@@ -1,6 +1,7 @@
 [% IF c.user && c.user.from_council %]
-
+<!--
 <input type="button" class="green-btn" value="Show Messages" id="show_messages">
+-->
 <ul id="message_manager" class="issue-list-a tab" style="display: none">
 	<li id="message-control">
 		<div id="mm-username-container">username:&nbsp;<span id="mm-received-username"></span></div>
@@ -8,16 +9,16 @@
 			<div id="mm-status-message"></div>
 		</div>
 		<div id="mm-login-container">
-			<div class="input text">
-				<label for="mm-htauth-username">MM username</label>
+			<div>
+				<label for="mm-htauth-username">Username:</label>
 				<input name="mm-htauth-username" id="mm-htauth-username" type="text"/>
 			</div>
-			<div class="input password">
-				<label for="mm-htauth-password">Password</label>
+			<div>
+				<label for="mm-htauth-password">Password:</label>
 				<input name="mm-htauth-password" id="mm-htauth-password" type="password"/>
 			</div>
 			<div class="submit">
-				<input  id="available-submit" type="submit" value="Get available messages"/>
+				<input  id="available-submit" type="submit" value="Get available messages" class="green-btn"/>
 			</div>
 		</div>
 	</li>
@@ -25,15 +26,35 @@
 		<div id="mm-message-list" style="min-height:1em;"></div>
 	</li>
 </ul>
+<div style="display:none">
+	<div id="reply-form-container">
+		<form action="/" id="reply-form" onsubmit="event.returnValue = false; return false;" method="post" accept-charset="utf-8">
+			<input type="hidden" name="message_id" id="reply_to_msg_id"/>
+			<div>
+				<label for="reply_text">Reply text:</label>
+				<textarea name="reply_text" id="reply_text"></textarea>
+			</div>
+			<div class="submit">
+				<input id="reply-submit" type="submit" value="Send Reply" class="green-btn"/>
+			</div>
+		</form>
+	</div>
+</div>
 
 <script type="text/javascript">
 	
 $(document).ready(function() {
 
 	var mm_url = "[% c.config.MESSAGE_MANAGER_URL %]"; // from config
-
+	var problem_id = "[% problem.id %]";
+	var dummy_busy = false;
+	
+	function sanitise_id(css_id) {
+	    return css_id.replace(/\D/g, "");
+	}
+	
 	var mm_populate_list = function(data) {
-		$('#mm-status-message-container').text("Accessed message server as " + data['username']);
+		$('#mm-status-message-container').text("Accessed Message Manager as " + data['username']);
 		$('input[name=mm_text]').prop('checked', false); // uncheck all
 	}
 
@@ -49,6 +70,15 @@ $(document).ready(function() {
 		}
 		$('#form_detail').val(msg_text);
 		$('#external_source_id').val(service_id);
+	}
+	
+	var dummy_reply_cleanup = function(data) {
+		$('#reply_text').val('');
+		dummy_busy = false;
+	}
+
+	var dummy_hide_cleanup = function(data) {
+		dummy_busy = false;
 	}
 
 	message_manager.config({url_root: mm_url});
@@ -66,11 +96,57 @@ $(document).ready(function() {
 	});
 	$('#available-submit').click();
 
-  $('<input type="button" value="Copy to update"/>').attr({
-      'id': 'add_support',
-      'name': 'add_support',
-      'class': 'green-btn'
-   }).appendTo($('#message_manager'));
+	$('#hide-button').click(function() {
+		if ($('#message_id').val()) {
+			message_manager.hide(
+			    $('#message_id').val(), 
+			    {callback:dummy_hide_cleanup});
+		}
+	});
+	
+	$('#mm-message-list').on('mouseover', 'li.mm-msg', function(e){
+		e.stopPropagation(); // because replies are nested
+		$('.mm-msg-action', $('#mm-message-list')).stop().fadeOut(200);
+		$(this).find('> .mm-msg-action').stop().show();
+		console.log("clicked on: " + $(this).attr('id'));
+	});
+
+	$('#mm-message-list').on('click', '.mm-hide', function(e){
+		var want_hide =
+			confirm('Are you sure you want to delete the following message?\n\n"' 
+				+ $('p', $(this).parent()).first().text() + '"\n');
+		if (want_hide) {
+		    message_manager.hide(
+			    sanitise_id($(this).parent().attr('id')),
+			    {callback:dummy_hide_cleanup});
+		}
+	});
+
+	$('#mm-message-list').on('click', '.mm-rep', function(e){
+		console.log("call message_manager.reply(" + $(this).parent().attr('id') + ", reply_text)");
+	});
+	
+	$('#reply-submit').click(function(e) {
+		e.preventDefault();
+		if (! dummy_busy) {
+			dummy_busy = true;
+			console.log("sending reply to: " + $('#reply_to_msg_id').val());
+			message_manager.reply(
+			    $('#reply_to_msg_id').val(), 
+			    $('#reply_text').val(), 
+			    {callback:dummy_reply_cleanup});
+		}
+	});
+    
+    $("a#reply").fancybox({onClosed: function(){dummy_busy=false;}});
+
+
+
+  // $('<input type="button" value="Copy to update"/>').attr({
+  //     'id': 'add_support',
+  //     'name': 'add_support',
+  //     'class': 'green-btn'
+  //  }).appendTo($('#message_manager'));
 
 	$('#add_support').click(function(e){
       e.preventDefault();
@@ -80,7 +156,7 @@ $(document).ready(function() {
           $('#external_source_id').val(id);
           $('#form_update').val( $(this).val() );
           $('#form_update_form').on('submit', function(e) {
-              message_manager.assign_fms_id( $('#external_source_id').val(), [% problem.id %], { 'is_async': false } );
+              message_manager.assign_fms_id( $('#external_source_id').val(), problem_id, { 'is_async': false } );
           });
       });
   });
