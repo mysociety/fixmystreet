@@ -33,9 +33,9 @@ sub disambiguate_location {
 
 sub _fallback_council_sender {
     my ( $self, $area_id, $area_info, $category ) = @_;
-    return 'London' if $area_info->{type} eq 'LBO';
-    return 'NI' if $area_info->{type} eq 'LGD';
-    return 'Email';
+    return { method => 'London' } if $area_info->{type} eq 'LBO';
+    return { method => 'NI' } if $area_info->{type} eq 'LGD';
+    return { method => 'Email' };
 }
 
 sub process_extras {

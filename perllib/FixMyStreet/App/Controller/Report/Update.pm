@@ -77,7 +77,7 @@ sub update_problem : Private {
     }
 
     if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_council && $c->req->param('external_source_id') ) {
-        $problem->interest_count( $problem->interest_count + 1 );
+        $problem->interest_count( \'interest_count + 1' );
     }
 
     $problem->lastupdate( \'ms_current_timestamp()' );

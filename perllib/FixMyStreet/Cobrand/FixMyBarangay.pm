@@ -16,6 +16,8 @@ sub country {
     return 'PH';
 }
 
+sub language_domain { 'FixMyBarangay' }
+
 sub area_types {
     return [ 'BGY' ];
 }

@@ -9,6 +9,7 @@ my %out;
 
 find( sub {
     next unless -f;
+    next if $File::Find::name =~ /ttc$/;
     open (FP, $_) or die $!;
     while (<FP>) {
         next unless /nget/;

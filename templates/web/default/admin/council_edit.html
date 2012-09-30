@@ -30,6 +30,33 @@
 
     <strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea> <br>
 
+    <h2>[% loc('Configure Endpoint') %]</h2>
+    <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <p>
+        <label for="endpoint">Endpoint</label>: 
+        <input type="text" name="endpoint" id="endpoint" value="[% contact.endpoint %]" size="50">
+    </p>
+
+    <p>
+        <label for="jurisdiction">Jurisdiction</label>: 
+        <input type="text" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction %]" size="50">
+    </p>
+
+    <p>
+        <label for="api_key">Api Key</label>: 
+        <input type="text" name="api_key" id="api_key" value="[% contact.api_key %]" size="25">
+    </p>
+
+    <p>
+        <label for="send_method">Send Method</label>:
+        <select name="send_method">
+            <option value=""> -- Select a method -- </option>
+            [% FOR method IN send_methods %]
+            <option value="[% method %]"[% ' selected' IF contact.send_method == method %]>[% method %]</option>
+            [% END %]
+        </select>
+    </p>
+
     <input type="hidden" name="area_id" value="[% area_id %]">
     <input type="hidden" name="posted" value="new">
     <input type="submit" name="Save changes" value="[% loc('Save changes') %]">
