@@ -1,3 +1,5 @@
+@import "_colours";
+
 $mm_status_message_color: #a66;
 $mm_border_color: #eee;
 
@@ -59,7 +61,7 @@ $color_bg_mm_list:       #F6F6F6;
           background-color: inherit;
           margin: 0.25em 0 0 0;
           padding: 0.5em 1em;
-          &:hover { background-color: #efe;}
+          // &:hover { background-color: #efe;}
         }
         ul.mm-reply-thread {
           li {
@@ -77,10 +79,10 @@ $color_bg_mm_list:       #F6F6F6;
           .mm-reply-5 { margin-left: 5em; background-color: $color_bg_reply_5;}
           .mm-reply-6 { margin-left: 6em; background-color: $color_bg_reply_6;}
         }
-        &.msg-is-locked { background-color: #fdd;}
-        &.msg-is-owned { background-color: #dfd;}
-        &.msg-is-busy { background-color: #ffd;}
         &:hover { background-color: #efe;}
+        &.msg-is-locked { background-color: #fdd;}
+        &.msg-is-busy { background-color: #ffd;}
+        &.msg-is-owned { background-color: $contrast1; color:#fff;} // was: #dfd, now stronger
         span.msg-tag {
           width: 3em;
           float:left;
