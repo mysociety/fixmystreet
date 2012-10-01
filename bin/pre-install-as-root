@@ -54,11 +54,11 @@ UNIX_USER="$1"
 
 if [ $DEFAULT_SERVER = true ]
 then
-    FMS_DIRECTORY="/var/www/fixmystreet"
+    DIRECTORY="/var/www/fixmystreet"
 else
-    FMS_DIRECTORY="/var/www/$HOST"
+    DIRECTORY="/var/www/$HOST"
 fi
-FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
+REPOSITORY="$DIRECTORY/fixmystreet"
 
 REPOSITORY_URL=git://github.com/mysociety/fixmystreet.git
 BRANCH=master
@@ -153,25 +153,25 @@ EOF
 clone_or_update_repository() {
     # Clone the repository into place if the directory isn't already
     # present:
-    if [ -d $FMS_REPOSITORY ]
+    if [ -d $REPOSITORY ]
     then
-        echo the directory $FMS_REPOSITORY already exists
-        cd $FMS_REPOSITORY
+        echo the directory $REPOSITORY already exists
+        cd $REPOSITORY
         git remote set-url origin "$REPOSITORY_URL"
         git fetch origin
         # Check that there are no uncommitted changes before doing a
         # git reset --hard:
-        git diff --quiet || { echo "There were changes in the working tree in $FMS_REPOSITORY; exiting."; exit 1; }
-        git diff --cached --quiet || { echo "There were staged but uncommitted changes in $FMS_REPOSITORY; exiting."; exit 1; }
+        git diff --quiet || { echo "There were changes in the working tree in $REPOSITORY; exiting."; exit 1; }
+        git diff --cached --quiet || { echo "There were staged but uncommitted changes in $REPOSITORY; exiting."; exit 1; }
         # If that was fine, carry on:
         git reset --hard origin/"$BRANCH"
         git submodule sync
         git submodule update --recursive
     else
-        PARENT="$(dirname $FMS_REPOSITORY)"
+        PARENT="$(dirname $REPOSITORY)"
         echo creating $PARENT
         mkdir -p $PARENT
-        git clone --recursive --branch "$BRANCH" "$REPOSITORY_URL" "$FMS_REPOSITORY"
+        git clone --recursive --branch "$BRANCH" "$REPOSITORY_URL" "$REPOSITORY"
     fi
 }
 
@@ -190,8 +190,8 @@ add_website_to_nginx() {
     fi
     SITE_FILENAME=/etc/nginx/sites-available/"$SITE"
     SITE_LINK=/etc/nginx/sites-enabled/"$SITE"
-    cp $FMS_REPOSITORY/conf/nginx.conf.example $SITE_FILENAME
-    sed -i "s,/var/www/fixmystreet,$FMS_DIRECTORY," $SITE_FILENAME
+    cp $REPOSITORY/conf/nginx.conf.example $SITE_FILENAME
+    sed -i "s,/var/www/fixmystreet,$DIRECTORY," $SITE_FILENAME
     if [ $DEFAULT_SERVER = false ]
     then
         sed -i "/listen 80/a\
@@ -207,8 +207,8 @@ add_website_to_nginx() {
 
 install_sysvinit_script() {
     SYSVINIT_FILENAME=/etc/init.d/$SYSVINIT_NAME
-    cp $FMS_REPOSITORY/conf/sysvinit-catalyst-fastcgi.example $SYSVINIT_FILENAME
-    sed -i "s,/var/www/fixmystreet,$FMS_DIRECTORY,g" $SYSVINIT_FILENAME
+    cp $REPOSITORY/conf/sysvinit-catalyst-fastcgi.example $SYSVINIT_FILENAME
+    sed -i "s,/var/www/fixmystreet,$DIRECTORY,g" $SYSVINIT_FILENAME
     sed -i "s/^ *USER=.*/USER=$UNIX_USER/" $SYSVINIT_FILENAME
     chmod a+rx $SYSVINIT_FILENAME
     update-rc.d fms-catalyst-fastcgi start 20 2 3 4 5 . stop 20 0 1 6 .
@@ -224,7 +224,7 @@ overwrite_rc_local() {
     cat > /etc/rc.local <<EOF
 #!/bin/sh -e
 
-su -l -c $FMS_REPOSITORY/bin/ec2-rewrite-conf $UNIX_USER
+su -l -c $REPOSITORY/bin/ec2-rewrite-conf $UNIX_USER
 /etc/init.d/$SYSVINIT_NAME restart
 
 exit 0
@@ -246,15 +246,15 @@ apt-get install -y git-core lockfile-progs rubygems
 # And remove one crippling package, if it's installed:
 apt-get remove --purge apt-xapian-index || true
 
-clone_or_update_repository $FMS_REPOSITORY
+clone_or_update_repository $REPOSITORY
 
-chown -R "$UNIX_USER"."$UNIX_USER" "$FMS_DIRECTORY"
+chown -R "$UNIX_USER"."$UNIX_USER" "$DIRECTORY"
 
 install_nginx
 
-install_website_packages "$FMS_REPOSITORY"
+install_website_packages "$REPOSITORY"
 
-add_website_to_nginx "$UNIX_USER" "$HOST" "$FMS_REPOSITORY"
+add_website_to_nginx "$UNIX_USER" "$HOST" "$REPOSITORY"
 
 add_postgresql_user "$UNIX_USER"
 
@@ -264,7 +264,7 @@ then
     DEFAULT_PARAMETER='--default'
 fi
 
-su -l -c "$FMS_REPOSITORY/bin/install-as-user $DEFAULT_PARAMETER '$UNIX_USER' '$HOST'" "$UNIX_USER"
+su -l -c "$REPOSITORY/bin/install-as-user $DEFAULT_PARAMETER '$UNIX_USER' '$HOST'" "$UNIX_USER"
 
 install_sysvinit_script
 
@@ -281,4 +281,4 @@ fi
 echo Installation complete - you should now be able to view the site at:
 echo   http://$HOST/
 echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
-echo running: $FMS_REPOSITORY/bin/cron-wrapper prove -r t
+echo running: $REPOSITORY/bin/cron-wrapper prove -r t
