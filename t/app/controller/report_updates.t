@@ -501,18 +501,6 @@ for my $test (
         state => 'in progress',
     },
     {
-        desc => 'from authority user marks report as closed',
-        fields => {
-            name => $user->name,
-            may_show_name => 1,
-            add_alert => undef,
-            photo => '',
-            update => 'Set state to closed',
-            state => 'closed',
-        },
-        state => 'closed',
-    },
-    {
         desc => 'from authority user marks report as fixed',
         fields => {
             name => $user->name,
@@ -535,6 +523,54 @@ for my $test (
             state => 'confirmed',
         },
         state => 'confirmed',
+    },
+    {
+        desc => 'from authority user marks report as action scheduled',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => undef,
+            photo => '',
+            update => 'Set state to action scheduled',
+            state => 'action scheduled',
+        },
+        state => 'action scheduled',
+    },
+    {
+        desc => 'from authority user marks report as unable to fix',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => undef,
+            photo => '',
+            update => 'Set state to unable to fix',
+            state => 'unable to fix',
+        },
+        state => 'unable to fix',
+    },
+    {
+        desc => 'from authority user marks report as not responsible',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => undef,
+            photo => '',
+            update => 'Set state to not responsible',
+            state => 'not responsible',
+        },
+        state => 'not responsible',
+    },
+    {
+        desc => 'from authority user marks report as duplicate',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => undef,
+            photo => '',
+            update => 'Set state to duplicate',
+            state => 'duplicate',
+        },
+        state => 'duplicate',
     },
     {
         desc => 'from authority user marks report sent to two councils as fixed',

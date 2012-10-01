@@ -245,7 +245,8 @@ sub check_for_errors : Private {
         $error = 1 unless $c->user && $c->user->belongs_to_council( $c->stash->{update}->problem->council );
 
         my $state = $c->req->param('state');
-        $error = 1 unless ( grep { $state eq $_ } ( qw/confirmed closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );
+        $state = 'fixed - council' if $state eq 'fixed';
+        $error = 1 unless ( grep { $state eq $_ } ( FixMyStreet::DB::Result::Problem->council_states() ) );
 
         if ( $error ) {
             $c->stash->{errors} ||= [];
