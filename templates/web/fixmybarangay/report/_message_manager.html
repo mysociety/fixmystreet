@@ -51,7 +51,6 @@ $(document).ready(function() {
 	var problem_id = "[% problem.id %]";
 	var dummy_busy = false;
 	var fms_username = "[% c.user.email | replace('\@.*', '') %]";
-	$('#mm-htauth-username').val(fms_username); // convenience... guess username:email-prefix match?
 	
 	function sanitise_id(css_id) {
 	    return css_id.replace(/\D/g, "");
@@ -98,7 +97,7 @@ $(document).ready(function() {
 
 	$('#available-submit').click(function(e){
 		e.preventDefault();
-		message_manager.get_available_messages({callback:mm_populate_list});
+		message_manager.get_available_messages({callback:mm_populate_list, suggest_username:fms_username});
 	});
 	$('#available-submit').click();
 	

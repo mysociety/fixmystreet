@@ -130,8 +130,11 @@ var message_manager = (function() {
         }
     };
 
-    var show_login_form = function() {
+    var show_login_form = function(suggest_username) {
         $('.mm-msg', $message_list_element).remove(); // remove (old) messages
+        if ($htauth_username.size() && ! $htauth_username.val()) {
+            $htauth_username.val(suggest_username)
+        }
         $login_element.stop().slideDown();
     };
 
@@ -234,16 +237,21 @@ var message_manager = (function() {
     };
 
     // gets messages or else requests login
+    // options: suggest_username, if provided, is preloaded into the login form if provided
     var get_available_messages = function(options) {
         var base_auth = get_current_auth_credentials();
-        if (base_auth === "") {
-            show_login_form();
-            return;
-        }
+        var suggest_username = "";
         if (options) {
             if (typeof(options.callback) === 'function') {
                 callback = options.callback;
             }
+            if (typeof options.suggest_username === 'string') {
+                suggest_username = options.suggest_username;
+            }
+        }
+        if (base_auth === "") {
+            show_login_form(suggest_username);
+            return;
         }
         $login_element.stop().hide();
         $.ajax({
@@ -265,7 +273,7 @@ var message_manager = (function() {
                         if (st == 401 || st == 403) {
                             var msg = (st == 401 ? "Invalid username or password for" : "Access denied: please log in to") + " " + _mm_name;
                             say_status(msg);
-                            show_login_form();
+                            show_login_form(suggest_username);
                         } else {
                             var err_msg = "Unable to load messages: ";
                             if (st === 0 && textStatus === 'error') { // x-domain hard to detect, sometimes intermittent?
