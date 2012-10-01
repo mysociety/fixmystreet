@@ -30,7 +30,7 @@
 </ul>
 <div style="display:none">
 	<div id="reply-form-container">
-		<form action="/" id="reply-form" onsubmit="event.returnValue = false; return false;" method="post" accept-charset="utf-8">
+		<div id="reply-form">
 			<input type="hidden" name="message_id" id="reply_to_msg_id"/>
 			<div>
 				<label for="reply_text">Reply text:</label>
@@ -39,7 +39,7 @@
 			<div class="submit">
 				<input id="reply-submit" type="submit" value="Send Reply" class="green-btn"/>
 			</div>
-		</form>
+		</div>
 	</div>
 </div>
 
