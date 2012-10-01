@@ -59,11 +59,9 @@ sub index : Path : Args(0) {
 
     %prob_counts =
       map { $_ => $prob_counts{$_} || 0 }
-      ('confirmed', 'investigating', 'in progress', 'closed', 'fixed - council',
-          'fixed - user', 'fixed', 'unconfirmed', 'hidden',
-          'partial', 'planned');
+        ( FixMyStreet::DB::Result::Problem->all_states() );
     $c->stash->{problems} = \%prob_counts;
-    $c->stash->{total_problems_live} += $prob_counts{$_} 
+    $c->stash->{total_problems_live} += $prob_counts{$_} ? $prob_counts{$_} : 0
         for ( FixMyStreet::DB::Result::Problem->visible_states() );
     $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
 

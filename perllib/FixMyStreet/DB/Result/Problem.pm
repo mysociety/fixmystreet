@@ -243,7 +243,7 @@ sub closed_states {
 
     @states = FixMyStreet::DB::Problem::visible_states();
 
-Get a list or states that should be visible on the site. If called in
+Get a list of states that should be visible on the site. If called in
 array context then returns an array of names, otherwise returns a
 HASHREF.
 
@@ -268,8 +268,50 @@ sub visible_states {
     return wantarray ? keys %{$states} : $states;
 }
 
+=head2
+
+    @states = FixMyStreet::DB::Problem::all_states();
+
+Get a list of all states that a problem can have. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub all_states {
+    my $states = {
+        'hidden'                      => 1,
+        'partial'                     => 1,
+        'unconfirmed'                 => 1,
+        'confirmed'                   => 1,
+        'planned'                     => 1,
+        'investigating'               => 1,
+        'in progress'                 => 1,
+        'action scheduled'            => 1,
+        'fixed'                       => 1,
+        'fixed - council'             => 1,
+        'fixed - user'                => 1,
+        'unable to fix'               => 1,
+        'not councils responsibility' => 1,
+        'duplicate'                   => 1,
+        'closed'                      => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::council_states();
+
+Get a list of states that are availble to council users. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
 sub council_states {
     my $states = {
+        'confirmed'                     => 1,
         'planned'                     => 1,
         'investigating'               => 1,
         'in progress'                 => 1,
