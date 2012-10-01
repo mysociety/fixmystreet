@@ -195,9 +195,8 @@ add_website_to_nginx() {
     sed -i "s,/var/www/fixmystreet,$FMS_DIRECTORY," $SITE_FILENAME
     if [ $DEFAULT_SERVER = false ]
     then
-        sed -i 's/listen 80/# listen 80/' $SITE_FILENAME
-        sed "/listen 80/i\
-     server_name $HOST;
+        sed -i "/listen 80/a\
+\    server_name $HOST;
 " $SITE_FILENAME
     fi
     ln -nsf "$SITE_FILENAME" "$SITE_LINK"
