@@ -133,7 +133,7 @@ var message_manager = (function() {
     var show_login_form = function(suggest_username) {
         $('.mm-msg', $message_list_element).remove(); // remove (old) messages
         if ($htauth_username.size() && ! $htauth_username.val()) {
-            $htauth_username.val(suggest_username)
+            $htauth_username.val(suggest_username);
         }
         $login_element.stop().slideDown();
     };
