@@ -1,5 +1,5 @@
 
-    --------------------------------------------------*/
+    /*--------------------------------------------------*/
 
     /*    1.stv- =FontFace Declarations
     --------------------------------------------------*/
@@ -83,7 +83,7 @@
         }
 
     p {
-      margin: 0 0 0.stv-8em 0;
+      margin: 0 0 0.8em 0;
       }
 
     input, label, select, option {
@@ -175,20 +175,20 @@
     /*    2.stv-2.stv- =Table
     --------------------------------------------------*/
     table { 
-      border: 1px solid #stv-c0c0be;
+      border: 1px solid #c0c0be;
       border-collapse: collapse;
       margin: 1em 0;
       }
 
     th {
         background-color: #656867;
-        border: 1px solid #stv-C0C0BE;
+        border: 1px solid #C0C0BE;
         color: #FFFFFF;
         padding: 3px 5px;
       }
 
     td {
-      border: 1px solid #stv-c0c0be;
+      border: 1px solid #c0c0be;
         padding: 5px 8px;
         vertical-align: top;
         }
@@ -205,11 +205,11 @@
       }
     fieldset {
         margin: 0;
-      padding: 0.stv-35em 0.stv-625em 0.stv-75em;
+      padding: 0.3em 0.625em 0.75em;
       }
     fieldset fieldset {
         border: medium none;
-        margin: 0.stv-5em 0;
+        margin: 0.5em 0;
         padding-left: 0;
         padding-right: 0;
       }
@@ -288,7 +288,7 @@
 
     .stv-FormBuilderSubmitItem input[type="submit"], .stv-FormBuilderSubmitItem input[type="button"] {
         margin-top: 5px;
-        margin-left: 25.stv-5%;
+        margin-left: 25%;
       }
 
     .stv-FormBuilderDateField {
@@ -475,7 +475,7 @@
         color: #005E38;
         display: inline;
         font-size: 1.3em;
-        line-height: 1.stv-7em;
+        line-height: 1.7em;
       }
 
     #stv-header #stv-pageTools #stv-topMenu li a {
@@ -634,8 +634,8 @@
     #stv-main.stv-home .stv-infoPanel h2,
     #stv-main.stv-landing .stv-infoPanel h2 {
         line-height: 1em;
-        margin-bottom: 0.stv-3em;
-        margin-top: 0.stv-3em;
+        margin-bottom: 0.3em;
+        margin-top: 0.3em;
       }
 
     #stv-main.stv-home .stv-infoPanel .stv-inner,
@@ -715,7 +715,7 @@
         height: 1%;
       }
     .stv-floatHolder:after {
-        content:".stv-";
+        content:".";
         clear:both;
         height:0;
         visibility:hidden;
