@@ -182,7 +182,7 @@ create table problem (
         or state = 'partial'
         or state = 'action scheduled'
         or state = 'unable to fix'
-        or state = 'not councils responsibility'
+        or state = 'not responsible'
         or state = 'duplicate'
     ),
     lang text not null default 'en-gb',
@@ -318,7 +318,7 @@ create table comment (
         or problem_state = 'fixed - user'
         or problem_state = 'action scheduled'
         or problem_state = 'unable to fix'
-        or problem_state = 'not councils responsibility'
+        or problem_state = 'not responsible'
         or problem_state = 'duplicate'
     ),
     -- other fields? one to indicate whether this was written by the council

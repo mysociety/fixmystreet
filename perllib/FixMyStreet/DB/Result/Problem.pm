@@ -190,7 +190,6 @@ sub open_states {
         'investigating'    => 1,
         'planned'          => 1,
         'in progress'      => 1,
-        'in progress'      => 1,
         'action scheduled' => 1,
     };
 
@@ -231,7 +230,7 @@ sub closed_states {
     my $states = {
         'closed'                      => 1,
         'unable to fix'               => 1,
-        'not councils responsibility' => 1,
+        'not responsible'             => 1,
         'duplicate'                   => 1,
     };
 
@@ -260,7 +259,7 @@ sub visible_states {
         'fixed - council'             => 1,
         'fixed - user'                => 1,
         'unable to fix'               => 1,
-        'not councils responsibility' => 1,
+        'not responsible'             => 1,
         'duplicate'                   => 1,
         'closed'                      => 1,
     };
@@ -292,7 +291,7 @@ sub all_states {
         'fixed - council'             => 1,
         'fixed - user'                => 1,
         'unable to fix'               => 1,
-        'not councils responsibility' => 1,
+        'not responsible'             => 1,
         'duplicate'                   => 1,
         'closed'                      => 1,
     };
@@ -318,7 +317,7 @@ sub council_states {
         'action scheduled'            => 1,
         'fixed - council'             => 1,
         'unable to fix'               => 1,
-        'not councils responsibility' => 1,
+        'not responsible'             => 1,
         'duplicate'                   => 1,
     };
 

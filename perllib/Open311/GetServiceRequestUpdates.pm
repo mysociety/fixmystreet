@@ -99,6 +99,8 @@ sub update_comments {
                     my $incoming_status = lc( $request->{status} );
                     my $internal_status = $incoming_status;
                     $internal_status =~ s/_/ /g;
+
+                    $internal_status = 'not responsible' if $internal_status eq 'not councils responsibility';
                     if ( $p->is_open and ( $incoming_status eq 'closed' or $incoming_status eq 'fixed' ) ) {
                         $p->state( 'fixed - council' );
                         $comment->problem_state( 'fixed - council' );
