@@ -60,6 +60,7 @@ h1 {
     width: 100%;
     min-height: 4em;
     position: absolute;
+    top:160px;
     border-top:4px solid #1a1a1a;
     @include border-image(url(/cobrands/fixmystreet/images/tile-y-border.jpg) 4 0 0 0);
     border-left:0;
@@ -235,7 +236,6 @@ body.mappage {
   .nav-wrapper{
     .nav-wrapper-2{
       position: fixed;
-      top:160px;
       background: #222;
       @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
     }
