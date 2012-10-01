@@ -14,6 +14,8 @@
 set -e
 set -x
 
+SITE=fixmystreet
+
 DEFAULT_SERVER=false
 if [ x"$1" = x"--default" ]
 then
@@ -54,16 +56,14 @@ UNIX_USER="$1"
 
 if [ $DEFAULT_SERVER = true ]
 then
-    DIRECTORY="/var/www/fixmystreet"
+    DIRECTORY="/var/www/$SITE"
 else
     DIRECTORY="/var/www/$HOST"
 fi
-REPOSITORY="$DIRECTORY/fixmystreet"
+REPOSITORY="$DIRECTORY/$SITE"
 
-REPOSITORY_URL=git://github.com/mysociety/fixmystreet.git
+REPOSITORY_URL=git://github.com/mysociety/$SITE.git
 BRANCH=master
-
-SYSVINIT_NAME=fms-catalyst-fastcgi
 
 IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
 
@@ -183,15 +183,15 @@ add_website_to_nginx() {
     UNIX_USER="$1"
     HOST="$2"
     REPOSITORY="$3"
-    SITE="$HOST"
+    NGINX_SITE="$HOST"
     if [ $DEFAULT_SERVER = true ]
     then
-        SITE=default
+        NGINX_SITE=default
     fi
-    SITE_FILENAME=/etc/nginx/sites-available/"$SITE"
-    SITE_LINK=/etc/nginx/sites-enabled/"$SITE"
+    SITE_FILENAME=/etc/nginx/sites-available/"$NGINX_SITE"
+    SITE_LINK=/etc/nginx/sites-enabled/"$NGINX_SITE"
     cp $REPOSITORY/conf/nginx.conf.example $SITE_FILENAME
-    sed -i "s,/var/www/fixmystreet,$DIRECTORY," $SITE_FILENAME
+    sed -i "s,/var/www/$SITE,$DIRECTORY," $SITE_FILENAME
     if [ $DEFAULT_SERVER = false ]
     then
         sed -i "/listen 80/a\
@@ -206,13 +206,13 @@ add_website_to_nginx() {
 }
 
 install_sysvinit_script() {
-    SYSVINIT_FILENAME=/etc/init.d/$SYSVINIT_NAME
+    SYSVINIT_FILENAME=/etc/init.d/$SITE
     cp $REPOSITORY/conf/sysvinit-catalyst-fastcgi.example $SYSVINIT_FILENAME
-    sed -i "s,/var/www/fixmystreet,$DIRECTORY,g" $SYSVINIT_FILENAME
+    sed -i "s,/var/www/$SITE,$DIRECTORY,g" $SYSVINIT_FILENAME
     sed -i "s/^ *USER=.*/USER=$UNIX_USER/" $SYSVINIT_FILENAME
     chmod a+rx $SYSVINIT_FILENAME
     update-rc.d fms-catalyst-fastcgi start 20 2 3 4 5 . stop 20 0 1 6 .
-    /etc/init.d/$SYSVINIT_NAME restart
+    /etc/init.d/$SITE restart
 }
 
 install_website_packages() {
@@ -225,7 +225,7 @@ overwrite_rc_local() {
 #!/bin/sh -e
 
 su -l -c $REPOSITORY/bin/ec2-rewrite-conf $UNIX_USER
-/etc/init.d/$SYSVINIT_NAME restart
+/etc/init.d/$SITE restart
 
 exit 0
 
