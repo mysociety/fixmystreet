@@ -207,7 +207,7 @@ add_website_to_nginx() {
 
 install_sysvinit_script() {
     SYSVINIT_FILENAME=/etc/init.d/$SITE
-    cp $REPOSITORY/conf/sysvinit-catalyst-fastcgi.example $SYSVINIT_FILENAME
+    cp $REPOSITORY/conf/sysvinit.example $SYSVINIT_FILENAME
     sed -i "s,/var/www/$SITE,$DIRECTORY,g" $SYSVINIT_FILENAME
     sed -i "s/^ *USER=.*/USER=$UNIX_USER/" $SYSVINIT_FILENAME
     chmod a+rx $SYSVINIT_FILENAME
