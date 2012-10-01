@@ -82,7 +82,8 @@ $color_bg_mm_list:       #F6F6F6;
         &:hover { background-color: #efe;}
         &.msg-is-locked { background-color: #fdd;}
         &.msg-is-busy { background-color: #ffd;}
-        &.msg-is-owned { background-color: $contrast1; color:#fff;} // was: #dfd, now stronger
+        &.msg-is-owned { background-color: #dfd;}
+        &.msg-is-active { background-color: $contrast1; color:#fff;}
         span.msg-tag {
           width: 3em;
           float:left;

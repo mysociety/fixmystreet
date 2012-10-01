@@ -46,7 +46,7 @@
 <script type="text/javascript">
 	
 $(document).ready(function() {
-
+	var $mm_message_list = $('#mm-message-list');
 	var mm_url = "[% c.config.MESSAGE_MANAGER_URL %]"; // from config
 	var problem_id = "[% problem.id %]";
 	var dummy_busy = false;
@@ -65,10 +65,12 @@ $(document).ready(function() {
 	var mm_selected_message = function(data) {
 		var msg_text = "";
 		var service_id = "";
+		$('li.msg-is-active', $mm_message_list).removeClass('msg-is-active');
 		if (data['success']) {
 			// msg_text = $('#form_detail').val( $('input[name=mm_text]:checked').val() ); # == message data
 			msg_text = data['data']['Message']['message'];
 			service_id = data['data']['Message']['id'];
+			$('#msg-' + service_id).addClass('msg-is-active');
 		} else {
 			$('input[name=mm_text]').prop('checked', false); // uncheck all
 		}
@@ -100,13 +102,13 @@ $(document).ready(function() {
 	});
 	$('#available-submit').click();
 	
-	$('#mm-message-list').on('mouseover', 'li.mm-msg', function(e){
+	$mm_message_list.on('mouseover', 'li.mm-msg', function(e){
 		e.stopPropagation(); // because replies are nested
-		$('.mm-msg-action', $('#mm-message-list')).stop().fadeOut(200);
+		$('.mm-msg-action', $mm_message_list).stop().fadeOut(200);
 		$(this).find('> .mm-msg-action').stop().show();
 	});
 
-	$('#mm-message-list').on('click', '.mm-hide', function(e){
+	$mm_message_list.on('click', '.mm-hide', function(e){
 		var want_hide =
 			confirm('Are you sure you want to delete the following message?\n\n"' 
 				+ $('p', $(this).parent()).first().text() + '"\n');
