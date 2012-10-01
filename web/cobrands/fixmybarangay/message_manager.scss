@@ -120,16 +120,13 @@ $color_bg_mm_list:       #F6F6F6;
     margin: 1em;
   }
 }
-#show_messages, #add_support { // COPY TO UPDATE button
+#show_messages, #add_support, #reply-submit { // COPY TO UPDATE button
   margin: 1em;
 }
 #reply-form-container {
   #reply-form{
     margin-top: 2em;
     border: 1px solid $mm_border_color;
-    background-color: #ffdddd;
-  }
-  .submit {
-    margin: 1em 0;
+    background-color: #fff;
   }
 }
