@@ -235,6 +235,7 @@ body.mappage {
   .nav-wrapper{
     .nav-wrapper-2{
       position: fixed;
+      top:160px;
       background: #222;
       @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
     }
