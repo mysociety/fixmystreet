@@ -113,7 +113,7 @@ add_unix_user() {
 }
 
 add_postgresql_user() {
-    su -c "createuser --createdb --no-createrole --no-superuser '$1'" postgres || true
+    su -l -c "createuser --createdb --no-createrole --no-superuser '$UNIX_USER'" postgres || true
 }
 
 update_apt_sources() {
