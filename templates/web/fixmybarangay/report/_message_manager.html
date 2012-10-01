@@ -50,6 +50,8 @@ $(document).ready(function() {
 	var mm_url = "[% c.config.MESSAGE_MANAGER_URL %]"; // from config
 	var problem_id = "[% problem.id %]";
 	var dummy_busy = false;
+	var fms_username = "[% c.user.email | replace('\@.*', '') %]";
+	$('#mm-htauth-username').val(fms_username); // convenience... guess username:email-prefix match?
 	
 	function sanitise_id(css_id) {
 	    return css_id.replace(/\D/g, "");
