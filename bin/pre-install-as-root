@@ -41,7 +41,6 @@ then
     then
         usage_and_exit
     else
-	echo "setting host"
         HOST="$EC2_HOSTNAME"
     fi
 elif [ $# = 2 ]
