@@ -211,7 +211,7 @@ install_sysvinit_script() {
     sed -i "s,/var/www/$SITE,$DIRECTORY,g" $SYSVINIT_FILENAME
     sed -i "s/^ *USER=.*/USER=$UNIX_USER/" $SYSVINIT_FILENAME
     chmod a+rx $SYSVINIT_FILENAME
-    update-rc.d fms-catalyst-fastcgi start 20 2 3 4 5 . stop 20 0 1 6 .
+    update-rc.d $SITE start 20 2 3 4 5 . stop 20 0 1 6 .
     /etc/init.d/$SITE restart
 }
 
