@@ -65,6 +65,9 @@ REPOSITORY="$DIRECTORY/$SITE"
 REPOSITORY_URL=git://github.com/mysociety/$SITE.git
 BRANCH=master
 
+DISTRIBUTION="$(lsb_release -i -s  | tr A-Z a-z)"
+VERSION="$(lsb_release -c -s)"
+
 IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
 
 if [ x = x"$IP_ADDRESS_FOR_HOST" ]
@@ -117,9 +120,7 @@ add_postgresql_user() {
 }
 
 update_apt_sources() {
-    DISTRIBUTION="$(lsb_release -i -s)"
-    VERSION="$(lsb_release -c -s)"
-    if [ x"$DISTRIBUTION" = x"Ubuntu" ] && [ x"$VERSION" = x"precise" ]
+    if [ x"$DISTRIBUTION" = x"ubuntu" ] && [ x"$VERSION" = x"precise" ]
     then
         cat > /etc/apt/sources.list.d/mysociety-extra.list <<EOF
 deb http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise multiverse
@@ -127,7 +128,7 @@ deb-src http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise multiverse
 deb http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise-updates multiverse
 deb-src http://eu-west-1.ec2.archive.ubuntu.com/ubuntu/ precise-updates multiverse
 EOF
-    elif [ x"$DISTRIBUTION" = x"Debian" ] && [ x"$VERSION" = x"squeeze" ]
+    elif [ x"$DISTRIBUTION" = x"debian" ] && [ x"$VERSION" = x"squeeze" ]
     then
         # Install the basic packages we require:
         cat > /etc/apt/sources.list.d/mysociety-extra.list <<EOF
@@ -216,7 +217,27 @@ install_sysvinit_script() {
 }
 
 install_website_packages() {
-    PACKAGES_FILE="$1/conf/packages.debian-squeeze"
+    EXACT_PACKAGES="$1/conf/packages.$DISTRIBUTION-$VERSION"
+    PRECISE_PACKAGES="$1/conf/packages.ubuntu-precise"
+    SQUEEZE_PACKAGES="$1/conf/packages.debian-squeeze"
+    GENERIC_PACKAGES="$1/conf/packages"
+    # If there's an exact match for the distribution and release, use that:
+    if [ -e "$EXACT_PACKAGES" ]
+    then
+        PACKAGES_FILE="$EXACT_PACKAGES"
+    # Otherwise, if this is Ubuntu, and there's a version specifically
+    # for precise, use that:
+    elif [ x"$DISTRIBUTION" = x"ubuntu" ] && [ -e "$PRECISE_PACKAGES" ]
+    then
+        PACKAGES_FILE="$PRECISE_PACKAGES"
+    # Otherwise, if this is Debian, and there's a version specifically
+    # for squeeze, use that:
+    elif [ x"$DISTRIBUTION" = x"debian" ] && [ -e "$SQUEEZE_PACKAGES" ]
+    then
+        PACKAGES_FILE="$SQUEEZE_PACKAGES"
+    else
+        PACKAGES_FILE="$GENERIC_PACKAGES"
+    fi
     xargs -a "$PACKAGES_FILE" apt-get -y install
 }
 
