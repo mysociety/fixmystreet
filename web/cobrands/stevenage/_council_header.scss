@@ -19,6 +19,7 @@
     padding: 0;
     font-size:62.5%;
     max-width: 100%;
+    background-color: #fff;
     
         #stv-everything {
       /*font-size: 125%;*/
@@ -561,6 +562,7 @@
     #stv-menu #stv-primaryNavigation li {
       display: block;
       float: left;
+      margin: 0;
         font-size: 1.5em;
         height: 2em;
         overflow: visible;

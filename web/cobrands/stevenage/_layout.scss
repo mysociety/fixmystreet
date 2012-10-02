@@ -10,7 +10,7 @@
 }
 
 body {
-  //background: #1A1A1A url(/cobrands/fixmystreet/images/tile.jpg) 0 0 repeat;
+  background: #dddddb; //#1A1A1A url(/cobrands/fixmystreet/images/tile.jpg) 0 0 repeat;
 }
 
 h1 {
@@ -58,14 +58,21 @@ h1 {
   display: table-caption;
   .nav-wrapper-2{
     width: 100%;
-    min-height: 4em;
+    min-height: min-intrinsic;
     position: absolute;
-    top:160px;
-    border-top:4px solid #1a1a1a;
-    @include border-image(url(/cobrands/fixmystreet/images/tile-y-border.jpg) 4 0 0 0);
+    top:158px;
+    border-top: none;
     border-left:0;
     border-right:0;
     z-index:2;
+    padding-top: 0.75em;
+    padding-bottom: 0.25em;
+    background-color: #6b6969;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#6b6969), to(#555454)); /* Safari 4+, Chrome */
+    background-image: -webkit-linear-gradient(top, #6b6969, #555454); /* Chrome 10+, Safari 5.1+, iOS 5+ */
+    background-image:    -moz-linear-gradient(top, #6b6969, #555454); /* Firefox 3.6-15 */
+    background-image:      -o-linear-gradient(top, #6b6969, #555454); /* Opera 11.10-12.00 */
+    background-image:         linear-gradient(to bottom, #6b6969, #555454); /* Firefox 16+, IE10, Opera 12.50+ */
   }
 }
 
@@ -122,7 +129,7 @@ h1 {
     list-style: none;
     padding: 0px;
     margin: 0px;
-    float:right;
+    float:none;
     li{
       list-style: none;
       display: inline;
@@ -133,25 +140,30 @@ h1 {
       span {
         display: block;
         color:#fff;
-        background: none;  
-        border-bottom: none;      
+        background: none;
+        border-bottom: none; 
+        margin: 0;    
+        margin-right: 2px;
+        font-family: 'PTSansRegular',PT Sans,Verdana,Arial,Sans-Serif;
       }
     }
     &#main-menu{
       li{
         a, span{
-          padding: 0.75em;
+          padding: 0.5em 0.75em;
           font-size: 0.9em;
+          margin: 0;
+          @include border-radius(0.25em);
         }
         a:hover{
           background:#444;
-          @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
         }
         a.report-a-problem-btn {
           color: $primary_text;
           background: $primary;
           padding:0.25em;
           margin:0.5em;
+          margin-bottom: 0;
           color:#333;
           @include border-radius(0.25em);
           &:hover {
@@ -159,7 +171,8 @@ h1 {
           }
         }
         span {
-          color:$primary;
+          color: #fff;
+          background-color: #066539;
         }
       }
     }
@@ -287,6 +300,11 @@ body.mappage {
 body.fullwidthpage {
   .content {
     width: 57em;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow:none;
+    -o-box-shadow:none;
+    background: none;
   }
   .intro {
     width:40em;
@@ -375,7 +393,7 @@ body.twothirdswidthpage {
 
 //footer blocks
 #footer-mobileapps {
-  border-right:1em solid #fff;
+  border-right:1em solid transparent;
   background:none;
   padding:0;
   @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
@@ -433,14 +451,14 @@ body.twothirdswidthpage {
 }
 
 #footer-help {
-  border-left:1em solid #fff;
+  border-left:1em solid transparent;
   ul {
     display:table;
     li {
       display:table-cell;
       border-bottom:none;
       &:last-child {
-        border-left:1.25em solid #fff;
+        border-left:1.25em solid transparent;
       }
     }
   }
@@ -768,10 +786,10 @@ body.frontpage {
     }
   }
   .nav-wrapper-2{
-    height:6em;
+    height:auto;
   }
   #site-header{
-    height:8em;
+    height:auto;
   }
   #site-logo{
     top:3em;
@@ -827,9 +845,11 @@ body.frontpage {
 // big yellow bit full screen width
 #front-main {
   color: $primary_text;
-  background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
-  margin: 0;
+  background: #fff;
+  margin: 0 auto;
+  margin-top: 1.5em;
   padding: 1em;
+  max-width: 60em;
   #front-main-container {
     max-width: 57em;
     margin:0 auto;
@@ -898,7 +918,7 @@ body.frontpage {
 }
 
 #front-howto {
-  border-right:1em solid #fff;
+  border-right:1em solid transparent;
   #front_stats {
     background:none;
     color: #222;
@@ -922,7 +942,7 @@ body.frontpage {
 }
 
 #front-recently {
-  border-left:1em solid #fff;
+  border-left:1em solid transparent;
 }
 
 #front-howto h2,
@@ -964,13 +984,14 @@ body.frontpage {
 
   #main-nav{
     width: auto;
-    float:right;
+    float:left;
     padding-left: 180px;
   }
   .nav-wrapper {
   //   width:auto;
     .nav-wrapper-2 {
       // width:auto;
+      @include background(linear-gradient(#222, #555 30%, #555 60%, #222));
     }
   }
 
