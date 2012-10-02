@@ -164,7 +164,7 @@ h1 {
           padding:0.25em;
           margin:0.5em;
           margin-bottom: 0;
-          color:#333;
+          color:#fff;
           @include border-radius(0.25em);
           &:hover {
             background:$primary/1.1;
@@ -232,12 +232,17 @@ h1 {
 
 // map page - has fixed header and different styling
 body.mappage {
+  #stevenage_cc_header{
+      position: fixed;
+    }
   .container {
     width: auto;
   }
   .content {
     float:left;
+    margin-top: 6em;
   }
+/*
   #main-nav ul#main-menu li a,
   #main-nav ul#main-menu li span {
     padding: 1.4em 0.75em 1.35em 0.75em;
@@ -246,12 +251,13 @@ body.mappage {
     padding: 0.5em;
     margin:0.9em 0.25em 0.85em 0.25em;
   }
+*/
   .nav-wrapper{
     .nav-wrapper-2{
       position: fixed;
-      background: #222;
-      @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+      top:92px;
     }
+    
   }
   #site-logo{
     position: fixed;
@@ -259,6 +265,9 @@ body.mappage {
 }
 .ie6, .ie7 {
   body.mappage {
+  #stevenage_cc_header {
+        position:static;
+      }
     // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
     .container {
       float: left;
@@ -281,12 +290,16 @@ body.mappage {
 //the z-index base yet again :S
 .ie8 {
   body.mappage {
+  #stevenage_cc_header{
+        position:static;
+      }
     .nav-wrapper{
       position: relative;
       z-index:0;
-      .nav-wrapper-2 {
+      .nav-wrapper-2{
         position:static;
       }
+      
     }
     #site-logo {
       position: absolute;
@@ -484,13 +497,13 @@ body.twothirdswidthpage {
   height: 29em;
   width: 29em;
   right: 1em;
-  top: 3em;
+  top: 140px;
   z-index:1;
 }
 
 // Pull OpenLayers navigation down a bit
 #fms_pan_zoom {
-  top: 4.75em !important;
+  top: 190px !important;
 }
 
 // push zoom back over to right

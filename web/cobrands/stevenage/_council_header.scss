@@ -15,10 +15,12 @@
     /*    2.stv- =BasicSetup and general styles
     --------------------------------------------------*/
 #stevenage_cc_header {
+    z-index: 2;
     margin: 0;
     padding: 0;
     font-size:62.5%;
     max-width: 100%;
+    width: 100%;
     background-color: #fff;
     
         #stv-everything {
@@ -727,4 +729,26 @@
         display:block;
       }
     
+}
+
+
+body.mappage{
+  #stevenage_cc_header{
+    #stv-header .stv-parf {
+      display: none;
+    }
+    #stv-header #stv-logo{
+      position: static;
+      float: left;
+      height: auto;
+      img{
+        height:50px;
+        width: auto;
+      }
+    }
+    #stv-pageTools.stv-floatHolder{
+      position: static;
+      z-index: auto;
+    }
+  }
 }
