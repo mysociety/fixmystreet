@@ -292,7 +292,7 @@ for my $test (
         fixed => 0
     },
     {
-        description => 'action scheduled eport',
+        description => 'action scheduled report',
         date => DateTime->now,
         state => 'action scheduled',
         banner_id => 'progress',
