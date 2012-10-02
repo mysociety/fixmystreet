@@ -14,7 +14,7 @@
 
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 SITE_HOME=/var/www/fixmystreet
-NAME=fms-catalyst-fastcgi
+NAME=fixmystreet
 DESC="FixMyStreet app server"
 USER=fms
 
