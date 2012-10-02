@@ -79,7 +79,7 @@
     [%
     rows = {
         '0' => [ "in progress", "Council has marked as in progress" ]
-        '1' => [ "planned", "Council has marked as planned" ]
+        '1' => [ "action scheduled", "Council has marked as planned" ]
         '2' => [ "investigating", "Council has marked as investigating" ]
         '3' => [ "closed", "Council has marked as closed" ]
     };
@@ -96,10 +96,14 @@
 
     <tr class='subtotal' id="marked">
         <th scope="row">Total marked</th>
-        <td>[% problems.wtd.${"in progress"} + problems.wtd.planned + problems.wtd.investigating + problems.wtd.closed %]</td>
-        <td>[% problems.week.${"in progress"} + problems.week.planned + problems.week.investigating + problems.wtd.closed %]</td>
-        <td>[% problems.weeks.${"in progress"} + problems.weeks.planned + problems.weeks.investigating + problems.wtd.closed %]</td>
-        <td>[% problems.ytd.${"in progress"} + problems.ytd.planned + problems.ytd.investigating + problems.wtd.closed %]</td>
+        <td>[% problems.wtd.${"in progress"} + problems.wtd.${"action scheduled"} +
+            problems.wtd.investigating + problems.wtd.closed %]</td>
+        <td>[% problems.week.${"in progress"} + problems.week.${"action scheduled"} +
+            problems.week.investigating + problems.wtd.closed %]</td>
+        <td>[% problems.weeks.${"in progress"} + problems.weeks.${"action scheduled"} +
+            problems.weeks.investigating + problems.wtd.closed %]</td>
+        <td>[% problems.ytd.${"in progress"} + problems.ytd.${"action scheduled"} +
+            problems.ytd.investigating + problems.wtd.closed %]</td>
     </tr>
 
     <tr id="avg_fixed">
@@ -134,7 +138,7 @@
 <p>Report state: <select name="state">
 <option value=''>All</option>
                 [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
-                loc('Investigating')], ['planned', loc('Planned')], ['in progress',
+                loc('Investigating')], ['action scheduled', loc('Planned')], ['in progress',
                 loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')] ] %]
                     <option [% 'selected ' IF state.0 == q_state %] value="[% state.0 %]">[% state.1 %]</option>
                 [% END %]

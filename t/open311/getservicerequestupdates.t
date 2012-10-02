@@ -117,18 +117,6 @@ for my $test (
         end_state => 'confirmed',
     },
     {
-        desc => 'planned status changed problem status',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
-        description => 'This is a note',
-        external_id => 638344,
-        start_state => 'confirmed',
-        comment_status => 'PLANNED',
-        mark_fixed=> 0,
-        mark_open => 0,
-        problem_state => 'planned',
-        end_state => 'planned',
-    },
-    {
         desc => 'investigating status changes problem status',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',

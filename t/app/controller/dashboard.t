@@ -78,7 +78,7 @@ my $categories = scraper {
     process "tr[id=fixed_user] > td", 'user[]' => 'TEXT',
     process "tr[id=total_fixed] > td", 'total_fixed[]' => 'TEXT',
     process "tr[id=in_progress] > td", 'in_progress[]' => 'TEXT',
-    process "tr[id=planned] > td", 'planned[]' => 'TEXT',
+    process "tr[id=action_scheduled] > td", 'action_scheduled[]' => 'TEXT',
     process "tr[id=investigating] > td", 'investigating[]' => 'TEXT',
     process "tr[id=marked] > td", 'marked[]' => 'TEXT',
     process "tr[id=avg_marked] > td", 'avg_marked[]' => 'TEXT',
@@ -212,10 +212,10 @@ foreach my $test (
         }
     },
     {
-        desc => 'marked as planned today',
+        desc => 'marked as action scheduled today',
         confirm_dt   => DateTime->now->subtract( days => 1 ),
         mark_dt      => DateTime->now,
-        state => 'planned',
+        state => 'action scheduled',
         counts => {
             totals => $is_monday ? [ 0,5,5,5] : [5,5,5,5],
             user => [1,1,1,1],
@@ -224,15 +224,15 @@ foreach my $test (
             avg_marked => [1,1,1,1],
             investigating => [1,1,1,1],
             in_progress => [1,1,1,1],
-            planned => [1,1,1,1],
+            action_scheduled => [1,1,1,1],
             marked => [3,3,3,3]
         }
     },
     {
-        desc => 'marked as planned today, confirmed a week ago',
+        desc => 'marked as action scheduled today, confirmed a week ago',
         confirm_dt   => DateTime->now->subtract( days => 8 ),
         mark_dt      => DateTime->now,
-        state => 'planned',
+        state => 'action scheduled',
         counts => {
             totals => $is_monday ? [0,5,6,6] : [5,5,6,6],
             user => [1,1,1,1],
@@ -241,7 +241,7 @@ foreach my $test (
             avg_marked => [3,3,3,3],
             investigating => [1,1,1,1],
             in_progress => [1,1,1,1],
-            planned => [2,2,2,2],
+            action_scheduled => [2,2,2,2],
             marked => [4,4,4,4]
         }
     },
@@ -259,7 +259,7 @@ foreach my $test (
             avg_marked => [3,3,3,3],
             investigating => [1,1,1,1],
             in_progress => [1,1,1,1],
-            planned => [2,2,2,2],
+            action_scheduled => [2,2,2,2],
             marked => [4,4,4,4]
         }
     },
@@ -277,7 +277,7 @@ foreach my $test (
             avg_marked => [3,3,3,3],
             investigating => [1,1,1,1],
             in_progress => [1,1,1,1],
-            planned => [2,2,2,2],
+            action_scheduled => [2,2,2,2],
             marked => [4,4,4,4]
         }
     },
@@ -295,7 +295,7 @@ foreach my $test (
             avg_marked => [3,3,3,3],
             investigating => [1,1,1,1],
             in_progress => [1,1,1,1],
-            planned => [2,2,2,2],
+            action_scheduled => [2,2,2,2],
             marked => [4,4,4,4]
         }
     },
@@ -313,7 +313,7 @@ foreach my $test (
             avg_marked => [2,2,2,2],
             investigating => [1,1,1,1],
             in_progress => [1,1,1,1],
-            planned => [2,2,2,2],
+            action_scheduled => [2,2,2,2],
             closed => [1,1,1,1],
             marked => [5,5,5,5]
         }

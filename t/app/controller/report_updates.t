@@ -477,18 +477,6 @@ for my $test (
         state => 'investigating',
     },
     {
-        desc => 'from authority user marks report as planned',
-        fields => {
-            name => $user->name,
-            may_show_name => 1,
-            add_alert => undef,
-            photo => '',
-            update => 'Set state to planned',
-            state => 'planned',
-        },
-        state => 'planned',
-    },
-    {
         desc => 'from authority user marks report as in progress',
         fields => {
             name => $user->name,

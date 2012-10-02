@@ -188,8 +188,8 @@ sub open_states {
     my $states = {
         'confirmed'        => 1,
         'investigating'    => 1,
-        'planned'          => 1,
         'in progress'      => 1,
+        'planned'          => 1,
         'action scheduled' => 1,
     };
 
@@ -251,9 +251,9 @@ HASHREF.
 sub visible_states {
     my $states = {
         'confirmed'                   => 1,
-        'planned'                     => 1,
         'investigating'               => 1,
         'in progress'                 => 1,
+        'planned'                     => 1,
         'action scheduled'            => 1,
         'fixed'                       => 1,
         'fixed - council'             => 1,
@@ -283,7 +283,6 @@ sub all_states {
         'partial'                     => 1,
         'unconfirmed'                 => 1,
         'confirmed'                   => 1,
-        'planned'                     => 1,
         'investigating'               => 1,
         'in progress'                 => 1,
         'action scheduled'            => 1,
@@ -311,10 +310,9 @@ HASHREF.
 sub council_states {
     my $states = {
         'confirmed'                     => 1,
-        'planned'                     => 1,
         'investigating'               => 1,
-        'in progress'                 => 1,
         'action scheduled'            => 1,
+        'in progress'                 => 1,
         'fixed - council'             => 1,
         'unable to fix'               => 1,
         'not responsible'             => 1,

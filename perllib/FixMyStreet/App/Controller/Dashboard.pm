@@ -181,11 +181,11 @@ sub updates_search : Private {
       map { $_ => $counts{$_} || 0 }
       ('confirmed', 'investigating', 'in progress', 'closed', 'fixed - council',
           'fixed - user', 'fixed', 'unconfirmed', 'hidden',
-          'partial', 'planned');
+          'partial', 'action scheduled');
 
     for my $vars (
         [ 'time_to_fix', 'fixed - council' ],
-        [ 'time_to_mark', 'in progress', 'planned', 'investigating', 'closed' ],
+        [ 'time_to_mark', 'in progress', 'action scheduled', 'investigating', 'closed' ],
     ) {
         my $col = shift @$vars;
         my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and problem_state in ('"
