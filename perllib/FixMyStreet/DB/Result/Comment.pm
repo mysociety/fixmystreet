@@ -186,6 +186,10 @@ sub meta_problem_state {
     my $state = $self->problem_state;
     $state =~ s/ -.*$//;
 
+    $state = _("not the council's responsibility") 
+        if $state eq 'not responsible';
+    $state = _('duplicate report') if $state eq 'duplicate';
+
     return $state;
 }
 
