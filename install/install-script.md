@@ -48,6 +48,20 @@ installing Perl modules, may take a long time to complete.
 When the script has finished, you should have a working copy of the
 website, accessible via the hostname you supplied to the script.
 
+By default, the admin part of the website (`/admin`) is password
+protected (with HTTP basic authentication).  In order to use this
+interface, you will need to create a username and password for one or
+more admin users.  To add such a user, you can use the `htpasswd`
+command from the `apache2-utils` packages, as follows:
+
+    ubuntu@ip-10-58-66-208:~$ sudo apt-get install apache2-utils
+    [...]
+    ubuntu@ip-10-58-66-208:~$ sudo su - fms
+    fms@ip-10-58-191-98:~$ htpasswd /var/www/fixmystreet/admin-htpasswd fmsadmin
+    New password:
+    Re-type new password:
+    Adding password for user fmsadmin
+
 You should then make sure that your local MTA is correctly configured
 to allow the `fms` user to send email, or change the `SMTP_SMARTHOST`
 variable in `conf/general.yml` to use a different smarthost.
