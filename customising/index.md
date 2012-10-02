@@ -27,6 +27,23 @@ called FixMyPark.
 
 The default Cobrand is called Default.
 
+## Administrative area mapping
+
+FixMyStreet works by mapping points to administrative areas to which reports
+can be sent. It normally does this using a different mySociety service called
+MapIt. By default, in the absence of a MapIt installation, FixMyStreet will map
+any point to the same administrative area, to allow for ease of set up and
+testing (and if you only need reports to be sent to one place, this might be
+enough!).
+
+If you are in the UK then you might be able to use mySociety's UK MapIt at
+<http://mapit.mysociety.org> although please check with us if you are
+expecting to generate a lot of requests or are using it commercially. We also
+have a global MapIt at <http://global.mapit.mysociety.org> using OpenStreetMap
+data that may be suitable for you. If you have some other boundary data, you
+can set up your own MapIt server to serve it out; for more details on how to
+install MapIt see our documentation at <http://code.mapit.mysociety.org>.
+
 ## Templates
 
 Templates are found in the templates directory. Within that there are
@@ -131,7 +148,7 @@ By default, FixMyStreet is set up so visiting a hostname starting with the
 two-letter language code will use that language; otherwise it will detect based
 upon the browser.
 
-### MAPIT_AREA_TYPES
+### MAPIT_URL / MAPIT_AREA_TYPES
 
 If you are using a MapIt installation, then as well as specifying its URL in
 `MAPIT_URL`, you can specify the types of area that matter to your FixMyStreet

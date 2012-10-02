@@ -11,7 +11,7 @@ FixMyStreet on your server.
 
 *Warning: only use this script on a newly installed server - it will
 make significant changes to your server's setup, including modifying
-your Apache setup, creating a user account, creating a database,
+your nginx setup, creating a user account, creating a database,
 installing new packages etc.*
 
 The script to run is `pre-install-as-root`, whose usage is as follows:

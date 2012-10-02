@@ -10,8 +10,8 @@ The rest of this page describes how to do this manually, for people
 who are used to setting up web applications, but there are two other
 options that may be easier:
 
-* [A FixMyStreet AMI for Amazon EC2](ami)
-* [An install script for Debian squeeze or Ubuntu precise servers](install-script)
+* [A FixMyStreet AMI for Amazon EC2](ami/)
+* [An install script for Debian squeeze or Ubuntu precise servers](install-script/)
 
 If you prefer to set up each required component of FixMyStreet
 yourself, proceed with the instructions below.
@@ -168,23 +168,6 @@ in order for the server to automatically restart when you update the code.
 * The admin site should be protected using HTTP AUTH.
 * [Customise your install using Templates, CSS and a Cobrand module](/customising/).
 * Add contact details for authorities and categories using the admin interface.
-* Add an installation of MapIt if required, and add the required authority data to it.
-
-### Administrative area mapping
-
-FixMyStreet works by mapping points to administrative areas to which reports
-can be sent. It normally does this using a different mySociety service called
-MapIt. By default, in the absence of a MapIt installation, FixMyStreet will map
-any point to the same administrative area, to allow for ease of set up and
-testing.
-
-If you are in the UK then you can use mySociety's UK MapIt:
-<http://mapit.mysociety.org> although please check with us if you are
-expecting to generate a lot of requests or are using it commercially. We also
-have a global MapIt at <http://global.mapit.mysociety.org> that may be
-suitable for you. If you have some other boundary data, you can set up your
-own MapIt server to serve it out; for more details on how to install MapIt see
-the mapit repository at <https://github.com/mysociety/mapit>
 
 ### Tile server
 
@@ -209,21 +192,22 @@ and:
 
 ## Deployment
 
-For production use of FixMyStreet, we suggest you use Apache and
+For production use of FixMyStreet, we suggest you use Apache or nginx, and
 FastCGI. It should also be possible to run it using Plack/PSGI.
 
-There is an example Apache vhost configuration file in `conf/httpd.conf-example`
-which contains a sample configuration and the required redirect rules. If you
-are using Apache and the sample configuration you will need the following
-modules enabled:
+There is an example nginx configuration in `conf/nginx.conf.example`, and an
+example Apache vhost configuration file in `conf/apache-vhost.conf.example` and
+`conf/httpd.conf-example`, which contain a sample configuration and the
+required redirect rules. If you are using Apache and the sample configuration
+you will need the following modules enabled:
 
 * mod_rewrite
 * mod_proxy
 * mod_expires
 * mod_fastcgi
 
-For most Linux distributions you should be able to install these using the distribution's
-packaging system.
+For most Linux distributions you should be able to install these using the
+distribution's packaging system.
 
 At this point you be able to restart the webserver and see your FixMyStreet
 installation at the configured URL.
