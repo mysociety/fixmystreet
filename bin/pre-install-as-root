@@ -275,6 +275,8 @@ install_nginx
 
 install_website_packages "$REPOSITORY"
 
+su -l -c "touch '$DIRECTORY/admin-htpasswd'" "$UNIX_USER"
+
 add_website_to_nginx "$UNIX_USER" "$HOST" "$REPOSITORY"
 
 add_postgresql_user "$UNIX_USER"
