@@ -24,6 +24,7 @@ has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
 has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
 has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
+has extended_statuses => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -274,12 +275,34 @@ sub _populate_service_request_update_params {
     my $name = $comment->name || $comment->user->name;
     my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
 
+    my $status = 'OPEN';
+    if ( $self->extended_statuses ) {
+        if ( $comment->problem->is_fixed ) {
+            $status = 'FIXED';
+        } elsif ( $comment->problem->state eq 'in progress' ) {
+            $status = 'IN_PROGRESS';
+        } elsif ($comment->problem->state eq 'action scheduled'
+            || $comment->problem->state eq 'planned' ) {
+            $status = 'ACTION_SCHEDULED';
+        } elsif ( $comment->problem->state eq 'investigating' ) {
+            $status = 'INVESTIGATING';
+        } elsif ( $comment->problem->state eq 'duplicate' ) {
+            $status = 'DUPLICATE';
+        } elsif ( $comment->problem->state eq 'not responsible' ) {
+            $status = 'NOT_COUNCILS_RESPONSIBILITY';
+        } elsif ( $comment->problem->state eq 'unable to fix' ) {
+            $status = 'UNABLE_TO_FIX';
+        }
+    } else {
+        $status = $comment->problem->is_open ? 'OPEN' : 'CLOSED',;
+    }
+
     my $params = {
         update_id_ext => $comment->id,
         updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed_local->set_nanosecond(0)),
         service_request_id => $comment->problem->external_id,
         service_request_id_ext => $comment->problem->id,
-        status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',
+        status => $status,
         email => $comment->user->email,
         description => $comment->text,
         public_anonymity_required => $comment->anonymous ? 'TRUE' : 'FALSE',

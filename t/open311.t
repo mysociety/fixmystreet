@@ -238,18 +238,42 @@ foreach my $test (
         state => 'fixed',
         anon  => 0,
         status => 'CLOSED',
+        extended => 'FIXED',
     },
     {
         desc => 'comment with fixed - user state sends status of CLOSED',
         state => 'fixed - user',
         anon  => 0,
         status => 'CLOSED',
+        extended => 'FIXED',
     },
     {
         desc => 'comment with fixed - council state sends status of CLOSED',
         state => 'fixed - council',
         anon  => 0,
         status => 'CLOSED',
+        extended => 'FIXED',
+    },
+    {
+        desc => 'comment with duplicate state sends status of CLOSED',
+        state => 'duplicate',
+        anon  => 0,
+        status => 'CLOSED',
+        extended => 'DUPLICATE',
+    },
+    {
+        desc => 'comment with not reponsible state sends status of CLOSED',
+        state => 'not responsible',
+        anon  => 0,
+        status => 'CLOSED',
+        extended => 'NOT_COUNCILS_RESPONSIBILITY',
+    },
+    {
+        desc => 'comment with unable to fix state sends status of CLOSED',
+        state => 'unable to fix',
+        anon  => 0,
+        status => 'CLOSED',
+        extended => 'UNABLE_TO_FIX',
     },
     {
         desc => 'comment with closed state sends status of CLOSED',
@@ -262,18 +286,28 @@ foreach my $test (
         state => 'investigating',
         anon  => 0,
         status => 'OPEN',
+        extended => 'INVESTIGATING',
     },
     {
         desc => 'comment with planned state sends status of OPEN',
         state => 'planned',
         anon  => 0,
         status => 'OPEN',
+        extended => 'ACTION_SCHEDULED',
+    },
+    {
+        desc => 'comment with action scheduled state sends status of OPEN',
+        state => 'action scheduled',
+        anon  => 0,
+        status => 'OPEN',
+        extended => 'ACTION_SCHEDULED',
     },
     {
         desc => 'comment with in progress state sends status of OPEN',
         state => 'in progress',
         anon  => 0,
         status => 'OPEN',
+        extended => 'IN_PROGRESS',
     },
     {
         desc => 'anonymous commment sets public_anonymity_required to true',
@@ -291,6 +325,12 @@ foreach my $test (
         my $c = CGI::Simple->new( $results->{ req }->content );
         is $c->param('status'), $test->{status}, 'correct status';
         is $c->param('public_anonymity_required'), $test->{anon} ? 'TRUE' : 'FALSE', 'correct anonymity';
+
+        if ( $test->{extended} ) {
+            my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_statuses => 1 } );
+            my $c = CGI::Simple->new( $results->{ req }->content );
+            is $c->param('status'), $test->{extended}, 'correct extended status';
+        }
     };
 }
 
@@ -502,15 +542,17 @@ for my $test (
 done_testing();
 
 sub make_update_req {
-    my $comment = shift;
-    my $xml = shift;
+    my $comment      = shift;
+    my $xml          = shift;
+    my $open311_args = shift || {};
 
     return make_req(
         {
-            object => $comment,
-              xml  => $xml,
-            method => 'post_service_request_update',
-            path   => 'update.xml',
+            object       => $comment,
+            xml          => $xml,
+            method       => 'post_service_request_update',
+            path         => 'update.xml',
+            open311_conf => $open311_args,
         }
     );
 }
