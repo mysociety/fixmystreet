@@ -307,11 +307,27 @@ for my $test (
         fixed => 0
     },
     {
+        state => 'action scheduled',
+        fixed => 0
+    },
+    {
         state => 'in progress',
         fixed => 0
     },
     {
         state => 'investigating',
+        fixed => 0
+    },
+    {
+        state => 'duplicate',
+        fixed => 0
+    },
+    {
+        state => 'not responsible',
+        fixed => 0
+    },
+    {
+        state => 'unable to fix',
         fixed => 0
     },
     {

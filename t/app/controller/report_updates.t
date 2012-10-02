@@ -547,6 +547,7 @@ for my $test (
             state => 'not responsible',
         },
         state => 'not responsible',
+        meta  => "not the council's responsibility"
     },
     {
         desc => 'from authority user marks report as duplicate',
@@ -559,6 +560,7 @@ for my $test (
             state => 'duplicate',
         },
         state => 'duplicate',
+        meta  => 'duplicate report',
     },
     {
         desc => 'from authority user marks report sent to two councils as fixed',
@@ -601,7 +603,8 @@ for my $test (
         is $update->problem_state, $test->{state}, 'problem state set';
 
         my $update_meta = $mech->extract_update_metas;
-        like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        my $meta_state = $test->{meta} || $test->{fields}->{state};
+        like $update_meta->[0], qr/marked as $meta_state$/, 'update meta includes state change';
         like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
         $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
 

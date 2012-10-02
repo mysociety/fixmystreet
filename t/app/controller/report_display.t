@@ -252,6 +252,30 @@ for my $test (
         fixed => 1
     },
     {
+        description => 'duplicate report',
+        date => DateTime->now,
+        state => 'duplicate',
+        banner_id => 'closed',
+        banner_text => 'closed',
+        fixed => 0
+    },
+    {
+        description => 'not responsible report',
+        date => DateTime->now,
+        state => 'not responsible',
+        banner_id => 'closed',
+        banner_text => 'closed',
+        fixed => 0
+    },
+    {
+        description => 'unable to fix report',
+        date => DateTime->now,
+        state => 'unable to fix',
+        banner_id => 'closed',
+        banner_text => 'closed',
+        fixed => 0
+    },
+    {
         description => 'closed report',
         date => DateTime->now,
         state => 'closed',
@@ -268,6 +292,14 @@ for my $test (
         fixed => 0
     },
     {
+        description => 'action scheduled eport',
+        date => DateTime->now,
+        state => 'action scheduled',
+        banner_id => 'progress',
+        banner_text => 'progress',
+        fixed => 0
+    },
+    {
         description => 'planned report',
         date => DateTime->now,
         state => 'planned',
@@ -276,7 +308,7 @@ for my $test (
         fixed => 0
     },
     {
-        description => 'in progressreport',
+        description => 'in progress report',
         date => DateTime->now,
         state => 'in progress',
         banner_id => 'progress',
