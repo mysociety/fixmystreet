@@ -14,13 +14,17 @@ server {
     root /var/www/fixmystreet/fixmystreet/web;
     error_page 503 /down.html;
 
-    # Make sure that Javascript, CSS and HTML are compressed:
+    # Make sure that Javascript and CSS are compressed.  (HTML is
+    # already compressed under the default configuration of the nginx
+    # package.)
+
     gzip on;
     gzip_disable "msie6";
     gzip_types application/javascript application/x-javascript text/css;
 
     # Set a long expiry time for CSS and Javascript, and prevent
     # the mangling of Javascript by proxies:
+
     location ~ \.css$ {
         expires 10y;
     }
@@ -51,6 +55,7 @@ server {
         }
         try_files $uri @catalyst;
     }
+
     location /down.html {
         internal;
     }
