@@ -318,6 +318,25 @@ foreach my $test (
             marked => [5,5,5,5]
         }
     },
+    {
+        desc => 'marked as planned',
+        confirm_dt   => DateTime->now->subtract( days => 1 ),
+        mark_dt      => DateTime->now,
+        state => 'planned',
+        counts => {
+            totals => $is_monday ? [0,7,10,11] : [7,7,10,11],
+            user => [1,1,1,2],
+            council => [2,2,3,3],
+            total_fixed => [3,3,4,5],
+            avg_fixed => [5,5,7,7],
+            avg_marked => [2,2,2,2],
+            investigating => [1,1,1,1],
+            in_progress => [1,1,1,1],
+            action_scheduled => [3,3,3,3],
+            closed => [1,1,1,1],
+            marked => [6,6,6,6]
+        }
+    },
 ) {
     subtest $test->{desc} => sub {
         make_problem(
@@ -528,6 +547,17 @@ for my $test (
         report_counts_after => [1,0,0],
     },
     {
+        desc => 'planned counted as action scheduled',
+        p1 => {
+                state   => 'planned',
+                conf_dt => DateTime->now(),
+                category => 'Potholes',
+        },
+        state => 'action scheduled',
+        report_counts => [3,0,0],
+        report_counts_after => [1,0,0],
+    },
+    {
         desc => 'All fixed states count as fixed',
         p1 => {
                 state   => 'fixed - council',
@@ -540,7 +570,7 @@ for my $test (
                 category => 'Potholes',
         },
         state => 'fixed',
-        report_counts => [4,0,0],
+        report_counts => [5,0,0],
         report_counts_after => [3,0,0],
     },
 ) {

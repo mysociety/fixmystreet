@@ -138,6 +138,8 @@ sub index : Path : Args(0) {
         $prob_where->{state} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
     } elsif ( $c->stash->{q_state} ) {
         $prob_where->{state} = $c->stash->{q_state};
+        $prob_where->{state} = { IN => [ 'planned', 'action scheduled' ] }
+            if $prob_where->{state} eq 'action scheduled';
     }
     my $params = {
         %$prob_where,
@@ -181,7 +183,9 @@ sub updates_search : Private {
       map { $_ => $counts{$_} || 0 }
       ('confirmed', 'investigating', 'in progress', 'closed', 'fixed - council',
           'fixed - user', 'fixed', 'unconfirmed', 'hidden',
-          'partial', 'action scheduled');
+          'partial', 'action scheduled', 'planned');
+
+      $counts{'action scheduled'} += $counts{planned} || 0;
 
     for my $vars (
         [ 'time_to_fix', 'fixed - council' ],
