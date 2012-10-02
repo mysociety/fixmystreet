@@ -16,9 +16,26 @@ server {
     root /var/www/fixmystreet/fixmystreet/web;
     error_page 503 /down.html;
 
+    # Make sure that Javascript, CSS and HTML are compressed:
+    gzip on;
+    gzip_disable "msie6";
+    gzip_types application/javascript application/x-javascript text/css;
+
+    # Set a long expiry time for CSS and Javascript, and prevent
+    # the mangling of Javascript by proxies:
+    location ~ \.css$ {
+        expires 10y;
+    }
+
+    location ~ \.js$ {
+        add_header Cache-Control no-transform;
+        expires 10y;
+        try_files $uri @catalyst;
+    }
+
     # These rewrite rules are ported from the Apache configuration in
     # conf/httpd.conf
-	      
+
     rewrite ^/rss/council/([0-9]+)$  /rss/reports/$1 permanent;
     rewrite ^/report$                /reports        permanent;
     rewrite '^/{/rss/(.*)}$'         /rss/$1         permanent;
