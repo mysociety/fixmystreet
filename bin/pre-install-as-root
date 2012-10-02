@@ -23,6 +23,9 @@ then
     shift
 fi
 
+# Install some packages that we will definitely need:
+apt-get install -y git-core lockfile-progs rubygems curl dnsutils lsb-release
+
 # If we're not running on an EC2 instance, an empty body is returned
 # by this request:
 EC2_HOSTNAME=`curl -s http://169.254.169.254/latest/meta-data/public-hostname || true`
@@ -260,9 +263,6 @@ set_locale
 add_unix_user "$UNIX_USER"
 
 update_apt_sources
-
-# Install some packages that we will definitely need:
-apt-get install -y git-core lockfile-progs rubygems
 
 # And remove one crippling package, if it's installed:
 apt-get remove -y --purge apt-xapian-index || true
