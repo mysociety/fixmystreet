@@ -15,7 +15,7 @@
     [% INCLUDE banner, id = 'closed', text = loc('Closed') %]
 [% END %]
 [% states = [ 'investigating', 'in progress', 'planned' ];
-   IF states.grep(problem.state).size %]
+   IF c.cobrand.moniker != 'bromley' && states.grep(problem.state).size %]
     [% INCLUDE banner, id = 'progress', text = loc('In progress') %]
 [% END %]
 
