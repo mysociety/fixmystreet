@@ -417,6 +417,11 @@ sub check_for_errors {
         $self->category(undef);
     }
 
+    if ( $self->council && $self->detail &&
+        $self->council eq '2482' && length($self->detail) > 2000 ) {
+        $errors{detail} = _('Reports are limited to 2000 characters in length. Please shorten your report');
+    }
+
     return \%errors;
 }
 
