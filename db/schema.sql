@@ -446,5 +446,6 @@ create table open311conf (
     send_method  text,
     send_comments boolean not null default 'f',
     comment_user_id int references users(id),
-    suppress_alerts boolean not null default 'f'
+    suppress_alerts boolean not null default 'f',
+    send_extended_statuses boolean not null default 'f'
 );

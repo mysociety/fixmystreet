@@ -34,6 +34,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "suppress_alerts",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "send_extended_statuses",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("open311conf_area_id_key", ["area_id"]);
@@ -50,8 +52,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-11 13:30:31
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ByJbRe/Y/9Z1WHdG8kaIHg
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-10-03 14:49:22
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OO3kNIohRp+84PGI2154fg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

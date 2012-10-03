@@ -146,6 +146,11 @@
     </p>
 
     <p>
+        <label for="extended_statuses">Send extended open311 statuses with service request updates</label>:
+        <input type="checkbox" name="extended_statuses"[% ' checked' IF conf.send_extended_statuses %]>
+    </p>
+
+    <p>
     <input type="hidden" name="open311_id" value="[% conf.id %]">
     <input type="hidden" name="area_id" value="[% area_id %]">
     <input type="hidden" name="posted" value="open311">

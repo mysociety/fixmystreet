@@ -56,11 +56,17 @@ while ( my $council = $councils->next ) {
         }
     );
 
-    my $o = Open311->new(
+    my %open311_conf = (
             endpoint => $council->endpoint,
             jurisdiction => $council->jurisdiction,
             api_key => $council->api_key,
     );
+
+    if ( $council->send_extended_statuses ) {
+        $open311_conf{extended_statuses} = 1;
+    }
+
+    my $o = Open311->new( %open311_conf );
 
     while ( my $comment = $comments->next ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
