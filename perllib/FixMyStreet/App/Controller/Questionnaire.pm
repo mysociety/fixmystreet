@@ -157,6 +157,8 @@ sub submit_standard : Private {
     my $new_state = '';
     $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' && 
         FixMyStreet::DB::Result::Problem->open_states()->{$old_state};
+    $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' &&
+        FixMyStreet::DB::Result::Problem->closed_states()->{$old_state};
     $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' &&
         FixMyStreet::DB::Result::Problem->fixed_states()->{$old_state};
 
