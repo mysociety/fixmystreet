@@ -361,7 +361,7 @@ sub send_reports {
 
         if (mySociety::Config::get('STAGING_SITE')) {
             # on a staging server send emails to ourselves rather than the councils
-            my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
+            my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') || '' );
             unless ( grep { $row->council eq $_ } @testing_councils ) {
                 %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI)/ } keys %reporters;
                 unless (%reporters) {
