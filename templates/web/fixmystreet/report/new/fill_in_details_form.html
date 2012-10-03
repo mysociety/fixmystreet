@@ -15,7 +15,7 @@
         [% PROCESS 'report/new/councils_text.html' %]
     [% END %]
 
-    [% IF c.cobrand.moniker != 'fixmybarangay' && c.user && c.user.from_council %]
+    [% IF c.cobrand.moniker != 'fixmybarangay' || ( c.user && c.user.from_council ) %]
     <div id="report-a-problem-sidebar">
         <!--
             The text for this section needs checking, but I can't work out which bit comes from where
@@ -128,7 +128,7 @@
                         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
                     </div>
 
-                        [% IF c.cobrand.moniker != 'fixmybarangay' && c.user && c.user.from_council %]
+                        [% IF c.cobrand.moniker != 'fixmybarangay' || ( c.user && c.user.from_council ) %]
                         <div class="general-sidebar-notes">
                             <p>[% loc('We never show your email address or phone number.') %]</p>
                         </div>
