@@ -177,6 +177,18 @@ for my $test (
         end_state => 'duplicate',
     },
     {
+        desc => 'fixed status changes problem status',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'confirmed',
+        comment_status => 'FIXED',
+        mark_fixed=> 0,
+        mark_open => 0,
+        problem_state => 'fixed - council',
+        end_state => 'fixed - council',
+    },
+    {
         desc => 'comment closes report',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
