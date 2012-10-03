@@ -553,7 +553,7 @@ for my $test (
         FixMyStreet::App->model('DB::AlertType')->email_alerts();
         $mech->email_count_is(1);
         my $email = $mech->get_email;
-        like $email->body, qr/Alert test for non public reports/, 'alert contains public report';
+        like $email->body, qr/Alert\s+test\s+for\s+non\s+public\s+reports/, 'alert contains public report';
 
         $mech->delete_user( $user1 );
         $mech->delete_user( $user2 );
