@@ -4,9 +4,7 @@
 # example of such a virtualhost configuration file can be found in the
 # file apache-vhost.conf.example in this directory.
 #
-# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
-# Email: team@mysociety.org
-# WWW: http://www.mysociety.org
+# See our installation help at http://code.fixmystreet.com/
 
 RewriteEngine on
 # RewriteLog /var/log/apache2/rewrite.log

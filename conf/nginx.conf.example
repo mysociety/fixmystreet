@@ -2,10 +2,8 @@
 # will also need to set up the FixMyStreet Catalyst FastCGI backend.
 # An example sysvinit script to help with this is shown given in the file
 # sysvinit-catalyst-fastcgi.example in this directory.
-
-# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
-# Email: team@mysociety.org
-# WWW: http://www.mysociety.org
+#
+# See our installation help at http://code.fixmystreet.com/
 
 server {
 
