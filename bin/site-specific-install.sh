@@ -9,6 +9,9 @@ misuse() {
   exit 1
 }
 
+# Strictly speaking we don't need to check all of these, but it might
+# catch some errors made when changing install-site.sh
+
 [ -z "$DIRECTORY" ] && misuse DIRECTORY
 [ -z "$UNIX_USER" ] && misuse UNIX_USER
 [ -z "$REPOSITORY" ] && misuse REPOSITORY
@@ -16,6 +19,7 @@ misuse() {
 [ -z "$BRANCH" ] && misuse BRANCH
 [ -z "$SITE" ] && misuse SITE
 [ -z "$DEFAULT_SERVER" ] && misuse DEFAULT_SERVER
+[ -z "$DEFAULT_PARAMETER" ] && misuse DEFAULT_PARAMETER
 [ -z "$EC2_HOSTNAME" ] && misuse EC2_HOSTNAME
 [ -z "$HOST" ] && misuse HOST
 [ -z "$DISTRIBUTION" ] && misuse DISTRIBUTION
