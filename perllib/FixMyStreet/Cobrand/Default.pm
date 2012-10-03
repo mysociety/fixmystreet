@@ -645,13 +645,58 @@ Get stats to display on the council reports page
 
 sub get_report_stats { return 0; }
 
-sub get_council_sender { return 'Email' };
+sub get_council_sender {
+    my ( $self, $area_id, $area_info, $category ) = @_;
+
+    my $send_method;
+
+    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    $send_method = $council_config->send_method if $council_config;
+
+    if ( $council_config && $council_config->can_be_devolved ) {
+        # look up via category
+        my $config = FixMyStreet::App->model("DB::Contact")->search( { area_id => $area_id, category => $category } )->first;
+        if ( $config->send_method ) {
+            return { method => $config->send_method, config => $config };
+        } else {
+            return { method => $send_method, config => $council_config };
+        }
+    } elsif ( $send_method ) {
+        return { method => $send_method, config => $council_config };
+    }
+
+    return $self->_fallback_council_sender( $area_id, $area_info, $category );
+}
+
+sub _fallback_council_sender {
+    my ( $self, $area_id, $area_info, $category ) = @_;
+
+    return { method => 'Email' };
+};
 
 sub example_places {
     my $e = FixMyStreet->config('EXAMPLE_PLACES') || [ 'High Street', 'Main Street' ];
     $e = [ map { Encode::decode('UTF-8', $_) } @$e ];
     return $e;
 }
+
+=head2 only_authed_can_create
+
+If true, only users with the from_council flag set are able to create reports.
+
+=cut
+
+sub only_authed_can_create {
+    return 0;
+}
+
+=head2 areas_on_around
+
+If set to an arrayref, will plot those area ID(s) from mapit on all the /around pages.
+
+=cut
+
+sub areas_on_around {}
 
 sub process_extras {}
 
@@ -677,6 +722,8 @@ Used in some cobrands to improve the intial display for Internet Explorer.
 =cut
 
 sub tweak_all_reports_map {}
+
+sub can_support_problems { return 0; }
 
 1;
 

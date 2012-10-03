@@ -85,6 +85,12 @@ create table contacts (
 
     -- for things like missed bin collections
     non_public boolean default 'f'
+
+    -- per contact endpoint configuration
+    endpoint     text,
+    jurisdiction text default '',
+    api_key      text default '',
+    send_method  text
 );
 create unique index contacts_area_id_category_idx on contacts(area_id, category);
 
@@ -205,6 +211,13 @@ create table problem (
 
     -- for things like missed bin collections
     non_public BOOLEAN default 'f'
+
+    -- record details about messages from external sources, eg. message manager
+    external_source text,
+    external_source_id text,
+
+    -- number of me toos
+    interest_count integer
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
@@ -444,5 +457,6 @@ create table open311conf (
     send_method  text,
     send_comments boolean not null default 'f',
     comment_user_id int references users(id),
-    suppress_alerts boolean not null default 'f'
+    suppress_alerts boolean not null default 'f',
+    can_be_devolved boolean not null default 'f'
 );

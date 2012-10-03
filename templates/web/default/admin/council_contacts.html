@@ -1,5 +1,7 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), council_name) -%]
 
+[% conf = open311.next %]
+
 [% IF updated %]
 <p>
 <em>[% updated %]</em>
@@ -36,6 +38,7 @@
             <th>[% loc('Email') %]</th>
             <th>[% loc('Confirmed') %]</th>
             <th>[% loc('Deleted') %]</th>
+            <th>[% loc('Devolved') %]</th>
             <th>[% loc('Last editor') %]</th>
             <th>[% loc('Note') %]</th>
             <th>[% loc('Public') %]</th>
@@ -48,6 +51,7 @@
                 <td>[% contact.email | html %]</td>
                 <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
                 <td>[% IF contact.deleted %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+                <td>[% IF conf.can_be_devolved && contact.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
                 <td>[% contact.editor %]</td>
                 <td>[% contact.note | html %]</td>
                 <td>[% contact.non_public ? loc('Non Public') : loc('Public') %]</td>
@@ -111,7 +115,6 @@
 
     <h2>[% loc('Configure Open311 integration') %]</h2>
     <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    [% conf = open311.next %]
     <p>
         <label for="endpoint">Endpoint</label>: 
         <input type="text" name="endpoint" id="endpoint" value="[% conf.endpoint %]" size="50">
@@ -150,6 +153,11 @@
     <p>
         <label for="suppress_alerts">Do not send email alerts on fetched comments to problem creator</label>:
         <input type="checkbox" name="suppress_alerts"[% ' checked' IF conf.suppress_alerts %]>
+    </p>
+
+    <p>
+        <label for="devolved">Endpoint lookup can be devolved to contacts</label>:
+        <input type="checkbox" name="devolved"[% ' checked' IF conf.can_be_devolved %]>
     </p>
 
     <p>

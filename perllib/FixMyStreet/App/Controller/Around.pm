@@ -45,7 +45,7 @@ sub around_index : Path : Args(0) {
           || $c->forward('/location/determine_location_from_pc');
 
     # Check to see if the spot is covered by a council - if not show an error.
-    return unless $c->forward('check_location_is_acceptable');
+    return unless $c->cobrand->moniker eq 'fixmybarangay' || $c->forward('check_location_is_acceptable');
 
     # If we have a partial - redirect to /report/new so that it can be
     # completed.
@@ -204,6 +204,7 @@ sub display_location : Private {
         longitude => $short_longitude,
         clickable => 1,
         pins      => \@pins,
+        area      => $c->cobrand->areas_on_around,
     );
 
     return 1;

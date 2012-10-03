@@ -310,8 +310,8 @@ sub send_reports {
             foreach my $council (@councils) {
                 my $name = $areas_info->{$council}->{name};
 
-                my $sender = $cobrand->get_council_sender( $council, $areas_info->{$council} );
-                $sender = "FixMyStreet::SendReport::$sender";
+                my $sender_info = $cobrand->get_council_sender( $council, $areas_info->{$council}, $row->category );
+                my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
                 if ( ! exists $senders->{ $sender } ) {
                     warn "No such sender [ $sender ] for council $name ( $council )";
@@ -324,7 +324,7 @@ sub send_reports {
                         $reporters{ $sender }->skipped;
                 } else {
                     push @dear, $name;
-                    $reporters{ $sender }->add_council( $council, $areas_info->{$council} );
+                    $reporters{ $sender }->add_council( $council, $areas_info->{$council}, $sender_info->{config} );
                 }
             }
 

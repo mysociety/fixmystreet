@@ -1,0 +1,163 @@
+[% IF c.user && c.user.from_council %]
+
+[% IF problem.id %]
+	<input type="button" class="green-btn" value="Show Messages" id="show_messages">
+[% END %]
+
+<ul id="message_manager" class="issue-list-a tab" style="display: none">
+	<li id="message-control">
+		<div id="mm-username-container">username:&nbsp;<span id="mm-received-username"></span></div>
+		<div id="mm-status-message-container">
+			<div id="mm-status-message"></div>
+		</div>
+		<div id="mm-login-container">
+			<div>
+				<label for="mm-htauth-username">Username:</label>
+				<input name="mm-htauth-username" id="mm-htauth-username" type="text"/>
+			</div>
+			<div>
+				<label for="mm-htauth-password">Password:</label>
+				<input name="mm-htauth-password" id="mm-htauth-password" type="password"/>
+			</div>
+			<div class="submit">
+				<input  id="available-submit" type="submit" value="Get available messages" class="green-btn"/>
+			</div>
+		</div>
+	</li>
+	<li>
+		<div id="mm-message-list" style="min-height:1em;"></div>
+	</li>
+</ul>
+<div style="display:none">
+	<div id="reply-form-container">
+		<div id="reply-form">
+			<input type="hidden" name="message_id" id="reply_to_msg_id"/>
+			<div>
+				<label for="reply_text">Reply text:</label>
+				<textarea name="reply_text" id="reply_text"></textarea>
+			</div>
+			<div class="submit">
+				<input id="reply-submit" type="submit" value="Send Reply" class="green-btn"/>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	
+$(document).ready(function() {
+	var $mm_message_list = $('#mm-message-list');
+	var mm_url = "[% c.config.MESSAGE_MANAGER_URL %]"; // from config
+	var problem_id = "[% problem.id %]";
+	var dummy_busy = false;
+	var fms_username = "[% c.user.email | replace('\@.*', '') %]";
+	
+	function sanitise_id(css_id) {
+	    return css_id.replace(/\D/g, "");
+	}
+	
+	var mm_populate_list = function(data) {
+		$('#mm-status-message-container').text("Accessed Message Manager as " + data['username']);
+		$('input[name=mm_text]').prop('checked', false); // uncheck all
+	}
+
+	var mm_selected_message = function(data) {
+		var msg_text = "";
+		var service_id = "";
+		$('li.msg-is-active', $mm_message_list).removeClass('msg-is-active');
+		if (data['success']) {
+			// msg_text = $('#form_detail').val( $('input[name=mm_text]:checked').val() ); # == message data
+			msg_text = data['data']['Message']['message'];
+			service_id = data['data']['Message']['id'];
+			$('#msg-' + service_id).addClass('msg-is-active');
+		} else {
+			$('input[name=mm_text]').prop('checked', false); // uncheck all
+		}
+		$('#form_detail').val(msg_text);
+		$('#external_source_id').val(service_id);
+	}
+	
+	var dummy_reply_cleanup = function(data) {
+		$('#reply_text').val('');
+		dummy_busy = false;
+	}
+
+	var dummy_hide_cleanup = function(data) {
+		dummy_busy = false;
+	}
+
+	message_manager.config({url_root: mm_url});
+	message_manager.setup_click_listener({callback:mm_selected_message});
+
+	// problem form hidden input "external_source_id": pass the MM id into FMS, if used
+	$('<input type="hidden"/>').attr({
+        'id': 'external_source_id',
+        'name': 'external_source_id',
+    }).appendTo($('#form_update_form'));
+
+	$('#available-submit').click(function(e){
+		e.preventDefault();
+		message_manager.get_available_messages({callback:mm_populate_list, suggest_username:fms_username});
+	});
+	$('#available-submit').click();
+	
+	$mm_message_list.on('mouseover', 'li.mm-msg', function(e){
+		e.stopPropagation(); // because replies are nested
+		$('.mm-msg-action', $mm_message_list).stop().fadeOut(200);
+		$(this).find('> .mm-msg-action').stop().show();
+	});
+
+	$mm_message_list.on('click', '.mm-hide', function(e){
+		var want_hide =
+			confirm('Are you sure you want to delete the following message?\n\n"' 
+				+ $('p', $(this).parent()).first().text() + '"\n');
+		if (want_hide) {
+		    message_manager.hide(
+			    sanitise_id($(this).parent().attr('id')),
+			    {callback:dummy_hide_cleanup});
+		}
+	});
+	
+	$('#reply-submit').click(function(e) {
+		e.preventDefault();
+		if (! dummy_busy) {
+			dummy_busy = true;
+			message_manager.reply(
+			    $('#reply_to_msg_id').val(), 
+			    $('#reply_text').val(), 
+			    {callback:dummy_reply_cleanup});
+		}
+	});
+    
+	$("a#reply").fancybox({onClosed: function(){dummy_busy=false;}});
+
+	// only show on problem display page
+	if (problem_id) {
+		$('<input type="button" value="Copy to update"/>').attr({
+			'id': 'add_support',
+			'name': 'add_support',
+			'class': 'green-btn'
+		}).appendTo($('#message_manager'));
+	}
+
+	$('#add_support').click(function(e){
+		e.preventDefault();
+		$('#mm-message-list input:checked').each( function(index) {
+			var id = $(this).attr('id');
+			id = id.replace('mm_text_','');
+			$('#external_source_id').val(id);
+			$('#form_update').val( $(this).val() );
+			$('#form_update_form').on('submit', function(e) {
+	 			message_manager.assign_fms_id( $('#external_source_id').val(), problem_id, { 'is_async': false } );
+			});
+		});
+	});
+
+	$('#show_messages').on('click', function(e) {
+		$('#message_manager').toggle();
+		$('#show_messages').val( $('#show_messages').val() == 'Show Messages' ? 'Hide Messages' : 'Show Messages' ); 
+	});
+});
+
+</script>
+[% END %]

@@ -1010,6 +1010,13 @@ sub save_user_and_report : Private {
     # Set unknown to DB unknown
     $report->council( undef ) if $report->council eq '-1';
 
+    # if there is a Message Manager message ID, pass it back to the client view
+    if ($c->cobrand->moniker eq 'fixmybarangay' && $c->req->param('external_source_id')=~/^\d+$/) {
+        $c->stash->{external_source_id} = $c->req->param('external_source_id');
+        $report->external_source_id( $c->req->param('external_source_id') );
+        $report->external_source( $c->config->{MESSAGE_MANAGER_URL} ) ;
+    }
+    
     # save the report;
     $report->in_storage ? $report->update : $report->insert();
 
@@ -1080,7 +1087,13 @@ sub redirect_or_confirm_creation : Private {
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
-        my $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
+        my $report_uri;
+
+        if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_council && $c->stash->{external_source_id}) {
+            $report_uri = $c->uri_for( '/report', $report->id, undef, { external_source_id => $c->stash->{external_source_id} } );
+        } else {
+            $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
+        }
         $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
         $c->res->redirect($report_uri);
         $c->detach;

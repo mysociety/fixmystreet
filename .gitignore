@@ -17,6 +17,7 @@ tags
 
 *.mo
 FixMyStreet-EmptyHomes.po
+FixMyBarangay.po
 
 /web/cobrands/fiksgatami/css.css
 /web/cobrands/southampton/css.css
@@ -26,6 +27,7 @@ FixMyStreet-EmptyHomes.po
 /web/cobrands/default/*.css
 /web/cobrands/fixmystreet/*.css
 /web/cobrands/bromley/*.css
+/web/cobrands/fixmybarangay/*.css
 /web/cobrands/barnet/*.css
 /web/cobrands/zurich/*.css
 /web/photo

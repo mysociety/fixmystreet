@@ -127,8 +127,11 @@ GAZE_URL: 'http://gaze.mysociety.org/gaze'
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'
 
-# Used to override the STAGING SERVER safety mechanism in send-reports
+# used to override the STAGING SERVER safety mechanism in send-reports
 TESTING_COUNCILS: ''
+
+# if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
+MESSAGE_MANAGER_URL: ''
 
 # -----------------------------------------------------------------------
 
@@ -139,4 +142,3 @@ LONDON_REPORTIT_KEY: ''
 LONDON_REPORTIT_SECRET: ''
 AUTH_SHARED_SECRET: ''
 HEARFROMYOURMP_BASE_URL: ''
-

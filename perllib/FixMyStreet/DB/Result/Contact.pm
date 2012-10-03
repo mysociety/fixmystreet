@@ -38,6 +38,14 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "non_public",
   { data_type => "boolean", default_value => \"false", is_nullable => 1 },
+  "endpoint",
+  { data_type => "text", is_nullable => 1 },
+  "jurisdiction",
+  { data_type => "text", default_value => "", is_nullable => 1 },
+  "api_key",
+  { data_type => "text", default_value => "", is_nullable => 1 },
+  "send_method",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("contacts_area_id_category_idx", ["area_id", "category"]);

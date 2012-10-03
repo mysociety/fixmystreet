@@ -76,6 +76,10 @@ sub update_problem : Private {
         $problem->state('confirmed');
     }
 
+    if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_council && $c->req->param('external_source_id') ) {
+        $problem->interest_count( \'interest_count + 1' );
+    }
+
     $problem->lastupdate( \'ms_current_timestamp()' );
     $problem->update;
 
@@ -348,6 +352,7 @@ sub redirect_or_confirm_creation : Private {
     if ( $update->confirmed ) {
         $c->forward( 'update_problem' );
         $c->forward( 'signup_for_alerts' );
+
         my $report_uri = $c->cobrand->base_url_for_report( $update->problem ) . $update->problem->url;
         $c->res->redirect($report_uri);
         $c->detach;

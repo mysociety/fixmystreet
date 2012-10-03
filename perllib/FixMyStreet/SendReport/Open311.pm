@@ -28,7 +28,7 @@ sub send {
     my $result = -1;
 
     foreach my $council ( keys %{ $self->councils } ) {
-        my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
+        my $conf = $self->councils->{$council}->{config};
 
         my $always_send_latlong = 1;
         my $send_notpinpointed  = 0;
@@ -94,10 +94,15 @@ sub send {
             $row->user->name( $row->user->id . ' ' . $row->user->name );
         }
 
+        if ($row->cobrand eq 'fixmybarangay') {
+            # FixMyBarangay endpoints expect external_id as an attribute
+            $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  ); 
+        }
+
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
 
         # make sure we don't save user changes from above
-        if ( $row->council =~ /2218/ || $row->council =~ /2482/ ) {
+        if ( $row->council =~ /2218/ || $row->council =~ /2482/ || $row->cobrand eq 'fixmybarangay') {
             $row->discard_changes();
         }
 

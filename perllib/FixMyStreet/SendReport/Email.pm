@@ -12,6 +12,7 @@ sub build_recipient_list {
 
     my $all_confirmed = 1;
     foreach my $council ( keys %{ $self->councils } ) {
+
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
             area_id => $council,
@@ -32,7 +33,7 @@ sub build_recipient_list {
             $self->unconfirmed_notes->{$council_email}{$row->category} = $note;
         }
 
-        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{name} ];
+        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{info}->{name} ];
         $recips{$council_email} = 1;
     }
 

@@ -39,8 +39,9 @@ sub add_council {
     my $self = shift;
     my $council = shift;
     my $info = shift;
+    my $config = shift;
 
-    $self->councils->{ $council } = $info;
+    $self->councils->{ $council } = { info => $info, config => $config };
 }
 
 

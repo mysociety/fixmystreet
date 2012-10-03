@@ -94,6 +94,12 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "non_public",
   { data_type => "boolean", default_value => \"false", is_nullable => 1 },
+  "external_source",
+  { data_type => "text", is_nullable => 1 },
+  "external_source_id",
+  { data_type => "text", is_nullable => 1 },
+  "interest_count",
+  { data_type => "integer", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(

@@ -28,7 +28,7 @@ sub build_recipient_list {
             #$note{$council_email}{$row->category} = $note;
         }
 
-        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{name} ];
+        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{ info }->{name} ];
         $recips{$council_email} = 1;
 
         my $country = $self->councils->{$council}->{country};
