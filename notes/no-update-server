@@ -511,7 +511,7 @@ case "$1" in
 	;;
     update)
 	fetch_git_source
-	fgmdbpassword=$(grep OPTION_BCI_DB_PASS $basedir/fixmystreet/conf/general | cut -d\' -f4)
+	fgmdbpassword=$(grep OPTION_FMS_DB_PASS $basedir/fixmystreet/conf/general | cut -d\' -f4)
 	midbpassword=$(grep OPTION_MAPIT_DB_PASS $basedir/mapit/conf/general | cut -d\' -f4)
 
 	update_fixmystreet_config www-data $fgmdbpassword fixmystreet

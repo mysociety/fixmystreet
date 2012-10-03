@@ -21,11 +21,11 @@ use Utils;
 BEGIN {
     mySociety::Config::set_file("$FindBin::Bin/../conf/general");
     mySociety::DBHandle::configure(
-        Name     => mySociety::Config::get('BCI_DB_NAME'),
-        User     => mySociety::Config::get('BCI_DB_USER'),
-        Password => mySociety::Config::get('BCI_DB_PASS'),
-        Host     => mySociety::Config::get( 'BCI_DB_HOST', undef ),
-        Port     => mySociety::Config::get( 'BCI_DB_PORT', undef )
+        Name     => mySociety::Config::get('FMS_DB_NAME'),
+        User     => mySociety::Config::get('FMS_DB_USER'),
+        Password => mySociety::Config::get('FMS_DB_PASS'),
+        Host     => mySociety::Config::get( 'FMS_DB_HOST', undef ),
+        Port     => mySociety::Config::get( 'FMS_DB_PORT', undef )
     );
 }
 

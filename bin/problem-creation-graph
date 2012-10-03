@@ -26,12 +26,12 @@ else
     DATE="2007-02-01"
 fi
 
-SOURCEA=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCEB=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCEC=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCED=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
-SOURCEE=/tmp/bci-creation-rate-graph-data-$RANDOM$RANDOM
-GPSCRIPT=/tmp/bci-creation-rate-graph-script-$RANDOM$RANDOM
+SOURCEA=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCEB=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCEC=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCED=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
+SOURCEE=/tmp/fms-creation-rate-graph-data-$RANDOM$RANDOM
+GPSCRIPT=/tmp/fms-creation-rate-graph-script-$RANDOM$RANDOM
 
 #    where status in ('draft') 
 
@@ -104,6 +104,6 @@ END
 #echo "gpscript $GPSCRIPT"
 
 export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > fixmystreet/web/bci-live-creation$EXTENSION 2>/dev/null
+gnuplot < $GPSCRIPT > fixmystreet/web/fms-live-creation$EXTENSION 2>/dev/null
 
 
