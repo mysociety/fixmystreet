@@ -14600,6 +14600,52 @@
          },
          "version" : "0.22"
       },
+      "File::Copy::Recursive" : {
+         "dist" : "File-Copy-Recursive-0.38",
+         "module" : "File::Copy::Recursive",
+         "mymeta" : {
+            "abstract" : "unknown",
+            "author" : [
+               "unknown"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.30, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "File-Copy-Recursive",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "File::Copy" : 0,
+                     "File::Spec" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.38",
+            "x_installdirs" : "site",
+            "x_version_from" : "Recursive.pm"
+         },
+         "name" : "File::Copy::Recursive",
+         "pathname" : "D/DM/DMUEY/File-Copy-Recursive-0.38.tar.gz",
+         "provides" : {
+            "File::Copy::Recursive" : {
+               "file" : "File/Copy/Recursive.pm",
+               "version" : "0.38"
+            }
+         },
+         "version" : "0.38"
+      },
       "File::Find::Closures" : {
          "dist" : "File-Find-Closures-1.09",
          "mymeta" : {
@@ -17258,6 +17304,163 @@
          },
          "target" : "IO::Scalar",
          "version" : "2.110"
+      },
+      "IO::Tty" : {
+         "dist" : "IO-Tty-1.10",
+         "module" : "IO::Pty",
+         "mymeta" : {
+            "abstract" : "Pseudo ttys and constants",
+            "author" : [
+               "Roland Giersig <RGiersig@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.56, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "IO-Tty",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Test::More" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {}
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "repository" : {
+                  "url" : "https://expectperl.svn.sourceforge.net/svnroot/expectperl/IO-Tty/trunk"
+               }
+            },
+            "version" : "1.10"
+         },
+         "name" : "IO::Tty",
+         "pathname" : "T/TO/TODDR/IO-Tty-1.10.tar.gz",
+         "provides" : {
+            "IO::Pty" : {
+               "file" : "IO/Pty.pm",
+               "version" : "1.10"
+            },
+            "IO::Tty" : {
+               "file" : "IO/Tty.pm",
+               "version" : "1.10"
+            },
+            "IO::Tty::Constant" : {
+               "file" : "IO/Tty/Constant.pm"
+            }
+         },
+         "version" : "1.10"
+      },
+      "IPC::Run" : {
+         "dist" : "IPC-Run-0.92",
+         "module" : "IPC::Run",
+         "mymeta" : {
+            "abstract" : "system() and background procs w/ piping, redirs, ptys (Unix, Win32)",
+            "author" : [
+               "Barrie Slaymaker <barries@slaysys.com>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.62, CPAN::Meta::Converter version 2.120351, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "IPC-Run",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "inc"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "recommends" : {
+                     "IO::Pty" : "1.08"
+                  },
+                  "requires" : {
+                     "IO::Pty" : "1.08",
+                     "Test::More" : "0.47"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "https://rt.cpan.org/NoAuth/Bugs.html?Dist=IPC-Run"
+               },
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ],
+               "repository" : {
+                  "url" : "https://github.com/toddr/IPC-Run"
+               }
+            },
+            "version" : "0.92"
+         },
+         "name" : "IPC::Run",
+         "pathname" : "T/TO/TODDR/IPC-Run-0.92.tar.gz",
+         "provides" : {
+            "IPC::Run" : {
+               "file" : "IPC/Run.pm",
+               "version" : "0.92"
+            },
+            "IPC::Run::Debug" : {
+               "file" : "IPC/Run/Debug.pm",
+               "version" : "0.90"
+            },
+            "IPC::Run::IO" : {
+               "file" : "IPC/Run/IO.pm",
+               "version" : "0.90"
+            },
+            "IPC::Run::Timer" : {
+               "file" : "IPC/Run/Timer.pm",
+               "version" : "0.90"
+            },
+            "IPC::Run::Win32Helper" : {
+               "file" : "IPC/Run/Win32Helper.pm",
+               "version" : "0.90"
+            },
+            "IPC::Run::Win32IO" : {
+               "file" : "IPC/Run/Win32IO.pm",
+               "version" : "0.90"
+            },
+            "IPC::Run::Win32Pump" : {
+               "file" : "IPC/Run/Win32Pump.pm",
+               "version" : "0.90"
+            }
+         },
+         "version" : "0.92"
       },
       "IPC::Run3" : {
          "dist" : "IPC-Run3-0.044",
@@ -20055,6 +20258,68 @@
             }
          },
          "version" : "1.08"
+      },
+      "Module::Signature" : {
+         "dist" : "Module-Signature-0.68",
+         "module" : "Module::Signature",
+         "mymeta" : {
+            "abstract" : "Module signature file manipulation",
+            "author" : [
+               "唐鳳 <cpan@audreyt.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Install version 1.00, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Module-Signature",
+            "no_index" : {
+               "directory" : [
+                  "inc",
+                  "t"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42",
+                     "IPC::Run" : 0,
+                     "Test::More" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.42"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "IO::Socket::INET" : 0,
+                     "perl" : "5.005"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "repository" : {
+                  "url" : "http://github.com/audreyt/module-signature"
+               }
+            },
+            "version" : "0.68"
+         },
+         "name" : "Module::Signature",
+         "pathname" : "F/FL/FLORA/Module-Signature-0.68.tar.gz",
+         "provides" : {
+            "Module::Signature" : {
+               "file" : "Module/Signature.pm",
+               "version" : "0.68"
+            }
+         },
+         "version" : "0.68"
       },
       "Moose" : {
          "dist" : "Moose-2.0401",
@@ -31354,6 +31619,52 @@
          },
          "target" : "XML::SAX::Base",
          "version" : "1.08"
+      },
+      "XML::SAX::Expat" : {
+         "dist" : "XML-SAX-Expat-0.40",
+         "module" : "XML::SAX::Expat",
+         "mymeta" : {
+            "abstract" : "SAX Driver for Expat",
+            "author" : [
+               "Robin Berjon"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.44, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "XML-SAX-Expat",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : 0
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "XML::NamespaceSupport" : "0.03",
+                     "XML::Parser" : "2.27",
+                     "XML::SAX" : "0.03",
+                     "XML::SAX::Base" : "1.00"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.40"
+         },
+         "name" : "XML::SAX::Expat",
+         "pathname" : "B/BJ/BJOERN/XML-SAX-Expat-0.40.tar.gz",
+         "provides" : {
+            "XML::SAX::Expat" : {
+               "file" : "XML/SAX/Expat.pm",
+               "version" : "0.40"
+            }
+         },
+         "version" : "0.40"
       },
       "XML::Simple" : {
          "dist" : "XML-Simple-2.18",
