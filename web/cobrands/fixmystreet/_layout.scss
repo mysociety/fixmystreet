@@ -664,6 +664,15 @@ body.twothirdswidthpage {
         border-bottom: 0.75em solid $contrast1_dark;
       }
     }
+    &#closed {
+      padding-top:5em;
+      background-image:url(/cobrands/fixmystreet/images/sprite.png);
+      background-position:-318px -326px;
+      background-repeat:no-repeat;
+      &:before {
+        border-bottom: 0.75em solid #666;
+      }
+    }
   }
 }
 .ie6 .banner p {
