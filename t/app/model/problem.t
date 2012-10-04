@@ -483,6 +483,10 @@ foreach my $test ( {
     },
 ) {
     subtest $test->{ desc } => sub {
+        if ( $test->{cobrand} && $test->{cobrand} =~ /lichfielddc/ && !FixMyStreet::Cobrand->exists('lichfielddc') ) {
+            plan skip_all => 'Skipping Lichfield tests without Lichfield cobrand';
+        }
+
         $mech->clear_emails_ok;
 
         FixMyStreet::App->model('DB::Problem')->search(
@@ -490,10 +494,6 @@ foreach my $test ( {
                 whensent => undef
             }
         )->update( { whensent => \'ms_current_timestamp()' } );
-
-        if ( $test->{cobrand} && $test->{cobrand} =~ /lichfielddc/ && !FixMyStreet::Cobrand->exists('lichfielddc') ) {
-            plan skip_all => 'Skipping Lichfield tests without Lichfield cobrand';
-        }
 
         $problem->discard_changes;
         $problem->update( {
