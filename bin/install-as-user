@@ -113,14 +113,14 @@ then
     psql -U "$UNIX_USER" "$DB_NAME" < "$FMS_REPOSITORY"/db/generate_secret.sql
 fi
 
-# Install the required Perl modules - this may take a very long time:
-
-cd "$FMS_REPOSITORY"
-bin/install_perl_modules
-
 # Generate po and mo files (these invocations taken from Kagee's script):
 
 ./bin/cron-wrapper ./bin/make_emptyhomes_po
 ./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po
 
 commonlib/bin/gettext-makemo FixMyStreet
+
+# Install the required Perl modules - this may take a very long time:
+
+cd "$FMS_REPOSITORY"
+bin/install_perl_modules
