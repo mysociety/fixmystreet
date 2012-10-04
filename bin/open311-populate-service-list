@@ -9,6 +9,7 @@ use Getopt::Long::Descriptive;
 my ($opt, $usage) = describe_options(
     '%c %o',
     ['verbose|v',  "print out all services as they are found"],
+    ['warn|w',     "output warnings about any issues"],
     ['help',       "print usage message and exit" ],
 );
 print($usage->text), exit if $opt->help;
@@ -16,6 +17,9 @@ print($usage->text), exit if $opt->help;
 my $council_list = FixMyStreet::App->model('DB::Open311conf')->search( {
     send_method => 'Open311'
 } );
-my $p = Open311::PopulateServiceList->new( council_list => $council_list, verbose => $opt->verbose? 1:0 );
+my $verbose = 0;
+$verbose = 1 if $opt->warn;
+$verbose = 2 if $opt->verbose;
+my $p = Open311::PopulateServiceList->new( council_list => $council_list, verbose => $verbose );
 
 $p->process_councils;
