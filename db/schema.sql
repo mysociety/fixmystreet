@@ -84,7 +84,7 @@ create table contacts (
     extra text,
 
     -- for things like missed bin collections
-    non_public boolean default 'f'
+    non_public boolean default 'f',
 
     -- per contact endpoint configuration
     endpoint     text,
@@ -210,7 +210,7 @@ create table problem (
     send_method_used text,
 
     -- for things like missed bin collections
-    non_public BOOLEAN default 'f'
+    non_public BOOLEAN default 'f',
 
     -- record details about messages from external sources, eg. message manager
     external_source text,
