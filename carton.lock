@@ -13615,6 +13615,84 @@
          "target" : "Encode::Locale",
          "version" : "1.02"
       },
+      "Error" : {
+         "dist" : "Error-0.17018",
+         "module" : "Error",
+         "mymeta" : {
+            "abstract" : "Error/exception handling in an OO-ish way",
+            "author" : [
+               "Shlomi Fish <shlomif@iglu.org.il>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Build version 0.4002, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Error",
+            "prereqs" : {
+               "configure" : {
+                  "requires" : {
+                     "Module::Build" : "0.38"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Scalar::Util" : 0,
+                     "perl" : "v5.6.0",
+                     "warnings" : 0
+                  }
+               }
+            },
+            "provides" : {
+               "Error" : {
+                  "file" : "lib/Error.pm",
+                  "version" : "0.17018"
+               },
+               "Error::Simple" : {
+                  "file" : "lib/Error.pm",
+                  "version" : "0.17018"
+               },
+               "Error::WarnDie" : {
+                  "file" : "lib/Error.pm",
+                  "version" : 0
+               },
+               "Error::subs" : {
+                  "file" : "lib/Error.pm",
+                  "version" : 0
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "license" : [
+                  "http://dev.perl.org/licenses/"
+               ]
+            },
+            "version" : "0.17018"
+         },
+         "name" : "Error",
+         "pathname" : "S/SH/SHLOMIF/Error-0.17018.tar.gz",
+         "provides" : {
+            "Error" : {
+               "file" : "Error.pm",
+               "version" : "0.17018"
+            },
+            "Error::Simple" : {
+               "file" : "Error.pm",
+               "version" : "0.17018"
+            },
+            "Error::WarnDie" : {
+               "file" : "Error.pm"
+            },
+            "Error::subs" : {
+               "file" : "Error.pm"
+            }
+         },
+         "version" : "0.17018"
+      },
       "Eval::Closure" : {
          "dist" : "Eval-Closure-0.06",
          "mymeta" : {
