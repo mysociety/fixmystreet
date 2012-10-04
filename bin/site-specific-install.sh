@@ -19,7 +19,6 @@ misuse() {
 [ -z "$BRANCH" ] && misuse BRANCH
 [ -z "$SITE" ] && misuse SITE
 [ -z "$DEFAULT_SERVER" ] && misuse DEFAULT_SERVER
-[ -z "$DEFAULT_PARAMETER" ] && misuse DEFAULT_PARAMETER
 [ -z "$EC2_HOSTNAME" ] && misuse EC2_HOSTNAME
 [ -z "$HOST" ] && misuse HOST
 [ -z "$DISTRIBUTION" ] && misuse DISTRIBUTION
