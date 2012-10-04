@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd | sed -e 's/\/bin$//' )"
 
 $DIR/bin/cpanm -l $DIR/local Carton
@@ -9,11 +11,7 @@ export PERL5LIB=$DIR/local/lib/perl5
 
 carton install --deployment
 
-perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
-
-HAVE_IM=$?
-
-if [ $HAVE_IM -ne 0 ]
+if ! perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
 then
     read -p "Image::Magick is not installed. Do you want to attempt to install it?" yn
     case $yn in 
