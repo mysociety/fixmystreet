@@ -34,7 +34,7 @@ add_website_to_nginx
 
 add_postgresql_user
 
-su -l -c "$REPOSITORY/bin/install-as-user $DEFAULT_PARAMETER '$UNIX_USER' '$HOST' '$DIRECTORY'" "$UNIX_USER"
+su -l -c "$REPOSITORY/bin/install-as-user '$UNIX_USER' '$HOST' '$DIRECTORY'" "$UNIX_USER"
 
 install_sysvinit_script
 
