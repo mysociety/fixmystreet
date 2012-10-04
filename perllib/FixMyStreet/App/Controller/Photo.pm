@@ -9,6 +9,7 @@ use Digest::SHA1 qw(sha1_hex);
 use File::Path;
 use File::Slurp;
 use Path::Class;
+use if !$ENV{TRAVIS}, 'Image::Magick';
 
 =head1 NAME
 
@@ -116,7 +117,6 @@ sub no_photo : Private {
 # Shrinks a picture to the specified size, but keeping in proportion.
 sub _shrink {
     my ($photo, $size) = @_;
-    use Image::Magick;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Scale(geometry => "$size>");
@@ -130,7 +130,6 @@ sub _shrink {
 # Shrinks a picture to 90x60, cropping so that it is exactly that.
 sub _crop {
     my ($photo) = @_;
-    use Image::Magick;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Resize( geometry => "90x60^" );

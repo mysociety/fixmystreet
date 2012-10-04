@@ -6,7 +6,6 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use FixMyStreet::Geocode;
 use Encode;
-use Image::Magick;
 use List::MoreUtils qw(uniq);
 use POSIX 'strcoll';
 use HTML::Entities;

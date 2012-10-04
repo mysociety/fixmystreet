@@ -7,6 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use POSIX qw(strftime strcoll);
 use Digest::MD5 qw(md5_hex);
 use mySociety::EmailUtil qw(is_valid_email);
+use if !$ENV{TRAVIS}, 'Image::Magick';
 
 use FixMyStreet::SendReport;
 
@@ -1289,7 +1290,6 @@ sub trim {
 
 sub _rotate_image {
     my ($photo, $direction) = @_;
-    use Image::Magick;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Rotate($direction);

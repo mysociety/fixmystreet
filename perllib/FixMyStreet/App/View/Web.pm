@@ -171,6 +171,7 @@ sub version {
         my $path = FixMyStreet->path_to('web', $file);
         $version_hash{$file} = ( stat( $path ) )[9];
     }
+    $version_hash{$file} ||= '';
     return "$file?$version_hash{$file}";
 }
 
