@@ -41,7 +41,7 @@ hostname, you could download and run the script with:
 Or, if you want to set this up as the default site on an EC2 instance,
 you could download the script and then invoke it with:
 
-    sudo ./install-site.sh --default fms
+    sudo ./install-site.sh --default fixmystreet fms
 
 Please be aware that the last part of the installation process,
 installing Perl modules, may take a long time to complete.
