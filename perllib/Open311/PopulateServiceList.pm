@@ -41,7 +41,8 @@ sub process_council {
 
     my $list = $open311->get_service_list;
     unless ( $list ) {
-        warn "ERROR: no service list found for " . $self->_current_council->area_id . "\n"
+        my $id = $self->_current_council->area_id;
+        warn "Council $id - http://mapit.mysociety.org/area/$id.html - did not return a service list\n"
             if $self->verbose >= 1;
         return;
     }
