@@ -3,25 +3,17 @@
 set -e
 set -x
 
-DEFAULT_SERVER=false
-if [ x"$1" = x"--default" ]
-then
-    DEFAULT_SERVER=true
-    shift
-fi
-
-if [ $# -ne 2 ]
+if [ $# -ne 3 ]
 then
     cat >&2 <<EOUSAGE
-Usage: $0 [--default] <UNIX-USER> <HOST>
---default means to install as the default site for this server,
-rather than a virtualhost for HOST.
+Usage: $0 <UNIX-USER> <HOST> <INSTALLATION-DIRECTORY>
 EOUSAGE
     exit 1
 fi
 
 UNIX_USER="$1"
 HOST="$2"
+DIRECTORY="$3"
 DB_NAME="fixmystreet"
 
 # Check that the arguments we've been passed are sensible:
@@ -37,7 +29,6 @@ fi
 if ! id "$UNIX_USER" 2> /dev/null > /dev/null
 then
     echo "The user '$UNIX_USER' didn't exist."
-    echo "(You should have run \"sudo pre-install-as-root '$UNIX_USER' '$HOST'\" before this.)"
     exit 1
 fi
 
@@ -47,17 +38,11 @@ then
     exit 1
 fi
 
-if [ $DEFAULT_SERVER = true ]
-then
-    FMS_DIRECTORY="/var/www/fixmystreet"
-else
-    FMS_DIRECTORY="/var/www/$HOST"
-fi
-FMS_REPOSITORY="$FMS_DIRECTORY/fixmystreet"
-FMS_LINK_DESTINATION="$HOME/fixmystreet"
+REPOSITORY="$DIRECTORY/fixmystreet"
+LINK_DESTINATION="$HOME/fixmystreet"
 
-ln -sfn "$FMS_REPOSITORY" $FMS_LINK_DESTINATION
-cd "$FMS_REPOSITORY"
+ln -sfn "$REPOSITORY" $LINK_DESTINATION
+cd "$REPOSITORY"
 
 # Add regularly scheduled tasks to cron:
 
@@ -65,11 +50,11 @@ TEMPORARY_CRONTAB=$(mktemp)
 
 echo crontab file is $TEMPORARY_CRONTAB
 
-cp "$FMS_REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
+cp "$REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
 
 sed -i \
-    -e 's,$FMS,'"$FMS_REPOSITORY,g" \
-    -e 's,$LOCK_DIR,'"$FMS_DIRECTORY,g" \
+    -e 's,$FMS,'"$REPOSITORY,g" \
+    -e 's,$LOCK_DIR,'"$DIRECTORY,g" \
     "$TEMPORARY_CRONTAB"
 
 crontab $TEMPORARY_CRONTAB
@@ -77,7 +62,7 @@ crontab $TEMPORARY_CRONTAB
 # Install the compass gem locally - it's required for generating the
 # CSS:
 
-export GEM_HOME="$FMS_DIRECTORY/gems"
+export GEM_HOME="$DIRECTORY/gems"
 mkdir -p "$GEM_HOME"
 export GEM_PATH=
 export PATH="$GEM_HOME/bin:$PATH"
@@ -108,14 +93,14 @@ if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
 then
     createdb --owner "$UNIX_USER" "$DB_NAME"
     echo 'CREATE LANGUAGE plpgsql;' | psql -U "$UNIX_USER" "$DB_NAME" || true
-    psql -U "$UNIX_USER" "$DB_NAME" < "$FMS_REPOSITORY"/db/schema.sql
-    psql -U "$UNIX_USER" "$DB_NAME" < "$FMS_REPOSITORY"/db/alert_types.sql
-    psql -U "$UNIX_USER" "$DB_NAME" < "$FMS_REPOSITORY"/db/generate_secret.sql
+    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/schema.sql
+    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/alert_types.sql
+    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/generate_secret.sql
 fi
 
 # Install the required Perl modules - this may take a very long time:
 
-cd "$FMS_REPOSITORY"
+cd "$REPOSITORY"
 bin/install_perl_modules
 
 # Generate po and mo files (these invocations taken from Kagee's script):
