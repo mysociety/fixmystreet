@@ -21,7 +21,7 @@ sub process_councils {
 
     while ( my $council = $self->council_list->next ) {
         next unless $council->endpoint;
-        next unless $council->send_method eq 'open311';
+        next unless lc($council->send_method) eq 'open311';
         $self->_current_council( $council );
         $self->process_council;
     }
