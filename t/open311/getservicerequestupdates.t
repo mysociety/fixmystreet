@@ -217,7 +217,7 @@ for my $test (
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
-        start_state => 'fixed - user',
+        start_state => 'not responsible',
         comment_status => 'OPEN',
         mark_fixed => 0,
         mark_open => 0,
