@@ -96,23 +96,16 @@ sub update_comments {
                 # do not change the status of the problem as it's
                 # tricky to determine the right thing to do.
                 if ( $comment->created_local > $p->lastupdate_local ) {
-                    my $incoming_status = lc( $request->{status} );
-                    my $internal_status = $incoming_status;
-                    $internal_status =~ s/_/ /g;
+                    my $state = $self->map_state( $request->{status} );
 
-                    $internal_status = 'not responsible' if $internal_status eq 'not councils responsibility';
-                    if ( $p->is_open and ( $incoming_status eq 'closed' or $incoming_status eq 'fixed' ) ) {
-                        $p->state( 'fixed - council' );
-                        $comment->problem_state( 'fixed - council' );
-                    } elsif ( ( $p->is_closed || $p->is_fixed ) and (
-                            $incoming_status eq 'open' or FixMyStreet::DB::Result::Problem->open_states()->{ $internal_status }
-                        ) ) {
-                        $p->state( 'confirmed' );
-                        $comment->problem_state( 'confirmed' );
-                    } else {
-                        if ( FixMyStreet::DB::Result::Problem->council_states()->{ $internal_status } ) {
-                            $p->state( $internal_status );
-                            $comment->problem_state( $internal_status );
+                    # do not change a fixed problem to a closed one
+                    if ( $p->is_fixed && FixMyStreet::DB::Result::Problem->open_states()->{$state} ) {
+                        $p->state($state);
+                        $comment->problem_state($state);
+                    } elsif ( ( $p->is_open || $p->is_closed ) && $p->state ne $state ) {
+                        if ( FixMyStreet::DB::Result::Problem->council_states() ->{$state} ) {
+                            $p->state($state);
+                            $comment->problem_state($state);
                         }
                     }
                 }
@@ -139,6 +132,23 @@ sub update_comments {
     }
 
     return 1;
+}
+
+sub map_state {
+    my $self           = shift;
+    my $incoming_state = shift;
+
+    $incoming_state = lc($incoming_state);
+    $incoming_state =~ s/_/ /g;
+
+    my %state_map = (
+        fixed                         => 'fixed - council',
+        'not councils responsibility' => 'not responsible',
+        open                          => 'confirmed',
+        closed                        => 'fixed - council'
+    );
+
+    return $state_map{$incoming_state} || $incoming_state;
 }
 
 1;

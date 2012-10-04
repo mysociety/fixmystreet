@@ -105,7 +105,7 @@ $problem->insert;
 
 for my $test (
     {
-        desc => 'element with content',
+        desc => 'OPEN status for confirmed problem does not change state',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
@@ -116,6 +116,19 @@ for my $test (
         problem_state => undef,
         end_state => 'confirmed',
     },
+    {
+        desc => 'bad state does not update states but does create update',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'confirmed',
+        comment_status => 'INVALID_STATE',
+        mark_fixed=> 0,
+        mark_open => 0,
+        problem_state => undef,
+        end_state => 'confirmed',
+    },
+
     {
         desc => 'investigating status changes problem status',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
@@ -177,7 +190,7 @@ for my $test (
         end_state => 'duplicate',
     },
     {
-        desc => 'fixed status changes problem status',
+        desc => 'fixed status marks report as fixed - council',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
@@ -189,7 +202,7 @@ for my $test (
         end_state => 'fixed - council',
     },
     {
-        desc => 'comment closes report',
+        desc => 'status of CLOSED marks report as fixed - council',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
@@ -201,7 +214,7 @@ for my $test (
         end_state => 'fixed - council',
     },
     {
-        desc => 'comment re-opens fixed report',
+        desc => 'status of OPEN re-opens fixed report',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
@@ -213,7 +226,19 @@ for my $test (
         end_state => 'confirmed',
     },
     {
-        desc => 'comment re-opens closed report',
+        desc => 'action sheduled re-opens fixed report as action scheduled',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'fixed - user',
+        comment_status => 'ACTION_SCHEDULED',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => 'action scheduled',
+        end_state => 'action scheduled',
+    },
+    {
+        desc => 'open status re-opens closed report',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
@@ -225,7 +250,7 @@ for my $test (
         end_state => 'confirmed',
     },
     {
-        desc => 'comment leaves report closed',
+        desc => 'fixed status leaves fixed - user report as fixed - user',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
@@ -233,7 +258,32 @@ for my $test (
         comment_status => 'FIXED',
         mark_fixed => 0,
         mark_open => 0,
+        problem_state => undef,
         end_state => 'fixed - user',
+    },
+    {
+        desc => 'closed status leaves fixed report as fixed',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'fixed - user',
+        comment_status => 'UNABLE_TO_FIX',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => undef,
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'fixed status sets closed report as fixed',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'unable to fix',
+        comment_status => 'FIXED',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => 'fixed - council',
+        end_state => 'fixed - council',
     },
 ) {
     subtest $test->{desc} => sub {
