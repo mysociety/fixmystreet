@@ -422,6 +422,19 @@ sub send_reports {
             }
             printf "    %-24s %4d\n", "Total:", $c;
         }
+        my $sending_errors = '';
+        my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
+            state => [ 'confirmed', 'fixed' ],
+            whensent => undef,
+            council => { '!=', undef },
+            send_fail_count => { '>', 0 }
+        } );
+        while (my $row = $unsent->next) {
+            $sending_errors .= "* http://www.fixmystreet.com/report/$row->id, failed $row->send_fail_count times, last at $row->send_fail_timestamp, reason $row->send_fail_reason\n"
+        }
+        if ($sending_errors) {
+            print "The following reports had problems sending:\n$sending_errors";
+        }
     }
 }
 

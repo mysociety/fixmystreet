@@ -661,7 +661,6 @@ sub report_edit : Path('report_edit') : Args(1) {
             || $flagged != $problem->flagged
             || $non_public != $problem->non_public )
         {
-            warn "edited";
             $edited = 1;
         }
 

@@ -10,6 +10,7 @@ has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => undef );
 has end_date => ( is => 'ro', default => undef );
 has suppress_alerts => ( is => 'rw', default => 0 );
+has verbose => ( is => 'ro', default => 0 );
 
 sub fetch {
     my $self = shift;
@@ -52,7 +53,8 @@ sub update_comments {
     my $requests = $open311->get_service_request_updates( @args );
 
     unless ( $open311->success ) {
-        warn "Failed to fetch ServiceRequest Updates: " . $open311->error;
+        warn "Failed to fetch ServiceRequest Updates: " . $open311->error
+            if $self->verbose;
         return 0;
     }
 
