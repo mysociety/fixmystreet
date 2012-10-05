@@ -87,15 +87,21 @@ while(<MAINPO>) {
         $new_buffer =~ s/"\n"//g;
 
         if ($lookup{$new_buffer} && $lookup{$new_buffer}[1]) {
-	    print OUTPO "#, fuzzy\n";
-	}
+            print OUTPO "#, fuzzy\n";
+        }
 
         print OUTPO $buffer;
         if ($lookup{$new_buffer}) {
             print OUTPO $lookup{$new_buffer}[0];
         } else {
-            print __LINE__ . "\n";
-            die "Failed to find match with buffer: $new_buffer";
+            if (m/^msgstr\[0\] ""/) {
+                $new_buffer =~ s/^msgid "/msgstr[0] "/m;
+                $new_buffer =~ s/^msgid_plural "/msgstr[1] "/m;
+                $_ = <MAINPO>; # skip untranslated plural
+            } else {
+                $new_buffer =~ s/^msgid "/msgstr "/;
+            }
+            print OUTPO $new_buffer;
         }
 
         $buffer = "";
