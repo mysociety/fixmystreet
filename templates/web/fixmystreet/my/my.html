@@ -13,6 +13,10 @@
 
 <h1>[% loc('Your Reports') %]</h1>
 
+[% IF c.cobrand.moniker == 'fixmybarangay' %]
+    [% INCLUDE '_barangay_buttons.html' %]
+[% END %]
+
 [% INCLUDE 'pagination.html',
     pager = problems_pager,
     param = 'p'
