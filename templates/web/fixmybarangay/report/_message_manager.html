@@ -90,10 +90,11 @@ $(document).ready(function() {
 	message_manager.setup_click_listener({callback:mm_selected_message});
 
 	// problem form hidden input "external_source_id": pass the MM id into FMS, if used
+	var $problem_form = $('#problem_form').size()? $('#problem_form') : $('#form_update_form');
 	$('<input type="hidden"/>').attr({
         'id': 'external_source_id',
         'name': 'external_source_id',
-    }).appendTo($('#form_update_form'));
+    }).appendTo($problem_form);
 
 	$('#available-submit').click(function(e){
 		e.preventDefault();
