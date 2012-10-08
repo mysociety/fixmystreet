@@ -12,9 +12,9 @@
 package Utils;
 
 use strict;
+use DateTime;
 use Encode;
 use File::Slurp qw();
-use POSIX qw(strftime);
 use mySociety::DBHandle qw(dbh);
 use mySociety::GeoUtil;
 use mySociety::Locale;
@@ -251,25 +251,32 @@ sub cleanup_text {
 }
 
 sub prettify_epoch {
-    my ( $s, $type ) = @_;
+    my ( $epoch, $type ) = @_;
     $type = 'short' if $type eq '1';
 
-    my @s = localtime($s);
+    my $dt = DateTime->from_epoch( epoch => $epoch, time_zone => 'local' );
+    $dt->set_time_zone( FixMyStreet->config('TIME_ZONE') )
+        if FixMyStreet->config('TIME_ZONE');
+
+    my $now = DateTime->now( time_zone => 'local' );
+    $now->set_time_zone( FixMyStreet->config('TIME_ZONE') )
+        if FixMyStreet->config('TIME_ZONE');
+
     my $tt = '';
-    $tt = strftime('%H:%M', @s) unless $type eq 'date';
-    my @t = localtime();
-    if (strftime('%Y%m%d', @s) eq strftime('%Y%m%d', @t)) {
+    $tt = $dt->strftime('%H:%M') unless $type eq 'date';
+
+    if ($dt->strftime('%Y%m%d') eq $now->strftime('%Y%m%d')) {
         return "$tt " . _('today');
     }
     $tt .= ', ' unless $type eq 'date';
-    if (strftime('%Y %U', @s) eq strftime('%Y %U', @t)) {
-        $tt .= decode_utf8(strftime('%A', @s));
+    if ($dt->strftime('%Y %U') eq $now->strftime('%Y %U')) {
+        $tt .= decode_utf8($dt->strftime('%A'));
     } elsif ($type eq 'short') {
-        $tt .= decode_utf8(strftime('%e %b %Y', @s));
-    } elsif (strftime('%Y', @s) eq strftime('%Y', @t)) {
-        $tt .= decode_utf8(strftime('%A %e %B %Y', @s));
+        $tt .= decode_utf8($dt->strftime('%e %b %Y'));
+    } elsif ($dt->strftime('%Y') eq $now->strftime('%Y')) {
+        $tt .= decode_utf8($dt->strftime('%A %e %B %Y'));
     } else {
-        $tt .= decode_utf8(strftime('%a %e %B %Y', @s));
+        $tt .= decode_utf8($dt->strftime('%a %e %B %Y'));
     }
     return $tt;
 }
