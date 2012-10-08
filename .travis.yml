@@ -1,5 +1,10 @@
 notifications:
   email: false
+  irc:
+    channels:
+      - "irc.mysociety.org#fixmystreet"
+    use_notice: true
+    skip_join: true
 
 language: perl
 perl:
