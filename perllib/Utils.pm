@@ -295,17 +295,27 @@ sub prettify_duration {
         return _('less than a minute') if $s == 0;
     }
     my @out = ();
-    _part(\$s, 60*60*24*7, _('%d week'), _('%d weeks'), \@out);
-    _part(\$s, 60*60*24, _('%d day'), _('%d days'), \@out);
-    _part(\$s, 60*60, _('%d hour'), _('%d hours'), \@out);
-    _part(\$s, 60, _('%d minute'), _('%d minutes'), \@out);
+    _part(\$s, 60*60*24*7, \@out);
+    _part(\$s, 60*60*24, \@out);
+    _part(\$s, 60*60, \@out);
+    _part(\$s, 60,  \@out);
     return join(', ', @out);
 }
 sub _part {
-    my ($s, $m, $w1, $w2, $o) = @_;
+    my ($s, $m, $o) = @_;
     if ($$s >= $m) {
         my $i = int($$s / $m);
-        push @$o, sprintf(mySociety::Locale::nget($w1, $w2, $i), $i);
+        my $str;
+        if ($m == 60*60*24*7) {
+            $str = mySociety::Locale::nget("%d week", "%d weeks", $i);
+        } elsif ($m == 60*60*24) {
+            $str = mySociety::Locale::nget("%d day", "%d days", $i);
+        } elsif ($m == 60*60) {
+            $str = mySociety::Locale::nget("%d hour", "%d hours", $i);
+        } elsif ($m == 60) {
+            $str = mySociety::Locale::nget("%d minute", "%d minutes", $i);
+        }
+        push @$o, sprintf($str, $i);
         $$s -= $i * $m;
     }
 }

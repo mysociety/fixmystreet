@@ -18,16 +18,17 @@ find( sub {
         do {
             $text .= <FP>;
         } until $text =~ /\)/;
-        $text =~ /nget\(\s*"(.*?)"\s*,\s*"(.*?)"\s*,\s*(.*?)\s*\)/s;
-        $out{$1} = {
-            file => $File::Find::name,
-            line => $line,
-            s => $1,
-            p => $2,
-        };
+        if ($text =~ /nget\(\s*"(.*?)"\s*,\s*"(.*?)"\s*,\s*(.*?)\s*\)/s) {
+            $out{$1} = {
+                file => $File::Find::name,
+                line => $line,
+                s => $1,
+                p => $2,
+            };
+        }
     }
     close FP;
-}, 'templates');
+}, 'templates', 'perllib');
 
 foreach (values %out) {
     print <<EOF;
