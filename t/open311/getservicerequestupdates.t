@@ -67,7 +67,7 @@ for my $test (
         my $local_requests_xml = $requests_xml;
         $local_requests_xml =~ s/UPDATED_DATETIME/$test->{updated_datetime}/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
         my $res = $o->get_service_request_updates;
         is_deeply $res->[0], $test->{ res }, 'result looks correct';
@@ -95,7 +95,7 @@ subtest 'check extended request parsed correctly' => sub {
 
     $extended_requests_xml =~ s/UPDATED_DATETIME/$updated_datetime/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $extended_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $extended_requests_xml } );
 
     my $res = $o->get_service_request_updates;
     is_deeply $res->[0], $expected_res, 'result looks correct';
@@ -197,7 +197,7 @@ for my $test (
         $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>@{[$problem->id]}</service_request_id_ext>#;
         $local_requests_xml =~ s#<status>\w+</status>#<status>closed</status># if $test->{close_comment};
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
         $problem->comments->delete;
         $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
@@ -239,7 +239,7 @@ foreach my $test (
         $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>@{[$problem->external_id]}</service_request_id>#;
         $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>@{[$problem->id]}</service_request_id_ext>#;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
         $problem->comments->delete;
 
@@ -309,7 +309,7 @@ for my $test (
         $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>$test->{request_id}</service_request_id>#;
         $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>$test->{request_id_ext}</service_request_id_ext>#;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
 
         my $council_details = { areaid => $test->{area_id} };
@@ -323,7 +323,7 @@ for my $test (
 
 subtest 'using start and end date' => sub {
     my $local_requests_xml = $requests_xml;
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
     my $start_dt = DateTime->now();
     $start_dt->subtract( days => 1 );
@@ -406,7 +406,7 @@ subtest 'check that existing comments are not duplicated' => sub {
     $requests_xml =~ s/UPDATED_DATETIME2/$dt/;
     $requests_xml =~ s/UPDATED_DATETIME/@{[ $comment->confirmed ]}/;
 
-    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
 
     my $update = Open311::GetServiceRequestUpdates->new(
         system_user => $user,
@@ -467,7 +467,7 @@ foreach my $test ( {
         $requests_xml =~ s/UPDATED_DATETIME/$test->{dt1}/;
         $requests_xml =~ s/UPDATED_DATETIME2/$test->{dt2}/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $user,
@@ -518,7 +518,7 @@ foreach my $test ( {
 
         $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
-        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
 
         my $update = Open311::GetServiceRequestUpdates->new(
             system_user => $user,

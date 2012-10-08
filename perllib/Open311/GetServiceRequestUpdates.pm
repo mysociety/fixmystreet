@@ -31,6 +31,13 @@ sub fetch {
             jurisdiction => $council->jurisdiction,
         );
 
+        if ( $council->area_id =~ /2482/ ) {
+            my $endpoints = $o->endpoints;
+            $endpoints->{update} = 'update.xml';
+            $endpoints->{service_requests_updates} = 'update.xml';
+            $o->endpoints( $endpoints );
+        }
+
         $self->suppress_alerts( $council->suppress_alerts );
         $self->system_user( $council->comment_user );
         $self->update_comments( $o, { areaid => $council->area_id }, );
