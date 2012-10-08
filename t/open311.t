@@ -544,7 +544,7 @@ sub make_update_req {
         object => $comment,
           xml  => $xml,
         method => 'post_service_request_update',
-        path   => 'update.xml',
+        path   => 'servicerequestupdates.xml',
     };
 
     if ( $extended ) {
