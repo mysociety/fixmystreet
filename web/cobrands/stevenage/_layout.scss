@@ -305,13 +305,14 @@ body.mappage {
 .ie8 {
   body.mappage {
   #stevenage_cc_header{
-        position:static;
+        position:absolute;
+        top:0;
       }
     .nav-wrapper{
       position: relative;
       z-index:0;
       .nav-wrapper-2{
-        position:static;
+        position:absolute;
       }
       
     }
