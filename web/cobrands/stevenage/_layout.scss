@@ -60,7 +60,7 @@ h1 {
     width: 100%;
     min-height: min-intrinsic;
     position: absolute;
-    top:158px;
+    top:9.5em;
     border-top: none;
     border-left:0;
     border-right:0;
@@ -151,7 +151,7 @@ h1 {
       li{
         a, span{
           padding: 0.5em 0.75em;
-          font-size: 0.9em;
+          font-size: 0.8em;
           margin: 0;
           @include border-radius(0.25em);
         }
@@ -161,9 +161,10 @@ h1 {
         a.report-a-problem-btn {
           color: $primary_text;
           background: $primary;
-          padding:0.25em;
-          margin:0.5em;
+          padding:0.5em 0.75em;
+          margin:0;
           margin-bottom: 0;
+          margin-left: 0.25em;
           color:#fff;
           @include border-radius(0.25em);
           &:hover {
@@ -240,7 +241,7 @@ body.mappage {
   }
   .content {
     float:left;
-    margin-top: 6em;
+    margin-top: 9em;
   }
 /*
   #main-nav ul#main-menu li a,
@@ -254,8 +255,13 @@ body.mappage {
 */
   .nav-wrapper{
     .nav-wrapper-2{
-      position: fixed;
-      top:92px;
+      position: absolute;
+      top: 11em;
+      bottom: auto;
+      left: 0.5em;
+      width: 29em;
+      padding-top: 0.15em;
+      z-index: 0;
     }
     
   }
@@ -739,7 +745,7 @@ textarea.form-error {
   position:absolute;
   z-index:-1;//push behind .content, .container resets z-index for this
   left:29.5em;
-  top:5em;
+  top:9em;
   width:15em;
   @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
   .sidebar-tips {
