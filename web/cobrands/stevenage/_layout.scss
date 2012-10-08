@@ -272,7 +272,7 @@ body.mappage {
 .ie6, .ie7 {
   body.mappage {
   #stevenage_cc_header {
-        position:static;
+        position:absolute;
       }
     // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
     .container {
@@ -283,7 +283,7 @@ body.mappage {
     .nav-wrapper{
       z-index:1;
       .nav-wrapper-2 {
-        position:static;
+        //position:static;
       }
     }
     #site-logo {
