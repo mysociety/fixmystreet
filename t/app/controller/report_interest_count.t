@@ -56,68 +56,72 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
-for my $test ( 
-    {
-        desc => 'if not from council then no supporter button',
-        from_council => 0,
-        support_string => 'No supporters',
-    },
-    {
-        desc => 'from council user can increment supported count',
-        from_council => 2504,
-        support_string => 'No supporters',
-        updated_support => '1 supporter'
-    },
-    {
-        desc => 'correct grammar for more than one supporter',
-        from_council => 2504,
-        support_string => '1 supporter',
-        updated_support => '2 supporters'
-    },
-) {
-    subtest $test->{desc} => sub {
+SKIP: {
+    skip( "Need 'fixmybarangay' in ALLOWED_COBRANDS config", 29 )
+        unless FixMyStreet::Cobrand->exists('fixmybarangay');
+    for my $test (
+        {
+            desc => 'if not from council then no supporter button',
+            from_council => 0,
+            support_string => 'No supporters',
+        },
+        {
+            desc => 'from council user can increment supported count',
+            from_council => 2504,
+            support_string => 'No supporters',
+            updated_support => '1 supporter'
+        },
+        {
+            desc => 'correct grammar for more than one supporter',
+            from_council => 2504,
+            support_string => '1 supporter',
+            updated_support => '2 supporters'
+        },
+    ) {
+        subtest $test->{desc} => sub {
+            ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
+            $mech->log_in_ok( $user->email );
+            $user->from_council( $test->{from_council} );
+            $user->update;
+
+            $report->discard_changes;
+            $report->council( $test->{report_council} );
+            $report->update;
+
+            $mech->get_ok("/report/$report_id");
+            $mech->content_contains( $test->{support_string} );
+
+            if ( $test->{from_council} ) {
+                $mech->content_contains('Add support');
+                $mech->submit_form_ok( { form_number => 1 } );
+
+                is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';
+
+                $mech->content_contains($test->{updated_support});
+            } else {
+                $mech->content_lacks( 'Add support' );
+            }
+        };
+    }
+
+    subtest 'check non council user cannot increment support count' => sub {
         ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
-        $mech->log_in_ok( $user->email );
-        $user->from_council( $test->{from_council} );
-        $user->update;
+        $report->discard_changes;
+        $report->interest_count(1);
+        ok $report->update(), 'updated interest count';
 
         $report->discard_changes;
-        $report->council( $test->{report_council} );
-        $report->update;
+        is $report->interest_count, 1, 'correct interest count';
 
         $mech->get_ok("/report/$report_id");
-        $mech->content_contains( $test->{support_string} );
+        $mech->content_contains( '1 supporter' );
 
-        if ( $test->{from_council} ) {
-            $mech->content_contains('Add support');
-            $mech->submit_form_ok( { form_number => 1 } );
+        $mech->post_ok("/report/support", { id => $report_id } );
 
-            is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';
+        is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';
 
-            $mech->content_contains($test->{updated_support});
-        } else {
-            $mech->content_lacks( 'Add support' );
-        }
+        $mech->content_contains( '1 supporter' );
     };
-}
-
-subtest 'check non council user cannot increment support count' => sub {
-    ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
-    $report->discard_changes;
-    $report->interest_count(1);
-    ok $report->update(), 'updated interest count';
-
-    $report->discard_changes;
-    is $report->interest_count, 1, 'correct interest count';
-
-    $mech->get_ok("/report/$report_id");
-    $mech->content_contains( '1 supporter' );
-
-    $mech->post_ok("/report/support", { id => $report_id } );
-
-    is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';
-
-    $mech->content_contains( '1 supporter' );
 };
 
 subtest 'check support details not shown if not enabled in cobrand' => sub {
