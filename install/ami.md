@@ -15,7 +15,8 @@ Micro instance which will be [free for a
 year](http://aws.amazon.com/free/).
 
 The AMI can be found in the **EU West (Ireland)** region, with the ID
-`ami-2b51515f` and name "Basic FixMyStreet installation 2012-10-05".
+`ami-2b51515f` and name
+["Basic FixMyStreet installation 2012-10-05"](https://console.aws.amazon.com/ec2/home?region=eu-west-1#launchAmi=ami-2b51515f).
 
 When you create an EC2 instance based on that AMI, make sure that you
 choose Security Groups that allows at least inbound HTTP, HTTPS and
