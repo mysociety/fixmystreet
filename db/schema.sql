@@ -217,7 +217,7 @@ create table problem (
     external_source_id text,
 
     -- number of me toos
-    interest_count integer
+    interest_count integer default 0
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
