@@ -337,7 +337,7 @@ $(function(){
         $('#sub_map_links').show();
         //only on mobile
         $('#mob_sub_map_links').remove();
-        $('.mobile-map-banner').text('Place pin on map');
+        $('.mobile-map-banner').html('<a href="/">Home</a> Place pin on map');
         fixmystreet.page = 'around';
     });
 
@@ -532,7 +532,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
             // Making it relative here makes it much easier to do the scrolling later
 
-            $('.mobile-map-banner').text('Right place?');
+            $('.mobile-map-banner').html('<a href="/">Home</a> Right place?');
 
             // mobile user clicks 'ok' on map
             $('#mob_ok').toggle(function(){

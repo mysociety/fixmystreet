@@ -92,8 +92,7 @@ $(function(){
                 $('.big-green-banner')
                     .addClass('mobile-map-banner')
                     .appendTo('#map_box')
-                    .text('Place pin on map')
-	            .prepend('<a href="/">home</a>');
+                    .html('<a href="/">Home</a> Place pin on map');
             }
             $('span.report-a-problem-btn').on('click.reportBtn', function(){
                 $('html, body').animate({scrollTop:0}, 500);
