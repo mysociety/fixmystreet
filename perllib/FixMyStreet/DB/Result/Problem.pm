@@ -608,7 +608,7 @@ sub processed_summary_string {
     }
     if ($problem->can_display_external_id) {
         if ($duration_clause) {
-            $external_ref_clause = sprintf(_('their ref:&nbsp;%s'), $problem->external_id);
+            $external_ref_clause = sprintf(_('council ref:&nbsp;%s'), $problem->external_id);
         } else {
             $external_ref_clause = sprintf(_('%s ref:&nbsp;%s'), $problem->external_body, $problem->external_id);
         }
