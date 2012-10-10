@@ -1146,25 +1146,29 @@ a:hover.button-left {
     }
   }
   &.map_complete {
-    background:none;
-    display:block;
-    border-bottom:4px solid #fff;
+    height: 100%;
+    background: none;
+    display: block;
+    border-bottom: 4px solid #fff;
     a#try_again {
-      display:block;
-      margin:0 auto 6em auto;
-      background:rgba(0, 0, 0, 0.8);
+      position: absolute;
+      display: block;
+      left: 25%;
+      bottom: 0;
+      margin-bottom: 6em;
+      background: rgba(0, 0, 0, 0.8);
       @include border-radius(0.5em);
     }
     a#mob_ok {
-      position:absolute;
-      right:1em;
-      bottom:0;
-      height:20px;
-      padding-top:30px;
-      display:block;
-      width:4em;
-      background:#fff url('/cobrands/fixmystreet/images/sprite.png') 12px -4140px no-repeat;
-      color:#000;
+      position: absolute;
+      display: block;
+      right: 1em;
+      bottom: 0;
+      height: 20px;
+      padding-top: 30px;
+      width: 4em;
+      background: #fff url('/cobrands/fixmystreet/images/sprite.png') 12px -4140px no-repeat;
+      color: #000;
     }
   }
 }
