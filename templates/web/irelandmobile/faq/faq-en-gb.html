@@ -1,0 +1,144 @@
+[% INCLUDE 'header.html', title => loc('Frequently Asked Questions'), bodyclass => 'twothirdswidthpage' %]
+
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li><a href="#faq">Frequently Asked Questions</a></li>
+            <li><a href="#practical">Practical Questions</a></li>
+            <li><a href="#organisation">Organisation Questions</a></li>
+            <li><a href="/privacy">Privacy and cookies</a></li>
+        </ul>
+    </aside>
+</div>
+
+<h1><a name="faq"></a>Frequently Asked Questions</h1>
+    <dl>
+        <dt>What is FixMyStreet?</dt>
+        <dd>FixMyStreet is a site to help people report, view,
+or discuss local problems they&rsquo;ve found to their local council by
+simply locating them on a map. </dd>
+        <dt>What sort of problems should I report with FixMyStreet?</dt>
+        <dd>FixMyStreet is primarily for reporting things which are
+<strong>broken or dirty or damaged or dumped, and need fixing, cleaning
+or clearing</strong>, such as:
+
+    <ul><li>Abandoned vehicles
+    <li>Dog Fouling
+    <li>Flyposting or graffiti
+    <li>Illegal dumping or litter
+    <li>Streetcleaning, such as broken glass in a cycle lane
+    <li>Unlit lamposts
+    <li>Potholes
+    </ul>
+    </dd>
+
+    <dt>What isn&rsquo;t FixMyStreet for?</dt>
+    <dd>FixMyStreet is not a way of getting in touch with [% c.cobrand.is_council ? 'the' : 'your' %] council for all
+    issues &ndash; please use FixMyStreet only for problems such as the above. <strong>You will need to contact [% c.cobrand.is_council ? 'the' : 'your' %] council
+    directly</strong> for problems such as: 
+
+    <ul><li>Anti-social behaviour
+    <li>Any urgent or emergency problems
+    <li>Noise pollution or barking dogs
+    <li>Fires and smoke/smell pollution
+    <li>Proposals for speed bumps/ CCTV/ pedestrian crossings/ new road layouts/ etc.
+    <li>Complaining about your neighbours
+    <li>Complaining about the council
+    <li>Joy riding, drug taking, animal cruelty, or other criminal activity
+    </ul>
+    <p>Some councils have direct hotlines for these sorts of issues.</p>
+    </dd>
+
+        <dt>How do I use the site?</dt>
+        <dd>After entering a postcode or location, you are presented
+with a map of that area. You can view problems already reported in that area,
+or report ones of your own simply by clicking on the map at the location of
+the problem.</dd>
+        <dt>How are the problems solved?</dt>
+        <dd>They are reported to the [% IF !c.cobrand.is_council %]relevant[% END %] council by email. The
+council can then resolve the problem the way they normally would.
+Alternatively, you can discuss the problem on the website with others, and
+then together lobby the council to fix it, or fix it directly yourselves.</dd>
+        <dt>Is it free?</dt>
+        <dd>The site is free to use, yes. FixMyStreet is <strong>run
+by volunteers</strong>, though, so do please bear that in mind if you're contacting us.</dd>
+
+    <dt>Can I use FixMyStreet on my mobile?</dt>
+    <dd>This web site does not yet provide a wonderful web experience on small devices. We're working on fixing that as soon as possible.</dd>
+    <dd>We're making native apps available more quickly. Watch this space. An Android app will become available before the end of September,
+    an iOS app as soon as we can find a developer to publish it for us.</dd>
+    <ul>
+    <li><em>Android:</em> A volunteer from the UK, Anna Powell-Smith, wrote an app 
+    which you can find on the 
+    <a href="https://play.google.com/store/apps/details?id=ie.fixmystreet">Google Play Store </a>.</li>
+    <li><em>iPhone:</em> Coming <b>very</b> soon.</li><!--Our basic app from 2008 is available for download
+    on the App Store:
+    <a href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">FixMyStreet</a>,-->
+    <!-- <li><em>Nokia:</em> A volunteer, Thomas Forth, has written an app available from the
+    <a href="http://store.ovi.com/content/107557">Ovi Store</a>.
+    </ul> -->
+    </dd>
+
+    </dl>
+
+    <h2><a name="practical"></a>Practical Questions</h2>
+    <dl>
+        <dt>I&rsquo;m from a council, where do you send the reports?</dt>
+        <dd>You can either leave a test report or <a href="/contact">contact us</a>
+to find out where reports go at the moment. Also <a href="/contact">contact us</a>
+to update the address or addresses we use. If your council is part of the FixYourStreet.ie trial project, 
+you'll find reports made here are posted directly to there.</dd>
+        <!--<dt>I&rsquo;m from a council, can we have FixMyStreet on our website?</dt>
+        <dd>Yes you can! We offer branded, hosted versions of FixMyStreet for local council websites.
+        <a href="http://www.mysociety.org/for-councils/fixmystreet/">Full details</a>.</dd> -->
+        <dt>Do you remove silly or illegal content?</dt>
+        <dd>FixMyStreet is not responsible for the content and accuracy
+of material submitted by its users. We reserve the right to edit or remove any
+problems or updates which we consider to be inappropriate upon being informed
+by a user of the site.</dd>
+
+    <dt>Why can&rsquo;t I zoom out more on the reporting map?</dt>
+    <dd>We want to keep FixMyStreet locally focused, so restrict the ability to
+    move radically between areas. The map on Your Reports will let you see all
+    the reports you&rsquo;ve made, wherever they are. If you&rsquo;re from the
+    council then the emailed version of the problem report also contains the
+    closest road and postcode to the pin on the map.</dd>
+
+    <h2><a name="organisation"></a>Organisation Questions</h2>
+    <dl>
+        <dt>Who built FixMyStreet?</dt>
+        <dd>The code for this site was primarily developed to run <a href="http://fixmystreet.com">FixMyStreet.com</a>
+        in the UK by a charity called <a href="http://mysociety.org">MySociety</a>.  The modifications required to 
+        make this version in Ireland were developed by John Handelaar.</dd>
+        <dt>Who pays for it?</dt>
+        <dd><a href="http://sabrinadent.com">Sabrina Dent</a> and John Handelaar.</dd>
+        <dt>Do you need any help with the project?</dt>
+        <dd>Yes, we can use help in all sorts of ways, technical or
+non-technical.  Please  <a
+href="/contact/">get in touch</a>.</dd>
+        <dt>I&rsquo;d like a site like this for my own location/ where&rsquo;s the "source code" to this site?</dt>
+        <dd>
+The software behind this site is open source, and available
+to you mainly under the GNU Affero GPL software license. You can <a
+href="http://github.com/mysociety/fixmystreet">download the
+source code</a> and help develop it.
+You&rsquo;re welcome to use it in your own projects (just like we did), although you must also
+make available the source code to any such projects.
+<a href="http://www.fiksgatami.no/">Fiksgatami</a> is an example of our code
+being used in a Norwegian version of this site. The original can be found at <a href="http://fixmystreet.com">FixMyStreet.com</a>
+</dd>
+<dt>I&rsquo;d prefer code in a different language?</dt>
+<dd>
+VisibleGovernment.ca wrote their own code for
+<a href="http://www.fixmystreet.ca/">FixMyStreet.ca</a>, which is
+written in GeoDjango and available under an MIT licence at <a
+href="http://github.com/visiblegovernment/django-fixmystreet/tree/master">github</a>.
+<a href="http://www.fixmystreet.org.nz/">FixMyStreet.org.nz</a> was written as modules for
+Drupal.
+</p>
+</dd>
+        <dt>People build things, not organisations. Who <em>actually</em> built it?</dt>
+        <dd>Matthew Somerville and Francis Irving wrote the site.</dd>
+        <dd>John Handelaar made it work for Ireland with some help from Matthew and MySociety.org.</dd>
+    </dl>
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

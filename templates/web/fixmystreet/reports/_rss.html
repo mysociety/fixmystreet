@@ -5,6 +5,8 @@
                 'Get updates of reports in Bromley';
             ELSIF c.cobrand.moniker == 'bromley';
                 'Get updates of reports in this ward';
+            ELSIF c.cobrand.moniker == 'irelandmobile' AND thing == 'ward':
+                'Get updates of problems in this LEA';
             ELSIF c.cobrand.is_council;
                 tprintf(loc('Get updates of %s problems'), thing);
             ELSE;

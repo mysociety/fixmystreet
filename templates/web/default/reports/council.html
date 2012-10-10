@@ -16,7 +16,7 @@
 
 [% IF c.cobrand.is_council %]
     [% ward_text = loc( 'View reports by ward' ) %]
-[% ELSIF c.cobrand.moniker == 'ireland' %]
+[% ELSIF c.cobrand.moniker == 'ireland' or c.cobrand.moniker == 'irelandmobile' %]
     [% ward_text = loc( 'Local electoral areas (LEAs) within this council' ) %]
 [% ELSE %]
     [% ward_text = loc( 'Wards of this council' ) %]

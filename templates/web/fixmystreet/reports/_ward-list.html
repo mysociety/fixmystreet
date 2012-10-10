@@ -1,7 +1,11 @@
 [% IF location == 'after' AND children.size %]
 <section id="council_wards" class="hidden-js">
 <h2>[% ward_text %]</h2>
-    <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+    [% IF c.cobrand.moniker == 'irelandmobile' %]
+        <p>[% loc('Follow a LEA link to view only reports within that LEA.') %]</p>
+    [% ELSE %]
+        <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
+    [% END %]
     <ul class="issue-list-a full-width">
         [% FOR child IN children.values.sort('name') %]
         <li><a href="[% child.url %]"><span class="text">[% child.name %]</span></a></li>

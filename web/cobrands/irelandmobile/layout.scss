@@ -1,0 +1,60 @@
+@import "_colours";
+@import "../fixmystreet/_layout";
+
+/*
+Note: The fact that the below has to override the CSS, though it is for the
+default template, is a sign that the CSS is not best organised. It needs
+refactoring, and making more maintainable through the use of SMACSS, OOCSS
+and similar.
+*/
+
+body {
+    background: #6688ff;
+}
+
+#front-main {
+    color: $primary_text;
+    background: $primary;
+    // layout sets this because base has it slightly lighter
+    h2 {
+        color: $primary_text;
+    }
+    a#geolocate_link {
+        color: $primary_text;
+    }
+}
+
+.nav-wrapper {
+    .nav-wrapper-2 {
+        border-top: 4px solid $primary;
+        @include border-image(none);
+    }
+}
+body.mappage {
+    .nav-wrapper {
+        .nav-wrapper-2 {
+            background: $contrast1;
+        }
+    }
+}
+
+#main-nav {
+    ul {
+        li {
+            a, span {
+                color: #000;
+            }
+        }
+        &#main-menu {
+            li {
+                a:hover {
+                    background: $primary;
+                }
+            }
+        }
+        &#mysoc-menu {
+            background: $primary;
+        }
+    }
+}
+
