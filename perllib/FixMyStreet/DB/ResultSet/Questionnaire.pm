@@ -62,7 +62,9 @@ sub send_questionnaires_period {
             ($template = $period) =~ s/ //;
             $template = Utils::read_file( FixMyStreet->path_to( "templates/email/emptyhomes/" . $row->lang . "/questionnaire-$template.txt" )->stringify );
         } else {
-            $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, "questionnaire.txt" )->stringify;
+            $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, $row->lang, "questionnaire.txt" )->stringify;
+            $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, "questionnaire.txt" )->stringify
+                unless -e $template;
             $template = FixMyStreet->path_to( "templates", "email", "default", "questionnaire.txt" )->stringify
                 unless -e $template;
             $template = Utils::read_file( $template );
