@@ -96,7 +96,7 @@ sub index : Path : Args(0) {
     $c->stash->{council} = $council_detail;
 
     my $children = mySociety::MaPit::call('area/children', $council,
-        type => $mySociety::VotingArea::council_child_types,
+        type => $c->cobrand->area_types_children,
     );
     $c->stash->{children} = $children;
 
