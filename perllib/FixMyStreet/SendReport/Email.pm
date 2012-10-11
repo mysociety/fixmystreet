@@ -78,6 +78,7 @@ sub send {
             _parameters_ => $h,
             To => $self->to,
             From => [ $row->user->email, $row->name ],
+            Bcc => mySociety::Config::get('CONTACT_EMAIL'),
         },
         mySociety::Config::get('CONTACT_EMAIL'),
         \@recips,
