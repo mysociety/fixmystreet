@@ -100,6 +100,10 @@ This contains all the styling for the content of the pages in a desktop sized br
 This contains basic colour information, so you can easily make a site that
 looks different simply by copying these files to your own cobrand CSS
 directory, and changing the colours.
+* config.rb
+This is the config script used by compass; to base your CSS off of FixMyStreet,
+you can just copy the one from `web/cobrands/fixmystreet/` and add your
+directory to `bin/make_css`.
 
 ## Configuration options
 
