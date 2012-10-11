@@ -1,6 +1,10 @@
 [% INCLUDE 'header.html', title => 'Open311' %]
 
+[% IF c.cobrand.moniker == 'ireland' %]
+<h1>[% loc('Open311 API') %]</h1>
+[% ELSE %]
 <h1>[% loc('Open311 API for the mySociety FixMyStreet server') %]</h1>
+[% END %]
 
 [% IF error %]
 <p>[% tprintf( loc('Note: <strong>%s</strong>'), error ) %]</p>
@@ -28,7 +32,12 @@
 
 <ul>
 
+[% IF c.cobrand.moniker == 'ireland' %]
+[% jurisdiction_id = 'fixmystreet.ie' %]
+[% ELSE %]
 [% jurisdiction_id = 'fiksgatami.no' %]
+[% END %]
+
 [% examples = [
     {
         url = c.cobrand.base_url _ "/open311/v2/discovery.xml?jurisdiction_id=$jurisdiction_id",

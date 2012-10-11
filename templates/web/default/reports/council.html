@@ -16,6 +16,8 @@
 
 [% IF c.cobrand.is_council %]
     [% ward_text = loc( 'View reports by ward' ) %]
+[% ELSIF c.cobrand.moniker == 'ireland' %]
+    [% ward_text = loc( 'Local electoral areas (LEAs) within this council' ) %]
 [% ELSE %]
     [% ward_text = loc( 'Wards of this council' ) %]
 [% END %]
@@ -36,6 +38,10 @@
 </div>
 <div id="side">
 
+[% IF c.cobrand.moniker == 'ireland' and ward %]
+    <h1 id="reports_heading">[% ward.name %]</h1><h3>A local electoral area within <br />[% council.name %]</h3>
+    <p>You can see <a href="[% council_url %]">all reports for this council</a>, or <a href="/reports">all councils</a>.</p> 
+[% ELSE %]
 <h1 id="reports_heading">
     [% IF ward %]
     [% ward.name %]<span>, </span><a href="[% council_url %]">[% council.name %]</a>
@@ -43,6 +49,7 @@
     [% council.name %]
     [% END %]
 </h1>
+[% END %]
 
 [% IF council.generation_high == 10 AND c.cobrand.country == 'GB' %]
     <p id="unknown" class="alert">This council no longer exists.
@@ -101,11 +108,16 @@
 [% BLOCK column %]
 [% IF problems %]
 
-<ul class="issue-list-a">
-[% FOREACH problem IN problems %]
-    [% INCLUDE 'reports/_list-entry.html' %]
-[% END %]
-</ul>
+    [% IF c.cobrand.moniker == 'ireland' %]<h3>Known problems</h3>[% END %]
+    <ul class="issue-list-a">
+    [% FOREACH problem IN problems %]
+        [% INCLUDE 'reports/_list-entry.html' %]
+    [% END %]
+    </ul>
+
+[% ELSIF c.cobrand.moniker == 'ireland' %]
+
+    <p>There are no current reports in this area.</p>
 
 [% END %]
 [% END %]

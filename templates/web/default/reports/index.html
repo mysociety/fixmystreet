@@ -5,7 +5,9 @@
 <div class="intro">
 <p>
 [% loc('This is a summary of all reports on this site; select a particular council to see the reports sent there.') %]
+[% IF c.cobrand.country == 'GB' %]
 [% loc('Greyed-out lines are councils that no longer exist.') %]
+[% END %]
 </p>
 </div>
 

@@ -1,0 +1,60 @@
+[% INCLUDE 'header.html', title => '' %]
+
+[% IF error %]
+    <p class="error">[% error %]</p>
+[% END %]
+
+[% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %]
+
+[% PROCESS 'around/postcode_form.html' %]
+
+<div id="front_intro">
+
+    <h2>[% loc('How to report a problem') %]</h2>
+    
+    <ol>
+        <li>[% loc('Locate the problem on a map of the area') %]</li>
+        <li>[% loc('Enter details of the problem') %]</li>
+        <li>[% loc('We send it to the council on your behalf') %]</li>
+    </ol>
+    
+
+</div>
+
+    [% INCLUDE "front/stats.html" %]
+    [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
+
+[% 
+    recent_photos = c.cobrand.recent_photos('front', 3);
+    probs         = c.cobrand.recent();
+%]
+
+
+[% IF probs.size || recent_photos.size %]
+<div id="front_recent">
+    <h2>[% loc('Recently reported problems') %]</h2>
+    [% IF recent_photos.size %]
+        <p id="front_photos">
+        [% FOREACH p IN recent_photos %]
+            <a href="/report/[% p.id %]"><img border="0" height="100"
+                src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+        [% END %]
+        </p>
+    [% END %]
+
+    [% IF probs.size %]
+
+    
+        <ul id="nearby_lists">
+        [% FOREACH p IN probs %]
+            <li>
+                <a href="/report/[% p.id %]">[% p.title | html %]</a>
+                <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
+            </li>    
+        [% END %]
+        </ul>
+    [% END %]
+</div>
+[% END %]
+<div style="clear: both;">&nbsp;</div>
+[% INCLUDE 'footer.html' %]

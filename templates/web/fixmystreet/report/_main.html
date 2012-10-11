@@ -13,8 +13,21 @@
 	<br><small>[% loc('Not reported to council') %]</small>
 	[% END %]
 	</em></p>
+
+    [% IF c.cobrand.moniker == 'ireland' %]
+    [% shorturl = "http://fixmy.st/I" _ c.cobrand.shorturl (problem.id) %]
+	<p>
+        <span class='st_twitter_hcount' displayText='Tweet' st_url="[% shorturl %]" st_title="FixMyStreet.ie: [% problem.title %]" ></span>
+        <span class='st_facebook_hcount' displayText='Facebook' st_url="[% shorturl %]" st_title="FixMyStreet.ie: [% problem.title %]" [% IF problem.photo %][% photo = problem.photo.get_photo_params %] st_image="[% photo.url %]" [% END %]></span>
+        <span class='st_email_hcount' displayText='Email' st_url="[% shorturl %]" st_title="FixMyStreet.ie: [% problem.title %]" ></span>
+    </p>
+    [% END %]
+
     [% INCLUDE 'report/_support.html' %]
-	[% INCLUDE 'report/photo.html' object=problem center=1 %]
+
+    [% IF c.cobrand.moniker == 'ireland' %]<div style="clear:left;">[% END %]
+    [% INCLUDE 'report/photo.html' object=problem center=1 %]
+    [% IF c.cobrand.moniker == 'ireland' %]</div>[% END %]
 
 	[% add_links( problem.detail ) | html_para %]
 

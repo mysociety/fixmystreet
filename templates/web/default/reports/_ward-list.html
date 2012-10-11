@@ -1,7 +1,11 @@
 [% IF location == 'before' AND children.size %]
 <h2 style="clear:right">[% ward_text %]</h2>
+[% IF c.cobrand.moniker == 'ireland' %]
+<p>[% loc('Follow a link below to view only reports within that LEA.') %]</p>
+[% ELSE %]
 <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
-<ul>
+[% END %]
+<ul class="ward_list">
 [% FOR child IN children.values.sort('name') %]
 <li><a href="[% child.url %]">[% child.name %]</a></li>
 [% END %]

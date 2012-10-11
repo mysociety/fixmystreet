@@ -1,0 +1,22 @@
+
+                                <div id="bigform">
+                                        <h2>Where&rsquo;s the problem?</h2>
+                                        <h3>Enter a nearby street name and area, or townland, to see your local issues or make a new report</h3>
+                                        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+                                            <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
+                                            <input type="submit" value="Go >" class="go" id="submit">
+                                            [% IF partial_token %]
+                                                <input type="hidden" name="partial" value="[% partial_token.token %]">
+                                            [% END %]
+                                        </form>
+
+
+
+<!--                                    <h2>Where&rsquo;s the problem?</h2>
+                                        <h3>Enter a nearby street name and area, or townland, to see your local issues or make a new report</h3> 
+                                        <form>
+                                                <input type="text" value='(eg: " )' /> <input class="go" type="submit" value="Go >" />
+                                                <span><br />...or <a href="#">locate me automatically</a></span>
+                                        </form> -->
+                                </div>
+

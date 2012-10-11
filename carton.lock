@@ -19256,6 +19256,67 @@
          "target" : "Mail::Address",
          "version" : "2.08"
       },
+      "Math::BaseCalc" : {
+         "dist" : "Math-BaseCalc-1.016",
+         "module" : "Math::BaseCalc",
+         "mymeta" : {
+            "abstract" : "Convert numbers between various bases",
+            "author" : [
+               "Ken Williams <kwilliams@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Module::Build version 0.4002, CPAN::Meta::Converter version 2.112150",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "Math-BaseCalc",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "Config" : 0,
+                     "Module::Build" : "0.3601",
+                     "Test::More" : 0
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.30",
+                     "Module::Build" : "0.3601"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Carp" : 0,
+                     "integer" : 0,
+                     "vars" : 0
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "web" : "http://rt.cpan.org/Public/Dist/Display.html?Name=Math-BaseCalc"
+               },
+               "repository" : {
+                  "url" : "http://perl-math-basecalc.googlecode.com/svn/trunk"
+               }
+            },
+            "version" : "1.016"
+         },
+         "name" : "Math::BaseCalc",
+         "pathname" : "K/KW/KWILLIAMS/Math-BaseCalc-1.016.tar.gz",
+         "provides" : {
+            "Math::BaseCalc" : {
+               "file" : "Math/BaseCalc.pm",
+               "version" : "1.014"
+            }
+         },
+         "version" : "1.014"
+      },
       "Math::Round" : {
          "dist" : "Math-Round-0.06",
          "mymeta" : {
