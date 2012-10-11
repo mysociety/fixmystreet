@@ -39,11 +39,11 @@ sub string {
     $s = URI::Escape::uri_escape_utf8($s);
     $s =~ s/%20/+/g;
     my $params = $c->cobrand->disambiguate_location($s);
-    return FixMyStreet::Geocode::Bing::string($s, $c, $params)
-        if FixMyStreet->config('BING_MAPS_API_KEY');
     # Fall back to Google API, which allow access with and without a key
     return FixMyStreet::Geocode::Google::string($s, $c, $params)
         if FixMyStreet->config('GOOGLE_MAPS_API_KEY');
+    return FixMyStreet::Geocode::Bing::string($s, $c, $params)
+        if FixMyStreet->config('BING_MAPS_API_KEY');
     return FixMyStreet::Geocode::OSM::string($s, $c, $params);
 }
 
