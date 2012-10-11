@@ -763,6 +763,14 @@ textarea.form-error {
   }
 }
 
+/* Adjust the above so text flow can be different from display */
+#forgotten-pw {
+    position: relative;
+    left: 27em;
+    top: -7em;
+    margin-bottom: -7em; // So no gap in main flow
+}
+
 // Frontpage
 
 body.frontpage {
