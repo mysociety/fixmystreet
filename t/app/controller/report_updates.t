@@ -1270,6 +1270,232 @@ for my $test (
     };
 }
 
+for my $test (
+    {
+        desc => 'update confirmed without marking as fixed leaves state unchanged',
+        initial_state => 'confirmed',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'confirmed',
+    },
+    {
+        desc => 'update investigating without marking as fixed leaves state unchanged',
+        initial_state => 'investigating',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'investigating',
+    },
+    {
+        desc => 'update in progress without marking as fixed leaves state unchanged',
+        initial_state => 'in progress',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'in progress',
+    },
+    {
+        desc => 'update action scheduled without marking as fixed leaves state unchanged',
+        initial_state => 'action scheduled',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'action scheduled',
+    },
+    {
+        desc => 'update fixed without marking as open leaves state unchanged',
+        initial_state => 'fixed',
+        expected_form_fields => {
+            reopen => undef,
+        },
+        submitted_form_fields => {
+            reopen => 0,
+        },
+        end_state => 'fixed',
+    },
+    {
+        desc => 'update unable to fix without marking as fixed leaves state unchanged',
+        initial_state => 'unable to fix',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'unable to fix',
+    },
+    {
+        desc => 'update not responsible without marking as fixed leaves state unchanged',
+        initial_state => 'not responsible',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'not responsible',
+    },
+    {
+        desc => 'update duplicate without marking as fixed leaves state unchanged',
+        initial_state => 'duplicate',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'duplicate',
+    },
+    {
+        desc => 'can mark confirmed as fixed',
+        initial_state => 'confirmed',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'can mark investigating as fixed',
+        initial_state => 'investigating',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'can mark in progress as fixed',
+        initial_state => 'in progress',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'can mark action scheduled as fixed',
+        initial_state => 'action scheduled',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'cannot mark fixed as fixed, can mark as not fixed',
+        initial_state => 'fixed',
+        expected_form_fields => {
+            reopen => undef,
+        },
+        submitted_form_fields => {
+            reopen => 1,
+        },
+        end_state => 'confirmed',
+    },
+    {
+        desc => 'can mark unable to fix as fixed, cannot mark not closed',
+        initial_state => 'unable to fix',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'can mark not responsible as fixed, cannot mark not closed',
+        initial_state => 'not responsible',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'can mark duplicate as fixed, cannot mark not closed',
+        initial_state => 'duplicate',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $mech->log_in_ok( $report->user->email );
+
+        my %standard_fields = (
+            name => $report->user->name,
+            update => 'update text',
+            photo         => '',
+            may_show_name => 1,
+            add_alert => 1,
+        );
+
+        my %expected_fields = (
+            %standard_fields,
+            %{ $test->{expected_form_fields} },
+            update => '',
+        );
+
+        my %submitted_fields = (
+            %standard_fields,
+            %{ $test->{submitted_form_fields} },
+        );
+
+        # clear out comments for this problem to make
+        # checking details easier later
+        ok( $_->delete, 'deleted comment ' . $_->id ) for $report->comments;
+
+        $report->discard_changes;
+        $report->state($test->{initial_state});
+        $report->update;
+
+        $mech->get_ok("/report/$report_id");
+
+        my $values = $mech->visible_form_values('updateForm');
+        is_deeply $values, \%expected_fields, 'correct form fields present';
+
+        if ( $test->{submitted_form_fields} ) {
+            $mech->submit_form_ok( {
+                    with_fields => \%submitted_fields
+                },
+                'submit update'
+            );
+
+            $report->discard_changes;
+            is $report->state, $test->{end_state}, 'update sets correct report state';
+        }
+    };
+}
+
 subtest 'check have to be logged in for creator fixed questionnaire' => sub {
     $mech->log_out_ok();
 
