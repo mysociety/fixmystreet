@@ -37,5 +37,9 @@ sub base_url_for_report {
     }
 }
 
+sub map_type {
+    return 'OSM';
+}
+
 1;
 
