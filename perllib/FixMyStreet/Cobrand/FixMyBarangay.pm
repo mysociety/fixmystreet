@@ -29,11 +29,6 @@ sub disambiguate_location {
     };
 }
 
-sub site_title {
-    my ($self) = @_;
-    return 'FixMyBarangay';
-}
-
 sub only_authed_can_create {
     return 1;
 }
