@@ -1,0 +1,10 @@
+<p id="text_map" class="banner">
+    [% loc( 'To <strong>report a problem</strong>, click on the map at the correct location.' ) %]
+    [%
+        tprintf(
+            loc("<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this step</a>.</small>"),
+            url_skip
+        )
+    %]
+    <span id="text_map_arrow"></span>
+</p>
