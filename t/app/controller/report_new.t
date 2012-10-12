@@ -1028,6 +1028,53 @@ for my $test (
     };
 }
 
+subtest 'user title not reset if no user title in submission' => sub {
+        $mech->log_out_ok;
+        $mech->host( 'http://fixmystreet.com' );
+
+        my $user = $mech->log_in_ok( 'userwithtitle@example.com' );
+
+        ok $user->update(
+            {
+                name => 'Has Title',
+                phone => '0789 654321',
+                title => 'MR',
+            }
+        ),
+        "set users details";
+
+
+        my $submission_fields = {
+            title             => "Test Report",
+            detail            => 'Test report details.',
+            photo             => '',
+            name              => 'Has Title',
+            may_show_name     => '1',
+            phone             => '07903 123 456',
+            category          => 'Trees',
+        };
+
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP', } },
+            "submit location" );
+        $mech->follow_link_ok(
+            { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link"
+        );
+
+        my $fields = $mech->visible_form_values('mapSkippedForm');
+        ok !exists( $fields->{fms_extra_title} ), 'user title field not displayed';
+
+        $mech->submit_form_ok( { with_fields => $submission_fields },
+            "submit good details" );
+
+        $user->discard_changes;
+        my $report = $user->problems->first;
+        ok $report, "Found report";
+        is $report->title, "Test Report", "Report title correct";
+        is $user->title, 'MR', 'User title unchanged';
+};
+
 SKIP: {
     skip( "Need 'lichfielddc' in ALLOWED_COBRANDS config", 100 )
         unless FixMyStreet::Cobrand->exists('lichfielddc');

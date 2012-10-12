@@ -708,21 +708,22 @@ sub process_user : Private {
 
     my $report = $c->stash->{report};
 
+    # Extract all the params to a hash to make them easier to work with
+    my %params = map { $_ => scalar $c->req->param($_) }
+      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
+
+    my $user_title = Utils::trim_text( $params{fms_extra_title} );
+
     # The user is already signed in
     if ( $c->user_exists ) {
         my $user = $c->user->obj;
-        my %params = map { $_ => scalar $c->req->param($_) } ( 'name', 'phone', 'fms_extra_title' );
         $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
         $user->phone( Utils::trim_text( $params{phone} ) );
-        $user->title( Utils::trim_text( $params{fms_extra_title} ) );
+        $user->title( $user_title ) if $user_title;
         $report->user( $user );
         $report->name( $user->name );
         return 1;
     }
-
-    # Extract all the params to a hash to make them easier to work with
-    my %params = map { $_ => scalar $c->req->param($_) }
-      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
 
     # cleanup the email address
     my $email = $params{email} ? lc $params{email} : '';
@@ -751,7 +752,7 @@ sub process_user : Private {
     $report->user->phone( Utils::trim_text( $params{phone} ) );
     $report->user->password( Utils::trim_text( $params{password_register} ) )
         if $params{password_register};
-    $report->user->title( Utils::trim_text( $params{fms_extra_title} ) );
+    $report->user->title( $user_title ) if $user_title;
     $report->name( Utils::trim_text( $params{name} ) );
 
     return 1;
