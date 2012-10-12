@@ -134,10 +134,12 @@ $(function(){
 
     // Geolocation
     if (geo_position_js.init()) {
+        var link = '<a href="#LINK" id="geolocate_link">&hellip; or locate me automatically</a>';
+        $('form[action="/alert/list"]').append(link.replace('LINK','alert/list'));
         if ($('body.frontpage').length) {
-            $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
+            $('#postcodeForm').after(link.replace('LINK','around'));
         } else{
-            $('#postcodeForm').append('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
+            $('#postcodeForm').append(link.replace('LINK','around'));
         }
         $('#geolocate_link').click(function(e) {
             var $link = $(this);
@@ -152,7 +154,8 @@ $(function(){
                 $link.find('img').remove();
                 var latitude = pos.coords.latitude;
                 var longitude = pos.coords.longitude;
-                location.href = '/around?latitude=' + latitude + ';longitude=' + longitude;
+                var page = $link.attr('href').substr(1);
+                location.href = '/' + page + '?latitude=' + latitude + ';longitude=' + longitude;
             }, function(err) {
                 $link.find('img').remove();
                 if (err.code == 1) { // User said no

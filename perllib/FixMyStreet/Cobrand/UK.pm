@@ -144,7 +144,6 @@ sub find_closest {
 
     my $str = $self->SUPER::find_closest( $latitude, $longitude, $problem );
 
-    # Get nearest postcode from Matthew's random gazetteer (put in MaPit? Or elsewhere?)
     my $url = "http://mapit.mysociety.org/nearest/4326/$longitude,$latitude";
     my $j = LWP::Simple::get($url);
     if ($j) {
