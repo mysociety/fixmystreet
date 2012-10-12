@@ -41,9 +41,9 @@
 
 <div id="report-updates-data" class="hidden-js">
     <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post">
-        <p><a href="[% c.uri_for( '/rss', problem.id ) %]">
-            <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float: right">
-        </a></p>
+        <a href="[% c.uri_for( '/rss', problem.id ) %]">
+            <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0">
+        </a>
         <p>[% loc('Receive email when updates are left on this problem.' ) %]</p>
         <fieldset>
         <label class="hidden n" for="alert_rznvy">[% loc('Your email') %]</label>

@@ -203,7 +203,7 @@ h1 {
   margin-top: 3em;
   margin-bottom: -1em;
   margin-left: 0.5em;
-  padding: 1em 1em 3em;
+  padding: 1em 1em 10em;
   background: #fff;
   @include box-shadow(0px 0px 6px 1px #000);
 }
@@ -621,6 +621,15 @@ body.twothirdswidthpage {
 // The padding is for the fading out when it's fixed positioned, which it isn't in IE6.
 .ie6 .shadow-wrap {
   padding-top: 0;
+}
+
+// If JS is disabled, these are still CSS positioned, so don't want behind shining through.
+#report-share, #report-updates-data {
+    background-color: #fff;
+}
+// Prevent gap in non-JS, and looks better with JS, due to some padding/margin effect.
+#report-updates-data fieldset {
+    margin-bottom: 0;
 }
 
 // pokes over the RHS with a little triangle
