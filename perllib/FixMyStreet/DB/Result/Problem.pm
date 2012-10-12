@@ -546,7 +546,7 @@ sub meta_line {
 
     }
 
-    $meta .= '; ' . _('the map was not used so pin location may be inaccurate')
+    $meta .= '; <strong>' . _('the map was not used so pin location may be inaccurate') . '</strong>'
         unless $problem->used_map;
 
     return $meta;
