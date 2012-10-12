@@ -94,7 +94,23 @@ sub email_alerts ($) {
             }
             # this is currently only for new_updates
             if ($row->{item_text}) {
-                $data{problem_url} = $url . "/report/" . $row->{id};
+                if ( $row->{alert_user_id} == $row->{user_id} ) {
+                    # This is an alert to the same user who made the report - make this a login link
+                    my $user = FixMyStreet::App->model('DB::User')->find( {
+                        id => $row->{alert_user_id}
+                    } );
+                    $data{alert_email} = $user->email;
+                    my $token_obj = FixMyStreet::App->model('DB::Token')->create( {
+                        scope => 'email_sign_in',
+                        data  => {
+                            email => $user->email,
+                            r => 'report/' . $row->{id},
+                        }
+                    } );
+                    $data{problem_url} = $url . "/M/" . $token_obj->token;
+                } else {
+                    $data{problem_url} = $url . "/report/" . $row->{id};
+                }
                 $data{data} .= $row->{item_name} . ' : ' if $row->{item_name} && !$row->{item_anonymous};
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
             # this is ward and council problems

@@ -390,7 +390,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         used_map           => 1,
         name               => $user1->name,
         anonymous          => 0,
-        state              => 'confirmed',
+        state              => 'fixed - user',
         confirmed          => $dt,
         lastupdate         => $dt,
         whensent           => $dt->clone->add( minutes => 5 ),
@@ -430,7 +430,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         problem_id => $report_id,
         user_id    => $user2->id,
         name       => 'Anonymous User',
-        mark_fixed => 'false',
+        mark_fixed => 'true',
         text       => 'This is some more update text',
         state      => 'confirmed',
         confirmed  => $dt->clone->add( hours => 8 ),
@@ -450,13 +450,23 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         $count++ if $_->body =~ /The following nearby problems have been added:/;
         $count++ if $_->body =~ /\s+-\s+Testing/;
     }
-    is $count, 5, 'Five emails with the right things in them';
+    is $count, 5, 'Three emails, with five matching lines in them';
 
     my $email = $emails[0];
     like $email->body, qr/Other User/, 'Update name given';
     unlike $email->body, qr/Anonymous User/, 'Update name not given';
 
-    my ( $url, $url_token ) = $emails[0]->body =~ m{http://\S+(/A/(\S+))};
+    # The update alert was to the problem reporter, so has a login update URL
+    $mech->get_ok( "/report/$report_id" );
+    $mech->content_lacks( 'has not been fixed' );
+    my ($url) = $email->body =~ m{(http://\S+/M/\S+)};
+    ok $url, "extracted update url '$url'";
+    $mech->get_ok( $url );
+    is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
+    $mech->content_contains( 'has not been fixed' );
+    $mech->logged_in_ok;
+
+    ($url) = $emails[0]->body =~ m{http://\S+(/A/\S+)};
     $mech->get_ok( $url );
     $mech->content_contains('successfully deleted');
 
