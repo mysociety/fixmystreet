@@ -1,6 +1,0 @@
-[% IF c.cobrand.allow_photo_display && object.photo %]
-[% photo = object.get_photo_params %]
-<p>
-    <img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% photo.url %]">
-</p>
-[% END %]
