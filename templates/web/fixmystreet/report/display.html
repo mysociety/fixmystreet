@@ -25,8 +25,19 @@
     <ul id="key-tools">
         <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse' ) %]</a></li>
         <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
+        [% IF c.cobrand.moniker == 'fixmystreet' %]
+        <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>
+        [% END %]
         <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
     </ul>
+
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+    <div id="report-share" class="hidden-js" align="center">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-text="I just reported &lsquo;[% problem.title | html %]&rsquo;" data-via="fixmystreet" data-related="mysociety" data-count="none" data-dnt="true">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        <iframe src="//www.facebook.com/plugins/like.php?href=[% c.req.uri | uri %]&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:90px; height:21px;" allowTransparency="true"></iframe>
+    </div>
+[% END %]
 
 <div id="report-updates-data" class="hidden-js">
     <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post">

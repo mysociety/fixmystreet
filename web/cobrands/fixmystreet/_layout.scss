@@ -589,6 +589,11 @@ body.twothirdswidthpage {
           background-image:url(/cobrands/fixmystreet/images/sprite.png);
           background-position:right -3074px;
         }
+        &.share {
+          min-width: 5em;
+          background-image: url(/cobrands/fixmystreet/images/share.png);
+          background-position: 90% 50%;
+        }
         &.chevron {
           background-image:url(/cobrands/fixmystreet/images/sprite.png);
           background-position:right -3225px;

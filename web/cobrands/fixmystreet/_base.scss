@@ -585,6 +585,10 @@ p.label-valid {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2563px;
         }
+        &.share {
+          background-image: url('/cobrands/fixmystreet/images/share.png');
+          background-position: center 25%;
+        }
         &.chevron {
           background-image:url('/cobrands/fixmystreet/images/sprite.png');
           background-position:center -2716px;
@@ -631,6 +635,9 @@ p.label-valid {
   }
 }
 
+#report-share iframe {
+    vertical-align: top;
+}
 
 //footer blocks
 #footer-mobileapps {

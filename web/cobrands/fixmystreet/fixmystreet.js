@@ -246,23 +246,34 @@ $(function(){
 
 // A sliding drawer from the bottom of the page, small version
 // that doesn't change the main content at all.
-$.fn.small_drawer = function(id) {
-    this.toggle(function(){
-        var $this = $(this), d = $('#' + id);
-        if (!$this.addClass('hover').data('setup')) {
-            d.hide().removeClass('hidden-js').css({
+(function($){
+
+    var opened;
+
+    $.fn.small_drawer = function(id) {
+        this.toggle(function(){
+            if (opened) {
+                opened.click();
+            }
+            var $this = $(this), d = $('#' + id);
+            if (!$this.addClass('hover').data('setup')) {
+                d.hide().removeClass('hidden-js').css({
                 padding: '1em',
                 background: '#fff'
-            });
-            $this.data('setup', true);
-        }
-        d.slideDown();
-    }, function(e){
-        var $this = $(this), d = $('#' + id);
-        $this.removeClass('hover');
-        d.slideUp();
-    });
-};
+                });
+                $this.data('setup', true);
+            }
+            d.slideDown();
+            opened = $this;
+        }, function(e){
+            var $this = $(this), d = $('#' + id);
+            $this.removeClass('hover');
+            d.slideUp();
+            opened = null;
+        });
+    };
+
+})(jQuery);
 
 // A sliding drawer from the bottom of the page, large version
 $.fn.drawer = function(id, ajax) {
@@ -337,6 +348,7 @@ $.fn.drawer = function(id, ajax) {
         $('#key-tool-around-updates').drawer('updates_ajax', true);
     }
     $('#key-tool-report-updates').small_drawer('report-updates-data');
+    $('#key-tool-report-share').small_drawer('report-share');
 
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
