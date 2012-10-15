@@ -159,7 +159,8 @@ sub set_lang_and_domain {
     my $lang_override = $self->language_override || $lang;
     my $lang_domain = $self->language_domain || 'FixMyStreet';
 
-    my $set_lang = mySociety::Locale::negotiate_language( $languages, $lang_override );
+    my $headers = $self->{c} ? $self->{c}->req->headers : undef;
+    my $set_lang = mySociety::Locale::negotiate_language( $languages, $lang_override, $headers );
     mySociety::Locale::gettext_domain( $lang_domain, $unicode, $dir );
     mySociety::Locale::change();
     return $set_lang;

@@ -7,6 +7,7 @@ use FixMyStreet;
 use mySociety::Locale;
 use Encode;
 use Data::Dumper;
+use HTTP::Headers;
 use Sort::Key qw(keysort);
 use POSIX 'strcoll';
 local $Data::Dumper::Sortkeys = 1;
@@ -17,6 +18,16 @@ die "You need to run 'commonlib/bin/gettext-makemo --quiet FixMyStreet' "
   . "to generate the *.mo files needed."
   unless -e FixMyStreet->path_to(
     'locale/cy_GB.UTF-8/LC_MESSAGES/FixMyStreet-EmptyHomes.mo');
+
+# Test the language negotiation works
+my $lang = mySociety::Locale::negotiate_language(
+    'en-gb,English,en_GB|cy,Cymraeg,cy_GB|es,Spanish,es_ES',
+    undef,
+    HTTP::Headers->new(
+        Accept_Language => 'es,en-gb;q=0.6,en;q=0.4'
+    )
+);
+is $lang, 'es', 'Language negotiation works okay';
 
 # Example strings
 my $english = "Please enter a valid email";
