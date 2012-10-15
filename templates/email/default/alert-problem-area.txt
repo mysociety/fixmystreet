@@ -5,8 +5,7 @@ The following new problems have been added within
 
 <?=$values['data']?>
 
-Yours,  
-The FixMyStreet team
+<?=$values['signature']?>
 
 To stop receiving emails when there are new problems in
 <?=$values['area_name']?>, please follow this link: 

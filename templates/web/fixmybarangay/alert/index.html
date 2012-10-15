@@ -1,0 +1,45 @@
+[% INCLUDE 'header.html', title = loc('Local RSS feeds and email alerts'), bodyclass = 'twothirdswidthpage' %]
+
+<h1>[% loc('Local RSS feeds and email alerts') %]</h1>
+
+<p>
+FixMyBarangay has a RSS feeds and email alerts for local problems.
+</p>
+
+[% IF location_error %]
+  <div class="error">[% location_error %]</div>
+[% ELSE %]
+  [% INCLUDE 'errors.html' %]
+[% END %]
+
+[% options = [ {
+        id => 'council:1:Luz',
+        text => 'Luz',
+        uri => '/rss/reports/Luz'
+    },
+    {
+        id => 'council:2:Basak_San_Nicolas',
+        text => 'Basak San Nicolas'
+        uri => '/rss/reports/Basak+San_Nicolas'
+    } ];
+%]
+
+<form id="alerts" name="alerts" method="post" action="/alert/subscribe">
+
+[% IF photos.size %]
+<div class="sticky-sidebar" id="alert_recent">
+  <aside>
+    <h2>[% loc('Some photos of recent reports') %]</h2>
+    [% FOREACH p IN photos %]
+        <a href="/report/[% p.id %]"><img border="0" height="100"
+            src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+    [% END %]
+  </aside>
+</div>
+[% END %]
+
+[% INCLUDE 'alert/_list.html' %]
+
+</form>
+
+[% INCLUDE 'footer.html' %]

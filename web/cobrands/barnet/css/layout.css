@@ -1,7 +1,8 @@
 /* FixMyStreet additions */
 /* Smaller map */
-#mysociety #map_box {
+#mysociety #map_box { 
     width: 380px;
+    margin-bottom: 8px;
 }
 #mysociety #map, #mysociety #drag {
     width: 378px;
@@ -13,6 +14,23 @@
     width: auto;
 }
 
+#mysociety textarea {
+    border: 1px solid #999999;
+}
+
+/* fix (for the reports page) */
+#content #mysociety h1 span {
+    display: inline;
+    border: none;
+    padding: 0;
+}
+
+#mysociety #postcodeForm {
+    background-color: #E9E9EA;
+}
+#mysociety #postcodeForm label {
+    width: 100%;
+}
 /*=========FROM CUSTOM=========*/
 .cl  {clear: both;}
     
@@ -70,61 +88,6 @@ h3, h4, h5, p, ol, ul, table, dl, address, form {margin-right: 5px; margin-left:
 h1, h2 {padding-left: 5px}
 */
 
-    /* Navigation */
-
-#left-column h2 {
-    margin:0 5px 15px 40px;
-    padding: 6px 0 0 25px;
-    font-size:1.245em;
-    line-height:1.1em;
-    background-repeat: no-repeat;
-    background-position: top left;
-    }
-
-#navigation h2 {font-size:1.692em; font-weight:normal; padding: 10px 0 6px 40px}
-
-#left-column div {margin-bottom:5px; padding: 5px 0 15px 0}
-
-#left-column ul, #left-column dl {
-    margin:0;
-    padding:0 0 0 35px;
-    font-size: 1.08em
-    }
-
-#left-column dl {padding: 0 5px 5px 40px}
-#left-column dt {margin: 10px 0 0 0}
-#left-column dd {padding:0; line-height:1.3em}
-
-#left-column dl a {
-    text-decoration:underline;
-    color:#000;
-    }
-#left-column dl a:hover {text-decoration: none}
-
-#left-column ul ul {
-    padding-left: 0;
-    font-size: 1em
-    }
-
-#left-column li {padding:0; margin:0}
-
-#left-column li a, #left-column li strong {
-    padding: 5px 5px 5px 20px;
-    display:block;
-    background-repeat: no-repeat;
-    background-position: 10px 11px;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration:none;
-    color:#000;
-    }
-
-#left-column li a:hover {text-decoration:underline}
-
-#left-column li li a, #left-column li li strong {padding-left:30px; background-position: 20px 11px;}
-#left-column li li li a, #left-column li li li strong {padding-left:40px; background-position: 30px 11px;}
-#left-column li li li li a, #left-column li li li li strong {padding-left:50px; background-position: 40px 11px;}
-#left-column li li li li li a, #left-column li li li li li strong {padding-left:60px; background-position: 50px 11px;}
 
 /*=== Quotes =====*/
 #content blockquote {margin:10px; min-height: 90px; padding-bottom: 10px}
@@ -170,229 +133,11 @@ legend {
     font-weight:bold
     }
    
-/*=======form fields and labels=========*/
 
-/*
-#content label, form p, #content input, #content select, #content textarea, form .long-label {
-    margin-bottom: 0.25em;
-    margin-top: 0.25em;
-    }
-
-#content form label {
-    font-weight: bold;
-    padding-right: 10px;
-    width: 10em;
-    float: left;
-    text-align: left;
-    color: #000;
-    margin-top:10px
-    }
-
-#content form .radio label, #content form .checkbox label {font-weight:normal; margin-top:0}
-
-form p, form h3 {margin-left:0}
-form p {font-weight: bold}
-*/
 
 /*======= wide rows ======= */
 #content textarea {padding: 5px;}
 
-/*====Required styling====*/
-.required {
-    font-size:200%;
-    padding:7px 0 0 0;
-    line-height:0;
-    vertical-align:middle;
-    color:#008184
-    }
-
-/*=========Header=========*/
-
-#header{
-    padding: 0;
-    margin: 0;
-    min-height: 80px;
-    text-align: center
-    }
-
-#header {background: #34a3a4 url(../images/header-bg.gif) repeat-x bottom left;}
-#header img {position: absolute; top:8px; left: 37px}
-
-#header form {
-    width: 320px;
-    text-align: left;
-    margin:0 auto;
-    padding: 20px 0 0 0;
-    }
-
-#header form div {float:left}
-
-#header form .search-input {background: url(../images/form-field_top.gif) no-repeat top left; padding:7px 0 0 0;}
-
-#header form .search-input input {
-    width:207px;
-    padding: 2px 5px 8px 5px;
-    font-size:0.923em;
-    color:#666666;
-    border:none;
-    background: url(../images/form-field_bottom.gif) no-repeat bottom left;
-    }
-
-#header form .search-button {
-    background: url(../images/search-button-top.gif) no-repeat top right;
-    margin:0 0 0 4px;
-    border-left: 1px solid #fff;
-    }
-#header form .search-button input {
-    border: none;
-    background: url(../images/search-button-bottom.gif) no-repeat bottom right;
-    padding: 3px 7px 8px 7px;
-    margin:4px 0 0 0;
-    font-weight:bold;
-    font-size:0.923em;
-    cursor: pointer
-    }
-
-/*======== Switcher ========*/
-#switcher {float:right; margin:-20px 47px 0 0; text-align: left; }
-
-#switcher p {
-    color: #fff;
-    font-weight:bold;
-    }
-
-#switcher li a, #switcher li strong {
-    background-repeat:no-repeat;
-    border:medium none;
-    outline-style:none;
-    outline-width:medium;
-    text-indent:-999em; 
-    }
-
-#switcher .default a, .default strong {background-image:url(../images/style-switcher_default.gif); }
-#switcher .relaxed-light a, .relaxed-light strong {background-image:url(../images/style-switcher_default-relaxed.gif); }
-#switcher .dark a, .dark strong {background-image:url(../images/style-switcher_dark.gif); }
-#switcher .relaxed-dark a, .relaxed-dark strong {background-image:url(../images/style-switcher_dark-relaxed.gif); }
-
-#switcher li a, #switcher li strong {
-    background-repeat:no-repeat;
-    border:medium none;
-    outline-style:none;
-    outline-width:medium;
-    text-indent:-999em;
-    }
-
-#switcher p {
-    font-size:1em;
-    margin: 0; 
-    padding:0;
-    width: auto; }
-
-#switcher ul {
-    list-style-type:none;
-    float:left;
-    margin:0;
-    padding:0;
-    width:auto;
-    }
-
-#switcher ul li {
-    float:left;
-    margin:0;
-    padding:0;
-    }
-
-#switcher li a, #switcher li strong {
-    display:block;
-    float:left;
-    height:30px;
-    margin:0;
-    width:44px; }
-
-#switcher strong {background-position:0 -60px; }
-#switcher li a:focus, #switcher li a:active, #switcher a:hover {background-position:0 -30px; }
-
-/*== Homepage Right Column ==*/
-
-.browse-aloud p, p.browse-aloud {background: url('../images/logo-browse-aloud.gif') no-repeat 10px 0;}
-.browse-aloud p {
-    font-size:1.235em;
-    padding: 0 9px 0 60px;
-    margin:10px 0 0 0;
-    line-height:1.3em
-    }
-
-p.browse-aloud {
-	padding: 10px 0 5px 45px;
-	margin: 0 5px -10px 40px;
-	background-position: 0 10px;
-	border-top: 1px solid #CC6666;
-	}
-
-p.browse-aloud a {color:#34020b}
-
-/*====Pre-Footer====*/
-
-#pre-footer {padding: 0 35px;}
-#pre-footer div {padding: 0}
-
-#pre-footer .box-left {width: 66.66%; padding:0; margin:0}
-#pre-footer .box-right {width: 33.33%; padding: 0; margin:0}
-
-#pre-footer dl {margin:0; padding:0; float:left; width:25%; font-size:0.85em}
-#pre-footer dt {margin: 10px 0 0 0}
-
-#pre-footer dt, #pre-footer dd {padding: 0 0 0 10px}
-
-#pre-footer .box-right div {padding: 10px}
-#pre-footer h2 {font-size:1em; border:none; padding:0; margin:0}
-
-#pre-footer .box-right div {
-    min-height:115px;
-    border-top:none; 
-    border-bottom:none;
-    margin-right:0;
-    position:relative;
-    overflow:hidden
-    }
-
-#pre-footer ul, #pre-footer p, #pre-footer li {margin:0; padding:0}
-#pre-footer ul, #pre-footer h2, #pre-footer p {margin-left:110px}
-#pre-footer img {position:absolute; left:10px; top:10px}
-
-#pre-footer .box-right div.social-bookmarking {padding: 10px 15px}
-#pre-footer .social-bookmarking ul, #pre-footer .social-bookmarking h2, #pre-footer .social-bookmarking p {margin:0;}
-#pre-footer .social-bookmarking ul {margin: 8px 0 3px 0; overflow:hidden; width:100%}
-#pre-footer .social-bookmarking ul li {width: 49%; float:left; margin: 0 0 3px 0}
-#pre-footer .social-bookmarking ul li a {
-    padding: 2px 0 2px 21px;
-    background-position:0 3px;
-    background-repeat: no-repeat;
-    }
-
-#pre-footer .social-bookmarking h2 {color:#000}
-#pre-footer .social-bookmarking p {font-size: 0.85em}
-
-#pre-footer .social-bookmarking ul li.facebook a {background-image: url('../images/social-facebook.gif')}
-#pre-footer .social-bookmarking ul li.technorati a {background-image: url('../images/social-technorati.gif')}
-#pre-footer .social-bookmarking ul li.delicious a {background-image: url('../images/social-delicious.gif')}
-#pre-footer .social-bookmarking ul li.stumbleupon a {background-image: url('../images/social-stumbleupon.gif')}
-#pre-footer .social-bookmarking ul li.google a {background-image: url('../images/social-google.gif')}
-#pre-footer .social-bookmarking ul li.digg a {background-image: url('../images/social-digg.gif')}
 
 
-
-/*====Footer====*/
-
-#footer {
-    clear: both;
-    padding: 5px;
-    margin:5px 0 0 0;
-    }
-#footer ul {margin: 0 25px}
-#footer li {display:inline}
-
-/*== Footer colours + customisations ==*/
-#footer {background: #34a3a4 url(../images/header-bg.gif) repeat-x bottom left;}
-#footer a, #footer a:link {color:#fff}
 

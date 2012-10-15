@@ -81,7 +81,16 @@ create table contacts (
     note text not null,
 
     -- extra fields required for open311
-    extra text
+    extra text,
+
+    -- for things like missed bin collections
+    non_public boolean default 'f',
+
+    -- per contact endpoint configuration
+    endpoint     text,
+    jurisdiction text default '',
+    api_key      text default '',
+    send_method  text
 );
 create unique index contacts_area_id_category_idx on contacts(area_id, category);
 
@@ -135,7 +144,8 @@ create table users (
     phone           text,
     password        text    not null default '',
     from_council    integer, -- id of council user is from or null/0 if not
-    flagged         boolean not null default 'f'
+    flagged         boolean not null default 'f',
+    title           text
 );
 
 -- Problems reported by users of site
@@ -194,7 +204,20 @@ create table problem (
     -- logging sending failures (used by webservices)
     send_fail_count integer not null default 0, 
     send_fail_reason text, 
-    send_fail_timestamp timestamp
+    send_fail_timestamp timestamp,
+    
+    -- record send_method used, which can be used to infer usefulness of external_id
+    send_method_used text,
+
+    -- for things like missed bin collections
+    non_public BOOLEAN default 'f',
+
+    -- record details about messages from external sources, eg. message manager
+    external_source text,
+    external_source_id text,
+
+    -- number of me toos
+    interest_count integer default 0
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
@@ -435,5 +458,7 @@ create table open311conf (
     send_comments boolean not null default 'f',
     comment_user_id int references users(id),
     username     text,
-    password     text
+    password     text,
+    suppress_alerts boolean not null default 'f',
+    can_be_devolved boolean not null default 'f'
 );

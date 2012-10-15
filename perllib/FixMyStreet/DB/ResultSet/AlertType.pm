@@ -65,6 +65,11 @@ sub email_alerts ($) {
             # call checks if this is the host that sends mail for this cobrand.
             next unless $cobrand->email_host;
 
+            # this is for the new_updates alerts
+            next if $row->{non_public} and $row->{user_id} != $row->{alert_user_id};
+
+            my $hashref_restriction = $cobrand->site_restriction( $row->{cobrand_data} );
+
             FixMyStreet::App->model('DB::AlertSent')->create( {
                 alert_id  => $row->{alert_id},
                 parameter => $row->{item_id},
@@ -83,7 +88,10 @@ sub email_alerts ($) {
                 $data{state_message} = _("This report is currently marked as open.");
             }
 
-            my $url = $cobrand->base_url_for_emails( $row->{alert_cobrand_data} );
+            my $url = $cobrand->base_url( $row->{alert_cobrand_data} );
+            if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} ne $hashref_restriction->{council} ) {
+                $url = mySociety::Config::get('BASE_URL');
+            }
             # this is currently only for new_updates
             if ($row->{item_text}) {
                 $data{problem_url} = $url . "/report/" . $row->{id};
@@ -91,9 +99,7 @@ sub email_alerts ($) {
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
             # this is ward and council problems
             } else {
-                my $postcode = $cobrand->format_postcode( $row->{postcode} );
-                $postcode = ", $postcode" if $postcode;
-                $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
+                $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
                 if ( exists $row->{geocode} && $row->{geocode} && $ref =~ /ward|council/ ) {
                     my $nearest_st = _get_address_from_gecode( $row->{geocode} );
                     $data{data} .= $nearest_st if $nearest_st;
@@ -136,8 +142,7 @@ sub email_alerts ($) {
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
-        my $url = $cobrand->base_url_for_emails( $alert->cobrand_data );
-        my ($site_restriction, $site_id) = $cobrand->site_restriction( $alert->cobrand_data );
+        my $hashref_restriction = $cobrand->site_restriction( $alert->cobrand_data );
         my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         # Convert integer to GB locale string (with a ".")
         $d = mySociety::Locale::in_gb_locale {
@@ -145,14 +150,14 @@ sub email_alerts ($) {
         };
         my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
         my %data = ( template => $template, data => '', alert_id => $alert->id, alert_email => $alert->user->email, lang => $alert->lang, cobrand => $alert->cobrand, cobrand_data => $alert->cobrand_data );
-        my $q = "select problem.id, problem.postcode, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
+        my $q = "select problem.id, problem.council, problem.postcode, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
             and problem.state in ($states)
+            and problem.non_public = 'f'
             and problem.confirmed >= ? and problem.confirmed >= ms_current_timestamp() - '7 days'::interval
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
             and users.email <> ?
-            $site_restriction
             order by confirmed desc";
         $q = dbh()->prepare($q);
         $q->execute($latitude, $longitude, $d, $alert->whensubscribed, $alert->id, $alert->user->email);
@@ -161,9 +166,11 @@ sub email_alerts ($) {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
-            my $postcode = $cobrand->format_postcode( $row->{postcode} );
-            $postcode = ", $postcode" if $postcode;
-            $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}$postcode\n\n";
+            my $url = $cobrand->base_url( $alert->cobrand_data );
+            if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} ne $hashref_restriction->{council} ) {
+                $url = mySociety::Config::get('BASE_URL');
+            }
+            $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
             if ( exists $row->{geocode} && $row->{geocode} ) {
                 my $nearest_st = _get_address_from_gecode( $row->{geocode} );
                 $data{data} .= $nearest_st if $nearest_st;
@@ -196,7 +203,7 @@ sub _send_aggregated_alert_email(%) {
             email => $data{alert_email},
         }
     } );
-    $data{unsubscribe_url} = $cobrand->base_url_for_emails( $data{cobrand_data} ) . '/A/' . $token->token;
+    $data{unsubscribe_url} = $cobrand->base_url( $data{cobrand_data} ) . '/A/' . $token->token;
 
     my $template = FixMyStreet->path_to(
         "templates", "email", $cobrand->moniker, $data{lang}, "$data{template}.txt"

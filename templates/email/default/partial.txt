@@ -10,5 +10,4 @@ please visit the following URL:
 
 Thanks!
 
-Yours,  
-The FixMyStreet team
+[% INCLUDE 'signature.txt' %]

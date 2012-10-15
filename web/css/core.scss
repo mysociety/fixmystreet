@@ -431,6 +431,16 @@ $map_width: 500px;
        font-size: smaller;
     }
 
+    .update-img {
+        text-align: center;
+    }
+    .update-img span {
+        display: none;
+    }
+    #updates .update-img {
+        text-align: left;
+    }
+
     // RSS feed XSL
 
     #rss_items {

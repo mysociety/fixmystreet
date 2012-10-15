@@ -68,7 +68,7 @@ Forward to the standard 404 error page
 
 sub default : Path {
     my ( $self, $c ) = @_;
-    $c->detach('/page_error_404_not_found');
+    $c->detach('/page_error_404_not_found', []);
 }
 
 =head2 page_error_404_not_found, page_error_410_gone
@@ -92,6 +92,13 @@ sub page_error_410_gone : Private {
     $c->stash->{template}  = 'index.html';
     $c->stash->{error} = $error_msg;
     $c->response->status(410);
+}
+
+sub page_error_403_access_denied : Private {
+    my ( $self, $c, $error_msg ) = @_;
+    $c->stash->{template}  = 'index.html';
+    $c->stash->{error} = $error_msg;
+    $c->response->status(403);
 }
 
 =head2 end

@@ -1,0 +1,5 @@
+var CONFIG = {
+    FMS_URL: '',
+    MAPIT_URL: '',
+    BING_API_KEY: ''
+};

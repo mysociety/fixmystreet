@@ -113,10 +113,10 @@ foreach my $test (
         # submit initial pc form
         $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
             "submit location" );
-        is_deeply $mech->form_errors, [], "no errors for pc '$test->{pc}'";
+        is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
 
         # click through to the report page
-        $mech->follow_link_ok( { text => 'skip this step', },
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
             "follow 'skip this step' link" );
 
         # submit the main form
@@ -124,7 +124,7 @@ foreach my $test (
             "submit form" );
 
         # check that we got the errors expected
-        is_deeply $mech->form_errors, $test->{errors}, "check errors";
+        is_deeply $mech->page_errors, $test->{errors}, "check errors";
 
         # check that fields have changed as expected
         my $new_values = {
@@ -136,7 +136,7 @@ foreach my $test (
 
         if ( $test->{fields}->{category} eq 'Street lighting' ) {
             my $result = scraper {
-                process 'div#category_meta div select#form_type option', 'option[]' => '@value';
+                process 'select#form_type option', 'option[]' => '@value';
             }
             ->scrape( $mech->response );
 

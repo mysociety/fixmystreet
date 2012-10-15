@@ -172,7 +172,6 @@ sub generate : Private {
     $c->stash->{rss} = new XML::RSS(
         version       => '2.0',
         encoding      => 'UTF-8',
-        stylesheet    => $c->cobrand->feed_xsl,
         encode_output => undef
     );
     $c->stash->{rss}->add_module(
@@ -205,14 +204,10 @@ sub query_main : Private {
     my ( $self, $c ) = @_;
     my $alert_type = $c->stash->{alert_type};
 
-    my ( $site_restriction, $site_id ) = $c->cobrand->site_restriction( $c->cobrand->extra_data );
-    # Only apply a site restriction if the alert uses the problem table
-    $site_restriction = '' unless $alert_type->item_table eq 'problem';
-
     # FIXME Do this in a nicer way at some point in the future...
     my $query = 'select * from ' . $alert_type->item_table . ' where '
         . ($alert_type->head_table ? $alert_type->head_table . '_id=? and ' : '')
-        . $alert_type->item_where . $site_restriction . ' order by '
+        . $alert_type->item_where . ' order by '
         . $alert_type->item_order;
     my $rss_limit = mySociety::Config::get('RSS_LIMIT');
     $query .= " limit $rss_limit" unless $c->stash->{type} =~ /^all/;
@@ -250,12 +245,13 @@ sub add_row : Private {
     (my $title = _($alert_type->item_title)) =~ s/{{(.*?)}}/$row->{$1}/g;
     (my $link = $alert_type->item_link) =~ s/{{(.*?)}}/$row->{$1}/g;
     (my $desc = _($alert_type->item_description)) =~ s/{{(.*?)}}/$row->{$1}/g;
-    my $url = $c->uri_for( $link );
 
-    if ( $row->{postcode} ) {
-        my $pc = $c->cobrand->format_postcode( $row->{postcode} );
-        $title .= ", $pc";
+    my $hashref_restriction = $c->cobrand->site_restriction;
+    my $base_url = $c->cobrand->base_url;
+    if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} && $row->{council} ne $hashref_restriction->{council} ) {
+        $base_url = $c->config->{BASE_URL};
     }
+    my $url = $base_url . $link;
 
     my %item = (
         title => ent($title),
@@ -268,7 +264,7 @@ sub add_row : Private {
 
     if ($c->cobrand->allow_photo_display && $row->{photo}) {
         my $key = $alert_type->item_table eq 'comment' ? 'c/' : '';
-        $item{description} .= ent("\n<br><img src=\"". $c->cobrand->base_url . "/photo/$key$row->{id}.jpeg\">");
+        $item{description} .= ent("\n<br><img src=\"". $base_url . "/photo/$key$row->{id}.jpeg\">");
     }
 
     if ( $row->{used_map} ) {

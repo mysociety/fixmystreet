@@ -92,8 +92,7 @@ $(function(){
                 $('.big-green-banner')
                     .addClass('mobile-map-banner')
                     .appendTo('#map_box')
-                    .text('Place pin on map')
-	            .prepend('<a href="/">home</a>');
+                    .html('<a href="/">Home</a> Place pin on map');
             }
             $('span.report-a-problem-btn').on('click.reportBtn', function(){
                 $('html, body').animate({scrollTop:0}, 500);
@@ -103,50 +102,28 @@ $(function(){
         } else {
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
-            if (cobrand == 'bromley') {
-                var $window = $(window), $content = $('.content'), o = $content.offset();
-                var map_height = $window.height() - o.top;
-                if ($html.hasClass('ie6')) {
-                    map_height = $window.height() - o.top + 32;
-                }
-                $('#map_box').prependTo('.wrapper').css({
-                    zIndex: 0, position: 'absolute',
-                    right: 0, top: '1em',
-                    width: $window.width() - o.left - $content.outerWidth(),
-                    height: map_height,
-                    margin: 0
-                });
-            } else if ($html.hasClass('ie6')) {
-                $('#map_box').prependTo('.wrapper').css({
-                    zIndex: 0, position: 'absolute',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    width: '100%', height: $(window).height(),
-                    margin: 0
-                });
-            } else {
-                $('#map_box').prependTo('.wrapper').css({
-                    zIndex: 0, position: 'fixed',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    width: '100%', height: '100%',
-                    margin: 0
-                });
-            }
+            position_map_box();
             if (typeof fixmystreet !== 'undefined') {
                 if (cobrand == 'bromley') {
-                    $('#bromley-footer').hide();
+                    //$('#bromley-footer').hide();
+                } else {
+                    fixmystreet.state_map = 'full';
                 }
-                fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                if (cobrand != 'bromley') {
+                var banner_text;
+                if (cobrand == 'bromley') {
+                    banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
+                } else {
                     $('#site-header').show();
+                    banner_text = 'Click map to report a problem';
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
                     .removeClass('mobile-map-banner')
                     .prependTo('#side')
-                    .text('Click map to report a problem');
+                    .html(banner_text);
             }
             $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
@@ -224,10 +201,15 @@ $(function(){
     /*
      * Show stuff on input focus
      */
-    $('.form-focus-hidden').hide();
-    $('.form-focus-trigger').on('focus', function(){
-        $('.form-focus-hidden').fadeIn(500);
-    });
+    var form_focus_data = $('.form-focus-trigger').map(function() {
+        return $(this).val();
+    }).get().join('');
+    if (!form_focus_data) {
+        $('.form-focus-hidden').hide();
+        $('.form-focus-trigger').on('focus', function(){
+            $('.form-focus-hidden').fadeIn(500);
+        });
+    }
 
     /*
      * Show on click - pretty generic
@@ -264,23 +246,34 @@ $(function(){
 
 // A sliding drawer from the bottom of the page, small version
 // that doesn't change the main content at all.
-$.fn.small_drawer = function(id) {
-    this.toggle(function(){
-        var $this = $(this), d = $('#' + id);
-        if (!$this.addClass('hover').data('setup')) {
-            d.hide().removeClass('hidden-js').css({
+(function($){
+
+    var opened;
+
+    $.fn.small_drawer = function(id) {
+        this.toggle(function(){
+            if (opened) {
+                opened.click();
+            }
+            var $this = $(this), d = $('#' + id);
+            if (!$this.addClass('hover').data('setup')) {
+                d.hide().removeClass('hidden-js').css({
                 padding: '1em',
                 background: '#fff'
-            });
-            $this.data('setup', true);
-        }
-        d.slideDown();
-    }, function(e){
-        var $this = $(this), d = $('#' + id);
-        $this.removeClass('hover');
-        d.slideUp();
-    });
-};
+                });
+                $this.data('setup', true);
+            }
+            d.slideDown();
+            opened = $this;
+        }, function(e){
+            var $this = $(this), d = $('#' + id);
+            $this.removeClass('hover');
+            d.slideUp();
+            opened = null;
+        });
+    };
+
+})(jQuery);
 
 // A sliding drawer from the bottom of the page, large version
 $.fn.drawer = function(id, ajax) {
@@ -342,12 +335,12 @@ $.fn.drawer = function(id, ajax) {
     });
 };
 
-    if ($('html.mobile').length) {
+    if ($('html.mobile').length || slide_wards_down ) {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();
             $('#council_wards').slideToggle('800', function(){
-              $('#key-tool-wards').toggleClass('active');
+              $('#key-tool-wards').toggleClass('hover');
             });
         });
     } else {
@@ -355,6 +348,7 @@ $.fn.drawer = function(id, ajax) {
         $('#key-tool-around-updates').drawer('updates_ajax', true);
     }
     $('#key-tool-report-updates').small_drawer('report-updates-data');
+    $('#key-tool-report-share').small_drawer('report-share');
 
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
@@ -366,10 +360,12 @@ $.fn.drawer = function(id, ajax) {
     $('.container').on('click', '#alert_email_button', function(e){
         e.preventDefault();
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
+        form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
         $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
             var $v = $(this);
             $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
         });
+        $('body').append(form);
         form.submit();
     });
 
@@ -423,9 +419,11 @@ $.fn.drawer = function(id, ajax) {
     /*
      * Fancybox fullscreen images
      */
-    $('a[rel=fancy]').fancybox({
-        'overlayColor': '#000000'
-    });
+    if (typeof $.fancybox == 'function') {
+        $('a[rel=fancy]').fancybox({
+            'overlayColor': '#000000'
+        });
+    }
 
     /*
      * heightfix the desktop .content div
@@ -440,6 +438,8 @@ $.fn.drawer = function(id, ajax) {
                 offset = -110;
             }
             heightFix(window, '.content', offset);
+            // in case we have a map that isn't full screen
+            map_fix();
         }
     }
 

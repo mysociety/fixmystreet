@@ -1,9 +1,9 @@
-Subject: Confirm your problem on FixMyStreet
+Subject: Confirm your problem on [% INCLUDE 'site-name.txt' | trim %]
 
 Hi [% report.name %],
 
 Please click on the link below to confirm the problem you just
-added to FixMyStreet:
+added to [% INCLUDE 'site-name.txt' | trim %]:
 
 [% token_url %]
 
@@ -16,5 +16,4 @@ Your problem had the title:
 And details:
 [% report.detail %]
 
-Yours,  
-The FixMyStreet team
+[% INCLUDE 'signature.txt' %]

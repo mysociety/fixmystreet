@@ -8,24 +8,17 @@ use Carp;
 use mySociety::MaPit;
 use FixMyStreet::Geocode::OSM;
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
+}
+
 sub country {
     return 'NO';
 }
 
-sub set_lang_and_domain {
-    my ( $self, $lang, $unicode, $dir ) = @_;
-    my $set_lang = mySociety::Locale::negotiate_language(
-        'en-gb,English,en_GB|nb,Norwegian,nb_NO', 'nb'
-    );
-    mySociety::Locale::gettext_domain( 'FixMyStreet', $unicode, $dir );
-    mySociety::Locale::change();
-    return $set_lang;
-}
-
-sub site_title {
-    my ($self) = @_;
-    return 'FiksGataMi';
-}
+sub languages { [ 'en-gb,English,en_GB', 'nb,Norwegian,nb_NO' ] }
+sub language_override { 'nb' }
 
 sub enter_postcode_text {
     my ( $self ) = @_;
@@ -41,19 +34,11 @@ sub disambiguate_location {
 }
 
 sub area_types {
-    return ( 'NKO', 'NFY', 'NRA' );
-}
-
-sub area_min_generation {
-    return '';
+    [ 'NKO', 'NFY', 'NRA' ];
 }
 
 sub admin_base_url {
     return 'http://www.fiksgatami.no/admin/';
-}
-
-sub writetothem_url {
-    return 'http://www.norge.no/styresmakter/';
 }
 
 # If lat/lon are present in the URL, OpenLayers will use that to centre the map.
@@ -243,9 +228,9 @@ sub reports_council_check {
 
         # Some kommunes have the same name, use the fylke name to work out which.
         my ($kommune, $fylke) = split /\s*,\s*/, $council;
-        my @area_types = $c->cobrand->area_types;
-        my $areas_k = mySociety::MaPit::call('areas', $kommune, type => \@area_types);
-        my $areas_f = mySociety::MaPit::call('areas', $fylke, type => \@area_types);
+        my $area_types = $c->cobrand->area_types;
+        my $areas_k = mySociety::MaPit::call('areas', $kommune, type => $area_types);
+        my $areas_f = mySociety::MaPit::call('areas', $fylke, type => $area_types);
         if (keys %$areas_f == 1) {
             ($fylke) = values %$areas_f;
             foreach (values %$areas_k) {

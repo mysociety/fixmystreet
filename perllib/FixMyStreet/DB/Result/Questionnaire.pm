@@ -1,3 +1,4 @@
+use utf8;
 package FixMyStreet::DB::Result::Questionnaire;
 
 # Created by DBIx::Class::Schema::Loader
@@ -7,7 +8,6 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime", "EncodedColumn");
 __PACKAGE__->table("questionnaire");
 __PACKAGE__->add_columns(
@@ -40,8 +40,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07010 @ 2011-06-23 15:49:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:QNFqqCg6J4SFlg4zwm7TWw
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NGlSRjoBpDoIvK3EueqN6Q
 
 use DateTime::TimeZone;
 

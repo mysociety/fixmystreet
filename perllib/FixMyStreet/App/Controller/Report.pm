@@ -56,6 +56,23 @@ sub display : Path('') : Args(1) {
     $c->forward( 'format_problem_for_display' );
 }
 
+sub support : Path('support') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $id = $c->req->param('id');
+
+    my $uri =
+        $id
+      ? $c->uri_for( '/report', $id )
+      : $c->uri_for('/');
+
+    if ( $id && $c->cobrand->can_support_problems && $c->user && $c->user->from_council ) {
+        $c->forward( 'load_problem_or_display_error', [ $id ] );
+        $c->stash->{problem}->update( { interest_count => \'interest_count +1' } );
+    }
+    $c->res->redirect( $uri );
+}
+
 sub load_problem_or_display_error : Private {
     my ( $self, $c, $id ) = @_;
 
@@ -74,6 +91,13 @@ sub load_problem_or_display_error : Private {
             '/page_error_410_gone',
             [ _('That report has been removed from FixMyStreet.') ]    #
         );
+    } elsif ( $problem->non_public ) {
+        if ( !$c->user || $c->user->id != $problem->user->id ) {
+            $c->detach(
+                '/page_error_403_access_denied',
+                [ _('That report cannot be viewed on FixMyStreet.') ]    #
+            );
+        }
     }
 
     $c->stash->{problem} = $problem;
@@ -115,8 +139,6 @@ sub format_problem_for_display : Private {
 
     my $problem = $c->stash->{problem};
 
-    $c->stash->{banner} = $c->cobrand->generate_problem_banner($problem);
-
     ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
@@ -124,6 +146,8 @@ sub format_problem_for_display : Private {
     unless ( $c->req->param('submit_update') ) {
         $c->stash->{add_alert} = 1;
     }
+
+    $c->stash->{extra_name_info} = $problem->council && $problem->council eq '2482' ? 1 : 0;
 
     $c->forward('generate_map_tags');
 
@@ -151,6 +175,36 @@ sub generate_map_tags : Private {
     );
 
     return 1;
+}
+
+sub delete :Local :Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+    my $p = $c->stash->{problem};
+
+    my $uri = $c->uri_for( '/report', $id );
+
+    return $c->res->redirect($uri) unless $c->user_exists;
+
+    my $council = $c->user->obj->from_council;
+    return $c->res->redirect($uri) unless $council;
+
+    my %councils = map { $_ => 1 } @{$p->councils};
+    return $c->res->redirect($uri) unless $councils{$council};
+
+    $p->state('hidden');
+    $p->lastupdate( \'ms_current_timestamp()' );
+    $p->update;
+
+    $c->model('DB::AdminLog')->create( {
+        admin_user => $c->user->email,
+        object_type => 'problem',
+        action => 'state_change',
+        object_id => $id,
+    } );
+
+    return $c->res->redirect($uri);
 }
 
 __PACKAGE__->meta->make_immutable;

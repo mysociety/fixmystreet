@@ -1,0 +1,32 @@
+# Timed tasks for FixMyStreet.
+
+# This is an example crontab that you may want to use as a basis for
+# one on your own server.  You should replace $FMS with the path to the
+# clone of the FixMyStreet repository that you are using.  You should
+# also replace $LOCK_DIR with a writeable directory for the lock files.
+
+# Copyright (c) 2007 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org. WWW: http://www.mysociety.org/
+
+PATH=/usr/local/bin:/usr/bin:/bin
+
+# send-reports has three rows so that its 8am entry can be run with --verbose to send a morning summary of anything that's gone wrong
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$FMS/send-reports.lock" "$FMS/bin/cron-wrapper send-reports" || echo "stalled?"
+0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports" || echo "stalled?"
+0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
+
+2 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-alerts.lock" "$FMS/bin/cron-wrapper send-alerts" || echo "stalled?"
+0,30 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-questionnaires.lock" "$FMS/bin/cron-wrapper send-questionnaires" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-comments.lock" "$FMS/bin/cron-wrapper send-comments" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/fetch-comments.lock" "$FMS/bin/cron-wrapper fetch-comments" || echo "stalled?"
+
+0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
+0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list --warn" || echo "stalled?"
+
+# Once an hour, update the all reports stats
+13 * * * * "$FMS/bin/cron-wrapper" update-all-reports
+
+# Once a day on all servers
+39 2 * * * "$FMS/bin/problems-filed-graph"
+43 2 * * * "$FMS/bin/problem-creation-graph"
+00 8 * * * "$FMS/bin/check-for-zombies" $UNIX_USER

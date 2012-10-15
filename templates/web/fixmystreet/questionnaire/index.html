@@ -1,11 +1,10 @@
 [%
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
     INCLUDE 'header.html', title = loc('Questionnaire'), bodyclass = 'mappage'
 %]
 
 [% map_html %]
-
-[% INCLUDE 'report/updates.html' %]
 
 </div>
 <div id="side">
@@ -23,6 +22,7 @@
 
         <div id="report" class="issue-list-a tab">
             [% INCLUDE 'report/_main.html' %]
+            [% INCLUDE 'report/updates.html' %]
         </div>
 </div>
 
@@ -96,9 +96,9 @@ your experience of getting the problem fixed?') %]</p>
     <p>[% loc('Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?') %]</p>
     <p>
         <input type="radio" name="another" id="another_yes" value="Yes"[% ' checked' IF another == 'Yes' %]>
-        <label for="another_yes">[% loc('Yes') %]</label>
+        <label class="inline" for="another_yes">[% loc('Yes') %]</label>
         <input type="radio" name="another" id="another_no" value="No"[% ' checked' IF another == 'No' %]>
-        <label for="another_no">[% loc('No') %]</label>
+        <label class="inline" for="another_no">[% loc('No') %]</label>
     </p>
 </div>
 

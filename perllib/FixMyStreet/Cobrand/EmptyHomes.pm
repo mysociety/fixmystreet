@@ -1,5 +1,5 @@
 package FixMyStreet::Cobrand::EmptyHomes;
-use base 'FixMyStreet::Cobrand::FixMyStreet';
+use base 'FixMyStreet::Cobrand::UK';
 
 use strict;
 use warnings;
@@ -22,24 +22,14 @@ sub base_url {
     return $base_url;
 }
 
-sub admin_base_url {
-    return 'https://secure.mysociety.org/admin/emptyhomes/';
-}
-
 sub area_types {
-    return qw(DIS LBO MTD UTA LGD COI);    # No CTY
+    [ 'DIS', 'LBO', 'MTD', 'UTA', 'LGD', 'COI' ]; # No CTY
 }
-
 
 sub base_url_with_lang {
     my $self = shift;
-    my $email = shift;
 
     my $base = $self->base_url;
-
-    if ($email) {
-        $base = $self->base_url_for_emails;
-    }
 
     my $lang = $mySociety::Locale::lang;
     if ($lang eq 'cy') {
@@ -50,43 +40,8 @@ sub base_url_with_lang {
     return $base;
 }
 
-=item set_lang_and_domain LANG UNICODE
-
-Set the language and text domain for the site based on the query and host. 
-
-=cut
-
-sub set_lang_and_domain {
-    my ( $self, $lang, $unicode, $dir ) = @_;
-    my $set_lang = mySociety::Locale::negotiate_language(
-        'en-gb,English,en_GB|cy,Cymraeg,cy_GB', $lang );
-    mySociety::Locale::gettext_domain( 'FixMyStreet-EmptyHomes', $unicode,
-        $dir );
-    mySociety::Locale::change();
-    return $set_lang;
-}
-
-=item site_title
-
-Return the title to be used in page heads
-
-=cut 
-
-sub site_title {
-    my ($self) = @_;
-    return _('Report Empty Homes');
-}
-
-=item feed_xsl
-
-Return the XSL file path to be used for feeds'
-
-=cut
-
-sub feed_xsl {
-    my ($self) = @_;
-    return '/xsl.eha.xsl';
-}
+sub languages { [ 'en-gb,English,en_GB', 'cy,Cymraeg,cy_GB' ] }
+sub language_domain { 'FixMyStreet-EmptyHomes' }
 
 =item shorten_recency_if_new_greater_than_fixed
 
@@ -96,28 +51,6 @@ For empty homes we don't want to shorten the recency
 
 sub shorten_recency_if_new_greater_than_fixed {
     return 0;
-}
-
-=head2 generate_problem_banner
-
-    my $banner = $c->cobrand->generate_problem_banner;
-
-    <p id="[% banner.id %]:>[% banner.text %]</p>
-
-Generate id and text for banner that appears at top of problem page.
-
-=cut
-
-sub generate_problem_banner {
-    my ( $self, $problem ) = @_;
-
-    my $banner = {};
-    if ($problem->is_fixed ) {
-        $banner->{id} = 'fixed';
-        $banner->{text} = _('This problem has been fixed') . '.';
-    }
-
-    return $banner;
 }
 
 =head2 default_photo_resize
@@ -140,7 +73,7 @@ sub council_rss_alert_options {
     my $all_councils = shift;
     my $c            = shift;
 
-    my %councils = map { $_ => 1 } $self->area_types();
+    my %councils = map { $_ => 1 } @{$self->area_types};
 
     my $num_councils = scalar keys %$all_councils;
 

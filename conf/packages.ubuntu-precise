@@ -1,0 +1,16 @@
+make
+jhead
+liberror-perl
+liblocale-gettext-perl
+libsoap-lite-perl
+memcached
+perl
+perlmagick
+libmath-bigint-gmp-perl
+gettext
+libhaml-ruby
+postgresql-9.1
+postgresql-server-dev-9.1
+gnuplot
+ttf-bitstream-vera
+libexpat1-dev

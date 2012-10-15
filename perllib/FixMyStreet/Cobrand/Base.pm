@@ -51,19 +51,5 @@ sub is_default {
     return $self->moniker eq 'default';
 }
 
-=head2 path_to_web_templates
-
-    $path = $cobrand->path_to_web_templates(  );
-
-Returns the path to the templates for this cobrand - by default
-"templates/web/$moniker"
-
-=cut
-
-sub path_to_web_templates {
-    my $self = shift;
-    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
-}
-
 1;
 

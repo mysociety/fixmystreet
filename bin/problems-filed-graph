@@ -20,8 +20,8 @@ source fixmystreet/commonlib/shlib/deployfns
 
 read_conf fixmystreet/conf/general.yml
 
-SOURCEO=/tmp/bci-report-rate-graph-data-nonwmc-$RANDOM$RANDOM
-GPSCRIPT=/tmp/bci-report-rate-graph-script-$RANDOM$RANDOM
+SOURCEO=/tmp/fms-report-rate-graph-data-nonwmc-$RANDOM$RANDOM
+GPSCRIPT=/tmp/fms-report-rate-graph-script-$RANDOM$RANDOM
 
 echo "select 
     date(created), count(*)
@@ -57,5 +57,5 @@ END
 #echo "gpscript $GPSCRIPT"
 
 export GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera
-gnuplot < $GPSCRIPT > fixmystreet/web/bci-live-line$EXTENSION
+gnuplot < $GPSCRIPT > fixmystreet/web/fms-live-line$EXTENSION 2>/dev/null
 

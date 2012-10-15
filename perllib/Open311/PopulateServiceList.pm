@@ -8,6 +8,7 @@ use Open311;
 
 has council_list => ( is => 'ro' );
 has found_contacts => ( is => 'rw', default => sub { [] } );
+has verbose => ( is => 'ro', default => 0 );
 
 has _current_council => ( is => 'rw' );
 has _current_open311 => ( is => 'rw' );
@@ -20,6 +21,7 @@ sub process_councils {
 
     while ( my $council = $self->council_list->next ) {
         next unless $council->endpoint;
+        next unless lc($council->send_method) eq 'open311';
         $self->_current_council( $council );
         $self->process_council;
     }
@@ -39,7 +41,9 @@ sub process_council {
 
     my $list = $open311->get_service_list;
     unless ( $list ) {
-        warn "ERROR: no service list found for " . $self->_current_council->area_id . "\n";
+        my $id = $self->_current_council->area_id;
+        warn "Council $id - http://mapit.mysociety.org/area/$id.html - did not return a service list\n"
+            if $self->verbose >= 1;
         return;
     }
     $self->process_services( $list );
@@ -81,7 +85,7 @@ sub process_service {
                     $self->_current_service->{description} : 
                     $self->_current_service->{service_name};
 
-    print $self->_current_service->{service_code} . ': ' . $category .  "\n";
+    print $self->_current_service->{service_code} . ': ' . $category .  "\n" if $self->verbose >= 2;
     my $contacts = FixMyStreet::App->model( 'DB::Contact')->search(
         {
             area_id => $self->_current_council->area_id,
@@ -121,7 +125,7 @@ sub _handle_existing_contact {
 
     my $service_name = $self->_normalize_service_name;
 
-    print $self->_current_council->area_id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n";
+    print $self->_current_council->area_id . " already has a contact for service code " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
 
     if ( $contact->deleted || $service_name ne $contact->category || $self->_current_service->{service_code} ne $contact->email ) {
         eval {
@@ -139,7 +143,8 @@ sub _handle_existing_contact {
         };
 
         if ( $@ ) {
-            warn "Failed to update contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}: $@\n";
+            warn "Failed to update contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}: $@\n"
+                if $self->verbose >= 1;
             return;
         }
     }
@@ -169,7 +174,8 @@ sub _create_contact {
     };
 
     if ( $@ ) {
-        warn "Failed to create contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}: $@\n";
+        warn "Failed to create contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}: $@\n"
+            if $self->verbose >= 1;
         return;
     }
 
@@ -179,14 +185,14 @@ sub _create_contact {
 
     if ( $contact ) {
         push @{ $self->found_contacts }, $self->_current_service->{service_code};
-        print "created contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}\n";
+        print "created contact for service code " . $self->_current_service->{service_code} . " for council @{[$self->_current_council->area_id]}\n" if $self->verbose >= 2;
     }
 }
 
-sub _add_contact_to_meta {
+sub _add_meta_to_contact {
     my ( $self, $contact ) = @_;
 
-    print "Fetching meta data for $self->_current_service->{service_code}\n";
+    print "Fetching meta data for $self->_current_service->{service_code}\n" if $self->verbose >= 2;
     my $meta_data = $self->_current_open311->get_service_meta_info( $self->_current_service->{service_code} );
 
     if ( ref $meta_data->{ attributes }->{ attribute } eq 'HASH' ) {
@@ -223,7 +229,11 @@ sub _add_contact_to_meta {
         @meta = grep { ! $ignore{ $_->{ code } } } @meta;
     }
 
-    $contact->extra( \@meta );
+    if ( @meta ) {
+        $contact->extra( \@meta );
+    } else {
+        $contact->extra( undef );
+    }
     $contact->update;
 }
 

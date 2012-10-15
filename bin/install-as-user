@@ -1,0 +1,111 @@
+#!/bin/sh
+
+set -e
+set -x
+
+if [ $# -ne 3 ]
+then
+    cat >&2 <<EOUSAGE
+Usage: $0 <UNIX-USER> <HOST> <INSTALLATION-DIRECTORY>
+EOUSAGE
+    exit 1
+fi
+
+UNIX_USER="$1"
+HOST="$2"
+DIRECTORY="$3"
+DB_NAME="fixmystreet"
+
+# Check that the arguments we've been passed are sensible:
+
+IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
+
+if [ x = x"$IP_ADDRESS_FOR_HOST" ]
+then
+    echo "The hostname $HOST didn't resolve to an IP address"
+    exit 1
+fi
+
+if ! id "$UNIX_USER" 2> /dev/null > /dev/null
+then
+    echo "The user '$UNIX_USER' didn't exist."
+    exit 1
+fi
+
+if [ "$(whoami)" != "$UNIX_USER" ]
+then
+    echo "This script should be run by the user '$UNIX_USER'."
+    exit 1
+fi
+
+REPOSITORY="$DIRECTORY/fixmystreet"
+LINK_DESTINATION="$HOME/fixmystreet"
+
+ln -sfn "$REPOSITORY" $LINK_DESTINATION
+cd "$REPOSITORY"
+
+# Add regularly scheduled tasks to cron:
+
+TEMPORARY_CRONTAB=$(mktemp)
+
+echo crontab file is $TEMPORARY_CRONTAB
+
+cp "$REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
+
+sed -i \
+    -e 's,$FMS,'"$REPOSITORY,g" \
+    -e 's,$LOCK_DIR,'"$DIRECTORY,g" \
+    "$TEMPORARY_CRONTAB"
+
+crontab $TEMPORARY_CRONTAB
+
+# Install the compass gem locally - it's required for generating the
+# CSS:
+
+export GEM_HOME="$DIRECTORY/gems"
+mkdir -p "$GEM_HOME"
+export GEM_PATH=
+export PATH="$GEM_HOME/bin:$PATH"
+
+gem install --no-ri --no-rdoc compass
+
+# Use compass to generate the CSS, if it doesn't seem to already
+# exist:
+
+if [ ! -f web/cobrands/default/base.css ]
+then
+    bin/make_css
+fi
+
+# Write sensible values into the config file:
+
+sed -r \
+    -e "s,^( *FMS_DB_HOST:).*,\\1 ''," \
+    -e "s,^( *FMS_DB_NAME:).*,\\1 '$DB_NAME'," \
+    -e "s,^( *FMS_DB_USER:).*,\\1 '$UNIX_USER'," \
+    -e "s,^( *BASE_URL:).*,\\1 'http://$HOST'," \
+    -e "s,^( *EMAIL_DOMAIN:).*,\\1 '$HOST'," \
+    -e "s,^( *CONTACT_EMAIL:).*,\\1 'help@$HOST'," \
+    conf/general.yml-example > conf/general.yml
+
+# Create the database if it doesn't exist:
+if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
+then
+    createdb --owner "$UNIX_USER" "$DB_NAME"
+    echo 'CREATE LANGUAGE plpgsql;' | psql -U "$UNIX_USER" "$DB_NAME" || true
+    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/schema.sql
+    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/alert_types.sql
+    psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/generate_secret.sql
+fi
+
+# Install the required Perl modules - this may take a very long time:
+
+cd "$FMS_REPOSITORY"
+bin/install_perl_modules
+
+# Generate po and mo files (these invocations taken from Kagee's script):
+
+bin/cron-wrapper bin/make_po FixMyStreet-EmptyHomes
+bin/cron-wrapper bin/make_emptyhomes_welsh_po
+
+commonlib/bin/gettext-makemo FixMyStreet

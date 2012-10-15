@@ -1,8 +1,0 @@
-[% IF c.cobrand.allow_photo_display && object.photo %]
-[% photo = object.get_photo_params %]
-<div class="update-img">
-    [% IF photo.url_full %]<a href="[% photo.url_full %]" rel="fancy">[% END
-    %]<img alt="Photo of this report" [% IF photo.height %]height="[% photo.height %]" width="[% photo.width %]"[% END %] src="[% photo.url %]">
-    [%- IF photo.url_full %]<span>zoom</span></a>[% END %]
-</div>
-[% END %]

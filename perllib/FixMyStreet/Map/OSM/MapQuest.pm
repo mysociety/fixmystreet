@@ -16,7 +16,8 @@ sub map_type {
 }
 
 sub map_tiles {
-    my ($self, $x, $y, $z) = @_;
+    my ( $self, %params ) = @_;
+    my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $tile_url = $self->base_tile_url();
     return [
         "http://otile1.$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",

@@ -32,7 +32,7 @@ EOF
 sub send {
     return if mySociety::Config::get('STAGING_SITE');
 
-    my ( $self, $row, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $self, $row, $h ) = @_;
 
     # FIXME: should not recreate this each time
     my $eh_service;

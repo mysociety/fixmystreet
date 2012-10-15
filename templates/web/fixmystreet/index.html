@@ -16,34 +16,19 @@ Modernizr.load({
 </script>
 [% END %]
 
-[% pre_container_extra = BLOCK %]
-<div id="front-main">
-    <div id="front-main-container">
-        <h1>[% loc('Report, view, or discuss local problems') %]</h1>
-
-        <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
-
-        [%
-            question
-                =  c.cobrand.enter_postcode_text()
-                || loc("Enter a nearby GB postcode, or street name and area");
-        %]
-
-        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-            <label for="pc">[% question %]:</label>
-            <div>
-                <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
-                <input type="submit" value="[% loc('Go') %]" id="submit">
-            </div>
-        </form>
-    </div>
-</div>
-[% END %]
-
+[% pre_container_extra = PROCESS 'around/postcode_form.html' %]
 [% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
 
 [% IF error %]
-    <p class="error">[% error %]</p>
+    <p class="form-error">[% error %]</p>
+[% END %]
+
+[% IF c.cobrand.moniker == 'bromley' %]
+<p>This is primarily for reporting physical problems that can be fixed
+like graffiti, cleansing issues or road defects. To report other
+kinds of problems like missed bins use our
+<a href="http://www.bromley.gov.uk/report">online report it forms</a>.
+</p>
 [% END %]
 
 <div class="tablewrapper">
@@ -51,10 +36,20 @@ Modernizr.load({
         <h2>[% loc('How to report a problem') %]</h2>
         
         <ol class="big-numbers">
+        [% IF c.cobrand.moniker == 'fixmybarangay' %]
+            <li>Text LUZ or BSN followed by your report to 12345</li>
+            <li>Visit the Barangay Center in person</li>
+            <li>Staff? <a href="/auth">Sign in</a> and click on the map!
+        [% ELSE %]
             <li>[% question %]</li>
             <li>[% loc('Locate the problem on a map of the area') %]</li>
             <li>[% loc('Enter details of the problem') %]</li>
-            <li>[% loc('We send it to the council on your behalf') %]</li>
+            [% IF c.cobrand.is_council %]
+                <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
+            [% ELSE %]
+                <li>[% loc('We send it to the council on your behalf') %]</li>
+            [% END %]
+        [% END %]
         </ol>
         
         <section class="full-width">
@@ -65,7 +60,7 @@ Modernizr.load({
 
 
     [% 
-        recent_photos = c.cobrand.recent_photos(5);
+        recent_photos = c.cobrand.recent_photos('front', 5);
     %]
 
     [% IF recent_photos.size %]
@@ -74,18 +69,9 @@ Modernizr.load({
 
         <section class="full-width">
             <ul class="issue-list-a">
-            [% FOREACH p IN recent_photos %]
-                <li>
-                    <a href="/report/[% p.id %]">
-                        <div class="text">
-                            <h4>[% p.title | html %]</h4>
-                            <small>[% prettify_epoch( p.confirmed_local.epoch, 1 ) %]</small>
-                        </div>
-                        <div class="img">
-                            <img alt="[% p.title | html %]" title="[% p.title | html %]" height="60" width="90" src="/photo/[% p.id %].fp.jpeg">
-                        </div>
-                    </a>
-                </li>    
+            [% FOREACH problem IN recent_photos %]
+            [%  problem.photo = 1; # Definitely is
+                INCLUDE 'report/_item.html', no_fixed = 1 %]
             [% END %]
             </ul>
         </section>

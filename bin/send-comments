@@ -28,7 +28,7 @@ use constant SEND_FAIL_RETRIES_CUTOFF => 3;
 
 # send_method config values found in by-area config data, for selecting to appropriate method
 use constant SEND_METHOD_EMAIL      => 'email';
-use constant SEND_METHOD_OPEN311    => 'open311';
+use constant SEND_METHOD_OPEN311    => 'Open311';
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
@@ -43,9 +43,13 @@ my $councils = FixMyStreet::App->model('DB::Open311Conf')->search( {
 while ( my $council = $councils->next ) {
     my $comments = FixMyStreet::App->model('DB::Comment')->search( {
             'me.whensent'    => undef,
+            'me.external_id' => undef,
+            'me.state'          => 'confirmed',
+            'me.confirmed'      => { '!=' => undef },
             'problem.whensent'    => { '!=' => undef },
             'problem.external_id'  => { '!=' => undef },
             'problem.council'      => { -like => '%' . $council->area_id .'%' },
+            'problem.send_method_used' => 'Open311',
         },
         {
             join => 'problem',
@@ -53,7 +57,9 @@ while ( my $council = $councils->next ) {
     );
 
     my $o = Open311->new(
-            endpoint => $council->endpoint
+            endpoint => $council->endpoint,
+            jurisdiction => $council->jurisdiction,
+            api_key => $council->api_key,
     );
 
     while ( my $comment = $comments->next ) {
@@ -63,11 +69,25 @@ while ( my $council = $councils->next ) {
             next if bromley_retry_timeout( $comment );
         }
 
+        if ( $council->area_id == 2482 ) {
+            my $extra = $comment->extra;
+            if ( !$extra ) {
+                $extra = {};
+            }
+
+            unless ( $extra->{title} ) {
+                $extra->{title} = $comment->user->title;
+                $comment->extra( $extra );
+            }
+        }
+
         my $id = $o->post_service_request_update( $comment );
 
         if ( $id ) {
-            $comment->external_id( $id );
-            $comment->update();
+            $comment->update( {
+                external_id => $id,
+                whensent    => \'ms_current_timestamp()',
+            } );
         } else {
             $comment->update( {
                 send_fail_count => $comment->send_fail_count + 1,

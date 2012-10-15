@@ -6,7 +6,6 @@ use File::Slurp;
 use List::MoreUtils qw(zip);
 use POSIX qw(strcoll);
 use mySociety::MaPit;
-use mySociety::VotingArea;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -34,8 +33,8 @@ sub index : Path : Args(0) {
     # Fetch all areas of the types we're interested in
     my $areas_info;
     eval {
-        my @area_types = $c->cobrand->area_types;
-        $areas_info = mySociety::MaPit::call('areas', \@area_types,
+        my $area_types = $c->cobrand->area_types;
+        $areas_info = mySociety::MaPit::call('areas', $area_types,
             min_generation => $c->cobrand->area_min_generation
         );
     };
@@ -43,6 +42,7 @@ sub index : Path : Args(0) {
         $c->stash->{message} = _("Unable to look up areas in MaPit. Please try again later.") . ' ' .
             sprintf(_('The error was: %s'), $@);
         $c->stash->{template} = 'errors/generic.html';
+        return;
     }
 
     # For each area, add its link and perhaps alter its name if we need to for
@@ -56,6 +56,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{areas_info} = $areas_info;
     my @keys = sort { strcoll($areas_info->{$a}{name}, $areas_info->{$b}{name}) } keys %$areas_info;
+    @keys = $c->cobrand->filter_all_council_ids_list( @keys );
     $c->stash->{areas_info_sorted} = [ map { $areas_info->{$_} } @keys ];
 
     eval {
@@ -67,9 +68,13 @@ sub index : Path : Args(0) {
         $c->stash->{open} = $j->{open};
     };
     if ($@) {
-        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.") . ' ' .
-            sprintf(_('The error was: %s'), $@);
+        $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.");
+        if ($c->config->{STAGING_SITE}) {
+            $c->stash->{message} .= '</p><p>Perhaps the bin/update-all-reports script needs running.</p><p>'
+                . sprintf(_('The error was: %s'), $@);
+        }
         $c->stash->{template} = 'errors/generic.html';
+        return;
     }
 
     # Down here so that error pages aren't cached.
@@ -124,10 +129,12 @@ sub ward : Path : Args(2) {
         any_zoom  => 1,
     );
 
+    $c->cobrand->tweak_all_reports_map( $c );
+
     # List of wards
     unless ($c->stash->{ward}) {
-        my $children = mySociety::MaPit::call('area/children', $c->stash->{council}->{id},
-            type => $mySociety::VotingArea::council_child_types,
+        my $children = mySociety::MaPit::call('area/children', [ $c->stash->{council}->{id} ],
+            type => $c->cobrand->area_types_children,
         );
         foreach (values %$children) {
             $_->{url} = $c->uri_for( $c->stash->{council_url}
@@ -161,13 +168,6 @@ sub rss_ward : Regex('^rss/(reports|area)$') : Args(2) {
     my $url =       $c->cobrand->short_name( $c->stash->{council} );
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward}    ) if $c->stash->{ward};
     $c->stash->{qs} = "/$url";
-
-    my @params;
-    push @params, $c->stash->{council}->{id} if $rss eq 'reports';
-    push @params, $c->stash->{ward}
-        ? $c->stash->{ward}->{id}
-        : $c->stash->{council}->{id};
-    $c->stash->{db_params} = [ @params ];
 
     if ( $rss eq 'area' && $c->stash->{ward} ) {
         # All problems within a particular ward
@@ -209,13 +209,6 @@ sub council_check : Private {
     $q_council =~ s/\+/ /g;
     $q_council =~ s/\.html//;
 
-    # Manual misspelling redirect
-    if ($q_council =~ /^rhondda cynon taff$/i) {
-        my $url = $c->uri_for( '/reports/rhondda+cynon+taf' );
-        $c->res->redirect( $url );
-        $c->detach();
-    }
-
     # Check cobrand specific incantations - e.g. ONS codes for UK,
     # Oslo/ kommunes sharing a name in Norway
     return if $c->cobrand->reports_council_check( $c, $q_council );
@@ -230,11 +223,12 @@ sub council_check : Private {
     }
 
     # We must now have a string to check
-    my @area_types = $c->cobrand->area_types;
+    my $area_types = $c->cobrand->area_types;
     my $areas = mySociety::MaPit::call( 'areas', $q_council,
-        type => \@area_types,
+        type => $area_types,
         min_generation => $c->cobrand->area_min_generation
     );
+
     if (keys %$areas == 1) {
         ($c->stash->{council}) = values %$areas;
         return;
@@ -256,7 +250,6 @@ sub council_check : Private {
 This action checks the ward name from a URI exists and is part of the right
 parent, already found with council_check. It either stores the ward Area if
 okay, or redirects to the council page if bad.
-This is currently only used in the UK, hence the use of mySociety::VotingArea.
 
 =cut
 
@@ -270,7 +263,7 @@ sub ward_check : Private {
     my $council = $c->stash->{council};
 
     my $qw = mySociety::MaPit::call('areas', $ward,
-        type => $mySociety::VotingArea::council_child_types,
+        type => $c->cobrand->area_types_children,
         min_generation => $c->cobrand->area_min_generation
     );
     foreach my $area (sort { $a->{name} cmp $b->{name} } values %$qw) {
@@ -317,7 +310,8 @@ sub load_and_group_problems : Private {
     my $page = $c->req->params->{p} || 1;
 
     my $where = {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
+        non_public => 0,
+        state      => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
@@ -349,7 +343,7 @@ sub load_and_group_problems : Private {
                 { photo    => 'photo is not null' },
             ],
             order_by => { -desc => 'lastupdate' },
-            rows => 100,
+            rows => $c->cobrand->reports_per_page,
         }
     )->page( $page );
     $c->stash->{pager} = $problems->pager;

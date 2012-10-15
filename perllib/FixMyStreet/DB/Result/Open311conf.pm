@@ -36,6 +36,10 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "password",
   { data_type => "text", is_nullable => 1 },
+  "suppress_alerts",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "can_be_devolved",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("open311conf_area_id_key", ["area_id"]);
@@ -52,9 +56,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-04-16 16:00:22
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YqsNwKXK4PdFtejQUTMGYQ
-
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-08-29 14:04:20
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Yoult8K/ldH6DMAKURtr3Q
 
 __PACKAGE__->add_columns(
     "password" => {

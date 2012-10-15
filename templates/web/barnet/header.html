@@ -1,93 +1,94 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<!--[if lt IE 7]><html class="ie6 oldie" lang="[% lang_code %]"><![endif]-->
-<!--[if IE 7]>   <html class="ie7 oldie" lang="[% lang_code %]"><![endif]-->
-<!--[if IE 8]>   <html class="ie8 oldie" lang="[% lang_code %]"><![endif]-->
-<!--[if gt IE 8]><!--><html lang="[% lang_code %]"><!--<![endif]-->
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js ie6 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 7]>   <html class="no-js ie7 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 8]>   <html class="no-js ie8 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 9]>   <html class="no-js ie9 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="[% lang_code %]"><!--<![endif]-->
     <head>
-        <link rel="stylesheet" type="text/css" href="/cobrands/barnet/css/basic.css">
+        <meta name="viewport" content="initial-scale=1.0">
 
-        <link rel="stylesheet" type="text/css" href="[% version('/css/core.css') %]">
-        <link rel="stylesheet" type="text/css" href="/cobrands/barnet/css/layout.css">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="HandHeldFriendly" content="true">
+        <meta name="mobileoptimized" content="0">
 
-        <!-- Preferred style sheet enabled when the page is loaded -->
-        <link rel="stylesheet" title="default" type="text/css" href="/cobrands/barnet/css/light.css">
+		<link rel="ToC" href="http://www.barnet.gov.uk/site_map" />
+		<meta name="Keywords" content="fixmystreet barnet pothole streetlights report street problem" />
+		<meta name="Description" content="FixMyStreet Barnet: report problems in Barnet like graffiti, fly tipping, broken paving slabs, or street lighting" />
 
-        <!-- Alternate style sheets used for the light/relaxed style -->
-        <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/light.css">
-        <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/relaxed.css">
+		<link rel="Shortcut Icon" type="image/x-icon" href="http://pledgebank.barnet.gov.uk/microsites/barnet/site/favicon.ico" />
 
-        <!-- Alternate style sheets used for the dark style -->
-        <link rel="alternate stylesheet" title="dark" type="text/css" href="/cobrands/barnet/css/dark.css">
-
-        <!-- Alternate style sheets used for the dark/relaxed style -->
-        <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/dark.css">
-        <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/relaxed.css">
-
-
-        <!--[if lte IE 6]>
-             <link rel="stylesheet" type="text/css" href="/cobrands/barnet/css/ie.css">
-
-             <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/ie-relaxed.css">
-
-             <link rel="alternate stylesheet" title="dark" type="text/css" href="/cobrands/barnet/css/ie-dark.css">
-
-             <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/ie-dark.css">
-             <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/ie-relaxed.css">
+        <link rel="stylesheet" href="[% version('/cobrands/barnet/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/barnet/layout.css') %]" media="(min-width:48em)">
+        <link rel="stylesheet" href="[% version('/js/fancybox/jquery.fancybox-1.3.4.css') %]">
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="[% version('/cobrands/barnet/layout.css') %]">
+        <![endif]-->
+        <link rel="stylesheet" href="[% version('/cobrands/barnet/barnet.css') %]" media="(min-width:48em)">
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="[% version('/cobrands/barnet/barnet.css') %]">
         <![endif]-->
 
-        <!--[if IE 7]>
-             <link rel="stylesheet" type="text/css" href="/cobrands/barnet/css/ie-seven.css">
+        <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
+        <script src="[% version('/cobrands/barnet/position_map.js') %]" charset="utf-8"></script>
+        [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = 'Barnet Council FixMyStreet' %]
+        <script src="[% version('/js/fancybox/jquery.fancybox-1.3.4.pack.js') %]" charset="utf-8"></script>
 
-             <link rel="alternate stylesheet" title="relaxed light" type="text/css" href="/cobrands/barnet/css/ie-seven-relaxed.css">
-
-             <link rel="alternate stylesheet" title="relaxed dark" type="text/css" href="/cobrands/barnet/css/ie-seven-relaxed.css">
-        <![endif]-->
-        <link rel="stylesheet" media="print" type="text/css" href="/cobrands/barnet/css/print.css">
-
-        <script type="text/javascript" src="[% version('/cobrands/barnet/javascript/jquery-1.2.6_common.js') %]"></script>
-        <script type="text/javascript" src="[% version('/cobrands/barnet/javascript/styleswitch.js') %]"></script>
-        <script type="text/javascript" src="[% version('/cobrands/barnet/javascript/jquery-cookie-min.js') %]"></script>
-        <script type="text/javascript" src="[% version('/cobrands/barnet/javascript/2008-portsurf.js') %]"></script>
-
-        [% INCLUDE 'common_header_tags.html' %]
-
-  </head>
-  <body>
-
-  <div id="iewrap">
-  <img id="print-logo" src="/cobrands/barnet/images/logo-barnet.gif" alt="">
-            <div id="header">
-                <a href="http://www.barnet.gov.uk/"><img src="/cobrands/barnet/images/logo-barnet.gif" alt="Barnet Logo"></a>
-
-                <a href="#content" class="rm">Skip to Content</a>
-                <span class="rm">|</span>
-                <a href="#navigation" class="rm">Skip to Menu</a>
-                <span class="rm">|</span>
-
-                <form action="http://www.barnet.gov.uk/search">
-                    <div class="search-input">
-                        <input type="hidden" name="col" value="lbb">
-                        <input type="hidden" name="type" value="sitesearch">
-                        <label for="input-0" class="rm">Search:</label>
-                        <input type="text" value="Please enter your search" name="search" class="search">
+    </head>
+    <body class="[% bodyclass | html IF bodyclass %]">
+        <div id="barnet-wrapper">
+        <div id="ie_wrapper">
+            <div id="mast">
+                <div class="pseudoH1">
+                    <a href="http://www.barnet.gov.uk/"><span>London Borough of Barnet</span> <img src="http://pledgebank.barnet.gov.uk/microsites/barnet/site/images/blank.gif" alt="London Borough of Barnet logo" /></a>
+                </div>
+                <ul id="skip" class="hidden">
+                    <li><a href="#content" rel="nofollow">Skip to content</a></li>
+                    <li><a href="#column_nav" rel="nofollow">Skip to main navigation</a></li>
+                </ul>
+                <div class="mast_links"></div>
+                <span class="clear"></span>
+                <div id="search"></div>
+                <div class="clear"></div>
+            </div>
+            <div id="page_wrap">
+                <div id="page">
+                    <div id="breadcrumb">
+        <!-- googleoff:all -->
+                        <ul>
+                            <li><a href="http://www.barnet.gov.uk/">Home</a></li>
+                            <li><a href="/">FixMyStreet</a></li>
+                            <li class="bc_end"><span>
+                            [% IF c.req.uri.path == '/' %]Report a problem[% ELSE %][% title %][% END %]
+                            </span></li>
+                        </ul>
+        <!-- googleon:all -->
                     </div>
-                    <div class="search-button">
-                        <input type="submit" value="Search" class="submit" id="input-0">
-                    </div>
-                </form>
+                    <div id="content" class="withWidth fullWidth">
+                        <div id="user-meta">
+                            [% IF c.user_exists %]
+                            <p>
+                                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                                <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                            </p>
+                            [% END %]
+                        </div>
 
-                <div id="switcher" style="display:none">
-                    <p>Site preferences:</p>
-                    <ul>
-                        <li class="default"><a id="s1" class="styleswitch" rel="default" title="Light colours with the default layout">default</a></li>
-                        <li class="relaxed-light"><a id="s2" class="styleswitch" rel="relaxed light" title="Light colours with the relaxed layout" href="#">relaxed light</a></li>
-                        <li class="dark"><a id="s3" class="styleswitch" rel="dark" title="Dark colours with the default layout" href="#">dark</a></li>
-                        <li class="relaxed-dark"><a id="s4" class="styleswitch" rel="relaxed dark" title="Dark colours with the relaxed layout" href="#">relaxed dark</a></li>
-                    </ul>
-                </div><!-- end switcher -->
-            </div><!-- end header -->
+                        <h1 id="page-title">
+                            <span>FixMyStreet</span>
+                        </h1>
 
-      <div id="wrap">
-          <div id="content">
-              <div id="mysociety">
+        <div class="wrapper">
+        <div class="table-cell">
+            <header id="site-header" role="banner">
+                <div class="container">
+                    <a href="/" id="site-logo">FixMyStreet</a>
+                    <a href="#main-nav" id="nav-link">Main Navigation</a>
+                </div>
+            </header>
 
+            [% pre_container_extra %]
+
+            <div class="container">
+                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+
+              <!-- end of header -->

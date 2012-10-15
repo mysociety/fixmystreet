@@ -33,7 +33,7 @@ EOF
 
 sub send {
     return if mySociety::Config::get('STAGING_SITE');
-    my ( $self, $row, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $self, $row, $h ) = @_;
 
     $h->{message} = construct_message( %$h );
     my $phone = $h->{phone};

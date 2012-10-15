@@ -1,0 +1,42 @@
+notifications:
+  email: false
+  irc:
+    channels:
+      - "irc.mysociety.org#fixmystreet"
+    use_notice: true
+    skip_join: true
+
+language: perl
+perl:
+  - "5.14"
+
+branches:
+  only:
+    - master
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq jhead
+# A couple of other modules that normally come from packages, but no system stuff here
+  - cpanm -q Carton Locale::gettext Math::BigInt::GMP SOAP::Lite
+  - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8
+install:
+  - carton install --deployment
+before_script:
+  - psql -c 'create database fms;' -U postgres
+  - psql fms postgres < db/schema.sql
+  - psql fms postgres < db/alert_types.sql
+  - psql fms postgres < db/generate_secret.sql
+  - >
+    sed -r -e "s,(FMS_DB_USER:) 'fms',\\1 'postgres',"
+    -e "s,cobrand_one,fixmystreet,"
+    -e "s,cobrand_two: 'hostname_substring2',fixmystreet: 'localhost',"
+    -e "s,(BASE_URL:) 'http://www.example.org',\\1 'http://localhost',"
+    -e "s,(MAPIT_URL:) '',\\1 'http://mapit.mysociety.org/',"
+    -e "s,(CONTACT_EMAIL:) 'team,\\1 'person,"
+    conf/general.yml-example > conf/general.yml
+  - ./bin/cron-wrapper ./bin/make_po FixMyStreet-EmptyHomes
+  - ./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po
+  - commonlib/bin/gettext-makemo FixMyStreet
+script: "bin/cron-wrapper perl /usr/bin/prove -rl t"
+

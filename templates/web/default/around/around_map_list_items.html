@@ -8,6 +8,8 @@
             <small>[% prettify_epoch( p.problem.confirmed_local.epoch, 1 ) %], [% dist %]km</small>
             [% IF p.problem.is_fixed %]
                 <small>[% loc('(fixed)') %]</small>
+            [% ELSIF p.problem.is_closed %]
+                <small>[% loc('(closed)') %]</small>
             [% END %]
         </li>
     [% END %]

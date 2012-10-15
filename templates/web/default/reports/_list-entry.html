@@ -1,0 +1,6 @@
+<li><a href="[% c.uri_for('/report/' _ problem.id) %]">[% problem.title | html %]</a>
+    [% IF problem.councils > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
+    [% IF c.cobrand.moniker != 'emptyhomes' %]
+        [% IF problem.councils == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
+    [% END %]
+</li>

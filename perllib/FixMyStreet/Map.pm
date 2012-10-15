@@ -18,7 +18,6 @@ use Module::Pluggable
 # Get the list of maps we want and load map classes at compile time
 my @ALL_MAP_CLASSES = allowed_maps();
 
-use mySociety::Config;
 use mySociety::Gaze;
 use mySociety::Locale;
 use Utils;
@@ -31,7 +30,8 @@ are permitted by the config.
 =cut
 
 sub allowed_maps {
-    my @allowed = split /,/, mySociety::Config::get('MAP_TYPE');
+    my @allowed = split /,/, ( FixMyStreet->config('MAP_TYPE') or "");
+    push @allowed, 'OSM'; # OSM is always allowed
     @allowed = map { __PACKAGE__.'::'.$_ } @allowed;
     my %avail = map { $_ => 1 } __PACKAGE__->maps;
     return grep { $avail{$_} } @allowed;

@@ -1,4 +1,5 @@
 [% 
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
 
     problem_title = problem.title _ ' - ' _ loc('Viewing a problem');
@@ -14,17 +15,18 @@
 </div>
 
 
-[% IF banner.id %]
-    <div class="banner">
-        <p id="[% banner.id %]">[% banner.text %]</p>
-    </div>
-[% END %]
-
+[% INCLUDE 'report/banner.html' %]
 [% INCLUDE 'report/_main.html' %]
 
 <div class="shadow-wrap">
     <ul id="key-tools">
-        <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse' ) %]</a></li>
+        [% IF c.user_exists AND c.user.council == 'Bromley Council' %]
+        <li><form method="post" action="/report/delete/[% problem.id %]">
+            <input type="submit" class="abuse" value="Remove from site">
+        </form></li>
+        [% ELSE %]
+            <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse') %]</a></li>
+        [% END %]
         <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
         <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
     </ul>
@@ -54,12 +56,6 @@
 <div id="update_form">
     <h2>[% loc( 'Provide an update') %]</h2>
 
-    [% IF c.cobrand.moniker != 'emptyhomes' %]
-    <div class="general-sidebar-notes">
-        <p>[% loc( 'Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>' ) %]</p>
-    </div>
-    [% END %]
-
     [% INCLUDE 'errors.html' %]
 
     <form method="post" action="[% c.uri_for( '/report/update' ) %]" name="updateForm" class="validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
@@ -72,6 +68,11 @@
                 <div class='form-error'>[% field_errors.update %]</div>
             [% END %]
             <textarea rows="7" cols="30" name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
+
+            <div class="general-sidebar-notes">
+                <p>Please note this comments box can only be used for this report.
+                <br><a href="http://www.bromley.gov.uk/report">Report a different issue</a>
+            </div>
 
             [% IF c.user && c.user.belongs_to_council( problem.council ) %]
                 <label for="form_state">[% loc( 'State' ) %]</label>
@@ -129,11 +130,10 @@
             <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
 
             <div id="form_sign_in">
-                <h3>[% loc("Now to submit your update&hellip;") %]</h3>
-                <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
+                <p>To submit your update you now need to confirm it either by email or by using a FixMyStreet password.</p>
 
                 <div id="form_sign_in_no" class="form-box">
-                    <h5>[% loc('<strong>No</strong> Let me confirm my update by email') %]</h5>
+                    <h5>Confirm my report by email</h5>
 
                     [% INCLUDE name %]
                     
@@ -150,7 +150,7 @@
                     </div>
                 </div>
                 <div id="form_sign_in_yes" class="form-box">
-                    <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
+                    <h5>Confirm my report with my FixMyStreet password</h5>
 
                     <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
                     [% IF field_errors.password %]
@@ -169,6 +169,9 @@
             </div>
 
         [% END %]
+
+        <p>Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>.</p>
+
         </fieldset>
     </form>
 </div>
@@ -178,10 +181,7 @@
 [% INCLUDE 'footer.html' %]
 
 [% BLOCK name %]
-    [% IF problem.council == '2482' %]
-        [% extra_name_info = 1 %]
-        [% INCLUDE 'report/new/extra_name.html' %]
-    [% END %]
+    [% INCLUDE 'report/new/extra_name.html' %]
 
     [% IF c.user_exists %]
         [% names = c.user.split_name %]
@@ -199,7 +199,7 @@
     <input type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
     <div class="checkbox-group">
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF update AND NOT update.anonymous %]>
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
     </div>
     <div class="checkbox-group">

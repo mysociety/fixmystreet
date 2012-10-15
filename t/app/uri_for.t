@@ -78,31 +78,36 @@ is(
     'FiksGataMi url with lat not zoom'
 );
 
-like(
-    $reh_en_c->uri_for_email( '/foo' ),
-    qr{^http://en.},
-    'adds en to retain language'
-);
+SKIP: {
+    skip( "Need 'emptyhomes' in ALLOWED_COBRANDS config", 2 )
+        unless FixMyStreet::Cobrand->exists('emptyhomes');
 
-# instantiate this here otherwise sets locale to cy and breaks test
-# above
-my $reh_cy_c = FixMyStreet::App->new(
-    {
-        request => Catalyst::Request->new(
-            {
-                base => URI->new('http://cy.reportemptyhomes.com/'),
-                uri  => URI->new('http://cy.reportemptyhomes.com/test_namespace')
-            }
-        ),
-        namespace => 'test_namespace',
-    }
-);
-$reh_cy_c->setup_request();
+    like(
+        $reh_en_c->uri_for_email( '/foo' ),
+        qr{^http://en.},
+        'adds en to retain language'
+    );
 
-like(
-    $reh_cy_c->uri_for_email( '/foo' ),
-    qr{^http://cy.},
-    'retains language'
-);
+    # instantiate this here otherwise sets locale to cy and breaks test
+    # above
+    my $reh_cy_c = FixMyStreet::App->new(
+        {
+            request => Catalyst::Request->new(
+                {
+                    base => URI->new('http://cy.reportemptyhomes.com/'),
+                    uri  => URI->new('http://cy.reportemptyhomes.com/test_namespace')
+                }
+            ),
+            namespace => 'test_namespace',
+        }
+    );
+    $reh_cy_c->setup_request();
+
+    like(
+        $reh_cy_c->uri_for_email( '/foo' ),
+        qr{^http://cy.},
+        'retains language'
+    );
+}
 
 done_testing();

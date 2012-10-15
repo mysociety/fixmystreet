@@ -1,4 +1,3 @@
-package FixMyStreet::App::Controller::Admin;
 use Moose;
 use namespace::autoclean;
 
@@ -6,6 +5,8 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use POSIX qw(strftime strcoll);
 use Digest::MD5 qw(md5_hex);
+use mySociety::EmailUtil qw(is_valid_email);
+use if !$ENV{TRAVIS}, 'Image::Magick';
 
 use FixMyStreet::SendReport;
 
@@ -49,7 +50,7 @@ sub index : Path : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my $site_restriction = $c->cobrand->site_restriction();
 
     my $problems = $c->cobrand->problems->summary_count;
 
@@ -121,7 +122,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 
     $c->forward('check_page_allowed');
 
-    my ( $sql_restriction, $id, $site_restriction ) = $c->cobrand->site_restriction();
+    my $site_restriction = $c->cobrand->site_restriction();
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
@@ -220,10 +221,10 @@ sub council_list : Path('council_list') : Args(0) {
     $c->stash->{edit_activity} = $edit_activity;
 
     # Not London, as treated separately
-    my @area_types = $c->cobrand->moniker eq 'emptyhomes'
+    my $area_types = $c->cobrand->moniker eq 'emptyhomes'
         ? $c->cobrand->area_types
-        : grep { $_ ne 'LBO' } $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
+        : [ grep { $_ ne 'LBO' } @{ $c->cobrand->area_types } ];
+    my $areas = mySociety::MaPit::call('areas', $area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
     @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
@@ -300,9 +301,14 @@ sub update_contacts : Private {
         $contact->email( $email );
         $contact->confirmed( $c->req->param('confirmed') ? 1 : 0 );
         $contact->deleted( $c->req->param('deleted') ? 1 : 0 );
+        $contact->non_public( $c->req->param('non_public') ? 1 : 0 );
         $contact->note( $c->req->param('note') );
         $contact->whenedited( \'ms_current_timestamp()' );
         $contact->editor( $editor );
+        $contact->endpoint( $c->req->param('endpoint') );
+        $contact->jurisdiction( $c->req->param('jurisdiction') );
+        $contact->api_key( $c->req->param('api_key') );
+        $contact->send_method( $c->req->param('send_method') );
 
         if ( $contact->in_storage ) {
             $c->stash->{updated} = _('Values updated');
@@ -339,10 +345,7 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) } qw/open311_id endpoint jurisdiction api_key area_id send_method username password/;
-
-        utf8::encode( $params{password});
-        $c->log->debug( 'passwrd is ' . $params{password} );
+        my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id devolved username password/;
 
         if ( $params{open311_id} ) {
             my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
@@ -353,8 +356,10 @@ sub update_contacts : Private {
             $conf->send_method( $params{send_method} );
             $conf->send_comments( $params{send_comments} || 0 );
             $conf->comment_user_id( $params{comment_user_id} );
+            $conf->suppress_alerts( $params{suppress_alerts} || 0);
             $conf->username( $params{username} );
             $conf->password( $params{password} );
+            $conf->can_be_devolved( $params{devolved} || 0 );
 
             $conf->update();
 
@@ -366,10 +371,12 @@ sub update_contacts : Private {
             $conf->jurisdiction( $params{jurisdiction} );
             $conf->api_key( $params{api_key} );
             $conf->send_method( $params{send_method} );
-            $conf->send_comments( $params{send_comments} || 0 );
-            $conf->comment_user_id( $params{comment_user_id} );
+            $conf->send_comments( $params{send_comments} || 0);
+            $conf->suppress_alerts( $params{suppress_alerts} || 0);
+            $conf->comment_user_id( $params{comment_user_id} || undef );
             $conf->username( $params{username} );
             $conf->password( $params{password} );
+            $conf->can_be_devolved( $params{devolved} || 0 );
 
             $conf->insert();
 
@@ -465,6 +472,9 @@ sub council_edit : Path('council_edit') : Args(2) {
 
     $c->stash->{history} = $history;
 
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    $c->stash->{send_methods} = \@methods;
+
     return 1;
 }
 
@@ -476,7 +486,7 @@ sub search_reports : Path('search_reports') {
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
 
-        my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+        my $site_restriction = $c->cobrand->site_restriction;
 
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
@@ -491,17 +501,33 @@ sub search_reports : Path('search_reports') {
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
         $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
+        my $query;
+        if (is_valid_email($search)) {
+            $query = [
+                'user.email' => { ilike => $like_search },
+            ];
+        } elsif ($search =~ /^id:(\d+)$/) {
+            $query = [
+                'me.id' => int($1),
+            ];
+        } elsif ($search =~ /^area:(\d+)$/) {
+            $query = [
+                'me.areas' => { like => "%,$1,%" }
+            ];
+        } else {
+            $query = [
+                'me.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                'me.title' => { ilike => $like_search },
+                detail => { ilike => $like_search },
+                council => { like => $like_search },
+                cobrand_data => { like => $like_search },
+            ];
+        }
         my $problems = $c->cobrand->problems->search(
             {
-                -or => [
-                    'me.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    title => { ilike => $like_search },
-                    detail => { ilike => $like_search },
-                    council => { like => $like_search },
-                    cobrand_data => { like => $like_search },
-                ]
+                -or => $query,
             },
             {
                 prefetch => 'user',
@@ -517,26 +543,42 @@ sub search_reports : Path('search_reports') {
         $c->stash->{edit_council_contacts} = 1
             if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
 
-        my $updates = $c->model('DB::Comment')->search(
-            {
-                -or => [
-                    'me.id' => $search_n,
-                    'problem.id' => $search_n,
-                    'user.email' => { ilike => $like_search },
-                    'me.name' => { ilike => $like_search },
-                    text => { ilike => $like_search },
-                    'me.cobrand_data' => { ilike => $like_search },
-                    %{ $site_restriction },
-                ]
-            },
-            {
-                -select   => [ 'me.*', qw/problem.council problem.state/ ],
-                prefetch => [qw/user problem/],
-                order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
-            }
-        );
+        if (is_valid_email($search)) {
+            $query = [
+                'user.email' => { ilike => $like_search },
+            ];
+        } elsif ($search =~ /^id:(\d+)$/) {
+            $query = [
+                'me.id' => int($1),
+                'me.problem_id' => int($1),
+            ];
+        } elsif ($search =~ /^area:(\d+)$/) {
+            $query = [];
+        } else {
+            $query = [
+                'me.id' => $search_n,
+                'problem.id' => $search_n,
+                'user.email' => { ilike => $like_search },
+                'me.name' => { ilike => $like_search },
+                text => { ilike => $like_search },
+                'me.cobrand_data' => { ilike => $like_search },
+            ];
+        }
 
-        $c->stash->{updates} = [ $updates->all ];
+        if (@$query) {
+            my $updates = $c->model('DB::Comment')->search(
+                {
+                    %{ $site_restriction },
+                    -or => $query,
+                },
+                {
+                    -select   => [ 'me.*', qw/problem.council problem.state/ ],
+                    prefetch => [qw/user problem/],
+                    order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
+                }
+            );
+            $c->stash->{updates} = [ $updates->all ];
+        }
 
         # Switch quoting back off. See above for explanation of this.
         $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
@@ -546,7 +588,7 @@ sub search_reports : Path('search_reports') {
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my ( $site_res_sql, $site_key, $site_restriction ) = $c->cobrand->site_restriction;
+    my $site_restriction = $c->cobrand->site_restriction;
 
     my $problem = $c->cobrand->problems->search(
         {
@@ -554,8 +596,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
     )->first;
 
-    $c->detach( '/page_error_404_not_found',
-        [ _('The requested URL was not found on this server.') ] )
+    $c->detach( '/page_error_404_not_found' )
       unless $problem;
 
     $c->stash->{problem} = $problem;
@@ -613,6 +654,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         my $flagged = $c->req->param('flagged') ? 1 : 0;
+        my $non_public = $c->req->param('non_public') ? 1 : 0;
 
         # do this here so before we update the values in problem
         if (   $c->req->param('anonymous') ne $problem->anonymous
@@ -620,7 +662,8 @@ sub report_edit : Path('report_edit') : Args(1) {
             || $c->req->param('email')  ne $problem->user->email
             || $c->req->param('title')  ne $problem->title
             || $c->req->param('detail') ne $problem->detail
-            || $flagged != $problem->flagged )
+            || $flagged != $problem->flagged
+            || $non_public != $problem->non_public )
         {
             $edited = 1;
         }
@@ -631,6 +674,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->state( $c->req->param('state') );
         $problem->name( $c->req->param('name') );
         $problem->flagged( $flagged );
+        $problem->non_public( $non_public );
 
         if ( $c->req->param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(
@@ -708,8 +752,7 @@ sub search_users: Path('search_users') : Args(0) {
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my ( $site_res_sql, $site_key, $site_restriction ) =
-      $c->cobrand->site_restriction;
+    my $site_restriction = $c->cobrand->site_restriction;
     my $update = $c->model('DB::Comment')->search(
         {
             id => $id,
@@ -717,8 +760,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
     )->first;
 
-    $c->detach( '/page_error_404_not_found',
-        [ _('The requested URL was not found on this server.') ] )
+    $c->detach( '/page_error_404_not_found' )
       unless $update;
 
     $c->forward('get_token');
@@ -1051,7 +1093,7 @@ sub check_token : Private {
     my ( $self, $c ) = @_;
 
     if ( !$c->req->param('token') || $c->req->param('token' ) ne $c->stash->{token} ) {
-        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;
@@ -1221,7 +1263,7 @@ sub check_page_allowed : Private {
     $page ||= 'summary';
 
     if ( !grep { $_ eq $page } keys %{ $c->stash->{allowed_pages} } ) {
-        $c->detach( '/page_error_404_not_found', [ _('The requested URL was not found on this server.') ] );
+        $c->detach( '/page_error_404_not_found' );
     }
 
     return 1;
@@ -1230,8 +1272,7 @@ sub check_page_allowed : Private {
 sub set_up_council_details : Private {
     my ($self, $c ) = @_;
 
-    my @area_types = $c->cobrand->area_types;
-    my $areas = mySociety::MaPit::call('areas', \@area_types);
+    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
 
     my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
     @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
@@ -1252,7 +1293,6 @@ sub trim {
 
 sub _rotate_image {
     my ($photo, $direction) = @_;
-    use Image::Magick;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Rotate($direction);

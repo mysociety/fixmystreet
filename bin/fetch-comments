@@ -5,11 +5,13 @@ use warnings;
 require 5.8.0;
 
 use FixMyStreet::App;
+use CronFns;
+my ($verbose, $nomail) = CronFns::options();
 
 use Open311;
 use Open311::GetServiceRequestUpdates;
 
 
-my $updates = Open311::GetServiceRequestUpdates->new;
+my $updates = Open311::GetServiceRequestUpdates->new( verbose => $verbose );
 
 $updates->fetch;

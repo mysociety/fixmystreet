@@ -318,7 +318,6 @@ BASE_URL: 'http://$servername'
 
 EMAIL_DOMAIN: 'nuug.no'
 CONTACT_EMAIL: ''
-TEST_EMAIL_PREFIX: ''
 
 CONTACT_NAME: 'FiksGataMi'
 STAGING_SITE: 1
@@ -329,7 +328,6 @@ GOOGLE_MAPS_API_KEY: ''
 
 MAPIT_URL: 'http://mapit.nuug.no'
 MAP_TYPE: 'OSM'
-EVEL_URL: ''
 GAZE_URL: 'http://gaze.mysociety.org/gaze'
 
 # empty = use /usr/sbin/sendmail'
@@ -338,11 +336,7 @@ SMTP_SMARTHOST: ''
 AUTH_SHARED_SECRET: ''
 HEARFROMYOURMP_BASE_URL: ''
 
-IPHONE_URL: ''
 ANDROID_URL: 'http://wiki.nuug.no/grupper/fiksgatami/android'
-
-# Log file (used in test harness, and later in admin scripts)
-HTTPD_ERROR_LOG: '/var/log/apache/error.log
 
 ALLOWED_COBRANDS: 'fiksgatami'
 
@@ -517,7 +511,7 @@ case "$1" in
 	;;
     update)
 	fetch_git_source
-	fgmdbpassword=$(grep OPTION_BCI_DB_PASS $basedir/fixmystreet/conf/general | cut -d\' -f4)
+	fgmdbpassword=$(grep OPTION_FMS_DB_PASS $basedir/fixmystreet/conf/general | cut -d\' -f4)
 	midbpassword=$(grep OPTION_MAPIT_DB_PASS $basedir/mapit/conf/general | cut -d\' -f4)
 
 	update_fixmystreet_config www-data $fgmdbpassword fixmystreet

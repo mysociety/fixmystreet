@@ -7,6 +7,7 @@ BEGIN { extends 'FixMyStreet::SendReport'; }
 
 use FixMyStreet::App;
 use mySociety::Config;
+use DateTime::Format::W3CDTF;
 use Open311;
 
 sub should_skip {
@@ -22,26 +23,48 @@ sub should_skip {
 
 sub send {
     my $self = shift;
-    my ( $row, $h, $to, $template, $recips, $nomail ) = @_;
+    my ( $row, $h ) = @_;
 
     my $result = -1;
 
     foreach my $council ( keys %{ $self->councils } ) {
-        my $conf = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $council, endpoint => { '!=', '' } } )->first;
+        my $conf = $self->councils->{$council}->{config};
+
+        my $always_send_latlong = 1;
+        my $send_notpinpointed  = 0;
+        my $use_service_as_deviceid = 0;
+
+        my $basic_desc = 0;
 
         # Extra bromley fields
         if ( $row->council =~ /2482/ ) {
 
             my $extra = $row->extra;
-            push @$extra, { name => 'northing', value => $h->{northing} };
-            push @$extra, { name => 'easting', value => $h->{easting} };
+            if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
+                push @$extra, { name => 'northing', value => $h->{northing} };
+                push @$extra, { name => 'easting', value => $h->{easting} };
+            }
             push @$extra, { name => 'report_url', value => $h->{url} };
             push @$extra, { name => 'service_request_id_ext', value => $row->id };
             push @$extra, { name => 'report_title', value => $row->title };
             push @$extra, { name => 'public_anonymity_required', value => $row->anonymous ? 'TRUE' : 'FALSE' };
             push @$extra, { name => 'email_alerts_requested', value => 'FALSE' }; # always false as can never request them
-            push @$extra, { name => 'requested_datetime', value => $row->confirmed };
+            push @$extra, { name => 'requested_datetime', value => DateTime::Format::W3CDTF->format_datetime($row->confirmed_local->set_nanosecond(0)) };
+            push @$extra, { name => 'email', value => $row->user->email };
             $row->extra( $extra );
+
+            $always_send_latlong = 0;
+            $send_notpinpointed = 1;
+            $use_service_as_deviceid = 0;
+
+            # make sure we have last_name attribute present in row's extra, so
+            # it is passed correctly to Bromley as attribute[]
+            if ( $row->cobrand ne 'bromley' ) {
+                my ( $firstname, $lastname ) = ( $row->user->name =~ /(\w+)\.?\s+(.+)/ );
+                push @$extra, { name => 'last_name', value => $lastname };
+            }
+
+            $basic_desc = 1;
         }
 
         # FIXME: we've already looked this up before
@@ -52,9 +75,13 @@ sub send {
         } );
 
         my $open311 = Open311->new(
-            jurisdiction => $conf->jurisdiction,
-            endpoint     => $conf->endpoint,
-            api_key      => $conf->api_key,
+            jurisdiction            => $conf->jurisdiction,
+            endpoint                => $conf->endpoint,
+            api_key                 => $conf->api_key,
+            always_send_latlong     => $always_send_latlong,
+            send_notpinpointed      => $send_notpinpointed,
+            use_service_as_deviceid => $use_service_as_deviceid,
+            basic_description       => $basic_desc,
         );
 
         # non standard west berks end points
@@ -67,15 +94,21 @@ sub send {
             $row->user->name( $row->user->id . ' ' . $row->user->name );
         }
 
+        if ($row->cobrand eq 'fixmybarangay') {
+            # FixMyBarangay endpoints expect external_id as an attribute
+            $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  ); 
+        }
+
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
 
         # make sure we don't save user changes from above
-        if ( $row->council =~ /2218/ || $row->council =~ /2482/ ) {
+        if ( $row->council =~ /2218/ || $row->council =~ /2482/ || $row->cobrand eq 'fixmybarangay') {
             $row->discard_changes();
         }
 
         if ( $resp ) {
             $row->external_id( $resp );
+            $row->send_method_used('Open311');
             $result *= 0;
             $self->success( 1 );
         } else {

@@ -1,0 +1,39 @@
+@import "../fixmystreet/_h5bp";
+@import "./_colours";
+@import "../fixmystreet/_mixins";
+@import "compass";
+
+@import "../fixmystreet/_base";
+
+#mast,
+#breadcrumb,
+#page-title,
+#column_nav,
+#footer,
+#bottomBar
+{ display: none }
+
+#site-header{
+    @include background(none);
+    background-color: white;
+}
+#site-logo {
+    width: 235px;
+    background: url('/cobrands/barnet/img/barnet-logo.gif') -3px -3px no-repeat;
+}
+#nav-link {
+    right: 1em;
+    background: url('/cobrands/barnet/img/barnet-skipnav.png') no-repeat;
+}
+
+#front-main #postcodeForm div input#submit,
+.green-btn,
+button.green-btn,
+input.green-btn,
+.red-btn,
+button.red-btn,
+input.red-btn{
+  @include button-reset;
+  background: #5D6167;
+  color: white;
+}

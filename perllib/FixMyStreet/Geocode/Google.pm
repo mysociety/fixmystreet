@@ -24,10 +24,14 @@ sub string {
     my ( $s, $c, $params ) = @_;
 
     my $url = 'http://maps.google.com/maps/geo?q=' . $s;
-      $url .=  '&ll=' . $params->{centre}  if $params->{centre};
-      $url .= '&spn=' . $params->{span}    if $params->{span};
-      $url .=  '&gl=' . $params->{country} if $params->{country};
-      $url .=  '&hl=' . $params->{lang}    if $params->{lang};
+    $url .=  '&ll=' . $params->{centre}  if $params->{centre};
+    $url .= '&spn=' . $params->{span}    if $params->{span};
+    if ($params->{google_country}) {
+        $url .=  '&gl=' . $params->{google_country};
+    } elsif ($params->{country}) {
+        $url .=  '&gl=' . $params->{country};
+    }
+    $url .=  '&hl=' . $params->{lang}    if $params->{lang};
 
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'google/';
     my $cache_file = $cache_dir . md5_hex($url);
@@ -58,9 +62,6 @@ sub string {
 
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
-    } elsif ($js =~ /BT\d/) {
-        # Northern Ireland, hopefully
-        return { error => _("We do not currently cover Northern Ireland, I'm afraid.") };
     }
 
     $js = JSON->new->utf8->allow_nonref->decode($js);
@@ -75,7 +76,14 @@ sub string {
         my $address = $_->{address};
         next unless $c->cobrand->geocoded_string_check( $address );
         ( $longitude, $latitude ) = @{ $_->{Point}->{coordinates} };
-        push (@$error, { address => $address, latitude => $latitude, longitude => $longitude });
+        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
+        mySociety::Locale::in_gb_locale {
+            push (@$error, {
+                address => $address,
+                latitude => sprintf('%0.6f', $latitude),
+                longitude => sprintf('%0.6f', $longitude)
+            });
+        };
         push (@valid_locations, $_);
     }
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;

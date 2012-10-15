@@ -9,13 +9,15 @@ has council_list => ( is => 'ro' );
 has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => undef );
 has end_date => ( is => 'ro', default => undef );
+has suppress_alerts => ( is => 'rw', default => 0 );
+has verbose => ( is => 'ro', default => 0 );
 
 sub fetch {
     my $self = shift;
 
     my $councils = FixMyStreet::App->model('DB::Open311Conf')->search(
         {
-            send_method     => 'open311',
+            send_method     => 'Open311',
             send_comments   => 1,
             comment_user_id => { '!=', undef },
             endpoint        => { '!=', '' },
@@ -30,6 +32,7 @@ sub fetch {
             jurisdiction => $council->jurisdiction,
         );
 
+        $self->suppress_alerts( $council->suppress_alerts );
         $self->system_user( $council->comment_user );
         $self->update_comments( $o, { areaid => $council->area_id }, );
     }
@@ -49,7 +52,11 @@ sub update_comments {
 
     my $requests = $open311->get_service_request_updates( @args );
 
-    return 0 unless $open311->success;
+    unless ( $open311->success ) {
+        warn "Failed to fetch ServiceRequest Updates: " . $open311->error
+            if $self->verbose;
+        return 0;
+    }
 
     for my $request (@$requests) {
         my $request_id = $request->{service_request_id};
@@ -87,19 +94,36 @@ sub update_comments {
                     }
                 );
 
-                if ( $p->is_open and $request->{status} eq 'closed' ) {
-                    $p->state( 'fixed - council' );
-                    $p->update;
-
-                    $comment->mark_fixed( 1 );
-                } elsif ( ( $p->is_closed || $p->is_fixed ) and $request->{status} eq 'open' ) {
-                    $p->state( 'confirmed' );
-                    $p->update;
-
-                    $comment->mark_open( 1 );
+                # if the comment is older than the last update
+                # do not change the status of the problem as it's
+                # tricky to determine the right thing to do.
+                if ( $comment->created_local > $p->lastupdate_local ) {
+                    if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
+                        $p->state( 'fixed - council' );
+                        $comment->problem_state( 'fixed - council' );
+                    } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
+                        $p->state( 'confirmed' );
+                        $comment->problem_state( 'confirmed' );
+                    }
                 }
 
+                $p->lastupdate( $comment->created );
+                $p->update;
                 $comment->insert();
+
+                if ( $self->suppress_alerts ) {
+                    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+                        alert_type => 'new_updates',
+                        parameter  => $p->id,
+                        confirmed  => 1,
+                        user_id    => $p->user->id,
+                    } );
+
+                    my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->find_or_create( {
+                        alert_id  => $alert->id,
+                        parameter => $comment->id,
+                    } );
+                }
             }
         }
     }

@@ -113,6 +113,7 @@ for my $test (
         close_comment => 0,
         mark_fixed=> 0,
         mark_open => 0,
+        problem_state => undef,
         end_state => 'confirmed',
     },
     {
@@ -122,8 +123,9 @@ for my $test (
         external_id => 638344,
         start_state => 'confirmed',
         close_comment => 1,
-        mark_fixed=> 1,
+        mark_fixed=> 0,
         mark_open => 0,
+        problem_state => 'fixed - council',
         end_state => 'fixed - council',
     },
     {
@@ -134,7 +136,8 @@ for my $test (
         start_state => 'fixed - user',
         close_comment => 0,
         mark_fixed => 0,
-        mark_open => 1,
+        mark_open => 0,
+        problem_state => 'confirmed',
         end_state => 'confirmed',
     },
     {
@@ -145,7 +148,8 @@ for my $test (
         start_state => 'closed',
         close_comment => 0,
         mark_fixed => 0,
-        mark_open => 1,
+        mark_open => 0,
+        problem_state => 'confirmed',
         end_state => 'confirmed',
     },
     {
@@ -170,6 +174,7 @@ for my $test (
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $local_requests_xml } );
 
         $problem->comments->delete;
+        $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
         $problem->state( $test->{start_state} );
         $problem->update;
 
@@ -184,6 +189,7 @@ for my $test (
         ok $c, 'comment exists';
         is $c->text, $test->{description}, 'text correct';
         is $c->mark_fixed, $test->{mark_fixed}, 'mark_closed correct';
+        is $c->problem_state, $test->{problem_state}, 'problem_state correct';
         is $c->mark_open, $test->{mark_open}, 'mark_open correct';
         is $problem->state, $test->{end_state}, 'correct problem state';
     };
@@ -397,6 +403,128 @@ subtest 'check that existing comments are not duplicated' => sub {
     $problem->discard_changes;
     is $problem->comments->count, 2, 'if comments are deleted then they are added';
 };
+
+foreach my $test ( {
+        desc => 'check that closed and then open comment results in correct state',
+        dt1  => $dt->subtract( hours => 1 ),
+        dt2  => $dt,
+    },
+    {
+        desc => 'check that old comments do not change problem status',
+        dt1  => $dt->subtract( hours => 2 ),
+        dt2  => $dt,
+    }
+) {
+    subtest $test->{desc}  => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638344</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+        <status>closed</status>
+        <description>This is a note</description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        <request_update>
+        <update_id>638354</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+        <status>open</status>
+        <description>This is a different note</description>
+        <updated_datetime>UPDATED_DATETIME2</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        $problem->comments->delete;
+        $problem->state( 'confirmed' );
+        $problem->lastupdate( $dt->subtract( hours => 3 ) );
+        $problem->update;
+
+        $requests_xml =~ s/UPDATED_DATETIME/$test->{dt1}/;
+        $requests_xml =~ s/UPDATED_DATETIME2/$test->{dt2}/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+        );
+
+        my $council_details = { areaid => 2482 };
+        $update->update_comments( $o, $council_details );
+
+        $problem->discard_changes;
+        is $problem->comments->count, 2, 'two comments after fetching updates';
+        is $problem->state, 'confirmed', 'correct problem status';
+    };
+}
+
+foreach my $test ( {
+        desc => 'normally alerts are not suppressed',
+        suppress_alerts => 0,
+    },
+    {
+        desc => 'alerts suppressed if suppress_alerts set',
+        suppress_alerts => 1,
+    }
+) {
+    subtest $test->{desc}  => sub {
+        my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
+        <service_requests_updates>
+        <request_update>
+        <update_id>638344</update_id>
+        <service_request_id>@{[ $problem->external_id ]}</service_request_id>
+        <service_request_id_ext>@{[ $problem->id ]}</service_request_id_ext>
+        <status>closed</status>
+        <description>This is a note</description>
+        <updated_datetime>UPDATED_DATETIME</updated_datetime>
+        </request_update>
+        </service_requests_updates>
+        };
+
+        $problem->comments->delete;
+        $problem->state( 'confirmed' );
+        $problem->lastupdate( $dt->subtract( hours => 3 ) );
+        $problem->update;
+
+        my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create( {
+            alert_type => 'new_updates',
+            parameter  => $problem->id,
+            confirmed  => 1,
+            user_id    => $problem->user->id,
+        } );
+
+        $requests_xml =~ s/UPDATED_DATETIME/$dt/;
+
+        my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'update.xml' => $requests_xml } );
+
+        my $update = Open311::GetServiceRequestUpdates->new(
+            system_user => $user,
+            suppress_alerts => $test->{suppress_alerts},
+        );
+
+        my $council_details = { areaid => 2482 };
+        $update->update_comments( $o, $council_details );
+        $problem->discard_changes;
+
+        my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->search(
+            {
+                alert_id => $alert->id,
+                parameter => $problem->comments->first->id,
+            }
+        );
+
+        if ( $test->{suppress_alerts} ) {
+            ok $alerts_sent->count(), 'alerts suppressed';
+        } else {
+            is $alerts_sent->count(), 0, 'alerts not suppressed';
+        }
+
+        $alerts_sent->delete;
+        $alert->delete;
+    }
+}
 
 $problem2->comments->delete();
 $problem->comments->delete();

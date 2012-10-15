@@ -25,7 +25,8 @@ sub map_template {
 }
 
 sub map_tiles {
-    my ($self, $x, $y, $z) = @_;
+    my ( $self, %params ) = @_;
+    my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $tile_url = $self->base_tile_url();
     return [
         "http://a.$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
@@ -73,26 +74,23 @@ sub display_map {
     my $zoom = defined $c->req->params->{zoom} ? $c->req->params->{zoom} + 0 : $default_zoom;
     $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
     $zoom = 0 if $zoom < 0;
-    my $zoom_act = $zoomOffset + $zoom;
-    my ($x_tile, $y_tile) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom_act);
+    $params{zoom_act} = $zoomOffset + $zoom;
+    ($params{x_tile}, $params{y_tile}) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $params{zoom_act});
 
     foreach my $pin (@{$params{pins}}) {
-        ($pin->{px}, $pin->{py}) = latlon_to_px($pin->{latitude}, $pin->{longitude}, $x_tile, $y_tile, $zoom_act);
+        ($pin->{px}, $pin->{py}) = latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $params{zoom_act});
     }
 
     $c->stash->{map} = {
         %params,
         type => $self->map_template(),
         map_type => $self->map_type(),
-        tiles => $self->map_tiles( $x_tile, $y_tile, $zoom_act ),
+        tiles => $self->map_tiles( %params ),
         copyright => $self->copyright(),
-        x_tile => $x_tile,
-        y_tile => $y_tile,
         zoom => $zoom,
-        zoom_act => $zoom_act,
         zoomOffset => $zoomOffset,
         numZoomLevels => $numZoomLevels,
-        compass => compass( $x_tile, $y_tile, $zoom_act ),
+        compass => compass( $params{x_tile}, $params{y_tile}, $params{zoom_act} ),
     };
 }
 
@@ -109,15 +107,9 @@ sub map_pins {
     my @pins = map {
         # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
         my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
-        #{
-        #    latitude  => $p->latitude,
-        #    longitude => $p->longitude,
-        #    colour    => $p->state eq 'fixed' ? 'green' : 'red',
-        #    id        => $p->id,
-        #    title     => $p->title,
-        #}
+        my $colour = $c->cobrand->pin_colour( $p, 'around' );
         [ $p->latitude, $p->longitude,
-          'yellow', # $p->is_fixed ? 'green' : 'red',
+          $colour,
           $p->id, $p->title
         ]
     } @$around_map, @$nearby;

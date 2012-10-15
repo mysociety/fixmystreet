@@ -31,27 +31,27 @@ sub check_questionnaire : Private {
 
     my $questionnaire = $c->stash->{questionnaire};
 
-    my $problem_id = $questionnaire->problem_id;
+    my $problem = $questionnaire->problem;
 
     if ( $questionnaire->whenanswered ) {
-        my $problem_url = $c->uri_for( "/report/$problem_id" );
+        my $problem_url = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
         my $contact_url = $c->uri_for( "/contact" );
         $c->stash->{message} = sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), $contact_url, $problem_url);
         $c->stash->{template} = 'errors/generic.html';
         $c->detach;
     }
 
-    unless ( $questionnaire->problem->is_visible ) {
+    unless ( $problem->is_visible ) {
         $c->detach('missing_problem');
     }
 
-    $c->stash->{problem} = $questionnaire->problem;
-    $c->stash->{answered_ever_reported} = $questionnaire->problem->user->answered_ever_reported;
+    $c->stash->{problem} = $problem;
+    $c->stash->{answered_ever_reported} = $problem->user->answered_ever_reported;
 
     # EHA needs to know how many to alter display, and whether to send another or not
     if ($c->cobrand->moniker eq 'emptyhomes') {
         $c->stash->{num_questionnaire} = $c->model('DB::Questionnaire')->count(
-            { problem_id => $c->stash->{problem}->id }
+            { problem_id => $problem->id }
         );
     }
 
@@ -96,15 +96,16 @@ sub submit_creator_fixed : Private {
 
     my @errors;
 
-    map { $c->stash->{$_} = $c->req->params->{$_} || '' } qw(reported problem);
+    $c->stash->{reported} = $c->req->params->{reported};
+    $c->stash->{problem_id} = $c->req->params->{problem};
 
     # should only be able to get to here if we are logged and we have a
     # problem
-    unless ( $c->user && $c->stash->{problem} ) {
+    unless ( $c->user && $c->stash->{problem_id} ) {
         $c->detach('missing_problem');
     }
 
-    my $problem = $c->cobrand->problems->find( { id => $c->stash->{problem} } );
+    my $problem = $c->cobrand->problems->find( { id => $c->stash->{problem_id} } );
 
     # you should not be able to answer questionnaires about problems
     # that you've not submitted
@@ -114,13 +115,12 @@ sub submit_creator_fixed : Private {
 
     push @errors, _('Please say whether you\'ve ever reported a problem to your council before') unless $c->stash->{reported};
 
-    $c->stash->{problem_id} = $c->stash->{problem};
     $c->stash->{errors} = \@errors;
     $c->detach( 'creator_fixed' ) if scalar @errors;
 
     my $questionnaire = $c->model( 'DB::Questionnaire' )->find_or_new(
         {
-            problem_id => $c->stash->{problem},
+            problem_id => $c->stash->{problem_id},
             # we want to look for any previous questionnaire here rather than one for
             # this specific open state -> fixed transistion
             old_state  => [ FixMyStreet::DB::Result::Problem->open_states() ],
@@ -157,6 +157,8 @@ sub submit_standard : Private {
     my $new_state = '';
     $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' && 
         FixMyStreet::DB::Result::Problem->open_states()->{$old_state};
+    $new_state = 'fixed - user' if $c->stash->{been_fixed} eq 'Yes' &&
+        FixMyStreet::DB::Result::Problem->closed_states()->{$old_state};
     $new_state = 'confirmed' if $c->stash->{been_fixed} eq 'No' &&
         FixMyStreet::DB::Result::Problem->fixed_states()->{$old_state};
 
@@ -199,7 +201,7 @@ sub submit_standard : Private {
                 mark_open    => $new_state eq 'confirmed' ? 1 : 0,
                 lang         => $c->stash->{lang_code},
                 cobrand      => $c->cobrand->moniker,
-                cobrand_data => $c->cobrand->extra_update_data,
+                cobrand_data => '',
                 confirmed    => \'ms_current_timestamp()',
                 anonymous    => $problem->anonymous,
             }
@@ -244,7 +246,7 @@ sub process_questionnaire : Private {
     push @errors, _('Please provide some explanation as to why you\'re reopening this report')
         if $c->stash->{been_fixed} eq 'No' && $c->stash->{problem}->is_fixed() && !$c->stash->{update};
 
-    $c->forward('/report/new/process_photo');
+    $c->forward('/photo/process_photo');
     push @errors, $c->stash->{photo_error}
         if $c->stash->{photo_error};
 
@@ -281,10 +283,10 @@ sub display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    $c->stash->{updates} = $c->model('DB::Comment')->search(
+    $c->stash->{updates} = [ $c->model('DB::Comment')->search(
         { problem_id => $problem->id, state => 'confirmed' },
         { order_by => 'confirmed' }
-    );
+    )->all ];
 
     $c->stash->{page} = 'questionnaire';
     FixMyStreet::Map::display_map(
@@ -294,7 +296,7 @@ sub display : Private {
         pins      => [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $problem->is_fixed() ? 'green' : 'red',
+            colour    => $c->cobrand->pin_colour( $problem, 'questionnaire' ),
         } ],
     );
 }

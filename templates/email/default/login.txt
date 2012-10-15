@@ -5,6 +5,5 @@ able to view your problem reports and manage them more easily.
 
 [% c.uri_for_action( 'auth/token', token ) %]
 
-Yours,  
-The FixMyStreet.com team
+[% INCLUDE 'signature.txt' %]
 

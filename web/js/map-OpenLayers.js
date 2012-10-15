@@ -7,6 +7,33 @@ function fixmystreet_update_pin(lonlat) {
     );
     document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
     document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+
+    $.getJSON('/report/new/ajax', {
+            latitude: $('#fixmystreet\\.latitude').val(),
+            longitude: $('#fixmystreet\\.longitude').val()
+    }, function(data) {
+        if (data.error) {
+            if (!$('#side-form-error').length) {
+                $('<div id="side-form-error"/>').insertAfter($('#side-form'));
+            }
+            $('#side-form-error').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>').show();
+            $('#side-form').hide();
+            return;
+        }
+        $('#side-form, #site-logo').show();
+        $('#councils_text').html(data.councils_text);
+        $('#form_category_row').html(data.category);
+        if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
+            // there might be a first name field on some cobrands
+            var lb = $('#form_first_name').prev();
+            if ( lb.length == 0 ) { lb = $('#form_name').prev(); }
+            lb.before(data.extra_name_info);
+        }
+    });
+
+    if (!$('#side-form-error').is(':visible')) {
+        $('#side-form, #site-logo').show();
+    }
 }
 
 function fixmystreet_activate_drag() {
@@ -43,22 +70,30 @@ function fms_markers_list(pins, transform) {
 }
 
 function fixmystreet_onload() {
-    if ( fixmystreet.area ) {
-        var area = new OpenLayers.Layer.Vector("KML", {
-            strategies: [ new OpenLayers.Strategy.Fixed() ],
-            protocol: new OpenLayers.Protocol.HTTP({
-                url: "/mapit/area/" + fixmystreet.area + ".kml?simplify_tolerance=0.0001",
-                format: new OpenLayers.Format.KML()
-            })
-        });
-        fixmystreet.map.addLayer(area);
-        area.events.register('loadend', null, function(a,b,c) {
-            var bounds = area.getDataExtent();
-            if (bounds) {
-                var center = bounds.getCenterLonLat();
-                fixmystreet.map.setCenter(center, fixmystreet.map.getZoomForExtent(bounds), false, true);
+    if ( fixmystreet.area.length ) {
+        for (var i=0; i<fixmystreet.area.length; i++) {
+            var area = new OpenLayers.Layer.Vector("KML", {
+                strategies: [ new OpenLayers.Strategy.Fixed() ],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    url: "/mapit/area/" + fixmystreet.area[i] + ".kml?simplify_tolerance=0.0001",
+                    format: new OpenLayers.Format.KML()
+                })
+            });
+            fixmystreet.map.addLayer(area);
+            if ( fixmystreet.area.length == 1 ) {
+                area.events.register('loadend', null, function(a,b,c) {
+                    var bounds = area.getDataExtent();
+                    if (bounds) {
+                        var center = bounds.getCenterLonLat();
+                        var z = fixmystreet.map.getZoomForExtent(bounds);
+                        if ( z < 13 && $('html').hasClass('mobile') ) {
+                            z = 13;
+                        }
+                        fixmystreet.map.setCenter(center, z, false, true);
+                    }
+                });
             }
-        });
+        }
     }
 
     var pin_layer_style_map = new OpenLayers.StyleMap({
@@ -118,10 +153,10 @@ function fixmystreet_onload() {
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
     if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
-        var select = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
+        fixmystreet.select_feature = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
         var selectedFeature;
         function onPopupClose(evt) {
-            select.unselect(selectedFeature);
+            fixmystreet.select_feature.unselect(selectedFeature);
             OpenLayers.Event.stop(evt);
         }
         fixmystreet.markers.events.register( 'featureunselected', fixmystreet.markers, function(evt) {
@@ -142,8 +177,8 @@ function fixmystreet_onload() {
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
         });
-        fixmystreet.map.addControl( select );
-        select.activate();
+        fixmystreet.map.addControl( fixmystreet.select_feature );
+        fixmystreet.select_feature.activate();
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
@@ -151,7 +186,14 @@ function fixmystreet_onload() {
 
     if ( fixmystreet.zoomToBounds ) {
         var bounds = fixmystreet.markers.getDataExtent();
-        if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
+        if (bounds) {
+            var center = bounds.getCenterLonLat();
+            var z = fixmystreet.map.getZoomForExtent(bounds);
+            if ( z < 13 && $('html').hasClass('mobile') ) {
+                z = 13;
+            }
+            fixmystreet.map.setCenter(center, z);
+        }
     }
 
     $('#hide_pins_link').click(function(e) {
@@ -164,9 +206,11 @@ function fixmystreet_onload() {
         for (var i=0; i<showhide.length; i+=2) {
             if (this.innerHTML == showhide[i]) {
                 fixmystreet.markers.setVisibility(true);
+                fixmystreet.select_feature.activate();
                 this.innerHTML = showhide[i+1];
             } else if (this.innerHTML == showhide[i+1]) {
                 fixmystreet.markers.setVisibility(false);
+                fixmystreet.select_feature.deactivate();
                 this.innerHTML = showhide[i];
             }
         }
@@ -245,7 +289,7 @@ $(function(){
             fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
         });
         fixmystreet.map.events.register("zoomend", null, function(e){
-            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom ) {
+            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom && fixmystreet.map.moveStart.zoom !== 0 ) {
                 return true; // getZoom() on Firefox appears to return null at first?
             }
             if ( !fixmystreet.map.moveStart || !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
@@ -293,7 +337,7 @@ $(function(){
         $('#sub_map_links').show();
         //only on mobile
         $('#mob_sub_map_links').remove();
-        $('.mobile-map-banner').text('Place pin on map');
+        $('.mobile-map-banner').html('<a href="/">Home</a> Place pin on map');
         fixmystreet.page = 'around';
     });
 
@@ -420,7 +464,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet.markers.addFeatures( markers );
             fixmystreet_activate_drag();
         }
-        fixmystreet_update_pin(lonlat);
+
         // check to see if markers are visible. We click the
         // link so that it updates the text in case they go
         // back
@@ -428,28 +472,15 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             fixmystreet.state_pins_were_hidden = true;
             $('#hide_pins_link').click();
         }
+
+        // Store pin location in form fields, and check coverage of point
+        fixmystreet_update_pin(lonlat);
+
+        // Already did this first time map was clicked, so no need to do it again.
         if (fixmystreet.page == 'new') {
             return;
         }
-        $.getJSON('/report/new/ajax', {
-                latitude: $('#fixmystreet\\.latitude').val(),
-                longitude: $('#fixmystreet\\.longitude').val()
-        }, function(data) {
-            if (data.error) {
-                // XXX If they then click back and click somewhere in the area, this error will still show.
-                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
-                return;
-            }
-            $('#councils_text').html(data.councils_text);
-            $('#form_category_row').html(data.category);
-            if ( data.extra_name_info ) {
-                // there might be a first name field on some cobrands
-                var lb = $('#form_first_name').prev() || $('#form_name').prev();
-                lb.before(data.extra_name_info);
-            }
-        });
 
-        $('#side-form, #site-logo').show();
         fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
@@ -472,6 +503,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             // e.xy is relative to top left of map, which might not be top left of page
             e.xy.x += bo.left;
             e.xy.y += bo.top;
+
+            // 24 and 64 is the width and height of the marker pin
             if (e.xy.y <= o.top || (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64)) {
                 // top of the page, pin hidden by header;
                 // or underneath where the new sidebar will appear
@@ -499,7 +532,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
             // Making it relative here makes it much easier to do the scrolling later
 
-            $('.mobile-map-banner').text('Right place?');
+            $('.mobile-map-banner').html('<a href="/">Home</a> Right place?');
 
             // mobile user clicks 'ok' on map
             $('#mob_ok').toggle(function(){

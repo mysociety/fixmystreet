@@ -1,5 +1,5 @@
 package FixMyStreet::Cobrand::Bromley;
-use base 'FixMyStreet::Cobrand::UKCouncils';
+use parent 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
@@ -8,6 +8,11 @@ sub council_id { return 2482; }
 sub council_area { return 'Bromley'; }
 sub council_name { return 'Bromley Council'; }
 sub council_url { return 'bromley'; }
+
+sub base_url {
+    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    return 'https://fix.bromley.gov.uk';
+}
 
 sub path_to_web_templates {
     my $self = shift;
@@ -18,12 +23,21 @@ sub path_to_web_templates {
 }
 
 sub disambiguate_location {
-    my $self = shift;
+    my $self    = shift;
+    my $string  = shift;
+
+    my $town = 'Bromley';
+    # Bing turns High St Bromley into Bromley High St which is in 
+    # Bromley by Bow.
+    if ( $string =~ /high\+st/i ) {
+        $town .= ', BR1';
+    }
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town => $town,
         centre => '51.366836,0.040623',
         span   => '0.154963,0.24347',
-        bounds => [ '51.289355,-0.081112', '51.444318,0.162358' ],
+        bounds => [ 51.289355, -0.081112, 51.444318, 0.162358 ],
     };
 }
 
@@ -31,33 +45,61 @@ sub example_places {
     return ( 'BR1 3UH', 'Glebe Rd, Bromley' );
 }
 
+sub map_type {
+    'Bromley';
+}
+
+sub on_map_default_max_pin_age {
+    return '1 month';
+}
+
+# Bromley pins always yellow
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'yellow';
+}
+
+sub recent_photos {
+    my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
+    $num = 3 if $num > 3 && $area eq 'alert';
+    return $self->problems->recent_photos( $num, $lat, $lon, $dist );
+}
+
+sub send_questionnaires {
+    return 0;
+}
+
+sub ask_ever_reported {
+    return 0;
+}
+
 sub process_extras {
-    my $self     = shift;
-    my $ctx      = shift;
-    my $contacts = shift;
-    my $extra    = shift;
+    my $self = shift;
+    $self->SUPER::process_extras( @_, [ 'first_name', 'last_name' ] );
+}
 
-    for my $field (qw/ fms_extra_title first_name last_name /) {
-        my $value = $ctx->request->param($field);
+sub contact_email {
+    my $self = shift;
+    my $type = shift || '';
+    return join( '@', 'info', 'bromley.gov.uk' ) if $type eq 'contact';
+    return $self->next::method();
+}
+sub contact_name { 'Bromley Council (do not reply)'; }
 
-        if ( !$value ) {
-            $ctx->stash->{field_errors}->{$field} =
-              _('This information is required');
-        }
-        push @$extra,
-          {
-            name        => $field,
-            description => uc($field),
-            value       => $value || '',
-          };
-    }
+sub reports_per_page { return 20; }
 
-    if ( $ctx->request->param('fms_extra_title') ) {
-        $ctx->stash->{fms_extra_title} =
-          $ctx->request->param('fms_extra_title');
-        $ctx->stash->{extra_name_info} = 1;
+sub tweak_all_reports_map {
+    my $self = shift;
+    my $c = shift;
+
+    if ( !$c->stash->{ward} ) {
+        $c->stash->{map}->{longitude} = 0.040622967881348;
+        $c->stash->{map}->{latitude} = 51.36690161822;
+        $c->stash->{map}->{any_zoom} = 0;
+        $c->stash->{map}->{zoom} = 11;
     }
 }
+
 
 1;
 

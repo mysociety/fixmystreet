@@ -105,34 +105,39 @@ subtest 'check summary counts' => sub {
 
     $mech->content_contains( "$q_count questionnaires sent" );
 
-    ok $mech->host('barnet.fixmystreet.com');
+    SKIP: {
+        skip( "Need 'barnet' in ALLOWED_COBRANDS config", 7 )
+            unless FixMyStreet::Cobrand->exists('barnet');
 
-    $mech->get_ok('/admin');
-    $mech->title_like(qr/Summary/);
+        ok $mech->host('barnet.fixmystreet.com');
 
-    my ($num_live) = $mech->content =~ /(\d+)<\/strong> live problems/;
-    my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
-    my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
+        $mech->get_ok('/admin');
+        $mech->title_like(qr/Summary/);
 
-    $report->council(2489);
-    $report->cobrand('barnet');
-    $report->update;
+        my ($num_live) = $mech->content =~ /(\d+)<\/strong> live problems/;
+        my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
+        my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
 
-    $alert->cobrand('barnet');
-    $alert->update;
+        $report->council(2489);
+        $report->cobrand('barnet');
+        $report->update;
 
-    $mech->get_ok('/admin');
+        $alert->cobrand('barnet');
+        $alert->update;
 
-    $mech->content_contains( ($num_live+1) . "</strong> live problems" );
-    $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
-    $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
+        $mech->get_ok('/admin');
 
-    $report->council(2504);
-    $report->cobrand('');
-    $report->update;
+        $mech->content_contains( ($num_live+1) . "</strong> live problems" );
+        $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
+        $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
 
-    $alert->cobrand('');
-    $alert->update;
+        $report->council(2504);
+        $report->cobrand('');
+        $report->update;
+
+        $alert->cobrand('');
+        $alert->update;
+    }
 
     FixMyStreet::App->model('DB::Problem')->search( { council => 1 } )->update( { council => 2489 } );
     ok $mech->host('fixmystreet.com');
@@ -158,19 +163,32 @@ subtest 'check contact creation' => sub {
     $mech->get_ok('/admin/council_contacts/2650');
 
     $mech->submit_form_ok( { with_fields => { 
-        category => 'test category',
-        email    => 'test@example.com',
-        note     => 'test note',
+        category   => 'test category',
+        email      => 'test@example.com',
+        note       => 'test note',
+        non_public => undef,
     } } );
 
     $mech->content_contains( 'test category' );
     $mech->content_contains( '<td>test@example.com' );
     $mech->content_contains( '<td>test note' );
+    $mech->content_contains( '<td>Public' );
+
+    $mech->submit_form_ok( { with_fields => { 
+        category   => 'private category',
+        email      => 'test@example.com',
+        note       => 'test note',
+        non_public => 'on',
+    } } );
+
+    $mech->content_contains( 'private category' );
+    $mech->content_contains( '<td>Non Public' );
 
     $mech->submit_form_ok( { with_fields => {
         category => 'test/category',
         email    => 'test@example.com',
         note     => 'test/note',
+        non_public => 'on',
     } } );
     $mech->get_ok('/admin/council_edit/2650/test/category');
 
@@ -182,11 +200,21 @@ subtest 'check contact editing' => sub {
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
         note     => 'test2 note',
+        non_public => undef,
     } } );
 
     $mech->content_contains( 'test category' );
     $mech->content_contains( '<td>test2@example.com' );
     $mech->content_contains( '<td>test2 note' );
+    $mech->content_contains( '<td>Public' );
+
+    $mech->submit_form_ok( { with_fields => { 
+        email    => 'test2@example.com',
+        note     => 'test2 note',
+        non_public => 'on',
+    } } );
+
+    $mech->content_contains( '<td>Non Public' );
 
     $mech->get_ok('/admin/council_edit/2650/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );
@@ -222,6 +250,8 @@ subtest 'check open311 configuring' => sub {
                 api_key      => 'api key',
                 endpoint     => 'http://example.com/open311',
                 jurisdiction => 'mySociety',
+                send_comments => 0,
+                send_method  => 'Open311',
             }
         }
     );
@@ -244,6 +274,8 @@ subtest 'check open311 configuring' => sub {
                 api_key      => 'new api key',
                 endpoint     => 'http://example.org/open311',
                 jurisdiction => 'open311',
+                send_comments => 0,
+                send_method  => 'Open311',
             }
         }
     );
@@ -284,206 +316,229 @@ ok $report, "created test report - $report_id";
 foreach my $test (
     {
         description => 'edit report title',
-        fields => {
-            title  => 'Report to Edit',
-            detail => 'Detail for Report to Edit',
-            state  => 'confirmed',
-            name   => 'Test User',
-            email  => $user->email,
-            anonymous => 0,
-            flagged => undef,
+        fields      => {
+            title      => 'Report to Edit',
+            detail     => 'Detail for Report to Edit',
+            state      => 'confirmed',
+            name       => 'Test User',
+            email      => $user->email,
+            anonymous  => 0,
+            flagged    => undef,
+            non_public => undef,
         },
-        changes => {
-            title => 'Edited Report',
-        },
-        log_count => 1,
-        log_entries => [ qw/edit/ ],
-        resend => 0,
+        changes     => { title => 'Edited Report', },
+        log_count   => 1,
+        log_entries => [qw/edit/],
+        resend      => 0,
     },
     {
         description => 'edit report description',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Detail for Report to Edit',
-            state  => 'confirmed',
-            name   => 'Test User',
-            email  => $user->email,
-            anonymous => 0,
-            flagged => undef,
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Detail for Report to Edit',
+            state      => 'confirmed',
+            name       => 'Test User',
+            email      => $user->email,
+            anonymous  => 0,
+            flagged    => undef,
+            non_public => undef,
         },
-        changes => {
-            detail => 'Edited Detail',
-        },
-        log_count => 2,
-        log_entries => [ qw/edit edit/ ],
-        resend => 0,
+        changes     => { detail => 'Edited Detail', },
+        log_count   => 2,
+        log_entries => [qw/edit edit/],
+        resend      => 0,
     },
     {
         description => 'edit report user name',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'confirmed',
-            name   => 'Test User',
-            email  => $user->email,
-            anonymous => 0,
-            flagged => undef,
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Test User',
+            email      => $user->email,
+            anonymous  => 0,
+            flagged    => undef,
+            non_public => undef,
         },
-        changes => {
-            name => 'Edited User',
-        },
-        log_count => 3,
-        log_entries => [ qw/edit edit edit/ ],
-        resend => 0,
-        user => $user,
+        changes     => { name => 'Edited User', },
+        log_count   => 3,
+        log_entries => [qw/edit edit edit/],
+        resend      => 0,
+        user        => $user,
     },
     {
         description => 'edit report set flagged true',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'confirmed',
-            name   => 'Edited User',
-            email  => $user->email,
-            anonymous => 0,
-            flagged => undef,
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            email      => $user->email,
+            anonymous  => 0,
+            flagged    => undef,
+            non_public => undef,
         },
         changes => {
-            flagged => 'on',
+            flagged    => 'on',
         },
-        log_count => 4,
-        log_entries => [ qw/edit edit edit edit/ ],
-        resend => 0,
-        user => $user,
+        log_count   => 4,
+        log_entries => [qw/edit edit edit edit/],
+        resend      => 0,
+        user        => $user,
     },
     {
         description => 'edit report user email',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'confirmed',
-            name   => 'Edited User',
-            email  => $user->email,
-            anonymous => 0,
-            flagged => 'on',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            email      => $user->email,
+            anonymous  => 0,
+            flagged    => 'on',
+            non_public => undef,
         },
-        changes => {
-            email => $user2->email,
-        },
-        log_count => 5,
-        log_entries => [ qw/edit edit edit edit edit/ ],
-        resend => 0,
-        user => $user2,
+        changes     => { email => $user2->email, },
+        log_count   => 5,
+        log_entries => [qw/edit edit edit edit edit/],
+        resend      => 0,
+        user        => $user2,
     },
     {
         description => 'change state to unconfirmed',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'confirmed',
-            name   => 'Edited User',
-            email  => $user2->email,
-            anonymous => 0,
-            flagged => 'on',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            email      => $user2->email,
+            anonymous  => 0,
+            flagged    => 'on',
+            non_public => undef,
         },
-        changes => {
-            state => 'unconfirmed'
-        },
+        changes   => { state => 'unconfirmed' },
         log_count => 6,
-        log_entries => [ qw/state_change edit edit edit edit edit/ ],
-        resend => 0,
+        log_entries => [qw/state_change edit edit edit edit edit/],
+        resend      => 0,
     },
     {
         description => 'change state to confirmed',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'unconfirmed',
-            name   => 'Edited User',
-            email  => $user2->email,
-            anonymous => 0,
-            flagged => 'on',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'unconfirmed',
+            name       => 'Edited User',
+            email      => $user2->email,
+            anonymous  => 0,
+            flagged    => 'on',
+            non_public => undef,
         },
-        changes => {
-            state => 'confirmed'
-        },
+        changes   => { state => 'confirmed' },
         log_count => 7,
-        log_entries => [ qw/state_change state_change edit edit edit edit edit/ ],
-        resend => 0,
+        log_entries => [qw/state_change state_change edit edit edit edit edit/],
+        resend      => 0,
     },
     {
         description => 'change state to fixed',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'confirmed',
-            name   => 'Edited User',
-            email  => $user2->email,
-            anonymous => 0,
-            flagged => 'on',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            email      => $user2->email,
+            anonymous  => 0,
+            flagged    => 'on',
+            non_public => undef,
         },
-        changes => {
-            state => 'fixed'
-        },
+        changes   => { state => 'fixed' },
         log_count => 8,
-        log_entries => [ qw/state_change state_change state_change edit edit edit edit edit/ ],
+        log_entries =>
+          [qw/state_change state_change state_change edit edit edit edit edit/],
         resend => 0,
     },
     {
         description => 'change state to hidden',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'fixed',
-            name   => 'Edited User',
-            email  => $user2->email,
-            anonymous => 0,
-            flagged => 'on',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'fixed',
+            name       => 'Edited User',
+            email      => $user2->email,
+            anonymous  => 0,
+            flagged    => 'on',
+            non_public => undef,
         },
-        changes => {
-            state => 'hidden'
-        },
-        log_count => 9,
-        log_entries => [ qw/state_change state_change state_change state_change edit edit edit edit edit/ ],
+        changes     => { state => 'hidden' },
+        log_count   => 9,
+        log_entries => [
+            qw/state_change state_change state_change state_change edit edit edit edit edit/
+        ],
         resend => 0,
     },
     {
         description => 'edit and change state',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'hidden',
-            name   => 'Edited User',
-            email  => $user2->email,
-            anonymous => 0,
-            flagged => 'on',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'hidden',
+            name       => 'Edited User',
+            email      => $user2->email,
+            anonymous  => 0,
+            flagged    => 'on',
+            non_public => undef,
         },
         changes => {
-            state => 'confirmed',
+            state     => 'confirmed',
             anonymous => 1,
         },
-        log_count => 11,
-        log_entries => [ qw/edit state_change state_change state_change state_change state_change edit edit edit edit edit/ ],
+        log_count   => 11,
+        log_entries => [
+            qw/edit state_change state_change state_change state_change state_change edit edit edit edit edit/
+        ],
         resend => 0,
     },
     {
         description => 'resend',
-        fields => {
-            title  => 'Edited Report',
-            detail => 'Edited Detail',
-            state  => 'confirmed',
-            name   => 'Edited User',
-            email  => $user2->email,
-            anonymous => 1,
-            flagged => 'on',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            email      => $user2->email,
+            anonymous  => 1,
+            flagged    => 'on',
+            non_public => undef,
         },
-        changes => {
-        },
-        log_count => 12,
-        log_entries => [ qw/resend edit state_change state_change state_change state_change state_change edit edit edit edit edit/ ],
+        changes     => {},
+        log_count   => 12,
+        log_entries => [
+            qw/resend edit state_change state_change state_change state_change state_change edit edit edit edit edit/
+        ],
         resend => 1,
     },
-) {
+    {
+        description => 'non public',
+        fields      => {
+            title      => 'Edited Report',
+            detail     => 'Edited Detail',
+            state      => 'confirmed',
+            name       => 'Edited User',
+            email      => $user2->email,
+            anonymous  => 1,
+            flagged    => 'on',
+            non_public => undef,
+        },
+        changes     => {
+            non_public => 'on',
+        },
+        log_count   => 13,
+        log_entries => [
+            qw/edit resend edit state_change state_change state_change state_change state_change edit edit edit edit edit/
+        ],
+        resend => 0,
+    },
+  )
+{
     subtest $test->{description} => sub {
         $log_entries->reset;
         $mech->get_ok("/admin/report_edit/$report_id");
@@ -514,6 +569,8 @@ foreach my $test (
         }
 
         $test->{changes}->{flagged} = 1 if $test->{changes}->{flagged};
+        $test->{changes}->{non_public} = 1 if $test->{changes}->{non_public};
+
         is $report->$_, $test->{changes}->{$_}, "$_ updated" for grep { $_ ne 'email' } keys %{ $test->{changes} };
 
         if ( $test->{user} ) {
@@ -538,6 +595,7 @@ subtest 'change email to new user' => sub {
         email  => $report->user->email,
         anonymous => 1,
         flagged => 'on',
+        non_public => 'on',
     };
 
     is_deeply( $mech->visible_form_values(), $fields, 'initial form values' );

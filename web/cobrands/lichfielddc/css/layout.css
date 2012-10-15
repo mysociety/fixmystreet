@@ -7,6 +7,11 @@
     background-color: #F3F4F4;
 }
 
+#mysociety .other-problems {
+    margin: 2em 8em 0em 8em;
+    font-weight: bold;
+}
+
 #mysociety #postcodeForm label {
     float: none;
     margin-bottom: 5px;

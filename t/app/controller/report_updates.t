@@ -271,7 +271,7 @@ for my $test (
         $mech->submit_form_ok( { with_fields => $test->{fields} },
             'submit update' );
 
-        is_deeply $mech->form_errors, $test->{field_errors}, 'field errors';
+        is_deeply $mech->page_errors, $test->{field_errors}, 'field errors';
 
         my $values = {
             %{ $test->{fields} },
@@ -577,7 +577,12 @@ for my $test (
         is $update->problem_state, $test->{state}, 'problem state set';
 
         my $update_meta = $mech->extract_update_metas;
-        like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        # setting it to confirmed shouldn't say anything
+        if ( $test->{fields}->{state} ne 'confirmed' ) {
+            like $update_meta->[0], qr/marked as $test->{fields}->{state}$/, 'update meta includes state change';
+        } else {
+            like $update_meta->[0], qr/reopened$/, 'update meta includes state change';
+        }
         like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
         $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
 
@@ -585,6 +590,44 @@ for my $test (
         is $report->state, $test->{state}, 'state set';
     };
 }
+
+subtest 'check meta correct for comments marked confirmed but not marked open' => sub {
+    $report->comments->delete;
+    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            user          => $user,
+            problem_id    => $report->id,
+            text          => 'update text',
+            confirmed     => DateTime->now,
+            problem_state => 'confirmed',
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 0,
+            state         => 'confirmed',
+        }
+    );
+
+    $mech->get_ok( "/report/" . $report->id );
+    my $update_meta = $mech->extract_update_metas;
+    like $update_meta->[0], qr/reopened$/,
+      'update meta does not say reopened';
+
+    $comment->update( { mark_open => 1, problem_state => undef } );
+    $mech->get_ok( "/report/" . $report->id );
+    $update_meta = $mech->extract_update_metas;
+
+    unlike $update_meta->[0], qr/marked as open$/,
+      'update meta does not says marked as open';
+    like $update_meta->[0], qr/reopened$/, 'update meta does say reopened';
+
+    $comment->update( { mark_open => 0, problem_state => undef } );
+    $mech->get_ok( "/report/" . $report->id );
+    $update_meta = $mech->extract_update_metas;
+
+    unlike $update_meta->[0], qr/marked as open$/,
+      'update meta does not says marked as open';
+    unlike $update_meta->[0], qr/reopened$/, 'update meta does not say reopened';
+  };
 
 $user->from_council(0);
 $user->update;
@@ -640,7 +683,7 @@ for my $test (
             'submit update'
         );
 
-        is_deeply $mech->form_errors, $test->{field_errors}, 'check there were errors';
+        is_deeply $mech->page_errors, $test->{field_errors}, 'check there were errors';
 
         SKIP: {
             skip( "Incorrect password", 5 ) unless $test->{form_values}{password_sign_in} eq $pw;
@@ -872,7 +915,11 @@ for my $test (
 
         is_deeply $values, $test->{initial_values}, 'initial form values';
 
-        is $mech->extract_problem_banner->{text}, $test->{initial_banner}, 'initial banner';
+        if ( !defined( $test->{initial_banner} ) ) {
+            is $mech->extract_problem_banner->{text}, undef, 'initial banner';
+        } else {
+            like $mech->extract_problem_banner->{text}, qr/@{[ $test->{initial_banner} ]}/i, 'initial banner';
+        }
 
         $mech->submit_form_ok(
             {
@@ -883,7 +930,11 @@ for my $test (
 
         is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
 
-        is $mech->extract_problem_banner->{text}, $test->{endstate_banner}, 'submitted banner';
+        if ( !defined( $test->{endstate_banner} ) ) {
+            is $mech->extract_problem_banner->{text}, undef, 'endstate banner';
+        } else {
+            like $mech->extract_problem_banner->{text}, qr/@{[ $test->{endstate_banner} ]}/i, 'endstate banner';
+        }
 
         $mech->email_count_is(0);
 
@@ -1029,8 +1080,12 @@ foreach my $test (
 
         is_deeply $values, $test->{initial_values}, 'initial form values';
 
-        is $mech->extract_problem_banner->{text}, $test->{initial_banner},
-          'initial banner';
+        if ( !defined( $test->{initial_banner} ) ) {
+            is $mech->extract_problem_banner->{text}, undef, 'initial banner';
+        } else {
+            like $mech->extract_problem_banner->{text}, qr/@{[ $test->{initial_banner} ]}/i,
+              'initial banner';
+        }
 
         $mech->submit_form_ok( { with_fields => $test->{fields}, },
             'submit update' );

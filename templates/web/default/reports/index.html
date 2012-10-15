@@ -34,6 +34,7 @@
 <td class="data">[% fixed.${area.id}.new or 0 %]</td>
 <td class="data">[% fixed.${area.id}.old or 0 %]</td>
 </tr>
+[% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
 [% END %]
 </tbody>
 </table>

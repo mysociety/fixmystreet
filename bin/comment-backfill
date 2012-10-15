@@ -14,8 +14,8 @@ my $start_time = DateTime->now->subtract( days => 1, hours => 1 );
 my $end_time = DateTime->now;
 
 my $updates = Open311::GetServiceRequestUpdates->new(
-    start_time  => $start_time,
-    end_time    => $end_time,
+    start_date => $start_time,
+    end_date   => $end_time,
 );
 
 $updates->fetch;

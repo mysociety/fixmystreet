@@ -151,7 +151,7 @@ sub delete_user {
         ok( $p->delete, "delete problem " . $p->title );
     }
     for my $a ( $user->alerts ) {
-        $a->alert_sents->delete;
+        $a->alerts_sent->delete;
         ok( $a->delete, "delete alert " . $a->alert_type );
     }
     ok( $_->delete, "delete comment " . $_->text )     for $user->comments;
@@ -211,25 +211,6 @@ sub get_email {
     return $emails[0];
 }
 
-=head2 form_errors
-
-    my $arrayref = $mech->form_errors;
-
-Find all the form errors on the current page and return them in page order as an
-arrayref of TEXTs. If none found return empty arrayref.
-
-=cut
-
-sub form_errors {
-    my $mech   = shift;
-    my $result = scraper {
-        process 'div.form-error', 'errors[]', 'TEXT';
-        process 'p.form-error', 'errors[]', 'TEXT';
-    }
-    ->scrape( $mech->response );
-    return $result->{errors} || [];
-}
-
 =head2 page_errors
 
     my $arrayref = $mech->page_errors;
@@ -242,8 +223,7 @@ arrayref of TEXTs. If none found return empty arrayref.
 sub page_errors {
     my $mech   = shift;
     my $result = scraper {
-        process 'p.error',  'errors[]', 'TEXT';
-        process 'ul.error li', 'errors[]', 'TEXT';
+        process 'div.form-error, p.form-error, p.error, ul.error li', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
     return $result->{errors} || [];
@@ -326,6 +306,7 @@ sub extract_problem_meta {
 
     my $result = scraper {
         process 'div#side p em', 'meta', 'TEXT';
+        process '.problem-header p em', 'meta', 'TEXT';
     }
     ->scrape( $mech->response );
 
@@ -347,6 +328,7 @@ sub extract_problem_title {
 
     my $result = scraper {
         process 'div#side h1', 'title', 'TEXT';
+        process '.problem-header h1', 'title', 'TEXT';
     }
     ->scrape( $mech->response );
 
@@ -387,12 +369,56 @@ sub extract_update_metas {
 
     my $result = scraper {
         process 'div#updates div.problem-update p em', 'meta[]', 'TEXT';
+        process '.update-text .meta-2', 'meta[]', 'TEXT';
     }
     ->scrape( $mech->response );
 
     my @metas = map { s/^\s+//; s/\s+$//; $_; } @{ $result->{meta} };
 
     return \@metas;
+}
+
+=head2 extract_problem_list
+
+    $problems = $mech->extract_problem_list
+
+Returns an array ref of all problem titles on a page featuring standard issue lists
+
+=cut
+
+sub extract_problem_list {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'ul.issue-list-a li a h4', 'problems[]', 'TEXT';
+    }->scrape( $mech->response );
+
+    return $result->{ problems } || [];
+}
+
+=head2 extract_report_stats
+
+    $stats = $mech->extract_report_stats
+
+Returns a hash ref keyed by council name of all the council stats from the all reports
+page. Each value is an array ref with the first element being the council name and the
+rest being the stats in the order the appear in each row.
+
+=cut
+
+sub extract_report_stats {
+    my $mech = shift;
+
+    my $result = scraper {
+        process 'tr[align=center]', 'councils[]' => scraper {
+            process 'td.title a', 'council', 'TEXT',
+            process 'td', 'stats[]', 'TEXT'
+        }
+    }->scrape( $mech->response );
+
+    my %councils = map { $_->{council} => $_->{stats} } @{ $result->{councils} };
+
+    return \%councils;
 }
 
 =head2 visible_form_values
@@ -490,6 +516,69 @@ sub get_ok_json {
       unless $res->header('Content-Type') =~ m{^application/json\b};
 
     return decode_json( $res->content );
+}
+
+sub delete_problems_for_council {
+    my $mech = shift;
+    my $council = shift;
+
+    my $reports = FixMyStreet::App->model('DB::Problem')->search( { council => $council } );
+    if ( $reports ) {
+        for my $r ( $reports->all ) {
+            $r->comments->delete;
+        }
+        $reports->delete;
+    }
+}
+
+sub create_problems_for_council {
+    my ( $mech, $count, $council, $title, $params ) = @_;
+
+    my $dt = $params->{dt} || DateTime->now();
+
+    my $user = $params->{user} ||
+      FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
+
+    delete $params->{user};
+    delete $params->{dt};
+
+    my @problems;
+
+    while ($count) {
+        my $default_params = {
+            postcode           => 'SW1A 1AA',
+            council            => $council,
+            areas              => ',105255,11806,11828,2247,2504,',
+            category           => 'Other',
+            title              => "$title Test $count for $council",
+            detail             => "$title Test $count for $council Detail",
+            used_map           => 't',
+            name               => 'Test User',
+            anonymous          => 'f',
+            state              => 'confirmed',
+            confirmed          => $dt->ymd . ' ' . $dt->hms,
+            lang               => 'en-gb',
+            service            => '',
+            cobrand            => 'default',
+            cobrand_data       => '',
+            send_questionnaire => 't',
+            latitude           => '51.5016605453401',
+            longitude          => '-0.142497580865087',
+            user_id            => $user->id,
+            photo              => 1,
+        };
+
+        my %report_params = ( %$default_params, %$params );
+
+        my $problem =
+          FixMyStreet::App->model('DB::Problem')->create( \%report_params );
+
+        push @problems, $problem;
+        $count--;
+    }
+
+    return @problems;
 }
 
 1;
