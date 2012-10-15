@@ -80,6 +80,11 @@ The templates use the `loc` function to pass strings to gettext for
 translation. The `commonlib/bin/gettext-makemo` script may be useful
 for compiling the .po files for use with Apache.
 
+If you use a new language, you must make sure that the locale for that language
+is installed on the server in order for the translations to work properly.
+On Debian, you can alter `/etc/locale.gen` and run `sudo locale-gen`.
+On Ubuntu, you can just run `sudo locale-gen <LOCALE_NAME>`.
+
 ## CSS
 
 The CSS is stored in `web/cobrands/` under which there are directories for Cobrands.
