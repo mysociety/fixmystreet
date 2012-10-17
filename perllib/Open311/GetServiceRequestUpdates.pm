@@ -54,6 +54,14 @@ sub update_comments {
 
         push @args, $self->start_date;
         push @args, $self->end_date;
+    # default to asking for last 2 hours worth if not Bromley
+    } elsif ( $council_details->{areaid} != 2482 ) {
+        my $end_dt = DateTime->now();
+        my $start_dt = $end_dt->clone;
+        $start_dt->add( hours => -2 );
+
+        push @args, DateTime::Format::W3CDTF->format_datetime( $start_dt );
+        push @args, DateTime::Format::W3CDTF->format_datetime( $end_dt );
     }
 
     my $requests = $open311->get_service_request_updates( @args );
