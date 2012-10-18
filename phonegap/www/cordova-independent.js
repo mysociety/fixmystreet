@@ -6,7 +6,7 @@
     } else if (navigator.userAgent.match(/Android/)) {
 	scriptElement.src = 'cordova-android-2.1.0.js';
     } else {
-        alert("Unknown platform - userAgent is: " + userAgent);
+        alert("Unknown platform - userAgent is: " + navigator.userAgent);
     }
     $('head').prepend(scriptElement);
 })();
