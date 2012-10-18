@@ -145,6 +145,12 @@ sub _handle_existing_contact {
         }
     }
 
+    if ( $contact and lc( $self->_current_service->{metadata} ) eq 'true' ) {
+        $self->_add_meta_to_contact( $contact );
+    } elsif ( $contact and $contact->extra and lc( $self->_current_service->{metadata} ) eq 'false' ) {
+        $contact->update( { extra => undef } );
+    }
+
     push @{ $self->found_contacts }, $self->_current_service->{service_code};
 }
 
