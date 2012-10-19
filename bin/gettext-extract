@@ -46,7 +46,7 @@ cat $PO | sed "
         s/POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE/POT-Creation-Date: $NOW/;
         s/LL@li.org/team@fixmystreet.com/;
         s/charset=CHARSET/charset=UTF-8/;
-        s/8bit/8bit\\\n\"\\$nl\"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;/;
+        s/8bit/8bit\\\n\"\\$nl\"Plural-Forms: nplurals=2; plural=n != 1;/;
 " >> $TEMP
 mv $TEMP $PO
 
