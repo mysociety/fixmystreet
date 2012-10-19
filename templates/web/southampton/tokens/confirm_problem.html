@@ -1,0 +1,14 @@
+[% INCLUDE 'header.html', title = loc('Confirmation') %]
+
+<h1>[% loc('Confirmation') %]</h1>
+
+<p class="confirmed">
+Thank you for your report which will be updated as soon as possible.
+You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">view the problem on this site</a>.
+</p>
+
+<p>Your reference for this problem is [% problem.id %], please quote it in any enquiries.
+
+[% display_crosssell_advert( problem.user.email, problem.name ) %]
+
+[% INCLUDE 'footer.html' %]
