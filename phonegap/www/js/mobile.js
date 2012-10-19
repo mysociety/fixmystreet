@@ -377,11 +377,10 @@ function sign_in() {
                 localStorage.name = data.name;
                 localStorage.username = $('#form_email').val();
                 localStorage.password = $('#password_sign_in').val();
-                alert( localStorage.name + ', ' + localStorage.username + ', ' + localStorage.password );
                 hideBusy();
-                window.location = 'signed_in.html';
-                $('#sign_out').show();
-                $('#sign_in').hide();
+                $('#user-meta').html('<p>You are signed in as ' + localStorage.username + '.</p>');
+                $('#form_sign_in_only').hide();
+                $('#forget_button').show();
             } else {
                 hideBusy();
                 $('#form_email').before('<div class="form-error">There was a problem with your email/password combination.</div>');
@@ -392,7 +391,6 @@ function sign_in() {
 }
 
 function display_signed_out_msg() {
-    $('#forget_button').hide();
     if ( localStorage.signed_out == 1 ) {
         $('#user-meta').html('<p>You&rsquo;ve been signed out.</p>');
         $('#form_sign_in_only').show();
@@ -402,8 +400,9 @@ function display_signed_out_msg() {
         $('#user-meta').html('<p>You are signed in as ' + localStorage.username + '.</p>');
         $('#form_sign_in_only').hide();
         $('#forget_button').show();
+    } else {
+        $('#form_sign_in_only').show();
     }
-
 }
 
 function sign_out() {
@@ -442,48 +441,12 @@ function sign_out_around() {
     } );
 }
 
-function check_auth() {
-    if ( $('#user-meta').length && localStorage.signed_out != 1 ) {
-        var sign_out_function = sign_out;
-        if ( $('body').hasClass('mappage') ) {
-            sign_out_function = sign_out_around;
-        }
-        jQuery.ajax( {
-            url: CONFIG.FMS_URL + "auth/ajax/check_auth?" + new Date().getTime() ,
-            type: 'GET',
-            statusCode: {
-                200: function(data) {
-                    localStorage.name = data.name;
-                    $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" id="meta_sign_out">Sign out</a></p>');
-                    $('#meta_sign_out').on('click', sign_out_function );
-                    $('.mobile-sign-in-banner').show();
-                    $('#sign_in').hide();
-                    $('#sign_out').show();
-                },
-                401: function() {
-                    $('#user-meta').html('');
-                    localStorage.name = '';
-                    $('.mobile-sign-in-banner').show();
-                    $('#sign_out').hide();
-                    $('#sign_in').show();
-                    $('#user-meta').html('');
-                }
-            }
-        } );
-    }
-}
-
-function signed_in() {
+function account() {
     $('.mobile-sign-in-banner').show();
-    $('#sign_in').show();
+    $('#account').show();
     if ( localStorage.name ) {
         if ( $('body').hasClass('signed-in-page') ) {
-            var sign_out_function = sign_out;
-            if ( $('body').hasClass('mappage') ) {
-                sign_out_function = sign_out_around;
-            }
-            $('#user-meta').html('<p>Hi ' + localStorage.name + '<a href="#" id="meta_sign_out">Sign out</a></p>');
-            $('#meta_sign_out').on('click', sign_out_function );
+            $('#user-meta').html('<p>Hi ' + localStorage.name + '</p>');
         }
 
         if ( $('#form_sign_in').length ) {
@@ -514,8 +477,7 @@ function onDeviceReady() {
     $('#ffo').click(getPosition);
     $('#forget').click(forget);
     $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
-    // check_auth();
-    signed_in();
+    account();
     hideBusy();
 }
 
