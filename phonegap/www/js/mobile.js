@@ -363,6 +363,8 @@ function postReport(e) {
 
 function sign_in() {
     showBusy( 'Signing In', 'Please wait while you are signed in' );
+    $('#form_email').blur();
+    $('#password_sign_in').blur();
     jQuery.ajax( {
         url: CONFIG.FMS_URL + "auth/ajax/sign_in",
         type: 'POST',
@@ -381,6 +383,8 @@ function sign_in() {
                 $('#user-meta').html('<p>You are signed in as ' + localStorage.username + '.</p>');
                 $('#form_sign_in_only').hide();
                 $('#forget_button').show();
+                $('#form_email').val('');
+                $('#password_sign_in').val('');
             } else {
                 hideBusy();
                 $('#form_email').before('<div class="form-error">There was a problem with your email/password combination.</div>');
@@ -401,6 +405,7 @@ function display_signed_out_msg() {
         $('#form_sign_in_only').hide();
         $('#forget_button').show();
     } else {
+        $('#forget_button').hide();
         $('#form_sign_in_only').show();
     }
 }
