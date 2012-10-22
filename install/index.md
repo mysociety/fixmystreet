@@ -112,7 +112,7 @@ If you're expecting a lot of traffic it's recommended that you install memcached
 
 FixMyStreet uses a number of CPAN modules; to install them, run:
 
-    ./bin/install_perl_modules
+    bin/install_perl_modules
 
 This should tell you what it is installing as it goes.
 
@@ -149,13 +149,13 @@ If you are using Bing or Google maps you should also set one of BING_MAPS_API_KE
 There is a script, bin/make_css, that uses Compass and sass to
 convert the SCSS files to CSS files:
 
-    ./bin/make_css
+    bin/make_css
 
 ## 7. Run
 
 The development server can now hopefully be run with:
 
-     ./bin/cron-wrapper ./script/fixmystreet_app_server.pl -d --fork
+     bin/cron-wrapper script/fixmystreet_app_server.pl -d --fork
 
 The server will be accessible as <http://localhost:3000/>. You can run with -r
 in order for the server to automatically restart when you update the code.
