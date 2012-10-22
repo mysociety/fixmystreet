@@ -418,7 +418,7 @@ sub _get_xml_object {
     my $obj;
 
     eval {
-        $obj = $simple ->XMLin( $xml );
+        $obj = $simple ->XMLin( $xml, ForceArray => [ qr/^key$/, qr/^name$/ ] );
     };
 
     return $obj;

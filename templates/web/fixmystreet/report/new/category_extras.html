@@ -11,8 +11,8 @@
             [% END -%]
             [% IF meta.exists('values') %]
                 <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-                    [% FOR option IN meta.values.value.keys %]
-                        <option value="[% meta.values.value.$option.key %]">[% option %]</option>
+                    [% FOR option IN meta.values.value %]
+                        <option value="[% option.key.0 %]">[% option.name.0 %]</option>
                     [% END %]
                 </select>
             [% ELSE %]

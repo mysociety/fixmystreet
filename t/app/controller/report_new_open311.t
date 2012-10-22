@@ -29,7 +29,7 @@ my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     email => '100',
     extra => [ { description => 'Lamppost number', code => 'number', required => 'True' },
                { description => 'Lamppost type', code => 'type', required => 'False', values =>
-                   { value => { Yellow => { key => 'modern' }, 'Gas' => { key => 'old' } } }
+                   { value => [ { name => ['Gas'], key => ['old'] }, { name => [ 'Yellow' ], key => [ 'modern' ] } ] }
                } 
              ],
 } );
