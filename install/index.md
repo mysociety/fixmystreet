@@ -214,7 +214,11 @@ installation at the configured URL.
 
 ### Check it's working
 
-You can run the unit tests using `prove -r t` in the FixMyStreet directory.
+You can run the unit tests by running the following command in the
+`fixmystreet` directory:
+
+    bin/cron-wrapper prove -r t
+
 These currently require that the fixmystreet cobrand is enabled in the
 `ALLOWED_COBRANDS` setting, and also might assume other config is set up
 correctly. Note that this may leave entries in your database at the moment and
