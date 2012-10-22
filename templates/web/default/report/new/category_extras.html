@@ -13,8 +13,8 @@
         <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
         [% IF meta.exists('values') %]
         <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-            [% FOR option IN meta.values.value.keys %]
-                <option value="[% meta.values.value.$option.key %]">[% option %]</option>
+            [% FOR option IN meta.values.value.value %]
+                <option value="[% option.key.0 %]"[% IF option.key.0 == report_meta.$meta_name.value %] selected[% END %]>[% option.name.0 %]</option>
             [% END %]
         </select>
         [% ELSE %]

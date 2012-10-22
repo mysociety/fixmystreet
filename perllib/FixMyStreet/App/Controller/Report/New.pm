@@ -884,7 +884,7 @@ sub process_report : Private {
         $c->cobrand->process_extras( $c, $contacts[0]->area_id, \@extra );
 
         if ( @extra ) {
-            $c->stash->{report_meta} = \@extra;
+            $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
             $report->extra( \@extra );
         }
     } elsif ( @{ $c->stash->{area_ids_to_list} } ) {
