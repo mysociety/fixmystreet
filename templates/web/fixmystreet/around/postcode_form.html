@@ -1,11 +1,6 @@
 <div id="front-main">
     <div id="front-main-container">
-        [% IF c.cobrand.moniker == 'bromley' %]
-            <h1 class="main mob-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
-        [% ELSE %]
-            <h1>[% loc('Report, view, or discuss local problems') %]</h1>
-            <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
-        [% END %]
+        [% INCLUDE 'around/intro.html' %]
 
         [%
             question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
