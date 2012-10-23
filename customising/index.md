@@ -97,11 +97,11 @@ format order to adapt the layout to work on different devices.
 
 The CSS is structured into main files:
 
-* base.css  
+* base.css
 This contains all the styling for the content of the pages in a mobile sized browser.
-* layout.css  
+* layout.css
 This contains all the styling for the content of the pages in a desktop sized browser.
-* \_colours.css  
+* \_colours.css
 This contains basic colour information, so you can easily make a site that
 looks different simply by copying these files to your own cobrand CSS
 directory, and changing the colours.
