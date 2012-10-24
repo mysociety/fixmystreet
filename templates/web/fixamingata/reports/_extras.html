@@ -1,0 +1,24 @@
+[%
+    fms_councils = {
+        'Bromley Council' = 'fix.bromley.gov.uk'
+        'Barnet Borough Council' = 'barnet.fixmystreet.com'
+        'Lichfield District Council' = 'lichfielddc.fixmystreet.com'
+        'Reading Borough Council' = 'reading.fixmystreet.com'
+        'Southampton City Council' = 'southampton.fixmystreet.com'
+    }
+    secure = {
+        'fix.bromley.gov.uk' = 's'
+    }
+    site = fms_councils.${area.name}
+%]
+[% IF site %]
+<tr align="center"
+[%- IF ! (loop.count % 2) %] class="a"
+[%- END %]>
+<td class="title" colspan="6" style="padding-top:0">
+    <small title="This council's online reporting is powered by FixMyStreet">(includes reports from
+    <a href="http[% secure.$site %]://[% site %]">[% site %]</a> using
+    <a href="http://www.mysociety.org/for-councils/fixmystreet/">FixMyStreet for Councils</a>)</small>
+</td>
+</tr>
+[% END %]

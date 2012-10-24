@@ -1,0 +1,26 @@
+<li>
+<a class="text" href="[% c.uri_for('/report', problem.id ) %]">
+    [% IF problem.photo %]
+        <img class="img" height="60" width="90" src="/photo/[% problem.id %].fp.jpeg" alt="">
+    [% END %]
+        <h4>[% problem.title | html %]</h4>
+        <small>[% IF problem.confirmed_local %]
+            [%- prettify_epoch( problem.confirmed_local.epoch, 1 ) %]
+            [%- ELSE %]
+            [%- prettify_epoch( problem.confirmed, 1 ) %]
+            [%- END %]
+            [%- IF dist %], [% dist %]km[% END %]
+            [%- IF include_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %], last updated [% prettify_epoch( problem.lastupdate, 1 ) %]
+            [%- END %]
+        [% IF include_lastupdate %]
+            [% IF problem.councils > 1 %] [% loc('(sent to both)') %]
+            [% ELSIF problem.councils == 0 %] [% loc('(not sent to council)') %]
+            [% END %]
+        [% END %]
+        [% IF NOT no_fixed AND problem.is_fixed %]
+            [% loc('(fixed)') %]
+        [% ELSIF NOT no_fixed AND problem.is_closed %]
+            [% loc('(closed)') %]
+        [% END %]</small>
+</a>
+</li>
