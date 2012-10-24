@@ -205,9 +205,61 @@ function fixmystreet_onload() {
     });
 
 }
+OpenLayers.Map.prototype.getCurrentSize = function() {
+    var mapDiv = $(this.div);
+    return new OpenLayers.Size(mapDiv.width(), mapDiv.height());
+};
 
-$(function(){
+function fixContentHeight(olMap) {
+    var footer = $("div[data-role='footer']:visible"),
+        content = $("div[data-role='content']:visible:visible"),
+        viewHeight = $(window).height(),
+        contentHeight = viewHeight - footer.outerHeight();
 
+    if ((content.outerHeight() + footer.outerHeight()) !== viewHeight) {
+        contentHeight -= (content.outerHeight() - content.height() + 1);
+        content.height(contentHeight);
+    }
+    content.width($(window).width());
+    olMap.updateSize();
+}
+
+function ensureNonZeroHeight(containerid) {
+    var footer = $("div[id='" + containerid + "'] > div[data-role='footer']"),
+        header = $("div[id='" + containerid + "'] > div[data-role='header']"),
+        content = $("div[id='" + containerid + "'] > div[data-role='content']"),
+        viewHeight = $(window).height(),
+        contentHeight = viewHeight - footer.outerHeight() - header.outerHeight();
+
+    if ((content.outerHeight() + footer.outerHeight() + header.outerHeight()) !== viewHeight) {
+        contentHeight -= (content.outerHeight() - content.height() + 1);
+        content.height(contentHeight);
+        content.width($(window).width());
+    }
+ }
+
+$(document).delegate('#submit-problem', 'pageshow', function(event) {
+    $('#side-form, #site-logo').show();
+    $('#pc').val(localStorage.pc);
+    $('#fixmystreet\\.latitude').val(localStorage.latitude);
+    $('#fixmystreet\\.longitude').val(localStorage.longitude);
+    $.getJSON( CONFIG.FMS_URL + 'report/new/ajax', {
+            latitude: $('#fixmystreet\\.latitude').val(),
+            longitude: $('#fixmystreet\\.longitude').val()
+    }, function(data) {
+        if (data.error) {
+            // XXX If they then click back and click somewhere in the area, this error will still show.
+            $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
+            return;
+        }
+        $('#councils_text').html(data.councils_text);
+        $('#form_category_row').html(data.category);
+    });
+});
+
+$(document).delegate('#around-page', 'pageshow', function(event) {
+
+    ensureNonZeroHeight();
     set_map_config();
 
     fixmystreet.map = new OpenLayers.Map("map", {
@@ -218,6 +270,8 @@ $(function(){
     if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
         $('#fms_pan_zoom').css({ top: '2.75em !important' });
     }
+
+    fixContentHeight(fixmystreet.map);
 
     fixmystreet.layer_options = OpenLayers.Util.extend({
         zoomOffset: fixmystreet.zoomOffset,
@@ -305,6 +359,7 @@ $(function(){
     } else {
         fixmystreet_onload();
     }
+    fixContentHeight(fixmystreet.map);
 });
 
 /* Overridding the buttonDown function of PanZoom so that it does
@@ -447,13 +502,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         });
 
         $('#side-form, #site-logo').show();
-        fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
+        //fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
          * or you cause a screen redraw by changing the phone orientation.
          * NB: This has to happen after the call to show() */
         if ( navigator.userAgent.match(/like Mac OS X/i)) {
-            document.getElementById('side-form').style.display = 'block';
+            //document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
         if (typeof heightFix !== 'undefined') {
@@ -499,6 +554,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $('.mobile-map-banner').text('Right place?').prepend('<a href="index.html">home</a>');
 
             // mobile user clicks 'ok' on map
+            /* 
             $('#mob_ok').toggle(function(){
                 //scroll the height of the map box instead of the offset
                 //of the #side-form or whatever as we will probably want
@@ -512,6 +568,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     $('#mob_sub_map_links').removeClass('map_complete');
                     $('#mob_ok').text('OK');
                 });
+            });
+            */
+            $('#mob_ok').on('click', function(){
+                localStorage.latitude = $('#fixmystreet\\.latitude').val();
+                localStorage.longitude = $('#fixmystreet\\.longitude').val();
+                $.mobile.changePage('submit-problem.html')
             });
         }
 

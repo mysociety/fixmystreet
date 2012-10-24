@@ -41,7 +41,8 @@ function show_around( lat, long ) {
     localStorage.longitude = long;
     localStorage.pc = pc;
     hideBusy();
-    window.location='around.html';
+    //window.location='around.html';
+    $.mobile.changePage('around.html');
     return false;
 }
 
@@ -476,6 +477,8 @@ function onDeviceReady() {
             navigator.network.connection.type == Connection.UNKNOWN ) ) {
         document.location = 'no_connection.html';
     }
+}
+$(document).bind('pageinit', function() {
     $('#postcodeForm').submit(locate);
     $('#mapForm').submit(postReport);
     $('#signInForm').submit(sign_in);
@@ -484,6 +487,6 @@ function onDeviceReady() {
     $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
     account();
     hideBusy();
-}
+});
 
 document.addEventListener("deviceready", onDeviceReady, false);

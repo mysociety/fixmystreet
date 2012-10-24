@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="mobile">
   <head>
   <title></title>
 
@@ -8,8 +8,11 @@
 
     <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/mobile.css">
+    <link rel="stylesheet" href="jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.css">
 
     <script type="text/javascript" src="js/jquery-1.7.0.min.js"></script>
+    <script type="text/javascript" src="js/mobile_config.js"></script>
+    <script type="text/javascript" src="jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.js"></script>
     <script type="text/javascript" src="cordova-independent.js"></script>
 
     <script type="text/javascript" src="js/json2.js"></script>
@@ -19,6 +22,10 @@
     <script type="text/javascript" src="js/geo.min.js"></script>
     <script type="text/javascript" src="js/fixmystreet.js"></script>
     <script type="text/javascript" src="js/mobile.js"></script>
+    <script type="text/javascript" src="js/OpenLayers.fixmystreet.js"></script>
+    <script type="text/javascript" src="js/map-OpenLayers.js"></script>
+    <script type="text/javascript" src="js/map-bing-ol.js"></script>
+    <script type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
 
     <script type="text/javascript">
         validation_strings = {
@@ -41,22 +48,23 @@
         };
         </script>
     </head>
-    <body id="container" class="frontpage fullwidthpage" ontouchmove="touchmove(event);">
+    <body id="container" class="frontpage fullwidthpage">
+        <!--ontouchmove="touchmove(event);">-->
 
-        <div class="wrapper">
+        <div class="wrapper" data-role="page">
             <div class="table-cell">
-                <header id="site-header" role="banner">
+                <!-- header id="site-header" role="banner">
                     <div class="container">
                         <span id="site-logo"></span>
                     </div>
-                </header>
+                </header -->
 
                 <div id="user-meta" class="hidden"></div>
 
                 <div class="container">
                     <div class="content" role="main">
                         <div id="front-main">
-                            <div id="front-main-container">
+                            <div id="front-main-container" data-enhance="false">
                                 <form action="" method="get" name="postcodeForm" id="postcodeForm">
                                     <label for="pc">Enter a nearby GB postcode, or street name and area:</label>
                                     <div>
@@ -84,12 +92,22 @@
                 </div><!-- .container -->
             </div><!-- .table-cell -->
 
-            <div class="mobile-info">
-                <a href="about.html">i</a>
-            </div>
+            <!--<div class="mobile-info">-->
+                <!--<a href="about.html">i</a>-->
+            <!--</div>-->
 
-            <div class="big-green-banner mobile-map-banner mobile-sign-in-banner">
-                <a id="account" href="account.html">Account</a>
+            <!--<div class="big-green-banner mobile-map-banner mobile-sign-in-banner">-->
+                <!--<a id="account" href="account.html">Account</a>-->
+            <!--</div>-->
+
+            <div data-role="footer" data-id="foo1" data-position="fixed">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="index.html" class="ui-button-active ui-state-persist">Report</a></li>
+                        <li><a href="account.html">Account</a></li>
+                        <li><a href="about.html">Info</a></li>
+                    </ul>
+                </div><!-- /navbar -->
             </div>
         </div> <!-- .wrapper -->
 
@@ -108,5 +126,4 @@
             <div class="bar12"></div>
           </div>
     </body>
-</html>
 </html>

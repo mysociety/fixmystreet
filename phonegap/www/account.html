@@ -10,8 +10,10 @@
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/mobile.css">
         <link rel="stylesheet" href="css/layout.css" media="(min-width:48em)">
+        <link rel="stylesheet" href="jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.css">
 
         <script type="text/javascript" src="js/jquery-1.7.0.min.js"></script>
+        <script type="text/javascript" src="jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.js"></script>
         <script type="text/javascript" charset="utf-8" src="cordova-independent.js"></script>
 
         <script type="text/javascript" src="js/config.js"></script>
@@ -50,19 +52,19 @@
 
     <body class="mobile-header" id="container" onload="display_signed_out_msg();">
 
-    <div class="wrapper">
+    <div class="wrapper" data-role="page">
         <div class="table-cell">
-            <header id="site-header" role="banner">
+            <!-- header id="site-header" role="banner">
                 <div class="container">
                     <span id="site-logo"></span>
                 </div>
-            </header>
+            </header -->
 
             <div id="user-meta">
 
             </div>
 
-            <div class="container">
+            <div class="container" data-role="content">
                 <div class="content" role="main">
                     <form action="" method="post" name="signInForm" id="signInForm" enctype="multipart/form-data" class="validate">
                     <div id="form_sign_in_only" class="nodisplay">
@@ -83,13 +85,23 @@
                         <input class="green-btn" type="button" id="forget" name="forget" value="Forget">
                     </div>
                 </div>
+
+                <div data-role="footer" data-id="foo1" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a href="index.html">Report</a></li>
+                            <li><a href="account.html" class="ui-button-active ui-state-persist">Account</a></li>
+                            <li><a href="about.html">Info</a></li>
+                        </ul>
+                    </div><!-- /navbar -->
+                </div>
             </div>
         </div><!-- .table-cell -->
 
-        <div class="big-green-banner mobile-map-banner mobile-nav-banner">
+        <!-- div class="big-green-banner mobile-map-banner mobile-nav-banner">
             <a href="index.html">home</a>
             Account
-        </div>
+        </div -->
     </div> <!-- .wrapper -->
     <div class="spinner" id="loadingSpinner">
         <div class="bar1"></div>

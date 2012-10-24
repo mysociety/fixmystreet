@@ -77,7 +77,7 @@ function tabs(elem, indirect) {
 }
 
 
-$(function(){
+$(document).bind('pageinit', function(){
     var $html = $('html');
 
     $html.removeClass('no-js').addClass('js');
@@ -554,7 +554,6 @@ $.fn.drawer = function(id, ajax) {
             heightFix(window, '.content', -176);
         }
     }
-
 });
 
 /*
