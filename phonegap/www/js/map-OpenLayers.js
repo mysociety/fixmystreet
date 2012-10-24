@@ -239,6 +239,8 @@ function ensureNonZeroHeight(containerid) {
  }
 
 $(document).delegate('#submit-problem', 'pageshow', function(event) {
+    $('#mapForm').submit(postReport);
+    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
     $('#side-form, #site-logo').show();
     $('#pc').val(localStorage.pc);
     $('#fixmystreet\\.latitude').val(localStorage.latitude);
