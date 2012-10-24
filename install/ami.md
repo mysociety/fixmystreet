@@ -42,7 +42,7 @@ the default (`localhost`) will work.
 Then you should restart the Catalyst FastCGI server with:
 
     fms@ip-10-58-191-98:~/fixmystreet$ logout
-    ubuntu@ip-10-58-191-98:~$ sudo /etc/init.d/fms-catalyst-fastcgi restart
+    ubuntu@ip-10-58-191-98:~$ sudo /etc/init.d/fixmystreet restart
 
 If you find the hostname of your EC2 instance from the AWS console,
 you should then be able to see the site at http://your-ec2-hostname.eu-west-1.compute.amazonaws.com
