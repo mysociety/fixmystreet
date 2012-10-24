@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2012-10-22 11:59+0100\n"
+"POT-Creation-Date: 2012-10-24 11:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -79,10 +79,6 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:306 perllib/FixMyStreet/Cobrand/UK.pm:318
 msgid "%s, within %s ward"
-msgstr ""
-
-#: templates/web/default/admin/stats.html:5
-msgid "%sreports between %s and %s"
 msgstr ""
 
 #: templates/web/default/email_sent.html:28
@@ -281,10 +277,6 @@ msgstr ""
 msgid "Alert me to future updates"
 msgstr ""
 
-#: templates/web/default/admin/stats.html:5
-msgid "All"
-msgstr ""
-
 #: templates/web/default/reports/index.html:3
 msgid "All Reports"
 msgstr ""
@@ -293,8 +285,12 @@ msgstr ""
 msgid "All confirmed"
 msgstr ""
 
-#: templates/web/barnet/footer.html:20 templates/web/bromley/footer.html:21 templates/web/bromley/header.html:77 templates/web/default/footer.html:11 templates/web/fiksgatami/footer.html:7 templates/web/fiksgatami/nn/footer.html:7 templates/web/fixmybarangay/footer.html:18 templates/web/fixmystreet/footer.html:49 templates/web/reading/footer.html:8
+#: templates/web/barnet/footer.html:20 templates/web/bromley/footer.html:21 templates/web/bromley/header.html:77 templates/web/default/footer.html:11 templates/web/fiksgatami/footer.html:7 templates/web/fiksgatami/nn/footer.html:7 templates/web/fixmybarangay/footer.html:20 templates/web/fixmystreet/footer.html:49 templates/web/reading/footer.html:8
 msgid "All reports"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:5
+msgid "All reports between %s and %s"
 msgstr ""
 
 #: templates/web/default/report/new/councils_text_some.html:2
@@ -461,12 +457,16 @@ msgstr ""
 msgid "Confirm by email below, providing a new password at that point. When you confirm, your password will be updated."
 msgstr ""
 
-#: templates/web/default/questionnaire/creator_fixed.html:1 templates/web/default/tokens/confirm_problem.html:1 templates/web/default/tokens/confirm_problem.html:3 templates/web/default/tokens/confirm_update.html:1 templates/web/default/tokens/confirm_update.html:3 templates/web/emptyhomes/tokens/confirm_problem.html:1 templates/web/emptyhomes/tokens/confirm_problem.html:3 templates/web/southampton/tokens/confirm_problem.html:1 templates/web/southampton/tokens/confirm_problem.html:3
+#: templates/web/default/questionnaire/creator_fixed.html:1 templates/web/default/tokens/confirm_problem.html:1 templates/web/default/tokens/confirm_problem.html:3 templates/web/default/tokens/confirm_update.html:1 templates/web/default/tokens/confirm_update.html:3 templates/web/emptyhomes/tokens/confirm_problem.html:1 templates/web/emptyhomes/tokens/confirm_problem.html:3
 msgid "Confirmation"
 msgstr ""
 
-#: templates/web/default/admin/council_contacts.html:39 templates/web/default/admin/council_contacts.html:88 templates/web/default/admin/council_edit.html:28 templates/web/default/admin/council_edit.html:71 templates/web/default/admin/stats.html:5
+#: templates/web/default/admin/council_contacts.html:39 templates/web/default/admin/council_contacts.html:88 templates/web/default/admin/council_edit.html:28 templates/web/default/admin/council_edit.html:71
 msgid "Confirmed"
+msgstr ""
+
+#: templates/web/default/admin/stats.html:5
+msgid "Confirmed reports between %s and %s"
 msgstr ""
 
 #: templates/web/default/admin/problem_row.html:23 templates/web/default/admin/report_edit.html:34
@@ -842,7 +842,7 @@ msgstr ""
 msgid "Have you ever reported a problem to a council before, or is this your first time?"
 msgstr ""
 
-#: templates/web/barnet/footer.html:24 templates/web/bromley/footer.html:25 templates/web/bromley/header.html:81 templates/web/default/footer.html:15 templates/web/emptyhomes/header.html:28 templates/web/fiksgatami/footer.html:9 templates/web/fiksgatami/nn/footer.html:9 templates/web/fixmybarangay/footer.html:22 templates/web/fixmystreet/footer.html:53 templates/web/reading/footer.html:10
+#: templates/web/barnet/footer.html:24 templates/web/bromley/footer.html:25 templates/web/bromley/header.html:81 templates/web/default/footer.html:15 templates/web/emptyhomes/header.html:28 templates/web/fiksgatami/footer.html:9 templates/web/fiksgatami/nn/footer.html:9 templates/web/fixmybarangay/footer.html:24 templates/web/fixmystreet/footer.html:53 templates/web/reading/footer.html:10
 msgid "Help"
 msgstr ""
 
@@ -1005,7 +1005,7 @@ msgstr ""
 msgid "Local RSS feeds and email alerts for ‘%s’"
 msgstr ""
 
-#: templates/web/barnet/footer.html:22 templates/web/bromley/footer.html:23 templates/web/bromley/header.html:79 templates/web/default/footer.html:13 templates/web/fiksgatami/footer.html:8 templates/web/fiksgatami/nn/footer.html:8 templates/web/fixmybarangay/footer.html:20 templates/web/fixmystreet/footer.html:51 templates/web/reading/footer.html:9
+#: templates/web/barnet/footer.html:22 templates/web/bromley/footer.html:23 templates/web/bromley/header.html:79 templates/web/default/footer.html:13 templates/web/fiksgatami/footer.html:8 templates/web/fiksgatami/nn/footer.html:8 templates/web/fixmybarangay/footer.html:22 templates/web/fixmystreet/footer.html:51 templates/web/reading/footer.html:9
 msgid "Local alerts"
 msgstr ""
 

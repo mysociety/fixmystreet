@@ -2,7 +2,7 @@
 
 [% IF show_count %]
 <p>
-<strong>[% tprintf( loc( '%sreports between %s and %s' ), ( unconfirmed ? loc( 'All' ) _ ' ' : loc( 'Confirmed' ) _ ' ' ), start_date.ymd, end_date.ymd ) | html %]</strong>
+<strong>[% tprintf( unconfirmed ? loc( 'All reports between %s and %s' ) : loc( 'Confirmed reports between %s and %s' ), start_date.ymd, end_date.ymd ) | html %]</strong>
 </p>
 [% IF bymonth %]
 <table>
