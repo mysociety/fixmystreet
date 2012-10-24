@@ -20,14 +20,7 @@
 
         function onDeviceReady() {
             var connectionType = navigator.network.connection.type;
-            if (connectionType == Connection.UNKNOWN ||
-                connectionType == Connection.NONE) {
-                window.location = 'frontpage-form.html';
-            } else {
-                // There is a network connection - load the map-based
-                // front page:
-                window.location = 'frontpage-map.html';
-            }
+        
         }
 
     </script>
@@ -35,7 +28,7 @@
     </head>
     <body id="container" class="frontpage fullwidthpage" onload="onLoad()" ontouchmove="touchmove(event);">
 
-    <p>Checking if we have a network connection...</p>
+    <p>The front page with a form.</p>
 
     </body>
 </html>
