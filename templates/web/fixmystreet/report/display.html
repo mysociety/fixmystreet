@@ -49,7 +49,7 @@
 <div id="update_form">
     <h2>[% loc( 'Provide an update') %]</h2>
 
-    [% IF c.cobrand.moniker != 'emptyhomes' %]
+    [% IF c.cobrand.moniker != 'emptyhomes' AND c.cobrand.moniker != 'stevenage' %]
     <div class="general-sidebar-notes">
         [% INCLUDE 'report/updates-sidebar-notes.html' %]
     </div>
