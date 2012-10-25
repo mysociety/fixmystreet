@@ -32,5 +32,7 @@ sub example_places {
     return [ 'SG1 1HN', 'Lyton Way' ];
 }
 
+sub default_map_zoom { return 3; }
+
 1;
 

@@ -678,5 +678,7 @@ Used in some cobrands to improve the intial display for Internet Explorer.
 
 sub tweak_all_reports_map {}
 
+sub default_map_zoom { undef };
+
 1;
 
