@@ -114,6 +114,9 @@
             [% IF c.user_exists %]
                 <div class="form-box">
 
+                    <label for="form_email">[% loc('Your email') %]</label>
+                    <input disabled type="text" value="[% report.user.email | html %]">
+
                     [% INCLUDE 'report/new/extra_name.html' %]
 
                     <label for="form_name">[% loc('Name') %]</label>
