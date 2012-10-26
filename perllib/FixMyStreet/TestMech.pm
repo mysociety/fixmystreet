@@ -460,6 +460,7 @@ sub visible_form_values {
       grep { ref($_) ne 'HTML::Form::SubmitInput' }
       grep { ref($_) ne 'HTML::Form::ImageInput' }
       grep { ref($_) ne 'HTML::Form::TextInput' || $_->type ne 'hidden' }
+      grep { !$_->disabled }
       $form->inputs;
 
     my @visible_field_names = map { $_->name } @visible_fields;
