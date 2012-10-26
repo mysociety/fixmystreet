@@ -541,43 +541,34 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }
 
         $('#sub_map_links').hide();
-        if ($('html').hasClass('mobile')) {
-            var $map_box = $('#map_box'),
-                width = $map_box.width(),
-                height = $map_box.height();
-            $map_box.append(
-                '<p id="mob_sub_map_links">' +
-                '<a href="#" id="try_again">Try again</a>' +
-                '<a href="#ok" id="mob_ok">OK</a>' +
-                '</p>'
-            ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
-            // Making it relative here makes it much easier to do the scrolling later
+        var $map_box = $('#map_box');
+        $map_box.append(
+            '<p id="mob_sub_map_links">' +
+            '<a href="#" id="try_again">Try again</a>' +
+            '<a href="#ok" id="mob_ok">OK</a>' +
+            '</p>'
+        ); 
+        // .css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
+        // Making it relative here makes it much easier to do the scrolling later
 
-            $('.mobile-map-banner').text('Right place?').prepend('<a href="index.html">home</a>');
+        $('.mobile-map-banner').text('Right place?').prepend('<a href="index.html">home</a>');
 
-            // mobile user clicks 'ok' on map
-            /* 
-            $('#mob_ok').toggle(function(){
-                //scroll the height of the map box instead of the offset
-                //of the #side-form or whatever as we will probably want
-                //to do this on other pages where #side-form might not be
-                $('html, body').animate({ scrollTop: height-60 }, 1000, function(){
-                    $('#mob_sub_map_links').addClass('map_complete');
-                    $('#mob_ok').text('MAP');
-                });
-            }, function(){
-                $('html, body').animate({ scrollTop: 0 }, 1000, function(){
-                    $('#mob_sub_map_links').removeClass('map_complete');
-                    $('#mob_ok').text('OK');
-                });
-            });
-            */
-            $('#mob_ok').on('click', function(){
-                localStorage.latitude = $('#fixmystreet\\.latitude').val();
-                localStorage.longitude = $('#fixmystreet\\.longitude').val();
-                $.mobile.changePage('submit-problem.html')
-            });
-        }
+        $('#try_again').on('click', function(){
+            fixmystreet.bbox_strategy.activate();
+            fixmystreet.markers.refresh( { force: true } );
+            if ( fixmystreet.state_pins_were_hidden ) {
+                // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
+                $('#hide_pins_link').click();
+            }
+            fixmystreet.drag.deactivate();
+            $('#sub_map_links').show();
+            $('#mob_sub_map_links').remove();
+        });
+        $('#mob_ok').on('click', function(){
+            localStorage.latitude = $('#fixmystreet\\.latitude').val();
+            localStorage.longitude = $('#fixmystreet\\.longitude').val();
+            $.mobile.changePage('submit-problem.html')
+        });
 
         fixmystreet.page = 'new';
         location.hash = 'report';
