@@ -225,7 +225,11 @@ function check_name( name, msg ) {
     $('#form_name').val( name );
     if ( msg ) {
         $('#form_name').focus();
-        $('#form_name').before('<div class="form-error">' + msg + '</div>' );
+        if ( $('#form_name_error').length ) {
+            $('#form_name_error').text(msg);
+        } else {
+            $('#form_name').before('<div class="form-error" id="form_name_error">' + msg + '</div>' );
+        }
     }
 }
 
