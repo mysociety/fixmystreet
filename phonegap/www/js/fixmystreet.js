@@ -77,6 +77,14 @@ function tabs(elem, indirect) {
 }
 
 
+$(document).delegate( '#front-page', 'pageshow', function(event, ui) {
+    // Geolocation
+    if (geo_position_js.init() && !$('#geolocate_link').length) {
+        $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
+        $('#geolocate_link').click(getPosition);
+    }
+});
+
 $(document).bind('pageinit', function(){
     var $html = $('html');
 
@@ -259,12 +267,6 @@ $(document).bind('pageinit', function(){
     } );
 
     $('#form_category').change( form_category_onchange );
-
-    // Geolocation
-    if (geo_position_js.init() && !$('#geolocate_link').length) {
-        $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
-        $('#geolocate_link').click(getPosition);
-    }
 
     /* 
      * Report a problem page 
