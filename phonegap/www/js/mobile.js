@@ -19,29 +19,11 @@ function loadingSpinner(method){
     }
 }
 
-function showBusy( title, msg ) {
-    if ( navigator && navigator.notification && typeof navigator.notification.activityStart !== "undefined") {
-        navigator.notification.activityStart( title, msg );
-    } else {
-        loadingSpinner('on');
-    }
-}
-
-function hideBusy() {
-    if ( navigator && navigator.notification && navigator.notification.activityStop) {
-        navigator.notification.activityStop();
-    } else {
-        loadingSpinner('off');
-    }
-}
-
 function show_around( lat, long ) {
     pc = $('#pc').val();
     localStorage.latitude = lat;
     localStorage.longitude = long;
     localStorage.pc = pc;
-    hideBusy();
-    //window.location='around.html';
     $.mobile.changePage('around.html');
     return false;
 }
@@ -73,7 +55,6 @@ function use_lat_long( lat, long ) {
 }
 
 function location_error( msg ) {
-    hideBusy();
     if ( msg === '' ) {
         $('#location_error').remove();
         return;
@@ -94,7 +75,6 @@ function lookup_string(q) {
     q = q.replace(/\s+/, ' ');
 
     if (!q) {
-        hideBusy();
         location_error("Please enter location");
         return false;
     }
@@ -141,7 +121,6 @@ function lookup_string(q) {
         } else {
             location_error("Could not find your location");
         }
-        hideBusy();
     });
     return false;
 }
@@ -154,8 +133,6 @@ function locate() {
         location_error( "Please enter your location" );
         return false;
     }
-
-    showBusy('Locating', 'Looking up location');
 
     if ( valid_postcode( pc ) ) {
         jQuery.get( CONFIG.MAPIT_URL + 'postcode/' + pc + '.json', function(data, status) {
@@ -183,7 +160,6 @@ function foundLocation(myLocation) {
 function notFoundLocation() { location_error( 'Could not find location' ); }
 
 function getPosition() {
-    showBusy( 'Locating', 'Looking up location' );
 
     navigator.geolocation.getCurrentPosition(foundLocation, notFoundLocation);
 }
@@ -245,11 +221,9 @@ function fileUploadSuccess(r) {
         if ( data.success ) {
             if ( data.report ) {
                 localStorage.report = data.report;
-                hideBusy();
-                window.location = 'report_created.html';
+                $.mobile.changePage('report_created.html');
             } else {
-                hideBusy();
-                window.location = 'email_sent.html';
+                $.mobile.changePage('email_sent.html');
             }
         } else {
             if ( data.check_name ) {
@@ -260,14 +234,12 @@ function fileUploadSuccess(r) {
             $('input[type=submit]').prop("disabled", false);
         }
     } else {
-        hideBusy();
         alert('Could not submit report');
         $('input[type=submit]').prop("disabled", false);
     }
 }
 
 function fileUploadFail() {
-    hideBusy();
     alert('Could not submit report');
     $('input[type=submit]').prop("disabled", false);
 }
@@ -311,7 +283,6 @@ function postReport(e) {
         }
     }
 
-    showBusy( 'Sending Report', 'Please wait while your report is sent' );
     if ( $('#form_photo').val() !== '' ) {
         fileURI = $('#form_photo').val();
 
@@ -337,11 +308,9 @@ function postReport(e) {
                     localStorage.long = null;
                     if ( data.report ) {
                         localStorage.report = data.report;
-                        hideBusy();
-                        window.location = 'report_created.html';
+                        $.mobile.changePage('report_created.html');
                     } else {
-                        hideBusy();
-                        window.location = 'email_sent.html';
+                        $.mobile.changePage('email_sent.html');
                     }
                     if ( !localStorage.name && $('#password_sign_in').val() ) {
                         localStorage.name = $('#form_name').val();
@@ -353,11 +322,9 @@ function postReport(e) {
                         check_name( data.check_name, data.errors.name );
                     }
                     $('input[type=submit]').prop("disabled", false);
-                    hideBusy();
                 }
             },
             error: function (data, status, errorThrown ) {
-                hideBusy();
                 alert( 'There was a problem submitting your report, please try again (' + status + '): ' + JSON.stringify(data), function(){}, 'Submit report' );
                 $('input[type=submit]').prop("disabled", false);
             }
@@ -367,7 +334,6 @@ function postReport(e) {
 }
 
 function sign_in() {
-    showBusy( 'Signing In', 'Please wait while you are signed in' );
     $('#form_email').blur();
     $('#password_sign_in').blur();
     jQuery.ajax( {
@@ -379,19 +345,16 @@ function sign_in() {
             remember_me: 1
         },
         success: function(data) {
-            console.log(data);
             if ( data.name ) {
                 localStorage.name = data.name;
                 localStorage.username = $('#form_email').val();
                 localStorage.password = $('#password_sign_in').val();
-                hideBusy();
                 $('#user-meta').html('<p>You are signed in as ' + localStorage.username + '.</p>');
                 $('#form_sign_in_only').hide();
                 $('#forget_button').show();
                 $('#form_email').val('');
                 $('#password_sign_in').val('');
             } else {
-                hideBusy();
                 $('#form_email').before('<div class="form-error">There was a problem with your email/password combination.</div>');
             }
         }
@@ -423,8 +386,7 @@ function sign_out() {
             if ( data.signed_out ) {
                 localStorage.signed_out = 1;
                 localStorage.name = null;
-                hideBusy();
-                document.location = 'sign_in.html';
+                $.mobile.pageChange('sign_in.html');
             }
         }
     } );
@@ -490,7 +452,6 @@ $(document).bind('pageinit', function() {
     $('#forget').click(forget);
     $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
     account();
-    hideBusy();
 });
 
 document.addEventListener("deviceready", onDeviceReady, false);
