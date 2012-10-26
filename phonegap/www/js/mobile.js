@@ -490,3 +490,8 @@ $(document).bind('pageinit', function() {
 });
 
 document.addEventListener("deviceready", onDeviceReady, false);
+
+$(document).delegate('#report-created', 'pageshow',function() {
+    var uri = CONFIG.FMS_URL + 'report/' + localStorage.report;
+    $('#report_url').html( '<a href="' + uri + '">' + uri + '</a>' );
+});
