@@ -1,21 +1,27 @@
-<h1>[% problem.title | html %]</h1>
+<div class="problem-header cf">
+    <h1>[% problem.title | html %]</h1>
 
-<p><em>[% problem.meta_line(c) | html %]
-[%- IF !problem.used_map %]; <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>[% END %]
-[% IF problem.council %]
-    [% IF problem.whensent || problem.can_display_external_id %]
-        <small class="council_sent_info"><br>
-          [% problem.processed_summary_string(c) %]
-        </small>
-    [% END %]    
-[% ELSE %]
-<br><small>[% loc('Not reported to council') %]</small>
-[% END %]
+    <p><em>
+    [% problem.meta_line(c) | html %]
+    [%- IF !problem.used_map %]; <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>[% END %]
+    [% IF problem.council %]
+        [% IF problem.whensent || problem.can_display_external_id %]
+            <small class="council_sent_info"><br>
+                [% problem.processed_summary_string(c) %]
+            </small>
+        [% END %]
+    [% ELSE %]
+        <br><small>[% loc('Not reported to council') %]</small>
+    [% END %]
+    </em></p>
+    [% INCLUDE 'report/_support.html' %]
 
-</em></p>
+    [% IF c.cobrand.moniker == 'southampton' %]
+        [% add_links( problem.detail ) | html_para %]
+        [% INCLUDE 'report/photo.html' object=problem %]
+    [% ELSE %]
+        [% INCLUDE 'report/photo.html' object=problem %]
+        [% add_links( problem.detail ) | html_para %]
+    [% END %]
 
-[% add_links( problem.detail ) | html_para %]
-
-[% INCLUDE 'report/photo.html' object=problem %]
-
-
+</div>
