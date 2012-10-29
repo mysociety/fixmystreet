@@ -345,7 +345,7 @@ function sign_in() {
 
 }
 
-function display_signed_out_msg() {
+function display_account_page() {
     if ( localStorage.signed_out == 1 ) {
         $('#user-meta').html('<p>You&rsquo;ve been signed out.</p>');
         $('#form_sign_in_only').show();
@@ -416,7 +416,7 @@ function forget() {
     delete localStorage.username;
     delete localStorage.password;
     localStorage.signed_out = 1;
-    display_signed_out_msg();
+    display_account_page();
 }
 
 function onDeviceReady() {
@@ -432,7 +432,7 @@ $(document).bind('pageinit', function() {
     $('#mapForm').submit(postReport);
     $('#signInForm').submit(sign_in);
     $('#ffo').click(getPosition);
-    $('#forget').click(forget);
+    $('#forget').on('click', forget);
     $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
     account();
 });
@@ -443,3 +443,5 @@ $(document).delegate('#report-created', 'pageshow',function() {
     var uri = CONFIG.FMS_URL + 'report/' + localStorage.report;
     $('#report_url').html( '<a href="' + uri + '">' + uri + '</a>' );
 });
+
+$(document).delegate('#account-page', 'pageshow', display_account_page);
