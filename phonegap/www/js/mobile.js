@@ -473,6 +473,7 @@ function save_report() {
         r = [];
     }
     r.push( params );
+    localStorage.setObject('reports', r);
     $.mobile.changePage('my_reports.html');
 }
 
