@@ -459,6 +459,11 @@ function get_report_params () {
         params.password_sign_in = $('#password_sign_in').val();
     }
 
+    if ( $('#form_photo').val() !== '' ) {
+        fileURI = $('#form_photo').val();
+        params.file = fileURI;
+    }
+
     return params;
 
 }
@@ -483,7 +488,11 @@ function display_saved_reports() {
         var list = $('<ul></ul>');
         for ( i = 0; i < r.length; i++ ) {
             if ( r[i] && r[i].title ) {
-                $('<li id="' + i + '">' + r[i].title + '</li>').appendTo(list);
+                var item = $('<li id="' + i + '">' + r[i].title + '</li>');
+                if ( r[i].file ) {
+                    $('<img src="' + r[i].file + '" width="100">').appendTo(item);
+                }
+                item.appendTo(list);
             }
         }
         list.appendTo('#reports');
