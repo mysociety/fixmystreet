@@ -2,23 +2,6 @@ function touchmove(e) {
     e.preventDefault();
 }
 
-function loadingSpinner(method){
-    if (method == "on") {
-        //Adjust to screen size
-        var pHeight = window.innerHeight;
-        var pWidth = window.innerWidth;
-        var sH = parseInt($('#loadingSpinner').css('height'),10);
-        var sW = parseInt($('#loadingSpinner').css('width'),10);
-        $('#loadingSpinner').css('top',(pHeight-sH)/2+$('body').scrollTop());
-        $('#loadingSpinner').css('left',(pWidth-sW)/2);
-        $('#loadingSpinner').css('z-index',1000);
-        //Show
-        $('#loadingSpinner').show();
-    } else if (method == 'off'){
-        $('#loadingSpinner').hide();
-    }
-}
-
 function show_around( lat, long ) {
     pc = $('#pc').val();
     localStorage.latitude = lat;
