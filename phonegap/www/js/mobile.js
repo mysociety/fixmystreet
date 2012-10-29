@@ -1,3 +1,11 @@
+Storage.prototype.setObject = function(key, value) {
+    this.setItem(key, JSON.stringify(value));
+};
+
+Storage.prototype.getObject = function(key) {
+    return JSON.parse(this.getItem(key));
+};
+
 function touchmove(e) {
     e.preventDefault();
 }
@@ -369,7 +377,7 @@ function sign_out() {
             if ( data.signed_out ) {
                 localStorage.signed_out = 1;
                 localStorage.name = null;
-                $.mobile.pageChange('sign_in.html');
+                $.mobile.changePage('sign_in.html');
             }
         }
     } );
@@ -427,12 +435,69 @@ function onDeviceReady() {
         document.location = 'no_connection.html';
     }
 }
+
+function get_report_params () {
+    var params = {
+        service: 'iphone',
+        title: $('#form_title').val(),
+        detail: $('#form_detail').val(),
+        may_show_name: $('#form_may_show_name').attr('checked') ? 1 : 0,
+        category: $('#form_category').val(),
+        lat: $('#fixmystreet\\.latitude').val(),
+        lon: $('#fixmystreet\\.longitude').val(),
+        phone: $('#form_phone').val(),
+        pc: $('#pc').val()
+    };
+
+    if ( localStorage.username && localStorage.password && localStorage.name ) {
+        params.name = localStorage.name;
+        params.email = localStorage.username;
+        params.password_sign_in = localStorage.password;
+    } else {
+        params.name = $('#form_name').val();
+        params.email = $('#form_email').val();
+        params.password_sign_in = $('#password_sign_in').val();
+    }
+
+    return params;
+
+}
+
+function save_report() {
+    var params = get_report_params();
+
+    var r;
+    if ( localStorage.getObject( 'reports' ) ) {
+        r = localStorage.getObject( 'reports' );
+    } else {
+        r = [];
+    }
+    r.push( params );
+    $.mobile.changePage('my_reports.html');
+}
+
+function display_saved_reports() {
+    if ( localStorage.getObject( 'reports' ) ) {
+        var r = localStorage.getObject('reports');
+        var list = $('<ul></ul>');
+        for ( i = 0; i < r.length; i++ ) {
+            if ( r[i] && r[i].title ) {
+                $('<li id="' + i + '">' + r[i].title + '</li>').appendTo(list);
+            }
+        }
+        list.appendTo('#reports');
+    } else {
+        $("#reports").innerHTML('No Reports');
+    }
+}
+
 $(document).bind('pageinit', function() {
     $('#postcodeForm').submit(locate);
     $('#mapForm').submit(postReport);
     $('#signInForm').submit(sign_in);
     $('#ffo').click(getPosition);
     $('#forget').on('click', forget);
+    $('#save_report').on('click', save_report);
     $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
     account();
 });
@@ -445,3 +510,4 @@ $(document).delegate('#report-created', 'pageshow',function() {
 });
 
 $(document).delegate('#account-page', 'pageshow', display_account_page);
+$(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
