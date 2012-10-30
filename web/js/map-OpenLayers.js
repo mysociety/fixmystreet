@@ -248,7 +248,7 @@ function fixmystreet_onload() {
 
 }
 
-$(document).bind('pageinit', function(){
+$(function(){
 
     set_map_config();
 
