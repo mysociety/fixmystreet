@@ -1453,7 +1453,9 @@ a:hover.button-left {
   vertical-align: top;
 }
 .issue-list-a li a .img, .list-a li a .img {
-  text-align: right;
+    width: 90px;
+    float: right;
+    height:auto;
 }
 .issue-list-a li a .img img, .list-a li a .img img {
   height: auto;

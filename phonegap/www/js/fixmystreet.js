@@ -79,7 +79,6 @@ function tabs(elem, indirect) {
 
 $(document).delegate( '#front-page', 'pageshow', function(event, ui) {
     // Geolocation
-    console.log('frontpage pageshow');
     if (geo_position_js.init() && !$('#geolocate_link').length) {
         console.log('adding thing');
         $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
@@ -91,7 +90,6 @@ $(document).bind('pageshow', function(){
     var $html = $('html');
 
     $html.removeClass('no-js').addClass('js');
-
 
     // Preload the new report pin
     document.createElement('img').src = '../i/pin-green.png';
@@ -112,6 +110,13 @@ $(document).bind('pageshow', function(){
                 margin: 0
             });
             $('#fms_pan_zoom').css({ top: '2.75em !important' });
+        } else {
+            $('#map_box').css({
+                zIndex: '', position: '',
+                top: '', left: '', right: '', bottom: '',
+                width: '', height: '10em',
+                margin: ''
+            });
         }
     });
 
@@ -506,17 +511,3 @@ $.fn.drawer = function(id, ajax) {
         }
     }
 });
-
-/*
-XXX Disabled because jerky on Android and makes map URL bar height too small on iPhone.
-// Hide URL bar
-$(window).load(function(){
-    window.setTimeout(function(){
-        var s = window.pageYOffset || document.compatMode === "CSS1Compat" && document.documentElement.scrollTop || document.body.scrollTop || 0;
-        if (s < 20 && !location.hash) {
-            window.scrollTo(0, 1);
-        }
-    }, 0);
-});
-*/
-

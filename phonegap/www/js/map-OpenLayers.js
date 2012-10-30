@@ -259,7 +259,7 @@ $(document).delegate('#submit-problem', 'pageshow', function(event) {
     });
 });
 
-$(document).delegate('#around-page', 'pageshow', function(event) {
+function show_map(event) {
 
     ensureNonZeroHeight();
     set_map_config();
@@ -293,6 +293,7 @@ $(document).delegate('#around-page', 'pageshow', function(event) {
     }
 
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
+        console.log('full page');
         // TODO Work better with window resizing, this is pretty 'set up' only at present
         var $content = $('.content'),
             q = ( $content.offset().left + $content.width() ) / 2;
@@ -362,7 +363,11 @@ $(document).delegate('#around-page', 'pageshow', function(event) {
         fixmystreet_onload();
     }
     fixContentHeight(fixmystreet.map);
-});
+}
+
+$(document).delegate('#around-page', 'pageshow', show_map );
+$(document).delegate('#report-page', 'pageshow', show_map );
+
 
 /* Overridding the buttonDown function of PanZoom so that it does
    zoomTo(0) rather than zoomToMaxExtent()

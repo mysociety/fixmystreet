@@ -485,19 +485,43 @@ function save_report() {
 function display_saved_reports() {
     if ( localStorage.getObject( 'reports' ) ) {
         var r = localStorage.getObject('reports');
-        var list = $('<ul></ul>');
+        var list = $('<ul id="current" class="issue-list-a tab open"></ul>');
         for ( i = 0; i < r.length; i++ ) {
             if ( r[i] && r[i].title ) {
-                var item = $('<li id="' + i + '">' + r[i].title + '</li>');
+                var item = $('<li class="saved-report" id="' + i + '"></li>');
+                var content = $('<a class="text"><h4>' + r[i].title + '</h4></a>');
                 if ( r[i].file ) {
-                    $('<img src="' + r[i].file + '" width="100">').appendTo(item);
+                    $('<img class="img" src="' + r[i].file + '" height="60" width="90">').prependTo(content);
                 }
+                content.appendTo(item);
                 item.appendTo(list);
             }
         }
         list.appendTo('#reports');
     } else {
         $("#reports").innerHTML('No Reports');
+    }
+}
+
+function open_saved_report_page(e) {
+    localStorage.currentReport = this.id;
+    $.mobile.changePage('report.html');
+}
+
+function display_saved_report() {
+    var r = localStorage.getObject('reports')[localStorage.currentReport];
+    fixmystreet.latitude = r.lat;
+    fixmystreet.longitude = r.lon;
+    fixmystreet.pins = [ [ r.lat, r.lon, 'yellow', '', "", 'big' ] ];
+
+    $('#title').text(r.title);
+    $('#details').text(r.detail);
+    if ( r.file ) {
+        $('#photo').attr('src', r.file);
+        $('#photo_link').attr('href', r.file);
+        $('#report-img').show();
+    } else {
+        $('#report-img').hide();
     }
 }
 
@@ -521,3 +545,5 @@ $(document).delegate('#report-created', 'pageshow',function() {
 
 $(document).delegate('#account-page', 'pageshow', display_account_page);
 $(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
+$(document).delegate('#report-page', 'pageshow', display_saved_report);
+$(document).delegate('.saved-report', 'click', open_saved_report_page);
