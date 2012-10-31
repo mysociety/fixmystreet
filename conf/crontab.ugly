@@ -20,7 +20,7 @@ MAILTO=!!(*= $user *)!!@mysociety.org
 #2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-alerts" || echo "stalled?"
 0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-questionnaires" || echo "stalled?"
 
-!!(* } elsif (($vhost eq 'www.fixmystreet.com') || ($vhost eq 'bromley.test.mysociety.org') || ($vhost eq 'integration-staging.fixmystreet.com') || ($vhost eq 'fixmybarangay.test.mysociety.org') || ($vhost eq 'demo.fixmybarangay.com')) { *)!!
+!!(* } elsif (($vhost eq 'www.fixmystreet.com') || ($vhost eq 'bromley.test.mysociety.org') || ($vhost eq 'barnet.fixmystreet.staging.mysociety.org') || ($vhost eq 'fixmybarangay.test.mysociety.org') || ($vhost eq 'demo.fixmybarangay.com')) { *)!!
 5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
 0 0-7,9-11,13-15,17-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
 0 8,12,16 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
