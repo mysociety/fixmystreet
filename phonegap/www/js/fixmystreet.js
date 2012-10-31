@@ -293,7 +293,6 @@ $(document).bind('pageshow', function(){
     /*
      * Show stuff on input focus
      */
-    $('.form-focus-hidden').hide();
     $('.form-focus-trigger').on('focus', function(){
         $('.form-focus-hidden').fadeIn(500);
     });

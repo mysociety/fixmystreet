@@ -525,6 +525,14 @@ function display_saved_report() {
     }
 }
 
+function submit_problem_show() {
+    if ( localStorage.name ) {
+        $('.form-focus-hidden').show();
+    } else {
+        $('.form-focus-hidden').hide();
+    }
+}
+
 $(document).bind('pageinit', function() {
     $('#postcodeForm').submit(locate);
     $('#mapForm').submit(postReport);
@@ -546,4 +554,5 @@ $(document).delegate('#report-created', 'pageshow',function() {
 $(document).delegate('#account-page', 'pageshow', display_account_page);
 $(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
 $(document).delegate('#report-page', 'pageshow', display_saved_report);
+$(document).delegate('#submit-problem', 'pageshow', submit_problem_show);
 $(document).delegate('.saved-report', 'click', open_saved_report_page);
