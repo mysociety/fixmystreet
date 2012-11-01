@@ -446,7 +446,8 @@ function get_report_params () {
         lat: $('#fixmystreet\\.latitude').val(),
         lon: $('#fixmystreet\\.longitude').val(),
         phone: $('#form_phone').val(),
-        pc: $('#pc').val()
+        pc: $('#pc').val(),
+        time: new Date()
     };
 
     if ( localStorage.username && localStorage.password && localStorage.name ) {
@@ -489,7 +490,15 @@ function display_saved_reports() {
         for ( i = 0; i < r.length; i++ ) {
             if ( r[i] && r[i].title ) {
                 var item = $('<li class="saved-report" id="' + i + '"></li>');
-                var content = $('<a class="text"><h4>' + r[i].title + '</h4></a>');
+                var date;
+                if ( r[i].time ) {
+                    var date = new Date( r[i].time );
+                    date = date.getDate() + '-' + ( date.getMonth() + 1 ) + '-' + date.getFullYear();
+                    date += ' ' + date.getHour() + ':' + date.getMinute();
+                } else {
+                    date = '';
+                }
+                var content = $('<a class="text"><h4>' + r[i].title + '</h4><small>' + date + '</small></a>');
                 if ( r[i].file ) {
                     $('<img class="img" src="' + r[i].file + '" height="60" width="90">').prependTo(content);
                 }
