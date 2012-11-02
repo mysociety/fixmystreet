@@ -1,3 +1,5 @@
+// -*- mode: espresso; espresso-indent-level: 4; indent-tabs-mode: nil -*-
+
 // This function might be passed either an OpenLayers.LonLat (so has
 // lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
 function fixmystreet_update_pin(lonlat) {

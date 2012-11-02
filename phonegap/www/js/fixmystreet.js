@@ -1,4 +1,4 @@
-/*
+/* -*- mode: espresso; espresso-indent-level: 4; indent-tabs-mode: nil -*-
  * fixmystreet.js
  * FixMyStreet JavaScript
  */
