@@ -1638,6 +1638,13 @@ a:hover.button-left {
   top: 44px !important;
 }
 
+#fms_pan_zoom_panleft,
+#fms_pan_zoom_panright,
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown {
+  display: none
+}
+
 #sub_map_links {
   position: absolute;
   left: 0;
