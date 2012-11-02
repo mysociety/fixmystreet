@@ -14,8 +14,7 @@ function set_map_config(perm) {
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
         fixmystreet.nav_control,
-        new OpenLayers.Control.Permalink(permalink_id),
-        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
+        new OpenLayers.Control.Permalink(permalink_id)
     ];
     fixmystreet.map_type = OpenLayers.Layer.Bing;
 }
