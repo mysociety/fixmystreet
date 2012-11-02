@@ -88,6 +88,26 @@ $(function(){
 
     var last_type;
     $(window).resize(function(){
+
+        var crosshairsControls, i, markHere, newX, newY;
+
+        if (typeof fixmystreet.map !== "undefined") {
+            // Update the position of any crosshairs controls:
+            crosshairsControls = fixmystreet.map.getControlsByClass(
+                "OpenLayers.Control.Crosshairs");
+            for (i = 0; i < crosshairsControls.length; ++i) {
+                crosshairsControls[i].reposition();
+            }
+            // Also reposition the "Tap here to mark this point" button:
+            markHere = $('#mark-here');
+            newX = $(window).width() / 2 - markHere.width() / 2;
+            newY = $(window).height() * 4 / 5 - markHere.height() / 2;
+            markHere.css({
+                left: newX + "px",
+                top: newY + "px"
+            });
+        }
+
         var type = $('#site-header').css('borderTopWidth');
         if (type == '4px') {
             type = 'mobile';

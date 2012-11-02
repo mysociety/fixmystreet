@@ -19,22 +19,39 @@
     <script type="text/javascript" src="js/geo.min.js"></script>
     <script type="text/javascript" src="js/fixmystreet.js"></script>
     <script type="text/javascript" src="js/mobile.js"></script>
+    <script type="text/javascript" src="js/OpenLayers.fixmystreet.js"></script>
+    <script type="text/javascript" src="js/map-OpenLayers.js"></script>
+    <script type="text/javascript" src="js/map-bing-ol.js"></script>
+    <script type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
 
     <script type="text/javascript">
+
+        var fixmystreet = {
+                           'page': 'around',
+                           'area': '',
+                           'all_pins': '',
+                           'latitude': localStorage.latitude,
+                           'longitude': localStorage.longitude,
+                           'zoom': 2,
+                           'numZoomLevels': 5,
+                           'zoomOffset': 13,
+                           'map_type': "",
+                           'pins': [  ]
+                          };
+
+        $('#fixmystreet\\.latitude').val( localStorage.latitude );
+        $('#fixmystreet\\.longitude').val( localStorage.longitude );
+        $('#pc').val( localStorage.pc );
 
         function onLoad() {
             document.addEventListener("deviceready", onDeviceReady, false);
         }
 
         function gotPosition(position) {
-             var element = document.getElementById('geolocation');
-             element.innerHTML = 'Latitude: '  + position.coords.latitude      + '<br />' +
-                                 'Longitude: ' + position.coords.longitude     + '<br />' +
-                                 '<hr />'      + element.innerHTML;
-
-             
-
-
+            localStorage.latitude = position.coords.latitude;
+            localStorage.longitude = position.coords.longitude;
+            localStorage.pc = '';
+            $(window).resize();
         }
 
         function positionError(error) {
@@ -74,35 +91,33 @@
     </head>
     <body id="container" class="frontpage fullwidthpage" onload="onLoad()" ontouchmove="touchmove(event);">
 
-        <div id="map_box">
-            <div id="map"></div>
+      <div class="wrapper">
+
+         <header id="site-header" role="banner">
+           <div class="container">
+                <span id="site-logo"></span>
+           </div>
+         </header>
+
+        <a id="mark-here">
+        Mark this point
+        </a>
+
+        <div class="container">
+          <div class="content" role="main">
+
+            <div id="map_box">
+                <div id="map"></div>
                 <p id="sub_map_links">
                     <a id="hide_pins_link" rel="nofollow" href="">Hide pins</a>
                     <a id="all_pins_link" rel="nofollow" href="">Show old</a>
                 </p>
             </div>
-
-            <div id="side">
-
-                <h1 class="big-green-banner">Click map to report a problem</h1>
-
-                <section class="full-width">
-                    <menu id="problems-nav" class="tab-nav">
-                        <ul>
-                            <li><a href="#current">Problems on the map</a></li>
-                            <li><a href="#current_near">Problems nearby</a></li>
-                        </ul>
-                    </menu>
-                    <ul id="current" class="issue-list-a tab">
-                        <li><p>No problems have been reported yet.</p></li>
-                    </ul>
-                     <ul id="current_near" class="issue-list-a tab">
-                        <li><p>No problems found.</p></li>
-                    </ul>
-                </section>
-            </div>
-
+          </div>
         </div>
+
+
+      </div>
 
 
     </body>
