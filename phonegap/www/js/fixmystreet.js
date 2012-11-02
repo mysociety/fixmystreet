@@ -89,10 +89,16 @@ $(function(){
     var last_type;
     $(window).resize(function(){
         var type = $('#site-header').css('borderTopWidth');
-        if (type == '4px') { type = 'mobile'; }
-        else if (type == '0px') { type = 'desktop'; }
-        else { return; }
-        if (last_type == type) { return; }
+        if (type == '4px') {
+            type = 'mobile';
+        } else if (type == '0px') {
+            type = 'desktop'; }
+        else {
+            return;
+        }
+        if (last_type == type) {
+            return;
+        }
         if (type == 'mobile') {
             $html.addClass('mobile');
             $('#map_box').prependTo('.content').css({
