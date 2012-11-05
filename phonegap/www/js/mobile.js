@@ -603,7 +603,7 @@ function decide_front_page() {
     }
 }
 
-$(document).delegate('#front-page', 'pageinit', decide_front_page);
+$(document).delegate('#front-page', 'pageshow', decide_front_page);
 $(document).delegate('#account-page', 'pageshow', display_account_page);
 $(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
 $(document).delegate('#report-page', 'pageshow', display_saved_report);
