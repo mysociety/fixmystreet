@@ -1,3 +1,5 @@
+var can_geolocate = false;
+
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
 };
@@ -140,19 +142,37 @@ function locate() {
     }
     return false;
 }
+var watch_id = null;
+var watch_count = 0;
 
 function foundLocation(myLocation) {
     var lat = myLocation.coords.latitude;
     var long = myLocation.coords.longitude;
-
-    show_around( lat, long );
+    watch_count++;
+    if ( myLocation.coords.accuracy < 100 ) {
+        navigator.geolocation.clearWatch(watch_id);
+        show_around( lat, long );
+        watch_id = null;
+    } else if ( watch_count > 10 ) {
+        navigator.geolocation.clearWatch(watch_id);
+        watch_id = null;
+        $.mobile.changePage( 'frontpage-form.html' );
+    }
 }
 
-function notFoundLocation() { location_error( 'Could not find location' ); }
+function notFoundLocation() { if ( watch_id ) { location_error( 'Could not find location' ); } else { console.log('should not be here'); } }
 
 function getPosition() {
-
-    navigator.geolocation.getCurrentPosition(foundLocation, notFoundLocation);
+    if ( !can_geolocate ) {
+        window.setTimeout( getPosition, 200 );
+        return;
+    }
+    if ( !watch_id ) {
+        watch_count = 0;
+        watch_id = navigator.geolocation.watchPosition(foundLocation, notFoundLocation, { timeout: 60000, enableHighAccuracy: true } );
+    } else {
+        alert('currently locating');
+    }
 }
 
 
@@ -428,12 +448,7 @@ function forget() {
 }
 
 function onDeviceReady() {
-    var location = document.location + '';
-    if ( location.indexOf('no_connection.html') < 0 && (
-            navigator.network.connection.type == Connection.NONE ||
-            navigator.network.connection.type == Connection.UNKNOWN ) ) {
-        document.location = 'no_connection.html';
-    }
+    can_geolocate = true;
 }
 
 function get_report_params () {
@@ -560,6 +575,20 @@ $(document).delegate('#report-created', 'pageshow',function() {
     $('#report_url').html( '<a href="' + uri + '">' + uri + '</a>' );
 });
 
+function decide_front_page() {
+    if ( !can_geolocate ) {
+        window.setTimeout( decide_front_page, 100 );
+        return;
+    }
+    if ( navigator.network.connection.type == Connection.NONE ||
+            navigator.network.connection.type == Connection.UNKNOWN ) {
+        $.mobile.changePage( 'no_connection.html' );
+    } else {
+        getPosition();
+    }
+}
+
+$(document).delegate('#front-page', 'pageinit', decide_front_page);
 $(document).delegate('#account-page', 'pageshow', display_account_page);
 $(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
 $(document).delegate('#report-page', 'pageshow', display_saved_report);

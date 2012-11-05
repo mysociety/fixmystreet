@@ -1,35 +1,42 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  <title></title>
+        <div class="wrapper" id="locate-page" data-role="page">
+            <div class="table-cell">
+                <div class="container">
+                    <div class="content" role="main">
+                        <div id="front-main">
+                            <div id="front-main-container" data-enhance="false">
+                                <form action="" method="get" name="postcodeForm" id="postcodeForm">
+                                    <label for="pc">Enter a nearby GB postcode, or street name and area:</label>
+                                    <div>
+                                        <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B2 4QA’ or ‘Tib St, Manchester’">
+                                        <input type="submit" value="Go" id="submit"> 
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
-    <meta charset="utf-8">
+                        <div class="tablewrapper">
+                            <div id="front-howto">
+                                <h2>How to report a problem</h2>
 
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/mobile.css">
-
-    <script type="text/javascript" src="js/jquery-1.7.0.min.js"></script>
-    <script type="text/javascript" src="cordova-independent.js"></script>
-
-    <script type="text/javascript">
-
-        function onLoad() {
-            document.addEventListener("deviceready", onDeviceReady, false);
-        }
-
-        function onDeviceReady() {
-            var connectionType = navigator.network.connection.type;
-        
-        }
-
-    </script>
-
-    </head>
-    <body id="container" class="frontpage fullwidthpage" onload="onLoad()" ontouchmove="touchmove(event);">
-
-    <p>The front page with a form.</p>
-
-    </body>
-</html>
-</html>
+                                <ol class="big-numbers">
+                                    <li>Enter a nearby GB postcode, or street name and area</li>
+                                    <li>Locate the problem on a map of the area</li>
+                                    <li>Enter details of the problem</li>
+                                    <li>We send it to the council on your behalf</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-role="footer" data-id="foo1" data-position="fixed">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="index.html" class="ui-button-active ui-state-persist">Report</a></li>
+                        <li><a href="account.html">Account</a></li>
+                        <li><a href="about.html">Info</a></li>
+                        <li><a href="my_reports.html">My</a></li>
+                    </ul>
+                </div><!-- /navbar -->
+            </div>
+        </div> <!-- .wrapper -->
