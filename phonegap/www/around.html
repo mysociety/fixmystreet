@@ -1,6 +1,10 @@
     <div id="around-page" class="wrapper" data-role="page">
+
             <div class="table-cell">
             <div class="container" data-enhance="false">
+                    <a id="mark-here">
+                    Mark this point
+                    </a>
                 <div class="content" role="main">
                     <input type="hidden" name="zoom" value="2">
                     <form action="" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate">
@@ -28,6 +32,7 @@
                         $('#fixmystreet\\.longitude').val( localStorage.longitude );
                         $('#pc').val( localStorage.pc );
                     </script>
+
                     <div id="map_box">
                         <div id="map"></div>
                             <p id="sub_map_links">

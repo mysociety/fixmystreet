@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/mobile.css">
+
+    <script type="text/javascript" src="js/jquery-1.7.0.min.js"></script>
+    <script type="text/javascript" src="cordova-independent.js"></script>
+
+    <script type="text/javascript" src="js/json2.js"></script>
+    <script type="text/javascript" src="js/config.js"></script>
+    <script src="js/jquery.validate.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <script type="text/javascript" src="js/geo.min.js"></script>
+    <script type="text/javascript" src="js/fixmystreet.js"></script>
+    <script type="text/javascript" src="js/mobile.js"></script>
+    <script type="text/javascript" src="js/OpenLayers.fixmystreet.js"></script>
+    <script type="text/javascript" src="js/map-OpenLayers.js"></script>
+    <script type="text/javascript" src="js/map-bing-ol.js"></script>
+    <script type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
+
+    <script type="text/javascript">
+
+        var fixmystreet = {
+                           'page': 'around',
+                           'area': '',
+                           'all_pins': '',
+                           'latitude': localStorage.latitude,
+                           'longitude': localStorage.longitude,
+                           'zoom': 2,
+                           'numZoomLevels': 5,
+                           'zoomOffset': 13,
+                           'map_type': "",
+                           'pins': [  ]
+                          };
+
+        $('#fixmystreet\\.latitude').val( localStorage.latitude );
+        $('#fixmystreet\\.longitude').val( localStorage.longitude );
+        $('#pc').val( localStorage.pc );
+
+        function onLoad() {
+            document.addEventListener("deviceready", onDeviceReady, false);
+        }
+
+        function gotPosition(position) {
+            localStorage.latitude = position.coords.latitude;
+            localStorage.longitude = position.coords.longitude;
+            localStorage.pc = '';
+            $(window).resize();
+        }
+
+        function positionError(error) {
+             alert('code: '    + error.code    + '\n' +
+                   'message: ' + error.message + '\n');
+        }
+
+        function onDeviceReady() {
+            // Throw an error if no update is received every 30 seconds
+            var options = { timeout: 30000 };
+            watchID = navigator.geolocation.watchPosition(gotPosition, positionError, options);        
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        validation_strings = {
+            update: 'Please enter a message',
+            title: 'Please enter a subject',
+            detail: 'Please enter some details',
+            name: {
+                required: 'Please enter your name',
+                validName: 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
+            },
+            category: 'Please choose a category',
+            rznvy: {
+                required: 'Please enter your email',
+                email: 'Please enter a valid email'
+            },
+            email: {
+                required: 'Please enter your email',
+                email: 'Please enter a valid email'
+            }
+        };
+    </script>
+
+    </head>
+    <body id="container" class="frontpage fullwidthpage" onload="onLoad()" ontouchmove="touchmove(event);">
+
+      <div class="wrapper">
+
+         <header id="site-header" role="banner">
+           <div class="container">
+                <span id="site-logo"></span>
+           </div>
+         </header>
+
+        <a id="mark-here">
+        Mark this point
+        </a>
+
+        <div class="container">
+          <div class="content" role="main">
+
+            <div id="map_box">
+                <div id="map"></div>
+                <p id="sub_map_links">
+                    <a id="hide_pins_link" rel="nofollow" href="">Hide pins</a>
+                    <a id="all_pins_link" rel="nofollow" href="">Show old</a>
+                </p>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+
+    </body>
+</html>
+</html>

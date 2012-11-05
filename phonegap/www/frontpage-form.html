@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title></title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/mobile.css">
+
+    <script type="text/javascript" src="js/jquery-1.7.0.min.js"></script>
+    <script type="text/javascript" src="cordova-independent.js"></script>
+
+    <script type="text/javascript">
+
+        function onLoad() {
+            document.addEventListener("deviceready", onDeviceReady, false);
+        }
+
+        function onDeviceReady() {
+            var connectionType = navigator.network.connection.type;
+        
+        }
+
+    </script>
+
+    </head>
+    <body id="container" class="frontpage fullwidthpage" onload="onLoad()" ontouchmove="touchmove(event);">
+
+    <p>The front page with a form.</p>
+
+    </body>
+</html>
+</html>

@@ -1,4 +1,4 @@
-/*
+/* -*- mode: espresso; espresso-indent-level: 4; indent-tabs-mode: nil -*-
  * fixmystreet.js
  * FixMyStreet JavaScript
  */
@@ -117,6 +117,33 @@ $(document).bind('pageshow', function(){
                 width: '', height: '10em',
                 margin: ''
             });
+        }
+
+        $('span.report-a-problem-btn').on('click.reportBtn', function(){
+            $('html, body').animate({scrollTop:0}, 500);
+        }).css({ cursor:'pointer' }).on('hover.reportBtn', function(){
+            $(this).toggleClass('hover');
+        });
+
+        var crosshairsControls, i, markHere, newX, newY;
+
+        if (typeof fixmystreet !== 'undefined' && typeof fixmystreet.map !== "undefined") {
+            // Update the position of any crosshairs controls:
+            crosshairsControls = fixmystreet.map.getControlsByClass(
+                "OpenLayers.Control.Crosshairs");
+            for (i = 0; i < crosshairsControls.length; ++i) {
+                crosshairsControls[i].reposition();
+            }
+            // Also reposition the "Tap here to mark this point" button:
+            console.log('reposition mark-here');
+            markHere = $('#mark-here');
+            newX = $(window).width() / 2 - markHere.width() / 2;
+            newY = $(window).height() * 4 / 5 - markHere.height() / 2;
+            markHere.css({
+                left: newX + "px",
+                top: newY + "px"
+            });
+            console.log( newX + ', ' + newY );
         }
     });
 
