@@ -135,7 +135,6 @@ $(document).bind('pageshow', function(){
                 crosshairsControls[i].reposition();
             }
             // Also reposition the "Tap here to mark this point" button:
-            console.log('reposition mark-here');
             markHere = $('#mark-here');
             newX = $(window).width() / 2 - markHere.width() / 2;
             newY = $(window).height() * 4 / 5 - markHere.height() / 2;
@@ -143,7 +142,6 @@ $(document).bind('pageshow', function(){
                 left: newX + "px",
                 top: newY + "px"
             });
-            console.log( newX + ', ' + newY );
         }
     });
 
