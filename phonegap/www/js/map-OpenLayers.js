@@ -325,11 +325,13 @@ function show_map(event) {
         });
     }
 
+    /*
     if (document.getElementById('mapForm')) {
         var click = new OpenLayers.Control.Click();
         fixmystreet.map.addControl(click);
         click.activate();
     }
+    */
 
     $(window).hashchange(function(){
         if (location.hash == '#report' && $('.rap-notes').is(':visible')) {
@@ -402,6 +404,17 @@ OpenLayers.Control.Crosshairs.prototype =
         var mapSize = this.map.getSize();
         return new OpenLayers.Pixel((mapSize.w / 2) - (this.imageSize.w / 2),
                                     (2 * mapSize.h / 5) - (this.imageSize.h / 2));
+    },
+
+    getMapPosition: function() {
+        var left = parseInt( $('#' + OpenLayers.Control.Crosshairs.DIV_ID).css('left') );
+        var top = parseInt( $('#' + OpenLayers.Control.Crosshairs.DIV_ID).css('top') );
+
+        left += ( this.imageSize.w / 2 );
+        top += ( this.imageSize.h / 2 );
+
+        var pos = this.map.getLonLatFromViewPortPx( new OpenLayers.Pixel( left, top ) );
+        return pos;
     },
 
     reposition: function() {

@@ -424,6 +424,21 @@ function sign_out_around() {
     } );
 }
 
+function set_location() {
+    var cross = fixmystreet.map.getControlsByClass(
+                "OpenLayers.Control.Crosshairs");
+
+    var position = cross[0].getMapPosition();
+    position.transform(
+        fixmystreet.map.getProjectionObject(),
+        new OpenLayers.Projection("EPSG:4326")
+    );
+
+    localStorage.latitude = position.lat;
+    localStorage.longitude = position.lon;
+    $.mobile.changePage('submit-problem.html');
+}
+
 function account() {
     $('.mobile-sign-in-banner').show();
     $('#account').show();
@@ -507,7 +522,7 @@ function display_saved_reports() {
                 var item = $('<li class="saved-report" id="' + i + '"></li>');
                 var date;
                 if ( r[i].time ) {
-                    var date = new Date( r[i].time );
+                    date = new Date( r[i].time );
                     date = date.getDate() + '-' + ( date.getMonth() + 1 ) + '-' + date.getFullYear();
                     date += ' ' + date.getHour() + ':' + date.getMinute();
                 } else {
@@ -594,3 +609,4 @@ $(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
 $(document).delegate('#report-page', 'pageshow', display_saved_report);
 $(document).delegate('#submit-problem', 'pageshow', submit_problem_show);
 $(document).delegate('.saved-report', 'click', open_saved_report_page);
+$(document).delegate('#mark-here', 'click', set_location);
