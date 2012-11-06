@@ -1,15 +1,19 @@
-        <div class="wrapper" data-role="page">
+        <div id="no-connection-page" class="wrapper" data-role="page">
             <div class="table-cell">
                 <div class="container">
-                    <div class="content" role="main">
+                    <div class="content" role="main" data-enhance="false">
                         <div class="tablewrapper">
                             <h2>No Internet connection</h2>
 
-                            <p>
-                            There is no connection to the internet available which means
-                            you can't report a problem at the moment. Please try again when
-                            you have a connection.
+                            <p id="have-gps">
                             </p>
+
+                            <div id="make-report" class="form-box nodisplay">
+                                <h5>Create an offline report</h5>
+                                <div class="form-txt-submit-box">
+                                    <input class="green-btn" type="button" id="create_report" name="create_report" value="Create">
+                                </div>
+                            </div>
                         </div>
                     </div><!-- .content role=main -->
                 </div><!-- .container -->

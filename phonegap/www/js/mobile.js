@@ -175,6 +175,47 @@ function getPosition() {
     }
 }
 
+function check_for_gps() {
+    if ( !can_geolocate ) {
+        window.setTimeout( check_for_gps, 200 );
+        return;
+    }
+    if ( !watch_id ) {
+        watch_count = 0;
+        watch_id = navigator.geolocation.watchPosition(have_gps, do_not_have_gps, { timeout: 60000, enableHighAccuracy: true } );
+    } else {
+        alert('currently locating');
+    }
+}
+
+function have_gps(myLocation) {
+    navigator.geolocation.clearWatch(watch_id);
+    if ( watch_id ) {
+        watch_id = null;
+        var lat = myLocation.coords.latitude;
+        var long = myLocation.coords.longitude;
+        $('#have-gps').text('Determined location using GPS');
+        $('#make-report').show();
+
+        localStorage.latitude = lat;
+        localStorage.longitude = long;
+    }
+}
+
+function create_offline() {
+    $.mobile.changePage('submit-problem.html');
+}
+
+function do_not_have_gps(err) {
+    console.log(err);
+    if ( watch_id ) {
+        navigator.geolocation.clearWatch(watch_id);
+        watch_id = null;
+        $('#have-gps').text('Cannot determine location');
+        $('#make-report').hide();
+    }
+}
+
 
 function takePhotoSuccess(imageURI) {
     $('#form_photo').val(imageURI);
@@ -596,8 +637,10 @@ function decide_front_page() {
         window.setTimeout( decide_front_page, 100 );
         return;
     }
+    localStorage.offline = 0;
     if ( navigator.network.connection.type == Connection.NONE ||
             navigator.network.connection.type == Connection.UNKNOWN ) {
+        localStorage.offline = 1;
         $.mobile.changePage( 'no_connection.html' );
     } else {
         getPosition();
@@ -609,5 +652,7 @@ $(document).delegate('#account-page', 'pageshow', display_account_page);
 $(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
 $(document).delegate('#report-page', 'pageshow', display_saved_report);
 $(document).delegate('#submit-problem', 'pageshow', submit_problem_show);
+$(document).delegate('#no-connection-page', 'pageshow', check_for_gps);
 $(document).delegate('.saved-report', 'click', open_saved_report_page);
 $(document).delegate('#mark-here', 'click', set_location);
+$(document).delegate('#create_report', 'click', create_offline);
