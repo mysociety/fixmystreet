@@ -522,9 +522,9 @@ function display_saved_reports() {
                 var item = $('<li class="saved-report" id="' + i + '"></li>');
                 var date;
                 if ( r[i].time ) {
-                    date = new Date( r[i].time );
-                    date = date.getDate() + '-' + ( date.getMonth() + 1 ) + '-' + date.getFullYear();
-                    date += ' ' + date.getHour() + ':' + date.getMinute();
+                    var date_o = new Date( r[i].time );
+                    date = date_o.getDate() + '-' + ( date_o.getMonth() + 1 ) + '-' + date_o.getFullYear();
+                    date = date + ' ' + date_o.getHours() + ':' + date_o.getMinutes();
                 } else {
                     date = '';
                 }
@@ -548,7 +548,8 @@ function open_saved_report_page(e) {
 }
 
 function display_saved_report() {
-    var r = localStorage.getObject('reports')[localStorage.currentReport];
+    var reports = localStorage.getObject('reports')
+    var r = reports[localStorage.currentReport];
     fixmystreet.latitude = r.lat;
     fixmystreet.longitude = r.lon;
     fixmystreet.pins = [ [ r.lat, r.lon, 'yellow', '', "", 'big' ] ];
