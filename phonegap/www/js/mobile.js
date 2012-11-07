@@ -594,7 +594,35 @@ function display_saved_report() {
     }
 }
 
+function complete_report() {
+    var reports = localStorage.getObject('reports');
+    var r = reports[localStorage.currentReport];
+
+    if ( r.lat && r.lon ) {
+        show_around( r.lat, r.lon );
+    } else {
+        getPosition();
+    }
+}
+
 function submit_problem_show() {
+    var reports, r;
+
+    if ( localStorage.currentReport ) {
+        reports = localStorage.getObject('reports');
+        r = reports[localStorage.currentReport];
+
+        $('#form_title').val(r.title);
+        $('#form_detail').val(r.detail);
+        if ( r.may_show_name == 0 ) {
+            $('#form_may_show_name').attr('checked', 'off');
+        }
+        //category: $('#form_category').val();
+        $('#form_phone').val(r.phone);
+        $('#pc').val(r.pc);
+
+    }
+
     $('#mapForm').submit(postReport);
     $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
     $('#side-form, #site-logo').show();
@@ -647,6 +675,7 @@ function decide_front_page() {
     }
 
     localStorage.offline = 0;
+    delete localStorage.currentReport;
 
     if ( navigator.network.connection.type == Connection.NONE ||
             navigator.network.connection.type == Connection.UNKNOWN ) {
@@ -673,3 +702,4 @@ $(document).delegate('#no-connection-page', 'pageshow', check_for_gps);
 $(document).delegate('.saved-report', 'click', open_saved_report_page);
 $(document).delegate('#mark-here', 'click', mark_here);
 $(document).delegate('#create_report', 'click', create_offline);
+$(document).delegate('#complete_report', 'click', complete_report);

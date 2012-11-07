@@ -247,6 +247,7 @@ function show_map(event) {
 
     ensureNonZeroHeight();
     set_map_config();
+    $('#mark-here').hide();
 
     fixmystreet.map = new OpenLayers.Map("map", {
         controls: fixmystreet.controls,
@@ -349,6 +350,14 @@ function show_map(event) {
         fixmystreet_onload();
     }
     fixContentHeight(fixmystreet.map);
+
+    if ( fixmystreet.page == 'around' ) {
+        if ( localStorage.currentReport ) {
+            mark_here();
+        } else {
+            $('#mark-here').show();
+        }
+    }
 }
 
 $(document).delegate('#around-page', 'pageshow', show_map );
@@ -561,58 +570,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             heightFix('#report-a-problem-sidebar', '.content', 26);
         }
 
-        // If we clicked the map somewhere inconvenient
-        var sidebar = $('#report-a-problem-sidebar');
-        if (sidebar.css('position') == 'absolute') {
-            var w = sidebar.width(), h = sidebar.height(),
-                o = sidebar.offset(),
-                $map_box = $('#map_box'), bo = $map_box.offset();
-            // e.xy is relative to top left of map, which might not be top left of page
-            e.xy.x += bo.left;
-            e.xy.y += bo.top;
-            if (e.xy.y <= o.top || (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64)) {
-                // top of the page, pin hidden by header;
-                // or underneath where the new sidebar will appear
-                lonlat.transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    fixmystreet.map.getProjectionObject()
-                );
-                var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= ( o.left + w ) / 2;
-                lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
-                fixmystreet.map.panTo(lonlat);
-            }
-        }
-
-        $('#sub_map_links').hide();
-        var $map_box = $('#map_box');
-        $map_box.append(
-            '<p id="mob_sub_map_links">' +
-            '<a href="#" id="try_again">Try again</a>' +
-            '<a href="#ok" id="mob_ok">OK</a>' +
-            '</p>'
-        ); 
-        // .css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
-        // Making it relative here makes it much easier to do the scrolling later
-
-        $('.mobile-map-banner').text('Right place?').prepend('<a href="index.html">home</a>');
-
-        $('#try_again').on('click', function(){
-            fixmystreet.bbox_strategy.activate();
-            fixmystreet.markers.refresh( { force: true } );
-            if ( fixmystreet.state_pins_were_hidden ) {
-                // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
-                $('#hide_pins_link').click();
-            }
-            fixmystreet.drag.deactivate();
-            $('#sub_map_links').show();
-            $('#mob_sub_map_links').remove();
-        });
-        $('#mob_ok').on('click', function(){
-            localStorage.latitude = $('#fixmystreet\\.latitude').val();
-            localStorage.longitude = $('#fixmystreet\\.longitude').val();
-            $.mobile.changePage('submit-problem.html')
-        });
 
         fixmystreet.page = 'new';
         location.hash = 'report';

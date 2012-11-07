@@ -1,44 +1,46 @@
     <div class="wrapper" id="report-page" data-role="page">
         <div class="table-cell">
-
             <div class="container" data-role="content">
                 <div class="content" id="report" role="main" data-enhance="false">
+                    <input type="hidden" name="zoom" value="3">
+                    <script type="text/javascript">
+                    var fixmystreet = {
+                        'page': 'report',
+                        'area': '',
+                        'all_pins': '',
+                        'latitude': 0,
+                        'longitude': 0,
+                        'zoom': 3,
+                        'numZoomLevels': 5,
+                        'zoomOffset': 13,
+                        'map_type': '',
+                        'pins': ''
+                    };
+                    </script>
+                    <div id="map_box">
+                        <div id="map"></div>
+                    </div>
 
+                    <div class="problem-header cf">
+                        <h1 id="title"></h1>
 
-<input type="hidden" name="zoom" value="3">
-<script type="text/javascript">
-var fixmystreet = {
-    'page': 'report',
-    'area': '',
-    'all_pins': '',
-    'latitude': 0,
-    'longitude': 0,
-    'zoom': 3,
-    'numZoomLevels': 5,
-    'zoomOffset': 13,
-    'map_type': '',
-    'pins': ''
-};
-</script>
-<div id="map_box">
-    <div id="map"></div>
-</div>
+                        <div id="report-img" class="update-img">
+                            <a id="photo_link" href="" rel="fancy"><img id="photo" alt="Photo of this report" width="250" src=""><span>zoom</span></a>
+                        </div>
 
-<div class="problem-header cf">
-	<h1 id="title"></h1>
+                        <div id="details">
+                        </div>
+                    </div>
 
-<div id="report-img" class="update-img">
-    <a id="photo_link" href="" rel="fancy"><img id="photo" alt="Photo of this report" width="250" src=""><span>zoom</span></a>
-</div>
-
-<div id="details">
-</div>
-
-</div>
-
-
+                    <div id="report_complete" class="form-box">
+                        <h5>Complete this report</h5>
+                        <div class="form-txt-submit-box">
+                            <input class="green-btn" type="button" id="complete_report" name="complete_report" value="Complete">
+                        </div>
+                    </div>
                 </div>
             </div>
+
             <div data-role="footer" data-id="foo1" data-position="fixed">
                 <div data-role="navbar">
                     <ul>
@@ -46,7 +48,7 @@ var fixmystreet = {
                         <li><a href="account.html">Account</a></li>
                         <li><a href="about.html">Info</a></li>
                     </ul>
-                </div><!-- /navbar -->
+                </div>
             </div>
-        </div><!-- .table-cell -->
+        </div>
     </div>
