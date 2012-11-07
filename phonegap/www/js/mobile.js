@@ -438,6 +438,37 @@ function set_location() {
     $.mobile.changePage('submit-problem.html');
 }
 
+function mark_here() {
+    if ( fixmystreet.markers.getVisibility() ) {
+        fixmystreet.state_pins_were_hidden = false;
+        $('#hide_pins_link').click();
+    }
+
+    $('#sub_map_links').hide();
+    var $map_box = $('#map_box');
+    $map_box.append(
+        '<p id="mob_sub_map_links">' +
+        '<a href="#" id="try_again">Try again</a>' +
+        '<a href="#ok" id="mob_ok">Confirm</a>' +
+        '</p>'
+    );
+    $('#mark-here').hide();
+
+    $('#try_again').on('click', function(){
+        fixmystreet.bbox_strategy.activate();
+        fixmystreet.markers.refresh( { force: true } );
+        if ( !fixmystreet.state_pins_were_hidden ) {
+            // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
+            $('#hide_pins_link').click();
+        }
+        //fixmystreet.drag.deactivate();
+        $('#sub_map_links').show();
+        $('#mob_sub_map_links').remove();
+        $('#mark-here').show();
+    });
+    $('#mob_ok').on('click', set_location );
+}
+
 function account() {
     $('#account').show();
     if ( localStorage.name ) {
@@ -640,5 +671,5 @@ $(document).delegate('#report-page', 'pageshow', display_saved_report);
 $(document).delegate('#submit-problem', 'pageshow', submit_problem_show);
 $(document).delegate('#no-connection-page', 'pageshow', check_for_gps);
 $(document).delegate('.saved-report', 'click', open_saved_report_page);
-$(document).delegate('#mark-here', 'click', set_location);
+$(document).delegate('#mark-here', 'click', mark_here);
 $(document).delegate('#create_report', 'click', create_offline);
