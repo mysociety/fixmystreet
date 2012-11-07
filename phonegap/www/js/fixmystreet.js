@@ -78,9 +78,7 @@ function tabs(elem, indirect) {
 
 
 $(document).delegate( '#front-page', 'pageshow', function(event, ui) {
-    // Geolocation
     if (geo_position_js.init() && !$('#geolocate_link').length) {
-        console.log('adding thing');
         $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
         $('#geolocate_link').click(getPosition);
     }
@@ -158,18 +156,6 @@ $(document).bind('pageshow', function(){
     });
     */
 
-    if (!$('#been_fixed_no').prop('checked') && !$('#been_fixed_unknown').prop('checked')) {
-        $('#another_qn').hide();
-    }
-    $('#been_fixed_no').click(function() {
-        $('#another_qn').show('fast');
-    });
-    $('#been_fixed_unknown').click(function() {
-        $('#another_qn').show('fast');
-    });
-    $('#been_fixed_yes').click(function() {
-        $('#another_qn').hide('fast');
-    });
 
     // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {

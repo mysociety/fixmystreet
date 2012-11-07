@@ -35,14 +35,6 @@ function valid_postcode(pc) {
     return false;
 }
 
-function checkConnection() {
-    var networkState = navigator.network.connection.type;
-    if ( networkState == Connection.NONE || networkState == Connection.UNKNOWN ) {
-        $('#main').hide();
-        $('#noconnection').show();
-    }
-}
-
 function use_lat_long( lat, long ) {
     show_around( lat, long );
 }
@@ -142,6 +134,7 @@ function locate() {
     }
     return false;
 }
+
 var watch_id = null;
 var watch_count = 0;
 
@@ -430,41 +423,6 @@ function display_account_page() {
     }
 }
 
-function sign_out() {
-    jQuery.ajax( {
-        url: CONFIG.FMS_URL + "auth/ajax/sign_out?" + new Date().getTime(),
-        type: 'GET',
-        success: function(data) {
-            if ( data.signed_out ) {
-                localStorage.signed_out = 1;
-                localStorage.name = null;
-                $.mobile.changePage('sign_in.html');
-            }
-        }
-    } );
-}
-
-function sign_out_around() {
-    jQuery.ajax( {
-        url: CONFIG.FMS_URL + "auth/ajax/sign_out?" + new Date().getTime(),
-        type: 'GET',
-        success: function(data) {
-            $('#user-meta').html('');
-            $('#email_label').show();
-            $('#form_email').show();
-            $('#now_submit').show();
-            $('#have_password').show();
-            $('#form_sign_in_yes').show();
-            $('#let_me_confirm').show();
-            $('#password_register').show();
-            $('#password_surround').show();
-            $('#providing_password').show();
-            $('#form_name').val( '' );
-            $('.form-focus-hidden').hide();
-        }
-    } );
-}
-
 function set_location() {
     var cross = fixmystreet.map.getControlsByClass(
                 "OpenLayers.Control.Crosshairs");
@@ -481,7 +439,6 @@ function set_location() {
 }
 
 function account() {
-    $('.mobile-sign-in-banner').show();
     $('#account').show();
     if ( localStorage.name ) {
         if ( $('body').hasClass('signed-in-page') ) {
@@ -607,16 +564,43 @@ function display_saved_report() {
 }
 
 function submit_problem_show() {
-    if ( localStorage.name ) {
-        $('.form-focus-hidden').show();
+    $('#mapForm').submit(postReport);
+    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
+    $('#side-form, #site-logo').show();
+    $('#pc').val(localStorage.pc);
+    $('#fixmystreet\\.latitude').val(localStorage.latitude);
+    $('#fixmystreet\\.longitude').val(localStorage.longitude);
+
+    if ( localStorage.offline == 1 ) {
+        $('#councils_text').html("You are currently operating in offline mode so you can save the details of the problem but you'll need to finish reporting when you have internet access.");
+        $('#form_category_row').hide();
+        $('#email_label').hide();
+        $('#form_email').hide();
+        $('#form_sign_in').hide();
     } else {
-        $('.form-focus-hidden').hide();
+        if ( localStorage.name ) {
+            $('.form-focus-hidden').show();
+        } else {
+            $('.form-focus-hidden').hide();
+        }
+
+        $.getJSON( CONFIG.FMS_URL + 'report/new/ajax', {
+                latitude: $('#fixmystreet\\.latitude').val(),
+                longitude: $('#fixmystreet\\.longitude').val()
+        }, function(data) {
+            if (data.error) {
+                // XXX If they then click back and click somewhere in the area, this error will still show.
+                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
+                return;
+            }
+            $('#councils_text').html(data.councils_text);
+            $('#form_category_row').html(data.category);
+        });
     }
 }
 
 $(document).bind('pageinit', function() {
     $('#postcodeForm').submit(locate);
-    $('#mapForm').submit(postReport);
     $('#signInForm').submit(sign_in);
     $('#ffo').click(getPosition);
     $('#forget').on('click', forget);
@@ -625,19 +609,14 @@ $(document).bind('pageinit', function() {
     account();
 });
 
-document.addEventListener("deviceready", onDeviceReady, false);
-
-$(document).delegate('#report-created', 'pageshow',function() {
-    var uri = CONFIG.FMS_URL + 'report/' + localStorage.report;
-    $('#report_url').html( '<a href="' + uri + '">' + uri + '</a>' );
-});
-
 function decide_front_page() {
     if ( !can_geolocate ) {
         window.setTimeout( decide_front_page, 100 );
         return;
     }
+
     localStorage.offline = 0;
+
     if ( navigator.network.connection.type == Connection.NONE ||
             navigator.network.connection.type == Connection.UNKNOWN ) {
         localStorage.offline = 1;
@@ -646,6 +625,13 @@ function decide_front_page() {
         getPosition();
     }
 }
+
+document.addEventListener("deviceready", onDeviceReady, false);
+
+$(document).delegate('#report-created', 'pageshow',function() {
+    var uri = CONFIG.FMS_URL + 'report/' + localStorage.report;
+    $('#report_url').html( '<a href="' + uri + '">' + uri + '</a>' );
+});
 
 $(document).delegate('#front-page', 'pageshow', decide_front_page);
 $(document).delegate('#account-page', 'pageshow', display_account_page);

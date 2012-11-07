@@ -206,7 +206,9 @@ function fixmystreet_onload() {
         }
     });
 
-    fixmystreet.map.addControl( new OpenLayers.Control.Crosshairs(null) );
+    if (fixmystreet.page == 'around' ) {
+        fixmystreet.map.addControl( new OpenLayers.Control.Crosshairs(null) );
+    }
 }
 OpenLayers.Map.prototype.getCurrentSize = function() {
     var mapDiv = $(this.div);
@@ -240,35 +242,6 @@ function ensureNonZeroHeight(containerid) {
         content.width($(window).width());
     }
  }
-
-$(document).delegate('#submit-problem', 'pageshow', function(event) {
-    $('#mapForm').submit(postReport);
-    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
-    $('#side-form, #site-logo').show();
-    $('#pc').val(localStorage.pc);
-    $('#fixmystreet\\.latitude').val(localStorage.latitude);
-    $('#fixmystreet\\.longitude').val(localStorage.longitude);
-    if ( !localStorage.offline ) {
-        $.getJSON( CONFIG.FMS_URL + 'report/new/ajax', {
-                latitude: $('#fixmystreet\\.latitude').val(),
-                longitude: $('#fixmystreet\\.longitude').val()
-        }, function(data) {
-            if (data.error) {
-                // XXX If they then click back and click somewhere in the area, this error will still show.
-                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
-                return;
-            }
-            $('#councils_text').html(data.councils_text);
-            $('#form_category_row').html(data.category);
-        });
-    } else {
-        $('#councils_text').html("You are currently operating in offline mode so you can save the details of the problem but you'll need to finish reporting when you have internet access.");
-        $('#form_category_row').hide();
-        $('#email_label').hide();
-        $('#form_email').hide();
-        $('#form_sign_in').hide();
-    }
-});
 
 function show_map(event) {
 
@@ -514,7 +487,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
 });
 
 /* Click handler */
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     defaultHandlerOptions: {
         'single': true,
         'double': false,
