@@ -168,19 +168,6 @@ function getPosition() {
     }
 }
 
-function check_for_gps() {
-    if ( !can_geolocate ) {
-        window.setTimeout( check_for_gps, 200 );
-        return;
-    }
-    if ( !watch_id ) {
-        watch_count = 0;
-        watch_id = navigator.geolocation.watchPosition(have_gps, do_not_have_gps, { timeout: 60000, enableHighAccuracy: true } );
-    } else {
-        alert('currently locating');
-    }
-}
-
 function have_gps(myLocation) {
     navigator.geolocation.clearWatch(watch_id);
     if ( watch_id ) {
@@ -195,10 +182,6 @@ function have_gps(myLocation) {
     }
 }
 
-function create_offline() {
-    $.mobile.changePage('submit-problem.html');
-}
-
 function do_not_have_gps(err) {
     console.log(err);
     if ( watch_id ) {
@@ -207,6 +190,23 @@ function do_not_have_gps(err) {
         $('#have-gps').text('Cannot determine location');
         $('#make-report').hide();
     }
+}
+
+function check_for_gps() {
+    if ( !can_geolocate ) {
+        window.setTimeout( check_for_gps, 200 );
+        return;
+    }
+    if ( !watch_id ) {
+        watch_count = 0;
+        watch_id = navigator.geolocation.watchPosition(have_gps, do_not_have_gps, { timeout: 60000, enableHighAccuracy: true } );
+    } else {
+        alert('currently locating');
+    }
+}
+
+function create_offline() {
+    $.mobile.changePage('submit-problem.html');
 }
 
 
@@ -450,8 +450,7 @@ function mark_here() {
         '<p id="mob_sub_map_links">' +
         '<a href="#" id="try_again">Try again</a>' +
         '<a href="#ok" id="mob_ok">Confirm</a>' +
-        '</p>'
-    );
+        '</p>' );
     $('#mark-here').hide();
 
     $('#try_again').on('click', function(){
@@ -577,7 +576,7 @@ function open_saved_report_page(e) {
 }
 
 function display_saved_report() {
-    var reports = localStorage.getObject('reports')
+    var reports = localStorage.getObject('reports');
     var r = reports[localStorage.currentReport];
     fixmystreet.latitude = r.lat;
     fixmystreet.longitude = r.lon;
@@ -614,7 +613,7 @@ function submit_problem_show() {
 
         $('#form_title').val(r.title);
         $('#form_detail').val(r.detail);
-        if ( r.may_show_name == 0 ) {
+        if ( r.may_show_name === 0 ) {
             $('#form_may_show_name').attr('checked', 'off');
         }
         //category: $('#form_category').val();
