@@ -254,6 +254,15 @@ function check_name( name, msg ) {
     }
 }
 
+function remove_saved_report() {
+    if ( localStorage.currentReport ) {
+        var reports = localStorage.getObject('reports');
+        delete reports[localStorage.currentReport];
+        localStorage.setObject('reports', reports);
+        delete localStorage.currentReport;
+    }
+}
+
 function fileUploadSuccess(r) {
     if ( r.response ) {
         var data;
@@ -270,6 +279,7 @@ function fileUploadSuccess(r) {
             } else {
                 $.mobile.changePage('email_sent.html');
             }
+            remove_saved_report();
         } else {
             if ( data.check_name ) {
                 check_name( data.check_name, data.errors.name );
@@ -288,7 +298,6 @@ function fileUploadFail() {
     alert('Could not submit report');
     $('input[type=submit]').prop("disabled", false);
 }
-
 
 var submit_clicked = null;
 
@@ -362,6 +371,7 @@ function postReport(e) {
                         localStorage.username = $('#form_email').val();
                         localStorage.password = $('#password_sign_in').val();
                     }
+                    remove_saved_report();
                 } else {
                     if ( data.check_name ) {
                         check_name( data.check_name, data.errors.name );
