@@ -1,6 +1,4 @@
-[% INCLUDE 'header.html', title => '' %]
-
-[% IF c.req.uri.host == 'reportemptyhomes.com' or c.req.uri.host == 'emptyhomes.matthew.fixmystreet.com' %]
+[% INCLUDE 'header.html', title = '' %]
 
 <h2>Channel 4: The Great British Property Scandal</h2>
 
@@ -21,50 +19,9 @@ The TV series launched a campaign for action and while this is running, our <a h
 <ul class="channel4">
 
 <li><a href="http://www.channel4.com/programmes/the-great-british-property-scandal/articles/report-an-empty">Report an empty property</a></li>
-<li><a href="http://cy.reportemptyhomes.com/">Rhoi gwybod am eiddo gwag</a></li>
 
 <li><a href="http://itunes.apple.com/gb/app/empty-homes-spotter/id482550587?mt=8"><img src="/i/appstore.png" hspace="5" alt="" align="right">Download the iPhone app</a> from the App Store.</li>
 
 </ul>
-
-[% ELSE %]
-
-[% IF error %]
-    <p class="error">[% error %]</p>
-[% END %]
-
-<p id="expl">        
-    <strong>[% loc('Report empty properties') %]</strong>
-</p>
-
-[%
-    question
-        =  c.cobrand.enter_postcode_text()
-        || loc("Enter a nearby GB postcode, or street name and area");
-%]
-
-<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-    <label for="pc">[% question %]:</label>
-    <span><input type="text" name="pc" value="" id="pc" size="10" maxlength="200">
-    <input type="submit" value="[% loc('Go') %]" id="submit">
-    </span>
-</form>
-
-<div id="front_intro">
-
-    <h2>[% loc('How to report a problem') %]</h2>
-    
-    <ol>
-        <li>[% question %]</li>
-        <li>[% loc('Locate the problem on a map of the area') %]</li>
-        <li>[% loc('Enter details of the problem') %]</li>
-        <li>[% loc('We send it to the council on your behalf') %]</li>
-    </ol>
-    
-    [% INCLUDE "front/stats.html" %]
-
-</div>
-
-[% END %]
 
 [% INCLUDE 'footer.html' %]
