@@ -614,6 +614,13 @@ function complete_report() {
     }
 }
 
+function delete_report() {
+    var reports = localStorage.getObject('reports');
+    delete reports[localStorage.currentReport];
+    localStorage.setObject('reports', reports);
+    $.mobile.changePage('my_reports.html');
+}
+
 function submit_problem_show() {
     var reports, r;
 
@@ -717,3 +724,4 @@ $(document).delegate('.saved-report', 'click', open_saved_report_page);
 $(document).delegate('#mark-here', 'click', mark_here);
 $(document).delegate('#create_report', 'click', create_offline);
 $(document).delegate('#complete_report', 'click', complete_report);
+$(document).delegate('#delete_report', 'click', delete_report);
