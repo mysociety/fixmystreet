@@ -619,7 +619,12 @@ function submit_problem_show() {
         //category: $('#form_category').val();
         $('#form_phone').val(r.phone);
         $('#pc').val(r.pc);
-
+        if ( r.file ) {
+            $('#form_photo').val(r.file);
+            $('#photo').attr('src', r.file );
+            $('#add_photo').hide();
+            $('#display_photo').show();
+        }
     }
 
     $('#mapForm').submit(postReport);
