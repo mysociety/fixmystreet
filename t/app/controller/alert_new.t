@@ -330,7 +330,7 @@ subtest "Test two-tier council alerts" => sub {
                 feed => $alert->{feed},
             }
         } );
-        is $mech->uri->path, $alert->{result};
+        is $mech->uri->path, $alert->{result}, 'Redirected to right RSS feed';
     }
 };
 
