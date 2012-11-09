@@ -273,7 +273,7 @@ foreach my $test (
         state => 'unable to fix',
         anon  => 0,
         status => 'CLOSED',
-        extended => 'UNABLE_TO_FIX',
+        extended => 'NO_FURTHER_ACTION',
     },
     {
         desc => 'comment with closed state sends status of CLOSED',

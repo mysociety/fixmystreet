@@ -309,7 +309,7 @@ HASHREF.
 =cut
 sub council_states {
     my $states = {
-        'confirmed'                     => 1,
+        'confirmed'                   => 1,
         'investigating'               => 1,
         'action scheduled'            => 1,
         'in progress'                 => 1,

@@ -291,7 +291,7 @@ sub _populate_service_request_update_params {
         } elsif ( $comment->problem->state eq 'not responsible' ) {
             $status = 'NOT_COUNCILS_RESPONSIBILITY';
         } elsif ( $comment->problem->state eq 'unable to fix' ) {
-            $status = 'UNABLE_TO_FIX';
+            $status = 'NO_FURTHER_ACTION';
         }
     } else {
         $status = $comment->problem->is_open ? 'OPEN' : 'CLOSED',;

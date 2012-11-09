@@ -98,15 +98,12 @@ sub update_comments {
                 if ( $comment->created_local > $p->lastupdate_local ) {
                     my $state = $self->map_state( $request->{status} );
 
-                    # do not change a fixed problem to a closed one
-                    if ( $p->is_fixed && FixMyStreet::DB::Result::Problem->open_states()->{$state} ) {
+                    # don't update state unless it's an allowed state and it's
+                    # actually changing the state of the problem
+                    if ( FixMyStreet::DB::Result::Problem->council_states()->{$state} && $p->state ne $state &&
+                        !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) ) {
                         $p->state($state);
                         $comment->problem_state($state);
-                    } elsif ( ( $p->is_open || $p->is_closed ) && $p->state ne $state ) {
-                        if ( FixMyStreet::DB::Result::Problem->council_states() ->{$state} ) {
-                            $p->state($state);
-                            $comment->problem_state($state);
-                        }
                     }
                 }
 
@@ -144,6 +141,7 @@ sub map_state {
     my %state_map = (
         fixed                         => 'fixed - council',
         'not councils responsibility' => 'not responsible',
+        'no further action'           => 'unable to fix',
         open                          => 'confirmed',
         closed                        => 'fixed - council'
     );
