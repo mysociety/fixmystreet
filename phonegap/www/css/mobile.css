@@ -156,10 +156,22 @@ input.green-btn:hover {
     top: 360px;
     left: 60px;
     z-index: 2000;
-    display: block;
+    display: none;
     padding: 10px;
 }
 
 #OpenLayers_Control_Crosshairs_crosshairs {
     pointer-events: none
+}
+
+#around-page .container {
+    padding: 0px;
+}
+
+#around-page #map_box {
+    position: 'absolute';
+    top: 0, left: 0, right: 0, bottom: 0;
+    padding: 0px;
+    height: 100%;
+    margin: 0px;
 }
