@@ -307,48 +307,7 @@ function show_map(event) {
         });
     }
 
-    /*
-    if (document.getElementById('mapForm')) {
-        var click = new OpenLayers.Control.Click();
-        fixmystreet.map.addControl(click);
-        click.activate();
-    }
-    */
-
-    $(window).hashchange(function(){
-        if (location.hash == '#report' && $('.rap-notes').is(':visible')) {
-            $('.rap-notes-close').click();
-            return;
-        }
-
-        if (location.hash && location.hash != '#') {
-            return;
-        }
-
-        // Okay, back to around view.
-        fixmystreet.bbox_strategy.activate();
-        fixmystreet.markers.refresh( { force: true } );
-        if ( fixmystreet.state_pins_were_hidden ) {
-            // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
-            $('#hide_pins_link').click();
-        }
-        fixmystreet.drag.deactivate();
-        $('#side-form').hide();
-        $('#side').show();
-        $('#sub_map_links').show();
-        //only on mobile
-        $('#mob_sub_map_links').remove();
-        $('.mobile-map-banner').text('Place pin on map')
-        .prepend('<a href="index.html">home</a>');
-        fixmystreet.page = 'around';
-    });
-
-    // Vector layers must be added onload as IE sucks
-    if ($.browser.msie) {
-        $(window).load(fixmystreet_onload);
-    } else {
-        fixmystreet_onload();
-    }
+    fixmystreet_onload();
     fixContentHeight(fixmystreet.map);
 
     if ( fixmystreet.page == 'around' ) {
@@ -417,43 +376,6 @@ OpenLayers.Control.Crosshairs.prototype =
     CLASS_NAME: "OpenLayers.Control.Crosshairs"
 });
 
-/* Overridding the buttonDown function of PanZoom so that it does
-   zoomTo(0) rather than zoomToMaxExtent()
-*/
-OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
-    buttonDown: function (evt) {
-        if (!OpenLayers.Event.isLeftClick(evt)) {
-            return;
-        }
-
-        switch (this.action) {
-            case "panup":
-                this.map.pan(0, -this.getSlideFactor("h"));
-                break;
-            case "pandown":
-                this.map.pan(0, this.getSlideFactor("h"));
-                break;
-            case "panleft":
-                this.map.pan(-this.getSlideFactor("w"), 0);
-                break;
-            case "panright":
-                this.map.pan(this.getSlideFactor("w"), 0);
-                break;
-            case "zoomin":
-                this.map.zoomIn();
-                break;
-            case "zoomout":
-                this.map.zoomOut();
-                break;
-            case "zoomworld":
-                this.map.zoomTo(0);
-                break;
-        }
-
-        OpenLayers.Event.stop(evt);
-    }
-});
-
 /* Overriding Permalink so that it can pass the correct zoom to OSM */
 OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink, {
     updateLink: function() {
@@ -494,85 +416,3 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
 });
-
-/* Click handler */
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
-    defaultHandlerOptions: {
-        'single': true,
-        'double': false,
-        'pixelTolerance': 0,
-        'stopSingle': false,
-        'stopDouble': false
-    },
-
-    initialize: function(options) {
-        this.handlerOptions = OpenLayers.Util.extend(
-            {}, this.defaultHandlerOptions);
-        OpenLayers.Control.prototype.initialize.apply(
-            this, arguments
-        ); 
-        this.handler = new OpenLayers.Handler.Click(
-            this, {
-                'click': this.trigger
-            }, this.handlerOptions);
-    }, 
-
-    trigger: function(e) {
-        if (typeof fixmystreet.nav_control != 'undefined') {
-            fixmystreet.nav_control.disableZoomWheel();
-        }
-        var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
-        if (fixmystreet.page == 'new') {
-            /* Already have a pin */
-            fixmystreet.markers.features[0].move(lonlat);
-        } else {
-            var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green' ] ], false );
-            fixmystreet.bbox_strategy.deactivate();
-            fixmystreet.markers.removeAllFeatures();
-            fixmystreet.markers.addFeatures( markers );
-            fixmystreet_activate_drag();
-        }
-        fixmystreet_update_pin(lonlat);
-        // check to see if markers are visible. We click the
-        // link so that it updates the text in case they go
-        // back
-        if ( ! fixmystreet.markers.getVisibility() ) {
-            fixmystreet.state_pins_were_hidden = true;
-            $('#hide_pins_link').click();
-        }
-        if (fixmystreet.page == 'new') {
-            return;
-        }
-        $.getJSON( CONFIG.FMS_URL + 'report/new/ajax', {
-                latitude: $('#fixmystreet\\.latitude').val(),
-                longitude: $('#fixmystreet\\.longitude').val()
-        }, function(data) {
-            if (data.error) {
-                // XXX If they then click back and click somewhere in the area, this error will still show.
-                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
-                return;
-            }
-            $('#councils_text').html(data.councils_text);
-            $('#form_category_row').html(data.category);
-        });
-
-        $('#side-form, #site-logo').show();
-        //fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
-        /* For some reason on IOS5 if you use the jQuery show method it
-         * doesn't display the JS validation error messages unless you do this
-         * or you cause a screen redraw by changing the phone orientation.
-         * NB: This has to happen after the call to show() */
-        if ( navigator.userAgent.match(/like Mac OS X/i)) {
-            //document.getElementById('side-form').style.display = 'block';
-        }
-        $('#side').hide();
-        if (typeof heightFix !== 'undefined') {
-            heightFix('#report-a-problem-sidebar', '.content', 26);
-        }
-
-
-        fixmystreet.page = 'new';
-        location.hash = 'report';
-    }
-});
-
