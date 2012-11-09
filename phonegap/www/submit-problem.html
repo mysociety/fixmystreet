@@ -79,14 +79,14 @@
 
                                     <div id="add_photo">
                                         <label>Add a Photo</label>
-                                        <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" onclick="takePhoto(navigator.camera.PictureSourceType.CAMERA);" class="green-btn"> Or 
-                                        <input value="Choose" type="button" name="existing" id="id_existing" onclick="takePhoto(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM);" class="green-btn">
+                                        <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" class="green-btn"> Or 
+                                        <input value="Choose" type="button" name="existing" id="id_existing" class="green-btn">
                                     </div>
 
                                     <div id="display_photo" style="display: none">
                                         <label>Your Photo</label>
                                         <img id="photo" src="" width="200" />
-                                        <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" onclick="delPhoto();" class="green-btn">
+                                        <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" class="green-btn">
                                     </div>
 
                                     <input type="hidden" name="photo" id="form_photo" value="">

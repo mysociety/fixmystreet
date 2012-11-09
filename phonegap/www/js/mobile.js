@@ -463,7 +463,7 @@ function mark_here() {
         '</p>' );
     $('#mark-here').hide();
 
-    $('#try_again').on('click', function(){
+    $('#try_again').on('vclick', function(){
         fixmystreet.bbox_strategy.activate();
         fixmystreet.markers.refresh( { force: true } );
         if ( !fixmystreet.state_pins_were_hidden ) {
@@ -475,7 +475,7 @@ function mark_here() {
         $('#mob_sub_map_links').remove();
         $('#mark-here').show();
     });
-    $('#mob_ok').on('click', set_location );
+    $('#mob_ok').on('vclick', set_location );
 }
 
 function account() {
@@ -645,7 +645,7 @@ function submit_problem_show() {
     }
 
     $('#mapForm').submit(postReport);
-    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
+    $('#mapForm :input[type=submit]').on('vclick', function() { submit_clicked = $(this); });
     $('#side-form, #site-logo').show();
     $('#pc').val(localStorage.pc);
     $('#fixmystreet\\.latitude').val(localStorage.latitude);
@@ -683,9 +683,9 @@ $(document).bind('pageinit', function() {
     $('#postcodeForm').submit(locate);
     $('#signInForm').submit(sign_in);
     $('#ffo').click(getPosition);
-    $('#forget').on('click', forget);
-    $('#save_report').on('click', save_report);
-    $('#mapForm :input[type=submit]').on('click', function() { submit_clicked = $(this); });
+    $('#forget').on('vclick', forget);
+    $('#save_report').on('vclick', save_report);
+    $('#mapForm :input[type=submit]').on('vclick', function() { submit_clicked = $(this); });
     account();
 });
 
@@ -720,8 +720,11 @@ $(document).delegate('#my-reports-page', 'pageshow', display_saved_reports);
 $(document).delegate('#report-page', 'pageshow', display_saved_report);
 $(document).delegate('#submit-problem', 'pageshow', submit_problem_show);
 $(document).delegate('#no-connection-page', 'pageshow', check_for_gps);
-$(document).delegate('.saved-report', 'click', open_saved_report_page);
-$(document).delegate('#mark-here', 'click', mark_here);
-$(document).delegate('#create_report', 'click', create_offline);
-$(document).delegate('#complete_report', 'click', complete_report);
-$(document).delegate('#delete_report', 'click', delete_report);
+$(document).delegate('.saved-report', 'vclick', open_saved_report_page);
+$(document).delegate('#mark-here', 'vclick', mark_here);
+$(document).delegate('#create_report', 'vclick', create_offline);
+$(document).delegate('#complete_report', 'vclick', complete_report);
+$(document).delegate('#delete_report', 'vclick', delete_report);
+$(document).delegate('#id_photo_button', 'vclick', function() {takePhoto(navigator.camera.PictureSourceType.CAMERA);});
+$(document).delegate('#id_existing', 'vclick', function() {takePhoto(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM);});
+$(document).delegate('#id_del_photo_button', 'vclick', delPhoto);
