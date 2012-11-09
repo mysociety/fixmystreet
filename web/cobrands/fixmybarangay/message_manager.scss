@@ -13,6 +13,8 @@ $color_bg_reply_5:       #BFBFBF;
 $color_bg_reply_6:       #B8B8B8;
 $color_bg_mm_list:       #F6F6F6;
 
+$weak_text_color:      #666;
+
 #message_manager {
 
   #message-control {
@@ -61,7 +63,15 @@ $color_bg_mm_list:       #F6F6F6;
           background-color: inherit;
           margin: 0.25em 0 0 0;
           padding: 0.5em 1em;
-          // &:hover { background-color: #efe;}
+          &:hover { background-color: #efe;}
+					.msg-info-box {
+						font-style: italic;
+						color: #666;
+						border-top: 1px dashed #666;
+						padding:4px 0 0 0;
+						margin: 4px 0 0 0;
+						display: none;
+					}
         }
         ul.mm-reply-thread {
           li {
@@ -106,14 +116,18 @@ $color_bg_mm_list:       #F6F6F6;
           top: 4px;
           &:hover { background-color: black;}
         }
-        .mm-hide {
-          right:0px;
-          background-color: red;
-        }
-        .mm-rep {
-          right:1.4em;
-          background-color: green;
-        }
+				.mm-hide {
+					right:0px;
+					background-color: red;
+				}
+				.mm-info {
+					right:1.5em;
+					background-color: blue;
+				}
+				.mm-rep {
+					right:2.6em;
+					background-color: green;
+				}
       }
     }
   }
@@ -124,10 +138,28 @@ $color_bg_mm_list:       #F6F6F6;
 #show_messages, #add_support, #reply-submit { // COPY TO UPDATE button
   margin: 1em;
 }
+#hide-form-container {
+  p {
+    color: #000;
+  }
+  #hide-form{
+    margin-top: 2em;
+    border: 1px solid $weak_text_color;
+    background-color: #ffdddd;
+  }
+  #mm-boilerplate-hide-reasons-box {
+    overflow: hidden;
+    display: none;
+  }
+}
 #reply-form-container {
   #reply-form{
     margin-top: 2em;
     border: 1px solid $mm_border_color;
     background-color: #fff;
+  }
+  #mm-boilerplate-replies-box {
+    overflow: hidden;
+    display: none;
   }
 }

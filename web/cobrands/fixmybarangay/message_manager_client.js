@@ -1,10 +1,19 @@
 /*
- *  message_manager.config(settings)
+ * creates a message_manage object that uses the Message Manager API:
+ * include this file, then initialise the object when the page is loaded with
+ * message_manager.config(settings)
  *
- * Accepts settings for the Message Manager client. Even if you accept all the defaults,
- * you *MUST* call config when the page is loaded (i.e., call message_manager.config())
+ * i.e., you *must* do something like:
  *
- * The (optional) single parameter is a hash of name-value pairs:
+ *   $(document).ready(function() { 
+ *     message_manager.config({url_root:'http://yourdomain.com/messages'})
+ *   }
+ *
+ * You'll need to set the url_root, but you can leave everything else to default 
+ * provided your HTML ids and classes are the same as ours (which they might be:
+ * see the Message Manager's dummy client (at /client) to see the HTML we use).
+ *
+ * The (optional) single parameter for .config() is a hash of name-value pairs:
  *
  *     url_root           accepts the root URL to the message manager.
  *
@@ -12,10 +21,10 @@
  *                        when claiming a new one so want_unique_locks defaults 
  *                        to true; but you can set it explicitly here.
  *
- *     msg_prefix         all message <li> items have this as their ID prefix
- *
  *     mm_name            name of Message Manager (used in error messages shown
- *                        to user, e.g., "please log in to Message Manager"
+ *                        to user, e.g., "please log in to Message Manager")
+ *
+ *     msg_prefix         all message <li> items have this as their ID prefix
  *
  *     *_selector         these are the jQuery selects that will be used to find
  *                        the respective elements:
@@ -24,15 +33,17 @@
  *                              status_selector:       status message display
  *                              login_selector:        login form 
  *
- *
+ * 
  *   Summary of all methods:
  *     message_manager.config([options])
  *     message_manager.setup_click_listener([options])
  *     message_manager.get_available_messages([options])
  *     message_manager.request_lock(msg_id, [options])  (default use: client code doesn't need to call this explicitly)
  *     message_manager.assign_fms_id(msg_id, fms_id, [options])
- *     message_manager.hide(msg_id, [options])
+ *     message_manager.hide(msg_id, reason_text, [options])
  *     message_manager.reply(msg_id, reply_text, [options])
+ *     message_manager.show_info(msg_id)
+ *     message_manager.sign_out()
  *
  *  Note: options are {name:value, ...} hashes and often include "callback" which is a function that is executed on success
  *        but see the docs (request_lock executes callback if the call is successful even if the lock was denied, for example).
@@ -56,6 +67,8 @@ var message_manager = (function() {
     var $login_element;
     var $htauth_username;
     var $htauth_password;
+    var $hide_reasons;
+    var $boilerplate_replies;
 
     var config = function(settings) {
         var selectors = {
@@ -64,7 +77,9 @@ var message_manager = (function() {
             login_selector:           '#mm-login-container',
             username_selector:        '#mm-received-username',
             htauth_username_selector: '#mm-htauth-username',
-            htauth_password_selector: '#mm-htauth-password'
+            htauth_password_selector: '#mm-htauth-password',
+            boilerplate_hide_reasons: '#mm-boilerplate-hide-reasons-box',
+            boilerplate_replies:      '#mm-boilerplate-replies-box'
         };
         if (settings) {
             if (typeof settings.url_root === 'string') {
@@ -93,6 +108,8 @@ var message_manager = (function() {
         $login_element = $(selectors.login_selector);
         $htauth_username = $(selectors.htauth_username_selector);
         $htauth_password = $(selectors.htauth_password_selector);
+        $hide_reasons = $(selectors.boilerplate_hide_reasons);
+        $boilerplate_replies = $(selectors.boilerplate_replies);
     };
 
     // btoa doesn't work on all browers?
@@ -123,7 +140,7 @@ var message_manager = (function() {
     
     var sign_out = function() { // clear_current_auth_credentials
         if (Modernizr.sessionstorage) {
-            sessionStorage.removeItem('mm_auth'); // FF doesn't support .clear()?
+            sessionStorage.removeItem('mm_auth');
         }
         if ($htauth_password) {
             $htauth_password.val('');
@@ -133,7 +150,7 @@ var message_manager = (function() {
     var show_login_form = function(suggest_username) {
         $('.mm-msg', $message_list_element).remove(); // remove (old) messages
         if ($htauth_username.size() && ! $htauth_username.val()) {
-            $htauth_username.val(suggest_username);
+            $htauth_username.val(suggest_username)
         }
         $login_element.stop().slideDown();
     };
@@ -160,10 +177,12 @@ var message_manager = (function() {
         var lockkeeper = message_root.Lockkeeper.username;
         var escaped_text = $('<div/>').text(msg.message).html();
         var $p = $('<p/>');
-        var $hide_button = $('<span class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '">X</span>');
+        var $hide_button = $('<a class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '" href="#hide-form-container">X</a>');
+        var $info_button = $('<span class="mm-msg-action mm-info" id="mm-info-' + msg.id + '">i</span>');
         var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container">reply</a>');
         if (_use_fancybox) {
             $reply_button.fancybox();
+            $hide_button.fancybox();
         }
         if (depth === 0) {
             var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
@@ -181,13 +200,20 @@ var message_manager = (function() {
         } else {
             $p.text(escaped_text).addClass('mm-reply mm-reply-' + depth);
         }
-        var $litem = $('<li id="' + _msg_prefix + msg.id + '" class="mm-msg">').append($p).append($hide_button);
+        var $litem = $('<li id="' + _msg_prefix + msg.id + '" class="mm-msg">').append($p).append($hide_button).append($info_button);
         if (msg.is_outbound != 1) {
           $litem.append($reply_button);
         }
         if (lockkeeper) {
             $litem.addClass(lockkeeper == _username? 'msg-is-owned' : 'msg-is-locked'); 
         }
+        var info_text = "";
+        if (msg.is_outbound == 1) {
+            info_text = 'sent on ' + msg.created + ' by ' + msg.sender_token;
+        } else {
+            info_text = 'received on ' + msg.created + ' from ' + '<abbr title="'+ msg.sender_token + '">user</abbr>';
+        }
+        $p.append('<div class="msg-info-box" id="msg-info-box-' + msg.id + '">' + info_text + '</div>');
         if (message_root.children) {
             $litem.append(extract_replies(message_root.children, depth+1));
         }
@@ -234,6 +260,11 @@ var message_manager = (function() {
         $message_list_element.on('click', '.mm-rep', function(event) {
             $('#reply_to_msg_id').val($(this).closest('li').attr('id').replace(_msg_prefix, ''));
         });
+        // clicking the hide button loads the id into the (modal/fancybox) hide form
+        $message_list_element.on('click', '.mm-hide', function(event) {
+            $('#hide_msg_id').val($(this).closest('li').attr('id').replace(_msg_prefix, ''));
+            // $('#hide-form-message-text').val(TODO);
+        });
     };
 
     // gets messages or else requests login
@@ -241,6 +272,7 @@ var message_manager = (function() {
     var get_available_messages = function(options) {
         var base_auth = get_current_auth_credentials();
         var suggest_username = "";
+        var callback = null;
         if (options) {
             if (typeof(options.callback) === 'function') {
                 callback = options.callback;
@@ -335,6 +367,7 @@ var message_manager = (function() {
     var assign_fms_id = function(msg_id, fms_id, options) {
         var check_li_exists = false;
         var is_async = true;
+        var callback = null;
         if (options) {
             if (typeof(options.callback) === 'function') {
                 callback = options.callback;
@@ -391,6 +424,7 @@ var message_manager = (function() {
         if (_use_fancybox){
             $.fancybox.close();
         }
+        var callback = null;
         var check_li_exists = false;
         if (options) {
             if (typeof(options.callback) === 'function') {
@@ -441,7 +475,11 @@ var message_manager = (function() {
         });
     };
 
-    var hide = function(msg_id, options) {
+    var hide = function(msg_id, reason_text, options) {
+        if (_use_fancybox){
+            $.fancybox.close();
+        }
+        var callback = null;
         var check_li_exists = false;
         if (options) {
             if (typeof(options.callback) === 'function') {
@@ -458,10 +496,12 @@ var message_manager = (function() {
                 return;
             }
         }
+        reason_text = $.trim(reason_text);
         $li.addClass('msg-is-busy');
         $.ajax({
             dataType:"json", 
             type:"post", 
+            data: {reason_text: reason_text},
             url: _url_root +"messages/hide/" + msg_id + ".json",
             beforeSend: function (xhr){
                 xhr.setRequestHeader('Authorization', get_current_auth_credentials());
@@ -485,7 +525,103 @@ var message_manager = (function() {
             }
         });
     };
+    
+    var show_info = function(msg_id) {
+        var $info = $("#msg-info-box-" + msg_id);
+        if ($info.size()==1) {
+            if ($info.is(':hidden')) {
+                $info.slideDown();                
+            } else {
+                $info.slideUp();                
+            }
+        }
+    };
+    
+    // if boilerplate is not already in local storage, make ajax call and load them
+    // otherwise, populate the boilerplate select lists: these are currently the
+    // reasons for hiding a message, and pre-loaded replies.message-manager.dev.mysociety.org
+    // NB no auth required on this call
+    var populate_boilerplate_strings = function(boilerplate_type, options) {
+        if (Modernizr.sessionstorage && sessionStorage.getItem('boilerplate_' + boilerplate_type)) {
+            populate_boilerplate(boilerplate_type, sessionStorage.getItem('boilerplate_' + boilerplate_type));
+            return;
+        }
+        var callback = null;
+        if (options) {
+            if (typeof(options.callback) === 'function') {
+                callback = options.callback;
+            }
+        }
+        alert("calling " + _url_root +"boilerplate_strings/index/" + boilerplate_type + ".json");
+        $.ajax({
+            dataType:"json", 
+            type:"post",
+            data: {lang: 'en', boilerplate_type: boilerplate_type},
+            url: _url_root +"boilerplate_strings/index/" + boilerplate_type + ".json",
+            success:function(data, textStatus) {
+                if (data.success) {
+                    var raw_data = data.data;
+                    var select_html = get_select_tag_html(data.data, boilerplate_type);
+                    if (Modernizr.sessionstorage) {
+                        sessionStorage.setItem('boilerplate_' + boilerplate_type, select_html);
+                    }
+                    populate_boilerplate(boilerplate_type, select_html);
+                     if (typeof(callback) === "function") {
+                         callback.call($(this), data.data); 
+                     }
+                } else {
+                    console.log("failed to load boilerplate");
+                }
+            }, 
+            error: function(jqXHR, textStatus, errorThrown) {
+                fixme = "";
+                for (x in jqXHR) {
+                    fixme = x + " => " + jqXHR[x] + "\n";
+                }
+                console.log("boilerplate error: " + textStatus + ": " + errorThrown + fixme);
+            }
+        })
+    };
 
+    // TODO flatten all HTML in boilerplate text
+    var get_select_tag_html = function(boilerplate_data, boilerplate_type) {
+        var html = "<option value=''>--none--</option>\n";
+        var qty_langs = 0;
+        var qty_strings = 0;
+        for (var lang in boilerplate_data) {qty_langs++;} // not lovely
+        for (var lang in boilerplate_data) {
+            var options = "";
+            for (var i in boilerplate_data[lang]) {
+                options += "<option>" + boilerplate_data[lang][i] + "</option>\n";
+                qty_strings++;
+            }
+            if (qty_langs > 1) { // really need pretty name for language
+                options = '<optgroup label="' + lang + '">\n' + options + '</optgroup>\n';
+            }
+            html += options;
+        }
+        if (qty_strings == 0) {
+            html = '';
+        }
+        return html;
+    }
+    
+    // actually load the select tag
+    var populate_boilerplate = function(boilerplate_type, html) {
+        var $target = null;
+        switch(boilerplate_type) {
+            case 'hide-reason': $target = $hide_reasons; break;
+            case 'reply': $target = $boilerplate_replies; break;
+        }
+        if ($target) {
+            if (html) {
+                $target.show().find('select').html(html);
+            } else {
+                $target.hide();
+            }
+        }
+    }
+    
     // revealed public methods:
     return {
        config: config,
@@ -495,6 +631,8 @@ var message_manager = (function() {
        assign_fms_id: assign_fms_id,
        reply: reply,
        hide: hide,
-       sign_out: sign_out
+       show_info: show_info,
+       sign_out: sign_out,
+       populate_boilerplate_strings: populate_boilerplate_strings
      };
 })();
