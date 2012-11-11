@@ -138,27 +138,21 @@ $weak_text_color:      #666;
 #show_messages, #add_support, #reply-submit { // COPY TO UPDATE button
   margin: 1em;
 }
+
+#reply-form-container, 
 #hide-form-container {
   p {
     color: #000;
   }
-  #hide-form{
-    margin-top: 2em;
-    border: 1px solid $weak_text_color;
-    background-color: #ffdddd;
-  }
-  #mm-boilerplate-hide-reasons-box {
-    overflow: hidden;
-    display: none;
-  }
-}
-#reply-form-container {
+  #hide-form,
   #reply-form{
     margin-top: 2em;
-    border: 1px solid $mm_border_color;
-    background-color: #fff;
+    textarea {
+      min-height: 3em;
+      margin-bottom: 0.5em;
+    }
   }
-  #mm-boilerplate-replies-box {
+  #mm-boilerplate-replies-box, #mm-boilerplate-hide-reasons-box {
     overflow: hidden;
     display: none;
   }
