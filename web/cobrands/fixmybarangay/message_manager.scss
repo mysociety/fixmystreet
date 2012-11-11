@@ -158,9 +158,14 @@ $weak_text_color:      #666;
     display: none;
   }
 }
-a#mm-link-to-admin {
+div#mm-admin-buttons {
   display:block;
+  text-align: right;
   float:right;
   font-size:80%;
   padding:4px 8px 4px 0;
+	a {
+		display: block;
+	}
+
 }

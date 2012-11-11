@@ -220,7 +220,21 @@ var message_manager = (function() {
         return $litem;
     };
     
-    var show_available_messages = function(data) {
+    var show_available_messages = function(data, anim_duration) {
+        var messages = data.messages;
+        _username = data.username;
+        var $output = $message_list_element;
+        if (anim_duration > 0) {
+            $output.stop().fadeOut(anim_duration, function(){
+                render_available_messages(data, anim_duration)
+            });
+        } else {
+            render_available_messages(data, anim_duration);
+        }
+    };
+    
+    // render allows animation (if required) to hide messages before repainting and then revealing them
+    var render_available_messages = function(data, anim_duration) {
         var messages = data.messages;
         _username = data.username;
         var $output = $message_list_element;
@@ -237,6 +251,9 @@ var message_manager = (function() {
             }
         } else {
             $output.html('<p>No messages (server did not send a list).</p>');
+        }
+        if (anim_duration > 0) {
+            $output.slideDown(anim_duration);
         }
     };
 
@@ -269,9 +286,11 @@ var message_manager = (function() {
 
     // gets messages or else requests login
     // options: suggest_username, if provided, is preloaded into the login form if provided
+    //          anim_duration: duration of fade/reveal (0, by defaut, does no animation)
     var get_available_messages = function(options) {
         var base_auth = get_current_auth_credentials();
         var suggest_username = "";
+        var anim_duration = 0;
         var callback = null;
         if (options) {
             if (typeof(options.callback) === 'function') {
@@ -279,6 +298,12 @@ var message_manager = (function() {
             }
             if (typeof options.suggest_username === 'string') {
                 suggest_username = options.suggest_username;
+            }
+            if (typeof options.anim_duration === 'string' || typeof options.anim_duration === 'number') {
+                anim_duration = parseInt(options.anim_duration, 10);
+                if (anim_duration == NaN) {
+                    anim_duration = 0;
+                }
             }
         }
         if (base_auth === "") {
@@ -295,7 +320,7 @@ var message_manager = (function() {
                 xhr.withCredentials = true;
             },
             success:  function(data, textStatus) {
-                          show_available_messages(data);
+                          show_available_messages(data, anim_duration);
                           if (typeof(callback) === "function") {
                               callback.call($(this), data); // execute callback
                           }
@@ -544,6 +569,7 @@ var message_manager = (function() {
     var populate_boilerplate_strings = function(boilerplate_type, options) {
         if (Modernizr.sessionstorage && sessionStorage.getItem('boilerplate_' + boilerplate_type)) {
             populate_boilerplate(boilerplate_type, sessionStorage.getItem('boilerplate_' + boilerplate_type));
+            console.log("boilerplate strings populated from local (sessionstorage) copy");
             return;
         }
         var callback = null;
@@ -552,10 +578,10 @@ var message_manager = (function() {
                 callback = options.callback;
             }
         }
-        alert("calling " + _url_root +"boilerplate_strings/index/" + boilerplate_type + ".json");
+        console.log("calling " + _url_root +"boilerplate_strings/index/" + boilerplate_type + ".json");
         $.ajax({
             dataType:"json", 
-            type:"post",
+            type:"get",
             data: {lang: 'en', boilerplate_type: boilerplate_type},
             url: _url_root +"boilerplate_strings/index/" + boilerplate_type + ".json",
             success:function(data, textStatus) {

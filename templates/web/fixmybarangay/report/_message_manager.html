@@ -6,7 +6,10 @@
 
 <ul id="message_manager" class="issue-list-a tab" style="display: none">
 	<li id="message-control">
-		<a id="mm-link-to-admin" href="[% c.config.MESSAGE_MANAGER_URL %]">[admin]</a>
+		<div id="mm-admin-buttons">
+			<a id="mm-link-to-admin" href="[% c.config.MESSAGE_MANAGER_URL %]">[admin]</a>
+			<a id="mm-link-to-refresh" href="#">[refresh]</a>
+		</div>
 		<div id="mm-username-container">username:&nbsp;<span id="mm-received-username"></span></div>
 		<div id="mm-status-message-container">
 			<div id="mm-status-message"></div>
@@ -91,6 +94,7 @@ $(document).ready(function() {
 	var mm_populate_list = function(data) {
 		$('#mm-status-message-container').text("Accessed Message Manager as " + data['username']);
 		$('input[name=mm_text]').prop('checked', false); // uncheck all
+		$('#mm-link-to-refresh').delay(2000).fadeIn();
 	}
 
 	var mm_selected_message = function(data) {
@@ -130,7 +134,11 @@ $(document).ready(function() {
 
 	$('#available-submit').click(function(e){
 		e.preventDefault();
-		message_manager.get_available_messages({callback:mm_populate_list, suggest_username:fms_username});
+		message_manager.get_available_messages({
+			callback: mm_populate_list, 
+			suggest_username: fms_username,
+			anim_duration: 500
+		});
 	});
 	$('#available-submit').click();
 	
@@ -191,6 +199,13 @@ $(document).ready(function() {
 		$('#show_messages').val( $('#show_messages').val() == 'Show Messages' ? 'Hide Messages' : 'Show Messages' ); 
 	});
 	
+	$('#mm-link-to-refresh').on('click', function(e) {
+		e.preventDefault();
+		$('#mm-link-to-refresh').fadeOut();
+		$('#available-submit').click();
+		console.log("refreshing...");
+	});
+
 	message_manager.populate_boilerplate_strings('hide-reason');
     message_manager.populate_boilerplate_strings('reply');
 });
