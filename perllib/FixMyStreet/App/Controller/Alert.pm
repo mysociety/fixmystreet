@@ -438,7 +438,7 @@ sub determine_location : Private {
             $c->detach('choose');
         }
 
-        $c->go('index') if $c->stash->{location_error};
+        $c->go('index');
     }
 
     # truncate the lat,lon for nicer urls

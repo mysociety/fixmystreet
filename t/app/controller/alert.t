@@ -40,7 +40,7 @@ $mech->get_ok('/alert/list?pc=High Street');
 $mech->content_contains('We found more than one match for that location');
 
 $mech->get_ok('/alert/list?pc=');
-$mech->content_contains('hat location does not appear to be covered by a council');
+$mech->content_contains('To find out what local alerts we have for you');
 
 $mech->get_ok('/alert/list?pc=GL502PR');
 $mech->content_contains('Problems within the boundary of');

@@ -101,7 +101,12 @@ body #main-nav ul#main-menu li span
     background-image: none;
     margin: 0;
   }
+
+  &.fmb-bgy-btn {
+    color: #fcc921;
+  }
   
+
   &:hover{
     background-color: rgba(0,0,0,0.75);
     background-image: none;

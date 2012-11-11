@@ -45,7 +45,7 @@ sub process_extras {
     my $extra   = shift;
     my $fields  = shift || [];
 
-    if ( $area_id == 2482 ) {
+    if ( $area_id eq '2482' ) {
         my @fields = ( 'fms_extra_title', @$fields );
         for my $field ( @fields ) {
             my $value = $ctx->request->param( $field );

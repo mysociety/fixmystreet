@@ -49,6 +49,8 @@ test_requires 'Test::More' => '0.88';
 test_requires 'Test::WWW::Mechanize::Catalyst';
 test_requires 'Sub::Override';
 
+tests 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t t/*/*/*/*/*.t';
+
 catalyst;
 
 install_script glob('script/*.pl');

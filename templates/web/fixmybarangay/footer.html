@@ -12,6 +12,8 @@
                     </ul>
 
                     <ul id="main-menu">
+                        <li><a href="/around?latitude=10.322;longitude=123.907" class="fmb-bgy-btn">Luz</a></li>
+                        <li><a href="/around?latitude=10.288;longitude=123.870" class="fmb-bgy-btn">BSN</a></li>
                         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                             >View problems</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
