@@ -419,7 +419,7 @@ sub _get_xml_object {
     my $obj;
 
     eval {
-        $obj = $simple ->XMLin( $xml );
+        $obj = $simple ->parse_string( $xml );
     };
 
     return $obj;

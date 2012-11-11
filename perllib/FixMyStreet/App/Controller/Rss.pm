@@ -106,10 +106,19 @@ sub local_problems_pc_distance : Path('pc') : Args(2) {
 
 }
 
-sub local_problems : LocalRegex('^(n|l)/([\d.-]+)[,/]([\d.-]+)(?:/(\d+))?$') {
+sub local_problems_dist : LocalRegex('^(n|l)/([\d.-]+)[,/]([\d.-]+)/(\d+)$') {
     my ( $self, $c ) = @_;
+    $c->forward( 'local_problems', $c->req->captures );
+}
 
-    my ( $type, $a, $b, $d) = @{ $c->req->captures };
+sub local_problems_no_dist : LocalRegex('^(n|l)/([\d.-]+)[,/]([\d.-]+)$') {
+    my ( $self, $c ) = @_;
+    $c->forward( 'local_problems', $c->req->captures );
+}
+
+sub local_problems : Private {
+    my ( $self, $c, $type, $a, $b, $d ) = @_;
+
     $c->forward( 'get_query_parameters', [ $d ] );
 
     $c->detach( 'redirect_lat_lon', [ $a, $b ] )

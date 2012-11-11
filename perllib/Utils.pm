@@ -241,6 +241,7 @@ sub cleanup_text {
 
 sub prettify_epoch {
     my ( $epoch, $type ) = @_;
+    $type ||= '';
     $type = 'short' if $type eq '1';
 
     my $dt = DateTime->from_epoch( epoch => $epoch, time_zone => 'local' );
