@@ -64,14 +64,15 @@ $weak_text_color:      #666;
           margin: 0.25em 0 0 0;
           padding: 0.5em 1em;
           &:hover { background-color: #efe;}
-					.msg-info-box {
-						font-style: italic;
-						color: #666;
-						border-top: 1px dashed #666;
-						padding:4px 0 0 0;
-						margin: 4px 0 0 0;
-						display: none;
-					}
+          .msg-info-box {
+            font-style: italic;
+            font-size: 90%;
+            color: #666;
+            border-top: 1px dashed #666;
+            padding:4px 0 0 0;
+            margin: 4px 0 0 0;
+            display: none;
+          }
         }
         ul.mm-reply-thread {
           li {
@@ -116,18 +117,18 @@ $weak_text_color:      #666;
           top: 4px;
           &:hover { background-color: black;}
         }
-				.mm-hide {
-					right:0px;
-					background-color: red;
-				}
-				.mm-info {
-					right:1.5em;
-					background-color: blue;
-				}
-				.mm-rep {
-					right:2.6em;
-					background-color: green;
-				}
+        .mm-hide {
+          right:0px;
+          background-color: red;
+        }
+        .mm-info {
+          right:1.5em;
+          background-color: blue;
+        }
+        .mm-rep {
+          right:2.6em;
+          background-color: green;
+        }
       }
     }
   }
