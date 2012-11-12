@@ -45,24 +45,6 @@ function fms_markers_list(pins, transform) {
 }
 
 function fixmystreet_onload() {
-    if ( fixmystreet.area ) {
-        var area = new OpenLayers.Layer.Vector("KML", {
-            strategies: [ new OpenLayers.Strategy.Fixed() ],
-            protocol: new OpenLayers.Protocol.HTTP({
-                url: CONFIG.FMS_URL + "/mapit/area/" + fixmystreet.area + ".kml?simplify_tolerance=0.0001",
-                format: new OpenLayers.Format.KML()
-            })
-        });
-        fixmystreet.map.addLayer(area);
-        area.events.register('loadend', null, function(a,b,c) {
-            var bounds = area.getDataExtent();
-            if (bounds) {
-                var center = bounds.getCenterLonLat();
-                fixmystreet.map.setCenter(center, fixmystreet.map.getZoomForExtent(bounds), false, true);
-            }
-        });
-    }
-
     var pin_layer_style_map = new OpenLayers.StyleMap({
         'default': new OpenLayers.Style({
             graphicTitle: "${title}",
@@ -275,36 +257,6 @@ function show_map(event) {
             fixmystreet.map.getProjectionObject()
         );
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
-    }
-
-    if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
-        console.log('full page');
-        // TODO Work better with window resizing, this is pretty 'set up' only at present
-        var $content = $('.content'),
-            q = ( $content.offset().left + $content.width() ) / 2;
-        // Need to try and fake the 'centre' being 75% from the left
-        fixmystreet.map.pan(-q, -25, { animate: false });
-        fixmystreet.map.events.register("movestart", null, function(e){
-            fixmystreet.map.moveStart = { zoom: this.getZoom(), center: this.getCenter() };
-        });
-        fixmystreet.map.events.register("zoomend", null, function(e){
-            if ( fixmystreet.map.moveStart && !fixmystreet.map.moveStart.zoom && fixmystreet.map.moveStart.zoom !== 0 ) {
-                return true; // getZoom() on Firefox appears to return null at first?
-            }
-            if ( !fixmystreet.map.moveStart || !this.getCenter().equals(fixmystreet.map.moveStart.center) ) {
-                // Centre has moved, e.g. by double-click. Same whether zoom in or out
-                fixmystreet.map.pan(-q, -25, { animate: false });
-                return;
-            }
-            var zoom_change = this.getZoom() - fixmystreet.map.moveStart.zoom;
-            if (zoom_change == -1) {
-                // Zoomed out, need to re'centre'
-                fixmystreet.map.pan(-q/2, 0, { animate: false });
-            } else if (zoom_change == 1) {
-                // Using a zoom button
-                fixmystreet.map.pan(q, 0, { animate: false });
-            }
-        });
     }
 
     fixmystreet_onload();
