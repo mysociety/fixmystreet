@@ -138,7 +138,7 @@ function fixmystreet_onload() {
         if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
     }
 
-    $('#hide_pins_link').click(function(e) {
+    $('#hide_pins_link').on('vclick', function(e) {
         e.preventDefault();
         var showhide = [
             'Show pins', 'Hide pins',
@@ -158,7 +158,7 @@ function fixmystreet_onload() {
         }
     });
 
-    $('#all_pins_link').click(function(e) {
+    $('#all_pins_link').on('vclick', function(e) {
         e.preventDefault();
         fixmystreet.markers.setVisibility(true);
         var texts = [
