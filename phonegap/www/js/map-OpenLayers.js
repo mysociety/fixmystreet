@@ -303,8 +303,10 @@ OpenLayers.Control.Crosshairs.prototype =
     getIdealPosition: function() {
         this.map.updateSize();
         var mapSize = this.map.getSize();
-        return new OpenLayers.Pixel((mapSize.w / 2) - (this.imageSize.w / 2),
-                                    (2 * mapSize.h / 5) - (this.imageSize.h / 2));
+        var center = this.map.getCenter();
+        var px = this.map.getPixelFromLonLat( center );
+        return new OpenLayers.Pixel( px.x - ( this.imageSize.w / 2 ),
+                                     px.y - ( this.imageSize.h / 2 ) );
     },
 
     getMapPosition: function() {
