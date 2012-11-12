@@ -86,17 +86,31 @@ $(document).ready(function() {
 	var problem_id = "[% problem.id %]";
 	var dummy_busy = false;
 	var fms_username = "[% c.user.email | replace('\@.*', '') %]";
+	var timeout_id = 0;
+	var can_refresh = true; // disable refresh
+	var refresh_period = 60000 * 3; // refresh messages every three minutes
 	
 	function sanitise_id(css_id) {
 	    return css_id.replace(/\D/g, "");
+	}
+	
+	var mm_refresh_messages = function() {
+		$('#mm-link-to-refresh').fadeOut();
+		$('#available-submit').click();
 	}
 	
 	var mm_populate_list = function(data) {
 		$('#mm-status-message-container').text("Accessed Message Manager as " + data['username']);
 		$('input[name=mm_text]').prop('checked', false); // uncheck all
 		$('#mm-link-to-refresh').delay(2000).fadeIn();
+		if (refresh_period && can_refresh) {
+			if (timeout_id) {
+				clearTimeout(timeout_id);
+			}
+			timeout_id = setTimeout(mm_refresh_messages, refresh_period);
+		}
 	}
-
+	
 	var mm_selected_message = function(data) {
 		var msg_text = "";
 		var service_id = "";
@@ -201,9 +215,7 @@ $(document).ready(function() {
 	
 	$('#mm-link-to-refresh').on('click', function(e) {
 		e.preventDefault();
-		$('#mm-link-to-refresh').fadeOut();
-		$('#available-submit').click();
-		console.log("refreshing...");
+		mm_refresh_messages();
 	});
 
 	message_manager.populate_boilerplate_strings('hide-reason');
