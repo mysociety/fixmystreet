@@ -1,10 +1,15 @@
         <div class="wrapper" id="locate-page" data-role="page">
+            <div data-id="locate" id="search-header" data-role="header" data-position="fixed">
+                <a href="index.html" class="ui-btn-left">Locate</a>
+                <h1>Locate</h1>
+                <a href="settings.html" class="ui-btn-right" data-icon="gear" data-iconpos="notext"></a>
+            </div>
             <div class="table-cell">
                 <div class="container">
                     <div class="content" role="main">
                         <div id="front-main">
                             <div id="front-main-container" data-enhance="false">
-                                <form action="" method="get" name="postcodeForm" id="postcodeForm">
+                                <form name="postcodeForm" id="postcodeForm">
                                     <label for="pc">Enter a nearby GB postcode, or street name and area:</label>
                                     <div>
                                         <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B2 4QA’ or ‘Tib St, Manchester’">
@@ -28,15 +33,5 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div data-role="footer" data-id="foo1" data-position="fixed">
-                <div data-role="navbar">
-                    <ul>
-                        <li><a href="index.html" class="ui-button-active ui-state-persist">Report</a></li>
-                        <li><a href="account.html">Account</a></li>
-                        <li><a href="about.html">Info</a></li>
-                        <li><a href="my_reports.html">My</a></li>
-                    </ul>
-                </div><!-- /navbar -->
             </div>
         </div> <!-- .wrapper -->
