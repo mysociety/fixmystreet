@@ -70,6 +70,8 @@ var message_manager = (function() {
     var $hide_reasons;
     var $boilerplate_replies;
 
+    var no_config_err_msg = "Config error: no Message Manager URL has been specified";
+
     var config = function(settings) {
         var selectors = {
             message_list_selector:    '#mm-message-list',
@@ -84,7 +86,7 @@ var message_manager = (function() {
         if (settings) {
             if (typeof settings.url_root === 'string') {
                 _url_root = settings.url_root;
-                if (_url_root.charAt(_url_root.length-1) !== "/") {
+                if (_url_root.length > 0 && _url_root.charAt(_url_root.length-1) !== "/") {
                     _url_root+="/";
                 }
             }
@@ -110,6 +112,9 @@ var message_manager = (function() {
         $htauth_password = $(selectors.htauth_password_selector);
         $hide_reasons = $(selectors.boilerplate_hide_reasons);
         $boilerplate_replies = $(selectors.boilerplate_replies);
+        if (typeof settings.url_root === 'string' && _url_root.length==0) {
+            say_status(no_config_err_msg);
+        };
     };
 
     // btoa doesn't work on all browers?
@@ -311,37 +316,41 @@ var message_manager = (function() {
             return;
         }
         $login_element.stop().hide();
-        $.ajax({
-            dataType: "json", 
-            type:     "post", 
-            url:      _url_root +"messages/available.json",
-            beforeSend: function (xhr){
-                xhr.setRequestHeader('Authorization', get_current_auth_credentials());
-                xhr.withCredentials = true;
-            },
-            success:  function(data, textStatus) {
-                          show_available_messages(data, anim_duration);
-                          if (typeof(callback) === "function") {
-                              callback.call($(this), data); // execute callback
-                          }
-                      }, 
-            error:    function(jqXHR, textStatus, errorThrown) {
-                        var st = jqXHR.status; 
-                        if (st == 401 || st == 403) {
-                            var msg = (st == 401 ? "Invalid username or password for" : "Access denied: please log in to") + " " + _mm_name;
-                            say_status(msg);
-                            show_login_form(suggest_username);
-                        } else {
-                            var err_msg = "Unable to load messages: ";
-                            if (st === 0 && textStatus === 'error') { // x-domain hard to detect, sometimes intermittent?
-                                err_msg += "maybe try refreshing page?";
+        if (_url_root.length == 0) {
+            say_status(no_config_err_msg);
+        } else {
+            $.ajax({
+                dataType: "json", 
+                type:     "post", 
+                url:      _url_root +"messages/available.json",
+                beforeSend: function (xhr){
+                    xhr.setRequestHeader('Authorization', get_current_auth_credentials());
+                    xhr.withCredentials = true;
+                },
+                success:  function(data, textStatus) {
+                              show_available_messages(data, anim_duration);
+                              if (typeof(callback) === "function") {
+                                  callback.call($(this), data); // execute callback
+                              }
+                          }, 
+                error:    function(jqXHR, textStatus, errorThrown) {
+                            var st = jqXHR.status; 
+                            if (st == 401 || st == 403) {
+                                var msg = (st == 401 ? "Invalid username or password for" : "Access denied: please log in to") + " " + _mm_name;
+                                say_status(msg);
+                                show_login_form(suggest_username);
                             } else {
-                                err_msg += textStatus + " (" + st + ")";
+                                var err_msg = "Unable to load messages: ";
+                                if (st === 0 && textStatus === 'error') { // x-domain hard to detect, sometimes intermittent?
+                                    err_msg += "maybe try refreshing page?";
+                                } else {
+                                    err_msg += textStatus + " (" + st + ")";
+                                }
+                                say_status(err_msg);
                             }
-                            say_status(err_msg);
-                        }
-                      }
-        });    
+                          }
+            });
+        }
     };
 
     var request_lock = function(msg_id, options) {
