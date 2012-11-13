@@ -582,7 +582,6 @@ var message_manager = (function() {
         $.ajax({
             dataType:"json", 
             type:"get",
-            data: {lang: 'en', boilerplate_type: boilerplate_type},
             url: _url_root +"boilerplate_strings/index/" + boilerplate_type + ".json",
             success:function(data, textStatus) {
                 if (data.success) {
