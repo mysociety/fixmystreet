@@ -256,9 +256,8 @@ function check_name( name, msg ) {
 
 function remove_saved_report() {
     if ( localStorage.currentReport ) {
-        var reports = localStorage.getObject('reports');
-        delete reports[localStorage.currentReport];
-        localStorage.setObject('reports', reports);
+        var r = new Report();
+        r.remove(localStorage.currentReport);
         delete localStorage.currentReport;
     }
 }
@@ -540,14 +539,9 @@ function get_report_params () {
 function save_report() {
     var params = get_report_params();
 
-    var r;
-    if ( localStorage.getObject( 'reports' ) ) {
-        r = localStorage.getObject( 'reports' );
-    } else {
-        r = [];
-    }
-    r.push( params );
-    localStorage.setObject('reports', r);
+    var r = new Report(params);
+    r.save();
+
     $.mobile.changePage('my_reports.html');
 }
 
@@ -586,11 +580,12 @@ function open_saved_report_page(e) {
 }
 
 function display_saved_report() {
-    var reports = localStorage.getObject('reports');
-    var r = reports[localStorage.currentReport];
-    fixmystreet.latitude = r.lat;
-    fixmystreet.longitude = r.lon;
-    fixmystreet.pins = [ [ r.lat, r.lon, 'yellow', '', "", 'big' ] ];
+    var r = new Report();
+    r.load(localStorage.currentReport);
+
+    fixmystreet.latitude = r.lat();
+    fixmystreet.longitude = r.lon();
+    fixmystreet.pins = [ [ r.lat(), r.lon(), 'yellow', '', "", 'big' ] ];
 
     $('#title').text(r.title);
     $('#details').text(r.detail);
@@ -604,41 +599,39 @@ function display_saved_report() {
 }
 
 function complete_report() {
-    var reports = localStorage.getObject('reports');
-    var r = reports[localStorage.currentReport];
+    var r = new Report();
+    r.load(localStorage.currentReport);
 
-    if ( r.lat && r.lon ) {
-        show_around( r.lat, r.lon );
+    if ( r.lat() && r.lon() ) {
+        show_around( r.lat(), r.lon() );
     } else {
         getPosition();
     }
 }
 
 function delete_report() {
-    var reports = localStorage.getObject('reports');
-    delete reports[localStorage.currentReport];
-    localStorage.setObject('reports', reports);
+    var r = new Report();
+    r.load(localStorage.currentReport);
+    r.remove();
     $.mobile.changePage('my_reports.html');
 }
 
 function submit_problem_show() {
-    var reports, r;
-
     if ( localStorage.currentReport ) {
-        reports = localStorage.getObject('reports');
-        r = reports[localStorage.currentReport];
+        var r = new Report();
+        r.load(localStorage.currentReport);
 
-        $('#form_title').val(r.title);
-        $('#form_detail').val(r.detail);
-        if ( r.may_show_name === 0 ) {
+        $('#form_title').val(r.title());
+        $('#form_detail').val(r.detail());
+        if ( r.may_show_name() === 0 ) {
             $('#form_may_show_name').attr('checked', 'off');
         }
         //category: $('#form_category').val();
-        $('#form_phone').val(r.phone);
-        $('#pc').val(r.pc);
-        if ( r.file ) {
-            $('#form_photo').val(r.file);
-            $('#photo').attr('src', r.file );
+        $('#form_phone').val(r.phone());
+        $('#pc').val(r.pc());
+        if ( r.file() ) {
+            $('#form_photo').val(r.file());
+            $('#photo').attr('src', r.file() );
             $('#add_photo').hide();
             $('#display_photo').show();
         }
