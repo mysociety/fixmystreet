@@ -116,10 +116,8 @@ function locate() {
     if ( valid_postcode( pc ) ) {
         jQuery.get( CONFIG.MAPIT_URL + 'postcode/' + pc + '.json', function(data, status) {
             if ( status == 'success' ) {
-                //activityStop();
                show_around( data.wgs84_lat, data.wgs84_lon );
            } else {
-               activityStop();
                alert('Could not locate postcode');
            }
         });
@@ -700,8 +698,8 @@ $(document).on('pageshow', '#submit-problem', submit_problem_show);
 $(document).on('pageshow', '#no-connection-page', check_for_gps);
 
 $(document).bind('pageinit', function() {
-    $('#postCodeForm').on('submit', locate);
     $('#signInForm').on('submit', sign_in);
+    $('#postcodeForm').on('submit', locate);
 });
 
 $(document).on('vclick', '#save_report', save_report);
