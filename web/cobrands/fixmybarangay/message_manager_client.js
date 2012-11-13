@@ -569,7 +569,6 @@ var message_manager = (function() {
     var populate_boilerplate_strings = function(boilerplate_type, options) {
         if (Modernizr.sessionstorage && sessionStorage.getItem('boilerplate_' + boilerplate_type)) {
             populate_boilerplate(boilerplate_type, sessionStorage.getItem('boilerplate_' + boilerplate_type));
-            console.log("boilerplate strings populated from local (sessionstorage) copy");
             return;
         }
         var callback = null;
@@ -578,7 +577,6 @@ var message_manager = (function() {
                 callback = options.callback;
             }
         }
-        console.log("calling " + _url_root +"boilerplate_strings/index/" + boilerplate_type + ".json");
         $.ajax({
             dataType:"json", 
             type:"get",
@@ -595,15 +593,11 @@ var message_manager = (function() {
                          callback.call($(this), data.data); 
                      }
                 } else {
-                    console.log("failed to load boilerplate");
+                    // console.log("failed to load boilerplate");
                 }
             }, 
             error: function(jqXHR, textStatus, errorThrown) {
-                fixme = "";
-                for (x in jqXHR) {
-                    fixme = x + " => " + jqXHR[x] + "\n";
-                }
-                console.log("boilerplate error: " + textStatus + ": " + errorThrown + fixme);
+                // console.log("boilerplate error: " + textStatus + ": " + errorThrown);
             }
         })
     };
