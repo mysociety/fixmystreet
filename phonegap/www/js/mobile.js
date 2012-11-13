@@ -520,13 +520,22 @@ function get_report_params () {
 
 }
 
-function save_report() {
+function _submit_save_report() {
     var params = get_report_params();
 
     var r = new Report(params);
     r.save();
+    return r;
+}
 
+function save_report() {
+    _submit_save_report();
     $.mobile.changePage('my_reports.html');
+}
+
+function submit_back() {
+    var r = _submit_save_report();
+    localStorage.currentReport = r.id();
 }
 
 function display_saved_reports() {
@@ -706,3 +715,4 @@ $(document).on('vclick', '#id_photo_button', function() {takePhoto(navigator.cam
 $(document).on('vclick', '#id_existing', function() {takePhoto(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM);});
 $(document).on('vclick', '#mapForm :input[type=submit]', function() { submit_clicked = $(this); });
 $(document).on('vclick', '#id_del_photo_button', delPhoto);
+$(document).on('vclick', '#submit-header a.ui-btn-left', submit_back);
