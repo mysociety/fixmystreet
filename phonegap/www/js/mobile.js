@@ -321,7 +321,9 @@ function postReport(e) {
         params.password_sign_in = localStorage.password;
         params.submit_sign_in = 1;
     } else {
-        params.name = $('#form_name').val();
+        if ( $('#form_name').val() !== '' ) {
+            params.name = $('#form_name').val();
+        }
         params.email = $('#form_email').val();
         params.password_sign_in = $('#password_sign_in').val();
 
@@ -357,14 +359,14 @@ function postReport(e) {
                     localStorage.long = null;
                     if ( data.report ) {
                         localStorage.report = data.report;
+                        if ( !localStorage.name && $('#password_sign_in').val() ) {
+                            localStorage.name = $('#form_name').val();
+                            localStorage.username = $('#form_email').val();
+                            localStorage.password = $('#password_sign_in').val();
+                        }
                         $.mobile.changePage('report_created.html');
                     } else {
                         $.mobile.changePage('email_sent.html');
-                    }
-                    if ( !localStorage.name && $('#password_sign_in').val() ) {
-                        localStorage.name = $('#form_name').val();
-                        localStorage.username = $('#form_email').val();
-                        localStorage.password = $('#password_sign_in').val();
                     }
                     remove_saved_report();
                 } else {
