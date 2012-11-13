@@ -35,17 +35,11 @@ function valid_postcode(pc) {
     return false;
 }
 
-function use_lat_long( lat, long ) {
-    show_around( lat, long );
-}
-
 function location_error( msg ) {
     if ( msg === '' ) {
         $('#location_error').remove();
         return;
     }
-
-    alert(msg);
 
     if ( !$('#location_error') ) {
         $('#postcodeForm').after('<p id="location_error"></p>');
@@ -97,7 +91,7 @@ function lookup_string(q) {
                 $('#multiple').remove();
                 var multiple_html = '<ul id="multiple"><li>Multiple locations found, please select one:';
                 for ( i = 0; i < multiple.length; i++ ) {
-                    multiple_html += '<li><a href="#" onclick="use_lat_long( ' + multiple[i].latitude + ',' + multiple[i].longitude +')">' + multiple[i].address + '</a></li>';
+                    multiple_html += '<li><a href="#" onclick="show_around( ' + multiple[i].latitude + ',' + multiple[i].longitude +')">' + multiple[i].address + '</a></li>';
                 }
                 multiple_html += '</ul>';
                 $('#front-howto').hide();
@@ -301,7 +295,9 @@ function fileUploadFail() {
 var submit_clicked = null;
 
 function postReport(e) {
-    e.preventDefault();
+    if ( e ) {
+        e.preventDefault();
+    }
 
     // the .stopImmediatePropogation call in invalidHandler should render this
     // redundant but it doesn't seem to work so belt and braces :(
@@ -477,20 +473,6 @@ function mark_here() {
     $('#mob_ok').on('vclick', set_location );
 }
 
-function account() {
-    $('#account').show();
-    if ( localStorage.name ) {
-        if ( $('body').hasClass('signed-in-page') ) {
-            $('#user-meta').html('<p>Hi ' + localStorage.name + '</p>');
-        }
-
-        if ( $('#form_sign_in').length ) {
-            check_name( localStorage.name );
-            $('.form-focus-hidden').show();
-        }
-    }
-}
-
 function forget() {
     delete localStorage.name;
     delete localStorage.username;
@@ -652,6 +634,7 @@ function submit_problem_show() {
         $('#form_sign_in').hide();
     } else {
         if ( localStorage.name ) {
+            check_name( localStorage.name );
             $('.form-focus-hidden').show();
         } else {
             $('.form-focus-hidden').hide();

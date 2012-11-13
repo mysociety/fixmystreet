@@ -236,10 +236,6 @@ function show_map(event) {
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
 
-    if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
-        $('#fms_pan_zoom').css({ top: '2.75em !important' });
-    }
-
     fixContentHeight(fixmystreet.map);
 
     fixmystreet.layer_options = OpenLayers.Util.extend({
