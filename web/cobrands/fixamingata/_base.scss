@@ -448,10 +448,10 @@ p.label-valid {
   z-index:2;
 }
 .ie6 #site-logo {
-  background: url('/cobrands/fixmystreet/images/ie_logo.gif') 0 -5px no-repeat;
+  background: url('/cobrands/fixamingata/images/ie_logo.gif') 0 -5px no-repeat;
 }
 .ie7 #site-logo {
-  background: url('/cobrands/fixmystreet/images/sprite.png') -3px -3px no-repeat;
+  background: url('/cobrands/fixamingata/images/sprite.png') -3px -3px no-repeat;
 }
 
 // this is a skip to nav for mobile users only
@@ -507,10 +507,10 @@ p.label-valid {
   }
 }
 .ie6 #main-nav ul#mysoc-menu li a#mysoc-logo {
-  background: url('/cobrands/fixmystreet/images/ie_mysoc_logo.gif') center no-repeat;
+  background: url('/cobrands/fixamingata/images/ie_mysoc_logo.gif') center no-repeat;
 }
 .ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
-  background: url('/cobrands/fixmystreet/images/sprite.png') -240px -38px no-repeat;
+  background: url('/cobrands/fixamingata/images/sprite.png') -240px -38px no-repeat;
 }
 
 //defines where the table caption is (login stuff on mob, nav menu on desktop)
@@ -578,19 +578,19 @@ p.label-valid {
           color:#fff;
         }
         &.abuse {
-          background-image:url('/cobrands/fixmystreet/images/sprite.png');
+          background-image:url('/cobrands/fixamingata/images/sprite.png');
           background-position:center -2424px;
         }
         &.feed {
-          background-image:url('/cobrands/fixmystreet/images/sprite.png');
+          background-image:url('/cobrands/fixamingata/images/sprite.png');
           background-position:center -2563px;
         }
         &.chevron {
-          background-image:url('/cobrands/fixmystreet/images/sprite.png');
+          background-image:url('/cobrands/fixamingata/images/sprite.png');
           background-position:center -2716px;
         }
         &.hover {
-          background-image:url('/cobrands/fixmystreet/images/sprite.png');
+          background-image:url('/cobrands/fixamingata/images/sprite.png');
           background-position:center -2064px;
         }
       }
@@ -615,19 +615,19 @@ p.label-valid {
 }
 .ie6 .shadow-wrap ul#key-tools li a {
   &.abuse {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
+    background-image:url('/cobrands/fixamingata/images/ie_key_tools_sprite.gif');
     background-position: right 0px;
   }
   &.feed {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
+    background-image:url('/cobrands/fixamingata/images/ie_key_tools_sprite.gif');
     background-position: right -58px;
   }
   &.chevron {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
+    background-image:url('/cobrands/fixamingata/images/ie_key_tools_sprite.gif');
     background-position: right -116px;
   }
   &:hover {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite_dark.gif');
+    background-image:url('/cobrands/fixamingata/images/ie_key_tools_sprite_dark.gif');
   }
 }
 
@@ -725,7 +725,7 @@ a.button-right,
 :hover.button-right,
 a:hover.button-right {
   padding:1em 3em 1em 1em;
-  background-image: url('/cobrands/fixmystreet/images/sprite.png');
+  background-image: url('/cobrands/fixamingata/images/sprite.png');
   background-repeat:no-repeat;
   background-position:right -686px;
 }
@@ -735,7 +735,7 @@ a.button-left,
 :hover.button-left,
 a:hover.button-left {
   padding:1em 1em 1em 3em;
-  background-image: url('/cobrands/fixmystreet/images/sprite.png');
+  background-image: url('/cobrands/fixamingata/images/sprite.png');
   background-repeat:no-repeat;
   background-position:-18px -802px;
 }
@@ -956,7 +956,7 @@ a:hover.button-left {
       width:20px;
       height:20px;
       opacity: 0.5;
-      background:#fff url(/cobrands/fixmystreet/images/sprite.png) -16px -1098px no-repeat;
+      background:#fff url(/cobrands/fixamingata/images/sprite.png) -16px -1098px no-repeat;
       //hide text - http://nicolasgallagher.com/another-css-image-replacement-technique/
       font: 0/0 a;
       color: transparent;
@@ -1020,7 +1020,7 @@ a:hover.button-left {
   height:36px !important;
   text-indent:-999999px;
   opacity:0.85;
-  background:url('/cobrands/fixmystreet/images/sprite.png') no-repeat;
+  background:url('/cobrands/fixamingata/images/sprite.png') no-repeat;
   &:hover {
     opacity:1;
   }
@@ -1088,19 +1088,19 @@ a:hover.button-left {
     padding:0.6em 3em 0.5em 1em;
     background-repeat:no-repeat;
     &#hide_pins_link {
-      background-image:url('/cobrands/fixmystreet/images/sprite.png');
+      background-image:url('/cobrands/fixamingata/images/sprite.png');
       background-position: right -3976px;
     }
     &#all_pins_link {
-      background-image:url('/cobrands/fixmystreet/images/sprite.png');
+      background-image:url('/cobrands/fixamingata/images/sprite.png');
       background-position: right -4022px;
     }
     &#map_permalink {
-      background-image:url('/cobrands/fixmystreet/images/sprite.png');
+      background-image:url('/cobrands/fixamingata/images/sprite.png');
       background-position: right -4070px;
     }
     &.feed {
-      background-image:url('/cobrands/fixmystreet/images/sprite.png');
+      background-image:url('/cobrands/fixamingata/images/sprite.png');
       background-position: right -3936px;
     }
     &:hover {
@@ -1112,15 +1112,15 @@ a:hover.button-left {
 
 .ie6 #sub_map_links a {
   &#hide_pins_link {
-    background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
+    background-image:url('/cobrands/fixamingata/images/ie_sub_map_links_sprite.gif');
     background-position: right 1px;
   }
   &#all_pins_link {
-    background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
+    background-image:url('/cobrands/fixamingata/images/ie_sub_map_links_sprite.gif');
     background-position: right -45px;
   }
   &#map_permalink {
-    background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
+    background-image:url('/cobrands/fixamingata/images/ie_sub_map_links_sprite.gif');
     background-position: right -93px;
   }
 }
@@ -1163,7 +1163,7 @@ a:hover.button-left {
       padding-top:30px;
       display:block;
       width:4em;
-      background:#fff url('/cobrands/fixmystreet/images/sprite.png') 12px -4140px no-repeat;
+      background:#fff url('/cobrands/fixamingata/images/sprite.png') 12px -4140px no-repeat;
       color:#000;
     }
   }
@@ -1347,10 +1347,10 @@ table.nicetable {
     width:16px;
     height:16px;
     text-indent:-999999px;
-    background:url(/cobrands/fixmystreet/images/sprite.png) -341px -263px no-repeat;
+    background:url(/cobrands/fixamingata/images/sprite.png) -341px -263px no-repeat;
     @include border-radius(4px);
     &:hover {
-      background:#222 url(/cobrands/fixmystreet/images/sprite.png) -341px -223px no-repeat;
+      background:#222 url(/cobrands/fixamingata/images/sprite.png) -341px -223px no-repeat;
     }
   }
 }
