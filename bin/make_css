@@ -10,7 +10,7 @@
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 #
 # $Id: send-reports,v 1.79 2010-01-06 16:50:26 louise Exp $
-
+#set -x
 DIRECTORY=$(cd `dirname $0`/../web && pwd)
 
 # FixMyStreet uses compass
@@ -23,5 +23,5 @@ done
 # The rest are plain sass
 for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v "cobrands/\($NEWSTYLE_REGEX\)"`
 do
-    sass --scss --update --style compressed $scss
+    sass --compass --scss --update --style compressed $scss
 done
