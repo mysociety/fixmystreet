@@ -72,6 +72,16 @@ body {
     background: #eee url(/cobrands/fixamingata/images/tile.jpg) 0 0 repeat;
 }
 
+#main-nav {
+    ul {
+        li {
+            a, span {
+                color: $primary_text;
+            }
+        }
+    }
+}
+
 #front-main {
     background: $primary url(/cobrands/fixamingata/images/tile-y.jpg);
 }
