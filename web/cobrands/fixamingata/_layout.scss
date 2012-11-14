@@ -10,7 +10,7 @@
 }
 
 body {
-  background: #1A1A1A url(/cobrands/fixmystreet/images/tile.jpg) 0 0 repeat;
+  background: #1A1A1A url(/cobrands/fixamingata/images/tile.jpg) 0 0 repeat;
 }
 
 h1 {
@@ -61,7 +61,7 @@ h1 {
     min-height: 4em;
     position: absolute;
     border-top:4px solid #1a1a1a;
-    @include border-image(url(/cobrands/fixmystreet/images/tile-y-border.jpg) 4 0 0 0);
+    @include border-image(url(/cobrands/fixamingata/images/tile-y-border.jpg) 4 0 0 0);
     border-left:0;
     border-right:0;
     z-index:2;
@@ -165,7 +165,7 @@ h1 {
     &#mysoc-menu{
       padding: 0em 0.5em;
       margin-left: 0.25em;
-      background:$primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+      background:$primary url(/cobrands/fixamingata/images/tile-y.jpg);
       @include border-radius(0 0 0.375em 0.375em);
       li{
         a{
@@ -395,7 +395,7 @@ body.twothirdswidthpage {
         height: 32px;
         margin:0 auto;
         text-indent: -999999px;
-        background: url(/cobrands/fixmystreet/images/sprite.png) -12px -3610px no-repeat;
+        background: url(/cobrands/fixamingata/images/sprite.png) -12px -3610px no-repeat;
         opacity: 0.8;
         &:hover {
           opacity: 1;
@@ -421,7 +421,7 @@ body.twothirdswidthpage {
   }
 }
 .ie6 #footer-mobileapps ul li a {
-  background:url(/cobrands/fixmystreet/images/ie_mobileapps.gif) -1px -1px no-repeat;
+  background:url(/cobrands/fixamingata/images/ie_mobileapps.gif) -1px -1px no-repeat;
   &.m-app-droid {
     background-position: -1px -148px;
   }
@@ -502,7 +502,7 @@ body.twothirdswidthpage {
     left:-1em;
     width:1em;
     height:100%;
-    background:#000 url(/cobrands/fixmystreet/images/sprite.png) right -4119px no-repeat;
+    background:#000 url(/cobrands/fixamingata/images/sprite.png) right -4119px no-repeat;
     @include border-radius(0.25em 0 0 0.25em);
     &:hover {
       left:-1.5em;
@@ -582,19 +582,19 @@ body.twothirdswidthpage {
         padding: 0.5em 1.5em 0.5em 0;
         text-transform:none;
         &.abuse {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url(/cobrands/fixamingata/images/sprite.png);
           background-position:right -2935px;
         }
         &.feed {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url(/cobrands/fixamingata/images/sprite.png);
           background-position:right -3074px;
         }
         &.chevron {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url(/cobrands/fixamingata/images/sprite.png);
           background-position:right -3225px;
         }
         &.hover {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url(/cobrands/fixamingata/images/sprite.png);
           background-position:right -1876px;
         }
       }
@@ -625,7 +625,7 @@ body.twothirdswidthpage {
   margin-left:-2em;
   font-size:1.375em;
   padding:1em 3em 1em 1em;
-  background: $contrast1 url(/cobrands/fixmystreet/images/sprite.png) right -2188px no-repeat;
+  background: $contrast1 url(/cobrands/fixamingata/images/sprite.png) right -2188px no-repeat;
   &:before {
     right:0;
     left:auto;
@@ -642,7 +642,7 @@ body.twothirdswidthpage {
   }
 }
 .ie6 .big-green-banner {
-  background: $contrast1 url(/cobrands/fixmystreet/images/ie_green_chevron.gif) right center no-repeat;
+  background: $contrast1 url(/cobrands/fixamingata/images/ie_green_chevron.gif) right center no-repeat;
 }
 
 .banner {
@@ -657,7 +657,7 @@ body.twothirdswidthpage {
     }
     &#fixed {
       padding-top:5em;
-      background-image:url(/cobrands/fixmystreet/images/sprite.png);
+      background-image:url(/cobrands/fixamingata/images/sprite.png);
       background-position:-324px -326px;
       background-repeat:no-repeat;
       &:before {
@@ -669,7 +669,7 @@ body.twothirdswidthpage {
 .ie6 .banner p {
   top:-1.5em;
   &#fixed {
-    background-image:url(/cobrands/fixmystreet/images/ie_fixed.gif);
+    background-image:url(/cobrands/fixamingata/images/ie_fixed.gif);
     background-position:center 0.75em;
   }
 }
@@ -776,7 +776,7 @@ body.frontpage {
     top:3em;
     width: 300px;
     height: 60px;
-    background: url('/cobrands/fixmystreet/images/sprite.png') -2px -108px no-repeat;
+    background: url('/cobrands/fixamingata/images/sprite.png') -2px -108px no-repeat;
   }
   #user-meta {
     z-index:10;
@@ -820,13 +820,13 @@ body.frontpage {
   }
 }
 .ie6 body.frontpage #site-logo {
-  background:url(/cobrands/fixmystreet/images/ie_front_logo.gif) 0 0 no-repeat;
+  background:url(/cobrands/fixamingata/images/ie_front_logo.gif) 0 0 no-repeat;
 }
 
 // big yellow bit full screen width
 #front-main {
   color: $primary_text;
-  background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+  background: $primary url(/cobrands/fixamingata/images/tile-y.jpg);
   margin: 0;
   padding: 1em;
   #front-main-container {
