@@ -1,3 +1,5 @@
+$image-sprite: '/cobrands/fixamingata/images/sprite.png';
+
 @font-face {
   font-family: 'MuseoSans';
   src: url('../fixmystreet/fonts/MuseoSans_300-webfont.eot');
@@ -66,3 +68,10 @@ h3, h4 {
 @import "_colours";
 @import "../sass/layout";
 
+body {
+    background: #eee url(/cobrands/fixamingata/images/tile.jpg) 0 0 repeat;
+}
+
+#front-main {
+    background: $primary url(/cobrands/fixamingata/images/tile-y.jpg);
+}

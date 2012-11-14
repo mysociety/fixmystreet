@@ -4,6 +4,8 @@
  * layout for browsers that can't handle media queries. Baseline grid of 1.5em.
  */
 
+$image-sprite: '/cobrands/fixamingata/images/sprite.png';
+
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
