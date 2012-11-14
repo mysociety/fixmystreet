@@ -52,7 +52,6 @@ sub load_and_check_councils : Private {
     my $short_latitude  = Utils::truncate_coordinate($latitude);
     my $short_longitude = Utils::truncate_coordinate($longitude);
 
-    # TODO: I think we want in_gb_locale around the MaPit line, needs testing
     my $all_councils;
     if ( $c->stash->{fetch_all_areas} ) {
         my %area_types = map { $_ => 1 } @$area_types;
