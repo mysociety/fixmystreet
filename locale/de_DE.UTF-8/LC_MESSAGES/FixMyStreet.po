@@ -1,6 +1,6 @@
 # Copyright (C) 2011 UK Citizens Online Democracy
 # This file is distributed under the same license as the main FixMyStreet code.
-# Matthew Somerville &lt;matthew@mysociety.org&gt;, 2011-06-03.
+# Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 msgid ""
 msgstr ""
@@ -8,8 +8,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-03-28 19:23+0100\n"
 "PO-Revision-Date: 2012-08-21 14:03+0100\n"
-"Last-Translator: FULL NAME &lt;EMAIL@ADDRESS&gt;\n"
-"Language-Team: LANGUAGE &lt;team@fixmystreet.com&gt;\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,7 +21,7 @@ msgstr "und"
 
 #: templates/web/default/tokens/confirm_problem.html:10
 #: templates/web/default/tokens/confirm_problem.html:6
-msgid " and &lt;strong&gt;we will now send it to the council&lt;/strong&gt;"
+msgid " and <strong>we will now send it to the council</strong>"
 msgstr ""
 
 #: templates/web/default/report/new/councils_text_all.html:10
@@ -197,30 +197,30 @@ msgstr ""
 
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:6
-msgid ". You can &lt;a href=\"%s\"&gt;view the problem on this site&lt;/a&gt;."
+msgid ". You can <a href=\"%s\">view the problem on this site</a>."
 msgstr ""
 
 #: templates/web/default/questionnaire/completed.html:25
 msgid ""
-"&lt;p style=\"font-size:150%\"&gt;Thank you very much for filling in our "
-"questionnaire; glad to hear it&amp;rsquo;s been fixed.&lt;/p&gt;"
+"<p style=\"font-size:150%\">Thank you very much for filling in our "
+"questionnaire; glad to hear it&amp;rsquo;s been fixed.</p>"
 msgstr ""
 
 #: templates/web/default/questionnaire/completed.html:15
 msgid ""
-"&lt;p style=\"font-size:150%%\"&gt;We&amp;rsquo;re sorry to hear that. We "
+"<p style=\"font-size:150%%\">We&amp;rsquo;re sorry to hear that. We "
 "have two suggestions: why not try\n"
-"&lt;a href=\"%s\"&gt;writing direct to your councillor(s)&lt;/a&gt;\n"
+"<a href=\"%s\">writing direct to your councillor(s)</a>\n"
 "or, if it&amp;rsquo;s a problem that could be fixed by local people working "
 "together,\n"
-"why not &lt;a href=\"http://www.pledgebank.com/new\"&gt;make and publicise a "
-"pledge&lt;/a&gt;?\n"
-"&lt;/p&gt;"
+"why not <a href=\"http://www.pledgebank.com/new\">make and publicise a "
+"pledge</a>?\n"
+"</p>"
 msgstr ""
 
 #: templates/web/default/questionnaire/index.html:35
 msgid ""
-"&lt;p&gt;Getting empty homes back into use can be difficult, but by now a "
+"<p>Getting empty homes back into use can be difficult, but by now a "
 "good council\n"
 "will have made a lot of progress and reported what they have done on the\n"
 "website. Even so properties can remain empty for many months if the owner "
@@ -232,14 +232,14 @@ msgid ""
 "time to say so. We think it&amp;rsquo;s a good idea to contact some other "
 "people who\n"
 "may be able to help or put pressure on the council  For advice on how to do\n"
-"this and other useful information please go to &lt;a\n"
-"href=\"http://www.emptyhomes.com/getinvolved/campaign.html\"&gt;http://www."
-"emptyhomes.com/getinvolved/campaign.html&lt;/a&gt;.&lt;/p&gt;\n"
+"this and other useful information please go to <a\n"
+"href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www."
+"emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
 #: templates/web/default/questionnaire/index.html:26
 msgid ""
-"&lt;p&gt;Getting empty homes back into use can be difficult. You shouldn&amp;"
+"<p>Getting empty homes back into use can be difficult. You shouldn&amp;"
 "rsquo;t expect\n"
 "the property to be back into use yet. But a good council will have started "
 "work\n"
@@ -249,16 +249,16 @@ msgid ""
 "to say. You may also want to try contacting some other people who may be "
 "able\n"
 "to help.  For advice on how to do this and other useful information please\n"
-"go to &lt;a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\"&gt;"
-"http://www.emptyhomes.com/getinvolved/campaign.html&lt;/a&gt;.&lt;/p&gt;\n"
+"go to <a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">"
+"http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
 msgstr ""
 
 #: templates/web/default/questionnaire/completed.html:9
 msgid ""
-"&lt;p&gt;Thank you very much for filling in our questionnaire; if you\n"
+"<p>Thank you very much for filling in our questionnaire; if you\n"
 "get some more information about the status of your problem, please come back "
 "to the\n"
-"site and leave an update.&lt;/p&gt;"
+"site and leave an update.</p>"
 msgstr ""
 
 #: templates/web/default/around/display_location.html:70
@@ -266,38 +266,38 @@ msgstr ""
 #: templates/web/emptyhomes/around/display_location.html:36
 #: templates/web/emptyhomes/around/display_location.html:38
 msgid ""
-"&lt;small&gt;If you cannot see the map, &lt;a href='%s' rel='nofollow'&gt;"
-"skip this step&lt;/a&gt;.&lt;/small&gt;"
+"<small>If you cannot see the map, <a href='%s' rel='nofollow'>"
+"skip this step</a>.</small>"
 msgstr ""
-"Karte nicht sichtbar? &lt;a href='%s' rel='nofollow'&gt;&Uuml;berspringen "
-"Sie diesen Schritt&lt;/a&gt;.&lt;/small&gt;"
+"Karte nicht sichtbar? <a href='%s' rel='nofollow'>&Uuml;berspringen "
+"Sie diesen Schritt</a>.</small>"
 
 #: templates/web/default/admin/index.html:14
-msgid "&lt;strong&gt;%d&lt;/strong&gt; live problems"
+msgid "<strong>%d</strong> live problems"
 msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:169
-msgid "&lt;strong&gt;No&lt;/strong&gt; Let me confirm my report by email"
+msgid "<strong>No</strong> Let me confirm my report by email"
 msgstr "Meldung per eMail best&auml;tigen"
 
 #: templates/web/fixmystreet/report/display.html:153
-msgid "&lt;strong&gt;No&lt;/strong&gt; Let me confirm my update by email"
+msgid "<strong>No</strong> Let me confirm my update by email"
 msgstr ""
 
 #: templates/web/fixmystreet/auth/general.html:46
-msgid "&lt;strong&gt;No&lt;/strong&gt; let me sign in by email"
+msgid "<strong>No</strong> let me sign in by email"
 msgstr ""
 
 #: templates/web/default/auth/general.html:55
-msgid "&lt;strong&gt;No&lt;/strong&gt;, I do not, let me sign in by email:"
+msgid "<strong>No</strong>, I do not, let me sign in by email:"
 msgstr ""
 
 #: templates/web/default/report/new/fill_in_details_form.html:162
-msgid "&lt;strong&gt;No&lt;/strong&gt;, let me confirm my report by email:"
+msgid "<strong>No</strong>, let me confirm my report by email:"
 msgstr ""
 
 #: templates/web/default/report/display.html:169
-msgid "&lt;strong&gt;No&lt;/strong&gt;, let me confirm my update by email:"
+msgid "<strong>No</strong>, let me confirm my update by email:"
 msgstr ""
 
 #: templates/web/default/auth/general.html:37
@@ -307,7 +307,7 @@ msgstr ""
 #: templates/web/fixmystreet/auth/general.html:34
 #: templates/web/fixmystreet/report/display.html:136
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:151
-msgid "&lt;strong&gt;Yes&lt;/strong&gt; I have a password"
+msgid "<strong>Yes</strong> I have a password"
 msgstr ""
 
 #: templates/web/default/static/about.html:1
@@ -374,9 +374,9 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/councils_text_all.html:3
 #: templates/web/fixmystreet/report/new/councils_text_all.html:5
 msgid ""
-"All the information you provide here will be sent to &lt;strong&gt;%s&lt;/"
-"strong&gt; or a relevant local body such as &lt;strong&gt;TfL&lt;/"
-"strong&gt;, via the London Report-It system."
+"All the information you provide here will be sent to <strong>%s</"
+"strong> or a relevant local body such as <strong>TfL</"
+"strong>, via the London Report-It system."
 msgstr ""
 
 #: templates/web/default/report/new/councils_text_all.html:10
@@ -388,15 +388,15 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:6
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:8
 msgid ""
-"All the information you provide here will be sent to &lt;strong&gt;%s&lt;/"
-"strong&gt;."
+"All the information you provide here will be sent to <strong>%s</"
+"strong>."
 msgstr ""
 
 #: templates/web/emptyhomes/report/new/councils_text_all.html:2
 #: templates/web/emptyhomes/report/new/councils_text_all.html:4
 msgid ""
-"All the information you provide here will be sent to &lt;strong&gt;%s&lt;/"
-"strong&gt;. On the site, we will show the subject and details of the "
+"All the information you provide here will be sent to <strong>%s</"
+"strong>. On the site, we will show the subject and details of the "
 "problem, plus your name if you give us permission."
 msgstr ""
 
@@ -418,7 +418,7 @@ msgstr "Anonym:"
 
 #: templates/web/default/footer.html:26
 msgid ""
-"Are you a &lt;strong&gt;developer&lt;/strong&gt;? Would you like to "
+"Are you a <strong>developer</strong>? Would you like to "
 "contribute to FixMyStreet?"
 msgstr ""
 
@@ -448,8 +448,8 @@ msgstr ""
 #: templates/web/fiksgatami/footer.html:16
 #: templates/web/fiksgatami/nn/footer.html:16
 msgid ""
-"Built by &lt;a href=\"http://www.mysociety.org/\"&gt;mySociety&lt;/a&gt; and "
-"maintained by &lt;a href=\"http://www.nuug.no/\"&gt;NUUG&lt;/a&gt;"
+"Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and "
+"maintained by <a href=\"http://www.nuug.no/\">NUUG</a>"
 msgstr ""
 
 #: templates/web/default/admin/stats.html:80
@@ -459,10 +459,10 @@ msgstr ""
 #: templates/web/fixmystreet/around/display_location.html:75
 #: templates/web/fixmystreet/around/display_location.html:77
 msgid ""
-"Can't see the map? &lt;a href='%s' rel='nofollow'&gt;Skip this step&lt;/a&gt;"
+"Can't see the map? <a href='%s' rel='nofollow'>Skip this step</a>"
 msgstr ""
-"Karte nicht sichtbar? &lt;a href='%s' rel='nofollow'&gt;&Uuml;berspringen "
-"Sie diesen Schritt&lt;/a&gt;"
+"Karte nicht sichtbar? <a href='%s' rel='nofollow'>&Uuml;berspringen "
+"Sie diesen Schritt</a>"
 
 #: templates/web/default/admin/council_contacts.html:31
 #: templates/web/default/admin/index.html:36
@@ -473,7 +473,7 @@ msgid "Category"
 msgstr "Kategorie"
 
 #: templates/web/default/admin/index.html:34
-msgid "Category fix rate for problems &gt; 4 weeks old"
+msgid "Category fix rate for problems > 4 weeks old"
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:552
@@ -527,7 +527,7 @@ msgstr "Geschlossen:"
 #: templates/web/default/around/display_location.html:101
 #: templates/web/default/around/display_location.html:103
 msgid ""
-"Closest nearby problems &lt;small&gt;(within&amp;nbsp;%skm)&lt;/small&gt;"
+"Closest nearby problems <small>(within&amp;nbsp;%skm)</small>"
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:15
@@ -868,8 +868,8 @@ msgstr "Beispiele:"
 
 #: templates/web/default/contact/submit.html:15
 msgid ""
-"Failed to send message.  Please try again, or &lt;a href=\"mailto:%s\"&gt;"
-"email us&lt;/a&gt;."
+"Failed to send message.  Please try again, or <a href=\"mailto:%s\">"
+"email us</a>."
 msgstr ""
 
 #: templates/web/default/questionnaire/index.html:79
@@ -879,7 +879,7 @@ msgstr ""
 
 #: templates/web/fiksgatami/header.html:16
 #: templates/web/fiksgatami/nn/header.html:16
-msgid "Fix&lt;span id=\"my\"&gt;My&lt;/span&gt;Street"
+msgid "Fix<span id=\"my\">My</span>Street"
 msgstr ""
 
 #: templates/web/default/header.html:24
@@ -1119,7 +1119,7 @@ msgstr "ID"
 #: templates/web/fixmystreet/report/new/councils_text_none.html:9
 msgid ""
 "If you submit a problem here the subject and details of the problem will be "
-"public, but the problem will &lt;strong&gt;not&lt;/strong&gt; be reported to "
+"public, but the problem will <strong>not</strong> be reported to "
 "the council."
 msgstr ""
 
@@ -1304,9 +1304,9 @@ msgstr "Identifizieren Sie den Mangel auf der Karte"
 
 #: perllib/FixMyStreet/Map/OSM.pm:43
 msgid ""
-"Map &amp;copy; &lt;a id=\"osm_link\" href=\"http://www.openstreetmap.org/"
-"\"&gt;OpenStreetMap&lt;/a&gt; and contributors, &lt;a href=\"http://"
-"creativecommons.org/licenses/by-sa/2.0/\"&gt;CC-BY-SA&lt;/a&gt;"
+"Map &amp;copy; <a id=\"osm_link\" href=\"http://www.openstreetmap.org/"
+"\">OpenStreetMap</a> and contributors, <a href=\"http://"
+"creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
 msgstr ""
 
 #: templates/web/fixmystreet/contact/index.html:86
@@ -1388,8 +1388,8 @@ msgid "Nearly Done! Now check your email..."
 msgstr "Fast Fertig! Bitte checken Sie ihre Mailbox..."
 
 #: templates/web/default/reports/index.html:16
-msgid "New &lt;br&gt;problems"
-msgstr "Neue &lt;br&gt;Meldungen"
+msgid "New <br>problems"
+msgstr "Neue <br>Meldungen"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:311
 msgid "New category contact added"
@@ -1546,7 +1546,7 @@ msgid "Note:"
 msgstr ""
 
 #: templates/web/default/open311/index.html:6
-msgid "Note: &lt;strong&gt;%s&lt;/strong&gt;"
+msgid "Note: <strong>%s</strong>"
 msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:146
@@ -1573,12 +1573,12 @@ msgid "Offensive? Unsuitable? Tell us"
 msgstr ""
 
 #: templates/web/default/reports/index.html:18
-msgid "Old / unknown &lt;br&gt;problems"
+msgid "Old / unknown <br>problems"
 msgstr ""
 
 #: templates/web/fiksgatami/nn/reports/index.html:12
 #: templates/web/fiksgatami/reports/index.html:12
-msgid "Old problems,&lt;br&gt;state unknown"
+msgid "Old problems,<br>state unknown"
 msgstr ""
 
 #: templates/web/default/admin/questionnaire.html:24
@@ -1586,11 +1586,11 @@ msgid "Old state"
 msgstr ""
 
 #: templates/web/default/reports/index.html:20
-msgid "Older &lt;br&gt;fixed"
+msgid "Older <br>fixed"
 msgstr ""
 
 #: templates/web/default/reports/index.html:17
-msgid "Older &lt;br&gt;problems"
+msgid "Older <br>problems"
 msgstr ""
 
 #: templates/web/emptyhomes/reports/index.html:14
@@ -1653,8 +1653,8 @@ msgstr ""
 
 #: templates/web/default/footer.html:27
 msgid ""
-"Our code is open source and &lt;a href=\"http://github.com/mysociety/"
-"fixmystreet\"&gt;available on GitHub&lt;/a&gt;."
+"Our code is open source and <a href=\"http://github.com/mysociety/"
+"fixmystreet\">available on GitHub</a>."
 msgstr ""
 
 #: templates/web/default/admin/list_updates.html:11
@@ -1720,7 +1720,7 @@ msgstr "Geplant"
 
 #: templates/web/fixmystreet/questionnaire/index.html:44
 msgid ""
-"Please &lt;a class=\"tab_link\" href=\"#report\"&gt;take a look&lt;/a&gt; at "
+"Please <a class=\"tab_link\" href=\"#report\">take a look</a> at "
 "the updates that have been left."
 msgstr ""
 
@@ -1762,10 +1762,10 @@ msgstr ""
 
 #: templates/web/default/contact/blurb.html:2
 msgid ""
-"Please do &lt;strong&gt;not&lt;/strong&gt; report problems through this "
+"Please do <strong>not</strong> report problems through this "
 "form; messages go to\n"
 "the team behind FixMyStreet, not a council. To report a problem,\n"
-"please &lt;a href=\"/\"&gt;go to the front page&lt;/a&gt; and follow the "
+"please <a href=\"/\">go to the front page</a> and follow the "
 "instructions."
 msgstr ""
 
@@ -1898,13 +1898,13 @@ msgstr ""
 msgid ""
 "Please note that updates are not sent to the council. If you leave your name "
 "it will be public. Your information will only be used in accordance with our "
-"&lt;a href=\"/faq#privacy\"&gt;privacy policy&lt;/a&gt;"
+"<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
 
 #: templates/web/default/report/new/fill_in_details_form.html:5
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:25
 msgid ""
-"Please note your report has &lt;strong&gt;not yet been sent&lt;/strong&gt;. "
+"Please note your report has <strong>not yet been sent</strong>. "
 "Choose a category and add further information below, then submit."
 msgstr ""
 
@@ -1971,7 +1971,7 @@ msgid "Posted anonymously at %s"
 msgstr ""
 
 #: templates/web/default/report/updates.html:17
-msgid "Posted by %s (&lt;strong&gt;%s&lt;/strong&gt;) at %s"
+msgid "Posted by %s (<strong>%s</strong>) at %s"
 msgstr ""
 
 #: templates/web/default/report/updates.html:19
@@ -2192,8 +2192,8 @@ msgid "Recent local problems, FixMyStreet"
 msgstr ""
 
 #: templates/web/default/reports/index.html:19
-msgid "Recently &lt;br&gt;fixed"
-msgstr "K&uuml;rzlich &lt;br&gt;gel&ouml;st"
+msgid "Recently <br>fixed"
+msgstr "K&uuml;rzlich <br>gel&ouml;st"
 
 #: templates/web/emptyhomes/reports/index.html:13
 #: templates/web/fiksgatami/nn/reports/index.html:13
@@ -2615,11 +2615,11 @@ msgstr ""
 #: templates/web/default/tokens/confirm_update.html:7
 #: templates/web/default/tokens/confirm_update.html:8
 msgid ""
-"Thank you &amp;mdash; you can &lt;a href=\"%s\"&gt;view your updated "
-"problem&lt;/a&gt; on the site."
+"Thank you &amp;mdash; you can <a href=\"%s\">view your updated "
+"problem</a> on the site."
 msgstr ""
-"Danke &amp;mdash; Sie k&ouml;nnen Ihre aktualisierte Meldung &lt;a href=\"%s"
-"\"&gt;auf der Webseite anschauen&lt;/a&gt;"
+"Danke &amp;mdash; Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s"
+"\">auf der Webseite anschauen</a>"
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:6
 #: templates/web/emptyhomes/tokens/confirm_problem.html:8
@@ -2644,8 +2644,8 @@ msgstr ""
 #: templates/web/default/tokens/error.html:7
 msgid ""
 "Thank you for trying to confirm your update or problem. We seem to have an "
-"error ourselves though, so &lt;a href=\"%s\"&gt;please let us know what went "
-"on&lt;/a&gt; and we'll look into it."
+"error ourselves though, so <a href=\"%s\">please let us know what went "
+"on</a> and we'll look into it."
 msgstr ""
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:24
@@ -2740,8 +2740,8 @@ msgstr ""
 #: templates/web/default/email_sent.html:22
 #: templates/web/fixmystreet/auth/token.html:21
 msgid ""
-"The confirmation email &lt;strong&gt;may&lt;/strong&gt; take a few minutes "
-"to arrive &amp;mdash; &lt;em&gt;please&lt;/em&gt; be patient."
+"The confirmation email <strong>may</strong> take a few minutes "
+"to arrive &amp;mdash; <em>please</em> be patient."
 msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
@@ -3007,13 +3007,13 @@ msgstr "Titel"
 
 #: templates/web/default/around/display_location.html:69
 msgid ""
-"To &lt;strong&gt;report a problem&lt;/strong&gt;, click on the map at the "
+"To <strong>report a problem</strong>, click on the map at the "
 "correct location."
 msgstr ""
 
 #: templates/web/emptyhomes/around/display_location.html:35
 msgid ""
-"To &lt;strong&gt;report a problem&lt;/strong&gt;, simply click on the map at "
+"To <strong>report a problem</strong>, simply click on the map at "
 "the correct location."
 msgstr ""
 
@@ -3231,23 +3231,23 @@ msgstr ""
 #: templates/web/default/report/new/notes.html:5
 #: templates/web/fixmystreet/report/new/notes.html:4
 msgid ""
-"We will only use your personal information in accordance with our &lt;a href="
-"\"/faq#privacy\"&gt;privacy policy.&lt;/a&gt;"
+"We will only use your personal information in accordance with our <a href="
+"\"/faq#privacy\">privacy policy.</a>"
 msgstr ""
-"Wir verwenden Ihre pers&ouml;nlichen Daten nur entsprechend unserer &lt;a "
-"href=\"/faq#privacy\"&gt;Datenschutzrichtlinien.&lt;/a&gt;"
+"Wir verwenden Ihre pers&ouml;nlichen Daten nur entsprechend unserer <a "
+"href=\"/faq#privacy\">Datenschutzrichtlinien.</a>"
 
 #: templates/web/emptyhomes/contact/blurb.html:2
 msgid ""
 "We&amp;rsquo;d love to hear what you think about this website. Just fill in "
 "the form. Please don&amp;rsquo;t contact us about individual empty homes; "
-"use the box accessed from &lt;a href=\"/\"&gt;the front page&lt;/a&gt;."
+"use the box accessed from <a href=\"/\">the front page</a>."
 msgstr ""
 
 #: templates/web/default/contact/blurb.html:8
 msgid ""
 "We'd love to hear what you think about this site. Just fill in the form, or "
-"send an email to &lt;a href='mailto:%s'&gt;%s&lt;/a&gt;:"
+"send an email to <a href='mailto:%s'>%s</a>:"
 msgstr ""
 
 #: templates/web/default/admin/council_contacts.html:37
@@ -3268,21 +3268,21 @@ msgstr ""
 msgid ""
 "With request searches, it is also possible to search for agency_responsible "
 "to limit the requests to those sent to a single administration.  The search "
-"term is the administration ID provided by &lt;a href=\"%s\"&gt;MaPit&lt;/"
-"a&gt;."
+"term is the administration ID provided by <a href=\"%s\">MaPit</"
+"a>."
 msgstr ""
 
 #: templates/web/fixmystreet/footer.html:23
 msgid ""
-"Would you like better integration with FixMyStreet? &lt;a href=\"/for-"
-"councils\"&gt;Find out about FixMyStreet for councils&lt;/a&gt;."
+"Would you like better integration with FixMyStreet? <a href=\"/for-"
+"councils\">Find out about FixMyStreet for councils</a>."
 msgstr ""
 
 #: templates/web/fixmystreet/footer.html:19
 msgid ""
-"Would you like to contribute to FixMyStreet? Our code is open source and &lt;"
-"a href=\"http://github.com/mysociety/fixmystreet\"&gt;available on "
-"GitHub&lt;/a&gt;."
+"Would you like to contribute to FixMyStreet? Our code is open source and <"
+"a href=\"http://github.com/mysociety/fixmystreet\">available on "
+"GitHub</a>."
 msgstr ""
 
 #: templates/web/default/questionnaire/index.html:102
@@ -3345,12 +3345,12 @@ msgstr ""
 
 #: templates/web/emptyhomes/reports/council.html:64
 msgid ""
-"You can &lt;a href=\"%s\"&gt;view all reports for the council&lt;/a&gt; or "
-"&lt;a href=\"/reports\"&gt;show all councils&lt;/a&gt;."
+"You can <a href=\"%s\">view all reports for the council</a> or "
+"<a href=\"/reports\">show all councils</a>."
 msgstr ""
 
 #: templates/web/emptyhomes/reports/council.html:66
-msgid "You can &lt;a href=\"/reports\"&gt;show all councils&lt;/a&gt;."
+msgid "You can <a href=\"/reports\">show all councils</a>."
 msgstr ""
 
 #: templates/web/default/report/new/councils_text_none.html:14
@@ -3363,14 +3363,14 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/councils_text_some.html:22
 msgid ""
 "You can help us by finding a contact email address for local problems for %s "
-"and emailing it to us at &lt;a href='mailto:%s'&gt;%s&lt;/a&gt;."
+"and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:38
 msgid ""
 "You have already answered this questionnaire. If you have a question, please "
-"&lt;a href='%s'&gt;get in touch&lt;/a&gt;, or &lt;a href='%s'&gt;view your "
-"problem&lt;/a&gt;.\n"
+"<a href='%s'>get in touch</a>, or <a href='%s'>view your "
+"problem</a>.\n"
 msgstr ""
 
 #: templates/web/default/questionnaire/index.html:92
@@ -3416,8 +3416,8 @@ msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt"
 #: templates/web/default/tokens/confirm_update.html:11
 #: templates/web/default/tokens/confirm_update.html:12
 msgid ""
-"You have successfully confirmed your update and you can now &lt;a href=\"%s"
-"\"&gt;view it on the site&lt;/a&gt;."
+"You have successfully confirmed your update and you can now <a href=\"%s"
+"\">view it on the site</a>."
 msgstr ""
 
 #: templates/web/default/tokens/confirm_alert.html:11
@@ -3664,8 +3664,8 @@ msgstr ""
 
 #: templates/web/emptyhomes/front/stats.html:17
 #, perl-format
-msgid "&lt;big&gt;%s&lt;/big&gt; report recently"
-msgid_plural "&lt;big&gt;%s&lt;/big&gt; reports recently"
+msgid "<big>%s</big> report recently"
+msgid_plural "<big>%s</big> reports recently"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -3678,32 +3678,32 @@ msgstr[0] ""
 
 #: templates/web/emptyhomes/front/stats.html:12
 #, perl-format
-msgid "&lt;big&gt;%s&lt;/big&gt; report in past week"
-msgid_plural "&lt;big&gt;%s&lt;/big&gt; reports in past week"
-msgstr[0] "&lt;big&gt;%s&lt;/big&gt; Meldung in der letzten Woche"
-msgstr[1] "&lt;big&gt;%s&lt;/big&gt; Meldungen in der letzten Woche"
+msgid "<big>%s</big> report in past week"
+msgid_plural "<big>%s</big> reports in past week"
+msgstr[0] "<big>%s</big> Meldung in der letzten Woche"
+msgstr[1] "<big>%s</big> Meldungen in der letzten Woche"
 
 #: templates/web/default/front/stats.html:23
 #, perl-format
-msgid "&lt;big&gt;%s&lt;/big&gt; fixed in past month"
-msgid_plural "&lt;big&gt;%s&lt;/big&gt; fixed in past month"
-msgstr[0] "&lt;big&gt;%s&lt;/big&gt; im letzten Monat behoben"
-msgstr[1] "&lt;big&gt;%s&lt;/big&gt; im letzten Monat gehoben"
+msgid "<big>%s</big> fixed in past month"
+msgid_plural "<big>%s</big> fixed in past month"
+msgstr[0] "<big>%s</big> im letzten Monat behoben"
+msgstr[1] "<big>%s</big> im letzten Monat gehoben"
 
 #: templates/web/default/front/stats.html:29
 #, perl-format
-msgid "&lt;big&gt;%s&lt;/big&gt; update on reports"
-msgid_plural "&lt;big&gt;%s&lt;/big&gt; updates on reports"
-msgstr[0] "&lt;big&gt;%s&lt;/big&gt; Meldung bearbeitet"
-msgstr[1] "&lt;big&gt;%s&lt;/big&gt; Meldungen bearbeitet"
+msgid "<big>%s</big> update on reports"
+msgid_plural "<big>%s</big> updates on reports"
+msgstr[0] "<big>%s</big> Meldung bearbeitet"
+msgstr[1] "<big>%s</big> Meldungen bearbeitet"
 
 #: templates/web/fixmystreet/report/new/councils_text_some.html:14
 #, perl-format
 msgid ""
-"We do &lt;strong&gt;not&lt;/strong&gt; yet have details for the other "
+"We do <strong>not</strong> yet have details for the other "
 "council that covers this location."
 msgid_plural ""
-"We do &lt;strong&gt;not&lt;/strong&gt; yet have details for the other "
+"We do <strong>not</strong> yet have details for the other "
 "councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
