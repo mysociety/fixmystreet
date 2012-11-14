@@ -112,9 +112,9 @@ var message_manager = (function() {
         $htauth_password = $(selectors.htauth_password_selector);
         $hide_reasons = $(selectors.boilerplate_hide_reasons);
         $boilerplate_replies = $(selectors.boilerplate_replies);
-        if (typeof settings.url_root === 'string' && _url_root.length==0) {
+        if (typeof settings.url_root === 'string' && _url_root.length===0) {
             say_status(no_config_err_msg);
-        };
+        }
     };
 
     // btoa doesn't work on all browers?
@@ -155,7 +155,7 @@ var message_manager = (function() {
     var show_login_form = function(suggest_username) {
         $('.mm-msg', $message_list_element).remove(); // remove (old) messages
         if ($htauth_username.size() && ! $htauth_username.val()) {
-            $htauth_username.val(suggest_username)
+            $htauth_username.val(suggest_username);
         }
         $login_element.stop().slideDown();
     };
@@ -231,7 +231,7 @@ var message_manager = (function() {
         var $output = $message_list_element;
         if (anim_duration > 0) {
             $output.stop().fadeOut(anim_duration, function(){
-                render_available_messages(data, anim_duration)
+                render_available_messages(data, anim_duration);
             });
         } else {
             render_available_messages(data, anim_duration);
@@ -306,7 +306,7 @@ var message_manager = (function() {
             }
             if (typeof options.anim_duration === 'string' || typeof options.anim_duration === 'number') {
                 anim_duration = parseInt(options.anim_duration, 10);
-                if (anim_duration == NaN) {
+                if (isNaN(anim_duration)) {
                     anim_duration = 0;
                 }
             }
@@ -316,7 +316,7 @@ var message_manager = (function() {
             return;
         }
         $login_element.stop().hide();
-        if (_url_root.length == 0) {
+        if (_url_root.length === 0) {
             say_status(no_config_err_msg);
         } else {
             $.ajax({
@@ -608,7 +608,7 @@ var message_manager = (function() {
             error: function(jqXHR, textStatus, errorThrown) {
                 // console.log("boilerplate error: " + textStatus + ": " + errorThrown);
             }
-        })
+        });
     };
 
     // TODO flatten all HTML in boilerplate text
@@ -616,23 +616,27 @@ var message_manager = (function() {
         var html = "<option value=''>--none--</option>\n";
         var qty_langs = 0;
         var qty_strings = 0;
-        for (var lang in boilerplate_data) {qty_langs++;} // not lovely
-        for (var lang in boilerplate_data) {
-            var options = "";
-            for (var i in boilerplate_data[lang]) {
-                options += "<option>" + boilerplate_data[lang][i] + "</option>\n";
-                qty_strings++;
+        if (boilerplate_data.langs) {
+            for (var i=0; i< boilerplate_data.langs.length; i++) {
+                var lang = boilerplate_data.langs[i];
+                var options = "";
+                for (var j in boilerplate_data[lang]) {
+                    if (boilerplate_data[lang].hasOwnProperty(j)) {
+                        options += "<option>" + boilerplate_data[lang][j] + "</option>\n";
+                        qty_strings++;
+                    }
+                }
+                if (boilerplate_data.langs.length > 1) { // really need pretty name for language
+                    options = '<optgroup label="' + lang + '">\n' + options + '</optgroup>\n';
+                }
+                html += options;
             }
-            if (qty_langs > 1) { // really need pretty name for language
-                options = '<optgroup label="' + lang + '">\n' + options + '</optgroup>\n';
-            }
-            html += options;
         }
-        if (qty_strings == 0) {
+        if (qty_strings === 0) {
             html = '';
         }
         return html;
-    }
+    };
     
     // actually load the select tag
     var populate_boilerplate = function(boilerplate_type, html) {
@@ -648,7 +652,7 @@ var message_manager = (function() {
                 $target.hide();
             }
         }
-    }
+    };
     
     // revealed public methods:
     return {
