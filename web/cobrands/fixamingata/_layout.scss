@@ -131,7 +131,7 @@ h1 {
       a,
       span {
         display: block;
-        color:#fff;
+        color: $primary_text;
         background: none;  
         border-bottom: none;      
       }
@@ -236,7 +236,7 @@ body.mappage {
     .nav-wrapper-2{
       position: fixed;
       background: #222;
-      @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+      @include background(linear-gradient(#3ca7a6, #eee 10%, #eee 90%, #3ca7a6));
     }
   }
   #site-logo{
