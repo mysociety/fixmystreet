@@ -85,3 +85,37 @@ body {
 #front-main {
     background: $primary url(/cobrands/fixamingata/images/tile-y.jpg);
 }
+
+.tablewrapper {
+    >div {
+        width: auto;
+    }
+}
+.ie6, .ie7 {
+    .tablewrapper {
+        div {
+            width: auto;
+        }
+    }
+}
+
+#footer-help {
+    ul {
+        li {
+            width: 30%;
+            border-right: 1.25em solid transparent;
+            &:last-child {
+                border-left: none;
+            }
+        }
+    }
+}
+.ie6, .ie7 {
+    #footer-help {
+        ul {
+            li {
+                width: 33%;
+            }
+        }
+    }
+}
