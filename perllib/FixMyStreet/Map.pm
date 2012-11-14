@@ -52,10 +52,6 @@ sub set_map_class {
     $map_class = $str;
 }
 
-sub header_js {
-    return $map_class->header_js(@_);
-}
-
 sub display_map {
     return $map_class->display_map(@_);
 }
