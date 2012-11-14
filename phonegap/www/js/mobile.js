@@ -5,7 +5,14 @@ Storage.prototype.setObject = function(key, value) {
 };
 
 Storage.prototype.getObject = function(key) {
-    return JSON.parse(this.getItem(key));
+    var item = this.getItem(key);
+    // if we try to parse an empty thing on Android then
+    // it falls over :(
+    if ( item ) {
+        return JSON.parse(item);
+    } else {
+        return null;
+    }
 };
 
 function touchmove(e) {
