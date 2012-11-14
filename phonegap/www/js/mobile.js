@@ -16,7 +16,7 @@ function show_around( lat, long ) {
     pc = $('#pc').val();
     localStorage.latitude = lat;
     localStorage.longitude = long;
-    localStorage.pc = pc;
+    localStorage.pc = pc || '';
     $.mobile.changePage('around.html');
     return false;
 }
