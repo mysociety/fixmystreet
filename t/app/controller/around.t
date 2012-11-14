@@ -66,6 +66,11 @@ foreach my $test (
         latitude  => '51.50101',
         longitude => '-0.141587',
     },
+    {
+        pc        => 'TQ 388 773',
+        latitude  => '51.478074',
+        longitude => '-0.001966',
+    },
   )
 {
     subtest "check lat/lng for '$test->{pc}'" => sub {

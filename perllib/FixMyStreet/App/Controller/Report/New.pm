@@ -13,7 +13,6 @@ use mySociety::MaPit;
 use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
-use mySociety::TempFiles;
 use JSON;
 
 =head1 NAME

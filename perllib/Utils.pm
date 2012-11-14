@@ -19,24 +19,6 @@ use mySociety::DBHandle qw(dbh);
 use mySociety::GeoUtil;
 use mySociety::Locale;
 
-sub workaround_pg_bytea {
-    my ( $st, $img_idx, @elements ) = @_;
-    my $s = dbh()->prepare($st);
-    for ( my $i = 1 ; $i <= @elements ; $i++ ) {
-        if ( $i == $img_idx ) {
-            $s->bind_param(
-                $i,
-                $elements[ $i - 1 ],
-                { pg_type => DBD::Pg::PG_BYTEA }
-            );
-        }
-        else {
-            $s->bind_param( $i, $elements[ $i - 1 ] );
-        }
-    }
-    $s->execute();
-}
-
 =head2 convert_latlon_to_en
 
     ( $easting, $northing ) = Utils::convert_en_to_latlon( $latitude, $longitude );
