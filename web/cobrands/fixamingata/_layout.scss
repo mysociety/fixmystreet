@@ -131,7 +131,7 @@ h1 {
       a,
       span {
         display: block;
-        color:#fff;
+        color: $primary_text;
         background: none;  
         border-bottom: none;      
       }
@@ -236,7 +236,7 @@ body.mappage {
     .nav-wrapper-2{
       position: fixed;
       background: #222;
-      @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+      @include background(linear-gradient(#3ca7a6, #eee 10%, #eee 90%, #3ca7a6));
     }
   }
   #site-logo{
@@ -343,7 +343,7 @@ body.twothirdswidthpage {
   padding:0 0 1em 0;
   >div {
     display:table-cell;
-    width:50%;
+    // width:50%;
   }
   .full-width {
     width:auto;
@@ -356,7 +356,7 @@ body.twothirdswidthpage {
   .tablewrapper {
     display:block;
     div {//ie6 doesn't support '>div', so we'll go with the somewhat risker 'div'
-      width:48%;
+      // width:48%;
       display:block;
       float: left;
       border:none !important;
@@ -438,8 +438,11 @@ body.twothirdswidthpage {
     li {
       display:table-cell;
       border-bottom:none;
+      width:30%;
+      border-right:1.25em solid #fff;
+
       &:last-child {
-        border-left:1.25em solid #fff;
+//        border-left:1.25em solid #fff;
       }
     }
   }
@@ -451,7 +454,7 @@ body.twothirdswidthpage {
       width:100%;
       li {
         float:left;
-        width:45%
+        width:33%
       }
     }
   }

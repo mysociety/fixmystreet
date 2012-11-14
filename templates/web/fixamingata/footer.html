@@ -2,17 +2,14 @@
                     <footer role="content-info">
                         <div class="tablewrapper bordered">
                             <div id="footer-mobileapps">
-                                <h4>Mobile apps</h4>
-
-                                <ul>
-                                    <li><a class="m-app-iphone" href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a></li>
-                                    <li><a class="m-app-droid" href="https://market.android.com/details?id=com.android.fixmystreet">Android</a></li>
-                                    <li><a class="m-app-nokia" href="http://store.ovi.com/content/107557">Nokia</a></li>
-                                </ul>
                             </div>
-
                             <div id="footer-help">
+
                                 <ul>
+                                   <li>
+                                      <h4>Sekretess och kakor</h4>
+                                      <p>Vill du veta mer om det juridiska? Läs vår information <a href="/privacy">om sekretess och kakor</a></p>
+                                   </li>
                                     <li>
                                         <h4>[% loc('Are you a developer?') %]</h4>
                                         <p>[% loc('Would you like to contribute to FixMyStreet? Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]</p>
@@ -24,7 +21,6 @@
                                 </ul>
                             </div>
                         </div>
-                        <p><a href="/privacy">Privacy and cookies</a></p>
                     </footer>
                     [% END %]
                 </div><!-- .content role=main -->
@@ -34,12 +30,6 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
-                    <ul id="mysoc-menu">
-                        <li><a id="mysoc-logo" href="http://www.mysociety.org/">mySociety</a></li>[%
-                        %]<li><a href="http://mysociety.org/donate/">Donate</a></li>[%
-                        %]<li><a href="http://www.mysociety.org/projects/">Our Sites</a></li>
-                    </ul>
-
                     <ul id="main-menu">
                         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
