@@ -418,7 +418,7 @@ function display_account_page() {
         $('#form_sign_in_only').show();
         localStorage.signed_out = null;
     }
-    if ( localStorage.name ) {
+    if ( localStorage.username ) {
         $('#user-meta').html('<p>You are signed in as ' + localStorage.username + '.</p>');
         $('#form_sign_in_only').hide();
         $('#forget_button').show();
