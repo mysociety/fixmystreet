@@ -175,3 +175,7 @@ input.green-btn:hover {
     height: 100%;
     margin: 0px;
 }
+
+div.wrapper {
+    -webkit-transform: translate3d(0,0,0);
+}
