@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-10-24 11:20+0100\n"
-"PO-Revision-Date: 2012-11-14 16:27+0000\n"
+"PO-Revision-Date: 2012-11-15 08:23+0000\n"
 "Last-Translator: jonas <jonas@morus.se>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/projects/p/fixmystreet/language/sv_SE/)\n"
 "MIME-Version: 1.0\n"
@@ -1690,14 +1690,14 @@ msgstr "Open311 Specifikation"
 #: templates/web/default/alert/_list.html:58
 #: templates/web/fixmystreet/alert/_list.html:60
 msgid "Or problems reported to:"
-msgstr ""
+msgstr "Eller problem rapporterade til:"
 
 #: templates/web/default/alert/_list.html:33
 #: templates/web/fixmystreet/alert/_list.html:36
 msgid ""
 "Or you can subscribe to an alert based upon what ward or council "
 "you&rsquo;re in:"
-msgstr ""
+msgstr "Du kan också prenumerera på larm baserat på vilken kommun du är i:"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1008
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:658
@@ -1709,13 +1709,13 @@ msgstr ""
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:331
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:340
 msgid "Other"
-msgstr ""
+msgstr "Övrig"
 
 #: templates/web/default/footer.html:27
 msgid ""
 "Our code is open source and <a "
 "href=\"http://github.com/mysociety/fixmystreet\">available on GitHub</a>."
-msgstr ""
+msgstr "FixaMinGata är öppen programvara och <a href=\"http://github.com/MorusAB/fixmystreet\">tillgänglig på GitHub</a>."
 
 #: templates/web/default/admin/list_updates.html:11
 msgid "Owner"
@@ -1791,12 +1791,12 @@ msgstr "Planerat"
 msgid ""
 "Please <a class=\"tab_link\" href=\"#report\">take a look</a> at the updates"
 " that have been left."
-msgstr ""
+msgstr "Observera <a class=\"tab_link\" href=\"#report\">uppdateringarna</a> som har lämnats."
 
 #: templates/web/default/report/new/notes.html:6
 #: templates/web/fixmystreet/report/new/notes.html:5
 msgid "Please be polite, concise and to the point."
-msgstr ""
+msgstr "Var vänlig, kortfattad och rakt på sak."
 
 #: templates/web/default/auth/change_password.html:12
 #: templates/web/default/auth/change_password.html:17
@@ -1838,14 +1838,14 @@ msgid ""
 "Please do <strong>not</strong> report problems through this form; messages go to\n"
 "the team behind FixMyStreet, not a council. To report a problem,\n"
 "please <a href=\"/\">go to the front page</a> and follow the instructions."
-msgstr ""
+msgstr "Var snäll och rapportera <strong>inga</strong> problem genom det här formuläret. Meddelanden här går till teamet bakom FixaMinGata, inte till din kommun. för att rapportera ett problem, <a href=\"/\">gå till framsidan</a> och följ instruktionerna."
 
 #: templates/web/default/report/new/notes.html:7
 #: templates/web/fixmystreet/report/new/notes.html:6
 msgid ""
 "Please do not be abusive &mdash; abusing your council devalues the service "
 "for all users."
-msgstr ""
+msgstr "Var snäll och missbruka inte tjänsten, det förstör för alla."
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:146
 #: templates/web/default/js/validation_strings.html:2
@@ -1904,7 +1904,7 @@ msgstr "Vänligen skriv in ditt förnamn"
 msgid ""
 "Please enter your full name, councils need this information – if you do not "
 "wish your name to be shown on the site, untick the box below"
-msgstr ""
+msgstr "Skriv in ditt namn om kommunen behöver den informationen. Om du inte vill att dit namn visas kan du välja det nedandör"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:95
 #: perllib/FixMyStreet/DB/Result/Comment.pm:143
@@ -1930,7 +1930,7 @@ msgid ""
 "There is no need for you to give the exact address. Please be polite, concise\n"
 "and to the point; writing your message entirely in block capitals makes it hard\n"
 "to read, as does a lack of punctuation."
-msgstr ""
+msgstr "Var vänlig och fyll i information om den tomma fastigheten nedanför. Ange vilken typ av fastighet det är, ex.v. ett tomt hem, kontor, etc. Berätta för oss om dess renoveringsbehov och annan information som du känner är relevant. Du behöver inte ge någon exakt adress. Var vänlig, konkret och rakt på sak. Om du skriver endast i versaler gör du det svårt att läsa sitt meddelande."
 
 #: templates/web/default/report/new/fill_in_details_text.html:1
 #: templates/web/default/report/new/fill_in_details_text.html:11
@@ -1939,7 +1939,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:11
 msgid "Please fill in details of the problem below."
-msgstr ""
+msgstr "Fyll i information om problemet nedan."
 
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:1
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:3
@@ -1947,7 +1947,7 @@ msgid ""
 "Please fill in details of the problem below. Leave as much detail as you can, \n"
 "and if possible describe the exact location of\n"
 "the problem (e.g. if there is a streetlight number or road name)."
-msgstr ""
+msgstr "Fyll i information om problemet nedan. Lämna så mycket detaljer som du kan och beskriv gärna den exakta platsen för problemet (exempelvis om det finns ett nummer på en lyktstolpe eller gatunamn)."
 
 #: templates/web/default/report/new/fill_in_details_text.html:1
 #: templates/web/default/report/new/fill_in_details_text.html:3
@@ -1956,11 +1956,11 @@ msgid ""
 "to help unless you leave as much detail as you can, so please describe the exact location of\n"
 "the problem (e.g. on a wall), what it is, how long it has been there, a description (and a\n"
 "photo of the problem if you have one), etc."
-msgstr ""
+msgstr "Fyll i information om problemet nedan. Kommunen kommer inte att kunna hjälpa till om du inte lämnar tillräckligt med detaljer. Beskriv så noga du kan den exakta platsen för problemet (exempelvis \"på väggen\"), vad problemet är, hur länge det har funntis och en beskrivning. Om du har ett foto får du gärna bifoga detta också."
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:70
 msgid "Please fill in details of the problem."
-msgstr ""
+msgstr "Fyll i information om problemet nedan."
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:28
 #: templates/web/default/report/new/fill_in_details_form.html:27
@@ -1968,29 +1968,29 @@ msgstr ""
 msgid ""
 "Please fill in the form below with details of the problem, and describe the "
 "location as precisely as possible in the details box."
-msgstr ""
+msgstr "Fyll i information om problemet nedan och beskriv den exakta platsen för problemet så noga du kan."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:243
 msgid "Please indicate whether you'd like to receive another questionnaire"
-msgstr ""
+msgstr "Ange ifall du vill ta emot ett annat frågeformulär"
 
 #: templates/web/fixmystreet/report/updates-sidebar-notes.html:3
 msgid "Please note that updates are not sent to the council."
-msgstr ""
+msgstr "Observera att uppdateringar inte skickas till kommunen."
 
 #: templates/web/default/report/display.html:56
 msgid ""
 "Please note that updates are not sent to the council. If you leave your name"
 " it will be public. Your information will only be used in accordance with "
 "our <a href=\"/faq#privacy\">privacy policy</a>"
-msgstr ""
+msgstr "Observera att uppdateringar inte skickas till kommunen. Om du lämnar ditt namn kommer det att visas publikt. Din information används endast i enlighet med vår <a href=\"/faq#privacy\">sekretesspolicy</a>"
 
 #: templates/web/barnet/report/updates-sidebar-notes.html:1
 msgid ""
 "Please note that updates are not sent to the relevant department. If you "
 "leave your name it will be public. Your information will only be used in "
 "accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
-msgstr ""
+msgstr "Observera att uppdateringar inte skickas till kommunen. Om du lämnar ditt namn kommer det att visas publikt. Din information används endast i enlighet med vår <a href=\"/faq#privacy\">sekretesspolicy</a>"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:23
 #: templates/web/default/report/new/fill_in_details_form.html:5
@@ -1998,60 +1998,60 @@ msgstr ""
 msgid ""
 "Please note your report has <strong>not yet been sent</strong>. Choose a "
 "category and add further information below, then submit."
-msgstr ""
+msgstr "Observera att din rapport <strong>inte har skickats än</strong>. Välj en kategori och ytterligare information nedan. Tryck sedan på skicka."
 
 #: templates/web/default/report/new/notes.html:1
 #: templates/web/fixmybarangay/report/new/notes.html:1
 #: templates/web/fixmystreet/report/new/notes.html:1
 msgid "Please note:"
-msgstr ""
+msgstr "Observera:"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:246
 msgid "Please provide some explanation as to why you're reopening this report"
-msgstr ""
+msgstr "Skriv en förklaring till varför du öppna de här rapporten igen"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:253
 msgid "Please provide some text as well as a photo"
-msgstr ""
+msgstr "Skriv lite förklarande text tillsammans med ett foto"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:116
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:239
 msgid ""
 "Please say whether you've ever reported a problem to your council before"
-msgstr ""
+msgstr "Ange om du har anmält ett problem till kommunen tidigare eller ej"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:80
 msgid "Please select the feed you want"
-msgstr ""
+msgstr "Välj det RSS-flöde du vill ha"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:118
 msgid "Please select the type of alert you want"
-msgstr ""
+msgstr "Välj den typ av larm du vill ha"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:235
 msgid "Please state whether or not the problem has been fixed"
-msgstr ""
+msgstr "Ange om problemet har lösts eller ej"
 
 #: templates/web/default/questionnaire/index.html:50
 msgid "Please take a look at the updates that have been left."
-msgstr ""
+msgstr "Titta på de uppdateringar som har lämnats."
 
 #: perllib/FixMyStreet/App/Controller/Photo.pm:175
 msgid "Please upload a JPEG image only"
-msgstr ""
+msgstr "Ladda upp en JPEG-bild"
 
 #: perllib/FixMyStreet/App/Controller/Photo.pm:182
 msgid "Please upload a JPEG image only\n"
-msgstr ""
+msgstr "Ladda upp en JPEG-bild\n"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:98
 msgid "Please write a message"
-msgstr ""
+msgstr "Skriv ett meddelande"
 
 #: templates/web/bromley/report/display.html:70
 #: templates/web/fixmystreet/report/display.html:85
 msgid "Please write your update here"
-msgstr ""
+msgstr "Skriv din uppdatering här"
 
 #: templates/web/bromley/report/display.html:121
 #: templates/web/bromley/report/display.html:149
@@ -2065,45 +2065,45 @@ msgstr ""
 #: templates/web/fixmystreet/report/display.html:155
 #: templates/web/fixmystreet/report/display.html:183
 msgid "Post"
-msgstr ""
+msgstr "Skicka"
 
 #: templates/web/default/report/updates.html:14
 msgid "Posted anonymously at %s"
-msgstr ""
+msgstr "Postat anonymt den %s"
 
 #: templates/web/default/report/updates.html:21
 msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr ""
+msgstr "Postat av %s (<strong>%s</strong>) den %s"
 
 #: templates/web/default/report/updates.html:23
 msgid "Posted by %s at %s"
-msgstr ""
+msgstr "Postat av %s den %s"
 
 #: templates/web/default/admin/council_contacts.html:100
 #: templates/web/default/admin/council_edit.html:30
 #: templates/web/default/admin/report_edit.html:43
 msgid "Private"
-msgstr ""
+msgstr "Privat"
 
 #: templates/web/default/maps/openlayers.html:85
 msgid "Problem"
-msgstr ""
+msgstr "Rapport"
 
 #: templates/web/default/admin/timeline.html:24
 msgid "Problem %d created"
-msgstr ""
+msgstr "Rapport %d skapat"
 
 #: templates/web/default/admin/timeline.html:26
 msgid "Problem %s confirmed"
-msgstr ""
+msgstr "Rapport %s bekräftad"
 
 #: templates/web/default/admin/timeline.html:28
 msgid "Problem %s sent to council %s"
-msgstr ""
+msgstr "Rapport %s skickad till %s"
 
 #: templates/web/default/admin/index.html:28
 msgid "Problem breakdown by state"
-msgstr ""
+msgstr "Rapporter per status"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:833
 msgid "Problem marked as open."
@@ -2381,41 +2381,41 @@ msgstr "Rapporterade %s"
 
 #: templates/web/default/my/my.html:72
 msgid "Reported %s, to %s"
-msgstr ""
+msgstr "Rapporterat %s till %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:520
 #: templates/web/default/contact/index.html:45
 #: templates/web/fixmystreet/contact/index.html:46
 msgid "Reported anonymously at %s"
-msgstr ""
+msgstr "Rapporterat anonymt den %s"
 
 #: templates/web/default/admin/questionnaire.html:5
 #: templates/web/default/questionnaire/index.html:77
 #: templates/web/fixmystreet/questionnaire/index.html:71
 msgid "Reported before"
-msgstr ""
+msgstr "Rapporterat tidigare"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:512
 msgid "Reported by %s anonymously at %s"
-msgstr ""
+msgstr "Rapporterat av %s anonymt den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:543
 #: templates/web/default/contact/index.html:47
 #: templates/web/fixmystreet/contact/index.html:48
 msgid "Reported by %s at %s"
-msgstr ""
+msgstr "Rapporterat av %s den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:534
 msgid "Reported by %s by %s at %s"
-msgstr ""
+msgstr "Rapporterat av %s av %s den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:508
 msgid "Reported by %s in the %s category anonymously at %s"
-msgstr ""
+msgstr "Rapporterat av %s i kategorin %s, anonymt den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:528
 msgid "Reported by %s in the %s category by %s at %s"
-msgstr ""
+msgstr "Rapporterat av %s i kategorin %s, anonymt av %s den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:516
 msgid "Reported in the %s category anonymously at %s"
@@ -3026,7 +3026,7 @@ msgstr "Det uppstod ett problem med din uppdatering. Se nedan."
 msgid ""
 "This API implementation is work in progress and not yet stabilized.  It will"
 " change without warnings in the future."
-msgstr ""
+msgstr "Den här API-implementationen är ett pågående arbete och har inte stabiliserats än. Den kommer att förändras."
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:341
 msgid ""
@@ -3034,33 +3034,33 @@ msgid ""
 "problem, as the user did not categorise it; please ignore it if you're not "
 "the correct council to deal with the issue, or let us know what category of "
 "problem this is so we can add it to our system."
-msgstr ""
+msgstr "Det här brevet har skickats till flera adresser eftersom rapportören inte angav någon kategori, eller den kategori som angavs hör till flera olika enheter. Du kan ignorera det här brevet om du inte är rätt person att hantera det, men det vore också mycket hjälpsamt om du kan ta reda på vem som är rätt person och anmäla detta till oss så att vi kan ändra databasen för framtida brev."
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:344
 msgid ""
 "This email has been sent to several councils covering the location of the "
 "problem, as the category selected is provided for all of them; please ignore"
 " it if you're not the correct council to deal with the issue."
-msgstr ""
+msgstr "Det här brevet har skickats till flera adresser eftersom rapportören inte angav någon kategori, eller den kategori som angavs hör till flera olika enheter. Du kan ignorera det här brevet om du inte är rätt person att hantera det, men det vore också mycket hjälpsamt om du kan ta reda på vem som är rätt person och anmäla detta till oss så att vi kan ändra databasen för framtida brev."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:870
 #: perllib/FixMyStreet/Cobrand/UK.pm:54
 msgid "This information is required"
-msgstr ""
+msgstr "Den här informationen krävs"
 
 #: templates/web/default/debug_header.html:3
 msgid ""
 "This is a developer site; things might break at any time, and the database "
 "will be periodically deleted."
-msgstr ""
+msgstr "Det här är en utvecklingsplats: olika saker kan komma att gå sönder vid olika tidpunkter och databasen kommer att rutinmässigt raderas."
 
 #: templates/web/emptyhomes/reports/council.html:58
 msgid "This is a summary of all reports for one %s."
-msgstr ""
+msgstr "Det här är en sammanställningsrapport för en %s."
 
 #: templates/web/emptyhomes/reports/council.html:60
 msgid "This is a summary of all reports for this %s."
-msgstr ""
+msgstr "Det här är en sammanställningsrapport för %s."
 
 #: templates/web/default/reports/index.html:7
 #: templates/web/emptyhomes/reports/index.html:4
@@ -3069,11 +3069,11 @@ msgstr ""
 msgid ""
 "This is a summary of all reports on this site; select a particular council "
 "to see the reports sent there."
-msgstr ""
+msgstr "Det här är en sammanställning av alla rapporter. Du kan välja en enskild kommun för att se rapporterna skickade dit."
 
 #: templates/web/default/report/banner.html:15
 msgid "This problem has been closed"
-msgstr ""
+msgstr "Den här rapporten har stängts"
 
 #: templates/web/bromley/report/display.html:96
 #: templates/web/default/report/banner.html:12
@@ -3081,48 +3081,48 @@ msgstr ""
 #: templates/web/emptyhomes/report/display.html:12
 #: templates/web/fixmystreet/report/display.html:106
 msgid "This problem has been fixed"
-msgstr ""
+msgstr "Det här problemet har lösts"
 
 #: templates/web/bromley/report/display.html:90
 #: templates/web/default/report/display.html:90
 #: templates/web/fixmystreet/report/display.html:100
 msgid "This problem has not been fixed"
-msgstr ""
+msgstr "Det här problemet har inte lösts"
 
 #: templates/web/default/report/banner.html:19
 msgid "This problem is in progress"
-msgstr ""
+msgstr "Arbete pågår med att lösa problemet"
 
 #: templates/web/default/report/banner.html:9
 msgid "This problem is old and of unknown status."
-msgstr ""
+msgstr "Problemet är gammalt och har okänt status"
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:86
 msgid "This report is currently marked as closed."
-msgstr ""
+msgstr "Den här rapporten är markerad som stängd"
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:84
 msgid "This report is currently marked as fixed."
-msgstr ""
+msgstr "Det här problemet är markerat som löst"
 
 #: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:88
 msgid "This report is currently marked as open."
-msgstr ""
+msgstr "Den här rapportern är öppen"
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:264
 msgid ""
 "This web page also contains a photo of the problem, provided by the user."
-msgstr ""
+msgstr "Den här sidan innehåller också ett foto av problemet"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1038
 #: templates/web/default/admin/timeline.html:1
 msgid "Timeline"
-msgstr ""
+msgstr "Tidslinje"
 
 #: templates/web/default/admin/list_flagged.html:10
 #: templates/web/default/admin/search_reports.html:13
 msgid "Title"
-msgstr ""
+msgstr "Titel"
 
 #: templates/web/default/around/_report_banner.html:2
 msgid ""
@@ -3144,99 +3144,99 @@ msgstr "För att se vilka lokala rapporter vi har runt dig, skriv in postnummer 
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:270
 msgid "To view a map of the precise location of this issue"
-msgstr ""
+msgstr "För att visa en karta med den exakta positionen för problemet"
 
 #: templates/web/default/admin/index.html:36
 #: templates/web/default/admin/questionnaire.html:24
 #: templates/web/default/admin/stats.html:24
 #: templates/web/default/admin/stats.html:43
 msgid "Total"
-msgstr ""
+msgstr "Totalt"
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:42
 msgid "Unable to look up areas in MaPit. Please try again later."
-msgstr ""
+msgstr "Kan tyvärr inte validera adresser mot vår databas. Försök igen senare."
 
 #: templates/web/default/admin/report_edit.html:18
 #: templates/web/default/admin/report_edit.html:21
 #: templates/web/default/admin/update_edit.html:19
 msgid "Unconfirmed"
-msgstr ""
+msgstr "Obekräftat"
 
 #: templates/web/fixmystreet/report/banner.html:9
 msgid "Unknown"
-msgstr ""
+msgstr "Okänt"
 
 #: perllib/FixMyStreet/App/Controller/Rss.pm:164
 msgid "Unknown alert type"
-msgstr ""
+msgstr "Okänd feltyp"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:87
 msgid "Unknown problem ID"
-msgstr ""
+msgstr "Okänt problemnummer"
 
 #: templates/web/bromley/report/display.html:66
 #: templates/web/fixmystreet/report/display.html:81
 msgid "Update"
-msgstr ""
+msgstr "Uppdatering"
 
 #: templates/web/default/admin/timeline.html:35
 msgid "Update %s created for problem %d; by %s"
-msgstr ""
+msgstr "Uppdatering %s skapad för rapporten %d, av %s"
 
 #: templates/web/default/contact/index.html:21
 #: templates/web/fixmystreet/contact/index.html:22
 msgid "Update below added anonymously at %s"
-msgstr ""
+msgstr "Uppdateringen nedan tillagd anonymt den %s"
 
 #: templates/web/default/contact/index.html:23
 #: templates/web/fixmystreet/contact/index.html:24
 msgid "Update below added by %s at %s"
-msgstr ""
+msgstr "Uppdateringen nedan tillagd av %s den %s"
 
 #: templates/web/default/admin/index.html:30
 msgid "Update breakdown by state"
-msgstr ""
+msgstr "Uppdatering per status"
 
 #: db/alert_types.pl:7
 msgid "Update by {{name}}"
-msgstr ""
+msgstr "Uppdatering av {{name}}"
 
 #: templates/web/default/admin/update_edit.html:33
 msgid "Update changed problem state to %s"
-msgstr ""
+msgstr "Uppdateringen ändrade statusen till %s"
 
 #: templates/web/default/admin/update_edit.html:35
 msgid "Update marked problem as fixed"
-msgstr ""
+msgstr "Uppdateringen markerade problemet som löst"
 
 #: templates/web/default/admin/update_edit.html:37
 msgid "Update reopened problem"
-msgstr ""
+msgstr "Uppdateringen öppnade rapporten på nytt"
 
 #: templates/web/default/admin/council_contacts.html:68
 msgid "Update statuses"
-msgstr ""
+msgstr "Uppdaterad status"
 
 #: templates/web/default/report/display.html:71
 msgid "Update:"
-msgstr ""
+msgstr "Uppdatering:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:708
 #: perllib/FixMyStreet/App/Controller/Admin.pm:823
 #: perllib/FixMyStreet/App/Controller/Admin.pm:903
 msgid "Updated!"
-msgstr ""
+msgstr "Uppdaterad!"
 
 #: templates/web/default/admin/list_updates.html:1
 #: templates/web/default/report/update.html:3
 #: templates/web/fixmystreet/report/update.html:3
 msgid "Updates"
-msgstr ""
+msgstr "Uppdateringar"
 
 #: db/alert_types.pl:5 db/alert_types.pl:6
 msgid "Updates on {{title}}"
-msgstr ""
+msgstr "Uppdateringar för {{title}}"
 
 #: templates/web/bromley/report/display.html:0
 #: templates/web/bromley/report/display.html:8
@@ -3245,44 +3245,44 @@ msgstr ""
 #: templates/web/fixmystreet/report/display.html:0
 #: templates/web/fixmystreet/report/display.html:8
 msgid "Updates to this problem, FixMyStreet"
-msgstr ""
+msgstr "Uppdateringar för det här problemet, FixaMinGata"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1196
 msgid "User flag removed"
-msgstr ""
+msgstr "Användarflaggan borttagen"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1168
 msgid "User flagged"
-msgstr ""
+msgstr "Användaren flaggad"
 
 #: templates/web/default/admin/list_flagged.html:30
 msgid "Users"
-msgstr ""
+msgstr "Användare"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:315
 #: perllib/FixMyStreet/App/Controller/Admin.pm:345
 msgid "Values updated"
-msgstr ""
+msgstr "Värden uppdaterade"
 
 #: templates/web/default/admin/report_edit.html:12
 #: templates/web/default/admin/update_edit.html:12
 msgid "View report on site"
-msgstr ""
+msgstr "Visa rapporter på sidan"
 
 #: templates/web/default/reports/council.html:18
 msgid "View reports by ward"
-msgstr ""
+msgstr "Visa rapporter per område"
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:39
 msgid "View your report"
-msgstr ""
+msgstr "Visa din rapport"
 
 #: templates/web/default/around/display_location.html:0
 #: templates/web/default/around/display_location.html:33
 #: templates/web/emptyhomes/around/display_location.html:0
 #: templates/web/emptyhomes/around/display_location.html:16
 msgid "Viewing a location"
-msgstr ""
+msgstr "Visa en position"
 
 #: templates/web/bromley/report/display.html:0
 #: templates/web/default/report/display.html:0
@@ -3290,7 +3290,7 @@ msgstr ""
 #: templates/web/emptyhomes/report/display.html:2
 #: templates/web/fixmystreet/report/display.html:0
 msgid "Viewing a problem"
-msgstr ""
+msgstr "Visa ett problem"
 
 #: templates/web/default/reports/council.html:20
 #: templates/web/emptyhomes/reports/council.html:18
@@ -3648,7 +3648,7 @@ msgstr "Ditt telefonnummer"
 
 #: templates/web/fixmystreet/questionnaire/index.html:15
 msgid "Your report"
-msgstr ""
+msgstr "Din rapport"
 
 #: templates/web/barnet/footer.html:18 templates/web/bromley/footer.html:19
 #: templates/web/bromley/header.html:75 templates/web/default/footer.html:9
@@ -3661,75 +3661,75 @@ msgstr "Dina rapporter"
 
 #: templates/web/default/my/my.html:45 templates/web/fixmystreet/my/my.html:49
 msgid "Your updates"
-msgstr ""
+msgstr "Dina uppdateringar"
 
 #: templates/web/default/contact/index.html:76
 msgid "Your&nbsp;email:"
-msgstr ""
+msgstr "Din&nbsp;epostadress:"
 
 #: templates/web/default/admin/timeline.html:6
 msgid "by %s"
-msgstr ""
+msgstr "av %s"
 
 #: templates/web/default/reports/council.html:12
 #: templates/web/default/reports/council.html:13
 #: templates/web/emptyhomes/reports/council.html:6
 #: templates/web/emptyhomes/reports/council.html:7
 msgid "council"
-msgstr ""
+msgstr "kommun"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:611
 msgid "council ref:&nbsp;%s"
-msgstr ""
+msgstr "kommunens referens:&nbsp;%s"
 
 #: templates/web/default/admin/report_edit.html:15
 msgid "didn't use map"
-msgstr ""
+msgstr "använde inte kartan"
 
 #: templates/web/default/alert/index.html:33
 #: templates/web/fixmystreet/around/postcode_form.html:23
 msgid "e.g. ‘%s’ or ‘%s’"
-msgstr ""
+msgstr "ex.v. '%s' eller '%s'"
 
 #: templates/web/default/admin/index.html:15
 msgid "from %d different users"
-msgstr ""
+msgstr "från %d olika användare"
 
 #: perllib/Utils.pm:295
 msgid "less than a minute"
-msgstr ""
+msgstr "mindre än en minut"
 
 #: templates/web/default/report/updates.html:27
 msgid "marked as %s"
-msgstr ""
+msgstr "markerad som %s"
 
 #: templates/web/default/report/updates.html:25
 msgid "marked as fixed"
-msgstr ""
+msgstr "markerad som löst"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:113
 #: templates/web/default/admin/questionnaire.html:15
 #: templates/web/default/admin/questionnaire.html:16
 msgid "n/a"
-msgstr ""
+msgstr "Ej tillgängligt"
 
 #: templates/web/default/alert/_list.html:87
 #: templates/web/fixmybarangay/alert/_list.html:32
 #: templates/web/fixmystreet/alert/_list.html:85
 msgid "or"
-msgstr ""
+msgstr "eller"
 
 #: templates/web/default/admin/report_edit.html:15
 msgid "originally entered"
-msgstr ""
+msgstr "ursprungligen inmatat"
 
 #: templates/web/default/admin/report_edit.html:16
 msgid "other areas:"
-msgstr ""
+msgstr "andra områden:"
 
 #: templates/web/default/report/updates.html:26
 msgid "reopened"
-msgstr ""
+msgstr "öppnat på nytt"
 
 #: templates/web/barnet/header.html:71 templates/web/bromley/header.html:100
 #: templates/web/bromley/header.html:65
@@ -3737,7 +3737,7 @@ msgstr ""
 #: templates/web/fixmystreet/header.html:48
 #: templates/web/zurich/header.html:48
 msgid "sign out"
-msgstr ""
+msgstr "logga ut"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:4
 #: templates/web/bromley/report/new/fill_in_details_form.html:7
@@ -3746,89 +3746,89 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:6
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:9
 msgid "the local council"
-msgstr ""
+msgstr "kommunen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:549
 msgid "there is no pin shown as the user did not use the map"
-msgstr ""
+msgstr "det finns ingen kartmarkering eftersom användaren inte använde kartan"
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:332
 msgid "this type of local problem"
-msgstr ""
+msgstr "den här typen av problem"
 
 #: perllib/Utils.pm:269
 msgid "today"
-msgstr ""
+msgstr "idag"
 
 #: templates/web/default/admin/report_edit.html:15
 msgid "used map"
-msgstr ""
+msgstr "använde kartan"
 
 #: templates/web/default/admin/update_edit.html:26
 msgid "user is from same council as problem - %d"
-msgstr ""
+msgstr "användaren är från samma kommun som problemet - %d"
 
 #: templates/web/default/admin/update_edit.html:29
 msgid "user is problem owner"
-msgstr ""
+msgstr "användaren är inte problemägare"
 
 #: templates/web/default/reports/council.html:0
 #: templates/web/default/reports/council.html:9
 #: templates/web/emptyhomes/reports/council.html:0
 #: templates/web/emptyhomes/reports/council.html:3
 msgid "ward"
-msgstr ""
+msgstr "område"
 
 #: templates/web/default/email_sent.html:15
 #: templates/web/default/email_sent.html:3
 msgid "we'll hang on to your alert while you're checking your email."
-msgstr ""
+msgstr "vi behåller ditt larm medan du kollar din epost."
 
 #: templates/web/default/email_sent.html:3
 #: templates/web/default/email_sent.html:7
 msgid "we'll hang on to your problem report while you're checking your email."
-msgstr ""
+msgstr "vi behåller din rapport medan du kollar din epost."
 
 #: templates/web/default/email_sent.html:11
 #: templates/web/default/email_sent.html:3
 msgid "we'll hang on to your update while you're checking your email."
-msgstr ""
+msgstr "vi behåller din uppdatering medans du kollar din epost."
 
 #: templates/web/default/email_sent.html:14
 #: templates/web/default/email_sent.html:3
 msgid "your alert will not be activated"
-msgstr ""
+msgstr "ditt larm kommer inte aktiveras"
 
 #: templates/web/default/email_sent.html:3
 #: templates/web/default/email_sent.html:6
 msgid "your problem will not be posted"
-msgstr ""
+msgstr "din rapport kommer inte skickas"
 
 #: templates/web/default/email_sent.html:10
 #: templates/web/default/email_sent.html:3
 msgid "your update will not be posted"
-msgstr ""
+msgstr "din uppdatering kommer inte skickas"
 
 #: templates/web/default/front/stats.html:17
 #, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "<big>%s</big> rapport nyligen"
+msgstr[1] "<big>%s</big> rapporter nyligen"
 
 #: perllib/Utils.pm:314
 #, perl-format
 msgid "%d hour"
 msgid_plural "%d hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d timme"
+msgstr[1] "%d timmar"
 
 #: perllib/Utils.pm:316
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d minut"
+msgstr[1] "%d minuter"
 
 #: templates/web/default/front/stats.html:29
 #, perl-format
@@ -3842,8 +3842,8 @@ msgstr[1] "<big>%s</big> uppdateringar av rapporter"
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural ""
 "We do not yet have details for the councils that cover this location."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Vi har ännu ingen information om kommunen på den platsen"
+msgstr[1] "Vi har ännu ingen information om kommunen på den platsen"
 
 #: perllib/Utils.pm:310
 #, perl-format
@@ -3874,12 +3874,12 @@ msgid ""
 msgid_plural ""
 "We do <strong>not</strong> yet have details for the other councils that "
 "cover this location."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Vi har ännu <strong>ingen</strong> information om kommunen på den platsen"
+msgstr[1] "Vi har ännu <strong>ingen</strong> information om kommunen på den platsen"
 
 #: perllib/Utils.pm:312
 #, perl-format
 msgid "%d day"
 msgid_plural "%d days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d dag"
+msgstr[1] "%d dagar"
