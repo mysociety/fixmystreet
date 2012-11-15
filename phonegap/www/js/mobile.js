@@ -455,9 +455,11 @@ function set_location() {
 }
 
 function mark_here() {
+    fixmystreet.state_pins_were_hidden = true;
     if ( fixmystreet.markers.getVisibility() ) {
         fixmystreet.state_pins_were_hidden = false;
-        $('#hide_pins_link').click();
+        fixmystreet.markers.setVisibility(false);
+        fixmystreet.select_feature.deactivate();
     }
 
     fixmystreet.nav.deactivate();
@@ -471,14 +473,15 @@ function mark_here() {
         '</p>' );
     $('#mark-here').hide();
 
-    $('#try_again').on('vclick', function(){
+    $('#try_again').on('vclick', function(e){
+        e.preventDefault();
         fixmystreet.bbox_strategy.activate();
         fixmystreet.markers.refresh( { force: true } );
         if ( !fixmystreet.state_pins_were_hidden ) {
             // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
-            $('#hide_pins_link').click();
+            fixmystreet.markers.setVisibility(true);
+            fixmystreet.select_feature.activate();
         }
-        //fixmystreet.drag.deactivate();
         $('#sub_map_links').show();
         $('#mob_sub_map_links').remove();
         $('#mark-here').show();
