@@ -1,4 +1,8 @@
     <div class="wrapper" id="report-page" data-role="page">
+        <div data-id="locate" id="report-header" data-role="header" data-position="fixed">
+            <h1>Report</h1>
+            <a href="settings.html" class="ui-btn-right" data-icon="gear" data-iconpos="notext"></a>
+        </div>
         <div class="table-cell">
             <div class="container" data-role="content">
                 <div class="content" id="report" role="main" data-enhance="false">
@@ -24,7 +28,7 @@
                     <div class="problem-header cf">
                         <h1 id="title"></h1>
 
-                        <div id="report-img" class="update-img">
+                        <div id="report-img" class="update-img nodisplay">
                             <a id="photo_link" href="" rel="fancy"><img id="photo" alt="Photo of this report" width="250" src=""><span>zoom</span></a>
                         </div>
 
@@ -40,16 +44,6 @@
                             <input class="green-btn" type="button" id="delete_report" name="delete_report" value="Delete">
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div data-role="footer" data-id="foo1" data-position="fixed">
-                <div data-role="navbar">
-                    <ul>
-                        <li><a href="index.html">Report</a></li>
-                        <li><a href="account.html">Account</a></li>
-                        <li><a href="about.html">Info</a></li>
-                    </ul>
                 </div>
             </div>
         </div>
