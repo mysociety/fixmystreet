@@ -156,13 +156,13 @@ $(function(){
             }, function(err) {
                 $link.find('img').remove();
                 if (err.code == 1) { // User said no
-                    $link.html("You declined; please fill in the box above");
+                    $link.html("Du tackade nej; var vänlig använd textrutan ovan");
                 } else if (err.code == 2) { // No position
-                    $link.html("Could not look up location");
+                    $link.html("Kunde inte lokalisera dig automatiskt");
                 } else if (err.code == 3) { // Too long
-                    $link.html("No result returned");
+                    $link.html("Inget resultat returnerades");
                 } else { // Unknown
-                    $link.html("Unknown error");
+                    $link.html("Okänt fel");
                 }
             }, {
                 enableHighAccuracy: true,
