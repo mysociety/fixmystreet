@@ -1630,14 +1630,14 @@ a:hover.button-left {
   background-position: -152px -223px;
   height: 44px !important;
   left: 0 !important;
-  top: 0 !important;
+  top: 60px !important;
 }
 
 #fms_pan_zoom_zoomout {
   background-position: -152px -259px;
   height: 44px !important;
   left: 0 !important;
-  top: 44px !important;
+  top: 104px !important;
 }
 
 #fms_pan_zoom_panleft,
