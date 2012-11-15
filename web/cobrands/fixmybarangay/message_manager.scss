@@ -94,7 +94,10 @@ $weak_text_color:      #666;
         &.msg-is-locked { background-color: #fdd;}
         &.msg-is-busy { background-color: #ffd;}
         &.msg-is-owned { background-color: #dfd;}
-        &.msg-is-active { background-color: $contrast1; color:#fff;}
+        &.msg-is-active { 
+          background-color: $contrast1; color:#fff;
+          p:hover { background-color: $contrast1; color:#fff; } // fix for mouseover on p
+        }
         span.msg-tag {
           width: 3em;
           float:left;
