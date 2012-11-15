@@ -134,6 +134,7 @@ $(document).ready(function() {
 	}
 
 	var dummy_hide_cleanup = function(data) {
+		$('#reason_text').val('');
 		dummy_busy = false;
 	}
 
@@ -176,12 +177,29 @@ $(document).ready(function() {
 	
 	$('#reply-submit').click(function(e) {
 		e.preventDefault();
+		// TODO: pending fancybox callbacks working, force dummy_busy here
+		//       this is possibly overly cautious anyway
+		dummy_busy = false; 
 		if (! dummy_busy) {
 			dummy_busy = true;
 			message_manager.reply(
 			    $('#reply_to_msg_id').val(), 
 			    $('#reply_text').val(), 
 			    {callback:dummy_reply_cleanup});
+		}
+	});
+
+	$('#hide-submit').click(function(e) {
+		e.preventDefault();
+		// TODO: pending fancybox callbacks working, force dummy_busy here
+		//       this is possibly overly cautious anyway
+		dummy_busy = false; 
+		if (! dummy_busy) {
+			dummy_busy = true;
+			message_manager.hide(
+			    $('#hide_msg_id').val(), 
+			    $('#reason_text').val(), 
+			    {callback:dummy_hide_cleanup});
 		}
 	});
     
