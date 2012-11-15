@@ -531,8 +531,17 @@ function get_report_params () {
 function _submit_save_report() {
     var params = get_report_params();
 
-    var r = new Report(params);
-    r.save();
+    var r;
+    if ( localStorage.currentReport ) {
+        r = new Report();
+        r.load( localStorage.currentReport );
+        r.update(params);
+    } else {
+        r = new Report(params);
+    }
+    if ( r.id() != -1 ) {
+        r.save();
+    }
     return r;
 }
 
