@@ -229,7 +229,11 @@ function takePhotoFail(message) {
 }
 
 function takePhoto(type) {
-    navigator.camera.getPicture(takePhotoSuccess, takePhotoFail, { quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type }); 
+    var save_to_album = false;
+    if ( type == navigator.camera.PictureSourceType.CAMERA ) {
+        save_to_album = true;
+    }
+    navigator.camera.getPicture(takePhotoSuccess, takePhotoFail, { saveToPhotoAlbum: save_to_album, quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type });
 }
 
 function check_name( name, msg ) {
