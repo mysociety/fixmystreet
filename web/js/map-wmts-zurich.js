@@ -87,7 +87,7 @@ function init_zurich_map(after) {
             centre.transform(
                 new OpenLayers.Projection("EPSG:4326"),
                 fixmystreet.map.getProjectionObject(),
-                7
+                fixmystreet.zoom || 5
             );
             fixmystreet.map.setCenter(centre);
 
