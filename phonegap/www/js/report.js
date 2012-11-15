@@ -56,6 +56,9 @@ function Report(spec) {
             }
             localStorage.setObject('reports', reports);
         },
+        update: function(spec) {
+            props = spec;
+        },
         remove: function(del_id) {
             if ( del_id ) {
                 this.load(del_id);
