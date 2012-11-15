@@ -543,9 +543,7 @@ function _submit_save_report() {
     } else {
         r = new Report(params);
     }
-    if ( r.id() != -1 ) {
-        r.save();
-    }
+    r.save();
     return r;
 }
 
