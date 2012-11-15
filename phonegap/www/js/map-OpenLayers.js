@@ -44,6 +44,18 @@ function fms_markers_list(pins, transform) {
     return markers;
 }
 
+function getNavControl(map) {
+    var nav;
+    for (var i = 0; i< map.controls.length; i++) {
+        if (map.controls[i].displayClass == 
+                                "olControlNavigation") {
+            nav = map.controls[i];
+            return nav;
+        }
+    }
+    return nav;
+}
+
 function fixmystreet_onload() {
     var pin_layer_style_map = new OpenLayers.StyleMap({
         'default': new OpenLayers.Style({
@@ -98,6 +110,8 @@ function fixmystreet_onload() {
     fixmystreet.markers.events.register( 'loadend', fixmystreet.markers, function(evt) {
         if (fixmystreet.map.popups.length) fixmystreet.map.removePopup(fixmystreet.map.popups[0]);
     });
+
+    fixmystreet.nav = getNavControl(fixmystreet.map);
 
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );

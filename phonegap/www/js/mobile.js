@@ -456,6 +456,8 @@ function mark_here() {
         $('#hide_pins_link').click();
     }
 
+    fixmystreet.nav.deactivate();
+
     $('#sub_map_links').hide();
     var $map_box = $('#map_box');
     $map_box.append(
@@ -476,6 +478,7 @@ function mark_here() {
         $('#sub_map_links').show();
         $('#mob_sub_map_links').remove();
         $('#mark-here').show();
+        fixmystreet.nav.activate();
     });
     $('#mob_ok').on('vclick', set_location );
 }
