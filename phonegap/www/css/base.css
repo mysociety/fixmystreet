@@ -1647,6 +1647,10 @@ a:hover.button-left {
   display: none
 }
 
+#report #fms_pan_zoom {
+    display: none;
+}
+
 #sub_map_links {
   position: absolute;
   left: 0;
