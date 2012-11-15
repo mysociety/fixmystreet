@@ -1,5 +1,5 @@
 function Report(spec) {
-    var id = -1;
+    var my_id = -1;
     var props = spec || {
         lat: 0,
         lon: 0,
@@ -12,7 +12,7 @@ function Report(spec) {
     };
 
     return {
-        id: function() { return id; },
+        id: function() { return my_id; },
         lat: function(lat) { if ( lat ) { props.lat = lat; } return props.lat; },
         lon: function(lon) { if ( lon ) { props.lon = lon; } return props.lon; },
         title: function(title) { if ( title ) { props.title = title; } return props.title; },
@@ -37,10 +37,10 @@ function Report(spec) {
                 t = props.time;
             }
         },
-        load: function(id) {
+        load: function(load_id) {
             var reports = localStorage.getObject('reports');
-            props = reports[id];
-            id = id;
+            props = reports[load_id];
+            my_id = load_id;
         },
         save: function() {
             var reports = localStorage.getObject('reports');
@@ -48,11 +48,11 @@ function Report(spec) {
                 reports = [];
             }
             props.time = new Date();
-            if ( id != -1 ) {
-                reports[id] = props;
+            if ( my_id != -1 ) {
+                reports[my_id] = props;
             } else {
                 reports.push( props );
-                id = reports.length - 1;
+                my_id = reports.length - 1;
             }
             localStorage.setObject('reports', reports);
         },
@@ -61,7 +61,7 @@ function Report(spec) {
                 this.load(del_id);
             }
             var reports = localStorage.getObject('reports');
-            delete report[id];
+            delete reports[my_id];
             localStorage.setObject('reports', reports);
         },
         reset: function() {
