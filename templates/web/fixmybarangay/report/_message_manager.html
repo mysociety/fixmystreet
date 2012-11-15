@@ -130,6 +130,7 @@ $(document).ready(function() {
 	var dummy_reply_cleanup = function(data) {
 		$('#reply_text').val('');
 		dummy_busy = false;
+		mm_refresh_messages();
 	}
 
 	var dummy_hide_cleanup = function(data) {
