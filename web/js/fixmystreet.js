@@ -135,9 +135,9 @@ $(function(){
     // Geolocation
     if (geo_position_js.init()) {
         if ($('body.frontpage').length) {
-            $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
+            $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; eller hitta min position automatiskt</a>');
         } else{
-            $('#postcodeForm').append('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
+            $('#postcodeForm').append('<a href="#" id="geolocate_link">&hellip; eller hitta min position automatiskt</a>');
         }
         $('#geolocate_link').click(function(e) {
             var $link = $(this);
