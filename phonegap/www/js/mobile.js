@@ -587,9 +587,8 @@ function display_saved_report() {
 
     $('#title').text(r.title);
     $('#details').text(r.detail);
-    if ( r.file ) {
-        $('#photo').attr('src', r.file);
-        $('#photo_link').attr('href', r.file);
+    if ( r.file() ) {
+        $('#photo_link').attr('href', r.file());
         $('#report-img').show();
     } else {
         $('#report-img').hide();
