@@ -240,6 +240,27 @@ function ensureNonZeroHeight(containerid) {
  }
 
 function show_map(event) {
+    if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+        // Immediately go full screen map if on around page
+        var footer = $("div[data-role='footer']:visible"),
+            content = $("div[data-role='content']:visible"),
+            viewHeight = $(window).height(),
+            contentHeight = viewHeight - footer.outerHeight();
+        $('#map_box').css({
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            height: contentHeight,
+            margin: 0
+        });
+        $('#fms_pan_zoom').css({ top: '2.75em !important' });
+    } else {
+        $('#map_box').css({
+            zIndex: '', position: '',
+            top: '', left: '', right: '', bottom: '',
+            width: '', height: '10em',
+            margin: ''
+        });
+    }
 
     ensureNonZeroHeight();
     set_map_config();
@@ -271,6 +292,26 @@ function show_map(event) {
 
     fixmystreet_onload();
     fixContentHeight(fixmystreet.map);
+
+    var crosshairsControls, i, markHere, newX, newY;
+
+    if (typeof fixmystreet !== 'undefined' && typeof fixmystreet.map !== "undefined") {
+        // Update the position of any crosshairs controls:
+        crosshairsControls = fixmystreet.map.getControlsByClass(
+            "OpenLayers.Control.Crosshairs");
+        for (i = 0; i < crosshairsControls.length; ++i) {
+            crosshairsControls[i].reposition();
+        }
+        // Also reposition the "Tap here to mark this point" button:
+        markHere = $('#mark-here');
+        newX = $(window).width() / 2 - markHere.width() / 2;
+        newY = $(window).height() * 4 / 5 - markHere.height() / 2;
+        markHere.css({
+            left: newX + "px",
+            top: newY + "px"
+        });
+    }
+
 
     if ( fixmystreet.page == 'around' ) {
         if ( localStorage.currentReport ) {

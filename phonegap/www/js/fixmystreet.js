@@ -92,70 +92,7 @@ $(document).bind('pageshow', function(){
     // Preload the new report pin
     document.createElement('img').src = '../i/pin-green.png';
 
-    var last_type;
-    $(window).resize(function(){
-        var footer = $("div[data-role='footer']:visible"),
-            content = $("div[data-role='content']:visible:visible"),
-            viewHeight = $(window).height(),
-            contentHeight = viewHeight - footer.outerHeight();
-        $html.addClass('mobile');
-        if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-            // Immediately go full screen map if on around page
-            $('#map_box').css({
-                position: 'absolute',
-                top: 0, left: 0, right: 0, bottom: 0,
-                height: contentHeight,
-                margin: 0
-            });
-            $('#fms_pan_zoom').css({ top: '2.75em !important' });
-        } else {
-            $('#map_box').css({
-                zIndex: '', position: '',
-                top: '', left: '', right: '', bottom: '',
-                width: '', height: '10em',
-                margin: ''
-            });
-        }
-
-        $('span.report-a-problem-btn').on('click.reportBtn', function(){
-            $('html, body').animate({scrollTop:0}, 500);
-        }).css({ cursor:'pointer' }).on('hover.reportBtn', function(){
-            $(this).toggleClass('hover');
-        });
-
-        var crosshairsControls, i, markHere, newX, newY;
-
-        if (typeof fixmystreet !== 'undefined' && typeof fixmystreet.map !== "undefined") {
-            // Update the position of any crosshairs controls:
-            crosshairsControls = fixmystreet.map.getControlsByClass(
-                "OpenLayers.Control.Crosshairs");
-            for (i = 0; i < crosshairsControls.length; ++i) {
-                crosshairsControls[i].reposition();
-            }
-            // Also reposition the "Tap here to mark this point" button:
-            markHere = $('#mark-here');
-            newX = $(window).width() / 2 - markHere.width() / 2;
-            newY = $(window).height() * 4 / 5 - markHere.height() / 2;
-            markHere.css({
-                left: newX + "px",
-                top: newY + "px"
-            });
-        }
-    });
-
-    //add mobile class if small screen
-    $(window).resize();
-
     $('input[type=submit]').removeAttr('disabled');
-    /*
-    $('#mapForm').submit(function() {
-        if (this.submit_problem) {
-            $('input[type=submit]', this).prop("disabled", true);
-        }
-        return true;
-    });
-    */
-
 
     // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {
