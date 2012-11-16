@@ -258,7 +258,7 @@ $(function(){
     // call that instead of setting the map up ourselves
     if(typeof fixmystreet.map_setup !== "undefined") {
         fixmystreet.map_setup(function () {
-            // TODO - can this go inside afterMapInit()?
+            // TODO - can this go inside afterMapInit() so it's not duped?
             if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
                 $('#fms_pan_zoom').css({ top: '2.75em !important' });
             }
@@ -266,6 +266,11 @@ $(function(){
         }); 
     }
     else {
+        // TODO - can this go inside afterMapInit() so it's not duped?
+        if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
+            $('#fms_pan_zoom').css({ top: '2.75em !important' });
+        }
+
         // Create the basics of the map
         fixmystreet.map = new OpenLayers.Map("map", {
                 controls: fixmystreet.controls,

@@ -8,27 +8,24 @@
  */
  function set_map_config(perm) {
     // This stuff is copied from js/map-bing-ol.js
-    // var permalink_id;
-    // if ($('#map_permalink').length) {
-    //     permalink_id = 'map_permalink';
-    // }
+    var permalink_id;
+    if ($('#map_permalink').length) {
+        permalink_id = 'map_permalink';
+    }
 
-    // var nav_opts = { zoomWheelEnabled: false };
-    // if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
-    //     nav_opts = {};
-    // }
-    // fixmystreet.nav_control = new OpenLayers.Control.Navigation(nav_opts);
+    var nav_opts = { zoomWheelEnabled: false };
+    if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
+        nav_opts = {};
+    }
+    fixmystreet.nav_control = new OpenLayers.Control.Navigation(nav_opts);
 
-    // fixmystreet.controls = [
-    //     new OpenLayers.Control.Attribution(),
-    //     new OpenLayers.Control.ArgParser(),
-    //     fixmystreet.nav_control,
-    //     new OpenLayers.Control.Permalink(permalink_id),
-    //     new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
-    // ];
-    // if (fixmystreet.map_type) {
-    //     tile_base = fixmystreet.map_type;
-    // }
+    fixmystreet.controls = [
+        new OpenLayers.Control.Attribution(),
+        new OpenLayers.Control.ArgParser(),
+        fixmystreet.nav_control,
+        new OpenLayers.Control.Permalink(permalink_id),
+        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
+    ];
 
     fixmystreet.map_type = OpenLayers.Layer.WMTS;
 
@@ -50,7 +47,8 @@ function init_zurich_map(after) {
         displayProjection: new OpenLayers.Projection("EPSG:21781"),
         maxExtent: new OpenLayers.Bounds(676000,241000,690000,255000),
         units: 'm',
-        scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500']
+        scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500'],
+        controls: fixmystreet.controls
     });
 
     var format = new OpenLayers.Format.WMTSCapabilities();
@@ -65,15 +63,17 @@ function init_zurich_map(after) {
             var capabilities = format.read(data);
 
             layer = format.createLayer(capabilities, {
-                // added by me
-                isBaseLayer: true,
-
                 // Mark/Matthew's
                 layer: "Luftbild",
                 matrixSet: "default028mm",
 		        // matrixSet: "nativeTileMatrixSet",
 		        requestEncoding: "REST",
-                isBaseLayer: true
+                isBaseLayer: true,
+                // Things from the original map-OpenLayers.js
+                zoomOffset: fixmystreet.zoomOffset,
+                transitionEffect: 'resize',
+                numZoomLevels: fixmystreet.numZoomLevels
+
             });
             // For some reason with OpenLayers 2.11 the format
             // returns a KVP url not a REST one, despite the settings
@@ -86,10 +86,9 @@ function init_zurich_map(after) {
             centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
             centre.transform(
                 new OpenLayers.Projection("EPSG:4326"),
-                fixmystreet.map.getProjectionObject(),
-                fixmystreet.zoom || 5
+                fixmystreet.map.getProjectionObject()
             );
-            fixmystreet.map.setCenter(centre);
+            fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
 
             // Call the after callback
             after();
