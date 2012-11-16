@@ -359,7 +359,7 @@ $.fn.drawer = function(id, ajax) {
     });
 
     //add permalink on desktop, force hide on mobile
-    $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
+    $('#sub_map_links').append('<a href="#" id="map_permalink">Permalänk</a>');
     if($('.mobile').length){
         $('#map_permalink').hide();
         $('#key-tools a.feed').appendTo('#sub_map_links');
