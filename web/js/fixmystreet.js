@@ -135,9 +135,9 @@ $(function(){
     // Geolocation
     if (geo_position_js.init()) {
         if ($('body.frontpage').length) {
-            $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
+            $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; eller hitta min position automatiskt</a>');
         } else{
-            $('#postcodeForm').append('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
+            $('#postcodeForm').append('<a href="#" id="geolocate_link">&hellip; eller hitta min position automatiskt</a>');
         }
         $('#geolocate_link').click(function(e) {
             var $link = $(this);
@@ -156,13 +156,13 @@ $(function(){
             }, function(err) {
                 $link.find('img').remove();
                 if (err.code == 1) { // User said no
-                    $link.html("You declined; please fill in the box above");
+                    $link.html("Du tackade nej; var vänlig använd textrutan ovan");
                 } else if (err.code == 2) { // No position
-                    $link.html("Could not look up location");
+                    $link.html("Kunde inte lokalisera dig automatiskt");
                 } else if (err.code == 3) { // Too long
-                    $link.html("No result returned");
+                    $link.html("Inget resultat returnerades");
                 } else { // Unknown
-                    $link.html("Unknown error");
+                    $link.html("Okänt fel");
                 }
             }, {
                 enableHighAccuracy: true,
