@@ -92,7 +92,7 @@ $(function(){
                 $('.big-green-banner')
                     .addClass('mobile-map-banner')
                     .appendTo('#map_box')
-                    .text('Place pin on map')
+                    .text('Klicka på kartan')
 	            .prepend('<a href="/">home</a>');
             }
             $('span.report-a-problem-btn').on('click.reportBtn', function(){
@@ -118,7 +118,7 @@ $(function(){
                     banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
                 } else {
                     $('#site-header').show();
-                    banner_text = 'Click map to report a problem';
+                    banner_text = 'Klicka på kartan för att rapportera ett problem';
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
