@@ -1,0 +1,13 @@
+Subject: Confirm your report on FixMyStreet
+
+Hi [% report.name || report.email %],
+
+To confirm the report you have uploaded to FixMyStreet via
+[% report.service %], and to check or add any details,
+please visit the following URL:
+
+[% token_url %]
+
+Thanks!
+
+[% INCLUDE 'signature.txt' %]
