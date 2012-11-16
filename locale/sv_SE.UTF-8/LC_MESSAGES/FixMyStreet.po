@@ -3219,7 +3219,7 @@ msgstr "Bekräftelsebrevet <strong>kan</strong> ta ett par minuter att komma fra
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
 msgid "The council won&rsquo;t be able to help unless you leave as much detail as you can. Please describe the exact location of the problem (e.g. on a wall), what it is, how long it has been there, a description (and a photo of the problem if you have one), etc."
-msgstr ""
+msgstr "Det är lättare för kommunen att hjälpa till om du lämnar så mycket detaljer som möjligt. Beskriv den exakta positionen (ex.v. på väggen), vad problemet är, hur länge det har funnits där, en beskrivning och foto (om du har), etc."
 
 #: templates/web/fixmystreet/questionnaire/index.html:43
 msgid "The details of your problem are available from the other tab above."
