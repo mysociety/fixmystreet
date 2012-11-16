@@ -1,0 +1,23 @@
+Subject: FixMyStreet questionnaire about '<?=$values['title']?>'
+
+Hi <?=$values['name']?>,
+
+<?=$values['created']?> ago, you left a problem on FixMyStreet
+with the details provided at the end of this email. To keep our
+site up to date and relevant, we'd appreciate it if you could
+follow the link below and fill in our short questionnaire
+updating the status of your problem:
+
+    <?=$values['url']?>
+
+Please do not reply to this email; there is a public comment
+box on the questionnaire.
+
+<?=$values['signature']?>
+
+Your problem was as follows:
+
+<?=$values['title']?>
+
+<?=$values['detail']?>
+
