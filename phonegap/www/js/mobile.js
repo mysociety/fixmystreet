@@ -304,6 +304,7 @@ function fileUploadFail() {
 var submit_clicked = null;
 
 function postReport(e) {
+    $.mobile.loading( 'show' );
     if ( e ) {
         e.preventDefault();
     }
@@ -688,6 +689,7 @@ function submit_problem_show() {
 
 
 function decide_front_page() {
+    $.mobile.loading( 'show' );
     if ( !can_geolocate ) {
         window.setTimeout( decide_front_page, 100 );
         return;
