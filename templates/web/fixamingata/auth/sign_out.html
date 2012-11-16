@@ -1,0 +1,8 @@
+[% INCLUDE 'header.html', title = loc('Sign out'), bodyclass = 'fullwidthpage' %]
+
+<h1>[% loc('You have been signed out') %]</h1>
+
+<p><a href="[% c.uri_for('/auth') %]">Logga in</a> igen, eller
+gå tillbaka till <a href="/">framsidan</a>.</p>
+
+[% INCLUDE 'footer.html' %]

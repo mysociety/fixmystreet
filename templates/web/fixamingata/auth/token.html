@@ -1,0 +1,27 @@
+[% INCLUDE 'header.html', title => loc('Confirm account') %]
+
+[% IF token_not_found %]
+
+<h1>[% loc('Error') %]</h1>
+
+<p>Vi har inte kunnat bekräfta ditt konto. Det här kan bero på:</p>
+
+<ul>
+    <li>Länken är för gammal eller har redan använts</li>
+    <li>Du kopierade inte länken exakt som det stod</li>
+    [%# FIXME - add more reasons here %]
+</ul>
+
+[% ELSE %]
+
+<h1>[% loc('Please check your email') %]</h1>
+
+<p>[% loc("We have sent you an email containing a link to confirm your account.") %]</p>
+
+<p>[% loc("The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.") %]</p>
+
+<p>[% loc("If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.") %]</p>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]
