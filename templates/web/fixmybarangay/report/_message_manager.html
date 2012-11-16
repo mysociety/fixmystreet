@@ -34,6 +34,12 @@
 </ul>
 	
 <script type="text/javascript">
+
+yepnope({
+  test: window.btoa && window.atob,
+  nope: '/cobrands/fixmybarangay/base64.js',
+  callback: function () {}    // `btoa` now safe to use (for IE)
+})
 	
 $(document).ready(function() {
 	var $mm_message_list = $('#mm-message-list');
