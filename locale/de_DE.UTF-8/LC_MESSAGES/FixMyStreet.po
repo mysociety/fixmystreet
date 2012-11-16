@@ -7,10 +7,9 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-10-24 11:20+0100\n"
-"PO-Revision-Date: 2012-08-21 14:03+0100\n"
+"PO-Revision-Date: 2012-11-16 15:02+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -145,11 +144,11 @@ msgstr ""
 
 #: templates/web/default/report/new/fill_in_details_form.html:211
 msgid "(we never show your email address or phone number)"
-msgstr "(ihre eMail-Adresse oder Telefonnummer werden nie angezeigt)"
+msgstr "(ihre E-Mail Adresse und Telefonnummer werden nie angezeigt)"
 
 #: templates/web/default/report/display.html:209
 msgid "(we never show your email)"
-msgstr "(ihre eMail-Adresse wird nie angezeigt)"
+msgstr "(ihre E-Mail Adresse wird nie angezeigt)"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:285
 msgid "*unknown*"
@@ -268,8 +267,8 @@ msgid ""
 "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this "
 "step</a>.</small>"
 msgstr ""
-"Karte nicht sichtbar? <a href='%s' rel='nofollow'>&Uuml;berspringen Sie "
-"diesen Schritt</a>.</small>"
+"Karte nicht sichtbar? <a href='%s' rel='nofollow'>&Uuml;berspringen</a>.</"
+"small>"
 
 #: templates/web/default/admin/index.html:14
 msgid "<strong>%d</strong> live problems"
@@ -277,7 +276,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:182
 msgid "<strong>No</strong> Let me confirm my report by email"
-msgstr "Meldung per eMail best&auml;tigen"
+msgstr "Meldung per E-Mail best&auml;tigen"
 
 #: templates/web/fixmystreet/report/display.html:170
 msgid "<strong>No</strong> Let me confirm my update by email"
@@ -508,7 +507,7 @@ msgstr "Passwort &auml;ndern"
 
 #: templates/web/fixmystreet/around/_report_banner.html:2
 msgid "Click map to report a problem"
-msgstr "Klicken Sie in die Karte um eine Meldung zu erfassen"
+msgstr "Mangel lokalisieren"
 
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:82
@@ -857,7 +856,7 @@ msgstr ""
 #: templates/web/emptyhomes/index.html:40
 #: templates/web/emptyhomes/index.html:41
 msgid "Enter a nearby GB postcode, or street name and area"
-msgstr "Geben Sie eine Adresse an"
+msgstr "Geben Sie die ungef&auml;hre Adresse des Mangels an"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:18
 #, fuzzy
@@ -866,15 +865,14 @@ msgstr "Geben Sie eine Adresse an"
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:25
 msgid "Enter a nearby postcode, or street name and area"
-msgstr "Geben Sie eine Adresse an"
+msgstr "Ungef&auml;hre Adresse des Mangels:"
 
 #: templates/web/default/around/postcode_form.html:1
 #: templates/web/default/around/postcode_form.html:2
 #: templates/web/fixmystreet/around/postcode_form.html:13
 #: templates/web/fixmystreet/around/postcode_form.html:14
-#, fuzzy
 msgid "Enter a nearby street name and area"
-msgstr "Geben Sie eine Adresse an"
+msgstr "Ungef&auml;hre Adresse des Mangels:"
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/display.html:171
@@ -1066,9 +1064,8 @@ msgstr ""
 
 #: templates/web/fixmystreet/reports/_rss.html:3
 #: templates/web/fixmystreet/reports/_rss.html:9
-#, fuzzy
 msgid "Get updates of %s problems"
-msgstr "Beschreiben sie den Mangel"
+msgstr "Beschreiben Sie den Mangel"
 
 #: templates/web/fixmystreet/reports/_rss.html:11
 #: templates/web/fixmystreet/reports/_rss.html:3
@@ -1385,7 +1382,7 @@ msgstr "RSS"
 #: templates/web/default/index.html:32 templates/web/emptyhomes/index.html:57
 #: templates/web/fixmystreet/index.html:45
 msgid "Locate the problem on a map of the area"
-msgstr "Identifizieren Sie den Mangel auf der Karte"
+msgstr "Lokalisieren Sie den Mangel auf der Karte"
 
 #: perllib/FixMyStreet/Map/OSM.pm:44
 msgid ""
@@ -1840,14 +1837,14 @@ msgstr ""
 
 #: templates/web/default/auth/token.html:17
 msgid "Please check your email"
-msgstr "Bitte &uuml;berpr&uuml;fen sie ihre eMail"
+msgstr "Bitte &uuml;berpr&uuml;fen sie ihr E-Mail"
 
 #: templates/web/default/auth/general.html:14
 #: templates/web/default/auth/general.html:8
 #: templates/web/fixmystreet/auth/general.html:15
 #: templates/web/fixmystreet/auth/general.html:9
 msgid "Please check your email address is correct"
-msgstr "Bitte &uuml;berpr&uuml;fen Sie ob Ihre eMail-Adresse korrekt ist"
+msgstr "Bitte &uuml;berpr&uuml;fen Sie ob Ihre E-Mail Adresse korrekt ist"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:824
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:831
@@ -1878,13 +1875,10 @@ msgstr ""
 
 #: templates/web/default/report/new/notes.html:7
 #: templates/web/fixmystreet/report/new/notes.html:6
-#, fuzzy
 msgid ""
 "Please do not be abusive &mdash; abusing your council devalues the service "
 "for all users."
 msgstr ""
-"Bitte missbrauchen Sie diesen Service nicht. Die Schaden damit nicht nur der "
-"Verwaltung, sondern s&auml;mtlichen Bewohnern von Z&uuml,rich."
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:146
 #: templates/web/default/js/validation_strings.html:2
@@ -1906,12 +1900,12 @@ msgstr ""
 #: templates/web/default/js/validation_strings.html:12
 #: templates/web/default/js/validation_strings.html:16
 msgid "Please enter a valid email"
-msgstr "Bitte geben Sie eine g&uuml;ltige eMail-Adresse an"
+msgstr "Bitte geben Sie eine g&uuml;ltige E-Mail Adresse an"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:346
 #: perllib/FixMyStreet/App/Controller/Contact.pm:107
 msgid "Please enter a valid email address"
-msgstr "Bitte geben Sie eine g&uuml;ltige eMail-Adresse an"
+msgstr "Bitte geben Sie eine g&uuml;ltige E-Mail Adresse an"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:333
 #: templates/web/default/js/validation_strings.html:4
@@ -1927,12 +1921,12 @@ msgstr "Bitte geben Sie einiges Details an"
 #: templates/web/fixmystreet/auth/general.html:14
 #: templates/web/fixmystreet/auth/general.html:9
 msgid "Please enter your email"
-msgstr "Bitte geben Sie Ihre eMail-Adresse an"
+msgstr "Bitte geben Sie Ihre E-Mail Adresse an"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:149
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:150
 msgid "Please enter your email address"
-msgstr "Bitte geben Sie eine Ihre eMail-Adresse an"
+msgstr "Bitte geben Sie eine Ihre E-Mail Adresse an"
 
 #: templates/web/default/js/validation_strings.html:19
 #, fuzzy
@@ -1960,9 +1954,8 @@ msgid "Please enter your second name"
 msgstr "Bitte geben Sie Ihren Namen an"
 
 #: templates/web/default/js/validation_strings.html:18
-#, fuzzy
 msgid "Please enter your title"
-msgstr "Bitte geben Sie Ihre eMail-Adresse an"
+msgstr "Bitte geben Sie Iher E-Mail-Adresse an"
 
 #: templates/web/emptyhomes/report/new/fill_in_details_text.html:1
 msgid ""
@@ -2379,7 +2372,7 @@ msgstr "K&uuml;rzlich gel&ouml;st"
 
 #: templates/web/default/index.html:50 templates/web/fixmystreet/index.html:68
 msgid "Recently reported problems"
-msgstr "K&uuml;rzlich erfasste Meldungen"
+msgstr "K&uuml;rzlich erfasste Meldungen:"
 
 #: templates/web/default/report/new/notes.html:9
 #: templates/web/fixmystreet/report/new/notes.html:8
@@ -2389,10 +2382,11 @@ msgid ""
 "site remember that you can contact your council directly using their own "
 "website."
 msgstr ""
-"Fix My Z&uuml;rich wird prim&auml;r daf&uuml;r verwendet, physische M&auml;"
-"ngel zu melden, welche behoben werden k&ouml;nnen. Wenn Ihr Problem daf&uuml;"
-"r nicht passend erscheint, k&ouml;nnen sie die entsprechende Dienststelle "
-"weiterhin telefonisch oder per eMail erreichen."
+"Fix My Z&uuml;rich dient dazu M&auml;ngel an der Infrastruktur zu melden. "
+"Meldungen und W&uuml;nsche bez&uuml;glich Verbesserungen an der "
+"Infrastruktur sowie Gestaltungsvorschl&auml;ge k&ouml;nnen über Fix My "
+"Z&uuml;rich nicht ber&uuml;cksichtigt werden. Notf&auml;lle m&uuml;ssen der "
+"Polizei gemeldet werden via Telefon 117."
 
 #: templates/web/fixmybarangay/report/new/notes.html:9
 msgid ""
@@ -2438,7 +2432,7 @@ msgstr ""
 #: templates/web/default/index.html:15
 #: templates/web/fixmystreet/around/postcode_form.html:9
 msgid "Report, view, or discuss local problems"
-msgstr "Melden sie M&auml;ngel an der Infrastruktur von Z&uuml;rich"
+msgstr "Melden Sie M&auml;ngel an der Infrastruktur von Z&uuml;rich"
 
 #: templates/web/default/my/my.html:74
 msgid "Reported %s"
@@ -2499,7 +2493,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details.html:5
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:2
 msgid "Reporting a problem"
-msgstr "Verfassen Sie eine Meldung"
+msgstr "Ihre Meldung"
 
 #: templates/web/default/around/tabbed_lists.html:3
 msgid "Reports on and around the map"
@@ -2950,7 +2944,6 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
-#, fuzzy
 msgid ""
 "The council won&rsquo;t be able to help unless you leave as much\n"
 "detail as you can. Please describe the exact location of the problem (e.g. "
@@ -2959,11 +2952,9 @@ msgid ""
 "of\n"
 "the problem if you have one), etc."
 msgstr ""
-"Bitte beschreiben sie Ihre Meldung weiter unten. Wir k&ouml;nnen den Mangel "
-"nur beheben, wenn Sie soviel Details wie m&ouml;glich angeben: Beschreiben "
-"sie die exakte Lage (z.B. An der Wand Richtung Strasse), was genau der "
-"Mangel ist, wie lange dieser schon da ist und laden sie wenn m&ouml;glich "
-"ein Photo des Mangels hoch."
+"Bitte machen Sie so genaue Angaben wie m&ouml;glich: Beschreiben Sie die Art "
+"des Mangels und wo er sich befindet (z.B. an der Wand). Senden Sie uns ein "
+"Photo des Mangels."
 
 #: templates/web/fixmystreet/questionnaire/index.html:43
 msgid "The details of your problem are available from the other tab above."
@@ -3408,14 +3399,14 @@ msgstr ""
 #: templates/web/bromley/report/display.html:141
 #: templates/web/fixmystreet/report/display.html:175
 msgid "We never show your email"
-msgstr "Ihre eMail wird nie angezeigt"
+msgstr "Ihr E-Mail wird nie angezeigt"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:133
 #: templates/web/bromley/report/new/fill_in_details_form.html:179
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:133
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:200
 msgid "We never show your email address or phone number."
-msgstr "Ihre eMail-Adresse oder Telefonnummer werden nie angezeigt"
+msgstr "Ihre E-Mail Adresse oder Telefonnummer werden nie angezeigt"
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:351
 msgid ""
@@ -3440,13 +3431,12 @@ msgstr ""
 "\"/faq#privacy\">Datenschutzrichtlinien.</a>"
 
 #: templates/web/fixmystreet/report/new/notes.html:4
-#, fuzzy
 msgid ""
 "We will only use your personal information in accordance with our <a href=\"/"
 "privacy\">privacy policy.</a>"
 msgstr ""
-"Wir verwenden Ihre pers&ouml;nlichen Daten nur entsprechend unserer <a href="
-"\"/faq#privacy\">Datenschutzrichtlinien.</a>"
+"Ihre pers&ouml;nlichen Angaben werden nur f&uuml;r interne Zwecke verwendet "
+"und nicht ver&ouml;ffentlicht."
 
 #: templates/web/emptyhomes/contact/blurb.html:2
 msgid ""
@@ -3611,9 +3601,8 @@ msgid ""
 "You have located the problem at the point marked with a green pin on the "
 "map. If this is not the correct location, simply click on the map again. "
 msgstr ""
-"Der gr&uuml;ne Pin auf der Karte repr&auml;sentiert ihre Meldung. Falls "
-"dieser Ort nicht der Richtige ist, klicken Sie einfach nochmals am richtigen "
-"Ort auf die Karte."
+"Der gr&uuml;ne lokalisiert Ihre Meldung auf der Karte. Falls dieser Ort "
+"nicht stimmt, kann der Pin verschoben werden."
 
 #: templates/web/default/tokens/confirm_alert.html:7
 msgid "You have successfully confirmed your alert."
@@ -3674,24 +3663,24 @@ msgstr ""
 #: templates/web/fixmystreet/report/display.html:51
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:146
 msgid "Your email"
-msgstr "Ihre eMail"
+msgstr "Ihre E-Mail Adresse"
 
 #: templates/web/bromley/report/display.html:130
 #: templates/web/fixmystreet/auth/general.html:26
 #: templates/web/fixmystreet/report/display.html:140
 msgid "Your email address"
-msgstr "Ihre eMail-Adresse"
+msgstr "Ihre E-Mail Adresse"
 
 #: templates/web/default/auth/general.html:27
 msgid "Your email address:"
-msgstr "Ihre eMail-Adresse:"
+msgstr "Ihre E-Mail Adresse:"
 
 #: templates/web/default/alert/_list.html:92
 #: templates/web/default/report/display.html:128
 #: templates/web/default/report/new/fill_in_details_form.html:124
 #: templates/web/fixmybarangay/alert/_list.html:37
 msgid "Your email:"
-msgstr "Ihre eMail:"
+msgstr "Ihre E-Mail:"
 
 #: templates/web/bromley/report/display.html:193
 #: templates/web/bromley/report/new/fill_in_details_form.html:117
@@ -3768,9 +3757,8 @@ msgid "Your updates"
 msgstr ""
 
 #: templates/web/default/contact/index.html:76
-#, fuzzy
 msgid "Your&nbsp;email:"
-msgstr "Ihre eMail:"
+msgstr "Ihre E-Mail Adresse:"
 
 #: templates/web/default/admin/timeline.html:6
 msgid "by %s"
@@ -3967,7 +3955,7 @@ msgstr[1] "<big>%s</big> Meldungen in der letzten Woche"
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
-msgstr[0] "<big>%s</big> im letzten Monat behoben"
+msgstr[0] "<big>%s</big> bearbeitete M&auml;ngel im letzten Monat"
 msgstr[1] "<big>%s</big> im letzten Monat gehoben"
 
 #: templates/web/default/report/new/councils_text_some.html:14
