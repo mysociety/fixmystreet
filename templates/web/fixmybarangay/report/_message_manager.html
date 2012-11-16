@@ -93,7 +93,7 @@ $(document).ready(function() {
 		dummy_busy = false;
 	}
 
-	message_manager.config({url_root: mm_url});
+	message_manager.config({url_root: mm_url, want_nice_msgs: true});
 	message_manager.setup_click_listener({callback:mm_selected_message});
 
 	// problem form hidden input "external_source_id": pass the MM id into FMS, if used

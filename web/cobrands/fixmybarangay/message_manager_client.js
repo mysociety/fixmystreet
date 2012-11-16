@@ -26,6 +26,8 @@
  *
  *     msg_prefix         all message <li> items have this as their ID prefix
  *
+ *     want_nice_msgs     don't use language like "lock granted"
+ *
  *     *_selector         these are the jQuery selects that will be used to find
  *                        the respective elements:
  *
@@ -60,6 +62,7 @@ var message_manager = (function() {
     var _username;
     var _mm_name               = "Message Manager";
     var _use_fancybox          = true; // note: currently *must* have fancybox!
+    var _want_nice_msgs        = false;
     
     // cached jQuery elements, populated by the (mandatory) call to config()
     var $message_list_element;
@@ -70,7 +73,17 @@ var message_manager = (function() {
     var $hide_reasons;
     var $boilerplate_replies;
 
-    var no_config_err_msg = "Config error: no Message Manager URL has been specified";
+    var msg_no_config_err   = "Config error: no Message Manager URL has been specified";
+
+    var msg_trying_for_lock = ["Trying for lock...", "Checking message..." ];
+    var msg_checking_lock   = ["Checking lock...",   "Checking message..." ];
+    var msg_claiming_lock   = ["Claiming lock...",   "Checking message..." ];
+    var msg_lock_granted_ok = ["Lock granted OK",    "Checking message... OK"];
+    var msg_lock_denied     = ["",                   "Someone is working with that message right now!"];
+
+    function get_msg(msg) {
+        return msg[_want_nice_msgs? 1 : 0];
+    }
 
     var config = function(settings) {
         var selectors = {
@@ -104,6 +117,9 @@ var message_manager = (function() {
             if (typeof settings.mm_name === 'string') {
                 _mm_name = settings.mm_name;
             }
+            if (typeof settings.want_nice_msgs !== 'undefined') {
+                _want_nice_msgs = settings.want_nice_msgs;
+            }
         }
         $message_list_element = $(selectors.message_list_selector);
         $status_element = $(selectors.status_selector);
@@ -113,7 +129,7 @@ var message_manager = (function() {
         $hide_reasons = $(selectors.boilerplate_hide_reasons);
         $boilerplate_replies = $(selectors.boilerplate_replies);
         if (typeof settings.url_root === 'string' && _url_root.length===0) {
-            say_status(no_config_err_msg);
+            say_status(msg_no_config_err);
         }
     };
 
@@ -270,11 +286,11 @@ var message_manager = (function() {
             var $li = $(this).closest('li');
             var id = $li.attr('id').replace(_msg_prefix, '');
             if ($li.hasClass('msg-is-locked')) {
-                say_status("Trying for lock...");
+                say_status(get_msg(msg_trying_for_lock));
             } else if ($li.hasClass('msg-is-owned')) {
-                say_status("Checking lock...");
+                say_status(get_msg(msg_checking_lock));
             } else {
-                say_status("Trying for lock...");
+                say_status(get_msg(msg_claiming_lock));
             }
             request_lock(id, options);
         });
@@ -317,7 +333,7 @@ var message_manager = (function() {
         }
         $login_element.stop().hide();
         if (_url_root.length === 0) {
-            say_status(no_config_err_msg);
+            say_status(msg_no_config_err);
         } else {
             $.ajax({
                 dataType: "json", 
@@ -382,10 +398,10 @@ var message_manager = (function() {
                         $('.msg-is-owned', $message_list_element).removeClass('msg-is-owned');
                     }
                     $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned');
-                    say_status("Lock granted OK"); // to data['data']['Lockkeeper']['username']?
+                    say_status(get_msg(msg_lock_granted_ok)); // to data['data']['Lockkeeper']['username']?
                 } else {
                     $li.removeClass('msg-is-busy').addClass('msg-is-locked');
-                    say_status("failed: " + data.error);
+                    say_status(get_msg(msg_lock_denied) || ("lock failed: " + data.error));
                 }
                 if (typeof(callback) === "function") { // note callbacks must check data['success']
                     callback.call($(this), data); // returned data['data'] is 'Message', 'Source', 'Lockkeeper' for success
@@ -438,7 +454,7 @@ var message_manager = (function() {
             success:function(data, textStatus) {
                 if (data.success) {
                     $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned').fadeOut('slow'); // no longer available
-                    say_status("FMS ID assigned"); // to data['data']['Lockkeeper']['username']?
+                    say_status("OK: report ID was assigned to message.");
                     if (typeof(callback) === "function") {
                         callback.call($(this), data.data); // returned data['data'] is 'Message', 'Source', 'Lockkeeper' for success
                     }
@@ -477,7 +493,7 @@ var message_manager = (function() {
         }
         reply_text = $.trim(reply_text);
         if (reply_text === '') {
-            say_status("won't send empty reply");
+            say_status("No reply sent: message was empty!");
             return;            
         } 
         $li.addClass('msg-is-busy');
@@ -499,11 +515,11 @@ var message_manager = (function() {
                     }
                 } else {
                     $li.removeClass('msg-is-busy').addClass('msg-is-locked');
-                    say_status("failed: " + data.error);
+                    say_status("Reply failed: " + data.error);
                 }
             }, 
             error: function(jqXHR, textStatus, errorThrown) {
-                say_status("error: " + textStatus + ": " + errorThrown);
+                say_status("Reply error: " + textStatus + ": " + errorThrown);
                 $li.removeClass('msg-is-busy');
             }
         });
@@ -550,11 +566,11 @@ var message_manager = (function() {
                     }
                 } else {
                     $li.removeClass('msg-is-busy').addClass('msg-is-locked');
-                    say_status("failed: " + data.error);
+                    say_status("Hide failed: " + data.error);
                 }
             }, 
             error: function(jqXHR, textStatus, errorThrown) {
-                say_status("error: " + textStatus + ": " + errorThrown);
+                say_status("Hide error: " + textStatus + ": " + errorThrown);
                 $li.removeClass('msg-is-busy');
             }
         });
