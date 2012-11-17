@@ -136,7 +136,7 @@ var message_manager = (function() {
     // btoa doesn't work on all browers?
     var make_base_auth = function(user, password) {
         var tok = user + ':' + password;
-        var hash = btoa(tok);
+        var hash = window.btoa(tok);
         return "Basic " + hash;
     };
 
