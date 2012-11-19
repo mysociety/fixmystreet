@@ -15,7 +15,7 @@ has test_mode => ( is => 'ro', isa => 'Bool' );
 has test_uri_used => ( is => 'rw', 'isa' => 'Str' );
 has test_req_used => ( is => 'rw' );
 has test_get_returns => ( is => 'rw' );
-has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'update.xml', update => 'update.xml' } } );
+has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'servicerequestupdates.xml', update => 'servicerequestupdates.xml' } } );
 has debug => ( is => 'ro', isa => 'Bool', default => 0 );
 has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
 has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
@@ -24,6 +24,7 @@ has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
 has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
 has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
+has use_extended_updates => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -283,17 +284,22 @@ sub _populate_service_request_update_params {
     my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
-        update_id_ext => $comment->id,
         updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed_local->set_nanosecond(0)),
         service_request_id => $comment->problem->external_id,
-        service_request_id_ext => $comment->problem->id,
         status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',
         email => $comment->user->email,
         description => $comment->text,
-        public_anonymity_required => $comment->anonymous ? 'TRUE' : 'FALSE',
         last_name => $lastname,
         first_name => $firstname,
     };
+
+    if ( $self->use_extended_updates ) {
+        $params->{public_anonymity_required} = $comment->anonymous ? 'TRUE' : 'FALSE',
+        $params->{update_id_ext} = $comment->id;
+        $params->{service_request_id_ext} = $comment->problem->id;
+    } else {
+        $params->{update_id} = $comment->id;
+    }
 
     if ( $comment->photo ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
@@ -419,7 +425,7 @@ sub _get_xml_object {
     my $obj;
 
     eval {
-        $obj = $simple ->parse_string( $xml );
+        $obj = $simple ->parse_string( $xml, ForceArray => [ qr/^key$/, qr/^name$/ ]  );
     };
 
     return $obj;

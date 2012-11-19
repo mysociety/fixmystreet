@@ -11,12 +11,12 @@
             [% END -%]
             [% IF meta.exists('values') %]
                 <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-                    [% FOR option IN meta.values.value.keys %]
-                        <option value="[% meta.values.value.$option.key %]">[% option %]</option>
+                    [% FOR option IN meta.values.value %]
+                        <option value="[% option.key.0 %]"[% IF option.key.0 == report_meta.$meta_name.value %] selected[% END %]>[% option.name.0 %]</option>
                     [% END %]
                 </select>
             [% ELSE %]
-                <input type="text" value="[% report_meta.$meta_name | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+                <input type="text" value="[% report_meta.$meta_name.value | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
             [% END %]
     
         [%- END %]

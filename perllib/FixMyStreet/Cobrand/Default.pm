@@ -726,5 +726,7 @@ sub tweak_all_reports_map {}
 
 sub can_support_problems { return 0; }
 
+sub default_map_zoom { undef };
+
 1;
 

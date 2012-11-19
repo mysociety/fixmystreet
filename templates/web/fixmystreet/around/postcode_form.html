@@ -1,13 +1,10 @@
 <div id="front-main">
     <div id="front-main-container">
-        [% IF c.cobrand.moniker == 'bromley' %]
-            <h1 class="main mob-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
-        [% ELSIF c.cobrand.moniker == 'fixmybarangay' %]
+        [% IF c.cobrand.moniker == 'fixmybarangay' %]
             <h1>View local problems</h1>
             <h2>(potholes or street lighting)</h2>
         [% ELSE %]
-            <h1>[% loc('Report, view, or discuss local problems') %]</h1>
-            <h2>[% loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)') %]</h2>
+            [% INCLUDE 'around/intro.html' %]
         [% END %]
 
         [%

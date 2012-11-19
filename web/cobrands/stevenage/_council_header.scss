@@ -1,0 +1,762 @@
+
+    /*--------------------------------------------------*/
+
+    /*    1.stv- =FontFace Declarations
+    --------------------------------------------------*/
+    @font-face { font-family: 'PTSansNarrowRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.svg#stv-webfontpTBqgUZV') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansCaptionBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.svg#stv-webfont8zHvniZB') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansCaptionRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.svg#stv-webfont7qk7wodx') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansBoldItalic'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.svg#stv-webfont2oPncueb') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.svg#stv-webfontaW07W6NV') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansItalic'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.svg#stv-webfontV5YcF68V') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.svg#stv-webfontakBUUg6U') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansNarrowBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.svg#stv-webfontSTdD4QCq') format('svg'); font-weight: normal; font-style: normal; } 
+
+    /*    2.stv- =BasicSetup and general styles
+    --------------------------------------------------*/
+#stevenage_cc_header {
+    display: block;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    font-size:62.5%;
+    max-width: 100%;
+    width: 100%;
+    background-color: #fff;
+    
+        #stv-everything {
+      /*font-size: 125%;*/
+      min-width: 984px;
+      overflow: hidden;
+      width: 100%;
+      }
+
+    .stv-inner {
+      width: 984px;
+      margin: 0 auto;
+      position: relative;
+      }
+
+    .stv-hidden {
+      position: absolute;
+      left: -99999em;
+      }
+
+    /*    2.stv-1.stv- =Text Elements
+    --------------------------------------------------*/
+    h1, h2, h3, h4, h5, h6, legend {
+      font-family: 'PTSansCaptionRegular', PT Sans Caption, Verdana, Arial, Sans-Serif; 
+      color: #656867;
+      font-weight: normal;
+      margin-top: 0;
+      }
+
+    h1 { color: #666666; font-size: 2.4em }
+    h2 { font-size: 2.4em }
+    h3 { font-size: 1.7em }
+    h4 { font-size: 1.7em }
+    h5 { font-size: 1.5em }
+    h6 { font-size: 1.5em }
+
+    p, a, li, td, th, dd, dt, span, cite {
+      font-family: 'PTSansRegular', PT Sans, Verdana, Arial, Sans-Serif;
+      font-weight: normal;
+      font-size: 1.5em;
+      color: #656867;
+      }
+    cite {
+      text-align: right;
+      display: block;
+      }
+
+    #stv-main.stv-content .stv-aside {
+      font-size: 0.87em;
+      }
+
+
+    #stv-main.stv-content dl dt {
+        width: 16%;
+        margin-right: 3%;
+        display: inline-block;
+      vertical-align: top;
+        }
+    #stv-main.stv-content dl dd {
+        width: 70%;
+        margin-left: 0;
+        display: inline-block;
+      vertical-align: top;
+        }
+
+    p {
+      margin: 0 0 0.8em 0;
+      }
+
+    input, label, select, option {
+      font-family: 'PTSansRegular', PT Sans, Verdana, Arial, Sans-Serif;
+      font-weight: normal;
+      font-size: 1.3em;
+      color: #656867;
+      }
+    legend {
+      font-size: 1.5em;
+      }
+
+    strong a, p strong, li strong, td strong, th strong, dd strong, dt strong {
+      font-family: 'PTSansCaptionBold', PT Sans, Verdana, Arial, Sans-Serif;
+      font-weight: bold;
+      }
+
+    p p, p a, p li, p td, p th, p dd, p dt, p input, p label, p span,
+    a p, a a, a li, a td, a th, a dd, a dt, a input, a label, a span,
+    h1 a, h2 a, h3 a, h4 a, h5 a, h6 a,
+    li p, li a, li li, li td, li th, li dd, li dt, li input, li label, li span,
+    td p, td a, td li, td td, td th, td dd, td dt, td input, td label, td span,
+    th p, th a, th li, th td, th th, th dd, th dt, th input, th label, th span,
+    dd p, dd a, dd li, dd td, dd th, dd dd, dd dt, dd input, dd label, dd span,
+    dt p, dt a, dt li, dt td, dt th, dt dd, dt dt, dt input, dt label, dt span,
+    input p, input a, input li, input td, input th, input dd, input dt, input input, input label, input span,
+    label p, label a, label li, label td, label th, label dd, label dt, label input, label label, label span,
+    span p, span a, span li, span td, span th, span dd, span dt, span input, span label, span span,
+    h1 span, h2 span, h3 span, h4 span, h5 span, h6 span,
+    legend span, select option {
+      font-size: 1em;
+      }
+
+    p h1, p h2, li h1, li h2, td h1, td h2, th h1, th h2 {
+      font-size: 1.6em;
+      }
+
+    p h3, p h4, li h3, li h4, td h3, td h4, th h3, th h4 {
+      font-size: 1.13em;
+      }
+
+    p h5, p h6, li h5, li h6, td h5, td h6, th h5, th h6 {
+      font-size: 1em;
+      }
+
+    a, a:link {
+      color: #005e38;
+      text-decoration: none;
+      }
+
+    a:hover, a:active {
+      text-decoration: underline;
+      }
+
+    a img {
+      border: none;
+      }
+
+    a.stv-more {
+      background: url("http://www.stevenage.gov.uk/Images/arrGrRgt.gif") no-repeat scroll right 7px transparent;
+        padding-right: 9px;
+      font-family: 'PTSansCaptionBold', PT Sans, Verdana, Arial, Sans-Serif;
+      font-weight: bold;
+      }
+
+    .stv-content .stv-article a {
+      font-family: 'PTSansCaptionBold', PT Sans, Verdana, Arial, Sans-Serif;
+      font-weight: bold;
+      }
+
+    .stv-content .stv-article .stv-subNav a {
+      font-family: 'PTSansRegular',PT Sans,Verdana,Arial,Sans-Serif;
+      font-weight: normal;
+      }
+
+
+    .stv-error {
+        color: #FF0000;
+        font-family: 'PTSansCaptionBold', PT Sans, Verdana, Arial, Sans-Serif;
+        font-size: 1.5em;
+        font-weight: bold;
+      }
+
+    .stv-error li {
+      font-size: 1em;
+      color: #FF0000;
+        }
+
+    /*    2.stv-2.stv- =Table
+    --------------------------------------------------*/
+    table { 
+      border: 1px solid #c0c0be;
+      border-collapse: collapse;
+      margin: 1em 0;
+      }
+
+    th {
+        background-color: #656867;
+        border: 1px solid #C0C0BE;
+        color: #FFFFFF;
+        padding: 3px 5px;
+      }
+
+    td {
+      border: 1px solid #c0c0be;
+        padding: 5px 8px;
+        vertical-align: top;
+        }
+
+    /*    2.stv-3.stv- =Form Elements
+    --------------------------------------------------*/
+    label {
+      display: inline-block;
+      }
+    input[type=text], input[type=password], textarea, select, fieldset {
+      border-width: 1px;
+      border-color: #c0c0be;
+      border-style: solid;
+      }
+    fieldset {
+        margin: 0;
+      padding: 0.3em 0.625em 0.75em;
+      }
+    fieldset fieldset {
+        border: medium none;
+        margin: 0.5em 0;
+        padding-left: 0;
+        padding-right: 0;
+      }
+    fieldset .stv-group {
+      margin: 1em 0;
+      }
+    fieldset fieldset legend {
+      font-family: 'PTSansRegular', PT Sans, Verdana, Arial, Sans-Serif;
+      font-weight: normal;
+        font-size: 1.3em;
+        padding: 0;
+      }
+    input[type=submit], input[type=button] {
+      border: 0;
+      color: #ffffff;
+      margin: 0;
+      background-image: url('http://www.stevenage.gov.uk/Images/submitBG.gif');
+      background-position: left top;
+      background-repeat: repeat-x;
+      background-color: #005e38;
+        padding: 1px;
+        font-family: 'PTSansCaptionRegular', PT Sans Caption, Verdana, Arial, Sans-Serif;
+      font-weight: normal;
+      cursor: pointer;
+      font-size: 1.5em;
+      }
+    input[type=checkbox], input[type=radio] {
+      margin-left: 25%;
+      }
+    textarea, select {
+      vertical-align: top;
+      }
+    fieldset label {
+        width: 25%;
+        word-wrap: break-word;
+      }
+    fieldset .stv-checkboxGroup label,
+    fieldset .stv-radioGroup label {
+      width: 65%;
+      }
+
+    fieldset .stv-double {
+      text-align: center;
+      margin: 3em 0;
+      }
+
+    fieldset .stv-double .stv-item {
+      position: relative;
+      width: 40%;
+      margin-left: 5%;
+      margin-right: 5%;
+      float: left;
+      }
+
+    fieldset .stv-double label {
+      width: 100%;
+      }
+
+    fieldset .stv-double .stv-separator {
+      position: absolute;
+      left: 45%;
+      width: 10%;
+      margin-top: 1em;
+      }
+
+    fieldset .stv-right {
+      text-align: right;
+      }
+
+    /*    2.stv-3.stv-1 =Form Builder
+    --------------------------------------------------*/
+    .stv-ValidationSummaryWithoutBullets ul {
+      list-style-type: none;
+      margin-top: 0em;
+      }
+
+    .stv-FormBuilderSubmitItem input[type="submit"], .stv-FormBuilderSubmitItem input[type="button"] {
+        margin-top: 5px;
+        margin-left: 25%;
+      }
+
+    .stv-FormBuilderDateField {
+      display: inline;
+      font-family: 'PTSansRegular', PT Sans, Verdana, Arial, Sans-Serif;
+      font-weight: normal;
+      font-size: 1.1em;
+      color: #656867;
+      }
+
+    .stv-FormBuilderCheckBoxListField,
+    .stv-FormBuilderRadioButtonListField {
+        display: inline-block;
+        font-size: 1.3em;
+        position: relative;
+        vertical-align: top;
+      }
+
+    .stv-FormBuilderCheckBoxListField label,
+    .stv-FormBuilderRadioButtonListField label {
+      width: auto;
+      }
+
+    .stv-FormBuilderCheckBoxListField input[type=checkbox],
+    .stv-FormBuilderCheckBoxListField input[type=radio],
+    .stv-FormBuilderRadioButtonListField input[type=checkbox],
+    .stv-FormBuilderRadioButtonListField input[type=radio] {
+      margin-left: 0;
+      }
+
+    /*    2.stv-4.stv- =Grid sizing
+    --------------------------------------------------*/
+    .stv-grid1,
+    .stv-grid2,
+    .stv-grid3,
+    .stv-grid4,
+    .stv-grid5,
+    .stv-grid6,
+    .stv-grid7,
+    .stv-grid8,
+    .stv-grid9,
+    .stv-grid10,
+    .stv-grid11,
+    .stv-grid12 {
+      margin-left: 6px;
+      margin-right: 6px;
+      }
+
+    .stv-alpha {
+      margin-left: 0;
+      }
+    .stv-omega {
+      margin-right: 0;
+      }
+    .stv-grid1 {
+      width:70px;
+      }
+    .stv-grid2 {
+      width:152px;
+      }
+    .stv-grid3 {
+      width:234px;
+      }
+    .stv-grid4 {
+      width:316px;
+      }
+    .stv-grid5 {
+      width:398px;
+      }
+    .stv-grid6 {
+      width:480px;
+      }
+    .stv-grid7 {
+      width:562px;
+      }
+    .stv-grid8 {
+      width:644px;
+      }
+    .stv-grid9 {
+      width:726px;
+      }
+    .stv-grid10 {
+      width:808px;
+      }
+    .stv-grid11 {
+      width:890px;
+      }
+    .stv-grid12 {
+      width:972px;
+      }
+
+    /*    3.stv- =Header
+    --------------------------------------------------*/
+    #stv-headerWrapper {
+      position: relative;
+      z-index: 22;
+      }
+
+    #stv-header {
+        background-image: url('http://www.stevenage.gov.uk/Images/headerBG.jpg');
+        background-repeat: repeat-x;
+        background-position: left bottom;
+        background-color: transparent;
+      }
+
+    /*    3.stv-1 =Site Logos
+    --------------------------------------------------*/
+    #stv-header #stv-logo {
+      bottom: 13px;
+        height: 89px;
+        left: 4px;
+        position: absolute;
+        width: 164px;
+        z-index: 11;
+      }
+
+    #stv-header #stv-logo a,
+    #stv-header #stv-logo img {
+      display: block;
+      }
+
+    #stv-header .stv-mapLogo {
+        bottom: 0;
+        left: 247px;
+        position: absolute;
+        width: 165px;
+      }
+
+    #stv-header .stv-mapLogo img {
+      display: block;
+      }
+
+    /*    3.stv-2 =Page Tools
+    --------------------------------------------------*/
+    #stv-header #stv-pageTools {
+        padding-left: 496px;
+        padding-top: 20px;
+        text-align: right;
+        width: 480px;
+      }
+
+    /*    3.stv-2.stv-1 =Site Search
+    --------------------------------------------------*/
+    #stv-header #stv-pageTools #stv-search,
+    #stv-header #stv-pageTools #stv-searchStatic {
+      float: right;
+      display: inline;
+      display: inline-block;
+      }
+
+    #stv-header #stv-pageTools #stv-searchStatic #stv-search {
+      float: none;
+      }
+
+    #stv-header #stv-pageTools #stv-search label,
+    #stv-header #stv-pageTools #stv-searchStatic label {
+      position: absolute;
+      left: -999999em;
+      }
+
+    #stv-header #stv-pageTools #stv-search #stv-searchBox,
+    #stv-header #stv-pageTools #stv-search input.stv-searchInput,
+    #stv-header #stv-pageTools #stv-searchStatic #stv-searchBox,
+    #stv-header #stv-pageTools #stv-searchStatic input.stv-searchInput {
+        border-right: medium none;
+        margin-right: -3px;
+        padding: 2px 4px;
+        position: relative;
+        top: -1px;
+        width: 126px;
+      }
+
+    /*    3.stv-2.stv-2 =Top Menu
+    --------------------------------------------------*/
+    #stv-header #stv-pageTools #stv-topMenu {
+      float: right;
+      }
+
+    #stv-header #stv-pageTools #stv-topMenu ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0 19px;
+      }
+
+    #stv-header #stv-pageTools #stv-topMenu li {
+        color: #005E38;
+        display: inline;
+        font-size: 1.3em;
+        line-height: 1.7em;
+      }
+
+    #stv-header #stv-pageTools #stv-topMenu li a {
+      word-spacing: 3px;
+      }
+
+    /*    3.stv-3 =Pay, Apply, Report, Find links 
+    --------------------------------------------------*/
+    #stv-header .stv-parf {
+        padding-left: 496px;
+        padding-right: 2px;
+        width: 478px;
+        background-image: url('http://www.stevenage.gov.uk/Images/parfEnd.jpg');
+        background-position: right bottom;
+        background-repeat: no-repeat;
+      }
+
+    #stv-header .stv-parf a {
+        background-color: transparent;
+        background-image: url("http://www.stevenage.gov.uk/Images/parfBG.jpg");
+        background-position: left bottom;
+        background-repeat: no-repeat;
+        color: #232122;
+        display: block;
+        float: left;
+        font-size: 1.1em;
+        line-height: 1em;
+        padding: 18px 16px 6px 14px;
+        width: 90px;
+        min-height: 60px;
+        height: auto !important;
+        height: 60px;
+      }
+
+    #stv-header .stv-parf a:hover {
+      background-image: url("http://www.stevenage.gov.uk/Images/parfHoverBG.jpg");
+      }
+
+    #stv-header .stv-parf a.stv-find {
+      padding-right: 14px;
+      }
+
+    #stv-header .stv-parf a span.stv-title {
+        display: block;
+        font-size: 2.4em;
+        line-height: 1em;
+      }
+
+    #stv-header .stv-parf a:hover,
+    #stv-header .stv-parf a:active,
+    #stv-header .stv-parf a:hover span.stv-title,
+    #stv-header .stv-parf a:active span.stv-title {
+      color: #005E38;
+      text-decoration: none;
+      }
+
+    /*    4.stv- =Navigation
+    --------------------------------------------------*/
+    #stv-menu {
+        background-color: #363636;
+        background-image: url("http://www.stevenage.gov.uk/Images/navBG.jpg");
+        background-position: left bottom;
+        background-repeat: repeat-x;
+
+      }
+
+    #stv-menu #stv-primaryNavigation {
+      width: 984px;
+      margin: 0 auto;
+      position: relative;
+      left: -7px;
+      }
+
+    #stv-menu #stv-primaryNavigation ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      }
+
+    #stv-menu #stv-primaryNavigation li {
+      display: block;
+      float: left;
+      margin: 0;
+        font-size: 1.5em;
+        height: 2em;
+        overflow: visible;
+        padding-bottom: 1px;
+      }
+
+    #stv-menu #stv-primaryNavigation li:hover,
+    #stv-menu #stv-primaryNavigation li.stv-panelHover {
+      background-color: #12723b;
+        background-image: url('http://www.stevenage.gov.uk/Images/navHover.jpg');
+        background-position: left bottom;
+        background-repeat: repeat-x;
+      }
+
+    #stv-menu #stv-primaryNavigation a {
+        color: #FFFFFF;
+        display: block;
+        font-family: 'PTSansCaptionRegular',PT Sans Caption,Verdana,Arial,Sans-Serif;
+      font-weight: normal;
+        padding: 6px 14px 11px 12px;
+        width: 138px;
+      }
+
+    #stv-menu #stv-primaryNavigation a:hover {
+      text-decoration: none;
+        }
+    #stv-menu #stv-primaryNavigation li.stv-panelHover a {
+        text-decoration: none;
+        background-image: url('http://www.stevenage.gov.uk/Images/arrGrDwn.gif');
+        background-repeat: no-repeat;
+        background-position: 12px bottom;
+        background-color: transparent;
+        }
+
+    #stv-menu #stv-primaryNavigation a:active {
+        text-decoration: none;
+        }
+
+    #stv-menu #stv-primaryNavigation li.stv-selected {
+      background-color: #ffffff;
+      }
+
+    #stv-menu #stv-primaryNavigation li.stv-selected a {
+      color: #005e38;
+        }
+
+    #stv-menu #stv-primaryNavigation li.stv-selected a:hover,
+    #stv-menu #stv-primaryNavigation li.stv-panelHover a {
+        color: #FFFFFF;
+      }
+
+    /*    5.stv- =Main Area
+    --------------------------------------------------*/
+    #stv-main {
+      background-image: url('http://www.stevenage.gov.uk/Images/mainDropShad.png');
+      background-position: top left;
+      background-repeat: repeat-x;
+      }
+
+    /*    5.stv-1 =Information Panel
+    --------------------------------------------------*/
+    #stv-main.stv-home .stv-infoPanel,
+    #stv-main.stv-landing .stv-infoPanel,
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-fadeIn {
+      min-height: 370px;
+      height: auto !important;
+      height: 370px;
+      background-image: url('http://www.stevenage.gov.uk/Images/infoBG.png');
+      background-position: top left;
+      background-repeat: repeat-x;
+      background-color: #e0e0dd;
+      }
+
+    #stv-main.stv-home .stv-infoPanel h2,
+    #stv-main.stv-landing .stv-infoPanel h2 {
+        line-height: 1em;
+        margin-bottom: 0.3em;
+        margin-top: 0.3em;
+      }
+
+    #stv-main.stv-home .stv-infoPanel .stv-inner,
+    #stv-main.stv-landing .stv-infoPanel .stv-inner { 
+        position: relative;
+      }
+
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingA,
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingB,
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingC,
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingD,
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingE,
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingF,
+    #stv-main.stv-landing .stv-infoPanel .stv-inner > div {
+      height: 348px;
+      overflow: hidden;
+        background-image: url("http://www.stevenage.gov.uk/Images/infoBG.gif");
+        background-position: left 17px;
+        background-repeat: no-repeat;
+        padding-top: 17px;
+      }
+
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingA,
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingB,
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingC,
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingD,
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingE,
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-inner .stv-landingF {
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+
+    .stv-js-on #stv-main.stv-home .stv-infoPanel .stv-fadeIn {
+      z-index: 20;
+      position: absolute;
+      width: 100%;
+      }
+
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-hidden {
+      display: none;
+      } 
+
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-selected {
+      display: block;
+      } 
+
+    #stv-main.stv-home .stv-infoPanel .stv-inner .stv-fade,
+    #stv-main.stv-landing .stv-infoPanel .stv-inner .stv-fade {
+        background-image: none;
+        background-position: left top;
+        background-repeat: repeat-x;
+        bottom: 0;
+        height: 24px;
+        position: absolute;
+        width: 100%;
+        z-index: 12;
+      }
+
+    #stv-main.stv-home .stv-infoPanel .stv-articleCont .stv-article.stv-attached .stv-fade,
+    #stv-main.stv-landing .stv-infoPanel .stv-articleCont .stv-article.stv-attached .stv-fade {
+        background-image: url("http://www.stevenage.gov.uk/Images/infoBGfadeWh.png");
+        height: 12px;
+      }
+
+
+    /*    9.stv- =Layout Fixes
+      FloatHolder can be used on any div which 
+      has floated item within as oppposed to 
+      floating the wrapper div aswell.stv-
+    --------------------------------------------------*/
+    .stv-floatHolder {
+        position: relative;
+        z-index: 10;
+        height: auto !important;
+        height: 1%;
+      }
+    .stv-floatHolder:after {
+        content:".";
+        clear:both;
+        height:0;
+        visibility:hidden;
+        display:block;
+      }
+    
+}
+.ie8{
+  #stv-header #stv-pageTools #stv-searchStatic{
+    width: 50%;
+  }
+}
+
+/*
+// Small council Header 
+body.mappage{
+  #stevenage_cc_header{
+    #stv-header .stv-parf {
+      display: none;
+    }
+    #stv-header #stv-logo{
+      position: static;
+      float: left;
+      height: auto;
+      img{
+        height:50px;
+        width: auto;
+      }
+    }
+    #stv-pageTools.stv-floatHolder{
+      position: static;
+      z-index: auto;
+    }
+  }
+}
+*/

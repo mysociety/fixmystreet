@@ -1,0 +1,56 @@
+                    [% IF pagefooter %]
+                    <footer role="content-info">
+                        <div class="tablewrapper bordered">
+                            <div id="footer-mobileapps">
+                                <h4>Mobile apps</h4>
+
+                                <ul>
+                                    <li><a class="m-app-iphone" href="http://itunes.apple.com/gb/app/fixmystreet/id297456545">iPhone</a></li>
+                                    <li><a class="m-app-droid" href="https://market.android.com/details?id=com.android.fixmystreet">Android</a></li>
+                                    <li><a class="m-app-nokia" href="http://store.ovi.com/content/107557">Nokia</a></li>
+                                </ul>
+                            </div>
+
+                            <div id="footer-help">
+                                <ul>
+                                    <li>
+                                        <h4>[% loc('Are you a developer?') %]</h4>
+                                        <p>[% loc('Would you like to contribute to FixMyStreet? Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]</p>
+                                    </li>
+                                    <li>
+                                        <h4>[% loc('Are you from a council?') %]</h4>
+                                        <p>[% loc('Would you like better integration with FixMyStreet? <a href="http://www.mysociety.org/for-councils/fixmystreet/">Find out about FixMyStreet for councils</a>.') %]</p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p><a href="/privacy">Privacy and cookies</a></p>
+                    </footer>
+                    [% END %]
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <ul id="main-menu">
+                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
+                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/reports/Stevenage' %]span[% ELSE %]a href="/reports/Stevenage"[% END
+                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!-- [% INCLUDE 'debug_footer.html' %] -->
+    </div> <!-- .wrapper -->
+</body>
+</html>
