@@ -137,7 +137,7 @@ function fixmystreet_onload() {
         styleMap: pin_layer_style_map
     };
     if (fixmystreet.page == 'around') {
-        fixmystreet.bbox_strategy = new OpenLayers.Strategy.BBOX({ ratio: 1 });
+        fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
             url: '/ajax',
