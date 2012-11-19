@@ -41,6 +41,7 @@ my $councils = FixMyStreet::App->model('DB::Open311Conf')->search( {
 } );
 
 while ( my $council = $councils->next ) {
+    my $use_extended = 0;
     my $comments = FixMyStreet::App->model('DB::Comment')->search( {
             'me.whensent'    => undef,
             'me.external_id' => undef,
@@ -56,11 +57,23 @@ while ( my $council = $councils->next ) {
         }
     );
 
+    if ( $council->area_id == 2482 ) {
+        $use_extended = 1;
+    }
+
     my $o = Open311->new(
             endpoint => $council->endpoint,
             jurisdiction => $council->jurisdiction,
             api_key => $council->api_key,
+            use_extended_updates => $use_extended,
     );
+
+    if ( $council->area_id =~ /2482/ ) {
+        my $endpoints = $o->endpoints;
+        $endpoints->{update} = 'update.xml';
+        $endpoints->{service_requests_updates} = 'update.xml';
+        $o->endpoints( $endpoints );
+    }
 
     while ( my $comment = $comments->next ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
