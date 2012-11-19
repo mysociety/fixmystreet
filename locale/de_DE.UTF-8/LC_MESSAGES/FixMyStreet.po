@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-10-24 11:20+0100\n"
-"PO-Revision-Date: 2012-11-16 15:02+0100\n"
+"PO-Revision-Date: 2012-11-19 13:41+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "MIME-Version: 1.0\n"
@@ -82,7 +82,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:496
 msgid "%s, reported anonymously at %s"
-msgstr "%s anonym gemeldet um %s"
+msgstr "%s, gemeldet um %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:498
 msgid "%s, reported by %s at %s"
@@ -865,14 +865,14 @@ msgstr "Geben Sie eine Adresse an"
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:25
 msgid "Enter a nearby postcode, or street name and area"
-msgstr "Ungef&auml;hre Adresse des Mangels:"
+msgstr "Ungef&auml;hre Adresse des Mangels"
 
 #: templates/web/default/around/postcode_form.html:1
 #: templates/web/default/around/postcode_form.html:2
 #: templates/web/fixmystreet/around/postcode_form.html:13
 #: templates/web/fixmystreet/around/postcode_form.html:14
 msgid "Enter a nearby street name and area"
-msgstr "Ungef&auml;hre Adresse des Mangels:"
+msgstr "Ungef&auml;hre Adresse des Mangels"
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/display.html:171
@@ -891,7 +891,7 @@ msgstr ""
 #: templates/web/default/index.html:33 templates/web/emptyhomes/index.html:58
 #: templates/web/fixmystreet/index.html:46
 msgid "Enter details of the problem"
-msgstr "Beschreiben sie den Mangel"
+msgstr "Beschreiben Sie den Mangel"
 
 #: templates/web/default/auth/token.html:5
 #: templates/web/default/errors/generic.html:1
@@ -1926,7 +1926,7 @@ msgstr "Bitte geben Sie Ihre E-Mail Adresse an"
 #: templates/web/bromley/report/new/fill_in_details_form.html:149
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:150
 msgid "Please enter your email address"
-msgstr "Bitte geben Sie eine Ihre E-Mail Adresse an"
+msgstr "Bitte geben Sie Ihre E-Mail Adresse an."
 
 #: templates/web/default/js/validation_strings.html:19
 #, fuzzy
@@ -2012,7 +2012,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:70
 msgid "Please fill in details of the problem."
-msgstr ""
+msgstr "Beschreiben Sie den Mangel."
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:28
 #: templates/web/default/report/new/fill_in_details_form.html:27
@@ -3955,8 +3955,8 @@ msgstr[1] "<big>%s</big> Meldungen in der letzten Woche"
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
-msgstr[0] "<big>%s</big> bearbeitete M&auml;ngel im letzten Monat"
-msgstr[1] "<big>%s</big> im letzten Monat gehoben"
+msgstr[0] "<big>%s</big> bearbeiteter Mangel im letzten Monat"
+msgstr[1] "<big>%s</big> bearbeitete M&auml;ngel im letzten Monat"
 
 #: templates/web/default/report/new/councils_text_some.html:14
 #, perl-format
