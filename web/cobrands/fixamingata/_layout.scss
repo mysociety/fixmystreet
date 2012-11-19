@@ -64,6 +64,7 @@ h1 {
     @include border-image(url(/cobrands/fixamingata/images/tile-y-border.jpg) 4 0 0 0);
     border-left:0;
     border-right:0;
+    border-top:0;
     z-index:2;
   }
 }
@@ -235,8 +236,7 @@ body.mappage {
   .nav-wrapper{
     .nav-wrapper-2{
       position: fixed;
-      background: #222;
-      @include background(linear-gradient(#3ca7a6, #eee 10%, #eee 90%, #3ca7a6));
+      background: #eee;
     }
   }
   #site-logo{
