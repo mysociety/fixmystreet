@@ -1876,7 +1876,7 @@ msgstr ""
 #: templates/web/default/report/new/notes.html:7
 #: templates/web/fixmystreet/report/new/notes.html:6
 msgid ""
-"Please do not be abusive &mdash; abusing your council devalues the service "
+"Please do not be abusive&nbsp;&mdash;&nbsp;abusing your council devalues the service "
 "for all users."
 msgstr ""
 
@@ -2945,7 +2945,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
 msgid ""
-"The council won&rsquo;t be able to help unless you leave as much\n"
+"The council won't be able to help unless you leave as much\n"
 "detail as you can. Please describe the exact location of the problem (e.g. "
 "on a\n"
 "wall), what it is, how long it has been there, a description (and a photo "
