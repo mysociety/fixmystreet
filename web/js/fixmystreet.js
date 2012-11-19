@@ -134,7 +134,7 @@ $(function(){
 
     // Geolocation
     if (geo_position_js.init()) {
-        var link = '<a href="#LINK" id="geolocate_link">&hellip; or locate me automatically</a>';
+        var link = '<a href="#LINK" id="geolocate_link">&hellip; ' + validation_strings.geolocate + '</a>';
         $('form[action="/alert/list"]').append(link.replace('LINK','alert/list'));
         if ($('body.frontpage').length) {
             $('#postcodeForm').after(link.replace('LINK','around'));
