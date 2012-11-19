@@ -72,6 +72,20 @@ body {
     background: #eee url(/cobrands/fixamingata/images/tile.jpg) 0 0 repeat;
 }
 
+.nav-wrapper {
+    .nav-wrapper-2 {
+        border-top: 0;
+    }
+}
+
+body.mappage {
+    .nav-wrapper {
+        .nav-wrapper-2 {
+            background: #eee;
+        }
+    }
+}
+
 #main-nav {
     ul {
         li {
