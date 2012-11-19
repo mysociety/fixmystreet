@@ -1,0 +1,10 @@
+Subject: Automatische Antwort auf Ihr E-Mail
+
+Guten Tag
+
+Dies ist eine automatische Antwort auf Ihr E-Mail. Ihr E-Mail wurde nicht &uuml;bermittelt.
+
+Falls Sie eine Meldung erfassen m&ouml;chten, tun Sie das bitte &uuml;ber die Hauptseite:
+[% ---link to FMZ--- %]
+
+Falls Sie Fragen zu Fix My Z&uuml;rich haben, senden Sie ein E-Mail an gis-zentrum@zuerich.ch

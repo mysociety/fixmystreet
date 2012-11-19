@@ -1,0 +1,16 @@
+Subject: Fix My Z&uuml;rich: Meldung #[% ---report.ID--- | trim %]
+
+
+
+Guten Tag [% report.name %]
+
+Bitte klicken Sie auf den untenstehenden Link, um Ihre Meldung zu best&auml;tigen. Falls der Link nicht funktioniert, kopieren Sie ihn in Ihren Browser:
+
+[% token_url %]
+
+Ihre Meldung:
+
+[% ---report.details---- %]
+
+
+Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.

@@ -1,0 +1,8 @@
+Subject: Overdue problems for moderation on FixMyZurich
+
+The following problems are overdue for moderation:
+
+<?=$values['data']?>
+
+To view these problems, please visit the following URL:
+<?=$values['admin_url']?>

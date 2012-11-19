@@ -1,0 +1,8 @@
+Subject: Overdue problems on FixMyZurich
+
+The following problems are overdue (they have not been fixed or closed):
+
+<?=$values['data']?>
+
+To view these problems, please visit the following URL:
+<?=$values['admin_url']?>

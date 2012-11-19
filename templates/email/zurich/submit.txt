@@ -1,0 +1,10 @@
+Subject: Fix My Z&uuml;rich: #<?=----$values['ID']----?>
+
+
+
+<?=$values['url']?>
+
+
+<?=$values['detail']?>
+
+
