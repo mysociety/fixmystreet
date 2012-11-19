@@ -117,7 +117,7 @@ $(function(){
                     banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
                 } else {
                     $('#site-header').show();
-                    banner_text = 'Click map to report a problem';
+                    banner_text = validation_strings.report_problem_heading;
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
