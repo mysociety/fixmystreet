@@ -32,7 +32,7 @@ function Report(spec) {
 
             var t;
             if ( typeof props.time === 'String' ) {
-                t = new Date( props.time );
+                t = new Date( parseInt(props.time, 10) );
             } else {
                 t = props.time;
             }
@@ -47,7 +47,7 @@ function Report(spec) {
             if ( ! reports ) {
                 reports = [];
             }
-            props.time = new Date();
+            props.time = new Date().getTime();
             if ( my_id != -1 ) {
                 reports[my_id] = props;
             } else {

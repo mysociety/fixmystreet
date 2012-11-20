@@ -515,7 +515,7 @@ function get_report_params () {
         lon: $('#fixmystreet\\.longitude').val(),
         phone: $('#form_phone').val(),
         pc: $('#pc').val(),
-        time: new Date()
+        time: new Date().getTime()
     };
 
     if ( localStorage.username && localStorage.password && localStorage.name ) {
@@ -572,7 +572,7 @@ function display_saved_reports() {
                 var item = $('<li class="saved-report" id="' + i + '"></li>');
                 var date;
                 if ( r[i].time ) {
-                    var date_o = new Date( r[i].time );
+                    var date_o = new Date( parseInt(r[i].time, 10) );
                     date = date_o.getDate() + '/' + ( date_o.getMonth() + 1 ) + '/' + date_o.getFullYear();
                     date = date + ' ' + date_o.getHours() + ':' + date_o.getMinutes();
                 } else {
