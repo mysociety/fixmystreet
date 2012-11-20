@@ -65,59 +65,6 @@ function init_zurich_map(after) {
       'xml');
 }
 
-// These next two functions come from the Swiss Federal Office of Topography
-// http://www.swisstopo.admin.ch/internet/swisstopo/en/home/products/software/products/skripts.html
-
-// Convert CH y/x to WGS lat
-function chToWGSlat(y, x) {
-
-    // Converts militar to civil and  to unit = 1000km
-    // Axiliary values (% Bern)
-    var y_aux = (y - 600000) / 1000000;
-    var x_aux = (x - 200000) / 1000000;
-
-    // Process lat
-    var lat = 16.9023892;
-    lat = lat + (3.238272 * x_aux);
-    lat = lat - (0.270978 * Math.pow(y_aux, 2));
-    lat = lat - (0.002528 * Math.pow(x_aux, 2));
-    lat = lat - (0.0447 * Math.pow(y_aux, 2) * x_aux);
-    lat = lat - (0.0140 * Math.pow(x_aux, 3));
-
-    // Unit 10000" to 1 " and converts seconds to degrees (dec)
-    lat = lat * 100 / 36;
-
-    return lat;
-  
-}
-
-// Convert CH y/x to WGS long
-function chToWGSlng(y, x) {
-
-    // Converts militar to civil and  to unit = 1000km
-    // Axiliary values (% Bern)
-    var y_aux = (y - 600000) / 1000000;
-    var x_aux = (x - 200000) / 1000000;
-
-    // Process long
-    var lng = 2.6779094;
-    lng = lng + (4.728982 * y_aux);
-    lng = lng + (0.791484 * y_aux * x_aux);
-    lng = lng + (0.1306 * y_aux * Math.pow(x_aux, 2));
-    lng = lng - (0.0436 * Math.pow(y_aux, 3));
-
-    // Unit 10000" to 1 " and converts seconds to degrees (dec)
-    lng = lng * 100 / 36;
-
-    return lng;
-  
-}
-
-// Function to convert a Swiss coordinate to a WGS84 coordinate. 
-function getOLLatLonFromSwiss(y, x) {
-    return new OpenLayers.LonLat(chToWGSlng(y, x), chToWGSlat(y, x));
-}
-
 /* 
  * set_map_config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
@@ -164,13 +111,18 @@ OpenLayers.Strategy.ZurichBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
         if (this.layer.map === null) {
             return null;
         }
+
         var swissBounds = this.layer.map.getExtent();
-        var topLeft = getOLLatLonFromSwiss(swissBounds.left,swissBounds.top);
-        var bottomRight = getOLLatLonFromSwiss(swissBounds.right,swissBounds.bottom);
-        var bounds = new OpenLayers.Bounds();
-        bounds.extend(topLeft);
-        bounds.extend(bottomRight);
-        return bounds;
+
+        // Transform bound corners into WGS84 - note x/y arrangement of
+        // values from the current bounding box, it seems wrong but is not.
+        var topLeft = OpenLayers.Projection.CH1903.projectInverseSwiss(
+                {y: swissBounds.left, x: swissBounds.top}
+            );
+        var bottomRight = OpenLayers.Projection.CH1903.projectInverseSwiss(
+                {y: swissBounds.right, x: swissBounds.bottom}
+            );  
+        return new OpenLayers.Bounds(topLeft.x, bottomRight.y, bottomRight.x, topLeft.y);
     },
 
     CLASS_NAME: "OpenLayers.Strategy.ZurichBBOX"
