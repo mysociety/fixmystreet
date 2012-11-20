@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2012-11-19 17:55+0000\n"
+"POT-Creation-Date: 2012-11-20 09:40+0000\n"
 "PO-Revision-Date: 2011-12-08 10:56+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Nynorsk <i18n-nn@lister.ping.uio.no>\n"
@@ -2009,13 +2009,6 @@ msgstr ""
 "til forsida</a> og følg instruksjonane."
 
 #: templates/web/default/report/new/notes.html:7
-msgid ""
-"Please do not be abusive &mdash; abusing your council devalues the service "
-"for all users."
-msgstr ""
-"Ikkje ver ufin &mdash; å kjefta på administrasjonen din skader verdet av "
-"tenesta for alle brukarane."
-
 #: templates/web/fixmystreet/report/new/notes.html:6
 #, fuzzy
 msgid ""
@@ -4321,6 +4314,13 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d dag"
 msgstr[1] "%d dag"
+
+#~ msgid ""
+#~ "Please do not be abusive &mdash; abusing your council devalues the "
+#~ "service for all users."
+#~ msgstr ""
+#~ "Ikkje ver ufin &mdash; å kjefta på administrasjonen din skader verdet av "
+#~ "tenesta for alle brukarane."
 
 #~ msgid "%d days"
 #~ msgstr "%d dagar"

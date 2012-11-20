@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2012-11-19 17:55+0000\n"
+"POT-Creation-Date: 2012-11-20 09:40+0000\n"
 "PO-Revision-Date: 2012-11-19 13:41+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -1877,11 +1877,6 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/report/new/notes.html:7
-msgid ""
-"Please do not be abusive &mdash; abusing your council devalues the service "
-"for all users."
-msgstr ""
-
 #: templates/web/fixmystreet/report/new/notes.html:6
 msgid ""
 "Please do not be abusive&nbsp;&mdash; abusing your council devalues the "
