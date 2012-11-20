@@ -573,7 +573,7 @@ function display_saved_reports() {
                 var date;
                 if ( r[i].time ) {
                     var date_o = new Date( r[i].time );
-                    date = date_o.getDate() + '-' + ( date_o.getMonth() + 1 ) + '-' + date_o.getFullYear();
+                    date = date_o.getDate() + '/' + ( date_o.getMonth() + 1 ) + '/' + date_o.getFullYear();
                     date = date + ' ' + date_o.getHours() + ':' + date_o.getMinutes();
                 } else {
                     date = '';
