@@ -56,6 +56,7 @@ function location_error( msg ) {
 }
 
 function lookup_string(q) {
+    var i;
     q = q.toLowerCase();
     q = q.replace(/[^\-&\w ']/, ' ');
     q = q.replace(/\s+/, ' ');
@@ -562,6 +563,7 @@ function submit_back() {
 }
 
 function display_saved_reports() {
+    var i;
     if ( localStorage.getObject( 'reports' ) ) {
         var r = localStorage.getObject('reports');
         var list = $('<ul id="current" class="issue-list-a tab open"></ul>');
