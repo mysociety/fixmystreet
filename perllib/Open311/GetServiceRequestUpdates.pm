@@ -68,7 +68,7 @@ sub update_comments {
     my $requests = $open311->get_service_request_updates( @args );
 
     unless ( $open311->success ) {
-        warn "Failed to fetch ServiceRequest Updates: " . $open311->error
+        warn "Failed to fetch ServiceRequest Updates for " . $council_details->{areaid} . ":\n" . $open311->error
             if $self->verbose;
         return 0;
     }

@@ -352,7 +352,11 @@ sub _get {
             $self->success(1);
         } else {
             $self->success(0);
-            $self->error( $res->status_line );
+            $self->error( sprintf(
+                "request failed: %s\n%s\n",
+                $res->status_line,
+                $uri->as_string
+            ) );
         }
     }
 
@@ -391,7 +395,7 @@ sub _post {
         return $res->decoded_content;
     } else {
         $self->success(0);
-        $self->error( sprintf( 
+        $self->error( sprintf(
             "request failed: %s\nerror: %s\n%s\n",
             $res->status_line,
             $self->_process_error( $res->decoded_content ),
