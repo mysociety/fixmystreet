@@ -77,13 +77,6 @@ function tabs(elem, indirect) {
 }
 
 
-$(document).delegate( '#front-page', 'pageshow', function(event, ui) {
-    if (geo_position_js.init() && !$('#geolocate_link').length) {
-        $('#postcodeForm').after('<a href="#" id="geolocate_link">&hellip; or locate me automatically</a>');
-        $('#geolocate_link').click(getPosition);
-    }
-});
-
 $(document).bind('pageshow', function(){
     var $html = $('html');
 
