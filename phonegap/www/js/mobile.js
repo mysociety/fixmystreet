@@ -48,7 +48,7 @@ function location_error( msg ) {
         return;
     }
 
-    if ( !$('#location_error') ) {
+    if ( $('#location_error').length === 0 ) {
         $('#postcodeForm').after('<p id="location_error"></p>');
     }
 
@@ -153,7 +153,17 @@ function foundLocation(myLocation) {
     }
 }
 
-function notFoundLocation() { if ( watch_id ) { location_error( 'Could not find location' ); } else { console.log('should not be here'); } }
+var location_error_str = '';
+function notFoundLocation() {
+    if ( watch_id ) {
+        location_error_str = 'Could not find location';
+        navigator.geolocation.clearWatch(watch_id);
+        watch_id = null;
+        $.mobile.changePage('frontpage-form.html');
+    } else {
+        console.log('should not be here');
+    }
+}
 
 function getPosition() {
     if ( !can_geolocate ) {
@@ -689,13 +699,17 @@ function submit_problem_show() {
     }
 }
 
+var geocheck_count = 0;
 
 function decide_front_page() {
     $.mobile.loading( 'show' );
-    if ( !can_geolocate ) {
+    if ( !can_geolocate || geocheck_count < 10 ) {
+        geocheck_count++;
         window.setTimeout( decide_front_page, 100 );
         return;
     }
+
+    geocheck_count = 0;
 
     localStorage.offline = 0;
     delete localStorage.currentReport;
@@ -706,6 +720,13 @@ function decide_front_page() {
         $.mobile.changePage( 'no_connection.html' );
     } else {
         getPosition();
+    }
+}
+
+function locate_page_display() {
+    if ( location_error_str !== '' ) {
+        location_error( location_error_str );
+        location_error_str = '';
     }
 }
 
@@ -723,6 +744,7 @@ $(document).on('pageshow', '#my-reports-page', display_saved_reports);
 $(document).on('pageshow', '#report-page', display_saved_report);
 $(document).on('pageshow', '#submit-problem', submit_problem_show);
 $(document).on('pageshow', '#no-connection-page', check_for_gps);
+$(document).on('pageshow', '#locate-page', locate_page_display);
 
 $(document).bind('pageinit', function() {
     $('#signInForm').on('submit', sign_in);
