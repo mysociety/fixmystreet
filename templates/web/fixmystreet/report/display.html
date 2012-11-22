@@ -23,7 +23,13 @@
 
 <div class="shadow-wrap">
     <ul id="key-tools">
+        [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_council( c.cobrand.council_id ) %]
+        <li><form method="post" action="/report/delete/[% problem.id %]">
+            <input type="submit" id="key-tool-report-abuse" class="abuse" value="Remove from site">
+        </form></li>
+        [% ELSE %]
         <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse' ) %]</a></li>
+        [% END %]
         <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
         [% IF c.cobrand.moniker == 'fixmystreet' %]
         <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>

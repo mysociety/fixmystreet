@@ -728,5 +728,7 @@ sub can_support_problems { return 0; }
 
 sub default_map_zoom { undef };
 
+sub users_can_hide { return 0; }
+
 1;
 

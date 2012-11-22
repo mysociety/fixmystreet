@@ -34,5 +34,7 @@ sub example_places {
 
 sub default_map_zoom { return 3; }
 
+sub users_can_hide { return 1; }
+
 1;
 
