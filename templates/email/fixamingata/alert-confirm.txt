@@ -1,13 +1,13 @@
-Subject: Confirm your alert on [% INCLUDE 'site-name.txt' | trim %]
+Subject: Bekräfta din bevakning på [% INCLUDE 'site-name.txt' | trim %]
 
-Hi,
+Hej,
 
-Please click on the link below to confirm the alert you just
-asked to subscribe to on [% INCLUDE 'site-name.txt' | trim %]:
+vänligen klicka på länken nedan för att bekräfta den bevakning du
+just valde att prenumerera till på [% INCLUDE 'site-name.txt' | trim %]:
 
     [% token_url %]
 
-If you can't click the link, please copy and paste it to the
-address bar of your web browser.
+Om du inte kan klicka på länken kan du kopiera den och klistra in den
+i adressfältet på din webbläsare.
 
 [% INCLUDE 'signature.txt' %]

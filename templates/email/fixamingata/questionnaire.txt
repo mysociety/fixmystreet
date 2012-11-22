@@ -1,21 +1,20 @@
-Subject: FixMyStreet questionnaire about '<?=$values['title']?>'
+Subject: Frågeformulär om '<?=$values['title']?>'
 
-Hi <?=$values['name']?>,
+Hej <?=$values['name']?>,
 
-<?=$values['created']?> ago, you left a problem on FixMyStreet
-with the details provided at the end of this email. To keep our
-site up to date and relevant, we'd appreciate it if you could
-follow the link below and fill in our short questionnaire
-updating the status of your problem:
+<?=$values['created']?> sedan lämnade du en rapport på Fixa Min Gata.
+För att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde
+klicka på länken nedan och svara på ett par korta frågor om det problem
+du rapporterade:
 
     <?=$values['url']?>
 
-Please do not reply to this email; there is a public comment
-box on the questionnaire.
+Var snäll och svara inte på det här brevet. Använd istället
+kommentarsfältet i frågeformuläret.
 
 <?=$values['signature']?>
 
-Your problem was as follows:
+Ditt rapporterade problem var enligt nedan:
 
 <?=$values['title']?>
 

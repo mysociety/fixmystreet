@@ -1,10 +1,10 @@
-Subject: New nearby problems on FixMyStreet
+Subject: Nya rapporter på FixMyStreet
 
-The following nearby problems have been added:
+Följande rapporter har nyligen lagts till på:
 
 <?=$values['data']?>
 
 <?=$values['signature']?>
 
-To stop receiving emails when there are nearby problems,
-please follow this link: <?=$values['unsubscribe_url']?>
+Om du vill avsluta din prenumeration på nya rapporter
+kan du klickan på följande länk: <?=$values['unsubscribe_url']?>
