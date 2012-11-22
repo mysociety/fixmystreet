@@ -35,7 +35,7 @@ sub fetch {
         if ( $council->area_id =~ /2482/ ) {
             my $endpoints = $o->endpoints;
             $endpoints->{update} = 'update.xml';
-            $endpoints->{service_requests_updates} = 'update.xml';
+            $endpoints->{service_request_updates} = 'update.xml';
             $o->endpoints( $endpoints );
         }
 
