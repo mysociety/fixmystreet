@@ -275,26 +275,31 @@ sub _populate_service_request_update_params {
     my $name = $comment->name || $comment->user->name;
     my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
 
+    # fall back to problem state as it's probably correct
+    my $state = $comment->problem_state || $comment->problem->state;
+
     my $status = 'OPEN';
     if ( $self->extended_statuses ) {
-        if ( $comment->problem->is_fixed ) {
+        if ( FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) {
             $status = 'FIXED';
-        } elsif ( $comment->problem->state eq 'in progress' ) {
+        } elsif ( $state eq 'in progress' ) {
             $status = 'IN_PROGRESS';
-        } elsif ($comment->problem->state eq 'action scheduled'
-            || $comment->problem->state eq 'planned' ) {
+        } elsif ($state eq 'action scheduled'
+            || $state eq 'planned' ) {
             $status = 'ACTION_SCHEDULED';
-        } elsif ( $comment->problem->state eq 'investigating' ) {
+        } elsif ( $state eq 'investigating' ) {
             $status = 'INVESTIGATING';
-        } elsif ( $comment->problem->state eq 'duplicate' ) {
+        } elsif ( $state eq 'duplicate' ) {
             $status = 'DUPLICATE';
-        } elsif ( $comment->problem->state eq 'not responsible' ) {
+        } elsif ( $state eq 'not responsible' ) {
             $status = 'NOT_COUNCILS_RESPONSIBILITY';
-        } elsif ( $comment->problem->state eq 'unable to fix' ) {
+        } elsif ( $state eq 'unable to fix' ) {
             $status = 'NO_FURTHER_ACTION';
         }
     } else {
-        $status = $comment->problem->is_open ? 'OPEN' : 'CLOSED',;
+        if ( !FixMyStreet::DB::Result::Problem->open_states()->{$state} ) {
+            $status = 'CLOSED';
+        }
     }
 
     my $params = {

@@ -191,6 +191,7 @@ my $comment = FixMyStreet::App->model('DB::Comment')->new( {
     anonymous => 0,
     text => 'this is a comment',
     confirmed => $dt,
+    problem_state => 'confirmed',
     extra => { title => 'Mr', email_alerts_requested => 0 },
 } );
 
@@ -317,6 +318,7 @@ foreach my $test (
     },
 ) {
     subtest $test->{desc} => sub {
+        $comment->problem_state( $test->{state} );
         $comment->problem->state( $test->{state} );
         $comment->anonymous( $test->{anon} );
 
@@ -325,6 +327,59 @@ foreach my $test (
         my $c = CGI::Simple->new( $results->{ req }->content );
         is $c->param('status'), $test->{status}, 'correct status';
         is $c->param('public_anonymity_required'), $test->{anon} ? 'TRUE' : 'FALSE', 'correct anonymity';
+
+        if ( $test->{extended} ) {
+            my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_statuses => 1 } );
+            my $c = CGI::Simple->new( $results->{ req }->content );
+            is $c->param('status'), $test->{extended}, 'correct extended status';
+        }
+    };
+}
+
+my $dt2 = $dt->clone;
+$dt2->add( 'minutes' => 1 );
+
+my $comment2 = FixMyStreet::App->model('DB::Comment')->new( {
+    id => 38363,
+    user => $user,
+    problem => $problem,
+    anonymous => 0,
+    text => 'this is a comment',
+    confirmed => $dt,
+    problem_state => 'confirmed',
+    extra => { title => 'Mr', email_alerts_requested => 0 },
+} );
+
+for my $test (
+    {
+        desc => 'comment with fixed - council state sends status of CLOSED even if problem is open',
+        state => 'fixed - council',
+        problem_state => 'confirmed',
+        status => 'CLOSED',
+        extended => 'FIXED',
+    },
+    {
+        desc => 'comment marked open sends status of OPEN even if problem is closed',
+        state => 'confirmed',
+        problem_state => 'fixed - council',
+        status => 'OPEN',
+        extended => 'OPEN',
+    },
+    {
+        desc => 'comment with no problem state falls back to report state',
+        state => '',
+        problem_state => 'fixed - council',
+        status => 'CLOSED',
+        extended => 'FIXED',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $comment->problem_state( $test->{state} );
+        $comment->problem->state( $test->{problem_state} );
+        my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
+
+        my $c = CGI::Simple->new( $results->{ req }->content );
+        is $c->param('status'), $test->{status}, 'correct status';
 
         if ( $test->{extended} ) {
             my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_statuses => 1 } );
