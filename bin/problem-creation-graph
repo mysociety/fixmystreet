@@ -42,7 +42,9 @@ function grab_data {
         $1
         group by date(created)
         order by date(created)
-        ;" | psql --host $OPTION_FMS_DB_HOST --port $OPTION_FMS_DB_PORT -A -F " " $OPTION_FMS_DB_NAME $OPTION_FMS_DB_USER | egrep -v "date|rows" >$2
+        ;" | psql -A -F " " $OPTION_FMS_DB_NAME $OPTION_FMS_DB_USER | egrep -v "date|rows" >$2
+	# We are not using password, we are using "ident authentication" instead
+        #;" | psql --host $OPTION_FMS_DB_HOST --port $OPTION_FMS_DB_PORT -A -F " " $OPTION_FMS_DB_NAME $OPTION_FMS_DB_USER | egrep -v "date|rows" >$2
 }
 
 # rather nastily, work out the cumulative heights in reverse, so can plot impulses on top of each other
