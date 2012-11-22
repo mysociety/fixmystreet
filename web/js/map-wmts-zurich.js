@@ -12,9 +12,6 @@ function init_zurich_map(after) {
         projection: new OpenLayers.Projection("EPSG:21781"),
         displayProjection: new OpenLayers.Projection("EPSG:21781"),
         maxExtent: new OpenLayers.Bounds(676000,241000,690000,255000),
-        //projection: new OpenLayers.Projection("EPSG:4326"),
-        //displayProjection: new OpenLayers.Projection("EPSG:4326"),
-        //maxExtent: new OpenLayers.Bounds(8.444933818976226,47.31509040172551,8.632922236617937,47.442777990747416),
         units: 'm',
         scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500'],
         controls: fixmystreet.controls
@@ -47,7 +44,6 @@ function init_zurich_map(after) {
             // For some reason with OpenLayers 2.11 the format
             // returns a KVP url not a REST one, despite the settings
             // we have above, so for now I'm hardcoding the right one
-            //layer.url = layer.url.replace('arcgis/rest/services/', '');
             layer.url = "http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/";
 
             fixmystreet.map.addLayer(layer);

@@ -1,14 +1,13 @@
 #!/usr/bin/perl
 #
 # FixMyStreet:Map::Zurich
-# Zurich have their own tileserver serving aerial photos instead
-# of street maps.
+# Zurich have their own tileserver.
 #
 # Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
 # Email: steve@mysociety.org; WWW: http://www.mysociety.org/
 
 package FixMyStreet::Map::Zurich;
-use base 'FixMyStreet::Map::FMS';
+use base 'FixMyStreet::Map::OSM';
 
 use strict;
 
@@ -21,19 +20,18 @@ sub map_template {
 }
 
 sub base_tile_url {
-    return 'http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/';
+    return 'http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/1.0.0/Luftbild/default/default028mm';
 }
 
-# TODO - totally wrong probably - how do we actually do this?
 sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $tile_url = $self->base_tile_url();
     return [
-        "$tile_url/$z/" . ($x - 1) . "/" . ($y - 1),
-        "$tile_url/$z/$x/" . ($y - 1),
-        "$tile_url/$z/" . ($x - 1) . "/$y",
-        "$tile_url/$z/$x/$y",
+        "$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".jpg",
+        "$tile_url/$z/$x/" . ($y - 1) . ".jpg",
+        "$tile_url/$z/" . ($x - 1) . "/$y.jpg",
+        "$tile_url/$z/$x/$y.jpg",
     ];
 }
 
