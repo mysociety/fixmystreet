@@ -1,7 +1,11 @@
 Subject: [% loc('Your FixMyStreet.com account details') %]
 
-Please click on the link below to confirm your email address. Then you will be
-able to view your problem reports and manage them more easily.
+Välkommen till Fixa Min Gata!
+
+För att bekräfta din epostadress måste du nu klicka på länken nedan.
+Du kommer sedan att kunna se dina rapporter och hantera dem via
+webbsidan.
+
 
 [% c.uri_for_action( 'auth/token', token ) %]
 

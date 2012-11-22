@@ -1,19 +1,19 @@
-Subject: Confirm your problem on [% INCLUDE 'site-name.txt' | trim %]
+Subject: Bekräfta din rapport på [% INCLUDE 'site-name.txt' | trim %]
 
-Hi [% report.name %],
+Hej [% report.name %],
 
-Please click on the link below to confirm the problem you just
-added to [% INCLUDE 'site-name.txt' | trim %]:
+för att bekräfta den rapport som du nyligen lade in på Fixa Min Gata
+måste du klicka på nedanstående länk:
 
 [% token_url %]
 
-If your email program does not let you click on this link,
-copy and paste it into your web browser and press return.
+Om det inte går att klicka på länken kan du kopiera den och klistra in
+i adressfältet på din webläsare.
 
-Your problem had the title:
-[% report.title %]
+Din rapport har titeln: [% report.title %]
+Du har angivit följande information om problemet:
 
-And details:
 [% report.detail %]
+
 
 [% INCLUDE 'signature.txt' %]
