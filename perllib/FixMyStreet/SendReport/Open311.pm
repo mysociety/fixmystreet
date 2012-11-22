@@ -96,7 +96,7 @@ sub send {
 
         if ($row->cobrand eq 'fixmybarangay') {
             # FixMyBarangay endpoints expect external_id as an attribute
-            $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  ); 
+            $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  );
         }
 
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
@@ -109,6 +109,11 @@ sub send {
         if ( $resp ) {
             $row->external_id( $resp );
             $row->send_method_used('Open311');
+            if ($row->cobrand eq 'fixmybarangay') {
+                # currently the only external body using Open311 is DPS
+                # (this will change when we have 'body' logic in place, meanwhile: hardcoded)
+                $row->external_body("DPS");
+            }
             $result *= 0;
             $self->success( 1 );
         } else {
