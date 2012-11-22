@@ -6,22 +6,7 @@
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-# Yuck
-if [ -e ../../locale ]
-then
-    cd ../../
-else if [ -e ../locale ]
-then
-    cd ../
-else if [ -e locale ]
-then
-    cd .
-else 
-    echo "Please run with current directory fixmystreet"
-    exit 1
-fi
-fi
-fi
+cd "$(dirname $(readlink -f $BASH_SOURCE))/.."
 
 for X in locale/*.UTF-8
 do

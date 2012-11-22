@@ -7,21 +7,7 @@
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-if [ -e ../../locale ]
-then
-    cd ../../
-else if [ -e ../locale ]
-then
-    cd ../
-else if [ -e locale ]
-then
-    cd .
-else 
-    echo "Please run with current directory fixmystreet/bin"
-    exit 1
-fi
-fi
-fi
+cd "$(dirname $(readlink -f $BASH_SOURCE))/.."
 
 # File to write to, clear it to start with
 PO=locale/FixMyStreet.po
