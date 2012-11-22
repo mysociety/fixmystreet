@@ -157,7 +157,7 @@ sub find_closest {
     return $str;
 }
 
-sub reports_council_check {
+sub reports_body_check {
     my ( $self, $c, $code ) = @_;
 
     # Manual misspelling redirect

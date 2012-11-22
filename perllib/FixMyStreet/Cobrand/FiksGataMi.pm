@@ -215,7 +215,7 @@ sub council_rss_alert_options {
 
 }
 
-sub reports_council_check {
+sub reports_body_check {
     my ( $self, $c, $council ) = @_;
 
     if ($council eq 'Oslo') {

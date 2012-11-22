@@ -83,13 +83,13 @@ sub index : Path : Args(0) {
 
 =head2 index
 
-Show the summary page for a particular council.
+Show the summary page for a particular body.
 
 =cut
 
-sub council : Path : Args(1) {
-    my ( $self, $c, $council ) = @_;
-    $c->detach( 'ward', [ $council ] );
+sub body : Path : Args(1) {
+    my ( $self, $c, $body ) = @_;
+    $c->detach( 'ward', [ $body ] );
 }
 
 =head2 index
@@ -101,7 +101,7 @@ Show the summary page for a particular ward.
 sub ward : Path : Args(2) {
     my ( $self, $c, $council, $ward ) = @_;
 
-    $c->forward( 'council_check', [ $council ] );
+    $c->forward( 'body_check', [ $council ] );
     $c->forward( 'ward_check', [ $ward ] )
         if $ward;
     $c->forward( 'load_parent' );
@@ -132,7 +132,8 @@ sub ward : Path : Args(2) {
     $c->cobrand->tweak_all_reports_map( $c );
 
     # List of wards
-    unless ($c->stash->{ward}) {
+    # Ignore external_body special council thing
+    unless ($c->stash->{ward} || !$c->stash->{council}->{id}) {
         my $children = mySociety::MaPit::call('area/children', [ $c->stash->{council}->{id} ],
             type => $c->cobrand->area_types_children,
         );
@@ -145,9 +146,9 @@ sub ward : Path : Args(2) {
     }
 }
 
-sub rss_council : Regex('^rss/(reports|area)$') : Args(1) {
-    my ( $self, $c, $council ) = @_;
-    $c->detach( 'rss_ward', [ $council ] );
+sub rss_body : Regex('^rss/(reports|area)$') : Args(1) {
+    my ( $self, $c, $body ) = @_;
+    $c->detach( 'rss_ward', [ $body ] );
 }
 
 sub rss_ward : Regex('^rss/(reports|area)$') : Args(2) {
@@ -157,8 +158,8 @@ sub rss_ward : Regex('^rss/(reports|area)$') : Args(2) {
 
     $c->stash->{rss} = 1;
 
-    $c->forward( 'council_check', [ $council ] );
-    $c->forward( 'ward_check',    [ $ward    ] ) if $ward;
+    $c->forward( 'body_check', [ $council ] );
+    $c->forward( 'ward_check', [ $ward ] ) if $ward;
 
     if ($rss eq 'area' && $c->stash->{council}{type} ne 'DIS' && $c->stash->{council}{type} ne 'CTY') {
         # Two possibilites are the same for one-tier councils, so redirect one to the other
@@ -195,15 +196,15 @@ sub rss_ward : Regex('^rss/(reports|area)$') : Args(2) {
     $c->forward( '/rss/output' );
 }
 
-=head2 council_check
+=head2 body_check
 
-This action checks the council name (or code) given in a URI exists, is valid
-and so on. If it is, it stores the Area in the stash, otherwise it redirects
-to the all reports page.
+This action checks the council or external_body name (or code) given in a URI
+exists, is valid and so on. If it is, it stores the area or body in the stash,
+otherwise it redirects to the all reports page.
 
 =cut
 
-sub council_check : Private {
+sub body_check : Private {
     my ( $self, $c, $q_council ) = @_;
 
     $q_council =~ s/\+/ /g;
@@ -211,7 +212,7 @@ sub council_check : Private {
 
     # Check cobrand specific incantations - e.g. ONS codes for UK,
     # Oslo/ kommunes sharing a name in Norway
-    return if $c->cobrand->reports_council_check( $c, $q_council );
+    return if $c->cobrand->reports_body_check( $c, $q_council );
 
     # If we're passed an ID number (don't think this is used anywhere, it
     # certainly shouldn't be), just look that up on MaPit and redirect
@@ -220,6 +221,15 @@ sub council_check : Private {
         $c->detach( 'redirect_index') if $council->{error};
         $c->stash->{council} = $council;
         $c->detach( 'redirect_area' );
+    }
+
+    if ( $c->cobrand->reports_by_body ) {
+        my $problem = $c->cobrand->problems->search({ 'lower(me.external_body)' => lc $q_council }, { columns => [ 'external_body' ], rows => 1 })->single;
+        if ( $problem ) {
+            # If external_body, put as a council with ID 0 for the moment.
+            $c->stash->{council} = { id => 0, name => $problem->external_body };
+            return;
+        }
     }
 
     # We must now have a string to check
@@ -248,7 +258,7 @@ sub council_check : Private {
 =head2 ward_check
 
 This action checks the ward name from a URI exists and is part of the right
-parent, already found with council_check. It either stores the ward Area if
+parent, already found with body_check. It either stores the ward Area if
 okay, or redirects to the council page if bad.
 
 =cut
@@ -321,6 +331,9 @@ sub load_and_group_problems : Private {
             { 'like', $c->stash->{council}->{id} . ',%' },
             { 'like', '%,' . $c->stash->{council}->{id} },
         ];
+    } elsif ($c->stash->{council} && $c->stash->{council}->{id} == 0) {
+        # A proxy for an external_body
+        $where->{'lower(external_body)'} = lc $c->stash->{council}->{name};
     } elsif ($c->stash->{council}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{council}->{id} . ',%' };
         $where->{council} = [
@@ -356,6 +369,11 @@ sub load_and_group_problems : Private {
         my %problem = zip @cols, @problem;
         $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
         $c->log->debug( $problem{'cobrand'} . ', cobrand is ' . $c->cobrand->moniker );
+        if ( !$c->stash->{council}->{id} ) {
+            # An external_body entry
+            add_row( \%problem, 0, \%problems, \@pins );
+            next;
+        }
         if ( !$problem{council} ) {
             # Problem was not sent to any council, add to possible councils
             $problem{councils} = 0;
@@ -368,7 +386,7 @@ sub load_and_group_problems : Private {
             my @council = split( /,/, $council );
             $problem{councils} = scalar @council;
             foreach ( @council ) {
-                next if $c->stash->{council} && $_ != $c->stash->{council}->{id};
+                next if $_ != $c->stash->{council}->{id};
                 add_row( \%problem, $_, \%problems, \@pins );
             }
         }

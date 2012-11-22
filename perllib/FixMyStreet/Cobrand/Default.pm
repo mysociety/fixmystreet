@@ -617,14 +617,14 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
-=head2 reports_council_check
+=head2 reports_body_check
 
 This function is called by the All Reports page, and lets you do some cobrand
-specific checking on the URL passed to try and match to a relevant area.
+specific checking on the URL passed to try and match to a relevant body.
 
 =cut
 
-sub reports_council_check {
+sub reports_body_check {
     my ( $self, $c, $code ) = @_;
     return 0;
 }
@@ -729,6 +729,15 @@ sub can_support_problems { return 0; }
 sub default_map_zoom { undef };
 
 sub users_can_hide { return 0; }
+
+=head2 reports_by_body
+
+Can /reports show reports indexed by external_body? This is a temporary measure
+until the contacts/area/body handling is rewritten to be better.
+
+=cut
+
+sub reports_by_body { 0; }
 
 1;
 

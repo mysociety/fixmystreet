@@ -221,6 +221,7 @@ create table problem (
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
+create index problem_external_body_idx on problem(lower(external_body));
 
 create table questionnaire (
     id serial not null primary key,
