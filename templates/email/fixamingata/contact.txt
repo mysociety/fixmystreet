@@ -1,5 +1,3 @@
-Subject: FMS message: [% subject %]
+Subject: [% subject %] (via Fixa Min Gata)
 
 [% message %]
-
-[ Sent by contact.cgi on [% host %]. IP address [% ip %] ]
