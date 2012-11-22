@@ -55,6 +55,11 @@ sub send_service_request {
     my $extra = shift;
     my $service_code = shift;
 
+    # all FMB Open311 requests are current ly marked DPS (actually could check for Streetlight category too)
+    if (defined($problem->cobrand) &&  $problem->cobrand eq "fixmybarangay") {
+        $problem->update({external_body => "DPS" }); # hardcoded for FMB, pending bodies table
+    }
+
     my $params = $self->_populate_service_request_params(
         $problem, $extra, $service_code
     );
