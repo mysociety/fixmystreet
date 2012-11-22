@@ -140,25 +140,29 @@ var message_manager = (function() {
     };
     
     function encodeBase64(input) {
-        var
-            chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
             INVALID_CHARACTER_ERR = (function () {
-        // fabricate a suitable error object
-        try { document.createElement('$'); }
-        catch (error) { return error; }}());
-        // encoder
+                // fabricate a suitable error object
+                try {
+                    document.createElement('$');
+                } catch (error) {
+                    return error;
+                }
+            }()),
+            block, charCode, idx, map, output;
+        // encoder (with wee change by mhl Mark to satisfy jslint)
         // [https://gist.github.com/999166] by [https://github.com/nignag]
-        for (
-            var block, charCode, idx = 0, map = chars, output = '';
-            input.charAt(idx | 0) || (map = '=', idx % 1);
-            output += map.charAt(63 & block >> 8 - idx % 1 * 8)
-        ) {
+        for (idx = 0, map = chars, output = '';
+             input.charAt(idx | 0) || ((map = '=') && (idx % 1));
+             output += map.charAt(63 & block >> 8 - idx % 1 * 8)) {
             charCode = input.charCodeAt(idx += 3/4);
-            if (charCode > 0xFF) throw INVALID_CHARACTER_ERR;
+            if (charCode > 0xFF) {
+                throw INVALID_CHARACTER_ERR;
+            }
             block = block << 8 | charCode;
         }
         return output;
-    };
+    }
 
     var get_current_auth_credentials = function() {
         var base_auth = "";
