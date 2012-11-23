@@ -207,6 +207,14 @@ sub _add_meta_to_contact {
         ];
     }
 
+    if ( ! $meta_data->{attributes}->{attribute} ) {
+        warn sprintf( "Empty meta data for %s at %s",
+                      $self->_current_service->{service_code},
+                      $self->_current_council->endpoint )
+        if $self->verbose;
+        return;
+    }
+
     # turn the data into something a bit more friendly to use
     my @meta =
         # remove trailing colon as we add this when we display so we don't want 2

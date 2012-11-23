@@ -372,6 +372,19 @@ for my $test (
     </service_definition>
         ',
     },
+    {
+        desc => 'check empty meta data handled',
+        has_meta => 1,
+        orig_meta => undef,
+        end_meta => undef,
+        meta_xml => '<?xml version="1.0" encoding="utf-8"?>
+    <service_definition>
+        <service_code>100</service_code>
+        <attributes>
+        </attributes>
+    </service_definition>
+        ',
+    },
 ) {
     subtest $test->{desc} => sub {
         my $processor = Open311::PopulateServiceList->new( council_list => [] );
