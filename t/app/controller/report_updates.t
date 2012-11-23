@@ -511,6 +511,7 @@ for my $test (
             state => 'confirmed',
         },
         state => 'confirmed',
+        reopened => 1,
     },
     {
         desc => 'from authority user marks report as action scheduled',
@@ -604,7 +605,11 @@ for my $test (
 
         my $update_meta = $mech->extract_update_metas;
         my $meta_state = $test->{meta} || $test->{fields}->{state};
-        like $update_meta->[0], qr/marked as $meta_state$/, 'update meta includes state change';
+        if ( $test->{reopened} ) {
+            like $update_meta->[0], qr/reopened$/, 'update meta says reopened';
+        } else {
+            like $update_meta->[0], qr/marked as $meta_state$/, 'update meta includes state change';
+        }
         like $update_meta->[0], qr{Test User \(Westminster City Council\)}, 'update meta includes council name';
         $mech->content_contains( 'Test User (<strong>Westminster City Council</strong>)', 'council name in bold');
 
@@ -612,6 +617,100 @@ for my $test (
         is $report->state, $test->{state}, 'state set';
     };
 }
+
+subtest "check comment with no status change has not status in meta" => sub {
+        $mech->log_in_ok( $user->email );
+        $user->from_council( 0 );
+        $user->update;
+
+        $mech->get_ok("/report/$report_id");
+
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    name => $user->name,
+                    may_show_name => 1,
+                    add_alert => undef,
+                    photo => '',
+                    update => 'Comment that does not change state',
+                },
+            },
+            'submit update'
+        );
+
+        $report->discard_changes;
+        my @updates = $report->comments->all;
+        is scalar @updates, 2, 'correct number of updates';
+
+        my $update = pop @updates;
+
+        is $report->state, 'fixed - council', 'correct report state';
+        is $update->problem_state, 'fixed - council', 'corect update state';
+        my $update_meta = $mech->extract_update_metas;
+        unlike $update_meta->[1], qr/marked as/, 'update meta does not include state change';
+
+        $user->from_council( 2504 );
+        $user->update;
+
+        $mech->get_ok("/report/$report_id");
+
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    name => $user->name,
+                    may_show_name => 1,
+                    add_alert => undef,
+                    photo => '',
+                    update => 'Comment that sets state to investigating',
+                    state => 'investigating',
+                },
+            },
+            'submit update'
+        );
+
+        $report->discard_changes;
+        @updates = $report->comments->all;
+        is scalar @updates, 3, 'correct number of updates';
+
+        $update = pop @updates;
+
+        is $report->state, 'investigating', 'correct report state';
+        is $update->problem_state, 'investigating', 'corect update state';
+        my $update_meta = $mech->extract_update_metas;
+        like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
+        unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
+        like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
+
+        my $dt = DateTime->now;
+        my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+            {
+                problem_id => $report_id,
+                user_id    => $user->id,
+                name       => 'Other User',
+                mark_fixed => 'false',
+                text       => 'This is some update text',
+                state      => 'confirmed',
+                confirmed  => $dt->ymd . ' ' . $dt->hms,
+                anonymous  => 'f',
+            }
+        );
+
+        $mech->get_ok("/report/$report_id");
+
+        $report->discard_changes;
+        @updates = $report->comments->all;
+        is scalar @updates, 4, 'correct number of updates';
+
+        $update = pop @updates;
+
+        is $report->state, 'investigating', 'correct report state';
+        is $update->problem_state, undef, 'no update state';
+        my $update_meta = $mech->extract_update_metas;
+        like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
+        unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
+        like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
+        unlike $update_meta->[3], qr/marked as/, 'fourth update meta has no state change';
+};
 
 $user->from_council(0);
 $user->update;
