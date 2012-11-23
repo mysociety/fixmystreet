@@ -13,21 +13,24 @@ en uppdatering om problemet:
 
 <?=$values['has_photo']?>
 
-Uppgiftslämnare
-===============
+** Uppgiftslämnare
+
 Namn: <?=$values['name']?>
+
 Epost: <?=$values['email']?>
+
 <?=$values['phone_line']?>
 
-Information om ärendet
-======================
+** Information om ärendet
+
 <?=$values['category_line']?>Ärende: <?=$values['title']?>
 
 <?=$values['detail']?>
 
-Geografisk position
-===================
+** Geografisk position
+
 <?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
+
 Longitude: <?=$values['longitude']?>
 
 <?=$values['closest_address']?>----------
