@@ -10,7 +10,7 @@ function init_zurich_map(after) {
 
     fixmystreet.map = new OpenLayers.Map('map', {
         projection: new OpenLayers.Projection("EPSG:21781"),
-        displayProjection: new OpenLayers.Projection("EPSG:21781"),
+        displayProjection: new OpenLayers.Projection("EPSG:4326"),
         maxExtent: new OpenLayers.Bounds(676000,241000,690000,255000),
         units: 'm',
         scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500'],
@@ -109,16 +109,9 @@ OpenLayers.Strategy.ZurichBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
         }
 
         var swissBounds = this.layer.map.getExtent();
-
-        // Transform bound corners into WGS84 - note x/y arrangement of
-        // values from the current bounding box, it seems wrong but is not.
-        var topLeft = OpenLayers.Projection.CH1903.projectInverseSwiss(
-                {y: swissBounds.left, x: swissBounds.top}
-            );
-        var bottomRight = OpenLayers.Projection.CH1903.projectInverseSwiss(
-                {y: swissBounds.right, x: swissBounds.bottom}
-            );  
-        return new OpenLayers.Bounds(topLeft.x, bottomRight.y, bottomRight.x, topLeft.y);
+        // Transform bound corners into WGS84
+        swissBounds.transform( new OpenLayers.Projection("EPSG:21781"), new OpenLayers.Projection("EPSG:4326") );
+        return swissBounds;
     },
 
     CLASS_NAME: "OpenLayers.Strategy.ZurichBBOX"

@@ -148,18 +148,20 @@ OpenLayers.Projection.CH1903 = {
 
     // Function to convert a WGS84 coordinate to a Swiss coordinate.
     projectForwardSwiss: function(point) {
-        var newPoint = {};
-        newPoint.x = OpenLayers.Projection.CH1903.WGStoCHx(point.x, point.y);
-        newPoint.y = OpenLayers.Projection.CH1903.WGStoCHy(point.x, point.y);
-        return newPoint;
+        var x = OpenLayers.Projection.CH1903.WGStoCHx(point.y, point.x),
+            y = OpenLayers.Projection.CH1903.WGStoCHy(point.y, point.x);
+        point.x = y; // x/y are geometrically swapped by the conversion functions
+        point.y = x;
+        return point;
     },
 
     // Function to convert a Swiss coordinate to a WGS84 coordinate. 
     projectInverseSwiss: function(point) {
-        var newPoint = {};
-        newPoint.x = OpenLayers.Projection.CH1903.chToWGSlng(point.y, point.x);
-        newPoint.y = OpenLayers.Projection.CH1903.chToWGSlat(point.y, point.x);
-        return newPoint;
+        var lon = OpenLayers.Projection.CH1903.chToWGSlng(point.x, point.y);
+        var lat = OpenLayers.Projection.CH1903.chToWGSlat(point.x, point.y);
+        point.x = lon;
+        point.y = lat;
+        return point;
     }
 };
 
