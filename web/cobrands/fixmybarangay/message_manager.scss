@@ -30,11 +30,22 @@ $weak_text_color:      #666;
       }
     }
     #mm-status-message-container {
+      position: relative;
       min-height: 1.4em;
       margin: 0 0 8px 0.5em;
-      padding: 8px 4px;
+      padding: 8px 4px 8px 24px;
       color: $mm_status_message_color;
       font-style: italic;
+      p {
+        margin:0;
+        padding:0;
+      }
+      #mm-spinner {
+        position: absolute;
+        left: 4px;
+        top: 10px;
+        display: none;
+      }
     }
     #mm-login-container {
       display: none; // only shown on/after a 403
@@ -97,6 +108,7 @@ $weak_text_color:      #666;
         &.msg-is-active { 
           background-color: $contrast1; color:#fff;
           p:hover { background-color: $contrast1; color:#fff; } // fix for mouseover on p
+          p.mm-reply:hover {background-color: #eef; color:#000;} // fix for mouseover on p
         }
         span.msg-tag {
           width: 3em;

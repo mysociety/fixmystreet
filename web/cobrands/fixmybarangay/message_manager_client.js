@@ -197,12 +197,18 @@ var message_manager = (function() {
         if ($htauth_username.size() && ! $htauth_username.val()) {
             $htauth_username.val(suggest_username);
         }
-        $login_element.stop().slideDown();
+        $login_element.stop(true,true).slideDown();
     };
 
-    var say_status = function (msg) {
+    var say_status = function (msg, show_spinner) {
         if ($status_element) {
-            $status_element.stop().show().text(msg);
+            if (show_spinner) {
+                // slow fade in so that spinner only appears if there's a long delay
+                $status_element.find('#mm-spinner').stop(true,true).fadeIn(1200);
+            } else {
+                $status_element.find('#mm-spinner').stop(true,true).hide();
+            }
+            $status_element.stop(true,true).show().find('p').text(msg);
         }
     };
 
@@ -270,7 +276,7 @@ var message_manager = (function() {
         _username = data.username;
         var $output = $message_list_element;
         if (anim_duration > 0) {
-            $output.stop().fadeOut(anim_duration, function(){
+            $output.stop(true,true).fadeOut(anim_duration, function(){
                 render_available_messages(data, anim_duration);
             });
         } else {
@@ -310,11 +316,11 @@ var message_manager = (function() {
             var $li = $(this).closest('li');
             var id = $li.attr('id').replace(_msg_prefix, '');
             if ($li.hasClass('msg-is-locked')) {
-                say_status(get_msg(msg_trying_for_lock));
+                say_status(get_msg(msg_trying_for_lock), true);
             } else if ($li.hasClass('msg-is-owned')) {
-                say_status(get_msg(msg_checking_lock));
+                say_status(get_msg(msg_checking_lock), true);
             } else {
-                say_status(get_msg(msg_claiming_lock));
+                say_status(get_msg(msg_claiming_lock), true);
             }
             request_lock(id, options);
         });
@@ -355,10 +361,11 @@ var message_manager = (function() {
             show_login_form(suggest_username);
             return;
         }
-        $login_element.stop().hide();
+        $login_element.stop(true,true).hide();
         if (_url_root.length === 0) {
             say_status(msg_no_config_err);
         } else {
+            say_status("Fetching messages...", true);
             $.ajax({
                 dataType: "json", 
                 type:     "post", 
@@ -369,6 +376,7 @@ var message_manager = (function() {
                 },
                 success:  function(data, textStatus) {
                               show_available_messages(data, anim_duration);
+                              say_status("Fetching messages... done, OK", false); // loaded OK
                               if (typeof(callback) === "function") {
                                   callback.call($(this), data); // execute callback
                               }

@@ -12,7 +12,8 @@
 		</div>
 		<div id="mm-username-container">username:&nbsp;<span id="mm-received-username"></span></div>
 		<div id="mm-status-message-container">
-			<div id="mm-status-message"></div>
+			<img id="mm-spinner" src="/cobrands/fixmybarangay/images/fmb-spinner-16x16.gif" alt=""/>
+			<p id="mm-status-message"></p>
 		</div>
 		<div id="mm-login-container">
 			<div>
@@ -55,7 +56,7 @@ $(document).ready(function() {
 	}
 	
 	var mm_populate_list = function(data) {
-		$('#mm-status-message-container').text("Accessed Message Manager as " + data['username']);
+		$('#mm-status-message-container').find('p').text("Accessed Message Manager as " + data['username']);
 		$('input[name=mm_text]').prop('checked', false); // uncheck all
 		$('#mm-link-to-refresh').delay(2000).fadeIn();
 		if (refresh_period && can_refresh) {
