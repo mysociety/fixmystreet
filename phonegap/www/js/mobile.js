@@ -140,7 +140,7 @@ var watch_id = null;
 function foundLocation(myLocation) {
     var lat = myLocation.coords.latitude;
     var long = myLocation.coords.longitude;
-    $('#accuracy').text('have position within ' + parseInt(myLocation.coords.accuracy) + ' meters');
+    $('#accuracy').text('have position within ' + parseInt(myLocation.coords.accuracy, 10) + ' meters');
     if ( myLocation.coords.accuracy < 100 ) {
         navigator.geolocation.clearWatch(watch_id);
         show_around( lat, long );
@@ -695,6 +695,10 @@ function submit_problem_show() {
 
 var geocheck_count = 0;
 
+function prep_front_page() {
+    $('#accuracy').text('');
+}
+
 function decide_front_page() {
     $.mobile.loading( 'show' );
     if ( !can_geolocate && ( !navigator.network || !navigator.network.connection ) ) {
@@ -741,6 +745,7 @@ $(document).on('pageshow', '#report-created', function() {
 });
 
 
+$(document).on('pagebeforeshow', '#front-page', prep_front_page);
 $(document).on('pageshow', '#front-page', decide_front_page);
 $(document).on('pageshow', '#account-page', display_account_page);
 $(document).on('pageshow', '#my-reports-page', display_saved_reports);
