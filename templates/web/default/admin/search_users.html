@@ -20,8 +20,8 @@
         <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
         <td><a href="[% c.uri_for( 'search_reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
         <td>[% PROCESS value_or_nbsp value=user.from_council %]</td> 
-        <td>[% user.flagged ? loc('Yes') : '&nbsp;' %]</td> 
-        <td><a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a></td>
+        <td>[% user.flagged == 2 ? loc('(Email in abuse table)') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
+        <td>[% IF user.id %]<a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a>[% END %]</td>
     </tr>
 [%- END -%]
 </table>

@@ -1066,9 +1066,8 @@ subtest 'report search' => sub {
 };
 
 subtest 'search abuse' => sub {
-    $mech->get_ok( '/admin/search_abuse?search=example' );
-
-    $mech->content_contains('test4@example.com');
+    $mech->get_ok( '/admin/search_users?search=example' );
+    $mech->content_like(qr/test4\@example.com.*\n.*\n.*Email in abuse table/);
 };
 
 subtest 'show flagged entries' => sub {

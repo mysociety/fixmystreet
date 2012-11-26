@@ -739,8 +739,24 @@ sub search_users: Path('search_users') : Args(0) {
                 ]
             }
         );
+        my @users = $users->all;
+        my %email2user = map { $_->email => $_ } @users;
+        $c->stash->{users} = [ @users ];
 
-        $c->stash->{users} = [ $users->all ];
+        my $emails = $c->model('DB::Abuse')->search(
+            {
+                email => { ilike => $isearch }
+            }
+        );
+        foreach my $email ($emails->all) {
+            # Slight abuse of the boolean flagged value
+            if ($email2user{$email->email}) {
+                $email2user{$email->email}->flagged( 2 );
+            } else {
+                push @{$c->stash->{users}}, { email => $email->email, flagged => 2 };
+            }
+        }
+
     }
 
     return 1;
@@ -842,26 +858,6 @@ sub update_edit : Path('update_edit') : Args(1) {
             $c->forward( 'log_edit', [ $update->id, 'update', 'edit' ] );
         }
 
-    }
-
-    return 1;
-}
-
-sub search_abuse : Path('search_abuse') : Args(0) {
-    my ( $self, $c ) = @_;
-
-    $c->forward('check_page_allowed');
-
-    my $search = $c->req->param('search');
-
-    if ($search) {
-        my $emails = $c->model('DB::Abuse')->search(
-            {
-                email => { ilike => "\%$search\%" }
-            }
-        );
-
-        $c->stash->{emails} = [ $emails->all ];
     }
 
     return 1;
@@ -1033,13 +1029,12 @@ sub set_allowed_pages : Private {
     if( !$pages ) {
         $pages = {
              'summary' => [_('Summary'), 0],
-             'council_list' => [_('Council contacts'), 1],
-             'search_reports' => [_('Search Reports'), 2],
+             'council_list' => [_('Bodies'), 1],
+             'search_reports' => [_('Reports'), 2],
              'timeline' => [_('Timeline'), 3],
-             'questionnaire' => [_('Survey Results'), 4],
-             'search_users' => [_('Search Users'), 5], 
-             'search_abuse' => [_('Search Abuse'), 5],
-             'list_flagged'  => [_('List Flagged'), 6],
+             'questionnaire' => [_('Survey'), 4],
+             'search_users' => [_('Users'), 5],
+             'list_flagged'  => [_('Flagged'), 6],
              'stats'  => [_('Stats'), 6],
              'user_edit' => [undef, undef], 
              'council_contacts' => [undef, undef],
