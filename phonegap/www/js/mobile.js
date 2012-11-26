@@ -142,6 +142,7 @@ function foundLocation(myLocation) {
     var lat = myLocation.coords.latitude;
     var long = myLocation.coords.longitude;
     watch_count++;
+    $('#accuracy').text('have position within ' + parseInt(myLocation.coords.accuracy) + ' meters');
     if ( myLocation.coords.accuracy < 100 ) {
         navigator.geolocation.clearWatch(watch_id);
         show_around( lat, long );
@@ -172,7 +173,7 @@ function getPosition() {
     }
     if ( !watch_id ) {
         watch_count = 0;
-        watch_id = navigator.geolocation.watchPosition(foundLocation, notFoundLocation, { timeout: 60000, enableHighAccuracy: true } );
+        watch_id = navigator.geolocation.watchPosition(foundLocation, notFoundLocation, { timeout: 7000, enableHighAccuracy: true } );
     } else {
         alert('currently locating');
     }
@@ -209,7 +210,7 @@ function check_for_gps() {
     }
     if ( !watch_id ) {
         watch_count = 0;
-        watch_id = navigator.geolocation.watchPosition(have_gps, do_not_have_gps, { timeout: 60000, enableHighAccuracy: true } );
+        watch_id = navigator.geolocation.watchPosition(have_gps, do_not_have_gps, { timeout: 7000, enableHighAccuracy: true } );
     } else {
         alert('currently locating');
     }
@@ -724,6 +725,12 @@ function decide_front_page() {
 }
 
 function locate_page_display() {
+    if ( watch_id ) {
+        $.mobile.loading( 'hide' );
+        navigator.geolocation.clearWatch(watch_id);
+        watch_id = null;
+    }
+
     if ( location_error_str !== '' ) {
         location_error( location_error_str );
         location_error_str = '';
