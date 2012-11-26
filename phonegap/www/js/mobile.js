@@ -136,21 +136,15 @@ function locate() {
 }
 
 var watch_id = null;
-var watch_count = 0;
 
 function foundLocation(myLocation) {
     var lat = myLocation.coords.latitude;
     var long = myLocation.coords.longitude;
-    watch_count++;
     $('#accuracy').text('have position within ' + parseInt(myLocation.coords.accuracy) + ' meters');
     if ( myLocation.coords.accuracy < 100 ) {
         navigator.geolocation.clearWatch(watch_id);
         show_around( lat, long );
         watch_id = null;
-    } else if ( watch_count > 10 ) {
-        navigator.geolocation.clearWatch(watch_id);
-        watch_id = null;
-        $.mobile.changePage( 'frontpage-form.html' );
     }
 }
 
@@ -173,7 +167,6 @@ function getPosition() {
         return;
     }
     if ( !watch_id ) {
-        watch_count = 0;
         watch_id = navigator.geolocation.watchPosition(foundLocation, notFoundLocation, { timeout: 7000, enableHighAccuracy: true } );
     } else {
         alert('currently locating');
@@ -210,7 +203,6 @@ function check_for_gps() {
         return;
     }
     if ( !watch_id ) {
-        watch_count = 0;
         watch_id = navigator.geolocation.watchPosition(have_gps, do_not_have_gps, { timeout: 7000, enableHighAccuracy: true } );
     } else {
         alert('currently locating');
