@@ -644,6 +644,10 @@ p.label-valid {
 }
 
 //footer blocks
+footer {
+    margin-top: 1em;
+}
+
 #footer-mobileapps {
   @extend .full-width;
   padding:1em;

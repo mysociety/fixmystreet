@@ -1,18 +1,16 @@
-<html>
-<head>
-<title>[% title %] - [% loc('FixMyStreet administration') %]</title>
+[% INCLUDE 'header.html' admin = 1, bodyclass = 'fullwidthpage' %]
 <style type="text/css">
 dt { clear: left; float: left; font-weight: bold; }
 dd { margin-left: 8em; }
 .hidden { color: #666666; }
 .error { color: red; }
+select { width: auto; }
 </style>
-</head>
-<body>
 
-    <strong>[% loc('FixMyStreet admin:') %]</strong>
+    <p><strong>[% loc('FixMyStreet admin:') %]</strong>
     [%- FOREACH link IN allowed_links %]
     <a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a>
-    [%- END %]
+    [% IF NOT loop.last %]|[% END %]
+    [% END %]</p>
 
     <h1>[% title %]</h1>
