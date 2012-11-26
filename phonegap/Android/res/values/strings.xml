@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, AndroidActivity!</string>
+    <string name="hello">Hello World, FxiMyStreet!</string>
     <string name="app_name">FixMyStreet</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">AndroidActivity</string>
+    <string name="title_activity_main">FixMyStreet</string>
 
 </resources>
