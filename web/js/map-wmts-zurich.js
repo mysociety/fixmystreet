@@ -2,65 +2,6 @@
  * Maps for FMZ using Zurich council's WMTS tile server 
  */
 
- /* 
- * Copied from Mark/Matthew's demo of using Zurich's layers
- * and merged with things that js/map-OpenLayers.js does
- */
-function init_zurich_map(after) {
-
-    fixmystreet.map = new OpenLayers.Map('map', {
-        projection: new OpenLayers.Projection("EPSG:21781"),
-        displayProjection: new OpenLayers.Projection("EPSG:4326"),
-        maxExtent: new OpenLayers.Bounds(676000,241000,690000,255000),
-        units: 'm',
-        scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500'],
-        controls: fixmystreet.controls
-    });
-
-    var format = new OpenLayers.Format.WMTSCapabilities();
-
-    jQuery.support.cors = true;
-
-    jQuery.get("cobrands/zurich/Zurich-WMTSCapabilities.xml",
-        '',
-        function (data, textStatus, jqXHR) {
-
-            var layer, centre;
-            var capabilities = format.read(data);
-
-            layer = format.createLayer(capabilities, {
-                // Mark/Matthew's
-                layer: "Luftbild",
-                matrixSet: "default028mm",
-                //matrixSet: "nativeTileMatrixSet",
-                requestEncoding: "REST",
-                isBaseLayer: true,
-                // Things from the original map-OpenLayers.js
-                zoomOffset: fixmystreet.zoomOffset,
-                transitionEffect: 'resize',
-                numZoomLevels: fixmystreet.numZoomLevels
-
-            });
-            // For some reason with OpenLayers 2.11 the format
-            // returns a KVP url not a REST one, despite the settings
-            // we have above, so for now I'm hardcoding the right one
-            layer.url = "http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/";
-
-            fixmystreet.map.addLayer(layer);
-
-            centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
-            centre.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                fixmystreet.map.getProjectionObject()
-            );
-            fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
-
-            // Call the after callback
-            after();
-      },
-      'xml');
-}
-
 /* 
  * set_map_config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
@@ -91,9 +32,32 @@ function init_zurich_map(after) {
     // Set DPI - default is 72
     OpenLayers.DOTS_PER_INCH = 96;
 
-    // tell the main code to run our function instead
-    // of setting the map up itself
-    fixmystreet.map_setup = init_zurich_map;
+    fixmystreet.map_options = {
+        projection: new OpenLayers.Projection("EPSG:21781"),
+        maxExtent: new OpenLayers.Bounds(676000, 241000, 690000, 255000),
+        units: 'm',
+        scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500'],
+    };
+
+    fixmystreet.layer_options = {
+        name: "Luftbild",
+        layer: "Luftbild",
+        matrixSet: "nativeTileMatrixSet",
+        requestEncoding: "REST",
+        url: "http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/",
+        style: "default",
+        matrixIds: [
+            { identifier: "0", matrixHeight: 3, matrixWidth: 3, scaleDenominator: 125000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "1", matrixHeight: 4, matrixWidth: 5, scaleDenominator: 64000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "2", matrixHeight: 7, matrixWidth: 8, scaleDenominator: 32000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "3", matrixHeight: 14, matrixWidth: 14, scaleDenominator: 16000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "4", matrixHeight: 27, matrixWidth: 27, scaleDenominator: 8000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "5", matrixHeight: 52, matrixWidth: 53, scaleDenominator: 4000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "6", matrixHeight: 104, matrixWidth: 105, scaleDenominator: 2000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "7", matrixHeight: 208, matrixWidth: 208, scaleDenominator: 1000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } },
+            { identifier: "8", matrixHeight: 415, matrixWidth: 414, scaleDenominator: 500, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814500, lon: -29386400 } }
+        ]
+    };
 
     // Give main code a new bbox_strategy that translates between
     // lat/lon and our swiss coordinates

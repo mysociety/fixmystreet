@@ -254,56 +254,42 @@ $(function(){
     // template should define this
     set_map_config(); 
 
-    // If the aforementioned js defined it's own setup method
-    // call that instead of setting the map up ourselves
-    if(typeof fixmystreet.map_setup !== "undefined") {
-        fixmystreet.map_setup(function () {
-            // TODO - can this go inside afterMapInit() so it's not duped?
-            if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
-                $('#fms_pan_zoom').css({ top: '2.75em !important' });
-            }
-            afterMapInit();
-        }); 
-    }
-    else {
-        // TODO - can this go inside afterMapInit() so it's not duped?
-        if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
-            $('#fms_pan_zoom').css({ top: '2.75em !important' });
-        }
+    // Create the basics of the map
+    fixmystreet.map = new OpenLayers.Map(
+        "map", OpenLayers.Util.extend({
+            controls: fixmystreet.controls,
+            displayProjection: new OpenLayers.Projection("EPSG:4326")
+        }, fixmystreet.map_options)
+    );
 
-        // Create the basics of the map
-        fixmystreet.map = new OpenLayers.Map("map", {
-                controls: fixmystreet.controls,
-                displayProjection: new OpenLayers.Projection("EPSG:4326")
-            }
+    if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
+        $('#fms_pan_zoom').css({ top: '2.75em !important' });
+    }
+
+    // Set it up our way
+    fixmystreet.layer_options = OpenLayers.Util.extend({
+        zoomOffset: fixmystreet.zoomOffset,
+        transitionEffect: 'resize',
+        numZoomLevels: fixmystreet.numZoomLevels
+    }, fixmystreet.layer_options);
+
+    var layer;
+    if (fixmystreet.layer_options.matrixIds) {
+        layer = new fixmystreet.map_type(fixmystreet.layer_options);
+    } else {
+        layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+    }
+    fixmystreet.map.addLayer(layer);
+
+    if (!fixmystreet.map.getCenter()) {
+        var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
+        centre.transform(
+            new OpenLayers.Projection("EPSG:4326"),
+            fixmystreet.map.getProjectionObject()
         );
-
-        // Set it up our way
-        fixmystreet.layer_options = OpenLayers.Util.extend({
-            zoomOffset: fixmystreet.zoomOffset,
-            transitionEffect: 'resize',
-            numZoomLevels: fixmystreet.numZoomLevels
-        }, fixmystreet.layer_options);
-        var layer = new fixmystreet.map_type("", fixmystreet.layer_options);
-        fixmystreet.map.addLayer(layer);
-
-        if (!fixmystreet.map.getCenter()) {
-            var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
-            centre.transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                fixmystreet.map.getProjectionObject()
-            );
-            fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
-        }
-
-        // Do the stuff we need to do after the map has
-        // been created
-        afterMapInit();
+        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
-});
 
-// Stuff to do after the map has been created
-function afterMapInit() {
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
         var $content = $('.content'), mb = $('#map_box'),
@@ -373,7 +359,7 @@ function afterMapInit() {
     } else {
         fixmystreet_onload();
     }
-}
+});
 
 /* Overridding the buttonDown function of PanZoom so that it does
    zoomTo(0) rather than zoomToMaxExtent()
