@@ -156,6 +156,7 @@ function foundLocation(myLocation) {
 
 var location_error_str = '';
 function notFoundLocation() {
+    $.mobile.loading( 'hide' );
     if ( watch_id ) {
         location_error_str = 'Could not find location';
         navigator.geolocation.clearWatch(watch_id);
@@ -704,11 +705,14 @@ var geocheck_count = 0;
 
 function decide_front_page() {
     $.mobile.loading( 'show' );
-    if ( !can_geolocate || geocheck_count < 10 ) {
+    if ( !can_geolocate && ( !navigator.network || !navigator.network.connection ) ) {
         geocheck_count++;
-        window.setTimeout( decide_front_page, 100 );
+        window.setTimeout( decide_front_page, 1000 );
         return;
     }
+
+    // sometime onDeviceReady does not fire so set this here to be sure
+    can_geolocate = true;
 
     geocheck_count = 0;
 
@@ -725,8 +729,8 @@ function decide_front_page() {
 }
 
 function locate_page_display() {
+    $.mobile.loading( 'hide' );
     if ( watch_id ) {
-        $.mobile.loading( 'hide' );
         navigator.geolocation.clearWatch(watch_id);
         watch_id = null;
     }
