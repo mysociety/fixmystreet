@@ -13,10 +13,31 @@ $color_bg_reply_5:       #BFBFBF;
 $color_bg_reply_6:       #B8B8B8;
 $color_bg_mm_list:       #F6F6F6;
 
+$color_bg_btn_hide:      #ff0000;
+$color_bg_btn_reply:     #008000;
+$color_bg_btn_info:      #0000ff;
+
+
 $weak_text_color:      #666;
 
 #message_manager {
-
+  margin-top: 0;
+  li#mm-admin-buttons {
+    margin: -0.5em 0 0 0;
+    text-align: right;
+    font-size:80%;
+    padding:4px 8px 4px 0;
+    a {
+      padding: 0.25em 0.5em;
+      border:1px solid $mm_border_color;
+      margin: 0 0.5em;
+      display: inline-block;
+    }
+    background-color: #fff;
+    &:hover {
+      background-color: #fff;
+    }
+  }
   #message-control {
     #mm-username-container {
       display: none; // hidden during dev
@@ -134,15 +155,15 @@ $weak_text_color:      #666;
         }
         .mm-hide {
           right:0px;
-          background-color: red;
+          background-color: $color_bg_btn_hide;
         }
         .mm-info {
           right:1.5em;
-          background-color: blue;
+          background-color: $color_bg_btn_info;
         }
         .mm-rep {
           right:2.6em;
-          background-color: green;
+          background-color: $color_bg_btn_reply;
         }
       }
     }
@@ -173,14 +194,13 @@ $weak_text_color:      #666;
     display: none;
   }
 }
-div#mm-admin-buttons {
-  display:block;
-  text-align: right;
-  float:right;
-  font-size:80%;
-  padding:4px 8px 4px 0;
-	a {
-		display: block;
-	}
-
+#mm-help {
+  .demo_hide_btn, .demo_reply_btn, .demo_info_btn {
+    color: #fff;
+    font-weight: bold;
+    padding: 0.2em 0.4em;
+  }
+  .demo_hide_btn  { background-color: $color_bg_btn_hide;  }
+  .demo_reply_btn { background-color: $color_bg_btn_reply; }
+  .demo_info_btn  { background-color: $color_bg_btn_info;  }
 }

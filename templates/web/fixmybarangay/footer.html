@@ -28,7 +28,7 @@
         </div>
 
 [% IF global.want_fmb_hidden_dialogs %]
-	<!-- fancybox hidden dialogues for message-manager reply/hide -->
+	<!-- fancybox hidden dialogues for message-manager reply/hide/help -->
 		<div style="display:none">
 			<div id="reply-form-container">
 				<form action="#" id="reply-form" onsubmit="event.returnValue = false; return false;" method="post" accept-charset="utf-8">
@@ -74,6 +74,61 @@
 				</form>
 			</div>
 		</div>
+		<div style="display:none">
+			<div id="mm-help" style="font-size:90%;">
+				<h2> Accessing Message Manager from FixMyBarangay (FMB)</h2>
+				<h3>
+					Logging into Message Manager
+				</h3>
+				<p>
+					You'll need a username and password (ask your manager if you haven't already got one). Your Message Manager password
+					might not be the same as your FMB password.
+				</p>
+				<p>
+					When you've logged in, you'll see the currently available messages (and any replies that have been sent to them).
+					You <em>only</em> see messages that are waiting to be used to make reports, and which are tagged with the keywords
+					your login allows you to see (these may mean you only see messages for your own barangay).
+					If you want to see any other messages, you'll need to have a manager or admin account on Message Manager: click on the 
+					<a href="[% c.config.MESSAGE_MANAGER_URL %]">admin</a> link to get there.
+				</p>
+				<h3>
+					Creating a new report from a message
+				</h3>
+				<p>
+					If you want to use a message to create a problem report, you'll need to select it first. Click on the radio button. When the message
+					is selected, it will go bright green. Now when you click on the map, the report will be used to create the report.
+				</p>
+				<p>
+					To stop two people replying to a message at the same time, if anyone else has just started working on it, you'll see a message
+					warning you, and you won't be able to select the radio button. Normally, if nobody works with a message, such a lock is released 
+					after about 3 minutes.
+				</p>
+				<h3>
+					Replying to a message
+				</h3>
+				<p>
+					You can send an SMS back to the original sender: just hover over the message and click <span class="demo_reply_btn">reply</span>. It will usually
+					take a few minutes for the message to arrive.
+				</p>
+				<h3>
+					Getting message info
+				</h3>
+				<p>
+					Hover over a message and click on its <span class="demo_info_btn">i</span> button to see when it was sent. 
+					You can also see the sender, although not their
+					actual number (instead the number is scrambled, but will be the <em>same scrambled number</em> on other message's they've sent).
+				</p>
+				<h3>
+					Hiding a message
+				</h3>
+				<p>
+					If a message can't be used to create a report, you can hide it by hovering over it and clicking its <span class="demo_hide_btn">X</span> button. If you're not
+					going to create a problem report with this message, you might like to reply first, to tell the person who sent the message why not.
+					When you click the X, give a reason why you're hiding it so other staff (managers in Message Manager) can see why the message was hidden.
+				</p>
+			</div>
+		</div>
+
 [% END %]
 
 <!-- [% INCLUDE 'debug_footer.html' %] -->

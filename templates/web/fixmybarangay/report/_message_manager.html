@@ -5,11 +5,12 @@
 [% END %]
 
 <ul id="message_manager" class="issue-list-a tab" style="display: none">
+	<li id="mm-admin-buttons">
+		<a id="mm-link-to-refresh" href="#">refresh</a>
+		<a id="mm-link-to-admin" href="[% c.config.MESSAGE_MANAGER_URL %]">admin</a>
+		<a id="mm-link-to-help" href="#mm-help">help</a>
+	</li>
 	<li id="message-control">
-		<div id="mm-admin-buttons">
-			<a id="mm-link-to-admin" href="[% c.config.MESSAGE_MANAGER_URL %]">[admin]</a>
-			<a id="mm-link-to-refresh" href="#">[refresh]</a>
-		</div>
 		<div id="mm-username-container">username:&nbsp;<span id="mm-received-username"></span></div>
 		<div id="mm-status-message-container">
 			<img id="mm-spinner" src="/cobrands/fixmybarangay/images/fmb-spinner-16x16.gif" alt=""/>
@@ -192,6 +193,8 @@ $(document).ready(function() {
 		e.preventDefault();
 		mm_refresh_messages();
 	});
+
+	$("a#mm-link-to-help").fancybox();
 
 	message_manager.populate_boilerplate_strings('hide-reason');
     message_manager.populate_boilerplate_strings('reply');
