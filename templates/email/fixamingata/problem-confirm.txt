@@ -11,6 +11,7 @@ Om det inte går att klicka på länken kan du kopiera den och klistra in
 i adressfältet på din webläsare.
 
 Din rapport har titeln: [% report.title %]
+
 Du har angivit följande information om problemet:
 
 [% report.detail %]
