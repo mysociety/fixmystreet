@@ -114,7 +114,26 @@ sub _map_features {
 }
 
 sub map_pins {
-    return $map_class->map_pins(@_);
+    my ($c, $interval) = @_;
+
+    my $bbox = $c->req->param('bbox');
+    my ( $min_lon, $min_lat, $max_lon, $max_lat ) = split /,/, $bbox;
+
+    my ( $around_map, $around_map_list, $nearby, $dist ) =
+      FixMyStreet::Map::map_features_bounds( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval );
+
+    # create a list of all the pins
+    my @pins = map {
+        # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
+        my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
+        my $colour = $c->cobrand->pin_colour( $p, 'around' );
+        [ $p->latitude, $p->longitude,
+          $colour,
+          $p->id, $p->title
+        ]
+    } @$around_map, @$nearby;
+
+    return (\@pins, $around_map_list, $nearby, $dist);
 }
 
 sub click_to_wgs84 {
