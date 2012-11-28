@@ -63,7 +63,7 @@
 
 /* Begin PBXFileReference section */
 		24065F8C162C7721004574A1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		240FE2E9162D6E4D00250E2D /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = ../../../../../libs/cordova_2.1/lib/ios/CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
+		240FE2E9162D6E4D00250E2D /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = ../../../../../libs/cordova_2.2/CordovaLib/CordovaLib.xcodeproj; sourceTree = "<group>"; };
 		249ED5EA162D82AD000076A1 /* cordova */ = {isa = PBXFileReference; lastKnownFileType = folder; path = cordova; sourceTree = "<group>"; };
 		24C01C771664F30600417E3D /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		24C01C781664F30600417E3D /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
