@@ -12,6 +12,11 @@ use DateTime;
 
 DateTime->DefaultLocale('sv_SE');
 
+sub site_title {
+    my ($self) = @_;
+    return 'Fixa Min Gata';
+}
+
 sub path_to_web_templates {
     my $self = shift;
     return [
