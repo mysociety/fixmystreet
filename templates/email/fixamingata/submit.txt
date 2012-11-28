@@ -3,11 +3,10 @@ Subject: Ny rapport: <?=$values['title']?>
 Till <?=$values['councils_name']?>,
 
 <?=$values['missing']?><?=$values['multiple']?>En användare av
-Fixa Min Gata har skickat följande rapport om ett lokalt problem som
+Fixa Min Gata har skickat följande rapport om ett problem som
 de tror behöver er uppmärksamhet.
 
-<?=$values['fuzzy']?>, eller klicka på följande länk för att lämna
-en uppdatering om problemet:
+<?=$values['fuzzy']?> eller uppdatera problemet, klicka på följande länk:
 
     <?=$values['url']?>
 
