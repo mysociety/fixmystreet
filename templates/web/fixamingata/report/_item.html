@@ -5,9 +5,9 @@
     [% END %]
         <h4>[% problem.title | html %]</h4>
         <small>[% IF problem.confirmed_local %]
-            [%- prettify_epoch( problem.confirmed_local.epoch, 1 ) %]
+            [%- prettify_epoch( problem.confirmed_local.epoch ) %]
             [%- ELSE %]
-            [%- prettify_epoch( problem.confirmed, 1 ) %]
+            [%- prettify_epoch( problem.confirmed ) %]
             [%- END %]
             [%- IF dist %], [% dist %]km[% END %]
             [%- IF include_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %], last updated [% prettify_epoch( problem.lastupdate, 1 ) %]
