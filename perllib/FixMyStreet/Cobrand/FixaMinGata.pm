@@ -7,6 +7,10 @@ use warnings;
 use Carp;
 use mySociety::MaPit;
 use FixMyStreet::Geocode::OSM;
+use DateTime;
+
+
+DateTime->DefaultLocale('sv_SE');
 
 sub path_to_web_templates {
     my $self = shift;
