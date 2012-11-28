@@ -715,8 +715,8 @@ function decide_front_page() {
     localStorage.offline = 0;
     delete localStorage.currentReport;
 
-    if ( navigator.network.connection.type == Connection.NONE ||
-            navigator.network.connection.type == Connection.UNKNOWN ) {
+    if ( navigator && navigator.network && ( navigator.network.connection.type == Connection.NONE ||
+            navigator.network.connection.type == Connection.UNKNOWN ) ) {
         localStorage.offline = 1;
         $.mobile.changePage( 'no_connection.html' );
     } else {
