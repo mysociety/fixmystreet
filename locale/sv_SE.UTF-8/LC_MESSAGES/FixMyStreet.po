@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-10-24 11:20+0100\n"
-"PO-Revision-Date: 2012-11-15 08:23+0000\n"
+"PO-Revision-Date: 2012-11-28 14:42+0000\n"
 "Last-Translator: jonas <jonas@morus.se>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/projects/p/fixmystreet/language/sv_SE/)\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,7 @@ msgstr "eller"
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:18
 msgid " and <strong>we will now send it to the council</strong>"
-msgstr "och <strong>vi kommer skicka det till ansvarig</strong>"
+msgstr " och <strong>vi kommer skicka det till kommunen</strong>"
 
 #: templates/web/default/report/new/councils_text_all.html:10
 #: templates/web/default/report/new/councils_text_all.html:17
@@ -49,7 +49,7 @@ msgstr "%d adresser"
 
 #: templates/web/default/admin/index.html:17
 msgid "%d confirmed alerts, %d unconfirmed"
-msgstr "%d bekräftade larm, %d obekräftade"
+msgstr "%d bekräftade bevakningar, %d obekräftade"
 
 #: templates/web/default/admin/index.html:19
 msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
@@ -61,7 +61,7 @@ msgstr "%d ändringar av %s"
 
 #: templates/web/default/admin/index.html:16
 msgid "%d live updates"
-msgstr "%d live-uppdateringar"
+msgstr "%d uppdateringar"
 
 #: templates/web/default/admin/index.html:18
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
@@ -88,11 +88,11 @@ msgstr "Administrativa området %s, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:496
 msgid "%s, reported anonymously at %s"
-msgstr "%s rapporterat anonymt den %s"
+msgstr "%s rapporterat anonymt %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:498
 msgid "%s, reported by %s at %s"
-msgstr "%s rapporterat av %s den %s"
+msgstr "%s rapporterat av %s %s"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:306 perllib/FixMyStreet/Cobrand/UK.pm:318
 msgid "%s, within %s ward"
@@ -173,7 +173,7 @@ msgstr "-- Välj en fastighetstyp --"
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:22
 msgid ". You can <a href=\"%s%s\">view the problem on this site</a>."
-msgstr "Du kan <a href=\"%s%s\">se problemet på webbsidan</a>."
+msgstr ". Du kan <a href=\"%s%s\">visa problemet på webbsidan</a>."
 
 #: templates/web/fixmystreet/report/_support.html:3
 msgid "1 supporter"
@@ -183,7 +183,7 @@ msgstr "1 supporter"
 msgid ""
 "<p style=\"font-size:150%\">Thank you very much for filling in our "
 "questionnaire; glad to hear it&rsquo;s been fixed.</p>"
-msgstr "<p style=\"font-size:150%\">Tack för att du fyllt i frågeformuläret! Vi är glada öve ratt höra att problemet har fixats.</p>"
+msgstr "<p style=\"font-size:150%\">Tack för att du fyllt i frågeformuläret! Vi är glada över att höra att problemet har lösts.</p>"
 
 #: templates/web/fiksgatami/questionnaire/completed-open.html:1
 msgid ""
@@ -193,7 +193,7 @@ msgid ""
 "fixed by local people working together, why not\n"
 "<a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
 "</p>"
-msgstr "<p style=\"font-size:150%\">Vi är ledsna över att höra det. Vi har två förslag. Du kan antingen skriva direkt till din kommun eller om det är ett problem som kan lösas genom att flera personer går ihop själva kan du kanske göra och publicera ett upprop?</p>"
+msgstr "<p style=\"font-size:150%\">Vi är ledsna över att höra att problemet inte åtgärdats. Du kan prova att skriva direkt till din kommun för att uppmana dem att åtgärda problemet.</p>"
 
 #: templates/web/fixmystreet/questionnaire/completed-open.html:1
 msgid ""
@@ -203,7 +203,7 @@ msgid ""
 "local people working together, why not\n"
 "<a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
 "</p>"
-msgstr "<p style=\"font-size:150%\">Vi är ledsna över att höra det. Vi har två förslag. Du kan antingen skriva direkt till din kommun eller om det är ett problem som kan lösas genom att flera personer går ihop själva kan du kanske göra och publicera ett upprop?</p>"
+msgstr "<p style=\"font-size:150%\">Vi är ledsna över att höra att problemet inte åtgärdats. Du kan prova att skriva direkt till din kommun för att uppmana dem att åtgärda problemet.</p>"
 
 #: templates/web/default/questionnaire/completed-open.html:1
 msgid ""
@@ -212,7 +212,7 @@ msgid ""
 "a problem that could be fixed by local people working together, why not\n"
 "<a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
 "</p>"
-msgstr "<p style=\"font-size:150%\">Vi är ledsna över att höra det. Vi har två förslag. Du kan antingen skriva direkt till din kommun eller om det är ett problem som kan lösas genom att flera personer går ihop själva kan du kanske göra och publicera ett upprop?</p>"
+msgstr "<p style=\"font-size:150%\">Vi är ledsna över att höra att problemet inte åtgärdats. Du kan prova att skriva direkt till din kommun för att uppmana dem att åtgärda problemet.</p>"
 
 #: templates/web/default/questionnaire/index.html:35
 msgid ""
@@ -306,7 +306,7 @@ msgstr "Ny kategori"
 
 #: templates/web/default/my/my.html:56 templates/web/fixmystreet/my/my.html:60
 msgid "Added %s"
-msgstr "Lade till %s"
+msgstr "Lades till %s"
 
 #: templates/web/default/auth/change_password.html:29
 msgid "Again:"
@@ -314,11 +314,11 @@ msgstr "Igen:"
 
 #: templates/web/default/admin/timeline.html:37
 msgid "Alert %d created for %s, type %s, parameters %s / %s"
-msgstr "Varning %d skapad för %s av typen %s med parametrarna %s/%s"
+msgstr "Bevakning %d skapad för %s av typen %s med parametrarna %s/%s"
 
 #: templates/web/default/admin/timeline.html:39
 msgid "Alert %d disabled (created %s)"
-msgstr "Varning %d avaktiverad (skapad %s)"
+msgstr "Bevakning %d avaktiverad (skapad %s)"
 
 #: templates/web/bromley/report/display.html:207
 #: templates/web/default/report/display.html:214
@@ -936,7 +936,7 @@ msgid ""
 "FixMyStreet has a variety of RSS feeds and email alerts for local problems, including\n"
 "alerts for all problems within a particular ward or council, or all problems\n"
 "within a certain distance of a particular location."
-msgstr "FixaMinGata har ett flertal RSS-flöden och epostlarm för lokala problem, inklusive larm för alla problem inom en kommun eller alla problem inom ett visst avstånd från en plats. "
+msgstr "FixaMinGata har ett flertal RSS-flöden och epostbevakningar för lokala problem, inklusive bevakning för alla problem inom en kommun eller alla problem inom ett visst avstånd från en plats. "
 
 #: templates/web/default/alert/_list.html:71
 #: templates/web/fixmystreet/alert/_list.html:73
@@ -947,7 +947,7 @@ msgid ""
 "will be sent to the district council, so will appear in both of the district\n"
 "council&rsquo;s alerts, but will only appear in the \"Within the boundary\" alert\n"
 "for the county council."
-msgstr "FixaMinGata skickar olika kategorier av larm till olika enheter inom en kommun eller län. Problem som rapporteras inom en viss kommun dyker därför inte nödvändigtvis upp i listan över larm till den kommunen. Exempelvis kan ett larm om en väg vara skickat till Vägverket snarare än kommunen. Larmet dyker då inte upp i rapporten över larm till kommunen, men dyker upp om man söker alla larm inom ett visst avstånd."
+msgstr "FixaMinGata skickar olika kategorier av rapporter till olika enheter inom en kommun eller län. Problem som rapporteras inom en viss kommun dyker därför inte nödvändigtvis upp i listan över rapporter till den kommunen. Exempelvis kan en rapport om en väg skickas till Vägverket snarare än kommunen. Rapporten dyker då inte upp i listan över rapporter till kommunen, men dyker upp om man söker alla rapporter inom ett visst avstånd."
 
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:82
@@ -1064,7 +1064,7 @@ msgstr "Skicka enkät?"
 
 #: templates/web/default/admin/index.html:24
 msgid "Graph of problem creation by status over time"
-msgstr "Visualisering av rapporer över tid"
+msgstr "Visualisering av rapporter över tid"
 
 #: templates/web/default/reports/index.html:8
 #: templates/web/emptyhomes/reports/index.html:5
@@ -1074,7 +1074,7 @@ msgstr "Utgråade linjer är kommuner som inte längre existerar."
 #: templates/web/default/questionnaire/index.html:61
 #: templates/web/fixmystreet/questionnaire/index.html:55
 msgid "Has this problem been fixed?"
-msgstr "Har det här problemet blivit fixat?"
+msgstr "Har det här problemet blivit löst?"
 
 #: templates/web/default/questionnaire/index.html:74
 #: templates/web/fixmystreet/questionnaire/index.html:68
@@ -1185,7 +1185,7 @@ msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council). For example, what was\n"
 "your experience of getting the problem fixed?"
-msgstr "Om du vill lämna en publik uppdatering för problemet, ange det här (observera att det inte kommer skickas till kommunen). Till exempel, hur var din erfarenhet från att få problemet löst?"
+msgstr "Om du vill lämna mer information om problemet, ange det här (notera att uppdateringen inte skickas till kommunen). Till exempel, hur upplevde du kommunikationen med kommunen?"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:111
 msgid "Illegal ID"
@@ -1329,14 +1329,14 @@ msgstr "Laddar..."
 #: templates/web/fixmybarangay/alert/index.html:3
 #: templates/web/fixmystreet/alert/updates.html:1
 msgid "Local RSS feeds and email alerts"
-msgstr "Lokala RSS-flöden och epostlarm"
+msgstr "Lokala RSS-flöden och epostbevakningar"
 
 #: templates/web/default/alert/list.html:1
 #: templates/web/default/alert/list.html:12
 #: templates/web/default/alert/list.html:14
 #: templates/web/default/alert/list.html:3
 msgid "Local RSS feeds and email alerts for ‘%s’"
-msgstr "Lokala RSS-flöden och epostlarm för '%s'"
+msgstr "Lokala RSS-flöden och epostbevakningar för '%s'"
 
 #: templates/web/barnet/footer.html:22 templates/web/bromley/footer.html:23
 #: templates/web/bromley/header.html:79 templates/web/default/footer.html:13
@@ -1502,7 +1502,7 @@ msgstr "Nya rapporter inom {{NAME}}'s administrativa gräns på reportemptyhomes
 
 #: templates/web/default/admin/questionnaire.html:24
 msgid "New state"
-msgstr "Ny stat"
+msgstr "Ny status"
 
 #: templates/web/fiksgatami/front/news.html:9
 #: templates/web/fiksgatami/nn/front/news.html:9
@@ -1527,7 +1527,7 @@ msgstr "Ny!"
 #: templates/web/fixmystreet/questionnaire/index.html:101
 #: templates/web/fixmystreet/questionnaire/index.html:62
 msgid "No"
-msgstr "Ingen"
+msgstr "Nej"
 
 #: templates/web/default/admin/stats.html:85
 #: templates/web/default/admin/user_edit.html:13
@@ -1669,7 +1669,7 @@ msgstr "Äldre problem"
 #: templates/web/default/report/display.html:79
 #: templates/web/fixmystreet/report/display.html:90
 msgid "Open"
-msgstr "Öppna"
+msgstr "Öppen"
 
 #: templates/web/default/my/my.html:22 templates/web/fixmystreet/my/my.html:26
 msgid "Open reports"
@@ -1697,7 +1697,7 @@ msgstr "Eller problem rapporterade til:"
 msgid ""
 "Or you can subscribe to an alert based upon what ward or council "
 "you&rsquo;re in:"
-msgstr "Du kan också prenumerera på larm baserat på vilken kommun du är i:"
+msgstr "Du kan också prenumerera på bevakningar baserat på vilken kommun du bor i:"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1008
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:658
@@ -2026,7 +2026,7 @@ msgstr "Välj det RSS-flöde du vill ha"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:118
 msgid "Please select the type of alert you want"
-msgstr "Välj den typ av larm du vill ha"
+msgstr "Välj den kategori av rapporter du vill ha"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:235
 msgid "Please state whether or not the problem has been fixed"
@@ -2069,15 +2069,15 @@ msgstr "Skicka"
 
 #: templates/web/default/report/updates.html:14
 msgid "Posted anonymously at %s"
-msgstr "Postat anonymt den %s"
+msgstr "Postat anonymt %s"
 
 #: templates/web/default/report/updates.html:21
 msgid "Posted by %s (<strong>%s</strong>) at %s"
-msgstr "Postat av %s (<strong>%s</strong>) den %s"
+msgstr "Postat av %s (<strong>%s</strong>) %s"
 
 #: templates/web/default/report/updates.html:23
 msgid "Posted by %s at %s"
-msgstr "Postat av %s den %s"
+msgstr "Postat av %s %s"
 
 #: templates/web/default/admin/council_contacts.html:100
 #: templates/web/default/admin/council_edit.html:30
@@ -2181,7 +2181,7 @@ msgstr "Ange en titel"
 #: templates/web/default/report/display.html:51
 #: templates/web/fixmystreet/report/display.html:66
 msgid "Provide an update"
-msgstr "Ange en uppdatering"
+msgstr "Ge en uppdatering"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:180
 msgid ""
@@ -2291,7 +2291,7 @@ msgstr "RSS-flöde för senaste lokala problemen"
 #: templates/web/fixmystreet/alert/updates.html:9
 #: templates/web/fixmystreet/report/display.html:45
 msgid "RSS feed of updates to this problem"
-msgstr "SS-flöde för uppdateringar till denna rapport"
+msgstr "RSS-flöde för uppdateringar till denna rapport"
 
 #: templates/web/bromley/report/display.html:39
 #: templates/web/default/alert/updates.html:9
@@ -2387,7 +2387,7 @@ msgstr "Rapporterat %s till %s"
 #: templates/web/default/contact/index.html:45
 #: templates/web/fixmystreet/contact/index.html:46
 msgid "Reported anonymously at %s"
-msgstr "Rapporterat anonymt den %s"
+msgstr "Rapporterat anonymt %s"
 
 #: templates/web/default/admin/questionnaire.html:5
 #: templates/web/default/questionnaire/index.html:77
@@ -2397,7 +2397,7 @@ msgstr "Rapporterat tidigare"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:512
 msgid "Reported by %s anonymously at %s"
-msgstr "Rapporterat av %s anonymt den %s"
+msgstr "Rapporterat av %s anonymt %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:543
 #: templates/web/default/contact/index.html:47
@@ -2411,7 +2411,7 @@ msgstr "Rapporterat av %s av %s den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:508
 msgid "Reported by %s in the %s category anonymously at %s"
-msgstr "Rapporterat av %s i kategorin %s, anonymt den %s"
+msgstr "Rapporterat av %s i kategorin %s, anonymt %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:528
 msgid "Reported by %s in the %s category by %s at %s"
@@ -2419,7 +2419,7 @@ msgstr "Rapporterat av %s i kategorin %s, anonymt av %s den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:516
 msgid "Reported in the %s category anonymously at %s"
-msgstr "Rapporterat i kategori %s, anonymt den %s"
+msgstr "Anonym rapporter i kategori %s, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:538
 msgid "Reported in the %s category by %s at %s"
@@ -2488,11 +2488,11 @@ msgstr "Sök:"
 msgid ""
 "Select which type of alert you'd like and click the button for an RSS feed, "
 "or enter your email address to subscribe to an email alert."
-msgstr "Välj vilken typ av larm du vill få och klicka knappen för ett RSS-flöde eller ange din epostadress för att prenumerera på epostlarm."
+msgstr "Välj vilken kategori av rapporter du vill få och klicka knappen för ett RSS-flöde eller ange din epostadress för att prenumerera via epost."
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:626
 msgid "Sent to %s %s later"
-msgstr "Skicka till %s, %s senare"
+msgstr "Skickat till %s, %s senare"
 
 #: templates/web/default/admin/report_edit.html:35
 msgid "Sent:"
@@ -2715,7 +2715,7 @@ msgstr "Prenumerera med epost"
 
 #: templates/web/fixmybarangay/alert/_list.html:6
 msgid "Subscribe to an alert based upon what baranagay you&rsquo;re in:"
-msgstr "Prenumerera på varningar baserat på vilket baranagay du är i"
+msgstr "Prenumerera på rapporter baserat på vilket baranagay du är i"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1035
 #: templates/web/default/admin/index.html:1
@@ -2732,7 +2732,7 @@ msgstr "Sammanställningsrapporter"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1039
 #: templates/web/default/admin/questionnaire.html:1
 msgid "Survey Results"
-msgstr "Besiktningsresultat"
+msgstr "Frågeresultat"
 
 #: templates/web/default/admin/list_updates.html:14
 msgid "Text"
@@ -2879,7 +2879,7 @@ msgstr "Kommunen kommer inte att kunna hjälpa till om du inte lämnar så mycke
 
 #: templates/web/fixmystreet/questionnaire/index.html:43
 msgid "The details of your problem are available from the other tab above."
-msgstr "Detaljerna för ditt problem kan nu ses från de andra flikarna ovan."
+msgstr "Information om ditt problem kan du se i fliken \"Din rapport\" ovan."
 
 #: templates/web/default/questionnaire/index.html:49
 msgid ""
@@ -2967,7 +2967,7 @@ msgstr "Den sökta adressen '%s' hittades inte på denna server"
 #: templates/web/default/alert/_list.html:14
 #: templates/web/fixmystreet/alert/_list.html:16
 msgid "The simplest alert is our geographic one:"
-msgstr "Vårt enklaste larm är det geografiska:"
+msgstr "Vår enklaste bevakning är för rapporter inom ett geografiskt område:"
 
 #: templates/web/barnet/report/new/councils_text_all.html:3
 #: templates/web/default/report/new/councils_extra_text.html:1
@@ -3140,7 +3140,7 @@ msgstr "Klicka på kartan för att <strong>rapportera ett problem</strong>."
 msgid ""
 "To find out what local alerts we have for you, please enter your postcode or"
 " street name and area"
-msgstr "För att se vilka lokala rapporter vi har runt dig, skriv in postnummer eller gatunamn och ort."
+msgstr "Skriv in postnummer eller gatunamn och ort för att se rapporter kring den platsen."
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:270
 msgid "To view a map of the precise location of this issue"
@@ -3187,7 +3187,7 @@ msgstr "Uppdatering %s skapad för rapporten %d, av %s"
 #: templates/web/default/contact/index.html:21
 #: templates/web/fixmystreet/contact/index.html:22
 msgid "Update below added anonymously at %s"
-msgstr "Uppdateringen nedan tillagd anonymt den %s"
+msgstr "Uppdateringen nedan tillagd anonymt %s"
 
 #: templates/web/default/contact/index.html:23
 #: templates/web/fixmystreet/contact/index.html:24
@@ -3518,7 +3518,7 @@ msgstr "Du har markerat problemet med den gröna pinnen på kartan. Om det inte 
 
 #: templates/web/default/tokens/confirm_alert.html:7
 msgid "You have successfully confirmed your alert."
-msgstr "Du har bekräftat ditt larm."
+msgstr "Du har bekräftat din bevakning."
 
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:15
@@ -3534,11 +3534,11 @@ msgstr "Du har bekräftat din uppdatering och kan nu <a href=\"%s\">se den på F
 
 #: templates/web/default/tokens/confirm_alert.html:11
 msgid "You have successfully created your alert."
-msgstr "Du har skapat ett larm."
+msgstr "Du har skapat en bevakning."
 
 #: templates/web/default/tokens/confirm_alert.html:9
 msgid "You have successfully deleted your alert."
-msgstr "Du har tagit bort ett larm."
+msgstr "Du har tagit bort en bevakning."
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:745
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:140
@@ -3782,7 +3782,7 @@ msgstr "område"
 #: templates/web/default/email_sent.html:15
 #: templates/web/default/email_sent.html:3
 msgid "we'll hang on to your alert while you're checking your email."
-msgstr "vi behåller ditt larm medan du kollar din epost."
+msgstr "vi sparar din bevakning medan du kollar din epost."
 
 #: templates/web/default/email_sent.html:3
 #: templates/web/default/email_sent.html:7
@@ -3797,7 +3797,7 @@ msgstr "vi behåller din uppdatering medans du kollar din epost."
 #: templates/web/default/email_sent.html:14
 #: templates/web/default/email_sent.html:3
 msgid "your alert will not be activated"
-msgstr "ditt larm kommer inte aktiveras"
+msgstr "din bevakning kommer inte aktiveras"
 
 #: templates/web/default/email_sent.html:3
 #: templates/web/default/email_sent.html:6
