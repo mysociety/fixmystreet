@@ -69,7 +69,7 @@ sub determine_location_from_pc : Private {
         $c->stash->{longitude} = $2;
         return $c->forward( 'check_location' );
     }
-    if ( $c->cobrand->country eq 'GB' && $pc =~ /^([A-Z])([A-Z])([\d\s]+)$/i ) {
+    if ( $c->cobrand->country eq 'GB' && $pc =~ /^([A-Z])([A-Z])([\d\s]{4,})$/i) {
         if (my $convert = gridref_to_latlon( $1, $2, $3 )) {
             $c->stash->{latitude}  = $convert->{latitude};
             $c->stash->{longitude} = $convert->{longitude};
