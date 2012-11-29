@@ -7,13 +7,14 @@
 # Translators:
 # Joel Hansen <johaswe@gmail.com>, 2012.
 #   <jonas@morus.se>, 2012.
+#   <rikard@morus.se>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-10-24 11:20+0100\n"
-"PO-Revision-Date: 2012-11-28 14:42+0000\n"
-"Last-Translator: jonas <jonas@morus.se>\n"
+"PO-Revision-Date: 2012-11-29 12:52+0000\n"
+"Last-Translator: morusrikard <rikard@morus.se>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/projects/p/fixmystreet/language/sv_SE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -357,7 +358,7 @@ msgstr "All information du anger här kommer att skickas till"
 msgid ""
 "All the information you provide here will be sent to <strong>%s</strong> or "
 "<strong>Roads Service</strong>."
-msgstr "All information du anger här kommer att skickas till <strong>%s</strong> eller <strong>Trafikverket</strong>."
+msgstr "All information du anger här kommer att skickas till ansvariga i <strong>%s</strong> eller <strong>Trafikverket</strong>."
 
 #: templates/web/default/report/new/councils_text_all.html:3
 #: templates/web/default/report/new/councils_text_all.html:5
@@ -365,7 +366,7 @@ msgid ""
 "All the information you provide here will be sent to <strong>%s</strong> or "
 "a relevant local body such as <strong>TfL</strong>, via the London Report-It"
 " system."
-msgstr "All information du anger här kommer att skickas till <strong>%s</strong> eller annan relevant kommunal verksamhet."
+msgstr "All information du anger här kommer att skickas till ansvariga i <strong>%s</strong> eller annan relevant kommunal verksamhet."
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:4
 #: templates/web/bromley/report/new/fill_in_details_form.html:6
@@ -377,7 +378,7 @@ msgstr "All information du anger här kommer att skickas till <strong>%s</strong
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:8
 msgid ""
 "All the information you provide here will be sent to <strong>%s</strong>."
-msgstr "All information du anger här kommer att skickas till <strong>%s</strong>."
+msgstr "All information du anger här kommer att skickas till ansvariga i <strong>%s</strong>."
 
 #: templates/web/emptyhomes/report/new/councils_text_all.html:2
 #: templates/web/emptyhomes/report/new/councils_text_all.html:4
@@ -385,7 +386,7 @@ msgid ""
 "All the information you provide here will be sent to <strong>%s</strong>. On"
 " the site, we will show the subject and details of the problem, plus your "
 "name if you give us permission."
-msgstr "All information du anger här kommer att skickas till <strong>%s</strong>. På FixaMinGata kommer vi att visa ärendet och information om problemet. Vi visar också ditt namn om du ger oss tillstånd till det."
+msgstr "All information du anger här kommer att skickas till ansvariga i <strong>%s</strong>. På FixaMinGata kommer vi att visa ärendet och information om problemet. Vi visar också ditt namn om du ger oss tillstånd till det."
 
 #: templates/web/default/questionnaire/index.html:60
 #: templates/web/fixmystreet/questionnaire/index.html:54
@@ -2419,7 +2420,7 @@ msgstr "Rapporterat av %s i kategorin %s, anonymt av %s den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:516
 msgid "Reported in the %s category anonymously at %s"
-msgstr "Anonym rapporter i kategori %s, %s"
+msgstr "Anonym rapport i kategori %s, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:538
 msgid "Reported in the %s category by %s at %s"
@@ -2492,11 +2493,11 @@ msgstr "Välj vilken kategori av rapporter du vill få och klicka knappen för e
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:626
 msgid "Sent to %s %s later"
-msgstr "Skickat till %s, %s senare"
+msgstr "Skickades till %s, %s senare"
 
 #: templates/web/default/admin/report_edit.html:35
 msgid "Sent:"
-msgstr "Skickat:"
+msgstr "Skickades:"
 
 #: templates/web/default/admin/report_edit.html:37
 msgid "Service:"
