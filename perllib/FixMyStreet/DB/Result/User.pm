@@ -151,6 +151,7 @@ sub council {
 
     my $key = 'council_name:' . $self->from_council;
     my $result = Memcached::get($key);
+    Encode::_utf8_on($result);
 
     unless ($result) {
         my $area_info = mySociety::MaPit::call('area', $self->from_council);
