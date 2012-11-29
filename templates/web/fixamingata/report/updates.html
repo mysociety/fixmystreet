@@ -1,0 +1,32 @@
+[% FOREACH update IN updates %]
+[% INCLUDE 'report/update.html' %]
+[% END %]
+
+[% BLOCK meta_line %]
+
+    [% IF update.whenanswered %]
+        [%# A questionnaire update, currently saying report is still open %]
+        [% tprintf( loc( 'Still open, via questionnaire, %s' ), prettify_epoch( update.whenanswered_local.epoch ) ) %]
+        [% RETURN %]
+    [% END %]
+
+    [% IF update.anonymous || update.name == '' %]
+        [% tprintf( loc( 'Posted anonymously at %s' ), prettify_epoch( update.confirmed_local.epoch ) ) -%]
+    [%- ELSIF update.user.from_council;
+        user_name = update.user.name | html;
+        council = update.user.council;
+        IF council == 'Bromley Council';
+            council = "$council <img src='/cobrands/bromley/favicon.png' alt=''>";
+        END %]
+        [% tprintf( loc( 'Posted by %s (<strong>%s</strong>) at %s' ), user_name, council, prettify_epoch( update.confirmed_local.epoch ) ) -%]
+    [%- ELSE %]
+        [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
+    [%- END -%]
+    [%- ", " _ loc( 'marked as fixed' ) IF update.mark_fixed %]
+    [%- ", " _ loc( 'reopened' ) IF update.mark_open OR update.problem_state == 'confirmed' %]
+    [%- ", " _ loc( 'markerad som stängd' ) IF update.problem_state AND update.problem_state == 'closed' %]
+    [%- ", " _ loc( 'markerad som att arbete pågår' ) IF update.problem_state AND update.problem_state == 'investigating' %]
+    [%- ", " _ loc( 'markerad som att arbete planerat' ) IF update.problem_state AND update.problem_state == 'planned' %]
+    [%- ", " _ loc( 'markerad som att arbete pågår' ) IF update.problem_state AND update.problem_state == 'in progress' %]
+[% END %]
+
