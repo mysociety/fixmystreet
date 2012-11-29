@@ -727,39 +727,6 @@ function onDeviceReady() {
     can_geolocate = true;
 }
 
-function get_report_params () {
-    var params = {
-        service: 'iphone',
-        title: $('#form_title').val(),
-        detail: $('#form_detail').val(),
-        may_show_name: $('#form_may_show_name').attr('checked') ? 1 : 0,
-        category: $('#form_category').val(),
-        lat: $('#fixmystreet\\.latitude').val(),
-        lon: $('#fixmystreet\\.longitude').val(),
-        phone: $('#form_phone').val(),
-        pc: $('#pc').val(),
-        time: new Date().getTime()
-    };
-
-    if ( localStorage.username && localStorage.password && localStorage.name ) {
-        params.name = localStorage.name;
-        params.email = localStorage.username;
-        params.password_sign_in = localStorage.password;
-    } else {
-        params.name = $('#form_name').val();
-        params.email = $('#form_email').val();
-        params.password_sign_in = $('#password_sign_in').val();
-    }
-
-    if ( $('#form_photo').val() !== '' ) {
-        fileURI = $('#form_photo').val();
-        params.file = fileURI;
-    }
-
-    return params;
-
-}
-
 function display_saved_reports() {
     var i;
     if ( localStorage.getObject( 'reports' ) ) {
@@ -831,62 +798,6 @@ function delete_report() {
     $.mobile.changePage('my_reports.html');
 }
 
-function submit_problem_show() {
-    if ( localStorage.currentReport ) {
-        var r = new Report();
-        r.load(localStorage.currentReport);
-
-        $('#form_title').val(r.title());
-        $('#form_detail').val(r.detail());
-        if ( r.may_show_name() === 0 ) {
-            $('#form_may_show_name').attr('checked', 'off');
-        }
-        //category: $('#form_category').val();
-        $('#form_phone').val(r.phone());
-        $('#pc').val(r.pc());
-        if ( r.file() ) {
-            $('#form_photo').val(r.file());
-            $('#photo').attr('src', r.file() );
-            $('#add_photo').hide();
-            $('#display_photo').show();
-        }
-    }
-
-    //$('#submit-page :input[type=submit]').on('vclick', postReport);
-    $('#side-form, #site-logo').show();
-    $('#pc').val(localStorage.pc);
-    $('#fixmystreet\\.latitude').val(localStorage.latitude);
-    $('#fixmystreet\\.longitude').val(localStorage.longitude);
-
-    if ( localStorage.offline == 1 ) {
-        $('#councils_text').html("You are currently operating in offline mode so you can save the details of the problem but you'll need to finish reporting when you have internet access.");
-        $('#form_category_row').hide();
-        $('#email_label').hide();
-        $('#form_email').hide();
-        $('#form_sign_in').hide();
-    } else {
-        if ( localStorage.name ) {
-            check_name( localStorage.name );
-            $('.form-focus-hidden').show();
-        } else {
-            $('.form-focus-hidden').hide();
-        }
-
-        $.getJSON( CONFIG.FMS_URL + 'report/new/ajax', {
-                latitude: $('#fixmystreet\\.latitude').val(),
-                longitude: $('#fixmystreet\\.longitude').val()
-        }, function(data) {
-            if (data.error) {
-                // XXX If they then click back and click somewhere in the area, this error will still show.
-                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
-                return;
-            }
-            $('#councils_text').html(data.councils_text);
-            $('#form_category_row').html(data.category);
-        });
-    }
-}
-
 var geocheck_count = 0;
 
 function prep_front_page() {
@@ -947,7 +858,6 @@ $(document).on('pageshow', '#front-page', decide_front_page);
 $(document).on('pageshow', '#account-page', display_account_page);
 $(document).on('pageshow', '#my-reports-page', display_saved_reports);
 $(document).on('pageshow', '#report-page', display_saved_report);
-$(document).on('pageshow', '#submit-problem', submit_problem_show);
 $(document).on('pageshow', '#no-connection-page', check_for_gps);
 $(document).on('pageshow', '#locate-page', locate_page_display);
 
