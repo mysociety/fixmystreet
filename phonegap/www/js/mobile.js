@@ -774,8 +774,8 @@ function display_saved_report() {
     fixmystreet.longitude = r.lon();
     fixmystreet.pins = [ [ r.lat(), r.lon(), 'yellow', '', "", 'big' ] ];
 
-    $('#title').text(r.title);
-    $('#details').text(r.detail);
+    $('#title').text(r.title());
+    $('#details').text(r.detail());
     if ( r.file() ) {
         $('#photo').attr('src', r.file());
         $('#report-img').show();
