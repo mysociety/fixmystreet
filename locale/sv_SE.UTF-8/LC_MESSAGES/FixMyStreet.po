@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-10-24 11:20+0100\n"
-"PO-Revision-Date: 2012-11-28 14:42+0000\n"
+"PO-Revision-Date: 2012-11-29 09:45+0000\n"
 "Last-Translator: jonas <jonas@morus.se>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/projects/p/fixmystreet/language/sv_SE/)\n"
 "MIME-Version: 1.0\n"
@@ -2419,7 +2419,7 @@ msgstr "Rapporterat av %s i kategorin %s, anonymt av %s den %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:516
 msgid "Reported in the %s category anonymously at %s"
-msgstr "Anonym rapporter i kategori %s, %s"
+msgstr "Anonym rapport i kategori %s, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:538
 msgid "Reported in the %s category by %s at %s"
@@ -2492,11 +2492,11 @@ msgstr "Välj vilken kategori av rapporter du vill få och klicka knappen för e
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:626
 msgid "Sent to %s %s later"
-msgstr "Skickat till %s, %s senare"
+msgstr "Skickades till %s, %s senare"
 
 #: templates/web/default/admin/report_edit.html:35
 msgid "Sent:"
-msgstr "Skickat:"
+msgstr "Skickades:"
 
 #: templates/web/default/admin/report_edit.html:37
 msgid "Service:"
