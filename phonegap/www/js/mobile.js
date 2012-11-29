@@ -690,6 +690,10 @@ function forget_user_details() {
     delete localStorage.username;
     delete localStorage.password;
     localStorage.signed_out = 1;
+    jQuery.ajax( {
+        url: CONFIG.FMS_URL + "auth/ajax/sign_out",
+        type: 'POST'
+    } );
     display_account_page();
 }
 
