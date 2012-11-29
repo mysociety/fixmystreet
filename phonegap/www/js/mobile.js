@@ -164,6 +164,9 @@ function notFoundLocation() {
 }
 
 function getPosition() {
+    $.mobile.loading( 'show' );
+    $('#have_saved').hide();
+    $('#locating').show();
     if ( !can_geolocate ) {
         window.setTimeout( getPosition, 200 );
         return;
@@ -387,6 +390,7 @@ function create_offline() {
 
 function save_report() {
     _submit_save_report();
+    delete localStorage.currentReport;
     $.mobile.changePage('my_reports.html');
 }
 
@@ -804,6 +808,16 @@ function prep_front_page() {
     $('#accuracy').text('');
 }
 
+function keep_saved_report() {
+    delete localStorage.currentReport;
+    getPosition();
+}
+
+function delete_saved_report() {
+    remove_saved_report();
+    getPosition();
+}
+
 function decide_front_page() {
     $.mobile.loading( 'show' );
     if ( !can_geolocate && ( !navigator.network || !navigator.network.connection ) ) {
@@ -818,7 +832,13 @@ function decide_front_page() {
     geocheck_count = 0;
 
     localStorage.offline = 0;
-    delete localStorage.currentReport;
+    if ( localStorage.currentReport ) {
+        $.mobile.loading( 'hide' );
+        $('#have_saved').show();
+        return;
+    }
+
+    $('#locating').show();
 
     if ( navigator && navigator.network && ( navigator.network.connection.type == Connection.NONE ||
             navigator.network.connection.type == Connection.UNKNOWN ) ) {
@@ -883,3 +903,7 @@ $(document).on('vclick', '#details-page a.ui-btn-right', detail_nav);
 $(document).on('vclick', '#details-page a.ui-btn-left', detail_nav);
 
 $(document).on('vclick', '#submit-page a.ui-btn-left', submit_nav);
+
+$(document).on('vclick', '#front-page #use_saved', complete_report);
+$(document).on('vclick', '#front-page #delete_saved', delete_saved_report);
+$(document).on('vclick', '#front-page #continue', keep_saved_report);
