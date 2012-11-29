@@ -8,7 +8,7 @@ function Report(spec) {
         may_show_name: '',
         category: '',
         phone: '',
-        pc: ''
+        pc: '',
     };
 
     return {
@@ -17,10 +17,13 @@ function Report(spec) {
         lon: function(lon) { if ( lon ) { props.lon = lon; } return props.lon; },
         title: function(title) { if ( title ) { props.title = title; } return props.title; },
         detail: function(detail) { if ( detail ) { props.detail = detail; } return props.detail; },
+        category: function(category) { if ( category ) { props.category = category; } return props.category; },
         phone: function(phone) { if ( phone ) { props.phone = phone; } return props.phone; },
         pc: function(pc) { if ( pc ) { props.pc = pc; } return props.pc; },
         may_show_name: function(may_show_name) { if ( may_show_name ) { props.may_show_name = may_show_name; } return props.may_show_name; },
         file: function(file) { if ( file ) { props.file = file; } return props.file; },
+        name: function(name) { if ( name ) { props.name = name; } return props.name; },
+        email: function(email) { if ( email ) { props.email = email; } return props.email; },
         getLastUpdate: function(time) {
             if ( time ) {
                 props.time = time;

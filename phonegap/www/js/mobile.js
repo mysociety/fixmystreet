@@ -19,6 +19,7 @@ function touchmove(e) {
     e.preventDefault();
 }
 
+/* location code */
 function show_around( lat, long ) {
     pc = $('#pc').val();
     localStorage.latitude = lat;
@@ -209,10 +210,186 @@ function check_for_gps() {
     }
 }
 
-function create_offline() {
-    $.mobile.changePage('submit-problem.html');
+/* report editing/creation */
+
+function validation_error( id, error ) {
+    var el_id = '#' + id;
+    var el = $(el_id);
+    var err = '<div for="' + id + '" class="form-error">' + error + '</div>';
+    if ( $('div[for='+id+']').length === 0 ) {
+        el.before(err);
+        el.addClass('form-error');
+    }
 }
 
+function clear_validation_errors() {
+    $('div.form-error').remove();
+    $('.form-error').removeClass('form-error');
+}
+
+function get_current_report() {
+    var report;
+    if ( localStorage.currentReport ) {
+        report = new Report();
+        report.load(localStorage.currentReport);
+    }
+    return report;
+}
+
+function get_current_report_or_new() {
+    var report = get_current_report();
+    if ( !report ) {
+        report = new Report();
+        report.save();
+        localStorage.currentReport = report.id();
+    }
+    return report;
+}
+
+function prep_photo_page() {
+    var report = get_current_report_or_new();
+
+    if ( report.file() ) {
+        $('#form_photo').val(report.file());
+        $('#photo').attr('src', report.file());
+        $('#add_photo').hide();
+        $('#display_photo').show();
+    }
+}
+
+function photo_next() {
+    var report = get_current_report();
+
+    if ( $('#form_photo').val() !== '' ) {
+        fileURI = $('#form_photo').val();
+        report.file( fileURI );
+    } else {
+        report.file('');
+    }
+
+    report.save();
+}
+
+function prep_detail_page() {
+    var report = get_current_report();
+
+    $('#form_title').val( report.title() );
+    $('#form_detail').val( report.detail() );
+
+    if (localStorage.offline !== 1) {
+        $.getJSON( CONFIG.FMS_URL + 'report/new/ajax', {
+                latitude: localStorage.latitude,
+                longitude: localStorage.longitude
+        }, function(data) {
+            if (data.error) {
+                // XXX If they then click back and click somewhere in the area, this error will still show.
+                $('#side-form').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>');
+                return;
+            }
+            // XXX cache this...
+            $('#councils_text').html(data.councils_text);
+            $('#form_category_row').html(data.category);
+            var report = get_current_report();
+            if ( report.category() ) {
+                $('#form_category').val(report.category());
+            }
+        });
+    }
+}
+
+function detail_nav(e) {
+    var report = get_current_report();
+    var valid = 1;
+
+    if ( !$('#form_title').val() ) {
+        valid = 0;
+        validation_error( 'form_title', validation_strings.title );
+    }
+
+    if ( !$('#form_detail').val() ) {
+        valid = 0;
+        validation_error( 'form_detail', validation_strings.detail );
+    }
+
+    var cat = $('#form_category').val();
+    if ( cat == '-- Pick a category --' && localStorage.offline !== 1 ) {
+        valid = 0;
+        validation_error( 'form_category', validation_strings.category );
+    }
+
+    if ( valid ) {
+        clear_validation_errors();
+        report.title($('#form_title').val());
+        report.detail($('#form_detail').val());
+        report.category($('#form_category').val());
+        report.save();
+    } else {
+        e.preventDefault();
+        return false;
+    }
+}
+
+function prep_submit_page() {
+    var report = get_current_report();
+
+    $('#form_phone').val( report.phone() );
+    if ( report.may_show_name() === 1 ) {
+        $('#form_may_show_name').prop('checked', true);
+    } else if ( report.may_show_name() === 0 ) {
+        $('#form_may_show_name').prop('checked', false);
+    }
+
+    if ( localStorage.username ) {
+        $('#signed_in').show();
+        $('#signed_out').hide();
+        $('#name_details').insertAfter($('#confirm_details'));
+
+        $('#username').text( localStorage.username );
+        $('#form_name').val( localStorage.name );
+    } else {
+        $('#form_email').val( report.email() );
+        $('#form_name').val( report.name() );
+        $('#name_details').insertAfter($('#let_me_confirm'));
+
+        $('#signed_out').show();
+        $('#signed_in').hide();
+    }
+}
+
+function _submit_save_report() {
+    var r = get_current_report();
+
+    r.may_show_name( $('#form_may_show_name').prop('checked') ? 1 : 0 );
+    r.phone( $('#form_phone').val() );
+
+    if ( localStorage.username && localStorage.password && localStorage.name ) {
+        //r.name( localStorage.name );
+        //r.email( localStorage.username );
+        //params.password_sign_in = localStorage.password;
+    } else {
+        r.name( $('#form_name').val() );
+        r.email( $('#form_email').val() );
+        //params.password_sign_in = $('#password_sign_in').val();
+    }
+
+    r.save();
+    return r;
+}
+
+function submit_nav() {
+    _submit_save_report();
+}
+
+function create_offline() {
+    $.mobile.changePage('photo.html');
+}
+
+function save_report() {
+    _submit_save_report();
+    $.mobile.changePage('my_reports.html');
+}
+
+/* photo handling */
 
 function takePhotoSuccess(imageURI) {
     $('#form_photo').val(imageURI);
@@ -271,6 +448,7 @@ function remove_saved_report() {
 }
 
 function fileUploadSuccess(r) {
+    $.mobile.loading('hide');
     if ( r.response ) {
         var data;
         try {
@@ -302,6 +480,7 @@ function fileUploadSuccess(r) {
 }
 
 function fileUploadFail() {
+    $.mobile.loading('hide');
     alert('Could not submit report');
     $('input[type=submit]').prop("disabled", false);
 }
@@ -310,24 +489,25 @@ var submit_clicked = null;
 
 function postReport(e) {
     $.mobile.loading( 'show' );
+    var report = get_current_report();
     if ( e ) {
         e.preventDefault();
     }
 
     // the .stopImmediatePropogation call in invalidHandler should render this
     // redundant but it doesn't seem to work so belt and braces :(
-    if ( !$('#mapForm').valid() ) { return; }
+    // if ( !$('#mapForm').valid() ) { return; }
 
     var params = {
         service: 'iphone',
-        title: $('#form_title').val(),
-        detail: $('#form_detail').val(),
+        title: report.title(),
+        detail: report.detail(),
         may_show_name: $('#form_may_show_name').attr('checked') ? 1 : 0,
-        category: $('#form_category').val(),
-        lat: $('#fixmystreet\\.latitude').val(),
-        lon: $('#fixmystreet\\.longitude').val(),
+        category: report.category(),
+        lat: report.lat(),
+        lon: report.lon(),
         phone: $('#form_phone').val(),
-        pc: $('#pc').val()
+        pc: report.pc()
     };
 
     if ( localStorage.username && localStorage.password && localStorage.name ) {
@@ -349,8 +529,8 @@ function postReport(e) {
         }
     }
 
-    if ( $('#form_photo').val() !== '' ) {
-        fileURI = $('#form_photo').val();
+    if ( report.file() && report.file() !== '' ) {
+        fileURI = report.file();
 
         var options = new FileUploadOptions();
         options.fileKey="photo";
@@ -365,7 +545,7 @@ function postReport(e) {
         jQuery.ajax( {
             url: CONFIG.FMS_URL + "report/new/mobile",
             type: 'POST',
-            data: params, 
+            data: params,
             timeout: 30000,
             success: function(data) {
                 if ( data.success ) {
@@ -388,6 +568,7 @@ function postReport(e) {
                     if ( data.check_name ) {
                         check_name( data.check_name, data.errors.name );
                     }
+                    $.mobile.loading('hide');
                     $('input[type=submit]').prop("disabled", false);
                 }
             },
@@ -455,9 +636,17 @@ function set_location() {
         new OpenLayers.Projection("EPSG:4326")
     );
 
+    var r = get_current_report_or_new();
+    if ( localStorage.pc ) {
+        r.pc( localStorage.pc );
+    }
+    r.lat( position.lat );
+    r.lon( position.lon );
+    r.save();
+
     localStorage.latitude = position.lat;
     localStorage.longitude = position.lon;
-    $.mobile.changePage('submit-problem.html');
+    $.mobile.changePage('photo.html');
 }
 
 function mark_here() {
@@ -539,31 +728,6 @@ function get_report_params () {
 
     return params;
 
-}
-
-function _submit_save_report() {
-    var params = get_report_params();
-
-    var r;
-    if ( localStorage.currentReport ) {
-        r = new Report();
-        r.load( localStorage.currentReport );
-        r.update(params);
-    } else {
-        r = new Report(params);
-    }
-    r.save();
-    return r;
-}
-
-function save_report() {
-    _submit_save_report();
-    $.mobile.changePage('my_reports.html');
-}
-
-function submit_back() {
-    var r = _submit_save_report();
-    localStorage.currentReport = r.id();
 }
 
 function display_saved_reports() {
@@ -658,7 +822,7 @@ function submit_problem_show() {
         }
     }
 
-    $('#mapForm').on('submit', postReport);
+    //$('#submit-page :input[type=submit]').on('vclick', postReport);
     $('#side-form, #site-logo').show();
     $('#pc').val(localStorage.pc);
     $('#fixmystreet\\.latitude').val(localStorage.latitude);
@@ -744,6 +908,9 @@ $(document).on('pageshow', '#report-created', function() {
     $('#report_url').html( '<a href="' + uri + '">' + uri + '</a>' );
 });
 
+$(document).on('pagebeforeshow', '#photo-page', prep_photo_page);
+$(document).on('pagebeforeshow', '#details-page', prep_detail_page);
+$(document).on('pagebeforeshow', '#submit-page', prep_submit_page);
 
 $(document).on('pagebeforeshow', '#front-page', prep_front_page);
 $(document).on('pageshow', '#front-page', decide_front_page);
@@ -768,6 +935,11 @@ $(document).on('vclick', '#complete_report', complete_report);
 $(document).on('vclick', '#delete_report', delete_report);
 $(document).on('vclick', '#id_photo_button', function() {takePhoto(navigator.camera.PictureSourceType.CAMERA);});
 $(document).on('vclick', '#id_existing', function() {takePhoto(navigator.camera.PictureSourceType.SAVEDPHOTOALBUM);});
-$(document).on('vclick', '#mapForm :input[type=submit]', function() { submit_clicked = $(this); });
+$(document).on('vclick', '#submit-page :input[type=submit]', function(e) { submit_clicked = $(this); postReport(e); });
 $(document).on('vclick', '#id_del_photo_button', delPhoto);
-$(document).on('vclick', '#submit-header a.ui-btn-left', submit_back);
+//$(document).on('vclick', '#submit-header a.ui-btn-left', submit_back);
+$(document).on('vclick', '#photo-page a.ui-btn-right', photo_next);
+$(document).on('vclick', '#details-page a.ui-btn-right', detail_nav);
+$(document).on('vclick', '#details-page a.ui-btn-left', detail_nav);
+
+$(document).on('vclick', '#submit-page a.ui-btn-left', submit_nav);
