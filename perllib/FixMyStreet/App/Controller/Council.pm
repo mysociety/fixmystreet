@@ -1,6 +1,7 @@
 package FixMyStreet::App::Controller::Council;
 use Moose;
 use namespace::autoclean;
+use Data::Dumper;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
@@ -96,6 +97,12 @@ sub load_and_check_councils : Private {
     $c->stash->{all_councils} = $all_councils;
     $c->stash->{all_council_names} =
       [ map { $_->{name} } values %$all_councils ];
+
+    my $uris = $c->model('DB::FmgMunicipality');
+    %{$c->stash->{all_council_urls}} = map {
+        $_->get_column('mapit_id') => $_->get_column('url')
+    } $uris->all;
+
     return 1;
 }
 
