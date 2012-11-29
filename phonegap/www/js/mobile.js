@@ -1,4 +1,5 @@
 var can_geolocate = false;
+var submit_clicked = null;
 
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
@@ -389,6 +390,32 @@ function save_report() {
     $.mobile.changePage('my_reports.html');
 }
 
+function validate_user_details() {
+    var valid = 1;
+    if ( localStorage.username ) {
+    } else {
+        if (!$('#form_email').val()) {
+            valid = 0;
+            validation_error( 'form_email', validation_strings.email.required );
+        }
+
+        if ( submit_clicked.attr('id') != 'submit_sign_in' ) {
+            var name = $('#form_name').val();
+            if (!name) {
+                valid = 0;
+                validation_error( 'form_name', validation_strings.name.required );
+            } else {
+                var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
+                if ( name.length < 6 || !name.match( /\S/ ) || name.match( validNamePat ) ) {
+                    valid = 0;
+                    validation_error( 'form_name', validation_strings.name.validName );
+                }
+            }
+        }
+    }
+    return valid;
+}
+
 /* photo handling */
 
 function takePhotoSuccess(imageURI) {
@@ -485,8 +512,6 @@ function fileUploadFail() {
     $('input[type=submit]').prop("disabled", false);
 }
 
-var submit_clicked = null;
-
 function postReport(e) {
     $.mobile.loading( 'show' );
     var report = get_current_report();
@@ -497,6 +522,7 @@ function postReport(e) {
     // the .stopImmediatePropogation call in invalidHandler should render this
     // redundant but it doesn't seem to work so belt and braces :(
     // if ( !$('#mapForm').valid() ) { return; }
+    if ( !validate_user_details() ) { $.mobile.loading('hide'); return; }
 
     var params = {
         service: 'iphone',
