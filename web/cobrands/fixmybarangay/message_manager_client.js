@@ -75,12 +75,19 @@ var message_manager = (function() {
 
     var msg_no_config_err   = "Config error: no Message Manager URL has been specified";
 
+    // set _want_nice_msgs to avoid using the term "lock"
     var msg_trying_for_lock = ["Trying for lock...", "Checking message..." ];
     var msg_checking_lock   = ["Checking lock...",   "Checking message..." ];
     var msg_claiming_lock   = ["Claiming lock...",   "Checking message..." ];
     var msg_lock_granted_ok = ["Lock granted OK",    "Checking message... OK"];
     var msg_lock_denied     = ["",                   "Someone is working with that message right now!"];
 
+    // tooltips currently hardcoded, but maybe hide if don't _want_nice_msgs?
+    var tooltip_hide  = "Hide message";
+    var tooltip_info  = "Get info";
+    var tooltip_reply = "Send SMS reply";
+    var tooltip_radio = "Select message before clicking on map to create report";
+    
     function get_msg(msg) {
         return msg[_want_nice_msgs? 1 : 0];
     }
@@ -228,9 +235,9 @@ var message_manager = (function() {
         var lockkeeper = message_root.Lockkeeper.username;
         var escaped_text = $('<div/>').text(msg.message).html();
         var $p = $('<p/>');
-        var $hide_button = $('<a class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '" href="#hide-form-container">X</a>');
-        var $info_button = $('<span class="mm-msg-action mm-info" id="mm-info-' + msg.id + '">i</span>');
-        var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container">reply</a>');
+        var $hide_button = $('<a class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '" href="#hide-form-container" title="' + tooltip_hide + '">X</a>');
+        var $info_button = $('<span class="mm-msg-action mm-info" id="mm-info-' + msg.id + '" title="' + tooltip_info + '">i</span>');
+        var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container" title="' + tooltip_reply + '">reply</a>');
         if (_use_fancybox) {
             $reply_button.fancybox();
             $hide_button.fancybox();
@@ -238,12 +245,12 @@ var message_manager = (function() {
         if (depth === 0) {
             var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
             tag = $('<span class="msg-tag"/>').html(tag);
-            var radio = depth > 0? null : $('<input type="radio"/>').attr({
+            var radio = depth > 0? null : $('<input type="radio" title="' + tooltip_radio + '"/>').attr({
                 'id': 'mm_text_' + msg.id,
                 'name': 'mm_text',
                 'value': escaped_text
             }).wrap('<p/>').parent().html();
-            var label = $('<label/>', {
+            var label = $('<label title="' + tooltip_radio + '"/>', {
                 'class': 'msg-text',
                 'for': 'mm_text_' + msg.id
             }).text(escaped_text).wrap('<p/>').parent().html();
