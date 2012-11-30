@@ -175,3 +175,27 @@ input.green-btn:hover {
     height: 100%;
     margin: 0px;
 }
+
+/* Jquery mobile overrides */
+
+.ui-btn, .ui-btn-corner-all, .ui-btn-inner {
+    text-decoration: none !important;
+    border: 0px !important;
+    background: none !important;
+}
+
+.ui-icon {
+    background-color: inherit !important;
+}
+
+.ui-btn-left .ui-btn-inner {
+    border-right: 1px solid #7fb900 !important;
+}
+
+.ui-btn-right .ui-btn-inner {
+    border-left: 1px solid #7fb900 !important;
+}
+
+.ui-btn-icon-notext .ui-btn-inner {
+    border: 0px !important;
+}

@@ -907,3 +907,8 @@ $(document).on('vclick', '#submit-page a.ui-btn-left', submit_nav);
 $(document).on('vclick', '#front-page #use_saved', complete_report);
 $(document).on('vclick', '#front-page #delete_saved', delete_saved_report);
 $(document).on('vclick', '#front-page #continue', keep_saved_report);
+
+$(document).on( 'pagebeforeshow', '.ui-page', function() {
+    $('a.ui-btn').buttonMarkup({ corners: false, shadow: false, iconshadow: false });
+});
+
