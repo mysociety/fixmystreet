@@ -258,6 +258,9 @@ function prep_photo_page() {
         $('#photo').attr('src', report.file());
         $('#add_photo').hide();
         $('#display_photo').show();
+        $('#photo-next-btn .ui-btn-text').text('Next');
+    } else {
+        $('#photo-next-btn .ui-btn-text').text('Skip');
     }
 }
 
@@ -427,6 +430,7 @@ function takePhotoSuccess(imageURI) {
     $('#photo').attr('src', imageURI );
     $('#add_photo').hide();
     $('#display_photo').show();
+    $('#photo-next-btn .ui-btn-text').text('Next');
 }
 
 function delPhoto() {
@@ -434,6 +438,7 @@ function delPhoto() {
     $('#photo').attr('src', '' );
     $('#display_photo').hide();
     $('#add_photo').show();
+    $('#photo-next-btn .ui-btn-text').text('Skip');
 }
 
 function takePhotoFail(message) {
