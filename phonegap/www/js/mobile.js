@@ -459,7 +459,7 @@ function takePhoto(type) {
     if ( type == navigator.camera.PictureSourceType.CAMERA ) {
         save_to_album = true;
     }
-    navigator.camera.getPicture(takePhotoSuccess, takePhotoFail, { saveToPhotoAlbum: save_to_album, quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type });
+    navigator.camera.getPicture(takePhotoSuccess, takePhotoFail, { saveToPhotoAlbum: save_to_album, quality: 50, destinationType: Camera.DestinationType.FILE_URI, sourceType: type, correctOrientation: true });
 }
 
 function check_name( name, msg ) {
