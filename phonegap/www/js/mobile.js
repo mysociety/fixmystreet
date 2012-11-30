@@ -21,12 +21,18 @@ function touchmove(e) {
 }
 
 /* location code */
-function show_around( lat, long ) {
+function show_around( lat, long, use_transition ) {
+
+    var options = { transition: 'slide' };
+    if ( use_transition ) {
+        options = { transition: use_transition, reverse: true };
+    }
+
     pc = $('#pc').val();
     localStorage.latitude = lat;
     localStorage.longitude = long;
     localStorage.pc = pc || '';
-    $.mobile.changePage('around.html');
+    $.mobile.changePage('around.html', options );
     return false;
 }
 
@@ -92,7 +98,7 @@ function lookup_string(q) {
             }
 
             if ( valid_locations == 1 ) {
-                show_around( latitude, longitude );
+                show_around( latitude, longitude, 'slideup' );
             } else if ( valid_locations === 0 ) {
                 location_error('Location not found');
                 $('#pc').select();
@@ -101,7 +107,7 @@ function lookup_string(q) {
                 $('#multiple').remove();
                 var multiple_html = '<ul id="multiple"><li>Multiple locations found, please select one:';
                 for ( i = 0; i < multiple.length; i++ ) {
-                    multiple_html += '<li><a href="#" onclick="show_around( ' + multiple[i].latitude + ',' + multiple[i].longitude +')">' + multiple[i].address + '</a></li>';
+                    multiple_html += '<li><a href="#" onclick="show_around( ' + multiple[i].latitude + ',' + multiple[i].longitude +', \'slideup\')">' + multiple[i].address + '</a></li>';
                 }
                 multiple_html += '</ul>';
                 $('#front-howto').hide();
@@ -116,6 +122,8 @@ function lookup_string(q) {
 
 function locate() {
     $("#multiple").remove();
+    delete localStorage.currentReport;
+
     var pc = $('#pc').val();
 
     if (!pc) {
@@ -126,7 +134,7 @@ function locate() {
     if ( valid_postcode( pc ) ) {
         jQuery.get( CONFIG.MAPIT_URL + 'postcode/' + pc + '.json', function(data, status) {
             if ( status == 'success' ) {
-               show_around( data.wgs84_lat, data.wgs84_lon );
+               show_around( data.wgs84_lat, data.wgs84_lon, 'slideup' );
            } else {
                alert('Could not locate postcode');
            }
