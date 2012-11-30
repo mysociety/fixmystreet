@@ -287,7 +287,7 @@ function show_map(event) {
             new OpenLayers.Projection("EPSG:4326"),
             fixmystreet.map.getProjectionObject()
         );
-        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
+        fixmystreet.map.setCenter(centre, fixmystreet.zoom || 4);
     }
 
     fixmystreet_onload();
