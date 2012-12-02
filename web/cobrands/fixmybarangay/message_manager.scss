@@ -20,6 +20,21 @@ $color_bg_btn_info:      #0000ff;
 
 $weak_text_color:      #666;
 
+
+p.mm-submitted-by-sms {
+  color: $weak_text_color;
+  font-style: italic;
+  font-size: 0.8125em;
+  img {
+    border: none;
+    margin-right: 0.5em;
+    width: 22px;
+    height: 40px;
+    vertical-align:middle;
+    display: inline;
+  }
+}
+
 #message_manager {
   margin-top: 0;
   li#mm-admin-buttons {

@@ -1,5 +1,15 @@
 [% IF c.user && c.user.from_council %]
 
+[% IF problem.external_source_id &&  problem.external_source == c.config.MESSAGE_MANAGER_URL %]
+	<p class="mm-submitted-by-sms">
+		[%# OK to link to Message Manager here because (currently) we're only showing this to staff users %]
+		<a href="[%= problem.external_source %]messages/view/[%= problem.external_source_id %]" 
+			title="view in Message Manager admin"><img 
+			src="/cobrands/fixmybarangay/images/mobile-22x40.png" alt="SMS"></a>
+		This report was submitted via SMS.
+	</p>
+[% END %]
+
 [% IF problem.id %]
 	<input type="button" class="green-btn" value="Show Messages" id="show_messages">
 [% END %]
