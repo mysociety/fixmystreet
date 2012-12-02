@@ -245,14 +245,16 @@ var message_manager = (function() {
         if (depth === 0) {
             var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
             tag = $('<span class="msg-tag"/>').html(tag);
-            var radio = depth > 0? null : $('<input type="radio" title="' + tooltip_radio + '"/>').attr({
+            var radio = depth > 0? null : $('<input type="radio"/>').attr({
                 'id': 'mm_text_' + msg.id,
                 'name': 'mm_text',
-                'value': escaped_text
+                'value': escaped_text,
+                'title': tooltip_radio
             }).wrap('<p/>').parent().html();
-            var label = $('<label title="' + tooltip_radio + '"/>', {
+            var label = $('<label />').attr({
                 'class': 'msg-text',
-                'for': 'mm_text_' + msg.id
+                'for': 'mm_text_' + msg.id,
+                'title': tooltip_radio
             }).text(escaped_text).wrap('<p/>').parent().html();
             $p.append(tag).append(radio).append(label);
         } else {
