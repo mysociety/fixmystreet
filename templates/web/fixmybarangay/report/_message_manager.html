@@ -11,7 +11,9 @@
 [% END %]
 
 [% IF problem.id %]
-	<input type="button" class="green-btn" value="Show Messages" id="show_messages">
+	<div id="mm-container-for-report-btns">
+		<input type="button" class="green-btn" value="Show Messages" id="show_messages">
+	</div>
 [% END %]
 
 <ul id="message_manager" class="issue-list-a tab" style="display: none">
@@ -193,8 +195,9 @@ $(document).ready(function() {
 		$('<input type="button" value="Copy to update"/>').attr({
 			'id': 'copy_to_update',
 			'name': 'copy_to_update',
-			'class': 'green-btn'
-		}).appendTo($('#message_manager'));
+			'class': 'green-btn',
+			'title': "add the selected message's text as an update to this report"
+		}).appendTo($('#mm-container-for-report-btns'));
 	}
 
 	$('#copy_to_update').click(function(e){
@@ -213,7 +216,14 @@ $(document).ready(function() {
 
 	$('#show_messages').on('click', function(e) {
 		$('#message_manager').slideToggle(1000);
-		$('#show_messages').val( $('#show_messages').val() == 'Show Messages' ? 'Hide Messages' : 'Show Messages' ); 
+		if ($('#show_messages').val() == 'Show Messages') {
+			$('#show_messages').val('Hide Messages');
+			$('#copy_to_update').stop(true,true).fadeIn();
+		} else {
+			$('#show_messages').val('Show Messages');
+			$('#copy_to_update').stop(true,true).fadeOut();
+		}
+		
 	});
 	
 	$('#mm-link-to-refresh').on('click', function(e) {
@@ -228,6 +238,7 @@ $(document).ready(function() {
 		if ($('.mm-current', $mm_message_list).is(':visible')) {
 			$('#copy_to_update').stop(true,true).fadeOut();
 			$('#mm-link-to-refresh').stop(true,true).fadeOut();
+			$('.mm-empty', $mm_message_list).stop(true,true).fadeOut();
 			$('.mm-current', $mm_message_list).stop(true,true).slideUp(1000, function(){
 				if($('.mm-archive', $mm_message_list).find('li').length == 0) {
 					message_manager.say_status("No messages found for this report,");
@@ -250,6 +261,7 @@ $(document).ready(function() {
 					$('#copy_to_update').stop(true,true).fadeIn();
 					$('#mm-link-to-toggle-archive').stop(true,true).fadeIn();
 					$('#mm-link-to-refresh').stop(true,true).fadeIn();
+					$('.mm-empty', $mm_message_list).stop(true,true).fadeIn();
 					can_refresh = true;
 					reset_timeout();
 				})	

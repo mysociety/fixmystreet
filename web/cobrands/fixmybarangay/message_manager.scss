@@ -194,6 +194,12 @@ p.mm-submitted-by-sms {
 #show_messages, #copy_to_update, #reply-submit {
   margin: 1em;
 }
+#copy_to_update {
+  display: none; // show on demand, not before
+}
+#show_messages {
+  width: 11em; // hack to stop adjacent button hopping when button message changes
+}
 
 #reply-form-container, 
 #hide-form-container {
