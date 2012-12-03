@@ -37,21 +37,11 @@ Geo::Coordinates::CH1903
 
 =cut
 
-sub deg2sec($) {
-    my $angle = shift;
-
-    my $deg = int($angle);
-    my $min = int(($angle - $deg) * 60);
-    my $sec = ((($angle - $deg) * 60) - $min) * 60;   
-
-    return $sec + ($min * 60) + ($deg * 3600);
-}
-
 sub from_latlon($$) {
     my ($lat, $lon) = @_;
 
-    $lat = deg2sec($lat);
-    $lon = deg2sec($lon);
+    $lat *= 3600;
+    $lon *= 3600;
 
     my $lat_aux = ($lat - 169028.66) / 10000;
     my $lon_aux = ($lon - 26782.5) / 10000;
