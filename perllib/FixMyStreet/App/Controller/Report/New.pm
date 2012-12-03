@@ -777,6 +777,7 @@ sub process_report : Private {
         'detail_offensive',
         'may_show_name',                         #
         'category',                              #
+        'subcategory',                              #
         'partial',                               #
       );
 
@@ -804,6 +805,8 @@ sub process_report : Private {
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
+
+    $report->subcategory( $params{subcategory} );
 
     my $areas = $c->stash->{all_areas};
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
