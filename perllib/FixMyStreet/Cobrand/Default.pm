@@ -739,5 +739,22 @@ until the contacts/area/body handling is rewritten to be better.
 
 sub reports_by_body { 0; }
 
+=head2 report_check_for_errors
+
+Perform validation for new reports. Takes Catalyst context object as an argument
+
+=cut
+
+sub report_check_for_errors {
+    my $self = shift;
+    my $c = shift;
+
+    return (
+        %{ $c->stash->{field_errors} },
+        %{ $c->stash->{report}->user->check_for_errors },
+        %{ $c->stash->{report}->check_for_errors },
+    );
+}
+
 1;
 

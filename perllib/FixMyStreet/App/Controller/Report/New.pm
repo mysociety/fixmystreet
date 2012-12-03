@@ -922,11 +922,7 @@ sub check_for_errors : Private {
 
     # let the model check for errors
     $c->stash->{field_errors} ||= {};
-    my %field_errors = (
-        %{ $c->stash->{field_errors} },
-        %{ $c->stash->{report}->user->check_for_errors },
-        %{ $c->stash->{report}->check_for_errors },
-    );
+    my %field_errors = $c->cobrand->report_check_for_errors( $c );
 
     # FIXME: need to check for required bromley fields here
 
