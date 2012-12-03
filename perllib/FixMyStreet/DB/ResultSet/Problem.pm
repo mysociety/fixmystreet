@@ -395,6 +395,9 @@ sub send_reports {
                 whensent => \'ms_current_timestamp()',
                 lastupdate => \'ms_current_timestamp()',
             } );
+            if ( $cobrand->report_sent_confirmation_email ) {
+                _send_report_sent_email( $row, \%h, $nomail );
+            }
         } else {
             my @errors;
             for my $sender ( keys %reporters ) {
@@ -438,6 +441,32 @@ sub send_reports {
             print "The following reports had problems sending:\n$sending_errors";
         }
     }
+}
+
+sub _send_report_sent_email {
+    my $row = shift;
+    my $h = shift;
+    my $nomail = shift;
+
+    my $template = 'confirm_report_sent.txt';
+    my $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $row->lang, $template )->stringify;
+    $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $template )->stringify
+        unless -e $template_path;
+    $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
+        unless -e $template_path;
+    $template = Utils::read_file( $template_path );
+
+    my $result = FixMyStreet::App->send_email_cron(
+        {
+            _template_ => $template,
+            _parameters_ => $h,
+            To => $row->user->email,
+            From => mySociety::Config::get('CONTACT_EMAIL'),
+        },
+        mySociety::Config::get('CONTACT_EMAIL'),
+        [ $row->user->email ],
+        $nomail
+    );
 }
 
 1;

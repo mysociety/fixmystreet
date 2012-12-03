@@ -1,0 +1,9 @@
+Subject: Problem Report Sent: <?=$values['title']?>
+
+Hi,
+
+Your report about "<?=$values['title']?>" has been sent to <?=$values['councils_name']?>.
+
+Thanks
+
+<?=$values['signature']?>

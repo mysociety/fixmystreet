@@ -756,5 +756,7 @@ sub report_check_for_errors {
     );
 }
 
+sub report_sent_confirmation_email { 0; }
+
 1;
 

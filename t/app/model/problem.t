@@ -540,6 +540,53 @@ foreach my $test ( {
     };
 }
 
+subtest 'check can turn on report sent email alerts' => sub {
+    eval 'use Test::MockModule; 1' or
+        plan skip_all => 'Skipping tests that rely on Test::MockModule';
+
+    $mech->clear_emails_ok;
+
+    FixMyStreet::App->model('DB::Problem')->search(
+        {
+            whensent => undef
+        }
+    )->update( { whensent => \'ms_current_timestamp()' } );
+
+    $problem->discard_changes;
+    $problem->update( {
+        council => 2651,
+        state => 'confirmed',
+        confirmed => \'ms_current_timestamp()',
+        whensent => undef,
+        category => 'potholes',
+        name => 'Test User',
+        cobrand => 'fixmystreet',
+    } );
+
+    my $m = new Test::MockModule(
+        'FixMyStreet::Cobrand::FixMyStreet' );
+    $m->mock( report_sent_confirmation_email => 1 );
+    FixMyStreet::App->model('DB::Problem')->send_reports();
+
+    $mech->email_count_is( 2 );
+    my @emails = $mech->get_email;
+    my $email = $emails[0];
+
+    like $email->header('To'),qr/City of Edinburgh Council/, 'to line looks correct';
+    is $email->header('From'), '"Test User" <system_user@example.com>', 'from line looks correct';
+    like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
+    like $email->body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
+    like $email->body, qr/Subject: A Title/, 'more email body checking';
+    like $email->body, qr/Dear City of Edinburgh Council/, 'Salutation looks correct';
+
+    $problem->discard_changes;
+    ok defined( $problem->whensent ), 'whensent set';
+
+    $email = $emails[1];
+    like $email->header('Subject'), qr/Problem Report Sent/, 'report sent email title correct';
+    like $email->body, qr/Your report about/, 'report sent body correct';
+};
+
 $problem->comments->delete;
 $problem->delete;
 $user->delete;
