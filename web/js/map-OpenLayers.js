@@ -137,7 +137,7 @@ function fixmystreet_onload() {
         styleMap: pin_layer_style_map
     };
     if (fixmystreet.page == 'around') {
-        fixmystreet.bbox_strategy = new OpenLayers.Strategy.BBOX({ ratio: 1 });
+        fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
             url: '/ajax',
@@ -250,23 +250,35 @@ function fixmystreet_onload() {
 
 $(function(){
 
-    set_map_config();
+    // Set specific map config - some other JS included in the
+    // template should define this
+    set_map_config(); 
 
-    fixmystreet.map = new OpenLayers.Map("map", {
-        controls: fixmystreet.controls,
-        displayProjection: new OpenLayers.Projection("EPSG:4326")
-    });
+    // Create the basics of the map
+    fixmystreet.map = new OpenLayers.Map(
+        "map", OpenLayers.Util.extend({
+            controls: fixmystreet.controls,
+            displayProjection: new OpenLayers.Projection("EPSG:4326")
+        }, fixmystreet.map_options)
+    );
 
     if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
         $('#fms_pan_zoom').css({ top: '2.75em !important' });
     }
 
+    // Set it up our way
     fixmystreet.layer_options = OpenLayers.Util.extend({
         zoomOffset: fixmystreet.zoomOffset,
         transitionEffect: 'resize',
         numZoomLevels: fixmystreet.numZoomLevels
     }, fixmystreet.layer_options);
-    var layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+
+    var layer;
+    if (fixmystreet.layer_options.matrixIds) {
+        layer = new fixmystreet.map_type(fixmystreet.layer_options);
+    } else {
+        layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+    }
     fixmystreet.map.addLayer(layer);
 
     if (!fixmystreet.map.getCenter()) {
