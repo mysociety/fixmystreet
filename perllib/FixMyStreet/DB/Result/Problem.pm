@@ -100,6 +100,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "interest_count",
   { data_type => "integer", is_nullable => 1 },
+  "subcategory",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -122,8 +124,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-08-31 10:25:34
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:mudIAiLAUdmK8gGWIPiq6g
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-03 17:48:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:xN/RB8Vx50CwyOeBjvJezQ
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
