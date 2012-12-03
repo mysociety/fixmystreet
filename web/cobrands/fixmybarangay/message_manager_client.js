@@ -311,16 +311,16 @@ var message_manager = (function() {
         var messages = data.messages;
         _username = data.username;
         if (messages instanceof Array) {
+            var $ul = $('<ul class="mm-root mm-current"/>');
             if (messages.length === 0) {
-                $output.html('<p class="mm-empty">No messages available.</p>');
+                $output.append('<p class="mm-empty">No messages available.</p>');
             } else {
-                var $ul = $('<ul class="mm-root mm-current"/>');
                 for(i=0; i< messages.length; i++) {
                     litem = get_message_li(messages[i], 0);
                     $ul.append(litem);
                 }
-                $output.append($ul);
             }
+            $output.append($ul);
         } else {
             $output.html('<p>No messages (server did not send a list).</p>');
         }
