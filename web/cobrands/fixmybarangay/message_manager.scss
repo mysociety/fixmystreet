@@ -21,6 +21,7 @@ $color_bg_btn_info:      #0000ff;
 $weak_text_color:      #666;
 
 
+
 p.mm-submitted-by-sms {
   color: $weak_text_color;
   font-style: italic;
@@ -96,6 +97,9 @@ p.mm-submitted-by-sms {
 
   #mm-message-list {
     ul {
+      &.mm-archive {
+        display: none; // archive only shown on interaction
+      }
       list-style-type: none;
       padding: 0;
       margin: 0;
@@ -187,7 +191,7 @@ p.mm-submitted-by-sms {
     margin: 1em;
   }
 }
-#show_messages, #add_support, #reply-submit { // COPY TO UPDATE button
+#show_messages, #copy_to_update, #reply-submit {
   margin: 1em;
 }
 

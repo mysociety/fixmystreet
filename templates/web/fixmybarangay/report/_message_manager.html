@@ -16,6 +16,9 @@
 
 <ul id="message_manager" class="issue-list-a tab" style="display: none">
 	<li id="mm-admin-buttons">
+		[% IF problem.id %]
+			<a style="float:left" id="mm-link-to-toggle-archive" href="#" title="show the message(s) associated with this report">show message for <b>this</b> report</a>
+		[% END %]
 		<a id="mm-link-to-refresh" href="#" title="update list of messages">refresh</a>
 		<a id="mm-link-to-admin" href="[% c.config.MESSAGE_MANAGER_URL %]" title="jump to Message Manager admin">admin</a>
 		<a id="mm-link-to-help" href="#mm-help" title="show help information">help</a>
@@ -56,9 +59,21 @@ $(document).ready(function() {
 	var timeout_id = 0;
 	var can_refresh = true; // disable refresh
 	var refresh_period = 60000 * 3; // refresh messages every three minutes
+	var has_archive_message = false;
 	
 	function sanitise_id(css_id) {
 	    return css_id.replace(/\D/g, "");
+	}
+	
+	// call this to push the auto-refresh timeout off so it's only triggered
+	// if there's no activity for a while
+	function reset_timeout() {
+		if (refresh_period && can_refresh) {
+			if (timeout_id) {
+				clearTimeout(timeout_id);
+			}
+			timeout_id = setTimeout(mm_refresh_messages, refresh_period);
+		}
 	}
 	
 	var mm_refresh_messages = function() {
@@ -70,12 +85,7 @@ $(document).ready(function() {
 		$('#mm-status-message-container').find('p').text("Accessed Message Manager as " + data['username']);
 		$('input[name=mm_text]').prop('checked', false); // uncheck all
 		$('#mm-link-to-refresh').delay(2000).fadeIn();
-		if (refresh_period && can_refresh) {
-			if (timeout_id) {
-				clearTimeout(timeout_id);
-			}
-			timeout_id = setTimeout(mm_refresh_messages, refresh_period);
-		}
+		reset_timeout();
 	}
 	
 	var mm_selected_message = function(data) {
@@ -95,12 +105,14 @@ $(document).ready(function() {
 	}
 	
 	var dummy_reply_cleanup = function(data) {
+		reset_timeout();
 		$('#reply_text').val('');
 		dummy_busy = false;
 		mm_refresh_messages();
 	}
 
 	var dummy_hide_cleanup = function(data) {
+		reset_timeout();
 		$('#reason_text').val('');
 		dummy_busy = false;
 	}
@@ -117,9 +129,11 @@ $(document).ready(function() {
 
 	$('#available-submit').click(function(e){
 		e.preventDefault();
+		reset_timeout();
 		message_manager.get_available_messages({
 			callback: mm_populate_list, 
 			suggest_username: fms_username,
+			fms_id: problem_id,
 			anim_duration: 500
 		});
 	});
@@ -132,6 +146,7 @@ $(document).ready(function() {
 	});
 	
 	$('#mm-message-list').on('click', '.mm-info', function(e){
+		reset_timeout();
 		message_manager.show_info(sanitise_id($(this).parent().attr('id')));
 	});
 	
@@ -158,6 +173,7 @@ $(document).ready(function() {
 
 	$('#hide-submit').click(function(e) {
 		e.preventDefault();
+		reset_timeout();
 		// TODO: pending fancybox callbacks working, force dummy_busy here
 		//       this is possibly overly cautious anyway
 		dummy_busy = false; 
@@ -175,13 +191,14 @@ $(document).ready(function() {
 	// only show on problem display page
 	if (problem_id) {
 		$('<input type="button" value="Copy to update"/>').attr({
-			'id': 'add_support',
-			'name': 'add_support',
+			'id': 'copy_to_update',
+			'name': 'copy_to_update',
 			'class': 'green-btn'
 		}).appendTo($('#message_manager'));
 	}
 
-	$('#add_support').click(function(e){
+	$('#copy_to_update').click(function(e){
+		reset_timeout();
 		e.preventDefault();
 		$('#mm-message-list input:checked').each( function(index) {
 			var id = $(this).attr('id');
@@ -195,7 +212,7 @@ $(document).ready(function() {
 	});
 
 	$('#show_messages').on('click', function(e) {
-		$('#message_manager').toggle();
+		$('#message_manager').slideToggle(1000);
 		$('#show_messages').val( $('#show_messages').val() == 'Show Messages' ? 'Hide Messages' : 'Show Messages' ); 
 	});
 	
@@ -204,6 +221,42 @@ $(document).ready(function() {
 		mm_refresh_messages();
 	});
 
+	// suppress fading control while archive messages are displayed, for now
+	$('#mm-link-to-toggle-archive').on('click', function(e) {
+		e.preventDefault();
+		$('#mm-link-to-toggle-archive').fadeOut();
+		if ($('.mm-current', $mm_message_list).is(':visible')) {
+			$('#copy_to_update').stop(true,true).fadeOut();
+			$('#mm-link-to-refresh').stop(true,true).fadeOut();
+			$('.mm-current', $mm_message_list).stop(true,true).slideUp(1000, function(){
+				if($('.mm-archive', $mm_message_list).find('li').length == 0) {
+					message_manager.say_status("No messages found for this report,");
+				} else {
+					message_manager.say_status("Messages for this report:");
+				};
+				$('.mm-archive', $mm_message_list).stop(true,true).slideDown(1000, function(){
+					$('#mm-link-to-toggle-archive').html('show all available messages')
+						.attr('title', 'show all available messages (for adding updates)');
+					$('#mm-link-to-toggle-archive').fadeIn();
+					can_refresh = false;
+				})	
+			});	
+		} else {
+			$('.mm-archive', $mm_message_list).stop(true,true).slideUp(1000, function(){
+				message_manager.say_status("Available messages:");
+				$('.mm-current', $mm_message_list).stop(true,true).slideDown(1000, function(){
+					$('#mm-link-to-toggle-archive').html("show message for <b>this</b> report")
+						.attr('title', 'show the original message(s) for this report');
+					$('#copy_to_update').stop(true,true).fadeIn();
+					$('#mm-link-to-toggle-archive').stop(true,true).fadeIn();
+					$('#mm-link-to-refresh').stop(true,true).fadeIn();
+					can_refresh = true;
+					reset_timeout();
+				})	
+			});	
+		}
+	});
+	
 	$("a#mm-link-to-help").fancybox();
 
 	message_manager.populate_boilerplate_strings('hide-reason');

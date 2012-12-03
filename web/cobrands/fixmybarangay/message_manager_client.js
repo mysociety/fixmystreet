@@ -295,19 +295,31 @@ var message_manager = (function() {
     
     // render allows animation (if required) to hide messages before repainting and then revealing them
     var render_available_messages = function(data, anim_duration) {
+        var $output = $message_list_element;
+        $output.empty();
+        var archive = data.messages_for_this_report;
+        var $archive = "";
+        var i, litem;
+        if (archive instanceof Array) {
+            var $arch_ul = $('<ul class="mm-root mm-archive"/>');
+            for(i=0; i< archive.length; i++) {
+                litem = get_message_li(archive[i], 0);
+                $arch_ul.append(litem);
+            }
+            $output.append($arch_ul);
+        }
         var messages = data.messages;
         _username = data.username;
-        var $output = $message_list_element;
         if (messages instanceof Array) {
             if (messages.length === 0) {
                 $output.html('<p class="mm-empty">No messages available.</p>');
             } else {
-                var $ul = $('<ul class="mm-root"/>');
-                for(var i=0; i< messages.length; i++) {
-                    var litem = get_message_li(messages[i], 0);
+                var $ul = $('<ul class="mm-root mm-current"/>');
+                for(i=0; i< messages.length; i++) {
+                    litem = get_message_li(messages[i], 0);
                     $ul.append(litem);
                 }
-                $output.empty().append($ul);
+                $output.append($ul);
             }
         } else {
             $output.html('<p>No messages (server did not send a list).</p>');
@@ -347,11 +359,13 @@ var message_manager = (function() {
     // gets messages or else requests login
     // options: suggest_username, if provided, is preloaded into the login form if provided
     //          anim_duration: duration of fade/reveal (0, by defaut, does no animation)
+    //          fms_id: if provided, display an archive of messages for this username
     var get_available_messages = function(options) {
         var base_auth = get_current_auth_credentials();
         var suggest_username = "";
         var anim_duration = 0;
         var callback = null;
+        var fms_id = null;
         if (options) {
             if (typeof(options.callback) === 'function') {
                 callback = options.callback;
@@ -365,6 +379,12 @@ var message_manager = (function() {
                     anim_duration = 0;
                 }
             }
+            if (typeof options.fms_id === 'string' || typeof options.fms_id === 'number') {
+                fms_id = parseInt(options.fms_id, 10);
+                if (isNaN(fms_id)) {
+                    fms_id = 0;
+                }
+            }
         }
         if (base_auth === "") {
             show_login_form(suggest_username);
@@ -374,11 +394,15 @@ var message_manager = (function() {
         if (_url_root.length === 0) {
             say_status(msg_no_config_err);
         } else {
+            var ajax_url = _url_root +"messages/available.json";
+            if (fms_id) {
+                ajax_url += "?fms_id=" + fms_id;
+            }
             say_status("Fetching messages...", true);
             $.ajax({
                 dataType: "json", 
-                type:     "post", 
-                url:      _url_root +"messages/available.json",
+                type:     "get", 
+                url:      ajax_url,
                 beforeSend: function (xhr){
                     xhr.setRequestHeader('Authorization', get_current_auth_credentials());
                     xhr.withCredentials = true;
@@ -722,6 +746,7 @@ var message_manager = (function() {
        hide: hide,
        show_info: show_info,
        sign_out: sign_out,
-       populate_boilerplate_strings: populate_boilerplate_strings
+       populate_boilerplate_strings: populate_boilerplate_strings,
+       say_status: say_status
      };
 })();
