@@ -1,2 +1,22 @@
 @import "_colours";
 @import "../fixmystreet/_layout";
+
+body {
+  background-color: #fff;
+  background-image: none;
+}
+
+#front-main {
+  background-color: $primary;
+  background-image: none;
+  @include border-radius(1em 1em 0 0);
+  margin: 2em 1em 0;
+  padding-top: 0;
+  h2 {
+      color: $primary_text;
+  }
+  a#geolocate_link {
+      color: $primary_text;
+  }
+}
+
