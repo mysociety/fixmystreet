@@ -766,5 +766,23 @@ If true then we never send an email to confirm a report
 
 sub never_confirm_reports { 0; }
 
+=head2 allow_anonymous_reports
+
+If true then can have reports that are truely anonymous - i.e with no email or name. You
+need to also put details in the anonymous_account function too.
+
+=cut
+
+sub allow_anonymous_reports { 0; }
+
+=head2 anonymous_account
+
+Details to use for anonymous reports. This should return a hashref with an email and
+a name key
+
+=cut
+
+sub anonymous_account { undef; }
+
 1;
 

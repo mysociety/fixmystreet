@@ -713,6 +713,14 @@ sub process_user : Private {
 
     my $user_title = Utils::trim_text( $params{fms_extra_title} );
 
+    if ( $c->cobrand->allow_anonymous_reports ) {
+        my $anon_details = $c->cobrand->anonymous_account;
+
+        for my $key ( qw( email name ) ) {
+            $params{ $key } ||= $anon_details->{ $key };
+        }
+    }
+
     # The user is already signed in
     if ( $c->user_exists ) {
         my $user = $c->user->obj;
