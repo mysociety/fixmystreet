@@ -40,6 +40,7 @@ sub string {
     my %query_params = (
         q => $s,
         format => 'json',
+	addressdetails => 1,
         #'accept-language' => '',
         email => 'support' . chr(64) . 'fixmystreet.com',
     );
@@ -71,18 +72,33 @@ sub string {
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
         # These co-ordinates are output as query parameters in a URL, make sure they have a "."
+	next unless	$_->{type} eq "town" ||
+			$_->{type} eq "village" ||
+			$_->{type} eq "city" ||
+			$_->{type} eq "secondary" ||
+			$_->{type} eq "tertiary" ||
+			$_->{type} eq "primary" ||
+			$_->{type} eq "unclassified" ||
+			$_->{type} eq "residential";
+
         ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
         mySociety::Locale::in_gb_locale {
             push (@$error, {
-                address => $_->{display_name},
+            #    address => ($_->{address}->{postcode})?
+#($_->{address}->{road}.", ".$_->{address}->{postcode}." ".$_->{address}->{administrative}):($_->{address}->{road}.", ".$_->{address}->{administrative}) ,
+		address => $_->{address}->{road}.", ".$_->{address}->{administrative}, 
                 latitude => sprintf('%0.6f', $latitude),
                 longitude => sprintf('%0.6f', $longitude)
             });
         };
+
         push (@valid_locations, $_);
     }
 
-    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
+    my %seen;
+    my @final_valid_locations = grep { $seen{$_->{address}}++ } @{$error};
+
+    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1 or scalar keys %seen == 1;
     return { error => $error };
 }
 

@@ -69,6 +69,7 @@ sub geocode_postcode {
     #    Most people write Swedish postcodes like this:
     #+   XXX XX, so let's remove the space
     #    Is this the right place to do this? //Rikard
+    #	 This is the right place! // Jonas
     $s =~ s/\ //g; # Rikard, remove space in postcode
     if ($s =~ /^\d{5}$/) {
         my $location = mySociety::MaPit::call('postcode', $s);
