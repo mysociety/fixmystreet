@@ -140,7 +140,7 @@ $(function(){
     }
 
     //show/hide notes on mobile
-    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
+    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">Hur man lyckas bäst med att rapportera fel</a>').hide();
     $('.rap-notes-trigger').click(function(e){
         e.preventDefault();
         //check if we've already moved the notes
@@ -151,7 +151,7 @@ $(function(){
         }else{
             //if not, move them and show, hiding .content
             $('.content').after('<div class="content rap-notes"></div>').hide();
-            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">Back</a>');
+            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">Tillbaka</a>');
         }
         $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
         location.hash = 'rap-notes';
