@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN {extends 'Catalyst::Controller'; }
 
 use Encode;
+use FixMyStreet::Geocode;
 
 =head1 NAME
 

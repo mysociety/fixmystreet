@@ -4,7 +4,6 @@ use Moose;
 use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
-use FixMyStreet::Geocode;
 use Encode;
 use List::MoreUtils qw(uniq);
 use POSIX 'strcoll';

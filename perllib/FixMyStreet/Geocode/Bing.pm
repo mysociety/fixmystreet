@@ -15,14 +15,21 @@ use File::Path ();
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
 
+use mySociety::Locale;
+
 # string STRING CONTEXT
 # Looks up on Bing Maps API, and caches, a user-inputted location.
 # Returns array of (LAT, LON, ERROR), where ERROR is either undef, a string, or
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
-    my ( $s, $c, $params ) = @_;
+    my ( $s, $c ) = @_;
+
+    my $params = $c->cobrand->disambiguate_location($s);
+
+    $s = FixMyStreet::Geocode::escape($s);
     $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
+
     my $url = "http://dev.virtualearth.net/REST/v1/Locations?q=$s";
     $url .= '&userMapView=' . join(',', @{$params->{bounds}})
         if $params->{bounds};

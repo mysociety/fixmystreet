@@ -14,6 +14,7 @@ use File::Slurp;
 use File::Path ();
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
+use mySociety::Locale;
 
 # string STRING CONTEXT
 # Looks up on Google Maps API, and caches, a user-inputted location.
@@ -21,7 +22,11 @@ use Digest::MD5 qw(md5_hex);
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
-    my ( $s, $c, $params ) = @_;
+    my ( $s, $c ) = @_;
+
+    my $params = $c->cobrand->disambiguate_location($s);
+
+    $s = FixMyStreet::Geocode::escape($s);
 
     my $url = 'http://maps.google.com/maps/geo?q=' . $s;
     $url .=  '&ll=' . $params->{centre}  if $params->{centre};

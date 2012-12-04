@@ -4,6 +4,7 @@ use base 'FixMyStreet::Cobrand::Base';
 use strict;
 use warnings;
 use FixMyStreet;
+use FixMyStreet::Geocode::Bing;
 use Encode;
 use URI;
 use Digest::MD5 qw(md5_hex);

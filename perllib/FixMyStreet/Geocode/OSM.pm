@@ -29,8 +29,13 @@ my $nominatimbase = "http://nominatim.openstreetmap.org/";
 # an array of matches if there are more than one. The information in the query
 # may be used to disambiguate the location in cobranded versions of the site.
 sub string {
-    my ( $s, $c, $params ) = @_;
+    my ( $s, $c ) = @_;
+
+    my $params = $c->cobrand->disambiguate_location($s);
+
+    $s = FixMyStreet::Geocode::escape($s);
     $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
+
     my $url = "${nominatimbase}search?";
     my %query_params = (
         q => $s,

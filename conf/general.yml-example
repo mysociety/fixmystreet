@@ -69,8 +69,12 @@ MAPIT_TYPES: [ 'ZZZ' ]
 #   MAPIT_TYPES_CHILDREN: [ 'DIW', 'LBW', 'MTW', 'UTE', 'UTW', 'CED', 'COP', 'LGW' ]
 MAPIT_TYPES_CHILDREN: ''
 
+# Which service to use to look up results from e.g. front page searches.
+# Possible choices are Google, Bing, or OSM (blank will use OSM by default).
+GEOCODER: ''
+
 # If you wish to use Google Maps or Bing Maps Geocoding, get and put the
-# relevant key here. Without a key, geocoding will use OSM's Nominatim.
+# relevant key here.
 GOOGLE_MAPS_API_KEY: ''
 BING_MAPS_API_KEY: ''
 

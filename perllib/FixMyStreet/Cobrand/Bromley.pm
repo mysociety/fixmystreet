@@ -29,7 +29,7 @@ sub disambiguate_location {
     my $town = 'Bromley';
     # Bing turns High St Bromley into Bromley High St which is in 
     # Bromley by Bow.
-    if ( $string =~ /high\+st/i ) {
+    if ( $string =~ /high\s+st/i ) {
         $town .= ', BR1';
     }
     return {

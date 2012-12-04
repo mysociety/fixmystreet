@@ -13,6 +13,7 @@ use URI::Escape;
 use FixMyStreet::Geocode::Bing;
 use FixMyStreet::Geocode::Google;
 use FixMyStreet::Geocode::OSM;
+use FixMyStreet::Geocode::Zurich;
 
 # lookup STRING CONTEXT
 # Given a user-inputted string, try and convert it into co-ordinates using either
@@ -33,18 +34,27 @@ sub lookup {
 # Canonicalises, and then passes to some external API to look stuff up.
 sub string {
     my ($s, $c) = @_;
+
+    my $service = $c->config->{GEOCODER};
+    $service = $service->{type} if ref $service;
+    $service = 'OSM' unless $service =~ /^(Bing|Google|OSM|Zurich)$/;
+    $service = 'OSM' if $service eq 'Bing' && !FixMyStreet->config('BING_MAPS_API_KEY');
+    $service = "FixMyStreet::Geocode::${service}::string";
+
+    no strict 'refs';
+    return &$service($s, $c);
+}
+
+# escape STRING CONTEXT
+# Escapes string for putting in URL geocoding call
+sub escape {
+    my ($s, $c) = @_;
     $s = lc($s);
     $s =~ s/[^-&\w ']/ /g;
     $s =~ s/\s+/ /g;
     $s = URI::Escape::uri_escape_utf8($s);
     $s =~ s/%20/+/g;
-    my $params = $c->cobrand->disambiguate_location($s);
-    return FixMyStreet::Geocode::Bing::string($s, $c, $params)
-        if FixMyStreet->config('BING_MAPS_API_KEY');
-    # Fall back to Google API, which allow access with and without a key
-    return FixMyStreet::Geocode::Google::string($s, $c, $params)
-        if FixMyStreet->config('GOOGLE_MAPS_API_KEY');
-    return FixMyStreet::Geocode::OSM::string($s, $c, $params);
+    return $s;
 }
 
 1;
