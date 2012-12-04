@@ -1,0 +1,86 @@
+/* Parts of oxfordshire's main CSS needed for its header/footer and adjusted (see
+ * bottom) to not be affected by main FixMyStreet CSS. Not very sustainable;
+ * perhaps we should wrap all council CSS within a SCSS #council ID? Hmm.
+ */
+
+
+body {
+  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif; 
+  line-height:18px; 
+  a {text-decoration:none; outline:0; font-family:Arial, Helvetica, sans-serif; font-size:0.75em; color:#0c62ba}
+  a { font-size: 1em; } // mySociety
+  a:hover {text-decoration:underline}
+  margin:0;
+}
+
+#oxford-header
+ {
+    padding:0 16px 7px 16px; 
+    clear:both; 
+    overflow:hidden; 
+    position:relative; 
+    width:958px; 
+    height:84px; 
+    height:auto !important; 
+    min-height:84px; 
+    background: url("../images/header.jpg") no-repeat 0 0;
+  
+	 a.logo:hover {cursor:pointer;cursor:hand}
+	 a.logo {float:left; display:inline; margin:3px 0 6px 10px; position:relative; overflow:hidden}
+	 a.logo span {display:block; position:absolute; top:0; left:0; z-index:10}
+	 a.logo,  a.logo span {width:173px; height:38px; background: url("../images/logo.jpg") no-repeat 0 0;
+	 
+	#oxford-nav { 
+	  padding:0 7px 0 0; width:688px; overflow:hidden; clear:right;margin-left:263px;}
+	 ul {float:left; width:686px; padding:0 0 0 2px; margin:0; background: url("../images/divider2x47.jpg") no-repeat 0 0}
+	 ul li {float:left; padding:0 2px 0 0; margin:0; height:47px; list-style:none; background: url("../images/divider2x47.jpg") no-repeat right 0; font:bold 0.813em arial}
+	 a {display:block; padding:10px 12px 0 12px; font:bold 1em arial; height:37px; color:#ffffff; text-align:center; background: url("../images/arrow-down.gif") no-repeat bottom center}
+	 a:hover,  a.active {background: #B2D7A6 url("../images/arrow-down-on.gif") no-repeat bottom center; text-decoration:none; color:#363636}
+	}
+	
+	 h1 {float:left; padding:8px 0 0 10px; margin:0; font-size:1.25em; line-height:normal; font-weight:bold; color:#ffffff; white-space:nowrap;font-family:"Trebuchet MS",Tahoma,Arial,sans-serif;}
+     span.header {float:left; padding:8px 0 0 10px; margin:0; font-size:1.25em; line-height:normal; font-weight:bold; color:#ffffff; white-space:nowrap}
+	 a {color:#ffffff;}
+	 
+	 #oxford-links {
+	  padding: 10px 3px 0px 0px; float:right;color:#ffffff;
+    a{
+      font-size:0.75em; // mySociety putting this back (switched off in body)
+      margin: 0px 5px 0px 5px
+    }
+  }
+  
+  /*
+  .sign-in {
+    float: right;
+    p {
+      padding: 0.25em;
+      margin: 0.5em 0;
+      a {
+        margin: 0 0.5em;
+      }
+    }
+  }
+  */
+}
+#oxford-main-menu {
+  clear: both;
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+  position: relative;
+  ul { 
+    margin: 0 0 0 330px;
+    position: relative;
+    li {
+      margin: 0;
+      list-style-type: none; 
+      float:left; 
+      width:126px;
+      text-align:center;
+      background: #e0e0e0;
+      padding: 8px 0;
+      margin: 0 0 0 2px;  
+    }
+  }
+}
