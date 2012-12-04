@@ -108,8 +108,13 @@
                 [% END %]
                 
                 <label for="form_photo">[% loc('Photo') %]</label>
+                <p>Iaktta försiktighet när du laddar upp en bild och undvik att få med personer, registreringsnummer och liknande detaljer som inte har med problemet i sig att göra.</p>
                 <input type="file" name="photo" id="form_photo">
             [% END %]
+
+<p>
+När du registrerar din anmälan samtycker du samtidigt till att dina personuppgifterna lagras i en databas och behandlas enligt personuppgiftslagen (PuL). <a href="/privacy">Läs mer</a>
+</p>
 
             [% IF c.user_exists %]
                 <div class="form-box">
