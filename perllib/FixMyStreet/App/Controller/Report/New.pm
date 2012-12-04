@@ -963,7 +963,10 @@ sub save_user_and_report : Private {
     my $report      = $c->stash->{report};
 
     # Save or update the user if appropriate
-    if ( !$report->user->in_storage ) {
+    if ( $c->cobrand->never_confirm_reports ) {
+        $report->user->update();
+        $report->confirm();
+    } elsif ( !$report->user->in_storage ) {
         # User does not exist.
         # Store changes in token for when token is validated.
         $c->stash->{token_data} = {

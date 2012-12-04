@@ -758,5 +758,13 @@ sub report_check_for_errors {
 
 sub report_sent_confirmation_email { 0; }
 
+=head2 never_confirm_reports
+
+If true then we never send an email to confirm a report
+
+=cut
+
+sub never_confirm_reports { 0; }
+
 1;
 
