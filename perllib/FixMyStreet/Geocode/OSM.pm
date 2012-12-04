@@ -76,7 +76,7 @@ sub string {
 			$_->{type} eq "locality" ||
 			$_->{type} eq "suburb" ||
 			$_->{type} eq "village" ||
-			$_->{type} eq "city" ||
+			$_->{type} eq "hamlet" ||
 			$_->{type} eq "secondary" ||
 			$_->{type} eq "tertiary" ||
 			$_->{type} eq "primary" ||
@@ -87,6 +87,7 @@ sub string {
 	$address = $_->{address}->{suburb}.", ".$_->{address}->{administrative} if $_->{type} eq "suburb";
 	$address = $_->{address}->{town}.", ".$_->{address}->{state} if $_->{type} eq "town";
 	$address = $_->{address}->{village}.", ".$_->{address}->{administrative} if $_->{type} eq "village";
+	$address = $_->{address}->{hamlet}.", ".$_->{address}->{administrative} if $_->{type} eq "hamlet";
 
             #    address => ($_->{address}->{postcode})?
 #($_->{address}->{road}.", ".$_->{address}->{postcode}." ".$_->{address}->{administrative}):($_->{address}->{road}.", ".$_->{address}->{administrative}) ,
