@@ -25,4 +25,9 @@ body {
     display: none;
 }
 
+// hide the site-header, currently has council logo at top of page
+#site-header {
+  display: none;
+}
+
 @import "oxfordshire";

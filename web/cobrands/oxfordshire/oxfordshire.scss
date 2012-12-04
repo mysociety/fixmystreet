@@ -95,3 +95,36 @@ body {
     }
   }
 }
+
+#oxford-footer {
+  float:left; 
+  display:inline; 
+  margin:0 -8px 0 -8px; 
+  padding:10px 25px 30px 21px; 
+  clear:both; 
+  overflow:hidden; 
+  width:960px; 
+  background:#000000 url("/cobrands/oxfordshire/images/footer.jpg") no-repeat bottom left;
+  address {float:left; padding:11px 0 0 0; margin:0; color:#989898; font:0.813em arial}
+  a {font:1em arial; color:#ffffff; margin:0px 5px 0px 5px}
+  address a {font:1em arial; color:#ffffff; margin:0px 0px 0px 0px}
+  ul {float:right; padding:5px 0 0 55px; margin:0}
+  ul li {float:left; padding:0; font:0.813em/27px arial; color:#ffffff; overflow:hidden}
+  /* contact-the-team */
+  .view-features-for-content-page .feature-tab-title,  .view-features-for-content-page .feature-tab-number{ display:none}
+  .footer_menu_container {overflow:hidden;height:0px}
+  li {
+    margin-left: 0.5em;
+    padding: 6px;
+    &.powered-by-fms {
+      // @include border-radius(6px);
+      &:hover {
+        background-color:#2c2c2c;
+      }
+      a:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}
+
