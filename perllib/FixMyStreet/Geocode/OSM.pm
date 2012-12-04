@@ -73,6 +73,8 @@ sub string {
     foreach (@$js) {
         # These co-ordinates are output as query parameters in a URL, make sure they have a "."
 	next unless	$_->{type} eq "town" ||
+			$_->{type} eq "locality" ||
+			$_->{type} eq "suburb" ||
 			$_->{type} eq "village" ||
 			$_->{type} eq "city" ||
 			$_->{type} eq "secondary" ||
@@ -80,13 +82,19 @@ sub string {
 			$_->{type} eq "primary" ||
 			$_->{type} eq "unclassified" ||
 			$_->{type} eq "residential";
+	my $address = $_->{address}->{road}.", ".$_->{address}->{administrative};
+	$address = $_->{address}->{locality}.", ".$_->{address}->{administrative} if $_->{type} eq "locality";
+	$address = $_->{address}->{suburb}.", ".$_->{address}->{administrative} if $_->{type} eq "suburb";
+	$address = $_->{address}->{town}.", ".$_->{address}->{state} if $_->{type} eq "town";
+	$address = $_->{address}->{village}.", ".$_->{address}->{administrative} if $_->{type} eq "village";
+
+            #    address => ($_->{address}->{postcode})?
+#($_->{address}->{road}.", ".$_->{address}->{postcode}." ".$_->{address}->{administrative}):($_->{address}->{road}.", ".$_->{address}->{administrative}) ,
 
         ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
         mySociety::Locale::in_gb_locale {
             push (@$error, {
-            #    address => ($_->{address}->{postcode})?
-#($_->{address}->{road}.", ".$_->{address}->{postcode}." ".$_->{address}->{administrative}):($_->{address}->{road}.", ".$_->{address}->{administrative}) ,
-		address => $_->{address}->{road}.", ".$_->{address}->{administrative}, 
+		address => $address,
                 latitude => sprintf('%0.6f', $latitude),
                 longitude => sprintf('%0.6f', $longitude)
             });
@@ -99,6 +107,7 @@ sub string {
     my @final_valid_locations = grep { $seen{$_->{address}}++ } @{$error};
 
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1 or scalar keys %seen == 1;
+    return { error => _('Sorry, we could not find that location.') } if scalar keys %seen == 0;
     return { error => $error };
 }
 
