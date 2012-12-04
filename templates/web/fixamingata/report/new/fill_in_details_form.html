@@ -9,7 +9,10 @@
                 loc('the local council')
             );
         %]
-        [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+        Informationen du anger här kommer att bli en offentlig handling när
+        rapporten skickats till kommunen och kommer samtidigt att visas
+        publikt på Fixa Min Gata. Ditt namn kommer dock att visas endast om
+        du medger att vi visar det.
         </p>
     [% ELSE %]
         [% PROCESS 'report/new/councils_text.html' %]
@@ -108,8 +111,13 @@
                 [% END %]
                 
                 <label for="form_photo">[% loc('Photo') %]</label>
+                <p>Iaktta försiktighet när du laddar upp en bild och undvik att få med personer, registreringsnummer och liknande detaljer som inte har med problemet i sig att göra.</p>
                 <input type="file" name="photo" id="form_photo">
             [% END %]
+
+<p>
+När du registrerar din anmälan samtycker du samtidigt till att dina personuppgifterna lagras i en databas och behandlas enligt personuppgiftslagen (PuL). <a href="/privacy">Läs mer</a>
+</p>
 
             [% IF c.user_exists %]
                 <div class="form-box">
