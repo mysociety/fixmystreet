@@ -964,7 +964,11 @@ sub save_user_and_report : Private {
 
     # Save or update the user if appropriate
     if ( $c->cobrand->never_confirm_reports ) {
-        $report->user->update();
+        if ( $report->user->in_storage() ) {
+            $report->user->update();
+        } else {
+            $report->user->insert();
+        }
         $report->confirm();
     } elsif ( !$report->user->in_storage ) {
         # User does not exist.
