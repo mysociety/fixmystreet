@@ -11,6 +11,17 @@ body {
   a { font-size: 1em; } // mySociety
   a:hover {text-decoration:underline}
   margin:0;
+  background:#E0E0E0 url("/cobrands/oxfordshire/images/bg.jpg") repeat-y top center;
+
+  #oxford-wrapper {
+    background: url("/cobrands/oxfordshire/images/bg-y.jpg") repeat-y scroll 0 0 #FFFFFF;
+    clear: both;
+    display: block;
+    margin: 0 auto;
+    padding: 0 8px;
+    width: 990px;
+  }
+
 }
 
 #oxford-header
@@ -23,19 +34,19 @@ body {
     height:84px; 
     height:auto !important; 
     min-height:84px; 
-    background: url("../images/header.jpg") no-repeat 0 0;
+    background: url("/cobrands/oxfordshire/images/header.jpg") no-repeat 0 0;
   
 	 a.logo:hover {cursor:pointer;cursor:hand}
 	 a.logo {float:left; display:inline; margin:3px 0 6px 10px; position:relative; overflow:hidden}
 	 a.logo span {display:block; position:absolute; top:0; left:0; z-index:10}
-	 a.logo,  a.logo span {width:173px; height:38px; background: url("../images/logo.jpg") no-repeat 0 0;
+	 a.logo,  a.logo span {width:173px; height:38px; background: url("/cobrands/oxfordshire/images/logo.jpg") no-repeat 0 0;
 	 
 	#oxford-nav { 
 	  padding:0 7px 0 0; width:688px; overflow:hidden; clear:right;margin-left:263px;}
-	 ul {float:left; width:686px; padding:0 0 0 2px; margin:0; background: url("../images/divider2x47.jpg") no-repeat 0 0}
-	 ul li {float:left; padding:0 2px 0 0; margin:0; height:47px; list-style:none; background: url("../images/divider2x47.jpg") no-repeat right 0; font:bold 0.813em arial}
-	 a {display:block; padding:10px 12px 0 12px; font:bold 1em arial; height:37px; color:#ffffff; text-align:center; background: url("../images/arrow-down.gif") no-repeat bottom center}
-	 a:hover,  a.active {background: #B2D7A6 url("../images/arrow-down-on.gif") no-repeat bottom center; text-decoration:none; color:#363636}
+	 ul {float:left; width:686px; padding:0 0 0 2px; margin:0; background: url("/cobrands/oxfordshire/images/divider2x47.jpg") no-repeat 0 0}
+	 ul li {float:left; padding:0 2px 0 0; margin:0; height:47px; list-style:none; background: url("/cobrands/oxfordshire/images/divider2x47.jpg") no-repeat right 0; font:bold 0.813em arial}
+	 a {display:block; padding:10px 12px 0 12px; font:bold 1em arial; height:37px; color:#ffffff; text-align:center; background: url("/cobrands/oxfordshire/images/arrow-down.gif") no-repeat bottom center}
+	 a:hover,  a.active {background: #B2D7A6 url("/cobrands/oxfordshire/images/arrow-down-on.gif") no-repeat bottom center; text-decoration:none; color:#363636}
 	}
 	
 	 h1 {float:left; padding:8px 0 0 10px; margin:0; font-size:1.25em; line-height:normal; font-weight:bold; color:#ffffff; white-space:nowrap;font-family:"Trebuchet MS",Tahoma,Arial,sans-serif;}
