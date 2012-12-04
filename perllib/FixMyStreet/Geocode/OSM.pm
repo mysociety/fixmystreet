@@ -10,6 +10,7 @@ package FixMyStreet::Geocode::OSM;
 
 use warnings;
 use strict;
+use Data::Dumper;
 
 use Digest::MD5 qw(md5_hex);
 use Encode;
@@ -75,6 +76,7 @@ sub string {
 	next unless	$_->{type} eq "town" ||
 			$_->{type} eq "locality" ||
 			$_->{type} eq "suburb" ||
+			$_->{type} eq "city" ||
 			$_->{type} eq "village" ||
 			$_->{type} eq "hamlet" ||
 			$_->{type} eq "secondary" ||
@@ -86,8 +88,9 @@ sub string {
 	$address = $_->{address}->{locality}.", ".$_->{address}->{administrative} if $_->{type} eq "locality";
 	$address = $_->{address}->{suburb}.", ".$_->{address}->{administrative} if $_->{type} eq "suburb";
 	$address = $_->{address}->{town}.", ".$_->{address}->{state} if $_->{type} eq "town";
+	$address = $_->{address}->{administrative}.", ".$_->{address}->{state} if $_->{type} eq "city";
 	$address = $_->{address}->{village}.", ".$_->{address}->{administrative} if $_->{type} eq "village";
-	$address = $_->{address}->{hamlet}.", ".$_->{address}->{administrative} if $_->{type} eq "hamlet";
+	$address = $_->{address}->{hamlet}.", ".$_->{address}->{state} if $_->{type} eq "hamlet";
 
             #    address => ($_->{address}->{postcode})?
 #($_->{address}->{road}.", ".$_->{address}->{postcode}." ".$_->{address}->{administrative}):($_->{address}->{road}.", ".$_->{address}->{administrative}) ,
@@ -106,7 +109,9 @@ sub string {
 
     my %seen;
     my @final_valid_locations = grep { $seen{$_->{address}}++ } @{$error};
-
+open(OUT, '>', '/tmp/moo');
+print OUT Dumper @valid_locations;
+close OUT;
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1 or scalar keys %seen == 1;
     return { error => _('Sorry, we could not find that location.') } if scalar keys %seen == 0;
     return { error => $error };
