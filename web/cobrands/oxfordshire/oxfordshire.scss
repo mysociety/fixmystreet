@@ -3,6 +3,8 @@
  * perhaps we should wrap all council CSS within a SCSS #council ID? Hmm.
  */
 
+ @import "_colours";
+
 
 body {
   font-family:"Trebuchet MS",Arial, Helvetica, sans-serif; 
@@ -34,7 +36,7 @@ body {
     height:84px; 
     height:auto !important; 
     min-height:84px; 
-    background: url("/cobrands/oxfordshire/images/header.jpg") no-repeat 0 0;
+    background: $oxfordshire_lt_green url("/cobrands/oxfordshire/images/header.jpg") no-repeat 0 0;
   
 	 a.logo:hover {cursor:pointer;cursor:hand}
 	 a.logo {float:left; display:inline; margin:3px 0 6px 10px; position:relative; overflow:hidden}
@@ -104,15 +106,13 @@ body {
   clear:both; 
   overflow:hidden; 
   width:960px; 
-  background:#000000 url("/cobrands/oxfordshire/images/footer.jpg") no-repeat bottom left;
+  background:#000000 url(/cobrands/oxfordshire/images/footer.jpg) no-repeat bottom left;
   address {float:left; padding:11px 0 0 0; margin:0; color:#989898; font:0.813em arial}
   a {font:1em arial; color:#ffffff; margin:0px 5px 0px 5px}
   address a {font:1em arial; color:#ffffff; margin:0px 0px 0px 0px}
   ul {float:right; padding:5px 0 0 55px; margin:0}
   ul li {float:left; padding:0; font:0.813em/27px arial; color:#ffffff; overflow:hidden}
   /* contact-the-team */
-  .view-features-for-content-page .feature-tab-title,  .view-features-for-content-page .feature-tab-number{ display:none}
-  .footer_menu_container {overflow:hidden;height:0px}
   li {
     margin-left: 0.5em;
     padding: 6px;
