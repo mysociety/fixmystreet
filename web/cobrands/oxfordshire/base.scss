@@ -4,3 +4,11 @@
 @import "compass";
 
 @import "../fixmystreet/_base";
+
+
+// Colour tab to match colour scheme
+#nav-link {
+  width: 50px;
+  height: 48px;
+  background: url('/cobrands/oxfordshire/images/tab-green.png') 0 0 no-repeat;
+}
