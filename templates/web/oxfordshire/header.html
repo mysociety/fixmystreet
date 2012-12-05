@@ -40,7 +40,15 @@
 			<a href="http://www.oxfordshire.gov.uk/" title="">Oxfordshire County Council home</a>|<a href="/" title="">FixMyStreet</a>
 		</span>
 		<div style="clear:both"></div>
-		<span class="header">FixMyStreet</span>
+		<span class="header"><a href="/">FixMyStreet</a></span>
+		<div class="oxford-user">
+			<p>
+				[% IF c.user_exists %]
+					[% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+					<a href="/auth/sign_out">[% loc('sign out') %]</a>
+				[% END %]
+			</p>
+		</div>
 	</div> <!-- end of oxford header -->
 	<div id="oxford-main-menu" class="desk-only">
 		<ul class="tabs">
