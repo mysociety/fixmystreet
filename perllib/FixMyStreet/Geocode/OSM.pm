@@ -43,7 +43,7 @@ sub string {
         format => 'json',
 	addressdetails => 1,
         #'accept-language' => '',
-        email => 'support' . chr(64) . 'fixmystreet.com',
+        email => 'info' . chr(64) . 'morus.se',
     );
     $query_params{viewbox} = $params->{bounds}[1] . ',' . $params->{bounds}[2] . ',' . $params->{bounds}[3] . ',' . $params->{bounds}[0]
         if $params->{bounds};
@@ -81,9 +81,12 @@ sub string {
 			$_->{type} eq "hamlet" ||
 			$_->{type} eq "secondary" ||
 			$_->{type} eq "tertiary" ||
+			$_->{type} eq "square" ||
+			$_->{type} eq "park" ||
 			$_->{type} eq "primary" ||
 			$_->{type} eq "unclassified" ||
 			$_->{type} eq "residential";
+
 	my $address = $_->{address}->{road}.", ".$_->{address}->{administrative};
 	$address = $_->{address}->{locality}.", ".$_->{address}->{administrative} if $_->{type} eq "locality";
 	$address = $_->{address}->{suburb}.", ".$_->{address}->{administrative} if $_->{type} eq "suburb";
@@ -91,9 +94,8 @@ sub string {
 	$address = $_->{address}->{administrative}.", ".$_->{address}->{state} if $_->{type} eq "city";
 	$address = $_->{address}->{village}.", ".$_->{address}->{administrative} if $_->{type} eq "village";
 	$address = $_->{address}->{hamlet}.", ".$_->{address}->{state} if $_->{type} eq "hamlet";
-
-            #    address => ($_->{address}->{postcode})?
-#($_->{address}->{road}.", ".$_->{address}->{postcode}." ".$_->{address}->{administrative}):($_->{address}->{road}.", ".$_->{address}->{administrative}) ,
+	$address = $_->{address}->{leisure}.", ".$_->{address}->{administrative} if $_->{type} eq "square";
+	$address = $_->{address}->{park}.", ".$_->{address}->{administrative} if $_->{type} eq "park";
 
         ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
         mySociety::Locale::in_gb_locale {
