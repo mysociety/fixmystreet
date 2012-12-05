@@ -169,6 +169,11 @@ body {
     padding: 6px;
     &.powered-by-fms {
       // @include border-radius(6px);
+      min-width: 200px;
+      img {
+        display: inline;
+        height:20px;
+      }
       &:hover {
         background-color:#2c2c2c;
       }
