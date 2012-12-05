@@ -72,6 +72,10 @@ body.twothirdswidthpage {
 // So that map appears underneath the header
 .wrapper {
     position: relative;
+    .table-cell {
+      padding-left: 13px; // added 13px to match Oxfordshire's normal look
+      padding-right: 13px;
+    }
 }
 .ie6, .ie7 {
     .wrapper {
@@ -111,7 +115,7 @@ body.twothirdswidthpage .content {
     .sticky-sidebar {
         left: 672px;
         aside {
-            top:7em;
+            top:10em;
         }
     }
 }
