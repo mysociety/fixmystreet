@@ -28,3 +28,13 @@
   width: 173px;
   height: 38px;
 }
+
+#main-nav ul#mysoc-menu li a#mysoc-logo {
+  background-image: none;
+  text-indent: 0;
+  img {
+    display: inline;
+    height: 20px;
+    width: 105px;
+  }
+}
