@@ -66,3 +66,8 @@ h3, h4 {
 @import "_colours";
 @import "_layout";
 
+// Tiled background stripe, not plain colour
+#front-main {
+    background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+}
+

@@ -12,18 +12,6 @@ body {
     background: #6688ff;
 }
 
-#front-main {
-    color: $primary_text;
-    background: $primary;
-    // layout sets this because base has it slightly lighter
-    h2 {
-        color: $primary_text;
-    }
-    a#geolocate_link {
-        color: $primary_text;
-    }
-}
-
 .nav-wrapper {
     .nav-wrapper-2 {
         border-top: 4px solid $primary;

@@ -44,17 +44,9 @@ body.twothirdswidthpage .content {
 }
 
 #front-main {
-    background: $primary;
     @include border-radius(1em 1em 0 0);
     margin: 2em 1em 0;
     padding-top: 0;
-    // layout sets this because base has it slightly lighter
-    h2 {
-        color: $primary_text;
-    }
-    a#geolocate_link {
-        color: $primary_text;
-    }
 }
 
 // Don't want gap that normal site has

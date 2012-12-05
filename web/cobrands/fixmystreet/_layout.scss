@@ -848,7 +848,7 @@ body.frontpage {
 // big yellow bit full screen width
 #front-main {
   color: $primary_text;
-  background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+  background: $primary;
   margin: 0;
   padding: 1em;
   #front-main-container {
@@ -858,7 +858,7 @@ body.frontpage {
   h2 {
     font-style:normal;
     margin:0;
-    color:#222;
+    color: $primary_text;
   }
   #postcodeForm {
     background:none;
@@ -897,8 +897,8 @@ body.frontpage {
     }
   }
   a#geolocate_link {
+    color: $primary_text;
     background:none;
-    color:#222;
     text-decoration: none;
     padding-bottom: 0;
     &:hover {
