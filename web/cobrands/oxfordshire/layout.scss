@@ -42,4 +42,25 @@ body {
     }
 }
 
+// Fix location of aside sidebar
+body.twothirdswidthpage {
+    .content {
+        aside {
+            @include box-shadow(none);
+        }
+        .sticky-sidebar {
+            aside {
+                position: fixed;
+                top: 10em;
+                li { // from occ website
+                  padding-left: 19px;
+                  font: 0.813em "Trebuchet MS";
+                  background: url("/cobrands/oxfordshire/images/dot6x6.jpg") no-repeat 0 5px;
+                }
+            }
+        }
+    }
+}
+
+
 @import "oxfordshire";
