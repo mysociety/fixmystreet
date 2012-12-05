@@ -54,8 +54,13 @@ $(function(){
     var $html = $('html');
 
     var cobrand;
+    var is_small_map = false;
     if (window.location.href.indexOf('bromley') != -1) {
         cobrand = 'bromley';
+        is_small_map = true;
+    } else if (window.location.href.indexOf('oxfordshire') != -1) {
+        cobrand = 'oxfordshire';
+        is_small_map = true;
     }
 
     // Deal with switching between mobile and desktop versions on resize
@@ -104,7 +109,7 @@ $(function(){
             $html.removeClass('mobile');
             position_map_box();
             if (typeof fixmystreet !== 'undefined') {
-                if (cobrand == 'bromley') {
+                if (is_small_map) {
                     //$('#bromley-footer').hide();
                 } else {
                     fixmystreet.state_map = 'full';
@@ -112,12 +117,12 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                var banner_text;
+                var banner_text = 'Click map to report a problem';
                 if (cobrand == 'bromley') {
-                    banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
-                } else {
+                    banner_text += '<span>Yellow pins show existing reports</span>';
+                }
+                if (! is_small_map) {
                     $('#site-header').show();
-                    banner_text = 'Click map to report a problem';
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
