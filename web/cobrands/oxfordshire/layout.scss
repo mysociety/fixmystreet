@@ -75,7 +75,13 @@ body.twothirdswidthpage {
     }
 }
 
-// To prevent font size larger interfering with the fixed Bromley layout
+.general-sidebar-notes,
+#report-a-problem-sidebar {
+  z-index: 99; // float above the map, since (like the map) this is the the right of the text/input column
+}
+
+
+// To prevent font size larger interfering with the fixed Oxfordshire layout
 .container { width: auto; }
 .full-width { width: 464px; }
 .shadow-wrap { width: 464px; }
