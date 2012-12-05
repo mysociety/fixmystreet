@@ -53,6 +53,7 @@ body {
       font-size:0.75em; // mySociety putting this back (switched off in body)
       margin: 0px 5px 0px 5px
     }
+
   }
 
   /*
@@ -68,6 +69,9 @@ body {
   }
   */
 }
+
+
+
 #oxford-main-menu {
   clear: both;
   margin: 0;
@@ -88,6 +92,60 @@ body {
       margin: 0 0 0 2px;  
     }
   }
+  // from occ.css (client site): #main .view-features-for-homepage ul.tabs
+  ul.tabs {
+    float:left; 
+    position:relative; 
+    padding:0; 
+    margin:0.5em 0 0 0;
+    z-index:10; 
+    width: 990px;
+    //width:635px; 
+    min-height:32px; 
+    overflow:hidden; 
+    clear:both; 
+    background: #939393 url("/cobrands/oxfordshire/images/tabs-featured.png") repeat 0 0;
+    li {
+      float:left; 
+      padding:0 0 0px 1px; 
+      margin:0; 
+      font:0.813em/27px "Trebuchet MS"; 
+      color:#ffffff; 
+      height:32px; 
+      background: #666 url("/cobrands/oxfordshire/images/divider1x32.png") no-repeat 0 0;
+    }
+    li.first {padding:0; background:none}
+    span, // mySociety
+    a {
+      display:block; 
+      position:relative; 
+      padding:8px 0 0 0; 
+      font:bold 1em "Trebuchet MS"; 
+      height:24px; 
+      color:#ffffff; 
+      text-align:center; 
+      background: #939393 url("/cobrands/oxfordshire/images/tabs-featured.png") repeat-x 0 0; 
+      white-space:nowrap;
+    }
+    a:hover,
+    a:focus {
+      background: none #EA6C18; 
+      background:-moz-linear-gradient(100% 100% 90deg, #ff4401, #EA6C18); 
+      background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#EA6C18), to(#ff4401)); 
+      color: #ffffff;
+    }
+    li span, // mySociety
+    li.active a {
+      text-decoration:none; 
+      background: #4c4c4c url("/cobrands/oxfordshire/images/tabs-featured-on.png") repeat-x 0 0;
+    }
+    li.active a:hover,
+    li.active a:focus {color: #ffffff;}
+    li.first a {}
+    li.last a {border-right:1px solid #666;}
+    a {padding:8px 0 0 0;}
+  }
+  
 }
 
 
