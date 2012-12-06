@@ -1,8 +1,54 @@
-@import "h5bp";
+@import "../fixmystreet/h5bp";
 @import "colours";
-@import "../fixmystreet/_mixins";
+@import "../fixmystreet/mixins";
 @import "compass";
 
-@import "fmsbase";
+@import "../fixmystreet/base";
+
 @import "council_header";
+
+// Front page button colour
+#front-main {
+  #postcodeForm {
+    div {
+      input#submit {
+        color: #fff;
+        background: $primary;
+        &:hover {
+          background: lighten($primary, 10%);
+        }
+      }
+    }
+  }
+}
+
+// Override all the fonts. Bit yucky, but will do for now.
+
+body, small, textarea, .meta-2, h4.static {
+    font-family: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
+}
+
+h1, h2 {
+  font-family: 'PTSansCaptionRegular', "PT Sans Caption", Verdana, Arial, sans-serif;
+}
+
+ol.big-numbers > li:before {
+    font-family: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
+}
+
+.shadow-wrap ul#key-tools li {
+    a, input[type=submit] {
+        font-family: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
+    }
+}
+
+#front-main {
+    h2, #postcodeForm, a#geolocate_link {
+        font-family: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
+    }
+}
+
+#front-howto #front_stats {
+    font-family: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
+}
 
