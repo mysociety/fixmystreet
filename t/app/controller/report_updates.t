@@ -676,7 +676,7 @@ subtest "check comment with no status change has not status in meta" => sub {
 
         is $report->state, 'investigating', 'correct report state';
         is $update->problem_state, 'investigating', 'corect update state';
-        my $update_meta = $mech->extract_update_metas;
+        $update_meta = $mech->extract_update_metas;
         like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
         unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
         like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
@@ -705,7 +705,7 @@ subtest "check comment with no status change has not status in meta" => sub {
 
         is $report->state, 'investigating', 'correct report state';
         is $update->problem_state, undef, 'no update state';
-        my $update_meta = $mech->extract_update_metas;
+        $update_meta = $mech->extract_update_metas;
         like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
         unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
         like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
