@@ -13,8 +13,11 @@
 package FixMyStreet::Geocode::Zurich;
 
 use strict;
+use Digest::MD5 qw(md5_hex);
+use File::Path ();
 use Geo::Coordinates::CH1903;
 use SOAP::Lite;
+use Storable;
 use mySociety::Locale;
 
 my ($soap, $method, $security);
@@ -56,16 +59,24 @@ sub string {
 
     setup_soap();
 
-    my $search = SOAP::Data->name('search' => $s)->type('');
-    my $count = SOAP::Data->name('count' => 10)->type('');
+    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'zurich/';
+    my $cache_file = $cache_dir . md5_hex($s);
     my $result;
-    eval {
-        $result = $soap->call($method, $security, $search, $count);
-    };
-    if ($@) {
-        return { error => 'The geocoder appears to be down.' };
+    if (-s $cache_file) {
+        $result = retrieve($cache_file);
+    } else {
+        my $search = SOAP::Data->name('search' => $s)->type('');
+        my $count = SOAP::Data->name('count' => 10)->type('');
+        eval {
+            $result = $soap->call($method, $security, $search, $count);
+        };
+        if ($@) {
+            return { error => 'The geocoder appears to be down.' };
+        }
+        $result = $result->result;
+        File::Path::mkpath($cache_dir);
+        store $result, $cache_file;
     }
-    $result = $result->result;
 
     if (!$result || !$result->{Location}) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
