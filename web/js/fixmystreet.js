@@ -53,13 +53,7 @@ $(function(){
     var submitted = false;
 
     $("form.validate").validate({
-        rules: {
-            title: { required: true },
-            detail: { required: true },
-            email: { required: true },
-            update: { required: true },
-            rznvy: { required: true }
-        },
+        rules: validation_rules,
         messages: validation_strings,
         onkeyup: false,
         onfocusout: false,
