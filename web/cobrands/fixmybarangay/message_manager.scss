@@ -146,8 +146,8 @@ p.mm-submitted-by-sms {
         &.msg-is-busy { background-color: #ffd;}
         &.msg-is-owned { background-color: #dfd;}
         &.msg-is-active { 
-          background-color: $contrast1; color:#fff;
-          p:hover { background-color: $contrast1; color:#fff; } // fix for mouseover on p
+          background-color: $col_click_map; color:#fff;
+          p:hover { background-color: $col_click_map; color:#fff; } // fix for mouseover on p
           p.mm-reply:hover {background-color: #eef; color:#000;} // fix for mouseover on p
         }
         span.msg-tag {

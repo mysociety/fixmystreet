@@ -1,9 +1,12 @@
 /* COLOURS */
 
-$primary: rgb(91,120,147);
+$bromley_blue: rgb(91,120,147);
+
+$primary: $bromley_blue;
 $primary_b: #000000;
 $primary_text: #ffffff;
 
-$contrast1: rgb(91,120,147);
-$contrast1_dark: darken(rgb(91,120,147), 10%);
-$contrast2: #AA8D11;
+$col_click_map: $bromley_blue;
+$col_click_map_dark: darken($bromley_blue, 10%);
+$col_fixed_label: $bromley_blue;
+$col_fixed_label_dark: darken($bromley_blue, 10%);

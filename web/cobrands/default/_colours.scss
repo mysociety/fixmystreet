@@ -1,9 +1,14 @@
 /* COLOURS */
 
-$primary: #ff9900;
+$orange: #ff9900;
+$bluey: #6688ff;
+
+$primary: $orange;
 $primary_b: #000000;
 $primary_text: #222222;
 
-$contrast1: #6688ff;
-$contrast1_dark: darken(#6688ff, 10%);
-$contrast2: #AA8D11;
+$col_click_map: $bluey;
+$col_click_map_dark: darken($bluey, 10%);
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;

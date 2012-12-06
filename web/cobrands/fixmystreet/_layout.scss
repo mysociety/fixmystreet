@@ -639,14 +639,14 @@ body.twothirdswidthpage {
   margin-left:-2em;
   font-size:1.375em;
   padding:1em 3em 1em 1em;
-  background: $contrast1 url(/cobrands/fixmystreet/images/sprite.png) right -2188px no-repeat;
+  background: $col_click_map url(/cobrands/fixmystreet/images/sprite.png) right -2188px no-repeat;
   &:before {
     right:0;
     left:auto;
     top:-0.5em;
     position: absolute;
     border-top: 0.5em solid transparent;
-    border-left: 0.5em solid $contrast1_dark;
+    border-left: 0.5em solid $col_click_map_dark;
     border-bottom:none;
   }
   span {
@@ -656,7 +656,7 @@ body.twothirdswidthpage {
   }
 }
 .ie6 .big-green-banner {
-  background: $contrast1 url(/cobrands/fixmystreet/images/ie_green_chevron.gif) right center no-repeat;
+  background: $col_click_map url(/cobrands/fixmystreet/images/ie_green_chevron.gif) right center no-repeat;
 }
 
 .banner {
@@ -675,7 +675,7 @@ body.twothirdswidthpage {
       background-position:-324px -326px;
       background-repeat:no-repeat;
       &:before {
-        border-bottom: 0.75em solid $contrast1_dark;
+        border-bottom: 0.75em solid $col_fixed_label_dark;
       }
     }
   }
