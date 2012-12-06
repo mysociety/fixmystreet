@@ -51,16 +51,9 @@ body {
 	}
 }
 
-.nav-wrapper {
-    .nav-wrapper-2 {
-        border-top: solid 4px $primary;
-        @include border-image(none);
-    }
-}
 #main-nav {
     ul {
         &#mysoc-menu {
-            background:$primary;
             padding: 1px 0.5em;
         }
         &#main-menu{

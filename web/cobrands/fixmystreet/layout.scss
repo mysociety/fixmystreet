@@ -66,8 +66,24 @@ h3, h4 {
 @import "_colours";
 @import "_layout";
 
+// Tiled main body background
+body {
+    background: #1A1A1A url(/cobrands/fixmystreet/images/tile.jpg) 0 0 repeat;
+    color: #fff;
+}
+
 // Tiled background stripe, not plain colour
 #front-main {
     background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+}
+#main-nav {
+    ul#mysoc-menu {
+        background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+    }
+}
+.nav-wrapper {
+    .nav-wrapper-2 {
+        @include border-image(url(/cobrands/fixmystreet/images/tile-y-border.jpg) 4 0 0 0);
+    }
 }
 

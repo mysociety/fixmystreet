@@ -12,12 +12,6 @@ body {
     background: #6688ff;
 }
 
-.nav-wrapper {
-    .nav-wrapper-2 {
-        border-top: 4px solid $primary;
-        @include border-image(none);
-    }
-}
 body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
@@ -39,9 +33,6 @@ body.mappage {
                     background: $primary;
                 }
             }
-        }
-        &#mysoc-menu {
-            background: $primary;
         }
     }
 }
