@@ -1,3 +1,269 @@
-@import "_colours";
-@import "_layout";
+@import "colours";
+@import "../fixmystreet/layout";
 
+// d523b431 - "Stevenage Home page styles"
+// 2a23e09f - Moved menu on map page and reverted to full header.
+
+body {
+    color: #222;
+    background: #dddddb;
+}
+
+// d523b431
+.nav-wrapper{
+  .nav-wrapper-2{
+    min-height: auto;
+    // e7c122a4 / 0b0a619b / - "Removed mySociety menu and positioned menu"
+    top: 9.5em;
+    border-top: none;
+    padding-top: 0.75em;
+    padding-bottom: 0.25em;
+    background-color: #6b6969;
+    @include background(linear-gradient(#6b6969, #555454));
+  }
+}
+
+.ie6, .ie7 {
+    // 452ce6a0 - Added IE6/7 position change to front page header too
+    #stevenage_cc_header {
+        position:absolute;
+        top:0;
+    }
+    // 39ec0005 - Removed position static from nav in IE6/7
+    .nav-wrapper {
+        .nav-wrapper-2 {
+            position: absolute;
+        }
+    }
+}
+
+// d523b431
+#main-nav {
+    ul {
+        float: none;
+        li {
+            a, span {
+                margin: 0;
+                margin-right: 2px;
+                font-family: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
+            }
+        }
+        &#main-menu {
+            li {
+                a, span {
+                    padding: 0.5em 0.75em;
+                    font-size: 0.8em;
+                    margin: 0;
+                    @include border-radius(0.25em);
+                }
+                a:hover {
+                    background: #444;
+                }
+                a.report-a-problem-btn {
+                    padding:0.5em 0.75em;
+                    margin:0;
+                    margin-left: 0.25em;
+                    color:#fff;
+                }
+                span {
+                    color: #fff;
+                    background-color: #066539;
+                }
+            }
+        }
+    }
+}
+
+// 452ce6a0 - "Added IE6/7 position change to front page header too" -
+// turned off border for ie6-8 .content - why, as box-shadow still on?
+.ie6, .ie7, .ie8  {
+    .content {
+        border: none;
+    }
+}
+
+body.mappage {
+    // 15591af7 - Stevenage Map page changes
+    #stevenage_cc_header {
+        position: fixed;
+    }
+    // 2a23e09f - Moved menu on map page and reverted to full header.
+    .content {
+        margin-top: 9em;
+    }
+    // 15591af7 - Stevenage Map page changes
+    #main-nav ul#main-menu li a, #main-nav ul#main-menu li span {
+        padding: 0.5em 0.75em;
+    }
+    #main-nav ul#main-menu li a.report-a-problem-btn {
+        padding: 0.5em 0.75em;
+        margin: 0 0 0 0.25em;
+    }
+    // 2a23e09f - Moved menu on map page and reverted to full header.
+    .nav-wrapper {
+        .nav-wrapper-2 {
+            position: absolute;
+            top: 11em;
+            bottom: auto;
+            left: 0.5em;
+            width: 29em;
+            padding-top: 0.15em;
+            z-index: 0;
+            background-color: #6b6969;
+            @include background(linear-gradient(#6b6969, #555454));
+        }
+    }
+}
+
+.ie6, .ie7 {
+    // 82d34958 - IE6/7 Positioning Tweaks on Council header
+    body.mappage {
+        // a7a564af - Stevenage IE8 position tweak
+        #stevenage_cc_header {
+            position:absolute;
+            top:0;
+        }
+        // ab958bc5 - IE6/7 Tweaks
+        .content {
+            margin-top:6em;
+        }
+        .nav-wrapper {
+            .nav-wrapper-2 {
+                position: absolute;
+            }
+        }
+    }
+}
+// a7a564a - Stevenage IE8 position tweak
+// 15591af7 - Stevenage Map page changes
+.ie8 {
+    body.mappage {
+        #stevenage_cc_header{
+            position:absolute;
+            top:0;
+        }
+        .nav-wrapper {
+            .nav-wrapper-2 {
+                position: absolute;
+            }
+        }
+    }
+}
+
+// d523b431
+body.fullwidthpage {
+    .content {
+        @include box-shadow(none);
+        background: none;
+    }
+}
+
+// 4d5998fb - Missed a sticky-sidebar
+body.twothirdswidthpage {
+    .content {
+        .sticky-sidebar {
+            aside {
+                top: 19em;
+            }
+        }
+    }
+}
+
+// d523b431
+#footer-mobileapps {
+    border-right: 1em solid transparent;
+}
+#footer-help {
+    border-left: 1em solid transparent;
+    ul {
+        li:last-child {
+            border-left: 1.25em solid transparent;
+        }
+    }
+}
+
+// 15591af7 - Stevenage Map page changes
+#map_box {
+    top: 140px;
+}
+#fms_pan_zoom {
+    top: 190px !important;
+}
+
+// 2a23e09f - Moved menu on map page and reverted to full header.
+#report-a-problem-sidebar {
+    top: 9em;
+}
+
+// d523b431
+body.frontpage {
+    .nav-wrapper-2 {
+        height: auto;
+    }
+    #site-header {
+        height: auto;
+    }
+    // 1162d5c8 - Changed the colour of the user text when you're logged in to be more readable
+    #user-meta {
+        p {
+            color: #fff;
+        }
+    }
+}
+
+// d523b431
+#front-main {
+    background: #fff;
+    color: #222;
+    margin: 0 auto;
+    margin-top: 1.5em;
+    max-width: 60em;
+    #postcodeForm {
+        color: #222;
+    }
+    h2 {
+        color: #222;
+    }
+    a#geolocate_link {
+        color: #222;
+    }
+}
+
+// d523b431
+#front-howto {
+    border-right: 1em solid transparent;
+}
+
+// 0c5d50bc - Added margin to front page report box to push below nav in IE6/7
+.ie6, .ie7 {
+    #front-main {
+        margin-top: 5.5em;
+    }
+}
+
+// d523b431
+#front-recently {
+    border-left: 1em solid transparent;
+}
+
+@media only screen and (min-width: 48em) and (max-width: 61em) {
+    // d523b431
+    #main-nav {
+        float: left;
+    }
+    .nav-wrapper {
+        .nav-wrapper-2 {
+            @include background(linear-gradient(#222, #555 30%, #555 60%, #222));
+        }
+    }
+    // f432a72d - moved sticky sidebars down a bit to account for the larger header
+    body.twothirdswidthpage {
+        .content {
+            .sticky-sidebar {
+                aside {
+                    top: 19em;
+                }
+            }
+        }
+    }
+}
