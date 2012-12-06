@@ -58,7 +58,13 @@ sub string {
 
     my $search = SOAP::Data->name('search' => $s)->type('');
     my $count = SOAP::Data->name('count' => 10)->type('');
-    my $result = $soap->call($method, $security, $search, $count);
+    my $result;
+    eval {
+        $result = $soap->call($method, $security, $search, $count);
+    };
+    if ($@) {
+        return { error => 'The geocoder appears to be down.' };
+    }
     $result = $result->result;
 
     if (!$result || !$result->{Location}) {
