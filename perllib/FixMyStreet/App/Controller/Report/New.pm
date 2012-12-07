@@ -1104,6 +1104,10 @@ sub redirect_or_confirm_creation : Private {
 
         if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_council && $c->stash->{external_source_id}) {
             $report_uri = $c->uri_for( '/report', $report->id, undef, { external_source_id => $c->stash->{external_source_id} } );
+        } elsif ( $c->cobrand->never_confirm_reports && $report->non_public ) {
+            $c->log->info( 'cobrand was set to always confirm reports and report was non public, success page showed');
+            $c->stash->{template} = 'report_created.html';
+            return 1;
         } else {
             $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
         }
