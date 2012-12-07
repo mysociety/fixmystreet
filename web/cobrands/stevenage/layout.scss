@@ -169,19 +169,6 @@ body.twothirdswidthpage {
     }
 }
 
-// d523b431
-#footer-mobileapps {
-    border-right: 1em solid transparent;
-}
-#footer-help {
-    border-left: 1em solid transparent;
-    ul {
-        li:last-child {
-            border-left: 1.25em solid transparent;
-        }
-    }
-}
-
 // 15591af7 - Stevenage Map page changes
 #map_box {
     top: 140px;
@@ -220,21 +207,11 @@ body.frontpage {
     max-width: 60em;
 }
 
-// d523b431
-#front-howto {
-    border-right: 1em solid transparent;
-}
-
 // 0c5d50bc - Added margin to front page report box to push below nav in IE6/7
 .ie6, .ie7 {
     #front-main {
         margin-top: 5.5em;
     }
-}
-
-// d523b431
-#front-recently {
-    border-left: 1em solid transparent;
 }
 
 @media only screen and (min-width: 48em) and (max-width: 61em) {

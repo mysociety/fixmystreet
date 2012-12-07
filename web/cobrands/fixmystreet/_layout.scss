@@ -375,7 +375,7 @@ body.twothirdswidthpage {
 
 //footer blocks
 #footer-mobileapps {
-  border-right:1em solid #fff;
+  border-right:1em solid transparent;
   background:none;
   padding:0;
   @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
@@ -433,14 +433,14 @@ body.twothirdswidthpage {
 }
 
 #footer-help {
-  border-left:1em solid #fff;
+  border-left:1em solid transparent;
   ul {
     display:table;
     li {
       display:table-cell;
       border-bottom:none;
       &:last-child {
-        border-left:1.25em solid #fff;
+        border-left:1.25em solid transparent;
       }
     }
   }
@@ -921,7 +921,7 @@ body.frontpage {
 }
 
 #front-howto {
-  border-right:1em solid #fff;
+  border-right:1em solid transparent;
   #front_stats {
     background:none;
     color: #222;
@@ -945,7 +945,7 @@ body.frontpage {
 }
 
 #front-recently {
-  border-left:1em solid #fff;
+  border-left:1em solid transparent;
 }
 
 #front-howto h2,
