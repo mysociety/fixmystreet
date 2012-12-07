@@ -1,6 +1,8 @@
 @import "compass";
 @import "_mixins";
 
+$image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
+
 //hacks for desk/mob only stuff
 .desk-only {
     display: block;
@@ -396,7 +398,7 @@ body.twothirdswidthpage {
         height: 32px;
         margin:0 auto;
         text-indent: -999999px;
-        background: url(/cobrands/fixmystreet/images/sprite.png) -12px -3610px no-repeat;
+        background: url($image-sprite) -12px -3610px no-repeat;
         opacity: 0.8;
         &:hover {
           opacity: 1;
@@ -503,7 +505,7 @@ body.twothirdswidthpage {
     left:-1em;
     width:1em;
     height:100%;
-    background:#000 url(/cobrands/fixmystreet/images/sprite.png) right -4119px no-repeat;
+    background:#000 url($image-sprite) right -4119px no-repeat;
     @include border-radius(0.25em 0 0 0.25em);
     &:hover {
       left:-1.5em;
@@ -583,11 +585,11 @@ body.twothirdswidthpage {
         padding: 0.5em 1.5em 0.5em 0;
         text-transform:none;
         &.abuse {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url($image-sprite);
           background-position:right -2935px;
         }
         &.feed {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url($image-sprite);
           background-position:right -3074px;
         }
         &.share {
@@ -596,11 +598,11 @@ body.twothirdswidthpage {
           background-position: 90% 50%;
         }
         &.chevron {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url($image-sprite);
           background-position:right -3225px;
         }
         &.hover {
-          background-image:url(/cobrands/fixmystreet/images/sprite.png);
+          background-image:url($image-sprite);
           background-position:right -1876px;
         }
       }
@@ -640,7 +642,7 @@ body.twothirdswidthpage {
   margin-left:-2em;
   font-size:1.375em;
   padding:1em 3em 1em 1em;
-  background: $col_click_map url(/cobrands/fixmystreet/images/sprite.png) right -2188px no-repeat;
+  background: $col_click_map url($image-sprite) right -2188px no-repeat;
   &:before {
     right:0;
     left:auto;
@@ -672,7 +674,7 @@ body.twothirdswidthpage {
     }
     &#fixed {
       padding-top:5em;
-      background-image:url(/cobrands/fixmystreet/images/sprite.png);
+      background-image:url($image-sprite);
       background-position:-324px -326px;
       background-repeat:no-repeat;
       &:before {
@@ -799,7 +801,7 @@ body.frontpage {
     top:3em;
     width: 300px;
     height: 60px;
-    background: url('/cobrands/fixmystreet/images/sprite.png') -2px -108px no-repeat;
+    background: url($image-sprite) -2px -108px no-repeat;
   }
   #user-meta {
     z-index:10;
