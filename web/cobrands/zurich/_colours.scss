@@ -1,8 +1,11 @@
 /* COLOURS */
 
-$primary: #FFD000;
-$primary_b: #F3B11E;
-$primary_text: #222;
+$dark_blue: rgb(50, 80, 165);
+$lighter_blue: rgb(57, 94, 147);
+
+$primary: $dark_blue;
+$primary_b: $dark_blue;
+$primary_text: #fff;
 
 $col_click_map: #00BD08;
 $col_click_map_dark: #4B8304;

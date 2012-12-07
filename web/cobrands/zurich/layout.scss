@@ -1,3 +1,48 @@
-@import "_colours";
-@import "../fixmystreet/_layout";
+@import "colours";
+@import "../fixmystreet/layout";
+@import "zurich";
+
+body {
+    color: #3c3c3c;
+    background-color: #fff;
+}
+
+// White background, so no shadow or margin needed.
+.content {
+    color: #3c3c3c;
+    @include box-shadow(none);
+}
+.ie6, .ie7, .ie8  {
+    .content {
+        border: none;
+    }
+}
+
+#site-header .container {
+    height: 83px;
+    background: url(logo_portal.x.jpg) top left repeat-x;
+}
+
+body.frontpage #site-logo, #site-logo {
+    width: 415px;
+    height: 83px;
+    background: url(logo_portal.jpg) top left no-repeat;
+    top: 0;
+}
+
+.nav-wrapper {
+    .nav-wrapper-2 {
+        border-top: solid 18px white;
+    }
+}
+
+body.mappage {
+    .nav-wrapper {
+        .nav-wrapper-2 {
+            border-top: none;
+            background: url(logo_portal.x.jpg) top left repeat-x;
+            height: 83px;
+        }
+    }
+}
 

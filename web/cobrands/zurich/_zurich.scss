@@ -1,0 +1,31 @@
+// Some things from the Zurich stylesheet
+
+a {
+    color: #126094;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+#zurich-footer {
+    margin-top: 1em; // mySociety
+    font-size: 67.5%;
+    line-height: 1.5em;
+    clear: both;
+    background-image: url(bg_mainnav_portal.png);
+    background-repeat: repeat-x;
+    border: 1px solid #d8d8d8;
+    width: 953px;
+    padding: 3px 10px;
+    margin-bottom: 24px;
+    height: 1.5em
+}
+
+#zurich-footer a {
+    padding-left: 20px;
+}
+
+#zurich-footer a:hover {
+    color: #3c3c3c;
+}

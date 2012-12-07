@@ -1,0 +1,31 @@
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <ul id="main-menu">
+                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
+                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!-- [% INCLUDE 'debug_footer.html' %] -->
+    </div> <!-- .wrapper -->
+
+    <div id="zurich-footer" class="desk-only">
+        &copy; 2012 Stadt Z&uuml;rich
+        <span class="hidden">|</span> <a href="http://www.stadt-zuerich.ch/content/portal/de/index/footer/rechtliche_hinweise.html">Rechtliche Hinweise</a>
+        <span class="hidden">|</span> <a href="http://www.stadt-zuerich.ch/content/portal/de/index/footer/impressum.html">Impressum</a>
+        <span class="hidden">|</span> <a href="http://www.stadt-zuerich.ch/content/portal/de/index/footer/barrierefreiheit.html">Barrierefreiheit</a>
+    </div>
+
+</body>
+</html>
