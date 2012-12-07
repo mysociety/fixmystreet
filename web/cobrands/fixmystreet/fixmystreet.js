@@ -433,7 +433,7 @@ $.fn.drawer = function(id, ajax) {
      */
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
-            var offset = -176;
+            var offset = -18 * 16;
             if (cobrand == 'bromley') {
                 offset = -110;
             }
