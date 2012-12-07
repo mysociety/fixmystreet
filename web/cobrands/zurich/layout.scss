@@ -40,8 +40,37 @@ body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
             border-top: none;
+            padding-top: 18px;
             background: url(logo_portal.x.jpg) top left repeat-x;
             height: 83px;
+        }
+    }
+}
+
+#main-nav {
+    ul#main-menu {
+        li {
+            a:hover {
+                background: $primary/1.1;
+            }
+            span {
+                color: $primary_text;
+            }
+        }
+    }
+}
+
+body.mappage {
+    #main-nav ul#main-menu li a,
+    #main-nav ul#main-menu li span {
+        padding: 0.75em;
+    }
+}
+
+body.twothirdswidthpage {
+    .content {
+        aside {
+            @include box-shadow(none);
         }
     }
 }
