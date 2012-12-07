@@ -202,7 +202,7 @@ h1 {
   margin-top: 3em;
   margin-bottom: -1em;
   margin-left: 0.5em;
-  padding: 1em 1em 10em;
+  padding: 1em 1em 3em;
   background: #fff;
   color: #222;
   @include box-shadow(0px 0px 6px 1px #000);
@@ -223,6 +223,7 @@ body.mappage {
   }
   .content {
     float:left;
+    padding: 1em 1em 10em;
   }
   #main-nav ul#main-menu li a,
   #main-nav ul#main-menu li span {
