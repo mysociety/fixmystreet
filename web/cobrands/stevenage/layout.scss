@@ -207,6 +207,21 @@ body.frontpage {
     max-width: 60em;
 }
 
+// Front page button colour
+#front-main {
+  #postcodeForm {
+    div {
+      input#submit {
+        color: #fff;
+        background: $primary;
+        &:hover {
+          background: lighten($primary, 10%);
+        }
+      }
+    }
+  }
+}
+
 // 0c5d50bc - Added margin to front page report box to push below nav in IE6/7
 .ie6, .ie7 {
     #front-main {

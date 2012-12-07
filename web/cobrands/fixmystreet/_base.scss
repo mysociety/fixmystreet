@@ -1,7 +1,11 @@
 /* HEADINGS and TYPOGRAPHY */
 
+$body-font: MuseoSans, Helmet, Freesans, sans-serif !default;
+$meta-font: Helmet, Freesans, sans-serif !default;
+$heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !default;
+
 body {
-  font-family: MuseoSans, Helmet, Freesans, sans-serif;
+  font-family: $body-font;
   margin:0;
   font-size:1em;
   line-height:1.5;
@@ -17,14 +21,14 @@ p {
 }
 
 small{
-  font-family: Helmet, Freesans, sans-serif;
+  font-family: $meta-font;
   font-style: italic;
   font-size: 0.8125em;
   line-height: 1.2307em;
 }
 
 h1 {
-  font-family: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif;
+  font-family: $heading-font;
   font-size: 2em;
   line-height: 1em;
   font-weight: normal;
@@ -40,7 +44,7 @@ h1#reports_heading a {
 }
 
 h2 {
-  font-family:'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif;
+  font-family: $heading-font;
   font-size: 1.5em; /*24px*/
   line-height: 1.3333em; /*32px*/
   font-weight: normal;
@@ -102,7 +106,7 @@ ol.big-numbers {
       color:#ccc;
       line-height:1;
       font: {
-        family: Helmet, Freesans, sans-serif;
+        family: $meta-font;
         weight:bold;
         size:2.5em;
       }
@@ -188,14 +192,14 @@ a:visited {
   margin-bottom: 0px;
 }
 .meta-2{
-  font-family: Helmet, Freesans, sans-serif;
+  font-family: $meta-font;
   color:#666666;
   font-style: italic;
   font-size: 0.75em;
 }
 
 h4.static{
-  font-family: Helmet, Freesans, sans-serif;
+  font-family: $meta-font;
   text-transform: uppercase;
   font-size: 0.875em;
   line-height: 1.71428em;
@@ -284,7 +288,7 @@ textarea {
   display: block;
   font-size: 1em;
   line-height: 1.5em;
-  font-family: Helmet, Freesans, sans-serif;
+  font-family: $meta-font;
   min-height:8em;
 }
 
@@ -570,7 +574,7 @@ p.label-valid {
         text-transform:uppercase;
         font: {
           size:0.6875em;
-          family: Helmet, Freesans, sans-serif;
+          family: $meta-font;
         }
         &:hover, &.hover {
           text-decoration:none;
@@ -1438,7 +1442,7 @@ table.nicetable {
   h2 {
     font: {
       style:italic;
-      family: Helmet, Freesans, sans-serif;
+      family: $meta-font;
       size:1.1875em;
     }
     color:#4d4d4d;
@@ -1451,7 +1455,7 @@ table.nicetable {
     padding:1em;
     color: $primary_text;
     background: $primary;
-    font-family: Helmet, Freesans, sans-serif;
+    font-family: $meta-font;
     label {
       margin:0;
     }
@@ -1493,7 +1497,7 @@ table.nicetable {
     color:#C8C8C8;
     padding:0.5em;
     font: {
-      family: Helmet, Freesans, sans-serif;
+      family: $meta-font;
       size:0.8125em;
     }
     @include border-radius(0 0 0.25em 0.25em);
@@ -1510,7 +1514,7 @@ table.nicetable {
     width:100%;
     color: $primary_text;
     background: $primary;
-    font-family: Helmet, Freesans, sans-serif;
+    font-family: $meta-font;
     div {
       display:table-cell;
       text-align:center;
