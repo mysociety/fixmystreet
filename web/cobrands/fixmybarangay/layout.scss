@@ -15,6 +15,7 @@ $image-sprite: 'images/sprite.png';
 body {
   background: #C7B299;
   background-image: url(images/pat3.png);
+  color: $primary_text;
   
   .wrapper{
     background: url('images/city7.png') 30% 0% repeat-x;
