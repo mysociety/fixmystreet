@@ -97,9 +97,6 @@ p.mm-submitted-by-sms {
 
   #mm-message-list {
     ul {
-      &.mm-archive {
-        display: none; // archive only shown on interaction
-      }
       list-style-type: none;
       padding: 0;
       margin: 0;
@@ -183,6 +180,12 @@ p.mm-submitted-by-sms {
         .mm-rep {
           right:2.6em;
           background-color: $color_bg_btn_reply;
+        }
+      }
+      &.mm-archive {
+        display: none; // archive only shown on interaction
+        input[type=radio] {
+          display: none; // archive messages can't sensible be used for creation, so hide radio
         }
       }
     }
