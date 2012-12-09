@@ -28,6 +28,13 @@
  *
  *     want_nice_msgs     don't use language like "lock granted"
  *
+ *     tooltips           hash of tooltips: override the items you want, keys are:
+ *                        tt_hide, tt_info, tt_reply, tt_radio
+ *
+ *     want_radio_btns    normally MM clients show a radio button, but for archive
+ *                        messages this might be unneccessary: default is true, but
+ *                        pass in false to suppress this.
+ *
  *     *_selector         these are the jQuery selects that will be used to find
  *                        the respective elements:
  *
@@ -63,7 +70,15 @@ var message_manager = (function() {
     var _mm_name               = "Message Manager";
     var _use_fancybox          = true; // note: currently *must* have fancybox!
     var _want_nice_msgs        = false;
-    
+    var _want_radio_btns       = true;
+
+    var _tooltips = {
+        tt_hide  : "Hide message",
+        tt_info  : "Get info",
+        tt_reply : "Send SMS reply",
+        tt_radio : "Select message before clicking on map to create report"
+    };
+
     // cached jQuery elements, populated by the (mandatory) call to config()
     var $message_list_element;
     var $status_element;
@@ -82,12 +97,6 @@ var message_manager = (function() {
     var msg_lock_granted_ok = ["Lock granted OK",    "Checking message... OK"];
     var msg_lock_denied     = ["",                   "Someone is working with that message right now!"];
 
-    // tooltips currently hardcoded, but maybe hide if don't _want_nice_msgs?
-    var tooltip_hide  = "Hide message";
-    var tooltip_info  = "Get info";
-    var tooltip_reply = "Send SMS reply";
-    var tooltip_radio = "Select message before clicking on map to create report";
-    
     function get_msg(msg) {
         return msg[_want_nice_msgs? 1 : 0];
     }
@@ -126,6 +135,16 @@ var message_manager = (function() {
             }
             if (typeof settings.want_nice_msgs !== 'undefined') {
                 _want_nice_msgs = settings.want_nice_msgs;
+            }
+            if (typeof settings.want_radio_btns !== 'undefined') {
+                _want_radio_btns = settings.want_radio_btns;
+            }
+            if (settings.tooltips) {
+                for (var key in settings.tooltips) {
+                    if (settings.tooltips.hasOwnProperty(key)) {
+                        _tooltips[key]=settings.tooltips[key];
+                    }
+                }
             }
         }
         $message_list_element = $(selectors.message_list_selector);
@@ -219,25 +238,26 @@ var message_manager = (function() {
         }
     };
 
-    var extract_replies = function(replies, depth) {
+    var extract_replies = function(replies, depth, is_archive) {
         var $ul = "";
         if (replies && replies.length > 0) {
             $ul = $('<ul class="mm-reply-thread"/>');
             for (var i=0; i<replies.length; i++) {
-                $ul.append(get_message_li(replies[i], depth));
+                $ul.append(get_message_li(replies[i], depth, is_archive));
             }
         }
         return $ul;
     };
     
-    var get_message_li = function(message_root, depth) {
+    var get_message_li = function(message_root, depth, is_archive) {
         var msg = message_root.Message; // or use label value
         var lockkeeper = message_root.Lockkeeper.username;
         var escaped_text = $('<div/>').text(msg.message).html();
         var $p = $('<p/>');
-        var $hide_button = $('<a class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '" href="#hide-form-container" title="' + tooltip_hide + '">X</a>');
-        var $info_button = $('<span class="mm-msg-action mm-info" id="mm-info-' + msg.id + '" title="' + tooltip_info + '">i</span>');
-        var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container" title="' + tooltip_reply + '">reply</a>');
+        var $hide_button = $('<a class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '" href="#hide-form-container" title="' + _tooltips.tt_hide + '">X</a>');
+        var $info_button = $('<span class="mm-msg-action mm-info" id="mm-info-' + msg.id + '" title="' + _tooltips.tt_info + '">i</span>');
+        var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container" title="' + _tooltips.tt_reply + '">reply</a>');
+        var is_radio_btn = _want_radio_btns && depth == 0 && ! is_archive;
         if (_use_fancybox) {
             $reply_button.fancybox();
             $hide_button.fancybox();
@@ -245,16 +265,21 @@ var message_manager = (function() {
         if (depth === 0) {
             var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
             tag = $('<span class="msg-tag"/>').html(tag);
-            var radio = depth > 0? null : $('<input type="radio"/>').attr({
-                'id': 'mm_text_' + msg.id,
-                'name': 'mm_text',
-                'value': escaped_text,
-                'title': tooltip_radio
-            }).wrap('<p/>').parent().html();
+            var radio = null;
+            if (is_radio_btn) {
+                radio = $('<input type="radio"/>').attr({
+                    'id': 'mm_text_' + msg.id,
+                    'name': 'mm_text',
+                    'value': escaped_text,
+                    'title': is_radio_btn? _tooltips.tt_radio : ""
+                }).wrap('<p/>').parent().html();
+            } else {
+                radio = $("<p>&ndash;</p>").addClass('mm-radio-filler');
+            }
             var label = $('<label />').attr({
                 'class': 'msg-text',
                 'for': 'mm_text_' + msg.id,
-                'title': tooltip_radio
+                'title': is_radio_btn? _tooltips.tt_radio : ""
             }).text(escaped_text).wrap('<p/>').parent().html();
             $p.append(tag).append(radio).append(label);
         } else {
@@ -275,7 +300,7 @@ var message_manager = (function() {
         }
         $p.append('<div class="msg-info-box" id="msg-info-box-' + msg.id + '">' + info_text + '</div>');
         if (message_root.children) {
-            $litem.append(extract_replies(message_root.children, depth+1));
+            $litem.append(extract_replies(message_root.children, depth+1, is_archive));
         }
         return $litem;
     };
@@ -303,7 +328,7 @@ var message_manager = (function() {
         if (archive instanceof Array) {
             var $arch_ul = $('<ul class="mm-root mm-archive"/>');
             for(i=0; i< archive.length; i++) {
-                litem = get_message_li(archive[i], 0);
+                litem = get_message_li(archive[i], 0, true);
                 $arch_ul.append(litem);
             }
             $output.append($arch_ul);
@@ -316,7 +341,7 @@ var message_manager = (function() {
                 $output.append('<p class="mm-empty">No messages available.</p>');
             } else {
                 for(i=0; i< messages.length; i++) {
-                    litem = get_message_li(messages[i], 0);
+                    litem = get_message_li(messages[i], 0, false);
                     $ul.append(litem);
                 }
             }

@@ -105,7 +105,6 @@ p.mm-submitted-by-sms {
         clear: both;
         margin: 4px 0 0 0;
         padding: 0;
-        cursor: pointer;
         background-color: $color_bg_mm_list;
         p {
           background-color: inherit;
@@ -151,6 +150,7 @@ p.mm-submitted-by-sms {
           width: 3em;
           float:left;
         }
+        .mm-radio-filler,
         input[type=radio] {
           display: block;
           float: left;
@@ -159,6 +159,10 @@ p.mm-submitted-by-sms {
           display: block;
           font-weight: normal;
           margin: 0.1em 0 0.1em 4.5em;
+        }
+        .mm-radio-filler {
+          margin:0;
+          padding:0;
         }
         .mm-msg-action {
           display: none;
@@ -172,20 +176,23 @@ p.mm-submitted-by-sms {
         .mm-hide {
           right:0px;
           background-color: $color_bg_btn_hide;
+          cursor: pointer;
         }
         .mm-info {
           right:1.5em;
           background-color: $color_bg_btn_info;
+          cursor: pointer;
         }
         .mm-rep {
           right:2.6em;
           background-color: $color_bg_btn_reply;
+          cursor: pointer;
         }
       }
       &.mm-archive {
         display: none; // archive only shown on interaction
-        input[type=radio] {
-          display: none; // archive messages can't sensible be used for creation, so hide radio
+        li label {
+          cursor: default;
         }
       }
     }

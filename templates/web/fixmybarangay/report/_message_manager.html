@@ -55,7 +55,10 @@
 $(document).ready(function() {
 	var $mm_message_list = $('#mm-message-list');
 	var mm_url = "[% c.config.MESSAGE_MANAGER_URL %]"; // from config
+	
+	[%# note that the presence of a problem id implies that this is a report view page, not a problem creation page  %]
 	var problem_id = "[% problem.id %]";
+	
 	var dummy_busy = false;
 	var fms_username = "[% c.user.email | replace('\@.*', '') %]";
 	var timeout_id = 0;
@@ -119,7 +122,15 @@ $(document).ready(function() {
 		dummy_busy = false;
 	}
 
-	message_manager.config({url_root: mm_url, want_nice_msgs: true});
+	var custom_tooltips;
+	if (problem_id) { // this page is viewing, not creating
+		custom_tooltips = {tt_radio: "Select before clicking 'Copy to Update' to add this message as an update"};
+	}
+	message_manager.config({
+		url_root: mm_url, 
+		tooltips: custom_tooltips,
+		want_nice_msgs: true
+	});
 	message_manager.setup_click_listener({callback:mm_selected_message});
 
 	// problem form hidden input "external_source_id": pass the MM id into FMS, if used
