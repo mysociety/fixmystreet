@@ -1,8 +1,10 @@
-Subject: Overdue problems for moderation on FixMyZurich
+Subject: eskalierte Meldungen auf FixMyZ&uuml;rich
 
-The following problems are overdue for moderation:
 
+
+Die folgenden Meldungen auf FixMyZ&uuml;rich sind &auml;lter als einen Tag und m&uuml;ssen dringend bearbeitet werden:
 <?=$values['data']?>
 
-To view these problems, please visit the following URL:
+Um diese Meldungen zu moderieren, klicken Sie auf folgende URL:
+
 <?=$values['admin_url']?>

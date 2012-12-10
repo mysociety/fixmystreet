@@ -6,11 +6,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2012-11-20 09:40+0000\n"
-"PO-Revision-Date: 2012-11-19 13:41+0100\n"
+"POT-Creation-Date: 2012-11-20 11:15+0000\n"
+"PO-Revision-Date: 2012-11-20 17:17+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -3818,7 +3817,7 @@ msgstr "oder"
 
 #: templates/web/default/js/validation_strings.html:21
 msgid "or locate me automatically"
-msgstr ""
+msgstr "oder automatisch lokalisieren"
 
 #: templates/web/default/admin/report_edit.html:15
 msgid "originally entered"
