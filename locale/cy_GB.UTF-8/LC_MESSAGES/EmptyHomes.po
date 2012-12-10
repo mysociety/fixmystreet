@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2012-12-10 12:55+0000\n"
+"POT-Creation-Date: 2012-12-10 13:18+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -2267,7 +2267,7 @@ msgstr ""
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:1
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:10
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
-#: templates/web/fixmystreet/report/new/fill_in_details_text.html:11
+#: templates/web/fixmystreet/report/new/fill_in_details_text.html:8
 msgid "Please fill in details of the empty property below."
 msgstr "Llenwch fanylion yr eiddo gwag isod."
 
@@ -3359,11 +3359,9 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
 msgid ""
-"The council won&rsquo;t be able to help unless you leave as much\n"
-"detail as you can. Please describe the exact location of the empty property "
-"(e.g. on a\n"
-"wall), what it is, how long it has been there, a description (and a photo "
-"of\n"
+"The council won&rsquo;t be able to help unless you leave as much detail as "
+"you can. Please describe the exact location of the empty property (e.g. on a "
+"wall), what it is, how long it has been there, a description (and a photo of "
 "the empty property if you have one), etc."
 msgstr ""
 

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2012-12-10 12:55+0000\n"
+"POT-Creation-Date: 2012-12-10 13:18+0000\n"
 "PO-Revision-Date: 2011-12-08 10:56+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Nynorsk <i18n-nn@lister.ping.uio.no>\n"
@@ -2140,7 +2140,7 @@ msgstr ""
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:1
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:10
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
-#: templates/web/fixmystreet/report/new/fill_in_details_text.html:11
+#: templates/web/fixmystreet/report/new/fill_in_details_text.html:8
 msgid "Please fill in details of the problem below."
 msgstr "Ver venleg og fyll ut detaljar om problemet under."
 
@@ -3187,14 +3187,11 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
-#, fuzzy
 msgid ""
-"The council won&rsquo;t be able to help unless you leave as much\n"
-"detail as you can. Please describe the exact location of the problem (e.g. "
-"on a\n"
-"wall), what it is, how long it has been there, a description (and a photo "
-"of\n"
-"the problem if you have one), etc."
+"The council won&rsquo;t be able to help unless you leave as much detail as "
+"you can. Please describe the exact location of the problem (e.g. on a wall), "
+"what it is, how long it has been there, a description (and a photo of the "
+"problem if you have one), etc."
 msgstr ""
 "Ver venlg og fyll inn detaljane om problemet under. Administrasjonen\n"
 "vil ikkje vera i stand til å hjelpa med mindre du legg inn så mange\n"

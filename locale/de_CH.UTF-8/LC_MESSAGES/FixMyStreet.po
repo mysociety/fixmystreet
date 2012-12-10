@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2012-12-10 12:55+0000\n"
+"POT-Creation-Date: 2012-12-10 13:18+0000\n"
 "PO-Revision-Date: 2012-11-20 17:17+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -1998,7 +1998,7 @@ msgstr ""
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:1
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:10
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
-#: templates/web/fixmystreet/report/new/fill_in_details_text.html:11
+#: templates/web/fixmystreet/report/new/fill_in_details_text.html:8
 msgid "Please fill in details of the problem below."
 msgstr ""
 
@@ -2977,12 +2977,10 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
 msgid ""
-"The council won&rsquo;t be able to help unless you leave as much\n"
-"detail as you can. Please describe the exact location of the problem (e.g. "
-"on a\n"
-"wall), what it is, how long it has been there, a description (and a photo "
-"of\n"
-"the problem if you have one), etc."
+"The council won&rsquo;t be able to help unless you leave as much detail as "
+"you can. Please describe the exact location of the problem (e.g. on a wall), "
+"what it is, how long it has been there, a description (and a photo of the "
+"problem if you have one), etc."
 msgstr ""
 "Bitte machen Sie so genaue Angaben wie m&ouml;glich: Beschreiben Sie die Art "
 "des Mangels und wo er sich befindet (z.B. an der Wand). Senden Sie uns ein "
