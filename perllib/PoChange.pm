@@ -41,7 +41,6 @@ sub fixmystreet_to_reportemptyhomes($) {
     $s =~ s/We send it to the council on your behalf/The details will be sent directly to the right person in the local council for them to take action/;
     $s =~ s/To find out what local alerts we have for you/To find out what local alerts we have in your area, council or ward/;
     $s =~ s/Local alerts/Get local reports/;
-    $s =~ s/All reports/Reports/;
     $s =~ s/Report an empty property/Report a property/;
     $s =~ s/Help/FAQs/;
 
