@@ -67,6 +67,16 @@ sub send {
             $basic_desc = 1;
         }
 
+        # extra Oxfordshire fields: send northing and easting
+        if ( $row->council =~ /2237/ ) {
+            my $extra = $row->extra;
+            if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
+                push @$extra, { name => 'northing', value => $h->{northing} };
+                push @$extra, { name => 'easting', value => $h->{easting} };
+                $row->extra( $extra );
+            }
+        }
+
         # FIXME: we've already looked this up before
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
@@ -102,7 +112,7 @@ sub send {
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
 
         # make sure we don't save user changes from above
-        if ( $row->council =~ /2218/ || $row->council =~ /2482/ || $row->cobrand eq 'fixmybarangay') {
+        if ( $row->council =~ /(2218|2482|2237)/ || $row->cobrand eq 'fixmybarangay') {
             $row->discard_changes();
         }
 
