@@ -24,7 +24,7 @@ subtest 'check basic functionality' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 1
     } );
 
@@ -54,7 +54,7 @@ subtest 'check non open311 contacts marked as deleted' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 1
     } );
 
@@ -89,7 +89,7 @@ subtest 'check email changed if matching category' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 1
     } );
 
@@ -126,7 +126,7 @@ subtest 'check category name changed if updated' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 1
     } );
 
@@ -179,7 +179,7 @@ subtest 'check conflicting contacts not changed' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 1
     } );
 
@@ -243,7 +243,7 @@ subtest 'check meta data population' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 2482
     } );
 
@@ -432,7 +432,7 @@ for my $test (
         my $service_list = get_xml_simple_object( $services_xml );
         $service_list = { service => [ $service_list->{ service } ] };
 
-        my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
+        my $council = FixMyStreet::App->model('DB::Body')->new( {
             area_id => 1
         } );
 
@@ -505,7 +505,7 @@ subtest 'check attribute ordering' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 1
     } );
 
@@ -611,7 +611,7 @@ subtest 'check bromely skip code' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
+    my $council = FixMyStreet::App->model('DB::Body')->new( {
         area_id => 2482
     } );
 

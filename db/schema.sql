@@ -447,12 +447,12 @@ create table admin_log (
     whenedited timestamp not null default ms_current_timestamp()
 ); 
 
--- Record open 311 configuration details
+-- Record details of reporting bodies, including open311 configuration details
 
-create table open311conf (
+create table body (
     id           serial primary key,
     area_id      integer not null unique,
-    endpoint     text not null,
+    endpoint     text,
     jurisdiction text,
     api_key      text,
     send_method  text,

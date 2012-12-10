@@ -652,7 +652,7 @@ sub get_council_sender {
 
     my $send_method;
 
-    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
+    my $council_config = FixMyStreet::App->model("DB::Body")->search( { area_id => $area_id } )->first;
     $send_method = $council_config->send_method if $council_config;
 
     if ( $council_config && $council_config->can_be_devolved ) {

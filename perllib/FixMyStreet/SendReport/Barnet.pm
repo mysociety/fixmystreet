@@ -80,7 +80,7 @@ sub send {
         ? $h{query} : $nearest_postcode; # use given postcode if available
     
     # note: endpoint can be of form 'https://username:password@url'
-    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => COUNCIL_ID_BARNET} )->first;
+    my $council_config = FixMyStreet::App->model("DB::Body")->search( { area_id => COUNCIL_ID_BARNET} )->first;
     if ($council_config and $council_config->endpoint) {
         $interface->set_proxy($council_config->endpoint);
         # Barnet web service doesn't like namespaces in the elements so use a prefix

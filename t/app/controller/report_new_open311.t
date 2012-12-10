@@ -7,7 +7,7 @@ use Web::Scraper;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $open311Conf = FixMyStreet::App->model('DB::Open311Conf')->find_or_create( {
+FixMyStreet::App->model('DB::Body')->find_or_create( {
         area_id => 2651,
         endpoint => 'http://example.com/open311',
         jurisdiction => 'mySociety',

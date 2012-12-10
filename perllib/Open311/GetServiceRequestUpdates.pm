@@ -15,7 +15,7 @@ has verbose => ( is => 'ro', default => 0 );
 sub fetch {
     my $self = shift;
 
-    my $councils = FixMyStreet::App->model('DB::Open311Conf')->search(
+    my $councils = FixMyStreet::App->model('DB::Body')->search(
         {
             send_method     => 'Open311',
             send_comments   => 1,

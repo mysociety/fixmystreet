@@ -42,15 +42,15 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
-  "comments",
-  "FixMyStreet::DB::Result::Comment",
-  { "foreign.user_id" => "self.id" },
+  "bodies",
+  "FixMyStreet::DB::Result::Body",
+  { "foreign.comment_user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
-  "open311confs",
-  "FixMyStreet::DB::Result::Open311conf",
-  { "foreign.comment_user_id" => "self.id" },
+  "comments",
+  "FixMyStreet::DB::Result::Comment",
+  { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
@@ -61,8 +61,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-01 16:20:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LKi8u5IYnHW1+Mez64nvGg
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-10 15:34:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6KOp2hcVLqx28Po7uENTnA
 
 __PACKAGE__->add_columns(
     "password" => {

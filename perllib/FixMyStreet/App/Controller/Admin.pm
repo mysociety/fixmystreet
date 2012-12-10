@@ -349,7 +349,7 @@ sub update_contacts : Private {
         my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id devolved/;
 
         if ( $params{open311_id} ) {
-            my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
+            my $conf = $c->model('DB::Body')->find( { id => $params{open311_id} } );
 
             $conf->endpoint( $params{endpoint} );
             $conf->jurisdiction( $params{jurisdiction} );
@@ -364,7 +364,7 @@ sub update_contacts : Private {
 
             $c->stash->{updated} = _('Configuration updated');
         } else {
-            my $conf = $c->model('DB::Open311Conf')->find_or_new( { area_id => $params{area_id} } );
+            my $conf = $c->model('DB::Body')->find_or_new( { area_id => $params{area_id} } );
 
             $conf->endpoint( $params{endpoint} );
             $conf->jurisdiction( $params{jurisdiction} );
@@ -399,7 +399,7 @@ sub display_contacts : Private {
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
 
-    my $open311 = $c->model('DB::Open311Conf')->search(
+    my $open311 = $c->model('DB::Body')->search(
         { area_id => $area_id }
     );
 

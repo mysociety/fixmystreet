@@ -13,7 +13,7 @@ my $system_user = FixMyStreet::App->model('DB::User')->find_or_create(
     }
 );
 
-my $council_list = FixMyStreet::App->model('DB::Open311conf');
+my $council_list = FixMyStreet::App->model('DB::Body');
 
 my $update = Open311::GetUpdates->new(
     council_list => $council_list,

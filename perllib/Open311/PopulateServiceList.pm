@@ -14,7 +14,7 @@ has _current_council => ( is => 'rw' );
 has _current_open311 => ( is => 'rw' );
 has _current_service => ( is => 'rw' );
 
-my $council_list = FixMyStreet::App->model('DB::Open311conf');
+my $council_list = FixMyStreet::App->model('DB::Body');
 
 sub process_councils {
     my $self = shift;
