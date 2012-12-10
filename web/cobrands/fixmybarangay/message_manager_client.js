@@ -257,7 +257,7 @@ var message_manager = (function() {
         var $hide_button = $('<a class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '" href="#hide-form-container" title="' + _tooltips.tt_hide + '">X</a>');
         var $info_button = $('<span class="mm-msg-action mm-info" id="mm-info-' + msg.id + '" title="' + _tooltips.tt_info + '">i</span>');
         var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container" title="' + _tooltips.tt_reply + '">reply</a>');
-        var is_radio_btn = _want_radio_btns && depth == 0 && ! is_archive;
+        var is_radio_btn = _want_radio_btns && depth === 0 && ! is_archive;
         if (_use_fancybox) {
             $reply_button.fancybox();
             $hide_button.fancybox();
