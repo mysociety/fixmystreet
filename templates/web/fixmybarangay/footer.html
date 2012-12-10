@@ -91,18 +91,39 @@
 					If you want to see any other messages, you'll need to have a manager or admin account on Message Manager: click on the 
 					<a href="[% c.config.MESSAGE_MANAGER_URL %]">admin</a> link to get there.
 				</p>
-				<h3>
-					Creating a new report from a message
-				</h3>
 				<p>
-					If you want to use a message to create a problem report, you'll need to select it first. Click on the radio button. When the message
-					is selected, it will go bright green. Now when you click on the map, the report will be used to create the report.
-				</p>
-				<p>
-					To stop two people replying to a message at the same time, if anyone else has just started working on it, you'll see a message
-					warning you, and you won't be able to select the radio button. Normally, if nobody works with a message, such a lock is released 
-					after about 3 minutes.
-				</p>
+				[% IF global.is_fmb_creation_page %]
+					<h3>
+						Creating a new report from a message 
+					</h3>
+					<p>
+						If you want to use a message to create a problem report, you'll need to select it first. Click on the radio button. When the message
+						is selected, it will go bright green. Now when you click on the map, the report will be used to create the report.
+					</p>
+					<p>
+						To stop two people replying to a message at the same time, if anyone else has just started working on it, you'll see a message
+						warning you, and you won't be able to select the radio button. Normally, if nobody works with a message, such a lock is released 
+						after about 3 minutes.
+					</p>
+				[% ELSE %]
+					<p>
+						Click <strong>show messages for this report</strong> to see
+						the message (or messages) that contributed to this report. Often this will be a single message
+						if the problem was submitted by SMS. But it will also include any messages that have been 
+						added as updates, as well as any replies that were sent back by barangay staff.
+						As well as letting you review the background to the report, this also lets you reply (for example, 
+						to notify the original reporter that the problem has been fixed).
+					</p>
+					<h3>
+						Adding a message as an update to this report
+					</h3>
+					<p>
+						If you want to add this message's contents as an update to this report, you'll need to select it first. Click 
+						on the radio button. When the message is selected, it will go bright green. Now when you click on the 
+						<strong>COPY&nbsp;TO&nbsp;UPDATE</strong> button, the message text will be added to this report's update text.
+						You can edit the text before clicking <strong>POST</strong>.
+					</p>
+				[% END %]
 				<h3>
 					Replying to a message
 				</h3>

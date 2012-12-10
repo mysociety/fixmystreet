@@ -198,7 +198,6 @@ $(document).ready(function() {
 			    {callback:dummy_hide_cleanup});
 		}
 	});
-    
 	$("a#reply").fancybox({onClosed: function(){dummy_busy=false;}});
 
 	// only show on problem display page
@@ -289,5 +288,6 @@ $(document).ready(function() {
 </script>
 
 [% global.want_fmb_hidden_dialogs = 1 %]
+[% global.is_fmb_creation_page = problem.id? 0 : 1 %]
 
 [% END %]
