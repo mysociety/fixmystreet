@@ -927,6 +927,13 @@ sub check_for_errors : Private {
         %{ $c->stash->{report}->check_for_errors },
     );
 
+    # Zurich, we don't care about title or name
+    # There is no title, and name is optional
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        delete $field_errors{title};
+        delete $field_errors{name};
+    }
+
     # FIXME: need to check for required bromley fields here
 
     # if they're got the login details wrong when signing in then
