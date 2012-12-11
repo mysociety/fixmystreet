@@ -75,7 +75,7 @@ sub string {
         }
         $result = $result->result;
         File::Path::mkpath($cache_dir);
-        store $result, $cache_file;
+        store $result, $cache_file if $result;
     }
 
     if (!$result || !$result->{Location}) {
