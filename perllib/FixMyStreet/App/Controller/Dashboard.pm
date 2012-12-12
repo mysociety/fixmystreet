@@ -74,9 +74,9 @@ sub check_page_allowed : Private {
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     $c->detach( '/page_error_404_not_found' )
-        unless $c->user_exists && $c->user->from_council;
+        unless $c->user_exists && $c->user->from_body;
 
-    return $c->user->from_council;
+    return $c->user->from_body;
 }
 
 =head2 index

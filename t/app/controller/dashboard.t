@@ -33,7 +33,7 @@ $mech->submit_form(
 
 is $mech->status, '404', 'If not council user get 404';
 
-$user->from_council( $test_council );
+$user->from_body( $test_council );
 $user->update;
 
 $mech->log_out_ok;

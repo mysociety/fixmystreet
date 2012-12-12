@@ -62,18 +62,18 @@ SKIP: {
     for my $test (
         {
             desc => 'if not from council then no supporter button',
-            from_council => 0,
+            from_body => 0,
             support_string => 'No supporters',
         },
         {
             desc => 'from council user can increment supported count',
-            from_council => 2504,
+            from_body => 2504,
             support_string => 'No supporters',
             updated_support => '1 supporter'
         },
         {
             desc => 'correct grammar for more than one supporter',
-            from_council => 2504,
+            from_body => 2504,
             support_string => '1 supporter',
             updated_support => '2 supporters'
         },
@@ -81,7 +81,7 @@ SKIP: {
         subtest $test->{desc} => sub {
             ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
             $mech->log_in_ok( $user->email );
-            $user->from_council( $test->{from_council} );
+            $user->from_body( $test->{from_body} );
             $user->update;
 
             $report->discard_changes;
@@ -91,7 +91,7 @@ SKIP: {
             $mech->get_ok("/report/$report_id");
             $mech->content_contains( $test->{support_string} );
 
-            if ( $test->{from_council} ) {
+            if ( $test->{from_body} ) {
                 $mech->content_contains('Add support');
                 $mech->submit_form_ok( { form_number => 1 } );
 

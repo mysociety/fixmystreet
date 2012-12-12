@@ -66,7 +66,7 @@ sub support : Path('support') : Args(0) {
       ? $c->uri_for( '/report', $id )
       : $c->uri_for('/');
 
-    if ( $id && $c->cobrand->can_support_problems && $c->user && $c->user->from_council ) {
+    if ( $id && $c->cobrand->can_support_problems && $c->user && $c->user->from_body ) {
         $c->forward( 'load_problem_or_display_error', [ $id ] );
         $c->stash->{problem}->update( { interest_count => \'interest_count +1' } );
     }
@@ -187,7 +187,7 @@ sub delete :Local :Args(1) {
 
     return $c->res->redirect($uri) unless $c->user_exists;
 
-    my $council = $c->user->obj->from_council;
+    my $council = $c->user->obj->from_body;
     return $c->res->redirect($uri) unless $council;
 
     my %councils = map { $_ => 1 } @{$p->councils};

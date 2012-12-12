@@ -1,4 +1,4 @@
-[% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council) %]
+[% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_body) %]
 [% IF allow_creation %]
 <div id="update_form">
     <h2>[% loc( 'Provide an update') %]</h2>
@@ -22,7 +22,7 @@
             [% END %]
             <textarea rows="7" cols="30" name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
 
-            [% IF c.user && c.user.belongs_to_council( problem.council ) %]
+            [% IF c.user && c.user.belongs_to_body( problem.council ) %]
                 <label for="form_state">[% loc( 'State' ) %]</label>
                 <select name="state" id="form_state">
                 [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',

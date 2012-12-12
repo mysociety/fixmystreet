@@ -684,7 +684,7 @@ sub example_places {
 
 =head2 only_authed_can_create
 
-If true, only users with the from_council flag set are able to create reports.
+If true, only users with the from_body flag set are able to create reports.
 
 =cut
 

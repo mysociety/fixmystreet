@@ -733,9 +733,9 @@ sub search_users: Path('search_users') : Args(0) {
         my $users = $c->model('DB::User')->search(
             {
                 -or => [
-                    email        => { ilike => $isearch },
-                    name         => { ilike => $isearch },
-                    from_council => $search_n,
+                    email => { ilike => $isearch },
+                    name => { ilike => $isearch },
+                    from_body => $search_n,
                 ]
             }
         );
@@ -881,13 +881,13 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->email ne $c->req->param('email') ||
             $user->name ne $c->req->param('name' ) ||
-            $user->from_council != $c->req->param('council') ) {
+            $user->from_body != $c->req->param('council') ) {
                 $edited = 1;
         }
 
         $user->name( $c->req->param('name') );
         $user->email( $c->req->param('email') );
-        $user->from_council( $c->req->param('council') || undef );
+        $user->from_body( $c->req->param('council') || undef );
         $user->flagged( $c->req->param('flagged') || 0 );
         $user->update;
 

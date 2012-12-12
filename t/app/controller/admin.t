@@ -907,7 +907,7 @@ for my $test (
         $update->mark_open( $test->{update_reopen} );
         $update->update;
 
-        $test->{update_user}->from_council( $test->{user_council} );
+        $test->{update_user}->from_body( $test->{user_council} );
         $test->{update_user}->update;
 
         $mech->get_ok('/admin/update_edit/' . $update->id );
@@ -1094,7 +1094,7 @@ subtest 'user search' => sub {
 
     $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
 
-    $user->from_council(2509);
+    $user->from_body(2509);
     $user->update;
     $mech->get_ok('/admin/search_users?search=2509' );
     $mech->content_contains(2509);

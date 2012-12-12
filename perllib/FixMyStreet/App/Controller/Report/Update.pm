@@ -76,7 +76,7 @@ sub update_problem : Private {
         $problem->state('confirmed');
     }
 
-    if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_council && $c->req->param('external_source_id') ) {
+    if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_body && $c->req->param('external_source_id') ) {
         $problem->interest_count( \'interest_count + 1' );
     }
 
@@ -201,7 +201,7 @@ sub process_update : Private {
 
     if ( $params{state} ) {
         $params{state} = 'fixed - council' 
-            if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_council( $update->problem->council );
+            if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_body( $update->problem->council );
         $update->problem_state( $params{state} );
     }
 
@@ -246,7 +246,7 @@ sub check_for_errors : Private {
     # they have to be an authority user to update the state
     if ( $c->req->param('state') ) {
         my $error = 0;
-        $error = 1 unless $c->user && $c->user->belongs_to_council( $c->stash->{update}->problem->council );
+        $error = 1 unless $c->user && $c->user->belongs_to_body( $c->stash->{update}->problem->council );
 
         my $state = $c->req->param('state');
         $error = 1 unless ( grep { $state eq $_ } ( qw/confirmed closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );

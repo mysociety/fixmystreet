@@ -12,13 +12,13 @@
 
     [% IF update.anonymous || update.name == '' %]
         [% tprintf( loc( 'Posted anonymously at %s' ), prettify_epoch( update.confirmed_local.epoch ) ) -%]
-    [%- ELSIF update.user.from_council;
+    [%- ELSIF update.user.from_body;
         user_name = update.user.name | html;
-        council = update.user.council;
-        IF council == 'Bromley Council';
-            council = "$council <img src='/cobrands/bromley/favicon.png' alt=''>";
+        body = update.user.body;
+        IF body == 'Bromley Council';
+            body = "$body <img src='/cobrands/bromley/favicon.png' alt=''>";
         END %]
-        [% tprintf( loc( 'Posted by %s (<strong>%s</strong>) at %s' ), user_name, council, prettify_epoch( update.confirmed_local.epoch ) ) -%]
+        [% tprintf( loc( 'Posted by %s (<strong>%s</strong>) at %s' ), user_name, body, prettify_epoch( update.confirmed_local.epoch ) ) -%]
     [%- ELSE %]
         [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
     [%- END -%]

@@ -348,32 +348,32 @@ for my $test (
 for my $test ( 
     {
         desc => 'no state dropdown if user not from authority',
-        from_council => 0,
+        from_body => 0,
         no_state => 1,
         report_council => '2504',
     },
     {
         desc => 'state dropdown if user from authority',
-        from_council => 2504,
+        from_body => 2504,
         no_state => 0,
         report_council => '2504',
     },
     {
         desc => 'no state dropdown if user not from same council as problem',
-        from_council => 2505,
+        from_body => 2505,
         no_state => 1,
         report_council => '2504',
     },
     {
         desc => 'state dropdown if user from authority and problem sent to multiple councils',
-        from_council => 2504,
+        from_body => 2504,
         no_state => 0,
         report_council => '2504,2506',
     },
 ) {
     subtest $test->{desc} => sub {
         $mech->log_in_ok( $user->email );
-        $user->from_council( $test->{from_council} );
+        $user->from_body( $test->{from_body} );
         $user->update;
 
         $report->discard_changes;

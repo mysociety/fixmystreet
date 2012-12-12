@@ -26,7 +26,7 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "from_council",
+  "from_body",
   { data_type => "integer", is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
@@ -61,8 +61,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-10 15:34:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:6KOp2hcVLqx28Po7uENTnA
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-12 13:06:09
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:L6gtjOQeVkebGUIHJcHuUA
 
 __PACKAGE__->add_columns(
     "password" => {
@@ -144,16 +144,17 @@ sub alert_for_problem {
     } );
 }
 
-sub council {
+sub body {
     my $self = shift;
 
-    return '' unless $self->from_council;
+    return '' unless $self->from_body;
 
-    my $key = 'council_name:' . $self->from_council;
+    my $key = 'body_name:' . $self->from_body;
     my $result = Memcached::get($key);
 
+    ### TODO: Add a 'name' column to body which is used instead of calling mapit
     unless ($result) {
-        my $area_info = mySociety::MaPit::call('area', $self->from_council);
+        my $area_info = mySociety::MaPit::call('area', $self->from_body);
         $result = $area_info->{name};
         Memcached::set($key, $result, 86400);
     }
@@ -161,21 +162,21 @@ sub council {
     return $result;
 }
 
-=head2 belongs_to_council
+=head2 belongs_to_body
 
-    $belongs_to_council = $user->belongs_to_council( $council_list );
+    $belongs_to_body = $user->belongs_to_body( $council_list );
 
 Returns true if the user belongs to the comma seperated list of council ids passed in
 
 =cut
 
-sub belongs_to_council {
+sub belongs_to_body {
     my $self = shift;
     my $council = shift;
 
     my %councils = map { $_ => 1 } split ',', $council;
 
-    return 1 if $self->from_council && $councils{ $self->from_council };
+    return 1 if $self->from_body && $councils{ $self->from_body };
 
     return 0;
 }

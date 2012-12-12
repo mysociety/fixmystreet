@@ -4,8 +4,6 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.49 2009-11-10 13:53:33 louise Exp $
---
 
 -- secret
 -- A random secret.
@@ -18,22 +16,6 @@ create table secret (
 create table debugdate (
     override_today date
 );
-
--- Returns the date of "today", which can be overriden for testing.
-create function ms_current_date()
-    returns date as '
-    declare
-        today date;
-    begin
-        today = (select override_today from debugdate);
-        if today is not null then
-           return today;
-        else
-           return current_date;
-        end if;
-
-    end;
-' language 'plpgsql' stable;
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
 create function ms_current_timestamp()
@@ -143,7 +125,7 @@ create table users (
     name            text,
     phone           text,
     password        text    not null default '',
-    from_council    integer, -- id of council user is from or null/0 if not
+    from_body       integer, -- id of body user is from or null/0 if not
     flagged         boolean not null default 'f',
     title           text
 );

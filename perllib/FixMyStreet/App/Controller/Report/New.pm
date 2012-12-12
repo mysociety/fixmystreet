@@ -1094,7 +1094,7 @@ sub redirect_or_confirm_creation : Private {
         $c->forward( 'create_reporter_alert' );
         my $report_uri;
 
-        if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_council && $c->stash->{external_source_id}) {
+        if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_body && $c->stash->{external_source_id}) {
             $report_uri = $c->uri_for( '/report', $report->id, undef, { external_source_id => $c->stash->{external_source_id} } );
         } else {
             $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
