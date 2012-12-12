@@ -47,15 +47,16 @@
         url: "http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/",
         style: "default",
         matrixIds: [
-            { identifier: "0", matrixHeight: 3, matrixWidth: 3, scaleDenominator: 125000,  supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "1", matrixHeight: 4, matrixWidth: 5, scaleDenominator: 64000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "2", matrixHeight: 7, matrixWidth: 8, scaleDenominator: 32000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "3", matrixHeight: 14, matrixWidth: 14, scaleDenominator: 16000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "4", matrixHeight: 27, matrixWidth: 27, scaleDenominator: 8000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "5", matrixHeight: 52, matrixWidth: 53, scaleDenominator: 4000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "6", matrixHeight: 104, matrixWidth: 105, scaleDenominator: 2000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "7", matrixHeight: 208, matrixWidth: 208, scaleDenominator: 1000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
-            { identifier: "8", matrixHeight: 415, matrixWidth: 414, scaleDenominator: 500, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } }
+            { identifier: "0", matrixHeight: 2, matrixWidth: 2, scaleDenominator: 250000,  supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "1", matrixHeight: 3, matrixWidth: 3, scaleDenominator: 125000,  supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "2", matrixHeight: 4, matrixWidth: 5, scaleDenominator: 64000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "3", matrixHeight: 7, matrixWidth: 8, scaleDenominator: 32000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "4", matrixHeight: 14, matrixWidth: 14, scaleDenominator: 16000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "5", matrixHeight: 27, matrixWidth: 27, scaleDenominator: 8000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "6", matrixHeight: 52, matrixWidth: 53, scaleDenominator: 4000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "7", matrixHeight: 104, matrixWidth: 105, scaleDenominator: 2000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "8", matrixHeight: 208, matrixWidth: 208, scaleDenominator: 1000, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
+            { identifier: "9", matrixHeight: 415, matrixWidth: 414, scaleDenominator: 500, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } }
         ]
     };
 
