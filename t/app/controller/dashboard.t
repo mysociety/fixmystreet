@@ -44,7 +44,7 @@ $mech->submit_form_ok( {
 
 $mech->content_contains( 'City of Edinburgh' );
 
-FixMyStreet::App->model('DB::Contact')->search( { area_id => $test_council } )
+FixMyStreet::App->model('DB::Contact')->search( { body_id => $test_council } )
   ->delete;
 
 delete_problems();
@@ -53,7 +53,7 @@ my @cats = qw( Grafitti Litter Potholes Other );
 for my $contact ( @cats ) {
     FixMyStreet::App->model('DB::Contact')->create(
         {
-            area_id    => $test_council,
+            body_id    => $test_council,
             category   => $contact,
             email      => "$contact\@example.org",
             confirmed  => 1,

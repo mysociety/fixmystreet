@@ -70,7 +70,7 @@ sub send {
         # FIXME: we've already looked this up before
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            area_id => $conf->area_id,
+            body_id => $conf->area_id,
             category => $row->category
         } );
 

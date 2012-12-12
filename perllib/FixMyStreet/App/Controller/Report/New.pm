@@ -584,7 +584,7 @@ sub setup_categories_and_councils : Private {
       = $c                      #
       ->model('DB::Contact')    #
       ->not_deleted             #
-      ->search( { area_id => [ keys %$all_councils ] } )    #
+      ->search( { body_id => [ keys %$all_councils ] } )    #
       ->all;
 
     # variables to populate
@@ -600,7 +600,7 @@ sub setup_categories_and_councils : Private {
 
         # add all areas found to the list
         foreach (@contacts) {
-            $area_ids_to_list{ $_->area_id } = 1;
+            $area_ids_to_list{ $_->body_id } = 1;
         }
 
         # set our own categories
@@ -638,7 +638,7 @@ sub setup_categories_and_councils : Private {
         my %seen;
         foreach my $contact (@contacts) {
 
-            $area_ids_to_list{ $contact->area_id } = 1;
+            $area_ids_to_list{ $contact->body_id } = 1;
 
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
@@ -839,7 +839,7 @@ sub process_report : Private {
           ->not_deleted           #
           ->search(
             {
-                area_id  => [ keys %$councils ],
+                body_id  => [ keys %$councils ],
                 category => $report->category
             }
           )->all;
@@ -853,7 +853,7 @@ sub process_report : Private {
         # construct the council string:
         #  'x,x'     - x are council IDs that have this category
         #  'x,x|y,y' - x are council IDs that have this category, y council IDs with *no* contact
-        my $council_string = join( ',', map { $_->area_id } @contacts );
+        my $council_string = join( ',', map { $_->body_id } @contacts );
         $council_string .=
           '|' . join( ',', @{ $c->stash->{missing_details_councils} } )
             if $council_string && @{ $c->stash->{missing_details_councils} };
@@ -879,7 +879,7 @@ sub process_report : Private {
             $report->non_public( 1 );
         }
 
-        $c->cobrand->process_extras( $c, $contacts[0]->area_id, \@extra );
+        $c->cobrand->process_extras( $c, $contacts[0]->body_id, \@extra );
 
         if ( @extra ) {
             $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };

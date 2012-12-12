@@ -39,43 +39,43 @@ FixMyStreet::App->model('DB::Contact')->search( {
 } )->delete;
 my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2651, # Edinburgh
+    body_id => 2651, # Edinburgh
     category => 'Street lighting',
     email => 'highways@example.com',
 } );
 my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2226, # Gloucestershire
+    body_id => 2226, # Gloucestershire
     category => 'Potholes',
     email => 'potholes@example.com',
 } );
 my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2326, # Cheltenham
+    body_id => 2326, # Cheltenham
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2482, # Bromley
+    body_id => 2482, # Bromley
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2651, # Edinburgh
+    body_id => 2651, # Edinburgh
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact6 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2434, # Lichfield
+    body_id => 2434, # Lichfield
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact7 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2240, # Lichfield
+    body_id => 2240, # Lichfield
     category => 'Street lighting',
     email => 'highways@example.com',
 } );

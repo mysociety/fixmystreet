@@ -13,7 +13,7 @@ sub build_recipient_list {
     foreach my $council ( keys %{ $self->councils } ) {
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            area_id => $council,
+            body_id => $council,
             category => 'Empty property',
         } );
 

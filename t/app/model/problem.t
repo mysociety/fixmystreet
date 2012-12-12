@@ -361,36 +361,36 @@ FixMyStreet::App->model('DB::Contact')->search( {
 } )->delete;
 my @contacts;
 for my $contact ( {
-    area_id => 2651, # Edinburgh
+    body_id => 2651, # Edinburgh
     category => 'potholes',
     email => 'test@example.org',
 }, {
-    area_id => 2226, # Gloucestershire
+    body_id => 2226, # Gloucestershire
     category => 'potholes',
     email => '2226@example.org',
 }, {
-    area_id => 2326, # Cheltenham
+    body_id => 2326, # Cheltenham
     category => 'potholes',
     email => '2326@example.org',
 }, {
-    area_id => 2434, # Lichfield
+    body_id => 2434, # Lichfield
     category => 'potholes',
     email => 'trees@example.com',
 }, {
-    area_id => 2240, # Staffordshire
+    body_id => 2240, # Staffordshire
     category => 'potholes',
     email => 'highways@example.com',
 }, {
-    area_id => 14279, # Ballymoney
+    body_id => 14279, # Ballymoney
     category => 'Street lighting',
     email => 'roads.western@drdni.example.org',
 }, {
-    area_id => 14279, # Ballymoney
+    body_id => 14279, # Ballymoney
     category => 'Graffiti',
     email => 'highways@example.com',
 }, {
     confirmed => 0,
-    area_id => 2636, # Isle of Wight
+    body_id => 2636, # Isle of Wight
     category => 'potholes',
     email => '2636@example.com',
 } ) {

@@ -50,10 +50,16 @@ __PACKAGE__->belongs_to(
     on_update     => "CASCADE",
   },
 );
+__PACKAGE__->has_many(
+  "contacts",
+  "FixMyStreet::DB::Result::Contact",
+  { "foreign.body_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-12 16:29:16
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7G4lkjrgUBXKmadSuK8emA
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 12:34:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YiDf4mhoPlG5cnxCIrqZxw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

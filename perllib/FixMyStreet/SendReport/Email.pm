@@ -15,7 +15,7 @@ sub build_recipient_list {
 
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            area_id => $council,
+            body_id => $council,
             category => $row->category
         } );
 

@@ -151,12 +151,12 @@ $mech->content_contains("$host/around");
 
 subtest 'check contact creation' => sub {
     my $contact = FixMyStreet::App->model('DB::Contact')->search(
-        { area_id => 2650, category => [ 'test category', 'test/category' ] }
+        { body_id => 2650, category => [ 'test category', 'test/category' ] }
     );
     $contact->delete_all;
 
     my $history = FixMyStreet::App->model('DB::ContactsHistory')->search(
-        { area_id => 2650, category => [ 'test category', 'test/category' ] }
+        { body_id => 2650, category => [ 'test category', 'test/category' ] }
     );
     $history->delete_all;
 

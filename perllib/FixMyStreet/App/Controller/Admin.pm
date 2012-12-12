@@ -233,15 +233,15 @@ sub council_list : Path('council_list') : Args(0) {
     my $contacts = $c->model('DB::Contact')->search(
         undef,
         {
-            select => [ 'area_id', { count => 'id' }, { count => \'case when deleted then 1 else null end' },
+            select => [ 'body_id', { count => 'id' }, { count => \'case when deleted then 1 else null end' },
             { count => \'case when confirmed then 1 else null end' } ],
-            as => [qw/area_id c deleted confirmed/],
-            group_by => [ 'area_id' ],
+            as => [qw/body_id c deleted confirmed/],
+            group_by => [ 'body_id' ],
             result_class => 'DBIx::Class::ResultClass::HashRefInflator'
         }
     );
 
-    my %council_info = map { $_->{area_id} => $_ } $contacts->all;
+    my %council_info = map { $_->{body_id} => $_ } $contacts->all;
 
     my @no_info = grep { !$council_info{$_} } @councils_ids;
     my @one_plus_deleted = grep { $council_info{$_} && $council_info{$_}->{deleted} } @councils_ids;
@@ -294,7 +294,7 @@ sub update_contacts : Private {
 
         my $contact = $c->model('DB::Contact')->find_or_new(
             {
-                area_id => $c->stash->{area_id},
+                body_id => $c->stash->{area_id},
                 category => $category,
             }
         );
@@ -328,7 +328,7 @@ sub update_contacts : Private {
 
         my $contacts = $c->model('DB::Contact')->search(
             {
-                area_id => $c->stash->{area_id},
+                body_id => $c->stash->{area_id},
                 category => { -in => \@categories },
             }
         );
@@ -390,7 +390,7 @@ sub display_contacts : Private {
     my $area_id = $c->stash->{area_id};
 
     my $contacts = $c->model('DB::Contact')->search(
-        { area_id => $area_id },
+        { body_id => $area_id },
         { order_by => ['category'] }
     );
 
@@ -450,7 +450,7 @@ sub council_edit : Path('council_edit') : Args(2) {
 
     my $contact = $c->model('DB::Contact')->search(
         {
-            area_id => $area_id,
+            body_id => $area_id,
             category => $category
         }
     )->first;
@@ -459,7 +459,7 @@ sub council_edit : Path('council_edit') : Args(2) {
 
     my $history = $c->model('DB::ContactsHistory')->search(
         {
-            area_id => $area_id,
+            body_id => $area_id,
             category => $category
         },
         {

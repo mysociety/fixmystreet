@@ -32,24 +32,10 @@ create function ms_current_timestamp()
     end;
 ' language 'plpgsql';
 
-
--- users, but call the table person rather than user so we don't have to quote
--- its name in every statement....
--- create table person (
---     id serial not null primary key,
---     name text,
---     email text not null,
---     password text,
---     website text,
---     numlogins integer not null default 0
--- );
--- 
--- create unique index person_email_idx on person(email);
-
--- Who to send problems for a specific MaPit area ID to
+-- The contact for a category within a particular body
 create table contacts (
     id serial primary key,
-    area_id integer not null,
+    body_id integer not null references body(id),
     category text not null default 'Other',
     email text not null,
     confirmed boolean not null,
@@ -74,7 +60,7 @@ create table contacts (
     api_key      text default '',
     send_method  text
 );
-create unique index contacts_area_id_category_idx on contacts(area_id, category);
+create unique index contacts_body_id_category_idx on contacts(body_id, category);
 
 -- History of changes to contacts - automatically updated
 -- whenever contacts is changed, using trigger below.
@@ -82,7 +68,7 @@ create table contacts_history (
     contacts_history_id serial not null primary key,
 
     contact_id integer not null,
-    area_id integer not null,
+    body_id integer not null,
     category text not null default 'Other',
     email text not null,
     confirmed boolean not null,
@@ -101,7 +87,7 @@ create table contacts_history (
 create function contacts_updated()
     returns trigger as '
     begin
-        insert into contacts_history (contact_id, area_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.id, new.area_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
+        insert into contacts_history (contact_id, body_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.id, new.body_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
         return new;
     end;
 ' language 'plpgsql';

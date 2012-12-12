@@ -16,7 +16,7 @@ my $e = FixMyStreet::SendReport::Email->new();
 
 my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
     email => 'council@example.com',
-    area_id => 1000,
+    body_id => 1000,
     category => 'category',
     confirmed => 1,
     deleted => 0,

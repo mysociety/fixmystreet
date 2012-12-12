@@ -18,8 +18,8 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "contacts_id_seq",
   },
-  "area_id",
-  { data_type => "integer", is_nullable => 0 },
+  "body_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "category",
   { data_type => "text", default_value => "Other", is_nullable => 0 },
   "email",
@@ -48,11 +48,17 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("contacts_area_id_category_idx", ["area_id", "category"]);
+__PACKAGE__->add_unique_constraint("contacts_body_id_category_idx", ["body_id", "category"]);
+__PACKAGE__->belongs_to(
+  "body",
+  "FixMyStreet::DB::Result::Body",
+  { id => "body_id" },
+  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-10 15:33:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:T1jcv40rbTqZbwDziGTYCA
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 12:34:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:imXq3EtrC0FrQwj+E2xfBw
 
 __PACKAGE__->filter_column(
     extra => {

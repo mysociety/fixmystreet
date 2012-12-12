@@ -657,7 +657,7 @@ sub get_council_sender {
 
     if ( $council_config && $council_config->can_be_devolved ) {
         # look up via category
-        my $config = FixMyStreet::App->model("DB::Contact")->search( { area_id => $area_id, category => $category } )->first;
+        my $config = FixMyStreet::App->model("DB::Contact")->search( { body_id => $area_id, category => $category } )->first;
         if ( $config->send_method ) {
             return { method => $config->send_method, config => $config };
         } else {

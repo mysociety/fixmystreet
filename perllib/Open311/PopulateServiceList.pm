@@ -88,7 +88,7 @@ sub process_service {
     print $self->_current_service->{service_code} . ': ' . $category .  "\n" if $self->verbose >= 2;
     my $contacts = FixMyStreet::App->model( 'DB::Contact')->search(
         {
-            area_id => $self->_current_council->area_id,
+            body_id => $self->_current_council->area_id,
             -OR => [
                 email => $self->_current_service->{service_code},
                 category => $category,
@@ -168,7 +168,7 @@ sub _create_contact {
         $contact = FixMyStreet::App->model( 'DB::Contact')->create(
             {
                 email => $self->_current_service->{service_code},
-                area_id => $self->_current_council->area_id,
+                body_id => $self->_current_council->area_id,
                 category => $service_name,
                 confirmed => 1,
                 deleted => 0,
@@ -272,7 +272,7 @@ sub _delete_contacts_not_in_service_list {
     my $found_contacts = FixMyStreet::App->model( 'DB::Contact')->search(
         {
             email => { -not_in => $self->found_contacts },
-            area_id => $self->_current_council->area_id,
+            body_id => $self->_current_council->area_id,
             deleted => 0,
         }
     );
