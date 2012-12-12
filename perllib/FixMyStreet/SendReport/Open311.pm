@@ -9,6 +9,9 @@ use FixMyStreet::App;
 use mySociety::Config;
 use DateTime::Format::W3CDTF;
 use Open311;
+use Readonly;
+
+Readonly::Scalar my $COUNCIL_ID_OXFORDSHIRE => 2237;
 
 sub should_skip {
     my $self = shift;
@@ -68,7 +71,7 @@ sub send {
         }
 
         # extra Oxfordshire fields: send northing and easting
-        if ( $row->council =~ /2237/ ) {
+        if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
             my $extra = $row->extra;
             if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
                 push @$extra, { name => 'northing', value => $h->{northing} };
@@ -105,14 +108,14 @@ sub send {
         }
 
         if ($row->cobrand eq 'fixmybarangay') {
-            # FixMyBarangay endpoints expect external_id as an attribute
+            # FixMyBarangay endpoints expect external_id as an attribute, as do Oxfordshire
             $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  );
         }
 
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
 
         # make sure we don't save user changes from above
-        if ( $row->council =~ /(2218|2482|2237)/ || $row->cobrand eq 'fixmybarangay') {
+        if ( $row->council =~ /(2218|2482|$COUNCIL_ID_OXFORDSHIRE)/ || $row->cobrand eq 'fixmybarangay') {
             $row->discard_changes();
         }
 
