@@ -195,6 +195,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
             councils_text   => $councils_text,
             category        => $category,
             extra_name_info => $extra_name_info,
+            categories      => $c->stash->{category_options},
         }
     );
 
