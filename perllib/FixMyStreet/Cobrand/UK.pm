@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::UK;
 use base 'FixMyStreet::Cobrand::Default';
 
+use mySociety::MaPit;
 use mySociety::VotingArea;
 
 sub path_to_web_templates {
@@ -31,8 +32,10 @@ sub disambiguate_location {
     };
 }
 
-sub _fallback_council_sender {
-    my ( $self, $area_id, $area_info, $category ) = @_;
+sub _fallback_body_sender {
+    my ( $self, $body, $category ) = @_;
+
+    my $area_info = mySociety::MaPit::call('area', $body->area_id);
     return { method => 'London' } if $area_info->{type} eq 'LBO';
     return { method => 'NI' } if $area_info->{type} eq 'LGD';
     return { method => 'Email' };

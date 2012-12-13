@@ -228,7 +228,7 @@ sub send_reports {
     my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
         state => [ 'confirmed', 'fixed' ],
         whensent => undef,
-        council => { '!=', undef },
+        bodies => { '!=', undef },
     } );
     my (%notgot, %note);
 
@@ -292,29 +292,28 @@ sub send_reports {
         my ( $sender_count );
         if ($site eq 'emptyhomes') {
 
-            my $council = $row->council;
-            my $areas_info = mySociety::MaPit::call('areas', $council);
+            my $body = $row->bodies;
+            $body = FixMyStreet::App->model("DB::Body")->find($body);
             my $sender = "FixMyStreet::SendReport::EmptyHomes";
             $reporters{ $sender } = $sender->new() unless $reporters{$sender};
-            $reporters{ $sender }->add_council( $council, $areas_info->{$council} );
+            $reporters{ $sender }->add_body( $body );
 
         } else {
 
             # XXX Needs locks!
-            my @all_councils = split /,|\|/, $row->council;
-            my ($councils, $missing) = $row->council =~ /^([\d,]+)(?:\|([\d,]+))?/;
-            my @councils = split(/,/, $councils);
-            my $areas_info = mySociety::MaPit::call('areas', \@all_councils);
+            # XXX Only copes with at most one missing body
+            my ($bodies, $missing) = $row->bodies =~ /^([\d,]+)(?:\|(\d+))?/;
+            my @bodies = split(/,/, $bodies);
+            $bodies = FixMyStreet::App->model("DB::Body")->search({ id => \@bodies });
+            $missing = FixMyStreet::App->model("DB::Body")->find($missing);
             my @dear;
 
-            foreach my $council (@councils) {
-                my $name = $areas_info->{$council}->{name};
-
-                my $sender_info = $cobrand->get_council_sender( $council, $areas_info->{$council}, $row->category );
+            while (my $body = $bodies->next) {
+                my $sender_info = $cobrand->get_body_sender( $body, $row->category );
                 my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
                 if ( ! exists $senders->{ $sender } ) {
-                    warn "No such sender [ $sender ] for council $name ( $council )";
+                    warn "No such sender [ $sender ] for body $body->name ( $body->id )";
                     next;
                 }
                 $reporters{ $sender } ||= $sender->new();
@@ -323,8 +322,8 @@ sub send_reports {
                     $sending_skipped_by_method{ $sender }++ if 
                         $reporters{ $sender }->skipped;
                 } else {
-                    push @dear, $name;
-                    $reporters{ $sender }->add_council( $council, $areas_info->{$council}, $sender_info->{config} );
+                    push @dear, $body->name;
+                    $reporters{ $sender }->add_body( $body, $sender_info->{config} );
                 }
             }
 
@@ -336,7 +335,7 @@ sub send_reports {
                 $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
             }
 
-            $h{councils_name} = join(_(' and '), @dear);
+            $h{bodies_name} = join(_(' and '), @dear);
             if ($h{category} eq _('Other')) {
                 $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
                     : '';
@@ -346,9 +345,8 @@ sub send_reports {
             }
             $h{missing} = ''; 
             if ($missing) {
-                my $name = $areas_info->{$missing}->{name};
                 $h{missing} = '[ '
-                  . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $name)
+                  . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $missing->name)
                   . " ]\n\n";
             }
 
@@ -362,9 +360,9 @@ sub send_reports {
         next unless $sender_count;
 
         if (mySociety::Config::get('STAGING_SITE')) {
-            # on a staging server send emails to ourselves rather than the councils
-            my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
-            unless ( grep { $row->council eq $_ } @testing_councils ) {
+            # on a staging server send emails to ourselves rather than the bodies
+            my @testing_bodies = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
+            unless ( grep { $row->bodies eq $_ } @testing_bodies ) {
                 %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI)/ } keys %reporters;
                 unless (%reporters) {
                     %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
@@ -426,7 +424,7 @@ sub send_reports {
         my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
             state => [ 'confirmed', 'fixed' ],
             whensent => undef,
-            council => { '!=', undef },
+            bodies => { '!=', undef },
             send_fail_count => { '>', 0 }
         } );
         while (my $row = $unsent->next) {

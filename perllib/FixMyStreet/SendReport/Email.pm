@@ -11,30 +11,30 @@ sub build_recipient_list {
     my %recips;
 
     my $all_confirmed = 1;
-    foreach my $council ( keys %{ $self->councils } ) {
+    foreach my $body ( @{ $self->bodies } ) {
 
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            body_id => $council,
+            body_id => $body->id,
             category => $row->category
         } );
 
-        my ($council_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
+        my ($body_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
 
-        $council_email = essex_contact($row->latitude, $row->longitude) if $council == 2225;
-        $council_email = oxfordshire_contact($row->latitude, $row->longitude) if $council == 2237 && $council_email eq 'SPECIAL';
+        $body_email = essex_contact($row->latitude, $row->longitude) if $body->area_id == 2225;
+        $body_email = oxfordshire_contact($row->latitude, $row->longitude) if $body->area_id == 2237 && $body_email eq 'SPECIAL';
 
         unless ($confirmed) {
             $all_confirmed = 0;
-            $note = 'Council ' . $row->council . ' deleted'
+            $note = 'Body ' . $row->bodies . ' deleted'
                 unless $note;
-            $council_email = 'N/A' unless $council_email;
-            $self->unconfirmed_counts->{$council_email}{$row->category}++;
-            $self->unconfirmed_notes->{$council_email}{$row->category} = $note;
+            $body_email = 'N/A' unless $body_email;
+            $self->unconfirmed_counts->{$body_email}{$row->category}++;
+            $self->unconfirmed_notes->{$body_email}{$row->category} = $note;
         }
 
-        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{info}->{name} ];
-        $recips{$council_email} = 1;
+        push @{ $self->to }, [ $body_email, $body->name ];
+        $recips{$body_email} = 1;
     }
 
     return () unless $all_confirmed;
@@ -45,7 +45,7 @@ sub get_template {
     my ( $self, $row ) = @_;
 
     my $template = 'submit.txt';
-    $template = 'submit-brent.txt' if $row->council eq 2488 || $row->council eq 2237;
+    $template = 'submit-brent.txt' if $row->bodies eq 2488 || $row->bodies eq 2237;
     my $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $row->lang, $template )->stringify;
     $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $template )->stringify
         unless -e $template_path;
@@ -61,7 +61,7 @@ sub send {
 
     my @recips = $self->build_recipient_list( $row, $h );
 
-    # on a staging server send emails to ourselves rather than the councils
+    # on a staging server send emails to ourselves rather than the bodies
     if (mySociety::Config::get('STAGING_SITE') && !FixMyStreet->test_mode) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     }

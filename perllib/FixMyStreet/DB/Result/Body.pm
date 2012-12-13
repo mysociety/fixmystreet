@@ -36,6 +36,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "can_be_devolved",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "name",
+  { data_type => "text", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("body_area_id_key", ["area_id"]);
@@ -58,8 +60,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 12:34:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YiDf4mhoPlG5cnxCIrqZxw
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 12:36:19
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Yl1KHSUzPi7KDjMenUe8qw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

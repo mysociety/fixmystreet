@@ -419,6 +419,7 @@ create table admin_log (
 
 create table body (
     id           serial primary key,
+    name         text not null,
     area_id      integer not null unique,
     endpoint     text,
     jurisdiction text,

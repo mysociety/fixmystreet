@@ -27,8 +27,8 @@ sub send {
 
     my $result = -1;
 
-    foreach my $council ( keys %{ $self->councils } ) {
-        my $conf = $self->councils->{$council}->{config};
+    foreach my $body ( @{ $self->bodies } ) {
+        my $conf = $self->body_config->{ $body->id };
 
         my $always_send_latlong = 1;
         my $send_notpinpointed  = 0;
@@ -36,8 +36,13 @@ sub send {
 
         my $basic_desc = 0;
 
+        # To rollback temporary changes made by this function
+        my $revert = 0;
+
         # Extra bromley fields
-        if ( $row->council =~ /2482/ ) {
+        if ( $row->bodies == 2482 ) {
+
+            $revert = 1;
 
             my $extra = $row->extra;
             if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
@@ -70,7 +75,7 @@ sub send {
         # FIXME: we've already looked this up before
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            body_id => $conf->area_id,
+            body_id => $body->id,
             category => $row->category
         } );
 
@@ -85,26 +90,26 @@ sub send {
         );
 
         # non standard west berks end points
-        if ( $row->council =~ /2619/ ) {
+        if ( $row->bodies =~ /2619/ ) {
             $open311->endpoints( { services => 'Services', requests => 'Requests' } );
         }
 
         # required to get round issues with CRM constraints
-        if ( $row->council =~ /2218/ ) {
+        if ( $row->bodies =~ /2218/ ) {
             $row->user->name( $row->user->id . ' ' . $row->user->name );
+            $revert = 1;
         }
 
         if ($row->cobrand eq 'fixmybarangay') {
             # FixMyBarangay endpoints expect external_id as an attribute
             $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  );
+            $revert = 1;
         }
 
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
 
         # make sure we don't save user changes from above
-        if ( $row->council =~ /2218/ || $row->council =~ /2482/ || $row->cobrand eq 'fixmybarangay') {
-            $row->discard_changes();
-        }
+        $row->discard_changes() if $revert;
 
         if ( $resp ) {
             $row->external_id( $resp );
@@ -119,7 +124,7 @@ sub send {
         } else {
             $result *= 1;
             # temporary fix to resolve some issues with west berks
-            if ( $row->council =~ /2619/ ) {
+            if ( $row->bodies =~ /2619/ ) {
                 $result *= 0;
             }
         }
