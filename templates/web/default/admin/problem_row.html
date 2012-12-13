@@ -10,8 +10,8 @@
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
         <td>[% PROCESS value_or_nbsp value=problem.name %]</td> 
         <td>[% PROCESS value_or_nbsp value=problem.user.email %]</td> 
-        <td>[%- IF edit_council_contacts -%]
-        <a href="[% c.uri_for('council_contacts', problem.bodies_str ) %]">[% PROCESS value_or_nbsp value=problem.bodies_str %]</a>
+        <td>[%- IF edit_body_contacts -%]
+        <a href="[% c.uri_for('body', problem.bodies_str ) %]">[% PROCESS value_or_nbsp value=problem.bodies_str %]</a>
         [%- ELSE -%]
             [%- PROCESS value_or_nbsp value=problem.bodies_str -%]
         [%- END -%]</td>

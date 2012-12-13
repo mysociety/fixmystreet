@@ -1,4 +1,4 @@
-[% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), council_name) -%]
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
 
 [% BLOCK highlightchanged_yesno %]
 [%- output = loc('No') %]
@@ -19,37 +19,43 @@
 [% END %]
 </p>
 
-<form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <strong>[% loc('Category:') %] </strong>[% contact.category | html %]
+<form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
     <input type="hidden" name="token" value="[% token %]" >
-    <strong>[% loc('Email:') %] </strong>
+    <p><strong>[% loc('Email:') %] </strong>
     <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
-    <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]> <label for="confirmed">[% loc('Confirmed' ) %]</label> 
-    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]> <label for="deleted">[% loc('Deleted') %]</label>
-    <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]> <label for="non_public">[% loc('Private') %]</label><br>
 
-    <strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea> <br>
-
-    <h2>[% loc('Configure Endpoint') %]</h2>
-    <form method="post" action="[% c.uri_for('council_contacts', area_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p>
-        <label for="endpoint">Endpoint</label>: 
+    <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
+    <label class="inline" for="confirmed">[% loc('Confirmed' ) %]</label> 
+    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
+    <label class="inline" for="deleted">[% loc('Deleted') %]</label>
+    <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]>
+    <label class="inline" for="non_public">[% loc('Private') %]</label><br>
+
+    <p><strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea>
+
+    [% IF body.can_be_devolved %]
+    <h2>[% loc('Configure Endpoint') %]</h2>
+    <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <p>
+        <label for="endpoint">Endpoint</label>
         <input type="text" name="endpoint" id="endpoint" value="[% contact.endpoint %]" size="50">
     </p>
 
     <p>
-        <label for="jurisdiction">Jurisdiction</label>: 
+        <label for="jurisdiction">Jurisdiction</label>
         <input type="text" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction %]" size="50">
     </p>
 
     <p>
-        <label for="api_key">Api Key</label>: 
+        <label for="api_key">Api Key</label>
         <input type="text" name="api_key" id="api_key" value="[% contact.api_key %]" size="25">
     </p>
 
     <p>
-        <label for="send_method">Send Method</label>:
+        <label for="send_method">Send Method</label>
         <select name="send_method">
             <option value=""> -- Select a method -- </option>
             [% FOR method IN send_methods %]
@@ -57,10 +63,10 @@
             [% END %]
         </select>
     </p>
+    [% END %]
 
-    <input type="hidden" name="area_id" value="[% area_id %]">
     <input type="hidden" name="posted" value="new">
-    <input type="submit" name="Save changes" value="[% loc('Save changes') %]">
+    <p><input type="submit" name="Save changes" value="[% loc('Save changes') %]">
 </form>
 
 <h2>[% loc('History') %]</h2>

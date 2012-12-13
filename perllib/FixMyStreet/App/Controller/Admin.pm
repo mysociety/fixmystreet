@@ -204,7 +204,7 @@ sub questionnaire : Path('questionnaire') : Args(0) {
     return 1;
 }
 
-sub council_list : Path('council_list') : Args(0) {
+sub bodies : Path('bodies') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->forward('check_page_allowed');
@@ -221,14 +221,10 @@ sub council_list : Path('council_list') : Args(0) {
 
     $c->stash->{edit_activity} = $edit_activity;
 
-    # Not London, as treated separately
-    my $area_types = $c->cobrand->moniker eq 'emptyhomes'
-        ? $c->cobrand->area_types
-        : [ grep { $_ ne 'LBO' } @{ $c->cobrand->area_types } ];
-    my $areas = mySociety::MaPit::call('areas', $area_types);
+    $c->forward( 'fetch_all_bodies' );
 
-    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
-    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
+    # XXX For fixmystreet.com, need to exclude bodies that are covering London.
+    # But soon, this means just don't have bodies covering London.
 
     my $contacts = $c->model('DB::Contact')->search(
         undef,
@@ -243,32 +239,21 @@ sub council_list : Path('council_list') : Args(0) {
 
     my %council_info = map { $_->{body_id} => $_ } $contacts->all;
 
-    my @no_info = grep { !$council_info{$_} } @councils_ids;
-    my @one_plus_deleted = grep { $council_info{$_} && $council_info{$_}->{deleted} } @councils_ids;
-    my @unconfirmeds = grep { $council_info{$_} && !$council_info{$_}->{deleted} && $council_info{$_}->{confirmed} != $council_info{$_}->{c} } @councils_ids;
-    my @all_confirmed = grep { $council_info{$_} && !$council_info{$_}->{deleted} && $council_info{$_}->{confirmed} == $council_info{$_}->{c} } @councils_ids;
-
-    $c->stash->{areas} = $areas;
     $c->stash->{counts} = \%council_info;
-    $c->stash->{no_info} = \@no_info;
-    $c->stash->{one_plus_deleted} = \@one_plus_deleted;
-    $c->stash->{unconfirmeds} = \@unconfirmeds;
-    $c->stash->{all_confirmed} = \@all_confirmed;
 
     return 1;
 }
 
-sub council_contacts : Path('council_contacts') : Args(1) {
-    my ( $self, $c, $area_id ) = @_;
+sub body : Path('body') : Args(1) {
+    my ( $self, $c, $body_id ) = @_;
 
-    $c->forward('check_page_allowed');
+    $c->stash->{body_id} = $body_id;
 
-    my $posted = $c->req->param('posted') || '';
-    $c->stash->{area_id} = $area_id;
-
+    $c->forward( 'check_page_allowed' );
     $c->forward( 'get_token' );
+    $c->forward( 'lookup_body' );
 
-    if ( $posted ) {
+    if ( $c->req->param('posted') ) {
         $c->log->debug( 'posted' );
         $c->forward('update_contacts');
     }
@@ -294,7 +279,7 @@ sub update_contacts : Private {
 
         my $contact = $c->model('DB::Contact')->find_or_new(
             {
-                body_id => $c->stash->{area_id},
+                body_id => $c->stash->{body_id},
                 category => $category,
             }
         );
@@ -328,7 +313,7 @@ sub update_contacts : Private {
 
         my $contacts = $c->model('DB::Contact')->search(
             {
-                body_id => $c->stash->{area_id},
+                body_id => $c->stash->{body_id},
                 category => { -in => \@categories },
             }
         );
@@ -346,64 +331,33 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id devolved/;
+        my %params = map { $_ => $c->req->param($_) || '' } qw/endpoint jurisdiction api_key send_method send_comments suppress_alerts comment_user_id devolved/;
 
-        if ( $params{open311_id} ) {
-            my $conf = $c->model('DB::Body')->find( { id => $params{open311_id} } );
+        my $body = $c->stash->{body};
 
-            $conf->endpoint( $params{endpoint} );
-            $conf->jurisdiction( $params{jurisdiction} );
-            $conf->api_key( $params{api_key} );
-            $conf->send_method( $params{send_method} );
-            $conf->send_comments( $params{send_comments} || 0);
-            $conf->suppress_alerts( $params{suppress_alerts} || 0);
-            $conf->comment_user_id( $params{comment_user_id} || undef );
-            $conf->can_be_devolved( $params{devolved} || 0 );
+        $body->endpoint( $params{endpoint} );
+        $body->jurisdiction( $params{jurisdiction} );
+        $body->api_key( $params{api_key} );
+        $body->send_method( $params{send_method} );
+        $body->send_comments( $params{send_comments} || 0);
+        $body->suppress_alerts( $params{suppress_alerts} || 0);
+        $body->comment_user_id( $params{comment_user_id} || undef );
+        $body->can_be_devolved( $params{devolved} || 0 );
 
-            $conf->update();
+        $body->update();
 
-            $c->stash->{updated} = _('Configuration updated');
-        } else {
-            my $conf = $c->model('DB::Body')->find_or_new( { area_id => $params{area_id} } );
-
-            $conf->endpoint( $params{endpoint} );
-            $conf->jurisdiction( $params{jurisdiction} );
-            $conf->api_key( $params{api_key} );
-            $conf->send_method( $params{send_method} );
-            $conf->send_comments( $params{send_comments} || 0);
-            $conf->suppress_alerts( $params{suppress_alerts} || 0);
-            $conf->comment_user_id( $params{comment_user_id} || undef );
-            $conf->can_be_devolved( $params{devolved} || 0 );
-
-            $conf->insert();
-
-            $c->stash->{updated} = _('Configuration updated - contacts will be generated automatically later');
-        }
+        $c->stash->{updated} = _('Configuration updated - contacts will be generated automatically later');
     }
 }
 
 sub display_contacts : Private {
     my ( $self, $c ) = @_;
 
-    $c->forward('setup_council_details');
-
-    my $area_id = $c->stash->{area_id};
-
-    my $contacts = $c->model('DB::Contact')->search(
-        { body_id => $area_id },
-        { order_by => ['category'] }
-    );
-
+    my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
     $c->stash->{contacts} = $contacts;
 
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
     $c->stash->{send_methods} = \@methods;
-
-    my $open311 = $c->model('DB::Body')->search(
-        { area_id => $area_id }
-    );
-
-    $c->stash->{open311} = $open311;
 
     if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
@@ -414,17 +368,16 @@ sub display_contacts : Private {
     return 1;
 }
 
-sub setup_council_details : Private {
+sub lookup_body : Private {
     my ( $self, $c ) = @_;
 
-    my $area_id = $c->stash->{area_id};
-
-    my $mapit_data = mySociety::MaPit::call('area', $area_id);
-
-    $c->stash->{council_name} = $mapit_data->{name};
-
-    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $area_id);
-
+    my $body_id = $c->stash->{body_id};
+    my $body = $c->model('DB::Body')->find($body_id);
+    $c->detach( '/page_error_404_not_found' )
+      unless $body;
+    $c->stash->{body} = $body;
+    
+    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $body->area_id);
     if ($example_postcode && ! ref $example_postcode) {
         $c->stash->{example_pc} = $example_postcode;
     }
@@ -432,41 +385,34 @@ sub setup_council_details : Private {
     return 1;
 }
 
-sub council_edit_all : Path('council_edit') {
-    my ( $self, $c, $area_id, @category ) = @_;
+# This is for if the category name contains a '/'
+sub body_edit_all : Path('body_edit') {
+    my ( $self, $c, $body_id, @category ) = @_;
     my $category = join( '/', @category );
-    $c->go( 'council_edit', [ $area_id, $category ] );
+    $c->go( 'body_edit', [ $body_id, $category ] );
 }
 
-sub council_edit : Path('council_edit') : Args(2) {
-    my ( $self, $c, $area_id, $category ) = @_;
+sub body_edit : Path('body_edit') : Args(2) {
+    my ( $self, $c, $body_id, $category ) = @_;
 
-    $c->forward('check_page_allowed');
+    $c->stash->{body_id} = $body_id;
 
-    $c->stash->{area_id} = $area_id;
-
+    $c->forward( 'check_page_allowed' );
     $c->forward( 'get_token' );
-    $c->forward('setup_council_details');
+    $c->forward( 'lookup_body' );
 
-    my $contact = $c->model('DB::Contact')->search(
-        {
-            body_id => $area_id,
-            category => $category
-        }
-    )->first;
-
+    my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
     $c->stash->{contact} = $contact;
 
     my $history = $c->model('DB::ContactsHistory')->search(
         {
-            body_id => $area_id,
+            body_id => $body_id,
             category => $category
         },
         {
             order_by => ['contacts_history_id']
         },
     );
-
     $c->stash->{history} = $history;
 
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
@@ -475,7 +421,7 @@ sub council_edit : Path('council_edit') : Args(2) {
     return 1;
 }
 
-sub search_reports : Path('search_reports') {
+sub reports : Path('reports') {
     my ( $self, $c ) = @_;
 
     $c->forward('check_page_allowed');
@@ -518,7 +464,7 @@ sub search_reports : Path('search_reports') {
                 'me.name' => { ilike => $like_search },
                 'me.title' => { ilike => $like_search },
                 detail => { ilike => $like_search },
-                council => { like => $like_search },
+                bodies_str => { like => $like_search },
                 cobrand_data => { like => $like_search },
             ];
         }
@@ -537,8 +483,8 @@ sub search_reports : Path('search_reports') {
         # will have been turned off
         $c->stash->{problems} = [ $problems->all ];
 
-        $c->stash->{edit_council_contacts} = 1
-            if ( grep {$_ eq 'councilcontacts'} keys %{$c->stash->{allowed_pages}});
+        $c->stash->{edit_body_contacts} = 1
+            if ( grep {$_ eq 'body'} keys %{$c->stash->{allowed_pages}});
 
         if (is_valid_email($search)) {
             $query = [
@@ -716,7 +662,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     return 1;
 }
 
-sub search_users: Path('search_users') : Args(0) {
+sub users: Path('users') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->forward('check_page_allowed');
@@ -872,7 +818,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     my $user = $c->model('DB::User')->find( { id => $id } );
     $c->stash->{user} = $user;
 
-    $c->forward('set_up_council_details');
+    $c->forward('fetch_all_bodies');
 
     if ( $c->req->param('submit') ) {
         $c->forward('check_token');
@@ -881,13 +827,13 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->email ne $c->req->param('email') ||
             $user->name ne $c->req->param('name' ) ||
-            $user->from_body != $c->req->param('council') ) {
+            $user->from_body != $c->req->param('body') ) {
                 $edited = 1;
         }
 
         $user->name( $c->req->param('name') );
         $user->email( $c->req->param('email') );
-        $user->from_body( $c->req->param('council') || undef );
+        $user->from_body( $c->req->param('body') || undef );
         $user->flagged( $c->req->param('flagged') || 0 );
         $user->update;
 
@@ -902,7 +848,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     return 1;
 }
 
-sub list_flagged : Path('list_flagged') : Args(0) {
+sub flagged : Path('flagged') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->forward('check_page_allowed');
@@ -924,8 +870,7 @@ sub stats : Path('stats') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->forward('check_page_allowed');
-
-    $c->forward('set_up_council_details');
+    $c->forward('fetch_all_bodies');
 
     if ( $c->req->param('getcounts') ) {
 
@@ -961,11 +906,11 @@ sub stats : Path('stats') : Args(0) {
 
         my $bymonth = $c->req->param('bymonth');
         $c->stash->{bymonth} = $bymonth;
-        my ( %council, %dates );
-        $council{council} = { like => $c->req->param('council') } 
-            if $c->req->param('council');
+        my ( %body, %dates );
+        $body{bodies_str} = { like => $c->req->param('body') } 
+            if $c->req->param('body');
 
-        $c->stash->{selected_council} = $c->req->param('council');
+        $c->stash->{selected_body} = $c->req->param('body');
 
         my $field = 'confirmed';
 
@@ -1000,7 +945,7 @@ sub stats : Path('stats') : Args(0) {
                     $field => { '>=', $start_date},
                     $field => { '<=', $end_date + $one_day },
                 ],
-                %council,
+                %body,
                 %dates,
             },
             \%select,
@@ -1029,16 +974,16 @@ sub set_allowed_pages : Private {
     if( !$pages ) {
         $pages = {
              'summary' => [_('Summary'), 0],
-             'council_list' => [_('Bodies'), 1],
-             'search_reports' => [_('Reports'), 2],
+             'bodies' => [_('Bodies'), 1],
+             'reports' => [_('Reports'), 2],
              'timeline' => [_('Timeline'), 3],
              'questionnaire' => [_('Survey'), 4],
-             'search_users' => [_('Users'), 5],
-             'list_flagged'  => [_('Flagged'), 6],
+             'users' => [_('Users'), 5],
+             'flagged'  => [_('Flagged'), 6],
              'stats'  => [_('Stats'), 6],
              'user_edit' => [undef, undef], 
-             'council_contacts' => [undef, undef],
-             'council_edit' => [undef, undef],
+             'body' => [undef, undef],
+             'body_edit' => [undef, undef],
              'report_edit' => [undef, undef],
              'update_edit' => [undef, undef],
              'abuse_edit'  => [undef, undef],
@@ -1261,16 +1206,12 @@ sub check_page_allowed : Private {
     return 1;
 }
 
-sub set_up_council_details : Private {
+sub fetch_all_bodies : Private {
     my ($self, $c ) = @_;
 
-    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
-
-    my @councils_ids = sort { strcoll($areas->{$a}->{name}, $areas->{$b}->{name}) } keys %$areas;
-    @councils_ids = $c->cobrand->filter_all_council_ids_list( @councils_ids );
-
-    $c->stash->{council_ids} = \@councils_ids;
-    $c->stash->{council_details} = $areas;
+    my @bodies = $c->model('DB::Body')->all;
+    @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+    $c->stash->{bodies} = \@bodies;
 
     return 1;
 }

@@ -1,0 +1,44 @@
+[% INCLUDE 'admin/header.html' title=loc('Council contacts') -%]
+
+<h2>[% loc('Diligency prize league table') %]</h2>
+[% IF edit_activity.count %]
+<ul>
+    [% WHILE ( editor = edit_activity.next ) %]
+    <li>[% tprintf( loc('%d edits by %s'), editor.get_column('c'), editor.editor ) %]</li>
+    [% END %]
+</ul>
+[% ELSE %]
+<p>
+[% loc('No edits have yet been made.') %]
+</p>
+[% END %]
+
+<h2>[% loc('Councils') %]</h2>
+
+[%- FOREACH body IN bodies %]
+    [%- SET id = body.id %]
+    [%- IF body.parent_area %]
+    [%-
+        p_area = areas.$body.parent_area
+        parent = ', ' _ areas.$parent.name
+    %]
+    [%- ELSE %]
+    [%- parent = '' %]
+    [%- END %]
+    [%- '<ul>' IF loop.first %]
+        <li><a href="[% c.uri_for( 'body', id ) %]">[% body.name %] [% parent %]</a>
+        &ndash;
+        [% IF counts.$id %]
+            [% tprintf( loc('%d addresses'), counts.$id.c) IF c.cobrand.moniker != 'emptyhomes' %]
+            [% IF counts.$id.deleted %]
+                (1+ deleted)
+            [% ELSIF counts.$id.confirmed != counts.$id.c %]
+                (some unconfirmed)
+            [% END %]
+        [% ELSE %]
+            no categories
+        [% END %]
+    [%- '</ul>' IF loop.last %]
+[%- END %]
+
+[% INCLUDE 'admin/footer.html' %]
