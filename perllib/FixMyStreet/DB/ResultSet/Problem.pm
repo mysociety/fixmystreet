@@ -305,7 +305,7 @@ sub send_reports {
             my ($bodies, $missing) = $row->bodies_str =~ /^([\d,]+)(?:\|(\d+))?/;
             my @bodies = split(/,/, $bodies);
             $bodies = FixMyStreet::App->model("DB::Body")->search({ id => \@bodies });
-            $missing = FixMyStreet::App->model("DB::Body")->find($missing);
+            $missing = FixMyStreet::App->model("DB::Body")->find($missing) if $missing;
             my @dear;
 
             while (my $body = $bodies->next) {
