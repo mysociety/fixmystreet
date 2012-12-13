@@ -70,14 +70,15 @@ sub send {
             $basic_desc = 1;
         }
 
-        # extra Oxfordshire fields: send northing and easting
+        # extra Oxfordshire fields: send northing and easting, and the FMS id
         if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
             my $extra = $row->extra;
+            push @$extra, { name => 'external_id', value => $row->id };
             if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
                 push @$extra, { name => 'northing', value => $h->{northing} };
                 push @$extra, { name => 'easting', value => $h->{easting} };
-                $row->extra( $extra );
             }
+            $row->extra( $extra );
         }
 
         # FIXME: we've already looked this up before
@@ -100,6 +101,11 @@ sub send {
         # non standard west berks end points
         if ( $row->council =~ /2619/ ) {
             $open311->endpoints( { services => 'Services', requests => 'Requests' } );
+        }
+
+        # non-standard Oxfordshire endpoint (because it's just a script, not a full Open311 service)
+        if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
+            $open311->endpoints( { requests => 'open311_service_request.pl' } );
         }
 
         # required to get round issues with CRM constraints
