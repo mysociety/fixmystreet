@@ -83,8 +83,8 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
     'New problems to {{COUNCIL}} on FixMyStreet', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
-    'problem', 'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (council like ''%''||?||''%''
-        or council is null) and areas like ''%,''||?||'',%''', 'created desc',
+    'problem', 'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (bodies_str like ''%''||?||''%''
+        or bodies_str is null) and areas like ''%,''||?||'',%''', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-council'
 );
 
@@ -97,8 +97,8 @@ insert into alert_type
 values ('ward_problems', '', '',
     'New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet', '/reports',
     'The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users',
-    'problem', 'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (council like ''%''||?||''%''
-        or council is null) and areas like ''%,''||?||'',%''', 'created desc',
+    'problem', 'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (bodies_str like ''%''||?||''%''
+        or bodies_str is null) and areas like ''%,''||?||'',%''', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-ward'
 );
 

@@ -24,7 +24,7 @@ __PACKAGE__->add_columns(
   { data_type => "double precision", is_nullable => 0 },
   "longitude",
   { data_type => "double precision", is_nullable => 0 },
-  "council",
+  "bodies_str",
   { data_type => "text", is_nullable => 1 },
   "areas",
   { data_type => "text", is_nullable => 0 },
@@ -122,8 +122,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-10 15:33:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:YZzkUjX7Dsxcsm4bXZjIYg
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 15:13:48
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:H2P3Og37G569nQdQA1IWaA
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -333,9 +333,9 @@ sub check_for_errors {
     $errors{detail} = _('Please enter some details')
       unless $self->detail =~ m/\S/;
 
-    $errors{council} = _('No council selected')
-      unless $self->council
-          && $self->council =~ m/^(?:-1|[\d,]+(?:\|[\d,]+)?)$/;
+    $errors{bodies} = _('No council selected')
+      unless $self->bodies_str
+          && $self->bodies_str =~ m/^(?:-1|[\d,]+(?:\|[\d,]+)?)$/;
 
     if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
@@ -388,18 +388,19 @@ sub confirm {
     return 1;
 }
 
-=head2 councils
+=head2 bodies
 
-Returns an arrayref of councils to which a report was sent.
+Returns an arrayref of bodies to which a report was sent.
 
 =cut
 
-sub councils {
+sub bodies($) {
     my $self = shift;
-    return [] unless $self->council;
-    (my $council = $self->council) =~ s/\|.*$//;
-    my @council = split( /,/, $council );
-    return \@council;
+    return [] unless $self->bodies_str;
+    (my $bodies = $self->bodies_str) =~ s/\|.*$//;
+    my @bodies = split( /,/, $bodies );
+    @bodies = FixMyStreet::App->model('DB::Body')->search({ id => \@bodies })->all;
+    return { map { $_->id => $_ } @bodies };
 }
 
 =head2 url
@@ -555,19 +556,18 @@ sub body {
     if ($problem->external_body) {
         $body = $problem->external_body;
     } else {
-        my $councils = $problem->councils;
-        my $areas_info = mySociety::MaPit::call('areas', $councils);
+        my $bodies = $problem->bodies;
         $body = join( _(' and '),
             map {
-                my $name = $areas_info->{$_}->{name};
+                my $name = $_->name;
                 if (mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS')) {
                     '<a href="'
-                    . $c->uri_for( '/reports/' . $c->cobrand->short_name( $areas_info->{$_} ) )
+                    # XXX . $c->uri_for( '/reports/' . $c->cobrand->short_name( $areas_info->{$_} ) )
                     . '">' . $name . '</a>';
                 } else {
                     $name;
                 }
-            } @$councils
+            } values %$bodies
         );
     }
     return $body;

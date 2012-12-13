@@ -14,7 +14,7 @@ has verbose => ( is => 'ro', default => 0 );
 sub fetch {
     my $self = shift;
 
-    my $councils = FixMyStreet::App->model('DB::Body')->search(
+    my $bodies = FixMyStreet::App->model('DB::Body')->search(
         {
             send_method     => 'Open311',
             send_comments   => 1,
@@ -23,24 +23,24 @@ sub fetch {
         }
     );
 
-    while ( my $council = $councils->next ) {
+    while ( my $body = $bodies->next ) {
 
         my $o = Open311->new(
-            endpoint     => $council->endpoint,
-            api_key      => $council->api_key,
-            jurisdiction => $council->jurisdiction,
+            endpoint     => $body->endpoint,
+            api_key      => $body->api_key,
+            jurisdiction => $body->jurisdiction,
         );
 
-        if ( $council->area_id =~ /2482/ ) {
+        if ( $body->area_id == 2482 ) {
             my $endpoints = $o->endpoints;
             $endpoints->{update} = 'update.xml';
             $endpoints->{service_request_updates} = 'update.xml';
             $o->endpoints( $endpoints );
         }
 
-        $self->suppress_alerts( $council->suppress_alerts );
-        $self->system_user( $council->comment_user );
-        $self->update_comments( $o, { areaid => $council->area_id }, );
+        $self->suppress_alerts( $body->suppress_alerts );
+        $self->system_user( $body->comment_user );
+        $self->update_comments( $o, { areaid => $body->area_id }, );
     }
 }
 
@@ -83,7 +83,7 @@ sub update_comments {
           FixMyStreet::App->model('DB::Problem')
           ->search( {
                   external_id => $request_id,
-                  council     => { like => '%' . $council_details->{areaid} . '%' },
+                  bodies_str  => { like => '%' . $council_details->{areaid} . '%' },
           } );
 
         if (my $p = $problem->first) {

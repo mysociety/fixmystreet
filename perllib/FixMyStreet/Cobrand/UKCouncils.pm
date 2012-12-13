@@ -13,7 +13,7 @@ sub is_council {
 
 sub site_restriction {
     my $self = shift;
-    return { council => sprintf('%d', $self->council_id) };
+    return { bodies_str => sprintf('%d', $self->council_id) };
 }
 sub site_key {
     my $self = shift;
@@ -27,7 +27,7 @@ sub restriction {
 # Different function to site_restriction due to two-tier use
 sub problems_clause {
     my $self = shift;
-    return { council => sprintf('%d', $self->council_id) };
+    return { bodies_str => sprintf('%d', $self->council_id) };
 }
 
 sub problems {
@@ -54,7 +54,7 @@ sub enter_postcode_text {
 sub area_check {
     my ( $self, $params, $context ) = @_;
 
-    my $councils = $params->{all_councils};
+    my $councils = $params->{all_areas};
     my $council_match = defined $councils->{$self->council_id};
     if ($council_match) {
         return 1;

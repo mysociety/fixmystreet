@@ -26,7 +26,7 @@ sub build_recipient_list {
 
         unless ($confirmed) {
             $all_confirmed = 0;
-            $note = 'Body ' . $row->bodies . ' deleted'
+            $note = 'Body ' . $row->bodies_str . ' deleted'
                 unless $note;
             $body_email = 'N/A' unless $body_email;
             $self->unconfirmed_counts->{$body_email}{$row->category}++;
@@ -45,7 +45,7 @@ sub get_template {
     my ( $self, $row ) = @_;
 
     my $template = 'submit.txt';
-    $template = 'submit-brent.txt' if $row->bodies eq 2488 || $row->bodies eq 2237;
+    $template = 'submit-brent.txt' if $row->bodies_str eq 2488 || $row->bodies_str eq 2237;
     my $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $row->lang, $template )->stringify;
     $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $template )->stringify
         unless -e $template_path;

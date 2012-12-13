@@ -325,7 +325,7 @@ sub load_and_group_problems : Private {
     };
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
-        $where->{council} = [
+        $where->{bodies_str} = [
             undef,
             $c->stash->{council}->{id},
             { 'like', $c->stash->{council}->{id} . ',%' },
@@ -336,7 +336,7 @@ sub load_and_group_problems : Private {
         $where->{'lower(external_body)'} = lc $c->stash->{council}->{name};
     } elsif ($c->stash->{council}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{council}->{id} . ',%' };
-        $where->{council} = [
+        $where->{bodies_str} = [
             undef,
             $c->stash->{council}->{id},
             { 'like', $c->stash->{council}->{id} . ',%' },
@@ -347,7 +347,7 @@ sub load_and_group_problems : Private {
         $where,
         {
             columns => [
-                'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
+                'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
                 #{ duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 #{ age      => { extract => "epoch from current_timestamp-confirmed"  } },
                 { confirmed  => { extract => 'epoch from confirmed' } },
@@ -364,7 +364,7 @@ sub load_and_group_problems : Private {
 
     my ( %problems, @pins );
     my $re_councils = join('|', keys %{$c->stash->{areas_info}});
-    my @cols = ( 'id', 'council', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'whensent', 'lastupdate', 'photo' );
+    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'whensent', 'lastupdate', 'photo' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
@@ -374,18 +374,19 @@ sub load_and_group_problems : Private {
             add_row( \%problem, 0, \%problems, \@pins );
             next;
         }
-        if ( !$problem{council} ) {
-            # Problem was not sent to any council, add to possible councils
-            $problem{councils} = 0;
+        if ( !$problem{bodies_str} ) {
+            # Problem was not sent to any body, add to possible councils XXX
+            $problem{bodies} = 0;
             while ($problem{areas} =~ /,($re_councils)(?=,)/g) {
                 add_row( \%problem, $1, \%problems, \@pins );
             }
         } else {
-            # Add to councils it was sent to
-            (my $council = $problem{council}) =~ s/\|.*$//;
-            my @council = split( /,/, $council );
-            $problem{councils} = scalar @council;
-            foreach ( @council ) {
+            # Add to bodies it was sent to
+            # XXX Assumes body ID matches "council ID"
+            (my $bodies = $problem{bodies_str}) =~ s/\|.*$//;
+            my @bodies = split( /,/, $bodies );
+            $problem{bodies} = scalar @bodies;
+            foreach ( @bodies ) {
                 next if $_ != $c->stash->{council}->{id};
                 add_row( \%problem, $_, \%problems, \@pins );
             }

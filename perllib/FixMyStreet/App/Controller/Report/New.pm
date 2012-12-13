@@ -587,7 +587,7 @@ sub setup_categories_and_bodies : Private {
       = $c                      #
       ->model('DB::Contact')    #
       ->not_deleted             #
-      ->search( { body => [ keys %bodies ] } )
+      ->search( { body_id => [ keys %bodies ] } )
       ->all;
 
     # variables to populate
@@ -816,7 +816,7 @@ sub process_report : Private {
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
 
         $bodies = join( ',', @{ $c->stash->{bodies_to_list} } ) || -1;
-        $report->bodies( $bodies );
+        $report->bodies_str( $bodies );
 
     } elsif ( $first_area->{id} == COUNCIL_ID_BARNET ) {
 
@@ -824,14 +824,14 @@ sub process_report : Private {
         unless ( exists Utils::barnet_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
-        $report->bodies( $first_area->{id} );
+        $report->bodies_str( $first_area->{id} );
         
     } elsif ( $first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
         
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
-        $report->area( $first_area->{id} );
+        $report->bodies_str( $first_area->{id} );
 
     } elsif ( $report->category ) {
 
@@ -842,14 +842,14 @@ sub process_report : Private {
           ->not_deleted           #
           ->search(
             {
-                body => [ keys %$bodies ],
+                body_id => [ keys %$bodies ],
                 category => $report->category
             }
           )->all;
 
         unless ( @contacts ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
-            $report->bodies( -1 );
+            $report->bodies_str( -1 );
             return 1;
         }
 
@@ -860,7 +860,7 @@ sub process_report : Private {
         $body_string .=
           '|' . join( ',', @{ $c->stash->{missing_details_bodies} } )
             if $body_string && @{ $c->stash->{missing_details_bodies} };
-        $report->bodies($body_string);
+        $report->bodies_str($body_string);
 
         my @extra = ();
         my $metas = $contacts[0]->extra;
@@ -897,7 +897,7 @@ sub process_report : Private {
 
         # If we're here, we've been submitted somewhere
         # where we have no contact information at all.
-        $report->bodies( -1 );
+        $report->bodies_str( -1 );
 
     }
 
@@ -1016,7 +1016,7 @@ sub save_user_and_report : Private {
     $report->category( _('Other') ) unless $report->category;
 
     # Set unknown to DB unknown
-    $report->bodies( undef ) if $report->bodies eq '-1';
+    $report->bodies_str( undef ) if $report->bodies_str eq '-1';
 
     # if there is a Message Manager message ID, pass it back to the client view
     if ($c->cobrand->moniker eq 'fixmybarangay' && $c->req->param('external_source_id')=~/^\d+$/) {

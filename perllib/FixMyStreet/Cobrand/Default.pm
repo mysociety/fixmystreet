@@ -600,10 +600,10 @@ Generate a set of options for council rss alerts.
 =cut
 
 sub council_rss_alert_options {
-    my ( $self, $all_councils, $c ) = @_;
+    my ( $self, $all_areas, $c ) = @_;
 
     my ( @options, @reported_to_options );
-    foreach (values %$all_councils) {
+    foreach (values %$all_areas) {
         $_->{short_name} = $self->short_name( $_ );
         ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
         push @options, {

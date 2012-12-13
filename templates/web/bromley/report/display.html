@@ -74,7 +74,7 @@
                 <br><a href="http://www.bromley.gov.uk/report">Report a different issue</a>
             </div>
 
-            [% IF c.user && c.user.belongs_to_body( problem.council ) %]
+            [% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
                 <label for="form_state">[% loc( 'State' ) %]</label>
                 <select name="state" id="form_state">
                 [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',

@@ -124,8 +124,8 @@ create table problem (
     postcode text not null,
     latitude double precision not null,
     longitude double precision not null,
-    council text, -- the council(s) we'll report this problem to
-    areas text not null, -- the voting areas this location is in
+    bodies_str text, -- the body(s) we'll report this problem to
+    areas text not null, -- the mapit areas this location is in
     category text not null default 'Other',
     title text not null,
     detail text not null,

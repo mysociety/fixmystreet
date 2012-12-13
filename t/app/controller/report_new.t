@@ -503,7 +503,7 @@ foreach my $test (
     is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
 
     # Check the report has been assigned appropriately
-    is $report->council, 2651;
+    is $report->bodies_str, 2651;
 
     # receive token
     my $email = $mech->get_email;
@@ -659,7 +659,7 @@ subtest "test report creation for a user who is signing in as they report" => su
     is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
 
     # Check the report has been assigned appropriately
-    is $report->council, 2651;
+    is $report->bodies_str, 2651;
 
     # check that no emails have been sent
     $mech->email_count_is(0);
@@ -750,7 +750,7 @@ foreach my $test (
         ok $report, "Found the report";
 
         # Check the report has been assigned appropriately
-        is $report->council, $test->{council};
+        is $report->bodies_str, $test->{council};
 
         # check that we got redirected to /report/
         is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
@@ -1116,7 +1116,7 @@ SKIP: {
     ok $report, "Found the report";
 
     # Check the report has been assigned appropriately
-    is $report->council, 2240;
+    is $report->bodies_str, 2240;
 
     # receive token
     my $email = $mech->get_email;

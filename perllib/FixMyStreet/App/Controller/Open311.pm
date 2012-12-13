@@ -164,11 +164,11 @@ sub get_services : Private {
 
     if ($lat || $lon) {
         my $area_types = $c->cobrand->area_types;
-        my $all_councils = mySociety::MaPit::call('point',
+        my $all_areas = mySociety::MaPit::call('point',
                                                   "4326/$lon,$lat",
                                                   type => $area_types);
         $categories = $categories->search( {
-            'body.area_id' => [ keys %$all_councils ],
+            'body.area_id' => [ keys %$all_areas ],
         }, { join => 'body' } );
     }
 
@@ -223,18 +223,10 @@ sub output_requests : Private {
     );
 
     my @problemlist;
-    my @councils;
     while ( my $problem = $problems->next ) {
         my $id = $problem->id;
 
         $problem->service( 'Web interface' ) unless $problem->service;
-
-        if ($problem->council) {
-            (my $council = $problem->council) =~ s/\|.*//g;
-            my @council_ids = split(/,/, $council);
-            push(@councils, @council_ids);
-            $problem->council( \@council_ids );
-        }
 
         $problem->state( $statusmap{$problem->state} );
 
@@ -256,7 +248,7 @@ sub output_requests : Private {
             'service_code' => [ $problem->category ],
             'service_name' => [ $problem->category ],
 #            'service_notice' => [ {} ],
-            'agency_responsible' =>  $problem->council , # FIXME Not according to Open311 v2
+            'agency_responsible' =>  $problem->bodies , # FIXME Not according to Open311 v2
 #            'zipcode' => [ {} ],
             'interface_used' => [ $problem->service ], # Not in Open311 v2
         };
@@ -288,12 +280,12 @@ sub output_requests : Private {
         }
         push(@problemlist, $request);
     }
-    my $areas_info = mySociety::MaPit::call('areas', \@councils);
+
     foreach my $request (@problemlist) {
         if ($request->{agency_responsible}) {
-            my @council_names = map { $areas_info->{$_}->{name} } @{$request->{agency_responsible}} ;
+            my @body_names = map { $_->name } values %{$request->{agency_responsible}} ;
             $request->{agency_responsible} =
-                [ {'recipient' => [ @council_names ] } ];
+                [ {'recipient' => [ @body_names ] } ];
         }
     }
     $c->forward( 'format_output', [ {
@@ -319,7 +311,7 @@ sub get_requests : Private {
         service_request_id => [ '=', 'id' ],
         service_code       => [ '=', 'category' ],
         status             => [ 'IN', 'state' ],
-        agency_responsible => [ '~', 'council' ],
+        agency_responsible => [ '~', 'bodies_str' ],
         interface_used     => [ '=', 'service' ],
         has_photo          => [ '=', 'photo' ],
     );

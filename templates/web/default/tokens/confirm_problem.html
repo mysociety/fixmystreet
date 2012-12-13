@@ -14,7 +14,7 @@ You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]
 [%    
     loc('You have successfully confirmed your problem');
 
-    IF problem.council;
+    IF problem.bodies_str;
         loc(' and <strong>we will now send it to the council</strong>');
     END;
     

@@ -47,7 +47,7 @@ my $user = $mech->create_user_ok('test@example.com');
 
 my $problem_args = {
     postcode  => 'sw1a 1aa',
-    council   => '2501',
+    bodies_str => '2501',
     areas     => ',105164,11806,11827,2247,2501,34817,42011,66045,70786,8519,',
     category  => 'test category',
     title     => 'Test title',

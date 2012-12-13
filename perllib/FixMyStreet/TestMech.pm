@@ -519,11 +519,11 @@ sub get_ok_json {
     return decode_json( $res->content );
 }
 
-sub delete_problems_for_council {
+sub delete_problems_for_body {
     my $mech = shift;
-    my $council = shift;
+    my $body = shift;
 
-    my $reports = FixMyStreet::App->model('DB::Problem')->search( { council => $council } );
+    my $reports = FixMyStreet::App->model('DB::Problem')->search( { bodies_str => $body } );
     if ( $reports ) {
         for my $r ( $reports->all ) {
             $r->comments->delete;
@@ -532,8 +532,8 @@ sub delete_problems_for_council {
     }
 }
 
-sub create_problems_for_council {
-    my ( $mech, $count, $council, $title, $params ) = @_;
+sub create_problems_for_body {
+    my ( $mech, $count, $body, $title, $params ) = @_;
 
     my $dt = $params->{dt} || DateTime->now();
 
@@ -549,11 +549,11 @@ sub create_problems_for_council {
     while ($count) {
         my $default_params = {
             postcode           => 'SW1A 1AA',
-            council            => $council,
+            bodies_str         => $body,
             areas              => ',105255,11806,11828,2247,2504,',
             category           => 'Other',
-            title              => "$title Test $count for $council",
-            detail             => "$title Test $count for $council Detail",
+            title              => "$title Test $count for $body",
+            detail             => "$title Test $count for $body Detail",
             used_map           => 't',
             name               => 'Test User',
             anonymous          => 'f',

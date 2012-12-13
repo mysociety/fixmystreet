@@ -85,7 +85,7 @@ SKIP: {
             $user->update;
 
             $report->discard_changes;
-            $report->council( $test->{report_council} );
+            $report->bodies_str( $test->{report_council} );
             $report->update;
 
             $mech->get_ok("/report/$report_id");
@@ -135,7 +135,7 @@ subtest 'check support details not shown if not enabled in cobrand' => sub {
 };
 
 $report->discard_changes;
-$report->council( 2504 );
+$report->bodies_str( 2504 );
 $report->update;
 
 # tidy up

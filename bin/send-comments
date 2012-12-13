@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 # send-reports:
-# Send new problem reports to councils
+# Send new problem reports to bodies
 #
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
@@ -35,12 +35,12 @@ my ($verbose, $nomail) = CronFns::options();
 my $base_url = mySociety::Config::get('BASE_URL');
 my $site = CronFns::site($base_url);
 
-my $councils = FixMyStreet::App->model('DB::Body')->search( {
+my $bodies = FixMyStreet::App->model('DB::Body')->search( {
     send_method => SEND_METHOD_OPEN311,
     send_comments => 1,
 } );
 
-while ( my $council = $councils->next ) {
+while ( my $body = $bodies->next ) {
     my $use_extended = 0;
     my $comments = FixMyStreet::App->model('DB::Comment')->search( {
             'me.whensent'    => undef,
@@ -49,7 +49,7 @@ while ( my $council = $councils->next ) {
             'me.confirmed'      => { '!=' => undef },
             'problem.whensent'    => { '!=' => undef },
             'problem.external_id'  => { '!=' => undef },
-            'problem.council'      => { -like => '%' . $council->area_id .'%' },
+            'problem.bodies_str' => { -like => '%' . $body->area_id .'%' },
             'problem.send_method_used' => 'Open311',
         },
         {
@@ -57,18 +57,18 @@ while ( my $council = $councils->next ) {
         }
     );
 
-    if ( $council->area_id == 2482 ) {
+    if ( $body->area_id == 2482 ) {
         $use_extended = 1;
     }
 
     my $o = Open311->new(
-            endpoint => $council->endpoint,
-            jurisdiction => $council->jurisdiction,
-            api_key => $council->api_key,
+            endpoint => $body->endpoint,
+            jurisdiction => $body->jurisdiction,
+            api_key => $body->api_key,
             use_extended_updates => $use_extended,
     );
 
-    if ( $council->area_id =~ /2482/ ) {
+    if ( $body->area_id == 2482 ) {
         my $endpoints = $o->endpoints;
         $endpoints->{update} = 'update.xml';
         $endpoints->{service_request_updates} = 'update.xml';
@@ -82,7 +82,7 @@ while ( my $council = $councils->next ) {
             next if bromley_retry_timeout( $comment );
         }
 
-        if ( $council->area_id == 2482 ) {
+        if ( $body->area_id == 2482 ) {
             my $extra = $comment->extra;
             if ( !$extra ) {
                 $extra = {};

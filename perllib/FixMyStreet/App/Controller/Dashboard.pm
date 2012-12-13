@@ -109,7 +109,7 @@ sub index : Path : Args(0) {
     $c->stash->{category} = $c->req->param('category');
 
     my %where = (
-        council => $council, # XXX This will break in a two tier council. Restriction needs looking at...
+        bodies_str => $council, # XXX This will break in a two tier council. Restriction needs looking at...
         'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
     $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }

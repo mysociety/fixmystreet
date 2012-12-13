@@ -16,7 +16,7 @@
 <h1>Empty property report</h1>
 
 <p><em>[% problem.meta_line(c) | html %]
-[% IF problem.council %]
+[% IF problem.bodies_str %]
     [% IF problem.whensent %]
         <small class="council_sent_info"><br>[% problem.duration_string(c) %]</small>
     [% END %]

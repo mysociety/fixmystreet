@@ -13,7 +13,7 @@
 <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
 <li><label for='detail'>[% loc('Details:') %]</label><br><textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
 <li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] [% problem.postcode | html %] , [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
-<li>[% loc('For council(s):') %] [% IF problem.council %][% problem.council %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
+<li>[% loc('For council(s):') %] [% IF problem.bodies_str %][% problem.bodies_str %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
 <li><label for="state">[% loc('State:') %]</label> <select name="state"  id="state">
     [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
     loc('Investigating')], ['planned', loc('Planned')], ['in progress',

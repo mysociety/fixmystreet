@@ -201,14 +201,14 @@ sub process_update : Private {
 
     if ( $params{state} ) {
         $params{state} = 'fixed - council' 
-            if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_body( $update->problem->council );
+            if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_body( $update->problem->bodies_str );
         $update->problem_state( $params{state} );
     }
 
     my @extra; # Next function fills this, but we don't need it here.
     # This is just so that the error checkign for these extra fields runs.
     # TODO Use extra here as it is used on reports.
-    $c->cobrand->process_extras( $c, $update->problem->council, \@extra );
+    $c->cobrand->process_extras( $c, $update->problem->bodies_str, \@extra );
 
     if ( $c->req->param('fms_extra_title') ) {
         my %extras = ();
@@ -246,7 +246,7 @@ sub check_for_errors : Private {
     # they have to be an authority user to update the state
     if ( $c->req->param('state') ) {
         my $error = 0;
-        $error = 1 unless $c->user && $c->user->belongs_to_body( $c->stash->{update}->problem->council );
+        $error = 1 unless $c->user && $c->user->belongs_to_body( $c->stash->{update}->problem->bodies_str );
 
         my $state = $c->req->param('state');
         $error = 1 unless ( grep { $state eq $_ } ( qw/confirmed closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );

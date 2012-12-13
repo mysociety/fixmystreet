@@ -382,7 +382,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     my $report_time = '2011-03-01 12:00:00';
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        council            => '2651',
+        bodies_str         => '2651',
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Testing',
@@ -532,7 +532,7 @@ for my $test (
 
         my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
             postcode           => 'EH1 1BB',
-            council            => '2651',
+            bodies_str         => '2651',
             areas              => ',11808,135007,14419,134935,2651,20728,',
             category           => 'Street lighting',
             title              => 'Alert test for non public reports',
@@ -590,7 +590,7 @@ subtest 'check new updates alerts for non public reports only go to report owner
 
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        council            => '2651',
+        bodies_str         => '2651',
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Alert test for non public reports',

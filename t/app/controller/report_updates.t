@@ -553,7 +553,7 @@ for my $test (
     subtest $test->{desc} => sub {
         $report->comments->delete;
         if ( $test->{ report_councils } ) {
-            $report->council( $test->{ report_councils } );
+            $report->bodies_str( $test->{ report_councils } );
             $report->update;
         }
 
@@ -633,7 +633,7 @@ $user->from_body(0);
 $user->update;
 
 $report->state('confirmed');
-$report->council('2504');
+$report->bodies_str('2504');
 $report->update;
 
 for my $test (

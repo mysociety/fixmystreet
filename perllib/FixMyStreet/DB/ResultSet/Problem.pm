@@ -228,7 +228,7 @@ sub send_reports {
     my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
         state => [ 'confirmed', 'fixed' ],
         whensent => undef,
-        bodies => { '!=', undef },
+        bodies_str => { '!=', undef },
     } );
     my (%notgot, %note);
 
@@ -292,7 +292,7 @@ sub send_reports {
         my ( $sender_count );
         if ($site eq 'emptyhomes') {
 
-            my $body = $row->bodies;
+            my $body = $row->bodies_str;
             $body = FixMyStreet::App->model("DB::Body")->find($body);
             my $sender = "FixMyStreet::SendReport::EmptyHomes";
             $reporters{ $sender } = $sender->new() unless $reporters{$sender};
@@ -302,7 +302,7 @@ sub send_reports {
 
             # XXX Needs locks!
             # XXX Only copes with at most one missing body
-            my ($bodies, $missing) = $row->bodies =~ /^([\d,]+)(?:\|(\d+))?/;
+            my ($bodies, $missing) = $row->bodies_str =~ /^([\d,]+)(?:\|(\d+))?/;
             my @bodies = split(/,/, $bodies);
             $bodies = FixMyStreet::App->model("DB::Body")->search({ id => \@bodies });
             $missing = FixMyStreet::App->model("DB::Body")->find($missing);
@@ -362,7 +362,7 @@ sub send_reports {
         if (mySociety::Config::get('STAGING_SITE')) {
             # on a staging server send emails to ourselves rather than the bodies
             my @testing_bodies = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
-            unless ( grep { $row->bodies eq $_ } @testing_bodies ) {
+            unless ( grep { $row->bodies_str eq $_ } @testing_bodies ) {
                 %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI)/ } keys %reporters;
                 unless (%reporters) {
                     %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
@@ -424,7 +424,7 @@ sub send_reports {
         my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
             state => [ 'confirmed', 'fixed' ],
             whensent => undef,
-            bodies => { '!=', undef },
+            bodies_str => { '!=', undef },
             send_fail_count => { '>', 0 }
         } );
         while (my $row = $unsent->next) {

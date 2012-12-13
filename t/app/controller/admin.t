@@ -45,7 +45,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Report to Edit',
@@ -84,7 +84,7 @@ subtest 'check summary counts' => sub {
     my $problem_count = $problems->count;
     $problems->update( { cobrand => '' } );
 
-    FixMyStreet::App->model('DB::Problem')->search( { council => 2489 } )->update( { council => 1 } );
+    FixMyStreet::App->model('DB::Problem')->search( { bodies_str => 2489 } )->update( { bodies_str => 1 } );
 
     my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_new( { problem => $report, });
     $q->whensent( \'ms_current_timestamp()' );
@@ -118,7 +118,7 @@ subtest 'check summary counts' => sub {
         my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
         my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
 
-        $report->council(2489);
+        $report->bodies_str(2489);
         $report->cobrand('barnet');
         $report->update;
 
@@ -131,7 +131,7 @@ subtest 'check summary counts' => sub {
         $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
         $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
 
-        $report->council(2504);
+        $report->bodies_str(2504);
         $report->cobrand('');
         $report->update;
 
@@ -139,7 +139,7 @@ subtest 'check summary counts' => sub {
         $alert->update;
     }
 
-    FixMyStreet::App->model('DB::Problem')->search( { council => 1 } )->update( { council => 2489 } );
+    FixMyStreet::App->model('DB::Problem')->search( { bodies_str => 1 } )->update( { bodies_str => 2489 } );
     ok $mech->host('fixmystreet.com');
 };
 

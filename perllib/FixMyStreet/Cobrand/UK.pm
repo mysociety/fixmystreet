@@ -203,17 +203,17 @@ sub reports_body_check {
 
 sub council_rss_alert_options {
     my $self = shift;
-    my $all_councils = shift;
-    my $c            = shift;
+    my $all_areas = shift;
+    my $c = shift;
 
     my %councils = map { $_ => 1 } @{$self->area_types};
 
-    my $num_councils = scalar keys %$all_councils;
+    my $num_councils = scalar keys %$all_areas;
 
     my ( @options, @reported_to_options );
     if ( $num_councils == 1 or $num_councils == 2 ) {
         my ($council, $ward);
-        foreach (values %$all_councils) {
+        foreach (values %$all_areas) {
             if ($councils{$_->{type}}) {
                 $council = $_;
                 $council->{short_name} = $self->short_name( $council );
@@ -252,7 +252,7 @@ sub council_rss_alert_options {
     } elsif ( $num_councils == 4 ) {
         # Two-tier council
         my ($county, $district, $c_ward, $d_ward);
-        foreach (values %$all_councils) {
+        foreach (values %$all_areas) {
             $_->{short_name} = $self->short_name( $_ );
             ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
             if ($_->{type} eq 'CTY') {
@@ -323,7 +323,7 @@ sub council_rss_alert_options {
         };
 
     } else {
-        throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_councils));
+        throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_areas));
     }
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );

@@ -40,7 +40,7 @@ sub send {
         my $revert = 0;
 
         # Extra bromley fields
-        if ( $row->bodies == 2482 ) {
+        if ( $row->bodies_str == 2482 ) {
 
             $revert = 1;
 
@@ -90,12 +90,12 @@ sub send {
         );
 
         # non standard west berks end points
-        if ( $row->bodies =~ /2619/ ) {
+        if ( $row->bodies_str =~ /2619/ ) {
             $open311->endpoints( { services => 'Services', requests => 'Requests' } );
         }
 
         # required to get round issues with CRM constraints
-        if ( $row->bodies =~ /2218/ ) {
+        if ( $row->bodies_str =~ /2218/ ) {
             $row->user->name( $row->user->id . ' ' . $row->user->name );
             $revert = 1;
         }
@@ -124,7 +124,7 @@ sub send {
         } else {
             $result *= 1;
             # temporary fix to resolve some issues with west berks
-            if ( $row->bodies =~ /2619/ ) {
+            if ( $row->bodies_str =~ /2619/ ) {
                 $result *= 0;
             }
         }

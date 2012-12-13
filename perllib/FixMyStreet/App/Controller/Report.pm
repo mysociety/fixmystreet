@@ -147,7 +147,7 @@ sub format_problem_for_display : Private {
         $c->stash->{add_alert} = 1;
     }
 
-    $c->stash->{extra_name_info} = $problem->council && $problem->council eq '2482' ? 1 : 0;
+    $c->stash->{extra_name_info} = $problem->bodies_str && $problem->bodies_str eq '2482' ? 1 : 0;
 
     $c->forward('generate_map_tags');
 
@@ -187,11 +187,10 @@ sub delete :Local :Args(1) {
 
     return $c->res->redirect($uri) unless $c->user_exists;
 
-    my $council = $c->user->obj->from_body;
-    return $c->res->redirect($uri) unless $council;
+    my $body = $c->user->obj->from_body;
+    return $c->res->redirect($uri) unless $body;
 
-    my %councils = map { $_ => 1 } @{$p->councils};
-    return $c->res->redirect($uri) unless $councils{$council};
+    return $c->res->redirect($uri) unless $p->bodies->{$body};
 
     $p->state('hidden');
     $p->lastupdate( \'ms_current_timestamp()' );
