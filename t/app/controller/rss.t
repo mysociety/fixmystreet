@@ -113,6 +113,69 @@ $mech->content_contains( "Testing, 10th October" );
 $mech->content_contains( '18 North Bridge, Edinburgh' );
 
 $report->delete();
+
+my $now = DateTime->now();
+my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
+    {
+        postcode           => 'WS13 6YY',
+        bodies_str         => '2434',
+        areas              => ',2434,2240,',
+        category           => 'Other',
+        title              => 'council report',
+        detail             => 'Test 2 Detail',
+        used_map           => 't',
+        name               => 'Test User',
+        anonymous          => 'f',
+        state              => 'closed',
+        confirmed          => $now->ymd . ' ' . $now->hms,
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 't',
+        latitude           => '52.727588',
+        longitude          => '-1.731322',
+        user_id            => $user1->id,
+    }
+);
+
+my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
+    {
+        postcode           => 'WS13 6YY',
+        bodies_str         => '2240',
+        areas              => ',2434,2240,',
+        category           => 'Other',
+        title              => 'county report',
+        detail             => 'Test 2 Detail',
+        used_map           => 't',
+        name               => 'Test User',
+        anonymous          => 'f',
+        state              => 'closed',
+        confirmed          => $now->ymd . ' ' . $now->hms,
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 't',
+        latitude           => '52.727588',
+        longitude          => '-1.731322',
+        user_id            => $user1->id,
+    }
+);
+
+subtest "check RSS feeds on cobrand have correct URLs for non-cobrand reports" => sub {
+    $mech->host('lichfielddc.fixmystreet.com');
+    $mech->get_ok("/rss/area/Lichfield");
+
+    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
+    my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
+
+    $mech->content_contains($expected1, 'non cobrand area report point to fixmystreet.com');
+    $mech->content_contains($expected2, 'cobrand area report point to cobrand url');
+};
+
+$user1->problems->delete();
 $user1->delete();
 
 done_testing();

@@ -257,7 +257,7 @@ sub add_row : Private {
 
     my $hashref_restriction = $c->cobrand->site_restriction;
     my $base_url = $c->cobrand->base_url;
-    if ( $hashref_restriction && $hashref_restriction->{council} && $row->{bodies_str} && $row->{bodies_str} ne $hashref_restriction->{council} ) {
+    if ( $hashref_restriction && $hashref_restriction->{bodies_str} && $row->{bodies_str} && $row->{bodies_str} ne $hashref_restriction->{bodies_str} ) {
         $base_url = $c->config->{BASE_URL};
     }
     my $url = $base_url . $link;
