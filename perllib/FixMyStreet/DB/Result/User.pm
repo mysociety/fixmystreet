@@ -164,19 +164,19 @@ sub body {
 
 =head2 belongs_to_body
 
-    $belongs_to_body = $user->belongs_to_body( $council_list );
+    $belongs_to_body = $user->belongs_to_body( $bodies );
 
-Returns true if the user belongs to the comma seperated list of council ids passed in
+Returns true if the user belongs to the comma seperated list of body ids passed in
 
 =cut
 
 sub belongs_to_body {
     my $self = shift;
-    my $council = shift;
+    my $bodies = shift;
 
-    my %councils = map { $_ => 1 } split ',', $council;
+    my %bodies = map { $_ => 1 } split ',', $bodies;
 
-    return 1 if $self->from_body && $councils{ $self->from_body };
+    return 1 if $self->from_body && $bodies{ $self->from_body };
 
     return 0;
 }

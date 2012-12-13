@@ -45,7 +45,7 @@ sub fetch {
 }
 
 sub update_comments {
-    my ( $self, $open311, $council_details ) = @_;
+    my ( $self, $open311, $body_details ) = @_;
 
     my @args = ();
 
@@ -55,7 +55,7 @@ sub update_comments {
         push @args, $self->start_date;
         push @args, $self->end_date;
     # default to asking for last 2 hours worth if not Bromley
-    } elsif ( $council_details->{areaid} != 2482 ) {
+    } elsif ( $body_details->{areaid} != 2482 ) {
         my $end_dt = DateTime->now();
         my $start_dt = $end_dt->clone;
         $start_dt->add( hours => -2 );
@@ -67,7 +67,7 @@ sub update_comments {
     my $requests = $open311->get_service_request_updates( @args );
 
     unless ( $open311->success ) {
-        warn "Failed to fetch ServiceRequest Updates for " . $council_details->{areaid} . ":\n" . $open311->error
+        warn "Failed to fetch ServiceRequest Updates for " . $body_details->{areaid} . ":\n" . $open311->error
             if $self->verbose;
         return 0;
     }
@@ -83,7 +83,7 @@ sub update_comments {
           FixMyStreet::App->model('DB::Problem')
           ->search( {
                   external_id => $request_id,
-                  bodies_str  => { like => '%' . $council_details->{areaid} . '%' },
+                  bodies_str  => { like => '%' . $body_details->{areaid} . '%' },
           } );
 
         if (my $p = $problem->first) {
