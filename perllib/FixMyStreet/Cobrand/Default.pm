@@ -468,14 +468,14 @@ sub format_postcode {
 
     return $postcode;
 }
-=head2 council_check
+=head2 area_check
 
-Paramters are COUNCILS, QUERY, CONTEXT. Return a boolean indicating whether
-COUNCILS pass any extra checks. CONTEXT is where we are on the site.
+Paramters are AREAS, QUERY, CONTEXT. Return a boolean indicating whether
+AREAS pass any extra checks. CONTEXT is where we are on the site.
 
 =cut
 
-sub council_check { return ( 1, '' ); }
+sub area_check { return ( 1, '' ); }
 
 =head2 all_councils_report
 
@@ -548,15 +548,15 @@ sub email_host {
     return 1;
 }
 
-=item remove_redundant_councils
+=item remove_redundant_areas
 
-Remove councils whose reports go to another council
+Remove areas whose reports go to another area (XXX)
 
 =cut
 
-sub remove_redundant_councils {
+sub remove_redundant_areas {
   my $self = shift;
-  my $all_councils = shift;
+  my $all_areas = shift;
 }
 
 =item filter_all_council_ids_list

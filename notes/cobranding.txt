@@ -13,7 +13,7 @@ NB: this is moderately specific to producing cobrands for UK councils
         site_restriction
         problems_clause
         enter_postcode_text
-        council_check
+        area_check
         base_url
         all_councils_report should return 0
         disambiguate_location - see below for details on this

@@ -100,13 +100,13 @@ sub guess_road_operator {
     return '';
 }
 
-sub remove_redundant_councils {
+sub remove_redundant_areas {
     my $self = shift;
-    my $all_councils = shift;
+    my $all_areas = shift;
 
     # Oslo is both a kommune and a fylke, we only want to show it once
-    delete $all_councils->{301}     #
-        if $all_councils->{3};
+    delete $all_areas->{301}
+        if $all_areas->{3};
 }
 
 sub filter_all_council_ids_list {

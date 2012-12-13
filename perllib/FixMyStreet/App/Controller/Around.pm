@@ -44,7 +44,7 @@ sub around_index : Path : Args(0) {
       unless $c->forward('/location/determine_location_from_coords')
           || $c->forward('/location/determine_location_from_pc');
 
-    # Check to see if the spot is covered by a council - if not show an error.
+    # Check to see if the spot is covered by a area - if not show an error.
     return unless $c->cobrand->moniker eq 'fixmybarangay' || $c->forward('check_location_is_acceptable');
 
     # If we have a partial - redirect to /report/new so that it can be
@@ -212,7 +212,7 @@ sub display_location : Private {
 
 =head2 check_location_is_acceptable
 
-Find the lat and lon in stash and check that they are acceptable to the council,
+Find the lat and lon in stash and check that they are acceptable to the area,
 and that they are in UK (if we are in UK).
 
 =cut
@@ -220,10 +220,10 @@ and that they are in UK (if we are in UK).
 sub check_location_is_acceptable : Private {
     my ( $self, $c ) = @_;
 
-    # check that there are councils that can accept this location
-    $c->stash->{council_check_action} = 'submit_problem';
-    $c->stash->{remove_redundant_councils} = 1;
-    return $c->forward('/council/load_and_check_councils');
+    # check that there are areas that can accept this location
+    $c->stash->{area_check_action} = 'submit_problem';
+    $c->stash->{remove_redundant_areas} = 1;
+    return $c->forward('/council/load_and_check_areas');
 }
 
 =head2 /ajax

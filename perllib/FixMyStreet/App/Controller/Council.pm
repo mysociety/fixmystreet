@@ -14,34 +14,34 @@ Catalyst Controller.
 
 =head1 METHODS
 
-=head2 load_and_check_councils_and_wards
+=head2 load_and_check_areas_and_wards
 
-Try to load councils and wards for this location and check that we have at least one. If
-there are no councils then return false.
+Try to load areas and wards for this location and check that we have at least one. If
+there are no areas then return false.
 
 =cut
 
-sub load_and_check_councils_and_wards : Private {
+sub load_and_check_areas_and_wards : Private {
     my ( $self, $c ) = @_;
     my $area_types = [ @{$c->cobrand->area_types}, @{$c->cobrand->area_types_children} ];
     $c->stash->{area_types} = $area_types;
-    $c->forward('load_and_check_councils');
+    $c->forward('load_and_check_areas');
 }
 
-=head2 load_and_check_councils
+=head2 load_and_check_areas
 
-Try to load councils for this location and check that we have at least one. If
-there are no councils then return false.
+Try to load areas for this location and check that we have at least one. If
+there are no areas then return false.
 
 =cut
 
-sub load_and_check_councils : Private {
+sub load_and_check_areas : Private {
     my ( $self, $c ) = @_;
 
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
 
-    # Look up councils and do checks for the point we've got
+    # Look up areas and do checks for the point we've got
     my $area_types;
     if ( $c->stash->{area_types} and scalar @{ $c->stash->{area_types} } ) {
         $area_types = $c->stash->{area_types};
@@ -52,49 +52,49 @@ sub load_and_check_councils : Private {
     my $short_latitude  = Utils::truncate_coordinate($latitude);
     my $short_longitude = Utils::truncate_coordinate($longitude);
 
-    my $all_councils;
+    my $all_areas;
     if ( $c->stash->{fetch_all_areas} ) {
         my %area_types = map { $_ => 1 } @$area_types;
-        my $all_areas =
+        $all_areas =
           mySociety::MaPit::call( 'point', "4326/$short_longitude,$short_latitude" );
-        $c->stash->{all_areas} = $all_areas;
-        $all_councils = {
+        $c->stash->{all_areas_mapit} = $all_areas;
+        $all_areas = {
             map { $_ => $all_areas->{$_} }
             grep { $area_types{ $all_areas->{$_}->{type} } }
             keys %$all_areas
         };
     } else {
-        $all_councils =
+        $all_areas =
           mySociety::MaPit::call( 'point', "4326/$short_longitude,$short_latitude",
             type => $area_types );
     }
-    if ($all_councils->{error}) {
-        $c->stash->{location_error} = $all_councils->{error};
+    if ($all_areas->{error}) {
+        $c->stash->{location_error} = $all_areas->{error};
         return;
     }
 
     # Let cobrand do a check
     my ( $success, $error_msg ) =
-      $c->cobrand->council_check( { all_councils => $all_councils },
-        $c->stash->{council_check_action} );
+      $c->cobrand->area_check( { all_areas => $all_areas },
+        $c->stash->{area_check_action} );
     if ( !$success ) {
         $c->stash->{location_error} = $error_msg;
         return;
     }
 
     # edit hash in-place
-    $c->cobrand->remove_redundant_councils($all_councils) if $c->stash->{remove_redundant_councils};
+    $c->cobrand->remove_redundant_areas($all_areas) if $c->stash->{remove_redundant_areas};
 
-    # If we don't have any councils we can't accept the report
-    if ( !scalar keys %$all_councils ) {
+    # If we don't have any areas we can't accept the report
+    if ( !scalar keys %$all_areas ) {
         $c->stash->{location_error} = _('That location does not appear to be covered by a council; perhaps it is offshore or outside the country. Please try again.');
         return;
     }
 
-    # all good if we have some councils left
-    $c->stash->{all_councils} = $all_councils;
-    $c->stash->{all_council_names} =
-      [ map { $_->{name} } values %$all_councils ];
+    # all good if we have some areas left
+    $c->stash->{all_areas} = $all_areas;
+    $c->stash->{all_area_names} =
+      [ map { $_->{name} } values %$all_areas ];
     return 1;
 }
 

@@ -51,7 +51,7 @@ sub enter_postcode_text {
     return 'Enter a ' . $self->council_area . ' postcode, or street name and area';
 }
 
-sub council_check {
+sub area_check {
     my ( $self, $params, $context ) = @_;
 
     my $councils = $params->{all_councils};

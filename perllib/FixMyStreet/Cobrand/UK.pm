@@ -100,19 +100,19 @@ sub geocode_postcode {
     return {};
 }
 
-sub remove_redundant_councils {
+sub remove_redundant_areas {
   my $self = shift;
-  my $all_councils = shift;
+  my $all_areas = shift;
 
   # Ipswich & St Edmundsbury are responsible for everything in their
   # areas, not Suffolk
-  delete $all_councils->{2241}
-    if $all_councils->{2446}    #
-        || $all_councils->{2443};
+  delete $all_areas->{2241}
+    if $all_areas->{2446}    #
+        || $all_areas->{2443};
 
   # Norwich is responsible for everything in its areas, not Norfolk
-  delete $all_councils->{2233}    #
-    if $all_councils->{2391};
+  delete $all_areas->{2233}    #
+    if $all_areas->{2391};
 }
 
 sub filter_all_council_ids_list {

@@ -407,13 +407,13 @@ Generate the details required to display the council/ward/area RSS feeds
 sub setup_council_rss_feeds : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{council_check_action} = 'alert';
-    unless ( $c->forward('/council/load_and_check_councils_and_wards') ) {
+    $c->stash->{area_check_action} = 'alert';
+    unless ( $c->forward('/council/load_and_check_areas_and_wards') ) {
         $c->go('index');
     }
 
     ( $c->stash->{options}, $c->stash->{reported_to_options} ) =
-      $c->cobrand->council_rss_alert_options( $c->stash->{all_councils}, $c );
+      $c->cobrand->council_rss_alert_options( $c->stash->{all_areas}, $c );
 
     return 1;
 }

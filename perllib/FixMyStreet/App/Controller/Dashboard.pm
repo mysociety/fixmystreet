@@ -29,7 +29,7 @@ sub example : Local : Args(0) {
     }
 
     # TODO Set up manual version of what the below would do
-    #$c->forward( '/report/new/setup_categories_and_councils' );
+    #$c->forward( '/report/new/setup_categories_and_bodies' );
 
     # See if we've had anything from the dropdowns - perhaps vary results if so
     $c->stash->{ward} = $c->req->param('ward');
@@ -100,8 +100,8 @@ sub index : Path : Args(0) {
     );
     $c->stash->{children} = $children;
 
-    $c->stash->{all_councils} = { $council => $council_detail };
-    $c->forward( '/report/new/setup_categories_and_councils' );
+    $c->stash->{all_areas} = { $council => $council_detail };
+    $c->forward( '/report/new/setup_categories_and_bodies' );
 
     # See if we've had anything from the dropdowns
 

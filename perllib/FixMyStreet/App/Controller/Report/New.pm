@@ -89,7 +89,7 @@ sub report_new : Path : Args(0) {
 
     # create a problem from the submitted details
     $c->stash->{template} = "report/new/fill_in_details.html";
-    $c->forward('setup_categories_and_councils');
+    $c->forward('setup_categories_and_bodies');
     $c->forward('generate_map');
     $c->forward('check_for_category');
 
@@ -119,7 +119,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
         return 1;
     }
 
-    $c->forward('setup_categories_and_councils');
+    $c->forward('setup_categories_and_bodies');
     $c->forward('process_user');
     $c->forward('process_report');
     $c->forward('/photo/process_photo');
@@ -180,7 +180,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         return;
     }
 
-    $c->forward('setup_categories_and_councils');
+    $c->forward('setup_categories_and_bodies');
 
     # render templates to get the html
     my $category = $c->render_fragment( 'report/new/category.html');
@@ -215,7 +215,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $c->res->body($body);
         return 1;
     }
-    $c->forward('setup_categories_and_councils');
+    $c->forward('setup_categories_and_bodies');
 
     my $category_extra = '';
     if ( $c->stash->{category_extras}->{ $c->req->param('category') } && @{ $c->stash->{category_extras}->{ $c->req->param('category') } } >= 1  ) {
@@ -568,27 +568,30 @@ sub determine_location_from_report : Private {
     return;
 }
 
-=head2 setup_categories_and_councils
+=head2 setup_categories_and_bodies
 
-Look up categories for this council or councils
+Look up categories for the relevant body or bodies.
 
 =cut
 
-sub setup_categories_and_councils : Private {
+sub setup_categories_and_bodies : Private {
     my ( $self, $c ) = @_;
 
-    my $all_councils = $c->stash->{all_councils};
-    my $first_council = ( values %$all_councils )[0];
+    my $all_areas = $c->stash->{all_areas};
+    my $first_area = ( values %$all_areas )[0];
+
+    my @bodies = $c->model('DB::Body')->search( { area_id => [ keys %$all_areas ] } )->all;
+    my %bodies = map { $_->id => $_ } @bodies;
 
     my @contacts                #
       = $c                      #
       ->model('DB::Contact')    #
       ->not_deleted             #
-      ->search( { body_id => [ keys %$all_councils ] } )    #
+      ->search( { body => [ keys %bodies ] } )
       ->all;
 
     # variables to populate
-    my %area_ids_to_list = ();       # Areas with categories assigned
+    my %bodies_to_list = ();       # Bodies with categories assigned
     my @category_options = ();       # categories to show
     my $category_label   = undef;    # what to call them
     my %category_extras  = ();       # extra fields to fill in for open311
@@ -598,9 +601,9 @@ sub setup_categories_and_councils : Private {
     # FIXME - implement in cobrand
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
 
-        # add all areas found to the list
+        # add all bodies found to the list
         foreach (@contacts) {
-            $area_ids_to_list{ $_->body_id } = 1;
+            $bodies_to_list{ $_->body_id } = 1;
         }
 
         # set our own categories
@@ -615,11 +618,12 @@ sub setup_categories_and_councils : Private {
         );
         $category_label = _('Property type:');
 
-    } elsif ($first_council->{id} != COUNCIL_ID_BROMLEY && $first_council->{type} eq 'LBO') {
+    } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
 
-        $area_ids_to_list{ $first_council->{id} } = 1;
+        # Assumes body ID and area ID match here
+        $bodies_to_list{ $first_area->{id} } = 1;
         my @local_categories;
-        if ($first_council->{id} == COUNCIL_ID_BARNET) {
+        if ($first_area->{id} == COUNCIL_ID_BARNET) {
             @local_categories =  sort keys %{ Utils::barnet_categories() }
         } else {
             @local_categories =  sort keys %{ Utils::london_categories() }            
@@ -638,7 +642,7 @@ sub setup_categories_and_councils : Private {
         my %seen;
         foreach my $contact (@contacts) {
 
-            $area_ids_to_list{ $contact->body_id } = 1;
+            $bodies_to_list{ $contact->body_id } = 1;
 
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
@@ -660,24 +664,21 @@ sub setup_categories_and_councils : Private {
     }
 
     # put results onto stash for display
-    $c->stash->{area_ids_to_list} = [ keys %area_ids_to_list ];
+    $c->stash->{bodies} = \%bodies;
+    $c->stash->{all_body_names} = [ map { $_->name } values %bodies ];
+    $c->stash->{bodies_to_list} = [ keys %bodies_to_list ];
     $c->stash->{category_label}   = $category_label;
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{non_public_categories}  = \%non_public_categories;
     $c->stash->{category_extras_json}  = encode_json \%category_extras;
-    $c->stash->{extra_name_info} = $first_council->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
+    $c->stash->{extra_name_info} = $first_area->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
 
-    my @missing_details_councils =
-      grep { !$area_ids_to_list{$_} }    #
-      keys %$all_councils;
+    my @missing_details_bodies = grep { !$bodies_to_list{$_->id} } values %bodies;
+    my @missing_details_body_names = map { $_->name } @missing_details_bodies;
 
-    my @missing_details_council_names =
-      map { $all_councils->{$_}->{name} }     #
-      @missing_details_councils;
-
-    $c->stash->{missing_details_councils}      = \@missing_details_councils;
-    $c->stash->{missing_details_council_names} = \@missing_details_council_names;
+    $c->stash->{missing_details_bodies} = \@missing_details_bodies;
+    $c->stash->{missing_details_body_names} = \@missing_details_body_names;
 }
 
 =head2 check_form_submitted
@@ -804,60 +805,62 @@ sub process_report : Private {
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
 
-    my $areas = $c->stash->{all_areas};
+    my $areas = $c->stash->{all_areas_mapit};
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
 
     # From earlier in the process.
-    my $councils = $c->stash->{all_councils};
-    my $first_council = ( values %$councils )[0];
+    $areas = $c->stash->{all_areas};
+    my $bodies = $c->stash->{bodies};
+    my $first_area = ( values %$areas )[0];
 
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
 
-        $councils = join( ',', @{ $c->stash->{area_ids_to_list} } ) || -1;
-        $report->council( $councils );
+        $bodies = join( ',', @{ $c->stash->{bodies_to_list} } ) || -1;
+        $report->bodies( $bodies );
 
-    } elsif ( $first_council->{id} == COUNCIL_ID_BARNET ) {
+    } elsif ( $first_area->{id} == COUNCIL_ID_BARNET ) {
 
+        # As in setup, assumes body ID == area ID for London
         unless ( exists Utils::barnet_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
-        $report->council( $first_council->{id} );
+        $report->bodies( $first_area->{id} );
         
-    } elsif ( $first_council->{id} != COUNCIL_ID_BROMLEY && $first_council->{type} eq 'LBO') {
+    } elsif ( $first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
         
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
-        $report->council( $first_council->{id} );
+        $report->area( $first_area->{id} );
 
     } elsif ( $report->category ) {
 
-        # FIXME All contacts were fetched in setup_categories_and_councils,
+        # FIXME All contacts were fetched in setup_categories_and_bodies,
         # so can this DB call also be avoided?
         my @contacts = $c->       #
           model('DB::Contact')    #
           ->not_deleted           #
           ->search(
             {
-                body_id  => [ keys %$councils ],
+                body => [ keys %$bodies ],
                 category => $report->category
             }
           )->all;
 
         unless ( @contacts ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
-            $report->council( -1 );
+            $report->bodies( -1 );
             return 1;
         }
 
-        # construct the council string:
-        #  'x,x'     - x are council IDs that have this category
-        #  'x,x|y,y' - x are council IDs that have this category, y council IDs with *no* contact
-        my $council_string = join( ',', map { $_->body_id } @contacts );
-        $council_string .=
-          '|' . join( ',', @{ $c->stash->{missing_details_councils} } )
-            if $council_string && @{ $c->stash->{missing_details_councils} };
-        $report->council($council_string);
+        # construct the bodies string:
+        #  'x,x' - x are body IDs that have this category
+        #  'x,x|y' - x are body IDs that have this category, y body IDs with *no* contact
+        my $body_string = join( ',', map { $_->body_id } @contacts );
+        $body_string .=
+          '|' . join( ',', @{ $c->stash->{missing_details_bodies} } )
+            if $body_string && @{ $c->stash->{missing_details_bodies} };
+        $report->bodies($body_string);
 
         my @extra = ();
         my $metas = $contacts[0]->extra;
@@ -894,7 +897,7 @@ sub process_report : Private {
 
         # If we're here, we've been submitted somewhere
         # where we have no contact information at all.
-        $report->council( -1 );
+        $report->bodies( -1 );
 
     }
 
@@ -1013,7 +1016,7 @@ sub save_user_and_report : Private {
     $report->category( _('Other') ) unless $report->category;
 
     # Set unknown to DB unknown
-    $report->council( undef ) if $report->council eq '-1';
+    $report->bodies( undef ) if $report->bodies eq '-1';
 
     # if there is a Message Manager message ID, pass it back to the client view
     if ($c->cobrand->moniker eq 'fixmybarangay' && $c->req->param('external_source_id')=~/^\d+$/) {
