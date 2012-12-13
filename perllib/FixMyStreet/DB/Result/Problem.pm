@@ -582,7 +582,7 @@ sub body {
 sub can_display_external_id {
     my $self = shift;
     if ($self->external_id && $self->send_method_used && 
-        ($self->send_method_used eq 'barnet' || $self->cobrand eq 'oxfordshire') {
+        ($self->send_method_used eq 'barnet' || $self->cobrand eq 'oxfordshire')) {
         return 1;
     }
     return 0;    
