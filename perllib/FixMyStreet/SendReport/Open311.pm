@@ -105,7 +105,7 @@ sub send {
 
         # non-standard Oxfordshire endpoint (because it's just a script, not a full Open311 service)
         if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
-            $open311->endpoints( { requests => 'open311_service_request.pl' } );
+            $open311->endpoints( { requests => 'open311_service_request.cgi' } );
         }
 
         # required to get round issues with CRM constraints
