@@ -14,12 +14,12 @@ my ($opt, $usage) = describe_options(
 );
 print($usage->text), exit if $opt->help;
 
-my $council_list = FixMyStreet::App->model('DB::Body')->search( {
+my $bodies = FixMyStreet::App->model('DB::Body')->search( {
     send_method => 'Open311'
 } );
 my $verbose = 0;
 $verbose = 1 if $opt->warn;
 $verbose = 2 if $opt->verbose;
-my $p = Open311::PopulateServiceList->new( council_list => $council_list, verbose => $verbose );
+my $p = Open311::PopulateServiceList->new( bodies => $bodies, verbose => $verbose );
 
-$p->process_councils;
+$p->process_bodies;

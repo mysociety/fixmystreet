@@ -5,7 +5,6 @@ use Open311;
 use FixMyStreet::App;
 use DateTime::Format::W3CDTF;
 
-has council_list => ( is => 'ro' );
 has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => undef );
 has end_date => ( is => 'ro', default => undef );
