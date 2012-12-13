@@ -168,8 +168,8 @@ sub get_services : Private {
                                                   "4326/$lon,$lat",
                                                   type => $area_types);
         $categories = $categories->search( {
-            body_id => [ keys %$all_councils ],
-        } );
+            'body.area_id' => [ keys %$all_councils ],
+        }, { join => 'body' } );
     }
 
     my @categories = $categories->search( undef, {
