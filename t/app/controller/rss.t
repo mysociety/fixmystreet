@@ -17,7 +17,7 @@ my $user1 = FixMyStreet::App->model('DB::User')
 
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
     postcode           => 'eh1 1BB',
-    council            => '2651',
+    bodies_str         => '2651',
     areas              => ',11808,135007,14419,134935,2651,20728,',
     category           => 'Street lighting',
     title              => 'Testing',

@@ -14,6 +14,10 @@ use mySociety::Locale;
 
 my $e = FixMyStreet::SendReport::Email->new();
 
+my $params = { id => 1000, area_id => 1000, name => 'Council of the Thousand' };
+my $body = FixMyStreet::App->model('DB::Body')->find_or_create($params);
+ok $body, "found/created body";
+
 my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
     email => 'council@example.com',
     body_id => 1000,
@@ -26,7 +30,7 @@ my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
 );
 
 my $row = FixMyStreet::App->model('DB::Problem')->new( {
-    council => '1000',
+    bodies_str => '1000',
     category => 'category',
 } );
 
@@ -47,7 +51,7 @@ foreach my $test ( {
         count => undef,
         add_council => 1,
         unconfirmed => 1,
-        expected_note => 'Council 1000 deleted',
+        expected_note => 'Body 1000 deleted',
     },
     {
         desc => 'unconfirmed contact note uses note from contact table',
@@ -62,7 +66,7 @@ foreach my $test ( {
         my $e = FixMyStreet::SendReport::Email->new;
         $contact->update( { confirmed => 0 } ) if $test->{unconfirmed};
         $contact->update( { note => $test->{note} } ) if $test->{note};
-        $e->add_council( 1000, { name => 'test council' } ) if $test->{add_council};
+        $e->add_body( $body ) if $test->{add_council};
         is $e->build_recipient_list( $row, {} ), $test->{count}, 'correct recipient list count';
 
         if ( $test->{unconfirmed} ) {

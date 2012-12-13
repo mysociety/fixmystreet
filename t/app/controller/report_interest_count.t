@@ -33,7 +33,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -61,12 +61,12 @@ SKIP: {
         unless FixMyStreet::Cobrand->exists('fixmybarangay');
     for my $test (
         {
-            desc => 'if not from council then no supporter button',
+            desc => 'if not from body then no supporter button',
             from_body => 0,
             support_string => 'No supporters',
         },
         {
-            desc => 'from council user can increment supported count',
+            desc => 'from body user can increment supported count',
             from_body => 2504,
             support_string => 'No supporters',
             updated_support => '1 supporter'
@@ -104,7 +104,7 @@ SKIP: {
         };
     }
 
-    subtest 'check non council user cannot increment support count' => sub {
+    subtest 'check non body user cannot increment support count' => sub {
         ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
         $report->discard_changes;
         $report->interest_count(1);

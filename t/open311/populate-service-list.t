@@ -17,19 +17,24 @@ use_ok( 'Open311' );
 my $processor = Open311::PopulateServiceList->new( council_list => [] );
 ok $processor, 'created object';
 
-
+my $body = FixMyStreet::App->model('DB::Body')->find_or_create( {
+    id => 1,
+    name => 'Body Numero Uno',
+    area_id => 1
+} );
+my $bromley = FixMyStreet::App->model('DB::Body')->find_or_create( {
+    id => 2482,
+    name => 'Bromley Council',
+    area_id => 2482
+} );
 
 subtest 'check basic functionality' => sub {
     FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->delete();
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->count();
@@ -54,12 +59,8 @@ subtest 'check non open311 contacts marked as deleted' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->count();
@@ -89,12 +90,8 @@ subtest 'check email changed if matching category' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     $contact->discard_changes;
@@ -126,12 +123,8 @@ subtest 'check category name changed if updated' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     $contact->discard_changes;
@@ -179,12 +172,8 @@ subtest 'check conflicting contacts not changed' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     $contact->discard_changes;
@@ -243,12 +232,8 @@ subtest 'check meta data population' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 2482
-    } );
-
     $processor->_current_open311( $o );
-    $processor->_current_council( $council );
+    $processor->_current_body( $bromley );
     $processor->_current_service( { service_code => 100 } );
 
     $processor->_add_meta_to_contact( $contact );
@@ -432,12 +417,8 @@ for my $test (
         my $service_list = get_xml_simple_object( $services_xml );
         $service_list = { service => [ $service_list->{ service } ] };
 
-        my $council = FixMyStreet::App->model('DB::Body')->new( {
-            area_id => 1
-        } );
-
         $processor->_current_open311( $o );
-        $processor->_current_council( $council );
+        $processor->_current_body( $body );
 
         $processor->process_services( $service_list );
 
@@ -505,12 +486,8 @@ subtest 'check attribute ordering' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 1
-    } );
-
     $processor->_current_open311( $o );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->_current_service( { service_code => 100 } );
 
     $processor->_add_meta_to_contact( $contact );
@@ -611,12 +588,8 @@ subtest 'check bromely skip code' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Body')->new( {
-        area_id => 2482
-    } );
-
     $processor->_current_open311( $o );
-    $processor->_current_council( $council );
+    $processor->_current_body( $bromley );
     $processor->_current_service( { service_code => 100 } );
 
     $processor->_add_meta_to_contact( $contact );
@@ -636,9 +609,7 @@ subtest 'check bromely skip code' => sub {
 
     is_deeply $contact->extra, $extra, 'only non std bromley meta data saved';
 
-    $council->area_id(1);
-
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->_add_meta_to_contact( $contact );
 
     $extra = [

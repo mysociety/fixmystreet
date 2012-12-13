@@ -123,7 +123,7 @@ my $problem = $problem_rs->new(
         lastupdate   => DateTime->now()->subtract( days => 1 ),
         anonymous    => 1,
         external_id  => time(),
-        council      => 2482,
+        bodies_str   => 2482,
     }
 );
 
@@ -273,7 +273,7 @@ my $problem2 = $problem_rs->new(
         lastupdate   => DateTime->now(),
         anonymous    => 1,
         external_id  => $problem->external_id,
-        council      => 2651,
+        bodies_str   => 2651,
     }
 );
 

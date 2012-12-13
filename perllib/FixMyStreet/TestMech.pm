@@ -532,6 +532,17 @@ sub delete_problems_for_body {
     }
 }
 
+sub create_body_ok {
+    my $self = shift;
+    my ( $id, $name ) = @_;
+
+    my $params = { id => $id, area_id => $id, name => $name };
+    my $body = FixMyStreet::App->model('DB::Body')->find_or_create($params);
+    $body->update($params); # Make sure
+    ok $body, "found/created user for $id $name";
+    return $body;
+}
+
 sub create_problems_for_body {
     my ( $mech, $count, $body, $title, $params ) = @_;
 

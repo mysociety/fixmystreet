@@ -45,6 +45,8 @@ is_deeply                                    #
 # put an entry in the database for this test
 my $user = $mech->create_user_ok('test@example.com');
 
+my $body = $mech->create_body_ok(2501, 'Wandsworth Borough Council');
+
 my $problem_args = {
     postcode  => 'sw1a 1aa',
     bodies_str => '2501',
@@ -86,7 +88,7 @@ is_deeply    #
         'category'  => 'test category',
         'confirmed' => '2000-01-01 12:01:00',
         'lastupdate' => '2000-01-01 12:00:00',
-        'council'   => 'Wandsworth Borough Council',
+        'bodies_str' => 'Wandsworth Borough Council',
         'detail'    => 'Test detail',
         'id'        => $problem->id,
         'name'      => 'Test Name',
@@ -103,7 +105,7 @@ is_deeply    #
         'category'  => 'test category',
         'confirmed' => '2000-01-01 12:02:00',
         'lastupdate' => '2000-01-01 12:00:00',
-        'council'   => 'Wandsworth Borough Council',
+        'bodies_str' => 'Wandsworth Borough Council',
         'detail'    => 'Test detail',
         'id'        => $anon_problem->id,
         'name'      => '',

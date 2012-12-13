@@ -44,7 +44,7 @@ for my $test (
         errors => {
             title => 'Please enter a subject',
             detail => 'Please enter some details',
-            council => 'No council selected',
+            bodies => 'No council selected',
             name => 'Please enter your name',
         }
     },
@@ -56,7 +56,7 @@ for my $test (
         errors => {
             title => 'Please enter a subject',
             detail => 'Please enter some details',
-            council => 'No council selected',
+            bodies => 'No council selected',
             name => 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
         }
     },
@@ -68,7 +68,7 @@ for my $test (
         errors => {
             title => 'Please enter a subject',
             detail => 'Please enter some details',
-            council => 'No council selected',
+            bodies => 'No council selected',
             name => 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
         }
     },
@@ -80,7 +80,7 @@ for my $test (
         errors => {
             title => 'Please enter a subject',
             detail => 'Please enter some details',
-            council => 'No council selected',
+            bodies => 'No council selected',
         }
     },
     {
@@ -90,7 +90,7 @@ for my $test (
         },
         errors => {
             detail => 'Please enter some details',
-            council => 'No council selected',
+            bodies => 'No council selected',
         }
     },
     {
@@ -99,22 +99,22 @@ for my $test (
             detail => 'Some information about the problem',
         },
         errors => {
-            council => 'No council selected',
+            bodies => 'No council selected',
         }
     },
     {
-        desc => 'incorrectly formatted council',
+        desc => 'incorrectly formatted body',
         changed => {
-            council => 'my council',
+            bodies_str => 'my body',
         },
         errors => {
-            council => 'No council selected',
+            bodies => 'No council selected',
         }
     },
     {
-        desc => 'correctly formatted council',
+        desc => 'correctly formatted body',
         changed => {
-            council => '1001',
+            bodies_str => '1001',
         },
         errors => {
         }
@@ -355,6 +355,20 @@ my %contact_params = (
     whenedited => \'ms_current_timestamp()',
     note => 'Created for test',
 );
+
+for my $body (
+    { id => 2651, area_id => 2651, name => 'City of Edinburgh Council' },
+    { id => 2226, area_id => 2226, name => 'Gloucestershire County Council' },
+    { id => 2326, area_id => 2326, name => 'Cheltenham Borough Council' },
+    { id => 2434, area_id => 2434, name => 'Lichfield District Council' },
+    { id => 2240, area_id => 2240, name => 'Staffordshire County Council' },
+    { id => 14279, area_id => 14279, name => 'Ballymoney Borough Council' },
+    { id => 2636, area_id => 2636, name => 'Isle of Wight Council' },
+    { id => 2649, area_id => 2649, name => 'Fife Council' },
+) {
+    $mech->create_body_ok($body->{id}, $body->{name});
+}
+
 # Let's make some contacts to send things to!
 FixMyStreet::App->model('DB::Contact')->search( {
     email => { 'like', '%example.com' },
@@ -410,13 +424,13 @@ foreach my $test ( {
         email_count   => 1,
         dear          => qr'Dear City of Edinburgh Council',
         to            => qr'City of Edinburgh Council',
-        council       => 2651,
+        body          => 2651,
     }, {
         %common,
         desc          => 'no email sent if no unsent problems',
         unset_whendef => 0,
         email_count   => 0,
-        council       => 2651,
+        body          => 2651,
     }, {
         %common,
         desc          => 'email to two tier council',
@@ -424,7 +438,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Gloucestershire County Council.*Cheltenham Borough Council',
         dear          => qr'Dear Gloucestershire County Council and Cheltenham Borough',
-        council       => '2226,2326',
+        body          => '2226,2326',
         multiple      => 1,
     }, {
         %common,
@@ -433,7 +447,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Gloucestershire County Council" <2226@example',
         dear          => qr'Dear Gloucestershire County Council,',
-        council       => '2226|2649',
+        body          => '2226|2649',
         missing       => qr'problem might be the responsibility of Fife.*Council'ms,
     }, {
         %common,
@@ -442,7 +456,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Lichfield District Council',
         dear          => qr'Dear Lichfield District Council,',
-        council       => '2434',
+        body          => '2434',
         cobrand       => 'lichfielddc',
         url           => 'lichfielddc.',
     }, {
@@ -452,7 +466,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Staffordshire County Council" <highways@example',
         dear          => qr'Dear Staffordshire County Council,',
-        council       => '2240',
+        body          => '2240',
         cobrand       => 'lichfielddc',
         url           => '',
     }, {
@@ -462,7 +476,7 @@ foreach my $test ( {
         email_count   => 1,
         dear          => qr'Dear Ballymoney Borough Council',
         to            => qr'Ballymoney Borough Council',
-        council       => 14279,
+        body          => 14279,
         category      => 'Graffiti',
     }, {
         %common,
@@ -471,7 +485,7 @@ foreach my $test ( {
         email_count   => 1,
         dear          => qr'Dear Roads Service \(Western\)',
         to            => qr'Roads Service \(Western\)" <roads',
-        council       => 14279,
+        body          => 14279,
         category      => 'Street lighting',
     }, {
         %common,
@@ -479,7 +493,7 @@ foreach my $test ( {
         unset_whendef => 1,
         stays_unsent  => 1,
         email_count   => 0,
-        council       => 2636,
+        body          => 2636,
     },
 ) {
     subtest $test->{ desc } => sub {
@@ -497,7 +511,7 @@ foreach my $test ( {
 
         $problem->discard_changes;
         $problem->update( {
-            council => $test->{ council },
+            bodies_str => $test->{ body },
             state => 'confirmed',
             confirmed => \'ms_current_timestamp()',
             whensent => $test->{ unset_whendef } ? undef : \'ms_current_timestamp()',
@@ -519,9 +533,9 @@ foreach my $test ( {
             like $email->body, $test->{ dear }, 'Salutation looks correct';
 
             if ( $test->{multiple} ) {
-                like $email->body, qr/This email has been sent to several councils /, 'multiple council text correct';
+                like $email->body, qr/This email has been sent to several councils /, 'multiple body text correct';
             } elsif ( $test->{ missing } ) {
-                like $email->body, $test->{ missing }, 'missing council information correct';
+                like $email->body, $test->{ missing }, 'missing body information correct';
             }
 
             if ( $test->{url} ) {

@@ -33,6 +33,18 @@ my %contact_params = (
     whenedited => \'current_timestamp',
     note => 'Created for test',
 );
+
+for my $body (
+    { id => 2651, name => 'City of Edinburgh Council' },
+    { id => 2226, name => 'Gloucestershire County Council' },
+    { id => 2326, name => 'Cheltenham Borough Council' },
+    { id => 2482, name => 'Bromley Council' },
+    { id => 2240, name => 'Staffordshire County Council' },
+    { id => 2434, name => 'Lichfield District Council' },
+) {
+    $mech->create_body_ok($body->{id}, $body->{name});
+}
+
 # Let's make some contacts to send things to!
 FixMyStreet::App->model('DB::Contact')->search( {
     email => { 'like', '%example.com' },

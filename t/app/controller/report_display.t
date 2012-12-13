@@ -33,7 +33,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -350,25 +350,25 @@ for my $test (
         desc => 'no state dropdown if user not from authority',
         from_body => 0,
         no_state => 1,
-        report_council => '2504',
+        report_body => '2504',
     },
     {
         desc => 'state dropdown if user from authority',
         from_body => 2504,
         no_state => 0,
-        report_council => '2504',
+        report_body => '2504',
     },
     {
-        desc => 'no state dropdown if user not from same council as problem',
+        desc => 'no state dropdown if user not from same body as problem',
         from_body => 2505,
         no_state => 1,
-        report_council => '2504',
+        report_body => '2504',
     },
     {
-        desc => 'state dropdown if user from authority and problem sent to multiple councils',
+        desc => 'state dropdown if user from authority and problem sent to multiple bodies',
         from_body => 2504,
         no_state => 0,
-        report_council => '2504,2506',
+        report_body => '2504,2506',
     },
 ) {
     subtest $test->{desc} => sub {
@@ -377,7 +377,7 @@ for my $test (
         $user->update;
 
         $report->discard_changes;
-        $report->bodies_str( $test->{report_council} );
+        $report->bodies_str( $test->{report_body} );
         $report->update;
 
         $mech->get_ok("/report/$report_id");

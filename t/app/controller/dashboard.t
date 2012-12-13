@@ -12,6 +12,8 @@ my $test_pass = 'password';
 my $test_council = 2651;
 my $test_ward = 20723;
 
+$mech->create_body_ok($test_council, 'City of Edinburgh Council');
+
 $mech->delete_user( $test_user );
 my $user = FixMyStreet::App->model('DB::User')->create( {
     email => $test_user,
@@ -578,7 +580,7 @@ sub make_problem {
         confirmed => $args->{conf_dt},
         whensent => $args->{conf_dt},
         lastupdate => $args->{mark_dt} || $args->{conf_dt},
-        council => $test_council,
+        bodies_str => $test_council,
         postcode => 'EH99 1SP',
         latitude => '51',
         longitude => '1',
@@ -632,10 +634,10 @@ sub check_report_counts {
 
 sub delete_problems {
     FixMyStreet::App->model('DB::Comment')
-      ->search( { 'problem.council' => $test_council }, { join => 'problem' } )
+      ->search( { 'problem.bodies_str' => $test_council }, { join => 'problem' } )
       ->delete;
     FixMyStreet::App->model('DB::Problem')
-      ->search( { council => $test_council } )->delete();
+      ->search( { bodies_str => $test_council } )->delete();
 }
 
 done_testing;
