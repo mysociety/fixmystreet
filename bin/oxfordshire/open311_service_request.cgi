@@ -360,8 +360,7 @@ sub insert_into_pem {
     , ce_doc_id OUT NUMBER);
     END;#);
 
-    my %bindings = map {($_, undef)} @PEM_BOUND_VAR_NAMES;
-
+    my %bindings;
                                                      # comments here are suggested values
     # fixed values    
     $bindings{":ce_cat"}            = 'ENQ';         # or REQS ?
@@ -384,7 +383,7 @@ sub insert_into_pem {
     $bindings{":ce_email"}         = substr($$h{$F{EMAIL}}, 0, 50);          # 'info@exor.co.uk'
     $bindings{":ce_description"}   = substr($$h{$F{DESCRIPTION}}, 0, 2000);  # 'Large Pothole'
 
-    foreach my $name (@PEM_BOUND_VAR_NAMES) {
+    foreach my $name (keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values
         my $type = $PEM_BOUND_VAR_TYPES{$name};
         $sth->bind_param(
