@@ -582,6 +582,7 @@ sub setup_categories_and_bodies : Private {
 
     my @bodies = $c->model('DB::Body')->search( { area_id => [ keys %$all_areas ] } )->all;
     my %bodies = map { $_->id => $_ } @bodies;
+    my $first_body = ( values %bodies )[0];
 
     my @contacts                #
       = $c                      #
@@ -620,8 +621,7 @@ sub setup_categories_and_bodies : Private {
 
     } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
 
-        # Assumes body ID and area ID match here
-        $bodies_to_list{ $first_area->{id} } = 1;
+        $bodies_to_list{ $first_body->id } = 1;
         my @local_categories;
         if ($first_area->{id} == COUNCIL_ID_BARNET) {
             @local_categories =  sort keys %{ Utils::barnet_categories() }
@@ -812,6 +812,7 @@ sub process_report : Private {
     $areas = $c->stash->{all_areas};
     my $bodies = $c->stash->{bodies};
     my $first_area = ( values %$areas )[0];
+    my $first_body = ( values %$bodies )[0];
 
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
 
@@ -820,18 +821,17 @@ sub process_report : Private {
 
     } elsif ( $first_area->{id} == COUNCIL_ID_BARNET ) {
 
-        # As in setup, assumes body ID == area ID for London
         unless ( exists Utils::barnet_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
-        $report->bodies_str( $first_area->{id} );
+        $report->bodies_str( $first_body->id );
         
     } elsif ( $first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
         
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
-        $report->bodies_str( $first_area->{id} );
+        $report->bodies_str( $first_body->id );
 
     } elsif ( $report->category ) {
 

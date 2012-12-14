@@ -27,10 +27,11 @@ sub disambiguate_location {
 }
 
 # If we ever link to a county problem report, needs to be to main FixMyStreet
-# XXX Assumes body ID equals mapit area ID
 sub base_url_for_report {
     my ( $self, $report ) = @_;
-    if ( $report->bodies->{2434} ) {
+    my $bodies = $report->bodies;
+    my %areas = map { $_->area_id => 1 } values %$bodies;
+    if ( $areas{2434} ) {
         return $self->base_url;
     } else {
         return FixMyStreet->config('BASE_URL');
