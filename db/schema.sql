@@ -32,6 +32,49 @@ create function ms_current_timestamp()
     end;
 ' language 'plpgsql';
 
+-- table for sessions - needed by Catalyst::Plugin::Session::Store::DBIC
+create table sessions (
+    id           char(72) primary key,
+    session_data text,
+    expires      integer
+);
+
+-- users table
+create table users (
+    id              serial  not null primary key,
+    email           text    not null unique,
+    name            text,
+    phone           text,
+    password        text    not null default '',
+    from_body       integer,
+    flagged         boolean not null default 'f',
+    title           text
+);
+
+-- Record details of reporting bodies, including open311 configuration details
+create table body (
+    id           serial primary key,
+    name         text not null,
+    endpoint     text,
+    jurisdiction text,
+    api_key      text,
+    send_method  text,
+    send_comments boolean not null default 'f',
+    comment_user_id int references users(id),
+    suppress_alerts boolean not null default 'f',
+    can_be_devolved boolean not null default 'f'
+);
+
+create table body_areas (
+    body_id integer not null references body(id),
+    area_id integer not null
+);
+create unique index body_areas_body_id_area_id_idx on body_areas(body_id, area_id);
+
+-- Now can create reference from users to body
+ALTER TABLE users ADD CONSTRAINT users_from_body_fkey
+    FOREIGN KEY (from_body) REFERENCES body(id);
+
 -- The contact for a category within a particular body
 create table contacts (
     id serial primary key,
@@ -96,25 +139,6 @@ create trigger contacts_update_trigger after update on contacts
     for each row execute procedure contacts_updated();
 create trigger contacts_insert_trigger after insert on contacts
     for each row execute procedure contacts_updated();
-
--- table for sessions - needed by Catalyst::Plugin::Session::Store::DBIC
-create table sessions (
-    id           char(72) primary key,
-    session_data text,
-    expires      integer
-);
-
--- users table
-create table users (
-    id              serial  not null primary key,
-    email           text    not null unique,
-    name            text,
-    phone           text,
-    password        text    not null default '',
-    from_body       integer references body(id), -- id of body user is from or null/0 if not
-    flagged         boolean not null default 'f',
-    title           text
-);
 
 -- Problems reported by users of site
 create table problem (
@@ -414,24 +438,3 @@ create table admin_log (
         or action = 'resend'),
     whenedited timestamp not null default ms_current_timestamp()
 ); 
-
--- Record details of reporting bodies, including open311 configuration details
-
-create table body (
-    id           serial primary key,
-    name         text not null,
-    endpoint     text,
-    jurisdiction text,
-    api_key      text,
-    send_method  text,
-    send_comments boolean not null default 'f',
-    comment_user_id int references users(id),
-    suppress_alerts boolean not null default 'f',
-    can_be_devolved boolean not null default 'f'
-);
-
-create table body_areas (
-    body_id integer not null references body(id),
-    area_id integer not null
-);
-create unique index body_areas_body_id_area_id_idx on body_areas(body_id, area_id);
