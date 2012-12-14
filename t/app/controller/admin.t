@@ -259,7 +259,7 @@ subtest 'check open311 configuring' => sub {
     $mech->content_contains('Configuration updated - contacts will be generated automatically later');
 
     my $open311 =
-      FixMyStreet::App->model('DB::Body')->search( { area_id => 2650 } );
+      FixMyStreet::App->model('DB::Body')->search( { 'body_areas.area_id' => 2650 }, { join => 'body_areas' } );
 
     is $open311->count, 1, 'only one configuration';
     my $conf = $open311->first;
@@ -283,7 +283,7 @@ subtest 'check open311 configuring' => sub {
     $mech->content_contains('Configuration updated');
 
     $open311 =
-      FixMyStreet::App->model('DB::Body')->search( { area_id => 2650 } );
+      FixMyStreet::App->model('DB::Body')->search( { 'body_areas.area_id' => 2650 }, { join => 'body_areas' } );
 
     is $open311->count, 1, 'only one configuration';
     $conf = $open311->first;

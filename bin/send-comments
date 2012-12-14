@@ -57,7 +57,7 @@ while ( my $body = $bodies->next ) {
         }
     );
 
-    if ( $body->area_id == 2482 ) {
+    if ( $body->areas->{2482} ) {
         $use_extended = 1;
     }
 
@@ -68,7 +68,7 @@ while ( my $body = $bodies->next ) {
             use_extended_updates => $use_extended,
     );
 
-    if ( $body->area_id == 2482 ) {
+    if ( $body->areas->{2482} ) {
         my $endpoints = $o->endpoints;
         $endpoints->{update} = 'update.xml';
         $endpoints->{service_request_updates} = 'update.xml';
@@ -82,7 +82,7 @@ while ( my $body = $bodies->next ) {
             next if bromley_retry_timeout( $comment );
         }
 
-        if ( $body->area_id == 2482 ) {
+        if ( $body->areas->{2482} ) {
             my $extra = $comment->extra;
             if ( !$extra ) {
                 $extra = {};

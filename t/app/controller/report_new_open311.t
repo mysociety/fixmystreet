@@ -7,12 +7,12 @@ use Web::Scraper;
 
 my $mech = FixMyStreet::TestMech->new;
 
-FixMyStreet::App->model('DB::Body')->find_or_create( {
-        area_id => 2651,
-        endpoint => 'http://example.com/open311',
-        jurisdiction => 'mySociety',
-        api_key => 'apikey',
-} );
+my $body = $mech->create_body_ok(2651, 'City of Edinburgh Council');
+$body->update({
+    endpoint => 'http://example.com/open311',
+    jurisdiction => 'mySociety',
+    api_key => 'apikey',
+});
 
 my %contact_params = (
     confirmed => 1,

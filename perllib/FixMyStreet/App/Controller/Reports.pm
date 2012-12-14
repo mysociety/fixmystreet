@@ -99,7 +99,7 @@ sub ward : Path : Args(2) {
         $c,
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
         longitude => @$pins ? $pins->[0]{longitude} : 0,
-        area      => $c->stash->{ward} ? $c->stash->{ward}->{id} : $c->stash->{body}->area_id,
+        area      => $c->stash->{ward} ? $c->stash->{ward}->{id} : [ keys %{$c->stash->{body}->areas} ],
         pins      => $pins,
         any_zoom  => 1,
     );
@@ -109,7 +109,7 @@ sub ward : Path : Args(2) {
     # List of wards
     # Ignore external_body special body thing
     unless ($c->stash->{ward} || !$c->stash->{body}->id) {
-        my $children = mySociety::MaPit::call('area/children', [ $c->stash->{body}->area_id ],
+        my $children = mySociety::MaPit::call('area/children', [ $c->stash->{body}->body_areas->first->area_id ],
             type => $c->cobrand->area_types_children,
         );
         unless ($children->{error}) {
@@ -301,7 +301,7 @@ sub ward_check : Private {
     # Could be from RSS area, or body...
     my $parent_id;
     if ( $c->stash->{body} ) {
-        $parent_id = $c->stash->{body}->area_id;
+        $parent_id = $c->stash->{body}->body_areas->first->area_id;
     } else {
         $parent_id = $c->stash->{area}->{id};
     }

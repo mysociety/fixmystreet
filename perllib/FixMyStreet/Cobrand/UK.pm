@@ -34,7 +34,8 @@ sub disambiguate_location {
 sub _fallback_body_sender {
     my ( $self, $body, $category ) = @_;
 
-    my $area_info = mySociety::MaPit::call('area', $body->area_id);
+    my $first_area = $body->body_areas->first->area_id;
+    my $area_info = mySociety::MaPit::call('area', $first_area);
     return { method => 'London' } if $area_info->{type} eq 'LBO';
     return { method => 'NI' } if $area_info->{type} eq 'LGD';
     return { method => 'Email' };
@@ -43,11 +44,12 @@ sub _fallback_body_sender {
 sub process_extras {
     my $self    = shift;
     my $ctx     = shift;
-    my $area_id = shift;
+    my $body_id = shift;
     my $extra   = shift;
     my $fields  = shift || [];
 
-    if ( $area_id eq '2482' ) {
+    # XXX Hardcoded body ID matching mapit area ID
+    if ( $body_id eq '2482' ) {
         my @fields = ( 'fms_extra_title', @$fields );
         for my $field ( @fields ) {
             my $value = $ctx->request->param( $field );

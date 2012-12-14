@@ -30,7 +30,7 @@ sub disambiguate_location {
 sub base_url_for_report {
     my ( $self, $report ) = @_;
     my $bodies = $report->bodies;
-    my %areas = map { $_->area_id => 1 } values %$bodies;
+    my %areas = map { %{$_->areas} } values %$bodies;
     if ( $areas{2434} ) {
         return $self->base_url;
     } else {

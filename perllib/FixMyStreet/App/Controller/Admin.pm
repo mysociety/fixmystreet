@@ -222,12 +222,15 @@ sub bodies : Path('bodies') : Args(0) {
 
     $c->stash->{edit_activity} = $edit_activity;
 
-    my $posted = $c->req->param('posted');
+    my $posted = $c->req->param('posted') || '';
     if ( $posted eq 'body' ) {
         $c->forward('check_token');
 
         my $params = $c->forward('body_params');
-        $c->model('DB::Body')->create( $params );
+        my $body = $c->model('DB::Body')->create( $params );
+        foreach ($c->req->params->{area_ids}) {
+            $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
+        }
 
         $c->stash->{updated} = _('New body added');
     }
@@ -350,6 +353,14 @@ sub update_contacts : Private {
 
         my $params = $c->forward( 'body_params' );
         $c->stash->{body}->update( $params );
+        my @current = $c->stash->{body}->body_areas->all;
+        my %current = map { $_->area_id => 1 } @current;
+        foreach ($c->req->params->{area_ids}) {
+            $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
+            delete $current{$_};
+        }
+        # Remove any others
+        $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
 
         $c->stash->{updated} = _('Configuration updated - contacts will be generated automatically later');
     }
@@ -358,10 +369,9 @@ sub update_contacts : Private {
 sub body_params : Private {
     my ( $self, $c ) = @_;
 
-    my @fields = qw/name area_id endpoint jurisdiction api_key send_method send_comments suppress_alerts comment_user_id can_be_devolved/;
+    my @fields = qw/name endpoint jurisdiction api_key send_method send_comments suppress_alerts comment_user_id can_be_devolved/;
     my %defaults = map { $_ => '' } @fields;
     %defaults = ( %defaults,
-        area_id => undef,
         send_comments => 0,
         suppress_alerts => 0,
         comment_user_id => undef,
@@ -398,7 +408,7 @@ sub lookup_body : Private {
       unless $body;
     $c->stash->{body} = $body;
     
-    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $body->area_id);
+    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $body->body_areas->first->area_id);
     if ($example_postcode && ! ref $example_postcode) {
         $c->stash->{example_pc} = $example_postcode;
     }

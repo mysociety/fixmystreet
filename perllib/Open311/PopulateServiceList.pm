@@ -42,8 +42,8 @@ sub process_body {
     my $list = $open311->get_service_list;
     unless ( $list ) {
         my $id = $self->_current_body->id;
-        my $area_id = $self->_current_body->area_id;
-        warn "Body $id for area $area_id - http://mapit.mysociety.org/area/$area_id.html - did not return a service list\n"
+        my $areas = join( ",", keys %{$self->_current_body->areas} );
+        warn "Body $id for areas $areas - http://mapit.mysociety.org/areas/$areas.html - did not return a service list\n"
             if $self->verbose >= 1;
         return;
     }
@@ -56,7 +56,7 @@ sub _check_endpoints {
     my $self = shift;
 
     # west berks end point not standard
-    if ( $self->_current_body->area_id == 2619 ) {
+    if ( $self->_current_body->areas->{2619} ) {
         $self->_current_open311->endpoints(
             {
                 services => 'Services',
@@ -82,7 +82,7 @@ sub process_services {
 sub process_service {
     my $self = shift;
 
-    my $category = $self->_current_body->area_id == 2218 ?
+    my $category = $self->_current_body->areas->{2218} ?
                     $self->_current_service->{description} :
                     $self->_current_service->{service_name};
 
@@ -226,7 +226,7 @@ sub _add_meta_to_contact {
 
     # we add these later on from bromley so don't list them here
     # as we don't want to display them
-    if ( $self->_current_body->area_id == 2482 ) {
+    if ( $self->_current_body->areas->{2482} ) {
         my %ignore = map { $_ => 1 } qw/
             service_request_id_ext
             requested_datetime
@@ -257,7 +257,7 @@ sub _normalize_service_name {
 
     # FIXME - at the moment it makes more sense to use the description
     # for cambridgeshire but need a more flexible way to set this
-    my $service_name = $self->_current_body->area_id == 2218 ?
+    my $service_name = $self->_current_body->areas->{2218} ?
                         $self->_current_service->{description} :
                         $self->_current_service->{service_name};
     # remove trailing whitespace as it upsets db queries

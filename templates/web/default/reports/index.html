@@ -24,7 +24,7 @@
 <tbody>
 [% FOREACH body IN bodies %]
 <tr align="center"
-[%- IF NOT body.area_id %] class="gone"
+[%- IF NOT body.areas %] class="gone"
 [%- ELSIF ! (loop.count % 2) %] class="a"
 [%- END %]>
 <td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>

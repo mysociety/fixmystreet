@@ -14,7 +14,8 @@ use mySociety::Locale;
 
 my $e = FixMyStreet::SendReport::Email->new();
 
-my $params = { id => 1000, area_id => 1000, name => 'Council of the Thousand' };
+# area id 1000
+my $params = { id => 1000, name => 'Council of the Thousand' };
 my $body = FixMyStreet::App->model('DB::Body')->find_or_create($params);
 ok $body, "found/created body";
 

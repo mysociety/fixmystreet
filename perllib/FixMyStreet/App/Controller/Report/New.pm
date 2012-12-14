@@ -580,7 +580,10 @@ sub setup_categories_and_bodies : Private {
     my $all_areas = $c->stash->{all_areas};
     my $first_area = ( values %$all_areas )[0];
 
-    my @bodies = $c->model('DB::Body')->search( { area_id => [ keys %$all_areas ] } )->all;
+    my @bodies = $c->model('DB::Body')->search(
+        { 'body_areas.area_id' => [ keys %$all_areas ] },
+        { join => 'body_areas' }
+    )->all;
     my %bodies = map { $_->id => $_ } @bodies;
     my $first_body = ( values %bodies )[0];
 

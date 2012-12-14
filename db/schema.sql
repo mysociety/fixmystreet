@@ -420,7 +420,6 @@ create table admin_log (
 create table body (
     id           serial primary key,
     name         text not null,
-    area_id      integer not null unique,
     endpoint     text,
     jurisdiction text,
     api_key      text,
@@ -430,3 +429,9 @@ create table body (
     suppress_alerts boolean not null default 'f',
     can_be_devolved boolean not null default 'f'
 );
+
+create table body_areas (
+    body_id integer not null references body(id),
+    area_id integer not null
+);
+create unique index body_areas_body_id_area_id_idx on body_areas(body_id, area_id);

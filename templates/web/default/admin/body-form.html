@@ -6,11 +6,12 @@
     </p>
 
     <p>
-        <label for="area_id">Area covered</label>
-        <select name="area_id">
+        <label for="area_ids">Area covered</label>
+        <select name="area_ids" multiple>
             <option value=""> -- Select an area -- </option>
             [% FOR area IN areas %]
-            <option value="[% area.id %]"[% ' selected' IF body.area_id == area.id %]>[% area.name %]</option>
+            [% SET aid = area.id %]
+            <option value="[% area.id %]"[% ' selected' IF body.areas.$aid %]>[% area.name %]</option>
             [% END %]
         </select>
     </p>

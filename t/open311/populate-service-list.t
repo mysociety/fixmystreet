@@ -20,11 +20,16 @@ ok $processor, 'created object';
 my $body = FixMyStreet::App->model('DB::Body')->find_or_create( {
     id => 1,
     name => 'Body Numero Uno',
+} );
+$body->body_areas->find_or_create({
     area_id => 1
 } );
+
 my $bromley = FixMyStreet::App->model('DB::Body')->find_or_create( {
     id => 2482,
     name => 'Bromley Council',
+} );
+$bromley->body_areas->find_or_create({
     area_id => 2482
 } );
 

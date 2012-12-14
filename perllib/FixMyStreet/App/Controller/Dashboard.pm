@@ -92,15 +92,18 @@ sub index : Path : Args(0) {
 
     # Set up the data for the dropdowns
 
-    my $council_detail = mySociety::MaPit::call('area', $body->area_id );
+    # Just take the first area ID we find
+    my $area_id = $body->body_areas->first->area_id;
+
+    my $council_detail = mySociety::MaPit::call('area', $area_id );
     $c->stash->{council} = $council_detail;
 
-    my $children = mySociety::MaPit::call('area/children', $body->area_id,
+    my $children = mySociety::MaPit::call('area/children', $area_id,
         type => $c->cobrand->area_types_children,
     );
     $c->stash->{children} = $children;
 
-    $c->stash->{all_areas} = { $body->area_id => $council_detail };
+    $c->stash->{all_areas} = { $area_id => $council_detail };
     $c->forward( '/report/new/setup_categories_and_bodies' );
 
     # See if we've had anything from the dropdowns

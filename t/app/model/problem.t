@@ -357,14 +357,14 @@ my %contact_params = (
 );
 
 for my $body (
-    { id => 2651, area_id => 2651, name => 'City of Edinburgh Council' },
-    { id => 2226, area_id => 2226, name => 'Gloucestershire County Council' },
-    { id => 2326, area_id => 2326, name => 'Cheltenham Borough Council' },
-    { id => 2434, area_id => 2434, name => 'Lichfield District Council' },
-    { id => 2240, area_id => 2240, name => 'Staffordshire County Council' },
-    { id => 14279, area_id => 14279, name => 'Ballymoney Borough Council' },
-    { id => 2636, area_id => 2636, name => 'Isle of Wight Council' },
-    { id => 2649, area_id => 2649, name => 'Fife Council' },
+    { id => 2651, name => 'City of Edinburgh Council' },
+    { id => 2226, name => 'Gloucestershire County Council' },
+    { id => 2326, name => 'Cheltenham Borough Council' },
+    { id => 2434, name => 'Lichfield District Council' },
+    { id => 2240, name => 'Staffordshire County Council' },
+    { id => 14279, name => 'Ballymoney Borough Council' },
+    { id => 2636, name => 'Isle of Wight Council' },
+    { id => 2649, name => 'Fife Council' },
 ) {
     $mech->create_body_ok($body->{id}, $body->{name});
 }

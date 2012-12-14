@@ -21,8 +21,8 @@ sub build_recipient_list {
 
         my ($body_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
 
-        $body_email = essex_contact($row->latitude, $row->longitude) if $body->area_id == 2225;
-        $body_email = oxfordshire_contact($row->latitude, $row->longitude) if $body->area_id == 2237 && $body_email eq 'SPECIAL';
+        $body_email = essex_contact($row->latitude, $row->longitude) if $body->areas->{2225};
+        $body_email = oxfordshire_contact($row->latitude, $row->longitude) if $body->areas->{2237} && $body_email eq 'SPECIAL';
 
         unless ($confirmed) {
             $all_confirmed = 0;
