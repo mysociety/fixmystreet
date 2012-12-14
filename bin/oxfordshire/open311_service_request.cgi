@@ -273,8 +273,13 @@ sub insert_into_pem {
     my $undef = undef;
     my $address = $$h{$F{ADDRESS_STRING}};
     my $status = $$h{$F{STATUS}}; 
-
     my $service_code = $$h{$F{SERVICE_CODE}}; 
+    my $description = $$h{$F{DESCRIPTION}};
+    my $media_url = $$h{$F{MEDIA_URL}};
+    if ($media_url) {
+        $description .= "\n\nPhoto: $media_url\n";
+    }
+
     my $sth = $dbh->prepare(q#
         BEGIN
         PEM.create_enquiry(
@@ -299,7 +304,6 @@ sub insert_into_pem {
             ce_doc_id => :ce_doc_id);
         END;
 #);
-    #ce_incident_datetime => to_Date(:ce_incident_datetime,'DD-MON-YYYY HH24:MI'),
 
     my %bindings;
                                                      # comments here are suggested values
@@ -325,13 +329,11 @@ sub insert_into_pem {
     $bindings{":ce_surname"}       = substr($$h{$F{LAST_NAME}}, 0, 30);      # 'STEWART'
     $bindings{":ce_work_phone"}    = substr($$h{$F{PHONE}}, 0, 25);          # '0117 600 4200'
     $bindings{":ce_email"}         = substr($$h{$F{EMAIL}}, 0, 50);          # 'info@exor.co.uk'
-    $bindings{":ce_description"}   = substr($$h{$F{DESCRIPTION}}, 0, 2000);  # 'Large Pothole'
+    $bindings{":ce_description"}   = substr($description, 0, 2000);          # 'Large Pothole'
 
     foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values
         my $type = $PEM_BOUND_VAR_TYPES{$name} || 'VARCHAR2';
-        
-        ### print "DEBUG: $name -> $bindings{$name} -> $type\n";
         $sth->bind_param(
             $name, 
             $bindings{$name}, 
@@ -406,6 +408,7 @@ sub get_FAKE_INSERT {
             $F{'LONG'}               => '-1.2596387532192',
             $F{'NORTHING'}           => '206709',
             $F{'SERVICE_CODE'}       => 'OT',
+            $F{'MEDIA_URL'}          => 'http://www.example.com/pothole.jpg',
         );
     return insert_into_pem(\%fake_data)
 }
