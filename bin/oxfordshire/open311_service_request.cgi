@@ -135,7 +135,8 @@ if ($TEST_SERVICE_DISCOVERY) {
 } elsif ($req -> param('services')) {
     get_service_discovery($req);
 } else {
-    get_FAKE_INSERT($req); # allow a GET to make an insert, for testing (from the commandnd line!)
+    my $fixme = get_FAKE_INSERT($req); # allow a GET to make an insert, for testing (from the commandnd line!)
+    print "Returned $fixme\n";
     # get_service_requests($req);
 }
 
@@ -303,7 +304,7 @@ sub insert_into_pem {
     my %bindings;
                                                      # comments here are suggested values
     # fixed values    
-    $bindings{":ce_cat"}            = 'ENQ';         # or REQS ?
+    $bindings{":ce_cat"}            = 'REQS';         # or REQS ?
     $bindings{":ce_class"}          = 'SERV';        # 'FRML' ?
     $bindings{":ce_contact_type"}   = 'ENQUIRER';    # 'ENQUIRER' 
     $bindings{":ce_status_code"}    = 'RE';          # RE=received (?)
@@ -363,9 +364,9 @@ sub insert_into_pem {
     # $sth->bind_param(":ce_compl_remarks",     $undef);      # remarks (notes) max 254 char
     
     # return values:
-    $sth->bind_param_inout(":error_value",   \$error_value, 12, { ora_type => ORA_NUMBER});   #> l_ERROR_VALUE # number
+    $sth->bind_param_inout(":error_value",   \$error_value, 12);   #> l_ERROR_VALUE # number
     $sth->bind_param_inout(":error_product", \$error_product, 10); #> l_ERROR_PRODUCT (will always be 'DOC')
-    $sth->bind_param_inout(":ce_doc_id",     \$pem_id, 12, { ora_type => ORA_NUMBER});        #> l_ce_doc_id # number
+    $sth->bind_param_inout(":ce_doc_id",     \$pem_id, 12);        #> l_ce_doc_id # number
 
     $sth->execute();
     $dbh->disconnect;
