@@ -208,6 +208,7 @@ sub bodies : Path('bodies') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->forward('check_page_allowed');
+    $c->forward( 'get_token' );
 
     my $edit_activity = $c->model('DB::ContactsHistory')->search(
         undef,
@@ -220,6 +221,16 @@ sub bodies : Path('bodies') : Args(0) {
     );
 
     $c->stash->{edit_activity} = $edit_activity;
+
+    my $posted = $c->req->param('posted');
+    if ( $posted eq 'body' ) {
+        $c->forward('check_token');
+
+        my $params = $c->forward('body_params');
+        $c->model('DB::Body')->create( $params );
+
+        $c->stash->{updated} = _('New body added');
+    }
 
     $c->forward( 'fetch_all_bodies' );
 
@@ -241,6 +252,9 @@ sub bodies : Path('bodies') : Args(0) {
 
     $c->stash->{counts} = \%council_info;
 
+    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
+    $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
+
     return 1;
 }
 
@@ -252,6 +266,9 @@ sub body : Path('body') : Args(1) {
     $c->forward( 'check_page_allowed' );
     $c->forward( 'get_token' );
     $c->forward( 'lookup_body' );
+
+    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
+    $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
 
     if ( $c->req->param('posted') ) {
         $c->log->debug( 'posted' );
@@ -328,26 +345,30 @@ sub update_contacts : Private {
         );
 
         $c->stash->{updated} = _('Values updated');
-    } elsif ( $posted eq 'open311' ) {
+    } elsif ( $posted eq 'body' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) || '' } qw/endpoint jurisdiction api_key send_method send_comments suppress_alerts comment_user_id devolved/;
-
-        my $body = $c->stash->{body};
-
-        $body->endpoint( $params{endpoint} );
-        $body->jurisdiction( $params{jurisdiction} );
-        $body->api_key( $params{api_key} );
-        $body->send_method( $params{send_method} );
-        $body->send_comments( $params{send_comments} || 0);
-        $body->suppress_alerts( $params{suppress_alerts} || 0);
-        $body->comment_user_id( $params{comment_user_id} || undef );
-        $body->can_be_devolved( $params{devolved} || 0 );
-
-        $body->update();
+        my $params = $c->forward( 'body_params' );
+        $c->stash->{body}->update( $params );
 
         $c->stash->{updated} = _('Configuration updated - contacts will be generated automatically later');
     }
+}
+
+sub body_params : Private {
+    my ( $self, $c ) = @_;
+
+    my @fields = qw/name area_id endpoint jurisdiction api_key send_method send_comments suppress_alerts comment_user_id can_be_devolved/;
+    my %defaults = map { $_ => '' } @fields;
+    %defaults = ( %defaults,
+        area_id => undef,
+        send_comments => 0,
+        suppress_alerts => 0,
+        comment_user_id => undef,
+        can_be_devolved => 0,
+    );
+    my %params = map { $_ => $c->req->param($_) || $defaults{$_} } @fields;
+    return \%params;
 }
 
 sub display_contacts : Private {

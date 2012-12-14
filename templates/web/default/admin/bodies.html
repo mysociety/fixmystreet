@@ -41,4 +41,7 @@
     [%- '</ul>' IF loop.last %]
 [%- END %]
 
+<h2>[% loc('Add body') %]</h2>
+[% INCLUDE 'admin/body-form.html', body='' %]
+
 [% INCLUDE 'admin/footer.html' %]

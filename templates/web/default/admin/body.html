@@ -109,58 +109,7 @@
         </div>
     </form>
 
-    <h2>[% loc('Configure Open311 integration') %]</h2>
-    <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <p>
-        <label for="endpoint">Endpoint</label>
-        <input type="text" name="endpoint" id="endpoint" value="[% body.endpoint %]" size="50">
-    </p>
-
-    <p>
-        <label for="jurisdiction">Jurisdiction</label>
-        <input type="text" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction %]" size="50">
-    </p>
-
-    <p>
-        <label for="api_key">Api Key</label>
-        <input type="text" name="api_key" id="api_key" value="[% body.api_key %]" size="25">
-    </p>
-
-    <p>
-        <label for="send_method">Send Method</label>
-        <select name="send_method">
-            <option value=""> -- Select a method -- </option>
-            [% FOR method IN send_methods %]
-            <option value="[% method %]"[% ' selected' IF body.send_method == method %]>[% method %]</option>
-            [% END %]
-        </select>
-    </p>
-
-    <p>
-        <input type="checkbox" name="send_comments"[% ' checked' IF body.send_comments %]>
-        <label for="send_comments" class="inline">Use Open311 comment sending extension</label>
-    </p>
-
-    <p>
-        <label for"comment_user_id">User to attribute fetched comments to</label>
-        <input type="text" name="comment_user_id" value="[% body.comment_user_id %]">
-    </p>
-
-    <p>
-        <input type="checkbox" name="suppress_alerts"[% ' checked' IF body.suppress_alerts %]>
-        <label for="suppress_alerts" class="inline">Do not send email alerts on fetched comments to problem creator</label>
-    </p>
-
-    <p>
-        <input type="checkbox" name="devolved"[% ' checked' IF body.can_be_devolved %]>
-        <label for="devolved" class="inline">Endpoint lookup can be devolved to contacts</label>
-    </p>
-
-    <p>
-    <input type="hidden" name="posted" value="open311">
-    <input type="hidden" name="token" value="[% token %]">
-    <input type="submit" name="Configure Open311" value="[% loc('Configure Open311') %]">
-    </p>
-    </form>
+    <h2>[% loc('Edit body details') %]</h2>
+    [% INCLUDE 'admin/body-form.html' %]
 
 [% INCLUDE 'admin/footer.html' %]

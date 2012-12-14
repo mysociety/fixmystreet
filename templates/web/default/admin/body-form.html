@@ -1,0 +1,69 @@
+    <form method="post" action="[% body ? c.uri_for('body', body.id) : c.uri_for('bodies') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+
+    <p>
+        <label for="name">Name</label>
+        <input type="text" name="name" id="name" value="[% body.name %]" size="50">
+    </p>
+
+    <p>
+        <label for="area_id">Area covered</label>
+        <select name="area_id">
+            <option value=""> -- Select an area -- </option>
+            [% FOR area IN areas %]
+            <option value="[% area.id %]"[% ' selected' IF body.area_id == area.id %]>[% area.name %]</option>
+            [% END %]
+        </select>
+    </p>
+
+    <p>
+        <label for="send_method">Send Method</label>
+        <select name="send_method">
+            <option value=""> -- Select a method -- </option>
+            [% FOR method IN send_methods %]
+            <option value="[% method %]"[% ' selected' IF body.send_method == method %]>[% method %]</option>
+            [% END %]
+        </select>
+    </p>
+
+    <p>
+        <label for="endpoint">Open311 Endpoint</label>
+        <input type="text" name="endpoint" id="endpoint" value="[% body.endpoint %]" size="50">
+    </p>
+
+    <p>
+        <label for="jurisdiction">Open311 Jurisdiction</label>
+        <input type="text" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction %]" size="50">
+    </p>
+
+    <p>
+        <label for="api_key">Open311 API Key</label>
+        <input type="text" name="api_key" id="api_key" value="[% body.api_key %]" size="25">
+    </p>
+
+    <p>
+        <input type="checkbox" id="send_comments" name="send_comments"[% ' checked' IF body.send_comments %]>
+        <label for="send_comments" class="inline">Use Open311 comment sending extension</label>
+    </p>
+
+    <p>
+        <label for"comment_user_id">User ID to attribute fetched comments to</label>
+        <input type="text" name="comment_user_id" value="[% body.comment_user_id %]">
+    </p>
+
+    <p>
+        <input type="checkbox" id="suppress_alerts" name="suppress_alerts"[% ' checked' IF body.suppress_alerts %]>
+        <label for="suppress_alerts" class="inline">Do not send email alerts on fetched comments to problem creator</label>
+    </p>
+
+    <p>
+        <input type="checkbox" id="can_be_devolved" name="can_be_devolved"[% ' checked' IF body.can_be_devolved %]>
+        <label for="can_be_devolved" class="inline">Endpoint lookup can be devolved to contacts</label>
+    </p>
+
+    <p>
+    <input type="hidden" name="posted" value="body">
+    <input type="hidden" name="token" value="[% token %]">
+    <input type="submit" value="[% body ? loc('Update body') : loc('Add body') %]">
+    </p>
+    </form>
+
