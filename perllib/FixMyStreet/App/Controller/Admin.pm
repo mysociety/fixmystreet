@@ -255,10 +255,19 @@ sub bodies : Path('bodies') : Args(0) {
 
     $c->stash->{counts} = \%council_info;
 
+    $c->forward( 'body_form_dropdowns' );
+
+    return 1;
+}
+
+sub body_form_dropdowns : Private {
+    my ( $self, $c ) = @_;
+
     my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
     $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
 
-    return 1;
+    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
+    $c->stash->{send_methods} = \@methods;
 }
 
 sub body : Path('body') : Args(1) {
@@ -269,9 +278,7 @@ sub body : Path('body') : Args(1) {
     $c->forward( 'check_page_allowed' );
     $c->forward( 'get_token' );
     $c->forward( 'lookup_body' );
-
-    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
-    $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
+    $c->forward( 'body_form_dropdowns' );
 
     if ( $c->req->param('posted') ) {
         $c->log->debug( 'posted' );
@@ -386,9 +393,6 @@ sub display_contacts : Private {
 
     my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
     $c->stash->{contacts} = $contacts;
-
-    my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
-    $c->stash->{send_methods} = \@methods;
 
     if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
