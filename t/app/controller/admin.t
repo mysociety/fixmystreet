@@ -845,6 +845,8 @@ for my $test (
     };
 }
 
+$mech->create_body_ok(2504, 'Westminster City Council');
+
 for my $test (
     {
         desc          => 'user is problem owner',
@@ -1082,6 +1084,8 @@ subtest 'show flagged entries' => sub {
     $mech->content_contains( $user->email );
 };
 
+$mech->create_body_ok(2509, 'Haringey Borough Council');
+
 subtest 'user search' => sub {
     $mech->get_ok('/admin/users');
     $mech->get_ok('/admin/users?search=' . $user->name);
@@ -1115,7 +1119,6 @@ is $log_entries->count, 0, 'no admin log entries';
 $user->flagged( 0 );
 $user->update;
 
-$mech->create_body_ok(2509, 'Haringey Borough Council');
 $mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
 
 for my $test (

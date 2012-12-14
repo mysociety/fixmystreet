@@ -827,7 +827,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->email ne $c->req->param('email') ||
             $user->name ne $c->req->param('name' ) ||
-            $user->from_body != $c->req->param('body') ) {
+            $user->from_body->id != $c->req->param('body') ) {
                 $edited = 1;
         }
 

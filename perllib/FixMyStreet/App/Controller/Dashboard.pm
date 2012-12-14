@@ -88,19 +88,19 @@ Show the dashboard table.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $council = $c->forward('check_page_allowed');
+    my $body = $c->forward('check_page_allowed');
 
     # Set up the data for the dropdowns
 
-    my $council_detail = mySociety::MaPit::call('area', $council );
+    my $council_detail = mySociety::MaPit::call('area', $body->area_id );
     $c->stash->{council} = $council_detail;
 
-    my $children = mySociety::MaPit::call('area/children', $council,
+    my $children = mySociety::MaPit::call('area/children', $body->area_id,
         type => $c->cobrand->area_types_children,
     );
     $c->stash->{children} = $children;
 
-    $c->stash->{all_areas} = { $council => $council_detail };
+    $c->stash->{all_areas} = { $body->area_id => $council_detail };
     $c->forward( '/report/new/setup_categories_and_bodies' );
 
     # See if we've had anything from the dropdowns
@@ -109,7 +109,7 @@ sub index : Path : Args(0) {
     $c->stash->{category} = $c->req->param('category');
 
     my %where = (
-        bodies_str => $council, # XXX This will break in a two tier council. Restriction needs looking at...
+        bodies_str => $body->id, # XXX Does this break in a two tier council? Restriction needs looking at...
         'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
     $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }

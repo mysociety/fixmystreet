@@ -345,10 +345,13 @@ for my $test (
     };
 }
 
+$mech->create_body_ok(2504, 'Westminster City Council');
+$mech->create_body_ok(2505, 'Camden Borough Council');
+
 for my $test ( 
     {
         desc => 'no state dropdown if user not from authority',
-        from_body => 0,
+        from_body => undef,
         no_state => 1,
         report_body => '2504',
     },

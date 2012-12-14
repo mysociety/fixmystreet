@@ -409,7 +409,7 @@ $report->update;
 
 subtest 'check non authority user cannot change set state' => sub {
     $mech->log_in_ok( $user->email );
-    $user->from_body( 0 );
+    $user->from_body( undef );
     $user->update;
 
     $mech->get_ok("/report/$report_id");
@@ -433,6 +433,8 @@ subtest 'check non authority user cannot change set state' => sub {
 
     is $report->state, 'confirmed', 'state unchanged';
 };
+
+$mech->create_body_ok(2504, 'Westminster City Council');
 
 for my $state ( qw/unconfirmed hidden partial/ ) {
     subtest "check that update cannot set state to $state" => sub {
@@ -547,13 +549,13 @@ for my $test (
             state => 'fixed',
         },
         state => 'fixed - council',
-        report_councils => '2504,2505',
+        report_bodies => '2504,2505',
     },
 ) {
     subtest $test->{desc} => sub {
         $report->comments->delete;
-        if ( $test->{ report_councils } ) {
-            $report->bodies_str( $test->{ report_councils } );
+        if ( $test->{ report_bodies } ) {
+            $report->bodies_str( $test->{ report_bodies } );
             $report->update;
         }
 
@@ -629,7 +631,7 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
     unlike $update_meta->[0], qr/reopened$/, 'update meta does not say reopened';
   };
 
-$user->from_body(0);
+$user->from_body(undef);
 $user->update;
 
 $report->state('confirmed');

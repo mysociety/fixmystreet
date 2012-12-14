@@ -111,7 +111,7 @@ create table users (
     name            text,
     phone           text,
     password        text    not null default '',
-    from_body       integer, -- id of body user is from or null/0 if not
+    from_body       integer references body(id), -- id of body user is from or null/0 if not
     flagged         boolean not null default 'f',
     title           text
 );

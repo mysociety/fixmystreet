@@ -16,11 +16,6 @@ my $user =
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
-my $user2 =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test2@example.com', name => 'Other User' } );
-ok $user2, "created test user";
-
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,
@@ -59,10 +54,13 @@ ok $report, "created test report - $report_id";
 SKIP: {
     skip( "Need 'fixmybarangay' in ALLOWED_COBRANDS config", 29 )
         unless FixMyStreet::Cobrand->exists('fixmybarangay');
+
+    $mech->create_body_ok(2504, 'Westminster City Council');
+
     for my $test (
         {
             desc => 'if not from body then no supporter button',
-            from_body => 0,
+            from_body => undef,
             support_string => 'No supporters',
         },
         {
@@ -84,9 +82,9 @@ SKIP: {
             $user->from_body( $test->{from_body} );
             $user->update;
 
-            $report->discard_changes;
-            $report->bodies_str( $test->{report_council} );
-            $report->update;
+            $report->update( {
+                bodies_str => $test->{report_council}
+            } );
 
             $mech->get_ok("/report/$report_id");
             $mech->content_contains( $test->{support_string} );
@@ -106,16 +104,14 @@ SKIP: {
 
     subtest 'check non body user cannot increment support count' => sub {
         ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
-        $report->discard_changes;
-        $report->interest_count(1);
-        ok $report->update(), 'updated interest count';
 
-        $report->discard_changes;
+        ok $report->update({ interest_count => 1 }), 'updated interest count';
         is $report->interest_count, 1, 'correct interest count';
 
         $mech->get_ok("/report/$report_id");
         $mech->content_contains( '1 supporter' );
 
+        # This doesn't send cookie, so is logged out
         $mech->post_ok("/report/support", { id => $report_id } );
 
         is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';

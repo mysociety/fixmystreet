@@ -58,10 +58,16 @@ __PACKAGE__->has_many(
   { "foreign.body_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "users",
+  "FixMyStreet::DB::Result::User",
+  { "foreign.from_body" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 12:36:19
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Yl1KHSUzPi7KDjMenUe8qw
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-14 09:23:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tvTHtIa0GrtptadZYHEM1Q
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
