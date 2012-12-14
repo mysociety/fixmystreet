@@ -135,9 +135,9 @@ if ($TEST_SERVICE_DISCOVERY) {
 } elsif ($req -> param('services')) {
     get_service_discovery($req);
 } else {
-    my $fixme = get_FAKE_INSERT($req); # allow a GET to make an insert, for testing (from the commandnd line!)
-    print "Returned $fixme\n";
-    # get_service_requests($req);
+    ### # allow a GET to make an insert, for testing (from the commandnd line!)
+    ### my $fixme = get_FAKE_INSERT($req); print "Returned $fixme\n";
+    get_service_requests($req);
 }
 
 #----------------------------------------------------
