@@ -273,92 +273,30 @@ sub insert_into_pem {
     my $status = $$h{$F{STATUS}}; 
 
     my $service_code = $$h{$F{SERVICE_CODE}}; 
-    my $sth = $dbh->prepare(q#BEGIN 
-    Pem.create_enquiry
-    (ce_cat IN VARCHAR2 DEFAULT NVL(Hig.get_useopt('ENQCAT', USER),Hig.get_sysopt('ENQCAT'))
-    , ce_class IN VARCHAR2 DEFAULT NVL(Hig.get_useopt('ENQCLASS', USER),Hig.get_sysopt('ENQCLASS'))
-    , ce_title IN VARCHAR2 DEFAULT NULL
-    , ce_contact_title IN VARCHAR2 DEFAULT NULL
-    , ce_forename IN VARCHAR2 DEFAULT NULL
-    , ce_surname IN VARCHAR2 DEFAULT NULL
-    , ce_contact_type IN VARCHAR2 DEFAULT NVL(Hig.get_useopt('ENQCONTYPE', USER)
-    ,Hig.get_sysopt('ENQCONTYPE'))
-    , ce_flag IN VARCHAR2 DEFAULT 'Y'
-    , ce_pcode_id IN VARCHAR2 DEFAULT NULL
-    , ce_postcode IN VARCHAR2 DEFAULT NULL
-    , ce_building_no IN VARCHAR2 DEFAULT NULL
-    , ce_building_name IN VARCHAR2 DEFAULT NULL
-    , ce_street IN VARCHAR2 DEFAULT NULL
-    , ce_locality IN VARCHAR2 DEFAULT NULL
-    , ce_town IN VARCHAR2 DEFAULT NULL
-    , ce_county IN VARCHAR2 DEFAULT NULL
-    , ce_organisation IN VARCHAR2 DEFAULT NULL
-    , ce_work_phone IN VARCHAR2 DEFAULT NULL
-    , ce_email IN VARCHAR2 DEFAULT NULL
-    , ce_location IN VARCHAR2 DEFAULT NULL
-    , ce_description IN VARCHAR2 DEFAULT NULL
-    , ce_enquiry_type IN VARCHAR2 DEFAULT NVL(Hig.get_useopt('ENQDEFENQT', USER)
-    ,Hig.get_sysopt('ENQDEFENQT'))
-    , ce_source IN VARCHAR2 DEFAULT NVL(Hig.get_useopt('ENQDEFSRCE', USER)
-    ,Hig.get_sysopt('ENQDEFSRCE'))
-    , ce_incident_datetime DATE
-    , ce_cpr_id IN VARCHAR2 DEFAULT NULL
-    , ce_asset_id IN VARCHAR2 DEFAULT NULL
-    , ce_rse_he_id IN VARCHAR2 DEFAULT NULL
-    , ce_x IN NUMBER DEFAULT NULL
-    , ce_y IN NUMBER DEFAULT NULL
-    , ce_date_expires IN DATE DEFAULT NULL
-    , ce_doc_reference IN VARCHAR2 DEFAULT NULL
-    , ce_issue_number IN NUMBER DEFAULT NULL
-    , ce_category IN VARCHAR2 DEFAULT NULL
-    , ce_status_date IN DATE DEFAULT NULL
-    , ce_resp_of IN VARCHAR2 DEFAULT NULL
-    , ce_compl_ack_flag IN VARCHAR2 DEFAULT NULL
-    , ce_compl_ack_date IN DATE DEFAULT NULL
-    , ce_compl_flag IN VARCHAR2 DEFAULT NULL
-    , ce_compl_peo_date IN DATE DEFAULT NULL
-    , ce_compl_target IN DATE DEFAULT NULL
-    , ce_compl_complete IN DATE DEFAULT NULL
-    , ce_compl_referred_to IN VARCHAR2 DEFAULT NULL
-    , ce_compl_police_notif_flag IN VARCHAR2 DEFAULT 'N'
-    , ce_compl_date_police_notif IN VARCHAR2 DEFAULT NULL
-    , ce_compl_from IN DATE DEFAULT NULL
-    , ce_compl_to IN DATE DEFAULT NULL
-    , ce_compl_claim IN VARCHAR2 DEFAULT NULL
-    , ce_compl_corresp_date IN DATE DEFAULT NULL
-    , ce_compl_corresp_deliv_date IN DATE DEFAULT NULL
-    , ce_compl_no_of_petitioners IN NUMBER DEFAULT NULL
-    , ce_compl_remarks IN VARCHAR2 DEFAULT NULL
-    , ce_compl_cause IN VARCHAR2 DEFAULT NULL
-    , ce_compl_injuries IN VARCHAR2 DEFAULT NULL
-    , ce_compl_damage IN VARCHAR2 DEFAULT NULL
-    , ce_compl_action IN VARCHAR2 DEFAULT NULL
-    , ce_compl_litigation_flag IN VARCHAR2 DEFAULT 'N'
-    , ce_compl_litigation_reason IN VARCHAR2 DEFAULT NULL
-    , ce_compl_claim_no IN VARCHAR2 DEFAULT NULL
-    , ce_compl_determination IN VARCHAR2 DEFAULT NULL
-    , ce_compl_est_cost IN NUMBER DEFAULT NULL
-    , ce_compl_adv_cost IN NUMBER DEFAULT NULL
-    , ce_compl_act_cost IN NUMBER DEFAULT NULL
-    , ce_compl_follow_up1 IN DATE DEFAULT NULL
-    , ce_compl_follow_up2 IN DATE DEFAULT NULL
-    , ce_compl_follow_up3 IN DATE DEFAULT NULL
-    , ce_compl_insurance_claim IN VARCHAR2 DEFAULT NULL
-    , ce_compl_summons_received IN VARCHAR2 DEFAULT NULL
-    , ce_compl_user_type IN VARCHAR2 DEFAULT 'USER'
-    , ce_hct_vip IN VARCHAR2 DEFAULT NULL
-    , ce_hct_home_phone IN VARCHAR2 DEFAULT NULL
-    , ce_hct_mobile_phone IN VARCHAR2 DEFAULT NULL
-    , ce_hct_fax IN VARCHAR2 DEFAULT NULL
-    , ce_had_sub_build_name_no IN VARCHAR2 DEFAULT NULL
-    , ce_had_property_type IN VARCHAR2 DEFAULT NULL
-    , ce_status_code IN VARCHAR2 DEFAULT NULL
-    , ce_date_time_arrived IN DATE DEFAULT NULL
-    , ce_reason_late IN VARCHAR2 DEFAULT NULL
-    , error_value OUT NUMBER
-    , error_product OUT VARCHAR2
-    , ce_doc_id OUT NUMBER);
-    END;#);
+    my $sth = $dbh->prepare(q#
+        BEGIN
+        PEM.create_enquiry(
+            ce_cat => :ce_cat,
+            ce_class => :ce_class,
+            ce_forename => :ce_forename,
+            ce_surname => :ce_surname,
+            ce_contact_type => :ce_contact_type,
+            ce_work_phone => :ce_work_phone,
+            ce_email => :ce_email,
+            ce_description => :ce_description,
+            ce_enquiry_type => :ce_enquiry_type,
+            ce_source => :ce_source,
+            ce_x => :ce_x,
+            ce_y => :ce_y,
+            ce_doc_reference => :ce_doc_reference,
+            ce_status_code => :ce_status_code,
+            ce_compl_user_type => :ce_compl_user_type,
+            error_value => :error_value,
+            error_product => :error_product,
+            ce_doc_id => :ce_doc_id);
+        END;
+#);
+    #ce_incident_datetime => to_Date(:ce_incident_datetime,'DD-MON-YYYY HH24:MI'),
 
     my %bindings;
                                                      # comments here are suggested values
@@ -383,9 +321,11 @@ sub insert_into_pem {
     $bindings{":ce_email"}         = substr($$h{$F{EMAIL}}, 0, 50);          # 'info@exor.co.uk'
     $bindings{":ce_description"}   = substr($$h{$F{DESCRIPTION}}, 0, 2000);  # 'Large Pothole'
 
-    foreach my $name (keys %bindings) {
+    foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values
-        my $type = $PEM_BOUND_VAR_TYPES{$name};
+        my $type = $PEM_BOUND_VAR_TYPES{$name} || 'VARCHAR2';
+        
+        print "DEBUG: $name -> $bindings{$name} -> $type\n";
         $sth->bind_param(
             $name, 
             $bindings{$name}, 
@@ -450,16 +390,16 @@ sub get_service_requests {
 #------------------------------------------------------------------
 sub get_FAKE_INSERT {
     my %fake_data = (
-            'DESCRIPTION'        => 'Testing, description',
-            'EASTING'            => '45119',
-            'EMAIL'              => 'email@example.com',
-            'FIRST_NAME'         => 'Dave',
-            'FMS_ID'             => '1012',
-            'LAST_NAME'          => 'Test',
-            'LAT'                => '51.756741605999',
-            'LONG'               => '-1.2596387532192',
-            'NORTHING'           => '206709',
-            'SERVICE_CODE'       => 'OT',
+            $F{'DESCRIPTION'}        => 'Testing, description',
+            $F{'EASTING'}            => '45119',
+            $F{'EMAIL'}              => 'email@example.com',
+            $F{'FIRST_NAME'}         => 'Dave',
+            $F{'FMS_ID'}             => '1012',
+            $F{'LAST_NAME'}          => 'Test',
+            $F{'LAT'}                => '51.756741605999',
+            $F{'LONG'}               => '-1.2596387532192',
+            $F{'NORTHING'}           => '206709',
+            $F{'SERVICE_CODE'}       => 'OT',
         );
     return insert_into_pem(\%fake_data)
 }
