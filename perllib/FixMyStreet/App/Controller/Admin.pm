@@ -228,7 +228,9 @@ sub bodies : Path('bodies') : Args(0) {
 
         my $params = $c->forward('body_params');
         my $body = $c->model('DB::Body')->create( $params );
-        foreach ($c->req->params->{area_ids}) {
+        my $area_ids = $c->req->params->{area_ids};
+        $area_ids = [ $area_ids ] unless ref $area_ids;
+        foreach (@$area_ids) {
             $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
         }
 
@@ -362,7 +364,9 @@ sub update_contacts : Private {
         $c->stash->{body}->update( $params );
         my @current = $c->stash->{body}->body_areas->all;
         my %current = map { $_->area_id => 1 } @current;
-        foreach ($c->req->params->{area_ids}) {
+        my $area_ids = $c->req->params->{area_ids};
+        $area_ids = [ $area_ids ] unless ref $area_ids;
+        foreach (@$area_ids) {
             $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
             delete $current{$_};
         }
@@ -412,9 +416,11 @@ sub lookup_body : Private {
       unless $body;
     $c->stash->{body} = $body;
     
-    my $example_postcode = mySociety::MaPit::call('area/example_postcode', $body->body_areas->first->area_id);
-    if ($example_postcode && ! ref $example_postcode) {
-        $c->stash->{example_pc} = $example_postcode;
+    if ($body->body_areas->first) {
+        my $example_postcode = mySociety::MaPit::call('area/example_postcode', $body->body_areas->first->area_id);
+        if ($example_postcode && ! ref $example_postcode) {
+            $c->stash->{example_pc} = $example_postcode;
+        }
     }
 
     return 1;

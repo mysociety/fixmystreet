@@ -258,11 +258,7 @@ subtest 'check open311 configuring' => sub {
     $mech->content_contains('Council contacts configured via Open311');
     $mech->content_contains('Configuration updated - contacts will be generated automatically later');
 
-    my $open311 =
-      FixMyStreet::App->model('DB::Body')->search( { 'body_areas.area_id' => 2650 }, { join => 'body_areas' } );
-
-    is $open311->count, 1, 'only one configuration';
-    my $conf = $open311->first;
+    my $conf = FixMyStreet::App->model('DB::Body')->find( 2650 );
     is $conf->endpoint, 'http://example.com/open311', 'endpoint configured';
     is $conf->api_key, 'api key', 'api key configured';
     is $conf->jurisdiction, 'mySociety', 'jurisdiction configures';
@@ -282,11 +278,7 @@ subtest 'check open311 configuring' => sub {
 
     $mech->content_contains('Configuration updated');
 
-    $open311 =
-      FixMyStreet::App->model('DB::Body')->search( { 'body_areas.area_id' => 2650 }, { join => 'body_areas' } );
-
-    is $open311->count, 1, 'only one configuration';
-    $conf = $open311->first;
+    $conf = FixMyStreet::App->model('DB::Body')->find( 2650 );
     is $conf->endpoint, 'http://example.org/open311', 'endpoint updated';
     is $conf->api_key, 'new api key', 'api key updated';
     is $conf->jurisdiction, 'open311', 'jurisdiction configures';
