@@ -109,24 +109,17 @@ sub remove_redundant_areas {
         if $all_areas->{3};
 }
 
-sub filter_all_council_ids_list {
-    my $self = shift;
-    my @all_councils_ids = @_;
-
-    # as above we only want to show Oslo once
-    return grep { $_ != 301 } @all_councils_ids;
-}
-
 sub short_name {
     my $self = shift;
     my ($area, $info) = @_;
 
-    if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
+    my $name = $area->{name} || $area->name;
+
+    if ($name =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
         my $parent = $info->{$area->{parent_area}}->{name};
-        return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
+        return URI::Escape::uri_escape_utf8("$name, $parent");
     }
 
-    my $name = $area->{name};
     $name =~ s/ & / and /;
     $name = URI::Escape::uri_escape_utf8($name);
     $name =~ s/%20/+/g;

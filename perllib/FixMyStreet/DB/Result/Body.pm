@@ -69,6 +69,10 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-14 09:23:59
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:tvTHtIa0GrtptadZYHEM1Q
 
+sub url {
+    my ( $self, $c ) = @_;
+    # XXX $areas_info was used here for Norway parent - needs body parents, I guess
+    return $c->uri_for( '/reports/' . $c->cobrand->short_name( $self ) );
+}
 
-# You can replace this text with custom code or comments, and it will be preserved on regeneration
 1;

@@ -8,6 +8,10 @@ use DateTime;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
+$mech->create_body_ok(2514, 'Birmingham City Council');
+$mech->create_body_ok(2651, 'City of Edinburgh Council');
+$mech->create_body_ok(2504, 'Westminster City Council');
+
 $mech->delete_problems_for_body( 2504 );
 $mech->delete_problems_for_body( 2651 );
 
@@ -63,6 +67,7 @@ SKIP: {
 
     skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
         unless FixMyStreet::Cobrand->exists('fiksgatami');
+    $mech->create_body_ok(3, 'Oslo');
     mySociety::MaPit::configure('http://mapit.nuug.no/');
     ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
     $mech->get_ok('/reports');

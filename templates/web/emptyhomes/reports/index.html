@@ -14,17 +14,17 @@
 <th>[% loc('Older fixed') %]</th>
 </tr>
 
-[% FOREACH area IN areas_info_sorted %]
+[% FOREACH body IN bodies %]
 <tr align="center"
-[%- IF area.generation_high == 10 %] class="gone"
+[%- IF NOT body.area_id %] class="gone"
 [%- ELSIF loop.count % 2 %] class="a"
 [%- END -%]
 >
-<td align="left">[% area.name %]</td>
-<td>[% open.${area.id}.new or 0 %]</td>
-<td>[% (open.${area.id}.older or 0) + (open.${area.id}.unknown or 0) %]</td>
-<td>[% fixed.${area.id}.new or 0 %]</td>
-<td>[% fixed.${area.id}.old or 0 %]</td>
+<td align="left">[% body.name %]</td>
+<td>[% open.${body.id}.new or 0 %]</td>
+<td>[% (open.${body.id}.older or 0) + (open.${body.id}.unknown or 0) %]</td>
+<td>[% fixed.${body.id}.new or 0 %]</td>
+<td>[% fixed.${body.id}.old or 0 %]</td>
 </tr>
 [% END %]
 </table>

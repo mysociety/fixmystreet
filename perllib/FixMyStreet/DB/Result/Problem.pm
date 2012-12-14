@@ -561,9 +561,7 @@ sub body {
             map {
                 my $name = $_->name;
                 if (mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS')) {
-                    '<a href="'
-                    # XXX . $c->uri_for( '/reports/' . $c->cobrand->short_name( $areas_info->{$_} ) )
-                    . '">' . $name . '</a>';
+                    '<a href="' . $_->url($c) . '">' . $name . '</a>';
                 } else {
                     $name;
                 }

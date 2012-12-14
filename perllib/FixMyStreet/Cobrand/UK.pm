@@ -12,7 +12,6 @@ sub path_to_web_templates {
 sub country             { return 'GB'; }
 sub area_types          { [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ] }
 sub area_types_children { $mySociety::VotingArea::council_child_types }
-sub area_min_generation { 10 }
 
 sub enter_postcode_text {
     my ( $self ) = @_;
@@ -115,31 +114,23 @@ sub remove_redundant_areas {
     if $all_areas->{2391};
 }
 
-sub filter_all_council_ids_list {
-    my $self = shift;
-    my @all_councils_ids = @_;
-
-    # Ignore the four council areas introduced because of generation 15
-    # (where we put the new boundaries under the old IDs)
-    return grep { $_ < 141648 || $_ > 141651 } @all_councils_ids;
-}
-
 sub short_name {
-  my $self = shift;
-  my ($area, $info) = @_;
-  # Special case Durham as it's the only place with two councils of the same name
-  return 'Durham+County' if $area->{name} eq 'Durham County Council';
-  return 'Durham+City' if $area->{name} eq 'Durham City Council';
+    my $self = shift;
+    my ($area) = @_;
 
-  my $name = $area->{name};
-  $name =~ s/ (Borough|City|District|County) Council$//;
-  $name =~ s/ Council$//;
-  $name =~ s/ & / and /;
-  $name =~ s{/}{_}g;
-  $name = URI::Escape::uri_escape_utf8($name);
-  $name =~ s/%20/+/g;
-  return $name;
+    my $name = $area->{name} || $area->name;
 
+    # Special case Durham as it's the only place with two councils of the same name
+    return 'Durham+County' if $name eq 'Durham County Council';
+    return 'Durham+City' if $name eq 'Durham City Council';
+
+    $name =~ s/ (Borough|City|District|County) Council$//;
+    $name =~ s/ Council$//;
+    $name =~ s/ & / and /;
+    $name =~ s{/}{_}g;
+    $name = URI::Escape::uri_escape_utf8($name);
+    $name =~ s/%20/+/g;
+    return $name;
 }
 
 sub find_closest {
@@ -177,11 +168,11 @@ sub reports_body_check {
         if (length($code) == 6) {
             my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
             $c->stash->{ward} = $area;
-            $c->stash->{council} = $council;
+            $c->stash->{body} = $council;
         } else {
-            $c->stash->{council} = $area;
+            $c->stash->{body} = $area;
         }
-        $c->detach( 'redirect_area' );
+        $c->detach( 'redirect_body' );
     }
 
     # New ONS codes
@@ -191,11 +182,11 @@ sub reports_body_check {
         if ($code =~ /^(E05|W05|S13)/) {
             my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
             $c->stash->{ward} = $area;
-            $c->stash->{council} = $council;
-            $c->detach( 'redirect_area' );
+            $c->stash->{body} = $council;
+            $c->detach( 'redirect_body' );
         } elsif ($code =~ /^(W06|S12|E0[6-9]|E10)/) {
-            $c->stash->{council} = $area;
-            $c->detach( 'redirect_area' );
+            $c->stash->{body} = $area;
+            $c->detach( 'redirect_body' );
         }
     }
 

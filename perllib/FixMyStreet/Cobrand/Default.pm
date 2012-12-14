@@ -518,7 +518,7 @@ Show the problem creation graph in the admin interface
 
 sub admin_show_creation_graph { 1 }
 
-=head2 area_types, area_min_generation
+=head2 area_types
 
 The MaPit types this site handles
 
@@ -526,7 +526,6 @@ The MaPit types this site handles
 
 sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
 sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
-sub area_min_generation { '' }
 
 =head2 contact_name, contact_email
 
@@ -559,28 +558,17 @@ sub remove_redundant_areas {
   my $all_areas = shift;
 }
 
-=item filter_all_council_ids_list
-
-Removes any council IDs that we don't need from an array and returns the
-filtered array
-
-=cut
-
-sub filter_all_council_ids_list {
-  my $self = shift;
-  return @_;
-}
-
 =item short_name
 
-Remove extra information from council names for tidy URIs
+Remove extra information from body names for tidy URIs
 
 =cut
 
 sub short_name {
     my $self = shift;
-    my ($area, $info) = @_;
-    my $name = $area->{name};
+    my ($area) = @_;
+
+    my $name = $area->{name} || $area->name;
     $name = URI::Escape::uri_escape_utf8($name);
     $name =~ s/%20/+/g;
     return $name;

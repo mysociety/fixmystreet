@@ -14,18 +14,18 @@
 <th>[% loc('Older fixed') %]</th>
 </tr>
 
-[% FOREACH area IN areas_info_sorted %]
-[% NEXT IF area.id == 301 %]
+[% FOREACH body IN bodies %]
+[% NEXT IF body.id == 301 %]
 <tr align="center"
 [%- IF loop.count % 2 %] class="a"
 [%- END -%]
 >
-<td align="left"><a href="[% area.url %]">[% area.name %]</a></td>
-<td>[% open.${area.id}.new or 0 %]</td>
-<td>[% open.${area.id}.older or 0 %]</td>
-<td>[% open.${area.id}.unknown or 0 %]</td>
-<td>[% fixed.${area.id}.new or 0 %]</td>
-<td>[% fixed.${area.id}.old or 0 %]</td>
+<td align="left"><a href="[% body.url(c) %]">[% body.name %]</a></td>
+<td>[% open.${body.id}.new or 0 %]</td>
+<td>[% open.${body.id}.older or 0 %]</td>
+<td>[% open.${body.id}.unknown or 0 %]</td>
+<td>[% fixed.${body.id}.new or 0 %]</td>
+<td>[% fixed.${body.id}.old or 0 %]</td>
 </tr>
 [% END %]
 </table>
