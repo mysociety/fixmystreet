@@ -3,18 +3,32 @@
 # script for absobring incoming Open311 service request POSTs and
 # passing them into Bentley EXOR backend via create_enquiry stored
 # procedure.
+#
+# mySociety: http://code.fixmystreet.com/
 #-----------------------------------------------------------------
-
-# try:
-# $ perl -e 'use DBD::Oracle; print $DBD::Oracle::VERSION,"\n";'
-# to see what we've got :-)
-# $dsn = "dbi:type:database_name:host_name:port";
 
 use strict;
 use CGI;
 use DBI;
 use DBD::Oracle qw(:ora_types);
 use Time::Piece;
+
+###################################################################
+# Config file: values in the config file override any values set 
+#              in the code below for the following things:
+#
+#     host: SXX-SAN-FOO_BAR
+#     sid: FOOBAR
+#     port: 1531
+#     username: foo
+#     password: FooBar
+#     testing: 0
+#
+# Absence of the config file fails silently in case you really are
+# using values directly set in this script.
+#------------------------------------------------------------------
+my $CONFIG_FILENAME       = "/usr/local/etc/fixmystreet.config";
+
 
 use constant {
     GENERAL_SERVICE_ERROR   => 400,
@@ -24,20 +38,18 @@ use constant {
     FATAL_ERROR             => 500
 };
 
-my $DB_SQL_TYPE       = '';
-my $DB_SERVER_NAME    = 'S12-SAN-ORA-L18';
+my $DB_SERVER_NAME    = 'FOO';
 my $DB_HOST           = $DB_SERVER_NAME; # did this just in case we need to add more to the name (e.g, domain)
 my $DB_PORT           = '1531';
-my $ORACLE_SID        = "EXORTEST";
+my $ORACLE_SID        = 'FOOBAR';
 my $USERNAME          = 'FIXMYSTREET';
 my $PASSWORD          = 'XXX';
 my $STORED_PROC_NAME  = 'PEM.create_enquiry';
 
 my $STRIP_CONTROL_CHARS   = 1;
-my $TESTING_WRITE_TO_FILE = 0;  # write to file instead of DB
-my $CONFIG_FILENAME       = "fms-conf.cgi"; # .pl to prevent http access in this dir, oh dear. Or set to blank.
-my $OUT_FILENAME          = "fms-test.txt";
 
+my $TESTING_WRITE_TO_FILE = 0;  # write to file instead of DB
+my $OUT_FILENAME          = "fms-test.txt";
 my $TEST_SERVICE_DISCOVERY=0;  # switch to 1 to run service discovery, which confirms the DB connection at least
 
 my %PEM_BOUND_VAR_TYPES;
@@ -49,37 +61,25 @@ foreach (get_pem_field_names()) {
     } else {
         push @PEM_BOUND_VAR_NAMES, $_;
     }
-    
 }
-my $PEM_BOUND_VARS_DECLARATION = ""; # not used
 
-# if there's a config file, pull the password from it
-#     (as a courtesy: not be keeping the config (e.g. password) in this script, 
-#     to allow insecure file transfer onto occ dev environment and to ease deployment).
-# Overrides existing values for these, if present:
-#
-#     host: SXX-SAN-FOO_BAR
-#     sid: FOOBAR
-#     port: 1531
-#     username: foo
-#     password: FooBar
-#     testing: 0
-
+# Config file overrides existing values for these, if present:
 if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
     while (<CONF>) {
-        if (/^\s*password:\s*(.*?)\s*$/i) {
+        next if /^#/;
+        if (/^\s*password:\s*(\S+)\s*$/i) {
             $PASSWORD = $1;
-        } elsif (/^\s*sid:\s*(.*?)\s*$/i) {
+        } elsif (/^\s*sid:\s*(\S+)\s*$/i) {
             $ORACLE_SID = $1;
-        } elsif (/^\s*username:\s*(.*?)\s*$/i) {
+        } elsif (/^\s*username:\s*(\S+)\s*$/i) {
             $USERNAME = $1;
-        } elsif (/^\s*port:\s*(.*?)\s*$/i) {
+        } elsif (/^\s*port:\s*(\S+)\s*$/i) {
             $DB_PORT = $1;
-        } elsif (/^\s*host:\s*(.*?)\s*$/i) {
+        } elsif (/^\s*host:\s*(\S+)\s*$/i) {
             $DB_HOST = $1;
-        } elsif (/^\s*testing:\s*(.*?)\s*$/i) {
+        } elsif (/^\s*testing:\s*(\S+)\s*$/i) {
             $TESTING_WRITE_TO_FILE = $1;
-        } elsif (/^\s*test-service-discovery:\s*(.*?)\s*$/i) {
+        } elsif (/^\s*test-service-discovery:\s*(\S+)\s*$/i) {
             $TEST_SERVICE_DISCOVERY = $1;
         }
     }
@@ -341,11 +341,7 @@ sub insert_into_pem {
         );  
     }
 
-    # NB FMS Open311 not sending this by default
-    # > to_Date('01-JAN-2004 11:00','DD-MON-YYYY HH24:MI') 
-    # $sth->bind_param(":ce_incident_datetime", $$h{$F{REQUESTED_DATETIME}});
-
-    # not used, but from the example docs
+    # not used, but from the example docs, for reference
     # $sth->bind_param(":ce_contact_title",     $undef);      # 'MR'
     # $sth->bind_param(":ce_postcode",          $undef);      # 'BS11EJ'   NB no spaces, upper case
     # $sth->bind_param(":ce_building_no",       $undef);      # '1'
@@ -389,6 +385,7 @@ sub insert_into_pem {
 # instead.
 #------------------------------------------------------------------
 sub get_service_requests {
+    # error_and_exit(BAD_METHOD, "sorry, currently only handling incoming Open311 service requests: use POST method");
     get_service_discovery(); # for now
 }
 
@@ -447,7 +444,6 @@ Content-type: text/xml
 $xml
 </services>
 XML
-    # error_and_exit(BAD_METHOD, "sorry, currently only handling incoming Open311 service requests: use POST method");
 }
 
 #------------------------------------------------------------------
@@ -457,6 +453,10 @@ XML
 # This also adds the colon prefix to all names.
 # Note the last three of these are inout params, and are handled
 # as a special (hardcoded) case when used (see above).
+#
+# These are currently only used for type lookup, so should probably
+# move them into the code as a name => type lookup; furthermore most of 
+# these are not used, and default to varchar2 anyway.
 #------------------------------------------------------------------
 sub get_pem_field_names {
     return map {":$_"} qw(
