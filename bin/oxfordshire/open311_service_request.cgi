@@ -14,6 +14,7 @@ use strict;
 use CGI;
 use DBI;
 use DBD::Oracle qw(:ora_types);
+use Time::Piece;
 
 use constant {
     GENERAL_SERVICE_ERROR   => 400,
@@ -286,6 +287,7 @@ sub insert_into_pem {
             ce_description => :ce_description,
             ce_enquiry_type => :ce_enquiry_type,
             ce_source => :ce_source,
+            ce_incident_datetime => to_Date(:ce_incident_datetime,'YYYY-MM-DD HH24:MI'),
             ce_x => :ce_x,
             ce_y => :ce_y,
             ce_doc_reference => :ce_doc_reference,
@@ -307,6 +309,9 @@ sub insert_into_pem {
     $bindings{":ce_status_code"}    = 'RE';          # RE=received (?)
     $bindings{":ce_compl_user_type"}= 'USER';        # 'USER'
 
+    # ce_incident_datetime is *not* an optional param, but FMS isn't sending it at the moment
+    $bindings{":ce_incident_datetime"}=$$h{$F{REQUESTED_DATETIME}} || Time::Piece->new->strftime('%Y-%m-%d %H:%M');
+
     # especially FMS-specific:
     $bindings{":ce_source"}        = "FMS";           # important, and specific to this script!
     $bindings{":ce_doc_reference"} = $$h{$F{FMS_ID}}; # FMS id
@@ -325,7 +330,7 @@ sub insert_into_pem {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values
         my $type = $PEM_BOUND_VAR_TYPES{$name} || 'VARCHAR2';
         
-        print "DEBUG: $name -> $bindings{$name} -> $type\n";
+        ### print "DEBUG: $name -> $bindings{$name} -> $type\n";
         $sth->bind_param(
             $name, 
             $bindings{$name}, 
@@ -358,9 +363,9 @@ sub insert_into_pem {
     # $sth->bind_param(":ce_compl_remarks",     $undef);      # remarks (notes) max 254 char
     
     # return values:
-    $sth->bind_param_inout(":error_value",   \$error_value, 12);   #> l_ERROR_VALUE # number
+    $sth->bind_param_inout(":error_value",   \$error_value, 12, { ora_type => ORA_NUMBER});   #> l_ERROR_VALUE # number
     $sth->bind_param_inout(":error_product", \$error_product, 10); #> l_ERROR_PRODUCT (will always be 'DOC')
-    $sth->bind_param_inout(":ce_doc_id",     \$pem_id, 12);        #> l_ce_doc_id # number
+    $sth->bind_param_inout(":ce_doc_id",     \$pem_id, 12, { ora_type => ORA_NUMBER});        #> l_ce_doc_id # number
 
     $sth->execute();
     $dbh->disconnect;
