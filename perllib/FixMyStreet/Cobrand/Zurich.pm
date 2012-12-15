@@ -13,4 +13,13 @@ sub example_places {
     return [ 'Langstrasse', 'Basteiplatz' ];
 }
 
+# If lat/lon are in the URI, we must have zoom as well, otherwise OpenLayers defaults to 0.
+sub uri {
+    my ( $self, $uri ) = @_;
+
+    $uri->query_param( zoom => 7 )
+      if $uri->query_param('lat') && !$uri->query_param('zoom');
+    return $uri;
+}
+
 1;
