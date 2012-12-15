@@ -22,4 +22,14 @@ sub uri {
     return $uri;
 }
 
+sub remove_redundant_areas {
+    my $self = shift;
+    my $all_areas = shift;
+
+    # Remove all except Zurich
+    foreach (keys %$all_areas) {
+        delete $all_areas->{$_} unless $_ eq 274456;
+    }
+}
+
 1;

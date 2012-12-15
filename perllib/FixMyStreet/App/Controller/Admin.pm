@@ -265,7 +265,12 @@ sub bodies : Path('bodies') : Args(0) {
 sub body_form_dropdowns : Private {
     my ( $self, $c ) = @_;
 
-    my $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
+    my $areas;
+    if ($c->cobrand->moniker eq 'zurich') {
+        $areas = mySociety::MaPit::call('areas', 274456);
+    } else {
+        $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
+    }
     $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
 
     my @methods = map { $_ =~ s/FixMyStreet::SendReport:://; $_ } keys %{ FixMyStreet::SendReport->get_senders };
