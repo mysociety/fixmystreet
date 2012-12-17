@@ -160,7 +160,7 @@ sub post_service_request {
     foreach (values %F) {
         $data{$_} = $req -> param($_);
         $data{$_} =~ s/^\s+|\s+$//g; # trim
-        
+
         if ($STRIP_CONTROL_CHARS) {
             if ($STRIP_CONTROL_CHARS eq 'ruthless') {
                 $data{$_} =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
@@ -175,7 +175,7 @@ sub post_service_request {
             }
         }
     }
-    
+
     error_and_exit(CODE_OR_ID_NOT_PROVIDED, "missing service code (Open311 requires one)") 
         unless $data{$F{SERVICE_CODE}};
     error_and_exit(GENERAL_SERVICE_ERROR, "the service code you provided ($data{$F{SERVICE_CODE}}) was not recognised by this server") 
@@ -295,7 +295,7 @@ sub insert_into_pem {
     my $description = $$h{$F{DESCRIPTION}};
     my $media_url = $$h{$F{MEDIA_URL}};
     if ($media_url) {
-        $description .= "\n\nPhoto: $media_url\n";
+        $description .= ($STRIP_CONTROL_CHARS ne 'ruthless'? "\n\n":"  ") . "Photo: $media_url";
     }
 
     my $sth = $dbh->prepare(q#
