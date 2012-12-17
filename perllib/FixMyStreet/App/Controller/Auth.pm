@@ -31,7 +31,7 @@ sub general : Path : Args(0) {
     my $req = $c->req;
 
     $c->detach( 'redirect_on_signin', [ $req->param('r') ] )
-        if $c->user && $req->param('r');
+        if $c->user && $req->param('r') && $req->param('r') !~ /admin/;
 
     # all done unless we have a form posted to us
     return unless $req->method eq 'POST';

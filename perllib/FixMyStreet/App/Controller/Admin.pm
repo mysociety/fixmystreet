@@ -33,6 +33,11 @@ sub begin : Private {
     my ( $self, $c ) = @_;
 
     $c->uri_disposition('relative');
+
+    if ($c->cobrand->moniker eq 'zurich') {
+        $c->detach( '/auth/redirect' ) unless $c->user_exists;
+        $c->detach( '/auth/redirect' ) unless $c->user->from_body;
+    }
 }
 
 sub summary : Path( 'summary' ) : Args(0) {
