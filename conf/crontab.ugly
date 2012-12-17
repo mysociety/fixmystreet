@@ -13,30 +13,49 @@ MAILTO=cron-!!(*= $site *)!!@mysociety.org
 MAILTO=!!(*= $user *)!!@mysociety.org
 !!(* } *)!!
 
-# On only one server
-!!(* if ($vhost eq 'reportemptyhomes.com') { *)!!
+!!(*
 
-*/5 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
-#2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-alerts" || echo "stalled?"
-0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-questionnaires" || echo "stalled?"
+my @sending = qw(
+    www.fixmystreet.com
+    bromley.test.mysociety.org
+    stevenage.test.mysociety.org
+    barnet.fixmystreet.staging.mysociety.org
+    fixmybarangay.test.mysociety.org
+    demo.fixmybarangay.com
+    www.fixmybarangay.com
+    zurich.fixmystreet.staging.mysociety.org
+);
+my @no_alerts = qw(
+    zurich.fixmystreet.staging.mysociety.org
+);
+my %sending = map { $_ => 1 } @sending;
+my %no_alerts = map { $_ => 1 } @no_alerts;
 
-!!(* } elsif (($vhost eq 'www.fixmystreet.com') || ($vhost eq 'bromley.test.mysociety.org') || ($vhost eq 'barnet.fixmystreet.staging.mysociety.org') || ($vhost eq 'fixmybarangay.test.mysociety.org') || ($vhost eq 'demo.fixmybarangay.com') || ($vhost eq 'www.fixmybarangay.com') || ($vhost eq 'stevenage.test.mysociety.org')) { *)!!
+*)!!
+
+!!(* if ($sending{$vhost}) { *)!!
+# Sending of reports
 5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
 0 0-7,9-11,13-15,17-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
 0 8,12,16 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
+
+!!(* if (!$no_alerts{$vhost}) { *)!!
+# Sending of alerts and questionnaires
 2 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-alerts.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-alerts" || echo "stalled?"
 0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-questionnaires" || echo "stalled?"
-5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-comments" || echo "stalled?"
+!!(* } *)!!
 
+# Open311 sending and fetching of updates
+5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-comments" || echo "stalled?"
 5,10,15,20,25,30,35,40,45,50,55 0-7,9-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments" || echo "stalled?"
 10,15,20,25,30,35,40,45,50,55 8 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments" || echo "stalled?"
 5 8 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments --verbose" || echo "stalled?"
 5 1 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments-24hs" || echo "stalled?"
 
+# Open311 service list population
 30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
 0 0-7,9-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
 0 8 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list --warn" || echo "stalled?"
-
 !!(* } *)!!
 
 # Once an hour, update the all reports stats
