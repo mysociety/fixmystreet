@@ -6,12 +6,12 @@ use warnings;
 
 sub council_id { return 2237; }
 sub council_area { return 'Oxfordshire'; }
-sub council_name { return 'Oxfordshire Council'; }
+sub council_name { return 'Oxfordshire County Council'; }
 sub council_url { return 'oxfordshire'; }
 
 sub base_url {
     return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
-    return 'https://fixmystreet.oxfordshire.gov.uk';
+    return 'http://fixmystreet.oxfordshire.gov.uk';
 }
 
 sub path_to_web_templates {
