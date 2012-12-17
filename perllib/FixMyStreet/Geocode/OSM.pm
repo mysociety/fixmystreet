@@ -80,6 +80,7 @@ sub string {
 			$_->{type} eq "village" ||
 			$_->{type} eq "hamlet" ||
 			$_->{type} eq "secondary" ||
+			$_->{type} eq "pedestrian" ||
 			$_->{type} eq "tertiary" ||
 			$_->{type} eq "square" ||
 			$_->{type} eq "park" ||
@@ -96,6 +97,7 @@ sub string {
 	$address = $_->{address}->{hamlet}.", ".$_->{address}->{state} if $_->{type} eq "hamlet";
 	$address = $_->{address}->{leisure}.", ".$_->{address}->{administrative} if $_->{type} eq "square";
 	$address = $_->{address}->{park}.", ".$_->{address}->{administrative} if $_->{type} eq "park";
+	$address = $_->{address}->{pedestrian}.", ".$_->{address}->{administrative} if $_->{type} eq "pedestrian";
 
         ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
         mySociety::Locale::in_gb_locale {
