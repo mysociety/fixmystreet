@@ -46,7 +46,11 @@ my $USERNAME          = 'FIXMYSTREET';
 my $PASSWORD          = 'XXX';
 my $STORED_PROC_NAME  = 'PEM.create_enquiry';
 
-my $STRIP_CONTROL_CHARS   = 1;
+# NB can override this setting in the config file!
+#   'ruthless' removes everything (i.e. all POSIX control chars)
+#   'desc'     removes everything, but keeps tabs and newlines in the 'description' field, where they matter
+#   'normal'   keeps tabs and newlines 
+my $STRIP_CONTROL_CHARS   = 'normal';  
 
 my $TESTING_WRITE_TO_FILE = 0;  # write to file instead of DB
 my $OUT_FILENAME          = "fms-test.txt";
@@ -81,6 +85,8 @@ if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
             $TESTING_WRITE_TO_FILE = $1;
         } elsif (/^\s*test-service-discovery:\s*(\S+)\s*$/i) {
             $TEST_SERVICE_DISCOVERY = $1;
+        } elsif (/^\s*strip-control-chars:\s*(\S+)\s*$/i) {
+            $STRIP_CONTROL_CHARS = lc $1;
         }
     }
 }
@@ -155,7 +161,19 @@ sub post_service_request {
         $data{$_} = $req -> param($_);
         $data{$_} =~ s/^\s+|\s+$//g; # trim
         
-        $data{$_} =~ s/[^\t\n[:^cntrl:]]/ /g if $STRIP_CONTROL_CHARS;
+        if ($STRIP_CONTROL_CHARS) {
+            if ($STRIP_CONTROL_CHARS eq 'ruthless') {
+                $data{$_} =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
+            } elsif ($STRIP_CONTROL_CHARS eq 'desc') {
+                if ($_ eq 'DESCRIPTION') {
+                    $data{$_} =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
+                } else {
+                    $data{$_} =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
+                }
+            } else { 
+                $data{$_} =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
+            }
+        }
     }
     
     error_and_exit(CODE_OR_ID_NOT_PROVIDED, "missing service code (Open311 requires one)") 
