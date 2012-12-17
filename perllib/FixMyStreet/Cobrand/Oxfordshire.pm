@@ -48,7 +48,7 @@ sub example_places {
     return ( 'OX20 1SZ', 'Park St, Woodstock' );
 }
 
-# If we ever link to a county problem report, needs to be to main FixMyStreet
+# If we ever link to a district problem report, needs to be to main FixMyStreet
 sub base_url_for_report {
     my ( $self, $report ) = @_;
     my %councils = map { $_ => 1 } @{$report->councils};
