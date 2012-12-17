@@ -14,6 +14,12 @@ sub base_url {
     return 'http://fixmystreet.oxfordshire.gov.uk';
 }
 
+# Different to councils parent due to this being a two-tier council. If we get
+# more, this can be genericised in the parent.
+sub problems_clause {
+    return { council => { like => '%2237%' } };
+}
+
 sub path_to_web_templates {
     my $self = shift;
     return [
@@ -40,6 +46,17 @@ sub disambiguate_location {
 
 sub example_places {
     return ( 'OX20 1SZ', 'Park St, Woodstock' );
+}
+
+# If we ever link to a county problem report, needs to be to main FixMyStreet
+sub base_url_for_report {
+    my ( $self, $report ) = @_;
+    my %councils = map { $_ => 1 } @{$report->councils};
+    if ( $councils{2237} ) {
+        return $self->base_url;
+    } else {
+        return FixMyStreet->config('BASE_URL');
+    }
 }
 
 1;
