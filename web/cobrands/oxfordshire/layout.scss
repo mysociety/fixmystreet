@@ -1,0 +1,154 @@
+@import "_colours";
+@import "../fixmystreet/_layout";
+
+body {
+  background-color: #fff;
+  background-image: none;
+}
+
+#front-main {
+  background-color: $primary;
+  background-image: none;
+  @include border-radius(1em 1em 0 0);
+  margin: 2em 1em 0;
+  padding-top: 1em;
+  h1 {
+    margin: 0 auto 0 auto;
+  }
+  h2 {
+      color: $primary_text;
+  }
+  a#geolocate_link {
+      color: $primary_text;
+  }
+}
+
+// Currently hide the nav-wrapper, because it's in going into Oxfordshire's own nav
+// likewise with user-meta
+.nav-wrapper, #user-meta {
+    display: none;
+}
+
+// hide the site-header, currently has council logo at top of page
+#site-header {
+  display: none;
+}
+
+// White background, so no shadow or margin needed.
+.content {
+    margin: 0;
+    @include box-shadow(none);
+}
+.ie6, .ie7, .ie8  {
+    .content {
+        margin: 0;
+        border: none;
+    }
+}
+
+// Fix location of aside sidebar
+body.twothirdswidthpage {
+    .content {
+        aside {
+            @include box-shadow(none);
+        }
+        .sticky-sidebar {
+            aside {
+                position: fixed;
+                top: 10em;
+                li { // from occ website
+                  padding-left: 19px;
+                  font: 0.813em "Trebuchet MS";
+                  background: url("/cobrands/oxfordshire/images/dot6x6.jpg") no-repeat 0 5px;
+                }
+            }
+        }
+    }
+}
+
+//-------------------------------------------------
+// following declarations concern the map display:
+//-------------------------------------------------
+// So that map appears underneath the header
+.wrapper {
+    position: relative;
+    .table-cell {
+      padding-left: 13px; // added 13px to match Oxfordshire's normal look
+      padding-right: 13px;
+    }
+}
+.ie6, .ie7 {
+    .wrapper {
+        padding-top: 1em;
+    }
+}
+
+// show the sidebar tips and notices in the document flow, i.e., in the
+// left-hand column, rather than in smaller text above the map
+.general-sidebar-notes,
+#report-a-problem-sidebar {
+  position: static;
+  width: auto;
+  @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
+  .sidebar-tips,
+  .sidebar-notes {
+    font-size:1em;
+  }
+}
+
+// To prevent font size larger interfering with the fixed Oxfordshire layout
+.container { width: auto; }
+.full-width { width: 464px; }
+.shadow-wrap { width: 464px; }
+
+#map_box { width: 464px; }
+.content { width: 432px; }
+
+body.fullwidthpage .content { width: auto; }
+body.twothirdswidthpage .content {
+    width: 640px;
+    aside {
+        left: 672px;
+        width: 208px;
+        padding: 16px;
+    }
+    .sticky-sidebar {
+        left: 672px;
+        aside {
+            top:10em;
+        }
+    }
+}
+.ie6, .ie7 {
+    body.mappage .container {
+        width: 464px;
+        margin-left: 0;
+    }
+}
+
+// As map can scroll and isn't at the top, give it an edge
+#map_box {
+    border: solid 1px #999;
+    top: 1em;
+    right: 0em;
+    margin: 0;
+}
+
+// Perhaps fix map location (should be in central?)
+.ie6 #map_box, .ie7 #map_box {
+    right: -480px;
+}
+
+// So as not to interfere with the Oxfordshire footer, make the fixed nav ("get updates" etc) static.
+.shadow-wrap {
+    position: static;
+    padding-top: 0;
+    margin-bottom: 1em;
+    ul#key-tools {
+        border-top: none;
+        border-bottom: 1px solid $primary;
+    }
+}
+
+
+@import "oxfordshire";
