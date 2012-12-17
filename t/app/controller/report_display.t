@@ -94,6 +94,19 @@ subtest "change report to unconfirmed and check for 404 status" => sub {
     ok $report->update( { state => 'confirmed' } ), 'confirm report again';
 };
 
+
+subtest "change report to unconfirmed and check for 404 status" => sub {
+    if ( !FixMyStreet::Cobrand->exists('zurich') ) {
+        plan skip_all => 'Skipping Zurich test without Zurich cobrand';
+    }
+    $mech->host( 'zurich.fixmystreet.com' );
+    ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->res->code, 200, "page found";
+    ok $report->update( { state => 'confirmed' } ), 'confirm report again';
+    $mech->host( 'www.fixmystreet.com' );
+};
+
 subtest "change report to hidden and check for 410 status" => sub {
     ok $report->update( { state => 'hidden' } ), 'hide report';
     ok $mech->get("/report/$report_id"), "get '/report/$report_id'";

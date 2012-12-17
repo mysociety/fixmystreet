@@ -723,5 +723,16 @@ until the contacts/area/body handling is rewritten to be better.
 
 sub reports_by_body { 0; }
 
+=head2 show_unconfirmed_reports
+
+Whether reports in state 'unconfirmed' should still be shown on the public site.
+(They're always included in the admin interface.)
+
+=cut
+
+sub show_unconfirmed_reports {
+    0;
+}
+
 1;
 

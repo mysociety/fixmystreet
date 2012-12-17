@@ -32,4 +32,8 @@ sub remove_redundant_areas {
     }
 }
 
+sub show_unconfirmed_reports {
+    1;
+}
+
 1;
