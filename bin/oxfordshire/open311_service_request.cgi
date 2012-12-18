@@ -11,6 +11,7 @@ use strict;
 use CGI;
 use DBI;
 use DBD::Oracle qw(:ora_types);
+### for local testing (no Oracle): use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 use Time::Piece;
 
 ###################################################################
@@ -101,6 +102,7 @@ if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
 my $ERR_MSG            = 'error'; # unique key in data hash
 
 # incoming (Open311, from FMS) field names
+# note: attribute[*] are being sent by FMS explicitly as attributes for Oxfordshire
 my %F = (
     'ACCOUNT_ID'         => 'account_id',
     'ADDRESS_ID'         => 'address_id',
@@ -116,11 +118,14 @@ my %F = (
     'LAT'                => 'lat',
     'LONG'               => 'long',
     'MEDIA_URL'          => 'media_url',
+    'NEAREST_STREET'     => 'attribute[nearest_street]',
     'NORTHING'           => 'attribute[northing]',
     'PHONE'              => 'phone',
+    'POSTCODE'           => 'attribute[postcode]',
     'REQUESTED_DATETIME' => 'requested_datetime',
     'SERVICE_CODE'       => 'service_code',
     'STATUS'             => 'status',
+
 );
 
 my $req = new CGI;
@@ -294,6 +299,9 @@ sub insert_into_pem {
     my $service_code = $$h{$F{SERVICE_CODE}}; 
     my $description = $$h{$F{DESCRIPTION}};
     my $media_url = $$h{$F{MEDIA_URL}};
+    my $postcode = uc $$h{$F{POSTCODE}}; # postcode must be in upper case...
+    $postcode =~s/\s+//g; # ...and no spaces in postcode
+    
     if ($media_url) {
         $description .= ($STRIP_CONTROL_CHARS ne 'ruthless'? "\n\n":"  ") . "Photo: $media_url";
     }
@@ -306,6 +314,8 @@ sub insert_into_pem {
             ce_forename => :ce_forename,
             ce_surname => :ce_surname,
             ce_contact_type => :ce_contact_type,
+            ce_postcode => :ce_postcode,
+            ce_street => :ce_street,
             ce_work_phone => :ce_work_phone,
             ce_email => :ce_email,
             ce_description => :ce_description,
@@ -348,6 +358,8 @@ sub insert_into_pem {
     $bindings{":ce_work_phone"}    = substr($$h{$F{PHONE}}, 0, 25);          # '0117 600 4200'
     $bindings{":ce_email"}         = substr($$h{$F{EMAIL}}, 0, 50);          # 'info@exor.co.uk'
     $bindings{":ce_description"}   = substr($description, 0, 2000);          # 'Large Pothole'
+    $bindings{":ce_street"}        = substr($$h{$F{NEAREST_STREET}}, 0, 80); # calculated/human postcode
+    $bindings{":postcode"}         = substr($postcode, 0, 8);                # calculated nearest street
 
     foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values
