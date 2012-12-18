@@ -891,7 +891,7 @@ sub process_report : Private {
             $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
             $report->extra( \@extra );
         }
-    } elsif ( @{ $c->stash->{area_ids_to_list} } ) {
+    } elsif ( @{ $c->stash->{bodies_to_list} } ) {
 
         # There was an area with categories, but we've not been given one. Bail.
         $c->stash->{field_errors}->{category} = _('Please choose a category');

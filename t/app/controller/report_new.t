@@ -104,6 +104,57 @@ ok $contact7, "created test contact 7";
 foreach my $test (
     {
         msg    => 'all fields empty',
+        pc     => 'OX1 3DH',
+        fields => {
+            title         => '',
+            detail        => '',
+            photo         => '',
+            name          => '',
+            may_show_name => '1',
+            email         => '',
+            phone         => '',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {},
+        errors  => [
+            'Please enter a subject',
+            'Please enter some details',
+            # No category error, as no categories for Oxon at all, so is skipped
+            'Please enter your email',
+            'Please enter your name',
+        ],
+    },
+    {
+        msg    => 'all fields empty, bad category',
+        pc     => 'GL50 2PR',
+        fields => {
+            title         => '',
+            detail        => '',
+            photo         => '',
+            name          => '',
+            may_show_name => '1',
+            email         => '',
+            phone         => '',
+            category      => 'Something bad',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {
+            category => '-- Pick a category --',
+        },
+        errors  => [
+            'Please enter a subject',
+            'Please enter some details',
+            'Please choose a category',
+            'Please enter your email',
+            'Please enter your name',
+        ],
+    },
+    {
+        msg    => 'all fields empty except category',
         pc     => 'SW1A 1AA',
         fields => {
             title         => '',
