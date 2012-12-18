@@ -342,6 +342,10 @@ sub send_reports {
                 $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
             }
 
+            if ( $row->subcategory ) {
+                $h{subcategory_line} = sprintf(_("Subcategory: %s"), $row->subcategory) . "\n\n";
+            }
+
             $h{councils_name} = join(_(' and '), @dear);
             if ($h{category} eq _('Other')) {
                 $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
