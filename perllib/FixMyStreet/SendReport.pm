@@ -44,5 +44,12 @@ sub add_council {
     $self->councils->{ $council } = { info => $info, config => $config };
 }
 
+sub delete_council {
+    my $self = shift;
+    my $council = shift;
+
+    delete $self->councils->{$council};
+}
+
 
 1;

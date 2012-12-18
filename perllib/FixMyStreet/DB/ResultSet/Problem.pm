@@ -363,8 +363,33 @@ sub send_reports {
 
         if (mySociety::Config::get('STAGING_SITE')) {
             # on a staging server send emails to ourselves rather than the councils
+            # however, we can configure a list of councils that we use non email
+            # delivery, e.g. Open311, for testing purposes. For those we want to
+            # send using the non email method and for everyone else we want to use
+            # email
             my @testing_councils = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
-            unless ( grep { $row->council eq $_ } @testing_councils ) {
+
+            # we only care about non missing councils so we get the missing ones
+            # and then essentially throw them away as we're not going to have
+            # configured them to do anything.
+            my %councils = map { $_ => 1 } @{ $row->councils };
+
+            # We now take the councils that we have contact details for and if any of them
+            # are in the list of testing councils we look a bit harder otherwise we throw
+            # away all the non email delivery methods
+            if ( grep { $councils{ $_ } } @testing_councils ) {
+                my %tc = map { $_ => 1 } @testing_councils;
+                my @non_matching = grep { !$tc{$_} } keys %councils;
+                for my $sender ( keys %reporters ) {
+                    next if $sender =~ /FixMyStreet::SendReport::(Email|NI)/;
+                    for my $council ( @non_matching ) {
+                        $reporters{$sender}->delete_council( $council );
+                    }
+                }
+                if ( @non_matching ) {
+                    $reporters{'FixMyStreet::SendReport::Email'} = FixMyStreet::SendReport::Email->new();
+                }
+            } else {
                 %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI)/ } keys %reporters;
                 unless (%reporters) {
                     %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
