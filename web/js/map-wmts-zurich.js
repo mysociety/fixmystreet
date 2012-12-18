@@ -33,13 +33,13 @@
     OpenLayers.DOTS_PER_INCH = 96;
 
     fixmystreet.map_options = {
-        projection: new OpenLayers.Projection("EPSG:21781"),
         maxExtent: new OpenLayers.Bounds(676000, 241000, 690000, 255000),
         units: 'm',
         scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500']
     };
 
     fixmystreet.layer_options = {
+        projection: new OpenLayers.Projection("EPSG:21781"),
         name: "Luftbild",
         layer: "Luftbild",
         matrixSet: "nativeTileMatrixSet",
