@@ -22,7 +22,7 @@ has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
 has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
-has extended_description => ( is => 'ro', isa => 'Bool', default => 0 );
+has extended_description => ( is => 'ro', isa => 'Str', default => 1 );
 has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
 has use_extended_updates => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -176,10 +176,9 @@ Submitted via FixMyStreet
 EOT
 ;
     if ($self->extended_description ne 'oxfordshire') {
-        $description = <<EOT;
+        $description = <<EOT . $description;
 title: @{[$problem->title()]}
 
-$description
 EOT
     }
 
