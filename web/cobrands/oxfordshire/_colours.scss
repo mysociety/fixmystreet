@@ -1,7 +1,5 @@
 /* COLOURS */
 
-@import "../fixmystreet/_colours";
-
 $oxfordshire_dk_green: #114500;
 $oxfordshire_lt_green: #339E00;
 
@@ -9,8 +7,10 @@ $primary: $oxfordshire_lt_green;
 $primary_b: $oxfordshire_dk_green;
 $primary_text: #fff;
 
-$contrast1: $oxfordshire_lt_green;
-$contrast1_dark: #fff; // darken(#E1E3E4, 10%);
-$contrast2: blue;
+$col_click_map: $oxfordshire_lt_green;
+$col_click_map_dark: $primary_text;
+
+$col_fixed_label: $oxfordshire_lt_green;
+$col_fixed_label_dark: $primary_text;
 
 
