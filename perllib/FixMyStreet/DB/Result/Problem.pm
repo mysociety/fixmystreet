@@ -582,7 +582,7 @@ sub body {
 sub can_display_external_id {
     my $self = shift;
     if ($self->external_id && $self->send_method_used && 
-        ($self->send_method_used eq 'barnet' || $self->cobrand eq 'oxfordshire')) {
+        ($self->send_method_used eq 'barnet' || $self->council =~ /2237/)) {
         return 1;
     }
     return 0;    
@@ -602,7 +602,7 @@ sub processed_summary_string {
     my ( $problem, $c ) = @_;
     my ($duration_clause, $external_ref_clause);
     if ($problem->whensent) {
-        $duration_clause = $problem->duration_string($c)
+        $duration_clause = $problem->duration_string($c);
     }
     if ($problem->can_display_external_id) {
         if ($duration_clause) {
