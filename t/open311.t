@@ -106,7 +106,7 @@ subtest 'posting service request with basic_description' => sub {
         $extra,
         $problem->category,
         '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>',
-        { basic_description => 1 },
+        { extended_description => 0 },
     );
 
     is $results->{ res }, 248, 'got request id';

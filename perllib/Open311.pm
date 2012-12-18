@@ -22,7 +22,7 @@ has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
 has error => ( is => 'rw', 'isa' => 'Str', default => '' );
 has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
 has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
-has basic_description => ( is => 'ro', isa => 'Bool', default => 0 );
+has extended_description => ( is => 'ro', isa => 'Bool', default => 0 );
 has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
 has use_extended_updates => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -95,12 +95,12 @@ sub _populate_service_request_params {
     my $service_code = shift;
 
     my $description;
-    if ( $self->basic_description ) {
-        $description = $problem->detail;
-    } else {
+    if ( $self->extended_description ) {
         $description = $self->_generate_service_request_description(
             $problem, $extra
         );
+    } else {
+        $description = $problem->detail;
     }
 
     my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\.?\s+(.+)/ );
@@ -168,8 +168,6 @@ sub _generate_service_request_description {
     my $extra = shift;
 
     my $description = <<EOT;
-title: @{[$problem->title()]}
-
 detail: @{[$problem->detail()]}
 
 url: $extra->{url}
@@ -177,6 +175,13 @@ url: $extra->{url}
 Submitted via FixMyStreet
 EOT
 ;
+    if ($self->extended_description ne 'oxfordshire') {
+        $description = <<EOT;
+title: @{[$problem->title()]}
+
+$description
+EOT
+    }
 
     return $description;
 }

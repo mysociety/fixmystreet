@@ -37,7 +37,7 @@ sub send {
         my $send_notpinpointed  = 0;
         my $use_service_as_deviceid = 0;
 
-        my $basic_desc = 0;
+        my $extended_desc = 1;
 
         # Extra bromley fields
         if ( $row->council =~ /2482/ ) {
@@ -67,7 +67,7 @@ sub send {
                 push @$extra, { name => 'last_name', value => $lastname };
             }
 
-            $basic_desc = 1;
+            $extended_desc = 0;
         }
 
         # extra Oxfordshire fields: send northing and easting, and the FMS id
@@ -79,6 +79,8 @@ sub send {
                 push @$extra, { name => 'easting', value => $h->{easting} };
             }
             $row->extra( $extra );
+
+            $extended_desc = 'oxfordshire';
         }
 
         # FIXME: we've already looked this up before
@@ -95,7 +97,7 @@ sub send {
             always_send_latlong     => $always_send_latlong,
             send_notpinpointed      => $send_notpinpointed,
             use_service_as_deviceid => $use_service_as_deviceid,
-            basic_description       => $basic_desc,
+            extended_description    => $extended_desc,
         );
 
         # non standard west berks end points
