@@ -288,6 +288,12 @@ sub send_reports {
             $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude}, $row );
         }
 
+        if ( $cobrand->allow_anonymous_reports &&
+             $row->user->email eq $cobrand->anonymous_account->{'email'}
+         ) {
+             $h{anonymous_report} = 1;
+         }
+
         my %reporters = ();
         my ( $sender_count );
         if ($site eq 'emptyhomes') {
@@ -395,7 +401,7 @@ sub send_reports {
                 whensent => \'ms_current_timestamp()',
                 lastupdate => \'ms_current_timestamp()',
             } );
-            if ( $cobrand->report_sent_confirmation_email ) {
+            if ( $cobrand->report_sent_confirmation_email && !$h{anonymous_report}) {
                 _send_report_sent_email( $row, \%h, $nomail );
             }
         } else {
