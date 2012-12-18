@@ -58,7 +58,7 @@ sub disambiguate_location {
 }
 
 sub example_places {
-    return ( 'ST5 6PJ', 'Cemetery Rd, Silverdale' );
+    return ( 'WS1 4NH', 'Austin Drive, Coventry' );
 }
 
 sub send_questionnaires {
