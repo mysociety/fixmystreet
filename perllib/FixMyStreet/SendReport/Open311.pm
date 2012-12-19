@@ -70,10 +70,23 @@ sub send {
             $extended_desc = 0;
         }
 
-        # extra Oxfordshire fields: send northing and easting, and the FMS id
+        # extra Oxfordshire fields: send nearest street, postcode, northing and easting, and the FMS id
         if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
+            my ($postcode, $nearest_street) = ('', '');
+            for ($h->{closest_address}) {
+                $postcode = sprintf("%-10s", $1) if /Nearest postcode [^:]+: ((\w{1,4}\s?\w+|\w+))/;
+                    # use partial postcode or comma as delimiter, strip leading number (possible letter 221B) off too
+                    #    "99 Foo Street, London N11 1XX" becomes Foo Street
+                    #    "99 Foo Street N11 1XX" becomes Foo Street
+                $nearest_street = $1 if /Nearest road [^:]+: (?:\d+\w? )?(.*?)(\b[A-Z]+\d|,|$)/m;
+            }
+            $postcode = mySociety::PostcodeUtil::is_valid_postcode($h->{query})
+                ? $h->{query} : $postcode; # use given postcode if available
+
             my $extra = $row->extra;
             push @$extra, { name => 'external_id', value => $row->id };
+            push @$extra, { name => 'postcode', value => $postcode } if $postcode;
+            push @$extra, { name => 'nearest_street', value => $nearest_street } if $nearest_street;
             if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
                 push @$extra, { name => 'northing', value => $h->{northing} };
                 push @$extra, { name => 'easting', value => $h->{easting} };
