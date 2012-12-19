@@ -351,7 +351,7 @@ sub insert_into_pem {
     $bindings{":ce_email"}         = substr($$h{$F{EMAIL}}, 0, 50);          # 'info@exor.co.uk'
     $bindings{":ce_description"}   = substr($description, 0, 2000);          # 'Large Pothole'
     $bindings{":ce_street"}        = substr($$h{$F{NEAREST_STREET}}, 0, 80); # calculated/human postcode
-    $bindings{":postcode"}         = substr($postcode, 0, 8);                # calculated nearest street
+    $bindings{":ce_postcode"}      = substr($postcode, 0, 8);                # calculated nearest street
 
     foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values (see below)
