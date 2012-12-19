@@ -18,6 +18,8 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "body_id_seq",
   },
+  "name",
+  { data_type => "text", is_nullable => 0 },
   "endpoint",
   { data_type => "text", is_nullable => 1 },
   "jurisdiction",
@@ -34,10 +36,16 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "can_be_devolved",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "name",
-  { data_type => "text", is_nullable => 0 },
+  "parent",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->has_many(
+  "bodies",
+  "FixMyStreet::DB::Result::Body",
+  { "foreign.parent" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 __PACKAGE__->has_many(
   "body_areas",
   "FixMyStreet::DB::Result::BodyArea",
@@ -61,6 +69,17 @@ __PACKAGE__->has_many(
   { "foreign.body_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->belongs_to(
+  "parent",
+  "FixMyStreet::DB::Result::Body",
+  { id => "parent" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
+);
 __PACKAGE__->has_many(
   "users",
   "FixMyStreet::DB::Result::User",
@@ -69,8 +88,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-14 17:54:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2Z3gCosNomCTcjrwWy/RNA
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-19 12:47:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DdtXjMWRpz20ZHjtY3oP2w
 
 sub url {
     my ( $self, $c ) = @_;

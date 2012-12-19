@@ -280,6 +280,7 @@ sub body : Path('body') : Args(1) {
     $c->forward( 'check_page_allowed' );
     $c->forward( 'get_token' );
     $c->forward( 'lookup_body' );
+    $c->forward( 'fetch_all_bodies' );
     $c->forward( 'body_form_dropdowns' );
 
     if ( $c->req->param('posted') ) {
@@ -380,13 +381,14 @@ sub update_contacts : Private {
 sub body_params : Private {
     my ( $self, $c ) = @_;
 
-    my @fields = qw/name endpoint jurisdiction api_key send_method send_comments suppress_alerts comment_user_id can_be_devolved/;
+    my @fields = qw/name endpoint jurisdiction api_key send_method send_comments suppress_alerts comment_user_id can_be_devolved parent/;
     my %defaults = map { $_ => '' } @fields;
     %defaults = ( %defaults,
         send_comments => 0,
         suppress_alerts => 0,
         comment_user_id => undef,
         can_be_devolved => 0,
+        parent => undef,
     );
     my %params = map { $_ => $c->req->param($_) || $defaults{$_} } @fields;
     return \%params;

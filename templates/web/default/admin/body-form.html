@@ -6,8 +6,18 @@
     </p>
 
     <p>
+        <label for="parent">Parent</label>
+        <select name="parent" id="parent">
+            <option value=""> -- Select a body -- </option>
+            [% FOR b IN bodies %]
+            <option value="[% b.id %]"[% ' selected' IF body.parent.id == b.id %]>[% b.name %]</option>
+            [% END %]
+        </select>
+    </p>
+
+    <p>
         <label for="area_ids">Area covered</label>
-        <select name="area_ids" multiple>
+        <select name="area_ids" id="area_ids" multiple>
             <option value=""> -- Select an area -- </option>
             [% FOR area IN areas %]
             [% SET aid = area.id %]
@@ -18,7 +28,7 @@
 
     <p>
         <label for="send_method">Send Method</label>
-        <select name="send_method">
+        <select name="send_method" id="send_method">
             <option value=""> -- Select a method -- </option>
             [% FOR method IN send_methods %]
             <option value="[% method %]"[% ' selected' IF body.send_method == method %]>[% method %]</option>

@@ -16,6 +16,7 @@ __PACKAGE__->add_columns(
   "area_id",
   { data_type => "integer", is_nullable => 0 },
 );
+__PACKAGE__->add_unique_constraint("body_areas_body_id_area_id_idx", ["body_id", "area_id"]);
 __PACKAGE__->belongs_to(
   "body",
   "FixMyStreet::DB::Result::Body",
@@ -24,8 +25,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-14 17:54:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jTU6Nu/MQEvg9o8Hf5YQUQ
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-19 12:47:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aAr+Nadyu8IckZlK6+PTNg
 
  __PACKAGE__->set_primary_key(__PACKAGE__->columns);
 
