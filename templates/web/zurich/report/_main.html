@@ -1,0 +1,24 @@
+<div class="problem-header cf">
+  [% IF problem.state != 'unconfirmed' %]
+    <h1>[% problem.title | html %]</h1>
+  [% END %]
+
+    <p><em>
+      [% SET date_time = prettify_epoch( problem.created_local.epoch ) %]
+      [% IF problem.category AND problem.category != loc('Other') %]
+        [% tprintf( loc('Reported in the %s category at %s'), problem.category, date_time ) %]
+      [% ELSE %]
+        [% tprintf( loc('Reported at %s'), date_time ) %]
+      [% END %]
+
+        [%- IF !problem.used_map %]; <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>[% END %]
+    </em></p>
+
+  [% IF problem.state != 'unconfirmed' %]
+    [% INCLUDE 'report/photo.html' object=problem %]
+    [% add_links( problem.detail ) | html_para %]
+  [% ELSE %]
+    [% loc('This report is awaiting moderation.') %]
+  [% END %]
+
+</div>

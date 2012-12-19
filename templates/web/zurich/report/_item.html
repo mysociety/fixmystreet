@@ -1,0 +1,30 @@
+<li>
+<a class="text" href="[% c.uri_for('/report', problem.id ) %]">
+    [% IF problem.state != 'unconfirmed' AND problem.photo %]
+        <img class="img" height="60" width="90" src="/photo/[% problem.id %].fp.jpeg" alt="">
+    [% END %]
+      [% IF problem.state != 'unconfirmed' %]
+        <h4>[% problem.title | html %]</h4>
+      [% ELSE %]
+        <h4><em>[% loc('Awaiting moderation') %]</em></h4>
+      [% END %]
+        <small>[% IF problem.created_local %]
+            [%- prettify_epoch( problem.created_local.epoch, 1 ) %]
+            [%- ELSE %]
+            [%- prettify_epoch( problem.created, 1 ) %]
+            [%- END %]
+            [%- IF dist %], [% dist %]km[% END %]
+            [%- IF include_lastupdate AND problem.created != problem.lastupdate AND problem.whensent != problem.lastupdate %], last updated [% prettify_epoch( problem.lastupdate, 1 ) %]
+            [%- END %]
+        [% IF include_lastupdate %]
+            [% IF problem.bodies > 1 %] [% loc('(sent to both)') %]
+            [% ELSIF problem.bodies == 0 %] [% loc('(not sent to council)') %]
+            [% END %]
+        [% END %]
+        [% IF NOT no_fixed AND problem.is_fixed %]
+            [% loc('(fixed)') %]
+        [% ELSIF NOT no_fixed AND problem.is_closed %]
+            [% loc('(closed)') %]
+        [% END %]</small>
+</a>
+</li>

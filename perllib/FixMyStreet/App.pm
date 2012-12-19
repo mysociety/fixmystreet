@@ -188,6 +188,10 @@ sub setup_request {
         mySociety::MaPit::configure( "http://$host/fakemapit/" );
     }
 
+    if ($c->cobrand->moniker eq 'zurich') {
+        FixMyStreet::DB::Result::Problem->visible_states_add_unconfirmed();
+    }
+
     return $c;
 }
 

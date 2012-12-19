@@ -252,21 +252,22 @@ HASHREF.
 
 =cut
 
+my $visible_states = {
+    'confirmed'       => 1,
+    'planned'         => 1,
+    'investigating'   => 1,
+    'in progress'     => 1,
+    'fixed'           => 1,
+    'fixed - council' => 1,
+    'fixed - user'    => 1,
+    'closed'          => 1,
+};
 sub visible_states {
-    my $states = {
-        'confirmed'       => 1,
-        'planned'         => 1,
-        'investigating'   => 1,
-        'in progress'     => 1,
-        'fixed'           => 1,
-        'fixed - council' => 1,
-        'fixed - user'    => 1,
-        'closed'          => 1,
-    };
-
-    return wantarray ? keys %{$states} : $states;
+    return wantarray ? keys %{$visible_states} : $visible_states;
 }
-
+sub visible_states_add_unconfirmed {
+    $visible_states->{unconfirmed} = 1;
+}
 
 my $tz = DateTime::TimeZone->new( name => "local" );
 
