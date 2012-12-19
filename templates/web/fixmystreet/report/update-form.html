@@ -138,7 +138,7 @@
     <input type="text" [% IF problem.council == '2482' %]class="validName" [% END %]name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
 
     <div class="checkbox-group">
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF update.anonymous==0 OR (c.cobrand.default_show_name AND update.anonymous=='') %]>
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
     </div>
     <div class="checkbox-group">

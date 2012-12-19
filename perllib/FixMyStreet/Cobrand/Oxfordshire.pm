@@ -59,5 +59,7 @@ sub base_url_for_report {
     }
 }
 
+sub default_show_name { 0 }
+
 1;
 

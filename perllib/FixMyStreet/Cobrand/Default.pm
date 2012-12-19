@@ -740,5 +740,15 @@ until the contacts/area/body handling is rewritten to be better.
 
 sub reports_by_body { 0; }
 
+=head2 default_show_name
+
+Returns true if the show name checkbox should be ticked by default.
+
+=cut
+
+sub default_show_name {
+    1;
+}
+
 1;
 

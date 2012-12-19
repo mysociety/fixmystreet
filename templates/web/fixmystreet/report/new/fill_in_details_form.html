@@ -125,17 +125,7 @@
 
                     [%# if there is nothing in the name field then set check box as default on form %]
                     <div class="checkbox-group">
-                        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"
-                          [% IF c.cobrand.moniker == 'fixmybarangay' && c.user.from_council %]
-                            [%# 
-                                FMB staff reports are anonymous by default; so may_show_name is checked only if explicitly set to 0.
-                                If the user has not set it (that is, it is null) TemplateToolkit sees an empty string. 
-                            %]
-                            [% 'checked' IF report.anonymous==0 %] 
-                          [% ELSE %]
-                            [% 'checked' IF !report.anonymous %]
-                          [% END %]
-                         >
+                        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]>
                         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %] </label>
                     </div>
 
@@ -203,7 +193,7 @@
 
                         [%# if there is nothing in the name field then set check box as default on form %]
                         <div class="checkbox-group">
-                            <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF !report.anonymous %]>
+                            <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]>
                             <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
                         </div>
 

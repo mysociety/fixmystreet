@@ -151,7 +151,7 @@
     </div>
 
     <div class="checkbox">
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' UNLESS update.anonymous %]>
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF update.anonymous==0 OR (c.cobrand.default_show_name AND update.anonymous=='') %]>
         <label for="form_may_show_name">[% loc('Show my name publicly') %]</label>
         <small>[% loc('(we never show your email)') %]</small>
     </div>

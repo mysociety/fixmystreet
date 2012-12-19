@@ -43,5 +43,12 @@ sub can_support_problems {
 
 sub reports_by_body { 1 }
 
+sub default_show_name {
+    my $self = shift;
+
+    return 0 if $self->{c}->user->from_council;
+    return 1;
+}
+
 1;
 
