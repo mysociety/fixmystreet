@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-12-10 13:18+0000\n"
-"PO-Revision-Date: 2012-11-20 17:17+0100\n"
+"PO-Revision-Date: 2012-12-17 16:50+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "Language: \n"
@@ -161,7 +161,7 @@ msgstr "*unbekannt*"
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:656
 #: perllib/FixMyStreet/DB/Result/Problem.pm:353
 msgid "-- Pick a category --"
-msgstr "-- W&auml;hlen Sie eine Kategorie --"
+msgstr "-- Wählen Sie eine Kategorie --"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:608
 #: perllib/FixMyStreet/DB/Result/Problem.pm:359
@@ -2046,6 +2046,8 @@ msgid ""
 "Please fill in the form below with details of the problem, and describe the "
 "location as precisely as possible in the details box."
 msgstr ""
+"F&uuml;llen Sie das Formular mit den Details des Mangels aus und beschreiben "
+"Sie den Ort des Mangels m&ouml;glichst genau."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:243
 msgid "Please indicate whether you'd like to receive another questionnaire"
@@ -3422,6 +3424,8 @@ msgid ""
 "We found more than one match for that location. We show up to ten matches, "
 "please try a different search if yours is not here."
 msgstr ""
+"Ihre Anfrage ergab mehr als eine m&ouml;gliche Adresse. Die ersten zehn "
+"Treffer werden unten aufgelistet."
 
 #: templates/web/default/auth/token.html:19
 msgid "We have sent you an email containing a link to confirm your account."
@@ -4009,8 +4013,8 @@ msgstr[1] "<big>%s</big> Meldungen in der letzten Woche"
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
-msgstr[0] "<big>%s</big> bearbeiteter Mangel im letzten Monat"
-msgstr[1] "<big>%s</big> bearbeitete M&auml;ngel im letzten Monat"
+msgstr[0] "<big>%s</big> bearbeitete Meldung im letzten Monat"
+msgstr[1] "<big>%s</big> bearbeitete Meldungen im letzten Monat"
 
 #: templates/web/default/report/new/councils_text_some.html:14
 #, perl-format
