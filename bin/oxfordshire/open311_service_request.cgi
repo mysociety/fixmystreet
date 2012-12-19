@@ -100,6 +100,7 @@ my %F = (
     'ADDRESS_ID'         => 'address_id',
     'ADDRESS_STRING'     => 'address_string',
     'API_KEY'            => 'api_key',
+    'CLOSEST_ADDRESS'    => 'attribute[closest_address]',
     'DESCRIPTION'        => 'description',
     'DEVICE_ID'          => 'device_id',
     'EASTING'            => 'attribute[easting]',
@@ -110,10 +111,8 @@ my %F = (
     'LAT'                => 'lat',
     'LONG'               => 'long',
     'MEDIA_URL'          => 'media_url',
-    'NEAREST_STREET'     => 'attribute[nearest_street]',
     'NORTHING'           => 'attribute[northing]',
     'PHONE'              => 'phone',
-    'POSTCODE'           => 'attribute[postcode]',
     'REQUESTED_DATETIME' => 'requested_datetime',
     'SERVICE_CODE'       => 'service_code',
     'STATUS'             => 'status',
@@ -286,14 +285,35 @@ sub insert_into_pem {
 
     # set specifc vars up where further processing on them might be needed:
     my $undef = undef;
-    my $address = $$h{$F{ADDRESS_STRING}};
     my $status = $$h{$F{STATUS}}; 
     my $service_code = $$h{$F{SERVICE_CODE}}; 
     my $description = $$h{$F{DESCRIPTION}};
     my $media_url = $$h{$F{MEDIA_URL}};
-    my $postcode = uc $$h{$F{POSTCODE}}; # postcode must be in upper case...
-    $postcode =~s/\s+//g; # ...and no spaces in postcode
+
+    # closest_address may be wildly off: may be entirely blank, or contain
+    # odd or unexpected structure; this is a best-guess approach
+    my $address = $$h{$F{CLOSEST_ADDRESS}};
+    my ($building_number, $street_name, $locality, $town_name, $postcode);
     
+    # note: postcodes may be partial (will PEM reject partial postcodes?)
+    if ($address=~s/\s*(\b[a-z]+\d+\s*(\d+[a-z]*))\s*$//i) {
+        $postcode = uc $1; # postcode must be in upper case...
+        $postcode =~s/\s+//g; # ...and no spaces in postcode
+    }
+    if ($address=~/(^\d+\w?)?(.*)\s*/i) {
+        $building_number = $1;
+        $street_name = $2;
+        if ($street_name=~/(.*),\s*((\w+\s*)\w+)\s*$/) {
+            $street_name = $1;
+            $town_name = $2;
+        }
+        if ($street_name=~/(.*),\s*((\w+\s*)\w+)\s*$/) {
+            $street_name = $1;
+            $locality = $2;
+        }
+        $street_name =~ s/(^\s+|\s+$)//g;
+    }
+        
     if ($media_url) {
         $description .= ($STRIP_CONTROL_CHARS ne 'ruthless'? "\n\n":"  ") . "Photo: $media_url";
     }
@@ -307,6 +327,9 @@ sub insert_into_pem {
             ce_surname => :ce_surname,
             ce_contact_type => :ce_contact_type,
             ce_postcode => :ce_postcode,
+            ce_building_no => :ce_building_no,
+            ce_locality => :ce_locality,
+            ce_town => :ce_town,
             ce_street => :ce_street,
             ce_work_phone => :ce_work_phone,
             ce_email => :ce_email,
@@ -327,6 +350,7 @@ sub insert_into_pem {
 
     my %bindings;
                                                      # comments here are suggested values
+                                                     # field lengths are from OCC's Java portlet
     # fixed values    
     $bindings{":ce_cat"}            = 'REQS';         # or REQS ?
     $bindings{":ce_class"}          = 'SERV';        # 'FRML' ?
@@ -350,8 +374,13 @@ sub insert_into_pem {
     $bindings{":ce_work_phone"}    = substr($$h{$F{PHONE}}, 0, 25);          # '0117 600 4200'
     $bindings{":ce_email"}         = substr($$h{$F{EMAIL}}, 0, 50);          # 'info@exor.co.uk'
     $bindings{":ce_description"}   = substr($description, 0, 2000);          # 'Large Pothole'
-    $bindings{":ce_street"}        = substr($$h{$F{NEAREST_STREET}}, 0, 80); # calculated/human postcode
-    $bindings{":ce_postcode"}      = substr($postcode, 0, 8);                # calculated nearest street
+    
+    # nearest address guesstimate
+    $bindings{":ce_building_no"}   = substr($building_number, 0, 6);
+    $bindings{":ce_street"}        = substr($street_name, 0, 80);
+    $bindings{":ce_locality"}      = substr($locality, 0, 80);
+    $bindings{":ce_town"}          = substr($town_name, 0, 60);
+    $bindings{":ce_postcode"}      = substr($postcode, 0, 8);
 
     foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values (see below)
@@ -427,8 +456,7 @@ sub get_FAKE_INSERT {
             $F{'NORTHING'}           => '206709',
             $F{'SERVICE_CODE'}       => 'OT',
             $F{'MEDIA_URL'}          => 'http://www.example.com/pothole.jpg',
-            $F{'POSTCODE'}           => 'OX20 1SZ',
-            $F{'NEAREST_STREET'}     => 'Testit Street'
+            $F{'CLOSEST_ADDRESS'}     => '19 Testit Street, Somewhere,Foobar BN271TT'
         );
     return insert_into_pem(\%fake_data)
 }
