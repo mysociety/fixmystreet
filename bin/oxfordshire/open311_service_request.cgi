@@ -9,10 +9,11 @@
 
 use strict;
 use CGI;
+use Time::Piece;
 use DBI;
 use DBD::Oracle qw(:ora_types);
-### for local testing (no Oracle): use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
-use Time::Piece;
+### for local testing (no Oracle): 
+###use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 
 ###################################################################
 # Config file: values in the config file override any values set 
@@ -57,17 +58,6 @@ my $TESTING_WRITE_TO_FILE = 0;  # write to file instead of DB
 my $OUT_FILENAME          = "fms-test.txt";
 my $TEST_SERVICE_DISCOVERY=0;  # switch to 1 to run service discovery, which confirms the DB connection at least
 
-my %PEM_BOUND_VAR_TYPES;
-my @PEM_BOUND_VAR_NAMES;
-foreach (get_pem_field_names()) {
-    if (s/__(NUMBER|DATE)$//) {
-        push @PEM_BOUND_VAR_NAMES, $_;
-        $PEM_BOUND_VAR_TYPES{$_} = $1 || ''; # empty for varchar2 
-    } else {
-        push @PEM_BOUND_VAR_NAMES, $_;
-    }
-}
-
 # Config file overrides existing values for these, if present:
 if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
     while (<CONF>) {
@@ -98,6 +88,8 @@ if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
 # $ENV{ORACLE_SID}     = $ORACLE_SID;
 # $ENV{PATH}           ="$ORACLE_HOME/bin";
 # $ENV{LD_LIBRARY_PATH}="$ORACLE_HOME/lib";
+
+my %PEM_BOUND_VAR_TYPES = get_pem_field_types();
 
 my $ERR_MSG            = 'error'; # unique key in data hash
 
@@ -362,14 +354,18 @@ sub insert_into_pem {
     $bindings{":postcode"}         = substr($postcode, 0, 8);                # calculated nearest street
 
     foreach my $name (sort keys %bindings) {
-        next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values
-        my $type = $PEM_BOUND_VAR_TYPES{$name} || 'VARCHAR2';
+        next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values (see below)
         $sth->bind_param(
             $name, 
             $bindings{$name}, 
-            $type eq 'NUMBER'? ORA_NUMBER : ($type eq 'DATE'? ORA_DATE : ORA_VARCHAR2 )
+            $PEM_BOUND_VAR_TYPES{$name} || ORA_VARCHAR2
         );  
     }
+    # return values are bound explicitly here:
+    $sth->bind_param_inout(":error_value",   \$error_value, 12);   #> l_ERROR_VALUE # number
+    $sth->bind_param_inout(":error_product", \$error_product, 10); #> l_ERROR_PRODUCT (will always be 'DOC')
+    $sth->bind_param_inout(":ce_doc_id",     \$pem_id, 12);        #> l_ce_doc_id # number
+    
 
     # not used, but from the example docs, for reference
     # $sth->bind_param(":ce_contact_title",     $undef);      # 'MR'
@@ -390,11 +386,6 @@ sub insert_into_pem {
     # $sth->bind_param(":ce_hct_home_phone",    $undef);      # '0117 900 6201'
     # $sth->bind_param(":ce_hct_mobile_phone",  $undef);      # '07111 1111111'
     # $sth->bind_param(":ce_compl_remarks",     $undef);      # remarks (notes) max 254 char
-    
-    # return values:
-    $sth->bind_param_inout(":error_value",   \$error_value, 12);   #> l_ERROR_VALUE # number
-    $sth->bind_param_inout(":error_product", \$error_product, 10); #> l_ERROR_PRODUCT (will always be 'DOC')
-    $sth->bind_param_inout(":ce_doc_id",     \$pem_id, 12);        #> l_ce_doc_id # number
 
     $sth->execute();
     $dbh->disconnect;
@@ -477,98 +468,35 @@ XML
 }
 
 #------------------------------------------------------------------
-# get_pem_field_names
-# return list of params for the stored procedure *in the correct order*
-# Also: __NUMBER and __DATE suffixes for anything that isn't a VARCHAR2
-# This also adds the colon prefix to all names.
-# Note the last three of these are inout params, and are handled
-# as a special (hardcoded) case when used (see above).
-#
-# These are currently only used for type lookup, so should probably
-# move them into the code as a name => type lookup; furthermore most of 
-# these are not used, and default to varchar2 anyway.
+# get_pem_field_types
+# return hash of types by field name: any not explicitly set here
+# can be defaulted to VARCHAR2
 #------------------------------------------------------------------
-sub get_pem_field_names {
-    return map {":$_"} qw(
-ce_cat
-ce_class
-ce_title
-ce_contact_title
-ce_forename
-ce_surname
-ce_contact_type
-ce_flag
-ce_pcode_id
-ce_postcode
-ce_building_no
-ce_building_name
-ce_street
-ce_locality
-ce_town
-ce_county
-ce_organisation
-ce_work_phone
-ce_email
-ce_location
-ce_description
-ce_enquiry_type
-ce_source
-ce_incident_datetime__DATE
-ce_cpr_id
-ce_asset_id
-ce_rse_he_id
-ce_x__NUMBER
-ce_y__NUMBER
-ce_date_expires__DATE
-ce_doc_reference
-ce_issue_number__NUMBER
-ce_category
-ce_status_date__DATE
-ce_resp_of
-ce_compl_ack_flag
-ce_compl_ack_date__DATE
-ce_compl_flag
-ce_compl_peo_date__DATE
-ce_compl_target__DATE
-ce_compl_complete__DATE
-ce_compl_referred_to
-ce_compl_police_notif_flag
-ce_compl_date_police_notif
-ce_compl_from__DATE
-ce_compl_to__DATE
-ce_compl_claim
-ce_compl_corresp_date__DATE
-ce_compl_corresp_deliv_date__DATE
-ce_compl_no_of_petitioners__NUMBER
-ce_compl_remarks
-ce_compl_cause
-ce_compl_injuries
-ce_compl_damgae
-ce_compl_action
-ce_compl_litigation_flag
-ce_compl_litigation_reason
-ce_compl_claim_no
-ce_compl_determination
-ce_compl_est_cost__NUMBER
-ce_compl_adv_cost__NUMBER
-ce_compl_act_cost__NUMBER
-ce_compl_follow_up1__DATE
-ce_compl_follow_up2__DATE
-ce_compl_follow_uo3__DATE
-ce_compl_insurance_claim
-ce_compl_summons_received
-ce_compl_user_type
-ce_hct_vip
-ce_hct_home_phone
-ce_hct_mobile_phone
-ce_hct_fax
-ce_had_sub_build_name
-ce_had_property_type
-ce_status_code
-ce_date_time_arrived__DATE
-ce_reason_late
-error_value__NUMBER
-error_product
-ce_doc_id__NUMBER
+sub get_pem_field_types {
+    return (
+        ':ce_incident_datetime' => ORA_DATE,
+        ':ce_x' => ORA_NUMBER,
+        ':ce_y' => ORA_NUMBER,
+        ':ce_date_expires' => ORA_DATE,
+        ':ce_issue_number' => ORA_NUMBER,
+        ':ce_status_date' => ORA_DATE,
+        ':ce_compl_ack_date' => ORA_DATE,
+        ':ce_compl_peo_date' => ORA_DATE,
+        ':ce_compl_target' => ORA_DATE,
+        ':ce_compl_complete' => ORA_DATE,
+        ':ce_compl_from' => ORA_DATE,
+        ':ce_compl_to' => ORA_DATE,
+        ':ce_compl_corresp_date' => ORA_DATE,
+        ':ce_compl_corresp_deliv_date' => ORA_DATE,
+        ':ce_compl_no_of_petitioners' => ORA_NUMBER,
+        ':ce_compl_est_cost' => ORA_NUMBER,
+        ':ce_compl_adv_cost' => ORA_NUMBER,
+        ':ce_compl_act_cost' => ORA_NUMBER,
+        ':ce_compl_follow_up1' => ORA_DATE,
+        ':ce_compl_follow_up2' => ORA_DATE,
+        ':ce_compl_follow_uo3' => ORA_DATE,
+        ':ce_date_time_arrived' => ORA_DATE,
+        ':error_value' => ORA_NUMBER,
+        ':ce_doc_id' => ORA_NUMBER,
     )
 }
