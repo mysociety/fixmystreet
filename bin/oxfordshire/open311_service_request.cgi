@@ -13,7 +13,7 @@ use Time::Piece;
 use DBI;
 use DBD::Oracle qw(:ora_types);
 ### for local testing (no Oracle): 
-###use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
+# use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 
 ###################################################################
 # Config file: values in the config file override any values set 
@@ -52,7 +52,7 @@ my $STORED_PROC_NAME  = 'PEM.create_enquiry';
 #   'ruthless' removes everything (i.e. all POSIX control chars)
 #   'desc'     removes everything, but keeps tabs and newlines in the 'description' field, where they matter
 #   'normal'   keeps tabs and newlines 
-my $STRIP_CONTROL_CHARS   = 'normal';  
+my $STRIP_CONTROL_CHARS   = 'ruthless';  
 
 my $TESTING_WRITE_TO_FILE  = 0;  # write to file instead of DB
 my $OUT_FILENAME           = "fms-test.txt";
@@ -138,7 +138,7 @@ if ($TEST_SERVICE_DISCOVERY) {
     get_service_discovery($req);
 } else {
     ### # allow a GET to make an insert, for testing (from the commandnd line!)
-    ### my $fixme = get_FAKE_INSERT($req); print "Returned $fixme\n";
+    ###my $fixme = get_FAKE_INSERT($req); print "Returned $fixme\n";
     get_service_requests($req);
 }
 
@@ -165,11 +165,7 @@ sub post_service_request {
     error_and_exit(GENERAL_SERVICE_ERROR, "no address or long-lat provided")
         unless ( (is_longlat($data{$F{LONG}}) && is_longlat($data{$F{LAT}})) || $data{$F{ADDRESS_STRING}} );
 
-    if ($TESTING_WRITE_TO_FILE) {
-        $pem_id = dump_to_file(\%data);
-    } else {
-        $pem_id = insert_into_pem(\%data);
-    }
+    $pem_id = insert_into_pem(\%data);
     
     if (! $pem_id) {
         error_and_exit(FATAL_ERROR, $data{$ERR_MSG} || "failed to get PEM ID");
@@ -263,8 +259,6 @@ sub dump_to_file {
 sub insert_into_pem {
     my $h = shift; # href to data hash
 
-    my $dbh = get_db_connection();
-
     my $pem_id;
     my $error_value;
     my $error_product;
@@ -286,33 +280,7 @@ sub insert_into_pem {
         $location=~s/(Nearest road)[^:]+:/$1:/;
         $location=~s/(Nearest postcode)[^:]+:(.*?)(\(\w+ away\))?\s*(\n|$)/$1: $2/;
     }
-
-    my $sth = $dbh->prepare(q#
-        BEGIN
-        PEM.create_enquiry(
-            ce_cat => :ce_cat,
-            ce_class => :ce_class,
-            ce_forename => :ce_forename,
-            ce_surname => :ce_surname,
-            ce_contact_type => :ce_contact_type,
-            ce_location => :ce_location,
-            ce_work_phone => :ce_work_phone,
-            ce_email => :ce_email,
-            ce_description => :ce_description,
-            ce_enquiry_type => :ce_enquiry_type,
-            ce_source => :ce_source,
-            ce_incident_datetime => to_Date(:ce_incident_datetime,'YYYY-MM-DD HH24:MI'),
-            ce_x => :ce_x,
-            ce_y => :ce_y,
-            ce_doc_reference => :ce_doc_reference,
-            ce_status_code => :ce_status_code,
-            ce_compl_user_type => :ce_compl_user_type,
-            error_value => :error_value,
-            error_product => :error_product,
-            ce_doc_id => :ce_doc_id);
-        END;
-#);
-
+    
     my %bindings;
                                                      # comments here are suggested values
                                                      # field lengths are from OCC's Java portlet
@@ -341,7 +309,40 @@ sub insert_into_pem {
     $bindings{":ce_description"}   = strip($description, 2000, $F{DESCRIPTION});          # 'Large Pothole'
 
     # nearest address guesstimate
-    $bindings{":ce_location"}      = strip($$h{$F{CLOSEST_ADDRESS}}, 254);
+    $bindings{":ce_location"}      = strip($location, 254);
+    
+    if ($TESTING_WRITE_TO_FILE) {
+        return dump_to_file(\%bindings);
+    }
+    
+    # everything ready: now put it into the database
+    my $dbh = get_db_connection();
+
+    my $sth = $dbh->prepare(q#
+        BEGIN
+        PEM.create_enquiry(
+            ce_cat => :ce_cat,
+            ce_class => :ce_class,
+            ce_forename => :ce_forename,
+            ce_surname => :ce_surname,
+            ce_contact_type => :ce_contact_type,
+            ce_location => :ce_location,
+            ce_work_phone => :ce_work_phone,
+            ce_email => :ce_email,
+            ce_description => :ce_description,
+            ce_enquiry_type => :ce_enquiry_type,
+            ce_source => :ce_source,
+            ce_incident_datetime => to_Date(:ce_incident_datetime,'YYYY-MM-DD HH24:MI'),
+            ce_x => :ce_x,
+            ce_y => :ce_y,
+            ce_doc_reference => :ce_doc_reference,
+            ce_status_code => :ce_status_code,
+            ce_compl_user_type => :ce_compl_user_type,
+            error_value => :error_value,
+            error_product => :error_product,
+            ce_doc_id => :ce_doc_id);
+        END;
+#);
 
     foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values (see below)
@@ -355,7 +356,6 @@ sub insert_into_pem {
     $sth->bind_param_inout(":error_value",   \$error_value, 12);   #> l_ERROR_VALUE # number
     $sth->bind_param_inout(":error_product", \$error_product, 10); #> l_ERROR_PRODUCT (will always be 'DOC')
     $sth->bind_param_inout(":ce_doc_id",     \$pem_id, 12);        #> l_ce_doc_id # number
-    
 
     # not used, but from the example docs, for reference
     # $sth->bind_param(":ce_contact_title",     $undef);      # 'MR'
@@ -364,7 +364,6 @@ sub insert_into_pem {
     # $sth->bind_param(":ce_building_name",     $undef);      # 'CLIFTON HEIGHTS'
     # $sth->bind_param(":ce_street",            $undef);      # 'HIGH STREET'
     # $sth->bind_param(":ce_town",              $undef);      # 'BRSITOL'
-    # $sth->bind_param(":ce_location",          $undef);      # 'Outside Flying Horse Public House'
     # $sth->bind_param(":ce_enquiry_type",      $undef);      # 'CD' , ce_source => 'T'
     # $sth->bind_param(":ce_cpr_id",            $undef);      # '5' (priority)
     # $sth->bind_param(":ce_rse_he_id",         $undef);      #> nm3net.get_ne_id('1200D90970/09001','L')
@@ -400,7 +399,7 @@ sub strip {
         if ($STRIP_CONTROL_CHARS eq 'ruthless') {
             $s =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
         } elsif ($STRIP_CONTROL_CHARS eq 'desc') {
-            if ($field_name eq 'DESCRIPTION') {
+            if ($field_name eq $F{DESCRIPTION}) {
                 $s =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
             } else {
                 $s =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
@@ -441,7 +440,11 @@ sub get_FAKE_INSERT {
             $F{'NORTHING'}           => '206709',
             $F{'SERVICE_CODE'}       => 'OT',
             $F{'MEDIA_URL'}          => 'http://www.example.com/pothole.jpg',
-            $F{'CLOSEST_ADDRESS'}     => '19 Testit Street, Somewhere,Foobar BN271TT'
+            $F{'CLOSEST_ADDRESS'}     => <<TEXT
+Nearest road to the pin placed on the map (automatically generated by Bing Maps): St Giles, Oxford, OX1 3
+
+Nearest postcode to the pin placed on the map (automatically generated): OX1 2LA (46m away)
+TEXT
         );
     return insert_into_pem(\%fake_data)
 }
