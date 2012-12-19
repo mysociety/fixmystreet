@@ -1,10 +1,6 @@
-Subject: Fix My Z&uuml;rich: #<?=----$values['ID']----?>
-
-
+Subject: Fix my Zurich: #<?=$values['ID']?>
 
 <?=$values['url']?>
 
-
 <?=$values['detail']?>
-
 

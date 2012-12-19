@@ -1,12 +1,8 @@
-Subject: R&uuml;ckmeldung erforderlich auf FixMyZ&uuml;rich
+Subject: Rückmeldung erforderlich auf Fix my Zurich
 
-
-Die folgenden Meldungen wurden eskaliert, da sie nicht innerhalb von f&uuml;nf Tagen beantwortet worden sind:
-
+Die folgenden Meldungen wurden eskaliert, da sie nicht innerhalb von fünf Tagen beantwortet worden sind:
 
 <?=$values['data']?>
-
-
 
 Um diese Meldungen zu bearbeiten, klicken Sie auf folgende URL:
 
