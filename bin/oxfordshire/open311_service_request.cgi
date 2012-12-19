@@ -54,9 +54,9 @@ my $STORED_PROC_NAME  = 'PEM.create_enquiry';
 #   'normal'   keeps tabs and newlines 
 my $STRIP_CONTROL_CHARS   = 'normal';  
 
-my $TESTING_WRITE_TO_FILE = 0;  # write to file instead of DB
-my $OUT_FILENAME          = "fms-test.txt";
-my $TEST_SERVICE_DISCOVERY=0;  # switch to 1 to run service discovery, which confirms the DB connection at least
+my $TESTING_WRITE_TO_FILE  = 0;  # write to file instead of DB
+my $OUT_FILENAME           = "fms-test.txt";
+my $TEST_SERVICE_DISCOVERY = 0;  # switch to 1 to run service discovery, which confirms the DB connection at least
 
 # Config file overrides existing values for these, if present:
 if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
@@ -427,6 +427,8 @@ sub get_FAKE_INSERT {
             $F{'NORTHING'}           => '206709',
             $F{'SERVICE_CODE'}       => 'OT',
             $F{'MEDIA_URL'}          => 'http://www.example.com/pothole.jpg',
+            $F{'POSTCODE'}           => 'OX20 1SZ',
+            $F{'NEAREST_STREET'}     => 'Testit Street'
         );
     return insert_into_pem(\%fake_data)
 }
