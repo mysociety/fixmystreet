@@ -156,20 +156,6 @@ sub post_service_request {
     foreach (values %F) {
         $data{$_} = $req -> param($_);
         $data{$_} =~ s/^\s+|\s+$//g; # trim
-
-        if ($STRIP_CONTROL_CHARS) {
-            if ($STRIP_CONTROL_CHARS eq 'ruthless') {
-                $data{$_} =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
-            } elsif ($STRIP_CONTROL_CHARS eq 'desc') {
-                if ($_ eq 'DESCRIPTION') {
-                    $data{$_} =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
-                } else {
-                    $data{$_} =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
-                }
-            } else { 
-                $data{$_} =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
-            }
-        }
     }
 
     error_and_exit(CODE_OR_ID_NOT_PROVIDED, "missing service code (Open311 requires one)") 
@@ -289,11 +275,16 @@ sub insert_into_pem {
     my $service_code = $$h{$F{SERVICE_CODE}}; 
     my $description = $$h{$F{DESCRIPTION}};
     my $media_url = $$h{$F{MEDIA_URL}};
-        
     if ($media_url) {
         # don't put URL for full images into the database (because they're too big to see on a Blackberry)
         $media_url =~ s/\.full(\.jpe?g)$/$1/;
         $description .= ($STRIP_CONTROL_CHARS ne 'ruthless'? "\n\n":"  ") . "Photo: $media_url";
+    }
+    my $location = $$h{$F{CLOSEST_ADDRESS}};
+    if ($location) {
+        # strip out everything apart from "Nearest" preamble
+        $location=~s/(Nearest road)[^:]+:/$1:/;
+        $location=~s/(Nearest postcode)[^:]+:(.*?)(\(\w+ away\))?\s*(\n|$)/$1: $2/;
     }
 
     my $sth = $dbh->prepare(q#
@@ -343,14 +334,14 @@ sub insert_into_pem {
     # incoming data
     $bindings{":ce_x"}             = $$h{$F{EASTING}};
     $bindings{":ce_y"}             = $$h{$F{NORTHING}};
-    $bindings{":ce_forename"}      = substr($$h{$F{FIRST_NAME}}, 0, 30);     # 'CLIFF'
-    $bindings{":ce_surname"}       = substr($$h{$F{LAST_NAME}}, 0, 30);      # 'STEWART'
-    $bindings{":ce_work_phone"}    = substr($$h{$F{PHONE}}, 0, 25);          # '0117 600 4200'
-    $bindings{":ce_email"}         = substr($$h{$F{EMAIL}}, 0, 50);          # 'info@exor.co.uk'
-    $bindings{":ce_description"}   = substr($description, 0, 2000);          # 'Large Pothole'
+    $bindings{":ce_forename"}      = strip($$h{$F{FIRST_NAME}}, 30);     # 'CLIFF'
+    $bindings{":ce_surname"}       = strip($$h{$F{LAST_NAME}}, 30);      # 'STEWART'
+    $bindings{":ce_work_phone"}    = strip($$h{$F{PHONE}}, 25);          # '0117 600 4200'
+    $bindings{":ce_email"}         = strip($$h{$F{EMAIL}}, 50);          # 'info@exor.co.uk'
+    $bindings{":ce_description"}   = strip($description, 2000, $F{DESCRIPTION});          # 'Large Pothole'
 
     # nearest address guesstimate
-    $bindings{":ce_location"}      = substr($$h{$F{CLOSEST_ADDRESS}}, 0, 254);
+    $bindings{":ce_location"}      = strip($$h{$F{CLOSEST_ADDRESS}}, 254);
 
     foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values (see below)
@@ -395,6 +386,30 @@ sub insert_into_pem {
     $$h{$ERR_MSG} = "$error_value $error_product" if ($error_value || $error_product); 
 
     return $pem_id;
+}
+
+#------------------------------------------------------------------
+# strip
+# args: data, max-length, field-name
+# Trims, strips control chars, truncates to max-length
+# Field-name only matters for description field
+#------------------------------------------------------------------
+sub strip {
+    my ($s, $max_len, $field_name) = @_;
+    if ($STRIP_CONTROL_CHARS) {
+        if ($STRIP_CONTROL_CHARS eq 'ruthless') {
+            $s =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
+        } elsif ($STRIP_CONTROL_CHARS eq 'desc') {
+            if ($field_name eq 'DESCRIPTION') {
+                $s =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
+            } else {
+                $s =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
+            }
+        } else {
+            $s =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
+        }
+    }
+    return $max_len? substr($s, 0, 2000) : $s;
 }
 
 #------------------------------------------------------------------
