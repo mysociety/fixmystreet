@@ -23,12 +23,6 @@ Admin pages
 
 =cut
 
-=head2 summary
-
-Redirect to index page. There to make the allowed pages stuff neater
-
-=cut
-
 sub begin : Private {
     my ( $self, $c ) = @_;
 
@@ -39,6 +33,18 @@ sub begin : Private {
         $c->detach( '/auth/redirect' ) unless $c->user->from_body;
     }
 }
+
+sub auto : Private {
+    my ( $self, $c ) = @_;
+
+    $c->forward('check_page_allowed');
+}
+
+=head2 summary
+
+Redirect to index page. There to make the allowed pages stuff neater
+
+=cut
 
 sub summary : Path( 'summary' ) : Args(0) {
     my ( $self, $c ) = @_;
@@ -53,8 +59,6 @@ Displays some summary information for the requests.
 
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
-
-    $c->forward('check_page_allowed');
 
     my $site_restriction = $c->cobrand->site_restriction();
 
@@ -126,8 +130,6 @@ sub index : Path : Args(0) {
 sub timeline : Path( 'timeline' ) : Args(0) {
     my ($self, $c) = @_;
 
-    $c->forward('check_page_allowed');
-
     my $site_restriction = $c->cobrand->site_restriction();
     my %time;
 
@@ -177,8 +179,6 @@ sub timeline : Path( 'timeline' ) : Args(0) {
 sub questionnaire : Path('questionnaire') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('check_page_allowed');
-
     my $questionnaires = $c->model('DB::Questionnaire')->search(
         { whenanswered => { '!=', undef } },
         { group_by => [ 'ever_reported' ],
@@ -212,7 +212,6 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 sub bodies : Path('bodies') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('check_page_allowed');
     $c->forward( 'get_token' );
 
     my $edit_activity = $c->model('DB::ContactsHistory')->search(
@@ -287,7 +286,6 @@ sub body : Path('body') : Args(1) {
 
     $c->stash->{body_id} = $body_id;
 
-    $c->forward( 'check_page_allowed' );
     $c->forward( 'get_token' );
     $c->forward( 'lookup_body' );
     $c->forward( 'fetch_all_bodies' );
@@ -450,7 +448,6 @@ sub body_edit : Path('body_edit') : Args(2) {
 
     $c->stash->{body_id} = $body_id;
 
-    $c->forward( 'check_page_allowed' );
     $c->forward( 'get_token' );
     $c->forward( 'lookup_body' );
 
@@ -476,8 +473,6 @@ sub body_edit : Path('body_edit') : Args(2) {
 
 sub reports : Path('reports') {
     my ( $self, $c ) = @_;
-
-    $c->forward('check_page_allowed');
 
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
@@ -598,7 +593,6 @@ sub report_edit : Path('report_edit') : Args(1) {
     $c->stash->{problem} = $problem;
 
     $c->forward('get_token');
-    $c->forward('check_page_allowed');
     $c->forward('check_email_for_abuse', [ $problem->user->email ] );
 
     $c->stash->{updates} =
@@ -718,8 +712,6 @@ sub report_edit : Path('report_edit') : Args(1) {
 sub users: Path('users') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('check_page_allowed');
-
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = 1;
 
@@ -776,7 +768,6 @@ sub update_edit : Path('update_edit') : Args(1) {
       unless $update;
 
     $c->forward('get_token');
-    $c->forward('check_page_allowed');
 
     $c->stash->{update} = $update;
 
@@ -865,7 +856,6 @@ sub update_edit : Path('update_edit') : Args(1) {
 sub user_edit : Path('user_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    $c->forward('check_page_allowed');
     $c->forward('get_token');
 
     my $user = $c->model('DB::User')->find( { id => $id } );
@@ -904,8 +894,6 @@ sub user_edit : Path('user_edit') : Args(1) {
 sub flagged : Path('flagged') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('check_page_allowed');
-
     my $problems = $c->model('DB::Problem')->search( { flagged => 1 } );
 
     # pass in as array ref as using same template as search_reports
@@ -922,7 +910,6 @@ sub flagged : Path('flagged') : Args(0) {
 sub stats : Path('stats') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('check_page_allowed');
     $c->forward('fetch_all_bodies');
 
     if ( $c->req->param('getcounts') ) {
