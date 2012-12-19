@@ -233,9 +233,11 @@ sub bodies : Path('bodies') : Args(0) {
         my $params = $c->forward('body_params');
         my $body = $c->model('DB::Body')->create( $params );
         my $area_ids = $c->req->params->{area_ids};
-        $area_ids = [ $area_ids ] unless ref $area_ids;
-        foreach (@$area_ids) {
-            $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
+        if ($area_ids) {
+            $area_ids = [ $area_ids ] unless ref $area_ids;
+            foreach (@$area_ids) {
+                $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
+            }
         }
 
         $c->stash->{updated} = _('New body added');
@@ -374,10 +376,12 @@ sub update_contacts : Private {
         my @current = $c->stash->{body}->body_areas->all;
         my %current = map { $_->area_id => 1 } @current;
         my $area_ids = $c->req->params->{area_ids};
-        $area_ids = [ $area_ids ] unless ref $area_ids;
-        foreach (@$area_ids) {
-            $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
-            delete $current{$_};
+        if ($area_ids) {
+            $area_ids = [ $area_ids ] unless ref $area_ids;
+            foreach (@$area_ids) {
+                $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
+                delete $current{$_};
+            }
         }
         # Remove any others
         $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
