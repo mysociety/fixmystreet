@@ -291,6 +291,8 @@ sub insert_into_pem {
     my $media_url = $$h{$F{MEDIA_URL}};
         
     if ($media_url) {
+        # don't put URL for full images into the database (because they're too big to see on a Blackberry)
+        $media_url =~ s/\.full(\.jpe?g)$/$1/;
         $description .= ($STRIP_CONTROL_CHARS ne 'ruthless'? "\n\n":"  ") . "Photo: $media_url";
     }
 
