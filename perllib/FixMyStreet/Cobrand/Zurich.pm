@@ -65,9 +65,24 @@ sub admin {
 
     if ($type eq 'dm') {
         $c->stash->{template} = 'admin/index-dm.html';
+
+        my $body = $c->stash->{body};
+        my @children = map { $_->id } $body->bodies;
+        my @all = (@children, $body->id);
+
+        # XXX No multiples or missing bodies
         $c->stash->{unconfirmed} = $c->cobrand->problems->search({
             state => 'unconfirmed',
-            bodies_str => $c->stash->{body}->id, # XXX No multiples or missing
+            bodies_str => $c->stash->{body}->id,
+        });
+        $c->stash->{approval} = $c->cobrand->problems->search({
+            'me.state' => 'in progress',
+            bodies_str => \@children,
+            'comments.state' => 'unconfirmed'
+        }, { join => 'comments', distinct => 1 } );
+        $c->stash->{other} = $c->cobrand->problems->search({
+            state => { '!=', 'unconfirmed' },
+            bodies_str => \@all,
         });
     } elsif ($type eq 'sdm') {
         $c->stash->{template} = 'admin/index-sdm.html';

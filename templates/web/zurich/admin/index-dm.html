@@ -2,7 +2,17 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <h2>New reports</h2>
+[% INCLUDE list, problems = unconfirmed.all %]
 
+<h2>Reports needing attention</h2>
+[% INCLUDE list, problems = approval.all %]
+
+<h2>All reports</h2>
+[% INCLUDE list, problems = other.all %]
+
+[% INCLUDE 'admin/footer.html' %]
+
+[% BLOCK list %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
@@ -11,7 +21,7 @@
         <th>[% loc('Created') %]</th>
         <th>*</th>
     </tr>
-[%- FOR problem IN unconfirmed.all %]
+[%- FOR problem IN problems %]
     <tr[% ' class="hidden"' IF problem.state == 'hidden' %]>
         <td>[% problem.id %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
@@ -21,7 +31,4 @@
     </tr>
 [%- END -%]
 </table>
-[%# WHILE ( problem = unconfirmed.next ) %]
-[%# END %]
-
-[% INCLUDE 'admin/footer.html' %]
+[% END %]

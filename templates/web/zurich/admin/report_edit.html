@@ -21,10 +21,8 @@
     [% END %]
     </select>
 </li>
-<li><label for="extra">[% loc('Internal notes:') %]</label>
-<textarea name='extra' id='extra' cols=60 rows=5>[% problem.extra | html %]</textarea></li>
 
-<li><label class="inline" for="state">[% loc('State:') %]</label> <select name="state"  id="state">
+<li>[% loc('State:') %] <select name="state"  id="state">
     [% FOREACH state IN [
         ['unconfirmed',loc('Submitted')]
         ['confirmed', loc('Open')],
@@ -36,11 +34,15 @@
         <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
 </select></li>
+
+<li><label for="extra">[% loc('Internal notes:') %]</label>
+<textarea name='extra' id='extra' cols=60 rows=5>[% problem.extra | html %]</textarea></li>
+
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <input type="hidden" name="anonymous" value="[% problem.anonymous %]">
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
 <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'></li>
-<li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
+<li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 <input type="hidden" name="flagged" value="[% problem.flagged %]">
 <input type="hidden" name="non_public" value="[% problem.non_public %]">
