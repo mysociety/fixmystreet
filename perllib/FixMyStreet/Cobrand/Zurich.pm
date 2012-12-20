@@ -122,16 +122,45 @@ sub admin_report_edit {
     $c->detach( '/page_error_404_not_found' )
       unless $allowed_bodies{$problem->bodies_str};
 
-    if ($type eq 'dm') {
+    if ($type eq 'super') {
+
+        my @bodies = $c->model('DB::Body')->all();
+        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+        $c->stash->{bodies} = \@bodies;
+
+    } elsif ($type eq 'dm') {
+
+        # Can assign to other DMs, and their own subdivisions
         my @bodies = $c->model('DB::Body')->search( [ { parent => $body->parent->id }, { parent => $body->id } ] );
         @bodies = sort { strcoll($a->name, $b->name) } @bodies;
         $c->stash->{bodies} = \@bodies;
+
     } elsif ($type eq 'sdm') {
+
+        # Has cut-down edit template for adding update and sending back up only
         $c->stash->{template} = 'admin/report_edit-sdm.html';
-        my @bodies = $c->model('DB::Body')->search( [ { id => $body->parent->id }, { id => $body->id } ] );
-        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
-        $c->stash->{bodies} = \@bodies;
+
+        if ($c->req->param('send_back')) {
+            $c->forward('check_token');
+
+            $problem->bodies_str( $body->parent->id );
+            $problem->update;
+
+            # log here
+
+            $c->res->redirect( '/admin/summary' );
+            return 1;
+
+        } elsif ($c->req->param('submit')) {
+            $c->forward('check_token');
+
+            # Add new update from status_update
+
+            return 1;
+        }
     }
+
+    return 0;
 
 }
 

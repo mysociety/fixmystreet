@@ -600,11 +600,13 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->stash->{problem} = $problem;
 
+    $c->forward('get_token');
+
     if ( $c->cobrand->moniker eq 'zurich' ) {
-        $c->cobrand->admin_report_edit();
+        my $done = $c->cobrand->admin_report_edit();
+        return if $done;
     }
 
-    $c->forward('get_token');
     $c->forward('check_email_for_abuse', [ $problem->user->email ] );
 
     $c->stash->{updates} =

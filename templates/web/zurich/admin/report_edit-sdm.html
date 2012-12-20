@@ -12,12 +12,7 @@
 <li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
 <li>[% loc('Details:') %] [% problem.detail | html %]</li>
 <li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] &lsquo;[% problem.postcode | html %]&rsquo;, [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
-<li>[% loc('Body:') %]
-    <select name="body">
-    [% FOR body IN bodies %]
-        <option value="[% body.id %]"[% IF body.id == problem.bodies_str%] selected[% END %]>[% body.name %]</option>
-    [% END %]
-    </select>
+<li><input type="submit" name="send_back" value="[% loc('Send back to division') %]">
 </li>
 
 <li>[% loc('Internal notes:') %] [% problem.extra | html %]
