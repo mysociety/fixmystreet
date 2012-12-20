@@ -11,7 +11,9 @@
         <td>[% PROCESS value_or_nbsp value=problem.name %]</td> 
         <td>[% PROCESS value_or_nbsp value=problem.user.email %]</td> 
         <td>[%- IF edit_body_contacts -%]
-        <a href="[% c.uri_for('body', problem.bodies_str ) %]">[% PROCESS value_or_nbsp value=problem.bodies_str %]</a>
+          [% FOR body IN problem.bodies.values %]
+            <a href="[% c.uri_for('body', body.id ) %]">[% PROCESS value_or_nbsp value=body.name %]</a>
+          [% END %]
         [%- ELSE -%]
             [%- PROCESS value_or_nbsp value=problem.bodies_str -%]
         [%- END -%]</td>

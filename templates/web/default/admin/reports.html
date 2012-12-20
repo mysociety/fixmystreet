@@ -2,7 +2,7 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
+    <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
 </form>
 
 
@@ -13,7 +13,7 @@
         <th>[% loc('Title') %]</th>
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
-        <th>[% loc('Council') %]</th>
+        <th>[% loc('Body') %]</th>
         <th>[% loc('Category') %]</th>
         <th>[% loc('Anonymous') %]</th>
         <th>[% loc('Cobrand') %]</th>

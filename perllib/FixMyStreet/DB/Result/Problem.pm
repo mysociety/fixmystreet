@@ -397,7 +397,7 @@ Returns an arrayref of bodies to which a report was sent.
 
 sub bodies($) {
     my $self = shift;
-    return [] unless $self->bodies_str;
+    return {} unless $self->bodies_str;
     (my $bodies = $self->bodies_str) =~ s/\|.*$//;
     my @bodies = split( /,/, $bodies );
     @bodies = FixMyStreet::App->model('DB::Body')->search({ id => \@bodies })->all;

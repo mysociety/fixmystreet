@@ -9,8 +9,8 @@
 <ul>
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% user.name | html %]'></li>
 <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
-<li>[% loc('Council:') %] <select id='body' name='body'>
-    <option value=''>[% loc('No council') %]</option>
+<li>[% loc('Body:') %] <select id='body' name='body'>
+    <option value=''>[% loc('No body') %]</option>
 [% FOR body IN bodies %]
     <option value="[% body.id %]"[% ' selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
 [% END %]

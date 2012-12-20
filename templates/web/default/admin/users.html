@@ -2,7 +2,7 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <form method="get" action="[% c.uri_for('users') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
+    <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
 </form>
 
 
@@ -11,7 +11,7 @@
     <tr>
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
-        <th>[% loc('Council') %]</th>
+        <th>[% loc('Body') %]</th>
         <th>[% loc('Flagged') %]</th>
         <th>*</th>
     </tr>
@@ -19,7 +19,7 @@
     <tr>
         <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
         <td><a href="[% c.uri_for( 'reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
-        <td>[% PROCESS value_or_nbsp value=user.from_body.id %]</td> 
+        <td>[% PROCESS value_or_nbsp value=user.from_body.name %]</td>
         <td>[% user.flagged == 2 ? loc('(Email in abuse table)') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
         <td>[% IF user.id %]<a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('Edit') %]</a>[% END %]</td>
     </tr>
