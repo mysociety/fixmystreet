@@ -10,6 +10,7 @@
 use strict;
 use CGI;
 use Time::Piece;
+use Encode qw(encode);
 use DBI;
 use DBD::Oracle qw(:ora_types);
 ### for local testing (no Oracle): 
@@ -30,7 +31,6 @@ use DBD::Oracle qw(:ora_types);
 # using values directly set in this script.
 #------------------------------------------------------------------
 my $CONFIG_FILENAME       = "/usr/local/etc/fixmystreet.config";
-
 
 use constant {
     GENERAL_SERVICE_ERROR   => 400,
@@ -57,6 +57,7 @@ my $STRIP_CONTROL_CHARS   = 'ruthless';
 my $TESTING_WRITE_TO_FILE  = 0;  # write to file instead of DB
 my $OUT_FILENAME           = "fms-test.txt";
 my $TEST_SERVICE_DISCOVERY = 0;  # switch to 1 to run service discovery, which confirms the DB connection at least
+my $ENCODE_TO_WIN1252      = 1; # force encoding to Win-1252 for PEM data
 
 # Config file overrides existing values for these, if present:
 if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
@@ -78,6 +79,8 @@ if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
             $TEST_SERVICE_DISCOVERY = $1;
         } elsif (/^\s*strip-control-chars:\s*(\S+)\s*$/i) {
             $STRIP_CONTROL_CHARS = lc $1;
+        } elsif (/^\s*encode-to-win1252:\s*(\S+)\s*$/i) {
+            $ENCODE_TO_WIN1252 = $1;
         }
     }
 }
@@ -138,7 +141,7 @@ if ($TEST_SERVICE_DISCOVERY) {
     get_service_discovery($req);
 } else {
     ### # allow a GET to make an insert, for testing (from the commandnd line!)
-    ###my $fixme = get_FAKE_INSERT($req); print "Returned $fixme\n";
+    # my $fixme = get_FAKE_INSERT($req); print "Returned $fixme\n"; exit;
     get_service_requests($req);
 }
 
@@ -408,6 +411,7 @@ sub strip {
             $s =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
         }
     }
+    $s = encode('Windows-1252', $s, sub { "?"; } ) if $ENCODE_TO_WIN1252;
     return $max_len? substr($s, 0, 2000) : $s;
 }
 
@@ -429,7 +433,8 @@ sub get_service_requests {
 #------------------------------------------------------------------
 sub get_FAKE_INSERT {
     my %fake_data = (
-            $F{'DESCRIPTION'}        => 'Testing, description',
+            $F{'DESCRIPTION'}        => 'Testing, description: A acute (requires Latin-1): [á] ' 
+                                         . ' pound sign (requires WinLatin-1): [£] omega tonos (requires UTF-8): [ώ]',
             $F{'EASTING'}            => '45119',
             $F{'EMAIL'}              => 'email@example.com',
             $F{'FIRST_NAME'}         => 'Dave',
