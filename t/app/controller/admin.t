@@ -1093,7 +1093,7 @@ subtest 'user search' => sub {
     $user->from_body(2509);
     $user->update;
     $mech->get_ok('/admin/users?search=2509' );
-    $mech->content_contains(2509);
+    $mech->content_contains('Haringey');
 };
 
 $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
