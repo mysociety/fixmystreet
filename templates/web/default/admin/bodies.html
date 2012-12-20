@@ -1,19 +1,6 @@
-[% INCLUDE 'admin/header.html' title=loc('Council contacts') -%]
+[% INCLUDE 'admin/header.html' title=loc('Bodies') -%]
 
-<h2>[% loc('Diligency prize league table') %]</h2>
-[% IF edit_activity.count %]
-<ul>
-    [% WHILE ( editor = edit_activity.next ) %]
-    <li>[% tprintf( loc('%d edits by %s'), editor.get_column('c'), editor.editor ) %]</li>
-    [% END %]
-</ul>
-[% ELSE %]
-<p>
-[% loc('No edits have yet been made.') %]
-</p>
-[% END %]
-
-<h2>[% loc('Councils') %]</h2>
+[% INCLUDE 'admin/edit-league.html' %]
 
 [%- FOREACH body IN bodies %]
     [%- SET id = body.id %]
