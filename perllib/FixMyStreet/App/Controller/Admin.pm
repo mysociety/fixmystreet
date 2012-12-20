@@ -60,6 +60,10 @@ Displays some summary information for the requests.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    if ($c->cobrand->moniker eq 'zurich') {
+        return $c->cobrand->admin();
+    }
+
     my $site_restriction = $c->cobrand->site_restriction();
 
     my $problems = $c->cobrand->problems->summary_count;

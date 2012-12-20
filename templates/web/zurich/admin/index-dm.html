@@ -1,0 +1,27 @@
+[% INCLUDE 'admin/header.html' title=loc('Summary') -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+<h2>New reports</h2>
+
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('Title') %]</th>
+        <th>[% loc('Category') %]</th>
+        <th>[% loc('Created') %]</th>
+        <th>*</th>
+    </tr>
+[%- FOR problem IN unconfirmed.all %]
+    <tr[% ' class="hidden"' IF problem.state == 'hidden' %]>
+        <td>[% problem.id %]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
+        <td>[% problem.category %]</td> 
+        <td>[% PROCESS format_time time=problem.created %]</td> 
+        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+    </tr>
+[%- END -%]
+</table>
+[%# WHILE ( problem = unconfirmed.next ) %]
+[%# END %]
+
+[% INCLUDE 'admin/footer.html' %]
