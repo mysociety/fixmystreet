@@ -841,6 +841,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
         if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
             $update->confirmed( \'ms_current_timestamp()' );
+            # XXX Also need to update state of problem here if needed - Zurich only?
         }
 
         $update->update;

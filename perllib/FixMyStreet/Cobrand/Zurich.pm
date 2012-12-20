@@ -42,8 +42,7 @@ sub show_unconfirmed_reports {
 sub admin_type {
     my $self = shift;
     my $c = $self->{c};
-    my $user = $c->user;
-    my $body = $user->from_body;
+    my $body = $c->user->from_body;
     $c->stash->{body} = $body;
 
     my $parent = $body->parent;
@@ -157,6 +156,22 @@ sub admin_report_edit {
             $c->forward('check_token');
 
             # Add new update from status_update
+            my $update = $c->req->param('status_update');
+            FixMyStreet::App->model('DB::Comment')->create( {
+                text => $update,
+                user => $c->user->obj,
+                state => 'unconfirmed',
+                problem => $problem,
+                mark_fixed => 0,
+                problem_state => 'fixed - council',
+                anonymous => 1,
+            } );
+
+            $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
+
+            $c->stash->{updates} = [ $c->model('DB::Comment')
+                ->search( { problem_id => $problem->id }, { order_by => 'created' } )
+                ->all ];
 
             return 1;
         }
