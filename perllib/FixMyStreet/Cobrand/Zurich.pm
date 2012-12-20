@@ -96,7 +96,7 @@ sub admin_bodies {
 
     if ($type eq 'dm') {
         my $body = $c->stash->{body};
-        my @bodies = $c->model('DB::Body')->search( [ { id => $body->id }, { parent => $body->id } ] );
+        my @bodies = $c->model('DB::Body')->search( [ { parent => $body->parent->id }, { parent => $body->id } ] );
         @bodies = sort { strcoll($a->name, $b->name) } @bodies;
         $c->stash->{bodies} = \@bodies;
     }
