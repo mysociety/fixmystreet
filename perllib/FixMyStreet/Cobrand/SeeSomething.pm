@@ -80,5 +80,45 @@ sub allow_anonymous_reports { 1; }
 
 sub anonymous_account { return { name => 'anon user', email => 'anon@example.com' }; }
 
+sub admin_pages {
+    my $self = shift;
+
+    return {
+        'stats' => ['Reports', 0],
+    };
+};
+
+sub admin_stats {
+    my ( $self, $c ) = @_;
+
+    my %filters = ();
+
+    if ( !$c->user_exists || !grep { $_ == $c->user->from_council } @{ $self->council_id } ) {
+        $c->detach( '/page_error_404_not_found' );
+    }
+
+    if ( $c->req->param('category') ) {
+        $filters{category} = $c->req->param('category');
+    }
+
+    if ( $c->req->param('subcategory') ) {
+        $filters{subcategory} = $c->req->param('subcategory');
+    }
+
+    my $p = $c->model('DB::Problem')->search(
+        {
+            confirmed => { not => undef },
+            %filters
+        },
+        {
+                order_by => { -desc=> [ 'confirmed' ] }
+        }
+    );
+
+    $c->stash->{reports} = $p;
+
+    return 1;
+}
+
 1;
 

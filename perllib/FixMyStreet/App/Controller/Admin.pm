@@ -925,6 +925,10 @@ sub stats : Path('stats') : Args(0) {
 
     $c->forward('check_page_allowed');
 
+    if ( $c->cobrand->moniker eq 'seesomething' ) {
+        return $c->cobrand->admin_stats( $c );
+    }
+
     $c->forward('set_up_council_details');
 
     if ( $c->req->param('getcounts') ) {

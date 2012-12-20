@@ -1,0 +1,43 @@
+[% INCLUDE 'admin/header.html' title=loc('Reports') %]
+[% PROCESS 'admin/report_blocks.html' %]
+
+<form method="post" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <select name="category">
+        <option value="">Select</option>
+        <option value="Bus">Bus</option>
+        <option value="Metro">Metro</option>
+        <option value="Train">Train</option>
+    </select>
+
+    <select name="subcategory">
+        <option value="">Select</option>
+        <option value="Smoking">Smoking</option>
+    </select>
+
+    <input type="submit" name="getcounts"  size="30" id="getcounts" value="Look Up" />
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Transport Category</th>
+            <th>Incident Category</th>
+            <th>Submitted</th>
+        </tr>
+    </thead>
+    <tbody>
+        [%- WHILE (report = reports.next) %]
+        <tr>
+            <td>[% report.id %]</td>
+            <td>[% report.detail %]</td>
+            <td>[% report.category %]</td>
+            <td>[% report.subcategory %]</td>
+            <td>[% PROCESS format_time time=report.confirmed %]</td>
+        </tr>
+        [%- END %]
+    </tbody>
+</table>
+
+[% INCLUDE 'admin/footer.html' %]
