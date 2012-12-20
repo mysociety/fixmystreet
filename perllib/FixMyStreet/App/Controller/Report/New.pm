@@ -938,6 +938,8 @@ sub check_for_errors : Private {
     if ( $c->cobrand->moniker eq 'zurich' ) {
         delete $field_errors{title};
         delete $field_errors{name};
+        my $report = $c->stash->{report};
+        $report->title( Utils::cleanup_text( substr($report->detail, 0, 25) ) );
     }
 
     # FIXME: need to check for required bromley fields here
