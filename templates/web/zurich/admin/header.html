@@ -1,0 +1,20 @@
+[% INCLUDE 'header.html' admin = 1, bodyclass = 'fullwidthpage' %]
+<style type="text/css">
+dt { clear: left; float: left; font-weight: bold; }
+dd { margin-left: 8em; }
+.hidden { color: #666666; }
+.error { color: red; }
+select { width: auto; }
+</style>
+
+    <p><strong>[% loc('FixMyStreet admin:') %]</strong>
+    <a href="summary">[% loc('Summary') %]</a> |
+    <a href="bodies">[% loc('Bodies') %]</a> |
+    <a href="reports">[% loc('Reports') %]</a> |
+    <!-- <a href="timeline">Timeline</a> | -->
+    <!-- <a href="questionnaire">Survey</a> | -->
+    <a href="users">[% loc('Users') %]</a>
+    <!-- <a href="flagged">Flagged</a> | -->
+    <!-- <a href="stats">Stats</a> -->
+
+    <h1>[% title %]</h1>
