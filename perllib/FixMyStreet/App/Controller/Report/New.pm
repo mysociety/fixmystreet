@@ -995,8 +995,10 @@ sub save_user_and_report : Private {
         $c->log->info($report->user->id . ' created for this report');
     }
     elsif ( $c->user && $report->user->id == $c->user->id ) {
+        # Logged in and matches, so instantly confirm (except Zurich, with no confirmation)
         $report->user->update();
-        $report->confirm;
+        $report->confirm
+            unless $c->cobrand->moniker eq 'zurich';
         $c->log->info($report->user->id . ' is logged in for this report');
     }
     else {

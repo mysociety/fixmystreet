@@ -1,0 +1,15 @@
+[% INCLUDE 'header.html', title = loc('Confirmation') %]
+
+<h1>[% loc('Confirmation') %]</h1>
+
+[%    
+    loc('You have successfully confirmed your email address.');
+    tprintf(
+        loc( 'You can <a href="%s%s">view the problem on this site</a>.' ),
+        c.cobrand.base_url_for_report( problem ),
+        problem.url
+    );
+%]
+</p>
+
+[% INCLUDE 'footer.html' %]

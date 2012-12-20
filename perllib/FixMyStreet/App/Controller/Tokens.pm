@@ -53,6 +53,23 @@ sub confirm_problem : Path('/P') {
         return;
     }
 
+    # For Zurich, email confirmation simply sets a flag, it does not change the
+    # problem state, log in, or anything else
+    if ($c->cobrand->moniker eq 'zurich') {
+        $problem->update( {
+            anonymous => 0,
+            confirmed => \'ms_current_timestamp()',
+        } );
+
+        if ( ref($data) && ( $data->{name} || $data->{password} ) ) {
+            $problem->user->name( $data->{name} ) if $data->{name};
+            $problem->user->phone( $data->{phone} ) if $data->{phone};
+            $problem->user->update;
+        }
+
+        return 1;
+    }
+
     # We have a problem - confirm it if needed!
     my $old_state = $problem->state;
     $problem->update(
