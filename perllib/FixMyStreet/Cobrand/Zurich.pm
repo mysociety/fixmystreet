@@ -47,15 +47,19 @@ sub admin_type {
     $c->stash->{body} = $body;
 
     my $parent = $body->parent;
-    my $children = $body->bodies;
+    my $children = $body->bodies->count;
 
+    my $type;
     if (!$parent) {
-        return 'super';
+        $type = 'super';
     } elsif ($parent && $children) {
-        return 'dm';
+        $type = 'dm';
     } elsif ($parent) {
-        return 'sdm';
+        $type = 'sdm';
     }
+
+    $c->stash->{admin_type} = $type;
+    return $type;
 }
 
 sub admin {
@@ -67,7 +71,7 @@ sub admin {
         $c->stash->{template} = 'admin/index-dm.html';
 
         my $body = $c->stash->{body};
-        my @children = map { $_->id } $body->bodies;
+        my @children = map { $_->id } $body->bodies->all;
         my @all = (@children, $body->id);
 
         # XXX No multiples or missing bodies
@@ -86,6 +90,23 @@ sub admin {
         });
     } elsif ($type eq 'sdm') {
         $c->stash->{template} = 'admin/index-sdm.html';
+
+        my $body = $c->stash->{body};
+
+        # XXX No multiples or missing bodies
+        my $p = $c->cobrand->problems->search({
+            'me.state' => 'in progress',
+            bodies_str => $body->id,
+        } );
+        $c->stash->{reports_new} = $p->search({
+            'comments.state' => undef
+        }, { join => 'comments', distinct => 1 } );
+        $c->stash->{reports_unpublished} = $p->search({
+            'comments.state' => 'unconfirmed'
+        }, { join => 'comments', distinct => 1 } );
+        $c->stash->{reports_published} = $p->search({
+            'comments.state' => 'confirmed'
+        }, { join => 'comments', distinct => 1 } );
     }
 }
 

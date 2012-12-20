@@ -1,0 +1,34 @@
+[% INCLUDE 'admin/header.html' title=loc('Summary') -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+<h2>New reports</h2>
+[% INCLUDE list, problems = reports_new.all %]
+
+<h2>Reports awaiting approval</h2>
+[% INCLUDE list, problems = reports_unpublished.all %]
+
+<h2>Reports published</h2>
+[% INCLUDE list, problems = reports_published.all %]
+
+[% INCLUDE 'admin/footer.html' %]
+
+[% BLOCK list %]
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('Title') %]</th>
+        <th>[% loc('Category') %]</th>
+        <th>[% loc('Created') %]</th>
+        <!-- <th>*</th> -->
+    </tr>
+[%- FOR problem IN problems %]
+    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
+        <td>[% problem.id %]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
+        <td>[% problem.category %]</td> 
+        <td>[% PROCESS format_time time=problem.created %]</td> 
+        <!-- <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td> -->
+    </tr>
+[%- END -%]
+</table>
+[% END %]
