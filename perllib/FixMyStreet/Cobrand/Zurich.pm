@@ -1,6 +1,8 @@
 package FixMyStreet::Cobrand::Zurich;
 use base 'FixMyStreet::Cobrand::Default';
 
+use POSIX qw(strcoll);
+
 use strict;
 use warnings;
 
@@ -69,6 +71,19 @@ sub admin {
         });
     } elsif ($type eq 'sdm') {
         $c->stash->{template} = 'admin/index-sdm.html';
+    }
+}
+
+sub admin_bodies {
+    my $self = shift;
+    my $c = $self->{c};
+    my $type = $self->admin_type();
+
+    if ($type eq 'dm') {
+        my $body = $c->stash->{body};
+        my @bodies = $c->model('DB::Body')->search( [ { id => $body->id }, { parent => $body->id } ] );
+        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+        $c->stash->{bodies} = \@bodies;
     }
 }
 

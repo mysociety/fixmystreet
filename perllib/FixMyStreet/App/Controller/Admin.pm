@@ -587,6 +587,10 @@ sub reports : Path('reports') {
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->cobrand->admin_bodies();
+    }
+
     my $site_restriction = $c->cobrand->site_restriction;
 
     my $problem = $c->cobrand->problems->search(
@@ -660,6 +664,8 @@ sub report_edit : Path('report_edit') : Args(1) {
             || $c->req->param('email')  ne $problem->user->email
             || $c->req->param('title')  ne $problem->title
             || $c->req->param('detail') ne $problem->detail
+            || ($c->req->param('body') && $c->req->param('body') ne $problem->bodies_str)
+            || ($c->req->param('extra') && $c->req->param('extra') ne $problem->extra)
             || $flagged != $problem->flagged
             || $non_public != $problem->non_public )
         {
@@ -669,8 +675,10 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->anonymous( $c->req->param('anonymous') );
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
-        $problem->state( $c->req->param('state') );
+        $problem->state( $new_state );
         $problem->name( $c->req->param('name') );
+        $problem->bodies_str( $c->req->param('body') ) if $c->req->param('body');
+        $problem->extra( $c->req->param('extra') ) if $c->req->param('extra');
         $problem->flagged( $flagged );
         $problem->non_public( $non_public );
 

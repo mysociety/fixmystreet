@@ -1,0 +1,64 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Editing problem %d'), problem.id ) -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% status_message %]
+
+<form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="submit" value="1" >
+<ul>
+    [%- cobrand_data = problem.cobrand_data %]
+    [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
+<li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
+<li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
+<li><label for='detail'>[% loc('Details:') %]</label>
+<textarea name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea></li>
+<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] &lsquo;[% problem.postcode | html %]&rsquo;, [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+<li>[% loc('Body:') %]
+    <select name="body">
+    [% FOR body IN bodies %]
+        <option value="[% body.id %]"[% IF body.id == problem.bodies_str%] selected[% END %]>[% body.name %]</option>
+    [% END %]
+    </select>
+</li>
+<li><label for="extra">[% loc('Internal notes:') %]</label>
+<textarea name='extra' id='extra' cols=60 rows=5>[% problem.extra | html %]</textarea></li>
+
+<li><label class="inline" for="state">[% loc('State:') %]</label> <select name="state"  id="state">
+    [% FOREACH state IN [
+        ['unconfirmed',loc('Submitted')]
+        ['confirmed', loc('Open')],
+        ['in progress', loc('In Progress')],
+        ['fixed - council', loc('Fixed')],
+        ['hidden', loc('Hidden')],
+        ['closed', loc('Third party')],
+    ] %]
+        <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
+    [% END %]
+</select></li>
+<li>[% loc('Category:') %] [% problem.category | html %] </li>
+<input type="hidden" name="anonymous" value="[% problem.anonymous %]">
+<li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'></li>
+<li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
+<li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
+<input type="hidden" name="flagged" value="[% problem.flagged %]">
+<input type="hidden" name="non_public" value="[% problem.non_public %]">
+
+[% IF problem.photo %]
+[% photo = problem.get_photo_params %]
+<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %][% photo.url %]">
+<br>
+[% IF rotated %]Photo may be cached. View image directly to check<br>[% END %]
+<input type="submit" name="rotate_photo" value="Rotate Left" />
+<input type="submit" name="rotate_photo" value="Rotate Right" />
+<br>
+<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
+<label for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
+[% END %]
+</ul>
+<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
+
+[% INCLUDE 'admin/list_updates.html' %]
+
+[% INCLUDE 'admin/footer.html' %]
