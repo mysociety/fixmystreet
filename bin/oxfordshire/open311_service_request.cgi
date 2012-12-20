@@ -14,7 +14,7 @@ use Encode qw(encode);
 use DBI;
 use DBD::Oracle qw(:ora_types);
 ### for local testing (no Oracle): 
-# use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
+#use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 
 ###################################################################
 # Config file: values in the config file override any values set 
@@ -48,16 +48,20 @@ my $USERNAME          = 'FIXMYSTREET';
 my $PASSWORD          = 'XXX';
 my $STORED_PROC_NAME  = 'PEM.create_enquiry';
 
-# NB can override this setting in the config file!
+# NB can override these settings in the config file!
+
+# Strip control chars:
 #   'ruthless' removes everything (i.e. all POSIX control chars)
 #   'desc'     removes everything, but keeps tabs and newlines in the 'description' field, where they matter
 #   'normal'   keeps tabs and newlines 
 my $STRIP_CONTROL_CHARS   = 'ruthless';  
 
-my $TESTING_WRITE_TO_FILE  = 0;  # write to file instead of DB
-my $OUT_FILENAME           = "fms-test.txt";
-my $TEST_SERVICE_DISCOVERY = 0;  # switch to 1 to run service discovery, which confirms the DB connection at least
 my $ENCODE_TO_WIN1252      = 1; # force encoding to Win-1252 for PEM data
+
+my $TESTING_WRITE_TO_FILE  = 0;  # write to file instead of DB
+my $OUT_FILENAME           = "fms-test.txt"; # dump data here if TESTING_WRITE_TO_FILE is true
+my $TEST_SERVICE_DISCOVERY = 0;  # switch to 1 to run service discovery, which confirms the DB connection at least
+my $RUN_FAKE_INSERT_TEST   = 0;  # command-line execution attempts insert with fake data (mimics a POST request)
 
 # Config file overrides existing values for these, if present:
 if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
@@ -81,6 +85,8 @@ if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
             $STRIP_CONTROL_CHARS = lc $1;
         } elsif (/^\s*encode-to-win1252:\s*(\S+)\s*$/i) {
             $ENCODE_TO_WIN1252 = $1;
+        } elsif (/^\s*run-fake-insert-test:\s*(\S+)\s*$/i) {
+            $RUN_FAKE_INSERT_TEST = $1;
         }
     }
 }
@@ -139,9 +145,12 @@ if ($TEST_SERVICE_DISCOVERY) {
     post_service_request($req);
 } elsif ($req -> param('services')) {
     get_service_discovery($req);
+} elsif ($RUN_FAKE_INSERT_TEST) {
+    # allow a GET to make an insert, for testing (from the commandnd line!)
+    print "Running fake insert test... returned: " . get_FAKE_INSERT();
+    print "\nSee $OUT_FILENAME for data" if $TESTING_WRITE_TO_FILE;
+    print "\n";
 } else {
-    ### # allow a GET to make an insert, for testing (from the commandnd line!)
-    # my $fixme = get_FAKE_INSERT($req); print "Returned $fixme\n"; exit;
     get_service_requests($req);
 }
 
