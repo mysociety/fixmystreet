@@ -91,7 +91,7 @@ sub _recent {
     $query->{photo} = { '!=', undef } if $photos;
 
     my $attrs = {
-        columns => [ 'id', 'title', 'confirmed' ],
+        columns => [ 'id', 'title', 'created', 'confirmed', 'state' ],
         order_by => { -desc => 'confirmed' },
         rows => $num,
     };
