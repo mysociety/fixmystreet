@@ -32,6 +32,7 @@
         [% INCLUDE 'tracking_code.html' %]
 
     </head>
+    [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
     <body class="[% bodyclass | html IF bodyclass %]">
 
     <div class="wrapper">
