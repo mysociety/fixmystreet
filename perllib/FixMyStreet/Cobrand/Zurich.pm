@@ -65,7 +65,7 @@ sub admin_type {
 sub admin {
     my $self = shift;
     my $c = $self->{c};
-    my $type = $self->admin_type();
+    my $type = $c->stash->{admin_type};
 
     if ($type eq 'dm') {
         $c->stash->{template} = 'admin/index-dm.html';
@@ -113,14 +113,16 @@ sub admin {
 sub admin_report_edit {
     my $self = shift;
     my $c = $self->{c};
-    my $type = $self->admin_type();
+    my $type = $c->stash->{admin_type};
 
     my $problem = $c->stash->{problem};
     my $body = $c->stash->{body};
 
-    my %allowed_bodies = map { $_->id => 1 } ( $body->bodies->all, $body );
-    $c->detach( '/page_error_404_not_found' )
-      unless $allowed_bodies{$problem->bodies_str};
+    if ($type ne 'super') {
+        my %allowed_bodies = map { $_->id => 1 } ( $body->bodies->all, $body );
+        $c->detach( '/page_error_404_not_found' )
+          unless $allowed_bodies{$problem->bodies_str};
+    }
 
     if ($type eq 'super') {
 

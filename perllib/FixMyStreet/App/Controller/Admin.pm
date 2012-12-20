@@ -31,6 +31,7 @@ sub begin : Private {
     if ($c->cobrand->moniker eq 'zurich') {
         $c->detach( '/auth/redirect' ) unless $c->user_exists;
         $c->detach( '/auth/redirect' ) unless $c->user->from_body;
+        $c->cobrand->admin_type();
     }
 }
 
