@@ -10,7 +10,10 @@
     [%- cobrand_data = update.cobrand_data %]
     [%- cobrand_data = c.data_for_generic_update IF !update.cobrand %]
 <li><a href="[% c.uri_for_email( '/report', update.problem_id, cobrand_data ) %]#update_[% update.id %]">[% loc('View report on site' )%]</a></li>
-<li><label for='detail'>[% loc('Text:') %]</label><br><textarea name='text' id='text' cols=60 rows=10>[% update.text | html %]</textarea></li>
+
+<li><label for='detail'>[% loc('Text:') %]</label>
+<textarea name='text' id='text' cols=60 rows=10>[% update.text | html %]</textarea></li>
+
 <li><label for="anonymous">[% loc('Anonymous:') %]</label> <select name="anonymous"  id="anonymous">
 <option [% 'selected ' IF update.anonymous %]value="1">[% loc('Yes') %]</option>
 <option [% 'selected ' IF !update.anonymous %]value="0">[% loc('No') %]</option>

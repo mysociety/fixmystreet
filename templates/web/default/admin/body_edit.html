@@ -32,7 +32,7 @@
     <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
     <label class="inline" for="deleted">[% loc('Deleted') %]</label>
     <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]>
-    <label class="inline" for="non_public">[% loc('Private') %]</label><br>
+    <label class="inline" for="non_public">[% loc('Private') %]</label>
 
     <p><strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea>
 

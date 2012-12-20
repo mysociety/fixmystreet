@@ -94,7 +94,7 @@ sub admin {
 
         # XXX No multiples or missing bodies
         my $p = $c->cobrand->problems->search({
-            'me.state' => 'in progress',
+            'me.state' => [ 'in progress', 'fixed - council' ],
             bodies_str => $body->id,
         } );
         $c->stash->{reports_new} = $p->search({

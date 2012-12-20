@@ -5,7 +5,7 @@
 [% INCLUDE list, problems = reports_new.all %]
 
 <h2>Reports awaiting approval</h2>
-[% INCLUDE list, problems = reports_unpublished.all %]
+[% INCLUDE list, problems = reports_unpublished.all, no_edit = 1 %]
 
 <h2>Reports published</h2>
 [% INCLUDE list, problems = reports_published.all %]
@@ -19,7 +19,9 @@
         <th>[% loc('Title') %]</th>
         <th>[% loc('Category') %]</th>
         <th>[% loc('Created') %]</th>
+        [% IF NOT no_edit %]
         <th>*</th>
+        [% END %]
     </tr>
 [%- FOR problem IN problems %]
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
@@ -27,7 +29,9 @@
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
         <td>[% problem.category %]</td> 
         <td>[% PROCESS format_time time=problem.created %]</td> 
+        [% IF NOT no_edit %]
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+        [% END %]
     </tr>
 [%- END -%]
 </table>
