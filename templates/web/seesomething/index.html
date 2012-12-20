@@ -1,7 +1,7 @@
 [%# Assumes fixmystreet cobrand is using FMS map template - for bonus points preload all the right map elements. %]
 
 [% PROCESS "maps/fms.html" %]
-[% INCLUDE 'header.html', title = '', bodyclass = 'mappage frontmappage' %]
+[% INCLUDE 'header.html', title = '', bodyclass = 'mappage' %]
 
 <form action="[% c.uri_for('/around') %]" method="get" name="mapForm" id="mapForm">
 <script type="text/javascript">
