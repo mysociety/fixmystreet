@@ -1,0 +1,9 @@
+Subject: See Something, Say Something report sent
+
+Hi,
+
+Your report on See Something, Say Something has been sent
+
+Thanks
+
+<?=$values['signature']?>
