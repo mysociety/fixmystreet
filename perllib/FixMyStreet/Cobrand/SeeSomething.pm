@@ -39,7 +39,7 @@ sub council_check {
         return 1;
     }
 
-    return ( 0, "Not in covered area" );
+    return ( 0, "That location is not covered by See Something, Say Something" );
 }
 
 sub disambiguate_location {
