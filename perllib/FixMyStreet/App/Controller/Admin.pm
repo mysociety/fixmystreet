@@ -587,10 +587,6 @@ sub reports : Path('reports') {
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    if ( $c->cobrand->moniker eq 'zurich' ) {
-        $c->cobrand->admin_bodies();
-    }
-
     my $site_restriction = $c->cobrand->site_restriction;
 
     my $problem = $c->cobrand->problems->search(
@@ -603,6 +599,10 @@ sub report_edit : Path('report_edit') : Args(1) {
       unless $problem;
 
     $c->stash->{problem} = $problem;
+
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->cobrand->admin_report_edit();
+    }
 
     $c->forward('get_token');
     $c->forward('check_email_for_abuse', [ $problem->user->email ] );

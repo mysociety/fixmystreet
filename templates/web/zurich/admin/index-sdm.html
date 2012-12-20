@@ -19,7 +19,7 @@
         <th>[% loc('Title') %]</th>
         <th>[% loc('Category') %]</th>
         <th>[% loc('Created') %]</th>
-        <!-- <th>*</th> -->
+        <th>*</th>
     </tr>
 [%- FOR problem IN problems %]
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
@@ -27,7 +27,7 @@
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
         <td>[% problem.category %]</td> 
         <td>[% PROCESS format_time time=problem.created %]</td> 
-        <!-- <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td> -->
+        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]
 </table>

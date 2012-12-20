@@ -110,17 +110,29 @@ sub admin {
     }
 }
 
-sub admin_bodies {
+sub admin_report_edit {
     my $self = shift;
     my $c = $self->{c};
     my $type = $self->admin_type();
 
+    my $problem = $c->stash->{problem};
+    my $body = $c->stash->{body};
+
+    my %allowed_bodies = map { $_->id => 1 } ( $body->bodies->all, $body );
+    $c->detach( '/page_error_404_not_found' )
+      unless $allowed_bodies{$problem->bodies_str};
+
     if ($type eq 'dm') {
-        my $body = $c->stash->{body};
         my @bodies = $c->model('DB::Body')->search( [ { parent => $body->parent->id }, { parent => $body->id } ] );
         @bodies = sort { strcoll($a->name, $b->name) } @bodies;
         $c->stash->{bodies} = \@bodies;
+    } elsif ($type eq 'sdm') {
+        $c->stash->{template} = 'admin/report_edit-sdm.html';
+        my @bodies = $c->model('DB::Body')->search( [ { id => $body->parent->id }, { id => $body->id } ] );
+        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+        $c->stash->{bodies} = \@bodies;
     }
+
 }
 
 1;
