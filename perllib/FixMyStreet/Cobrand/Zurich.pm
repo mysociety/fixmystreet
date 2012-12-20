@@ -78,11 +78,11 @@ sub admin {
             state => 'unconfirmed',
             bodies_str => $c->stash->{body}->id,
         });
-        $c->stash->{approval} = $c->cobrand->problems->search({
-            'me.state' => 'in progress',
-            bodies_str => \@children,
-            'comments.state' => 'unconfirmed'
-        }, { join => 'comments', distinct => 1 } );
+        $c->stash->{approval} = $c->model('DB::Comment')->search({
+            'problem.state' => 'in progress',
+            'problem.bodies_str' => \@children,
+            'me.state' => 'unconfirmed'
+        }, { join => 'problem' } );
         $c->stash->{other} = $c->cobrand->problems->search({
             state => { '!=', 'unconfirmed' },
             bodies_str => \@all,

@@ -4,8 +4,27 @@
 <h2>New reports</h2>
 [% INCLUDE list, problems = unconfirmed.all %]
 
-<h2>Reports needing attention</h2>
-[% INCLUDE list, problems = approval.all %]
+<h2>Updates needing attention</h2>
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('Problem ID') %]</th>
+        <th>[% loc('Category') %]</th>
+        <th>[% loc('Text') %]</th>
+        <th>[% loc('Created') %]</th>
+        <th>*</th>
+    </tr>
+[%- FOR update IN approval.all %]
+    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
+        <td>[% update.id %]</td>
+        <td>[% update.problem.id %]</td>
+        <td>[% update.problem.category %]</td>
+        <td>[% update.text %]</td>
+        <td>[% PROCESS format_time time=update.created %]</td>
+        <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a></td>
+    </tr>
+[%- END -%]
+</table>
 
 <h2>All reports</h2>
 [% INCLUDE list, problems = other.all %]
@@ -24,9 +43,9 @@
 [%- FOR problem IN problems %]
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
         <td>[% problem.id %]</td>
-        <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
-        <td>[% problem.category %]</td> 
-        <td>[% PROCESS format_time time=problem.created %]</td> 
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
+        <td>[% problem.category %]</td>
+        <td>[% PROCESS format_time time=problem.created %]</td>
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]

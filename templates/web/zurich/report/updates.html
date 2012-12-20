@@ -1,0 +1,18 @@
+[% FOREACH update IN updates %]
+[% INCLUDE 'report/update.html' %]
+[% END %]
+
+[% BLOCK meta_line %]
+
+    [%- IF update.user.from_body;
+        user_name = update.user.name | html;
+        body = update.user.body;
+    %]
+        [% tprintf( loc( 'Posted by %s (<strong>%s</strong>) at %s' ), user_name, body, prettify_epoch( update.confirmed_local.epoch ) ) -%]
+    [%- ELSE %]
+        [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
+    [%- END -%]
+    [%- ", " _ loc( 'reopened' ) IF update.problem_state == 'confirmed' %]
+    [%- ", " _ tprintf(loc( 'marked as %s' ), update.meta_problem_state) IF update.problem_state AND update.problem_state != 'confirmed' %]
+[% END %]
+
