@@ -17,7 +17,7 @@
     <input type="submit" name="getcounts"  size="30" id="getcounts" value="Look Up" />
 </form>
 
-<table>
+<table class="admin-report">
     <thead>
         <tr>
             <th>ID</th>
@@ -33,8 +33,8 @@
             <td>[% report.id %]</td>
             <td>[% report.detail %]</td>
             <td>[% report.category %]</td>
-            <td>[% report.subcategory %]</td>
-            <td>[% PROCESS format_time time=report.confirmed %]</td>
+            <td class="nowrap">[% report.subcategory %]</td>
+            <td class="nowrap">[% PROCESS format_time time=report.confirmed %]</td>
         </tr>
         [%- END %]
     </tbody>
