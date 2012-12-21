@@ -106,17 +106,24 @@ sub admin_stats {
         $filters{subcategory} = $c->req->param('subcategory');
     }
 
+    my $page = $c->req->params->{p} || 1;
+
     my $p = $c->model('DB::Problem')->search(
         {
             confirmed => { not => undef },
             %filters
         },
         {
-                order_by => { -desc=> [ 'confirmed' ] }
+            columns => [ qw(
+                id detail category subcategory confirmed
+            ) ],
+            order_by => { -desc=> [ 'confirmed' ] },
+            rows => 20,
         }
-    );
+    )->page( $page );
 
     $c->stash->{reports} = $p;
+    $c->stash->{pager} = $p->pager;
 
     return 1;
 }
