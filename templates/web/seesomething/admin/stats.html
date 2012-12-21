@@ -47,7 +47,7 @@ No Results found
     <tbody>
         [%- WHILE (report = reports.next) %]
         <tr>
-            <td>[% report.service %]</td>
+            <td>[% report.service || 'Other' %]</td>
             <td>[% report.category %]</td>
             <td class="nowrap">[% report.subcategory %]</td>
             <td class="nowrap">[% council_details.${report.council}.name %]</td>
