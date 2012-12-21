@@ -100,14 +100,17 @@ sub admin_stats {
 
     if ( $c->req->param('category') ) {
         $filters{category} = $c->req->param('category');
+        $c->stash->{category} = $c->req->param('category');
     }
 
     if ( $c->req->param('subcategory') ) {
         $filters{subcategory} = $c->req->param('subcategory');
+        $c->stash->{subcategory} = $c->req->param('subcategory');
     }
 
     if ( $c->req->param('service') ) {
         $filters{service} = { -ilike => $c->req->param('service') };
+        $c->stash->{service} = $c->req->param('service');
     }
 
     my $page = $c->req->params->{p} || 1;

@@ -1,32 +1,29 @@
 [% INCLUDE 'admin/header.html' title=loc('Reports') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
+[% BLOCK options %]
+    [% FOR option IN option_list %]
+        <option value="[% option %]"[% ' selected' IF selected == option %]>[% option %]</opytion>
+    [% END %]
+[% END %]
+
 <form method="post" action="[% c.uri_for('stats') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="filter-form">
     <label for="form_category">Transport Type: </label>
     <select name="category" id="form_category">
         <option value="">Select</option>
-        <option value="Bus">Bus</option>
-        <option value="Metro">Metro</option>
-        <option value="Train">Train</option>
+        [% PROCESS options, option_list = [ 'Bus', 'Metro', 'Train' ], selected = category %]
     </select>
 
     <label for="form_subcategory">Incident Type: </label>
     <select name="subcategory" id="form_subcategory">
         <option value="">Select</option>
-        <option value="Smoking">Smoking</option>
-        <option value="Drugs">Drugs</option>
-        <option value="Anti-social Behaviour">Anti-social Behaviour</option>
-        <option value="Loud Music">Loud Music</option>
-        <option value="Damage">Damage</option>
-        <option value="Feet on Seats">Feet on Seats</option>
-        <option value="Other">Other</option>
+        [% PROCESS options, option_list = ['Smoking', 'Drugs', 'Anti-social Behaviour', 'Loud Music', 'Damage', 'Feet on Seats', 'Other'], selected = subcategory %]
     </select>
 
     <label for="form_service">Device: </label>
     <select name="service" id="form_service">
         <option value="">Select</option>
-        <option value="Android">Android</option>
-        <option value="iPhone">iPhone</option>
+        [% PROCESS options, option_list = [ 'Android', 'iPhone' ], selected = service %]
     </select>
 
     <input type="submit" name="getcounts"  size="30" id="getcounts" value="Look Up" />
