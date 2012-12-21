@@ -1,20 +1,9 @@
 [%
-    PROCESS "report/photo-js.html";
-    PROCESS "maps/${map.type}.html";
-
     INCLUDE 'header.html'
         robots = 'index, nofollow',
-        bobyclass = 'mappage',
-        no_version_css => 1;
+        bobyclass = 'mappage';
 %]
 
-[% IF !c.user_exists OR !c.user.from_council %]
 Reports to this site are private
-[% ELSE %]
-[% map_html %]
-
-</div>
-[% INCLUDE 'report/_main.html' %]
-[% END %]
 
 [% INCLUDE 'footer.html' %]
