@@ -106,6 +106,10 @@ sub admin_stats {
         $filters{subcategory} = $c->req->param('subcategory');
     }
 
+    if ( $c->req->param('service') ) {
+        $filters{service} = { -ilike => $c->req->param('service') };
+    }
+
     my $page = $c->req->params->{p} || 1;
 
     my $p = $c->model('DB::Problem')->search(
