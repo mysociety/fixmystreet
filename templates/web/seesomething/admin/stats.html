@@ -1,15 +1,17 @@
 [% INCLUDE 'admin/header.html' title=loc('Reports') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
-<form method="post" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <select name="category">
+<form method="post" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="filter-form">
+    <label for="form_category">Transport Type: </label>
+    <select name="category" id="form_category">
         <option value="">Select</option>
         <option value="Bus">Bus</option>
         <option value="Metro">Metro</option>
         <option value="Train">Train</option>
     </select>
 
-    <select name="subcategory">
+    <label for="form_subcategory">Incident Type: </label>
+    <select name="subcategory" id="form_subcategory">
         <option value="">Select</option>
         <option value="Smoking">Smoking</option>
         <option value="Drugs">Drugs</option>
