@@ -84,15 +84,17 @@ sub _recent {
     my $key = $photos ? 'recent_photos' : 'recent';
     $key .= ":$site_key:$num";
 
+    # unconfirmed might be returned for e.g. Zurich, but would mean in moderation, so no photo
+    my @states = grep { $_ ne 'unconfirmed' } FixMyStreet::DB::Result::Problem->visible_states();
     my $query = {
         non_public => 0,
-        state      => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        state      => \@states,
     };
     $query->{photo} = { '!=', undef } if $photos;
 
     my $attrs = {
         columns => [ 'id', 'title', 'created', 'confirmed', 'state' ],
-        order_by => { -desc => 'confirmed' },
+        order_by => { -desc => 'coalesce(confirmed, created)' },
         rows => $num,
     };
 
