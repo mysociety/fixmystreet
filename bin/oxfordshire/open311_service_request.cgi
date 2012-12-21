@@ -10,11 +10,11 @@
 use strict;
 use CGI;
 use Time::Piece;
-use Encode qw(encode);
+use Encode qw(from_to);
 use DBI;
 use DBD::Oracle qw(:ora_types);
 ### for local testing (no Oracle): 
-#use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
+# use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 
 ###################################################################
 # Config file: values in the config file override any values set 
@@ -26,6 +26,7 @@ use DBD::Oracle qw(:ora_types);
 #     username: foo
 #     password: FooBar
 #     testing: 0
+#     encode-to-win1252: 1
 #
 # Absence of the config file fails silently in case you really are
 # using values directly set in this script.
@@ -420,7 +421,7 @@ sub strip {
             $s =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
         }
     }
-    $s = encode('Windows-1252', $s, sub { "?"; } ) if $ENCODE_TO_WIN1252;
+    from_to($s, 'utf8', 'Windows-1252') if $ENCODE_TO_WIN1252;
     return $max_len? substr($s, 0, 2000) : $s;
 }
 
