@@ -37,8 +37,6 @@ No Results found
 <table class="admin-report">
     <thead>
         <tr>
-            <th>ID</th>
-            <th>Description</th>
             <th>Device</th>
             <th>Transport Category</th>
             <th>Incident Category</th>
@@ -49,8 +47,6 @@ No Results found
     <tbody>
         [%- WHILE (report = reports.next) %]
         <tr>
-            <td>[% report.id %]</td>
-            <td>[% report.detail %]</td>
             <td>[% report.service %]</td>
             <td>[% report.category %]</td>
             <td class="nowrap">[% report.subcategory %]</td>

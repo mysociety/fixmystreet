@@ -131,7 +131,7 @@ sub admin_stats {
         },
         {
             columns => [ qw(
-                id detail service category subcategory council confirmed
+                service category subcategory council confirmed
             ) ],
             order_by => { -desc=> [ 'confirmed' ] },
             rows => 20,
