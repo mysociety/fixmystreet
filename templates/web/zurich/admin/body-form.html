@@ -1,14 +1,14 @@
     <form method="post" action="[% body ? c.uri_for('body', body.id) : c.uri_for('bodies') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
     <p>
-        <label for="name">Name</label>
+        <label for="name">[% loc('Name') %]</label>
         <input type="text" name="name" id="name" value="[% body.name %]" size="50">
     </p>
 
     <p>
-        <label for="parent">Parent</label>
+        <label for="parent">[% loc('Parent') %]</label>
         <select name="parent" id="parent">
-            <option value=""> -- Select a body -- </option>
+            <option value=""> -- [% loc('Select a body') %] -- </option>
             [% FOR b IN bodies %]
             <option value="[% b.id %]"[% ' selected' IF body.parent.id == b.id %]>[% b.name %]</option>
             [% END %]
@@ -16,9 +16,9 @@
     </p>
 
     <p>
-        <label for="area_ids">Area covered</label>
+        <label for="area_ids">[% loc('Area covered') %]</label>
         <select name="area_ids" id="area_ids" multiple>
-            <option value=""> -- Select an area -- </option>
+            <option value=""> -- [% loc('Select an area') %] -- </option>
             [% FOR area IN areas %]
             [% SET aid = area.id %]
             <option value="[% area.id %]"[% ' selected' IF body.areas.$aid %]>[% area.name %]</option>
