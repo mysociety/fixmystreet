@@ -42,6 +42,7 @@ No Results found
             <th>Device</th>
             <th>Transport Category</th>
             <th>Incident Category</th>
+            <th>Area</th>
             <th>Submitted</th>
         </tr>
     </thead>
@@ -53,6 +54,7 @@ No Results found
             <td>[% report.service %]</td>
             <td>[% report.category %]</td>
             <td class="nowrap">[% report.subcategory %]</td>
+            <td class="nowrap">[% council_details.${report.council}.name %]</td>
             <td class="nowrap">[% PROCESS format_time time=report.confirmed %]</td>
         </tr>
         [%- END %]

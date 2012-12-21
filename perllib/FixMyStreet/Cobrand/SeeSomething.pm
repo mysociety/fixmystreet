@@ -94,6 +94,15 @@ sub admin_stats {
 
     my %filters = ();
 
+    my %councils =
+        map {
+            $c->stash->{council_details}->{$_}->{name} =~ s/(?:Borough|City) Council//;
+            $_ => $c->stash->{council_details}->{$_}
+        }
+        @{ $self->council_id };
+
+    $c->stash->{council_details} = \%councils;
+
     if ( !$c->user_exists || !grep { $_ == $c->user->from_council } @{ $self->council_id } ) {
         $c->detach( '/page_error_404_not_found' );
     }
@@ -122,7 +131,7 @@ sub admin_stats {
         },
         {
             columns => [ qw(
-                id detail service category subcategory confirmed
+                id detail service category subcategory council confirmed
             ) ],
             order_by => { -desc=> [ 'confirmed' ] },
             rows => 20,
