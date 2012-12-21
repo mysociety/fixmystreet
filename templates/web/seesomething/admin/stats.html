@@ -32,6 +32,11 @@
     <input type="submit" name="getcounts"  size="30" id="getcounts" value="Look Up" />
 </form>
 
+[% IF pager.total_entries == 0 %]
+<p align="center">
+No Results found
+</p>
+[% ELSE %]
 <table class="admin-report">
     <thead>
         <tr>
@@ -56,6 +61,7 @@
         [%- END %]
     </tbody>
 </table>
+[% END %]
 
 [% INCLUDE 'pagination.html', param = 'p' %]
 
