@@ -22,7 +22,7 @@ the problem has been reported to:
     Open ( a synonym for confirmed )
     Investigating
     Planned
-    In Progress
+    In progress
     Fixed
     Closed
 

@@ -1,0 +1,20 @@
+[% USE date %]
+[% BLOCK banner %]
+    <div class="banner">
+        <p id="[% id %]">[% text %]</p>
+    </div>
+[% END %]
+
+[% IF problem.is_fixed %]
+    [% INCLUDE banner, id = 'fixed', text = loc('Fixed') %]
+[% END %]
+[% IF problem.is_closed %]
+    [% INCLUDE banner, id = 'closed', text = loc('Third party') %]
+[% END %]
+[% IF problem.state == 'unconfirmed' %]
+    [% INCLUDE banner, id = 'closed', text = loc('Submitted') %]
+[% END %]
+[% IF problem.state == 'in progress' %]
+    [% INCLUDE banner, id = 'progress', text = loc('In progress') %]
+[% END %]
+
