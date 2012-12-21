@@ -255,6 +255,7 @@ sub _get_address_from_gecode {
     my $geocode = shift;
 
     return '' unless defined $geocode;
+    utf8::encode($geocode) if utf8::is_utf8($geocode);
     my $h = new IO::String($geocode);
     my $data = RABX::wire_rd($h);
 

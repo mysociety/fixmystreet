@@ -66,6 +66,7 @@ __PACKAGE__->filter_column(
             my $self = shift;
             my $ser  = shift;
             return undef unless defined $ser;
+            utf8::encode($ser) if utf8::is_utf8($ser);
             my $h = new IO::String($ser);
             return RABX::wire_rd($h);
         },
