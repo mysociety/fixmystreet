@@ -777,6 +777,7 @@ sub process_report : Private {
         'may_show_name',                         #
         'category',                              #
         'partial',                               #
+        'service',                               #
       );
 
     # load the report
@@ -800,6 +801,9 @@ sub process_report : Private {
         $detail .= "\n\n\u$w: " . $params{"detail_$w"};
     }
     $report->detail( $detail );
+
+    # mobile device type
+    $report->service( $params{service} ) if $params{service};
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
