@@ -30,6 +30,7 @@
         <tr>
             <th>ID</th>
             <th>Description</th>
+            <th>Device</th>
             <th>Transport Category</th>
             <th>Incident Category</th>
             <th>Submitted</th>
@@ -40,6 +41,7 @@
         <tr>
             <td>[% report.id %]</td>
             <td>[% report.detail %]</td>
+            <td>[% report.service %]</td>
             <td>[% report.category %]</td>
             <td class="nowrap">[% report.subcategory %]</td>
             <td class="nowrap">[% PROCESS format_time time=report.confirmed %]</td>

@@ -115,7 +115,7 @@ sub admin_stats {
         },
         {
             columns => [ qw(
-                id detail category subcategory confirmed
+                id detail service category subcategory confirmed
             ) ],
             order_by => { -desc=> [ 'confirmed' ] },
             rows => 20,
