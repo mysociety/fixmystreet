@@ -89,7 +89,8 @@ sub admin_pages {
 };
 
 sub admin_stats {
-    my ( $self, $c ) = @_;
+    my $self = shift;
+    my $c = $self->{c};
 
     my %filters = ();
 
