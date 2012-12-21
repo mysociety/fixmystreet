@@ -41,7 +41,9 @@
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <input type="hidden" name="anonymous" value="[% problem.anonymous %]">
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
-<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'></li>
+<li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'>
+[% IF NOT problem.anonymous %][% loc('Confirmed') %][% END %]
+</li>
 <li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 <input type="hidden" name="flagged" value="[% problem.flagged %]">
