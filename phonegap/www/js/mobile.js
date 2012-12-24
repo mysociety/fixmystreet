@@ -542,7 +542,7 @@ function postReport(e) {
     if ( !validate_user_details() ) { $.mobile.loading('hide'); return; }
 
     var params = {
-        service: 'iphone',
+        service: device.platform,
         title: report.title(),
         detail: report.detail(),
         may_show_name: $('#form_may_show_name').attr('checked') ? 1 : 0,
