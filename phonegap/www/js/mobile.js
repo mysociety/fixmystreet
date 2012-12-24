@@ -450,8 +450,13 @@ function delPhoto() {
 }
 
 function takePhotoFail(message) {
-    alert('There was a problem taking your photo');
-    console.log('error taking picture: ' + message);
+    if ( message != 'no image selected' &&
+         message != 'Selection cancelled.' &&
+         message != 'Camera cancelled.'
+       ) {
+        navigator.notification.alert('There was a problem taking your photo', null, 'Photo');
+        console.log('error taking picture: ' + message);
+    }
 }
 
 function takePhoto(type) {
