@@ -15,6 +15,7 @@ my ($opt, $usage) = describe_options(
 print($usage->text), exit if $opt->help;
 
 my $council_list = FixMyStreet::App->model('DB::Open311conf')->search( {
+    area_id => { '!=', 2237 }, # XXX Until Oxfordshire does do so
     send_method => 'Open311'
 } );
 my $verbose = 0;
