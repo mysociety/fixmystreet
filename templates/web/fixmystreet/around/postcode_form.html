@@ -16,7 +16,7 @@
         [% ELSE %]
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
             <label for="pc">[% question %]:</label>
-            <div>
+            <div id="pc-input-container">
                 <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
                 <input type="submit" value="[% loc('Go') %]" id="submit">
             </div>

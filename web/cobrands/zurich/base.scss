@@ -5,3 +5,33 @@
 
 @import "../fixmystreet/_base";
 
+
+#front-main-container {
+  #pc-input-container {
+    background: red;
+    position: relative;
+    #submit {
+      position: absolute;
+      top:0;
+      right:0;
+    }
+    ul.ui-autocomplete {
+      li.ui-menu-item {
+        color: black;
+        text-align: left;
+        padding: 0.1em 0.5em;
+        list-style-type: none;
+        margin-bottom:0;
+        a {
+          text-decoration: none;
+        }
+      }
+    }
+    .ui-helper-hidden-accessible {
+      display: block;
+      clear: both;
+      text-align: left;
+      display: none; // hmm
+    }
+  }
+}

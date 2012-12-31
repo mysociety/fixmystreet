@@ -281,6 +281,33 @@ sub ajax : Path('/ajax') {
     $c->res->body($body);
 }
 
+
+sub location_autocomplete : Path('/ajax/geocode') {
+    my ( $self, $c ) = @_;
+    $c->res->content_type('application/json; charset=utf-8');
+    unless ( $c->req->param('term') ) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+    # we want the match even if there's no ambiguity, so recommendation doesn't
+    # disappear when it's the last choice being offered in the autocomplete.
+    $c->stash->{allow_single_geocode_match_strings} = 1;
+    my ( $lat, $long, $suggestions ) =
+        FixMyStreet::Geocode::lookup( $c->req->param('term'), $c );
+    my @addresses;
+    # $error doubles up to return multiple choices by being an array
+    if ( ref($suggestions) eq 'ARRAY' ) {
+        foreach (@$suggestions) {
+            push @addresses, decode_utf8($_->{address});
+        }
+    }
+    my $body = JSON->new->utf8(1)->encode(
+        \@addresses
+    );
+    $c->res->body($body);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

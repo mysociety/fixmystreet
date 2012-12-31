@@ -24,7 +24,10 @@
         <script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = 'FixMyZ&uuml;rich' %]
         [% extra_js %]
-                
+
+		<!-- CDN for now FIXME -->
+        <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js" charset="utf-8"></script>
+
         [% INCLUDE 'tracking_code.html' %]
 
     </head>

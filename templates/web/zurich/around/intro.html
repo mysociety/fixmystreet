@@ -1,1 +1,12 @@
             <h1>[% loc('Report, view, or discuss local problems') %]</h1>
+<hr id="davetest"/>
+	<script>
+	$(function() {
+		$( "#pc" ).autocomplete({
+			minLength: 3,
+			// delay: 100,
+			appendTo: "#pc-input-container",
+			source: "/ajax/geocode"
+		});
+	});	
+	</script>
