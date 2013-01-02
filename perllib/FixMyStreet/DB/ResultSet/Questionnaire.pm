@@ -89,9 +89,8 @@ sub send_questionnaires_period {
         } );
         $h{url} = $cobrand->base_url($row->cobrand_data) . '/Q/' . $token->token;
 
-        my $sender = $cobrand->contact_email;
+        my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
         my $sender_name = _($cobrand->contact_name);
-        $sender =~ s/team/fms-DO-NOT-REPLY/;
 
         print "Sending questionnaire " . $questionnaire->id . ", problem "
             . $row->id . ", token " . $token->token . " to "

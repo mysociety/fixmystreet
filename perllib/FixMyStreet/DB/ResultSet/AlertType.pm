@@ -230,13 +230,12 @@ sub _send_aggregated_alert_email(%) {
         unless -e $template;
     $template = Utils::read_file($template);
 
-    my $sender = $cobrand->contact_email;
-    (my $from = $sender) =~ s/team/fms-DO-NOT-REPLY/; # XXX
+    my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
     my $result = FixMyStreet::App->send_email_cron(
         {
             _template_ => $template,
             _parameters_ => \%data,
-            From => [ $from, _($cobrand->contact_name) ],
+            From => [ $sender, _($cobrand->contact_name) ],
             To => $data{alert_email},
         },
         $sender,

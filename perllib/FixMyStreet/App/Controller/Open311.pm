@@ -100,7 +100,7 @@ sub error : Private {
 sub get_discovery : Private {
     my ( $self, $c ) = @_;
 
-    my $contact_email = $c->config->{CONTACT_EMAIL};
+    my $contact_email = $c->cobrand->contact_email;
     my $prod_url = 'http://www.fiksgatami.no/open311';
     my $test_url = 'http://fiksgatami-dev.nuug.no/open311';
     my $prod_changeset = '2011-04-08T00:00:00Z';

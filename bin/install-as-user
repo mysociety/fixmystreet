@@ -86,6 +86,7 @@ sed -r \
     -e "s,^( *BASE_URL:).*,\\1 'http://$HOST'," \
     -e "s,^( *EMAIL_DOMAIN:).*,\\1 '$HOST'," \
     -e "s,^( *CONTACT_EMAIL:).*,\\1 'help@$HOST'," \
+    -e "s,^( *DO_NOT_REPLY_EMAIL:).*,\\1 'help@$HOST'," \
     conf/general.yml-example > conf/general.yml
 
 # Create the database if it doesn't exist:

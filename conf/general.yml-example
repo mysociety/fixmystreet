@@ -22,6 +22,10 @@ BASE_URL: 'http://www.example.org'
 EMAIL_DOMAIN: 'example.org'
 CONTACT_EMAIL: 'team@example.org'
 CONTACT_NAME: 'FixMyStreet'
+# Address used for emails you don't expect a reply to (e.g. confirmation
+# emails); can be same as CONTACT_EMAIL above, of course, if you don't have a
+# special address.
+DO_NOT_REPLY_EMAIL: 'do-not-reply@example.org'
 
 # Whether this is a development site or not.
 STAGING_SITE: 1

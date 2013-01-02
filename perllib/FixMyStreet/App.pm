@@ -274,9 +274,8 @@ sub send_email {
     my $template           = shift;
     my $extra_stash_values = shift || {};
 
-    my $sender = $c->cobrand->contact_email;
+    my $sender = $c->config->{DO_NOT_REPLY_EMAIL};
     my $sender_name = $c->cobrand->contact_name;
-    $sender =~ s/team/fms-DO-NOT-REPLY/;
 
     # create the vars to pass to the email template
     my $vars = {

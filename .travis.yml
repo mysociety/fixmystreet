@@ -33,7 +33,6 @@ before_script:
     -e "s,cobrand_two: 'hostname_substring2',fixmystreet: 'localhost',"
     -e "s,(BASE_URL:) 'http://www.example.org',\\1 'http://localhost',"
     -e "s,(MAPIT_URL:) '',\\1 'http://mapit.mysociety.org/',"
-    -e "s,(CONTACT_EMAIL:) 'team,\\1 'person,"
     conf/general.yml-example > conf/general.yml
   - ./bin/cron-wrapper ./bin/make_po FixMyStreet-EmptyHomes
   - ./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po

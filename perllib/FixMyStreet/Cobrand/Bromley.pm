@@ -80,9 +80,7 @@ sub process_extras {
 
 sub contact_email {
     my $self = shift;
-    my $type = shift || '';
-    return join( '@', 'info', 'bromley.gov.uk' ) if $type eq 'contact';
-    return $self->next::method();
+    return join( '@', 'info', 'bromley.gov.uk' );
 }
 sub contact_name { 'Bromley Council (do not reply)'; }
 
