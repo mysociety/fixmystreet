@@ -194,6 +194,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
             councils_text   => $councils_text,
             category        => $category,
             extra_name_info => $extra_name_info,
+            categories      => $c->stash->{category_options},
         }
     );
 
@@ -712,6 +713,14 @@ sub process_user : Private {
 
     my $user_title = Utils::trim_text( $params{fms_extra_title} );
 
+    if ( $c->cobrand->allow_anonymous_reports ) {
+        my $anon_details = $c->cobrand->anonymous_account;
+
+        for my $key ( qw( email name ) ) {
+            $params{ $key } ||= $anon_details->{ $key };
+        }
+    }
+
     # The user is already signed in
     if ( $c->user_exists ) {
         my $user = $c->user->obj;
@@ -776,6 +785,7 @@ sub process_report : Private {
         'detail_offensive',
         'may_show_name',                         #
         'category',                              #
+        'subcategory',                              #
         'partial',                               #
         'service',                               #
       );
@@ -807,6 +817,8 @@ sub process_report : Private {
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
+
+    $report->subcategory( $params{subcategory} );
 
     my $areas = $c->stash->{all_areas};
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
@@ -925,11 +937,7 @@ sub check_for_errors : Private {
 
     # let the model check for errors
     $c->stash->{field_errors} ||= {};
-    my %field_errors = (
-        %{ $c->stash->{field_errors} },
-        %{ $c->stash->{report}->user->check_for_errors },
-        %{ $c->stash->{report}->check_for_errors },
-    );
+    my %field_errors = $c->cobrand->report_check_for_errors( $c );
 
     # Zurich, we don't care about title or name
     # There is no title, and name is optional
@@ -974,7 +982,14 @@ sub save_user_and_report : Private {
     my $report      = $c->stash->{report};
 
     # Save or update the user if appropriate
-    if ( !$report->user->in_storage ) {
+    if ( $c->cobrand->never_confirm_reports ) {
+        if ( $report->user->in_storage() ) {
+            $report->user->update();
+        } else {
+            $report->user->insert();
+        }
+        $report->confirm();
+    } elsif ( !$report->user->in_storage ) {
         # User does not exist.
         # Store changes in token for when token is validated.
         $c->stash->{token_data} = {
@@ -1100,6 +1115,10 @@ sub redirect_or_confirm_creation : Private {
 
         if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_council && $c->stash->{external_source_id}) {
             $report_uri = $c->uri_for( '/report', $report->id, undef, { external_source_id => $c->stash->{external_source_id} } );
+        } elsif ( $c->cobrand->never_confirm_reports && $report->non_public ) {
+            $c->log->info( 'cobrand was set to always confirm reports and report was non public, success page showed');
+            $c->stash->{template} = 'report_created.html';
+            return 1;
         } else {
             $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
         }

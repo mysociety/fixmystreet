@@ -33,6 +33,11 @@ sub begin : Private {
     my ( $self, $c ) = @_;
 
     $c->uri_disposition('relative');
+
+    if ( $c->cobrand->moniker eq 'seesomething' ) {
+        $c->detach( '/auth/redirect' ) unless $c->user_exists;
+        $c->detach( '/auth/redirect' ) unless $c->user->from_council;
+    }
 }
 
 sub summary : Path( 'summary' ) : Args(0) {
@@ -926,6 +931,10 @@ sub stats : Path('stats') : Args(0) {
     $c->forward('check_page_allowed');
 
     $c->forward('set_up_council_details');
+
+    if ( $c->cobrand->moniker eq 'seesomething' ) {
+        return $c->cobrand->admin_stats();
+    }
 
     if ( $c->req->param('getcounts') ) {
 

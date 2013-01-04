@@ -217,7 +217,10 @@ create table problem (
     external_source_id text,
 
     -- number of me toos
-    interest_count integer default 0
+    interest_count integer default 0,
+
+    -- subcategory to enable filtering in reporting --
+    subcategory text
 );
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );

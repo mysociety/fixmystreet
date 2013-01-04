@@ -288,6 +288,16 @@ sub send_reports {
             $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude}, $row );
         }
 
+        if ( $cobrand->allow_anonymous_reports &&
+             $row->user->email eq $cobrand->anonymous_account->{'email'}
+         ) {
+             $h{anonymous_report} = 1;
+             $h{user_details} = _('This report was submitted anonymously');
+         } else {
+             $h{user_details} = sprintf(_('Name: %s'), $row->name) . "\n\n";
+             $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
+         }
+
         my %reporters = ();
         my ( $sender_count );
         if ($site eq 'emptyhomes') {
@@ -334,6 +344,10 @@ sub send_reports {
             } else {
                 $h{category_footer} = "'" . $h{category} . "'";
                 $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
+            }
+
+            if ( $row->subcategory ) {
+                $h{subcategory_line} = sprintf(_("Subcategory: %s"), $row->subcategory) . "\n\n";
             }
 
             $h{councils_name} = join(_(' and '), @dear);
@@ -420,6 +434,9 @@ sub send_reports {
                 whensent => \'ms_current_timestamp()',
                 lastupdate => \'ms_current_timestamp()',
             } );
+            if ( $cobrand->report_sent_confirmation_email && !$h{anonymous_report}) {
+                _send_report_sent_email( $row, \%h, $nomail );
+            }
         } else {
             my @errors;
             for my $sender ( keys %reporters ) {
@@ -463,6 +480,32 @@ sub send_reports {
             print "The following reports had problems sending:\n$sending_errors";
         }
     }
+}
+
+sub _send_report_sent_email {
+    my $row = shift;
+    my $h = shift;
+    my $nomail = shift;
+
+    my $template = 'confirm_report_sent.txt';
+    my $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $row->lang, $template )->stringify;
+    $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $template )->stringify
+        unless -e $template_path;
+    $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
+        unless -e $template_path;
+    $template = Utils::read_file( $template_path );
+
+    my $result = FixMyStreet::App->send_email_cron(
+        {
+            _template_ => $template,
+            _parameters_ => $h,
+            To => $row->user->email,
+            From => mySociety::Config::get('CONTACT_EMAIL'),
+        },
+        mySociety::Config::get('CONTACT_EMAIL'),
+        [ $row->user->email ],
+        $nomail
+    );
 }
 
 1;

@@ -95,7 +95,7 @@ sub load_problem_or_display_error : Private {
         if ( !$c->user || $c->user->id != $problem->user->id ) {
             $c->detach(
                 '/page_error_403_access_denied',
-                [ _('That report cannot be viewed on FixMyStreet.') ]    #
+                [ sprintf(_('That report cannot be viewed on %s.'), $c->cobrand->site_title) ]    #
             );
         }
     }

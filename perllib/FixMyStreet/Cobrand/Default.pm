@@ -145,6 +145,14 @@ Can be specified in template.
 
 sub enter_postcode_text { }
 
+=head2 site_title
+
+The name of the site
+
+=cut
+
+sub site_title { return 'FixMyStreet'; }
+
 =head2 set_lang_and_domain
 
     my $set_lang = $cobrand->set_lang_and_domain( $lang, $unicode, $dir )
@@ -749,6 +757,51 @@ Returns true if the show name checkbox should be ticked by default.
 sub default_show_name {
     1;
 }
+
+=head2 report_check_for_errors
+
+Perform validation for new reports. Takes Catalyst context object as an argument
+
+=cut
+
+sub report_check_for_errors {
+    my $self = shift;
+    my $c = shift;
+
+    return (
+        %{ $c->stash->{field_errors} },
+        %{ $c->stash->{report}->user->check_for_errors },
+        %{ $c->stash->{report}->check_for_errors },
+    );
+}
+
+sub report_sent_confirmation_email { 0; }
+
+=head2 never_confirm_reports
+
+If true then we never send an email to confirm a report
+
+=cut
+
+sub never_confirm_reports { 0; }
+
+=head2 allow_anonymous_reports
+
+If true then can have reports that are truely anonymous - i.e with no email or name. You
+need to also put details in the anonymous_account function too.
+
+=cut
+
+sub allow_anonymous_reports { 0; }
+
+=head2 anonymous_account
+
+Details to use for anonymous reports. This should return a hashref with an email and
+a name key
+
+=cut
+
+sub anonymous_account { undef; }
 
 1;
 

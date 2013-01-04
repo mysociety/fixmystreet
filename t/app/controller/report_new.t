@@ -1142,6 +1142,119 @@ SKIP: {
     $mech->delete_user($user);
 }
 
+SKIP: {
+    skip( "Need 'seesomething' in ALLOWED_COBRANDS config", 100 )
+        unless FixMyStreet::Cobrand->exists('seesomething');
+
+    $mech->host('seesomething.fixmystreet.com');
+    $mech->clear_emails_ok;
+    $mech->log_out_ok;
+
+    my $cobrand = FixMyStreet::Cobrand::SeeSomething->new();
+
+    my $bus_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+        %contact_params,
+        area_id => 2535,
+        category => 'Bus',
+        email => 'bus@example.com',
+        non_public => 1,
+    } );
+
+    for my $test ( {
+            desc => 'report with no user details works',
+            pc => 'WS1 4NH',
+            fields => {
+                detail => 'Test report details',
+                category => 'Bus',
+                subcategory => 'Smoking',
+            },
+            email => $cobrand->anonymous_account->{email},
+        },
+        {
+            desc => 'report with user details works',
+            pc => 'WS1 4NH',
+            fields => {
+                detail => 'Test report details',
+                category => 'Bus',
+                subcategory => 'Smoking',
+                email => 'non_anon_user@example.com',
+                name => 'Non Anon',
+            },
+            email => 'non_anon_user@example.com',
+        },
+        {
+            desc => 'report with public category',
+            pc => 'WS1 4NH',
+            fields => {
+                detail => 'Test report details',
+                category => 'Bus',
+                subcategory => 'Smoking',
+            },
+            email => $cobrand->anonymous_account->{email},
+            public => 1,
+        }
+    ) {
+        subtest $test->{desc} => sub {
+            $mech->clear_emails_ok;
+            my $user =
+              FixMyStreet::App->model('DB::User')->find( { email => $test->{email} } );
+
+            if ( $user ) {
+                $user->alerts->delete;
+                $user->problems->delete;
+                $user->delete;
+            }
+
+            if ( $test->{public} ) {
+                $bus_contact->non_public(0);
+                $bus_contact->update;
+            } else {
+                $bus_contact->non_public(1);
+                $bus_contact->update;
+            }
+
+            $mech->get_ok( '/around' );
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        pc => $test->{pc},
+                    },
+                },
+                'submit around form',
+            );
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+
+            $mech->submit_form_ok(
+                {
+                    with_fields => $test->{fields},
+                },
+                'Submit form details with no user details',
+            );
+            is_deeply $mech->page_errors, [], "check there were no errors";
+
+            $user =
+              FixMyStreet::App->model('DB::User')->find( { email => $test->{email} } );
+            ok $user, "user found";
+
+            my $report = $user->problems->first;
+            ok $report, "Found the report";
+
+            $mech->email_count_is(0);
+
+            ok $report->confirmed, 'Report is confirmed automatically';
+
+            if ( $test->{public} ) {
+                is $mech->uri->path, '/report/' . $report->id, 'redirects to report page';
+            } else {
+                is $mech->uri->path, '/report/new', 'stays on report/new page';
+                $mech->content_contains( 'Your report has been sent', 'use report created template' );
+            }
+        };
+    }
+
+    $bus_contact->delete;
+}
+
 $contact1->delete;
 $contact2->delete;
 $contact3->delete;
