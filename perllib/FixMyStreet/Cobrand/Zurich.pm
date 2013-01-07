@@ -131,8 +131,12 @@ sub admin_report_edit {
 
     } elsif ($type eq 'dm') {
 
-        # Can assign to other DMs, and their own subdivisions
-        my @bodies = $c->model('DB::Body')->search( [ { parent => $body->parent->id }, { parent => $body->id } ] );
+        # Can assign to:
+        my @bodies = $c->model('DB::Body')->search( [
+            { 'me.parent' => $body->parent->id }, # Other DMs on the same level
+            { 'me.parent' => $body->id }, # Their subdivisions
+            { 'me.parent' => undef, 'bodies.id' => undef }, # External bodies
+        ], { join => 'bodies', distinct => 1 } );
         @bodies = sort { strcoll($a->name, $b->name) } @bodies;
         $c->stash->{bodies} = \@bodies;
 
