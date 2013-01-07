@@ -5,6 +5,16 @@
         <input type="text" name="name" id="name" value="[% body.name %]" size="50">
     </p>
 
+[% IF admin_type == 'dm' %]
+    <p>
+        <label for="email">[% loc('Email') %]</label>
+        <input type="text" name="endpoint" id="email" value="[% body.endpoint %]" size="50">
+    </p>
+[% ELSE %]
+    <input type="hidden" name="endpoint" id="endpoint" value="[% body.endpoint %]">
+[% END %]
+
+[% IF admin_type == 'super' %]
     <p>
         <label for="parent">[% loc('Parent') %]</label>
         <select name="parent" id="parent">
@@ -25,9 +35,9 @@
             [% END %]
         </select>
     </p>
+[% END %]
 
         <input type="hidden" name="send_method" value="Email">
-        <input type="hidden" name="endpoint" id="endpoint" value="[% body.endpoint %]">
         <input type="hidden" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction %]">
         <input type="hidden" name="api_key" id="api_key" value="[% body.api_key %]">
         <input type="hidden" id="send_comments" name="send_comments" value="[% body.send_comments %]">

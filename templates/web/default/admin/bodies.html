@@ -4,16 +4,11 @@
 
 [%- FOREACH body IN bodies %]
     [%- SET id = body.id %]
-    [%- IF body.parent_area %]
-    [%-
-        p_area = areas.$body.parent_area
-        parent = ', ' _ areas.$parent.name
-    %]
-    [%- ELSE %]
-    [%- parent = '' %]
-    [%- END %]
     [%- '<ul>' IF loop.first %]
-        <li><a href="[% c.uri_for( 'body', id ) %]">[% body.name %] [% parent %]</a>
+    [% NEXT IF c.cobrand.moniker == 'zurich' AND admin_type == 'dm' AND (body.parent OR body.bodies) %]
+        <li><a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
+    [%- ', ' _ body.parent.name IF body.parent -%]
+    [% IF c.cobrand.moniker != 'zurich' %]
         &ndash;
         [% IF counts.$id %]
             [% tprintf( loc('%d addresses'), counts.$id.c) IF c.cobrand.moniker != 'emptyhomes' %]
@@ -25,6 +20,7 @@
         [% ELSE %]
             no categories
         [% END %]
+    [% END %]
     [%- '</ul>' IF loop.last %]
 [%- END %]
 
