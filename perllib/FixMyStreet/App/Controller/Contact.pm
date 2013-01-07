@@ -113,6 +113,9 @@ sub validate : Private {
           or $c->req->param('update_id')
           && $c->req->param('update_id') !~ /^[1-9]\d*$/;
 
+    push @errors, _('There was a problem showing this page. Please try again later.')
+      if $c->req->params->{message} && $c->req->params->{message} =~ /\[url=/;
+
     unshift @errors,
       _('There were problems with your report. Please see below.')
       if scalar keys %field_errors;
