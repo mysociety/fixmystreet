@@ -722,6 +722,15 @@ sub report_edit : Path('report_edit') : Args(1) {
             # do this here otherwise lastupdate and confirmed times
             # do not display correctly
             $problem->discard_changes;
+
+            if ( $c->cobrand->moniker eq 'zurich' && $c->req->param('body') ) {
+                my $problem_body = $c->req->param('body');
+                my $admin_body = $c->stash->{body};
+                if ($admin_body ne $problem_body) {
+                    $c->detach('index');
+                }
+            }
+
         }
     }
 
