@@ -626,6 +626,14 @@ sub duration_string {
     );
 }
 
+sub local_coords {
+    my $self = shift;
+    if ($self->cobrand eq 'zurich') {
+        my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($self->latitude, $self->longitude);
+        return ( int($x+0.5), int($y+0.5) );
+    }
+}
+
 =head2 update_from_open311_service_request
 
     $p->update_from_open311_service_request( $request, $council_details, $system_user );

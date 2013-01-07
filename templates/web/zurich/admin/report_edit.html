@@ -13,7 +13,7 @@
 <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
 <li><label for='detail'>[% loc('Details:') %]</label>
 <textarea name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea></li>
-<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] &lsquo;[% problem.postcode | html %]&rsquo;, [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+<li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %] ([% problem.latitude %],[% problem.longitude %]) ([% loc('originally entered') %] &lsquo;[% problem.postcode | html %]&rsquo;, [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 <li>[% loc('Body:') %]
     <select name="body">
     [% FOR body IN bodies %]
