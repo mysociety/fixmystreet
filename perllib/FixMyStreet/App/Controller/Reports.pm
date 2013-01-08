@@ -374,7 +374,7 @@ sub load_and_group_problems : Private {
                 { confirmed  => { extract => 'epoch from confirmed' } },
                 { whensent   => { extract => 'epoch from whensent' } },
                 { lastupdate => { extract => 'epoch from lastupdate' } },
-                { photo    => 'photo is not null' },
+                'photo', 'extra',
             ],
             order_by => { -desc => 'lastupdate' },
             rows => $c->cobrand->reports_per_page,
@@ -384,7 +384,7 @@ sub load_and_group_problems : Private {
     $problems = $problems->cursor; # Raw DB cursor for speed
 
     my ( %problems, @pins );
-    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'whensent', 'lastupdate', 'photo' );
+    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'whensent', 'lastupdate', 'photo', 'extra' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};

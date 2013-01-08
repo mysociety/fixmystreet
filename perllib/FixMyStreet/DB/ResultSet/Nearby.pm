@@ -21,12 +21,7 @@ sub nearby {
     } if $c->cobrand->problems_clause;
 
     my $attrs = {
-        join => 'problem',
-        columns => [
-            'problem.id', 'problem.title', 'problem.latitude',
-            'problem.longitude', 'distance', 'problem.state',
-            'problem.created', 'problem.confirmed', { 'problem.photo' => 'problem.photo is not null' },
-        ],
+        prefetch => 'problem',
         bind => [ $mid_lat, $mid_lon, $dist ],
         order_by => [ 'distance', { -desc => 'created' } ],
         rows => $limit,

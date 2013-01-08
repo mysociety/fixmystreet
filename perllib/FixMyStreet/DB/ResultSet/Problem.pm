@@ -93,7 +93,6 @@ sub _recent {
     $query->{photo} = { '!=', undef } if $photos;
 
     my $attrs = {
-        columns => [ 'id', 'title', 'created', 'confirmed', 'state' ],
         order_by => { -desc => 'coalesce(confirmed, created)' },
         rows => $num,
     };
@@ -136,10 +135,6 @@ sub around_map {
     my ( $rs, $min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit ) = @_;
     my $attr = {
         order_by => { -desc => 'created' },
-        columns => [
-            'id', 'title', 'latitude', 'longitude', 'state', 'created', 'confirmed',
-            { photo => 'photo is not null' },
-        ],
     };
     $attr->{rows} = $limit if $limit;
 
