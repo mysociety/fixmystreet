@@ -57,7 +57,7 @@
 <input type="submit" name="rotate_photo" value="Rotate Left" />
 <input type="submit" name="rotate_photo" value="Rotate Right" />
 <br>
-<input type="checkbox" id="publish_photo" name="publish_photo" value="1">
+<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
 <label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
 [% END %]
 </ul>
