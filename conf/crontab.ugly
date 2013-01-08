@@ -37,6 +37,10 @@ MAILTO=!!(*= $user *)!!@mysociety.org
 0 0-7,9-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
 0 8 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list --warn" || echo "stalled?"
 
+!!(* } elsif ($vhost eq 'seeseomthing.mysociety.org') { *)!!
+5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
+0 0-7,9-11,13-15,17-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports" || echo "stalled?"
+0 8,12,16 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-reports.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
 !!(* } *)!!
 
 # Once an hour, update the all reports stats
