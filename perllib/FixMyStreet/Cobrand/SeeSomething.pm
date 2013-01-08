@@ -78,7 +78,7 @@ sub never_confirm_reports { 1; }
 
 sub allow_anonymous_reports { 1; }
 
-sub anonymous_account { return { name => 'anon user', email => 'anon@example.com' }; }
+sub anonymous_account { return { name => 'Anonymous Submission', email => FixMyStreet->config('DO_NOT_REPLY_EMAIL') }; }
 
 sub admin_pages {
     my $self = shift;
