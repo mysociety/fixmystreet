@@ -662,8 +662,8 @@ sub report_edit : Path('report_edit') : Args(1) {
         my $non_public = $c->req->param('non_public') ? 1 : 0;
 
         # Predefine the hash so it's there for lookups
-        # Shallow copy so that the database actually sees any changes? :-/
-        my $extra = { %{ $problem->extra || {} } };
+        # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
+        my $extra = $problem->extra || {};
         $extra->{internal_notes} ||= '';
 
         # do this here so before we update the values in problem
@@ -674,6 +674,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             || $c->req->param('detail') ne $problem->detail
             || ($c->req->param('body') && $c->req->param('body') ne $problem->bodies_str)
             || ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes})
+            || ($c->cobrand->moniker eq 'zurich' && $c->req->param('publish_photo') ne $extra->{publish_photo})
             || $flagged != $problem->flagged
             || $non_public != $problem->non_public )
         {
@@ -688,7 +689,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->bodies_str( $c->req->param('body') ) if $c->req->param('body');
         if ($c->req->param('internal_notes')) {
             $extra->{internal_notes} = $c->req->param('internal_notes');
-            $problem->extra( $extra );
+            $problem->extra( { %$extra } );
         }
 
         # Zurich have photos being published or not; can't just check as with
@@ -696,7 +697,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         # ticked
         if ($c->cobrand->moniker eq 'zurich') {
             $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
-            $problem->extra( $extra );
+            $problem->extra( { %$extra } );
         }
 
         $problem->flagged( $flagged );

@@ -6,6 +6,26 @@
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
+
+[% IF NOT state OR state.0 == 'unconfirmed' %]
+<p>[% loc('Body:') %]
+    <select name="body_external">
+    [% FOR body IN bodies %]
+        [% NEXT IF !body.parent AND !body.bodies %]
+        <option value="[% body.id %]"[% IF body.id == problem.bodies_str%] selected[% END %]>[% body.name %]</option>
+    [% END %]
+    </select>
+
+<p>[% loc('Body:') %]
+    <select name="body_external">
+    [% FOR body IN bodies %]
+        [% NEXT IF body.parent OR body.bodies %]
+        <option value="[% body.id %]"[% IF body.id == problem.bodies_str%] selected[% END %]>[% body.name %]</option>
+    [% END %]
+    </select>
+
+[% END %]
+
 <ul>
     [%- cobrand_data = problem.cobrand_data %]
     [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
