@@ -692,11 +692,12 @@ sub report_edit : Path('report_edit') : Args(1) {
             $problem->extra( { %$extra } );
         }
 
-        # Zurich have photos being published or not; can't just check as with
-        # e.g. internal_notes as it's a checkbox and won't be set if it's not
-        # ticked
+        # Zurich have photos being published or not, and third parties getting
+        # personal data; can't just check as with e.g. internal_notes as it's a
+        # checkbox and won't be set if it's not ticked
         if ($c->cobrand->moniker eq 'zurich') {
             $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
+            $extra->{third_personal} = $c->req->params->{third_personal} || 0;
             $problem->extra( { %$extra } );
         }
 

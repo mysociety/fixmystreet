@@ -7,6 +7,7 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
+<!--
 [% IF NOT state OR state.0 == 'unconfirmed' %]
 <p>[% loc('Body:') %]
     <select name="body_external">
@@ -25,6 +26,7 @@
     </select>
 
 [% END %]
+-->
 
 <ul>
     [%- cobrand_data = problem.cobrand_data %]
@@ -40,6 +42,8 @@
         <option value="[% body.id %]"[% IF body.id == problem.bodies_str%] selected[% END %]>[% body.name %]</option>
     [% END %]
     </select>
+    <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
+    <label for="third_personal" class="inline">Include reporter personal details</label>
 </li>
 
 <li>[% loc('State:') %] <select name="state"  id="state">
