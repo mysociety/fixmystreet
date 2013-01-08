@@ -133,9 +133,17 @@ sub send {
             $row->external_id( $resp );
             $row->send_method_used('Open311');
             if ($row->cobrand eq 'fixmybarangay') {
-                # currently the only external body using Open311 is DPS
-                # (this will change when we have 'body' logic in place, meanwhile: hardcoded)
-                $row->external_body("DPS");
+                # FixMyBarangay: currently the  external bodies using Open311 are DPS, DEPW, DPWH
+                # for now identify the latter two by their name in the service_code ($contact->email)
+                # So: this works because we are anticipating the service codes for (e.g., potholes) look 
+                # like this:
+                #              POTDEPW      or      POTDPWH
+                # (TODO: this will change when we have 'body' logic in place, meanwhile: hardcoded)
+                if ($contact->email =~ /(DEPW|DPWH)$/i) {
+                    $row->external_body(uc $1); # body is DEPW (city roads) or DPWH (national roads)
+                } else {
+                    $row->external_body("DPS"); # only other open311 dept is DPS
+                }
             }
             $result *= 0;
             $self->success( 1 );

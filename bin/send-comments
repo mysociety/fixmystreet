@@ -78,6 +78,18 @@ while ( my $council = $councils->next ) {
     while ( my $comment = $comments->next ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
 
+        # actually this should be OK for any devolved endpoint if original Open311->can_be_devolved, presumably
+        if ( $cobrand->moniker eq "fixmybarangay") {
+            my $sender = $cobrand->get_council_sender( $council->area_id, undef, $comment->problem->category );
+            my $config = $sender->{config};
+            $o = Open311->new(
+                    endpoint => $config->endpoint,
+                    jurisdiction => $config->jurisdiction,
+                    api_key => $config->api_key,
+                    use_extended_updates => 1, # FMB uses extended updates
+            );
+        }
+
         if ( $comment->send_fail_count ) {
             next if bromley_retry_timeout( $comment );
         }
