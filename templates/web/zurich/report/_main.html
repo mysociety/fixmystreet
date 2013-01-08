@@ -15,7 +15,9 @@
     </em></p>
 
   [% IF problem.state != 'unconfirmed' %]
-    [% INCLUDE 'report/photo.html' object=problem %]
+    [% IF problem.extra.publish_photo %]
+      [% INCLUDE 'report/photo.html' object=problem %]
+    [% END %]
     [% add_links( problem.detail ) | html_para %]
   [% ELSE %]
     [% loc('This report is awaiting moderation.') %]

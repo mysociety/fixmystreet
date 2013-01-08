@@ -661,6 +661,11 @@ sub report_edit : Path('report_edit') : Args(1) {
         my $flagged = $c->req->param('flagged') ? 1 : 0;
         my $non_public = $c->req->param('non_public') ? 1 : 0;
 
+        # Predefine the hash so it's there for lookups
+        # Shallow copy so that the database actually sees any changes? :-/
+        my $extra = { %{ $problem->extra || {} } };
+        $extra->{internal_notes} ||= '';
+
         # do this here so before we update the values in problem
         if (   $c->req->param('anonymous') ne $problem->anonymous
             || $c->req->param('name')   ne $problem->name
@@ -668,7 +673,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             || $c->req->param('title')  ne $problem->title
             || $c->req->param('detail') ne $problem->detail
             || ($c->req->param('body') && $c->req->param('body') ne $problem->bodies_str)
-            || ($c->req->param('extra') && $c->req->param('extra') ne $problem->extra)
+            || ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes})
             || $flagged != $problem->flagged
             || $non_public != $problem->non_public )
         {
@@ -681,7 +686,19 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->state( $new_state );
         $problem->name( $c->req->param('name') );
         $problem->bodies_str( $c->req->param('body') ) if $c->req->param('body');
-        $problem->extra( $c->req->param('extra') ) if $c->req->param('extra');
+        if ($c->req->param('internal_notes')) {
+            $extra->{internal_notes} = $c->req->param('internal_notes');
+            $problem->extra( $extra );
+        }
+
+        # Zurich have photos being published or not; can't just check as with
+        # e.g. internal_notes as it's a checkbox and won't be set if it's not
+        # ticked
+        if ($c->cobrand->moniker eq 'zurich') {
+            $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
+            $problem->extra( $extra );
+        }
+
         $problem->flagged( $flagged );
         $problem->non_public( $non_public );
 
@@ -726,7 +743,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             if ( $c->cobrand->moniker eq 'zurich' && $c->req->param('body') ) {
                 my $problem_body = $c->req->param('body');
                 my $admin_body = $c->stash->{body};
-                if ($admin_body ne $problem_body) {
+                if ($admin_body->id ne $problem_body) {
                     $c->detach('index');
                 }
             }

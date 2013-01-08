@@ -35,14 +35,14 @@
     [% END %]
 </select></li>
 
-<li><label for="extra">[% loc('Internal notes:') %]</label>
-<textarea name='extra' id='extra' cols=60 rows=5>[% problem.extra | html %]</textarea></li>
+<li><label for="internal_notes">[% loc('Internal notes:') %]</label>
+<textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></li>
 
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <input type="hidden" name="anonymous" value="[% problem.anonymous %]">
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
 <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'>
-[% IF NOT problem.anonymous %][% loc('Confirmed') %][% END %]
+[% IF problem.extra.email_confirmed %][% loc('Confirmed') %][% END %]
 </li>
 <li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
@@ -57,8 +57,8 @@
 <input type="submit" name="rotate_photo" value="Rotate Left" />
 <input type="submit" name="rotate_photo" value="Rotate Right" />
 <br>
-<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-<label class="inline" for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
+<input type="checkbox" id="publish_photo" name="publish_photo" value="1">
+<label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
 [% END %]
 </ul>
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
