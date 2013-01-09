@@ -151,7 +151,17 @@ sub admin_report_edit {
             $problem->bodies_str( $body->parent->id );
             $problem->state( 'confirmed' );
             $problem->update;
+            # log here
 
+            $c->res->redirect( '/admin/summary' );
+            return 1;
+
+        } elsif ($c->req->param('no_more_updates')) {
+            $c->forward('check_token');
+
+            $problem->bodies_str( $body->parent->id );
+            $problem->state( 'planned' );
+            $problem->update;
             # log here
 
             $c->res->redirect( '/admin/summary' );

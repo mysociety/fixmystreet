@@ -6,17 +6,15 @@
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
+
+<p align="right"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+
 <ul>
     [%- cobrand_data = problem.cobrand_data %]
     [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
 <li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
 <li>[% loc('Details:') %] [% problem.detail | html %]</li>
-<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] &lsquo;[% problem.postcode | html %]&rsquo;, [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
-<li><input type="submit" name="send_back" value="[% loc('Send back to division') %]">
-</li>
-
-<li><label for="internal_notes">[% loc('Internal notes:') %]</label>
-<textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></li>
+<li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %] ([% problem.latitude %],[% problem.longitude %]) ([% loc('originally entered') %] &lsquo;[% problem.postcode | html %]&rsquo;, [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <li>[% loc('Name:') %] [% problem.name | html %]
@@ -25,12 +23,17 @@
 <li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 
-<li><label for="status_update">[% loc('Update:') %]</label>
+<li><label for="internal_notes">[% loc('Internal notes:') %]</label>
+<textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></li>
+
+<li><label for="status_update">[% loc('New update:') %]</label>
 <textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
 
 </ul>
 
-<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
+<p><input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></p>
+<p align="right"><input type="submit" name="no_more_updates" value="[% loc('No further updates') %]"></p>
+</form>
 
 [% INCLUDE 'admin/list_updates.html' %]
 
