@@ -33,7 +33,13 @@ sub build_recipient_list {
             $self->unconfirmed_notes->{$council_email}{$row->category} = $note;
         }
 
-        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{info}->{name} ];
+        # see something uses council areas but doesn't send to councils so just use a
+        # generic name here to minimise confusion
+        if ( $row->cobrand eq 'seesomething' ) {
+            push @{ $self->to }, [ $council_email, 'See Something, Say Something' ];
+        } else {
+            push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{info}->{name} ];
+        }
         $recips{$council_email} = 1;
     }
 
