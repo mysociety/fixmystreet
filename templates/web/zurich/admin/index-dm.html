@@ -5,7 +5,7 @@
         'unconfirmed' = loc('Submitted'),
         'confirmed' = loc('Open'),
         'in progress' = loc('In progress'),
-        'planned' = loc('Feedback pending'),
+        'planned' = loc('Planned'),
         'fixed - council' = loc('Closed'),
         'hidden' = loc('Hidden'),
         'closed' = loc('Closed'),
@@ -15,7 +15,7 @@
 <h2>New reports</h2>
 [% INCLUDE list, problems = unconfirmed.all %]
 
-<h2>[% loc('Feedback pending') %]</h2>
+<h2>[% loc('Planned') %]</h2>
 [% INCLUDE list, problems = approval.all %]
 
 <h2>All reports</h2>
@@ -37,12 +37,6 @@
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
         <td>[% problem.id %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
-    [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
-    loc('Investigating')], ['planned', loc('Planned')], ['in progress',
-    loc('In progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')], ['fixed - user',
-    loc('Fixed - User')], ['fixed - council', loc('Fixed - Council')], ['hidden', loc('Hidden')], ['partial', loc('Partial')],['unconfirmed',loc('Unconfirmed')] ] %]
-        <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
-    [% END %]
         <td>[% states.${problem.state} %]</td>
         <td>[% problem.category %]</td>
         <td>[% PROCESS format_time time=problem.created %]</td>
