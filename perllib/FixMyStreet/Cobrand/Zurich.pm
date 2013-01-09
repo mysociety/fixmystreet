@@ -149,7 +149,7 @@ sub admin_report_edit {
             $c->forward('check_token');
 
             $problem->bodies_str( $body->parent->id );
-            $problem->state( 'unconfirmed' );
+            $problem->state( 'confirmed' );
             $problem->update;
 
             # log here
