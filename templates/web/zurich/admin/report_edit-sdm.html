@@ -15,7 +15,9 @@
 <li><input type="submit" name="send_back" value="[% loc('Send back to division') %]">
 </li>
 
-<li>[% loc('Internal notes:') %] [% problem.extra | html %]
+<li><label for="internal_notes">[% loc('Internal notes:') %]</label>
+<textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></li>
+
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <li>[% loc('Name:') %] [% problem.name | html %]
 <li>[% loc('Email:') %] [% problem.user.email | html %]

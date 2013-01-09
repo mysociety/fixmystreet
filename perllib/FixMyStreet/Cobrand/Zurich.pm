@@ -160,17 +160,26 @@ sub admin_report_edit {
         } elsif ($c->req->param('submit')) {
             $c->forward('check_token');
 
+            my $extra = $problem->extra || {};
+            $extra->{internal_notes} ||= '';
+            if ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes}) {
+                $extra->{internal_notes} = $c->req->param('internal_notes');
+                $problem->extra( { %$extra } );
+                $problem->update;
+            }
+
             # Add new update from status_update
-            my $update = $c->req->param('status_update');
-            FixMyStreet::App->model('DB::Comment')->create( {
-                text => $update,
-                user => $c->user->obj,
-                state => 'unconfirmed',
-                problem => $problem,
-                mark_fixed => 0,
-                problem_state => 'fixed - council',
-                anonymous => 1,
-            } );
+            if (my $update = $c->req->param('status_update')) {
+                FixMyStreet::App->model('DB::Comment')->create( {
+                    text => $update,
+                    user => $c->user->obj,
+                    state => 'unconfirmed',
+                    problem => $problem,
+                    mark_fixed => 0,
+                    problem_state => 'fixed - council',
+                    anonymous => 1,
+                } );
+            }
 
             $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
 
