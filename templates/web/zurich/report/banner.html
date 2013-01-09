@@ -5,16 +5,13 @@
     </div>
 [% END %]
 
-[% IF problem.is_fixed %]
-    [% INCLUDE banner, id = 'fixed', text = loc('Fixed') %]
-[% END %]
-[% IF problem.is_closed %]
-    [% INCLUDE banner, id = 'closed', text = loc('Third party') %]
-[% END %]
 [% IF problem.state == 'unconfirmed' %]
     [% INCLUDE banner, id = 'closed', text = loc('Submitted') %]
-[% END %]
-[% IF problem.state == 'in progress' %]
+[% ELSIF problem.state == 'confirmed' %]
+    [% INCLUDE banner, id = 'closed', text = loc('Open') %]
+[% ELSIF problem.is_fixed OR problem.is_closed %]
+    [% INCLUDE banner, id = 'fixed', text = loc('Closed') %]
+[% ELSIF problem.state == 'in progress' OR problem.state == 'planned' %]
     [% INCLUDE banner, id = 'progress', text = loc('In progress') %]
 [% END %]
 
