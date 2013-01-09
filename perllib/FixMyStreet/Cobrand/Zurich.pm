@@ -78,13 +78,12 @@ sub admin {
             state => 'unconfirmed',
             bodies_str => $c->stash->{body}->id,
         });
-        $c->stash->{approval} = $c->model('DB::Comment')->search({
-            'problem.state' => 'in progress',
-            'problem.bodies_str' => \@children,
-            'me.state' => 'unconfirmed'
-        }, { join => 'problem' } );
+        $c->stash->{approval} = $c->cobrand->problems->search({
+            state => 'planned',
+            bodies_str => $c->stash->{body}->id,
+        });
         $c->stash->{other} = $c->cobrand->problems->search({
-            state => { '!=', 'unconfirmed' },
+            state => { -not_in => [ 'unconfirmed', 'planned' ] },
             bodies_str => \@all,
         });
     } elsif ($type eq 'sdm') {

@@ -5,36 +5,18 @@
         'unconfirmed' = loc('Submitted'),
         'confirmed' = loc('Open'),
         'in progress' = loc('In progress'),
-        'fixed - council' = loc('Fixed'),
+        'planned' = loc('Feedback pending'),
+        'fixed - council' = loc('Closed'),
         'hidden' = loc('Hidden'),
-        'closed' = loc('Third party'),
+        'closed' = loc('Closed'),
     }
 %]
 
 <h2>New reports</h2>
 [% INCLUDE list, problems = unconfirmed.all %]
 
-<h2>Updates needing attention</h2>
-<table cellspacing="0" cellpadding="2" border="1">
-    <tr>
-        <th>[% loc('ID') %]</th>
-        <th>[% loc('Problem ID') %]</th>
-        <th>[% loc('Category') %]</th>
-        <th>[% loc('Text') %]</th>
-        <th>[% loc('Created') %]</th>
-        <th>*</th>
-    </tr>
-[%- FOR update IN approval.all %]
-    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
-        <td>[% update.id %]</td>
-        <td>[% update.problem.id %]</td>
-        <td>[% update.problem.category %]</td>
-        <td>[% update.text %]</td>
-        <td>[% PROCESS format_time time=update.created %]</td>
-        <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a></td>
-    </tr>
-[%- END -%]
-</table>
+<h2>[% loc('Feedback pending') %]</h2>
+[% INCLUDE list, problems = approval.all %]
 
 <h2>All reports</h2>
 [% INCLUDE list, problems = other.all %]
