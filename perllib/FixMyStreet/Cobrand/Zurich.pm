@@ -92,19 +92,18 @@ sub admin {
         my $body = $c->stash->{body};
 
         # XXX No multiples or missing bodies
-        my $p = $c->cobrand->problems->search({
-            'me.state' => [ 'in progress', 'fixed - council' ],
+        $c->stash->{reports_new} = $c->cobrand->problems->search( {
+            state => 'in progress',
             bodies_str => $body->id,
         } );
-        $c->stash->{reports_new} = $p->search({
-            'comments.state' => undef
-        }, { join => 'comments', distinct => 1 } );
-        $c->stash->{reports_unpublished} = $p->search({
-            'comments.state' => 'unconfirmed'
-        }, { join => 'comments', distinct => 1 } );
-        $c->stash->{reports_published} = $p->search({
-            'comments.state' => 'confirmed'
-        }, { join => 'comments', distinct => 1 } );
+        $c->stash->{reports_unpublished} = $c->cobrand->problems->search( {
+            state => 'planned',
+            bodies_str => $body->parent->id,
+        } );
+        $c->stash->{reports_published} = $c->cobrand->problems->search( {
+            state => 'fixed - council',
+            bodies_str => $body->parent->id,
+        } );
     }
 }
 
