@@ -1,9 +1,10 @@
 Subject: See Something, Say Something report sent
 
-Hi,
+Thank you for your report. It will help us to direct our policing activity to make public transport even safer. Find out more of what we are doing at:
 
-Your report on See Something, Say Something has been sent
+Safer Travel Partnership
 
-Thanks
+http://www.safertravel.info
 
-<?=$values['signature']?>
+Follow us on Twitter: https://www.twitter.com/ST_Police
+or on Facebook: http://www.facebook.com/safertravelpolice
