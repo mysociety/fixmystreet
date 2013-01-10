@@ -30,3 +30,12 @@ a:hover {
 #zurich-footer a:hover {
     color: #3c3c3c;
 }
+
+table.admin {
+  th {
+    color: white;
+    background-color: #595959;
+    border-bottom: 2px solid #393939;
+    padding: 0.8em 0.5em;
+  }
+}
