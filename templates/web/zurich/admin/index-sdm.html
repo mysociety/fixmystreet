@@ -25,7 +25,7 @@
     </tr>
 [%- FOR problem IN problems %]
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
-        <td>[% problem.id %]</td>
+        <td class="record-id">[% problem.id %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
         <td>[% problem.category %]</td> 
         <td>[% PROCESS format_time time=problem.created %]</td> 

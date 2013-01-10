@@ -45,4 +45,8 @@ table.admin {
     background-color: $table_heading_bg_col;
     border-bottom: 2px solid $table_heading_underline_col;
   }
+  td.record-id {
+    text-align: center;
+    font-weight: bold;
+  }
 }
