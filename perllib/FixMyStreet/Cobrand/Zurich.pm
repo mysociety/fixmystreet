@@ -186,6 +186,21 @@ sub admin_report_edit {
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
 
+        # Final, public, Update from DM
+        if (my $update = $c->req->param('status_update')) {
+            FixMyStreet::App->model('DB::Comment')->create( {
+                text => $update,
+                user => $c->user->obj,
+                state => 'confirmed',
+                confirmed => \'ms_current_timestamp()',
+                problem => $problem,
+                mark_fixed => 0,
+                problem_state => 'fixed - council',
+                anonymous => 1,
+            } );
+            $problem->state( 'fixed - council' );
+        }
+
         $problem->lastupdate( \'ms_current_timestamp()' );
         $problem->update;
 
@@ -199,6 +214,10 @@ sub admin_report_edit {
         if ( $redirect ) {
             $c->detach('index');
         }
+
+        $c->stash->{updates} = [ $c->model('DB::Comment')
+          ->search( { problem_id => $problem->id }, { order_by => 'created' } )
+          ->all ];
 
         return 1;
     }

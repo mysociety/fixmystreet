@@ -3,11 +3,15 @@
 
 [% status_message %]
 
+[% IF problem.state == 'planned' %]
+[% INCLUDE 'admin/list_updates.html' %]
+[% END %]
+
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
-<div style="float:left; width:48%; margin-right:2%">
+<div style="float:left; margin-top: 1em; width:48%; margin-right:2%">
 
 <ul>
     [%- cobrand_data = problem.cobrand_data %]
@@ -108,7 +112,8 @@
     </select></p>
 
     <ul>
-    <li>TODO: Leave public update to finish</li>
+<li><label for="status_update">[% loc('Public response:') %]</label>
+<textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
     </ul>
 
 [% END %]
@@ -120,6 +125,9 @@
 
 </form>
 
+[% IF problem.state != 'planned' %]
 [% INCLUDE 'admin/list_updates.html' %]
+[% END %]
+
 
 [% INCLUDE 'admin/footer.html' %]
