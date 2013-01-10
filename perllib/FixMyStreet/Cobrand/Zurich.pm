@@ -251,11 +251,12 @@ sub admin_report_edit {
             }
 
             $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
-            $c->stash->{updates} = [ $c->model('DB::Comment')
-                ->search( { problem_id => $problem->id }, { order_by => 'created' } )
-                ->all ];
 
         }
+
+        $c->stash->{updates} = [ $c->model('DB::Comment')
+            ->search( { problem_id => $problem->id }, { order_by => 'created' } )
+            ->all ];
 
         return 1;
 
