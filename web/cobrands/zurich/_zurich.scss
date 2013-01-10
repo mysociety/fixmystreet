@@ -32,10 +32,17 @@ a:hover {
 }
 
 table.admin {
+  width: 100%;
+  font-size: 0.9em;
+  border: 1px solid $table_border_color;
+  border-collapse:collapse;
+  th, td {
+    padding: 0.666em 0.5em;
+    border: 1px solid $table_border_color;
+  }
   th {
     color: white;
-    background-color: #595959;
-    border-bottom: 2px solid #393939;
-    padding: 0.8em 0.5em;
+    background-color: $table_heading_bg_col;
+    border-bottom: 2px solid $table_heading_underline_col;
   }
 }
