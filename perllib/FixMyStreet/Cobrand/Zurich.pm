@@ -121,28 +121,15 @@ sub admin_report_edit {
           unless $allowed_bodies{$problem->bodies_str};
     }
 
-    # Problem updates upon submission
-    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
-        $c->forward('check_token');
-
-        # Predefine the hash so it's there for lookups
-        # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
-        my $extra = $problem->extra || {};
-
-        $extra->{internal_notes} = $c->req->param('internal_notes');
-        $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
-        $extra->{third_personal} = $c->req->params->{third_personal} || 0;
-        $problem->extra( { %$extra } );
-
-        $problem->lastupdate( \'ms_current_timestamp()' );
-        $problem->update;
-    }
-
     if ($type eq 'super') {
 
         my @bodies = $c->model('DB::Body')->all();
         @bodies = sort { strcoll($a->name, $b->name) } @bodies;
         $c->stash->{bodies} = \@bodies;
+
+        # Can change category to any other
+        my @categories = $c->model('DB::Contact')->not_deleted->all;
+        $c->stash->{categories} = [ map { $_->category } @categories ];
 
     } elsif ($type eq 'dm') {
 
@@ -155,7 +142,68 @@ sub admin_report_edit {
         @bodies = sort { strcoll($a->name, $b->name) } @bodies;
         $c->stash->{bodies} = \@bodies;
 
-    } elsif ($type eq 'sdm') {
+        # Can change category to any other
+        my @categories = $c->model('DB::Contact')->not_deleted->all;
+        $c->stash->{categories} = [ map { $_->category } @categories ];
+
+    }
+
+    # Problem updates upon submission
+    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
+        $c->forward('check_token');
+
+        # Predefine the hash so it's there for lookups
+        # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
+        my $extra = $problem->extra || {};
+        $extra->{internal_notes} = $c->req->param('internal_notes');
+        $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
+        $extra->{third_personal} = $c->req->params->{third_personal} || 0;
+        $problem->extra( { %$extra } );
+
+        # Workflow things
+        my $redirect = 0;
+        my $new_cat = $c->req->params->{category};
+        if ( $new_cat && $new_cat ne $problem->category ) {
+            my $cat = $c->model('DB::Contact')->search( { category => $c->req->params->{category} } )->first;
+            $problem->category( $new_cat );
+            $problem->bodies_str( $cat->body_id );
+            $problem->whensent( undef );
+            $redirect = 1 if $cat->body_id ne $body->id;
+        } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
+            $problem->state( 'in progress' );
+            $problem->bodies_str( $subdiv );
+            $problem->whensent( undef );
+            $redirect = 1;
+        } elsif ( my $external = $c->req->params->{body_external} ) {
+            $problem->state( 'closed' );
+            $problem->bodies_str( $external );
+            $problem->whensent( undef );
+            $redirect = 1;
+        } else {
+            $problem->state( $c->req->params->{state} ) if $c->req->params->{state};
+        }
+
+        $problem->title( $c->req->param('title') );
+        $problem->detail( $c->req->param('detail') );
+
+        $problem->lastupdate( \'ms_current_timestamp()' );
+        $problem->update;
+
+        $c->stash->{status_message} =
+          '<p><em>' . _('Updated!') . '</em></p>';
+
+        # do this here otherwise lastupdate and confirmed times
+        # do not display correctly
+        $problem->discard_changes;
+
+        if ( $redirect ) {
+            $c->detach('index');
+        }
+
+        return 1;
+    }
+
+    if ($type eq 'sdm') {
 
         # Has cut-down edit template for adding update and sending back up only
         $c->stash->{template} = 'admin/report_edit-sdm.html';
@@ -167,9 +215,7 @@ sub admin_report_edit {
             $problem->state( 'confirmed' );
             $problem->update;
             # log here
-
             $c->res->redirect( '/admin/summary' );
-            return 1;
 
         } elsif ($c->req->param('no_more_updates')) {
             $c->forward('check_token');
@@ -178,9 +224,7 @@ sub admin_report_edit {
             $problem->state( 'planned' );
             $problem->update;
             # log here
-
             $c->res->redirect( '/admin/summary' );
-            return 1;
 
         } elsif ($c->req->param('submit')) {
             $c->forward('check_token');
@@ -207,13 +251,14 @@ sub admin_report_edit {
             }
 
             $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
-
             $c->stash->{updates} = [ $c->model('DB::Comment')
                 ->search( { problem_id => $problem->id }, { order_by => 'created' } )
                 ->all ];
 
-            return 1;
         }
+
+        return 1;
+
     }
 
     return 0;
