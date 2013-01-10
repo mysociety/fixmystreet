@@ -121,6 +121,23 @@ sub admin_report_edit {
           unless $allowed_bodies{$problem->bodies_str};
     }
 
+    # Problem updates upon submission
+    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
+        $c->forward('check_token');
+
+        # Predefine the hash so it's there for lookups
+        # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
+        my $extra = $problem->extra || {};
+
+        $extra->{internal_notes} = $c->req->param('internal_notes');
+        $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
+        $extra->{third_personal} = $c->req->params->{third_personal} || 0;
+        $problem->extra( { %$extra } );
+
+        $problem->lastupdate( \'ms_current_timestamp()' );
+        $problem->update;
+    }
+
     if ($type eq 'super') {
 
         my @bodies = $c->model('DB::Body')->all();
