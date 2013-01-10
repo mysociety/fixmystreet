@@ -601,6 +601,13 @@ For UK sub-cobrands, to specify various alternations needed for them.
 =cut
 sub is_council { 0; }
 
+=item is_two_tier
+
+For UK sub-cobrands, to specify various alternations needed for them.
+
+=cut
+sub is_two_tier { 0; }
+
 =item council_rss_alert_options
 
 Generate a set of options for council rss alerts. 

@@ -1079,67 +1079,124 @@ SKIP: {
     skip( "Need 'lichfielddc' in ALLOWED_COBRANDS config", 100 )
         unless FixMyStreet::Cobrand->exists('lichfielddc');
 
-    my $test_email = 'test-22@example.com';
-    $mech->host( 'http://lichfielddc.fixmystreet.com/' );
-    $mech->clear_emails_ok;
-    $mech->log_out_ok;
-
-    $mech->get_ok('/around');
-    $mech->content_contains( "Lichfield District Council FixMyStreet" );
-    $mech->submit_form_ok( { with_fields => { pc => 'WS13 7RD' } }, "submit location" );
-    $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
-    $mech->submit_form_ok(
+    for my $test (
         {
-            button      => 'submit_register',
-            with_fields => {
-                title         => 'Test Report',
-                detail        => 'Test report details.',
-                photo         => '',
-                name          => 'Joe Bloggs',
-                may_show_name => '1',
-                email         => $test_email,
-                phone         => '07903 123 456',
-                category      => 'Street lighting',
-            }
+            desc      => 'confirm link for cobrand council in two tier cobrand links to cobrand site',
+            category  => 'Trees',
+            council   => 2434,
+            link_base => 'http://lichfielddc.localhost/',
+            national  => 0,
+            button    => 'submit_register',
         },
-        "submit good details"
-    );
-    is_deeply $mech->page_errors, [], "check there were no errors";
+          {
+            desc      => 'confirm link for non cobrand council in two tier cobrand links to national site',
+            category  => 'Street Lighting',
+            council   => 2240,
+            link_base => 'http://localhost/',
+            national  => 1,
+            button    => 'submit_register',
+          },
+          {
+            desc      => 'confirm redirect for cobrand council in two tier cobrand redirects to cobrand site',
+            category  => 'Trees',
+            council   => 2434,
+            link_base => 'lichfielddc.localhost',
+            national  => 0,
+            redirect  => 1,
+          },
+          {
+            desc      => 'confirm redirect for non cobrand council in two tier cobrand redirect to national site',
+            category  => 'Street Lighting',
+            council   => 2240,
+            link_base => 'localhost',
+            national  => 1,
+            redirect  => 1,
+          },
+    ) {
+        subtest $test->{ desc } => sub {
+            my $test_email = 'test-22@example.com';
+            $mech->host( 'http://lichfielddc.fixmystreet.com/' );
+            $mech->clear_emails_ok;
+            $mech->log_out_ok;
 
-    # check that the user has been created/ not changed
-    my $user =
-      FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
-    ok $user, "user found";
+            my $user = $mech->log_in_ok($test_email) if $test->{redirect};
 
-    # find the report
-    my $report = $user->problems->first;
-    ok $report, "Found the report";
+            $mech->get_ok('/around');
+            $mech->content_contains( "Lichfield District Council FixMyStreet" );
+            $mech->submit_form_ok( { with_fields => { pc => 'WS13 7RD' } }, "submit location" );
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+            my %optional_fields = $test->{redirect} ?  () :
+                ( email => $test_email, phone => '07903 123 456' );
 
-    # Check the report has been assigned appropriately
-    is $report->council, 2240;
+            # we do this as otherwise test::www::mechanize::catalyst
+            # goes to the value set in ->host above irregardless and
+            # that is a 404. It works but it is not pleasant.
+            $mech->clear_host if $test->{redirect} && $test->{national};
+            $mech->submit_form_ok(
+                {
+                    button      => $test->{button},
+                    with_fields => {
+                        title         => 'Test Report',
+                        detail        => 'Test report details.',
+                        photo         => '',
+                        name          => 'Joe Bloggs',
+                        may_show_name => '1',
+                        category      => $test->{category},
+                        %optional_fields
+                    }
+                },
+                "submit good details"
+            );
+            is_deeply $mech->page_errors, [], "check there were no errors";
 
-    # receive token
-    my $email = $mech->get_email;
-    ok $email, "got an email";
-    like $email->body, qr/confirm the problem/i, "confirm the problem";
+            # check that the user has been created/ not changed
+            $user =
+              FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+            ok $user, "user found";
 
-    my ($url) = $email->body =~ m{(http://\S+)};
-    ok $url, "extracted confirm url '$url'";
+            # find the report
+            my $report = $user->problems->first;
+            ok $report, "Found the report";
 
-    # confirm token
-    $mech->get_ok($url);
-    $report->discard_changes;
-    is $report->state, 'confirmed', "Report is now confirmed";
+            # Check the report has been assigned appropriately
+            is $report->council, $test->{council};
 
-    # Shouldn't be found, as it was a county problem
-    is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
+            if ( $test->{redirect} ) {
+                is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
+                is $mech->uri->host, $test->{link_base}, 'redirected to correct site';
+            } else {
+                # receive token
+                my $email = $mech->get_email;
+                ok $email, "got an email";
+                like $email->body, qr/confirm the problem/i, "confirm the problem";
 
-    # But should be on the main site
-    $mech->host( 'www.fixmystreet.com' );
-    $mech->get_ok( '/report/' . $report->id );
-    is $report->name, 'Joe Bloggs', 'name updated correctly';
+                my ($url) = $email->body =~ m{(http://\S+)};
+                ok $url, "extracted confirm url '$url'";
 
-    $mech->delete_user($user);
+                # confirm token
+                $mech->get_ok($url);
+
+                $mech->content_contains( $test->{link_base} . 'report/' .
+                    $report->id, 'confirm page links to correct site' );
+
+                if ( $test->{national} ) {
+                    # Shouldn't be found, as it was a county problem
+                    is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
+
+                    # But should be on the main site
+                    $mech->host( 'www.fixmystreet.com' );
+                }
+                $mech->get_ok( '/report/' . $report->id );
+            }
+
+            $report->discard_changes;
+            is $report->state, 'confirmed', "Report is now confirmed";
+
+            is $report->name, 'Joe Bloggs', 'name updated correctly';
+
+            $mech->delete_user($user);
+        };
+    }
 }
 
 SKIP: {

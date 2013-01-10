@@ -8,6 +8,7 @@ sub council_id { return 2347; }
 sub council_area { return 'Stevenage'; }
 sub council_name { return 'Stevenage Council'; }
 sub council_url { return 'stevenage'; }
+sub is_two_tier { return 1; }
 
 sub path_to_web_templates {
     my $self = shift;

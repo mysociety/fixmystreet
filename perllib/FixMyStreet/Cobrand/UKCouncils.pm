@@ -86,4 +86,18 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
+sub base_url_for_report {
+    my ( $self, $report ) = @_;
+    if ( $self->is_two_tier ) {
+        my %councils = map { $_ => 1 } @{$report->councils};
+        if ( $councils{$self->council_id} ) {
+            return $self->base_url;
+        } else {
+            return FixMyStreet->config('BASE_URL');
+        }
+    } else {
+        return $self->base_url;
+    }
+}
+
 1;

@@ -8,6 +8,7 @@ sub council_id { return 2237; }
 sub council_area { return 'Oxfordshire'; }
 sub council_name { return 'Oxfordshire County Council'; }
 sub council_url { return 'oxfordshire'; }
+sub is_two_tier { return 1; }
 
 sub base_url {
     return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
@@ -46,17 +47,6 @@ sub disambiguate_location {
 
 sub example_places {
     return ( 'OX20 1SZ', 'Park St, Woodstock' );
-}
-
-# If we ever link to a district problem report, needs to be to main FixMyStreet
-sub base_url_for_report {
-    my ( $self, $report ) = @_;
-    my %councils = map { $_ => 1 } @{$report->councils};
-    if ( $councils{2237} ) {
-        return $self->base_url;
-    } else {
-        return FixMyStreet->config('BASE_URL');
-    }
 }
 
 sub default_show_name { 0 }
