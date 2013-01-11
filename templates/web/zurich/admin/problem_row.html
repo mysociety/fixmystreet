@@ -1,0 +1,25 @@
+[%
+    states = {
+        'unconfirmed' = loc('Submitted'),
+        'confirmed' = loc('Open'),
+        'in progress' = loc('In progress'),
+        'planned' = loc('Planned'),
+        'fixed - council' = loc('Closed'),
+        'hidden' = loc('Hidden'),
+        'closed' = loc('Closed'),
+    }
+%]
+[%- FOR problem IN problems %]
+    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
+        <td>[%- IF problem.is_visible -%]
+        <a href="[% c.uri_for_email( '/report', problem.id ) %]">[% problem.id %]</a>
+        [%- ELSE %]
+        [%- problem.id %]
+        [%- END -%]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
+        <td>[% states.${problem.state} %]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
+        <td>[% PROCESS format_time time=problem.created %]</td>
+        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+    </tr>
+[%- END -%]

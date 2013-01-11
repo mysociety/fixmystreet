@@ -1,16 +1,5 @@
 [% INCLUDE 'admin/header.html' title=loc('Summary') -%]
 [% PROCESS 'admin/report_blocks.html' %]
-[%
-    states = {
-        'unconfirmed' = loc('Submitted'),
-        'confirmed' = loc('Open'),
-        'in progress' = loc('In progress'),
-        'planned' = loc('Planned'),
-        'fixed - council' = loc('Closed'),
-        'hidden' = loc('Hidden'),
-        'closed' = loc('Closed'),
-    }
-%]
 
 [% status_message %]
 
@@ -35,15 +24,6 @@
         <th>[% loc('Created') %]</th>
         <th>*</th>
     </tr>
-[%- FOR problem IN problems %]
-    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
-        <td>[% problem.id %]</td>
-        <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
-        <td>[% states.${problem.state} %]</td>
-        <td>[% problem.category %]</td>
-        <td>[% PROCESS format_time time=problem.created %]</td>
-        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
-    </tr>
-[%- END -%]
+[% INCLUDE 'admin/problem_row.html' %]
 </table>
 [% END %]
