@@ -39,6 +39,34 @@ sub show_unconfirmed_reports {
 }
 
 # Specific administrative displays
+
+sub admin_pages {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my $type = $c->stash->{admin_type};
+    my $pages = {
+        'summary' => [_('Summary'), 0],
+        'reports' => [_('Reports'), 2],
+        'report_edit' => [undef, undef],
+        'update_edit' => [undef, undef],
+    };
+    return $pages if $type eq 'sdm';
+
+    $pages = { %$pages,
+        'bodies' => [_('Bodies'), 1],
+        'body' => [undef, undef],
+        'body_edit' => [undef, undef],
+    };
+    return $pages if $type eq 'dm';
+
+    $pages = { %$pages,
+        'users' => [_('Users'), 3],
+        'user_edit' => [undef, undef],
+    };
+    return $pages if $type eq 'super';
+}
+
 sub admin_type {
     my $self = shift;
     my $c = $self->{c};
