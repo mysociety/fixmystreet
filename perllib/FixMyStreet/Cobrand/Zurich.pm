@@ -236,15 +236,6 @@ sub admin_report_edit {
             # log here
             $c->res->redirect( '/admin/summary' );
 
-        } elsif ($c->req->param('no_more_updates')) {
-            $c->forward('check_token');
-
-            $problem->bodies_str( $body->parent->id );
-            $problem->state( 'planned' );
-            $problem->update;
-            # log here
-            $c->res->redirect( '/admin/summary' );
-
         } elsif ($c->req->param('submit')) {
             $c->forward('check_token');
 
@@ -271,6 +262,14 @@ sub admin_report_edit {
 
             $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
 
+            # If they clicked the no more updates button, we're done.
+            if ($c->req->param('no_more_updates')) {
+                $problem->bodies_str( $body->parent->id );
+                $problem->state( 'planned' );
+                $problem->update;
+                # log here
+                $c->res->redirect( '/admin/summary' );
+            }
         }
 
         $c->stash->{updates} = [ $c->model('DB::Comment')
