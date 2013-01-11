@@ -31,7 +31,7 @@
         <td class="record-id">[% problem.id %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
         <td>[% problem.category %]</td> 
-        <td>[% PROCESS format_time time=problem.created %]</td> 
+        <td>[% PROCESS format_date this_date=problem.created %]</td> 
         [% IF NOT no_edit %]
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
         [% END %]

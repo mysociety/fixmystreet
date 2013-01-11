@@ -15,3 +15,11 @@
 [% BLOCK flag_button -%]
 [% IF user.flagged || user_flagged %]<input type="submit" name="removeuserflag" value="[% loc('Remove flag') %]">[% ELSE %]<input type="submit" name="flaguser" value="[% loc('Flag user') %]" />[% END %]
 [%- END %]
+
+[%- USE date_format = DateTime::Format('DateTime::Format::Strptime', { pattern => "%d/%m/%Y" }) %]
+
+[% BLOCK format_date -%]
+    [%- IF this_date %]
+      [% date_format.format(this_date) %]
+    [% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
+[%- END %]
