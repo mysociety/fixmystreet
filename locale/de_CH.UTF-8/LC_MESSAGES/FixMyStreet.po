@@ -575,7 +575,7 @@ msgstr "Mangel lokalisieren"
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:30
 msgid "Closed"
-msgstr "Geschlossen"
+msgstr "Erledigt"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:696
 msgid "Closed by council"
@@ -1789,7 +1789,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:28
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Open"
-msgstr "&Ouml;ffnen"
+msgstr "Aufgenommen"
 
 #: templates/web/default/my/my.html:22 templates/web/fixmystreet/my/my.html:26
 msgid "Open reports"
@@ -1915,7 +1915,7 @@ msgstr "Fotos von neuen Meldungen in der N&auml;he"
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:29
 msgid "Planned"
-msgstr "Geplant"
+msgstr "Rückmeldung ausstehend"
 
 #: templates/web/fixmystreet/questionnaire/index.html:44
 msgid ""
