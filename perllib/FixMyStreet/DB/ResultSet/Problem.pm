@@ -222,8 +222,10 @@ sub send_reports {
     my $base_url = mySociety::Config::get('BASE_URL');
     my $site = CronFns::site($base_url);
 
+    my $states = [ 'confirmed', 'fixed' ];
+    $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed' ] if $site eq 'zurich';
     my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
-        state => [ 'confirmed', 'fixed' ],
+        state => $states,
         whensent => undef,
         bodies_str => { '!=', undef },
     } );
@@ -252,10 +254,12 @@ sub send_reports {
         my $email_base_url = $cobrand->base_url_for_report($row);
         my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
         map { $h{$_} = $row->user->$_ } qw/email phone/;
-        $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) );
+        $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) )
+            if $row->confirmed;
 
         $h{query} = $row->postcode;
         $h{url} = $email_base_url . $row->url;
+        $h{admin_url} = $cobrand->admin_base_url . 'report_edit/' . $row->id;
         $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
         if ($row->photo) {
             $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";

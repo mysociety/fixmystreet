@@ -38,6 +38,11 @@ sub show_unconfirmed_reports {
     1;
 }
 
+sub get_body_sender {
+    my ( $self, $body, $category ) = @_;
+    return { method => 'Zurich' };
+}
+
 # Specific administrative displays
 
 sub admin_pages {
@@ -293,6 +298,7 @@ sub admin_report_edit {
             # If they clicked the no more updates button, we're done.
             if ($c->req->param('no_more_updates')) {
                 $problem->bodies_str( $body->parent->id );
+                $problem->whensent( undef );
                 $problem->state( 'planned' );
                 $problem->update;
                 # log here

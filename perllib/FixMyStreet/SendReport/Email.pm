@@ -55,6 +55,11 @@ sub get_template {
     return $template;
 }
 
+sub send_from {
+    my ( $self, $row ) = @_;
+    return [ $row->user->email, $row->name ];
+}
+
 sub send {
     my $self = shift;
     my ( $row, $h ) = @_;
@@ -77,7 +82,7 @@ sub send {
             _template_ => $self->get_template( $row ),
             _parameters_ => $h,
             To => $self->to,
-            From => [ $row->user->email, $row->name ],
+            From => $self->send_from( $row ),
         },
         mySociety::Config::get('CONTACT_EMAIL'),
         \@recips,

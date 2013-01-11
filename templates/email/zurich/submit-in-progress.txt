@@ -2,7 +2,7 @@ Subject: FixMyZurich: New report #<?=$values['id']?>
 
 Dear <?=$values['bodies_name']?>,
 
-A new report has been submitted by a user.
+This report has been sent to you by your division to be dealt with.
 
 Public URL: <?=$values['url']?>
 

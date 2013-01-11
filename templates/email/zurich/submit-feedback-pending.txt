@@ -1,0 +1,10 @@
+Subject: FixMyZurich: report #<?=$values['id']?> pending feedback
+
+Dear <?=$values['bodies_name']?>,
+
+This report has been sent back to you by the subdivision for final response and closure.
+
+Public URL: <?=$values['url']?>
+
+Admin URL: <?=$values['admin_url']?>
+
