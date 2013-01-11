@@ -5,14 +5,10 @@
         <input type="text" name="name" id="name" value="[% body.name %]" size="50">
     </p>
 
-[% IF admin_type == 'dm' %]
     <p>
         <label for="email">[% loc('Email') %]</label>
         <input type="text" name="endpoint" id="email" value="[% body.endpoint %]" size="50">
     </p>
-[% ELSE %]
-    <input type="hidden" name="endpoint" id="endpoint" value="[% body.endpoint %]">
-[% END %]
 
 [% IF admin_type == 'super' %]
     <p>
