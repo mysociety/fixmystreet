@@ -65,7 +65,8 @@
     </select></p>
 
 <ul>
-<li><label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
+<li class="assignation">
+<label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision">
             <option value="">--</option>
         [% FOR body IN bodies %]
@@ -74,7 +75,7 @@
         [% END %]
         </select>
 
-<li>
+<li class="assignation">
 <label for="category">
 [% loc('Category:') %] [% problem.category %]<br>
 [% loc('Assign to different category:') %]</label>
@@ -85,7 +86,8 @@
       [% END %]
     </select></li>
 
-<li><label for="body_external">[% loc('Assign to external body:') %]</label>
+<li class="assignation">
+<label for="body_external">[% loc('Assign to external body:') %]</label>
     <select name="body_external" id="body_external">
         <option value="">--</option>
     [% FOR body IN bodies %]
@@ -98,6 +100,20 @@
     <label for="third_personal" class="inline">Include reporter personal details</label>
 
 </ul>
+
+<script type="text/javascript">
+$(function(){
+    $('.assignation select').change(function(){
+        if (this.value == "") {
+            $('.assignation').css('color', '#000');
+        } else {
+            var a = $(this).closest('li').css('color', '#000');
+            $('.assignation select').not(this).val("");
+            $('.assignation').not(a).css('color', '#999');
+        }
+    });
+});
+</script>
 
 [% ELSIF problem.state == 'planned' %]
 
