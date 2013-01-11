@@ -6,8 +6,6 @@
 </p>
 [% END %]
 
-[% IF c.cobrand.moniker != 'zurich' OR admin_type == 'super' %]
-
 <p>
 [% IF example_pc %]
 <a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
@@ -110,8 +108,6 @@
             <input type="hidden" name=".cgifields" value="deleted" >
         </div>
     </form>
-
-[% END %]
 
     <h2>[% loc('Edit body details') %]</h2>
     [% INCLUDE 'admin/body-form.html' %]
