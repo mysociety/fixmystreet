@@ -312,7 +312,7 @@ sub update_contacts : Private {
     my ( $self, $c ) = @_;
 
     my $posted = $c->req->param('posted');
-    my $editor = $c->req->remote_user || _('*unknown*');
+    my $editor = $c->req->remote_user || ($c->user && $c->user->name) || _('*unknown*');
 
     if ( $posted eq 'new' ) {
         $c->forward('check_token');
