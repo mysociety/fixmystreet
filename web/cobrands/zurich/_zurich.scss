@@ -50,6 +50,7 @@ table.admin {
     font-weight: bold;
   }
   tr.filter-row td {
+    display: none; /* TODO: reveal when filtering is implemented */
     padding: 4px 4px 4px 40px;
     background-color: $button_bg_col;
     background-image: url('search-icon-white.png');
