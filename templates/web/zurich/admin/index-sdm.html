@@ -13,7 +13,7 @@
 [% INCLUDE 'admin/footer.html' %]
 
 [% BLOCK list %]
-<table cellspacing="0" cellpadding="2" border="1">
+<table cellspacing="0" cellpadding="2" border="1" class="admin">
     <tr>
         <th>[% loc('ID') %]</th>
         <th>[% loc('Title') %]</th>
@@ -23,12 +23,15 @@
         <th>*</th>
         [% END %]
     </tr>
+    <tr class="filter-row">
+        <td colspan="6"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
+    </tr>
 [%- FOR problem IN problems %]
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
-        <td>[% problem.id %]</td>
+        <td class="record-id">[% problem.id %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
         <td>[% problem.category %]</td> 
-        <td>[% PROCESS format_time time=problem.created %]</td> 
+        <td>[% PROCESS format_date this_date=problem.created %]</td> 
         [% IF NOT no_edit %]
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
         [% END %]

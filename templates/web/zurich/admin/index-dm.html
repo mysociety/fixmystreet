@@ -15,7 +15,7 @@
 [% INCLUDE 'admin/footer.html' %]
 
 [% BLOCK list %]
-<table cellspacing="0" cellpadding="2" border="1">
+<table cellspacing="0" cellpadding="2" border="1" class="admin">
     <tr>
         <th>[% loc('ID') %]</th>
         <th>[% loc('Title') %]</th>
@@ -23,6 +23,9 @@
         <th>[% loc('Category') %]</th>
         <th>[% loc('Created') %]</th>
         <th>*</th>
+    </tr>
+    <tr class="filter-row">
+        <td colspan="6"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
     </tr>
 [% INCLUDE 'admin/problem_row.html' %]
 </table>
