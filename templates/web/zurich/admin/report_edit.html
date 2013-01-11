@@ -34,7 +34,7 @@
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
-<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %][% photo.url %]">
+<li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]">
 <br>
 [% IF rotated %]Photo may be cached. View image directly to check<br>[% END %]
 <input type="submit" name="rotate_photo" value="Rotate Left" />
