@@ -33,6 +33,9 @@
         <th>[% loc('Created') %]</th>
         <th>*</th>
     </tr>
+    <tr class="filter-row">
+        <td colspan="6"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
+    </tr>
 [%- FOR problem IN problems %]
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
         <td class="record-id">[% problem.id %]</td>
