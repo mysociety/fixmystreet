@@ -20,9 +20,11 @@
         [%- problem.id %]
         [%- END -%]</td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
-        <td>[% states.${problem.state} %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
         <td>[% PROCESS format_date this_date=problem.created %]</td>
+        <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
+        <td>[% states.${problem.state} %]</td>
+        <td>lorem</td>
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]
