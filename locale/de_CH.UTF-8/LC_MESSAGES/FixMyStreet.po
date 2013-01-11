@@ -2907,9 +2907,8 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:26
 #: templates/web/zurich/admin/report_edit.html:27
 #: templates/web/zurich/report/banner.html:15
-#, fuzzy
 msgid "Submitted"
-msgstr "Abschicken"
+msgstr "Erfasst"
 
 #: templates/web/bromley/report/display.html:44
 #: templates/web/default/alert/updates.html:17
