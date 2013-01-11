@@ -14,13 +14,13 @@
 
 [% status_message %]
 
-<h2>New reports</h2>
+<h2>[% loc('Submitted') %]</h2>
 [% INCLUDE list, problems = unconfirmed.all %]
 
 <h2>[% loc('Planned') %]</h2>
 [% INCLUDE list, problems = approval.all %]
 
-<h2>All reports</h2>
+<h2>[% loc('All reports') %]</h2>
 [% INCLUDE list, problems = other.all %]
 
 [% INCLUDE 'admin/footer.html' %]
