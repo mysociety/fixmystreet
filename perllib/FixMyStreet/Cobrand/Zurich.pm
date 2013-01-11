@@ -75,7 +75,7 @@ sub admin {
 
         # XXX No multiples or missing bodies
         $c->stash->{unconfirmed} = $c->cobrand->problems->search({
-            state => 'unconfirmed',
+            state => [ 'unconfirmed', 'confirmed' ],
             bodies_str => $c->stash->{body}->id,
         });
         $c->stash->{approval} = $c->cobrand->problems->search({
@@ -83,7 +83,7 @@ sub admin {
             bodies_str => $c->stash->{body}->id,
         });
         $c->stash->{other} = $c->cobrand->problems->search({
-            state => { -not_in => [ 'unconfirmed', 'planned' ] },
+            state => { -not_in => [ 'unconfirmed', 'confirmed', 'planned' ] },
             bodies_str => \@all,
         });
     } elsif ($type eq 'sdm') {
