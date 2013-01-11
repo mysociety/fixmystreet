@@ -44,6 +44,9 @@ table.admin {
     color: white;
     background-color: $table_heading_bg_col;
     border-bottom: 2px solid $table_heading_underline_col;
+    border-left: 1px solid $table_heading_border_col;
+    border-right: 1px solid $table_heading_border_col;
+    
   }
   td.record-id {
     text-align: center;
