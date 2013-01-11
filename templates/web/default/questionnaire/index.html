@@ -80,9 +80,13 @@ href="http://www.emptyhomes.com/getinvolved/campaign.html">http://www.emptyhomes
 </p>
 [% END %]
 
+[% IF c.cobrand.moniker == 'southampton' %]
+<p>Add a public update (please note it will not be sent to the council)</p>
+[% ELSE %]
 <p>[% loc('If you wish to leave a public update on the problem, please enter it here
 (please note it will not be sent to the council). For example, what was
 your experience of getting the problem fixed?') %]</p>
+[% END %]
 
 <p><textarea name="update" style="max-width:90%" rows="7" cols="30">[% update | html %]</textarea></p>
 
