@@ -23,6 +23,18 @@
 <li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 
+[% IF problem.photo %]
+[% photo = problem.get_photo_params %]
+<li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]">
+<br>
+[% IF rotated %]Photo may be cached. View image directly to check<br>[% END %]
+<input type="submit" name="rotate_photo" value="Rotate Left" />
+<input type="submit" name="rotate_photo" value="Rotate Right" />
+<br>
+<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
+<label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
+[% END %]
+
 <li><label for="internal_notes">[% loc('Internal notes:') %]</label>
 <textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></li>
 
