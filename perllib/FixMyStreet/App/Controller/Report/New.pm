@@ -147,7 +147,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
     } else {
         $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
         $c->send_email( 'problem-confirm.txt', {
-            to => [ [ $report->user->email, $report->name ] ],
+            to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
         } );
         $c->stash->{ json_response } = { success => 1 };
     }
@@ -1125,7 +1125,7 @@ sub redirect_or_confirm_creation : Private {
     } );
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
     $c->send_email( 'problem-confirm.txt', {
-        to => [ [ $report->user->email, $report->name ] ],
+        to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
     } );
 
     # tell user that they've been sent an email
