@@ -590,11 +590,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     my $site_restriction = $c->cobrand->site_restriction;
 
-    my $problem = $c->cobrand->problems->search(
-        {
-            id => $id,
-        }
-    )->first;
+    my $problem = $c->cobrand->problems->search( { id => $id } )->first;
 
     $c->detach( '/page_error_404_not_found' )
       unless $problem;
@@ -602,6 +598,11 @@ sub report_edit : Path('report_edit') : Args(1) {
     $c->stash->{problem} = $problem;
 
     $c->forward('get_token');
+
+    if ( $c->req->param('rotate_photo') ) {
+        $c->forward('rotate_photo');
+        return 1;
+    }
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
         my $done = $c->cobrand->admin_report_edit();
@@ -635,9 +636,6 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
     elsif ( $c->req->param('banuser') ) {
         $c->forward('ban_user');
-    }
-    elsif ( $c->req->param('rotate_photo') ) {
-        $c->forward('rotate_photo');
     }
     elsif ( $c->req->param('submit') ) {
         $c->forward('check_token');
