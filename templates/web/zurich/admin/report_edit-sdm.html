@@ -13,7 +13,11 @@
     [%- cobrand_data = problem.cobrand_data %]
     [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
 <li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
-<li>[% loc('Details:') %] [% problem.detail | html %]</li>
+<li>[% loc('Details:') %] [% problem.detail | html %]
+[% IF problem.extra.original_detail %]
+<br>[% loc('originally entered') %]: &ldquo;[% problem.extra.original_detail | html %]&rdquo;
+[% END %]
+</li>
 <li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %] ([% problem.latitude %],[% problem.longitude %]) ([% loc('originally entered') %] &lsquo;[% problem.postcode | html %]&rsquo;, [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
 <li>[% loc('Category:') %] [% problem.category | html %] </li>

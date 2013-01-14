@@ -191,6 +191,8 @@ sub admin_report_edit {
         $extra->{internal_notes} = $c->req->param('internal_notes');
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
+        # Make sure we have a copy of the original detail field
+        $extra->{original_detail} = $problem->detail unless $extra->{original_detail};
         $problem->extra( { %$extra } );
 
         # Workflow things
