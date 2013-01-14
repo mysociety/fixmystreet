@@ -312,7 +312,7 @@ sub update_contacts : Private {
     my ( $self, $c ) = @_;
 
     my $posted = $c->req->param('posted');
-    my $editor = $c->req->remote_user || ($c->user && $c->user->name) || _('*unknown*');
+    my $editor = $c->forward('get_user');
 
     if ( $posted eq 'new' ) {
         $c->forward('check_token');
@@ -1059,6 +1059,16 @@ sub set_allowed_pages : Private {
     return 1;
 }
 
+sub get_user : Private {
+    my ( $self, $c ) = @_;
+
+    my $user = $c->req->remote_user();
+    $user ||= ($c->user && $c->user->name);
+    $user ||= '';
+
+    return $user;
+}
+
 =item get_token
 
 Generate a token based on user and secret
@@ -1069,12 +1079,8 @@ sub get_token : Private {
     my ( $self, $c ) = @_;
 
     my $secret = $c->model('DB::Secret')->search()->first;
-
-    my $user = $c->req->remote_user();
-    $user ||= '';
-
+    my $user = $c->forward('get_user');
     my $token = md5_hex(($user . $secret->secret));
-
     $c->stash->{token} = $token;
 
     return 1;
@@ -1101,7 +1107,7 @@ sub check_token : Private {
 
     $c->forward( 'log_edit', [ $object_id, $object_type, $action_performed ] );
 
-Adds an entry into the admin_log table using the current remote_user.
+Adds an entry into the admin_log table using the current user.
 
 =cut
 
@@ -1109,7 +1115,7 @@ sub log_edit : Private {
     my ( $self, $c, $id, $object_type, $action ) = @_;
     $c->model('DB::AdminLog')->create(
         {
-            admin_user => ( $c->req->remote_user() || '' ),
+            admin_user => $c->forward('get_user'),
             object_type => $object_type,
             action => $action,
             object_id => $id,
