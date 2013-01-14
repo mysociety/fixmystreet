@@ -24,7 +24,13 @@
         <td>[% PROCESS format_date this_date=problem.created %]</td>
         <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
         <td>[% states.${problem.state} %]</td>
-        <td>lorem</td>
+        <td>
+            [%- IF p_body.parent.id AND p_body.parent.parent.id -%][%# ...it's a subdivision %]
+                [% PROCESS value_or_nbsp value=p_body.name %]
+            [%- ELSE -%]
+                &nbsp;
+            [%- END -%]
+        </td>
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]
