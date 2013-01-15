@@ -201,11 +201,13 @@ sub admin_report_edit {
         if ( $new_cat && $new_cat ne $problem->category ) {
             my $cat = $c->model('DB::Contact')->search( { category => $c->req->params->{category} } )->first;
             $problem->category( $new_cat );
+            $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
             $problem->whensent( undef );
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $problem->state( 'in progress' );
+            $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
