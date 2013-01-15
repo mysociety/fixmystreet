@@ -147,8 +147,9 @@ $(function(){
     </li>
 
     <li><label for="status_update">[% loc('Public response:') %]</label>
-    <textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
 
+    <textarea name='status_update' id='status_update' cols=60 rows=5>[% problem.extra.public_response | html %]</textarea>
+    </li>
 </ul>
 
 [% END %]
@@ -156,7 +157,12 @@ $(function(){
 </div>
 
 <div style="clear:both"></div>
-<p align="right"><input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></p>
+<p align="right">
+[% IF problem.state == 'planned' %]
+<input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
+[% END %]
+<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
+</p>
 
 </form>
 

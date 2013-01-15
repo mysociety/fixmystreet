@@ -1,18 +1,15 @@
-[% FOREACH update IN updates %]
-[% INCLUDE 'report/update.html' %]
+[% IF problem.state == 'fixed - council' %]
+<section class="full-width">
+    <h4 class="static-with-rule">[% loc('Updates') %]</h4>
+    <ul class="issue-list">
+        <li>
+            <div class="update-wrap">
+                <div class="update-text">
+                    <p class="meta-2">[% prettify_epoch( problem.lastupdate_local.epoch ) %]</p>
+                    [% add_links( problem.extra.public_response ) | html_para %]
+                </div>
+            </div>
+        </li>
+    </ul>
+</section>
 [% END %]
-
-[% BLOCK meta_line %]
-
-    [%- IF update.user.from_body;
-        user_name = update.user.name | html;
-        body = update.user.body;
-    %]
-        [% tprintf( loc( 'Posted by %s (<strong>%s</strong>) at %s' ), user_name, body, prettify_epoch( update.confirmed_local.epoch ) ) -%]
-    [%- ELSE %]
-        [% tprintf( loc( 'Posted by %s at %s' ), update.name, prettify_epoch( update.confirmed_local.epoch ) ) | html -%]
-    [%- END -%]
-    [%- ", " _ loc( 'reopened' ) IF update.problem_state == 'confirmed' %]
-    [%- ", " _ tprintf(loc( 'marked as %s' ), update.meta_problem_state) IF update.problem_state AND update.problem_state != 'confirmed' %]
-[% END %]
-

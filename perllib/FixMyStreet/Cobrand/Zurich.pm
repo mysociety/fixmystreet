@@ -223,17 +223,11 @@ sub admin_report_edit {
 
         # Final, public, Update from DM
         if (my $update = $c->req->param('status_update')) {
-            FixMyStreet::App->model('DB::Comment')->create( {
-                text => $update,
-                user => $c->user->obj,
-                state => 'confirmed',
-                confirmed => \'ms_current_timestamp()',
-                problem => $problem,
-                mark_fixed => 0,
-                problem_state => 'fixed - council',
-                anonymous => 1,
-            } );
-            $problem->state( 'fixed - council' );
+            $extra->{public_response} = $update;
+            $problem->extra( { %$extra } );
+            if ($c->req->params->{publish_response}) {
+                $problem->state( 'fixed - council' );
+            }
         }
 
         $problem->lastupdate( \'ms_current_timestamp()' );
