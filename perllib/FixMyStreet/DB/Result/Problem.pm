@@ -557,7 +557,11 @@ sub body {
     my ( $problem, $c ) = @_;
     my $body;
     if ($problem->external_body) {
-        $body = $problem->external_body;
+        if ($problem->cobrand eq 'zurich') {
+            $body = $c->model('DB::Body')->find({ id => $problem->external_body });
+        } else {
+            $body = $problem->external_body;
+        }
     } else {
         my $bodies = $problem->bodies;
         $body = join( _(' and '),

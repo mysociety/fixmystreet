@@ -10,7 +10,7 @@
 [% INCLUDE list, problems = approval.all %]
 
 <h2>[% loc('All reports') %]</h2>
-[% INCLUDE list, problems = other.all %]
+[% INCLUDE list, problems = other.all, include_subdiv = 1 %]
 
 [% INCLUDE 'admin/footer.html' %]
 
@@ -23,7 +23,9 @@
         <th>[% loc('Submitted') %]</th>
         <th>[% loc('Updated') %]</th>
         <th>[% loc('Status') %]</th>
-        <th>[% loc('Subdivision') %]</th>
+    [% IF include_subdiv %]
+        <th>[% loc('Subdivision/Body') %]</th>
+    [% END %]
         <th>*</th>
     </tr>
     <tr class="filter-row">

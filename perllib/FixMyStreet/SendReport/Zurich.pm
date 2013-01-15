@@ -9,6 +9,8 @@ sub build_recipient_list {
 
     # Only one body ever, most of the time with an email endpoint
     my $body = @{ $self->bodies }[0];
+    $body = FixMyStreet::App->model("DB::Body")->find( { id => $row->external_body } )
+        if $row->external_body;
     my $body_email = $body->endpoint;
 
     my @bodies = $body->bodies;

@@ -211,7 +211,7 @@ sub admin_report_edit {
             $redirect = 1;
         } elsif ( my $external = $c->req->params->{body_external} ) {
             $problem->state( 'closed' );
-            $problem->bodies_str( $external );
+            $problem->external_body( $external );
             $problem->whensent( undef );
             $redirect = 1;
         } else {
