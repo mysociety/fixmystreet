@@ -27,14 +27,7 @@
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
-<li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]">
-<br>
-[% IF rotated %]Photo may be cached. View image directly to check<br>[% END %]
-<input type="submit" name="rotate_photo" value="Rotate Left" />
-<input type="submit" name="rotate_photo" value="Rotate Right" />
-<br>
-<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
-<label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
+<li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]"></li>
 [% END %]
 
 <li>[% loc('State:') %] [% states.${problem.state} %]</li>
