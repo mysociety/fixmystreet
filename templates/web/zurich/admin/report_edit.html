@@ -14,9 +14,7 @@
 <div style="float:left; margin-top: 1em; width:48%; margin-right:2%">
 
 <ul>
-    [%- cobrand_data = problem.cobrand_data %]
-    [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
-<li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
+<li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
 <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
 <li><label for='detail'>[% loc('Details:') %]</label>
 <textarea name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea>
@@ -52,18 +50,26 @@
 <p><label for="internal_notes">[% loc('Internal notes:') %]</label>
 <textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></p>
 
-[% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
+<p>[% loc('State:') %] <select name="state"  id="state">
+    <option value="">--</option>
+  [% FOREACH s IN [
+        ['unconfirmed', loc('Submitted')]
+        ['confirmed', loc('Open')],
+        ['planned', loc('Planned')],
+        ['hidden', loc('Hidden')],
+  ] %]
+    <option [% 'selected ' IF s.0 == problem.state %] value="[% s.0 %]">[% s.1 %]</option>
+  [% END %]
+  [% IF problem.state == 'closed' %]
+    <option selected value="closed">[% loc('Closed') %]</option>
+  [% ELSIF problem.state == 'fixed - council' %]
+    <option selected value="fixed - council">[% loc('Closed') %]</option>
+  [% ELSIF problem.state == 'in progress' %]
+    <option selected value="in progress">[% loc('In progress') %]</option>
+  [% END %]
+</select></p>
 
-    <p>[% loc('State:') %] <select name="state"  id="state">
-        <option value="">--</option>
-      [% FOREACH s IN [
-            ['unconfirmed',loc('Submitted')]
-            ['confirmed', loc('Open')],
-            ['hidden', loc('Hidden')],
-      ] %]
-        <option [% 'selected ' IF s.0 == problem.state %] value="[% s.0 %]">[% s.1 %]</option>
-      [% END %]
-    </select></p>
+[% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
 
 <ul>
 <li class="assignation">
@@ -118,20 +124,22 @@ $(function(){
 
 [% ELSIF problem.state == 'planned' %]
 
-    <p>[% loc('State:') %] <select name="state"  id="state">
-        <option value="">--</option>
-      [% FOREACH s IN [
-            ['planned', loc('Planned')],
-            ['hidden', loc('Hidden')],
-      ] %]
-        <option [% 'selected ' IF s.0 == problem.state %] value="[% s.0 %]">[% s.1 %]</option>
-      [% END %]
-    </select></p>
+<ul>
+    <li class="assignation">
+    <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
+        <select name="body_subdivision" id="body_subdivision">
+            <option value="" selected>--</option>
+        [% FOR body IN bodies %]
+            [% NEXT UNLESS body.parent.id == c.user.from_body.id %]
+            <option value="[% body.id %]">[% body.name %]</option>
+        [% END %]
+        </select>
+    </li>
 
-    <ul>
-<li><label for="status_update">[% loc('Public response:') %]</label>
-<textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
-    </ul>
+    <li><label for="status_update">[% loc('Public response:') %]</label>
+    <textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
+
+</ul>
 
 [% END %]
 

@@ -10,9 +10,7 @@
 <p align="right"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 
 <ul>
-    [%- cobrand_data = problem.cobrand_data %]
-    [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
-<li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
+<li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
 <li>[% loc('Details:') %] [% problem.detail | html %]
 [% IF problem.extra.original_detail %]
 <br>[% loc('originally entered') %]: &ldquo;[% problem.extra.original_detail | html %]&rdquo;
