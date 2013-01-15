@@ -1,14 +1,3 @@
-[%
-    states = {
-        'unconfirmed' = loc('Submitted'),
-        'confirmed' = loc('Open'),
-        'in progress' = loc('In progress'),
-        'planned' = loc('Planned'),
-        'fixed - council' = loc('Closed'),
-        'hidden' = loc('Hidden'),
-        'closed' = loc('Closed'),
-    }
-%]
 [%- FOR problem IN problems %]
     [% SET p_body = problem.bodies.values.0 %]
     [% NEXT IF admin_type == 'sdm' AND p_body.id != body.id %]
@@ -23,6 +12,8 @@
         <td>[% states.${problem.state} %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
         <td>[% PROCESS format_date this_date=problem.created %]</td>
+        [% IF NOT no_edit %]
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+        [% END %]
     </tr>
 [%- END -%]

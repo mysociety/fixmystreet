@@ -17,6 +17,7 @@
     <tr>
         <th>[% loc('ID') %]</th>
         <th>[% loc('Title') %]</th>
+        <th>[% loc('State') %]</th>
         <th>[% loc('Category') %]</th>
         <th>[% loc('Created') %]</th>
         [% IF NOT no_edit %]
@@ -26,16 +27,6 @@
     <tr class="filter-row">
         <td colspan="6"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
     </tr>
-[%- FOR problem IN problems %]
-    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
-        <td class="record-id">[% problem.id %]</td>
-        <td>[% PROCESS value_or_nbsp value=problem.title %]</td> 
-        <td>[% problem.category %]</td> 
-        <td>[% PROCESS format_date this_date=problem.created %]</td> 
-        [% IF NOT no_edit %]
-        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
-        [% END %]
-    </tr>
-[%- END -%]
+[% INCLUDE 'admin/problem_row.html' %]
 </table>
 [% END %]

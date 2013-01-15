@@ -37,6 +37,8 @@
 <label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
 [% END %]
 
+<li>[% loc('State:') %] [% states.${problem.state} %]</li>
+
 <li><label for="internal_notes">[% loc('Internal notes:') %]</label>
 <textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></li>
 
