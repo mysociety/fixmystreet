@@ -11,11 +11,21 @@
         [%- problem.id %]
         [%- END -%]</td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
-        <td>[% states.${problem.state} %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
         <td>[% PROCESS format_date this_date=problem.created %]</td>
+        <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
+        <td>[% states.${problem.state} %]</td>
+        [% IF admin_type != 'sdm' %]
+            <td>
+                [%- IF p_body.parent.id AND p_body.parent.parent.id -%][%# ...it's a subdivision %]
+                    [% PROCESS value_or_nbsp value=p_body.name %]
+                [%- ELSE -%]
+                    &nbsp;
+                [%- END -%]
+            </td>
+        [% END %]
         [% IF NOT no_edit %]
-        <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+            <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
         [% END %]
     </tr>
 [%- END -%]
