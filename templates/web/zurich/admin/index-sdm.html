@@ -16,16 +16,17 @@
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
-        <th>[% loc('Title') %]</th>
-        <th>[% loc('State') %]</th>
+        <th>[% loc('Description') %]</th>
         <th>[% loc('Category') %]</th>
-        <th>[% loc('Created') %]</th>
+        <th>[% loc('Submitted') %]</th>
+        <th>[% loc('Updated') %]</th>
+        <th>[% loc('Status') %]</th>
         [% IF NOT no_edit %]
         <th>*</th>
         [% END %]
     </tr>
     <tr class="filter-row">
-        <td colspan="6"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
+        <td colspan="8"><input type="text" placeholder="[%= loc('Filter report list') %]" /></td>
     </tr>
 [% INCLUDE 'admin/problem_row.html' %]
 </table>
