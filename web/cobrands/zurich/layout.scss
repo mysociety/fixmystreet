@@ -47,6 +47,27 @@ body.mappage {
     }
 }
 
+.nav-wrapper-2 p:first-child {
+    font-weight: bold;
+    margin-top: 0.75em;
+}
+.nav-wrapper-2 p {
+    line-height: 1.2;
+    color: white;
+    clear: right;
+    float: right;
+    margin: 0 1em 0 0;
+    font-size: 85%;
+    a {
+        color: white;
+        font-size: 85%;
+    }
+    a:hover {
+        color: white;
+    }
+}
+
+/* TODO Change the main-nav to be what is wanted */
 #main-nav {
     ul#main-menu {
         li {
