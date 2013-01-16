@@ -78,3 +78,21 @@ body.twothirdswidthpage {
     }
 }
 
+// Zurich base has made this a more simple construct. The top is to pull it up
+// over the content padding to be attached to the top of the content area.
+// We reduce the padding as no pin image, and change the background.
+.banner {
+    top: -1em;
+    p {
+        &#fixed {
+            padding-top: 2em;
+            @include background(linear-gradient(#769643, #648721 4px));
+        }
+    }
+}
+.ie6 .banner p {
+    &#fixed {
+        background-image: none;
+    }
+}
+

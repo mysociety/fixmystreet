@@ -18,3 +18,21 @@
     color: #666;
     font-size: 85%;
 }
+
+// Simplify the banner to just be a floated box. Colours etc. still
+// inherited from the base stylesheet.
+.banner {
+    p {
+        position: static;
+        float: right;
+        font-weight: bold;
+        padding: 1em;
+        margin: 0;
+        text-transform: uppercase;
+        text-align: center;
+        &:before {
+            display: none;
+        }
+    }
+}
+
