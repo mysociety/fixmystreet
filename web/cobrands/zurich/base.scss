@@ -36,3 +36,32 @@
     }
 }
 
+// No grey background or other bits
+// The amount of resetting here shows this needs refactoring, so that it is FMS making the changes
+// Also look into why full-width pulls things out, but then it is its children
+// that have to recompensate with padding.
+h4.static-with-rule {
+    color: black;
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: none;
+    background: none;
+    padding-left: 0;
+    padding-right: 0;
+    border-top: 0.25em solid #e5e5e5;
+}
+.issue-list {
+    border-bottom: none;
+    li {
+        padding-left: 0;
+        padding-right: 0;
+        background: none;
+    }
+}
+
+.issue-list-a {
+    border-bottom: none;
+    li {
+        background: none;
+    }
+}
