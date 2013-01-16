@@ -196,10 +196,11 @@ HASHREF.
 
 sub open_states {
     my $states = {
-        'confirmed'     => 1,
-        'investigating' => 1,
-        'planned'       => 1,
-        'in progress'   => 1,
+        'confirmed'        => 1,
+        'investigating'    => 1,
+        'in progress'      => 1,
+        'planned'          => 1,
+        'action scheduled' => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -237,7 +238,10 @@ HASHREF.
 
 sub closed_states {
     my $states = {
-        'closed'          => 1,
+        'closed'                      => 1,
+        'unable to fix'               => 1,
+        'not responsible'             => 1,
+        'duplicate'                   => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -248,7 +252,7 @@ sub closed_states {
 
     @states = FixMyStreet::DB::Problem::visible_states();
 
-Get a list or states that should be visible on the site. If called in
+Get a list of states that should be visible on the site. If called in
 array context then returns an array of names, otherwise returns a
 HASHREF.
 
@@ -256,14 +260,73 @@ HASHREF.
 
 sub visible_states {
     my $states = {
-        'confirmed'       => 1,
-        'planned'         => 1,
-        'investigating'   => 1,
-        'in progress'     => 1,
-        'fixed'           => 1,
-        'fixed - council' => 1,
-        'fixed - user'    => 1,
-        'closed'          => 1,
+        'confirmed'                   => 1,
+        'investigating'               => 1,
+        'in progress'                 => 1,
+        'planned'                     => 1,
+        'action scheduled'            => 1,
+        'fixed'                       => 1,
+        'fixed - council'             => 1,
+        'fixed - user'                => 1,
+        'unable to fix'               => 1,
+        'not responsible'             => 1,
+        'duplicate'                   => 1,
+        'closed'                      => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::all_states();
+
+Get a list of all states that a problem can have. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+sub all_states {
+    my $states = {
+        'hidden'                      => 1,
+        'partial'                     => 1,
+        'unconfirmed'                 => 1,
+        'confirmed'                   => 1,
+        'investigating'               => 1,
+        'in progress'                 => 1,
+        'action scheduled'            => 1,
+        'fixed'                       => 1,
+        'fixed - council'             => 1,
+        'fixed - user'                => 1,
+        'unable to fix'               => 1,
+        'not responsible'             => 1,
+        'duplicate'                   => 1,
+        'closed'                      => 1,
+    };
+
+    return wantarray ? keys %{$states} : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::council_states();
+
+Get a list of states that are availble to council users. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+sub council_states {
+    my $states = {
+        'confirmed'                   => 1,
+        'investigating'               => 1,
+        'action scheduled'            => 1,
+        'in progress'                 => 1,
+        'fixed - council'             => 1,
+        'unable to fix'               => 1,
+        'not responsible'             => 1,
+        'duplicate'                   => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -362,6 +425,11 @@ sub check_for_errors {
     {
         $errors{category} = _('Please choose a property type');
         $self->category(undef);
+    }
+
+    if ( $self->council && $self->detail &&
+        $self->council eq '2482' && length($self->detail) > 2000 ) {
+        $errors{detail} = _('Reports are limited to 2000 characters in length. Please shorten your report');
     }
 
     return \%errors;
