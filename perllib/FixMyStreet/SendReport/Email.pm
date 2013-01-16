@@ -67,7 +67,7 @@ sub send {
     my @recips = $self->build_recipient_list( $row, $h );
 
     # on a staging server send emails to ourselves rather than the bodies
-    if (mySociety::Config::get('STAGING_SITE') && !FixMyStreet->test_mode) {
+    if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING') && !FixMyStreet->test_mode) {
         @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
     }
 

@@ -360,7 +360,7 @@ sub send_reports {
 
         next unless $sender_count;
 
-        if (mySociety::Config::get('STAGING_SITE')) {
+        if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING')) {
             # on a staging server send emails to ourselves rather than the bodies
             my @testing_bodies = split( '\|', mySociety::Config::get('TESTING_COUNCILS') );
             unless ( grep { $row->bodies_str eq $_ } @testing_bodies ) {
