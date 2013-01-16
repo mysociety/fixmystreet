@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-16 11:55+0000\n"
+"POT-Creation-Date: 2013-01-16 12:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -21,7 +21,7 @@ msgstr ""
 msgid " and "
 msgstr ""
 
-#: templates/web/default/tokens/confirm_problem.html:18
+#: templates/web/default/tokens/confirm_problem.html:14 templates/web/default/tokens/confirm_problem.html:17
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr ""
 
@@ -1331,7 +1331,7 @@ msgstr ""
 msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1023 perllib/FixMyStreet/App/Controller/Report/New.pm:663 perllib/FixMyStreet/App/Controller/Report/New.pm:664 perllib/FixMyStreet/DB/Result/Problem.pm:509 perllib/FixMyStreet/DB/Result/Problem.pm:519 perllib/FixMyStreet/DB/Result/Problem.pm:529 perllib/FixMyStreet/DB/Result/Problem.pm:541 perllib/FixMyStreet/DB/ResultSet/Problem.pm:331 perllib/FixMyStreet/DB/ResultSet/Problem.pm:340 templates/web/zurich/report/_main.html:8
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1023 perllib/FixMyStreet/App/Controller/Report/New.pm:663 perllib/FixMyStreet/App/Controller/Report/New.pm:664 perllib/FixMyStreet/DB/Result/Problem.pm:509 perllib/FixMyStreet/DB/Result/Problem.pm:519 perllib/FixMyStreet/DB/Result/Problem.pm:529 perllib/FixMyStreet/DB/Result/Problem.pm:541 perllib/FixMyStreet/DB/ResultSet/Problem.pm:331 perllib/FixMyStreet/DB/ResultSet/Problem.pm:340
 msgid "Other"
 msgstr ""
 
@@ -1851,10 +1851,6 @@ msgstr ""
 msgid "Reported anonymously at %s"
 msgstr ""
 
-#: templates/web/zurich/report/_main.html:11
-msgid "Reported at %s"
-msgstr ""
-
 #: templates/web/default/admin/questionnaire.html:5 templates/web/default/questionnaire/index.html:77 templates/web/fixmystreet/questionnaire/index.html:71
 msgid "Reported before"
 msgstr ""
@@ -1879,12 +1875,12 @@ msgstr ""
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:520
-msgid "Reported in the %s category anonymously at %s"
+#: templates/web/zurich/report/_main.html:2
+msgid "Reported in the %s category"
 msgstr ""
 
-#: templates/web/zurich/report/_main.html:9
-msgid "Reported in the %s category at %s"
+#: perllib/FixMyStreet/DB/Result/Problem.pm:520
+msgid "Reported in the %s category anonymously at %s"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:542
@@ -2407,7 +2403,7 @@ msgstr ""
 msgid "This problem is old and of unknown status."
 msgstr ""
 
-#: templates/web/zurich/report/_main.html:23
+#: templates/web/zurich/report/_main.html:15
 msgid "This report is awaiting moderation."
 msgstr ""
 
@@ -2683,7 +2679,7 @@ msgstr ""
 msgid "You can <a href=\"%s\">view all reports for the council</a> or <a href=\"/reports\">show all councils</a>."
 msgstr ""
 
-#: templates/web/default/tokens/confirm_problem.html:22 templates/web/zurich/tokens/confirm_problem.html:5 templates/web/zurich/tokens/confirm_problem.html:8
+#: templates/web/default/tokens/confirm_problem.html:19 templates/web/default/tokens/confirm_problem.html:21 templates/web/zurich/tokens/confirm_problem.html:5 templates/web/zurich/tokens/confirm_problem.html:8
 msgid "You can <a href=\"%s%s\">view the problem on this site</a>."
 msgstr ""
 
@@ -2723,7 +2719,7 @@ msgstr ""
 msgid "You have successfully confirmed your email address."
 msgstr ""
 
-#: templates/web/default/tokens/confirm_problem.html:15
+#: templates/web/default/tokens/confirm_problem.html:14 templates/web/default/tokens/confirm_problem.html:15
 msgid "You have successfully confirmed your problem"
 msgstr ""
 
@@ -2887,7 +2883,7 @@ msgstr ""
 msgid "the local council"
 msgstr ""
 
-#: templates/web/default/report/_main.html:6 templates/web/zurich/report/_main.html:14
+#: templates/web/default/report/_main.html:6 templates/web/zurich/report/_main.html:6
 msgid "there is no pin shown as the user did not use the map"
 msgstr ""
 

@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-16 11:55+0000\n"
+"POT-Creation-Date: 2013-01-16 12:43+0000\n"
 "PO-Revision-Date: 2013-01-15 17:55+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -21,7 +21,8 @@ msgstr ""
 msgid " and "
 msgstr "und"
 
-#: templates/web/default/tokens/confirm_problem.html:18
+#: templates/web/default/tokens/confirm_problem.html:14
+#: templates/web/default/tokens/confirm_problem.html:17
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr ""
 
@@ -1885,7 +1886,6 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:541
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:331
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:340
-#: templates/web/zurich/report/_main.html:8
 msgid "Other"
 msgstr ""
 
@@ -2635,11 +2635,6 @@ msgstr ""
 msgid "Reported anonymously at %s"
 msgstr "Anonym gemeldet um"
 
-#: templates/web/zurich/report/_main.html:11
-#, fuzzy
-msgid "Reported at %s"
-msgstr "Gemeldet von %s um %s"
-
 #: templates/web/default/admin/questionnaire.html:5
 #: templates/web/default/questionnaire/index.html:77
 #: templates/web/fixmystreet/questionnaire/index.html:71
@@ -2668,13 +2663,13 @@ msgstr ""
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr ""
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:520
-msgid "Reported in the %s category anonymously at %s"
+#: templates/web/zurich/report/_main.html:2
+#, fuzzy
+msgid "Reported in the %s category"
 msgstr "In der Kategorie %s um %s gemeldet"
 
-#: templates/web/zurich/report/_main.html:9
-#, fuzzy
-msgid "Reported in the %s category at %s"
+#: perllib/FixMyStreet/DB/Result/Problem.pm:520
+msgid "Reported in the %s category anonymously at %s"
 msgstr "In der Kategorie %s um %s gemeldet"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:542
@@ -3427,7 +3422,7 @@ msgstr "Dieser Mangel ist in Bearbeitung"
 msgid "This problem is old and of unknown status."
 msgstr "Dieses Problem ist alt und hat einen unbekannten Status"
 
-#: templates/web/zurich/report/_main.html:23
+#: templates/web/zurich/report/_main.html:15
 msgid "This report is awaiting moderation."
 msgstr ""
 
@@ -3839,7 +3834,8 @@ msgid ""
 "reports\">show all councils</a>."
 msgstr ""
 
-#: templates/web/default/tokens/confirm_problem.html:22
+#: templates/web/default/tokens/confirm_problem.html:19
+#: templates/web/default/tokens/confirm_problem.html:21
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:8
 msgid "You can <a href=\"%s%s\">view the problem on this site</a>."
@@ -3911,6 +3907,7 @@ msgstr ""
 msgid "You have successfully confirmed your email address."
 msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt"
 
+#: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:15
 msgid "You have successfully confirmed your problem"
 msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt"
@@ -4161,7 +4158,7 @@ msgid "the local council"
 msgstr ""
 
 #: templates/web/default/report/_main.html:6
-#: templates/web/zurich/report/_main.html:14
+#: templates/web/zurich/report/_main.html:6
 msgid "there is no pin shown as the user did not use the map"
 msgstr ""
 
@@ -4297,6 +4294,10 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d Tag"
 msgstr[1] "%d Tage"
+
+#, fuzzy
+#~ msgid "Reported at %s"
+#~ msgstr "Gemeldet von %s um %s"
 
 #~ msgid "*unknown*"
 #~ msgstr "*unbekannt*"

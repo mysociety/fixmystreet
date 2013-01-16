@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-16 11:55+0000\n"
+"POT-Creation-Date: 2013-01-16 12:43+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -25,7 +25,8 @@ msgstr ""
 msgid " and "
 msgstr ""
 
-#: templates/web/default/tokens/confirm_problem.html:18
+#: templates/web/default/tokens/confirm_problem.html:14
+#: templates/web/default/tokens/confirm_problem.html:17
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr " a <strong>byddwn nawr yn ei anfon at y cyngor</strong>"
 
@@ -2133,7 +2134,6 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:541
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:331
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:340
-#: templates/web/zurich/report/_main.html:8
 msgid "Other"
 msgstr "Arall"
 
@@ -2932,11 +2932,6 @@ msgstr "Adroddwyd gan %s am %s"
 msgid "Reported anonymously at %s"
 msgstr "Adroddwyd yn ddi-enw am %s"
 
-#: templates/web/zurich/report/_main.html:11
-#, fuzzy
-msgid "Reported at %s"
-msgstr "Adroddiadau"
-
 #: templates/web/default/admin/questionnaire.html:5
 #: templates/web/default/questionnaire/index.html:77
 #: templates/web/fixmystreet/questionnaire/index.html:71
@@ -2965,14 +2960,14 @@ msgstr "Adroddwyd am hyn gan %s yn y categori %s yn ddi-enw, am %s"
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr "Adroddwyd gan %s yn y categori %s trwy %s am %s"
 
+#: templates/web/zurich/report/_main.html:2
+#, fuzzy
+msgid "Reported in the %s category"
+msgstr "Adroddwyd yn y categori %s gan %s am %s"
+
 #: perllib/FixMyStreet/DB/Result/Problem.pm:520
 msgid "Reported in the %s category anonymously at %s"
 msgstr "Adroddiwyd yn y categori %s yn ddi-enw am %s"
-
-#: templates/web/zurich/report/_main.html:9
-#, fuzzy
-msgid "Reported in the %s category at %s"
-msgstr "Adroddwyd yn y categori %s gan %s am %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:542
 msgid "Reported in the %s category by %s at %s"
@@ -3852,7 +3847,7 @@ msgstr "Mae'r eiddo gwag hwn wedi cael ei adfer i'w ddefnyddio"
 msgid "This empty property is old and of unknown status."
 msgstr "Mae'r eiddo gwag hwn yn hen ac nid yw ei statws yn hysbys."
 
-#: templates/web/zurich/report/_main.html:23
+#: templates/web/zurich/report/_main.html:15
 msgid "This report is awaiting moderation."
 msgstr ""
 
@@ -4309,7 +4304,8 @@ msgstr ""
 "Gallwch <a href=\"%s\">weld llai o fanylion</a> neu fynd yn ôl a <a href=\"/"
 "reports\">dangos pob cyngor</a>."
 
-#: templates/web/default/tokens/confirm_problem.html:22
+#: templates/web/default/tokens/confirm_problem.html:19
+#: templates/web/default/tokens/confirm_problem.html:21
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:8
 msgid "You can <a href=\"%s%s\">view the empty property on this site</a>."
@@ -4386,6 +4382,7 @@ msgstr "Rydych wedi cadarnhau'ch hysbysiad yn llwyddiannus."
 msgid "You have successfully confirmed your email address."
 msgstr "Rydych wedi cadarnhau'ch hysbysiad yn llwyddiannus."
 
+#: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:15
 msgid "You have successfully confirmed your empty property"
 msgstr "Rydych wedi cadarnhau eich eiddo gwag yn llwyddiannus"
@@ -4647,7 +4644,7 @@ msgid "the local council"
 msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 
 #: templates/web/default/report/_main.html:6
-#: templates/web/zurich/report/_main.html:14
+#: templates/web/zurich/report/_main.html:6
 msgid "there is no pin shown as the user did not use the map"
 msgstr ""
 
@@ -4789,6 +4786,10 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "diwrnod"
 msgstr[1] "diwrnod"
+
+#, fuzzy
+#~ msgid "Reported at %s"
+#~ msgstr "Adroddiadau"
 
 #, fuzzy
 #~ msgid "Empty property ID"

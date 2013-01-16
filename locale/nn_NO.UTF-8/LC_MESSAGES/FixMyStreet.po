@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-16 11:55+0000\n"
+"POT-Creation-Date: 2013-01-16 12:43+0000\n"
 "PO-Revision-Date: 2011-12-08 10:56+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Nynorsk <i18n-nn@lister.ping.uio.no>\n"
@@ -26,7 +26,8 @@ msgstr ""
 msgid " and "
 msgstr " og "
 
-#: templates/web/default/tokens/confirm_problem.html:18
+#: templates/web/default/tokens/confirm_problem.html:14
+#: templates/web/default/tokens/confirm_problem.html:17
 msgid " and <strong>we will now send it to the council</strong>"
 msgstr " og <strong>vi sender det no til administrasjonen</strong>"
 
@@ -2015,7 +2016,6 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:541
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:331
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:340
-#: templates/web/zurich/report/_main.html:8
 msgid "Other"
 msgstr "Anna"
 
@@ -2811,11 +2811,6 @@ msgstr "Rapportert %s, til %s"
 msgid "Reported anonymously at %s"
 msgstr "Rapportert anonymt %s"
 
-#: templates/web/zurich/report/_main.html:11
-#, fuzzy
-msgid "Reported at %s"
-msgstr "Rapportert %s"
-
 #: templates/web/default/admin/questionnaire.html:5
 #: templates/web/default/questionnaire/index.html:77
 #: templates/web/fixmystreet/questionnaire/index.html:71
@@ -2844,14 +2839,14 @@ msgstr "Rapportert av %s i kategorien %s anonymt %s"
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr "Rapportert av %s i kategorien %s av %s %s"
 
+#: templates/web/zurich/report/_main.html:2
+#, fuzzy
+msgid "Reported in the %s category"
+msgstr "Rapportert i kategorien %s av %s %s"
+
 #: perllib/FixMyStreet/DB/Result/Problem.pm:520
 msgid "Reported in the %s category anonymously at %s"
 msgstr "Rapportert i kategorien %s anonymt %s"
-
-#: templates/web/zurich/report/_main.html:9
-#, fuzzy
-msgid "Reported in the %s category at %s"
-msgstr "Rapportert i kategorien %s av %s %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:542
 msgid "Reported in the %s category by %s at %s"
@@ -3695,7 +3690,7 @@ msgstr "Dette problemet er under arbeid"
 msgid "This problem is old and of unknown status."
 msgstr "Dette problemet er gammalt og med ukjend status."
 
-#: templates/web/zurich/report/_main.html:23
+#: templates/web/zurich/report/_main.html:15
 #, fuzzy
 msgid "This report is awaiting moderation."
 msgstr "Denne rapporten er for tida markert som open."
@@ -4150,7 +4145,8 @@ msgstr ""
 "Du kan <a href=\"%s\">sjå alle rapportar for administrasjonen</a> eller <a "
 "href=\"/reports\">sjå alle administrasjonane</a>."
 
-#: templates/web/default/tokens/confirm_problem.html:22
+#: templates/web/default/tokens/confirm_problem.html:19
+#: templates/web/default/tokens/confirm_problem.html:21
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:8
 #, fuzzy
@@ -4231,6 +4227,7 @@ msgstr "Du har no stadfesta varselet ditt."
 msgid "You have successfully confirmed your email address."
 msgstr "Du har no stadfesta varselet ditt."
 
+#: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:15
 msgid "You have successfully confirmed your problem"
 msgstr "Du har no stadfesta problemet ditt"
@@ -4493,7 +4490,7 @@ msgid "the local council"
 msgstr "den lokale administrasjonen"
 
 #: templates/web/default/report/_main.html:6
-#: templates/web/zurich/report/_main.html:14
+#: templates/web/zurich/report/_main.html:6
 msgid "there is no pin shown as the user did not use the map"
 msgstr ""
 
@@ -4636,6 +4633,10 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d dag"
 msgstr[1] "%d dager"
+
+#, fuzzy
+#~ msgid "Reported at %s"
+#~ msgstr "Rapportert %s"
 
 #~ msgid "*unknown*"
 #~ msgstr "*ukjent*"
