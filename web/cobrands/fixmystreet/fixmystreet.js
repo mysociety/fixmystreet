@@ -92,7 +92,7 @@ $(function(){
                 $('.big-green-banner')
                     .addClass('mobile-map-banner')
                     .appendTo('#map_box')
-                    .html('<a href="/">Home</a> Place pin on map');
+                    .html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
             }
             $('span.report-a-problem-btn').on('click.reportBtn', function(){
                 $('html, body').animate({scrollTop:0}, 500);
@@ -117,7 +117,7 @@ $(function(){
                     banner_text = 'Click map to report a problem<span>Yellow pins show existing reports</span>';
                 } else {
                     $('#site-header').show();
-                    banner_text = validation_strings.report_problem_heading;
+                    banner_text = translation_strings.report_problem_heading;
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
@@ -139,7 +139,7 @@ $(function(){
     }
 
     //show/hide notes on mobile
-    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
+    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">' + translation_strings.how_to_send + '</a>').hide();
     $('.rap-notes-trigger').click(function(e){
         e.preventDefault();
         //check if we've already moved the notes
@@ -150,7 +150,7 @@ $(function(){
         }else{
             //if not, move them and show, hiding .content
             $('.content').after('<div class="content rap-notes"></div>').hide();
-            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">Back</a>');
+            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">' + translation_strings.back + '</a>');
         }
         $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
         location.hash = 'rap-notes';

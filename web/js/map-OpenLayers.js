@@ -349,7 +349,7 @@ $(function(){
         $('#sub_map_links').show();
         //only on mobile
         $('#mob_sub_map_links').remove();
-        $('.mobile-map-banner').html('<a href="/">Home</a> Place pin on map');
+        $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
         fixmystreet.page = 'around';
     });
 
@@ -538,13 +538,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 height = $map_box.height();
             $map_box.append(
                 '<p id="mob_sub_map_links">' +
-                '<a href="#" id="try_again">Try again</a>' +
+                '<a href="#" id="try_again">' + translation_strings.try_again + '</a>' +
                 '<a href="#ok" id="mob_ok">OK</a>' +
                 '</p>'
             ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
             // Making it relative here makes it much easier to do the scrolling later
 
-            $('.mobile-map-banner').html('<a href="/">Home</a> Right place?');
+            $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.right_place);
 
             // mobile user clicks 'ok' on map
             $('#mob_ok').toggle(function(){

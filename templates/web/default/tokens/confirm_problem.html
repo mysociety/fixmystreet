@@ -13,13 +13,12 @@ You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]
 [% ELSE %]
 [%    
     loc('You have successfully confirmed your problem');
-
     IF problem.bodies_str;
         loc(' and <strong>we will now send it to the council</strong>');
-    END;
-    
+    END; %].
+[%
     tprintf(
-        loc( '. You can <a href="%s%s">view the problem on this site</a>.' ),
+        loc( 'You can <a href="%s%s">view the problem on this site</a>.' ),
         c.cobrand.base_url_for_report( problem ),
         problem.url
     );
