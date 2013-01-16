@@ -356,9 +356,13 @@ sub load_and_group_problems : Private {
         # A proxy for an external_body
         $where->{'lower(external_body)'} = lc $c->stash->{body}->name;
     } elsif ($c->stash->{body}) {
-        $where->{areas} = { 'like', '%,' . $c->stash->{body}->id . ',%' };
+        # XXX FixMyStreet used to have the following line so that reports not
+        # currently sent anywhere could still be listed in the appropriate
+        # (body/area), as they were the same.  Now they're not, not sure if
+        # there's a way to do this easily.
+        #$where->{areas} = { 'like', '%,' . $c->stash->{body}->id . ',%' };
         $where->{bodies_str} = [
-            undef,
+        #    undef,
             $c->stash->{body}->id,
             { 'like', $c->stash->{body}->id . ',%' },
             { 'like', '%,' . $c->stash->{body}->id },
@@ -371,6 +375,7 @@ sub load_and_group_problems : Private {
                 'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
                 #{ duration => { extract => "epoch from current_timestamp-lastupdate" } },
                 #{ age      => { extract => "epoch from current_timestamp-confirmed"  } },
+                { created    => { extract => 'epoch from created' } },
                 { confirmed  => { extract => 'epoch from confirmed' } },
                 { whensent   => { extract => 'epoch from whensent' } },
                 { lastupdate => { extract => 'epoch from lastupdate' } },
@@ -384,7 +389,7 @@ sub load_and_group_problems : Private {
     $problems = $problems->cursor; # Raw DB cursor for speed
 
     my ( %problems, @pins );
-    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'confirmed', 'whensent', 'lastupdate', 'photo', 'extra' );
+    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'created', 'confirmed', 'whensent', 'lastupdate', 'photo', 'extra' );
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
