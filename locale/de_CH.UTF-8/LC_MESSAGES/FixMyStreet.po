@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2012-12-21 17:13+0000\n"
-"PO-Revision-Date: 2012-12-17 16:50+0100\n"
+"PO-Revision-Date: 2013-01-15 17:55+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "Language: \n"
@@ -165,7 +165,7 @@ msgstr "*unbekannt*"
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:663
 #: perllib/FixMyStreet/DB/Result/Problem.pm:356
 msgid "-- Pick a category --"
-msgstr "-- Wählen Sie eine Kategorie --"
+msgstr "-- W&auml;hlen Sie eine Kategorie --"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:615
 #: perllib/FixMyStreet/DB/Result/Problem.pm:362
@@ -174,11 +174,10 @@ msgstr ""
 
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:22
-#, fuzzy
 msgid ". You can <a href=\"%s%s\">view the problem on this site</a>."
 msgstr ""
-"Danke &amp;mdash; Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s"
-"\">auf der Webseite anschauen</a>"
+"Danke! Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s\">auf der "
+"Webseite anschauen</a>"
 
 #: templates/web/default/report/_support.html:3
 msgid "1 supporter"
@@ -587,7 +586,7 @@ msgstr ""
 
 #: templates/web/default/admin/problem_row.html:27
 msgid "Closed:"
-msgstr "Geschlossen:"
+msgstr "Erledigt:"
 
 #: templates/web/default/around/tabbed_lists.html:10
 #: templates/web/default/around/tabbed_lists.html:12
@@ -2600,12 +2599,12 @@ msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:520
 msgid "Reported in the %s category anonymously at %s"
-msgstr ""
+msgstr "In der Kategorie %s um %s gemeldet"
 
 #: templates/web/zurich/report/_main.html:9
 #, fuzzy
 msgid "Reported in the %s category at %s"
-msgstr "Gemeldet von %s um %s"
+msgstr "In der Kategorie %s um %s gemeldet"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:542
 msgid "Reported in the %s category by %s at %s"
@@ -3491,7 +3490,7 @@ msgstr ""
 #: templates/web/default/report/update.html:3
 #: templates/web/fixmystreet/report/update.html:3
 msgid "Updates"
-msgstr ""
+msgstr "Antwort"
 
 #: db/alert_types.pl:5 db/alert_types.pl:6
 msgid "Updates on {{title}}"
@@ -3747,8 +3746,8 @@ msgstr ""
 #, fuzzy
 msgid "You can <a href=\"%s%s\">view the problem on this site</a>."
 msgstr ""
-"Danke &amp;mdash; Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s"
-"\">auf der Webseite anschauen</a>"
+"Danke! Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s\">auf der "
+"Webseite anschauen</a>"
 
 #: templates/web/emptyhomes/reports/body.html:66
 msgid "You can <a href=\"/reports\">show all councils</a>."
@@ -4180,8 +4179,8 @@ msgstr[1] "<big>%s</big> Meldungen in der letzten Woche"
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
-msgstr[0] "<big>%s</big> bearbeitete Meldung im letzten Monat"
-msgstr[1] "<big>%s</big> bearbeitete Meldungen im letzten Monat"
+msgstr[0] "<big>%s</big> bearbeiteter Mangel im letzten Monat"
+msgstr[1] "<big>%s</big> bearbeitete M&auml;ngel im letzten Monat"
 
 #: templates/web/default/report/new/councils_text_some.html:14
 #, perl-format
