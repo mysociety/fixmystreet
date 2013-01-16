@@ -4,8 +4,9 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use Path::Class;
 use POSIX qw(strftime strcoll);
-use Digest::MD5 qw(md5_hex);
+use Digest::SHA1 qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email);
 use if !$ENV{TRAVIS}, 'Image::Magick';
 
@@ -1080,7 +1081,7 @@ sub get_token : Private {
 
     my $secret = $c->model('DB::Secret')->search()->first;
     my $user = $c->forward('get_user');
-    my $token = md5_hex(($user . $secret->secret));
+    my $token = sha1_hex($user . $secret->secret);
     $c->stash->{token} = $token;
 
     return 1;
@@ -1235,20 +1236,37 @@ sub rotate_photo : Private {
     my ( $self, $c ) =@_;
 
     my $direction = $c->req->param('rotate_photo');
-
     return unless $direction =~ /Left/ or $direction =~ /Right/;
 
-    my $photo = _rotate_image( $c->stash->{problem}->photo, $direction =~ /Left/ ? -90 : 90 );
+    my $photo = $c->stash->{problem}->photo;
+    my $file;
 
-    if ( $photo ) {
-        $c->stash->{rotated} = 1;
-        $c->stash->{problem}->photo( $photo );
+    # If photo field contains a hash
+    if ( length($photo) == 40 ) {
+        $file = file( $c->config->{UPLOAD_DIR}, "$photo.jpeg" );
+        $photo = $file->slurp;
+    }
+
+    $photo = _rotate_image( $photo, $direction =~ /Left/ ? -90 : 90 );
+    return unless $photo;
+
+    my $fileid;
+    if ( !$file ) {
+        $fileid = sha1_hex($photo);
+        $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
+    }
+
+    $c->stash->{rotated} = 1;
+    $file->spew( $photo );
+    unlink glob FixMyStreet->path_to( 'web', 'photo', $c->stash->{problem}->id . '.*' );
+
+    if ( $fileid ) {
+        $c->stash->{problem}->photo( $fileid );
         $c->stash->{problem}->update();
     }
 
     return 1;
 }
-
 
 =head2 check_page_allowed
 
