@@ -39,7 +39,11 @@ sub get_service_list {
 
     my $service_list_xml = $self->_get( $self->endpoints->{services} );
 
-    return $self->_get_xml_object( $service_list_xml );
+    if ( $service_list_xml ) {
+        return $self->_get_xml_object( $service_list_xml );
+    } else {
+        return undef;
+    }
 }
 
 sub get_service_meta_info {
