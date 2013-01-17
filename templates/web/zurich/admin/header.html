@@ -18,11 +18,29 @@ dd { margin-left: 8em; }
 select { width: auto; }
 </style>
 
-    <p><strong>[% loc('FixMyStreet admin:') %]</strong>
-    <a href="/admin/summary">[% loc('Summary') %]</a>
-[% IF admin_type == 'dm' OR admin_type == 'super' %]
-    | <a href="/admin/bodies">[% loc('Bodies') %]</a>
-    | <a href="/admin/reports">[% loc('Reports') %]</a>
+    <!--<strong>[% loc('FixMyStreet admin:') %]</strong>-->
+    <div class="admin-nav">
+        <ul>
+            [% pagename = c.req.uri.path %]
+            [% pagename = pagename.replace('/admin/?(\w*)', '$1') %]
+
+            <li [% IF pagename == 'summary' OR pagename == '' %]class="current"[% END %]>
+                <a href="/admin/summary">[% loc('Summary') %]</a>
+            </li>
+            [% IF admin_type == 'dm' OR admin_type == 'super' %]
+            <li [% IF pagename == 'bodies' %]class="current"[% END %]>
+                <a href="/admin/bodies">[% loc('Bodies') %]</a>
+            </li>
+            <li [% IF pagename == 'reports' %]class="current"[% END %]>
+                <a href="/admin/reports">[% loc('Reports') %]</a>
+            </li>
+            <li class="search-box">
+				<form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+				    <input type="text" name="search" size="20" id="search" placeholder="[% loc('Search reports') %]">
+				</form>
+            </li>
+        </ul>
+    </div>
     <!-- | <a href="timeline">Timeline</a> -->
     <!-- | <a href="questionnaire">Survey</a> -->
     <!-- | <a href="/admin/users">[% loc('Users') %]</a> -->
@@ -30,4 +48,4 @@ select { width: auto; }
     <!-- | <a href="stats">Stats</a> -->
 [% END %]
 
-    <h1>[% title %]</h1>
+    <h1 style="clear:both;">[% title %]</h1>
