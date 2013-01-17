@@ -294,20 +294,6 @@ sub location_autocomplete : Path('/ajax/geocode') {
     # disappear when it's the last choice being offered in the autocomplete.
     $c->stash->{allow_single_geocode_match_strings} = 1;
     return $self->_geocode( $c, $c->req->param('term') );
-
-    my ( $lat, $long, $suggestions ) =
-        FixMyStreet::Geocode::lookup( $c->req->param('term'), $c );
-    my @addresses;
-    # $error doubles up to return multiple choices by being an array
-    if ( ref($suggestions) eq 'ARRAY' ) {
-        foreach (@$suggestions) {
-            push @addresses, decode_utf8($_->{address});
-        }
-    }
-    my $body = JSON->new->utf8(1)->encode(
-        \@addresses
-    );
-    $c->res->body($body);
 }
 
 sub location_lookup : Path('/ajax/lookup_location') {
