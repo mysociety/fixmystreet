@@ -1,10 +1,10 @@
-Subject: FixMyZurich: New report #<?=$values['id']?>
+Subject: FixMyZurich: Neue Meldung #<?=$values['id']?>
 
-Dear <?=$values['bodies_name']?>,
+Guten Tag <?=$values['bodies_name']?>,
 
-This report has been sent to you by your division to be dealt with.
+Diese Meldung wurde Ihnen von Ihrer FMZ-Verantworltichen Stelle zugeteilt.
 
-Public URL: <?=$values['url']?>
+Öffentliche URL: <?=$values['url']?>
 
 Admin URL: <?=$values['admin_url']?>
 

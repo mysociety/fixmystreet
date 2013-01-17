@@ -1,10 +1,10 @@
-Subject: FixMyZurich: report #<?=$values['id']?> pending feedback
+Subject: FixMyZurich: Meldung #<?=$values['id']?> bereit für Feedback
 
-Dear <?=$values['bodies_name']?>,
+Guten Tag <?=$values['bodies_name']?>,
 
-This report has been sent back to you by the subdivision for final response and closure.
+Diese Meldung wurde vom Fachbereich abschliessend beantwortet und kann nun auf Fix My Zurich beantwortet und abgeschlossen werden.
 
-Public URL: <?=$values['url']?>
+Öffentliche URL: <?=$values['url']?>
 
 Admin URL: <?=$values['admin_url']?>
 

@@ -1,10 +1,10 @@
-Subject: FixMyZurich: New report #<?=$values['id']?>
+Subject: FixMyZurich: Neue Meldung #<?=$values['id']?>
 
-Dear <?=$values['bodies_name']?>,
+Guten Tag <?=$values['bodies_name']?>,
 
-A new report has been submitted by a user.
+Eine neue Meldung wurde erfasst:
 
-Public URL: <?=$values['url']?>
+Öffentliche URL: <?=$values['url']?>
 
 Admin URL: <?=$values['admin_url']?>
 

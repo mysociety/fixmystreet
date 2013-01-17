@@ -7,10 +7,9 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-01-16 12:43+0000\n"
-"PO-Revision-Date: 2013-01-15 17:55+0100\n"
+"PO-Revision-Date: 2013-01-16 17:30+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1963,7 +1962,7 @@ msgstr "Fotos von neuen Meldungen in der N&auml;he"
 
 #: templates/web/default/js/translation_strings.html:24
 msgid "Place pin on map"
-msgstr ""
+msgstr "Pin auf der Karte absetzen"
 
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:81
@@ -2705,7 +2704,7 @@ msgstr ""
 
 #: templates/web/default/js/translation_strings.html:22
 msgid "Right place?"
-msgstr ""
+msgstr "Richtiger Ort?"
 
 #: perllib/FixMyStreet/Geocode/OSM.pm:173
 msgid ""
@@ -3323,6 +3322,8 @@ msgid ""
 "remember your password, or do not have one, please fill in the &lsquo;sign "
 "in by email&rsquo; section of the form."
 msgstr ""
+"Ihre Email/Passwort Kombination war ung&uuml;ltig. Bitte versuchen Sie es "
+"erneut oder wenden Sie sich an den Administrator."
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:355
 msgid ""
@@ -3486,7 +3487,7 @@ msgstr "Total"
 
 #: templates/web/default/js/translation_strings.html:23
 msgid "Try again"
-msgstr ""
+msgstr "Erneut versuchen"
 
 #: templates/web/default/admin/report_edit.html:19
 #: templates/web/default/admin/report_edit.html:22
@@ -4274,8 +4275,8 @@ msgstr[1] "<big>%s</big> Meldungen in der letzten Woche"
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
-msgstr[0] "<big>%s</big> bearbeiteter Mangel im letzten Monat"
-msgstr[1] "<big>%s</big> bearbeitete M&auml;ngel im letzten Monat"
+msgstr[0] "<big>%s</big> bearbeitete Meldung im letzten Monat"
+msgstr[1] "<big>%s</big> bearbeitete Meldungen im letzten Monat"
 
 #: templates/web/default/report/new/councils_text_some.html:14
 #, perl-format

@@ -1,8 +1,8 @@
-Subject: FixMyZurich: New report #<?=$values['id']?>
+Subject: FixMyZurich: Neue Meldung #<?=$values['id']?>
 
-Dear <?=$values['bodies_name']?>,
+Guten Tag<?=$values['bodies_name']?>,
 
-This report has been sent to you by Stadt Zurich to be dealt with.
+Diese Meldung wurde Ihnen von der Stadt Zürich gesendet, da es Ihr Zuständigkeitsgebiet betreffen könnte.
 
-Public URL: <?=$values['url']?>
+Öffentliche URL: <?=$values['url']?>
 
