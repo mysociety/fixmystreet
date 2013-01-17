@@ -1,10 +1,6 @@
 [% PROCESS 'admin/header.html' title=loc('Search Reports') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
-<form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
-</form>
-
 [% IF searched %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
