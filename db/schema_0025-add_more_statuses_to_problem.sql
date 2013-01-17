@@ -18,6 +18,7 @@ BEGIN;
         or state = 'unable to fix'
         or state = 'not responsible'
         or state = 'duplicate'
+        or state = 'internal referral'
     );
 
 
@@ -36,40 +37,47 @@ BEGIN;
         or problem_state = 'unable to fix'
         or problem_state = 'not responsible'
         or problem_state = 'duplicate'
+        or problem_state = 'internal referral'
     );
 
     UPDATE alert_type set item_where = 'nearby.problem_id = problem.id and problem.state in
     (''confirmed'', ''investigating'', ''planned'', ''in progress'',
      ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'' )'
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'')'
      WHERE ref = 'postcode_local_problems';
     UPDATE alert_type set item_where = 'problem.state in
         (''confirmed'', ''investigating'', ''planned'', ''in progress'',
          ''fixed'', ''fixed - council'', ''fixed - user'', ''closed''
-         ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'' )'
+         ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+         ''internal referral'' )'
         WHERE ref = 'new_problems';
     UPDATE alert_type set item_where = 'problem.state in (''fixed'', ''fixed - user'', ''fixed - council'')' WHERE ref = 'new_fixed_problems';
     UPDATE alert_type set item_where = 'nearby.problem_id = problem.id and problem.state in
     (''confirmed'', ''investigating'', ''planned'', ''in progress'',
      ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'' )'
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'')'
     WHERE ref = 'local_problems';
     UPDATE alert_type set item_where = 'problem.state in
     (''confirmed'', ''investigating'', ''planned'', ''in progress'',
       ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'' ) AND
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'' ) AND
     (council like ''%''||?||''%'' or council is null) and
     areas like ''%,''||?||'',%''' WHERE ref = 'council_problems';
     UPDATE alert_type set item_where = 'problem.state in
     (''confirmed'', ''investigating'', ''planned'', ''in progress'',
      ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'' ) AND
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'' ) AND
     (council like ''%''||?||''%'' or council is null) and
     areas like ''%,''||?||'',%''' WHERE ref = 'ward_problems';
     UPDATE alert_type set item_where = 'problem.state in
     (''confirmed'', ''investigating'', ''planned'', ''in progress'',
      ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
-     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'' ) AND
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'' ) AND
     areas like ''%,''||?||'',%''' WHERE ref = 'area_problems';
 
 COMMIT;

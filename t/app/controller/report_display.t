@@ -307,6 +307,14 @@ for my $test (
         fixed => 0
     },
     {
+        description => 'internal referral report',
+        date => DateTime->now,
+        state => 'internal referral',
+        banner_id => 'closed',
+        banner_text => 'closed',
+        fixed => 0
+    },
+    {
         description => 'closed report',
         date => DateTime->now,
         state => 'closed',

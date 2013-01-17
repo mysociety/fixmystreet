@@ -242,6 +242,7 @@ sub closed_states {
         'unable to fix'               => 1,
         'not responsible'             => 1,
         'duplicate'                   => 1,
+        'internal referral'           => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -272,6 +273,7 @@ sub visible_states {
         'not responsible'             => 1,
         'duplicate'                   => 1,
         'closed'                      => 1,
+        'internal referral'           => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -303,6 +305,7 @@ sub all_states {
         'not responsible'             => 1,
         'duplicate'                   => 1,
         'closed'                      => 1,
+        'internal referral'           => 1,
     };
 
     return wantarray ? keys %{$states} : $states;
@@ -327,6 +330,7 @@ sub council_states {
         'unable to fix'               => 1,
         'not responsible'             => 1,
         'duplicate'                   => 1,
+        'internal referral'           => 1,
     };
 
     return wantarray ? keys %{$states} : $states;

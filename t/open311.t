@@ -295,6 +295,13 @@ foreach my $test (
         extended => 'NO_FURTHER_ACTION',
     },
     {
+        desc => 'comment with internal referral state sends status of CLOSED',
+        state => 'internal referral',
+        anon  => 0,
+        status => 'CLOSED',
+        extended => 'INTERNAL_REFERRAL',
+    },
+    {
         desc => 'comment with closed state sends status of CLOSED',
         state => 'closed',
         status => 'CLOSED',

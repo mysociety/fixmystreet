@@ -193,6 +193,7 @@ create table problem (
         or state = 'unable to fix'
         or state = 'not responsible'
         or state = 'duplicate'
+        or state = 'internal referral'
     ),
     lang text not null default 'en-gb',
     service text not null default '',
@@ -343,6 +344,7 @@ create table comment (
         or problem_state = 'unable to fix'
         or problem_state = 'not responsible'
         or problem_state = 'duplicate'
+        or problem_state = 'internal referral'
     ),
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
