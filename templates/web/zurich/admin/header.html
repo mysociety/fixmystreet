@@ -19,22 +19,24 @@ select { width: auto; }
 </style>
 
     <!--<strong>[% loc('FixMyStreet admin:') %]</strong>-->
-	<ul class="admin-nav">
-		<li>
-    		<a href="/admin/summary">[% loc('Summary') %]</a>
-		</li>
-		[% IF admin_type == 'dm' OR admin_type == 'super' %]
-     	<li>
-			<a href="/admin/bodies">[% loc('Bodies') %]</a>
-		</li>
-		<li>
-    		<a href="/admin/reports">[% loc('Reports') %]</a>
-		</li>
-		<li class="search-box">
-    		Search
-		</li>
-		
-	</ul>
+    <div class="admin-nav">
+        <ul>
+            <li class="current">
+                <a href="/admin/summary">[% loc('Summary') %]</a>
+            </li>
+            [% IF admin_type == 'dm' OR admin_type == 'super' %]
+            <li>
+                <a href="/admin/bodies">[% loc('Bodies') %]</a>
+            </li>
+            <li>
+                <a href="/admin/reports">[% loc('Reports') %]</a>
+            </li>
+            <li class="search-box">
+                Search
+            </li>
+        
+        </ul>
+    </div>
     <!-- | <a href="timeline">Timeline</a> -->
     <!-- | <a href="questionnaire">Survey</a> -->
     <!-- | <a href="/admin/users">[% loc('Users') %]</a> -->
