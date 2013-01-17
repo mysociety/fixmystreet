@@ -21,14 +21,17 @@ select { width: auto; }
     <!--<strong>[% loc('FixMyStreet admin:') %]</strong>-->
     <div class="admin-nav">
         <ul>
-            <li class="current">
+            [% pagename = c.req.uri.path %]
+            [% pagename = pagename.replace('/admin/?(\w*)', '$1') %]
+
+            <li [% IF pagename == 'summary' OR pagename == '' %]class="current"[% END %]>
                 <a href="/admin/summary">[% loc('Summary') %]</a>
             </li>
             [% IF admin_type == 'dm' OR admin_type == 'super' %]
-            <li>
+            <li [% IF pagename == 'bodies' %]class="current"[% END %]>
                 <a href="/admin/bodies">[% loc('Bodies') %]</a>
             </li>
-            <li>
+            <li [% IF pagename == 'reports' %]class="current"[% END %]>
                 <a href="/admin/reports">[% loc('Reports') %]</a>
             </li>
             <li class="search-box">
