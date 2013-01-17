@@ -217,7 +217,7 @@ subtest 'basic request update post parameters' => sub {
 };
 
 subtest 'extended request update post parameters' => sub {
-    my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_updates => 1 } );
+    my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { use_extended_updates => 1 } );
 
     is $results->{ res }, 248, 'got update id';
 
@@ -322,19 +322,23 @@ foreach my $test (
         desc => 'comment with in progress state sends status of OPEN',
         state => 'in progress',
         status => 'OPEN',
-    },
-    {
-        state => 'confirmed',
-        status => 'OPEN',
+        extended => 'IN_PROGRESS',
     },
 ) {
     subtest $test->{desc} => sub {
+        $comment->problem_state( $test->{state} );
         $comment->problem->state( $test->{state} );
 
         my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>' );
 
         my $c = CGI::Simple->new( $results->{ req }->content );
         is $c->param('status'), $test->{status}, 'correct status';
+
+        if ( $test->{extended} ) {
+            my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_statuses => 1 } );
+            my $c = CGI::Simple->new( $results->{ req }->content );
+            is $c->param('status'), $test->{extended}, 'correct extended status';
+        }
     };
 }
 
@@ -344,7 +348,6 @@ for my $test (
         state => 'confirmed',
         anon  => 0,
         status => 'OPEN',
-        extended => 'IN_PROGRESS',
     },
     {
         desc => 'anonymous commment sets public_anonymity_required to true',
@@ -358,16 +361,10 @@ for my $test (
         $comment->problem->state( $test->{state} );
         $comment->anonymous( $test->{anon} );
 
-        my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_updates => 1 } );
+        my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { use_extended_updates => 1 } );
 
         my $c = CGI::Simple->new( $results->{ req }->content );
         is $c->param('public_anonymity_required'), $test->{anon} ? 'TRUE' : 'FALSE', 'correct anonymity';
-
-        if ( $test->{extended} ) {
-            my $results = make_update_req( $comment, '<?xml version="1.0" encoding="utf-8"?><service_request_updates><request_update><update_id>248</update_id></request_update></service_request_updates>', { extended_statuses => 1 } );
-            my $c = CGI::Simple->new( $results->{ req }->content );
-            is $c->param('status'), $test->{extended}, 'correct extended status';
-        }
     };
 }
 
@@ -634,13 +631,13 @@ done_testing();
 sub make_update_req {
     my $comment = shift;
     my $xml = shift;
-    my $open311conf = shift || {};
+    my $open311_args = shift || {};
 
     my $params = {
-        object => $comment,
-          xml  => $xml,
-        method => 'post_service_request_update',
-        path   => 'servicerequestupdates.xml',
+        object       => $comment,
+        xml          => $xml,
+        method       => 'post_service_request_update',
+        path         => 'servicerequestupdates.xml',
         open311_conf => $open311_args,
     };
 
