@@ -1,0 +1,11 @@
+Subject: New update on report - '<?=$values['title']?>'
+
+The following update has been left on this report:
+
+<?=$values['data']?>
+
+To view this report on the site, please visit the following URL:
+    <?=$values['problem_url']?>
+
+<?=$values['signature']?>
+

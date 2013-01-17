@@ -94,8 +94,9 @@ sub email_alerts ($) {
             }
             # this is currently only for new_updates
             if ($row->{item_text}) {
-                if ( $row->{alert_user_id} == $row->{user_id} ) {
+                if ( $cobrand->moniker ne 'zurich' && $row->{alert_user_id} == $row->{user_id} ) {
                     # This is an alert to the same user who made the report - make this a login link
+                    # Don't bother with Zurich which has no accounts
                     my $user = FixMyStreet::App->model('DB::User')->find( {
                         id => $row->{alert_user_id}
                     } );
