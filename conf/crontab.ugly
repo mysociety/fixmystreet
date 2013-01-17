@@ -28,10 +28,9 @@ MAILTO=!!(*= $user *)!!@mysociety.org
 0,30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-questionnaires.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-questionnaires" || echo "stalled?"
 5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/send-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper send-comments" || echo "stalled?"
 
-5,10,15,20,25,30,35,40,45,50,55 0-7,9-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments" || echo "stalled?"
-10,15,20,25,30,35,40,45,50,55 8 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments" || echo "stalled?"
-5 8 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments --verbose" || echo "stalled?"
-5 1 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments-24hs" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments" || echo "stalled?"
+0 8 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments --verbose" || echo "stalled?"
+0 1 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/fetch-comments.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper fetch-comments-24hs" || echo "stalled?"
 
 30 * * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
 0 0-7,9-23 * * * !!(*= $user *)!! run-with-lockfile -n /data/vhost/!!(*= $vhost *)!!/open311-populate-service-list.lock "/data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
