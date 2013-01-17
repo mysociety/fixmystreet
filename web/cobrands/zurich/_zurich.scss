@@ -44,6 +44,7 @@ a:hover {
       padding: 0;
       border-top: 1px solid $table_border_color;
       border-left: 1px solid $table_border_color;
+      border-right: 1px solid $table_border_color;
       li {
         border-right: 1px solid $table_border_color;
         float:left;
@@ -62,6 +63,19 @@ a:hover {
       li.current {
         background-color: #fff;
         border-bottom: 2px solid #fff;
+      }
+      li.search-box {
+        border:none;
+        padding: 0.2em 0.5em 0.2em 30px;
+        background-image: url('search-icon.png');
+        background-position: 2px center;
+        background-repeat: no-repeat;
+        input {
+          height: 100%;
+          width: 12em;
+          border: none;
+          padding: 6px 0.5em;
+        }
       }
     }
   }
