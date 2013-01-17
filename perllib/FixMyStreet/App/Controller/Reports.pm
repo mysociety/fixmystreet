@@ -5,6 +5,7 @@ use namespace::autoclean;
 use File::Slurp;
 use List::MoreUtils qw(zip);
 use POSIX qw(strcoll);
+use RABX;
 use mySociety::MaPit;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -393,6 +394,10 @@ sub load_and_group_problems : Private {
     while ( my @problem = $problems->next ) {
         my %problem = zip @cols, @problem;
         $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
+        if ($problem{extra} && $c->cobrand->moniker eq 'zurich') { # Inflate
+            utf8::encode($problem{extra}) if utf8::is_utf8($problem{extra});
+            $problem{extra} = RABX::unserialise($problem{extra});
+        }
         $c->log->debug( $problem{'cobrand'} . ', cobrand is ' . $c->cobrand->moniker );
         if ( !$c->stash->{body}->id ) {
             # An external_body entry
