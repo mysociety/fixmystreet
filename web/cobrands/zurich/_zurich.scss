@@ -34,6 +34,7 @@ a:hover {
 .admin {
   .admin-nav {
     background: #f4f4f4;
+    @include background(linear-gradient(#fbfbfb, #efefef));
     border-bottom: 2px solid $table_border_color;
     margin: 0 0 1em 0;
     ul {
