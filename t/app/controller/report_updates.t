@@ -576,6 +576,19 @@ for my $test (
         meta  => 'duplicate report',
     },
     {
+        desc => 'from authority user marks report as internal referral',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => undef,
+            photo => '',
+            update => 'Set state to internal referral',
+            state => 'internal referral',
+        },
+        state => 'internal referral',
+        meta  => 'internal referral',
+    },
+    {
         desc => 'from authority user marks report sent to two councils as fixed',
         fields => {
             name => $user->name,
