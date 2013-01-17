@@ -18,11 +18,23 @@ dd { margin-left: 8em; }
 select { width: auto; }
 </style>
 
-    <p><strong>[% loc('FixMyStreet admin:') %]</strong>
-    <a href="/admin/summary">[% loc('Summary') %]</a>
-[% IF admin_type == 'dm' OR admin_type == 'super' %]
-    | <a href="/admin/bodies">[% loc('Bodies') %]</a>
-    | <a href="/admin/reports">[% loc('Reports') %]</a>
+    <!--<strong>[% loc('FixMyStreet admin:') %]</strong>-->
+	<ul class="admin-nav">
+		<li>
+    		<a href="/admin/summary">[% loc('Summary') %]</a>
+		</li>
+		[% IF admin_type == 'dm' OR admin_type == 'super' %]
+     	<li>
+			<a href="/admin/bodies">[% loc('Bodies') %]</a>
+		</li>
+		<li>
+    		<a href="/admin/reports">[% loc('Reports') %]</a>
+		</li>
+		<li class="search-box">
+    		Search
+		</li>
+		
+	</ul>
     <!-- | <a href="timeline">Timeline</a> -->
     <!-- | <a href="questionnaire">Survey</a> -->
     <!-- | <a href="/admin/users">[% loc('Users') %]</a> -->
@@ -30,4 +42,4 @@ select { width: auto; }
     <!-- | <a href="stats">Stats</a> -->
 [% END %]
 
-    <h1>[% title %]</h1>
+    <h1 style="clear:both;">[% title %]</h1>

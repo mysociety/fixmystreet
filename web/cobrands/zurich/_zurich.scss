@@ -31,42 +31,69 @@ a:hover {
     color: #3c3c3c;
 }
 
-.admin table {
-  width: 100%;
-  font-size: 0.9em;
-  border: 1px solid $table_border_color;
-  border-collapse:collapse;
-  th, td {
-    padding: 0.666em 0.5em;
-    border: 1px solid $table_border_color;
-  }
-  th {
-    color: white;
-    background-color: $table_heading_bg_col;
-    border-bottom: 2px solid $table_heading_underline_col;
-    border-left: 1px solid $table_heading_border_col;
-    border-right: 1px solid $table_heading_border_col;
-    
-  }
-  td.record-id {
-    text-align: center;
-    font-weight: bold;
-  }
-  tr.filter-row td {
-    display: none; /* TODO: reveal when filtering is implemented */
-    padding: 4px 4px 4px 40px;
-    background-color: $button_bg_col;
-    background-image: url('search-icon-white.png');
-    background-position: 14px center;
-    background-repeat: no-repeat;
+.admin {
+  ul.admin-nav {
+    overflow:auto;
+    background: #f4f4f4;
+    margin:0 0 1em 0;
+    list-style: none;
+    padding: 0;
+    border-top: 1px solid $table_border_color;
+    border-left: 1px solid $table_border_color;
     border-bottom: 2px solid $table_border_color;
+    li {
+      border-right: 1px solid $table_border_color;
+      display: inline;
+      float:left;
+      list-style: none;
+      margin:0;
+      padding: 0.5em 1em;
+      font-weight: bold;
+      color: #000;
+      a {
+        color: #000;
+      }
+    }
+    li.search-box {
+      float: right;
+    }
   }
-  tr.filter-row td input[type=text] {
-    background-color: #e1e1e1;
-    width: 16em;
-    @include border-radius(4px);
-    border: none;
-    padding: 3px 0.5em;
+  table {
+    width: 100%;
+    font-size: 0.9em;
+    border: 1px solid $table_border_color;
+    border-collapse:collapse;
+    th, td {
+      padding: 0.666em 0.5em;
+      border: 1px solid $table_border_color;
+    }
+    th {
+      color: white;
+      background-color: $table_heading_bg_col;
+      border-bottom: 2px solid $table_heading_underline_col;
+      border-left: 1px solid $table_heading_border_col;
+      border-right: 1px solid $table_heading_border_col;
+    
+    }
+    td.record-id {
+      text-align: center;
+      font-weight: bold;
+    }
+    tr.filter-row td {
+      display: none; /* TODO: reveal when filtering is implemented */
+      padding: 4px 4px 4px 40px;
+      background-color: $button_bg_col;
+      background-image: url('search-icon-white.png');
+      background-position: 14px center;
+      background-repeat: no-repeat;
+      border-bottom: 2px solid $table_border_color;
+    }
+    tr.filter-row td input[type=text] {
+      background-color: #e1e1e1;
+      width: 16em;
+      @include border-radius(4px);
+      border: none;
+      padding: 3px 0.5em;
+    }
   }
-  
 }
