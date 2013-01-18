@@ -13,7 +13,7 @@ use Geo::Coordinates::CH1903;
 use Math::Trig;
 use Utils;
 
-use constant ZOOM_LEVELS    => 10;
+use constant ZOOM_LEVELS    => 9;
 use constant DEFAULT_ZOOM   => 7;
 use constant MIN_ZOOM_LEVEL => 0;
 
@@ -93,7 +93,7 @@ sub latlon_to_tile($$$) {
     my $matrix_id = $zoom;
     $matrix_id = 0 if $matrix_id < 0;
 
-    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500' );
+    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000' );
     my $tileOrigin = { lat => 30814423, lon => -29386322 };
     my $tileSize = 256;
     my $res = $scales[$zoom] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
