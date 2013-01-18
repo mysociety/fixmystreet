@@ -40,11 +40,11 @@
 
     fixmystreet.layer_options = {
         projection: new OpenLayers.Projection("EPSG:21781"),
-        name: "Luftbild",
-        layer: "Luftbild",
+        name: "Hybrid",
+        layer: "Hybrid",
         matrixSet: "nativeTileMatrixSet",
         requestEncoding: "REST",
-        url: "http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/",
+        url: "http://www.wmts.stadt-zuerich.ch/Hybrid/MapServer/WMTS/tile/",
         style: "default",
         matrixIds: [
             { identifier: "0", matrixHeight: 2, matrixWidth: 2, scaleDenominator: 250000,  supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
