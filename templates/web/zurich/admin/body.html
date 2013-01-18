@@ -1,4 +1,5 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
+[% PROCESS 'admin/report_blocks.html' %]
 
 [% IF updated %]
 <p>
@@ -21,7 +22,7 @@
                 <td>[% contact.email | html %]</td>
                 <td>[% contact.editor %]</td>
                 <td>[% contact.note | html %]</td>
-                <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
+                <td>[% PROCESS format_date this_date=contact.whenedited %]</td>
             </tr>
         [% END %]
     </table>

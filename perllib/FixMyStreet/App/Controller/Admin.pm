@@ -485,7 +485,7 @@ sub reports : Path('reports') {
     my ( $self, $c ) = @_;
 
     if (my $search = $c->req->param('search')) {
-        $c->stash->{searched} = 1;
+        $c->stash->{searched} = $search;
 
         my $site_restriction = $c->cobrand->site_restriction;
 

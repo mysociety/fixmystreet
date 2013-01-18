@@ -22,21 +22,21 @@ select { width: auto; }
     <div class="admin-nav">
         <ul>
             [% pagename = c.req.uri.path %]
-            [% pagename = pagename.replace('/admin/?(\w*)', '$1') %]
+            [% pagename = pagename.replace('/admin/?(\w*).*', '$1') %]
 
             <li [% IF pagename == 'summary' OR pagename == '' %]class="current"[% END %]>
                 <a href="/admin/summary">[% loc('Summary') %]</a>
             </li>
-            <li [% IF pagename == 'reports' %]class="current"[% END %]>
+            <li [% IF pagename == 'reports' OR pagename == 'report_edit' %]class="current"[% END %]>
                 <a href="/admin/reports">[% loc('Reports') %]</a>
             </li>
             [% IF admin_type == 'dm' OR admin_type == 'super' %]
-            <li [% IF pagename == 'bodies' %]class="current"[% END %]>
+            <li [% IF pagename == 'bodies' OR pagename == 'body' %]class="current"[% END %]>
                 <a href="/admin/bodies">[% loc('Bodies') %]</a>
             </li>
             [% END %]
             [% IF admin_type == 'super' %]
-            <li [% IF pagename == 'users' %]class="current"[% END %]>
+            <li [% IF pagename == 'users' OR pagename == 'user_edit' %]class="current"[% END %]>
                 <a href="/admin/users">[% loc('Users') %]</a>
             </li>
             [% END %]
