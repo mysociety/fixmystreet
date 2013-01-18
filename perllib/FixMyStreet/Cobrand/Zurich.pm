@@ -215,9 +215,13 @@ sub admin_report_edit {
             $problem->state( 'closed' );
             $problem->external_body( $external );
             $problem->whensent( undef );
+            _admin_send_email( $c, 'problem-external.txt', $problem );
             $redirect = 1;
         } else {
             $problem->state( $c->req->params->{state} ) if $c->req->params->{state};
+            if ( $problem->state eq 'hidden' ) {
+                _admin_send_email( $c, 'problem-rejected.txt', $problem );
+            }
         }
 
         $problem->title( $c->req->param('title') );
@@ -229,6 +233,7 @@ sub admin_report_edit {
             $problem->extra( { %$extra } );
             if ($c->req->params->{publish_response}) {
                 $problem->state( 'fixed - council' );
+                _admin_send_email( $c, 'problem-closed.txt', $problem );
             }
         }
 
@@ -314,6 +319,19 @@ sub admin_report_edit {
 
     return 0;
 
+}
+
+sub _admin_send_email {
+    my ( $c, $template, $problem ) = @_;
+
+    my $to = $problem->name
+        ? [ $problem->user->email, $problem->name ]
+        : $problem->user->email;
+
+    $c->send_email( $template, {
+        to => [ $to ],
+        url => $c->uri_for_email( $problem->url ),
+    } );
 }
 
 1;

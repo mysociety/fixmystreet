@@ -8,6 +8,6 @@ Bitte klicken Sie auf den untenstehenden Link, um Ihre Meldung zu bestätigen. F
 
 Ihre Meldung:
 
-[% report.details %]
+[% report.detail %]
 
 Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.

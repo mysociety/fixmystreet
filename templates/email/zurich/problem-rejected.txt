@@ -1,0 +1,12 @@
+Subject: Fix my Zurich: Meldung #[% problem.id %]
+
+Guten Tag [% problem.name %]
+
+I am afraid that your report has been rejected, for being inappropriate for the site.
+
+Ihre Meldung:
+
+[% problem.detail %]
+
+Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.
+

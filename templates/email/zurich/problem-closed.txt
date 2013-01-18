@@ -1,0 +1,17 @@
+Subject: FixMyZurich: Meldung #[% problem.id %]
+
+Guten Tag [% problem.name %]
+
+The following update has been left on your report:
+
+[% problem.extra.public_response %]
+
+To view your report on the site, please visit:
+    [% url %]
+
+Ihre Meldung:
+
+[% problem.detail %]
+
+Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.
+
