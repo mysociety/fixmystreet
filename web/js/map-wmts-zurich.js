@@ -2,6 +2,16 @@
  * Maps for FMZ using Zurich council's WMTS tile server 
  */
 
+$(function(){
+    $('#map_layer_toggle').toggle(function(){
+        $(this).text('Luftbild');
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+    }, function(){
+        $(this).text('Stadtplan');
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
+    });
+});
+
 /* 
  * set_map_config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
@@ -38,7 +48,7 @@
         scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000' ]
     };
 
-    fixmystreet.layer_options = {
+    var layer_options = {
         projection: new OpenLayers.Projection("EPSG:21781"),
         name: "Hybrid",
         layer: "Hybrid",
@@ -60,11 +70,12 @@
         ]
     };
     fixmystreet.layer_options = [
-        fixmystreet.layer_options, OpenLayers.Util.extend({}, fixmystreet.layer_options)
+        layer_options, OpenLayers.Util.applyDefaults({
+            name: "Stadtplan",
+            layer: "Stadtplan",
+            url:  "http://www.wmts.stadt-zuerich.ch/Stadtplan/MapServer/WMTS/tile/"
+        }, layer_options)
     ];
-    fixmystreet.layer_options[1].name = "Stadtplan";
-    fixmystreet.layer_options[1].layer = "Stadtplan";
-    fixmystreet.layer_options[1].url = "http://www.wmts.stadt-zuerich.ch/Stadtplan/MapServer/WMTS/tile/";
 
     // Give main code a new bbox_strategy that translates between
     // lat/lon and our swiss coordinates
