@@ -10,14 +10,14 @@
  * elem2: target element
  * offset: this will be added (if present) to the final value, useful for height errors
  */
-function heightFix(elem1, elem2, offset){
+function heightFix(elem1, elem2, offset, force) {
     var h1 = $(elem1).height(),
         h2 = $(elem2).height();
-    if(offset === undefined){
+    if (offset === undefined) {
         offset = 0;
     }
-    if(h1 > h2){
-        $(elem2).css({'min-height':h1+offset});
+    if (h1 > h2 || force) {
+        $(elem2).css( { 'min-height': h1+offset } );
     }
 }
 
@@ -437,7 +437,7 @@ $.fn.drawer = function(id, ajax) {
             if (cobrand == 'bromley') {
                 offset = -110;
             }
-            heightFix(window, '.content', offset);
+            heightFix(window, '.content', offset, 1);
             // in case we have a map that isn't full screen
             map_fix();
         }
