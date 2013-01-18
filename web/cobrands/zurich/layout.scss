@@ -101,6 +101,41 @@ body.mappage {
     }
 }
 
+#zurich-main-nav {
+  margin: -1em -1em 1em -1em; // -1em spreads back out over content's 1em padding
+  padding: 0;
+  background-color: #6A6869;
+
+  ul {
+      overflow:auto;
+      margin:0 0 0 0;
+      list-style: none;
+      padding: 0;
+      li {
+          font-size: 80%;
+          float:left;
+          list-style: none;
+          margin:0;
+          font-weight: bold;
+          color: #fff;
+          a, span {
+            display: block;
+            padding: 0.75em 1em;
+          }
+          a {
+              color: #fff;
+              text-decoration: none;
+              &:hover {
+                background-color: #333;
+              }
+          }
+          span {
+            background-color: #0056A4;
+          }
+      }
+  }
+}
+
 body.mappage {
     #main-nav ul#main-menu li a,
     #main-nav ul#main-menu li span {
