@@ -730,11 +730,9 @@ sub users: Path('users') : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $search = $c->req->param('search')) {
-        $c->stash->{searched} = 1;
+        $c->stash->{searched} = $search;
 
-        my $search = $c->req->param('search');
         my $isearch = '%' . $search . '%';
-
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
 
@@ -765,6 +763,9 @@ sub users: Path('users') : Args(0) {
             }
         }
 
+    } else {
+        $c->forward('get_token');
+        $c->forward('fetch_all_bodies');
     }
 
     return 1;
@@ -871,6 +872,35 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
 
     }
+
+    return 1;
+}
+
+sub user_add : Path('user_edit') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{template} = 'admin/user_edit.html';
+    $c->forward('get_token');
+    $c->forward('fetch_all_bodies');
+
+    return 1 unless $c->req->param('submit');
+
+    $c->forward('check_token');
+
+    my $user = $c->model('DB::User')->find_or_create( {
+        name => $c->req->param('name'),
+        email => $c->req->param('email'),
+        from_body => $c->req->param('body') || undef,
+        flagged => $c->req->param('flagged') || 0,
+    }, {
+        key => 'users_email_key'
+    } );
+    $c->stash->{user} = $user;
+
+    $c->forward( 'log_edit', [ $user->id, 'user', 'edit' ] );
+
+    $c->stash->{status_message} =
+      '<p><em>' . _('Updated!') . '</em></p>';
 
     return 1;
 }

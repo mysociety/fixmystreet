@@ -1,0 +1,18 @@
+<form method="post" action="[% c.uri_for( 'user_edit', user.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="submit" value="1" >
+    <ul>
+        <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% user.name | html %]'></li>
+        <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
+        <li>[% loc('Body:') %] <select id='body' name='body'>
+            <option value=''>[% loc('No body') %]</option>
+        [% FOR body IN bodies %]
+            <option value="[% body.id %]"[% ' selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
+        [% END %]
+        </select>
+      [% IF c.cobrand.moniker != 'zurich' %]
+        <li>[% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]></li>
+      [% END %]
+    </ul>
+    <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
+</form>
