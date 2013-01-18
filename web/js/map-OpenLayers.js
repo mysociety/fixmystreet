@@ -201,7 +201,8 @@ function fixmystreet_onload() {
         var showhide = [
             'Show pins', 'Hide pins',
             'Dangos pinnau', 'Cuddio pinnau',
-            "Vis nåler", "Gjem nåler"
+            "Vis nåler", "Gjem nåler",
+            "Zeige Stecknadeln", "Stecknadeln ausblenden"
         ];
         for (var i=0; i<showhide.length; i+=2) {
             if (this.innerHTML == showhide[i]) {
