@@ -30,7 +30,7 @@ sub map_tiles {
 }
 
 sub base_tile_url {
-    return 'http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/1.0.0/Luftbild/default/nativeTileMatrixSet';
+    return 'http://www.wmts.stadt-zuerich.ch/Hybrid/MapServer/WMTS/tile/1.0.0/Hybrid/default/nativeTileMatrixSet';
 }
 
 sub copyright {
@@ -90,7 +90,7 @@ sub latlon_to_tile($$$) {
 
     my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($lat, $lon);
 
-    my $matrix_id = $zoom - 1;
+    my $matrix_id = $zoom;
     $matrix_id = 0 if $matrix_id < 0;
 
     my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500' );
