@@ -39,6 +39,9 @@ sub get_template {
         $template = 'submit-feedback-pending.txt';
     } elsif ( $row->state eq 'closed' ) {
         $template = 'submit-external.txt';
+        if ( $row->extra->{third_personal} ) {
+            $template = 'submit-external-personal.txt';
+        }
     }
 
     my $template_path = FixMyStreet->path_to( "templates", "email", "zurich", $template )->stringify;
