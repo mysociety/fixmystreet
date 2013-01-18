@@ -1325,7 +1325,11 @@ sub fetch_all_bodies : Private {
     my ($self, $c ) = @_;
 
     my @bodies = $c->model('DB::Body')->all;
-    @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        @bodies = $c->cobrand->admin_fetch_all_bodies( @bodies );
+    } else {
+        @bodies = sort { strcoll($a->name, $b->name) } @bodies;
+    }
     $c->stash->{bodies} = \@bodies;
 
     return 1;

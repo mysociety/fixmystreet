@@ -2,14 +2,31 @@
 
 [% INCLUDE 'admin/edit-league.html' %]
 
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('Name') %]</th>
+      [% IF c.cobrand.moniker == 'zurich' %]
+        <th>[% loc('Email') %]</th>
+      [% ELSE %]
+        <th>[% loc('Category') %]</th>
+      [% END %]
+    </tr>
 [%- FOREACH body IN bodies %]
     [%- SET id = body.id %]
-    [%- '<ul>' IF loop.first %]
     [% NEXT IF c.cobrand.moniker == 'zurich' AND admin_type == 'dm' AND (body.parent OR body.bodies) %]
-        <li><a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
-    [%- ', ' _ body.parent.name IF body.parent -%]
-    [% IF c.cobrand.moniker != 'zurich' %]
-        &ndash;
+    <tr>
+        <td>
+          [% IF c.cobrand.moniker == 'zurich' %]
+            [% FILTER repeat(4*body.api_key) %]&nbsp;[% END %]
+          [% END %]
+            <a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
+          [% IF c.cobrand.moniker != 'zurich' %]
+            [%- ', ' _ body.parent.name IF body.parent -%]
+          [% END %]
+        </td>
+    [% IF c.cobrand.moniker == 'zurich' %]
+        <td>[% body.endpoint %]</td>
+    [% ELSE %]
         [% IF counts.$id %]
             [% tprintf( loc('%d addresses'), counts.$id.c) IF c.cobrand.moniker != 'emptyhomes' %]
             [% IF counts.$id.deleted %]
@@ -21,8 +38,9 @@
             no categories
         [% END %]
     [% END %]
-    [%- '</ul>' IF loop.last %]
+    </tr>
 [%- END %]
+</table>
 
 <h2>[% loc('Add body') %]</h2>
 [% INCLUDE 'admin/body-form.html', body='' %]
