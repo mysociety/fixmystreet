@@ -24,6 +24,7 @@
         new OpenLayers.Control.ArgParser(),
         fixmystreet.nav_control,
         new OpenLayers.Control.Permalink(permalink_id),
+        new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
 
@@ -59,6 +60,12 @@
             { identifier: "9", matrixHeight: 415, matrixWidth: 414, scaleDenominator: 500, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } }
         ]
     };
+    fixmystreet.layer_options = [
+        fixmystreet.layer_options, OpenLayers.Util.extend({}, fixmystreet.layer_options)
+    ];
+    fixmystreet.layer_options[1].name = "Stadtplan";
+    fixmystreet.layer_options[1].layer = "Stadtplan";
+    fixmystreet.layer_options[1].url = "http://www.wmts.stadt-zuerich.ch/Stadtplan/MapServer/WMTS/tile/";
 
     // Give main code a new bbox_strategy that translates between
     // lat/lon and our swiss coordinates
