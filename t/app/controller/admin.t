@@ -1061,7 +1061,7 @@ subtest 'report search' => sub {
 
 subtest 'search abuse' => sub {
     $mech->get_ok( '/admin/users?search=example' );
-    $mech->content_like(qr/test4\@example.com.*\n.*\n.*Email in abuse table/);
+    $mech->content_like(qr{test4\@example.com.*</td>\s*<td>.*?</td>\s*<td>\(Email in abuse table});
 };
 
 subtest 'show flagged entries' => sub {
