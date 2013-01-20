@@ -1,7 +1,10 @@
 #!/usr/bin/env perl
 
-# send-reports:
-# Send new problem reports to councils
+# send-comments:
+# Send comments/updates on reports to councils
+#   In Open311 parlance these are 'service request udpates' and are sent using
+#   mySociety's proposed extension to the Open311 Georeport v2 spec:
+#   https://github.com/mysociety/fixmystreet/wiki/Open311-FMS---Proposed-differences-to-Open311
 #
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
