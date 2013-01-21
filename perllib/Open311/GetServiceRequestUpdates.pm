@@ -12,7 +12,8 @@ has end_date => ( is => 'ro', default => undef );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 
-Readonly::Scalar my $COUNCIL_ID_OXFORDSHIRE => 2237;
+Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
+Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 
 sub fetch {
     my $self = shift;
@@ -35,12 +36,12 @@ sub fetch {
         );
 
         # custom endpoint URLs because these councils have non-standard paths
-        if ( $council->area_id =~ /2482/ ) {
+        if ( $council->area_id =~ /\b$AREA_ID_BROMLEY\b/o ) {
             my $endpoints = $o->endpoints;
             $endpoints->{update} = 'update.xml';
             $endpoints->{service_request_updates} = 'update.xml';
             $o->endpoints( $endpoints );
-        } elsif ($council->area_id =~/$COUNCIL_ID_OXFORDSHIRE/o) {
+        } elsif ($council->area_id =~/\b$AREA_ID_OXFORDSHIRE\b/o) {
             my $endpoints = $o->endpoints;
             $endpoints->{service_request_updates} = 'open311_service_request_update.cgi';
             $o->endpoints( $endpoints );
@@ -63,7 +64,7 @@ sub update_comments {
         push @args, $self->start_date;
         push @args, $self->end_date;
     # default to asking for last 2 hours worth if not Bromley
-    } elsif ( $council_details->{areaid} != 2482 ) {
+    } elsif ( $council_details->{areaid} != $AREA_ID_BROMLEY ) {
         my $end_dt = DateTime->now();
         my $start_dt = $end_dt->clone;
         $start_dt->add( hours => -2 );
