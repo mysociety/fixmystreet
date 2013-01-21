@@ -80,12 +80,14 @@ sub update_comments {
         # what problem it belongs to so just skip
         next unless $request_id;
 
-        my $problem =
-          FixMyStreet::App->model('DB::Problem')
-          ->search( {
-                  external_id => $request_id,
-                  council     => { like => '%' . $council_details->{areaid} . '%' },
-          } );
+        my $problem;
+        my $criteria = { external_id => $request_id };
+        if ($open311->jurisdiction =~ /^fixmybarangay_(dps|dpwh|depw)$/i) { # use jurisdiction (not area_id) for FMB bodies
+            $criteria->{ external_body } = uc $1;
+        } else {
+            $criteria->{ council } = { like => '%' . $council_details->{areaid} . '%' };
+        }
+        $problem = FixMyStreet::App->model('DB::Problem')->search( $criteria );
 
         if (my $p = $problem->first) {
             my $c = $p->comments->search( { external_id => $request->{update_id} } );
