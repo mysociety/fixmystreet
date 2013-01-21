@@ -12,6 +12,8 @@ has end_date => ( is => 'ro', default => undef );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 
+Readonly::Scalar my $COUNCIL_ID_OXFORDSHIRE => 2237;
+
 sub fetch {
     my $self = shift;
 
@@ -32,10 +34,15 @@ sub fetch {
             jurisdiction => $council->jurisdiction,
         );
 
+        # custom endpoint URLs because these councils have non-standard paths
         if ( $council->area_id =~ /2482/ ) {
             my $endpoints = $o->endpoints;
             $endpoints->{update} = 'update.xml';
             $endpoints->{service_request_updates} = 'update.xml';
+            $o->endpoints( $endpoints );
+        } elsif ($council->area_id =~/$COUNCIL_ID_OXFORDSHIRE/o) {
+            my $endpoints = $o->endpoints;
+            $endpoints->{service_request_updates} = 'open311_service_request_update.cgi';
             $o->endpoints( $endpoints );
         }
 
