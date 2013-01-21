@@ -14,10 +14,11 @@ my $CGI_VAR_START_DATE = 'start_date';
 my $CGI_VAR_END_DATE   = 'end_date';
 my $CGI_VAR_NO_DEFAULT_DATE   = 'force_no_default_date'; # for testing scratchy Oracle date stuff
 my $CGI_VAR_LIMIT   = 'limit'; # for testing
+my $CGI_VAR_ANY_STATUS = 'any_status'; # for testing
 
 my $USE_ONLY_DATES = 0;  # dates not times
 my $MAX_LIMIT = 1000;
-
+my $STATUS_CRITERIA = "(status='OPEN' OR status='CLOSED')";
 my $req = new CGI;
 
 get_service_request_updates($req);
@@ -67,7 +68,9 @@ sub get_service_request_updates {
     $end_date = "updated_timedate <= to_date('$end_date', '$date_format')" if $end_date;
 
     my $where_clause = '';
-    $where_clause = join(' AND ', grep {$_} ($start_date, $end_date));
+    my @criteria = ($start_date, $end_date);
+    push @criteria, $STATUS_CRITERIA  unless $req -> param($CGI_VAR_ANY_STATUS);
+    $where_clause = join(' AND ', grep {$_} @criteria);
     $where_clause = "WHERE $where_clause" if $where_clause;
 
     my $sql = qq(SELECT row_id, service_request_id, to_char(updated_timedate, '$date_format'), status, description FROM higatlas.fms_update $where_clause ORDER BY updated_timedate DESC);
