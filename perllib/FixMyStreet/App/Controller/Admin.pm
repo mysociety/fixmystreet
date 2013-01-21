@@ -606,6 +606,21 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
+
+        FixMyStreet::Map::display_map(
+            $c,
+            latitude  => $problem->latitude,
+            longitude => $problem->longitude,
+            pins      => $problem->used_map
+            ? [ {
+                latitude  => $problem->latitude,
+                longitude => $problem->longitude,
+                colour    => 'yellow',
+                type      => 'big',
+              } ]
+            : [],
+        );
+
         my $done = $c->cobrand->admin_report_edit();
         return if $done;
     }

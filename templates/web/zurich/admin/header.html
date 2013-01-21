@@ -1,5 +1,7 @@
-[% INCLUDE 'header.html' admin = 1, bodyclass = 'fullwidthpage admin' %]
 [%
+    SET bodyclass = bodyclass || 'fullwidthpage';
+    INCLUDE 'header.html' admin = 1, bodyclass = bodyclass _ ' admin';
+
     states = {
         'unconfirmed' = loc('Submitted'),
         'confirmed' = loc('Open'),
@@ -17,39 +19,5 @@ dd { margin-left: 8em; }
 .error { color: red; }
 select { width: auto; }
 </style>
-
-    <!--<strong>[% loc('FixMyStreet admin:') %]</strong>-->
-    <div class="admin-nav">
-        <ul>
-            [% pagename = c.req.uri.path %]
-            [% pagename = pagename.replace('/admin/?(\w*).*', '$1') %]
-
-            <li [% IF pagename == 'summary' OR pagename == '' %]class="current"[% END %]>
-                <a href="/admin/summary">[% loc('Summary') %]</a>
-            </li>
-            <li [% IF pagename == 'reports' OR pagename == 'report_edit' %]class="current"[% END %]>
-                <a href="/admin/reports">[% loc('Reports') %]</a>
-            </li>
-            [% IF admin_type == 'dm' OR admin_type == 'super' %]
-            <li [% IF pagename == 'bodies' OR pagename == 'body' %]class="current"[% END %]>
-                <a href="/admin/bodies">[% loc('Bodies') %]</a>
-            </li>
-            [% END %]
-            [% IF admin_type == 'super' %]
-            <li [% IF pagename == 'users' OR pagename == 'user_edit' %]class="current"[% END %]>
-                <a href="/admin/users">[% loc('Users') %]</a>
-            </li>
-            [% END %]
-            <li class="search-box">
-				<form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-				    <input type="text" name="search" size="20" id="search" placeholder="[% loc('Search reports') %]">
-				</form>
-            </li>
-        </ul>
-    </div>
-    <!-- | <a href="timeline">Timeline</a> -->
-    <!-- | <a href="questionnaire">Survey</a> -->
-    <!-- | <a href="flagged">Flagged</a> -->
-    <!-- | <a href="stats">Stats</a> -->
 
     <h1 style="clear:both;">[% title %]</h1>
