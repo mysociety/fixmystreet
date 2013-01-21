@@ -13,10 +13,10 @@ require 'open311_services.pm';
 my $CGI_VAR_START_DATE = 'start_date';
 my $CGI_VAR_END_DATE   = 'end_date';
 my $CGI_VAR_NO_DEFAULT_DATE   = 'force_no_default_date'; # for testing scratchy Oracle date stuff
-my $CGI_VAR_NO_LIMIT   = 'force_no_limit'; # for testing
+my $CGI_VAR_LIMIT   = 'limit'; # for testing
 
 my $USE_ONLY_DATES = 0;  # dates not times
-my $LIMIT_CLAUSE = ' LIMIT 1000';
+my $MAX_LIMIT = 1000;
 
 my $req = new CGI;
 
@@ -61,16 +61,19 @@ sub get_service_request_updates {
         $start_date = get_date_or_nothing( $YESTERDAY, $USE_ONLY_DATES ) unless ($start_date or $end_date);
     }
 
-    $start_date = "updated_timedate >= to_date('$start_date', 'yyyy-mm-dd hh:mi:ss')" if $start_date;
-    $end_date = "updated_timedate <= to_date('$end_date', 'yyyy-mm-dd hh:mi:ss')" if $end_date;
+    my $date_format = 'YYYY-MM-DD HH24:MI:SS'; # NB: hh24 (not hh)
+
+    $start_date = "updated_timedate >= to_date('$start_date', '$date_format')" if $start_date;
+    $end_date = "updated_timedate <= to_date('$end_date', '$date_format')" if $end_date;
 
     my $where_clause = '';
     $where_clause = join(' AND ', grep {$_} ($start_date, $end_date));
     $where_clause = "WHERE $where_clause" if $where_clause;
 
-    my $limit = $LIMIT_CLAUSE unless $req -> param($CGI_VAR_NO_LIMIT);
-    
-    my $sql = qq(SELECT row_id, service_request_id, to_char(updated_timedate, 'yyyy-mm-dd hh:mi:ss'), status, description FROM higatlas.fms_update $where_clause ORDER BY updated_timedate DESC $limit);
+    my $sql = qq(SELECT row_id, service_request_id, to_char(updated_timedate, '$date_format'), status, description FROM higatlas.fms_update $where_clause ORDER BY updated_timedate DESC);
+
+    my $limit = $req -> param($CGI_VAR_LIMIT) =~ /^(\d{1,3})$/? $1 : $MAX_LIMIT;
+    $sql = "SELECT * FROM ($sql) WHERE ROWNUM <= $limit" if $limit;
 
     my $debug_str = <<XML;
         <!-- DEBUG: from: $raw_start_date => $start_date  -->
@@ -79,7 +82,7 @@ sub get_service_request_updates {
 XML
 
     my $ary_ref;
-    
+
     if ($TESTING_WRITE_TO_FILE) {
         $ary_ref = [
             [97, 1000, '2013-01-05', 'OPEN', 'report was opened'],
@@ -89,7 +92,7 @@ XML
         my $dbh = get_db_connection();
         $ary_ref = $dbh->selectall_arrayref($sql);
     }
-    
+
     # rough and ready XML dump now (should use XML Simple to build/escape properly!)
     my $xml = "";
     foreach my $row(@{$ary_ref})  {
