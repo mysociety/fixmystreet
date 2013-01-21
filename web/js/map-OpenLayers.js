@@ -201,7 +201,8 @@ function fixmystreet_onload() {
         var showhide = [
             'Show pins', 'Hide pins',
             'Dangos pinnau', 'Cuddio pinnau',
-            "Vis nåler", "Gjem nåler"
+            "Vis nåler", "Gjem nåler",
+            "Zeige Stecknadeln", "Stecknadeln ausblenden"
         ];
         for (var i=0; i<showhide.length; i+=2) {
             if (this.innerHTML == showhide[i]) {
@@ -267,19 +268,24 @@ $(function(){
     }
 
     // Set it up our way
-    fixmystreet.layer_options = OpenLayers.Util.extend({
-        zoomOffset: fixmystreet.zoomOffset,
-        transitionEffect: 'resize',
-        numZoomLevels: fixmystreet.numZoomLevels
-    }, fixmystreet.layer_options);
 
     var layer;
-    if (fixmystreet.layer_options.matrixIds) {
-        layer = new fixmystreet.map_type(fixmystreet.layer_options);
-    } else {
-        layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+    if (!fixmystreet.layer_options.length) {
+        fixmystreet.layer_options = [ fixmystreet.layer_options ];
     }
-    fixmystreet.map.addLayer(layer);
+    for (var i=0; i<fixmystreet.layer_options.length; i++) {
+        fixmystreet.layer_options[i] = OpenLayers.Util.extend({
+            zoomOffset: fixmystreet.zoomOffset,
+            transitionEffect: 'resize',
+            numZoomLevels: fixmystreet.numZoomLevels
+        }, fixmystreet.layer_options[i]);
+        if (fixmystreet.layer_options[i].matrixIds) {
+            layer = new fixmystreet.map_type(fixmystreet.layer_options[i]);
+        } else {
+            layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+        }
+        fixmystreet.map.addLayer(layer);
+    }
 
     if (!fixmystreet.map.getCenter()) {
         var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );

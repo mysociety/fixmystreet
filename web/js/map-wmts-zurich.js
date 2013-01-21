@@ -2,6 +2,16 @@
  * Maps for FMZ using Zurich council's WMTS tile server 
  */
 
+$(function(){
+    $('#map_layer_toggle').toggle(function(){
+        $(this).text('Luftbild');
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+    }, function(){
+        $(this).text('Stadtplan');
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
+    });
+});
+
 /* 
  * set_map_config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
@@ -35,16 +45,16 @@
     fixmystreet.map_options = {
         maxExtent: new OpenLayers.Bounds(676000, 241000, 690000, 255000),
         units: 'm',
-        scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500']
+        scales: [ '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000' ]
     };
 
-    fixmystreet.layer_options = {
+    var layer_options = {
         projection: new OpenLayers.Projection("EPSG:21781"),
-        name: "Luftbild",
-        layer: "Luftbild",
+        name: "Hybrid",
+        layer: "Hybrid",
         matrixSet: "nativeTileMatrixSet",
         requestEncoding: "REST",
-        url: "http://www.wmts.stadt-zuerich.ch/Luftbild/MapServer/WMTS/tile/",
+        url: "http://www.wmts.stadt-zuerich.ch/Hybrid/MapServer/WMTS/tile/",
         style: "default",
         matrixIds: [
             { identifier: "0", matrixHeight: 2, matrixWidth: 2, scaleDenominator: 250000,  supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
@@ -59,6 +69,13 @@
             { identifier: "9", matrixHeight: 415, matrixWidth: 414, scaleDenominator: 500, supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } }
         ]
     };
+    fixmystreet.layer_options = [
+        layer_options, OpenLayers.Util.applyDefaults({
+            name: "Stadtplan",
+            layer: "Stadtplan",
+            url:  "http://www.wmts.stadt-zuerich.ch/Stadtplan/MapServer/WMTS/tile/"
+        }, layer_options)
+    ];
 
     // Give main code a new bbox_strategy that translates between
     // lat/lon and our swiss coordinates

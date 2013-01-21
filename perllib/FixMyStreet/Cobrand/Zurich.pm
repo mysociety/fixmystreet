@@ -334,4 +334,43 @@ sub _admin_send_email {
     } );
 }
 
+sub admin_fetch_all_bodies {
+    my ( $self, @bodies ) = @_;
+
+    sub tree_sort {
+        my ( $level, $id, $sorted, $out ) = @_;
+
+        my @sorted;
+        my $array = $sorted->{$id};
+        if ( $level == 0 ) {
+            @sorted = sort {
+                # Want Zurich itself at the top.
+                return -1 if $sorted->{$a->id};
+                return 1 if $sorted->{$b->id};
+                # Otherwise, by name
+                strcoll($a->name, $b->name)
+            } @$array;
+        } else {
+            @sorted = sort { strcoll($a->name, $b->name) } @$array;
+        }
+        foreach ( @sorted ) {
+            $_->api_key( $level ); # Misuse
+            push @$out, $_;
+            if ($sorted->{$_->id}) {
+                tree_sort( $level+1, $_->id, $sorted, $out );
+            }
+        }
+    }
+
+    my %sorted;
+    foreach (@bodies) {
+        my $p = $_->parent ? $_->parent->id : 0;
+        push @{$sorted{$p}}, $_;
+    }
+
+    my @out;
+    tree_sort( 0, 0, \%sorted, \@out );
+    return @out;
+}
+
 1;
