@@ -148,6 +148,7 @@ body.fullwidthpage.admin .content {
 }
 
 body.mappage.admin .content {
+    margin-top: 6em;
     margin-left: 0.5em;
 
 }
@@ -205,8 +206,11 @@ body.mappage.admin .content {
     padding: 1.5em 0 1em;
 }
 body.mappage .admin-nav-wrapper {
+    box-sizing: border-box;
     padding-left: 10px;
     padding-right: 10px;
+    position: fixed;
+    width: 100%;
 }
 
 .admin-nav {
