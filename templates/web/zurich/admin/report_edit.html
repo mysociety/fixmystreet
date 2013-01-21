@@ -11,15 +11,9 @@
 
 [% status_message %]
 
-[% IF problem.state == 'planned' %]
-[% INCLUDE 'admin/list_updates.html' %]
-[% END %]
-
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
-
-<div style="float:left; margin-top: 1em; width:48%; margin-right:2%">
 
 <ul>
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
@@ -61,9 +55,6 @@
 <label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
 [% END %]
 </ul>
-</div>
-
-<div style="float:right;width:48%">
 
 <p><label for="internal_notes">[% loc('Internal notes:') %]</label>
 <textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></p>
@@ -162,9 +153,6 @@ $(function(){
 
 [% END %]
 
-</div>
-
-<div style="clear:both"></div>
 <p align="right">
 [% IF problem.state == 'planned' %]
 <input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
@@ -174,9 +162,6 @@ $(function(){
 
 </form>
 
-[% IF problem.state != 'planned' %]
 [% INCLUDE 'admin/list_updates.html' %]
-[% END %]
-
 
 [% INCLUDE 'admin/footer.html' %]
