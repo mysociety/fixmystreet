@@ -312,6 +312,8 @@ sub _populate_service_request_update_params {
             $status = 'NOT_COUNCILS_RESPONSIBILITY';
         } elsif ( $state eq 'unable to fix' ) {
             $status = 'NO_FURTHER_ACTION';
+        } elsif ( $state eq 'internal referral' ) {
+            $status = 'INTERNAL_REFERRAL';
         }
     } else {
         if ( !FixMyStreet::DB::Result::Problem->open_states()->{$state} ) {

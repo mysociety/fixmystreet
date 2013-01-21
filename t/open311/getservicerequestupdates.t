@@ -204,6 +204,18 @@ for my $test (
         end_state => 'not responsible',
     },
     {
+        desc => 'internal referral status changes problem status',
+        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'confirmed',
+        comment_status => 'INTERNAL_REFERRAL',
+        mark_fixed=> 0,
+        mark_open => 0,
+        problem_state => 'internal referral',
+        end_state => 'internal referral',
+    },
+    {
         desc => 'duplicate status changes problem status',
         updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',

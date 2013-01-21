@@ -538,6 +538,18 @@ for my $test (
         state => 'unable to fix',
     },
     {
+        desc => 'from authority user marks report as internal referral',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => undef,
+            photo => '',
+            update => 'Set state to internal referral',
+            state => 'internal referral',
+        },
+        state => 'internal referral',
+    },
+    {
         desc => 'from authority user marks report as not responsible',
         fields => {
             name => $user->name,
@@ -562,6 +574,19 @@ for my $test (
         },
         state => 'duplicate',
         meta  => 'duplicate report',
+    },
+    {
+        desc => 'from authority user marks report as internal referral',
+        fields => {
+            name => $user->name,
+            may_show_name => 1,
+            add_alert => undef,
+            photo => '',
+            update => 'Set state to internal referral',
+            state => 'internal referral',
+        },
+        state => 'internal referral',
+        meta  => 'internal referral',
     },
     {
         desc => 'from authority user marks report sent to two councils as fixed',
@@ -1480,6 +1505,17 @@ for my $test (
         end_state => 'unable to fix',
     },
     {
+        desc => 'update internal referral without marking as fixed leaves state unchanged',
+        initial_state => 'internal referral',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 0,
+        },
+        end_state => 'internal referral',
+    },
+    {
         desc => 'update not responsible without marking as fixed leaves state unchanged',
         initial_state => 'not responsible',
         expected_form_fields => {
@@ -1559,6 +1595,17 @@ for my $test (
     {
         desc => 'can mark unable to fix as fixed, cannot mark not closed',
         initial_state => 'unable to fix',
+        expected_form_fields => {
+            fixed => undef,
+        },
+        submitted_form_fields => {
+            fixed => 1,
+        },
+        end_state => 'fixed - user',
+    },
+    {
+        desc => 'can mark internal referral as fixed, cannot mark not closed',
+        initial_state => 'internal referral',
         expected_form_fields => {
             fixed => undef,
         },
