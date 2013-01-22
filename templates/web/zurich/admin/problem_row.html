@@ -4,7 +4,10 @@
         [% NEXT IF admin_type == 'sdm' AND p_body.id != body.id %]
         [% NEXT IF admin_type == 'dm' AND p_body.id != body.id AND p_body.parent.id != body.id %]
     [% END %]
-    <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
+    <tr[%
+        ' class="adminhidden"' IF problem.state == 'hidden';
+        ' class="overdue"' IF c.cobrand.overdue( problem );
+    %]>
         <td class="record-id">[%- IF problem.is_visible -%]
         <a href="[% c.uri_for_email( '/report', problem.id ) %]">[% problem.id %]</a>
         [%- ELSE %]

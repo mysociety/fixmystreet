@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::Zurich;
 use base 'FixMyStreet::Cobrand::Default';
 
+use DateTime;
 use POSIX qw(strcoll);
 
 use strict;
@@ -41,6 +42,46 @@ sub show_unconfirmed_reports {
 sub get_body_sender {
     my ( $self, $body, $category ) = @_;
     return { method => 'Zurich' };
+}
+
+# Report overdue functions
+
+my %public_holidays = map { $_ => 1 } (
+    '2013-01-01', '2013-01-02', '2013-03-29', '2013-04-01',
+    '2013-04-15', '2013-05-01', '2013-05-09', '2013-05-20',
+    '2013-08-01', '2013-09-09', '2013-12-25', '2013-12-26',
+    '2014-01-01', '2014-01-02', '2014-04-18', '2014-04-21',
+    '2014-04-28', '2014-05-01', '2014-05-29', '2014-06-09',
+    '2014-08-01', '2014-09-15', '2014-12-25', '2014-12-26',
+);
+
+sub add_days {
+    my ( $dt, $days ) = @_;
+    $dt = $dt->clone;
+    while ( $days > 0 ) {
+        $dt->add ( days => 1 );
+        next if $public_holidays{$dt->ymd};
+        next if $dt->dow > 5;
+        $days--;
+    }
+    return $dt;
+}
+
+sub overdue {
+    my ( $self, $problem ) = @_;
+
+    my $w = $problem->whensent;
+    if ( $problem->state eq 'unconfirmed' || $problem->state eq 'confirmed' ) {
+        # One working day
+        $w = add_days( $w, 1 );
+        return $w > DateTime->now();
+    } elsif ( $problem->state eq 'in progress' ) {
+        # Five working days
+        $w = add_days( $w, 5 );
+        return $w > DateTime->now();
+    } else {
+        return 0;
+    }
 }
 
 # Specific administrative displays
