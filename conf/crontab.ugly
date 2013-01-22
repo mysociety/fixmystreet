@@ -64,3 +64,7 @@ my %no_alerts = map { $_ => 1 } @no_alerts;
 39 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problems-filed-graph
 43 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problem-creation-graph
 00 8 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/check-for-zombies !!(*= $user *)!!
+
+!!(* if ($vhost =~ /zurich/) { *)!!
+30 0 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/zurich-overdue-alert
+!!(* } *)!!
