@@ -55,13 +55,33 @@ my %public_holidays = map { $_ => 1 } (
     '2014-08-01', '2014-09-15', '2014-12-25', '2014-12-26',
 );
 
+sub is_public_holiday {
+    my $dt = shift;
+    return $public_holidays{$dt->ymd};
+}
+
+sub is_weekend {
+    my $dt = shift;
+    return $dt->dow > 5;
+}
+
 sub add_days {
     my ( $dt, $days ) = @_;
     $dt = $dt->clone;
     while ( $days > 0 ) {
         $dt->add ( days => 1 );
-        next if $public_holidays{$dt->ymd};
-        next if $dt->dow > 5;
+        next if is_public_holiday($dt) or is_weekend($dt);
+        $days--;
+    }
+    return $dt;
+}
+
+sub sub_days {
+    my ( $dt, $days ) = @_;
+    $dt = $dt->clone;
+    while ( $days > 0 ) {
+        $dt->subtract ( days => 1 );
+        next if is_public_holiday($dt) or is_weekend($dt);
         $days--;
     }
     return $dt;

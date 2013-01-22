@@ -1,6 +1,7 @@
 Subject: eskalierte Meldungen auf Fix my Zurich
 
 Die folgenden Meldungen auf Fix my Zurich sind älter als einen Tag und müssen dringend bearbeitet werden:
+
 <?=$values['data']?>
 
 Um diese Meldungen zu moderieren, klicken Sie auf folgende URL:
