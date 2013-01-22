@@ -74,11 +74,11 @@ sub overdue {
     if ( $problem->state eq 'unconfirmed' || $problem->state eq 'confirmed' ) {
         # One working day
         $w = add_days( $w, 1 );
-        return $w > DateTime->now();
+        return $w < DateTime->now();
     } elsif ( $problem->state eq 'in progress' ) {
         # Five working days
         $w = add_days( $w, 5 );
-        return $w > DateTime->now();
+        return $w < DateTime->now();
     } else {
         return 0;
     }
