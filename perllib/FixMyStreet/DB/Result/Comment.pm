@@ -146,6 +146,11 @@ sub check_for_errors {
     $errors{update} = _('Please enter a message')
       unless $self->text =~ m/\S/;
 
+    if ( $self->text && $self->problem && $self->problem->council 
+        && $self->problem->council eq '2482' && length($self->text) > 2000 ) {
+        $errors{update} = _('Updates are limited to 2000 characters in length. Please shorten your update');
+    }
+
     return \%errors;
 }
 
@@ -185,6 +190,10 @@ sub meta_problem_state {
 
     my $state = $self->problem_state;
     $state =~ s/ -.*$//;
+
+    $state = _("not the council's responsibility") 
+        if $state eq 'not responsible';
+    $state = _('duplicate report') if $state eq 'duplicate';
 
     return $state;
 }

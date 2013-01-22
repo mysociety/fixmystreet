@@ -71,7 +71,23 @@ for my $test (
         colour => 'yellow',
     },
     {
+        state => 'duplicate', 
+        colour => 'yellow',
+    },
+    {
+        state => 'unable to fix', 
+        colour => 'yellow',
+    },
+    {
+        state => 'not responsible', 
+        colour => 'yellow',
+    },
+    {
         state => 'investigating', 
+        colour => 'yellow',
+    },
+    {
+        state => 'action scheduled', 
         colour => 'yellow',
     },
     {

@@ -25,6 +25,7 @@ has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
 has extended_description => ( is => 'ro', isa => 'Str', default => 1 );
 has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
 has use_extended_updates => ( is => 'ro', isa => 'Bool', default => 0 );
+has extended_statuses => ( is => 'ro', isa => 'Bool', default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates
@@ -38,7 +39,11 @@ sub get_service_list {
 
     my $service_list_xml = $self->_get( $self->endpoints->{services} );
 
-    return $self->_get_xml_object( $service_list_xml );
+    if ( $service_list_xml ) {
+        return $self->_get_xml_object( $service_list_xml );
+    } else {
+        return undef;
+    }
 }
 
 sub get_service_meta_info {
@@ -287,10 +292,39 @@ sub _populate_service_request_update_params {
     my $name = $comment->name || $comment->user->name;
     my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
 
+    # fall back to problem state as it's probably correct
+    my $state = $comment->problem_state || $comment->problem->state;
+
+    my $status = 'OPEN';
+    if ( $self->extended_statuses ) {
+        if ( FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) {
+            $status = 'FIXED';
+        } elsif ( $state eq 'in progress' ) {
+            $status = 'IN_PROGRESS';
+        } elsif ($state eq 'action scheduled'
+            || $state eq 'planned' ) {
+            $status = 'ACTION_SCHEDULED';
+        } elsif ( $state eq 'investigating' ) {
+            $status = 'INVESTIGATING';
+        } elsif ( $state eq 'duplicate' ) {
+            $status = 'DUPLICATE';
+        } elsif ( $state eq 'not responsible' ) {
+            $status = 'NOT_COUNCILS_RESPONSIBILITY';
+        } elsif ( $state eq 'unable to fix' ) {
+            $status = 'NO_FURTHER_ACTION';
+        } elsif ( $state eq 'internal referral' ) {
+            $status = 'INTERNAL_REFERRAL';
+        }
+    } else {
+        if ( !FixMyStreet::DB::Result::Problem->open_states()->{$state} ) {
+            $status = 'CLOSED';
+        }
+    }
+
     my $params = {
         updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed_local->set_nanosecond(0)),
         service_request_id => $comment->problem->external_id,
-        status => $comment->problem->is_open ? 'OPEN' : 'CLOSED',
+        status => $status,
         email => $comment->user->email,
         description => $comment->text,
         last_name => $lastname,

@@ -183,12 +183,17 @@ create table problem (
         or state = 'investigating'
         or state = 'planned'
         or state = 'in progress'
+        or state = 'action scheduled'
         or state = 'closed'
         or state = 'fixed'
         or state = 'fixed - council'
         or state = 'fixed - user'
         or state = 'hidden'
         or state = 'partial'
+        or state = 'unable to fix'
+        or state = 'not responsible'
+        or state = 'duplicate'
+        or state = 'internal referral'
     ),
     lang text not null default 'en-gb',
     service text not null default '',
@@ -331,10 +336,15 @@ create table comment (
         or problem_state = 'investigating'
         or problem_state = 'planned'
         or problem_state = 'in progress'
+        or problem_state = 'action scheduled'
         or problem_state = 'closed'
         or problem_state = 'fixed'
         or problem_state = 'fixed - council'
         or problem_state = 'fixed - user'
+        or problem_state = 'unable to fix'
+        or problem_state = 'not responsible'
+        or problem_state = 'duplicate'
+        or problem_state = 'internal referral'
     ),
     -- other fields? one to indicate whether this was written by the council
     -- and should be highlighted in the display?
@@ -462,5 +472,6 @@ create table open311conf (
     send_comments boolean not null default 'f',
     comment_user_id int references users(id),
     suppress_alerts boolean not null default 'f',
-    can_be_devolved boolean not null default 'f'
+    can_be_devolved boolean not null default 'f',
+    send_extended_statuses boolean not null default 'f'
 );

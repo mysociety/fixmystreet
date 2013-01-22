@@ -65,11 +65,9 @@ sub index : Path : Args(0) {
 
     %prob_counts =
       map { $_ => $prob_counts{$_} || 0 }
-      ('confirmed', 'investigating', 'in progress', 'closed', 'fixed - council',
-          'fixed - user', 'fixed', 'unconfirmed', 'hidden',
-          'partial', 'planned');
+        ( FixMyStreet::DB::Result::Problem->all_states() );
     $c->stash->{problems} = \%prob_counts;
-    $c->stash->{total_problems_live} += $prob_counts{$_} 
+    $c->stash->{total_problems_live} += $prob_counts{$_} ? $prob_counts{$_} : 0
         for ( FixMyStreet::DB::Result::Problem->visible_states() );
     $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
 
@@ -351,7 +349,7 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'open311' ) {
         $c->forward('check_token');
 
-        my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts comment_user_id devolved/;
+        my %params = map { $_ => $c->req->param($_) || '' } qw/open311_id endpoint jurisdiction api_key area_id send_method send_comments suppress_alerts extended_statuses comment_user_id devolved/;
 
         if ( $params{open311_id} ) {
             my $conf = $c->model('DB::Open311Conf')->find( { id => $params{open311_id} } );
@@ -364,6 +362,7 @@ sub update_contacts : Private {
             $conf->suppress_alerts( $params{suppress_alerts} || 0);
             $conf->comment_user_id( $params{comment_user_id} || undef );
             $conf->can_be_devolved( $params{devolved} || 0 );
+            $conf->send_extended_statuses( $params{extended_statuses} || 0 );
 
             $conf->update();
 
@@ -379,6 +378,7 @@ sub update_contacts : Private {
             $conf->suppress_alerts( $params{suppress_alerts} || 0);
             $conf->comment_user_id( $params{comment_user_id} || undef );
             $conf->can_be_devolved( $params{devolved} || 0 );
+            $conf->send_extended_statuses( $params{extended_statuses} || 0 );
 
             $conf->insert();
 

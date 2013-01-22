@@ -52,9 +52,9 @@ while ( my @problem = $problems->next ) {
         my $type = ( $problem{duration} > 2 * $fourweeks )
             ? 'unknown'
             : ($problem{age} > $fourweeks ? 'older' : 'new');
-        if (FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}}) {
+        if (FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}} || FixMyStreet::DB::Result::Problem->closed_states()->{$problem{state}}) {
             # Fixed problems are either old or new
-            $fixed{$council}{$duration_str}++ if FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
+            $fixed{$council}{$duration_str}++;
         } else {
             # Open problems are either unknown, older, or new
             $open{$council}{$type}++ if $problem{state} eq 'confirmed';

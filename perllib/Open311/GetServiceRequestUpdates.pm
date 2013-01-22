@@ -12,6 +12,9 @@ has end_date => ( is => 'ro', default => undef );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
 
+Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
+Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
+
 sub fetch {
     my $self = shift;
 
@@ -32,10 +35,15 @@ sub fetch {
             jurisdiction => $council->jurisdiction,
         );
 
-        if ( $council->area_id =~ /2482/ ) {
+        # custom endpoint URLs because these councils have non-standard paths
+        if ( $council->area_id =~ /\b$AREA_ID_BROMLEY\b/o ) {
             my $endpoints = $o->endpoints;
             $endpoints->{update} = 'update.xml';
             $endpoints->{service_request_updates} = 'update.xml';
+            $o->endpoints( $endpoints );
+        } elsif ($council->area_id =~/\b$AREA_ID_OXFORDSHIRE\b/o) {
+            my $endpoints = $o->endpoints;
+            $endpoints->{service_request_updates} = 'open311_service_request_update.cgi';
             $o->endpoints( $endpoints );
         }
 
@@ -56,7 +64,7 @@ sub update_comments {
         push @args, $self->start_date;
         push @args, $self->end_date;
     # default to asking for last 2 hours worth if not Bromley
-    } elsif ( $council_details->{areaid} != 2482 ) {
+    } elsif ( $council_details->{areaid} != $AREA_ID_BROMLEY ) {
         my $end_dt = DateTime->now();
         my $start_dt = $end_dt->clone;
         $start_dt->add( hours => -2 );
@@ -115,12 +123,14 @@ sub update_comments {
                 # do not change the status of the problem as it's
                 # tricky to determine the right thing to do.
                 if ( $comment->created_local > $p->lastupdate_local ) {
-                    if ( $p->is_open and lc($request->{status}) eq 'closed' ) {
-                        $p->state( 'fixed - council' );
-                        $comment->problem_state( 'fixed - council' );
-                    } elsif ( ( $p->is_closed || $p->is_fixed ) and lc($request->{status}) eq 'open' ) {
-                        $p->state( 'confirmed' );
-                        $comment->problem_state( 'confirmed' );
+                    my $state = $self->map_state( $request->{status} );
+
+                    # don't update state unless it's an allowed state and it's
+                    # actually changing the state of the problem
+                    if ( FixMyStreet::DB::Result::Problem->council_states()->{$state} && $p->state ne $state &&
+                        !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) ) {
+                        $p->state($state);
+                        $comment->problem_state($state);
                     }
                 }
 
@@ -146,6 +156,24 @@ sub update_comments {
     }
 
     return 1;
+}
+
+sub map_state {
+    my $self           = shift;
+    my $incoming_state = shift;
+
+    $incoming_state = lc($incoming_state);
+    $incoming_state =~ s/_/ /g;
+
+    my %state_map = (
+        fixed                         => 'fixed - council',
+        'not councils responsibility' => 'not responsible',
+        'no further action'           => 'unable to fix',
+        open                          => 'confirmed',
+        closed                        => 'fixed - council'
+    );
+
+    return $state_map{$incoming_state} || $incoming_state;
 }
 
 1;

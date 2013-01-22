@@ -203,7 +203,22 @@ sub process_update : Private {
         $params{state} = 'fixed - council' 
             if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_council( $update->problem->council );
         $update->problem_state( $params{state} );
+    } else {
+        # we do this so we have a record of the state of the problem at this point
+        # for use when sending updates to external parties
+        if ( $update->mark_fixed ) {
+            $update->problem_state( 'fixed - user' );
+        } elsif ( $update->mark_open ) {
+            $update->problem_state( 'confirmed' );
+        # if there is not state param and neither of the above conditions apply
+        # then we are not changing the state of the problem so can use the current
+        # problem state
+        } else {
+            my $problem = $c->stash->{problem} || $update->problem;
+            $update->problem_state( $problem->state );
+        }
     }
+
 
     my @extra; # Next function fills this, but we don't need it here.
     # This is just so that the error checkign for these extra fields runs.
@@ -249,7 +264,8 @@ sub check_for_errors : Private {
         $error = 1 unless $c->user && $c->user->belongs_to_council( $c->stash->{update}->problem->council );
 
         my $state = $c->req->param('state');
-        $error = 1 unless ( grep { $state eq $_ } ( qw/confirmed closed fixed investigating planned/, 'in progress', 'fixed', 'fixed - user', 'fixed - council' ) );
+        $state = 'fixed - council' if $state eq 'fixed';
+        $error = 1 unless ( grep { $state eq $_ } ( FixMyStreet::DB::Result::Problem->council_states() ) );
 
         if ( $error ) {
             $c->stash->{errors} ||= [];
