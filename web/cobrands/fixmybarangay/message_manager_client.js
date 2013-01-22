@@ -226,7 +226,7 @@ var message_manager = (function() {
         $login_element.stop(true,true).slideDown();
     };
 
-    var say_status = function (msg, show_spinner) {
+    var say_status = function (msg, show_spinner, allow_html) {
         if ($status_element) {
             if (show_spinner) {
                 // slow fade in so that spinner only appears if there's a long delay
@@ -234,7 +234,12 @@ var message_manager = (function() {
             } else {
                 $status_element.find('#mm-spinner').stop(true,true).hide();
             }
-            $status_element.stop(true,true).show().find('p').text(msg);
+            $status_element.stop(true,true).show();
+            if (allow_html) {
+                $status_element.find('p').html(msg);
+            } else {
+                $status_element.find('p').text(msg);                
+            }
         }
     };
 
@@ -440,7 +445,8 @@ var message_manager = (function() {
                               }
                           }, 
                 error:    function(jqXHR, textStatus, errorThrown) {
-                            var st = jqXHR.status; 
+                            var st = jqXHR.status;
+                            var msg_is_html = false;
                             if (st == 401 || st == 403) {
                                 var msg = (st == 401 ? "Invalid username or password for" : "Access denied: please log in to") + " " + _mm_name;
                                 say_status(msg);
@@ -448,11 +454,17 @@ var message_manager = (function() {
                             } else {
                                 var err_msg = "Unable to load messages: ";
                                 if (st === 0 && textStatus === 'error') { // x-domain hard to detect, sometimes intermittent?
-                                    err_msg += "maybe try refreshing page?";
+                                    if (_url_root.indexOf('https')===0 && ! location.protocol != 'https:') {
+                                        var surl = "https://" + location.host;
+                                        err_msg += "this is an insecure URL.<br/>Try from <a href='" + surl + "'>"  + surl + "</a>";
+                                        msg_is_html = true;
+                                    } else {
+                                        err_msg += "maybe try refreshing page?";
+                                    }
                                 } else {
                                     err_msg += textStatus + " (" + st + ")";
                                 }
-                                say_status(err_msg);
+                                say_status(err_msg, false, msg_is_html);
                             }
                           }
             });
