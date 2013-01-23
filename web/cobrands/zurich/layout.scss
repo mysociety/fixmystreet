@@ -87,6 +87,11 @@ body.mappage {
     }
 }
 
+#front-main {
+  background-color: inherit;
+  color: inherit;
+}
+
 /* TODO Change the main-nav to be what is wanted */
 #main-nav {
     ul#main-menu {
@@ -99,6 +104,41 @@ body.mappage {
             }
         }
     }
+}
+
+#zurich-main-nav {
+  margin: -1em -1em 1em -1em; // -1em spreads back out over content's 1em padding
+  padding: 0;
+  background-color: #6A6869;
+
+  ul {
+      overflow:auto;
+      margin:0 0 0 0;
+      list-style: none;
+      padding: 0;
+      li {
+          font-size: 80%;
+          float:left;
+          list-style: none;
+          margin:0;
+          font-weight: bold;
+          color: #fff;
+          a, span {
+            display: block;
+            padding: 0.75em 1em;
+          }
+          a {
+              color: #fff;
+              text-decoration: none;
+              &:hover {
+                background-color: #333;
+              }
+          }
+          span {
+            background-color: #0056A4;
+          }
+      }
+  }
 }
 
 body.mappage {
@@ -115,6 +155,9 @@ body.twothirdswidthpage {
     .content {
         aside {
             @include box-shadow(none);
+        }
+        .sticky-sidebar aside {
+          top: 14em; // overrides default value, due to Zurich nav at top of content
         }
     }
 }
