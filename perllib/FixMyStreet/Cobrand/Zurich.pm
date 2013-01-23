@@ -91,6 +91,8 @@ sub overdue {
     my ( $self, $problem ) = @_;
 
     my $w = $problem->whensent;
+    return 0 unless $w;
+
     if ( $problem->state eq 'unconfirmed' || $problem->state eq 'confirmed' ) {
         # One working day
         $w = add_days( $w, 1 );
