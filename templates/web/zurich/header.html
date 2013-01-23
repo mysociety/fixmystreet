@@ -43,11 +43,10 @@
                 </div>
             </header>
 
-            [% pre_container_extra %]
-
             <div class="container">
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+                [% INCLUDE 'nav_over_content.html' %]
+
+                [% pre_container_extra %]
 
         <!-- [% INCLUDE 'debug_header.html' %] -->
-
-                [% INCLUDE 'nav_over_content.html' %]
