@@ -193,6 +193,8 @@ sub setup_request {
     if ($c->cobrand->moniker eq 'zurich') {
         FixMyStreet::DB::Result::Problem->visible_states_add_unconfirmed();
         DateTime->DefaultLocale( 'de_CH' );
+    } else {
+        DateTime->DefaultLocale( 'en_US' );
     }
 
     return $c;

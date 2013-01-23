@@ -16,6 +16,8 @@ sub example_places {
     return [ 'Langstrasse', 'Basteiplatz' ];
 }
 
+sub languages { [ 'de-ch,Deutsch,de_CH', 'en-gb,English,en_GB' ] };
+
 # If lat/lon are in the URI, we must have zoom as well, otherwise OpenLayers defaults to 0.
 sub uri {
     my ( $self, $uri ) = @_;
