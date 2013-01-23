@@ -151,6 +151,9 @@ body.twothirdswidthpage {
         aside {
             @include box-shadow(none);
         }
+        .sticky-sidebar aside {
+          top: 14em; // overrides default value, due to Zurich nav at top of content
+        }
     }
 }
 
