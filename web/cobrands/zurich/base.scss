@@ -36,6 +36,11 @@
     }
 }
 
+#site-header {
+	background: $lighter_blue;
+        border-top: 0.25em solid $mobile_menu_tab_bg_col;
+}
+
 // No grey background or other bits
 // The amount of resetting here shows this needs refactoring, so that it is FMS making the changes
 // Also look into why full-width pulls things out, but then it is its children
