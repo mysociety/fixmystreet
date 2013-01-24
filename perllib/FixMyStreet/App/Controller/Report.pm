@@ -51,6 +51,25 @@ sub display : Path('') : Args(1) {
         return $c->res->redirect( $c->uri_for($1), 301 );
     }
 
+    $c->forward( '_display', [ $id ] );
+}
+
+=head2 ajax
+
+Return JSON formatted details of a report
+
+=cut
+
+sub ajax : Path('ajax') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    $c->stash->{ajax} = 1;
+    $c->forward( '_display', [ $id ] );
+}
+
+sub _display : Private {
+    my ( $self, $c, $id ) = @_;
+
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
@@ -150,6 +169,15 @@ sub format_problem_for_display : Private {
     $c->stash->{extra_name_info} = $problem->bodies_str && $problem->bodies_str eq '2482' ? 1 : 0;
 
     $c->forward('generate_map_tags');
+
+    if ( $c->stash->{ajax} ) {
+        $c->res->content_type('application/json; charset=utf-8');
+        my $content = JSON->new->utf8(1)->encode(
+            $problem->as_hashref( $c )
+        );
+        $c->res->body( $content );
+        return 1;
+    }
 
     return 1;
 }
