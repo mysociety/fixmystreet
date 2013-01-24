@@ -731,6 +731,23 @@ sub update_send_failed {
     } );
 }
 
+sub as_hashref {
+    my $self = shift;
+    my $c    = shift;
+
+    return {
+        id        => $self->id,
+        title     => $self->title,
+        category  => $self->category,
+        detail    => $self->detail,
+        latitude  => $self->latitude,
+        longitude => $self->longitude,
+        postcode  => $self->postcode,
+        photo     => $self->get_photo_params,
+        meta      => $self->meta_line( $c ),
+    };
+}
+
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
