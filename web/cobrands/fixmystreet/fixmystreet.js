@@ -56,6 +56,8 @@ $(function(){
     var cobrand;
     if (window.location.href.indexOf('bromley') != -1) {
         cobrand = 'bromley';
+    } else if (window.location.href.indexOf('zurich') != -1) {
+        cobrand = 'zurich';
     }
 
     // Deal with switching between mobile and desktop versions on resize
@@ -370,7 +372,10 @@ $.fn.drawer = function(id, ajax) {
     });
 
     //add permalink on desktop, force hide on mobile
-    $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
+    if (cobrand != 'zurich') {
+        $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
+    }
+
     if($('.mobile').length){
         $('#map_permalink').hide();
         $('#key-tools a.feed').appendTo('#sub_map_links');

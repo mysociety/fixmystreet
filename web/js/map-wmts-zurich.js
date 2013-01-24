@@ -18,10 +18,6 @@ $(function(){
  */
  function set_map_config(perm) {
     // This stuff is copied from js/map-bing-ol.js
-    var permalink_id;
-    if ($('#map_permalink').length) {
-        permalink_id = 'map_permalink';
-    }
 
     var nav_opts = { zoomWheelEnabled: false };
     if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
@@ -33,7 +29,6 @@ $(function(){
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
         fixmystreet.nav_control,
-        new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
 
