@@ -80,7 +80,9 @@
 [% END %]
 
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
-                [% INCLUDE 'nav_over_content.html' %]
+                [% IF NOT admin %]
+                  [% INCLUDE 'nav_over_content.html' %]
+                [% END %]
 
                 [% pre_container_extra %]
 
