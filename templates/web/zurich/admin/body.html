@@ -7,7 +7,7 @@
 </p>
 [% END %]
 
-[% IF admin_type == 'super' AND body.parent AND body.bodies # A division %]
+[% IF admin_type == 'super' AND body.parent AND NOT body.parent.parent # A division %]
     <table cellspacing="0" cellpadding="2" border="1">
         <tr>
             <th>[% loc('Category') %]</th>
