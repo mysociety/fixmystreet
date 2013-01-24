@@ -27,12 +27,19 @@
     <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
 
     <p>
-    <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
-    <label class="inline" for="confirmed">[% loc('Confirmed' ) %]</label> 
-    <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
-    <label class="inline" for="deleted">[% loc('Deleted') %]</label>
-    <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]>
-    <label class="inline" for="non_public">[% loc('Private') %]</label>
+      [% IF c.cobrand.moniker != 'zurich' %]
+        <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
+        <label class="inline" for="confirmed">[% loc('Confirmed' ) %]</label> 
+      [% ELSE %]
+        <input type="hidden" name="confirmed" value="1">
+      [% END %]
+        <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
+        <label class="inline" for="deleted">[% loc('Deleted') %]</label>
+      [% IF c.cobrand.moniker != 'zurich' %]
+        <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]>
+        <label class="inline" for="non_public">[% loc('Private') %]</label>
+      [% END %]
+    </p>
 
     <p><strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea>
 
