@@ -192,7 +192,7 @@ sub display_location : Private {
                 longitude => $p->longitude,
                 colour    => $colour,
                 id        => $p->id,
-                title     => $p->title,
+                title     => $p->title_safe,
             }
         } @$on_map_all, @$around_map;
     }

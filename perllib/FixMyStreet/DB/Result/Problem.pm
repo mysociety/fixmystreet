@@ -312,6 +312,12 @@ around service => sub {
     return $s;
 };
 
+sub title_safe {
+    my $self = shift;
+    return _('Awaiting moderation') if $self->cobrand eq 'zurich' && $self->state eq 'unconfirmed';
+    return $self->title;
+}
+
 =head2 check_for_errors
 
     $error_hashref = $problem->check_for_errors();
