@@ -19,6 +19,15 @@ body {
         border: none;
     }
 }
+// Except on map pages
+body.mappage .content {
+    @include box-shadow(0 0 6px 1px #000);
+}
+.ie6, .ie7, .ie8  {
+    body.mappage .content {
+        border: 1px solid #666;
+    }
+}
 
 // Different header and logo
 #site-header .container {
