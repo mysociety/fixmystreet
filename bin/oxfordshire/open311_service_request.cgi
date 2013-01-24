@@ -7,97 +7,10 @@
 # mySociety: http://code.fixmystreet.com/
 #-----------------------------------------------------------------
 
-use strict;
-use CGI;
-use Time::Piece;
-use Encode qw(from_to);
-use DBI;
+require 'open311_services.pm';
 use DBD::Oracle qw(:ora_types);
-### for local testing (no Oracle): 
-# use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
-
-###################################################################
-# Config file: values in the config file override any values set 
-#              in the code below for the following things:
-#
-#     host: SXX-SAN-FOO_BAR
-#     sid: FOOBAR
-#     port: 1531
-#     username: foo
-#     password: FooBar
-#     testing: 0
-#     encode-to-win1252: 1
-#
-# Absence of the config file fails silently in case you really are
-# using values directly set in this script.
-#------------------------------------------------------------------
-my $CONFIG_FILENAME       = "/usr/local/etc/fixmystreet.config";
-
-use constant {
-    GENERAL_SERVICE_ERROR   => 400,
-    CODE_OR_ID_NOT_FOUND    => 404,
-    CODE_OR_ID_NOT_PROVIDED => 400,
-    BAD_METHOD              => 405,
-    FATAL_ERROR             => 500
-};
-
-my $DB_SERVER_NAME    = 'FOO';
-my $DB_HOST           = $DB_SERVER_NAME; # did this just in case we need to add more to the name (e.g, domain)
-my $DB_PORT           = '1531';
-my $ORACLE_SID        = 'FOOBAR';
-my $USERNAME          = 'FIXMYSTREET';
-my $PASSWORD          = 'XXX';
-my $STORED_PROC_NAME  = 'PEM.create_enquiry';
-
-# NB can override these settings in the config file!
-
-# Strip control chars:
-#   'ruthless' removes everything (i.e. all POSIX control chars)
-#   'desc'     removes everything, but keeps tabs and newlines in the 'description' field, where they matter
-#   'normal'   keeps tabs and newlines 
-my $STRIP_CONTROL_CHARS   = 'ruthless';  
-
-my $ENCODE_TO_WIN1252      = 1; # force encoding to Win-1252 for PEM data
-
-my $TESTING_WRITE_TO_FILE  = 0;  # write to file instead of DB
-my $OUT_FILENAME           = "fms-test.txt"; # dump data here if TESTING_WRITE_TO_FILE is true
-my $TEST_SERVICE_DISCOVERY = 0;  # switch to 1 to run service discovery, which confirms the DB connection at least
-my $RUN_FAKE_INSERT_TEST   = 0;  # command-line execution attempts insert with fake data (mimics a POST request)
-
-# Config file overrides existing values for these, if present:
-if ($CONFIG_FILENAME && open(CONF, $CONFIG_FILENAME)) {
-    while (<CONF>) {
-        next if /^#/;
-        if (/^\s*password:\s*(\S+)\s*$/i) {
-            $PASSWORD = $1;
-        } elsif (/^\s*sid:\s*(\S+)\s*$/i) {
-            $ORACLE_SID = $1;
-        } elsif (/^\s*username:\s*(\S+)\s*$/i) {
-            $USERNAME = $1;
-        } elsif (/^\s*port:\s*(\S+)\s*$/i) {
-            $DB_PORT = $1;
-        } elsif (/^\s*host:\s*(\S+)\s*$/i) {
-            $DB_HOST = $1;
-        } elsif (/^\s*testing:\s*(\S+)\s*$/i) {
-            $TESTING_WRITE_TO_FILE = $1;
-        } elsif (/^\s*test-service-discovery:\s*(\S+)\s*$/i) {
-            $TEST_SERVICE_DISCOVERY = $1;
-        } elsif (/^\s*strip-control-chars:\s*(\S+)\s*$/i) {
-            $STRIP_CONTROL_CHARS = lc $1;
-        } elsif (/^\s*encode-to-win1252:\s*(\S+)\s*$/i) {
-            $ENCODE_TO_WIN1252 = $1;
-        } elsif (/^\s*run-fake-insert-test:\s*(\S+)\s*$/i) {
-            $RUN_FAKE_INSERT_TEST = $1;
-        }
-    }
-}
-
-# assuming Oracle environment is happily set already, don't need these:
-# my $ORACLE_HOME       = "/app/oracle/product/11.2.0/db_1";
-# $ENV{ORACLE_HOME}    = $ORACLE_HOME;
-# $ENV{ORACLE_SID}     = $ORACLE_SID;
-# $ENV{PATH}           ="$ORACLE_HOME/bin";
-# $ENV{LD_LIBRARY_PATH}="$ORACLE_HOME/lib";
+### for local testing (no Oracle):
+### use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 
 my %PEM_BOUND_VAR_TYPES = get_pem_field_types();
 
@@ -197,33 +110,11 @@ XML
 }
 
 #------------------------------------------------------------------
-# error_and_exit 
-# args: HTTP status code, error message
-# Sends out the HTTP status code and message
-# and temrinates execution
-#------------------------------------------------------------------
-sub error_and_exit {
-    my ($status, $msg) = @_;
-    print "Status: $status $msg\n\n$msg\n";
-    exit;
-}
-
-#------------------------------------------------------------------
 # is_longlat
 # returns true if this looks like a long/lat value
 #------------------------------------------------------------------
 sub is_longlat {
     return $_[0] =~ /^-?\d+\.\d+$/o? 1 : 0;
-}
-
-#------------------------------------------------------------------
-# get_db_connection
-# no args: uses globals, possibly read from config
-# returns handle for the connection (otherwise terminates)
-#------------------------------------------------------------------
-sub get_db_connection {
-    return DBI->connect( "dbi:Oracle:host=$DB_HOST;sid=$ORACLE_SID;port=$DB_PORT", $USERNAME, $PASSWORD )
-        or error_and_exit(FATAL_ERROR, "failed to connect to database: " . $DBI::errstr, "");   
 }
 
 #------------------------------------------------------------------
@@ -533,3 +424,4 @@ sub get_pem_field_types {
         ':ce_doc_id' => ORA_NUMBER,
     )
 }
+

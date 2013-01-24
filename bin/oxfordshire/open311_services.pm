@@ -10,9 +10,6 @@ use CGI;
 use Encode qw(from_to);
 use DBI;
 use Time::Piece;
-use DBD::Oracle qw(:ora_types);
-### for local testing (no Oracle): 
-### use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 
 
 ###################################################################
