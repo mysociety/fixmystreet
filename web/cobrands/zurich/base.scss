@@ -70,3 +70,9 @@ h4.static-with-rule {
         }
     }
 }
+
+.form-txt-submit-box input[type=submit] {
+    width:auto; // 28% is too narrow
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+}
