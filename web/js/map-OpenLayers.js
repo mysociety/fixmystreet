@@ -171,7 +171,7 @@ function fixmystreet_onload() {
             var popup = new OpenLayers.Popup.FramedCloud("popup",
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
-                feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">More details</a>",
+                feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">" + translation_strings.more_details + "</a>",
                 { size: new OpenLayers.Size(0,0), offset: new OpenLayers.Pixel(0,-40) },
                 true, onPopupClose);
             feature.popup = popup;
