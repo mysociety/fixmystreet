@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-24 15:23+0000\n"
+"POT-Creation-Date: 2013-01-24 18:27+0000\n"
 "PO-Revision-Date: 2012-09-14 00:22+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
@@ -99,9 +99,26 @@ msgstr "%s, rapportert av %s %s"
 msgid "%s, within %s ward"
 msgstr "%s, innefor bydel %s"
 
-#: templates/web/default/email_sent.html:31
-msgid "(Don't worry &mdash; %s)"
-msgstr "(Ingen grunn til bekymring &mdash; %s)"
+#: templates/web/default/email_sent.html:28
+#, fuzzy
+msgid ""
+"(Don't worry &mdash; we'll hang on to your alert while you're checking your "
+"email.)"
+msgstr "vi tar vare på ditt varsel mens du sjekker din e-post."
+
+#: templates/web/default/email_sent.html:24
+#, fuzzy
+msgid ""
+"(Don't worry &mdash; we'll hang on to your problem report while you're "
+"checking your email.)"
+msgstr "vi tar vare på rapporten din mens du sjekker e-post."
+
+#: templates/web/default/email_sent.html:26
+#, fuzzy
+msgid ""
+"(Don't worry &mdash; we'll hang on to your update while you're checking your "
+"email.)"
+msgstr "vi tar vare på din oppdatering mens du sjekker din e-post."
 
 #: templates/web/default/admin/report_blocks.html:11
 #: templates/web/default/admin/users.html:26
@@ -685,7 +702,7 @@ msgstr "Merkevaresamarbeid:"
 msgid "Configuration updated - contacts will be generated automatically later"
 msgstr "Oppsett oppdatert - kontakter vil bli generert automatisk senere"
 
-#: templates/web/default/admin/body_edit.html:40
+#: templates/web/default/admin/body_edit.html:47
 #, fuzzy
 msgid "Configure Endpoint"
 msgstr "Sett opp Open311"
@@ -721,8 +738,8 @@ msgstr "Bekreftelse"
 
 #: templates/web/default/admin/body.html:37
 #: templates/web/default/admin/body.html:85
-#: templates/web/default/admin/body_edit.html:31
-#: templates/web/default/admin/body_edit.html:77
+#: templates/web/default/admin/body_edit.html:32
+#: templates/web/default/admin/body_edit.html:84
 #: templates/web/zurich/admin/report_edit-sdm.html:24
 #: templates/web/zurich/admin/report_edit.html:41
 msgid "Confirmed"
@@ -827,8 +844,8 @@ msgstr "Oversikt"
 
 #: templates/web/default/admin/body.html:38
 #: templates/web/default/admin/body.html:88
-#: templates/web/default/admin/body_edit.html:33
-#: templates/web/default/admin/body_edit.html:78
+#: templates/web/default/admin/body_edit.html:37
+#: templates/web/default/admin/body_edit.html:85
 msgid "Deleted"
 msgstr "Slettet"
 
@@ -906,14 +923,14 @@ msgstr "Redigerer oppdatering %d"
 msgid "Editing user %d"
 msgstr "Redigerer bruker %d"
 
-#: templates/web/default/admin/body_edit.html:79
+#: templates/web/default/admin/body_edit.html:86
 msgid "Editor"
 msgstr "Oppdatert av"
 
 #: templates/web/bromley/report/display.html:126
 #: templates/web/default/admin/bodies.html:9
 #: templates/web/default/admin/body.html:36
-#: templates/web/default/admin/body_edit.html:76
+#: templates/web/default/admin/body_edit.html:83
 #: templates/web/default/admin/flagged.html:12
 #: templates/web/default/admin/flagged.html:35
 #: templates/web/default/admin/list_updates.html:8
@@ -1220,7 +1237,7 @@ msgid "GeoRSS on Google Maps"
 msgstr "GeoRSS på Google Maps"
 
 #: templates/web/bromley/report/display.html:30
-#: templates/web/fixmystreet/report/display.html:32
+#: templates/web/fixmystreet/report/display.html:38
 msgid "Get updates"
 msgstr "Få oppdateringer"
 
@@ -1321,7 +1338,7 @@ msgstr "Skjul gamle"
 msgid "Hide pins"
 msgstr "Skjul nåler"
 
-#: templates/web/default/admin/body_edit.html:72
+#: templates/web/default/admin/body_edit.html:79
 msgid "History"
 msgstr "Historie"
 
@@ -1372,6 +1389,21 @@ msgstr ""
 msgid "ID"
 msgstr "ID"
 
+#: templates/web/default/email_sent.html:18
+#, fuzzy
+msgid "If you do not, your alert will not be activated."
+msgstr "ditt varsel vil ikke bli aktivert"
+
+#: templates/web/default/email_sent.html:14
+#, fuzzy
+msgid "If you do not, your problem will not be posted."
+msgstr "vil ditt problem ikke bli publisert"
+
+#: templates/web/default/email_sent.html:16
+#, fuzzy
+msgid "If you do not, your update will not be posted."
+msgstr "din oppdatering vil ikke bli publisert"
+
 #: templates/web/default/report/new/councils_text_none.html:8
 #: templates/web/default/report/new/councils_text_none.html:9
 msgid ""
@@ -1394,7 +1426,7 @@ msgstr ""
 "område."
 
 #: templates/web/default/auth/token.html:23
-#: templates/web/default/email_sent.html:26
+#: templates/web/default/email_sent.html:9
 msgid ""
 "If you use web-based email or have 'junk mail' filters, you may wish to "
 "check your bulk/spam mail folders: sometimes, our messages are marked that "
@@ -1693,7 +1725,7 @@ msgstr ""
 "Bing Maps) er: %s\n"
 "\n"
 
-#: templates/web/default/email_sent.html:20
+#: templates/web/default/email_sent.html:3
 msgid "Nearly Done! Now check your email..."
 msgstr "Nesten ferdig! Nå må du sjekke e-posten din..."
 
@@ -1872,7 +1904,7 @@ msgid "Not reported to council"
 msgstr "Ikke rapportert til administrasjonen"
 
 #: templates/web/default/admin/body.html:41
-#: templates/web/default/admin/body_edit.html:80
+#: templates/web/default/admin/body_edit.html:87
 #: templates/web/zurich/admin/body.html:16
 msgid "Note"
 msgstr "Merk"
@@ -1888,7 +1920,7 @@ msgstr ""
 "bekreftet, så tallene kan hoppe litt opp og ned."
 
 #: templates/web/default/admin/body.html:92
-#: templates/web/default/admin/body_edit.html:37
+#: templates/web/default/admin/body_edit.html:44
 #: templates/web/zurich/admin/body.html:47
 msgid "Note:"
 msgstr "Merk:"
@@ -2462,7 +2494,7 @@ msgid "Posted by %s at %s"
 msgstr "Sendt inn av %s %s"
 
 #: templates/web/default/admin/body.html:97
-#: templates/web/default/admin/body_edit.html:35
+#: templates/web/default/admin/body_edit.html:40
 #: templates/web/default/admin/report_edit.html:44
 msgid "Private"
 msgstr ""
@@ -2505,7 +2537,7 @@ msgstr "Problemer i dette området"
 
 #: templates/web/bromley/report/display.html:31
 #: templates/web/fixmystreet/around/tabbed_lists.html:4
-#: templates/web/fixmystreet/report/display.html:37
+#: templates/web/fixmystreet/report/display.html:43
 msgid "Problems nearby"
 msgstr "Problemer i nærheten"
 
@@ -2636,7 +2668,7 @@ msgstr "Spørreskjema fylt inn av feilrapportøren"
 #: templates/web/default/reports/_rss.html:1
 #: templates/web/fixmystreet/alert/_list.html:22
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:51
+#: templates/web/fixmystreet/report/display.html:57
 msgid "RSS feed"
 msgstr "RSS-strøm"
 
@@ -2689,7 +2721,7 @@ msgstr "RSS-strøm med nylige lokale problemer"
 #: templates/web/bromley/report/display.html:37
 #: templates/web/default/report/display.html:42
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:51
+#: templates/web/fixmystreet/report/display.html:57
 msgid "RSS feed of updates to this problem"
 msgstr "RSS-strøm med oppdateringer for dette problemet"
 
@@ -2697,7 +2729,7 @@ msgstr "RSS-strøm med oppdateringer for dette problemet"
 #: templates/web/default/alert/updates.html:9
 #: templates/web/default/report/display.html:33
 #: templates/web/fixmystreet/alert/updates.html:14
-#: templates/web/fixmystreet/report/display.html:53
+#: templates/web/fixmystreet/report/display.html:59
 msgid "Receive email when updates are left on this problem."
 msgstr "Motta e-post når det er oppdateringer på dette problemet"
 
@@ -2766,7 +2798,7 @@ msgid "Report a problem"
 msgstr "Rapporter et problem"
 
 #: templates/web/bromley/report/display.html:28
-#: templates/web/fixmystreet/report/display.html:29
+#: templates/web/fixmystreet/report/display.html:35
 msgid "Report abuse"
 msgstr "Rapporter misbruk"
 
@@ -2884,7 +2916,7 @@ msgstr ""
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "Veioperatør for denne navngitte veien (fra OpenStreetMap): %s"
 
-#: templates/web/default/admin/body_edit.html:69
+#: templates/web/default/admin/body_edit.html:76
 msgid "Save changes"
 msgstr "Lagre endringer"
 
@@ -2940,7 +2972,7 @@ msgstr "Sendt:"
 msgid "Service:"
 msgstr "Tjeneste:"
 
-#: templates/web/fixmystreet/report/display.html:35
+#: templates/web/fixmystreet/report/display.html:41
 msgid "Share"
 msgstr ""
 
@@ -3180,7 +3212,7 @@ msgstr "Send inn"
 #: templates/web/default/alert/updates.html:17
 #: templates/web/default/report/display.html:38
 #: templates/web/fixmystreet/alert/updates.html:23
-#: templates/web/fixmystreet/report/display.html:58
+#: templates/web/fixmystreet/report/display.html:64
 msgid "Subscribe"
 msgstr "Abonner"
 
@@ -3382,7 +3414,7 @@ msgstr ""
 "hvordan atributten er definert i Open311 v2-spesifikasjonen."
 
 #: templates/web/default/auth/token.html:21
-#: templates/web/default/email_sent.html:23
+#: templates/web/default/email_sent.html:6
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
@@ -4001,7 +4033,7 @@ msgstr ""
 "fyll ut skjemaet, eller send en e-post <a href='mailto:%s'>%s</a>:"
 
 #: templates/web/default/admin/body.html:43
-#: templates/web/default/admin/body_edit.html:75
+#: templates/web/default/admin/body_edit.html:82
 #: templates/web/zurich/admin/body.html:17
 msgid "When edited"
 msgstr "Når redigert"
@@ -4239,10 +4271,9 @@ msgstr ""
 "Du har lykkes med å logge inn. Vennligst sjekk og bekreft at dine detaljer "
 "er korrekte:"
 
-#: templates/web/default/email_sent.html:28
-msgid ""
-"You must now click the link in the email we've just sent you &mdash; if you "
-"do not, %s."
+#: templates/web/default/email_sent.html:12
+#, fuzzy
+msgid "You must now click the link in the email we've just sent you."
 msgstr ""
 "Du må nå åpne lenken i e-posten vi akkurat sendte deg &mdash; dersom du ikke "
 "gjør det, %s"
@@ -4265,8 +4296,8 @@ msgstr "Dine rapporter"
 #: templates/web/fixmystreet/alert/updates.html:19
 #: templates/web/fixmystreet/alert/updates.html:22
 #: templates/web/fixmystreet/contact/index.html:72
-#: templates/web/fixmystreet/report/display.html:55
-#: templates/web/fixmystreet/report/display.html:57
+#: templates/web/fixmystreet/report/display.html:61
+#: templates/web/fixmystreet/report/display.html:63
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:115
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:157
 #: templates/web/zurich/report/new/fill_in_details_form.html:88
@@ -4494,36 +4525,6 @@ msgstr "bruker er eier av problemet"
 msgid "ward"
 msgstr "bydel"
 
-#: templates/web/default/email_sent.html:15
-#: templates/web/default/email_sent.html:3
-msgid "we'll hang on to your alert while you're checking your email."
-msgstr "vi tar vare på ditt varsel mens du sjekker din e-post."
-
-#: templates/web/default/email_sent.html:3
-#: templates/web/default/email_sent.html:7
-msgid "we'll hang on to your problem report while you're checking your email."
-msgstr "vi tar vare på rapporten din mens du sjekker e-post."
-
-#: templates/web/default/email_sent.html:11
-#: templates/web/default/email_sent.html:3
-msgid "we'll hang on to your update while you're checking your email."
-msgstr "vi tar vare på din oppdatering mens du sjekker din e-post."
-
-#: templates/web/default/email_sent.html:14
-#: templates/web/default/email_sent.html:3
-msgid "your alert will not be activated"
-msgstr "ditt varsel vil ikke bli aktivert"
-
-#: templates/web/default/email_sent.html:3
-#: templates/web/default/email_sent.html:6
-msgid "your problem will not be posted"
-msgstr "vil ditt problem ikke bli publisert"
-
-#: templates/web/default/email_sent.html:10
-#: templates/web/default/email_sent.html:3
-msgid "your update will not be posted"
-msgstr "din oppdatering vil ikke bli publisert"
-
 #: templates/web/emptyhomes/front/stats.html:17
 #, perl-format
 msgid "<big>%s</big> report recently"
@@ -4604,6 +4605,9 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d dag"
 msgstr[1] "%d dager"
+
+#~ msgid "(Don't worry &mdash; %s)"
+#~ msgstr "(Ingen grunn til bekymring &mdash; %s)"
 
 #, fuzzy
 #~ msgid ""

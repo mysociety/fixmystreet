@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-24 15:23+0000\n"
+"POT-Creation-Date: 2013-01-24 18:27+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -101,9 +101,28 @@ msgstr "Adroddwyd am %s gan %s am %s"
 msgid "%s, within %s ward"
 msgstr "Eiddo gwag yn ward %s"
 
-#: templates/web/default/email_sent.html:31
-msgid "(Don't worry &mdash; %s)"
+#: templates/web/default/email_sent.html:28
+#, fuzzy
+msgid ""
+"(Don't worry &mdash; we'll hang on to your alert while you're checking your "
+"email.)"
+msgstr "byddwn yn dal gafael ar eich hysbysiad wrth i chi wirio eich e-bost."
+
+#: templates/web/default/email_sent.html:24
+#, fuzzy
+msgid ""
+"(Don't worry &mdash; we'll hang on to your empty property report while "
+"you're checking your email.)"
 msgstr ""
+"byddwn yn dal gafael ar eich hysbysiad am eiddo gwag wrth i chi wirio eich e-"
+"bost."
+
+#: templates/web/default/email_sent.html:26
+#, fuzzy
+msgid ""
+"(Don't worry &mdash; we'll hang on to your update while you're checking your "
+"email.)"
+msgstr "byddwn yn dal gafael ar eich diweddariad wrth i chi wirio eich e-bost."
 
 #: templates/web/default/admin/report_blocks.html:11
 #: templates/web/default/admin/users.html:26
@@ -754,7 +773,7 @@ msgstr ""
 msgid "Configuration updated - contacts will be generated automatically later"
 msgstr ""
 
-#: templates/web/default/admin/body_edit.html:40
+#: templates/web/default/admin/body_edit.html:47
 #, fuzzy
 msgid "Configure Endpoint"
 msgstr "Cadarnhau"
@@ -792,8 +811,8 @@ msgstr "Cadarnhau"
 
 #: templates/web/default/admin/body.html:37
 #: templates/web/default/admin/body.html:85
-#: templates/web/default/admin/body_edit.html:31
-#: templates/web/default/admin/body_edit.html:77
+#: templates/web/default/admin/body_edit.html:32
+#: templates/web/default/admin/body_edit.html:84
 #: templates/web/zurich/admin/report_edit-sdm.html:24
 #: templates/web/zurich/admin/report_edit.html:41
 #, fuzzy
@@ -906,8 +925,8 @@ msgstr ""
 
 #: templates/web/default/admin/body.html:38
 #: templates/web/default/admin/body.html:88
-#: templates/web/default/admin/body_edit.html:33
-#: templates/web/default/admin/body_edit.html:78
+#: templates/web/default/admin/body_edit.html:37
+#: templates/web/default/admin/body_edit.html:85
 msgid "Deleted"
 msgstr ""
 
@@ -990,14 +1009,14 @@ msgstr "Cyflwyno'ch diweddariad"
 msgid "Editing user %d"
 msgstr "Cyflwyno'ch diweddariad"
 
-#: templates/web/default/admin/body_edit.html:79
+#: templates/web/default/admin/body_edit.html:86
 msgid "Editor"
 msgstr ""
 
 #: templates/web/bromley/report/display.html:126
 #: templates/web/default/admin/bodies.html:9
 #: templates/web/default/admin/body.html:36
-#: templates/web/default/admin/body_edit.html:76
+#: templates/web/default/admin/body_edit.html:83
 #: templates/web/default/admin/flagged.html:12
 #: templates/web/default/admin/flagged.html:35
 #: templates/web/default/admin/list_updates.html:8
@@ -1323,7 +1342,7 @@ msgid "GeoRSS on Google Maps"
 msgstr ""
 
 #: templates/web/bromley/report/display.html:30
-#: templates/web/fixmystreet/report/display.html:32
+#: templates/web/fixmystreet/report/display.html:38
 #, fuzzy
 msgid "Get updates"
 msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
@@ -1428,7 +1447,7 @@ msgstr ""
 msgid "Hide pins"
 msgstr "Cuddio pinnau"
 
-#: templates/web/default/admin/body_edit.html:72
+#: templates/web/default/admin/body_edit.html:79
 msgid "History"
 msgstr ""
 
@@ -1481,6 +1500,21 @@ msgstr ""
 msgid "ID"
 msgstr ""
 
+#: templates/web/default/email_sent.html:18
+#, fuzzy
+msgid "If you do not, your alert will not be activated."
+msgstr "ni fydd eich hysbysiad yn cael ei weithredu"
+
+#: templates/web/default/email_sent.html:14
+#, fuzzy
+msgid "If you do not, your empty property will not be posted."
+msgstr "ni fydd eich eiddo gwag yn cael ei bostio"
+
+#: templates/web/default/email_sent.html:16
+#, fuzzy
+msgid "If you do not, your update will not be posted."
+msgstr "ni fydd eich diweddariad yn cael ei bostio"
+
 #: templates/web/default/report/new/councils_text_none.html:8
 #: templates/web/default/report/new/councils_text_none.html:9
 msgid ""
@@ -1504,7 +1538,7 @@ msgstr ""
 "ddangos i'r cyngor y gweithgarwch yn ei ardal."
 
 #: templates/web/default/auth/token.html:23
-#: templates/web/default/email_sent.html:26
+#: templates/web/default/email_sent.html:9
 msgid ""
 "If you use web-based email or have 'junk mail' filters, you may wish to "
 "check your bulk/spam mail folders: sometimes, our messages are marked that "
@@ -1807,7 +1841,7 @@ msgid ""
 "\n"
 msgstr ""
 
-#: templates/web/default/email_sent.html:20
+#: templates/web/default/email_sent.html:3
 msgid "Nearly Done! Now check your email..."
 msgstr ""
 
@@ -2003,7 +2037,7 @@ msgid "Not reported to council"
 msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 
 #: templates/web/default/admin/body.html:41
-#: templates/web/default/admin/body_edit.html:80
+#: templates/web/default/admin/body_edit.html:87
 #: templates/web/zurich/admin/body.html:16
 #, fuzzy
 msgid "Note"
@@ -2017,7 +2051,7 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/admin/body.html:92
-#: templates/web/default/admin/body_edit.html:37
+#: templates/web/default/admin/body_edit.html:44
 #: templates/web/zurich/admin/body.html:47
 #, fuzzy
 msgid "Note:"
@@ -2593,7 +2627,7 @@ msgid "Posted by %s at %s"
 msgstr "Cofnodwyd gan %s am %s"
 
 #: templates/web/default/admin/body.html:97
-#: templates/web/default/admin/body_edit.html:35
+#: templates/web/default/admin/body_edit.html:40
 #: templates/web/default/admin/report_edit.html:44
 msgid "Private"
 msgstr ""
@@ -2642,7 +2676,7 @@ msgstr "Eiddo gwag yn yr ardal hon"
 
 #: templates/web/bromley/report/display.html:31
 #: templates/web/fixmystreet/around/tabbed_lists.html:4
-#: templates/web/fixmystreet/report/display.html:37
+#: templates/web/fixmystreet/report/display.html:43
 #, fuzzy
 msgid "Empty properties nearby"
 msgstr "Mwy o eiddo gwag cyfagos"
@@ -2778,7 +2812,7 @@ msgstr "Llenwyd yr holiadur gan yr unigolyn a roddodd wybod am yr eiddo gwag"
 #: templates/web/default/reports/_rss.html:1
 #: templates/web/fixmystreet/alert/_list.html:22
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:51
+#: templates/web/fixmystreet/report/display.html:57
 msgid "RSS feed"
 msgstr "Porthiant RSS"
 
@@ -2836,7 +2870,7 @@ msgstr "Porthiant RSS o eiddo gwag lleol diweddar"
 #: templates/web/bromley/report/display.html:37
 #: templates/web/default/report/display.html:42
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:51
+#: templates/web/fixmystreet/report/display.html:57
 msgid "RSS feed of updates to this empty property"
 msgstr "Porthiant RSS o ddiweddariadau i'r eiddo gwag hwn"
 
@@ -2844,7 +2878,7 @@ msgstr "Porthiant RSS o ddiweddariadau i'r eiddo gwag hwn"
 #: templates/web/default/alert/updates.html:9
 #: templates/web/default/report/display.html:33
 #: templates/web/fixmystreet/alert/updates.html:14
-#: templates/web/fixmystreet/report/display.html:53
+#: templates/web/fixmystreet/report/display.html:59
 msgid "Receive email when updates are left on this empty property."
 msgstr ""
 "Derbyn neges e-bost pan fydd diweddariadau'n cael eu rhoi am yr eiddo gwag "
@@ -2912,7 +2946,7 @@ msgid "Report a property"
 msgstr "Rhoi gwybod am eiddo"
 
 #: templates/web/bromley/report/display.html:28
-#: templates/web/fixmystreet/report/display.html:29
+#: templates/web/fixmystreet/report/display.html:35
 #, fuzzy
 msgid "Report abuse"
 msgstr "Adroddiadau"
@@ -3033,7 +3067,7 @@ msgstr ""
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr ""
 
-#: templates/web/default/admin/body_edit.html:69
+#: templates/web/default/admin/body_edit.html:76
 msgid "Save changes"
 msgstr ""
 
@@ -3094,7 +3128,7 @@ msgstr "Pwnc:"
 msgid "Service:"
 msgstr ""
 
-#: templates/web/fixmystreet/report/display.html:35
+#: templates/web/fixmystreet/report/display.html:41
 msgid "Share"
 msgstr ""
 
@@ -3358,7 +3392,7 @@ msgstr "Anfon"
 #: templates/web/default/alert/updates.html:17
 #: templates/web/default/report/display.html:38
 #: templates/web/fixmystreet/alert/updates.html:23
-#: templates/web/fixmystreet/report/display.html:58
+#: templates/web/fixmystreet/report/display.html:64
 msgid "Subscribe"
 msgstr "Tanysgrifio"
 
@@ -3592,7 +3626,7 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/auth/token.html:21
-#: templates/web/default/email_sent.html:23
+#: templates/web/default/email_sent.html:6
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
@@ -4226,7 +4260,7 @@ msgstr ""
 "anfonwch neges e-bost at <a href='mailto:%s'>%s</a>:"
 
 #: templates/web/default/admin/body.html:43
-#: templates/web/default/admin/body_edit.html:75
+#: templates/web/default/admin/body_edit.html:82
 #: templates/web/zurich/admin/body.html:17
 msgid "When edited"
 msgstr ""
@@ -4449,10 +4483,8 @@ msgid ""
 "accurate:"
 msgstr "Rydych wedi cadarnhau'ch hysbysiad yn llwyddiannus."
 
-#: templates/web/default/email_sent.html:28
-msgid ""
-"You must now click the link in the email we've just sent you &mdash; if you "
-"do not, %s."
+#: templates/web/default/email_sent.html:12
+msgid "You must now click the link in the email we've just sent you."
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:36
@@ -4474,8 +4506,8 @@ msgstr "Adroddiadau"
 #: templates/web/fixmystreet/alert/updates.html:19
 #: templates/web/fixmystreet/alert/updates.html:22
 #: templates/web/fixmystreet/contact/index.html:72
-#: templates/web/fixmystreet/report/display.html:55
-#: templates/web/fixmystreet/report/display.html:57
+#: templates/web/fixmystreet/report/display.html:61
+#: templates/web/fixmystreet/report/display.html:63
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:115
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:157
 #: templates/web/zurich/report/new/fill_in_details_form.html:88
@@ -4712,39 +4744,6 @@ msgstr "Adroddiadau hŷn o eiddo gwag"
 #: templates/web/emptyhomes/reports/body.html:3
 msgid "ward"
 msgstr ""
-
-#: templates/web/default/email_sent.html:15
-#: templates/web/default/email_sent.html:3
-msgid "we'll hang on to your alert while you're checking your email."
-msgstr "byddwn yn dal gafael ar eich hysbysiad wrth i chi wirio eich e-bost."
-
-#: templates/web/default/email_sent.html:3
-#: templates/web/default/email_sent.html:7
-msgid ""
-"we'll hang on to your empty property report while you're checking your email."
-msgstr ""
-"byddwn yn dal gafael ar eich hysbysiad am eiddo gwag wrth i chi wirio eich e-"
-"bost."
-
-#: templates/web/default/email_sent.html:11
-#: templates/web/default/email_sent.html:3
-msgid "we'll hang on to your update while you're checking your email."
-msgstr "byddwn yn dal gafael ar eich diweddariad wrth i chi wirio eich e-bost."
-
-#: templates/web/default/email_sent.html:14
-#: templates/web/default/email_sent.html:3
-msgid "your alert will not be activated"
-msgstr "ni fydd eich hysbysiad yn cael ei weithredu"
-
-#: templates/web/default/email_sent.html:3
-#: templates/web/default/email_sent.html:6
-msgid "your empty property will not be posted"
-msgstr "ni fydd eich eiddo gwag yn cael ei bostio"
-
-#: templates/web/default/email_sent.html:10
-#: templates/web/default/email_sent.html:3
-msgid "your update will not be posted"
-msgstr "ni fydd eich diweddariad yn cael ei bostio"
 
 #: templates/web/emptyhomes/front/stats.html:17
 #, perl-format
