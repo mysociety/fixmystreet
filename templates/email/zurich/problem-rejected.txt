@@ -2,7 +2,7 @@ Subject: Fix my Zurich: Meldung #[% problem.id %]
 
 Guten Tag [% problem.name %]
 
-I am afraid that your report has been rejected, for being inappropriate for the site.
+Ihre Meldung wurde aufgrund des Inhalts zurückgewiesen.
 
 Ihre Meldung:
 

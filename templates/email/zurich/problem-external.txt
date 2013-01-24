@@ -2,9 +2,9 @@ Subject: FixMyZurich: Meldung #[% problem.id %]
 
 Guten Tag [% problem.name %]
 
-Your report has been forwarded to [% problem.body(c).name %] for them to deal with.
+Ihre Meldung wurde an [% problem.body(c).name %] weitergeleitet.
 
-To view your report on the site, please visit:
+Um die Meldung auf der Webseite zu betrachen, klicken Sie auf folgenden Link:
     [% url %]
 
 Ihre Meldung:

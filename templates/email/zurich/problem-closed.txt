@@ -2,11 +2,11 @@ Subject: FixMyZurich: Meldung #[% problem.id %]
 
 Guten Tag [% problem.name %]
 
-The following update has been left on your report:
+Antwort auf Ihre Meldung:
 
 [% problem.extra.public_response %]
 
-To view your report on the site, please visit:
+Um die Meldung auf der Webseite zu betrachen, klicken Sie auf folgenden Link:
     [% url %]
 
 Ihre Meldung:
