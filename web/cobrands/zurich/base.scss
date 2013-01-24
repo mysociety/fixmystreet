@@ -54,6 +54,10 @@
   height: 48px;
   background: url('/cobrands/zurich/tab-white.png') 0 0 no-repeat;
 }
+#front-howto #front_stats,
+#front-main #postcodeForm {
+    background-color: $mobile_header_blue;
+}
 
 // No grey background or other bits
 // The amount of resetting here shows this needs refactoring, so that it is FMS making the changes
