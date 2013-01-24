@@ -37,16 +37,16 @@
 }
 
 #site-header {
-	background: $mobile_header_blue; 
-        border-top: 4px solid $mobile_menu_tab_bg_col;
-        height: 48px;
+    background: $mobile_header_blue; 
+    border-top: 4px solid $mobile_menu_tab_bg_col;
+    height: 48px;
 }
 #site-logo {
-        background: url(logo_portal.jpg) 0px -24px no-repeat;
-        width: 200px;
-        height:44px;
-        left:0; 
-        top:4px;
+    background: url(logo_portal.jpg) 0px -24px no-repeat;
+    width: 200px;
+    height:44px;
+    left:0; 
+    top:4px;
 }
 // Colour tab to match colour scheme
 #nav-link {
