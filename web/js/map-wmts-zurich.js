@@ -28,9 +28,11 @@ $(function(){
     fixmystreet.controls = [
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
-        fixmystreet.nav_control,
-        new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
+        fixmystreet.nav_control
     ];
+    if ( fixmystreet.page != 'report' || !$('html').hasClass('mobile') ) {
+        fixmystreet.controls.push( new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' }) );
+    }
 
     fixmystreet.map_type = OpenLayers.Layer.WMTS;
 
