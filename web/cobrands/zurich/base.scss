@@ -48,6 +48,12 @@
         left:0; 
         top:4px;
 }
+// Colour tab to match colour scheme
+#nav-link {
+  width: 50px;
+  height: 48px;
+  background: url('/cobrands/zurich/tab-white.png') 0 0 no-repeat;
+}
 
 // No grey background or other bits
 // The amount of resetting here shows this needs refactoring, so that it is FMS making the changes
