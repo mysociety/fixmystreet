@@ -8,7 +8,8 @@
 
 <p>[% loc("If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.") %]</p>
 
-<p>
+[% IF c.cobrand.moniker != 'zurich' %]
+    <p>
     [% loc("You must now click the link in the email we've just sent you.") %]
     [% IF email_type == 'problem' %]
         [% loc("If you do not, your problem will not be posted.") %]
@@ -17,16 +18,17 @@
     [% ELSIF email_type == 'alert' %]
         [% loc("If you do not, your alert will not be activated.") %]
     [% END %]
-</p>
+    </p>
 
-[% IF c.cobrand.moniker != 'zurich' %]
+    <p>
     [% IF email_type == 'problem' %]
-        <p>[% loc("(Don't worry &mdash; we'll hang on to your problem report while you're checking your email.)") %]</p>
+        [% loc("(Don't worry &mdash; we'll hang on to your problem report while you're checking your email.)") %]
     [% ELSIF email_type == 'update' %]
-        <p>[% loc("(Don't worry &mdash; we'll hang on to your update while you're checking your email.)") %]</p>
+        [% loc("(Don't worry &mdash; we'll hang on to your update while you're checking your email.)") %]
     [% ELSIF email_type == 'alert' %]
-        <p>[% loc("(Don't worry &mdash; we'll hang on to your alert while you're checking your email.)") %]</p>
+        [% loc("(Don't worry &mdash; we'll hang on to your alert while you're checking your email.)") %]
     [% END %]
+    </p>
 [% END %]
 
 [% INCLUDE 'footer.html' %]
