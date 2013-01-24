@@ -159,13 +159,13 @@ $(function(){
             }, function(err) {
                 $link.find('img').remove();
                 if (err.code == 1) { // User said no
-                    $link.html("You declined; please fill in the box above");
+                    $link.html(translation_strings.geolocation_declined);
                 } else if (err.code == 2) { // No position
-                    $link.html("Could not look up location");
+                    $link.html(translation_strings.geolocation_no_position);
                 } else if (err.code == 3) { // Too long
-                    $link.html("No result returned");
+                    $link.html(translation_strings.geolocation_no_result);
                 } else { // Unknown
-                    $link.html("Unknown error");
+                    $link.html(translation_strings.geolocation_unknown);
                 }
             }, {
                 enableHighAccuracy: true,

@@ -16,7 +16,7 @@ function fixmystreet_update_pin(lonlat) {
             if (!$('#side-form-error').length) {
                 $('<div id="side-form-error"/>').insertAfter($('#side-form'));
             }
-            $('#side-form-error').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>').show();
+            $('#side-form-error').html('<h1>' + translation_strings.reporting_a_problem + '</h1><p>' + data.error + '</p>').show();
             $('#side-form').hide();
             return;
         }
@@ -545,7 +545,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             $map_box.append(
                 '<p id="mob_sub_map_links">' +
                 '<a href="#" id="try_again">' + translation_strings.try_again + '</a>' +
-                '<a href="#ok" id="mob_ok">OK</a>' +
+                '<a href="#ok" id="mob_ok">' + translation_strings.ok + '</a>' +
                 '</p>'
             ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
             // Making it relative here makes it much easier to do the scrolling later
@@ -559,12 +559,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 //to do this on other pages where #side-form might not be
                 $('html, body').animate({ scrollTop: height-60 }, 1000, function(){
                     $('#mob_sub_map_links').addClass('map_complete');
-                    $('#mob_ok').text('MAP');
+                    $('#mob_ok').text(translation_strings.map);
                 });
             }, function(){
                 $('html, body').animate({ scrollTop: 0 }, 1000, function(){
                     $('#mob_sub_map_links').removeClass('map_complete');
-                    $('#mob_ok').text('OK');
+                    $('#mob_ok').text(translation_strings.ok);
                 });
             });
         }
