@@ -3862,7 +3862,7 @@ msgstr ""
 #: templates/web/zurich/tokens/confirm_problem.html:8
 msgid "You can <a href=\"%s%s\">view the problem on this site</a>."
 msgstr ""
-"Danke! Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s\">auf der "
+"Danke! Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s%s\">auf der "
 "Webseite anschauen</a>"
 
 #: templates/web/emptyhomes/reports/body.html:66
