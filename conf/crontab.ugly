@@ -66,5 +66,5 @@ my %no_alerts = map { $_ => 1 } @no_alerts;
 00 8 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/check-for-zombies !!(*= $user *)!!
 
 !!(* if ($vhost =~ /zurich/) { *)!!
-30 0 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/zurich-overdue-alert
+30 0 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper zurich-overdue-alert
 !!(* } *)!!
