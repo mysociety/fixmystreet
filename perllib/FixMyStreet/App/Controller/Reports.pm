@@ -383,13 +383,13 @@ sub load_and_group_problems : Private {
         $c->log->debug( $problem->cobrand . ', cobrand is ' . $c->cobrand->moniker );
         if ( !$c->stash->{body}->id ) {
             # An external_body entry
-            add_row( $problem, 0, \%problems, \@pins );
+            add_row( $c, $problem, 0, \%problems, \@pins );
             next;
         }
         if ( !$problem->bodies_str ) {
             # Problem was not sent to any body, add to all possible areas XXX
             while ($problem->areas =~ /,(\d+)(?=,)/g) {
-                add_row( $problem, $1, \%problems, \@pins );
+                add_row( $c, $problem, $1, \%problems, \@pins );
             }
         } else {
             # Add to bodies it was sent to
@@ -397,7 +397,7 @@ sub load_and_group_problems : Private {
             my $bodies = $problem->bodies_str_ids;
             foreach ( @$bodies ) {
                 next if $_ != $c->stash->{body}->id;
-                add_row( $problem, $_, \%problems, \@pins );
+                add_row( $c, $problem, $_, \%problems, \@pins );
             }
         }
     }
@@ -428,12 +428,12 @@ sub redirect_body : Private {
 }
 
 sub add_row {
-    my ( $problem, $body, $problems, $pins ) = @_;
+    my ( $c, $problem, $body, $problems, $pins ) = @_;
     push @{$problems->{$body}}, $problem;
     push @$pins, {
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
-        colour    => 'yellow', # FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->state} ? 'green' : 'red',
+        colour    => $c->cobrand->pin_colour( $problem, 'reports' ),
         id        => $problem->id,
         title     => $problem->title,
     };

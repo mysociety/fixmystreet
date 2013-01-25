@@ -7,6 +7,13 @@ use POSIX qw(strcoll);
 use strict;
 use warnings;
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'red' if $p->state eq 'unconfirmed' || $p->state eq 'confirmed';
+    return 'yellow';
+}
+
 sub enter_postcode_text {
     my ( $self ) = @_;
     return _('Enter a Z&uuml;rich street name');
