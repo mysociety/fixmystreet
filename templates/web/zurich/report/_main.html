@@ -1,7 +1,7 @@
 <div class="problem-header cf">
     <h1>[% tprintf( loc('Reported in the %s category'), problem.category ) %]</h1>
     <p class="sub">
-        [% prettify_epoch( problem.created_local.epoch ) %]
+        [% prettify_dt( problem.created_local ) %]
         [%- IF !problem.used_map %]<br>[% loc('there is no pin shown as the user did not use the map') %][% END %]
     </p>
 

@@ -221,12 +221,11 @@ sub cleanup_text {
     return $input;
 }
 
-sub prettify_epoch {
-    my ( $epoch, $type ) = @_;
+sub prettify_dt {
+    my ( $dt, $type ) = @_;
     $type ||= '';
     $type = 'short' if $type eq '1';
 
-    my $dt = DateTime->from_epoch( epoch => $epoch, time_zone => 'local' );
     $dt->set_time_zone( FixMyStreet->config('TIME_ZONE') )
         if FixMyStreet->config('TIME_ZONE');
 

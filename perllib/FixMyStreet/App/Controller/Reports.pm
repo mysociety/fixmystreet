@@ -372,53 +372,32 @@ sub load_and_group_problems : Private {
     my $problems = $c->cobrand->problems->search(
         $where,
         {
-            columns => [
-                'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand',
-                #{ duration => { extract => "epoch from current_timestamp-lastupdate" } },
-                #{ age      => { extract => "epoch from current_timestamp-confirmed"  } },
-                { created    => { extract => 'epoch from created' } },
-                { confirmed  => { extract => 'epoch from confirmed' } },
-                { whensent   => { extract => 'epoch from whensent' } },
-                { lastupdate => { extract => 'epoch from lastupdate' } },
-                'photo', 'extra',
-            ],
             order_by => { -desc => 'lastupdate' },
             rows => $c->cobrand->reports_per_page,
         }
     )->page( $page );
     $c->stash->{pager} = $problems->pager;
-    $problems = $problems->cursor; # Raw DB cursor for speed
 
     my ( %problems, @pins );
-    my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'latitude', 'longitude', 'title', 'cobrand', 'created', 'confirmed', 'whensent', 'lastupdate', 'photo', 'extra' );
-    while ( my @problem = $problems->next ) {
-        my %problem = zip @cols, @problem;
-        $problem{is_fixed} = FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}};
-        if ($problem{extra} && $c->cobrand->moniker eq 'zurich') { # Inflate
-            utf8::encode($problem{extra}) if utf8::is_utf8($problem{extra});
-            $problem{extra} = RABX::unserialise($problem{extra});
-        }
-        $c->log->debug( $problem{'cobrand'} . ', cobrand is ' . $c->cobrand->moniker );
+    while ( my $problem = $problems->next ) {
+        $c->log->debug( $problem->cobrand . ', cobrand is ' . $c->cobrand->moniker );
         if ( !$c->stash->{body}->id ) {
             # An external_body entry
-            add_row( \%problem, 0, \%problems, \@pins );
+            add_row( $problem, 0, \%problems, \@pins );
             next;
         }
-        if ( !$problem{bodies_str} ) {
+        if ( !$problem->bodies_str ) {
             # Problem was not sent to any body, add to all possible areas XXX
-            $problem{bodies} = 0;
-            while ($problem{areas} =~ /,(\d+)(?=,)/g) {
-                add_row( \%problem, $1, \%problems, \@pins );
+            while ($problem->areas =~ /,(\d+)(?=,)/g) {
+                add_row( $problem, $1, \%problems, \@pins );
             }
         } else {
             # Add to bodies it was sent to
             # XXX Assumes body ID matches "council ID"
-            (my $bodies = $problem{bodies_str}) =~ s/\|.*$//;
-            my @bodies = split( /,/, $bodies );
-            $problem{bodies} = scalar @bodies;
-            foreach ( @bodies ) {
+            my $bodies = $problem->bodies_str_ids;
+            foreach ( @$bodies ) {
                 next if $_ != $c->stash->{body}->id;
-                add_row( \%problem, $_, \%problems, \@pins );
+                add_row( $problem, $_, \%problems, \@pins );
             }
         }
     }
@@ -452,11 +431,11 @@ sub add_row {
     my ( $problem, $body, $problems, $pins ) = @_;
     push @{$problems->{$body}}, $problem;
     push @$pins, {
-        latitude  => $problem->{latitude},
-        longitude => $problem->{longitude},
-        colour    => 'yellow', # FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->{state}} ? 'green' : 'red',
-        id        => $problem->{id},
-        title     => $problem->{title},
+        latitude  => $problem->latitude,
+        longitude => $problem->longitude,
+        colour    => 'yellow', # FixMyStreet::DB::Result::Problem->fixed_states()->{$problem->state} ? 'green' : 'red',
+        id        => $problem->id,
+        title     => $problem->title,
     };
 }
 

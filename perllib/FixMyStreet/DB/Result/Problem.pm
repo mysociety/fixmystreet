@@ -397,6 +397,14 @@ sub confirm {
     return 1;
 }
 
+sub bodies_str_ids {
+    my $self = shift;
+    return unless $self->bodies_str;
+    (my $bodies = $self->bodies_str) =~ s/\|.*$//;
+    my @bodies = split( /,/, $bodies );
+    return \@bodies;
+}
+
 =head2 bodies
 
 Returns an arrayref of bodies to which a report was sent.
@@ -406,9 +414,8 @@ Returns an arrayref of bodies to which a report was sent.
 sub bodies($) {
     my $self = shift;
     return {} unless $self->bodies_str;
-    (my $bodies = $self->bodies_str) =~ s/\|.*$//;
-    my @bodies = split( /,/, $bodies );
-    @bodies = FixMyStreet::App->model('DB::Body')->search({ id => \@bodies })->all;
+    my $bodies = $self->bodies_str_ids;
+    my @bodies = FixMyStreet::App->model('DB::Body')->search({ id => $bodies })->all;
     return { map { $_->id => $_ } @bodies };
 }
 
@@ -493,8 +500,7 @@ meta data about the report.
 sub meta_line {
     my ( $problem, $c ) = @_;
 
-    my $date_time =
-      Utils::prettify_epoch( $problem->confirmed_local->epoch );
+    my $date_time = Utils::prettify_dt( $problem->confirmed_local );
     my $meta = '';
 
     # FIXME Should be in cobrand

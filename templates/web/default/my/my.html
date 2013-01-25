@@ -53,7 +53,7 @@ END %]
     <li>&ldquo;[% u.text | html %]&rdquo;
     &ndash; <a href="[% c.uri_for( '/report', u.problem_id ) %]#update_[% u.id %]">[% u.problem.title | html %]</a>.
     <em class="council_sent_info">
-        [% tprintf( loc("Added %s"), prettify_epoch( u.confirmed_local.epoch, 'date' ) ) %]
+        [% tprintf( loc("Added %s"), prettify_dt( u.confirmed_local, 'date' ) ) %]
         </em>
     </li>
     [% "</ul>" IF loop.last %]
@@ -69,9 +69,9 @@ END %]
     <li><a href="[% c.uri_for( '/report', p.id ) %]">[% p.title | html %]</a>
     <em class="council_sent_info"> &ndash;
         [% IF p.whensent %]
-            [% tprintf( loc("Reported %s, to %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ), p.body(c) ) %]
+            [% tprintf( loc("Reported %s, to %s"), prettify_dt( p.confirmed_local, 'date' ), p.body(c) ) %]
         [% ELSE %]
-            [% tprintf( loc("Reported %s"), prettify_epoch( p.confirmed_local.epoch, 'date' ) ) %]
+            [% tprintf( loc("Reported %s"), prettify_dt( p.confirmed_local, 'date' ) ) %]
         [% END %]
         </em>
     </li>
