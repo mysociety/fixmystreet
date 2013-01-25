@@ -1,14 +1,14 @@
 /* COLOURS */
 
-$dark_blue: rgb(50, 80, 165);
-$lighter_blue: rgb(57, 94, 147);
+$dark_blue: rgb(0, 79, 167);
+$zurich_blue: rgb(0, 81, 169);
 
-$primary: $lighter_blue;
+$primary: $zurich_blue;
 $primary_b: $dark_blue;
 $primary_text: #fff;
 
-$col_click_map: $lighter_blue;
-$col_click_map_dark: darken($lighter_blue, 20%);
+$col_click_map: $zurich_blue;
+$col_click_map_dark: darken($zurich_blue, 20%);
 
 $col_fixed_label: #648721;
 $col_fixed_label_dark: #4B8304;
