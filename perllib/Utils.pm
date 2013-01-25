@@ -242,6 +242,8 @@ sub prettify_dt {
     $tt .= ', ' unless $type eq 'date';
     if ($dt->strftime('%Y %U') eq $now->strftime('%Y %U')) {
         $tt .= decode_utf8($dt->strftime('%A'));
+    } elsif ($type eq 'zurich') {
+        $tt .= decode_utf8($dt->strftime('%e. %B %Y'));
     } elsif ($type eq 'short') {
         $tt .= decode_utf8($dt->strftime('%e %b %Y'));
     } elsif ($dt->strftime('%Y') eq $now->strftime('%Y')) {
