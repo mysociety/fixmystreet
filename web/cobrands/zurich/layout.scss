@@ -180,7 +180,8 @@ body.twothirdswidthpage {
     p {
         &#fixed {
             padding-top: 2em;
-            @include background(linear-gradient(#769643, #648721 4px));
+            background: $col_fixed_label;
+            @include background(linear-gradient(#769643, $col_fixed_label 4px));
         }
     }
 }
