@@ -455,7 +455,7 @@ var message_manager = (function() {
                                 var err_msg = "Unable to load messages: ";
                                 if (st === 0 && textStatus === 'error') { // x-domain hard to detect, sometimes intermittent?
                                     if (_url_root.indexOf('https')===0 && ! location.protocol != 'https:') {
-                                        var surl = _url_root.replace(/\/$/, '') + location.pathname + location.search;
+                                        var surl = location.href.replace(/^http:/, 'https:');
                                         err_msg += 'this is an insecure URL.<br/><a href="' + surl + '">Try from HTTPS instead?</a>';
                                         msg_is_html = true;
                                     } else {
