@@ -76,7 +76,8 @@ var message_manager = (function() {
         tt_hide  : "Hide message",
         tt_info  : "Get info",
         tt_reply : "Send SMS reply",
-        tt_radio : "Select message before clicking on map to create report"
+        tt_radio : "Select message before clicking on map to create report",
+        tt_detach: "Detach this message because it is not a reply"
     };
 
     // cached jQuery elements, populated by the (mandatory) call to config()
@@ -262,10 +263,12 @@ var message_manager = (function() {
         var $hide_button = $('<a class="mm-msg-action mm-hide" id="mm-hide-' + msg.id + '" href="#hide-form-container" title="' + _tooltips.tt_hide + '">X</a>');
         var $info_button = $('<span class="mm-msg-action mm-info" id="mm-info-' + msg.id + '" title="' + _tooltips.tt_info + '">i</span>');
         var $reply_button = $('<a class="mm-msg-action mm-rep" id="mm-rep-' + msg.id + '" href="#reply-form-container" title="' + _tooltips.tt_reply + '">reply</a>');
+        var $detach_button = $('<a class="mm-msg-action mm-detach" id="mm-rep-' + msg.id + '" href="#detach-form-container" title="' + _tooltips.tt_detach + '">detach</a>');
         var is_radio_btn = _want_radio_btns && depth === 0 && ! is_archive;
         if (_use_fancybox) {
             $reply_button.fancybox();
             $hide_button.fancybox();
+            $detach_button.fancybox();
         }
         if (depth === 0) {
             var tag = (!msg.tag || msg.tag === 'null')? '&nbsp;' : msg.tag;
@@ -291,6 +294,9 @@ var message_manager = (function() {
             $p.text(escaped_text).addClass('mm-reply mm-reply-' + depth);
         }
         var $litem = $('<li id="' + _msg_prefix + msg.id + '" class="mm-msg">').append($p).append($hide_button).append($info_button);
+        if (depth > 0 && depth % 2 === 0) { // only even-numbered depths are incoming replies that can be detached
+            $litem.append($detach_button);
+        }
         if (msg.is_outbound != 1) {
           $litem.append($reply_button);
         }
@@ -383,6 +389,10 @@ var message_manager = (function() {
         $message_list_element.on('click', '.mm-hide', function(event) {
             $('#hide_msg_id').val($(this).closest('li').attr('id').replace(_msg_prefix, ''));
             // $('#hide-form-message-text').val(TODO);
+        });
+        // clicking the detach button loads the id into the (modal/fancybox) detach form
+        $message_list_element.on('click', '.mm-detach', function(event) {
+            $('#detach_msg_id').val($(this).closest('li').attr('id').replace(_msg_prefix, ''));
         });
     };
 
@@ -689,6 +699,56 @@ var message_manager = (function() {
         }
     };
     
+    var mark_as_not_a_reply = function(msg_id, options) {
+        if (_use_fancybox){
+            $.fancybox.close();
+        }
+        var callback = null;
+        var check_li_exists = false;
+        if (options) {
+            if (typeof(options.callback) === 'function') {
+                callback = options.callback;
+            }
+            if (typeof(options.check_li_exists) !== undefined && options.check_li_exists !== undefined) {
+                check_li_exists = true; // MM dummy
+            }
+        }
+        var $li = $('#' + _msg_prefix + msg_id);
+        if (check_li_exists) {
+            if ($li.size() === 0) {
+                say_status("Couldn't find message with ID " + msg_id);
+                return;
+            }
+        }
+        $li.addClass('msg-is-busy');
+        $.ajax({
+            dataType:"json", 
+            type:"post", 
+            data: {},
+            url: _url_root +"messages/mark_as_not_a_reply/" + msg_id + ".json",
+            beforeSend: function (xhr){
+                xhr.setRequestHeader('Authorization', get_current_auth_credentials());
+                xhr.withCredentials = true;
+            },
+            success:function(data, textStatus) {
+                if (data.success) {
+                    $li.removeClass('msg-is-busy msg-is-locked').addClass('msg-is-owned').fadeOut('slow'); // no longer available
+                    say_status("Message no longer marked as a reply");
+                    if (typeof(callback) === "function") {
+                        callback.call($(this), data.data); 
+                    }
+                } else {
+                    $li.removeClass('msg-is-busy').addClass('msg-is-locked');
+                    say_status("Hide failed: " + data.error);
+                }
+            }, 
+            error: function(jqXHR, textStatus, errorThrown) {
+                say_status("Detach error: " + textStatus + ": " + errorThrown);
+                $li.removeClass('msg-is-busy');
+            }
+        });
+    };
+    
     // if boilerplate is not already in local storage, make ajax call and load them
     // otherwise, populate the boilerplate select lists: these are currently the
     // reasons for hiding a message, and pre-loaded replies.message-manager.dev.mysociety.org
@@ -784,6 +844,7 @@ var message_manager = (function() {
        show_info: show_info,
        sign_out: sign_out,
        populate_boilerplate_strings: populate_boilerplate_strings,
-       say_status: say_status
+       say_status: say_status,
+       mark_as_not_a_reply: mark_as_not_a_reply
      };
 })();
