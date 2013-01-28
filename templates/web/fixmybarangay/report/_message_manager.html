@@ -109,20 +109,20 @@ $(document).ready(function() {
 		$('#external_source_id').val(service_id);
 	}
 	
-	var dummy_reply_cleanup = function(data) {
+	var reply_cleanup = function(data) {
 		reset_timeout();
 		$('#reply_text').val('');
 		dummy_busy = false;
 		mm_refresh_messages();
 	}
 
-	var dummy_hide_cleanup = function(data) {
+	var hide_cleanup = function(data) {
 		reset_timeout();
 		$('#reason_text').val('');
 		dummy_busy = false;
 	}
 
-	var dummy_detach_cleanup = function(data) {
+	var detach_cleanup = function(data) {
 		reset_timeout();
 		dummy_busy = false;
 		mm_refresh_messages(); // refresh because detached message now appears in the list
@@ -186,7 +186,7 @@ $(document).ready(function() {
 			message_manager.reply(
 			    $('#reply_to_msg_id').val(), 
 			    $('#reply_text').val(), 
-			    {callback:dummy_reply_cleanup});
+			    {callback:reply_cleanup});
 		}
 	});
 
@@ -201,7 +201,7 @@ $(document).ready(function() {
 			message_manager.hide(
 			    $('#hide_msg_id').val(), 
 			    $('#reason_text').val(), 
-			    {callback:dummy_hide_cleanup});
+			    {callback:hide_cleanup});
 		}
 	});
 
@@ -211,7 +211,7 @@ $(document).ready(function() {
 			dummy_busy = true;
 			message_manager.mark_as_not_a_reply(
 			    $('#detach_msg_id').val(),
-			    {callback:dummy_detach_cleanup});
+			    {callback:detach_cleanup});
 		}
 	});
 
