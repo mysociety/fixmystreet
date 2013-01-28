@@ -31,6 +31,22 @@ Show the summary page of all reports.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    # Zurich goes straight to map page, with all reports
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->forward( 'load_and_group_problems' );
+        my $pins = $c->stash->{pins};
+        $c->stash->{page} = 'reports';
+        FixMyStreet::Map::display_map(
+            $c,
+            latitude  => @$pins ? $pins->[0]{latitude} : 0,
+            longitude => @$pins ? $pins->[0]{longitude} : 0,
+            area      => 274456,
+            pins      => $pins,
+            any_zoom  => 1,
+        );
+        return 1;
+    }
+
     # Fetch all areas of the types we're interested in
     my @bodies = $c->model('DB::Body')->all;
     @bodies = sort { strcoll($a->name, $b->name) } @bodies;
@@ -381,7 +397,7 @@ sub load_and_group_problems : Private {
     my ( %problems, @pins );
     while ( my $problem = $problems->next ) {
         $c->log->debug( $problem->cobrand . ', cobrand is ' . $c->cobrand->moniker );
-        if ( !$c->stash->{body}->id ) {
+        if ( !$c->stash->{body} || !$c->stash->{body}->id ) {
             # An external_body entry
             add_row( $c, $problem, 0, \%problems, \@pins );
             next;
@@ -435,7 +451,7 @@ sub add_row {
         longitude => $problem->longitude,
         colour    => $c->cobrand->pin_colour( $problem, 'reports' ),
         id        => $problem->id,
-        title     => $problem->title,
+        title     => $problem->title_safe,
     };
 }
 
