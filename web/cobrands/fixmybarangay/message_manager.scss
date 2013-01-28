@@ -16,7 +16,7 @@ $color_bg_mm_list:       #F6F6F6;
 $color_bg_btn_hide:      #ff0000;
 $color_bg_btn_reply:     #008000;
 $color_bg_btn_info:      #0000ff;
-
+$color_bg_btn_detach:    #FFA500;
 
 $weak_text_color:      #666;
 
@@ -188,6 +188,11 @@ p.mm-submitted-by-sms {
           background-color: $color_bg_btn_reply;
           cursor: pointer;
         }
+        .mm-detach {
+          right:5.65em;
+          background-color: $color_bg_btn_detach;
+          cursor: pointer;
+        }
       }
       &.mm-archive {
         display: none; // archive only shown on interaction
@@ -211,6 +216,7 @@ p.mm-submitted-by-sms {
   width: 11em; // hack to stop adjacent button hopping when button message changes
 }
 
+#detach-form-container,
 #reply-form-container, 
 #hide-form-container {
   p {
