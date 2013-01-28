@@ -122,6 +122,12 @@ $(document).ready(function() {
 		dummy_busy = false;
 	}
 
+	var dummy_detach_cleanup = function(data) {
+		reset_timeout();
+		dummy_busy = false;
+		mm_refresh_messages(); // refresh because detached message now appears in the list
+	}
+
 	var custom_tooltips;
 	if (problem_id) { // this page is viewing, not creating
 		custom_tooltips = {tt_radio: "Select before clicking 'Copy to Update' to add this message as an update"};
@@ -198,6 +204,17 @@ $(document).ready(function() {
 			    {callback:dummy_hide_cleanup});
 		}
 	});
+
+	$('#detach-submit').click(function(e) {
+		e.preventDefault();
+		if (! dummy_busy) {
+			dummy_busy = true;
+			message_manager.mark_as_not_a_reply(
+			    $('#detach_msg_id').val(),
+			    {callback:dummy_detach_cleanup});
+		}
+	});
+
 	$("a#reply").fancybox({onClosed: function(){dummy_busy=false;}});
 
 	// only show on problem display page

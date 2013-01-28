@@ -86,12 +86,15 @@
 				<p>
 					If you detach the message, it will appear as a new, available message (instead of being a reply).
 				</p>
-				<!--
-					echo $this->Form->create(array('id' => 'detach-form','default'=>false));
-					echo $this->Form->input('msg_id', array('type'=>'hidden', 'name'=>'msg_id', 'id'=>'detach_msg_id'));
-					echo $this->Form->submit(__('Detach Message'), array('id' => 'detach-submit'));
-					echo $this->Form->end();
-				-->
+				<form action="/dummy" id="detach-form" onsubmit="event.returnValue = false; return false;" method="post" accept-charset="utf-8">
+					<div style="display:none;">
+						<input type="hidden" name="_method" value="POST">
+					</div>
+					<input type="hidden" name="msg_id" id="detach_msg_id">
+					<div class="submit">
+						<input id="detach-submit" type="submit" value="Detach Message">
+					</div>
+				</form>
 			</div>
 		</div>
 		<div style="display:none">
