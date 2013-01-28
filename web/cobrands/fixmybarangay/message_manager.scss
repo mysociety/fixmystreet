@@ -236,7 +236,7 @@ p.mm-submitted-by-sms {
   }
 }
 #mm-help {
-  .demo_hide_btn, .demo_reply_btn, .demo_info_btn {
+  .demo_hide_btn, .demo_reply_btn, .demo_info_btn, .demo_detach_btn {
     color: #fff;
     font-weight: bold;
     padding: 0.2em 0.4em;
@@ -244,4 +244,12 @@ p.mm-submitted-by-sms {
   .demo_hide_btn  { background-color: $color_bg_btn_hide;  }
   .demo_reply_btn { background-color: $color_bg_btn_reply; }
   .demo_info_btn  { background-color: $color_bg_btn_info;  }
+  .demo_detach_btn{ background-color: $color_bg_btn_detach;  }
+  h3 {
+    border-top: 1px solid $color_reply_bg;
+    padding-top: 0.8em;
+  }
+  p {
+    margin: 1em;
+  }
 }
