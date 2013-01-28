@@ -13,7 +13,7 @@ my $dt = DateTime->new(
 );
 
 my $user1 = FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
+  ->find_or_create( { email => 'reporter-rss@example.com', name => 'Reporter User' } );
 
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
     postcode           => 'eh1 1BB',
@@ -113,6 +113,6 @@ $mech->content_contains( "Testing, 10th October" );
 $mech->content_contains( '18 North Bridge, Edinburgh' );
 
 $report->delete();
-$user1->delete();
+$mech->delete_user( $user1 );
 
 done_testing();
