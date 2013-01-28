@@ -755,6 +755,9 @@ sub as_hashref {
         latitude  => $self->latitude,
         longitude => $self->longitude,
         postcode  => $self->postcode,
+        state     => $self->state,
+        used_map  => $self->used_map,
+        is_fixed  => $self->fixed_states->{ $self->state } ? 1 : 0,
         photo     => $self->get_photo_params,
         meta      => $self->meta_line( $c ),
     };
