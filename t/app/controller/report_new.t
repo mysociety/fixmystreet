@@ -1084,7 +1084,6 @@ SKIP: {
             desc      => 'confirm link for cobrand council in two tier cobrand links to cobrand site',
             category  => 'Trees',
             council   => 2434,
-            link_base => 'http://lichfielddc.localhost/',
             national  => 0,
             button    => 'submit_register',
         },
@@ -1092,7 +1091,6 @@ SKIP: {
             desc      => 'confirm link for non cobrand council in two tier cobrand links to national site',
             category  => 'Street Lighting',
             council   => 2240,
-            link_base => 'http://localhost/',
             national  => 1,
             button    => 'submit_register',
           },
@@ -1100,7 +1098,6 @@ SKIP: {
             desc      => 'confirm redirect for cobrand council in two tier cobrand redirects to cobrand site',
             category  => 'Trees',
             council   => 2434,
-            link_base => 'lichfielddc.localhost',
             national  => 0,
             redirect  => 1,
           },
@@ -1108,7 +1105,6 @@ SKIP: {
             desc      => 'confirm redirect for non cobrand council in two tier cobrand redirect to national site',
             category  => 'Street Lighting',
             council   => 2240,
-            link_base => 'localhost',
             national  => 1,
             redirect  => 1,
           },
@@ -1163,7 +1159,10 @@ SKIP: {
 
             if ( $test->{redirect} ) {
                 is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
-                is $mech->uri->host, $test->{link_base}, 'redirected to correct site';
+                my $base = FixMyStreet->config('BASE_URL');
+                $base =~ s{http://}{};
+                $base = "lichfielddc.$base" unless $test->{national};
+                is $mech->uri->host, $base, 'redirected to correct site';
             } else {
                 # receive token
                 my $email = $mech->get_email;
@@ -1176,7 +1175,9 @@ SKIP: {
                 # confirm token
                 $mech->get_ok($url);
 
-                $mech->content_contains( $test->{link_base} . 'report/' .
+                my $base = FixMyStreet->config('BASE_URL');
+                $base =~ s{http://}{http://lichfielddc.} unless $test->{national};
+                $mech->content_contains( $base . '/report/' .
                     $report->id, 'confirm page links to correct site' );
 
                 if ( $test->{national} ) {

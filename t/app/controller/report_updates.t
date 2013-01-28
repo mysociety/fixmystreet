@@ -750,7 +750,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
 
         my $dt = DateTime->now->add( seconds => 1 );
-        my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+        $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
             {
                 problem_id => $report_id,
                 user_id    => $user->id,

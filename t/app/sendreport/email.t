@@ -28,6 +28,7 @@ my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
 my $row = FixMyStreet::App->model('DB::Problem')->new( {
     council => '1000',
     category => 'category',
+    cobrand => '',
 } );
 
 ok $e;
