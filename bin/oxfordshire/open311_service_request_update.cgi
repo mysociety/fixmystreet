@@ -78,12 +78,7 @@ sub get_service_request_updates {
     my $limit = $req -> param($CGI_VAR_LIMIT) =~ /^(\d{1,3})$/? $1 : $MAX_LIMIT;
     $sql = "SELECT * FROM ($sql) WHERE ROWNUM <= $limit" if $limit;
 
-    my $debug_str = <<XML;
-        <!-- DEBUG: from: $raw_start_date => $start_date  -->
-        <!-- DEBUG: to:   $raw_end_date => $end_date -->
-        <!-- DEBUG: sql:  $sql -->
-XML
-
+    my $debug_str;
     my $ary_ref;
 
     if ($TESTING_WRITE_TO_FILE) {
@@ -91,6 +86,12 @@ XML
             [97, 1000, '2013-01-05', 'OPEN', 'report was opened'],
             [99, 1000, '2013-01-06', 'CLOSED', 'report was closed']
         ];
+        # only add debug now if config says we're testing
+        $debug_str = <<XML;
+        <!-- DEBUG: from: $raw_start_date => $start_date  -->
+        <!-- DEBUG: to:   $raw_end_date => $end_date -->
+        <!-- DEBUG: sql:  $sql -->
+XML
     } else {
         my $dbh = get_db_connection();
         $ary_ref = $dbh->selectall_arrayref($sql);
