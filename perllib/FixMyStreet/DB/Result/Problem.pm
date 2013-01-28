@@ -761,6 +761,8 @@ sub as_hashref {
         is_fixed  => $self->fixed_states->{ $self->state } ? 1 : 0,
         photo     => $self->get_photo_params,
         meta      => $self->confirmed ? $self->meta_line( $c ) : '',
+        confirmed_pp => $self->confirmed ? Utils::prettify_dt( $self->confirmed_local, 1 ): '',
+        created_pp => Utils::prettify_dt( $self->created_local, 1 ),
     };
 }
 
