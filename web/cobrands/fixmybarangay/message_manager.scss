@@ -56,6 +56,10 @@ p.mm-submitted-by-sms {
     }
   }
   #message-control {
+    background-color: #fff;
+    &:hover {
+      background-color: #fff;
+    }
     #mm-username-container {
       display: none; // hidden during dev
       padding: 8px;
