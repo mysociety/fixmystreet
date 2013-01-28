@@ -226,6 +226,8 @@ p.mm-submitted-by-sms {
 #hide-form-container {
   p {
     color: #000;
+    max-width: 25em;
+    margin: 1em;
   }
   #hide-form,
   #reply-form{
