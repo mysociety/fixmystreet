@@ -232,6 +232,10 @@ p.mm-submitted-by-sms {
     overflow: hidden;
     display: none;
   }
+  select {
+    width: 100%;
+    max-width: 25em;
+  }
 }
 #mm-help {
   .demo_hide_btn, .demo_reply_btn, .demo_info_btn, .demo_detach_btn {
