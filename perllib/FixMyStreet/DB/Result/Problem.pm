@@ -759,7 +759,7 @@ sub as_hashref {
         used_map  => $self->used_map,
         is_fixed  => $self->fixed_states->{ $self->state } ? 1 : 0,
         photo     => $self->get_photo_params,
-        meta      => $self->meta_line( $c ),
+        meta      => $self->confirmed ? $self->meta_line( $c ) : '',
     };
 }
 
