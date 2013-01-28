@@ -50,5 +50,10 @@ sub default_show_name {
     return 1;
 }
 
+# makes no sense to send questionnaires since FMB's reporters are mostly staff
+sub send_questionnaires {
+    return 0;
+}
+
 1;
 
