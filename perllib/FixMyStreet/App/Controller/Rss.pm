@@ -241,6 +241,15 @@ sub add_row : Private {
     $row->{name} = 'anonymous' if $row->{anonymous} || !$row->{name};
 
     my $pubDate;
+    if ($row->{created}) {
+        $row->{created} =~ /^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
+        $pubDate = mySociety::Locale::in_gb_locale {
+            strftime("%a, %d %b %Y %H:%M:%S %z", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0)
+        };
+        $row->{created} = strftime("%e %B", $6, $5, $4, $3, $2-1, $1-1900, -1, -1, 0);
+        $row->{created} =~ s/^\s+//;
+        $row->{created} =~ s/^(\d+)/ordinal($1)/e if $c->stash->{lang_code} eq 'en-gb';
+    }
     if ($row->{confirmed}) {
         $row->{confirmed} =~ /^(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/;
         $pubDate = mySociety::Locale::in_gb_locale {
