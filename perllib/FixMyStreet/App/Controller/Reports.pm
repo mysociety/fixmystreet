@@ -120,14 +120,21 @@ sub ward : Path : Args(2) {
     my $pins = $c->stash->{pins};
 
     $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
-    FixMyStreet::Map::display_map(
-        $c,
+    my %map_params = (
         latitude  => @$pins ? $pins->[0]{latitude} : 0,
         longitude => @$pins ? $pins->[0]{longitude} : 0,
         area      => $c->stash->{ward} ? $c->stash->{ward}->{id} : $c->stash->{council}->{id},
-        pins      => $pins,
         any_zoom  => 1,
     );
+    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+        FixMyStreet::Map::display_map(
+            $c, %map_params, latitude => 0, longitude => 0,
+        );
+    } else {
+        FixMyStreet::Map::display_map(
+            $c, %map_params, pins => $pins,
+        );
+    }
 
     $c->cobrand->tweak_all_reports_map( $c );
 

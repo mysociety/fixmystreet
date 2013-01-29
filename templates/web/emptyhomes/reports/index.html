@@ -10,8 +10,6 @@
 <th>[% loc('Name') %]</th>
 <th>[% loc('New problems') %]</th>
 <th>[% loc('Older problems') %]</th>
-<th>[% loc('Recently fixed') %]</th>
-<th>[% loc('Older fixed') %]</th>
 </tr>
 
 [% FOREACH area IN areas_info_sorted %]
@@ -20,12 +18,11 @@
 [%- ELSIF loop.count % 2 %] class="a"
 [%- END -%]
 >
-<td align="left">[% area.name %]</td>
+<td align="left"><a href="[% area.url %]">[% area.name %]</a></td>
 <td>[% open.${area.id}.new or 0 %]</td>
-<td>[% (open.${area.id}.older or 0) + (open.${area.id}.unknown or 0) %]</td>
-<td>[% fixed.${area.id}.new or 0 %]</td>
-<td>[% fixed.${area.id}.old or 0 %]</td>
+<td>[% (open.${area.id}.older or 0) + (open.${area.id}.unknown or 0) + (fixed.${area.id}.new or 0) + (fixed.${area.id}.old or 0) %]</td>
 </tr>
+
 [% END %]
 </table>
 

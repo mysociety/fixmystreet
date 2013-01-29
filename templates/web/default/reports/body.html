@@ -1,9 +1,3 @@
-[% IF c.cobrand.moniker == 'fixmystreet' OR c.cobrand.moniker == 'bromley';
-     style = 'new';
-   ELSE;
-     style = 'old';
-   END;
-%]
 [% IF ward %]
     [% name = "$ward.name, $council.name"
        thing = loc('ward')
@@ -24,7 +18,6 @@
     PROCESS "maps/${map.type}.html";
     INCLUDE 'header.html',
     title = tprintf(loc('%s - Summary reports'), name)
-    context = 'reports'
     bodyclass = 'mappage'
     rss = [ tprintf(loc('Problems within %s, FixMyStreet'), name), rss_url ]
 %]
