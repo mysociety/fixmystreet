@@ -1304,7 +1304,11 @@ sub rotate_photo : Private {
     }
 
     $c->stash->{rotated} = 1;
-    $file->spew( $photo );
+
+    my $fh = $file->open('w');
+    print $fh $photo;
+    close $fh;
+
     unlink glob FixMyStreet->path_to( 'web', 'photo', $c->stash->{problem}->id . '.*' );
 
     if ( $fileid ) {
