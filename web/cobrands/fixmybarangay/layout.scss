@@ -18,7 +18,7 @@ body {
   color: $primary_text;
   
   .wrapper{
-    background: url('images/city7.png') 30% 0% repeat-x;
+    background: url('images/fmb-header.png') 30% 0% repeat-x;
   }
 }
 
@@ -27,11 +27,13 @@ body.frontpage {
     #site-logo {
         width: 370px !important;
         height: 70px;
-	    background: url('images/sprite.png') -3px -106px no-repeat;
+        background: url('images/sprite.png') -3px -106px no-repeat;
+        top: 2em;
+        left: 1em;
     }
 
     .wrapper {
-        background: url('images/city7.png') 30% 0% repeat-x;
+        background: url('images/fmb-header.png') 30% 0% repeat-x;
     }
 }
 
