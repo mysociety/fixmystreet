@@ -29,9 +29,9 @@
 
     PROCESS "maps/${map.type}.html";
 
+    SET rss = [ loc('Recent local problems, FixMyStreet'), rss_url ] IF c.cobrand.moniker != 'emptyhomes';
     INCLUDE 'header.html',
         title  => loc('Viewing a location')
-        rss    => [ loc('Recent local problems, FixMyStreet'), rss_url ],
         bodyclass => 'mappage',
         robots => 'noindex,nofollow';
 
@@ -51,6 +51,7 @@
 
     [% map_html %]
 
+      [% IF c.cobrand.moniker != 'emptyhomes' %]
         <p id='sub_map_links'>
             [% IF c.req.params.no_pins %]
                 <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 0 } ) %]'>[% loc('Show pins') %]</a>
@@ -66,6 +67,7 @@
                 [% END %]
             [% END %]
         </p>
+      [% END %]
 
     </div>
 
@@ -79,11 +81,13 @@
             [% TRY %][% INCLUDE 'around/extra_text.html' %][% CATCH file %][% END %]
         [% END %]
 
+      [% IF c.cobrand.moniker != 'emptyhomes' %]
         [% INCLUDE 'around/_updates.html' %]
 
         <section class="full-width">
             [% INCLUDE "around/tabbed_lists.html" %]
         </section>
+      [% END %]
     </div>
 
     [% IF allow_creation %]
