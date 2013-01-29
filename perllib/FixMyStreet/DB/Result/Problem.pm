@@ -566,11 +566,7 @@ sub meta_line {
 
         my $category = _($problem->category);
         utf8::decode($category);
-        if ($problem->anonymous) {
-            $meta = sprintf(_('%s, reported anonymously at %s'), $category, $date_time);
-        } else {
-            $meta = sprintf(_('%s, reported by %s at %s'), $category, $problem->name, $date_time);
-        }
+        $meta = sprintf(_('%s, reported at %s'), $category, $date_time);
 
     } else {
 
