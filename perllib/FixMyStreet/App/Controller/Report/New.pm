@@ -861,7 +861,7 @@ sub process_report : Private {
         #  'x,x|y' - x are body IDs that have this category, y body IDs with *no* contact
         my $body_string = join( ',', map { $_->body_id } @contacts );
         $body_string .=
-          '|' . join( ',', @{ $c->stash->{missing_details_bodies} } )
+          '|' . join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } )
             if $body_string && @{ $c->stash->{missing_details_bodies} };
         $report->bodies_str($body_string);
 
