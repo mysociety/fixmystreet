@@ -62,7 +62,7 @@ Displays some summary information for the requests.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    if ($c->cobrand->moniker eq 'zurich') {
+    if ($c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} ne 'super') {
         return $c->cobrand->admin();
     }
 
@@ -937,7 +937,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->email ne $c->req->param('email') ||
             $user->name ne $c->req->param('name' ) ||
-            ($user->from_body && $user->from_body->id != $c->req->param('body')) ||
+            ($user->from_body && $user->from_body->id ne $c->req->param('body')) ||
             (!$user->from_body && $c->req->param('body'))
         ) {
                 $edited = 1;
