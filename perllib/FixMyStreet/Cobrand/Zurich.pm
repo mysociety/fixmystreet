@@ -14,6 +14,12 @@ sub pin_colour {
     return 'yellow';
 }
 
+# This isn't used
+sub find_closest {
+    my ( $self, $latitude, $longitude, $problem ) = @_;
+    return '';
+}
+
 sub enter_postcode_text {
     my ( $self ) = @_;
     return _('Enter a Z&uuml;rich street name');
