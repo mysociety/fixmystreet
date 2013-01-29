@@ -38,3 +38,9 @@ body.mappage .nav-wrapper div.nav-wrapper-2 {
     background-image: url('images/ie_logo.png');
 }
 
+// #site-header creates grey bar in mobile
+// .nav-wrapper-2 is used on desktop
+#site-header{
+  border-top: 0.25em solid $fmb_tab_yellow;
+  @include background(linear-gradient($fmb_dark_blue, $fmb_base_blue 10%, $fmb_base_blue 90%, $fmb_dark_blue));
+}
