@@ -22,6 +22,7 @@ sub process_councils {
     while ( my $council = $self->council_list->next ) {
         next unless $council->endpoint;
         next unless lc($council->send_method) eq 'open311';
+        next if $council->jurisdiction =~ /^fixmybarangay_\w+$/; # FMB depts. not using service discovery yet
         $self->_current_council( $council );
         $self->process_council;
     }
@@ -29,7 +30,6 @@ sub process_councils {
 
 sub process_council {
     my $self = shift;
-
     my $open311 = Open311->new(
         endpoint => $self->_current_council->endpoint,
         jurisdiction => $self->_current_council->jurisdiction,
