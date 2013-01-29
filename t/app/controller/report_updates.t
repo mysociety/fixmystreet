@@ -501,19 +501,6 @@ for my $test (
         state => 'fixed - council',
     },
     {
-        desc => 'from authority user marks report as confirmed',
-        fields => {
-            name => $user->name,
-            may_show_name => 1,
-            add_alert => undef,
-            photo => '',
-            update => 'Set state to confirmed',
-            state => 'confirmed',
-        },
-        state => 'confirmed',
-        reopened => 1,
-    },
-    {
         desc => 'from authority user marks report as action scheduled',
         fields => {
             name => $user->name,
@@ -661,7 +648,7 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
 
     $mech->get_ok( "/report/" . $report->id );
     my $update_meta = $mech->extract_update_metas;
-    like $update_meta->[0], qr/reopened$/,
+    unlike $update_meta->[0], qr/reopened$/,
       'update meta does not say reopened';
 
     $comment->update( { mark_open => 1, problem_state => undef } );
@@ -679,7 +666,21 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
     unlike $update_meta->[0], qr/marked as open$/,
       'update meta does not says marked as open';
     unlike $update_meta->[0], qr/reopened$/, 'update meta does not say reopened';
-  };
+};
+
+subtest "check first comment with no status change has no status in meta" => sub {
+    $mech->log_in_ok( $user->email );
+    $user->from_council( 0 );
+    $user->update;
+
+    my $comment = $report->comments->first;
+    $comment->update( { mark_fixed => 0, problem_state => 'confirmed' } );
+
+    $mech->get_ok("/report/$report_id");
+
+    my $update_meta = $mech->extract_update_metas;
+    unlike $update_meta->[0], qr/marked as|reopened/, 'update meta does not include state change';
+};
 
 subtest "check comment with no status change has not status in meta" => sub {
         $mech->log_in_ok( $user->email );
@@ -778,6 +779,45 @@ subtest "check comment with no status change has not status in meta" => sub {
         unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
         like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
         unlike $update_meta->[3], qr/marked as/, 'fourth update meta has no state change';
+};
+
+subtest 'check meta correct for second comment marking as reopened' => sub {
+    $report->comments->delete;
+    my $comment = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            user          => $user,
+            problem_id    => $report->id,
+            text          => 'update text',
+            confirmed     => DateTime->now,
+            problem_state => 'fixed - user',
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 1,
+            state         => 'confirmed',
+        }
+    );
+
+    $mech->get_ok( "/report/" . $report->id );
+    my $update_meta = $mech->extract_update_metas;
+    like $update_meta->[0], qr/fixed$/, 'update meta says fixed';
+
+    $comment = FixMyStreet::App->model('DB::Comment')->create(
+        {
+            user          => $user,
+            problem_id    => $report->id,
+            text          => 'update text',
+            confirmed     => DateTime->now,
+            problem_state => 'confirmed',
+            anonymous     => 0,
+            mark_open     => 0,
+            mark_fixed    => 0,
+            state         => 'confirmed',
+        }
+    );
+
+    $mech->get_ok( "/report/" . $report->id );
+    $update_meta = $mech->extract_update_metas;
+    like $update_meta->[1], qr/reopened$/, 'update meta says reopened';
 };
 
 $user->from_council(0);
