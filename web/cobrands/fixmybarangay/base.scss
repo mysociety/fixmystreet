@@ -45,3 +45,30 @@ body.mappage .nav-wrapper div.nav-wrapper-2 {
   border-top: 0.25em solid $fmb_tab_yellow;
   @include background(linear-gradient($fmb_dark_blue, $fmb_base_blue 10%, $fmb_base_blue 90%, $fmb_dark_blue));
 }
+
+ul#promo-list {
+  margin: 0.5em;
+  li {
+    list-style:none;
+  }
+}
+.promo-big, .promo-bigger {
+    font-size: 130%;
+    font-weight: bold;
+    padding: 0 0.2em;
+}
+.promo-bigger {
+    font-size: 150%;
+}
+.promo-example {
+  font-size: 90%;
+  font-style: italic;
+  border: 1px solid #aaa;
+  background-color:#f0ebe8; // pale tone of background image
+  padding: 0.666em;
+  margin: 1em 1em 1em 0;
+  div {
+    font-style: normal;
+    font-family: monospace;
+  }
+}
