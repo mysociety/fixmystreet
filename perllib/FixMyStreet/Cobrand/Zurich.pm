@@ -406,6 +406,8 @@ sub admin_report_edit {
 sub _admin_send_email {
     my ( $c, $template, $problem ) = @_;
 
+    return unless $problem->extra && $problem->extra->{email_confirmed};
+
     my $to = $problem->name
         ? [ $problem->user->email, $problem->name ]
         : $problem->user->email;
