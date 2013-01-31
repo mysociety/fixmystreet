@@ -13,8 +13,8 @@ use Geo::Coordinates::CH1903;
 use Math::Trig;
 use Utils;
 
-use constant ZOOM_LEVELS    => 9;
-use constant DEFAULT_ZOOM   => 7;
+use constant ZOOM_LEVELS    => 7;
+use constant DEFAULT_ZOOM   => 5;
 use constant MIN_ZOOM_LEVEL => 0;
 
 sub map_tiles {
