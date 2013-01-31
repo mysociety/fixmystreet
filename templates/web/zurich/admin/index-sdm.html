@@ -1,13 +1,13 @@
 [% PROCESS 'admin/header.html' title=loc('Summary') -%]
 [% PROCESS 'admin/report_blocks.html' %]
 
-<h2>New reports</h2>
+<h2>[% loc('New reports') %]</h2>
 [% INCLUDE list, problems = reports_new.all %]
 
-<h2>Reports awaiting approval</h2>
+<h2>[% loc('Reports awaiting approval') %]</h2>
 [% INCLUDE list, problems = reports_unpublished.all, no_edit = 1 %]
 
-<h2>Reports published</h2>
+<h2>[% loc('Reports published') %]</h2>
 [% INCLUDE list, problems = reports_published.all, no_edit = 1 %]
 
 [% INCLUDE 'admin/footer.html' %]

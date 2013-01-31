@@ -48,8 +48,8 @@
 <li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]">
 <br>
 [% IF rotated %]Photo may be cached for a while.<br>[% END %]
-<input type="submit" name="rotate_photo" value="Rotate Left" />
-<input type="submit" name="rotate_photo" value="Rotate Right" />
+<input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
+<input type="submit" name="rotate_photo" value="[% loc('Rotate Right') %]">
 <br>
 <input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
 <label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
@@ -113,7 +113,7 @@
     </select>
     <br>
     <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
-    <label for="third_personal" class="inline">Include reporter personal details</label>
+    <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
 
 </ul>
 

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-24 18:27+0000\n"
+"POT-Creation-Date: 2013-01-31 15:25+0000\n"
 "PO-Revision-Date: 2011-12-08 10:56+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Nynorsk <i18n-nn@lister.ping.uio.no>\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:573
+#: perllib/FixMyStreet/DB/Result/Problem.pm:579
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:339
 msgid " and "
 msgstr " og "
@@ -52,6 +52,7 @@ msgid "%d confirmed alerts, %d unconfirmed"
 msgstr "%d stadfesta varsel, %d ikkje stadfesta"
 
 #: templates/web/default/admin/index.html:19
+#: templates/web/zurich/admin/index.html:6
 msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
 msgstr "%d administrasjonskontaktar &ndash; %d stadfesta, %d ikkje stadfesta"
 
@@ -78,7 +79,7 @@ msgstr ""
 msgid "%s - Summary reports"
 msgstr "%s – oppsummeringsrapportar"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:621
+#: perllib/FixMyStreet/DB/Result/Problem.pm:627
 msgid "%s ref:&nbsp;%s"
 msgstr ""
 
@@ -86,11 +87,11 @@ msgstr ""
 msgid "%s ward, %s"
 msgstr "%s bydel, %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:506
+#: perllib/FixMyStreet/DB/Result/Problem.pm:512
 msgid "%s, reported anonymously at %s"
 msgstr "%s, rapportert anonymt %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:508
+#: perllib/FixMyStreet/DB/Result/Problem.pm:514
 msgid "%s, reported by %s at %s"
 msgstr "%s, rapportert av %s %s"
 
@@ -98,21 +99,21 @@ msgstr "%s, rapportert av %s %s"
 msgid "%s, within %s ward"
 msgstr "%s, innanfor bydelen %s"
 
-#: templates/web/default/email_sent.html:28
+#: templates/web/default/email_sent.html:29
 #, fuzzy
 msgid ""
 "(Don't worry &mdash; we'll hang on to your alert while you're checking your "
 "email.)"
 msgstr "vi tek vare på varselet ditt medan du sjekkar e-posten din."
 
-#: templates/web/default/email_sent.html:24
+#: templates/web/default/email_sent.html:25
 #, fuzzy
 msgid ""
 "(Don't worry &mdash; we'll hang on to your problem report while you're "
 "checking your email.)"
 msgstr "vi tek vare på rapporten din medan du sjekkar e-posten din."
 
-#: templates/web/default/email_sent.html:26
+#: templates/web/default/email_sent.html:27
 #, fuzzy
 msgid ""
 "(Don't worry &mdash; we'll hang on to your update while you're checking your "
@@ -136,16 +137,16 @@ msgstr "(alternativt kan RSS-straumen tilpassast, innanfor"
 
 #: templates/web/default/around/around_map_list_items.html:12
 #: templates/web/default/around/on_map_list_items.html:9
-#: templates/web/fixmystreet/report/_item.html:23
-#: templates/web/zurich/report/_item.html:27
+#: templates/web/fixmystreet/report/_item.html:20
+#: templates/web/zurich/report/_item.html:19
 #, fuzzy
 msgid "(closed)"
 msgstr "Lukka"
 
 #: templates/web/default/around/around_map_list_items.html:10
 #: templates/web/default/around/on_map_list_items.html:7
-#: templates/web/fixmystreet/report/_item.html:21
-#: templates/web/zurich/report/_item.html:25
+#: templates/web/fixmystreet/report/_item.html:18
+#: templates/web/zurich/report/_item.html:17
 msgid "(fixed)"
 msgstr "(løyst)"
 
@@ -155,8 +156,7 @@ msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
 msgstr "(som tagging, søppel, hol i vegen, eller øydelagte gatelys)"
 
 #: templates/web/default/reports/_list-entry.html:4
-#: templates/web/fixmystreet/report/_item.html:17
-#: templates/web/zurich/report/_item.html:21
+#: templates/web/fixmystreet/report/_item.html:14
 msgid "(not sent to council)"
 msgstr "(ikkje rapportert til administrasjonen)"
 
@@ -166,8 +166,7 @@ msgid "(optional)"
 msgstr "(valfritt)"
 
 #: templates/web/default/reports/_list-entry.html:2
-#: templates/web/fixmystreet/report/_item.html:16
-#: templates/web/zurich/report/_item.html:20
+#: templates/web/fixmystreet/report/_item.html:13
 msgid "(sent to both)"
 msgstr "(sendt til begge)"
 
@@ -314,6 +313,7 @@ msgstr ""
 "dette steget</a>.</small>"
 
 #: templates/web/default/admin/index.html:14
+#: templates/web/zurich/admin/index.html:4
 msgid "<strong>%d</strong> live problems"
 msgstr "<strong>%d</strong> aktive problem"
 
@@ -402,6 +402,7 @@ msgstr "Send meg varsel ved framtidige oppdateringar"
 
 #: templates/web/default/reports/index.html:3
 #: templates/web/fixmybarangay/reports/index.html:3
+#: templates/web/zurich/reports/index.html:12
 #, fuzzy
 msgid "All Reports"
 msgstr "Alle rapportar"
@@ -563,8 +564,8 @@ msgid ""
 "whom the report is sent."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1084
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:127
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1086
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:140
 #: templates/web/default/admin/bodies.html:1
 #: templates/web/zurich/header.html:63
 msgid "Bodies"
@@ -668,7 +669,7 @@ msgid "Closed"
 msgstr "Lukka"
 
 # skal det vera forskjellig tyding frå engelsken her? --KBU
-#: perllib/FixMyStreet/DB/Result/Problem.pm:714
+#: perllib/FixMyStreet/DB/Result/Problem.pm:720
 msgid "Closed by council"
 msgstr "(ikkje rapportert til administrasjonen)"
 
@@ -789,8 +790,8 @@ msgstr "Kontakt oss"
 msgid "Contact the team"
 msgstr "Kontakt prosjektgruppa"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1217
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1245
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1219
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1247
 msgid "Could not find user"
 msgstr "Kunne ikkje finna brukaren"
 
@@ -953,11 +954,11 @@ msgstr "Oppdatert av"
 msgid "Email"
 msgstr "E-post"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1193
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1195
 msgid "Email added to abuse list"
 msgstr "E-post lagd til misbrukliste"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1190
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1192
 msgid "Email already in abuse list"
 msgstr "E-post allereie i misbruklista"
 
@@ -1023,7 +1024,7 @@ msgstr "Sluttmånad:"
 msgid "Endpoint"
 msgstr "Sett opp Open311"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:12
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:25
 #, fuzzy
 msgid "Enter a Z&uuml;rich street name"
 msgstr "Skriv inn postnummer i nærleiken, eller vegnamn og stad"
@@ -1204,7 +1205,7 @@ msgstr "Løyst:"
 msgid "Flag user"
 msgstr "Flagg brukar"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1089
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1091
 #: templates/web/default/admin/users.html:16
 msgid "Flagged"
 msgstr "Flagga:"
@@ -1286,6 +1287,7 @@ msgid "Going to send questionnaire?"
 msgstr "Skal spørjeskjemaet sendast?"
 
 #: templates/web/default/admin/index.html:24
+#: templates/web/zurich/admin/index.html:11
 msgid "Graph of problem creation by status over time"
 msgstr "Graf over problemoppretting fordelt på status over tid"
 
@@ -1405,17 +1407,17 @@ msgstr ""
 msgid "ID"
 msgstr "ID"
 
-#: templates/web/default/email_sent.html:18
+#: templates/web/default/email_sent.html:19
 #, fuzzy
 msgid "If you do not, your alert will not be activated."
 msgstr "varselet ditt vil ikkje aktiverast"
 
-#: templates/web/default/email_sent.html:14
+#: templates/web/default/email_sent.html:15
 #, fuzzy
 msgid "If you do not, your problem will not be posted."
 msgstr "vil problemet ditt ikkje publiserast"
 
-#: templates/web/default/email_sent.html:16
+#: templates/web/default/email_sent.html:17
 #, fuzzy
 msgid "If you do not, your update will not be posted."
 msgstr "oppdateringa di vil ikkje publiserast"
@@ -1502,6 +1504,11 @@ msgstr ""
 msgid "In progress"
 msgstr "Under arbeid"
 
+#: templates/web/zurich/admin/report_edit.html:116
+#, fuzzy
+msgid "Include reporter personal details"
+msgstr "Ver venleg og legg inn opplysningar om problemet"
+
 #: templates/web/default/admin/stats.html:76
 msgid "Include unconfirmed reports"
 msgstr "Inkluder ikkje-stadfesta problem"
@@ -1519,7 +1526,7 @@ msgstr ""
 msgid "Invalid agency_responsible value %s"
 msgstr "Ugyldig agency_responsible-verdi %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1004
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1006
 msgid "Invalid end date"
 msgstr "Ugyldig slutt-dato"
 
@@ -1527,7 +1534,7 @@ msgstr "Ugyldig slutt-dato"
 msgid "Invalid format %s specified."
 msgstr "Ugyldig format %s oppgjeve."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:994
+#: perllib/FixMyStreet/App/Controller/Admin.pm:996
 msgid "Invalid start date"
 msgstr "Ugyldig startdato"
 
@@ -1797,6 +1804,11 @@ msgstr "Nye problem i {{COUNCIL}} på FiksGataMi"
 msgid "New problems within {{NAME}}'s boundary on FixMyStreet"
 msgstr "Nye rapportar innanfor grensa til {{NAME}} på FiksGataMi"
 
+#: templates/web/zurich/admin/index-sdm.html:4
+#, fuzzy
+msgid "New reports"
+msgstr "Opne rapportar"
+
 #: db/alert_types_eha.pl:23
 msgid ""
 "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
@@ -2063,10 +2075,10 @@ msgstr ""
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1023
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:663
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:664
-#: perllib/FixMyStreet/DB/Result/Problem.pm:515
-#: perllib/FixMyStreet/DB/Result/Problem.pm:525
-#: perllib/FixMyStreet/DB/Result/Problem.pm:535
-#: perllib/FixMyStreet/DB/Result/Problem.pm:547
+#: perllib/FixMyStreet/DB/Result/Problem.pm:521
+#: perllib/FixMyStreet/DB/Result/Problem.pm:531
+#: perllib/FixMyStreet/DB/Result/Problem.pm:541
+#: perllib/FixMyStreet/DB/Result/Problem.pm:553
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:331
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:340
 msgid "Other"
@@ -2324,6 +2336,13 @@ msgstr "Ver venleg og legg inn namnet ditt"
 msgid "Please enter your title"
 msgstr "Ver venleg og legg inn e-posten din"
 
+#: templates/web/default/auth/sign_out.html:5
+#: templates/web/zurich/auth/sign_out.html:5
+msgid ""
+"Please feel free to <a href=\"%s\">sign in again</a>, or go back to the <a "
+"href=\"/\">front page</a>."
+msgstr ""
+
 #: templates/web/emptyhomes/report/new/fill_in_details_text.html:1
 msgid ""
 "Please fill in details of the empty property below, saying what type of\n"
@@ -2544,6 +2563,7 @@ msgid "Problem %s sent to council %s"
 msgstr "Problem %s sendt til administrasjon %s"
 
 #: templates/web/default/admin/index.html:28
+#: templates/web/zurich/admin/index.html:15
 msgid "Problem breakdown by state"
 msgstr "Tilstandsfordeling av problem"
 
@@ -2840,7 +2860,7 @@ msgstr "Rapporter eit problem"
 msgid "Report empty properties"
 msgstr "Rapporter tomme heimar"
 
-#: perllib/FixMyStreet/App/Controller/Rss.pm:286
+#: perllib/FixMyStreet/App/Controller/Rss.pm:295
 msgid "Report on %s"
 msgstr "Rapport på %s"
 
@@ -2859,7 +2879,7 @@ msgstr "Rapportert %s"
 msgid "Reported %s, to %s"
 msgstr "Rapportert %s, til %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:530
+#: perllib/FixMyStreet/DB/Result/Problem.pm:536
 #: templates/web/default/contact/index.html:45
 #: templates/web/fixmystreet/contact/index.html:46
 msgid "Reported anonymously at %s"
@@ -2871,25 +2891,25 @@ msgstr "Rapportert anonymt %s"
 msgid "Reported before"
 msgstr "Rapportert tidlegare"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:522
+#: perllib/FixMyStreet/DB/Result/Problem.pm:528
 msgid "Reported by %s anonymously at %s"
 msgstr "Publisert av %s anonymt %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:553
+#: perllib/FixMyStreet/DB/Result/Problem.pm:559
 #: templates/web/default/contact/index.html:47
 #: templates/web/fixmystreet/contact/index.html:48
 msgid "Reported by %s at %s"
 msgstr "Publisert av %s %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:544
+#: perllib/FixMyStreet/DB/Result/Problem.pm:550
 msgid "Reported by %s by %s at %s"
 msgstr "Rapportert av %s av %s %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:518
+#: perllib/FixMyStreet/DB/Result/Problem.pm:524
 msgid "Reported by %s in the %s category anonymously at %s"
 msgstr "Rapportert av %s i kategorien %s anonymt %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:538
+#: perllib/FixMyStreet/DB/Result/Problem.pm:544
 msgid "Reported by %s in the %s category by %s at %s"
 msgstr "Rapportert av %s i kategorien %s av %s %s"
 
@@ -2898,11 +2918,11 @@ msgstr "Rapportert av %s i kategorien %s av %s %s"
 msgid "Reported in the %s category"
 msgstr "Rapportert i kategorien %s av %s %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:526
+#: perllib/FixMyStreet/DB/Result/Problem.pm:532
 msgid "Reported in the %s category anonymously at %s"
 msgstr "Rapportert i kategorien %s anonymt %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:548
+#: perllib/FixMyStreet/DB/Result/Problem.pm:554
 msgid "Reported in the %s category by %s at %s"
 msgstr "Rapportert i kategorien %s av %s %s"
 
@@ -2919,16 +2939,26 @@ msgstr "Rapportert i kategorien %s av %s %s"
 msgid "Reporting a problem"
 msgstr "Legger til eit problem"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1085
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:120
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1087
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:133
 #: templates/web/zurich/header.html:59
 #, fuzzy
 msgid "Reports"
 msgstr "Alle rapportar"
 
+#: templates/web/zurich/admin/index-sdm.html:7
+#, fuzzy
+msgid "Reports awaiting approval"
+msgstr "Legger til eit problem"
+
 #: templates/web/default/around/tabbed_lists.html:3
 msgid "Reports on and around the map"
 msgstr "Problem i og rundt kartet"
+
+#: templates/web/zurich/admin/index-sdm.html:10
+#, fuzzy
+msgid "Reports published"
+msgstr "Rapporter eit problem"
 
 #: templates/web/default/admin/report_edit.html:36
 msgid "Resend report"
@@ -2949,6 +2979,16 @@ msgstr ""
 #: perllib/FixMyStreet/Geocode/OSM.pm:170
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "Vegoperatør for denne namngjevne vegen (frå OpenStreetMap): %s"
+
+#: templates/web/default/admin/report_edit.html:51
+#: templates/web/zurich/admin/report_edit.html:51
+msgid "Rotate Left"
+msgstr ""
+
+#: templates/web/default/admin/report_edit.html:52
+#: templates/web/zurich/admin/report_edit.html:52
+msgid "Rotate Right"
+msgstr ""
 
 #: templates/web/default/admin/body_edit.html:76
 msgid "Save changes"
@@ -2994,7 +3034,7 @@ msgstr ""
 "Vel kva for ein type varsel du ynskjer og klikk på knappen for ei RSS-"
 "kjelde, eller skriv inn e-postadressa di for å abonnera på eit e-postvarsel."
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:634
+#: perllib/FixMyStreet/DB/Result/Problem.pm:640
 msgid "Sent to %s %s later"
 msgstr "Sendt til %s %s seinare"
 
@@ -3076,7 +3116,6 @@ msgstr "Logg inn eller opprett ein konto"
 #: templates/web/emptyhomes/header.html:41
 #: templates/web/fiksgatami/header.html:22
 #: templates/web/fiksgatami/nn/header.html:22
-#: templates/web/fixmybarangay/auth/sign_out.html:1
 #: templates/web/lichfielddc/header.html:177
 #: templates/web/reading/header.html:33
 #: templates/web/zurich/auth/sign_out.html:1
@@ -3169,7 +3208,7 @@ msgstr "Tilstand"
 msgid "State:"
 msgstr "Tilstand:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1090
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1092
 #: templates/web/default/admin/stats.html:1
 msgid "Stats"
 msgstr "Statistikk"
@@ -3266,12 +3305,12 @@ msgstr ""
 "Eller du kan abonnera på varsel basert på bydel eller administrasjon du "
 "høyrer til under:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1083
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:119
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1085
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:132
 #: templates/web/default/admin/index.html:1
 #: templates/web/zurich/admin/index-dm.html:1
 #: templates/web/zurich/admin/index-sdm.html:1
-#: templates/web/zurich/header.html:56
+#: templates/web/zurich/admin/index.html:1 templates/web/zurich/header.html:56
 msgid "Summary"
 msgstr "Oppsummering"
 
@@ -3280,10 +3319,12 @@ msgstr "Oppsummering"
 #: templates/web/fiksgatami/nn/reports/index.html:1
 #: templates/web/fiksgatami/reports/index.html:1
 #: templates/web/fixmybarangay/reports/index.html:1
+#: templates/web/zurich/reports/index.html:0
+#: templates/web/zurich/reports/index.html:4
 msgid "Summary reports"
 msgstr "Oppsummeringsrapportar"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1087
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1089
 #, fuzzy
 msgid "Survey"
 msgstr "Resultat frå spørjeundersøkinga"
@@ -3492,7 +3533,7 @@ msgstr ""
 "Detaljane om problemet ditt er tilgjengelege på høgre kant av denne sida."
 
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:60
-#: perllib/FixMyStreet/App/Controller/Reports.pm:51
+#: perllib/FixMyStreet/App/Controller/Reports.pm:67
 msgid "The error was: %s"
 msgstr "Feilen var: %s"
 
@@ -3604,7 +3645,7 @@ msgstr ""
 "Brukaren kunne ikkje plassera problemet på eit kart, men sjekk områdde rundt "
 "staden dei skreiv inn"
 
-#: perllib/FixMyStreet/App/Controller/Reports.pm:48
+#: perllib/FixMyStreet/App/Controller/Reports.pm:64
 msgid ""
 "There was a problem showing the All Reports page. Please try again later."
 msgstr ""
@@ -3774,7 +3815,7 @@ msgid ""
 msgstr ""
 "Denne nettsida inneheld òg eit bilete av problemet, sendt inn av brukaren."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1086
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1088
 #: templates/web/default/admin/timeline.html:1
 msgid "Timeline"
 msgstr "Tidslinje"
@@ -3914,9 +3955,9 @@ msgstr "Oppdatert!"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:733
 #: perllib/FixMyStreet/App/Controller/Admin.pm:867
 #: perllib/FixMyStreet/App/Controller/Admin.pm:918
-#: perllib/FixMyStreet/App/Controller/Admin.pm:955
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:309
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:364
+#: perllib/FixMyStreet/App/Controller/Admin.pm:957
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:322
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:377
 msgid "Updated!"
 msgstr "Oppdatert!"
 
@@ -3941,16 +3982,16 @@ msgstr "Oppdateringar av {{title}}"
 msgid "Updates to this problem, FixMyStreet"
 msgstr "Oppdateringar til dette problemet, FiksGataMi"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1249
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1251
 msgid "User flag removed"
 msgstr "Brukarflagg fjerna"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1221
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1223
 msgid "User flagged"
 msgstr "Brukar flagga"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1088
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:134
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1090
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:147
 #: templates/web/default/admin/flagged.html:30
 #: templates/web/zurich/header.html:68
 msgid "Users"
@@ -4272,7 +4313,6 @@ msgstr ""
 "anna vil byta ut dette."
 
 #: templates/web/default/auth/sign_out.html:3
-#: templates/web/fixmybarangay/auth/sign_out.html:3
 #: templates/web/zurich/auth/sign_out.html:3
 msgid "You have been signed out"
 msgstr "Du er allereie logga ut"
@@ -4330,7 +4370,7 @@ msgstr ""
 "Du har no logga inn. Ver venleg og sjekk og stadfest at detaljane dine er "
 "korrekte:"
 
-#: templates/web/default/email_sent.html:12
+#: templates/web/default/email_sent.html:13
 #, fuzzy
 msgid "You must now click the link in the email we've just sent you."
 msgstr ""
@@ -4476,7 +4516,7 @@ msgstr "av %s"
 msgid "council"
 msgstr "administrasjon"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:619
+#: perllib/FixMyStreet/DB/Result/Problem.pm:625
 msgid "council ref:&nbsp;%s"
 msgstr ""
 
@@ -4492,10 +4532,11 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr ""
 
 #: templates/web/default/admin/index.html:15
+#: templates/web/zurich/admin/index.html:5
 msgid "from %d different users"
 msgstr "frå %d ulike brukarar"
 
-#: perllib/Utils.pm:267
+#: perllib/Utils.pm:268
 msgid "less than a minute"
 msgstr "mindre enn eitt minutt"
 
@@ -4567,7 +4608,7 @@ msgstr ""
 msgid "this type of local problem"
 msgstr "denne typen lokalt problem"
 
-#: perllib/Utils.pm:241
+#: perllib/Utils.pm:240
 msgid "today"
 msgstr "i dag"
 
@@ -4599,14 +4640,14 @@ msgid_plural "<big>%s</big> reports recently"
 msgstr[0] "<big>%s</big> rapport nyleg"
 msgstr[1] "<big>%s</big> rapportar nyleg"
 
-#: perllib/Utils.pm:286
+#: perllib/Utils.pm:287
 #, perl-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d time"
 msgstr[1] "%d timar"
 
-#: perllib/Utils.pm:288
+#: perllib/Utils.pm:289
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
@@ -4630,7 +4671,7 @@ msgstr[0] ""
 msgstr[1] ""
 "Vi har enno ikkje detaljar for administrasjonane som dekkjer denne staden."
 
-#: perllib/Utils.pm:282
+#: perllib/Utils.pm:283
 #, perl-format
 msgid "%d week"
 msgid_plural "%d weeks"
@@ -4666,7 +4707,7 @@ msgstr[1] ""
 "Vi har enno <strong>ikkje</strong> detaljane for dei andre administrasjonane "
 "som dekkjer denne staden."
 
-#: perllib/Utils.pm:284
+#: perllib/Utils.pm:285
 #, perl-format
 msgid "%d day"
 msgid_plural "%d days"

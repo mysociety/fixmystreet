@@ -2,7 +2,6 @@
 
 <h1>[% loc('You have been signed out') %]</h1>
 
-<p>Please feel free to <a href="[% c.uri_for('/admin') %]">sign in again</a>, or
-go back to the <a href="/">front page</a>.</p>
+<p>[% tprintf( loc('Please feel free to <a href="%s">sign in again</a>, or go back to the <a href="/">front page</a>.'), c.uri_for('/admin') ) %]</p>
 
 [% INCLUDE 'footer.html' %]
