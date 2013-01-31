@@ -28,8 +28,13 @@ body.mappage .content {
         border: 1px solid #666;
     }
 }
+/* The header on a map page needs a shadow too */
 body.mappage .nav-wrapper-2 {
     @include box-shadow(0 0 6px 1px #000);
+}
+/* Except on admin pages where there's an admin nav directly underneath it */
+body.mappage.admin .nav-wrapper-2 {
+    @include box-shadow(none);
 }
 
 // Different header and logo
@@ -268,6 +273,7 @@ body.mappage .admin-nav-wrapper {
     padding-right: 10px;
     position: fixed;
     width: 100%;
+    @include box-shadow(0 0 6px 1px #000);
 }
 
 .admin-nav {
