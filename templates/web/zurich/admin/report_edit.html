@@ -40,7 +40,7 @@
     </li>
 [% END %]
 
-<li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %] ([% problem.latitude %],[% problem.longitude %])
+<li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %]
 ([%
     SET safe = problem.postcode | html;
     tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
@@ -52,7 +52,8 @@
 [% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
 </li>
 <li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
-<li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
+<li>[% loc('Created:') %] [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
+
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
