@@ -28,6 +28,9 @@ body.mappage .content {
         border: 1px solid #666;
     }
 }
+body.mappage .nav-wrapper-2 {
+    @include box-shadow(0 0 6px 1px #000);
+}
 
 // Different header and logo
 #site-header .container {
