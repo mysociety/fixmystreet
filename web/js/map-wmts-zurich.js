@@ -77,6 +77,8 @@ $(function(){
     // Give main code a new bbox_strategy that translates between
     // lat/lon and our swiss coordinates
     fixmystreet.bbox_strategy = new OpenLayers.Strategy.ZurichBBOX({ratio: 1});
+
+    fixmystreet.area_format = { fillColor: 'none', strokeWidth: 4, strokeColor: 'black' };
 }
 
 OpenLayers.Strategy.ZurichBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {

@@ -82,6 +82,9 @@ function fixmystreet_onload() {
             fixmystreet.map.addLayer(area);
             if ( fixmystreet.area.length == 1 ) {
                 area.events.register('loadend', null, function(a,b,c) {
+                    if ( fixmystreet.area_format ) {
+                        area.styleMap.styles.default.defaultStyle = fixmystreet.area_format;
+                    }
                     var bounds = area.getDataExtent();
                     if (bounds) {
                         var center = bounds.getCenterLonLat();
