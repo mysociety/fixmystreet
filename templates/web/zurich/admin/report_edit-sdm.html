@@ -29,7 +29,7 @@
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
 <li>[% loc('Name:') %] [% problem.name | html %]
 <li>[% loc('Email:') %] [% problem.user.email | html %]
-[% IF problem.extra.email_confirmed %][% loc('Confirmed') %][% END %]
+[% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
 <li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 

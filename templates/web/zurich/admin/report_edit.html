@@ -49,7 +49,7 @@
 
 <li>[% loc('Name:') %] [% problem.name | html %] <input type='hidden' name='name' id='name' value='[% problem.name | html %]'></li>
 <li>[% loc('Email:') %] [% problem.user.email | html %] <input type='hidden' id='email' name='email' value='[% problem.user.email | html %]'>
-[% IF problem.extra.email_confirmed %][% loc('Confirmed') %][% END %]
+[% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
 </li>
 <li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
