@@ -22,9 +22,11 @@ $mech->content_like( qr/zurich/i );
 my $zurich = $mech->create_body_ok( 1, 'Zurich' );
 my $division = $mech->create_body_ok( 2, 'Division 1' );
 $division->parent( $zurich->id );
+$division->endpoint( 'division@example.org' );
 $division->update;
 my $subdivision = $mech->create_body_ok( 3, 'Subdivision A' );
 $subdivision->parent( $division->id );
+$subdivision->endpoint( 'subdivision@example.org' );
 $subdivision->update;
 
 my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
@@ -60,6 +62,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Aufgenommen');
 $mech->content_contains('Test Test');
 $mech->content_lacks('photo/' . $report->id . '.jpeg');
+$mech->email_count_is(0);
 
 # Photo publishing
 $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -83,6 +86,12 @@ $mech->submit_form_ok( { with_fields => { body_subdivision => 3 } } );
 $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('In Bearbeitung');
 $mech->content_contains('Test Test');
+
+FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+my $email = $mech->get_email;
+like $email->header('Subject'), qr/Neue Meldung/, 'subject looks okay';
+like $email->header('To'), qr/subdivision\@example.org/, 'to line looks correct';
+$mech->clear_emails_ok;
 
 $mech->log_out_ok;
 
@@ -113,6 +122,12 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('In Bearbeitung');
 $mech->content_contains('Test Test');
 
+FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+$email = $mech->get_email;
+like $email->header('Subject'), qr/Feedback/, 'subject looks okay';
+like $email->header('To'), qr/division\@example.org/, 'to line looks correct';
+$mech->clear_emails_ok;
+
 $report->discard_changes;
 is $report->state, 'planned', 'Report now in planned state';
 
@@ -123,6 +138,12 @@ $mech->get_ok( '/admin' );
 $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 
+# User confirms their email address
+my $extra = $report->extra;
+$extra->{email_confirmed} = 1;
+$report->extra ( { %$extra } );
+$report->update;
+
 $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->submit_form_ok( { with_fields => { status_update => 'FINAL UPDATE' } } );
 $mech->form_with_fields( 'status_update' );
@@ -132,6 +153,11 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Erledigt');
 $mech->content_contains('Test Test');
 $mech->content_contains('FINAL UPDATE');
+
+$email = $mech->get_email;
+like $email->header('To'), qr/test\@example.com/, 'to line looks correct';
+like $email->body, qr/FINAL UPDATE/, 'body looks correct';
+$mech->clear_emails_ok;
 
 $mech->delete_problems_for_body( 2 );
 $mech->delete_user( 'dm1@example.org' );

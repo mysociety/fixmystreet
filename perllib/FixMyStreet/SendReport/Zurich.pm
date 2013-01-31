@@ -20,7 +20,7 @@ sub build_recipient_list {
             body_id => $body->id,
             category => $row->category
         } );
-        $body_email = $contact->email if $contact->email;
+        $body_email = $contact->email if $contact && $contact->email;
     }
 
     push @{ $self->to }, [ $body_email, $body->name ];

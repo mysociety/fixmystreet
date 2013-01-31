@@ -217,10 +217,12 @@ sub categories_summary {
 }
 
 sub send_reports {
+    my ( $rs, $site_override ) = @_;
+
     # Set up site, language etc.
     my ($verbose, $nomail) = CronFns::options();
     my $base_url = mySociety::Config::get('BASE_URL');
-    my $site = CronFns::site($base_url);
+    my $site = $site_override || CronFns::site($base_url);
 
     my $states = [ 'confirmed', 'fixed' ];
     $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed' ] if $site eq 'zurich';
