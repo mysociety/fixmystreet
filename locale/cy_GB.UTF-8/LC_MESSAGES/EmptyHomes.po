@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-01-31 15:25+0000\n"
+"POT-Creation-Date: 2013-01-31 15:59+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -549,7 +549,7 @@ msgstr ""
 msgid "Anonymous"
 msgstr "Di-enw"
 
-#: templates/web/default/admin/report_edit.html:27
+#: templates/web/default/admin/report_edit.html:31
 #: templates/web/default/admin/update_edit.html:17
 #, fuzzy
 msgid "Anonymous:"
@@ -577,16 +577,16 @@ msgstr "Ni roddwyd gwybod i'r cyngor am hyn"
 msgid "Area covered"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:97
+#: templates/web/zurich/admin/report_edit.html:99
 msgid "Assign to different category:"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:106
+#: templates/web/zurich/admin/report_edit.html:108
 msgid "Assign to external body:"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:138
-#: templates/web/zurich/admin/report_edit.html:85
+#: templates/web/zurich/admin/report_edit.html:140
+#: templates/web/zurich/admin/report_edit.html:87
 msgid "Assign to subdivision:"
 msgstr ""
 
@@ -684,11 +684,11 @@ msgstr ""
 
 #: templates/web/default/admin/body.html:75
 #: templates/web/default/admin/body_edit.html:23
-#: templates/web/default/admin/report_edit.html:26
+#: templates/web/default/admin/report_edit.html:30
 #: templates/web/default/report/new/fill_in_details_form.html:67
 #: templates/web/zurich/admin/body.html:36
-#: templates/web/zurich/admin/report_edit-sdm.html:21
-#: templates/web/zurich/admin/report_edit.html:96
+#: templates/web/zurich/admin/report_edit-sdm.html:23
+#: templates/web/zurich/admin/report_edit.html:98
 msgid "Category:"
 msgstr "Categori:"
 
@@ -711,8 +711,7 @@ msgstr "Sut i roi gwybod am eiddo gwag"
 
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:82
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:21
+#: templates/web/default/admin/report_edit.html:25
 #: templates/web/default/dashboard/index.html:138
 #: templates/web/default/dashboard/index.html:140
 #: templates/web/default/report/update-form.html:30
@@ -723,8 +722,8 @@ msgstr "Sut i roi gwybod am eiddo gwag"
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:10
 #: templates/web/zurich/admin/header.html:12
-#: templates/web/zurich/admin/report_edit.html:73
 #: templates/web/zurich/admin/report_edit.html:75
+#: templates/web/zurich/admin/report_edit.html:77
 #: templates/web/zurich/report/banner.html:13
 msgid "Closed"
 msgstr ""
@@ -748,7 +747,7 @@ msgstr ""
 msgid "Closest nearby empty properties <small>(within&nbsp;%skm)</small>"
 msgstr "Yr eiddo gwag cyfagos agosaf <small>(within&nbsp;%skm)</small>"
 
-#: templates/web/default/admin/report_edit.html:16
+#: templates/web/default/admin/report_edit.html:17
 #: templates/web/zurich/admin/report_edit-sdm.html:19
 #: templates/web/zurich/admin/report_edit.html:37
 msgid "Co-ordinates:"
@@ -760,12 +759,12 @@ msgstr ""
 msgid "Cobrand"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:40
+#: templates/web/default/admin/report_edit.html:44
 #: templates/web/default/admin/update_edit.html:44
 msgid "Cobrand data:"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:39
+#: templates/web/default/admin/report_edit.html:43
 #: templates/web/default/admin/update_edit.html:43
 msgid "Cobrand:"
 msgstr ""
@@ -814,8 +813,8 @@ msgstr "Cadarnhau"
 #: templates/web/default/admin/body.html:85
 #: templates/web/default/admin/body_edit.html:32
 #: templates/web/default/admin/body_edit.html:84
-#: templates/web/zurich/admin/report_edit-sdm.html:24
-#: templates/web/zurich/admin/report_edit.html:41
+#: templates/web/zurich/admin/report_edit-sdm.html:26
+#: templates/web/zurich/admin/report_edit.html:43
 #, fuzzy
 msgid "Confirmed"
 msgstr "Cadarnhau"
@@ -826,7 +825,7 @@ msgid "Confirmed reports between %s and %s"
 msgstr "Adroddwyd am %s gan %s am %s"
 
 #: templates/web/default/admin/problem_row.html:25
-#: templates/web/default/admin/report_edit.html:35
+#: templates/web/default/admin/report_edit.html:39
 #, fuzzy
 msgid "Confirmed:"
 msgstr "Cadarnhau"
@@ -907,10 +906,10 @@ msgstr "Categori:"
 msgid "Created"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:34
+#: templates/web/default/admin/report_edit.html:38
 #: templates/web/default/admin/update_edit.html:45
-#: templates/web/zurich/admin/report_edit-sdm.html:26
-#: templates/web/zurich/admin/report_edit.html:44
+#: templates/web/zurich/admin/report_edit-sdm.html:28
+#: templates/web/zurich/admin/report_edit.html:46
 #: templates/web/zurich/admin/update_edit.html:29
 msgid "Created:"
 msgstr ""
@@ -993,7 +992,6 @@ msgstr ""
 
 #: templates/web/default/admin/report_edit.html:1
 #: templates/web/zurich/admin/report_edit-sdm.html:1
-#: templates/web/zurich/admin/report_edit.html:1
 #: templates/web/zurich/admin/report_edit.html:4
 #, fuzzy
 msgid "Editing empty property %d"
@@ -1049,14 +1047,14 @@ msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
 
 #: templates/web/default/admin/body.html:80
 #: templates/web/default/admin/body_edit.html:26
-#: templates/web/default/admin/report_edit.html:32
+#: templates/web/default/admin/report_edit.html:36
 #: templates/web/default/admin/update_edit.html:27
 #: templates/web/default/admin/user-form.html:6
 #: templates/web/default/alert/updates.html:13
 #: templates/web/default/report/display.html:34
 #: templates/web/zurich/admin/body.html:41
-#: templates/web/zurich/admin/report_edit-sdm.html:23
-#: templates/web/zurich/admin/report_edit.html:40
+#: templates/web/zurich/admin/report_edit-sdm.html:25
+#: templates/web/zurich/admin/report_edit.html:42
 msgid "Email:"
 msgstr "E-bost:"
 
@@ -1170,7 +1168,7 @@ msgstr ""
 msgid "Examples:"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:41
+#: templates/web/default/admin/report_edit.html:45
 msgid "Extra data:"
 msgstr ""
 
@@ -1258,8 +1256,7 @@ msgstr ""
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:82
 #: templates/web/default/admin/index.html:36
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:21
+#: templates/web/default/admin/report_edit.html:25
 #: templates/web/default/dashboard/index.html:138
 #: templates/web/default/dashboard/index.html:140
 #: templates/web/default/report/update-form.html:30
@@ -1270,14 +1267,12 @@ msgstr ""
 msgid "Fixed"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:22
+#: templates/web/default/admin/report_edit.html:26
 #, fuzzy
 msgid "Fixed - Council"
 msgstr "cyngor"
 
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:22
+#: templates/web/default/admin/report_edit.html:26
 #, fuzzy
 msgid "Fixed - User"
 msgstr "Cuddio hen adroddiadau "
@@ -1300,7 +1295,7 @@ msgstr ""
 msgid "Flagged"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:43
+#: templates/web/default/admin/report_edit.html:47
 #: templates/web/default/admin/user-form.html:14
 msgid "Flagged:"
 msgstr ""
@@ -1311,7 +1306,7 @@ msgstr ""
 msgid "Follow a ward link to view only reports within that ward."
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:17
+#: templates/web/default/admin/report_edit.html:21
 #, fuzzy
 msgid "For council(s):"
 msgstr "cyngor"
@@ -1373,7 +1368,7 @@ msgstr "Rhowch borthiant RSS i mi"
 msgid "Go"
 msgstr "Ewch"
 
-#: templates/web/default/admin/report_edit.html:42
+#: templates/web/default/admin/report_edit.html:46
 #, fuzzy
 msgid "Going to send questionnaire?"
 msgstr "Anfon yr holiadur"
@@ -1429,13 +1424,11 @@ msgstr ""
 msgid "Hi %s"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:22
+#: templates/web/default/admin/report_edit.html:26
 #: templates/web/default/admin/update_edit.html:22
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:11
-#: templates/web/zurich/admin/report_edit.html:64
-#: templates/web/zurich/admin/report_edit.html:68
+#: templates/web/zurich/admin/report_edit.html:70
 #: templates/web/zurich/admin/update_edit.html:18
 #, fuzzy
 msgid "Hidden"
@@ -1539,7 +1532,7 @@ msgstr ""
 "fel y gallwn\n"
 "ddangos i'r cyngor y gweithgarwch yn ei ardal."
 
-#: templates/web/default/auth/token.html:23
+#: templates/web/default/auth/token.html:25
 #: templates/web/default/email_sent.html:9
 msgid ""
 "If you use web-based email or have 'junk mail' filters, you may wish to "
@@ -1579,8 +1572,7 @@ msgstr ""
 
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:82
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:21
+#: templates/web/default/admin/report_edit.html:25
 #: templates/web/default/dashboard/index.html:138
 #: templates/web/default/dashboard/index.html:140
 #: templates/web/default/report/update-form.html:30
@@ -1590,12 +1582,12 @@ msgstr ""
 #: templates/web/fixmystreet/report/update-form.html:30
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:8
-#: templates/web/zurich/admin/report_edit.html:77
+#: templates/web/zurich/admin/report_edit.html:79
 #: templates/web/zurich/report/banner.html:15
 msgid "In progress"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:116
+#: templates/web/zurich/admin/report_edit.html:118
 #, fuzzy
 msgid "Include reporter personal details"
 msgstr "Cofnodwch fanylion"
@@ -1609,8 +1601,8 @@ msgstr "Cynnwys hen adroddiadau"
 msgid "Incorrect has_photo value \"%s\""
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit-sdm.html:35
-#: templates/web/zurich/admin/report_edit.html:59
+#: templates/web/zurich/admin/report_edit-sdm.html:37
+#: templates/web/zurich/admin/report_edit.html:61
 msgid "Internal notes:"
 msgstr ""
 
@@ -1633,8 +1625,7 @@ msgstr ""
 
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:81
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:20
+#: templates/web/default/admin/report_edit.html:24
 #: templates/web/default/dashboard/index.html:138
 #: templates/web/default/dashboard/index.html:139
 #: templates/web/default/report/update-form.html:30
@@ -1692,7 +1683,7 @@ msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
 msgid "Last editor"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:37
+#: templates/web/default/admin/report_edit.html:41
 #, fuzzy
 msgid "Last update:"
 msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
@@ -1808,11 +1799,11 @@ msgstr "Mwy o eiddo gwag cyfagos"
 msgid "Name"
 msgstr "Enw"
 
-#: templates/web/default/admin/report_edit.html:31
+#: templates/web/default/admin/report_edit.html:35
 #: templates/web/default/admin/update_edit.html:26
 #: templates/web/default/admin/user-form.html:5
-#: templates/web/zurich/admin/report_edit-sdm.html:22
-#: templates/web/zurich/admin/report_edit.html:39
+#: templates/web/zurich/admin/report_edit-sdm.html:24
+#: templates/web/zurich/admin/report_edit.html:41
 msgid "Name:"
 msgstr "Enw:"
 
@@ -1944,7 +1935,7 @@ msgstr "Adroddiadau newydd o fewn ffin {{NAME}} ar reportemptyhomes.com"
 msgid "New state"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit-sdm.html:38
+#: templates/web/zurich/admin/report_edit-sdm.html:40
 #, fuzzy
 msgid "New update:"
 msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
@@ -1963,8 +1954,8 @@ msgstr "Newydd!"
 #: templates/web/default/admin/list_updates.html:31
 #: templates/web/default/admin/list_updates.html:32
 #: templates/web/default/admin/problem_row.html:21
-#: templates/web/default/admin/report_edit.html:29
-#: templates/web/default/admin/report_edit.html:42
+#: templates/web/default/admin/report_edit.html:33
+#: templates/web/default/admin/report_edit.html:46
 #: templates/web/default/admin/update_edit.html:19
 #: templates/web/default/questionnaire/creator_fixed.html:16
 #: templates/web/default/questionnaire/index.html:107
@@ -2000,7 +1991,7 @@ msgstr "Ni ddaethpwyd o hyd i unrhyw eiddo gwag."
 msgid "No flagged users found"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit-sdm.html:44
+#: templates/web/zurich/admin/report_edit-sdm.html:46
 #, fuzzy
 msgid "No further updates"
 msgstr "Adroddiadau"
@@ -2027,9 +2018,9 @@ msgstr ""
 msgid "Non Public"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:17
-#: templates/web/zurich/admin/report_edit-sdm.html:25
-#: templates/web/zurich/admin/report_edit.html:43
+#: templates/web/default/admin/report_edit.html:21
+#: templates/web/zurich/admin/report_edit-sdm.html:27
+#: templates/web/zurich/admin/report_edit.html:45
 #, fuzzy
 msgid "None"
 msgstr "Nac ydw"
@@ -2142,15 +2133,14 @@ msgid "Older empty property reports"
 msgstr "Adroddiadau hŷn o eiddo gwag"
 
 #: templates/web/bromley/report/display.html:80
-#: templates/web/default/admin/report_edit.html:19
+#: templates/web/default/admin/report_edit.html:23
 #: templates/web/default/admin/update_edit.html:22
 #: templates/web/default/dashboard/index.html:138
 #: templates/web/default/report/update-form.html:30
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:7
-#: templates/web/zurich/admin/report_edit.html:64
-#: templates/web/zurich/admin/report_edit.html:66
+#: templates/web/zurich/admin/report_edit.html:68
 #: templates/web/zurich/admin/update_edit.html:18
 #: templates/web/zurich/report/banner.html:11
 msgid "Open"
@@ -2221,8 +2211,7 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:22
+#: templates/web/default/admin/report_edit.html:26
 msgid "Partial"
 msgstr ""
 
@@ -2249,10 +2238,10 @@ msgid "Phone number (optional)"
 msgstr "(dewisol)"
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:263
-#: templates/web/default/admin/report_edit.html:33
+#: templates/web/default/admin/report_edit.html:37
 #: templates/web/default/report/new/fill_in_details_form.html:215
-#: templates/web/zurich/admin/report_edit-sdm.html:25
-#: templates/web/zurich/admin/report_edit.html:43
+#: templates/web/zurich/admin/report_edit-sdm.html:27
+#: templates/web/zurich/admin/report_edit.html:45
 msgid "Phone:"
 msgstr "Rhif ffôn:"
 
@@ -2282,8 +2271,7 @@ msgstr ""
 
 #: templates/web/bromley/report/display.html:80
 #: templates/web/bromley/report/display.html:81
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:20
+#: templates/web/default/admin/report_edit.html:24
 #: templates/web/default/dashboard/index.html:138
 #: templates/web/default/dashboard/index.html:139
 #: templates/web/default/report/update-form.html:30
@@ -2293,8 +2281,7 @@ msgstr ""
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:9
 #: templates/web/zurich/admin/index-dm.html:9
-#: templates/web/zurich/admin/report_edit.html:64
-#: templates/web/zurich/admin/report_edit.html:67
+#: templates/web/zurich/admin/report_edit.html:69
 msgid "Planned"
 msgstr ""
 
@@ -2647,7 +2634,7 @@ msgstr "Cofnodwyd gan %s am %s"
 
 #: templates/web/default/admin/body.html:97
 #: templates/web/default/admin/body_edit.html:40
-#: templates/web/default/admin/report_edit.html:44
+#: templates/web/default/admin/report_edit.html:48
 msgid "Private"
 msgstr ""
 
@@ -2786,15 +2773,15 @@ msgstr ""
 msgid "Public"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:148
+#: templates/web/zurich/admin/report_edit.html:150
 msgid "Public response:"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:55
+#: templates/web/zurich/admin/report_edit.html:57
 msgid "Publish photo"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:158
+#: templates/web/zurich/admin/report_edit.html:160
 msgid "Publish the response"
 msgstr ""
 
@@ -2944,7 +2931,7 @@ msgstr ""
 msgid "Remove flag"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:55
+#: templates/web/default/admin/report_edit.html:59
 #: templates/web/default/admin/update_edit.html:51
 #: templates/web/zurich/admin/update_edit.html:35
 msgid "Remove photo (can't be undone!)"
@@ -3077,7 +3064,7 @@ msgstr "Adroddiadau ar ac yng nghyffiniau'r map"
 msgid "Reports published"
 msgstr "Adroddiadau"
 
-#: templates/web/default/admin/report_edit.html:36
+#: templates/web/default/admin/report_edit.html:40
 #, fuzzy
 msgid "Resend report"
 msgstr "Cuddio hen adroddiadau "
@@ -3096,13 +3083,13 @@ msgstr ""
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:51
-#: templates/web/zurich/admin/report_edit.html:51
+#: templates/web/default/admin/report_edit.html:55
+#: templates/web/zurich/admin/report_edit.html:53
 msgid "Rotate Left"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:52
-#: templates/web/zurich/admin/report_edit.html:52
+#: templates/web/default/admin/report_edit.html:56
+#: templates/web/zurich/admin/report_edit.html:54
 msgid "Rotate Right"
 msgstr ""
 
@@ -3158,12 +3145,12 @@ msgstr ""
 msgid "Sent to %s %s later"
 msgstr "Anfonwyd at %s %s yn ddiweddarach"
 
-#: templates/web/default/admin/report_edit.html:36
+#: templates/web/default/admin/report_edit.html:40
 #, fuzzy
 msgid "Sent:"
 msgstr "Pwnc:"
 
-#: templates/web/default/admin/report_edit.html:38
+#: templates/web/default/admin/report_edit.html:42
 msgid "Service:"
 msgstr ""
 
@@ -3338,11 +3325,11 @@ msgstr ""
 msgid "State"
 msgstr "Diweddariad:"
 
-#: templates/web/default/admin/report_edit.html:18
+#: templates/web/default/admin/report_edit.html:22
 #: templates/web/default/admin/update_edit.html:21
 #: templates/web/default/report/update-form.html:28
-#: templates/web/zurich/admin/report_edit-sdm.html:33
-#: templates/web/zurich/admin/report_edit.html:62
+#: templates/web/zurich/admin/report_edit-sdm.html:35
+#: templates/web/zurich/admin/report_edit.html:64
 #: templates/web/zurich/admin/update_edit.html:17
 #, fuzzy
 msgid "State:"
@@ -3398,11 +3385,11 @@ msgstr "Pwnc:"
 msgid "Submit"
 msgstr "Anfon"
 
-#: templates/web/default/admin/report_edit.html:58
+#: templates/web/default/admin/report_edit.html:62
 #: templates/web/default/admin/update_edit.html:54
 #: templates/web/default/admin/user-form.html:17
-#: templates/web/zurich/admin/report_edit-sdm.html:43
-#: templates/web/zurich/admin/report_edit.html:160
+#: templates/web/zurich/admin/report_edit-sdm.html:45
+#: templates/web/zurich/admin/report_edit.html:162
 #: templates/web/zurich/admin/update_edit.html:38
 #, fuzzy
 msgid "Submit changes"
@@ -3418,8 +3405,7 @@ msgstr "Anfon yr holiadur"
 #: templates/web/zurich/admin/index-dm.html:23
 #: templates/web/zurich/admin/index-dm.html:6
 #: templates/web/zurich/admin/index-sdm.html:21
-#: templates/web/zurich/admin/report_edit.html:64
-#: templates/web/zurich/admin/report_edit.html:65
+#: templates/web/zurich/admin/report_edit.html:67
 #: templates/web/zurich/admin/reports.html:15
 #: templates/web/zurich/report/banner.html:9
 #, fuzzy
@@ -3665,7 +3651,7 @@ msgid ""
 "the way the attribute is defined in the Open311 v2 specification."
 msgstr ""
 
-#: templates/web/default/auth/token.html:21
+#: templates/web/default/auth/token.html:22
 #: templates/web/default/email_sent.html:6
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
@@ -4025,8 +4011,7 @@ msgstr ""
 msgid "Try again"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:19
-#: templates/web/default/admin/report_edit.html:22
+#: templates/web/default/admin/report_edit.html:26
 #: templates/web/default/admin/update_edit.html:22
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Unconfirmed"
@@ -4364,8 +4349,8 @@ msgstr ""
 #: templates/web/default/admin/list_updates.html:31
 #: templates/web/default/admin/list_updates.html:32
 #: templates/web/default/admin/problem_row.html:21
-#: templates/web/default/admin/report_edit.html:28
-#: templates/web/default/admin/report_edit.html:42
+#: templates/web/default/admin/report_edit.html:32
+#: templates/web/default/admin/report_edit.html:46
 #: templates/web/default/admin/update_edit.html:18
 #: templates/web/default/admin/users.html:26
 #: templates/web/default/questionnaire/creator_fixed.html:14
@@ -4526,7 +4511,7 @@ msgstr "Rydych wedi cadarnhau'ch hysbysiad yn llwyddiannus."
 msgid "You must now click the link in the email we've just sent you."
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:36
+#: templates/web/default/admin/report_edit.html:40
 msgid "You really want to resend?"
 msgstr ""
 
@@ -4670,9 +4655,9 @@ msgstr "cyngor"
 msgid "council ref:&nbsp;%s"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:16
-#: templates/web/zurich/admin/report_edit-sdm.html:19
-#: templates/web/zurich/admin/report_edit.html:37
+#: templates/web/default/admin/report_edit.html:19
+#: templates/web/zurich/admin/report_edit-sdm.html:21
+#: templates/web/zurich/admin/report_edit.html:39
 msgid "didn't use map"
 msgstr ""
 
@@ -4714,16 +4699,16 @@ msgstr "neu"
 msgid "or locate me automatically"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:16
+#: templates/web/default/admin/report_edit.html:18
 #: templates/web/zurich/admin/report_edit-sdm.html:16
-#: templates/web/zurich/admin/report_edit-sdm.html:19
+#: templates/web/zurich/admin/report_edit-sdm.html:20
 #: templates/web/zurich/admin/report_edit.html:24
 #: templates/web/zurich/admin/report_edit.html:32
-#: templates/web/zurich/admin/report_edit.html:37
-msgid "originally entered"
+#: templates/web/zurich/admin/report_edit.html:38
+msgid "originally entered: &ldquo;%s&rdquo;"
 msgstr ""
 
-#: templates/web/default/admin/report_edit.html:17
+#: templates/web/default/admin/report_edit.html:21
 msgid "other areas:"
 msgstr ""
 
@@ -4763,9 +4748,9 @@ msgstr "Anfonwch fanylion eiddo gwag lleol newydd ataf i drwy'r e-bost"
 msgid "today"
 msgstr "heddiw"
 
-#: templates/web/default/admin/report_edit.html:16
-#: templates/web/zurich/admin/report_edit-sdm.html:19
-#: templates/web/zurich/admin/report_edit.html:37
+#: templates/web/default/admin/report_edit.html:19
+#: templates/web/zurich/admin/report_edit-sdm.html:21
+#: templates/web/zurich/admin/report_edit.html:39
 msgid "used map"
 msgstr ""
 

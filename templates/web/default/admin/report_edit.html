@@ -13,7 +13,11 @@
 <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
 <li><label for='detail'>[% loc('Details:') %]</label>
 <textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
-<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] [% problem.postcode | html %] , [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+
+<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %]
+( [% tprintf( loc('originally entered: &ldquo;%s&rdquo;'), problem.postcode | html ) %],
+[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+
 <li>[% loc('For council(s):') %] [% IF problem.bodies_str %][% problem.bodies_str %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
 <li><label class="inline" for="state">[% loc('State:') %]</label> <select name="state"  id="state">
     [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
