@@ -7,6 +7,10 @@ use POSIX qw(strcoll);
 use strict;
 use warnings;
 
+sub shorten_recency_if_new_greater_than_fixed {
+    return 0;
+}
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'green' if $p->is_fixed || $p->is_closed;

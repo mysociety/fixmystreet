@@ -39,5 +39,7 @@
     [% IF c.cobrand.moniker != 'emptyhomes' %]
     <div>[% tprintf( fixed_text,   stats.fixed   ) | comma %]</div>
     [% END %]
+    [% IF c.cobrand.moniker != 'zurich' %]
     <div>[% tprintf( updates_text, stats.updates ) | comma %]</div>
+    [% END %]
 </div>
