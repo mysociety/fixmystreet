@@ -15,7 +15,10 @@
 <textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
 
 <li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %]
-( [% tprintf( loc('originally entered: &ldquo;%s&rdquo;'), problem.postcode | html ) %],
+( [%
+    SET postcode_safe = problem.postcode | html;
+    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
+%],
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
 <li>[% loc('For council(s):') %] [% IF problem.bodies_str %][% problem.bodies_str %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>

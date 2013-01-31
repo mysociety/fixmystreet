@@ -13,11 +13,17 @@
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
 <li>[% loc('Details:') %] [% problem.detail | html %]
 [% IF problem.extra.original_detail %]
-<br>[% tprintf( loc('originally entered: &ldquo;%s&rdquo;'), problem.extra.original_detail | html ) %]
+<br>[%
+    SET safe = problem.extra.original_detail | html;
+    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
+%]
 [% END %]
 </li>
 <li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %] ([% problem.latitude %],[% problem.longitude %])
-([% tprintf( loc('originally entered: &ldquo;%s&rdquo;'), problem.postcode | html ) %],
+([%
+    SET safe = problem.postcode | html;
+    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
+%],
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
