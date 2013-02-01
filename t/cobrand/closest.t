@@ -5,6 +5,9 @@ use Test::More;
 
 use mySociety::Locale;
 use FixMyStreet::App;
+use FixMyStreet::TestMech;
+
+my $mech = FixMyStreet::TestMech->new;
 
 use_ok 'FixMyStreet::Cobrand';
 
@@ -81,4 +84,5 @@ SKIP: {
 }
 
 # all done
+$mech->delete_user( $user );
 done_testing();

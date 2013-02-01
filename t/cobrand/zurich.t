@@ -22,10 +22,12 @@ $mech->content_like( qr/zurich/i );
 my $zurich = $mech->create_body_ok( 1, 'Zurich' );
 my $division = $mech->create_body_ok( 2, 'Division 1' );
 $division->parent( $zurich->id );
+$division->send_method( 'Zurich' );
 $division->endpoint( 'division@example.org' );
 $division->update;
 my $subdivision = $mech->create_body_ok( 3, 'Subdivision A' );
 $subdivision->parent( $division->id );
+$subdivision->send_method( 'Zurich' );
 $subdivision->endpoint( 'subdivision@example.org' );
 $subdivision->update;
 
@@ -44,6 +46,8 @@ $mech->get_ok( '/admin' );
 is $mech->uri->path, '/auth', "got sent to the sign in page";
 
 my $user = $mech->log_in_ok( 'dm1@example.org') ;
+$user->from_body( undef );
+$user->update;
 $mech->get_ok( '/admin' );
 is $mech->uri->path, '/auth', "got sent to the sign in page";
 $user->from_body( 2 );
