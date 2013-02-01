@@ -335,15 +335,16 @@ subtest "Test two-tier council alerts" => sub {
 };
 
 subtest "Test normal alert signups and that alerts are sent" => sub {
+    $mech->delete_user( 'reporter@example.com' );
+    $mech->delete_user( 'alerts@example.com' );
+
     my $user1 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
     ok $user1, "created test user";
-    $user1->alerts->delete;
 
     my $user2 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
     ok $user2, "created test user";
-    $user2->alerts->delete;
 
     for my $alert (
         {
@@ -509,15 +510,16 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
+        $mech->delete_user( 'reporter@example.com' );
+        $mech->delete_user( 'alerts@example.com' );
+
         my $user1 = FixMyStreet::App->model('DB::User')
           ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
         ok $user1, "created test user";
-        $user1->alerts->delete;
 
         my $user2 = FixMyStreet::App->model('DB::User')
           ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
         ok $user2, "created test user";
-        $user2->alerts->delete;
 
         my $dt = DateTime->now->add( minutes => -30 );
         my $r_dt = $dt->clone->add( minutes => 20 );
@@ -571,15 +573,16 @@ for my $test (
 }
 
 subtest 'check new updates alerts for non public reports only go to report owner' => sub {
+    $mech->delete_user( 'reporter@example.com' );
+    $mech->delete_user( 'alerts@example.com' );
+
     my $user1 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
     ok $user1, "created test user";
-    $user1->alerts->delete;
 
     my $user2 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
     ok $user2, "created test user";
-    $user2->alerts->delete;
 
     my $user3 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'updates@example.com', name => 'Update User' } );
