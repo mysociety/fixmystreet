@@ -711,12 +711,10 @@ subtest "check comment with no status change has not status in meta" => sub {
         my @updates = $report->comments->all;
         is scalar @updates, 2, 'correct number of updates';
 
-        warn $updates[0]->problem_state;
-        warn $updates[1]->problem_state;
         my $update = pop @updates;
 
         is $report->state, 'fixed - council', 'correct report state';
-        is $update->problem_state, 'fixed - council', 'corect update state';
+        is $update->problem_state, 'fixed - council', 'correct update state';
         my $update_meta = $mech->extract_update_metas;
         unlike $update_meta->[1], qr/marked as/, 'update meta does not include state change';
 
@@ -740,13 +738,14 @@ subtest "check comment with no status change has not status in meta" => sub {
         );
 
         $report->discard_changes;
-        @updates = $report->comments->all;
+        @updates = $report->comments->search(undef, { order_by => 'created' })->all;;
+
         is scalar @updates, 3, 'correct number of updates';
 
         $update = pop @updates;
 
         is $report->state, 'investigating', 'correct report state';
-        is $update->problem_state, 'investigating', 'corect update state';
+        is $update->problem_state, 'investigating', 'correct update state';
         $update_meta = $mech->extract_update_metas;
         like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
         unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
@@ -769,7 +768,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         $mech->get_ok("/report/$report_id");
 
         $report->discard_changes;
-        @updates = $report->comments->all;
+        @updates = $report->comments->search(undef, { order_by => 'created' })->all;;
         is scalar @updates, 4, 'correct number of updates';
 
         $update = pop @updates;
