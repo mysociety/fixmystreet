@@ -26,8 +26,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "from_council",
-  { data_type => "integer", is_nullable => 1 },
+  "from_body",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "title",
@@ -42,16 +42,27 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
+  "bodies",
+  "FixMyStreet::DB::Result::Body",
+  { "foreign.comment_user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "comments",
   "FixMyStreet::DB::Result::Comment",
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
-__PACKAGE__->has_many(
-  "open311confs",
-  "FixMyStreet::DB::Result::Open311conf",
-  { "foreign.comment_user_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+__PACKAGE__->belongs_to(
+  "from_body",
+  "FixMyStreet::DB::Result::Body",
+  { id => "from_body" },
+  {
+    is_deferrable => 1,
+    join_type     => "LEFT",
+    on_delete     => "CASCADE",
+    on_update     => "CASCADE",
+  },
 );
 __PACKAGE__->has_many(
   "problems",
@@ -61,8 +72,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-05-01 16:20:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LKi8u5IYnHW1+Mez64nvGg
+# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-14 09:23:59
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aw374WQraL5ysOvUmUIU3w
 
 __PACKAGE__->add_columns(
     "password" => {
@@ -144,38 +155,27 @@ sub alert_for_problem {
     } );
 }
 
-sub council {
+sub body {
     my $self = shift;
-
-    return '' unless $self->from_council;
-
-    my $key = 'council_name:' . $self->from_council;
-    my $result = Memcached::get($key);
-
-    unless ($result) {
-        my $area_info = mySociety::MaPit::call('area', $self->from_council);
-        $result = $area_info->{name};
-        Memcached::set($key, $result, 86400);
-    }
-
-    return $result;
+    return '' unless $self->from_body;
+    return $self->from_body->name;
 }
 
-=head2 belongs_to_council
+=head2 belongs_to_body
 
-    $belongs_to_council = $user->belongs_to_council( $council_list );
+    $belongs_to_body = $user->belongs_to_body( $bodies );
 
-Returns true if the user belongs to the comma seperated list of council ids passed in
+Returns true if the user belongs to the comma seperated list of body ids passed in
 
 =cut
 
-sub belongs_to_council {
+sub belongs_to_body {
     my $self = shift;
-    my $council = shift;
+    my $bodies = shift;
 
-    my %councils = map { $_ => 1 } split ',', $council;
+    my %bodies = map { $_ => 1 } split ',', $bodies;
 
-    return 1 if $self->from_council && $councils{ $self->from_council };
+    return 1 if $self->from_body && $bodies{ $self->from_body->id };
 
     return 0;
 }

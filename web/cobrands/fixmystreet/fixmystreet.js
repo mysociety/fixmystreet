@@ -10,14 +10,14 @@
  * elem2: target element
  * offset: this will be added (if present) to the final value, useful for height errors
  */
-function heightFix(elem1, elem2, offset){
+function heightFix(elem1, elem2, offset, force) {
     var h1 = $(elem1).height(),
         h2 = $(elem2).height();
-    if(offset === undefined){
+    if (offset === undefined) {
         offset = 0;
     }
-    if(h1 > h2){
-        $(elem2).css({'min-height':h1+offset});
+    if (h1 > h2 || force) {
+        $(elem2).css( { 'min-height': h1+offset } );
     }
 }
 
@@ -61,6 +61,8 @@ $(function(){
     } else if (window.location.href.indexOf('oxfordshire') != -1) {
         cobrand = 'oxfordshire';
         is_small_map = true;
+    } else if (window.location.href.indexOf('zurich') != -1) {
+        cobrand = 'zurich';
     }
 
     // Deal with switching between mobile and desktop versions on resize
@@ -97,7 +99,7 @@ $(function(){
                 $('.big-green-banner')
                     .addClass('mobile-map-banner')
                     .appendTo('#map_box')
-                    .html('<a href="/">Home</a> Place pin on map');
+                    .html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
             }
             $('span.report-a-problem-btn').on('click.reportBtn', function(){
                 $('html, body').animate({scrollTop:0}, 500);
@@ -117,13 +119,13 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
-                var banner_text = 'Click map to report a problem';
+                var banner_text = translation_strings.report_problem_heading;
                 if (cobrand == 'bromley') {
                     banner_text += '<span>Yellow pins show existing reports</span>';
                 }
                 if (! is_small_map) {
                     $('#site-header').show();
-                    banner_text = validation_strings.report_problem_heading;
+                    banner_text = translation_strings.report_problem_heading;
                 }
                 $('#fms_pan_zoom').css({ top: '4.75em !important' });
                 $('.big-green-banner')
@@ -145,7 +147,7 @@ $(function(){
     }
 
     //show/hide notes on mobile
-    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">How to send successful reports</a>').hide();
+    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">' + translation_strings.how_to_send + '</a>').hide();
     $('.rap-notes-trigger').click(function(e){
         e.preventDefault();
         //check if we've already moved the notes
@@ -156,7 +158,7 @@ $(function(){
         }else{
             //if not, move them and show, hiding .content
             $('.content').after('<div class="content rap-notes"></div>').hide();
-            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">Back</a>');
+            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">' + translation_strings.back + '</a>');
         }
         $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
         location.hash = 'rap-notes';
@@ -376,7 +378,10 @@ $.fn.drawer = function(id, ajax) {
     });
 
     //add permalink on desktop, force hide on mobile
-    $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
+    if (cobrand != 'zurich') {
+        $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
+    }
+
     if($('.mobile').length){
         $('#map_permalink').hide();
         $('#key-tools a.feed').appendTo('#sub_map_links');
@@ -443,7 +448,7 @@ $.fn.drawer = function(id, ajax) {
             if (cobrand == 'bromley') {
                 offset = -110;
             }
-            heightFix(window, '.content', offset);
+            heightFix(window, '.content', offset, 1);
             // in case we have a map that isn't full screen
             map_fix();
         }

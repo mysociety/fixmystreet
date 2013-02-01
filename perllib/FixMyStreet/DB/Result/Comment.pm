@@ -91,6 +91,7 @@ __PACKAGE__->filter_column(
             my $self = shift;
             my $ser  = shift;
             return undef unless defined $ser;
+            utf8::encode($ser) if utf8::is_utf8($ser);
             my $h = new IO::String($ser);
             return RABX::wire_rd($h);
         },
@@ -146,8 +147,8 @@ sub check_for_errors {
     $errors{update} = _('Please enter a message')
       unless $self->text =~ m/\S/;
 
-    if ( $self->text && $self->problem && $self->problem->council 
-        && $self->problem->council eq '2482' && length($self->text) > 2000 ) {
+    if ( $self->text && $self->problem && $self->problem->bodies_str
+        && $self->problem->bodies_str eq '2482' && length($self->text) > 2000 ) {
         $errors{update} = _('Updates are limited to 2000 characters in length. Please shorten your update');
     }
 

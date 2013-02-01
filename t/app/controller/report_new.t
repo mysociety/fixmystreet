@@ -33,49 +33,61 @@ my %contact_params = (
     whenedited => \'current_timestamp',
     note => 'Created for test',
 );
+
+for my $body (
+    { id => 2651, name => 'City of Edinburgh Council' },
+    { id => 2226, name => 'Gloucestershire County Council' },
+    { id => 2326, name => 'Cheltenham Borough Council' },
+    { id => 2482, name => 'Bromley Council' },
+    { id => 2240, name => 'Staffordshire County Council' },
+    { id => 2434, name => 'Lichfield District Council' },
+) {
+    $mech->create_body_ok($body->{id}, $body->{name});
+}
+
 # Let's make some contacts to send things to!
 FixMyStreet::App->model('DB::Contact')->search( {
     email => { 'like', '%example.com' },
 } )->delete;
 my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2651, # Edinburgh
+    body_id => 2651, # Edinburgh
     category => 'Street lighting',
     email => 'highways@example.com',
 } );
 my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2226, # Gloucestershire
+    body_id => 2226, # Gloucestershire
     category => 'Potholes',
     email => 'potholes@example.com',
 } );
 my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2326, # Cheltenham
+    body_id => 2326, # Cheltenham
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2482, # Bromley
+    body_id => 2482, # Bromley
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2651, # Edinburgh
+    body_id => 2651, # Edinburgh
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact6 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2434, # Lichfield
+    body_id => 2434, # Lichfield
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact7 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    area_id => 2240, # Lichfield
+    body_id => 2240, # Lichfield
     category => 'Street lighting',
     email => 'highways@example.com',
 } );
@@ -92,6 +104,57 @@ ok $contact7, "created test contact 7";
 foreach my $test (
     {
         msg    => 'all fields empty',
+        pc     => 'OX1 3DH',
+        fields => {
+            title         => '',
+            detail        => '',
+            photo         => '',
+            name          => '',
+            may_show_name => '1',
+            email         => '',
+            phone         => '',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {},
+        errors  => [
+            'Please enter a subject',
+            'Please enter some details',
+            # No category error, as no categories for Oxon at all, so is skipped
+            'Please enter your email',
+            'Please enter your name',
+        ],
+    },
+    {
+        msg    => 'all fields empty, bad category',
+        pc     => 'GL50 2PR',
+        fields => {
+            title         => '',
+            detail        => '',
+            photo         => '',
+            name          => '',
+            may_show_name => '1',
+            email         => '',
+            phone         => '',
+            category      => 'Something bad',
+            password_sign_in => '',
+            password_register => '',
+            remember_me => undef,
+        },
+        changes => {
+            category => '-- Pick a category --',
+        },
+        errors  => [
+            'Please enter a subject',
+            'Please enter some details',
+            'Please choose a category',
+            'Please enter your email',
+            'Please enter your name',
+        ],
+    },
+    {
+        msg    => 'all fields empty except category',
         pc     => 'SW1A 1AA',
         fields => {
             title         => '',
@@ -503,7 +566,7 @@ foreach my $test (
     is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
 
     # Check the report has been assigned appropriately
-    is $report->council, 2651;
+    is $report->bodies_str, 2651;
 
     # receive token
     my $email = $mech->get_email;
@@ -659,7 +722,7 @@ subtest "test report creation for a user who is signing in as they report" => su
     is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
 
     # Check the report has been assigned appropriately
-    is $report->council, 2651;
+    is $report->bodies_str, 2651;
 
     # check that no emails have been sent
     $mech->email_count_is(0);
@@ -750,7 +813,7 @@ foreach my $test (
         ok $report, "Found the report";
 
         # Check the report has been assigned appropriately
-        is $report->council, $test->{council};
+        is $report->bodies_str, $test->{council};
 
         # check that we got redirected to /report/
         is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
@@ -1155,7 +1218,7 @@ SKIP: {
             ok $report, "Found the report";
 
             # Check the report has been assigned appropriately
-            is $report->council, $test->{council};
+            is $report->bodies_str, $test->{council};
 
             if ( $test->{redirect} ) {
                 is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
@@ -1210,9 +1273,10 @@ SKIP: {
 
     my $cobrand = FixMyStreet::Cobrand::SeeSomething->new();
 
+    $mech->create_body_ok(2535, 'Sandwell Borough Council');
     my $bus_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( {
         %contact_params,
-        area_id => 2535,
+        body_id => 2535,
         category => 'Bus',
         email => 'bus@example.com',
         non_public => 1,

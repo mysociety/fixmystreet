@@ -18,7 +18,7 @@ sub base_url {
 # Different to councils parent due to this being a two-tier council. If we get
 # more, this can be genericised in the parent.
 sub problems_clause {
-    return { council => { like => '%2237%' } };
+    return { bodies_str => { like => '%2237%' } };
 }
 
 sub path_to_web_templates {

@@ -29,7 +29,7 @@ sub example : Local : Args(0) {
     }
 
     # TODO Set up manual version of what the below would do
-    #$c->forward( '/report/new/setup_categories_and_councils' );
+    #$c->forward( '/report/new/setup_categories_and_bodies' );
 
     # See if we've had anything from the dropdowns - perhaps vary results if so
     $c->stash->{ward} = $c->req->param('ward');
@@ -74,9 +74,9 @@ sub check_page_allowed : Private {
     $c->detach( '/auth/redirect' ) unless $c->user_exists;
 
     $c->detach( '/page_error_404_not_found' )
-        unless $c->user_exists && $c->user->from_council;
+        unless $c->user_exists && $c->user->from_body;
 
-    return $c->user->from_council;
+    return $c->user->from_body;
 }
 
 =head2 index
@@ -88,20 +88,23 @@ Show the dashboard table.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $council = $c->forward('check_page_allowed');
+    my $body = $c->forward('check_page_allowed');
 
     # Set up the data for the dropdowns
 
-    my $council_detail = mySociety::MaPit::call('area', $council );
+    # Just take the first area ID we find
+    my $area_id = $body->body_areas->first->area_id;
+
+    my $council_detail = mySociety::MaPit::call('area', $area_id );
     $c->stash->{council} = $council_detail;
 
-    my $children = mySociety::MaPit::call('area/children', $council,
+    my $children = mySociety::MaPit::call('area/children', $area_id,
         type => $c->cobrand->area_types_children,
     );
     $c->stash->{children} = $children;
 
-    $c->stash->{all_councils} = { $council => $council_detail };
-    $c->forward( '/report/new/setup_categories_and_councils' );
+    $c->stash->{all_areas} = { $area_id => $council_detail };
+    $c->forward( '/report/new/setup_categories_and_bodies' );
 
     # See if we've had anything from the dropdowns
 
@@ -109,7 +112,7 @@ sub index : Path : Args(0) {
     $c->stash->{category} = $c->req->param('category');
 
     my %where = (
-        council => $council, # XXX This will break in a two tier council. Restriction needs looking at...
+        bodies_str => $body->id, # XXX Does this break in a two tier council? Restriction needs looking at...
         'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
     $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }

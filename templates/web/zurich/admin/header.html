@@ -1,0 +1,22 @@
+[%
+    SET bodyclass = bodyclass || 'fullwidthpage';
+    INCLUDE 'header.html' admin = 1, bodyclass = bodyclass _ ' admin';
+
+    states = {
+        'unconfirmed' = loc('Submitted'),
+        'confirmed' = loc('Open'),
+        'in progress' = loc('In progress'),
+        'planned' = loc('Planned'),
+        'fixed - council' = loc('Closed'),
+        'hidden' = loc('Hidden'),
+        'closed' = loc('Closed'),
+    }
+%]
+<style type="text/css">
+    .adminhidden { color: #666666; }
+    .error { color: red; }
+    .overdue { background-color: #ffcccc; }
+    select { width: auto; }
+</style>
+
+    <h1 style="clear:both;">[% title %]</h1>

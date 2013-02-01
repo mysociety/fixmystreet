@@ -1,16 +1,13 @@
-Subject: Fix My Z&uuml;rich: Meldung #[% ---report.ID--- | trim %]
-
-
+Subject: Fix my Zurich: Meldung #[% report.id %]
 
 Guten Tag [% report.name %]
 
-Bitte klicken Sie auf den untenstehenden Link, um Ihre Meldung zu best&auml;tigen. Falls der Link nicht funktioniert, kopieren Sie ihn in Ihren Browser:
+Bitte klicken Sie auf den untenstehenden Link, um Ihre Meldung zu bestätigen. Falls der Link nicht funktioniert, kopieren Sie ihn in Ihren Browser:
 
 [% token_url %]
 
 Ihre Meldung:
 
-[% ---report.details---- %]
-
+[% report.detail %]
 
 Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.

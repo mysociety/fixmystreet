@@ -61,8 +61,8 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
     'New reports to {{COUNCIL}} on reportemptyhomes.com', '/reports', 'The latest reports for {{COUNCIL}} reported by users',
-    'problem', 'problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (council like ''%''||?||''%''
-        or council is null) and areas like ''%,''||?||'',%''', 'created desc',
+    'problem', 'problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (bodies_str like ''%''||?||''%''
+        or bodies_str is null) and areas like ''%,''||?||'',%''', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-council'
 );
 
@@ -75,8 +75,8 @@ insert into alert_type
 values ('ward_problems', '', '',
     'New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com', '/reports',
     'The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users',
-    'problem', 'problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (council like ''%''||?||''%''
-        or council is null) and areas like ''%,''||?||'',%''', 'created desc',
+    'problem', 'problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (bodies_str like ''%''||?||''%''
+        or bodies_str is null) and areas like ''%,''||?||'',%''', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-ward'
 );
 

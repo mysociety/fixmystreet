@@ -81,10 +81,10 @@
     </p>
 
     <p>
-    [% loc('Council:') %] <select id='council' name='council'>
+    [% loc('Council:') %] <select id='body' name='body'>
         <option value=''>[% loc('No council') %]</option>
-        [% FOR council IN council_ids %]
-        <option value="[% council %]"[% ' selected' IF council == selected_council %]>[% council_details.$council.name %]</option>
+        [% FOR body IN bodies %]
+        <option value="[% body.id %]"[% ' selected' IF body.id == selected_body %]>[% body.name %]</option>
         [% END %]
     </select>
     </p>

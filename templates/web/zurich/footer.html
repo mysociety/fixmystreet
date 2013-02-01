@@ -4,15 +4,24 @@
 
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
-                <div id="main-nav" role="navigation">
-                    <ul id="main-menu">
-                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %]
+                <div class="nav-wrapper-3">
+                    <div id="main-nav" role="navigation">
+                      [% IF c.user_exists %]
+                        <p>
+                            [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                        </p><p><a href="/auth/sign_out">[% loc('sign out') %]</a>
+                        </p>
+                      [% ELSE %]
+                        <ul id="main-menu" class="mob-only">
+                            <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %]
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
+                            %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                            %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-                    </ul>
+                        </ul>
+                      [% END %]
+                    </div>
                 </div>
             </div>
         </div>

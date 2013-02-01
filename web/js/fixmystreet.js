@@ -43,18 +43,18 @@ $(function(){
 
     // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {
-        return this.optional(element) || value != '-- Pick a category --'; }, validation_strings.category );
+        return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
 
     jQuery.validator.addMethod('validName', function(value, element) {
         var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
-        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && value.match( /\s/ ) && !value.match( validNamePat ); }, validation_strings.category );
+        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && value.match( /\s/ ) && !value.match( validNamePat ); }, translation_strings.category );
 
     var form_submitted = 0;
     var submitted = false;
 
     $("form.validate").validate({
         rules: validation_rules,
-        messages: validation_strings,
+        messages: translation_strings,
         onkeyup: false,
         onfocusout: false,
         errorElement: 'div',
@@ -128,7 +128,7 @@ $(function(){
 
     // Geolocation
     if (geo_position_js.init()) {
-        var link = '<a href="#LINK" id="geolocate_link">&hellip; ' + validation_strings.geolocate + '</a>';
+        var link = '<a href="#LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
         $('form[action="/alert/list"]').append(link.replace('LINK','alert/list'));
         if ($('body.frontpage').length) {
             $('#postcodeForm').after(link.replace('LINK','around'));
@@ -153,13 +153,13 @@ $(function(){
             }, function(err) {
                 $link.find('img').remove();
                 if (err.code == 1) { // User said no
-                    $link.html("You declined; please fill in the box above");
+                    $link.html(translation_strings.geolocation_declined);
                 } else if (err.code == 2) { // No position
-                    $link.html("Could not look up location");
+                    $link.html(translation_strings.geolocation_no_position);
                 } else if (err.code == 3) { // Too long
-                    $link.html("No result returned");
+                    $link.html(translation_strings.geolocation_no_result);
                 } else { // Unknown
-                    $link.html("Unknown error");
+                    $link.html(translation_strings.geolocation_unknown);
                 }
             }, {
                 enableHighAccuracy: true,

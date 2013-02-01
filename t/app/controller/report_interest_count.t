@@ -16,11 +16,6 @@ my $user =
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
-my $user2 =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test2@example.com', name => 'Other User' } );
-ok $user2, "created test user";
-
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,
@@ -33,7 +28,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -59,21 +54,24 @@ ok $report, "created test report - $report_id";
 SKIP: {
     skip( "Need 'fixmybarangay' in ALLOWED_COBRANDS config", 29 )
         unless FixMyStreet::Cobrand->exists('fixmybarangay');
+
+    $mech->create_body_ok(2504, 'Westminster City Council');
+
     for my $test (
         {
-            desc => 'if not from council then no supporter button',
-            from_council => 0,
+            desc => 'if not from body then no supporter button',
+            from_body => undef,
             support_string => 'No supporters',
         },
         {
-            desc => 'from council user can increment supported count',
-            from_council => 2504,
+            desc => 'from body user can increment supported count',
+            from_body => 2504,
             support_string => 'No supporters',
             updated_support => '1 supporter'
         },
         {
             desc => 'correct grammar for more than one supporter',
-            from_council => 2504,
+            from_body => 2504,
             support_string => '1 supporter',
             updated_support => '2 supporters'
         },
@@ -81,17 +79,17 @@ SKIP: {
         subtest $test->{desc} => sub {
             ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
             $mech->log_in_ok( $user->email );
-            $user->from_council( $test->{from_council} );
+            $user->from_body( $test->{from_body} );
             $user->update;
 
-            $report->discard_changes;
-            $report->council( $test->{report_council} );
-            $report->update;
+            $report->update( {
+                bodies_str => $test->{report_council}
+            } );
 
             $mech->get_ok("/report/$report_id");
             $mech->content_contains( $test->{support_string} );
 
-            if ( $test->{from_council} ) {
+            if ( $test->{from_body} ) {
                 $mech->content_contains('Add support');
                 $mech->submit_form_ok( { form_number => 1 } );
 
@@ -104,18 +102,16 @@ SKIP: {
         };
     }
 
-    subtest 'check non council user cannot increment support count' => sub {
+    subtest 'check non body user cannot increment support count' => sub {
         ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
-        $report->discard_changes;
-        $report->interest_count(1);
-        ok $report->update(), 'updated interest count';
 
-        $report->discard_changes;
+        ok $report->update({ interest_count => 1 }), 'updated interest count';
         is $report->interest_count, 1, 'correct interest count';
 
         $mech->get_ok("/report/$report_id");
         $mech->content_contains( '1 supporter' );
 
+        # This doesn't send cookie, so is logged out
         $mech->post_ok("/report/support", { id => $report_id } );
 
         is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';
@@ -135,7 +131,7 @@ subtest 'check support details not shown if not enabled in cobrand' => sub {
 };
 
 $report->discard_changes;
-$report->council( 2504 );
+$report->bodies_str( 2504 );
 $report->update;
 
 # tidy up

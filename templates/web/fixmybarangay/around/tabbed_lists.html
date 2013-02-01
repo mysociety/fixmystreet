@@ -1,4 +1,4 @@
-[% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council);
+[% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_body);
 
 IF allow_creation %]
 <menu id="problems-nav" class="tab-nav">

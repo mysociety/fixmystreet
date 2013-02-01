@@ -7,7 +7,8 @@ use Module::Pluggable
     search_path => __PACKAGE__,
     require     => 1;
 
-has 'councils' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'body_config' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'bodies' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'to' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'success' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'error' => ( is => 'rw', isa => 'Str', default => '' );
@@ -31,25 +32,18 @@ sub get_senders {
 sub reset {
     my $self = shift;
 
-    $self->councils( {} );
+    $self->bodies( [] );
+    $self->body_config( {} );
     $self->to( [] );
 }
 
-sub add_council {
+sub add_body {
     my $self = shift;
-    my $council = shift;
-    my $info = shift;
+    my $body = shift;
     my $config = shift;
 
-    $self->councils->{ $council } = { info => $info, config => $config };
+    push @{$self->bodies}, $body;
+    $self->body_config->{ $body->id } = $config;
 }
-
-sub delete_council {
-    my $self = shift;
-    my $council = shift;
-
-    delete $self->councils->{$council};
-}
-
 
 1;

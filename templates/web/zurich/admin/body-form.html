@@ -1,0 +1,50 @@
+    <form method="post" action="[% body ? c.uri_for('body', body.id) : c.uri_for('bodies') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+
+    <p>
+        <label for="name">[% loc('Name') %]</label>
+        <input type="text" name="name" id="name" value="[% body.name %]" size="50">
+    </p>
+
+    <p>
+        <label for="email">[% loc('Email') %]</label>
+        <input type="text" name="endpoint" id="email" value="[% body.endpoint %]" size="50">
+    </p>
+
+[% IF admin_type == 'super' %]
+    <p>
+        <label for="parent">[% loc('Parent') %]</label>
+        <select name="parent" id="parent">
+            <option value=""> -- [% loc('Select a body') %] -- </option>
+            [% FOR b IN bodies %]
+            <option value="[% b.id %]"[% ' selected' IF body.parent.id == b.id %]>[% b.name %]</option>
+            [% END %]
+        </select>
+    </p>
+
+    <p>
+        <label for="area_ids">[% loc('Area covered') %]</label>
+        <select name="area_ids" id="area_ids" multiple>
+            <option value=""> -- [% loc('Select an area') %] -- </option>
+            [% FOR area IN areas %]
+            [% SET aid = area.id %]
+            <option value="[% area.id %]"[% ' selected' IF body.areas.$aid %]>[% area.name %]</option>
+            [% END %]
+        </select>
+    </p>
+[% END %]
+
+        <input type="hidden" name="send_method" value="Email">
+        <input type="hidden" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction %]">
+        <input type="hidden" name="api_key" id="api_key" value="[% body.api_key %]">
+        <input type="hidden" id="send_comments" name="send_comments" value="[% body.send_comments %]">
+        <input type="hidden" name="comment_user_id" value="[% body.comment_user_id %]">
+        <input type="hidden" id="suppress_alerts" name="suppress_alerts" value="[% body.suppress_alerts %]">
+        <input type="hidden" id="can_be_devolved" name="can_be_devolved" value="[% body.can_be_devolved %]">
+
+    <p>
+    <input type="hidden" name="posted" value="body">
+    <input type="hidden" name="token" value="[% token %]">
+    <input type="submit" value="[% body ? loc('Update body') : loc('Add body') %]">
+    </p>
+    </form>
+

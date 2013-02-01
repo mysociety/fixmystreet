@@ -14,12 +14,12 @@ sub site_title { return 'See Something, Say Something'; }
 
 sub site_restriction {
     my $self = shift;
-    return { council => { IN => $self->council_id  } };
+    return { bodies_str => { IN => $self->council_id  } };
 }
 
 sub problems_clause {
     my $self = shift;
-    return { council => { IN => $self->council_id  } };
+    return { bodies_str => { IN => $self->council_id  } };
 }
 
 sub path_to_web_templates {
@@ -30,10 +30,10 @@ sub path_to_web_templates {
     ];
 }
 
-sub council_check {
+sub area_check {
     my ( $self, $params, $context ) = @_;
 
-    my $councils = $params->{all_councils};
+    my $councils = $params->{all_areas};
     my $council_match = grep { $councils->{$_} } @{ $self->council_id };
 
     if ($council_match) {

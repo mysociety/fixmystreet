@@ -3,6 +3,8 @@ package FixMyStreet::SendReport::EmptyHomes;
 use Moose;
 use namespace::autoclean;
 
+use mySociety::MaPit;
+
 BEGIN { extends 'FixMyStreet::SendReport::Email'; }
 
 sub build_recipient_list {
@@ -10,28 +12,29 @@ sub build_recipient_list {
     my %recips;
 
     my $all_confirmed = 1;
-    foreach my $council ( keys %{ $self->councils } ) {
+    foreach my $body ( @{ $self->bodies } ) {
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            area_id => $council,
+            body_id => $body->id,
             category => 'Empty property',
         } );
 
-        my ($council_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
+        my ($body_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
 
         unless ($confirmed) {
             $all_confirmed = 0;
-            #$note = 'Council ' . $row->council . ' deleted'
+            #$note = 'Council ' . $row->body . ' deleted'
                 #unless $note;
-            $council_email = 'N/A' unless $council_email;
-            #$notgot{$council_email}{$row->category}++;
-            #$note{$council_email}{$row->category} = $note;
+            $body_email = 'N/A' unless $body_email;
+            #$notgot{$body_email}{$row->category}++;
+            #$note{$body_email}{$row->category} = $note;
         }
 
-        push @{ $self->to }, [ $council_email, $self->councils->{ $council }->{ info }->{name} ];
-        $recips{$council_email} = 1;
+        push @{ $self->to }, [ $body_email, $body->name ];
+        $recips{$body_email} = 1;
 
-        my $country = $self->councils->{$council}->{country};
+        my $area_info = mySociety::MaPit::call('area', $body->area_id);
+        my $country = $area_info->{country};
         if ($country eq 'W') {
             $recips{ 'shelter@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
         } else {

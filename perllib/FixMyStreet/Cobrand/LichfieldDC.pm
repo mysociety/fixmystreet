@@ -13,7 +13,7 @@ sub is_two_tier { return 1; }
 # Different to councils parent due to this being a two-tier council. If we get
 # more, this can be genericised in the parent.
 sub problems_clause {
-    return { council => { like => '%2434%' } };
+    return { bodies_str => { like => '%2434%' } };
 }
 
 # FIXME - need to double check this is all correct

@@ -476,14 +476,14 @@ sub format_postcode {
 
     return $postcode;
 }
-=head2 council_check
+=head2 area_check
 
-Paramters are COUNCILS, QUERY, CONTEXT. Return a boolean indicating whether
-COUNCILS pass any extra checks. CONTEXT is where we are on the site.
+Paramters are AREAS, QUERY, CONTEXT. Return a boolean indicating whether
+AREAS pass any extra checks. CONTEXT is where we are on the site.
 
 =cut
 
-sub council_check { return ( 1, '' ); }
+sub area_check { return ( 1, '' ); }
 
 =head2 all_councils_report
 
@@ -526,7 +526,7 @@ Show the problem creation graph in the admin interface
 
 sub admin_show_creation_graph { 1 }
 
-=head2 area_types, area_min_generation
+=head2 area_types
 
 The MaPit types this site handles
 
@@ -534,7 +534,6 @@ The MaPit types this site handles
 
 sub area_types          { FixMyStreet->config('MAPIT_TYPES') || [ 'ZZZ' ] }
 sub area_types_children { FixMyStreet->config('MAPIT_TYPES_CHILDREN') || [] }
-sub area_min_generation { '' }
 
 =head2 contact_name, contact_email
 
@@ -556,39 +555,28 @@ sub email_host {
     return 1;
 }
 
-=item remove_redundant_councils
+=item remove_redundant_areas
 
-Remove councils whose reports go to another council
-
-=cut
-
-sub remove_redundant_councils {
-  my $self = shift;
-  my $all_councils = shift;
-}
-
-=item filter_all_council_ids_list
-
-Removes any council IDs that we don't need from an array and returns the
-filtered array
+Remove areas whose reports go to another area (XXX)
 
 =cut
 
-sub filter_all_council_ids_list {
+sub remove_redundant_areas {
   my $self = shift;
-  return @_;
+  my $all_areas = shift;
 }
 
 =item short_name
 
-Remove extra information from council names for tidy URIs
+Remove extra information from body names for tidy URIs
 
 =cut
 
 sub short_name {
     my $self = shift;
-    my ($area, $info) = @_;
-    my $name = $area->{name};
+    my ($area) = @_;
+
+    my $name = $area->{name} || $area->name;
     $name = URI::Escape::uri_escape_utf8($name);
     $name =~ s/%20/+/g;
     return $name;
@@ -615,10 +603,10 @@ Generate a set of options for council rss alerts.
 =cut
 
 sub council_rss_alert_options {
-    my ( $self, $all_councils, $c ) = @_;
+    my ( $self, $all_areas, $c ) = @_;
 
     my ( @options, @reported_to_options );
-    foreach (values %$all_councils) {
+    foreach (values %$all_areas) {
         $_->{short_name} = $self->short_name( $_ );
         ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
         push @options, {
@@ -662,31 +650,26 @@ Get stats to display on the council reports page
 
 sub get_report_stats { return 0; }
 
-sub get_council_sender {
-    my ( $self, $area_id, $area_info, $category ) = @_;
+sub get_body_sender {
+    my ( $self, $body, $category ) = @_;
 
-    my $send_method;
-
-    my $council_config = FixMyStreet::App->model("DB::Open311conf")->search( { area_id => $area_id } )->first;
-    $send_method = $council_config->send_method if $council_config;
-
-    if ( $council_config && $council_config->can_be_devolved ) {
+    if ( $body->can_be_devolved ) {
         # look up via category
-        my $config = FixMyStreet::App->model("DB::Contact")->search( { area_id => $area_id, category => $category } )->first;
+        my $config = FixMyStreet::App->model("DB::Contact")->search( { body_id => $body->id, category => $category } )->first;
         if ( $config->send_method ) {
             return { method => $config->send_method, config => $config };
         } else {
-            return { method => $send_method, config => $council_config };
+            return { method => $body->send_method, config => $body };
         }
-    } elsif ( $send_method ) {
-        return { method => $send_method, config => $council_config };
+    } elsif ( $body->send_method ) {
+        return { method => $body->send_method, config => $body };
     }
 
-    return $self->_fallback_council_sender( $area_id, $area_info, $category );
+    return $self->_fallback_body_sender( $body, $category );
 }
 
-sub _fallback_council_sender {
-    my ( $self, $area_id, $area_info, $category ) = @_;
+sub _fallback_body_sender {
+    my ( $self, $body, $category ) = @_;
 
     return { method => 'Email' };
 };
@@ -699,7 +682,7 @@ sub example_places {
 
 =head2 only_authed_can_create
 
-If true, only users with the from_council flag set are able to create reports.
+If true, only users with the from_body flag set are able to create reports.
 
 =cut
 
@@ -809,6 +792,17 @@ a name key
 =cut
 
 sub anonymous_account { undef; }
+
+=head2 show_unconfirmed_reports
+
+Whether reports in state 'unconfirmed' should still be shown on the public site.
+(They're always included in the admin interface.)
+
+=cut
+
+sub show_unconfirmed_reports {
+    0;
+}
 
 1;
 

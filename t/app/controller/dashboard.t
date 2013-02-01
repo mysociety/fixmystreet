@@ -12,6 +12,8 @@ my $test_pass = 'password';
 my $test_council = 2651;
 my $test_ward = 20723;
 
+$mech->create_body_ok($test_council, 'City of Edinburgh Council');
+
 $mech->delete_user( $test_user );
 my $user = FixMyStreet::App->model('DB::User')->create( {
     email => $test_user,
@@ -33,7 +35,7 @@ $mech->submit_form(
 
 is $mech->status, '404', 'If not council user get 404';
 
-$user->from_council( $test_council );
+$user->from_body( $test_council );
 $user->update;
 
 $mech->log_out_ok;
@@ -44,7 +46,7 @@ $mech->submit_form_ok( {
 
 $mech->content_contains( 'City of Edinburgh' );
 
-FixMyStreet::App->model('DB::Contact')->search( { area_id => $test_council } )
+FixMyStreet::App->model('DB::Contact')->search( { body_id => $test_council } )
   ->delete;
 
 delete_problems();
@@ -53,7 +55,7 @@ my @cats = qw( Grafitti Litter Potholes Other );
 for my $contact ( @cats ) {
     FixMyStreet::App->model('DB::Contact')->create(
         {
-            area_id    => $test_council,
+            body_id    => $test_council,
             category   => $contact,
             email      => "$contact\@example.org",
             confirmed  => 1,
@@ -608,7 +610,7 @@ sub make_problem {
         confirmed => $args->{conf_dt},
         whensent => $args->{conf_dt},
         lastupdate => $args->{mark_dt} || $args->{conf_dt},
-        council => $test_council,
+        bodies_str => $test_council,
         postcode => 'EH99 1SP',
         latitude => '51',
         longitude => '1',
@@ -662,10 +664,10 @@ sub check_report_counts {
 
 sub delete_problems {
     FixMyStreet::App->model('DB::Comment')
-      ->search( { 'problem.council' => $test_council }, { join => 'problem' } )
+      ->search( { 'problem.bodies_str' => $test_council }, { join => 'problem' } )
       ->delete;
     FixMyStreet::App->model('DB::Problem')
-      ->search( { council => $test_council } )->delete();
+      ->search( { bodies_str => $test_council } )->delete();
 }
 
 done_testing;

@@ -5,3 +5,104 @@
 
 @import "../fixmystreet/_base";
 
+/* Front page main box is in content now, so get rid of its margin from parent */
+#front-main {
+    margin: 0;
+}
+
+/* Autocomplete dropdown on front page, don't want bullets */
+.ui-menu-item {
+    list-style-type: none;
+}
+
+/* Simplify the problem header on a report page */
+.problem-header h1 {
+    font-size: 120%;
+    font-weight: bold;
+    margin: 0;
+}
+.problem-header .sub {
+    color: #666;
+    font-size: 85%;
+}
+
+// Simplify the banner to just be a floated box. Colours etc. still
+// inherited from the base stylesheet.
+.banner {
+    p {
+        position: static;
+        float: right;
+        font-weight: bold;
+        padding: 1em;
+        margin: 0;
+        text-transform: uppercase;
+        text-align: center;
+        &:before {
+            display: none;
+        }
+    }
+}
+
+#site-header {
+    background: $mobile_header_blue; 
+    border-top: 4px solid $mobile_menu_tab_bg_col;
+    height: 48px;
+}
+#site-logo {
+    background: url(logo_portal.jpg) 0px -24px no-repeat;
+    width: 200px;
+    height:44px;
+    left:0; 
+    top:4px;
+}
+// Colour tab to match colour scheme
+#nav-link {
+  width: 50px;
+  height: 48px;
+  background: url('/cobrands/zurich/tab-white.png') 0 0 no-repeat;
+}
+#front-howto #front_stats,
+#front-main #postcodeForm {
+    background-color: $mobile_header_blue;
+}
+
+// No grey background or other bits
+// The amount of resetting here shows this needs refactoring, so that it is FMS making the changes
+// Also look into why full-width pulls things out, but then it is its children
+// that have to recompensate with padding.
+h4.static-with-rule {
+    color: black;
+    font-size: 1em;
+    font-weight: bold;
+    text-transform: none;
+    background: none;
+    padding-left: 0;
+    padding-right: 0;
+    border-top: 0.25em solid #e5e5e5;
+}
+.issue-list {
+    border-bottom: none;
+    li {
+        padding-left: 0;
+        padding-right: 0;
+        background: none;
+    }
+}
+
+.issue-list-a {
+    border-bottom: none;
+    li {
+        background: none;
+        .text {
+            .img {
+                padding-right: 1em;
+            }
+        }
+    }
+}
+
+.form-txt-submit-box input[type=submit] {
+    width:auto; // 28% is too narrow
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+}

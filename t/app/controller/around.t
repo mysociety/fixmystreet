@@ -90,7 +90,7 @@ subtest 'check non public reports are not displayed on around page' => sub {
         longitude => -3.17492254484,
     };
     my @edinburgh_problems =
-      $mech->create_problems_for_council( 5, 2651, 'Around page', $params );
+      $mech->create_problems_for_body( 5, 2651, 'Around page', $params );
 
     $mech->get_ok('/');
     $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },

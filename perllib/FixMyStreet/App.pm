@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use Catalyst::Runtime 5.80;
+use DateTime;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use Memcached;
@@ -186,6 +187,14 @@ sub setup_request {
         my $port = $c->req->uri->port;
         $host = "$host:$port" unless $port == 80;
         mySociety::MaPit::configure( "http://$host/fakemapit/" );
+    }
+
+    # XXX Put in cobrand / do properly
+    if ($c->cobrand->moniker eq 'zurich') {
+        FixMyStreet::DB::Result::Problem->visible_states_add_unconfirmed();
+        DateTime->DefaultLocale( 'de_CH' );
+    } else {
+        DateTime->DefaultLocale( 'en_US' );
     }
 
     return $c;

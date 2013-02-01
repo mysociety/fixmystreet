@@ -1,0 +1,40 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Editing update %d'), update.id ) -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% status_message %]
+
+<form method="post" action="[% c.uri_for( 'update_edit', update.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="submit" value="1" >
+<ul>
+<li><a href="[% c.uri_for_email( '/report', update.problem_id ) %]#update_[% update.id %]">[% loc('View report on site' )%]</a></li>
+
+<li><label for='detail'>[% loc('Text:') %]</label>
+<textarea name='text' id='text' cols=60 rows=5>[% update.text | html %]</textarea></li>
+
+<input type="hidden" name="anonymous" value="[% update.anonymous %]">
+
+<li>[% loc('State:') %] <select name="state"  id="state">
+    [% FOREACH state IN [ ['confirmed', loc('Open')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]
+        <option [% 'selected ' IF state.0 == update.state %] value="[% state.0 %]">[% state.1 %]</option>
+    [% END %]
+</select></li>
+<input type='hidden' name='name' id='name' value='[% update.name | html %]'>
+<input type='hidden' id='email' name='email' value='[% update.user.email | html %]'>
+[% IF update.problem_state %]
+<li>[% tprintf(loc('Update changed problem state to %s'), update.problem_state) %]</li>
+[% END %]
+</li>
+
+<li>[% loc('Created:') %] [% PROCESS format_date this_date=update.created %] [% update.created.hms %]</li>
+
+[% IF update.photo %]
+[% photo = update.get_photo_params %]
+<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% photo.url %]">
+<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
+<label for="remove_photo" class="inline">[% loc("Remove photo (can't be undone!)") %]</label></li>
+[% END %]
+</ul>
+<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
+
+[% INCLUDE 'admin/footer.html' %]

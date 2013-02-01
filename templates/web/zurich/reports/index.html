@@ -1,0 +1,33 @@
+[%
+    PROCESS "maps/${map.type}.html";
+    INCLUDE 'header.html',
+        title = loc('Summary reports'),
+        bodyclass = 'mappage';
+%]
+[% map_html %]
+    <p id='sub_map_links'>
+        <a class="hidden-nojs" id="map_layer_toggle" href="">Stadtplan</a>
+    </p>
+</div>
+
+<div id="side">
+
+<h1>[% loc('All Reports') %]</h1>
+
+[% INCLUDE 'pagination.html', param = 'p' %]
+
+<section class="full-width">
+  [% IF problems.0 %]
+    <ul class="issue-list-a">
+      [% FOREACH problem IN problems.0 %]
+        [% INCLUDE 'reports/_list-entry.html' %]
+      [% END %]
+    </ul>
+  [% END %]
+</section>
+
+[% INCLUDE 'pagination.html', param = 'p' %]
+
+</div>
+[% INCLUDE 'footer.html' %]
+

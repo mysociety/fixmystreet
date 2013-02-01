@@ -1,9 +1,9 @@
 <p>
 [% loc('All the information you provide here will be sent to') %]
 
-[% FOREACH council_id IN area_ids_to_list %]
+[% FOREACH body_id IN bodies_to_list %]
     [% loc( ' or ') IF ! loop.first %]
-    <strong>[% all_councils.$council_id.name %]</strong>
+    <strong>[% bodies.$body_id.name %]</strong>
     [%- '.' IF loop.last %]    
 [% END %]
 
@@ -14,13 +14,13 @@
     nget(
         "We do <strong>not</strong> yet have details for the other council that covers this location.",
         "We do <strong>not</strong> yet have details for the other councils that cover this location.",
-        missing_details_councils.size
+        missing_details_bodies.size
     );
 %]
 [%
     tprintf(
         loc("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."),
-        missing_details_council_names.join( loc(' or ') ),
+        missing_details_body_names.join( loc(' or ') ),
         c.cobrand.contact_email,
         c.cobrand.contact_email
     );

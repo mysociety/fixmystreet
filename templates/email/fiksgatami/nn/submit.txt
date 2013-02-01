@@ -1,6 +1,6 @@
 Subject: Problemrapport: <?=$values['title']?>
 
-Til <?=$values['councils_name']?>,
+Til <?=$values['bodies_name']?>,
 
 <?=$values['missing']?><?=$values['multiple']?>Ein brukar av
 FiksGataMi har sendt inn følgjande rapport om eit lokalt problem som

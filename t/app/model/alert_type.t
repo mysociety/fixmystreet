@@ -39,7 +39,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -345,7 +345,7 @@ my $ward_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
 my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
-        council            => '2434',
+        bodies_str         => '2434',
         areas              => ',105255,11806,11828,2247,2504,7117,',
         category           => 'Other',
         title              => 'council report',
@@ -369,7 +369,7 @@ my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
-        council            => '2240',
+        bodies_str         => '2240',
         areas              => ',105255,11806,11828,2247,2504,7117,',
         category           => 'Other',
         title              => 'county report',
@@ -393,7 +393,7 @@ my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_c
 my $report_outside_district = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
-        council            => '2221',
+        bodies_str         => '2221',
         areas              => ',105255,11806,11828,2247,2504,7117,',
         category           => 'Other',
         title              => 'outside district report',

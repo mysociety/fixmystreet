@@ -1,1 +1,16 @@
             <h1>[% loc('Report, view, or discuss local problems') %]</h1>
+
+<!-- FIXME Better place for this -->
+<script>
+    $(function() {
+        $( "#pc" ).autocomplete({
+            minLength: 3,
+            select: function(event, ui) {
+                $(this).val(ui.item.value);
+                this.form.submit();
+                return true;
+            },
+            source: "/ajax/geocode"
+        });
+    });
+</script>

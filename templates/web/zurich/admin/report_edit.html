@@ -1,0 +1,179 @@
+[%
+    PROCESS "maps/zurich.html";
+    INCLUDE 'admin/header.html'
+        title = tprintf(loc('Editing problem %d'), problem.id ),
+        bodyclass = 'mappage';
+    PROCESS 'admin/report_blocks.html'
+-%]
+
+[% map_html %]
+</div>
+
+[% status_message %]
+
+<form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="submit" value="1" >
+
+<ul>
+<li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
+
+[% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
+    <li>[% loc('Details:') %] [% problem.detail | html %]
+    [% IF problem.extra.original_detail %]
+    <br>[%
+        SET detail_safe = problem.extra.original_detail | html;
+        tprintf( loc('originally entered: &ldquo;%s&rdquo;'), detail_safe )
+    %]
+    [% END %]
+    </li>
+[% ELSE %]
+    <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
+    <li><label for='detail'>[% loc('Details:') %]</label>
+    <textarea name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea>
+    [% IF problem.extra.original_detail %]
+    [%
+        SET detail_safe = problem.extra.original_detail | html;
+        tprintf( loc('originally entered: &ldquo;%s&rdquo;'), detail_safe )
+    %]
+    [% END %]
+    </li>
+[% END %]
+
+<li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %]
+([%
+    SET safe = problem.postcode | html;
+    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
+%],
+[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+
+<li>[% loc('Name:') %] [% problem.name | html %] <input type='hidden' name='name' id='name' value='[% problem.name | html %]'></li>
+<li>[% loc('Email:') %] [% problem.user.email | html %] <input type='hidden' id='email' name='email' value='[% problem.user.email | html %]'>
+[% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
+</li>
+<li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
+<li>[% loc('Created:') %] [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
+
+
+[% IF problem.photo %]
+[% photo = problem.get_photo_params %]
+<li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]">
+<br>
+[% IF rotated %]Photo may be cached for a while.<br>[% END %]
+<input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
+<input type="submit" name="rotate_photo" value="[% loc('Rotate Right') %]">
+<br>
+<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
+<label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
+[% END %]
+</ul>
+
+<p><label for="internal_notes">[% loc('Internal notes:') %]</label>
+<textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></p>
+
+<p>[% loc('State:') %] <select name="state"  id="state">
+    <option value="">--</option>
+  [% FOREACH s IN [
+        ['unconfirmed', loc('Submitted')]
+        ['confirmed', loc('Open')],
+        ['planned', loc('Planned')],
+        ['hidden', loc('Hidden')],
+  ] %]
+    <option [% 'selected ' IF s.0 == problem.state %] value="[% s.0 %]">[% s.1 %]</option>
+  [% END %]
+  [% IF problem.state == 'closed' %]
+    <option selected value="closed">[% loc('Closed') %]</option>
+  [% ELSIF problem.state == 'fixed - council' %]
+    <option selected value="fixed - council">[% loc('Closed') %]</option>
+  [% ELSIF problem.state == 'in progress' %]
+    <option selected value="in progress">[% loc('In progress') %]</option>
+  [% END %]
+</select></p>
+
+[% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
+
+<ul>
+<li class="assignation">
+<label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
+        <select name="body_subdivision" id="body_subdivision">
+            <option value="">--</option>
+        [% FOR body IN bodies %]
+            [% NEXT UNLESS body.parent.id == c.user.from_body.id %]
+            <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
+        [% END %]
+        </select>
+
+<li class="assignation">
+<label for="category">
+[% loc('Category:') %] [% problem.category %]<br>
+[% loc('Assign to different category:') %]</label>
+ <select name="category" id="category">
+        <option value="">--</option>
+      [% FOREACH cat IN categories %]
+        <option value="[% cat %]">[% cat %]</option>
+      [% END %]
+    </select></li>
+
+<li class="assignation">
+<label for="body_external">[% loc('Assign to external body:') %]</label>
+    <select name="body_external" id="body_external">
+        <option value="">--</option>
+    [% FOR body IN bodies %]
+        [% NEXT IF body.parent OR body.bodies %]
+        <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
+    [% END %]
+    </select>
+    <br>
+    <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
+    <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
+
+</ul>
+
+<script type="text/javascript">
+$(function(){
+    $('.assignation select').change(function(){
+        if (this.value == "") {
+            $('.assignation').css('color', '#000');
+        } else {
+            var a = $(this).closest('li').css('color', '#000');
+            $('.assignation select').not(this).val("");
+            $('.assignation').not(a).css('color', '#999');
+        }
+    });
+});
+</script>
+
+[% ELSIF problem.state == 'planned' %]
+
+<ul>
+    <li class="assignation">
+    <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
+        <select name="body_subdivision" id="body_subdivision">
+            <option value="" selected>--</option>
+        [% FOR body IN bodies %]
+            [% NEXT UNLESS body.parent.id == c.user.from_body.id %]
+            <option value="[% body.id %]">[% body.name %]</option>
+        [% END %]
+        </select>
+    </li>
+
+    <li><label for="status_update">[% loc('Public response:') %]</label>
+
+    <textarea name='status_update' id='status_update' cols=60 rows=5>[% problem.extra.public_response | html %]</textarea>
+    </li>
+</ul>
+
+[% END %]
+
+<p align="right">
+[% IF problem.state == 'planned' %]
+<input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
+[% END %]
+<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
+</p>
+
+</form>
+
+[% INCLUDE 'admin/list_updates.html' %]
+
+[% INCLUDE 'admin/footer.html' %]

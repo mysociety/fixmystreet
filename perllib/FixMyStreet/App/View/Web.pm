@@ -18,7 +18,7 @@ __PACKAGE__->config(
     ENCODING       => 'utf8',
     render_die     => 1,
     expose_methods => [
-        'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_epoch',
+        'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_dt',
         'add_links', 'version',
     ],
     FILTERS => {
@@ -92,20 +92,20 @@ sub display_crosssell_advert {
     return CrossSell::display_advert( $c, $email, $name, %data );
 }
 
-=head2 Utils::prettify_epoch
+=head2 Utils::prettify_dt
 
-    [% pretty = prettify_epoch( $epoch, $short_bool ) %]
+    [% pretty = prettify_dt( $dt, $short_bool ) %]
 
-Return a pretty version of the epoch.
+Return a pretty version of the DateTime object.
 
     $short_bool = 1;     # 16:02, 29 Mar 2011
     $short_bool = 0;     # 16:02, Tuesday 29 March 2011
 
 =cut
 
-sub prettify_epoch {
+sub prettify_dt {
     my ( $self, $c, $epoch, $short_bool ) = @_;
-    return Utils::prettify_epoch( $epoch, $short_bool );
+    return Utils::prettify_dt( $epoch, $short_bool );
 }
 
 =head2 add_links

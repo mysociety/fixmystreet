@@ -16,7 +16,7 @@ function fixmystreet_update_pin(lonlat) {
             if (!$('#side-form-error').length) {
                 $('<div id="side-form-error"/>').insertAfter($('#side-form'));
             }
-            $('#side-form-error').html('<h1>Reporting a problem</h1><p>' + data.error + '</p>').show();
+            $('#side-form-error').html('<h1>' + translation_strings.reporting_a_problem + '</h1><p>' + data.error + '</p>').show();
             $('#side-form').hide();
             return;
         }
@@ -82,6 +82,9 @@ function fixmystreet_onload() {
             fixmystreet.map.addLayer(area);
             if ( fixmystreet.area.length == 1 ) {
                 area.events.register('loadend', null, function(a,b,c) {
+                    if ( fixmystreet.area_format ) {
+                        area.styleMap.styles.default.defaultStyle = fixmystreet.area_format;
+                    }
                     var bounds = area.getDataExtent();
                     if (bounds) {
                         var center = bounds.getCenterLonLat();
@@ -171,7 +174,7 @@ function fixmystreet_onload() {
             var popup = new OpenLayers.Popup.FramedCloud("popup",
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
-                feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">More details</a>",
+                feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">" + translation_strings.more_details + "</a>",
                 { size: new OpenLayers.Size(0,0), offset: new OpenLayers.Pixel(0,-40) },
                 true, onPopupClose);
             feature.popup = popup;
@@ -201,7 +204,8 @@ function fixmystreet_onload() {
         var showhide = [
             'Show pins', 'Hide pins',
             'Dangos pinnau', 'Cuddio pinnau',
-            "Vis nåler", "Gjem nåler"
+            "Vis nåler", "Gjem nåler",
+            "Zeige Stecknadeln", "Stecknadeln ausblenden"
         ];
         for (var i=0; i<showhide.length; i+=2) {
             if (this.innerHTML == showhide[i]) {
@@ -267,19 +271,24 @@ $(function(){
     }
 
     // Set it up our way
-    fixmystreet.layer_options = OpenLayers.Util.extend({
-        zoomOffset: fixmystreet.zoomOffset,
-        transitionEffect: 'resize',
-        numZoomLevels: fixmystreet.numZoomLevels
-    }, fixmystreet.layer_options);
 
     var layer;
-    if (fixmystreet.layer_options.matrixIds) {
-        layer = new fixmystreet.map_type(fixmystreet.layer_options);
-    } else {
-        layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+    if (!fixmystreet.layer_options.length) {
+        fixmystreet.layer_options = [ fixmystreet.layer_options ];
     }
-    fixmystreet.map.addLayer(layer);
+    for (var i=0; i<fixmystreet.layer_options.length; i++) {
+        fixmystreet.layer_options[i] = OpenLayers.Util.extend({
+            zoomOffset: fixmystreet.zoomOffset,
+            transitionEffect: 'resize',
+            numZoomLevels: fixmystreet.numZoomLevels
+        }, fixmystreet.layer_options[i]);
+        if (fixmystreet.layer_options[i].matrixIds) {
+            layer = new fixmystreet.map_type(fixmystreet.layer_options[i]);
+        } else {
+            layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+        }
+        fixmystreet.map.addLayer(layer);
+    }
 
     if (!fixmystreet.map.getCenter()) {
         var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
@@ -349,7 +358,7 @@ $(function(){
         $('#sub_map_links').show();
         //only on mobile
         $('#mob_sub_map_links').remove();
-        $('.mobile-map-banner').html('<a href="/">Home</a> Place pin on map');
+        $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
         fixmystreet.page = 'around';
     });
 
@@ -538,13 +547,13 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 height = $map_box.height();
             $map_box.append(
                 '<p id="mob_sub_map_links">' +
-                '<a href="#" id="try_again">Try again</a>' +
-                '<a href="#ok" id="mob_ok">OK</a>' +
+                '<a href="#" id="try_again">' + translation_strings.try_again + '</a>' +
+                '<a href="#ok" id="mob_ok">' + translation_strings.ok + '</a>' +
                 '</p>'
             ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
             // Making it relative here makes it much easier to do the scrolling later
 
-            $('.mobile-map-banner').html('<a href="/">Home</a> Right place?');
+            $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.right_place);
 
             // mobile user clicks 'ok' on map
             $('#mob_ok').toggle(function(){
@@ -553,12 +562,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                 //to do this on other pages where #side-form might not be
                 $('html, body').animate({ scrollTop: height-60 }, 1000, function(){
                     $('#mob_sub_map_links').addClass('map_complete');
-                    $('#mob_ok').text('MAP');
+                    $('#mob_ok').text(translation_strings.map);
                 });
             }, function(){
                 $('html, body').animate({ scrollTop: 0 }, 1000, function(){
                     $('#mob_sub_map_links').removeClass('map_complete');
-                    $('#mob_ok').text('OK');
+                    $('#mob_ok').text(translation_strings.ok);
                 });
             });
         }

@@ -4,8 +4,6 @@
 -- Copyright (c) 2006 UK Citizens Online Democracy. All rights reserved.
 -- Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 --
--- $Id: schema.sql,v 1.49 2009-11-10 13:53:33 louise Exp $
---
 
 -- secret
 -- A random secret.
@@ -18,22 +16,6 @@ create table secret (
 create table debugdate (
     override_today date
 );
-
--- Returns the date of "today", which can be overriden for testing.
-create function ms_current_date()
-    returns date as '
-    declare
-        today date;
-    begin
-        today = (select override_today from debugdate);
-        if today is not null then
-           return today;
-        else
-           return current_date;
-        end if;
-
-    end;
-' language 'plpgsql' stable;
 
 -- Returns the timestamp of current time, but with possibly overriden "today".
 create function ms_current_timestamp()
@@ -50,24 +32,55 @@ create function ms_current_timestamp()
     end;
 ' language 'plpgsql';
 
+-- table for sessions - needed by Catalyst::Plugin::Session::Store::DBIC
+create table sessions (
+    id           char(72) primary key,
+    session_data text,
+    expires      integer
+);
 
--- users, but call the table person rather than user so we don't have to quote
--- its name in every statement....
--- create table person (
---     id serial not null primary key,
---     name text,
---     email text not null,
---     password text,
---     website text,
---     numlogins integer not null default 0
--- );
--- 
--- create unique index person_email_idx on person(email);
+-- users table
+create table users (
+    id              serial  not null primary key,
+    email           text    not null unique,
+    name            text,
+    phone           text,
+    password        text    not null default '',
+    from_body       integer,
+    flagged         boolean not null default 'f',
+    title           text
+);
 
--- Who to send problems for a specific MaPit area ID to
+-- Record details of reporting bodies, including open311 configuration details
+create table body (
+    id           serial primary key,
+    name         text not null,
+    parent       integer references body(id),
+    endpoint     text,
+    jurisdiction text,
+    api_key      text,
+    send_method  text,
+    send_comments boolean not null default 'f',
+    comment_user_id int references users(id),
+    suppress_alerts boolean not null default 'f',
+    can_be_devolved boolean not null default 'f',
+    send_extended_statuses boolean not null default 'f'
+);
+
+create table body_areas (
+    body_id integer not null references body(id),
+    area_id integer not null
+);
+create unique index body_areas_body_id_area_id_idx on body_areas(body_id, area_id);
+
+-- Now can create reference from users to body
+ALTER TABLE users ADD CONSTRAINT users_from_body_fkey
+    FOREIGN KEY (from_body) REFERENCES body(id);
+
+-- The contact for a category within a particular body
 create table contacts (
     id serial primary key,
-    area_id integer not null,
+    body_id integer not null references body(id),
     category text not null default 'Other',
     email text not null,
     confirmed boolean not null,
@@ -92,7 +105,7 @@ create table contacts (
     api_key      text default '',
     send_method  text
 );
-create unique index contacts_area_id_category_idx on contacts(area_id, category);
+create unique index contacts_body_id_category_idx on contacts(body_id, category);
 
 -- History of changes to contacts - automatically updated
 -- whenever contacts is changed, using trigger below.
@@ -100,7 +113,7 @@ create table contacts_history (
     contacts_history_id serial not null primary key,
 
     contact_id integer not null,
-    area_id integer not null,
+    body_id integer not null,
     category text not null default 'Other',
     email text not null,
     confirmed boolean not null,
@@ -119,7 +132,7 @@ create table contacts_history (
 create function contacts_updated()
     returns trigger as '
     begin
-        insert into contacts_history (contact_id, area_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.id, new.area_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
+        insert into contacts_history (contact_id, body_id, category, email, editor, whenedited, note, confirmed, deleted) values (new.id, new.body_id, new.category, new.email, new.editor, new.whenedited, new.note, new.confirmed, new.deleted);
         return new;
     end;
 ' language 'plpgsql';
@@ -129,25 +142,6 @@ create trigger contacts_update_trigger after update on contacts
 create trigger contacts_insert_trigger after insert on contacts
     for each row execute procedure contacts_updated();
 
--- table for sessions - needed by Catalyst::Plugin::Session::Store::DBIC
-create table sessions (
-    id           char(72) primary key,
-    session_data text,
-    expires      integer
-);
-
--- users table
-create table users (
-    id              serial  not null primary key,
-    email           text    not null unique,
-    name            text,
-    phone           text,
-    password        text    not null default '',
-    from_council    integer, -- id of council user is from or null/0 if not
-    flagged         boolean not null default 'f',
-    title           text
-);
-
 -- Problems reported by users of site
 create table problem (
     id serial not null primary key,
@@ -156,8 +150,8 @@ create table problem (
     postcode text not null,
     latitude double precision not null,
     longitude double precision not null,
-    council text, -- the council(s) we'll report this problem to
-    areas text not null, -- the voting areas this location is in
+    bodies_str text, -- the body(s) we'll report this problem to
+    areas text not null, -- the mapit areas this location is in
     category text not null default 'Other',
     title text not null,
     detail text not null,
@@ -459,19 +453,3 @@ create table admin_log (
         or action = 'resend'),
     whenedited timestamp not null default ms_current_timestamp()
 ); 
-
--- Record open 311 configuration details
-
-create table open311conf (
-    id           serial primary key,
-    area_id      integer not null unique,
-    endpoint     text not null,
-    jurisdiction text,
-    api_key      text,
-    send_method  text,
-    send_comments boolean not null default 'f',
-    comment_user_id int references users(id),
-    suppress_alerts boolean not null default 'f',
-    can_be_devolved boolean not null default 'f',
-    send_extended_statuses boolean not null default 'f'
-);

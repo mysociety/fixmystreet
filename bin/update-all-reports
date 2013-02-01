@@ -18,46 +18,53 @@ use List::MoreUtils qw(zip);
 
 my $fourweeks = 4*7*24*60*60;
 
+# Age problems from when they're confirmed, except on Zurich
+# where they appear as soon as they're created.
+my $age_column = 'confirmed';
+if ( FixMyStreet->config('BASE_URL') =~ /zurich/ ) {
+    $age_column = 'created';
+}
+
 my $problems = FixMyStreet::App->model("DB::Problem")->search(
     {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     },
     {
         columns => [
-            'id', 'council', 'state', 'areas',
+            'id', 'bodies_str', 'state', 'areas',
             { duration => { extract => "epoch from current_timestamp-lastupdate" } },
-            { age      => { extract => "epoch from current_timestamp-confirmed"  } },
+            { age      => { extract => "epoch from current_timestamp-$age_column"  } },
         ]
     }
 );
 $problems = $problems->cursor; # Raw DB cursor for speed
 
 my ( %fixed, %open );
-my @cols = ( 'id', 'council', 'state', 'areas', 'duration', 'age' );
+my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'duration', 'age' );
 while ( my @problem = $problems->next ) {
     my %problem = zip @cols, @problem;
-    my @areas;
-    if ( !$problem{council} ) {
-        # Problem was not sent to any council, add to all areas
-        @areas = grep { $_ } split( /,/, $problem{areas} );
-        $problem{councils} = 0;
+    my @bodies;
+    if ( !$problem{bodies_str} ) {
+        # Problem was not sent to any bodies, add to all areas
+        @bodies = grep { $_ } split( /,/, $problem{areas} );
+        $problem{bodies} = 0;
     } else {
-        # Add to councils it was sent to
-        (my $council = $problem{council}) =~ s/\|.*$//;
-        @areas = split( /,/, $council );
-        $problem{councils} = scalar @areas;
+        # Add to bodies it was sent to
+        (my $bodies = $problem{bodies_str}) =~ s/\|.*$//;
+        @bodies = split( /,/, $bodies );
+        $problem{bodies} = scalar @bodies;
     }
-    foreach my $council ( @areas ) {
+    foreach my $body ( @bodies ) {
         my $duration_str = ( $problem{duration} > 2 * $fourweeks ) ? 'old' : 'new';
         my $type = ( $problem{duration} > 2 * $fourweeks )
             ? 'unknown'
             : ($problem{age} > $fourweeks ? 'older' : 'new');
         if (FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}} || FixMyStreet::DB::Result::Problem->closed_states()->{$problem{state}}) {
             # Fixed problems are either old or new
-            $fixed{$council}{$duration_str}++;
+            $fixed{$body}{$duration_str}++;
         } else {
             # Open problems are either unknown, older, or new
-            $open{$council}{$type}++ if $problem{state} eq 'confirmed';
+            $open{$body}{$type}++ if $problem{state} eq 'confirmed';
         }
     }
 }

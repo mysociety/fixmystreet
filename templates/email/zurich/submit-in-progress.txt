@@ -1,0 +1,10 @@
+Subject: FixMyZurich: Neue Meldung #<?=$values['id']?>
+
+Guten Tag <?=$values['bodies_name']?>,
+
+Diese Meldung wurde Ihnen von Ihrer FMZ-Verantworltichen Stelle zugeteilt.
+
+Öffentliche URL: <?=$values['url']?>
+
+Admin URL: <?=$values['admin_url']?>
+

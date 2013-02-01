@@ -1,0 +1,8 @@
+Subject: FixMyZurich: Neue Meldung #<?=$values['id']?>
+
+Guten Tag <?=$values['bodies_name']?>,
+
+Diese Meldung wurde Ihnen von der Stadt Zürich gesendet, da es Ihr Zuständigkeitsgebiet betreffen könnte.
+
+Öffentliche URL: <?=$values['url']?>
+

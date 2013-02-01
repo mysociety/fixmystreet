@@ -2,6 +2,8 @@
 @import "../fixmystreet/layout";
 @import "zurich";
 
+// Things to override from parent stylesheet
+
 body {
     color: #3c3c3c;
     background-color: #fff;
@@ -17,17 +19,41 @@ body {
         border: none;
     }
 }
+// Except on map pages
+body.mappage .content {
+    @include box-shadow(0 0 6px 1px #000);
+}
+.ie6, .ie7, .ie8  {
+    body.mappage .content {
+        border: 1px solid #666;
+    }
+}
+/* The header on a map page needs a shadow too */
+body.mappage .nav-wrapper-2 {
+    @include box-shadow(0 0 6px 1px #000);
+}
+/* Except on admin pages where there's an admin nav directly underneath it */
+body.mappage.admin .nav-wrapper-2 {
+    @include box-shadow(none);
+}
 
+// Different header and logo
 #site-header .container {
-    height: 83px;
+    height: 99px;
     background: url(logo_portal.x.jpg) top left repeat-x;
 }
 
 body.frontpage #site-logo, #site-logo {
     width: 415px;
-    height: 83px;
+    height: 16px;
     background: url(logo_portal.jpg) top left no-repeat;
     top: 0;
+    text-indent: 0;
+    padding-left: 10px;
+    padding-top: 83px;
+    color: #585858;
+    font-size: 85%;
+    left: auto; // base set this to 0
 }
 
 .nav-wrapper {
@@ -40,13 +66,52 @@ body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
             border-top: none;
-            padding-top: 18px;
-            background: url(logo_portal.x.jpg) top left repeat-x;
-            height: 83px;
+            background: #fff;
+            height: 117px; // 99px+18px for padding
+            padding: 0 10px;
+            box-sizing: border-box;
         }
+    }
+    /* Ugh :( But first wrapper is the caption, second is the fixed (so first we
+       can do padding on) so a third seems necessary for the background then. */
+    .nav-wrapper-3 {
+        height: 99px;
+        padding-top: 18px;
+        background: #fff url(logo_portal.x.jpg) top left repeat-x;
+    }
+    #site-logo {
+        margin-left: 10px;
     }
 }
 
+// Logged in notice in footer (appearing in header)
+.nav-wrapper-2 p:first-child {
+    font-weight: bold;
+    margin-top: 0.75em;
+}
+.nav-wrapper-2 p {
+    line-height: 1.2;
+    color: white;
+    clear: right;
+    float: right;
+    margin: 0 1em 0 0;
+    font-size: 85%;
+    a {
+        color: white;
+        font-size: 85%;
+    }
+    a:hover {
+        color: white;
+    }
+}
+
+#front-main {
+  background-color: inherit;
+  color: inherit;
+  margin: 0 0 2em 0;
+}
+
+/* TODO Change the main-nav to be what is wanted */
 #main-nav {
     ul#main-menu {
         li {
@@ -58,6 +123,40 @@ body.mappage {
             }
         }
     }
+}
+
+#zurich-main-nav {
+  margin: -1em -1em 1em -1em; // -1em spreads back out over content's 1em padding
+  padding: 0;
+  background-color: #6A6869;
+
+  ul {
+      overflow:auto;
+      margin:0 0 0 0;
+      list-style: none;
+      padding: 0;
+      li {
+          font-size: 80%;
+          float:left;
+          list-style: none;
+          margin:0;
+          color: #fff;
+          a, span {
+            display: block;
+            padding: 0.75em 1em;
+          }
+          a {
+              color: #fff;
+              text-decoration: none;
+              &:hover {
+                background-color: #333;
+              }
+          }
+          span {
+            background-color: $zurich_blue;
+          }
+      }
+  }
 }
 
 body.mappage {
@@ -74,6 +173,152 @@ body.twothirdswidthpage {
     .content {
         aside {
             @include box-shadow(none);
+        }
+        .sticky-sidebar aside {
+          top: 14em; // overrides default value, due to Zurich nav at top of content
+        }
+    }
+}
+
+// Zurich base has made this a more simple construct. The top is to pull it up
+// over the content padding to be attached to the top of the content area.
+// We reduce the padding as no pin image, and change the background.
+.banner {
+    top: -1em;
+    p {
+        &#fixed {
+            padding-top: 2em;
+            background: $col_fixed_label;
+            @include background(linear-gradient(#769643, $col_fixed_label 4px));
+        }
+    }
+}
+.ie6 .banner p {
+    &#fixed {
+        background-image: none;
+    }
+}
+
+#fms_pan_zoom {
+  top: 7.75em !important;
+}
+
+// Admin specific changes
+
+body.fullwidthpage.admin .content {
+    width: 100%;
+}
+
+body.mappage.admin .content {
+    margin-top: 6em;
+    margin-left: 0.5em;
+
+}
+.admin {
+    .content {
+        margin: 2em 0 1em;
+        padding: 0 0 0 0;
+    }
+
+    #zurich-footer {
+        margin: 2em auto 3em auto;
+    }
+
+    table {
+        width: 100%;
+        font-size: 0.9em;
+        border: 1px solid $table_border_color;
+        border-collapse:collapse;
+        th, td {
+            padding: 0.666em 0.5em;
+            border: 1px solid $table_border_color;
+        }
+        th {
+            color: white;
+            background-color: $table_heading_bg_col;
+            border-bottom: 2px solid $table_heading_underline_col;
+            border-left: 1px solid $table_heading_border_col;
+            border-right: 1px solid $table_heading_border_col;
+        }
+        td.record-id {
+            text-align: center;
+            font-weight: bold;
+        }
+        tr.filter-row td {
+            display: none; /* TODO: reveal when filtering is implemented */
+            padding: 4px 4px 4px 40px;
+            background-color: $button_bg_col;
+            background-image: url('search-icon-white.png');
+            background-position: 14px center;
+            background-repeat: no-repeat;
+            border-bottom: 2px solid $table_border_color;
+        }
+        tr.filter-row td input[type=text] {
+            background-color: #e1e1e1;
+            width: 16em;
+            @include border-radius(4px);
+            border: none;
+            padding: 3px 0.5em;
+        }
+    }
+}
+
+.admin-nav-wrapper {
+    background-color: white;
+    padding: 1.5em 0 1em;
+}
+body.mappage .admin-nav-wrapper {
+    box-sizing: border-box;
+    padding-left: 10px;
+    padding-right: 10px;
+    position: fixed;
+    width: 100%;
+    @include box-shadow(0 0 6px 1px #000);
+}
+
+.admin-nav {
+    background: #f4f4f4;
+    @include background(linear-gradient(#fbfbfb, #efefef));
+    border-bottom: 2px solid $table_border_color;
+    ul {
+        overflow:auto;
+        margin:0 0 -2px 0;
+        list-style: none;
+        padding: 0;
+        border-top: 1px solid $table_border_color;
+        border-left: 1px solid $table_border_color;
+        border-right: 1px solid $table_border_color;
+        li {
+            border-right: 1px solid $table_border_color;
+            float:left;
+            list-style: none;
+            margin:0;
+            padding: 0.5em 1em;
+            font-weight: bold;
+            color: #000;
+            a {
+                color: #000;
+            }
+        }
+        li.search-box {
+            float: right;
+        }
+        li.current {
+            background-color: #fff;
+            border-bottom: 2px solid #fff;
+        }
+        li.search-box {
+            border:none;
+            padding: 0.2em 0.5em 0.2em 30px;
+            background-image: url('search-icon.png');
+            background-position: 2px center;
+            background-repeat: no-repeat;
+            input {
+                height: 100%;
+                width: 12em;
+                border: none;
+                padding: 6px 0.5em;
+            }
         }
     }
 }

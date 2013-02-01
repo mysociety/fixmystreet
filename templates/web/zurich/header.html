@@ -11,21 +11,23 @@
         <meta name="HandHeldFriendly" content="true">
         <meta name="mobileoptimized" content="0">
 
-        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+[% SET start = c.config.ADMIN_BASE_URL IF admin %]
+
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
+            <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
         <![endif]-->
 
-        <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
-        <script src="[% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
-        [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = 'FixMyZ&uuml;rich' %]
+<!-- CDN for now FIXME --><link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/redmond/jquery-ui.css">
+
+        <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
+        <script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
+        [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = 'FixMyZurich' %]
         [% extra_js %]
-                
-        [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
-            <link rel="canonical" href="http://www.fixmystreet.com[% c.req.uri.path_query %]">
-        [% END %]
+
+<!-- CDN for now FIXME --><script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js" charset="utf-8"></script>
 
         [% INCLUDE 'tracking_code.html' %]
 
@@ -36,25 +38,52 @@
         <div class="table-cell">
             <header id="site-header" role="banner">
                 <div class="container">
-                    <a href="/" id="site-logo">FixMyStreet</a>
+                    <a href="http://www.stadt-zuerich.ch/" id="site-logo">FixMyZurich</a>
                     <a href="#main-nav" id="nav-link">Main Navigation</a>
                 </div>
             </header>
 
-            <div id="user-meta">
-                [% IF c.user_exists %]
-                <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                </p>
-                [% ELSE %]
-                    <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
-                [% END %]
-            </div>
-
-            [% pre_container_extra %]
-
             <div class="container">
+
+[% IF admin %]
+    <div class="admin-nav-wrapper">
+    <div class="admin-nav">
+        <ul>
+            [% pagename = c.req.uri.path %]
+            [% pagename = pagename.replace('/admin/?(\w*).*', '$1') %]
+
+            <li [% IF pagename == 'summary' OR pagename == '' %]class="current"[% END %]>
+                <a href="/admin/summary">[% loc('Summary') %]</a>
+            </li>
+            <li [% IF pagename == 'reports' OR pagename == 'report_edit' %]class="current"[% END %]>
+                <a href="/admin/reports">[% loc('Reports') %]</a>
+            </li>
+            [% IF admin_type == 'dm' OR admin_type == 'super' %]
+            <li [% IF pagename == 'bodies' OR pagename == 'body' %]class="current"[% END %]>
+                <a href="/admin/bodies">[% loc('Bodies') %]</a>
+            </li>
+            [% END %]
+            [% IF admin_type == 'super' %]
+            <li [% IF pagename == 'users' OR pagename == 'user_edit' %]class="current"[% END %]>
+                <a href="/admin/users">[% loc('Users') %]</a>
+            </li>
+            [% END %]
+            <li class="search-box">
+                <form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+                    <input type="text" name="search" size="20" id="search" placeholder="[% loc('Search reports') %]">
+                </form>
+
+            </li>
+        </ul>
+    </div>
+    </div>
+[% END %]
+
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+                [% IF NOT admin %]
+                  [% INCLUDE 'nav_over_content.html' %]
+                [% END %]
+
+                [% pre_container_extra %]
 
         <!-- [% INCLUDE 'debug_header.html' %] -->

@@ -89,13 +89,14 @@ sub email_alerts ($) {
             }
 
             my $url = $cobrand->base_url( $row->{alert_cobrand_data} );
-            if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} ne $hashref_restriction->{council} ) {
+            if ( $hashref_restriction && $hashref_restriction->{bodies_str} && $row->{bodies_str} ne $hashref_restriction->{bodies_str} ) {
                 $url = mySociety::Config::get('BASE_URL');
             }
             # this is currently only for new_updates
             if ($row->{item_text}) {
-                if ( $row->{alert_user_id} == $row->{user_id} ) {
+                if ( $cobrand->moniker ne 'zurich' && $row->{alert_user_id} == $row->{user_id} ) {
                     # This is an alert to the same user who made the report - make this a login link
+                    # Don't bother with Zurich which has no accounts
                     my $user = FixMyStreet::App->model('DB::User')->find( {
                         id => $row->{alert_user_id}
                     } );
@@ -166,7 +167,7 @@ sub email_alerts ($) {
         };
         my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
         my %data = ( template => $template, data => '', alert_id => $alert->id, alert_email => $alert->user->email, lang => $alert->lang, cobrand => $alert->cobrand, cobrand_data => $alert->cobrand_data );
-        my $q = "select problem.id, problem.council, problem.postcode, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
+        my $q = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
             and problem.state in ($states)
@@ -183,7 +184,7 @@ sub email_alerts ($) {
                 parameter => $row->{id},
             } );
             my $url = $cobrand->base_url( $alert->cobrand_data );
-            if ( $hashref_restriction && $hashref_restriction->{council} && $row->{council} ne $hashref_restriction->{council} ) {
+            if ( $hashref_restriction && $hashref_restriction->{bodies_str} && $row->{bodies_str} ne $hashref_restriction->{bodies_str} ) {
                 $url = mySociety::Config::get('BASE_URL');
             }
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
@@ -254,6 +255,7 @@ sub _get_address_from_gecode {
     my $geocode = shift;
 
     return '' unless defined $geocode;
+    utf8::encode($geocode) if utf8::is_utf8($geocode);
     my $h = new IO::String($geocode);
     my $data = RABX::wire_rd($h);
 
