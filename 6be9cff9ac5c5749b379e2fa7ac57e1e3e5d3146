@@ -1,0 +1,3 @@
+This is to handle the case where a report is made in a two tier authority and the report is being sent to both councils.
+
+Without this both reports would be sent by email even if one of the councils was in testing councils and had a non email report mechanism configured.
