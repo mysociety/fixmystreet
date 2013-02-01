@@ -39,7 +39,7 @@ my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
 my $report = $reports[0];
 
 $mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('moderation');
+$mech->content_contains('&Uuml;berpr&uuml;fung ausstehend');
 
 # Check logging in to deal with this report
 $mech->get_ok( '/admin' );

@@ -103,7 +103,7 @@ subtest "Zurich unconfirmeds are 200" => sub {
     $mech->host( 'zurich.fixmystreet.com' );
     ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
     $mech->get_ok("/report/$report_id");
-    $mech->content_contains( 'This report is awaiting moderation' );
+    $mech->content_contains( '&Uuml;berpr&uuml;fung ausstehend' );
     ok $report->update( { state => 'confirmed' } ), 'confirm report again';
     $mech->host( 'www.fixmystreet.com' );
 };
