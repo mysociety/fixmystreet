@@ -211,82 +211,49 @@ body {
   ---------------------------------------------------------------------------------*/
 
 #navigation {
+  /* menubar from e.g., http://fisd.oxfordshire.gov.uk/kb5/oxfordshire/fsd/includes/css/wireframe/navbar.css */
+  .menubar {
+    color: #999999;
+    overflow: visible;
+    /*width: @gridWidth; only needed for contained menu*/
+    display: inline-block;
+    z-index: 100;
+    .menu-inner {
+      background-color: #004300;
+      background-repeat: repeat-x;
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      border-radius: 0;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 -1px 0 rgba(0, 0, 0, 0.1) inset;
 
-/* menubar from e.g., http://fisd.oxfordshire.gov.uk/kb5/oxfordshire/fsd/includes/css/wireframe/navbar.css */
-.menubar {
-  color: #999999;
-  overflow: visible;
-  /*width: @gridWidth; only needed for contained menu*/
+      .menu {
+        left: 0;
+        margin: 0 10px 0 0;
+        padding: 0;
+        position: relative;
+        list-style: none outside none;
+        > li {
+          float: left;
+           > a, {
+            color: #ffffff;
+            float: none;
+            line-height: 19px;
+            padding: 10px 10px 11px;
+            text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+            display: block;
+            text-decoration: none;
+            &:hover {
+              color: #FFFFFF;
+            }
+          }
+        }
+      }
+    }
+  
+  
+  
+  }
 
-  display: inline-block;
-  z-index: 100;
-}
-
-.menubar .menu-inner {
-  background-color: #004300;
-  background-repeat: repeat-x;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), 0 -1px 0 rgba(0, 0, 0, 0.1) inset;
-
-
-}
-.menubar .menu-inner .menu {
-  left: 0;
-  margin: 0 10px 0 0;
-  padding: 0;
-  position: relative;
-  list-style: none outside none;
-}
-.menubar .menu-inner .menu > li {
-  float: left;
-}
-.menubar .menu-inner .menu > li > a {
-  color: #ffffff;
-  float: none;
-  line-height: 19px;
-  padding: 10px 10px 11px;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-  display: block;
-  text-decoration: none;
-}
-.menubar .menu-inner .menu > li a:hover {
-  color: #FFFFFF;
-}
-.menubar .menu-inner .menu .dropdown-menu {
-  background-clip: padding-box;
-  background-color: #ffffff;
-  border-color: rgba(0, 0, 0, 0.2);
-  border-style: solid;
-  border-width: 1px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  display: none;
-  float: left;
-  left: 0;
-  list-style: none outside none;
-  min-width: 160px;
-  padding: 4px 0;
-  position: absolute;
-  top: 40px;
-  z-index: 1001;
-}
-.menubar .menu-inner .menu .dropdown-menu a {
-  clear: both;
-  color: #333333;
-  display: block;
-  font-weight: normal;
-  line-height: 18px;
-  padding: 3px 15px;
-  white-space: nowrap;
-  text-decoration: none;
-  z-index: 1000;
-}
-.menubar .menu-inner .menu .dropdown-menu a:hover {
-  background-color: #069b01;
-  color: #ffffff;
-  text-decoration: none;
-}
 .menubar-fixed-top {
   left: 0;
   margin-bottom: 0;
