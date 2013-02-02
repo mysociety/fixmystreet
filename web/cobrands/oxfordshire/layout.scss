@@ -6,6 +6,10 @@ body {
   background-image: none;
 }
 
+body, body a {
+  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif; 
+}
+
 #front-main {
   background-color: $primary;
   background-image: none;
@@ -148,6 +152,10 @@ body.twothirdswidthpage .content {
         border-top: none;
         border-bottom: 1px solid $primary;
     }
+}
+
+body {
+  font-family:"LASTFIXME Trebuchet MS",Arial, Helvetica, sans-serif; 
 }
 
 

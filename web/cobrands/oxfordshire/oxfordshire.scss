@@ -9,7 +9,7 @@
 body {
   font-family:"Trebuchet MS",Arial, Helvetica, sans-serif; 
   line-height:18px; 
-  a {text-decoration:none; outline:0; font-family:Arial, Helvetica, sans-serif; font-size:0.75em; color:#0c62ba}
+  a {text-decoration:none; color:#0c62ba}
   a { font-size: 1em; } // mySociety
   a:hover {text-decoration:underline}
   margin:0;
@@ -213,6 +213,7 @@ body {
 #navigation {
   /* menubar from e.g., http://fisd.oxfordshire.gov.uk/kb5/oxfordshire/fsd/includes/css/wireframe/navbar.css */
   .menubar {
+    font-size: 13px; /*  explicit; it was implicit from OCC's styles */
     color: #999999;
     overflow: visible;
     /*width: @gridWidth; only needed for contained menu*/
@@ -234,7 +235,7 @@ body {
         list-style: none outside none;
         > li {
           float: left;
-           > a, {
+           > a, > span {
             color: #ffffff;
             float: none;
             line-height: 19px;
