@@ -234,8 +234,9 @@ body {
         position: relative;
         list-style: none outside none;
         > li {
+          list-style: none outside none;
           float: left;
-           > a, > span {
+          > a, > span {
             color: #ffffff;
             float: none;
             line-height: 19px;
