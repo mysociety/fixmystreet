@@ -17,9 +17,8 @@
 [%- END %]
 
 [%# note: date format here (i.e., dd.mm.YYYY) currently used by Zurich %]
-[%- USE date_format = DateTime::Format('DateTime::Format::Strptime', { pattern => "%d.%m.%Y" }) %]
 [% BLOCK format_date -%]
     [%- IF this_date %]
-      [% date_format.format(this_date) %]
+      [% this_date.strftime('%d.%m.%y') %]
     [% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
 [%- END %]

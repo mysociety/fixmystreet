@@ -1,6 +1,4 @@
 [% INCLUDE 'admin/header.html' title=loc('Timeline') %]
-[%- USE f = DateTime::Format('DateTime::Format::Strptime', { pattern => "%A, %e %B %Y" }) %]
-[%- USE alert_format = DateTime::Format('DateTime::Format::Strptime', { pattern => "%H:%M:%S %e %B %Y" }) %]
 
 [%- BLOCK problem_name %]
     [%- tprintf(loc('by %s'), problem.name) | html %] &lt;[% problem.user.email | html %]&gt;, '[% problem.title | html %]'
@@ -8,7 +6,7 @@
 
 [%- date = '' %]
 [% FOREACH moment IN time.keys.sort.reverse %]
-    [%- curdate = f.format(time.$moment.0.date) -%]
+    [%- curdate = time.$moment.0.date.strftime('%A, %e %B %Y') -%]
     [%- IF date != curdate %]
         [% '</dl>' IF date %]
         <h2>[% curdate %]</h2>
@@ -36,7 +34,7 @@
             [% CASE 'alertSub' %]
                  [% tprintf(loc("Alert %d created for %s, type %s, parameters %s / %s"), item.obj.id, item.obj.user.email, item.obj.alert_type.ref, item.obj.parameter, item.obj.parameter2) | html %]
             [% CASE 'alertDel' %]
-                 [% tprintf(loc("Alert %d disabled (created %s)"), item.obj.id, alert_format.format( item.obj.whensubscribed_local ) ) %]
+                 [% tprintf(loc("Alert %d disabled (created %s)"), item.obj.id, item.obj.whensubscribed_local.strftime('%H:%M:%S %e %B %Y') ) %]
         [%- END %]
         <br />
     [%- END %] 
