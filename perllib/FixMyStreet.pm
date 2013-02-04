@@ -33,7 +33,7 @@ Thus module has utility functions for the FMS project.
     FixMyStreet->test_mode( $bool );
     my $in_test_mode_bool = FixMyStreet->test_mode;
 
-Put the FixMyStreet into test mode - inteded for the unit tests:
+Put the FixMyStreet into test mode - intended for the unit tests:
 
     BEGIN {
         use FixMyStreet;

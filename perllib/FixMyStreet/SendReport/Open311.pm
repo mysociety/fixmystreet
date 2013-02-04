@@ -97,7 +97,7 @@ sub send {
             category => $row->category
         } );
 
-        my $open311 = Open311->new(
+        my %open311_params = (
             jurisdiction            => $conf->jurisdiction,
             endpoint                => $conf->endpoint,
             api_key                 => $conf->api_key,
@@ -106,6 +106,16 @@ sub send {
             use_service_as_deviceid => $use_service_as_deviceid,
             extended_description    => $extended_desc,
         );
+        if (FixMyStreet->test_mode) {
+            my $test_res = HTTP::Response->new();
+            $test_res->code(200);
+            $test_res->message('OK');
+            $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>');
+            $open311_params{test_mode} = 1;
+            $open311_params{test_get_returns} = { 'requests.xml' => $test_res };
+        }
+
+        my $open311 = Open311->new( %open311_params );
 
         # non standard west berks end points
         if ( $row->bodies_str =~ /2619/ ) {
