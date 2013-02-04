@@ -16,6 +16,11 @@ body {
     color: #fff;
 }
 
+/* The OpenLayers popup sets a background image with a white background without setting the CSS colours correctly. */
+#popup {
+    color: #000;
+}
+
 h1 {
     margin-top: 0;
 }
