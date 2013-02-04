@@ -273,8 +273,8 @@ $(function(){
     // Set it up our way
 
     var layer;
-    if (!fixmystreet.layer_options.length) {
-        fixmystreet.layer_options = [ fixmystreet.layer_options ];
+    if (!fixmystreet.layer_options) {
+        fixmystreet.layer_options = [ {} ];
     }
     for (var i=0; i<fixmystreet.layer_options.length; i++) {
         fixmystreet.layer_options[i] = OpenLayers.Util.extend({
@@ -285,7 +285,7 @@ $(function(){
         if (fixmystreet.layer_options[i].matrixIds) {
             layer = new fixmystreet.map_type(fixmystreet.layer_options[i]);
         } else {
-            layer = new fixmystreet.map_type("", fixmystreet.layer_options);
+            layer = new fixmystreet.map_type("", fixmystreet.layer_options[i]);
         }
         fixmystreet.map.addLayer(layer);
     }
