@@ -154,6 +154,13 @@ body.twothirdswidthpage .content {
     }
 }
 
+#front-main #postcodeForm div {
+  border: 1px solid #fff; // because orange "Go" button (see below) abuts this border, looks a tiny bit better if it's not dark green
+}
+
+// styled Oxfordshire buttons -- including the "Go" button on the postcode form -- to be orange:
+
+#front-main #postcodeForm div input#submit,
 .green-btn,
 button.green-btn,
 input.green-btn{
