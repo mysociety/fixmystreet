@@ -340,6 +340,8 @@ sub ward_check : Private {
         }
     }
     # Given a false ward name
+    $c->stash->{body} = $c->stash->{area}
+        unless $c->stash->{body};
     $c->detach( 'redirect_body' );
 }
 
