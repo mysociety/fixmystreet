@@ -7,10 +7,9 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-01-31 15:59+0000\n"
-"PO-Revision-Date: 2013-01-28 14:00+0100\n"
+"PO-Revision-Date: 2013-02-04 12:02+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -337,7 +336,7 @@ msgstr "F&uuml;ge neue Kategorie hinzu"
 
 #: templates/web/default/admin/users.html:35
 msgid "Add user"
-msgstr ""
+msgstr "User hinzuf&uuml;gen"
 
 #: templates/web/default/my/my.html:56 templates/web/fixmystreet/my/my.html:60
 msgid "Added %s"
@@ -458,7 +457,7 @@ msgstr ""
 #: templates/web/default/admin/body-form.html:19
 #: templates/web/zurich/admin/body-form.html:25
 msgid "Area covered"
-msgstr ""
+msgstr "Gebiet"
 
 #: templates/web/zurich/admin/report_edit.html:99
 msgid "Assign to different category:"
@@ -517,11 +516,11 @@ msgstr "Externe Adressen"
 #: templates/web/default/admin/reports.html:16
 #: templates/web/default/admin/users.html:14
 msgid "Body"
-msgstr ""
+msgstr "Organisation"
 
 #: templates/web/default/admin/user-form.html:7
 msgid "Body:"
-msgstr ""
+msgstr "Organisation:"
 
 #: templates/web/fiksgatami/footer.html:16
 #: templates/web/fiksgatami/nn/footer.html:16
@@ -647,7 +646,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:395
 msgid "Configuration updated - contacts will be generated automatically later"
-msgstr ""
+msgstr "Aktualisiert"
 
 #: templates/web/default/admin/body_edit.html:47
 msgid "Configure Endpoint"
@@ -743,7 +742,7 @@ msgstr ""
 #: templates/web/default/admin/body_edit.html:1
 #: templates/web/zurich/admin/body.html:1
 msgid "Council contacts for %s"
-msgstr ""
+msgstr "Kontaktdetails von %s"
 
 #: templates/web/default/admin/stats.html:84
 msgid "Council:"
@@ -849,7 +848,7 @@ msgstr ""
 #: templates/web/default/admin/body.html:112
 #: templates/web/zurich/admin/body.html:64
 msgid "Edit body details"
-msgstr ""
+msgstr "Details editieren"
 
 #: templates/web/default/admin/report_edit.html:1
 #: templates/web/zurich/admin/report_edit-sdm.html:1
@@ -1195,7 +1194,7 @@ msgstr ""
 #: templates/web/default/admin/index.html:24
 #: templates/web/zurich/admin/index.html:11
 msgid "Graph of problem creation by status over time"
-msgstr ""
+msgstr "Grafik der Meldungen nach Status und Zeit"
 
 #: templates/web/default/reports/index.html:8
 #: templates/web/emptyhomes/reports/index.html:5
@@ -1385,9 +1384,8 @@ msgid "In progress"
 msgstr "In Bearbeitung"
 
 #: templates/web/zurich/admin/report_edit.html:118
-#, fuzzy
 msgid "Include reporter personal details"
-msgstr "Bitte geben Sie einiges Details an"
+msgstr "Pers&oumol;nliche Angaben des Meldenden mitsenden"
 
 #: templates/web/default/admin/stats.html:76
 msgid "Include unconfirmed reports"
@@ -1627,7 +1625,7 @@ msgstr "Neue <br>Meldungen"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:249
 msgid "New body added"
-msgstr ""
+msgstr "Neue Organisation hinzugef&uuml;gt"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:351
 msgid "New category contact added"
@@ -1668,9 +1666,8 @@ msgid "New problems within {{NAME}}'s boundary on FixMyStreet"
 msgstr ""
 
 #: templates/web/zurich/admin/index-sdm.html:4
-#, fuzzy
 msgid "New reports"
-msgstr "Alle Meldungen"
+msgstr "Neu"
 
 #: db/alert_types_eha.pl:23
 msgid ""
@@ -1951,7 +1948,7 @@ msgstr ""
 #: templates/web/default/admin/body-form.html:9
 #: templates/web/zurich/admin/body-form.html:15
 msgid "Parent"
-msgstr ""
+msgstr "Geh&ouml;rt zu"
 
 #: templates/web/default/admin/report_edit.html:26
 msgid "Partial"
@@ -2167,6 +2164,8 @@ msgid ""
 "Please feel free to <a href=\"%s\">sign in again</a>, or go back to the <a "
 "href=\"/\">front page</a>."
 msgstr ""
+"<a href=\"%s\">Erneut anmelden</a> oder <a href=\"/\">zur&uuml;ck zur "
+"Startseite</a>."
 
 #: templates/web/emptyhomes/report/new/fill_in_details_text.html:1
 msgid ""
@@ -2741,18 +2740,16 @@ msgid "Reports"
 msgstr "Meldungen"
 
 #: templates/web/zurich/admin/index-sdm.html:7
-#, fuzzy
 msgid "Reports awaiting approval"
-msgstr "Ihre Meldung"
+msgstr "R&uuml;ckmeldung ausstehend"
 
 #: templates/web/default/around/tabbed_lists.html:3
 msgid "Reports on and around the map"
 msgstr ""
 
 #: templates/web/zurich/admin/index-sdm.html:10
-#, fuzzy
 msgid "Reports published"
-msgstr "Missbrauch melden"
+msgstr "Erledigt"
 
 #: templates/web/default/admin/report_edit.html:40
 msgid "Resend report"
@@ -2775,12 +2772,12 @@ msgstr ""
 #: templates/web/default/admin/report_edit.html:55
 #: templates/web/zurich/admin/report_edit.html:53
 msgid "Rotate Left"
-msgstr ""
+msgstr "Links drehen"
 
 #: templates/web/default/admin/report_edit.html:56
 #: templates/web/zurich/admin/report_edit.html:54
 msgid "Rotate Right"
-msgstr ""
+msgstr "Rechts drehen"
 
 #: templates/web/default/admin/body_edit.html:76
 msgid "Save changes"
@@ -2794,7 +2791,7 @@ msgstr "Meldungen suchen"
 
 #: templates/web/default/admin/users.html:1
 msgid "Search Users"
-msgstr ""
+msgstr "User suchen"
 
 #: templates/web/zurich/header.html:73
 msgid "Search reports"
@@ -2809,12 +2806,12 @@ msgstr "Suchen:"
 #: templates/web/default/admin/body-form.html:11
 #: templates/web/zurich/admin/body-form.html:17
 msgid "Select a body"
-msgstr ""
+msgstr "Organisation wählen"
 
 #: templates/web/default/admin/body-form.html:21
 #: templates/web/zurich/admin/body-form.html:27
 msgid "Select an area"
-msgstr ""
+msgstr "Gebiet wählen"
 
 #: templates/web/default/alert/_list.html:8
 #: templates/web/fixmystreet/alert/_list.html:10
@@ -3582,9 +3579,8 @@ msgstr ""
 
 #: templates/web/bromley/report/display.html:66
 #: templates/web/fixmystreet/report/update-form.html:19
-#, fuzzy
 msgid "Update"
-msgstr "Beschreibung"
+msgstr "Speichern"
 
 #: templates/web/default/admin/timeline.html:35
 msgid "Update %s created for problem %d; by %s"
@@ -4202,9 +4198,8 @@ msgstr "oder automatisch lokalisieren"
 #: templates/web/zurich/admin/report_edit.html:24
 #: templates/web/zurich/admin/report_edit.html:32
 #: templates/web/zurich/admin/report_edit.html:38
-#, fuzzy
 msgid "originally entered: &ldquo;%s&rdquo;"
-msgstr "urspr&uuml;nglich eingegeben"
+msgstr "Originaltext: &ldquo;%s&rdquo;"
 
 #: templates/web/default/admin/report_edit.html:21
 msgid "other areas:"
