@@ -419,7 +419,8 @@ sub load_and_group_problems : Private {
         }
         if ( !$problem->bodies_str ) {
             # Problem was not sent to any body, add to all possible areas XXX
-            while ($problem->areas =~ /,(\d+)(?=,)/g) {
+            my $a = $problem->areas; # Store, as otherwise is looked up every iteration.
+            while ($a =~ /,(\d+)(?=,)/g) {
                 add_row( $c, $problem, $1, \%problems, \@pins );
             }
         } else {
