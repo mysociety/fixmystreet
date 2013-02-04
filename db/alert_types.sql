@@ -17,7 +17,13 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('new_problems', '', '',
     'New problems on FixMyStreet', '/', 'The latest problems reported by users',
-    'problem', 'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'')', 'created desc',
+    'problem',
+    'problem.non_public = ''f'' and problem.state in
+        (''confirmed'', ''investigating'', ''planned'', ''in progress'',
+         ''fixed'', ''fixed - council'', ''fixed - user'', ''closed''
+         ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+         ''internal referral'' )',
+    'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem');
 
 -- New fixed problems anywhere on the site
@@ -39,7 +45,13 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('local_problems', '', '',
     'New local problems on FixMyStreet', '/', 'The latest local problems reported by users',
-    'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'')', 'created desc',
+    'problem_find_nearby(?, ?, ?) as nearby,problem',
+    'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in
+    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
+     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'')',
+    'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
 -- New problems around a location
@@ -61,7 +73,13 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('postcode_local_problems', '', '',
     'New problems near {{POSTCODE}} on FixMyStreet', '/', 'The latest local problems reported by users',
-    'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'')', 'created desc',
+    'problem_find_nearby(?, ?, ?) as nearby,problem',
+    'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in
+    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
+     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'')',
+    'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
 -- New problems around a postcode with a particular state
@@ -83,8 +101,15 @@ insert into alert_type
     item_title, item_link, item_description, template)
 values ('council_problems', '', '',
     'New problems to {{COUNCIL}} on FixMyStreet', '/reports', 'The latest problems for {{COUNCIL}} reported by users',
-    'problem', 'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (bodies_str like ''%''||?||''%''
-        or bodies_str is null) and areas like ''%,''||?||'',%''', 'created desc',
+    'problem',
+    'problem.non_public = ''f'' and problem.state in
+    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
+      ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'' ) AND
+    (bodies_str like ''%''||?||''%'' or bodies_str is null) and
+    areas like ''%,''||?||'',%''',
+    'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-council'
 );
 
@@ -97,8 +122,15 @@ insert into alert_type
 values ('ward_problems', '', '',
     'New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet', '/reports',
     'The latest problems for {{COUNCIL}} within {{WARD}} ward reported by users',
-    'problem', 'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and (bodies_str like ''%''||?||''%''
-        or bodies_str is null) and areas like ''%,''||?||'',%''', 'created desc',
+    'problem',
+    'problem.non_public = ''f'' and problem.state in
+    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
+     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'' ) AND
+    (bodies_str like ''%''||?||''%'' or bodies_str is null) and
+    areas like ''%,''||?||'',%''',
+    'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-ward'
 );
 
@@ -111,7 +143,13 @@ insert into alert_type
 values ('area_problems', '', '',
     'New problems within {{NAME}}''s boundary on FixMyStreet', '/reports',
     'The latest problems within {{NAME}}''s boundary reported by users', 'problem',
-    'problem.non_public = ''f'' and problem.state in (''confirmed'', ''investigating'', ''planned'', ''in progress'', ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'') and areas like ''%,''||?||'',%''', 'created desc',
+    'problem.non_public = ''f'' and problem.state in
+    (''confirmed'', ''investigating'', ''planned'', ''in progress'',
+     ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
+     ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
+     ''internal referral'' ) AND
+    areas like ''%,''||?||'',%''',
+    'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-area'
 );
 
