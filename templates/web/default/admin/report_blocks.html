@@ -19,6 +19,6 @@
 [%# note: date format here (i.e., dd.mm.YYYY) currently used by Zurich %]
 [% BLOCK format_date -%]
     [%- IF this_date %]
-      [% this_date.strftime('%d.%m.%y') %]
+      [% this_date.strftime('%d.%m.%Y') %]
     [% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
 [%- END %]
