@@ -55,5 +55,8 @@ sub send_questionnaires {
     return 0;
 }
 
+# let staff hide reports in their own barangay
+sub users_can_hide { 1 }
+
 1;
 
