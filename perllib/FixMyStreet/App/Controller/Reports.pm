@@ -162,6 +162,10 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
     $area =~ s/\+/ /g;
     $area =~ s/\.html//;
 
+    # XXX Currently body/area overlaps here are a bit muddy.
+    # We're checking an area here, but this function is currently doing that.
+    return if $c->cobrand->reports_body_check( $c, $area );
+
     # If we're passed an ID number (don't think this is used anywhere, it
     # certainly shouldn't be), just look that up on mapit and redirect
     if ($area =~ /^\d+$/) {
@@ -185,6 +189,8 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
             }
         }
     }
+
+    $c->detach( 'redirect_index' ) unless $c->stash->{area};
 
     $c->forward( 'ward_check', [ $ward ] ) if $ward;
 
