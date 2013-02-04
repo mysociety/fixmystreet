@@ -669,7 +669,7 @@ sub body {
 sub can_display_external_id {
     my $self = shift;
     if ($self->external_id && $self->send_method_used && 
-        ($self->send_method_used eq 'barnet' || $self->council =~ /2237/)) {
+        ($self->send_method_used eq 'barnet' || $self->bodies_str =~ /2237/)) {
         return 1;
     }
     return 0;    

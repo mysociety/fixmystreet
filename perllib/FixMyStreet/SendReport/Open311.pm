@@ -76,7 +76,7 @@ sub send {
         }
 
         # extra Oxfordshire fields: send nearest street, postcode, northing and easting, and the FMS id
-        if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
+        if ( $row->bodies_str =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
 
             my $extra = $row->extra;
             push @$extra, { name => 'external_id', value => $row->id };
@@ -113,7 +113,7 @@ sub send {
         }
 
         # non-standard Oxfordshire endpoint (because it's just a script, not a full Open311 service)
-        if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
+        if ( $row->bodies_str =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
             $open311->endpoints( { requests => 'open311_service_request.cgi' } );
             $revert = 1;
         }
