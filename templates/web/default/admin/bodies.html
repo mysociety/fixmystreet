@@ -27,6 +27,7 @@
     [% IF c.cobrand.moniker == 'zurich' %]
         <td>[% body.endpoint %]</td>
     [% ELSE %]
+        <td>
         [% IF counts.$id %]
             [% tprintf( loc('%d addresses'), counts.$id.c) IF c.cobrand.moniker != 'emptyhomes' %]
             [% IF counts.$id.deleted %]
@@ -37,6 +38,7 @@
         [% ELSE %]
             no categories
         [% END %]
+        </td>
     [% END %]
     </tr>
 [%- END %]
