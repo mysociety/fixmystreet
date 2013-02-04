@@ -33,6 +33,8 @@ use constant SEND_FAIL_RETRIES_CUTOFF => 3;
 use constant SEND_METHOD_EMAIL      => 'email';
 use constant SEND_METHOD_OPEN311    => 'Open311';
 
+use constant COUNCIL_ID_OXFORDSHIRE => 2237;
+
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
 my $base_url = mySociety::Config::get('BASE_URL');
@@ -44,6 +46,11 @@ my $bodies = FixMyStreet::App->model('DB::Body')->search( {
 } );
 
 while ( my $body = $bodies->next ) {
+
+    # Oxfordshire (OCC) is special:
+    # we do *receive* service_request_updates (aka comments) for OCC, but we never *send* them, so skip this pass
+    next if $body->areas->{COUNCIL_ID_OXFORDSHIRE};
+
     my $use_extended = 0;
     my $comments = FixMyStreet::App->model('DB::Comment')->search( {
             'me.whensent'    => undef,
