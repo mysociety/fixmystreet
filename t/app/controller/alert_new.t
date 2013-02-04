@@ -307,6 +307,9 @@ for my $test (
     };
 }
 
+$mech->create_body_ok(2226, 'Gloucestershire County Council');
+$mech->create_body_ok(2326, 'Cheltenham Borough Council');
+
 subtest "Test two-tier council alerts" => sub {
     for my $alert (
         { feed => "local:51.896269:-2.093063",          result => '/rss/l/51.896269,-2.093063' },
