@@ -26,7 +26,7 @@ function fixmystreet_update_pin(lonlat) {
         if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
             // there might be a first name field on some cobrands
             var lb = $('#form_first_name').prev();
-            if ( lb.length == 0 ) { lb = $('#form_name').prev(); }
+            if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
     });
@@ -83,7 +83,7 @@ function fixmystreet_onload() {
             if ( fixmystreet.area.length == 1 ) {
                 area.events.register('loadend', null, function(a,b,c) {
                     if ( fixmystreet.area_format ) {
-                        area.styleMap.styles.default.defaultStyle = fixmystreet.area_format;
+                        area.styleMap.styles['default'].defaultStyle = fixmystreet.area_format;
                     }
                     var bounds = area.getDataExtent();
                     if (bounds) {
@@ -150,18 +150,20 @@ function fixmystreet_onload() {
     }
     fixmystreet.markers = new OpenLayers.Layer.Vector("Pins", pin_layer_options);
     fixmystreet.markers.events.register( 'loadend', fixmystreet.markers, function(evt) {
-        if (fixmystreet.map.popups.length) fixmystreet.map.removePopup(fixmystreet.map.popups[0]);
+        if (fixmystreet.map.popups.length) {
+            fixmystreet.map.removePopup(fixmystreet.map.popups[0]);
+        }
     });
 
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
+    function onPopupClose(evt) {
+        fixmystreet.select_feature.unselect(selectedFeature);
+        OpenLayers.Event.stop(evt);
+    }
     if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
         fixmystreet.select_feature = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
         var selectedFeature;
-        function onPopupClose(evt) {
-            fixmystreet.select_feature.unselect(selectedFeature);
-            OpenLayers.Event.stop(evt);
-        }
         fixmystreet.markers.events.register( 'featureunselected', fixmystreet.markers, function(evt) {
             var feature = evt.feature, popup = feature.popup;
             fixmystreet.map.removePopup(popup);
@@ -520,7 +522,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         if (sidebar.css('position') == 'absolute') {
             var w = sidebar.width(), h = sidebar.height(),
                 o = sidebar.offset(),
-                $map_box = $('#map_box'), bo = $map_box.offset();
+                $map_boxx = $('#map_box'), bo = $map_boxx.offset();
             // e.xy is relative to top left of map, which might not be top left of page
             e.xy.x += bo.left;
             e.xy.y += bo.top;
@@ -545,12 +547,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             var $map_box = $('#map_box'),
                 width = $map_box.width(),
                 height = $map_box.height();
-            $map_box.append(
-                '<p id="mob_sub_map_links">' +
-                '<a href="#" id="try_again">' + translation_strings.try_again + '</a>' +
-                '<a href="#ok" id="mob_ok">' + translation_strings.ok + '</a>' +
-                '</p>'
-            ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
+            $map_box.append( '<p id="mob_sub_map_links">' + '<a href="#" id="try_again">' + translation_strings.try_again + '</a>' + '<a href="#ok" id="mob_ok">' + translation_strings.ok + '</a>' + '</p>' ).css({ position: 'relative', width: width, height: height, marginBottom: '1em' });
             // Making it relative here makes it much easier to do the scrolling later
 
             $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.right_place);
