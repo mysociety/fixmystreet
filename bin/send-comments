@@ -2,7 +2,7 @@
 
 # send-comments:
 # Send comments/updates on reports to bodies
-#   In Open311 parlance these are 'service request udpates' and are sent using
+#   In Open311 parlance these are 'service request updates' and are sent using
 #   mySociety's proposed extension to the Open311 Georeport v2 spec:
 #   https://github.com/mysociety/fixmystreet/wiki/Open311-FMS---Proposed-differences-to-Open311
 #
@@ -95,8 +95,8 @@ while ( my $body = $bodies->next ) {
     while ( my $comment = $comments->next ) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($comment->cobrand)->new();
 
-        # actually this should be OK for any devolved endpoint if original Open311->can_be_devolved, presumably
-        if ( $cobrand->moniker eq "fixmybarangay") {
+        # TODO actually this should be OK for any devolved endpoint if original Open311->can_be_devolved, presumably
+        if ( 0 ) { # Check can_be_devolved and do this properly if set
             my $sender = $cobrand->get_body_sender( $body, $comment->problem->category );
             my $config = $sender->{config};
             $o = Open311->new(

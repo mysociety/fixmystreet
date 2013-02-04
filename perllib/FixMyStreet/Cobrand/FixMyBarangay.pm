@@ -41,8 +41,6 @@ sub can_support_problems {
     return 1;
 }
 
-sub reports_by_body { 1 }
-
 sub default_show_name {
     my $self = shift;
 

@@ -88,13 +88,11 @@ sub update_comments {
         next unless $request_id;
 
         my $problem;
-        my $criteria = { external_id => $request_id };
-        if ($open311->jurisdiction =~ /^fixmybarangay_(dps|dpwh|depw)$/i) { # use jurisdiction (not area_id) for FMB bodies
-            $criteria->{ external_body } = uc $1;
-        } else {
+        my $criteria = {
+            external_id => $request_id,
             # XXX This assumes that areas will actually only be one area.
-            $criteria->{ bodies_str } = { like => '%' . join(",", keys %{$body_details->{areas}}) . '%' };
-        }
+            bodies_str => { like => '%' . join(",", keys %{$body_details->{areas}}) . '%' },
+        };
         $problem = FixMyStreet::App->model('DB::Problem')->search( $criteria );
 
         if (my $p = $problem->first) {

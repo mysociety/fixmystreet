@@ -729,15 +729,6 @@ sub default_map_zoom { undef };
 
 sub users_can_hide { return 0; }
 
-=head2 reports_by_body
-
-Can /reports show reports indexed by external_body? This is a temporary measure
-until the contacts/area/body handling is rewritten to be better.
-
-=cut
-
-sub reports_by_body { 0; }
-
 =head2 default_show_name
 
 Returns true if the show name checkbox should be ticked by default.

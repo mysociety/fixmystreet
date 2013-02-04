@@ -131,7 +131,6 @@ sub ward : Path : Args(2) {
     $c->cobrand->tweak_all_reports_map( $c );
 
     # List of wards
-    # Ignore external_body special body thing
     if ( !$c->stash->{ward} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
         my $children = mySociety::MaPit::call('area/children', [ $c->stash->{body}->body_areas->first->area_id ],
             type => $c->cobrand->area_types_children,
@@ -285,15 +284,6 @@ sub body_check : Private {
         $c->detach( 'redirect_body' );
     }
 
-    if ( $c->cobrand->reports_by_body ) {
-        my $problem = $c->cobrand->problems->search({ 'lower(me.external_body)' => lc $q_body }, { columns => [ 'external_body' ], rows => 1 })->single;
-        if ( $problem ) {
-            # If external_body, put as a body with ID 0 for the moment.
-            $c->stash->{body} = $c->model('DB::Body')->new( { id => 0, name => $problem->external_body } );
-            return;
-        }
-    }
-
     # We must now have a string to check
     my @bodies = $c->model('DB::Body')->search( { name => { -like => "$q_body%" } } )->all;
 
@@ -384,9 +374,6 @@ sub load_and_group_problems : Private {
             { 'like', $c->stash->{body}->id . ',%' },
             { 'like', '%,' . $c->stash->{body}->id },
         ];
-    } elsif ($c->stash->{body} && $c->stash->{body}->id == 0) {
-        # A proxy for an external_body
-        $where->{'lower(external_body)'} = lc $c->stash->{body}->name;
     } elsif ($c->stash->{body}) {
         # XXX FixMyStreet used to have the following line so that reports not
         # currently sent anywhere could still be listed in the appropriate
@@ -412,8 +399,7 @@ sub load_and_group_problems : Private {
     my ( %problems, @pins );
     while ( my $problem = $problems->next ) {
         $c->log->debug( $problem->cobrand . ', cobrand is ' . $c->cobrand->moniker );
-        if ( !$c->stash->{body} || !$c->stash->{body}->id ) {
-            # An external_body entry
+        if ( !$c->stash->{body} ) {
             add_row( $c, $problem, 0, \%problems, \@pins );
             next;
         }
