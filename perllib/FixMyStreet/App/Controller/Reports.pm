@@ -132,7 +132,7 @@ sub ward : Path : Args(2) {
 
     # List of wards
     # Ignore external_body special body thing
-    unless ($c->stash->{ward} || !$c->stash->{body}->id) {
+    if ( !$c->stash->{ward} && $c->stash->{body}->id && $c->stash->{body}->body_areas->first ) {
         my $children = mySociety::MaPit::call('area/children', [ $c->stash->{body}->body_areas->first->area_id ],
             type => $c->cobrand->area_types_children,
         );
