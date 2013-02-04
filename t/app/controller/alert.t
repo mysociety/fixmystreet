@@ -2,11 +2,8 @@ use strict;
 use warnings;
 use Test::More;
 
-
-use Catalyst::Test 'FixMyStreet::App';
-use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
-
-ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
+use FixMyStreet::TestMech;
+my $mech = FixMyStreet::TestMech->new;
 
 # check that we can get the page
 $mech->get_ok('/alert');
