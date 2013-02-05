@@ -527,10 +527,29 @@ sub reports : Path('reports') {
                 cobrand_data => { like => $like_search },
             ];
         }
+
+        if ( $c->cobrand->moniker eq 'zurich' ) {
+            my $type = $c->stash->{admin_type};
+            my $body = $c->stash->{body};
+            if ( $type eq 'super' ) {
+                $query = { -or => $query };
+            } elsif ( $type eq 'dm' ) {
+                my @children = map { $_->id } $body->bodies->all;
+                my @all = (@children, $body->id);
+                $query = {
+                    bodies_str => \@all,
+                    -or => $query
+                };
+            } elsif ( $type eq 'sdm' ) {
+                $query = { bodies_str => $body->id, -or => $query };
+            }
+        } else {
+            $query = { -or => $query };
+        }
+
+
         my $problems = $c->cobrand->problems->search(
-            {
-                -or => $query,
-            },
+            $query,
             {
                 prefetch => 'user',
                 order_by => [\"(state='hidden')",'created']

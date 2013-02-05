@@ -17,7 +17,7 @@
         <th>[% loc('Status') %]</th>
         <th>*</th>
     </tr>
-    [% INCLUDE 'admin/problem_row.html', page = 'search' %]
+    [% INCLUDE 'admin/problem_row.html' %]
 </table>
 
 [% INCLUDE 'pagination.html', admin = 1, param = 'p' IF pager %]

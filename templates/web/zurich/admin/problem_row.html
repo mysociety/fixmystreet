@@ -1,9 +1,5 @@
 [%- FOR problem IN problems %]
     [% SET p_body = problem.bodies.values.0 %]
-    [% IF page == 'search' %]
-        [% NEXT IF admin_type == 'sdm' AND p_body.id != body.id %]
-        [% NEXT IF admin_type == 'dm' AND p_body.id != body.id AND p_body.parent.id != body.id %]
-    [% END %]
     <tr[%
         SET classes = [];
         classes.push('adminhidden') IF problem.state == 'hidden';
