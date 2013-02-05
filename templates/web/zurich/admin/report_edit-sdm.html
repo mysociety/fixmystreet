@@ -1,5 +1,13 @@
-[% PROCESS 'admin/header.html' title=tprintf(loc('Editing problem %d'), problem.id ) -%]
-[% PROCESS 'admin/report_blocks.html' %]
+[%
+    PROCESS "maps/zurich.html";
+    PROCESS 'admin/header.html'
+        title = tprintf(loc('Editing problem %d'), problem.id ),
+        bodyclass = 'mappage';
+    PROCESS 'admin/report_blocks.html'
+-%]
+
+[% map_html %]
+</div>
 
 [% status_message %]
 
