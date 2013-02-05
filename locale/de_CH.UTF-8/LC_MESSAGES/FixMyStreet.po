@@ -490,7 +490,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:317
 #: templates/web/zurich/report/_item.html:9
 msgid "Awaiting moderation"
-msgstr "&Uuml;berpr&uuml;fung ausstehend"
+msgstr "Überprüfung ausstehend"
 
 #: templates/web/default/js/translation_strings.html:26
 msgid "Back"
