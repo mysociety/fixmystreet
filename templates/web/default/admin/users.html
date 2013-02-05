@@ -5,7 +5,7 @@
     <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search" value="[% searched | html %]">
 </form>
 
-[% IF searched %]
+[% IF users.size %]
 
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
@@ -30,10 +30,11 @@
 [%- END -%]
 </table>
 
-[% ELSE %]
+[% END %]
 
+[% IF NOT searched %]
 <h2>[% loc('Add user') %]</h2>
-[% INCLUDE 'admin/user-form.html' %]
+[% INCLUDE 'admin/user-form.html', user = '' %]
 
 [% END %]
 

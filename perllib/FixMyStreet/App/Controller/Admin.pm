@@ -782,6 +782,16 @@ sub users: Path('users') : Args(0) {
     } else {
         $c->forward('get_token');
         $c->forward('fetch_all_bodies');
+
+        # Admin users by default
+        my $users = $c->model('DB::User')->search(
+            { from_body => { '!=', undef } },
+            { order_by => 'name' }
+        );
+        my @users = $users->all;
+        my %email2user = map { $_->email => $_ } @users;
+        $c->stash->{users} = \@users;
+
     }
 
     return 1;
@@ -902,6 +912,8 @@ sub user_add : Path('user_edit') : Args(0) {
     return 1 unless $c->req->param('submit');
 
     $c->forward('check_token');
+
+    return unless $c->req->param('name') && $c->req->param('email');
 
     my $user = $c->model('DB::User')->find_or_create( {
         name => $c->req->param('name'),
