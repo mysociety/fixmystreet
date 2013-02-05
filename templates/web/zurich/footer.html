@@ -11,16 +11,15 @@
                             [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
                         </p><p><a href="/admin">[% loc('Summary') %]</a> | <a href="/auth/sign_out">[% loc('sign out') %]</a>
                         </p>
-                      [% ELSE %]
+                      [% END %]
                         <ul id="main-menu" class="mob-only">
-                            <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %]
-                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                            <li><[% IF c.req.uri.path == '/' %]a onclick="$('html, body').animate({scrollTop:0}, 500); return false;" href="#site-header"[% ELSE %]a href="/"[% END %]
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'a' : 'a' %]></li>[%
                             %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
                             %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
                         </ul>
-                      [% END %]
                     </div>
                 </div>
             </div>
