@@ -33,6 +33,9 @@ sub only_authed_can_create {
     return 1;
 }
 
+# effectively allows barangay staff to hide reports
+sub council_id { return  [ 1, 2 ]; }
+
 sub areas_on_around {
     return [ 1, 2 ];
 }
