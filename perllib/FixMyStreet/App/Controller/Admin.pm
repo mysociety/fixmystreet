@@ -485,6 +485,19 @@ sub body_edit : Path('body_edit') : Args(2) {
 sub reports : Path('reports') {
     my ( $self, $c ) = @_;
 
+    my $query = {};
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        my $type = $c->stash->{admin_type};
+        my $body = $c->stash->{body};
+        if ( $type eq 'dm' ) {
+            my @children = map { $_->id } $body->bodies->all;
+            my @all = (@children, $body->id);
+            $query = { bodies_str => \@all };
+        } elsif ( $type eq 'sdm' ) {
+            $query = { bodies_str => $body->id };
+        }
+    }
+
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = $search;
 
@@ -503,21 +516,20 @@ sub reports : Path('reports') {
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
         $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
-        my $query;
         if (is_valid_email($search)) {
-            $query = [
+            $query->{'-or'} = [
                 'user.email' => { ilike => $like_search },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
-            $query = [
+            $query->{'-or'} = [
                 'me.id' => int($1),
             ];
         } elsif ($search =~ /^area:(\d+)$/) {
-            $query = [
+            $query->{'-or'} = [
                 'me.areas' => { like => "%,$1,%" }
             ];
         } else {
-            $query = [
+            $query->{'-or'} = [
                 'me.id' => $search_n,
                 'user.email' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
@@ -527,26 +539,6 @@ sub reports : Path('reports') {
                 cobrand_data => { like => $like_search },
             ];
         }
-
-        if ( $c->cobrand->moniker eq 'zurich' ) {
-            my $type = $c->stash->{admin_type};
-            my $body = $c->stash->{body};
-            if ( $type eq 'super' ) {
-                $query = { -or => $query };
-            } elsif ( $type eq 'dm' ) {
-                my @children = map { $_->id } $body->bodies->all;
-                my @all = (@children, $body->id);
-                $query = {
-                    bodies_str => \@all,
-                    -or => $query
-                };
-            } elsif ( $type eq 'sdm' ) {
-                $query = { bodies_str => $body->id, -or => $query };
-            }
-        } else {
-            $query = { -or => $query };
-        }
-
 
         my $problems = $c->cobrand->problems->search(
             $query,
@@ -607,7 +599,7 @@ sub reports : Path('reports') {
 
         my $page = $c->req->params->{p} || 1;
         my $problems = $c->cobrand->problems->search(
-            { },
+            $query,
             { order_by => 'created desc' }
         )->page( $page );
         $c->stash->{problems} = [ $problems->all ];
