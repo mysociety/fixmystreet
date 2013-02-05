@@ -236,12 +236,15 @@ sub admin {
         }, {
             order_by => 'created desc'
         } );
+
+        my $page = $c->req->params->{p} || 1;
         $c->stash->{reports_published} = $c->cobrand->problems->search( {
             state => 'fixed - council',
             bodies_str => $body->parent->id,
         }, {
             order_by => 'created desc'
-        } );
+        } )->page( $page );
+        $c->stash->{pager} = $c->stash->{reports_published}->pager;
     }
 }
 
