@@ -1,4 +1,4 @@
-Subject: Fix my Zurich: Meldung #[% problem.id %]
+Subject: Züri wie neu: Meldung #[% problem.id %]
 
 Guten Tag [% problem.name %]
 

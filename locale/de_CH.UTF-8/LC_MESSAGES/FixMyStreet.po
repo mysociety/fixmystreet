@@ -2609,7 +2609,7 @@ msgid ""
 "site remember that you can contact your council directly using their own "
 "website."
 msgstr ""
-"Fix My Z&uuml;rich dient dazu M&auml;ngel an der Infrastruktur zu melden. "
+"Züri wie neu dient dazu M&auml;ngel an der Infrastruktur zu melden. "
 "Meldungen und W&uuml;nsche bez&uuml;glich Verbesserungen an der "
 "Infrastruktur sowie Gestaltungsvorschl&auml;ge k&ouml;nnen über Fix My "
 "Z&uuml;rich nicht ber&uuml;cksichtigt werden. Notf&auml;lle m&uuml;ssen der "
@@ -3212,11 +3212,11 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:117
 msgid "That report cannot be viewed on FixMyStreet."
-msgstr "Diese Meldung wurde von Fix My Z&uuml;rich entfernt."
+msgstr "Diese Meldung wurde von Züri wie neu entfernt."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:111
 msgid "That report has been removed from FixMyStreet."
-msgstr "Diese Meldung wurde von Fix My Z&uuml;rich entfernt."
+msgstr "Diese Meldung wurde von Züri wie neu entfernt."
 
 #: templates/web/emptyhomes/static/about.html:7
 msgid "The Empty Homes Agency"
