@@ -636,7 +636,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             ? [ {
                 latitude  => $problem->latitude,
                 longitude => $problem->longitude,
-                colour    => 'yellow',
+                colour    => $c->cobrand->pin_colour($problem),
                 type      => 'big',
               } ]
             : [],
