@@ -44,6 +44,13 @@ sub uri {
     return $uri;
 }
 
+sub prettify_dt {
+    my $self = shift;
+    my $dt = shift;
+
+    return Utils::prettify_dt( $dt, 'zurich' );
+}
+
 sub remove_redundant_areas {
     my $self = shift;
     my $all_areas = shift;

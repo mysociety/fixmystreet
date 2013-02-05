@@ -795,5 +795,20 @@ sub show_unconfirmed_reports {
     0;
 }
 
+=head2 prettify_dt
+
+    my $date = $c->prettify_dt( $datetime );
+
+Takes a datetime object and returns a string representation.
+
+=cut
+
+sub prettify_dt {
+    my $self = shift;
+    my $dt = shift;
+
+    return Utils::prettify_dt( $dt, 1 );
+}
+
 1;
 
