@@ -49,7 +49,7 @@ my $user = $mech->log_in_ok( 'dm1@example.org') ;
 $user->from_body( undef );
 $user->update;
 $mech->get_ok( '/admin' );
-is $mech->uri->path, '/auth', "got sent to the sign in page";
+is $mech->uri->path, '/my', "got sent to /my";
 $user->from_body( 2 );
 $user->update;
 
@@ -82,7 +82,7 @@ $mech->content_contains( 'Some internal notes' );
 # Original description
 $mech->submit_form_ok( { with_fields => { detail => 'Edited details text.' } } );
 $mech->content_contains( 'Edited details text.' );
-$mech->content_contains( 'originally entered: &ldquo;Test Test 1 for 2 Detail&rdquo;' );
+$mech->content_contains( 'Originaltext: &ldquo;Test Test 1 for 2 Detail&rdquo;' );
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->submit_form_ok( { with_fields => { body_subdivision => 3 } } );
@@ -101,7 +101,7 @@ $mech->log_out_ok;
 
 $user = $mech->log_in_ok( 'sdm1@example.org') ;
 $mech->get_ok( '/admin' );
-is $mech->uri->path, '/auth', "got sent to the sign in page";
+is $mech->uri->path, '/my', "got sent to /my";
 $user->from_body( 3 );
 $user->update;
 

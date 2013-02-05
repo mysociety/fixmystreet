@@ -182,7 +182,10 @@ Used after signing in to take the person back to where they were.
 sub redirect_on_signin : Private {
     my ( $self, $c, $redirect ) = @_;
     $redirect = 'my' unless $redirect;
-    $redirect = 'admin' if $c->cobrand->moniker eq 'zurich' && $c->user->from_body;
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        $redirect = 'my' if $redirect eq 'admin';
+        $redirect = 'admin' if $c->user->from_body;
+    }
     $c->res->redirect( $c->uri_for( "/$redirect" ) );
 }
 
