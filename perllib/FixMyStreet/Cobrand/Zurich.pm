@@ -199,15 +199,25 @@ sub admin {
         $c->stash->{unconfirmed} = $c->cobrand->problems->search({
             state => [ 'unconfirmed', 'confirmed' ],
             bodies_str => $c->stash->{body}->id,
+        }, {
+            order_by => 'created'
         });
         $c->stash->{approval} = $c->cobrand->problems->search({
             state => 'planned',
             bodies_str => $c->stash->{body}->id,
+        }, {
+            order_by => 'created'
         });
+
+        my $page = $c->req->params->{p} || 1;
         $c->stash->{other} = $c->cobrand->problems->search({
             state => { -not_in => [ 'unconfirmed', 'confirmed', 'planned' ] },
             bodies_str => \@all,
-        });
+        }, {
+            order_by => 'created desc'
+        })->page( $page );
+        $c->stash->{pager} = $c->stash->{other}->pager;
+
     } elsif ($type eq 'sdm') {
         $c->stash->{template} = 'admin/index-sdm.html';
 
@@ -217,14 +227,20 @@ sub admin {
         $c->stash->{reports_new} = $c->cobrand->problems->search( {
             state => 'in progress',
             bodies_str => $body->id,
+        }, {
+            order_by => 'created'
         } );
         $c->stash->{reports_unpublished} = $c->cobrand->problems->search( {
             state => 'planned',
             bodies_str => $body->parent->id,
+        }, {
+            order_by => 'created desc'
         } );
         $c->stash->{reports_published} = $c->cobrand->problems->search( {
             state => 'fixed - council',
             bodies_str => $body->parent->id,
+        }, {
+            order_by => 'created desc'
         } );
     }
 }

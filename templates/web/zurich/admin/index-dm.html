@@ -11,6 +11,7 @@
 
 <h2>[% loc('All reports') %]</h2>
 [% INCLUDE list, problems = other.all, include_subdiv = 1 %]
+[% INCLUDE 'pagination.html', admin = 1, param = 'p' %]
 
 [% INCLUDE 'admin/footer.html' %]
 
