@@ -196,7 +196,7 @@ sub generate_map_tags : Private {
         ? [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => 'yellow',
+            colour    => $c->cobrand->moniker eq 'zurich'? $c->cobrand->pin_colour($problem) : 'yellow',
             type      => 'big',
           } ]
         : [],
