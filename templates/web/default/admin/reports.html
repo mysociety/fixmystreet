@@ -24,6 +24,8 @@
     [% INCLUDE 'admin/problem_row.html' %]
 </table>
 
+[% INCLUDE 'pagination.html', admin = 1, param = 'p' IF pager %]
+
 [% END %]
 
 [% INCLUDE 'admin/list_updates.html' %]

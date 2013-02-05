@@ -20,7 +20,7 @@
     [% INCLUDE 'admin/problem_row.html', page = 'search' %]
 </table>
 
-[% INCLUDE 'pagination.html', param = 'p' IF pager %]
+[% INCLUDE 'pagination.html', admin = 1, param = 'p' IF pager %]
 
 [% END %]
 
