@@ -212,12 +212,17 @@ body.fullwidthpage.admin .content {
 body.mappage.admin .content {
     margin-top: 6em;
     margin-left: 0.5em;
-
 }
 .admin {
     .content {
         margin: 2em 0 1em;
         padding: 0 0 0 0;
+        ul.no-bullets {
+            margin-left: 0;
+            > li {
+              list-style: none;
+            }
+        }
     }
 
     #zurich-footer {

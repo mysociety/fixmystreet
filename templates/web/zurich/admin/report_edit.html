@@ -15,7 +15,7 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
-<ul>
+<ul class="no-bullets">
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
 
 [% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
