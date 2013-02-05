@@ -9,7 +9,7 @@
                       [% IF c.user_exists %]
                         <p>
                             [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
-                        </p><p><a href="/auth/sign_out">[% loc('sign out') %]</a>
+                        </p><p><a href="/admin">[% loc('Summary') %]</a> | <a href="/auth/sign_out">[% loc('sign out') %]</a>
                         </p>
                       [% ELSE %]
                         <ul id="main-menu" class="mob-only">
