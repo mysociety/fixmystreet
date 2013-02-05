@@ -240,7 +240,8 @@ body.mappage.admin .content {
         width: 100%;
         font-size: 0.9em;
         border: 1px solid $table_border_color;
-        border-collapse:collapse;
+        border-collapse: collapse;
+        margin-bottom: 1em;
         th, td {
             padding: 0.666em 0.5em;
             border: 1px solid $table_border_color;
