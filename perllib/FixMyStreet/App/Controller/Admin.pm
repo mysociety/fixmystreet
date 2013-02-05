@@ -584,6 +584,15 @@ sub reports : Path('reports') {
 
         # Switch quoting back off. See above for explanation of this.
         $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
+    } else {
+
+        my $page = $c->req->params->{p} || 1;
+        my $problems = $c->cobrand->problems->search(
+            { },
+            { order_by => 'created desc' }
+        )->page( $page );
+        $c->stash->{problems} = [ $problems->all ];
+        $c->stash->{pager} = $problems->pager;
     }
 }
 

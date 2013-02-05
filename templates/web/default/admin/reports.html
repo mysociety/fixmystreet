@@ -2,11 +2,10 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search">
+    <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search" value="[% searched | html %]">
 </form>
 
-
-[% IF searched %]
+[% IF problems.size %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
@@ -25,8 +24,8 @@
     [% INCLUDE 'admin/problem_row.html' %]
 </table>
 
-[% INCLUDE 'admin/list_updates.html' %]
-
 [% END %]
+
+[% INCLUDE 'admin/list_updates.html' %]
 
 [% INCLUDE 'admin/footer.html' %]

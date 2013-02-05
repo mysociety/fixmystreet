@@ -6,7 +6,7 @@
 </form>
 
 
-[% IF searched %]
+[% IF problems.size %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
@@ -20,8 +20,10 @@
     [% INCLUDE 'admin/problem_row.html', page = 'search' %]
 </table>
 
-[% INCLUDE 'admin/list_updates.html' %]
+[% INCLUDE 'pagination.html', param = 'p' IF pager %]
 
 [% END %]
+
+[% INCLUDE 'admin/list_updates.html' %]
 
 [% INCLUDE 'admin/footer.html' %]
