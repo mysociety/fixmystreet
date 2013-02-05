@@ -49,7 +49,7 @@ while ( my $body = $bodies->next ) {
 
     # Oxfordshire (OCC) is special:
     # we do *receive* service_request_updates (aka comments) for OCC, but we never *send* them, so skip this pass
-    next if $body->areas->{COUNCIL_ID_OXFORDSHIRE};
+    next if $body->areas->{+COUNCIL_ID_OXFORDSHIRE};
 
     my $use_extended = 0;
     my $comments = FixMyStreet::App->model('DB::Comment')->search( {
