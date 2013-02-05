@@ -39,7 +39,7 @@ sub languages { [ 'de-ch,Deutsch,de_CH', 'en-gb,English,en_GB' ] };
 sub uri {
     my ( $self, $uri ) = @_;
 
-    $uri->query_param( zoom => 7 )
+    $uri->query_param( zoom => 6 )
       if $uri->query_param('lat') && !$uri->query_param('zoom');
     return $uri;
 }
