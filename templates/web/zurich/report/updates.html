@@ -1,0 +1,17 @@
+[% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
+    <h4 class="static-with-rule">[% loc('Updates') %]</h4>
+    <ul class="issue-list">
+        <li>
+            <div class="update-wrap">
+                <div class="update-text">
+                    <p class="meta-2">[% prettify_dt( problem.lastupdate_local, 'zurich' ) %]</p>
+                  [% IF problem.state == 'fixed - council' %]
+                    [% add_links( problem.extra.public_response ) | html_para %]
+                  [% ELSIF problem.state == 'closed' AND problem.external_body %]
+                    <p>[% tprintf( loc('Assigned to %s'), problem.body(c).name ) %]</p>
+                  [% END %]
+                </div>
+            </div>
+        </li>
+    </ul>
+[% END %]

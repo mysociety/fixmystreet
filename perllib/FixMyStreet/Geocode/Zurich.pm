@@ -52,8 +52,13 @@ sub setup_soap {
 # string STRING CONTEXT
 # Looks up on Zurich web service a user-inputted location.
 # Returns array of (LAT, LON, ERROR), where ERROR is either undef, a string, or
-# an array of matches if there are more than one. The information in the query
-# may be used to disambiguate the location in cobranded versions of the site.
+# an array of matches if there are more than one.
+# If there is no ambiguity, returns only a {lat,long} hash, unless allow_single_match_string is true
+# (because the auto-complete use of this (in /around) should send the matched name even though it's not ambiguous).
+#
+# The information in the query may be used to disambiguate the location in cobranded 
+# versions of the site.
+
 sub string {
     my ( $s, $c ) = @_;
 
@@ -98,8 +103,9 @@ sub string {
         push (@valid_locations, $_);
         last if lc($_->{text}) eq lc($s);
     }
-
-    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
+    if (scalar @valid_locations == 1 && ! $c->stash->{allow_single_geocode_match_strings} ) {
+        return { latitude => $latitude, longitude => $longitude };
+    }
     return { error => $error };
 }
 

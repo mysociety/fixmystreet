@@ -221,12 +221,11 @@ sub cleanup_text {
     return $input;
 }
 
-sub prettify_epoch {
-    my ( $epoch, $type ) = @_;
+sub prettify_dt {
+    my ( $dt, $type ) = @_;
     $type ||= '';
     $type = 'short' if $type eq '1';
 
-    my $dt = DateTime->from_epoch( epoch => $epoch, time_zone => 'local' );
     $dt->set_time_zone( FixMyStreet->config('TIME_ZONE') )
         if FixMyStreet->config('TIME_ZONE');
 
@@ -243,6 +242,8 @@ sub prettify_epoch {
     $tt .= ', ' unless $type eq 'date';
     if ($dt->strftime('%Y %U') eq $now->strftime('%Y %U')) {
         $tt .= decode_utf8($dt->strftime('%A'));
+    } elsif ($type eq 'zurich') {
+        $tt .= decode_utf8($dt->strftime('%e. %B %Y'));
     } elsif ($type eq 'short') {
         $tt .= decode_utf8($dt->strftime('%e %b %Y'));
     } elsif ($dt->strftime('%Y') eq $now->strftime('%Y')) {

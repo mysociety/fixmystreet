@@ -9,10 +9,10 @@ sub build_recipient_list {
     my %recips;
 
     my $all_confirmed = 1;
-    foreach my $council ( keys %{ $self->councils } ) {
+    foreach my $body ( @{ $self->bodies } ) {
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            area_id => $council,
+            body_id => $body->id,
             category => $row->category
         } );
 
@@ -23,10 +23,10 @@ sub build_recipient_list {
             $email = 'N/A' unless $email;
         }
 
-        my $name = $self->councils->{$council}->{info}->{name};
+        my $name = $body->name;
         if ( $email =~ /^roads.([^@]*)\@drdni/ ) {
             $name = "Roads Service (\u$1)";
-            $h->{councils_name} = $name;
+            $h->{bodies_name} = $name;
             $row->external_body( 'Roads Service' );
         }
         push @{ $self->to }, [ $email, $name ];

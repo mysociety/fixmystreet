@@ -1,9 +1,9 @@
 [% IF ward %]
-    [% name = "$ward.name, $council.name"
+    [% name = "$ward.name, $body.name"
        thing = loc('ward')
     %]
 [% ELSE %]
-    [% name = council.name
+    [% name = body.name
        thing = loc('council')
     %]
 [% END %]
@@ -31,13 +31,13 @@
 
 <h1 id="reports_heading">
     [% IF ward %]
-    [% ward.name %]<span>, </span><a href="[% council_url %]">[% council.name %]</a>
+    [% ward.name %]<span>, </span><a href="[% body_url %]">[% body.name %]</a>
     [% ELSE %]
-    [% council.name %]
+    [% body.name %]
     [% END %]
 </h1>
 
-[% IF council.generation_high == 10 AND c.cobrand.country == 'GB' %]
+[% IF NOT body.areas.size AND c.cobrand.country == 'GB' %]
     <p id="unknown" class="alert">This council no longer exists.
     [% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
     Its area is now covered by <a href="/reports/Cornwall">Cornwall Council</a>.
@@ -82,7 +82,7 @@
 
 <section class="full-width">
     [% INCLUDE column
-        problems = problems.${council.id}
+        problems = problems.${body.id}
     %]
 </section>
 

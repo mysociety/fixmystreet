@@ -1,20 +1,6 @@
 <div id="report-a-problem-main">
     <h1>[% loc('Reporting a problem') %]</h1>
 
-    [% IF js %]
-        <p id="councils_text">
-        [%
-            tprintf(
-                loc('All the information you provide here will be sent to <strong>%s</strong>.'),
-                loc('the local council')
-            );
-        %]
-        [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
-        </p>
-    [% ELSE %]
-        [% PROCESS 'report/new/councils_text.html' %]
-    [% END %]
-
     <div id="report-a-problem-sidebar">
         <!--
             The text for this section needs checking, but I can't work out which bit comes from where
@@ -49,8 +35,8 @@
             [% INCLUDE 'report/new/form_heading.html' %]
 
 
-            [% IF field_errors.council %]
-                <p class='form-error'>[% field_errors.council %]</p>
+            [% IF field_errors.bodies %]
+                <p class='form-error'>[% field_errors.bodies %]</p>
             [% END %]
 
             <label for="form_detail">[% loc('Details') %]</label>

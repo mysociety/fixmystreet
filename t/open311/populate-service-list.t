@@ -17,31 +17,41 @@ use_ok( 'Open311' );
 my $processor = Open311::PopulateServiceList->new( council_list => [] );
 ok $processor, 'created object';
 
+my $body = FixMyStreet::App->model('DB::Body')->find_or_create( {
+    id => 1,
+    name => 'Body Numero Uno',
+} );
+$body->body_areas->find_or_create({
+    area_id => 1
+} );
 
+my $bromley = FixMyStreet::App->model('DB::Body')->find_or_create( {
+    id => 2482,
+    name => 'Bromley Council',
+} );
+$bromley->body_areas->find_or_create({
+    area_id => 2482
+} );
 
 subtest 'check basic functionality' => sub {
-    FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->delete();
+    FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->delete();
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
-    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->count();
+    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->count();
     is $contact_count, 3, 'correct number of contacts';
 };
 
 subtest 'check non open311 contacts marked as deleted' => sub {
-    FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->delete();
+    FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->delete();
 
     my $contact = FixMyStreet::App->model('DB::Contact')->create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   'contact@example.com',
             category => 'An old category',
             confirmed => 1,
@@ -54,27 +64,23 @@ subtest 'check non open311 contacts marked as deleted' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
-    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->count();
+    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->count();
     is $contact_count, 4, 'correct number of contacts';
 
-    $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1, deleted => 1 } )->count();
+    $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1, deleted => 1 } )->count();
     is $contact_count, 1, 'correct number of deleted contacts';
 };
 
 subtest 'check email changed if matching category' => sub {
-    FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->delete();
+    FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->delete();
 
     my $contact = FixMyStreet::App->model('DB::Contact')->create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   '009',
             category => 'Cans left out 24x7',
             confirmed => 1,
@@ -89,12 +95,8 @@ subtest 'check email changed if matching category' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     $contact->discard_changes;
@@ -102,16 +104,16 @@ subtest 'check email changed if matching category' => sub {
     is $contact->confirmed, 1, 'contact still confirmed';
     is $contact->deleted, 0, 'contact still not deleted';
 
-    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->count();
+    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->count();
     is $contact_count, 3, 'correct number of contacts';
 };
 
 subtest 'check category name changed if updated' => sub {
-    FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->delete();
+    FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->delete();
 
     my $contact = FixMyStreet::App->model('DB::Contact')->create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   '001',
             category => 'Bins left out 24x7',
             confirmed => 1,
@@ -126,12 +128,8 @@ subtest 'check category name changed if updated' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     $contact->discard_changes;
@@ -140,16 +138,16 @@ subtest 'check category name changed if updated' => sub {
     is $contact->confirmed, 1, 'contact still confirmed';
     is $contact->deleted, 0, 'contact still not deleted';
 
-    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->count();
+    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->count();
     is $contact_count, 3, 'correct number of contacts';
 };
 
 subtest 'check conflicting contacts not changed' => sub {
-    FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->delete();
+    FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->delete();
 
     my $contact = FixMyStreet::App->model('DB::Contact')->create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   'existing@example.com',
             category => 'Cans left out 24x7',
             confirmed => 1,
@@ -164,7 +162,7 @@ subtest 'check conflicting contacts not changed' => sub {
 
     my $contact2 = FixMyStreet::App->model('DB::Contact')->create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   '001',
             category => 'Bins left out 24x7',
             confirmed => 1,
@@ -179,12 +177,8 @@ subtest 'check conflicting contacts not changed' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $council = FixMyStreet::App->model('DB::Open311Conf')->new( {
-        area_id => 1
-    } );
-
     my $processor = Open311::PopulateServiceList->new( council_list => [] );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
     $contact->discard_changes;
@@ -199,7 +193,7 @@ subtest 'check conflicting contacts not changed' => sub {
     is $contact2->confirmed, 1, 'second contact contact still confirmed';
     is $contact2->deleted, 0, 'second contact contact still not deleted';
 
-    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { area_id => 1 } )->count();
+    my $contact_count = FixMyStreet::App->model('DB::Contact')->search( { body_id => 1 } )->count();
     is $contact_count, 4, 'correct number of contacts';
 };
 
@@ -225,7 +219,7 @@ subtest 'check meta data population' => sub {
 
     my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   '001',
             category => 'Bins left out 24x7',
             confirmed => 1,
@@ -243,12 +237,8 @@ subtest 'check meta data population' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
-        area_id => 2482
-    } );
-
     $processor->_current_open311( $o );
-    $processor->_current_council( $council );
+    $processor->_current_body( $bromley );
     $processor->_current_service( { service_code => 100 } );
 
     $processor->_add_meta_to_contact( $contact );
@@ -409,7 +399,7 @@ for my $test (
 
         my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
             {
-                area_id => 1,
+                body_id => 1,
                 email =>   '100',
                 category => 'Cans left out 24x7',
                 confirmed => 1,
@@ -432,12 +422,8 @@ for my $test (
         my $service_list = get_xml_simple_object( $services_xml );
         $service_list = { service => [ $service_list->{ service } ] };
 
-        my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
-            area_id => 1
-        } );
-
         $processor->_current_open311( $o );
-        $processor->_current_council( $council );
+        $processor->_current_body( $body );
 
         $processor->process_services( $service_list );
 
@@ -487,7 +473,7 @@ subtest 'check attribute ordering' => sub {
 
     my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   '001',
             category => 'Bins left out 24x7',
             confirmed => 1,
@@ -505,12 +491,8 @@ subtest 'check attribute ordering' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
-        area_id => 1
-    } );
-
     $processor->_current_open311( $o );
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->_current_service( { service_code => 100 } );
 
     $processor->_add_meta_to_contact( $contact );
@@ -593,7 +575,7 @@ subtest 'check bromely skip code' => sub {
 
     my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
         {
-            area_id => 1,
+            body_id => 1,
             email =>   '001',
             category => 'Bins left out 24x7',
             confirmed => 1,
@@ -611,12 +593,8 @@ subtest 'check bromely skip code' => sub {
         test_get_returns => { 'services/100.xml' => $meta_xml }
     );
 
-    my $council = FixMyStreet::App->model('DB::Open311conf')->new( {
-        area_id => 2482
-    } );
-
     $processor->_current_open311( $o );
-    $processor->_current_council( $council );
+    $processor->_current_body( $bromley );
     $processor->_current_service( { service_code => 100 } );
 
     $processor->_add_meta_to_contact( $contact );
@@ -636,9 +614,7 @@ subtest 'check bromely skip code' => sub {
 
     is_deeply $contact->extra, $extra, 'only non std bromley meta data saved';
 
-    $council->area_id(1);
-
-    $processor->_current_council( $council );
+    $processor->_current_body( $body );
     $processor->_add_meta_to_contact( $contact );
 
     $extra = [

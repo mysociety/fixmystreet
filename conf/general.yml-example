@@ -27,8 +27,14 @@ CONTACT_NAME: 'FixMyStreet'
 # special address.
 DO_NOT_REPLY_EMAIL: 'do-not-reply@example.org'
 
-# Whether this is a development site or not.
+# Whether this is a development site or not. It will mean e.g. templates/
+# CSS modified times aren't cached
 STAGING_SITE: 1
+# Normally, a staging site will route all reports to CONTACT_EMAIL on a
+# development site (when STAGING_SITE is 1), to guard against sending fake
+# reports to live places. Set this to 1 if you want a dev site to route
+# reports as normal.
+SEND_REPORTS_ON_STAGING: 0
 
 # What to use as front page/alert example places placeholder
 # Defaults to High Street, Main Street

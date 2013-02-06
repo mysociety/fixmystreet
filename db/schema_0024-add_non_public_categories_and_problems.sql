@@ -34,4 +34,3 @@ BEGIN;
 
 commit;
 
-COMMIT;

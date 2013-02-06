@@ -129,7 +129,7 @@ sub map_pins {
         my $colour = $c->cobrand->pin_colour( $p, 'around' );
         [ $p->latitude, $p->longitude,
           $colour,
-          $p->id, $p->title
+          $p->id, $p->title_safe
         ]
     } @$around_map, @$nearby;
 

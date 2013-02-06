@@ -33,6 +33,9 @@ sub only_authed_can_create {
     return 1;
 }
 
+# effectively allows barangay staff to hide reports
+sub council_id { return  [ 1, 2 ]; }
+
 sub areas_on_around {
     return [ 1, 2 ];
 }
@@ -40,8 +43,6 @@ sub areas_on_around {
 sub can_support_problems {
     return 1;
 }
-
-sub reports_by_body { 1 }
 
 sub default_show_name {
     my $self = shift;
@@ -54,6 +55,9 @@ sub default_show_name {
 sub send_questionnaires {
     return 0;
 }
+
+# let staff hide reports in their own barangay
+sub users_can_hide { 1 }
 
 1;
 

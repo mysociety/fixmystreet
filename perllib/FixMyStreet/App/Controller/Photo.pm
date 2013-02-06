@@ -102,10 +102,7 @@ sub output : Private {
     File::Path::make_path( FixMyStreet->path_to( 'web', 'photo', 'c' )->stringify );
     File::Slurp::write_file( FixMyStreet->path_to( 'web', $c->req->path )->stringify, \$photo );
 
-    my $dt = DateTime->now()->add( years => 1 );
-
     $c->res->content_type( 'image/jpeg' );
-    $c->res->header( 'expires', DateTime::Format::HTTP->format_datetime( $dt ) );
     $c->res->body( $photo );
 }
 

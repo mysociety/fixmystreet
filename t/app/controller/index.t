@@ -55,12 +55,12 @@ subtest "does pc, (x,y), (e,n) or (lat,lon) go to /around" => sub {
     }
 };
 
-$mech->delete_problems_for_council( 2651 );
+$mech->delete_problems_for_body( 2651 );
 
 my $problem_rs = FixMyStreet::App->model('DB::Problem');
 my $num = $problem_rs->count;
 
-my @edinburgh_problems = $mech->create_problems_for_council(5, 2651, 'Front page');
+my @edinburgh_problems = $mech->create_problems_for_body(5, 2651, 'Front page');
 is scalar @edinburgh_problems, 5, 'correct number of edinburgh problems created';
 
 $mech->get_ok('/report/' . $edinburgh_problems[2]->id);

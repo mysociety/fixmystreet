@@ -22,7 +22,7 @@ site and leave an update.</p>') %]
 [% END %]
 
 [% IF advert_outcome %]
-    [% display_crosssell_advert( problem.user.email, problem.name, 'council', problem.council ) %]
+    [% display_crosssell_advert( problem.user.email, problem.name, 'council', problem.bodies_str ) %]
 [% END %]
 
 [% INCLUDE 'footer.html' %]

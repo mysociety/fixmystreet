@@ -11,19 +11,27 @@
     [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
 <li><a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% loc('View report on site' )%]</a></li>
 <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
-<li><label for='detail'>[% loc('Details:') %]</label><br><textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
-<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %] ( [% loc('originally entered') %] [% problem.postcode | html %] , [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
-<li>[% loc('For council(s):') %] [% IF problem.council %][% problem.council %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
-<li><label for="state">[% loc('State:') %]</label> <select name="state"  id="state">
+<li><label for='detail'>[% loc('Details:') %]</label>
+<textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
+
+<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %]
+( [%
+    SET postcode_safe = problem.postcode | html;
+    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
+%],
+[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+
+<li>[% loc('For council(s):') %] [% IF problem.bodies_str %][% problem.bodies_str %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
+<li><label class="inline" for="state">[% loc('State:') %]</label> <select name="state"  id="state">
     [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
     loc('Investigating')], ['planned', loc('Planned')], ['in progress',
-    loc('In Progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')], ['fixed - user',
+    loc('In progress')], ['closed', loc('Closed')], ['fixed', loc('Fixed')], ['fixed - user',
     loc('Fixed - User')], ['fixed - council', loc('Fixed - Council')], ['hidden', loc('Hidden')], ['partial', loc('Partial')],['unconfirmed',loc('Unconfirmed')] ] %]
         <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
 </select></li>
 <li>[% loc('Category:') %] [% problem.category | html %] </li>
-<li><label for="anonymous">[% loc('Anonymous:') %]</label> <select name="anonymous"  id="anonymous">
+<li><label class="inline" for="anonymous">[% loc('Anonymous:') %]</label> <select name="anonymous"  id="anonymous">
 <option [% 'selected ' IF problem.anonymous %]value="1">[% loc('Yes') %]</option>
 <option [% 'selected ' IF !problem.anonymous %]value="0">[% loc('No') %]</option>
 </select></li>
@@ -39,19 +47,19 @@
 <li>[% loc('Cobrand data:') %] [% problem.cobrand_data %]</li>
 <li>[% loc('Extra data:') %] [% problem.extra ? 'Yes' : 'No' %]</li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
-<li><label for="flagged">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged"[% ' checked' IF problem.flagged %]></li>
-<li><label for="non_public">[% loc('Private') %]:</label> <input type="checkbox" name="non_public"[% ' checked' IF problem.non_public %]></li>
+<li><label class="inline" for="flagged">[% loc('Flagged:') %]</label> <input type="checkbox" name="flagged"[% ' checked' IF problem.flagged %]></li>
+<li><label class="inline" for="non_public">[% loc('Private') %]:</label> <input type="checkbox" name="non_public"[% ' checked' IF problem.non_public %]></li>
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
 <li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %][% photo.url %]">
 <br>
-[% IF rotated %]Photo may be cached. View image directly to check<br>[% END %]
-<input type="submit" name="rotate_photo" value="Rotate Left" />
-<input type="submit" name="rotate_photo" value="Rotate Right" />
+[% IF rotated %]Photo may be cached for a while.<br>[% END %]
+<input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
+<input type="submit" name="rotate_photo" value="[% loc('Rotate Right') %]">
 <br>
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-<label for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
+<label class="inline" for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
 [% END %]
 </ul>
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>

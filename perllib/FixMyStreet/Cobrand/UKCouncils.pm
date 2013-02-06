@@ -13,7 +13,7 @@ sub is_council {
 
 sub site_restriction {
     my $self = shift;
-    return { council => sprintf('%d', $self->council_id) };
+    return { bodies_str => sprintf('%d', $self->council_id) };
 }
 sub site_key {
     my $self = shift;
@@ -27,7 +27,7 @@ sub restriction {
 # Different function to site_restriction due to two-tier use
 sub problems_clause {
     my $self = shift;
-    return { council => sprintf('%d', $self->council_id) };
+    return { bodies_str => sprintf('%d', $self->council_id) };
 }
 
 sub problems {
@@ -51,10 +51,10 @@ sub enter_postcode_text {
     return 'Enter a ' . $self->council_area . ' postcode, or street name and area';
 }
 
-sub council_check {
+sub area_check {
     my ( $self, $params, $context ) = @_;
 
-    my $councils = $params->{all_councils};
+    my $councils = $params->{all_areas};
     my $council_match = defined $councils->{$self->council_id};
     if ($council_match) {
         return 1;
@@ -86,11 +86,13 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
+# If we ever link to a county problem report, needs to be to main FixMyStreet
 sub base_url_for_report {
     my ( $self, $report ) = @_;
     if ( $self->is_two_tier ) {
-        my %councils = map { $_ => 1 } @{$report->councils};
-        if ( $councils{$self->council_id} ) {
+        my $bodies = $report->bodies;
+        my %areas = map { %{$_->areas} } values %$bodies;
+        if ( $areas{$self->council_id} ) {
             return $self->base_url;
         } else {
             return FixMyStreet->config('BASE_URL');

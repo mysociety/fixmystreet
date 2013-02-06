@@ -1,0 +1,17 @@
+<div class="problem-header cf">
+    <h1>[% tprintf( loc('Reported in the %s category'), problem.category ) %]</h1>
+    <p class="sub">
+        [% prettify_dt( problem.created_local, 'zurich' ) %]
+        [%- IF !problem.used_map %]<br>[% loc('there is no pin shown as the user did not use the map') %][% END %]
+    </p>
+
+  [% IF problem.state != 'unconfirmed' %]
+    [% IF problem.extra.publish_photo %]
+      [% INCLUDE 'report/photo.html' object=problem %]
+    [% END %]
+    [% add_links( problem.detail ) | html_para %]
+  [% ELSE %]
+    [% loc('This report is awaiting moderation.') %]
+  [% END %]
+
+</div>

@@ -45,7 +45,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Report to Edit',
@@ -84,7 +84,7 @@ subtest 'check summary counts' => sub {
     my $problem_count = $problems->count;
     $problems->update( { cobrand => '' } );
 
-    FixMyStreet::App->model('DB::Problem')->search( { council => 2489 } )->update( { council => 1 } );
+    FixMyStreet::App->model('DB::Problem')->search( { bodies_str => 2489 } )->update( { bodies_str => 1 } );
 
     my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_new( { problem => $report, });
     $q->whensent( \'ms_current_timestamp()' );
@@ -118,7 +118,7 @@ subtest 'check summary counts' => sub {
         my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
         my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
 
-        $report->council(2489);
+        $report->bodies_str(2489);
         $report->cobrand('barnet');
         $report->update;
 
@@ -131,7 +131,7 @@ subtest 'check summary counts' => sub {
         $mech->content_contains( ($num_alerts+1) . " confirmed alerts" );
         $mech->content_contains( ($num_qs+1) . " questionnaires sent" );
 
-        $report->council(2504);
+        $report->bodies_str(2504);
         $report->cobrand('');
         $report->update;
 
@@ -139,28 +139,30 @@ subtest 'check summary counts' => sub {
         $alert->update;
     }
 
-    FixMyStreet::App->model('DB::Problem')->search( { council => 1 } )->update( { council => 2489 } );
+    FixMyStreet::App->model('DB::Problem')->search( { bodies_str => 1 } )->update( { bodies_str => 2489 } );
     ok $mech->host('fixmystreet.com');
 };
 
 my $host = FixMyStreet->config('BASE_URL');
-$mech->get_ok('/admin/council_contacts/2650');
+
+my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
+$mech->get_ok('/admin/body/2650');
 $mech->content_contains('Aberdeen City Council');
 $mech->content_like(qr{AB\d\d});
 $mech->content_contains("$host/around");
 
 subtest 'check contact creation' => sub {
     my $contact = FixMyStreet::App->model('DB::Contact')->search(
-        { area_id => 2650, category => [ 'test category', 'test/category' ] }
+        { body_id => 2650, category => [ 'test category', 'test/category' ] }
     );
     $contact->delete_all;
 
     my $history = FixMyStreet::App->model('DB::ContactsHistory')->search(
-        { area_id => 2650, category => [ 'test category', 'test/category' ] }
+        { body_id => 2650, category => [ 'test category', 'test/category' ] }
     );
     $history->delete_all;
 
-    $mech->get_ok('/admin/council_contacts/2650');
+    $mech->get_ok('/admin/body/2650');
 
     $mech->submit_form_ok( { with_fields => { 
         category   => 'test category',
@@ -190,12 +192,12 @@ subtest 'check contact creation' => sub {
         note     => 'test/note',
         non_public => 'on',
     } } );
-    $mech->get_ok('/admin/council_edit/2650/test/category');
+    $mech->get_ok('/admin/body_edit/2650/test/category');
 
 };
 
 subtest 'check contact editing' => sub {
-    $mech->get_ok('/admin/council_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/2650/test%20category');
 
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
@@ -216,31 +218,29 @@ subtest 'check contact editing' => sub {
 
     $mech->content_contains( '<td>Non Public' );
 
-    $mech->get_ok('/admin/council_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/2650/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );
 };
 
 subtest 'check contact updating' => sub {
-    $mech->get_ok('/admin/council_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/2650/test%20category');
     $mech->content_like(qr{test2\@example.com</strong>[^<]*</td>[^<]*<td>No}s);
 
-    $mech->get_ok('/admin/council_contacts/2650');
+    $mech->get_ok('/admin/body/2650');
 
     $mech->form_number( 1 );
     $mech->tick( 'confirmed', 'test category' );
     $mech->submit_form_ok({form_number => 1});
 
     $mech->content_like(qr'test2@example.com</td>[^<]*<td>Yes's);
-    $mech->get_ok('/admin/council_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/2650/test%20category');
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };
 
-my $open311 =
-  FixMyStreet::App->model('DB::Open311Conf')->search( { area_id => 2650 } );
-$open311->delete if $open311;
+$body->update({ send_method => undef }); 
 
 subtest 'check open311 configuring' => sub {
-    $mech->get_ok('/admin/council_contacts/2650/');
+    $mech->get_ok('/admin/body/2650');
     $mech->content_lacks('Council contacts configured via Open311');
 
     $mech->form_number(3);
@@ -258,11 +258,7 @@ subtest 'check open311 configuring' => sub {
     $mech->content_contains('Council contacts configured via Open311');
     $mech->content_contains('Configuration updated - contacts will be generated automatically later');
 
-    $open311 =
-      FixMyStreet::App->model('DB::Open311Conf')->search( { area_id => 2650 } );
-
-    is $open311->count, 1, 'only one configuration';
-    my $conf = $open311->first;
+    my $conf = FixMyStreet::App->model('DB::Body')->find( 2650 );
     is $conf->endpoint, 'http://example.com/open311', 'endpoint configured';
     is $conf->api_key, 'api key', 'api key configured';
     is $conf->jurisdiction, 'mySociety', 'jurisdiction configures';
@@ -282,18 +278,14 @@ subtest 'check open311 configuring' => sub {
 
     $mech->content_contains('Configuration updated');
 
-    $open311 =
-      FixMyStreet::App->model('DB::Open311Conf')->search( { area_id => 2650 } );
-
-    is $open311->count, 1, 'only one configuration';
-    $conf = $open311->first;
+    $conf = FixMyStreet::App->model('DB::Body')->find( 2650 );
     is $conf->endpoint, 'http://example.org/open311', 'endpoint updated';
     is $conf->api_key, 'new api key', 'api key updated';
     is $conf->jurisdiction, 'open311', 'jurisdiction configures';
 };
 
 subtest 'check text output' => sub {
-    $mech->get_ok('/admin/council_contacts/2650?text=1');
+    $mech->get_ok('/admin/body/2650?text=1');
     is $mech->content_type, 'text/plain';
     $mech->content_contains('test category');
 };
@@ -845,6 +837,8 @@ for my $test (
     };
 }
 
+$mech->create_body_ok(2504, 'Westminster City Council');
+
 for my $test (
     {
         desc          => 'user is problem owner',
@@ -853,17 +847,17 @@ for my $test (
         update_fixed  => 0,
         update_reopen => 0,
         update_state  => undef,
-        user_council  => undef,
+        user_body     => undef,
         content       => 'user is problem owner',
     },
     {
-        desc          => 'user is council user',
+        desc          => 'user is body user',
         problem_user  => $user,
         update_user   => $user2,
         update_fixed  => 0,
         update_reopen => 0,
         update_state  => undef,
-        user_council  => 2504,
+        user_body     => 2504,
         content       => 'user is from same council as problem - 2504',
     },
     {
@@ -873,7 +867,7 @@ for my $test (
         update_fixed  => 0,
         update_reopen => 0,
         update_state  => 'planned',
-        user_council  => 2504,
+        user_body     => 2504,
         content       => 'Update changed problem state to planned',
     },
     {
@@ -883,7 +877,7 @@ for my $test (
         update_fixed  => 1,
         update_reopen => 0,
         update_state  => undef,
-        user_council  => undef,
+        user_body     => undef,
         content       => 'Update marked problem as fixed',
     },
     {
@@ -893,7 +887,7 @@ for my $test (
         update_fixed  => 0,
         update_reopen => 1,
         update_state  => undef,
-        user_council  => undef,
+        user_body     => undef,
         content       => 'Update reopened problem',
     },
 ) {
@@ -907,7 +901,7 @@ for my $test (
         $update->mark_open( $test->{update_reopen} );
         $update->update;
 
-        $test->{update_user}->from_council( $test->{user_council} );
+        $test->{update_user}->from_body( $test->{user_body} );
         $test->{update_user}->update;
 
         $mech->get_ok('/admin/update_edit/' . $update->id );
@@ -1033,14 +1027,14 @@ subtest 'report search' => sub {
     $update->user($report->user);
     $update->update;
 
-    $mech->get_ok('/admin/search_reports');
-    $mech->get_ok('/admin/search_reports?search=' . $report->id );
+    $mech->get_ok('/admin/reports');
+    $mech->get_ok('/admin/reports?search=' . $report->id );
 
     $mech->content_contains( $report->title );
     my $r_id = $report->id;
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
 
-    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->get_ok('/admin/reports?search=' . $report->user->email);
 
     my $u_id = $update->id;
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
@@ -1049,25 +1043,25 @@ subtest 'report search' => sub {
     $update->state('hidden');
     $update->update;
 
-    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->get_ok('/admin/reports?search=' . $report->user->email);
     $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $u_id \s* </td>}xs );
 
     $report->state('hidden');
     $report->update;
 
-    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->get_ok('/admin/reports?search=' . $report->user->email);
     $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
 
     $report->state('fixed - user');
     $report->update;
 
-    $mech->get_ok('/admin/search_reports?search=' . $report->user->email);
+    $mech->get_ok('/admin/reports?search=' . $report->user->email);
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
 };
 
 subtest 'search abuse' => sub {
-    $mech->get_ok( '/admin/search_users?search=example' );
-    $mech->content_like(qr/test4\@example.com.*\n.*\n.*Email in abuse table/);
+    $mech->get_ok( '/admin/users?search=example' );
+    $mech->content_like(qr{test4\@example.com.*</td>\s*<td>.*?</td>\s*<td>\(Email in abuse table});
 };
 
 subtest 'show flagged entries' => sub {
@@ -1077,27 +1071,29 @@ subtest 'show flagged entries' => sub {
     $user->flagged( 1 );
     $user->update;
 
-    $mech->get_ok('/admin/list_flagged');
+    $mech->get_ok('/admin/flagged');
     $mech->content_contains( $report->title );
     $mech->content_contains( $user->email );
 };
 
+$mech->create_body_ok(2509, 'Haringey Borough Council');
+
 subtest 'user search' => sub {
-    $mech->get_ok('/admin/search_users');
-    $mech->get_ok('/admin/search_users?search=' . $user->name);
+    $mech->get_ok('/admin/users');
+    $mech->get_ok('/admin/users?search=' . $user->name);
 
     $mech->content_contains( $user->name);
     my $u_id = $user->id;
     $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
 
-    $mech->get_ok('/admin/search_users?search=' . $user->email);
+    $mech->get_ok('/admin/users?search=' . $user->email);
 
     $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
 
-    $user->from_council(2509);
+    $user->from_body(2509);
     $user->update;
-    $mech->get_ok('/admin/search_users?search=2509' );
-    $mech->content_contains(2509);
+    $mech->get_ok('/admin/users?search=2509' );
+    $mech->content_contains('Haringey');
 };
 
 $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
@@ -1115,13 +1111,15 @@ is $log_entries->count, 0, 'no admin log entries';
 $user->flagged( 0 );
 $user->update;
 
+$mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
+
 for my $test (
     {
         desc => 'edit user name',
         fields => {
             name => 'Test User',
             email => 'test@example.com',
-            council => 2509,
+            body => 2509,
             flagged => undef,
         },
         changes => {
@@ -1135,7 +1133,7 @@ for my $test (
         fields => {
             name => 'Changed User',
             email => 'test@example.com',
-            council => 2509,
+            body => 2509,
             flagged => undef,
         },
         changes => {
@@ -1145,15 +1143,15 @@ for my $test (
         log_entries => [qw/edit edit/],
     },
     {
-        desc => 'edit user council',
+        desc => 'edit user body',
         fields => {
             name => 'Changed User',
             email => 'changed@example.com',
-            council => 2509,
+            body => 2509,
             flagged => undef,
         },
         changes => {
-            council => 2607,
+            body => 2607,
         },
         log_count => 3,
         log_entries => [qw/edit edit edit/],
@@ -1163,7 +1161,7 @@ for my $test (
         fields => {
             name => 'Changed User',
             email => 'changed@example.com',
-            council => 2607,
+            body => 2607,
             flagged => undef,
         },
         changes => {
@@ -1177,7 +1175,7 @@ for my $test (
         fields => {
             name => 'Changed User',
             email => 'changed@example.com',
-            council => 2607,
+            body => 2607,
             flagged => 'on',
         },
         changes => {

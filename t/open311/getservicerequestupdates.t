@@ -123,7 +123,7 @@ my $problem = $problem_rs->new(
         lastupdate   => DateTime->now()->subtract( days => 1 ),
         anonymous    => 1,
         external_id  => time(),
-        council      => 2482,
+        bodies_str   => 2482,
     }
 );
 
@@ -350,7 +350,7 @@ for my $test (
         $problem->state( $test->{start_state} );
         $problem->update;
 
-        my $council_details = { areaid => 2482 };
+        my $council_details = { areas => { 2482 => 1 } };
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
         $update->update_comments( $o, $council_details );
 
@@ -389,7 +389,7 @@ foreach my $test (
 
         $problem->comments->delete;
 
-        my $council_details = { areaid => 2482 };
+        my $council_details = { areas => { 2482 => 1 } };
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
         $update->update_comments( $o, $council_details );
 
@@ -419,7 +419,7 @@ my $problem2 = $problem_rs->new(
         lastupdate   => DateTime->now(),
         anonymous    => 1,
         external_id  => $problem->external_id,
-        council      => 2651,
+        bodies_str   => 2651,
     }
 );
 
@@ -458,7 +458,7 @@ for my $test (
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
 
-        my $council_details = { areaid => $test->{area_id} };
+        my $council_details = { areas => { $test->{area_id} => 1 } };
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
         $update->update_comments( $o, $council_details );
 
@@ -498,7 +498,7 @@ subtest 'using start and end date' => sub {
         end_date => $end_dt,
     );
 
-    my $council_details = { areaid => 2482 };
+    my $council_details = { areas => { 2482 => 1 } };
     $update->update_comments( $o, $council_details );
 
     my $start = $start_dt . '';
@@ -558,7 +558,7 @@ subtest 'check that existing comments are not duplicated' => sub {
         system_user => $user,
     );
 
-    my $council_details = { areaid => 2482 };
+    my $council_details = { areas => { 2482 => 1 } };
     $update->update_comments( $o, $council_details );
 
     $problem->discard_changes;
@@ -619,7 +619,7 @@ foreach my $test ( {
             system_user => $user,
         );
 
-        my $council_details = { areaid => 2482 };
+        my $council_details = { areas => { 2482 => 1 } };
         $update->update_comments( $o, $council_details );
 
         $problem->discard_changes;
@@ -671,7 +671,7 @@ foreach my $test ( {
             suppress_alerts => $test->{suppress_alerts},
         );
 
-        my $council_details = { areaid => 2482 };
+        my $council_details = { areas => { 2482 => 1 } };
         $update->update_comments( $o, $council_details );
         $problem->discard_changes;
 

@@ -1,23 +1,24 @@
+[%# XXX The below type checking is assuming that a body ID can be used to look up a mapit type. %]
 <p>
-[% IF area_ids_to_list.0 != 2489 && area_ids_to_list.0 != 2482 && all_councils.${area_ids_to_list.0}.type == 'LBO' %]
+[% IF bodies_to_list.0 != 2489 && bodies_to_list.0 != 2482 && all_areas.${bodies_to_list.0}.type == 'LBO' %]
 [%
     tprintf(
         loc('All the information you provide here will be sent to <strong>%s</strong> or a relevant local body such as <strong>TfL</strong>, via the London Report-It system.'),
-        all_council_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+        all_body_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
     );
 %]
-[% ELSIF all_councils.${area_ids_to_list.0}.type == 'LGD' %]
+[% ELSIF all_areas.${bodies_to_list.0}.type == 'LGD' %]
 [%
     tprintf(
         loc('All the information you provide here will be sent to <strong>%s</strong> or <strong>Roads Service</strong>.'),
-        all_council_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+        all_body_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
     );
 %]
 [% ELSE %]
 [%
     tprintf(
         loc('All the information you provide here will be sent to <strong>%s</strong>.'),
-        all_council_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+        all_body_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
     );
 %]
 [% END %]

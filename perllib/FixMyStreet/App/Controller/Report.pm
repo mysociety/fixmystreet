@@ -51,6 +51,25 @@ sub display : Path('') : Args(1) {
         return $c->res->redirect( $c->uri_for($1), 301 );
     }
 
+    $c->forward( '_display', [ $id ] );
+}
+
+=head2 ajax
+
+Return JSON formatted details of a report
+
+=cut
+
+sub ajax : Path('ajax') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    $c->stash->{ajax} = 1;
+    $c->forward( '_display', [ $id ] );
+}
+
+sub _display : Private {
+    my ( $self, $c, $id ) = @_;
+
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
@@ -66,7 +85,7 @@ sub support : Path('support') : Args(0) {
       ? $c->uri_for( '/report', $id )
       : $c->uri_for('/');
 
-    if ( $id && $c->cobrand->can_support_problems && $c->user && $c->user->from_council ) {
+    if ( $id && $c->cobrand->can_support_problems && $c->user && $c->user->from_body ) {
         $c->forward( 'load_problem_or_display_error', [ $id ] );
         $c->stash->{problem}->update( { interest_count => \'interest_count +1' } );
     }
@@ -83,7 +102,7 @@ sub load_problem_or_display_error : Private {
       : $c->cobrand->problems->find( { id => $id } );
 
     # check that the problem is suitable to show.
-    if ( !$problem || $problem->state eq 'unconfirmed' || $problem->state eq 'partial' ) {
+    if ( !$problem || ($problem->state eq 'unconfirmed' && !$c->cobrand->show_unconfirmed_reports) || $problem->state eq 'partial' ) {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
     }
     elsif ( $problem->state eq 'hidden' ) {
@@ -147,9 +166,18 @@ sub format_problem_for_display : Private {
         $c->stash->{add_alert} = 1;
     }
 
-    $c->stash->{extra_name_info} = $problem->council && $problem->council eq '2482' ? 1 : 0;
+    $c->stash->{extra_name_info} = $problem->bodies_str && $problem->bodies_str eq '2482' ? 1 : 0;
 
     $c->forward('generate_map_tags');
+
+    if ( $c->stash->{ajax} ) {
+        $c->res->content_type('application/json; charset=utf-8');
+        my $content = JSON->new->utf8(1)->encode(
+            $problem->as_hashref( $c )
+        );
+        $c->res->body( $content );
+        return 1;
+    }
 
     return 1;
 }
@@ -187,11 +215,10 @@ sub delete :Local :Args(1) {
 
     return $c->res->redirect($uri) unless $c->user_exists;
 
-    my $council = $c->user->obj->from_council;
-    return $c->res->redirect($uri) unless $council;
+    my $body = $c->user->obj->from_body;
+    return $c->res->redirect($uri) unless $body;
 
-    my %councils = map { $_ => 1 } @{$p->councils};
-    return $c->res->redirect($uri) unless $councils{$council};
+    return $c->res->redirect($uri) unless $p->bodies->{$body};
 
     $p->state('hidden');
     $p->lastupdate( \'ms_current_timestamp()' );

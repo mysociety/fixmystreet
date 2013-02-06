@@ -1,0 +1,67 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
+[% PROCESS 'admin/report_blocks.html' %]
+
+[% IF updated %]
+<p>
+<em>[% updated %]</em>
+</p>
+[% END %]
+
+[% IF admin_type == 'super' AND body.parent AND NOT body.parent.parent # A division %]
+    <table cellspacing="0" cellpadding="2" border="1">
+        <tr>
+            <th>[% loc('Category') %]</th>
+            <th>[% loc('Email') %]</th>
+            <th>[% loc('Last editor') %]</th>
+            <th>[% loc('Note') %]</th>
+            <th>[% loc('When edited') %]</th>
+        </tr>
+        [% WHILE ( contact = contacts.next ) %]
+            <tr>
+                <td><a href="[% c.uri_for( 'body_edit', body_id, contact.category ) %]">[% contact.category %]</a></td>
+                <td>[% contact.email | html %]</td>
+                <td>[% contact.editor %]</td>
+                <td>[% contact.note | html %]</td>
+                <td>[% PROCESS format_date this_date=contact.whenedited %]</td>
+            </tr>
+        [% END %]
+    </table>
+
+    <h2>[% loc('Add new category') %]</h2>
+
+    <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+
+        [% IF c.cobrand.moniker != 'emptyhomes' %]
+        <p>
+        <strong>[% loc('Category:') %] </strong><input type="text" name="category" size="30">
+        </p>
+        [% END %]
+
+        <p>
+        <strong>[% loc('Email:') %] </strong><input type="text" name="email" size="30">
+        </p>
+
+        <input type="hidden" name="confirmed" value="1" id="confirmed"> 
+
+        <p>
+        <strong>[% loc('Note:') %] </strong> <textarea name="note" rows="3" cols="40"></textarea>
+        </p>
+
+        <p>
+        <input type="hidden" name="posted" value="new" >
+        <input type="hidden" name="token" value="[% token %]" >
+        <input type="submit" name="Create category" value="[% loc('Create category') %]" >
+        </p>
+
+        <div>
+            <input type="hidden" name=".cgifields" value="confirmed" >
+            <input type="hidden" name=".cgifields" value="deleted" >
+        </div>
+    </form>
+
+[% END %]
+
+    <h2>[% loc('Edit body details') %]</h2>
+    [% INCLUDE 'admin/body-form.html' %]
+
+[% INCLUDE 'admin/footer.html' %]

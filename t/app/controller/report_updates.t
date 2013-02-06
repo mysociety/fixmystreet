@@ -35,7 +35,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -409,7 +409,7 @@ $report->update;
 
 subtest 'check non authority user cannot change set state' => sub {
     $mech->log_in_ok( $user->email );
-    $user->from_council( 0 );
+    $user->from_body( undef );
     $user->update;
 
     $mech->get_ok("/report/$report_id");
@@ -434,10 +434,12 @@ subtest 'check non authority user cannot change set state' => sub {
     is $report->state, 'confirmed', 'state unchanged';
 };
 
+$mech->create_body_ok(2504, 'Westminster City Council');
+
 for my $state ( qw/unconfirmed hidden partial/ ) {
     subtest "check that update cannot set state to $state" => sub {
         $mech->log_in_ok( $user->email );
-        $user->from_council( 2504 );
+        $user->from_body( 2504 );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -586,18 +588,18 @@ for my $test (
             state => 'fixed',
         },
         state => 'fixed - council',
-        report_councils => '2504,2505',
+        report_bodies => '2504,2505',
     },
 ) {
     subtest $test->{desc} => sub {
         $report->comments->delete;
-        if ( $test->{ report_councils } ) {
-            $report->council( $test->{ report_councils } );
+        if ( $test->{ report_bodies } ) {
+            $report->bodies_str( $test->{ report_bodies } );
             $report->update;
         }
 
         $mech->log_in_ok( $user->email );
-        $user->from_council( 2504 );
+        $user->from_body( 2504 );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -670,7 +672,7 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
 
 subtest "check first comment with no status change has no status in meta" => sub {
     $mech->log_in_ok( $user->email );
-    $user->from_council( 0 );
+    $user->from_body( undef );
     $user->update;
 
     my $comment = $report->comments->first;
@@ -684,7 +686,7 @@ subtest "check first comment with no status change has no status in meta" => sub
 
 subtest "check comment with no status change has not status in meta" => sub {
         $mech->log_in_ok( $user->email );
-        $user->from_council( 0 );
+        $user->from_body( undef );
         $user->update;
 
         my $comment = $report->comments->first;
@@ -709,16 +711,14 @@ subtest "check comment with no status change has not status in meta" => sub {
         my @updates = $report->comments->all;
         is scalar @updates, 2, 'correct number of updates';
 
-        warn $updates[0]->problem_state;
-        warn $updates[1]->problem_state;
         my $update = pop @updates;
 
         is $report->state, 'fixed - council', 'correct report state';
-        is $update->problem_state, 'fixed - council', 'corect update state';
+        is $update->problem_state, 'fixed - council', 'correct update state';
         my $update_meta = $mech->extract_update_metas;
         unlike $update_meta->[1], qr/marked as/, 'update meta does not include state change';
 
-        $user->from_council( 2504 );
+        $user->from_body( 2504 );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -738,13 +738,14 @@ subtest "check comment with no status change has not status in meta" => sub {
         );
 
         $report->discard_changes;
-        @updates = $report->comments->all;
+        @updates = $report->comments->search(undef, { order_by => 'created' })->all;;
+
         is scalar @updates, 3, 'correct number of updates';
 
         $update = pop @updates;
 
         is $report->state, 'investigating', 'correct report state';
-        is $update->problem_state, 'investigating', 'corect update state';
+        is $update->problem_state, 'investigating', 'correct update state';
         $update_meta = $mech->extract_update_metas;
         like $update_meta->[0], qr/marked as fixed/, 'first update meta says fixed';
         unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
@@ -767,7 +768,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         $mech->get_ok("/report/$report_id");
 
         $report->discard_changes;
-        @updates = $report->comments->all;
+        @updates = $report->comments->search(undef, { order_by => 'created' })->all;;
         is scalar @updates, 4, 'correct number of updates';
 
         $update = pop @updates;
@@ -820,11 +821,11 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
     like $update_meta->[1], qr/reopened$/, 'update meta says reopened';
 };
 
-$user->from_council(0);
+$user->from_body(undef);
 $user->update;
 
 $report->state('confirmed');
-$report->council('2504');
+$report->bodies_str('2504');
 $report->update;
 
 for my $test (

@@ -1,6 +1,7 @@
 package FixMyStreet::Cobrand::UK;
 use base 'FixMyStreet::Cobrand::Default';
 
+use mySociety::MaPit;
 use mySociety::VotingArea;
 
 sub path_to_web_templates {
@@ -11,7 +12,6 @@ sub path_to_web_templates {
 sub country             { return 'GB'; }
 sub area_types          { [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ] }
 sub area_types_children { $mySociety::VotingArea::council_child_types }
-sub area_min_generation { 10 }
 
 sub enter_postcode_text {
     my ( $self ) = @_;
@@ -31,8 +31,11 @@ sub disambiguate_location {
     };
 }
 
-sub _fallback_council_sender {
-    my ( $self, $area_id, $area_info, $category ) = @_;
+sub _fallback_body_sender {
+    my ( $self, $body, $category ) = @_;
+
+    my $first_area = $body->body_areas->first->area_id;
+    my $area_info = mySociety::MaPit::call('area', $first_area);
     return { method => 'London' } if $area_info->{type} eq 'LBO';
     return { method => 'NI' } if $area_info->{type} eq 'LGD';
     return { method => 'Email' };
@@ -41,11 +44,12 @@ sub _fallback_council_sender {
 sub process_extras {
     my $self    = shift;
     my $ctx     = shift;
-    my $area_id = shift;
+    my $body_id = shift;
     my $extra   = shift;
     my $fields  = shift || [];
 
-    if ( $area_id eq '2482' ) {
+    # XXX Hardcoded body ID matching mapit area ID
+    if ( $body_id eq '2482' ) {
         my @fields = ( 'fms_extra_title', @$fields );
         for my $field ( @fields ) {
             my $value = $ctx->request->param( $field );
@@ -97,46 +101,38 @@ sub geocode_postcode {
     return {};
 }
 
-sub remove_redundant_councils {
+sub remove_redundant_areas {
   my $self = shift;
-  my $all_councils = shift;
+  my $all_areas = shift;
 
   # Ipswich & St Edmundsbury are responsible for everything in their
   # areas, not Suffolk
-  delete $all_councils->{2241}
-    if $all_councils->{2446}    #
-        || $all_councils->{2443};
+  delete $all_areas->{2241}
+    if $all_areas->{2446}    #
+        || $all_areas->{2443};
 
   # Norwich is responsible for everything in its areas, not Norfolk
-  delete $all_councils->{2233}    #
-    if $all_councils->{2391};
-}
-
-sub filter_all_council_ids_list {
-    my $self = shift;
-    my @all_councils_ids = @_;
-
-    # Ignore the four council areas introduced because of generation 15
-    # (where we put the new boundaries under the old IDs)
-    return grep { $_ < 141648 || $_ > 141651 } @all_councils_ids;
+  delete $all_areas->{2233}    #
+    if $all_areas->{2391};
 }
 
 sub short_name {
-  my $self = shift;
-  my ($area, $info) = @_;
-  # Special case Durham as it's the only place with two councils of the same name
-  return 'Durham+County' if $area->{name} eq 'Durham County Council';
-  return 'Durham+City' if $area->{name} eq 'Durham City Council';
+    my $self = shift;
+    my ($area) = @_;
 
-  my $name = $area->{name};
-  $name =~ s/ (Borough|City|District|County) Council$//;
-  $name =~ s/ Council$//;
-  $name =~ s/ & / and /;
-  $name =~ s{/}{_}g;
-  $name = URI::Escape::uri_escape_utf8($name);
-  $name =~ s/%20/+/g;
-  return $name;
+    my $name = $area->{name} || $area->name;
 
+    # Special case Durham as it's the only place with two councils of the same name
+    return 'Durham+County' if $name eq 'Durham County Council';
+    return 'Durham+City' if $name eq 'Durham City Council';
+
+    $name =~ s/ (Borough|City|District|County) Council$//;
+    $name =~ s/ Council$//;
+    $name =~ s/ & / and /;
+    $name =~ s{/}{_}g;
+    $name = URI::Escape::uri_escape_utf8($name);
+    $name =~ s/%20/+/g;
+    return $name;
 }
 
 sub find_closest {
@@ -174,11 +170,11 @@ sub reports_body_check {
         if (length($code) == 6) {
             my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
             $c->stash->{ward} = $area;
-            $c->stash->{council} = $council;
+            $c->stash->{body} = $council;
         } else {
-            $c->stash->{council} = $area;
+            $c->stash->{body} = $area;
         }
-        $c->detach( 'redirect_area' );
+        $c->detach( 'redirect_body' );
     }
 
     # New ONS codes
@@ -188,11 +184,11 @@ sub reports_body_check {
         if ($code =~ /^(E05|W05|S13)/) {
             my $council = mySociety::MaPit::call( 'area', $area->{parent_area} );
             $c->stash->{ward} = $area;
-            $c->stash->{council} = $council;
-            $c->detach( 'redirect_area' );
+            $c->stash->{body} = $council;
+            $c->detach( 'redirect_body' );
         } elsif ($code =~ /^(W06|S12|E0[6-9]|E10)/) {
-            $c->stash->{council} = $area;
-            $c->detach( 'redirect_area' );
+            $c->stash->{body} = $area;
+            $c->detach( 'redirect_body' );
         }
     }
 
@@ -200,17 +196,17 @@ sub reports_body_check {
 
 sub council_rss_alert_options {
     my $self = shift;
-    my $all_councils = shift;
-    my $c            = shift;
+    my $all_areas = shift;
+    my $c = shift;
 
     my %councils = map { $_ => 1 } @{$self->area_types};
 
-    my $num_councils = scalar keys %$all_councils;
+    my $num_councils = scalar keys %$all_areas;
 
     my ( @options, @reported_to_options );
     if ( $num_councils == 1 or $num_councils == 2 ) {
         my ($council, $ward);
-        foreach (values %$all_councils) {
+        foreach (values %$all_areas) {
             if ($councils{$_->{type}}) {
                 $council = $_;
                 $council->{short_name} = $self->short_name( $council );
@@ -249,7 +245,7 @@ sub council_rss_alert_options {
     } elsif ( $num_councils == 4 ) {
         # Two-tier council
         my ($county, $district, $c_ward, $d_ward);
-        foreach (values %$all_councils) {
+        foreach (values %$all_areas) {
             $_->{short_name} = $self->short_name( $_ );
             ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
             if ($_->{type} eq 'CTY') {
@@ -320,7 +316,7 @@ sub council_rss_alert_options {
         };
 
     } else {
-        throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_councils));
+        throw Error::Simple('An area with three tiers of council? Impossible! '. join('|',keys %$all_areas));
     }
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );

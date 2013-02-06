@@ -1,0 +1,103 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
+
+[% BLOCK highlightchanged_yesno %]
+[%- output = loc('No') %]
+[%- IF new.$value %][% output = loc('Yes') %][% END %]
+[%- IF old && old.$value != new.$value %]<strong>[% output %]</strong>[% ELSE %][% output %][% END %]
+[%- END %]
+
+[% BLOCK highlightchanged %]
+[%- IF old && old.$value != new.$value %]<strong>[% new.$value %]</strong>[% ELSE %][% new.$value %][% END %]
+[%- END %]
+<p>
+<em>[% updated %]</em>
+</p>
+
+<p>
+[% IF example_pc %]
+<a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a>
+[% END %]
+</p>
+
+<form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
+    <input type="hidden" name="category" value="[% contact.category | html %]" >
+    <input type="hidden" name="token" value="[% token %]" >
+    <p><strong>[% loc('Email:') %] </strong>
+    <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
+
+    <p>
+      [% IF c.cobrand.moniker != 'zurich' %]
+        <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
+        <label class="inline" for="confirmed">[% loc('Confirmed' ) %]</label> 
+      [% ELSE %]
+        <input type="hidden" name="confirmed" value="1">
+      [% END %]
+        <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
+        <label class="inline" for="deleted">[% loc('Deleted') %]</label>
+      [% IF c.cobrand.moniker != 'zurich' %]
+        <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]>
+        <label class="inline" for="non_public">[% loc('Private') %]</label>
+      [% END %]
+    </p>
+
+    <p><strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40">[% contact.note | html %]</textarea>
+
+    [% IF body.can_be_devolved %]
+    <h2>[% loc('Configure Endpoint') %]</h2>
+    <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+    <p>
+        <label for="endpoint">Endpoint</label>
+        <input type="text" name="endpoint" id="endpoint" value="[% contact.endpoint %]" size="50">
+    </p>
+
+    <p>
+        <label for="jurisdiction">Jurisdiction</label>
+        <input type="text" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction %]" size="50">
+    </p>
+
+    <p>
+        <label for="api_key">Api Key</label>
+        <input type="text" name="api_key" id="api_key" value="[% contact.api_key %]" size="25">
+    </p>
+
+    <p>
+        <label for="send_method">Send Method</label>
+        <select name="send_method">
+            <option value=""> -- Select a method -- </option>
+            [% FOR method IN send_methods %]
+            <option value="[% method %]"[% ' selected' IF contact.send_method == method %]>[% method %]</option>
+            [% END %]
+        </select>
+    </p>
+    [% END %]
+
+    <input type="hidden" name="posted" value="new">
+    <p><input type="submit" name="Save changes" value="[% loc('Save changes') %]">
+</form>
+
+<h2>[% loc('History') %]</h2>
+<table border="1">
+    <tr>
+        <th>[% loc('When edited') %]</th>
+        <th>[% loc('Email') %]</th>
+        <th>[% loc('Confirmed') %]</th>
+        <th>[% loc('Deleted') %]</th>
+        <th>[% loc('Editor') %]</th>
+        <th>[% loc('Note') %]</th>
+    </tr>
+    [%- prev = '' %]
+    [%- WHILE ( contact = history.next ) %]
+    <tr>
+        <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
+        <td>[% PROCESS highlightchanged old=prev new=contact value='email' %]</td>
+        <td>[% PROCESS highlightchanged_yesno old=prev new=contact value='confirmed' %]</td>
+        <td>[% PROCESS highlightchanged_yesno old=prev new=contact value='deleted' %]</td>
+        <td>[% contact.editor %]</td>
+        <td>[% contact.note | html %]</td>
+    </tr>
+        [%- prev = contact %]
+    [%- END %]
+</table>
+
+[% INCLUDE 'admin/footer.html' %]

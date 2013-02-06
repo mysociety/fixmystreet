@@ -1,0 +1,38 @@
+[%- FOR problem IN problems %]
+    [% SET p_body = problem.bodies.values.0 %]
+    [% IF page == 'search' %]
+        [% NEXT IF admin_type == 'sdm' AND p_body.id != body.id %]
+        [% NEXT IF admin_type == 'dm' AND p_body.id != body.id AND p_body.parent.id != body.id %]
+    [% END %]
+    <tr[%
+        ' class="adminhidden"' IF problem.state == 'hidden';
+        ' class="overdue"' IF c.cobrand.overdue( problem );
+    %]>
+        <td class="record-id">[%- IF problem.is_visible -%]
+        <a href="[% c.uri_for_email( '/report', problem.id ) %]">[% problem.id %]</a>
+        [%- ELSE %]
+        [%- problem.id %]
+        [%- END -%]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
+        <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
+        <td>[% PROCESS format_date this_date=problem.created %]</td>
+        <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
+        <td>[% states.${problem.state} %]</td>
+
+        [% IF include_subdiv %]
+            <td>
+                [%- IF p_body.parent.parent.id -%][%# ...it's a subdivision %]
+                    [% PROCESS value_or_nbsp value=p_body.name %]
+                [%- ELSIF problem.external_body %]
+                    [% PROCESS value_or_nbsp value=problem.body(c).name %]
+                [%- ELSE -%]
+                    &nbsp;
+                [%- END -%]
+            </td>
+        [% END %]
+
+        [% IF NOT no_edit %]
+            <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
+        [% END %]
+    </tr>
+[%- END -%]

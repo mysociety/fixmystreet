@@ -1,0 +1,10 @@
+Subject: FixMyZurich: Meldung #<?=$values['id']?> bereit für Feedback
+
+Guten Tag <?=$values['bodies_name']?>,
+
+Diese Meldung wurde vom Fachbereich abschliessend beantwortet und kann nun auf Fix My Zurich beantwortet und abgeschlossen werden.
+
+Öffentliche URL: <?=$values['url']?>
+
+Admin URL: <?=$values['admin_url']?>
+

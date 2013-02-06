@@ -8,11 +8,15 @@ use DateTime;
 
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
-$mech->delete_problems_for_council( 2504 );
-$mech->delete_problems_for_council( 2651 );
+$mech->create_body_ok(2514, 'Birmingham City Council');
+$mech->create_body_ok(2651, 'City of Edinburgh Council');
+$mech->create_body_ok(2504, 'Westminster City Council');
 
-my @edinburgh_problems = $mech->create_problems_for_council(3, 2651, 'All reports');
-my @westminster_problems = $mech->create_problems_for_council(5, 2504, 'All reports');
+$mech->delete_problems_for_body( 2504 );
+$mech->delete_problems_for_body( 2651 );
+
+my @edinburgh_problems = $mech->create_problems_for_body(3, 2651, 'All reports');
+my @westminster_problems = $mech->create_problems_for_body(5, 2504, 'All reports');
 
 is scalar @westminster_problems, 5, 'correct number of westminster problems created';
 is scalar @edinburgh_problems, 3, 'correct number of edinburgh problems created';
@@ -63,6 +67,7 @@ SKIP: {
 
     skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 8 )
         unless FixMyStreet::Cobrand->exists('fiksgatami');
+    $mech->create_body_ok(3, 'Oslo');
     mySociety::MaPit::configure('http://mapit.nuug.no/');
     ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
     $mech->get_ok('/reports');

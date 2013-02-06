@@ -30,8 +30,8 @@ sub send {
 
     my $result = -1;
 
-    foreach my $council ( keys %{ $self->councils } ) {
-        my $conf = $self->councils->{$council}->{config};
+    foreach my $body ( @{ $self->bodies } ) {
+        my $conf = $self->body_config->{ $body->id };
 
         my $always_send_latlong = 1;
         my $send_notpinpointed  = 0;
@@ -39,8 +39,13 @@ sub send {
 
         my $extended_desc = 1;
 
+        # To rollback temporary changes made by this function
+        my $revert = 0;
+
         # Extra bromley fields
-        if ( $row->council =~ /2482/ ) {
+        if ( $row->bodies_str == 2482 ) {
+
+            $revert = 1;
 
             my $extra = $row->extra;
             if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
@@ -71,7 +76,7 @@ sub send {
         }
 
         # extra Oxfordshire fields: send nearest street, postcode, northing and easting, and the FMS id
-        if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
+        if ( $row->bodies_str =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
 
             my $extra = $row->extra;
             push @$extra, { name => 'external_id', value => $row->id };
@@ -88,11 +93,11 @@ sub send {
         # FIXME: we've already looked this up before
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             deleted => 0,
-            area_id => $conf->area_id,
+            body_id => $body->id,
             category => $row->category
         } );
 
-        my $open311 = Open311->new(
+        my %open311_params = (
             jurisdiction            => $conf->jurisdiction,
             endpoint                => $conf->endpoint,
             api_key                 => $conf->api_key,
@@ -101,56 +106,54 @@ sub send {
             use_service_as_deviceid => $use_service_as_deviceid,
             extended_description    => $extended_desc,
         );
+        if (FixMyStreet->test_mode) {
+            my $test_res = HTTP::Response->new();
+            $test_res->code(200);
+            $test_res->message('OK');
+            $test_res->content('<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>');
+            $open311_params{test_mode} = 1;
+            $open311_params{test_get_returns} = { 'requests.xml' => $test_res };
+        }
+
+        my $open311 = Open311->new( %open311_params );
 
         # non standard west berks end points
-        if ( $row->council =~ /2619/ ) {
+        if ( $row->bodies_str =~ /2619/ ) {
             $open311->endpoints( { services => 'Services', requests => 'Requests' } );
         }
 
         # non-standard Oxfordshire endpoint (because it's just a script, not a full Open311 service)
-        if ( $row->council =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
+        if ( $row->bodies_str =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
             $open311->endpoints( { requests => 'open311_service_request.cgi' } );
+            $revert = 1;
         }
 
         # required to get round issues with CRM constraints
-        if ( $row->council =~ /2218/ ) {
+        if ( $row->bodies_str =~ /2218/ ) {
             $row->user->name( $row->user->id . ' ' . $row->user->name );
+            $revert = 1;
         }
 
         if ($row->cobrand eq 'fixmybarangay') {
             # FixMyBarangay endpoints expect external_id as an attribute, as do Oxfordshire
             $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  );
+            $revert = 1;
         }
 
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
 
         # make sure we don't save user changes from above
-        if ( $row->council =~ /(2218|2482|$COUNCIL_ID_OXFORDSHIRE)/ || $row->cobrand eq 'fixmybarangay') {
-            $row->discard_changes();
-        }
+        $row->discard_changes() if $revert;
 
         if ( $resp ) {
             $row->external_id( $resp );
             $row->send_method_used('Open311');
-            if ($row->cobrand eq 'fixmybarangay') {
-                # FixMyBarangay: currently the  external bodies using Open311 are DPS, DEPW, DPWH
-                # for now identify the latter two by their name in the service_code ($contact->email)
-                # So: this works because we are anticipating the service codes for (e.g., potholes) look 
-                # like this:
-                #              POTDEPW      or      POTDPWH
-                # (TODO: this will change when we have 'body' logic in place, meanwhile: hardcoded)
-                if ($contact->email =~ /(DEPW|DPWH)$/i) {
-                    $row->external_body(uc $1); # body is DEPW (city roads) or DPWH (national roads)
-                } else {
-                    $row->external_body("DPS"); # only other open311 dept is DPS
-                }
-            }
             $result *= 0;
             $self->success( 1 );
         } else {
             $result *= 1;
             # temporary fix to resolve some issues with west berks
-            if ( $row->council =~ /2619/ ) {
+            if ( $row->bodies_str =~ /2619/ ) {
                 $result *= 0;
             }
         }

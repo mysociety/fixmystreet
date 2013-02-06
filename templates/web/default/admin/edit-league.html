@@ -1,0 +1,14 @@
+<h2>[% loc('Diligency prize league table') %]</h2>
+[% IF edit_activity.count %]
+<ul>
+    [% WHILE ( editor = edit_activity.next ) %]
+    <li>[% tprintf( loc('%d edits by %s'), editor.get_column('c'), editor.editor ) %]</li>
+    [% END %]
+</ul>
+[% ELSE %]
+<p>
+[% loc('No edits have yet been made.') %]
+</p>
+[% END %]
+
+

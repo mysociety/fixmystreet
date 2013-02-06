@@ -44,7 +44,7 @@ sub around_index : Path : Args(0) {
       unless $c->forward('/location/determine_location_from_coords')
           || $c->forward('/location/determine_location_from_pc');
 
-    # Check to see if the spot is covered by a council - if not show an error.
+    # Check to see if the spot is covered by a area - if not show an error.
     return unless $c->cobrand->moniker eq 'fixmybarangay' || $c->forward('check_location_is_acceptable');
 
     # If we have a partial - redirect to /report/new so that it can be
@@ -192,7 +192,7 @@ sub display_location : Private {
                 longitude => $p->longitude,
                 colour    => $colour,
                 id        => $p->id,
-                title     => $p->title,
+                title     => $p->title_safe,
             }
         } @$on_map_all, @$around_map;
     }
@@ -212,7 +212,7 @@ sub display_location : Private {
 
 =head2 check_location_is_acceptable
 
-Find the lat and lon in stash and check that they are acceptable to the council,
+Find the lat and lon in stash and check that they are acceptable to the area,
 and that they are in UK (if we are in UK).
 
 =cut
@@ -220,10 +220,10 @@ and that they are in UK (if we are in UK).
 sub check_location_is_acceptable : Private {
     my ( $self, $c ) = @_;
 
-    # check that there are councils that can accept this location
-    $c->stash->{council_check_action} = 'submit_problem';
-    $c->stash->{remove_redundant_councils} = 1;
-    return $c->forward('/council/load_and_check_councils');
+    # check that there are areas that can accept this location
+    $c->stash->{area_check_action} = 'submit_problem';
+    $c->stash->{remove_redundant_areas} = 1;
+    return $c->forward('/council/load_and_check_areas');
 }
 
 =head2 /ajax
@@ -279,6 +279,65 @@ sub ajax : Path('/ajax') {
     );
 
     $c->res->body($body);
+}
+
+
+sub location_autocomplete : Path('/ajax/geocode') {
+    my ( $self, $c ) = @_;
+    $c->res->content_type('application/json; charset=utf-8');
+    unless ( $c->req->param('term') ) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+    # we want the match even if there's no ambiguity, so recommendation doesn't
+    # disappear when it's the last choice being offered in the autocomplete.
+    $c->stash->{allow_single_geocode_match_strings} = 1;
+    return $self->_geocode( $c, $c->req->param('term') );
+}
+
+sub location_lookup : Path('/ajax/lookup_location') {
+    my ( $self, $c ) = @_;
+    $c->res->content_type('application/json; charset=utf-8');
+    unless ( $c->req->param('term') ) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    return $self->_geocode( $c, $c->req->param('term') );
+}
+
+sub _geocode : Private {
+    my ( $self, $c, $term ) = @_;
+
+    my ( $lat, $long, $suggestions ) =
+        FixMyStreet::Geocode::lookup( $c->req->param('term'), $c );
+
+    my ($response, @addresses);
+
+    if ( $lat && $long ) {
+        $response = { latitude => $lat, longitude => $long };
+    } else {
+        if ( ref($suggestions) eq 'ARRAY' ) {
+            foreach (@$suggestions) {
+                push @addresses, decode_utf8($_->{address});
+            }
+            $response = { suggestions => \@addresses };
+        } else {
+            $response = { error => $suggestions };
+        }
+    }
+
+    if ( $c->stash->{allow_single_geocode_match_strings} ) {
+        $response = \@addresses;
+    }
+
+    my $body = JSON->new->utf8(1)->encode(
+        $response
+    );
+    $c->res->body($body);
+
 }
 
 __PACKAGE__->meta->make_immutable;

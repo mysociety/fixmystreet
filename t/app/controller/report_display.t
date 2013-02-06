@@ -5,6 +5,7 @@ use Test::More;
 use FixMyStreet::TestMech;
 use Web::Scraper;
 use Path::Class;
+use Test::LongString;
 use DateTime;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -33,7 +34,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        council            => '2504',
+        bodies_str         => '2504',
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -92,6 +93,19 @@ subtest "change report to unconfirmed and check for 404 status" => sub {
     is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
     $mech->content_contains('Unknown problem ID');
     ok $report->update( { state => 'confirmed' } ), 'confirm report again';
+};
+
+
+subtest "Zurich unconfirmeds are 200" => sub {
+    if ( !FixMyStreet::Cobrand->exists('zurich') ) {
+        plan skip_all => 'Skipping Zurich test without Zurich cobrand';
+    }
+    $mech->host( 'zurich.fixmystreet.com' );
+    ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
+    $mech->get_ok("/report/$report_id");
+    $mech->content_contains( '&Uuml;berpr&uuml;fung ausstehend' );
+    ok $report->update( { state => 'confirmed' } ), 'confirm report again';
+    $mech->host( 'www.fixmystreet.com' );
 };
 
 subtest "change report to hidden and check for 410 status" => sub {
@@ -385,39 +399,111 @@ for my $test (
     };
 }
 
+subtest "Zurich banners are displayed correctly" => sub {
+    if ( !FixMyStreet::Cobrand->exists('zurich') ) {
+        plan skip_all => 'Skipping Zurich test without Zurich cobrand';
+    }
+    $mech->host( 'zurich.fixmystreet.com' );
+
+    for my $test (
+        {
+            description => 'new report',
+            state => 'unconfirmed',
+            banner_id => 'closed',
+            banner_text => 'Erfasst'
+        },
+        {
+            description => 'confirmed report',
+            state => 'confirmed',
+            banner_id => 'closed',
+            banner_text => 'Aufgenommen',
+        },
+        {
+            description => 'fixed report',
+            state => 'fixed - council',
+            banner_id => 'fixed',
+            banner_text => 'Erledigt',
+        },
+        {
+            description => 'closed report',
+            state => 'closed',
+            banner_id => 'fixed',
+            banner_text => 'Erledigt',
+        },
+        {
+            description => 'in progress report',
+            state => 'in progress',
+            banner_id => 'progress',
+            banner_text => 'In Bearbeitung',
+        },
+        {
+            description => 'planned report',
+            state => 'planned',
+            banner_id => 'progress',
+            banner_text => 'In Bearbeitung',
+        },
+    ) {
+        subtest "banner for $test->{description}" => sub {
+            $report->state( $test->{state} );
+            $report->update;
+
+            $mech->get_ok("/report/$report_id");
+            is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+            my $banner = $mech->extract_problem_banner;
+            if ( $banner->{text} ) {
+                $banner->{text} =~ s/^ //g;
+                $banner->{text} =~ s/ $//g;
+            }
+
+            is $banner->{id}, $test->{banner_id}, 'banner id';
+            if ($test->{banner_text}) {
+                like_string( $banner->{text}, qr/$test->{banner_text}/i, 'banner text is ' . $test->{banner_text} );
+            } else {
+                is $banner->{text}, $test->{banner_text}, 'banner text';
+            }
+
+        };
+    }
+
+    $mech->host( 'www.fixmystreet.com' );
+};
+
+$mech->create_body_ok(2504, 'Westminster City Council');
+$mech->create_body_ok(2505, 'Camden Borough Council');
+
 for my $test ( 
     {
         desc => 'no state dropdown if user not from authority',
-        from_council => 0,
+        from_body => undef,
         no_state => 1,
-        report_council => '2504',
+        report_body => '2504',
     },
     {
         desc => 'state dropdown if user from authority',
-        from_council => 2504,
+        from_body => 2504,
         no_state => 0,
-        report_council => '2504',
+        report_body => '2504',
     },
     {
-        desc => 'no state dropdown if user not from same council as problem',
-        from_council => 2505,
+        desc => 'no state dropdown if user not from same body as problem',
+        from_body => 2505,
         no_state => 1,
-        report_council => '2504',
+        report_body => '2504',
     },
     {
-        desc => 'state dropdown if user from authority and problem sent to multiple councils',
-        from_council => 2504,
+        desc => 'state dropdown if user from authority and problem sent to multiple bodies',
+        from_body => 2504,
         no_state => 0,
-        report_council => '2504,2506',
+        report_body => '2504,2506',
     },
 ) {
     subtest $test->{desc} => sub {
         $mech->log_in_ok( $user->email );
-        $user->from_council( $test->{from_council} );
+        $user->from_body( $test->{from_body} );
         $user->update;
 
         $report->discard_changes;
-        $report->council( $test->{report_council} );
+        $report->bodies_str( $test->{report_body} );
         $report->update;
 
         $mech->get_ok("/report/$report_id");
@@ -431,7 +517,7 @@ for my $test (
 }
 
 $report->discard_changes;
-$report->council( 2504 );
+$report->bodies_str( 2504 );
 $report->update;
 
 # tidy up

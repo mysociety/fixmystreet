@@ -31,7 +31,7 @@ sub lookup {
 }
 
 # string STRING CONTEXT
-# Canonicalises, and then passes to some external API to look stuff up.
+# Passes the string to some external API to look stuff up.
 sub string {
     my ($s, $c) = @_;
 

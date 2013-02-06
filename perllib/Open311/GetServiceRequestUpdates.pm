@@ -5,7 +5,6 @@ use Open311;
 use FixMyStreet::App;
 use DateTime::Format::W3CDTF;
 
-has council_list => ( is => 'ro' );
 has system_user => ( is => 'rw' );
 has start_date => ( is => 'ro', default => undef );
 has end_date => ( is => 'ro', default => undef );
@@ -18,7 +17,7 @@ Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 sub fetch {
     my $self = shift;
 
-    my $councils = FixMyStreet::App->model('DB::Open311Conf')->search(
+    my $bodies = FixMyStreet::App->model('DB::Body')->search(
         {
             send_method     => 'Open311',
             send_comments   => 1,
@@ -27,34 +26,34 @@ sub fetch {
         }
     );
 
-    while ( my $council = $councils->next ) {
+    while ( my $body = $bodies->next ) {
 
         my $o = Open311->new(
-            endpoint     => $council->endpoint,
-            api_key      => $council->api_key,
-            jurisdiction => $council->jurisdiction,
+            endpoint     => $body->endpoint,
+            api_key      => $body->api_key,
+            jurisdiction => $body->jurisdiction,
         );
 
         # custom endpoint URLs because these councils have non-standard paths
-        if ( $council->area_id =~ /\b$AREA_ID_BROMLEY\b/o ) {
+        if ( $body->areas->{$AREA_ID_BROMLEY} ) {
             my $endpoints = $o->endpoints;
             $endpoints->{update} = 'update.xml';
             $endpoints->{service_request_updates} = 'update.xml';
             $o->endpoints( $endpoints );
-        } elsif ($council->area_id =~/\b$AREA_ID_OXFORDSHIRE\b/o) {
+        } elsif ( $body->areas->{$AREA_ID_OXFORDSHIRE} ) {
             my $endpoints = $o->endpoints;
             $endpoints->{service_request_updates} = 'open311_service_request_update.cgi';
             $o->endpoints( $endpoints );
         }
 
-        $self->suppress_alerts( $council->suppress_alerts );
-        $self->system_user( $council->comment_user );
-        $self->update_comments( $o, { areaid => $council->area_id }, );
+        $self->suppress_alerts( $body->suppress_alerts );
+        $self->system_user( $body->comment_user );
+        $self->update_comments( $o, { areas => $body->areas }, );
     }
 }
 
 sub update_comments {
-    my ( $self, $open311, $council_details ) = @_;
+    my ( $self, $open311, $body_details ) = @_;
 
     my @args = ();
 
@@ -64,7 +63,7 @@ sub update_comments {
         push @args, $self->start_date;
         push @args, $self->end_date;
     # default to asking for last 2 hours worth if not Bromley
-    } elsif ( $council_details->{areaid} != $AREA_ID_BROMLEY ) {
+    } elsif ( ! $body_details->{areas}->{$AREA_ID_BROMLEY} ) {
         my $end_dt = DateTime->now();
         my $start_dt = $end_dt->clone;
         $start_dt->add( hours => -2 );
@@ -76,7 +75,7 @@ sub update_comments {
     my $requests = $open311->get_service_request_updates( @args );
 
     unless ( $open311->success ) {
-        warn "Failed to fetch ServiceRequest Updates for " . $council_details->{areaid} . ":\n" . $open311->error
+        warn "Failed to fetch ServiceRequest Updates for " . join(",", keys %{$body_details->{areas}}) . ":\n" . $open311->error
             if $self->verbose;
         return 0;
     }
@@ -89,12 +88,11 @@ sub update_comments {
         next unless $request_id;
 
         my $problem;
-        my $criteria = { external_id => $request_id };
-        if ($open311->jurisdiction =~ /^fixmybarangay_(dps|dpwh|depw)$/i) { # use jurisdiction (not area_id) for FMB bodies
-            $criteria->{ external_body } = uc $1;
-        } else {
-            $criteria->{ council } = { like => '%' . $council_details->{areaid} . '%' };
-        }
+        my $criteria = {
+            external_id => $request_id,
+            # XXX This assumes that areas will actually only be one area.
+            bodies_str => { like => '%' . join(",", keys %{$body_details->{areas}}) . '%' },
+        };
         $problem = FixMyStreet::App->model('DB::Problem')->search( $criteria );
 
         if (my $p = $problem->first) {

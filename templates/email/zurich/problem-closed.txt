@@ -1,0 +1,17 @@
+Subject: FixMyZurich: Meldung #[% problem.id %]
+
+Guten Tag [% problem.name %]
+
+Antwort auf Ihre Meldung:
+
+[% problem.extra.public_response %]
+
+Um die Meldung auf der Webseite zu betrachen, klicken Sie auf folgenden Link:
+    [% url %]
+
+Ihre Meldung:
+
+[% problem.detail %]
+
+Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.
+

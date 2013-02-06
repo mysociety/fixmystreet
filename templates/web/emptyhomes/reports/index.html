@@ -12,15 +12,15 @@
 <th>[% loc('Older problems') %]</th>
 </tr>
 
-[% FOREACH area IN areas_info_sorted %]
+[% FOREACH body IN bodies %]
 <tr align="center"
-[%- IF area.generation_high == 10 %] class="gone"
+[%- IF NOT body.areas.size %] class="gone"
 [%- ELSIF loop.count % 2 %] class="a"
 [%- END -%]
 >
-<td align="left"><a href="[% area.url %]">[% area.name %]</a></td>
-<td>[% open.${area.id}.new or 0 %]</td>
-<td>[% (open.${area.id}.older or 0) + (open.${area.id}.unknown or 0) + (fixed.${area.id}.new or 0) + (fixed.${area.id}.old or 0) %]</td>
+<td align="left"><a href="[% body.url(c) %]">[% body.name %]</a></td>
+<td>[% open.${body.id}.new or 0 %]</td>
+<td>[% (open.${body.id}.older or 0) + (open.${body.id}.unknown or 0) + (fixed.${body.id}.new or 0) + (fixed.${body.id}.old or 0) %]</td>
 </tr>
 
 [% END %]

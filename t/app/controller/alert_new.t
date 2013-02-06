@@ -307,6 +307,9 @@ for my $test (
     };
 }
 
+$mech->create_body_ok(2226, 'Gloucestershire County Council');
+$mech->create_body_ok(2326, 'Cheltenham Borough Council');
+
 subtest "Test two-tier council alerts" => sub {
     for my $alert (
         { feed => "local:51.896269:-2.093063",          result => '/rss/l/51.896269,-2.093063' },
@@ -335,15 +338,16 @@ subtest "Test two-tier council alerts" => sub {
 };
 
 subtest "Test normal alert signups and that alerts are sent" => sub {
+    $mech->delete_user( 'reporter@example.com' );
+    $mech->delete_user( 'alerts@example.com' );
+
     my $user1 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
     ok $user1, "created test user";
-    $user1->alerts->delete;
 
     my $user2 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
     ok $user2, "created test user";
-    $user2->alerts->delete;
 
     for my $alert (
         {
@@ -382,7 +386,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     my $report_time = '2011-03-01 12:00:00';
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        council            => '2651',
+        bodies_str         => '2651',
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Testing',
@@ -509,15 +513,16 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
+        $mech->delete_user( 'reporter@example.com' );
+        $mech->delete_user( 'alerts@example.com' );
+
         my $user1 = FixMyStreet::App->model('DB::User')
           ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
         ok $user1, "created test user";
-        $user1->alerts->delete;
 
         my $user2 = FixMyStreet::App->model('DB::User')
           ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
         ok $user2, "created test user";
-        $user2->alerts->delete;
 
         my $dt = DateTime->now->add( minutes => -30 );
         my $r_dt = $dt->clone->add( minutes => 20 );
@@ -532,7 +537,7 @@ for my $test (
 
         my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
             postcode           => 'EH1 1BB',
-            council            => '2651',
+            bodies_str         => '2651',
             areas              => ',11808,135007,14419,134935,2651,20728,',
             category           => 'Street lighting',
             title              => 'Alert test for non public reports',
@@ -571,15 +576,16 @@ for my $test (
 }
 
 subtest 'check new updates alerts for non public reports only go to report owner' => sub {
+    $mech->delete_user( 'reporter@example.com' );
+    $mech->delete_user( 'alerts@example.com' );
+
     my $user1 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
     ok $user1, "created test user";
-    $user1->alerts->delete;
 
     my $user2 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
     ok $user2, "created test user";
-    $user2->alerts->delete;
 
     my $user3 = FixMyStreet::App->model('DB::User')
       ->find_or_create( { email => 'updates@example.com', name => 'Update User' } );
@@ -590,7 +596,7 @@ subtest 'check new updates alerts for non public reports only go to report owner
 
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        council            => '2651',
+        bodies_str         => '2651',
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Alert test for non public reports',

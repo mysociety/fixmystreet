@@ -35,7 +35,7 @@
         bodyclass => 'mappage',
         robots => 'noindex,nofollow';
 
-    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_council);
+    allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_body);
 %]
 
 [% IF allow_creation %]
@@ -53,6 +53,9 @@
 
       [% IF c.cobrand.moniker != 'emptyhomes' %]
         <p id='sub_map_links'>
+            [% IF c.cobrand.moniker == 'zurich' %]
+                <a class="hidden-nojs" id="map_layer_toggle" href="">Stadtplan</a>
+            [% END %]
             [% IF c.req.params.no_pins %]
                 <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 0 } ) %]'>[% loc('Show pins') %]</a>
             [% ELSE %]

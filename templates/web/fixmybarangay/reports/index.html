@@ -22,17 +22,16 @@
 </thead>
 
 <tbody>
-[% FOREACH area IN areas_info_sorted %]
+[% FOREACH body IN bodies %]
 <tr align="center"
-[%- IF area.generation_high == 10 %] class="gone"
-[%- ELSIF ! (loop.count % 2) %] class="a"
+[%- IF ! (loop.count % 2) %] class="a"
 [%- END %]>
-<td class="title"><a href="[% area.url %]">[% area.name %]</a></td>
-<td class="data">[% open.${area.id}.new or 0 %]</td>
-<td class="data">[% open.${area.id}.older or 0 %]</td>
-<td class="data">[% open.${area.id}.unknown or 0 %]</td>
-<td class="data">[% fixed.${area.id}.new or 0 %]</td>
-<td class="data">[% fixed.${area.id}.old or 0 %]</td>
+<td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
+<td class="data">[% open.${body.id}.new or 0 %]</td>
+<td class="data">[% open.${body.id}.older or 0 %]</td>
+<td class="data">[% open.${body.id}.unknown or 0 %]</td>
+<td class="data">[% fixed.${body.id}.new or 0 %]</td>
+<td class="data">[% fixed.${body.id}.old or 0 %]</td>
 </tr>
 [% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
 [% END %]
@@ -40,20 +39,4 @@
 </table>
 
 
-<p>
-[%# (this will change when we have 'body' logic in place, meanwhile: hardcoded) %]
-See also the maps of reports submitted to these departments:
-</p>
-<ul>
-<li>
-<a href="/reports/depw" title="Department of Engineering and Public Works">DEPW</a> &mdash; city road maintenance
-</li>
-<li>
-<a href="/reports/dps" title="Department of Public Services">DPS</a> &mdash; streetlight maintenance
-</li>
-<li>
-<a href="/reports/dpwh" title="Department of Public Works and Highways">DPWH</a> &mdash; national road maintenance
-</li>
-</ul>
-</p>
 [% INCLUDE 'footer.html', pagefooter = 'yes' %]
