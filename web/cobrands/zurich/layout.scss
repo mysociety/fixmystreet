@@ -45,15 +45,20 @@ body.mappage.admin .nav-wrapper-2 {
 
 body.frontpage #site-logo, #site-logo {
     width: 415px;
-    height: 16px;
+    height: 99px;
     background: url(logo_portal.jpg) top left no-repeat;
     top: 0;
-    text-indent: 0;
-    padding-left: 10px;
+    left: auto; // base set this to 0
+}
+
+#site-logo-text {
+    position: absolute;
+    top: 0;
+    z-index: 3;
     padding-top: 83px;
+    padding-left: 10px;
     color: #585858;
     font-size: 85%;
-    left: auto; // base set this to 0
 }
 
 .nav-wrapper {
