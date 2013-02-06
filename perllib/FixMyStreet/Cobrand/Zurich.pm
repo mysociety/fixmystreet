@@ -196,7 +196,7 @@ sub admin {
         my @all = (@children, $body->id);
 
         my $order = $c->req->params->{o} || 'created';
-        my $dir = $c->req->params->{d} || 1;
+        my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
         $c->stash->{order} = $order;
         $c->stash->{dir} = $dir;
         $order .= ' desc' if $dir;
