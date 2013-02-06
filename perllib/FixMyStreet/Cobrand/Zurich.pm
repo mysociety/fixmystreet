@@ -220,7 +220,7 @@ sub admin {
             state => { -not_in => [ 'unconfirmed', 'confirmed', 'planned' ] },
             bodies_str => \@all,
         }, {
-            order_by => 'created desc'
+            order_by => $order,
         })->page( $page );
         $c->stash->{pager} = $c->stash->{other}->pager;
 
