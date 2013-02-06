@@ -195,18 +195,24 @@ sub admin {
         my @children = map { $_->id } $body->bodies->all;
         my @all = (@children, $body->id);
 
+        my $order = $c->req->params->{o} || 'created';
+        my $dir = $c->req->params->{d} || 1;
+        $c->stash->{order} = $order;
+        $c->stash->{dir} = $dir;
+        $order .= ' desc' if $dir;
+
         # XXX No multiples or missing bodies
         $c->stash->{unconfirmed} = $c->cobrand->problems->search({
             state => [ 'unconfirmed', 'confirmed' ],
             bodies_str => $c->stash->{body}->id,
         }, {
-            order_by => 'created'
+            order_by => $order,
         });
         $c->stash->{approval} = $c->cobrand->problems->search({
             state => 'planned',
             bodies_str => $c->stash->{body}->id,
         }, {
-            order_by => 'created'
+            order_by => $order,
         });
 
         my $page = $c->req->params->{p} || 1;
