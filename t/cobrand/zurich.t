@@ -1,5 +1,4 @@
 # TODO
-# Report to third party (with third_personal)
 # Overdue alerts 
 
 use strict;
@@ -30,6 +29,10 @@ $subdivision->parent( $division->id );
 $subdivision->send_method( 'Zurich' );
 $subdivision->endpoint( 'subdivision@example.org' );
 $subdivision->update;
+my $external_body = $mech->create_body_ok( 4, 'External Body' );
+$external_body->send_method( 'Zurich' );
+$external_body->endpoint( 'external_body@example.org' );
+$external_body->update;
 
 my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
     state              => 'unconfirmed',
@@ -163,6 +166,48 @@ $mech->content_contains('FINAL UPDATE');
 $email = $mech->get_email;
 like $email->header('To'), qr/test\@example.com/, 'to line looks correct';
 like $email->body, qr/FINAL UPDATE/, 'body looks correct';
+$mech->clear_emails_ok;
+
+# Report assigned to third party
+
+@reports = $mech->create_problems_for_body( 1, 2, 'Third', {
+    state              => 'unconfirmed',
+    confirmed          => undef,
+    cobrand            => 'zurich',
+});
+$report = $reports[0];
+
+$mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->submit_form_ok( { with_fields => { body_external => 4 } } );
+$mech->get_ok( '/report/' . $report->id );
+$mech->content_contains('Erledigt');
+$mech->content_contains('Third Test');
+$mech->content_contains('An Fachbereich zuweisen: External Body');
+FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+$email = $mech->get_email;
+like $email->header('Subject'), qr/Neue Meldung/, 'subject looks okay';
+like $email->header('To'), qr/external_body\@example.org/, 'to line looks correct';
+like $email->body, qr/External Body/, 'body has right name';
+unlike $email->body, qr/test\@example.com/, 'body does not contain email address';
+$mech->clear_emails_ok;
+
+# Test calling back, and third_personal boolean setting
+$mech->get_ok( '/admin' );
+is $mech->uri->path, '/admin', "am logged in";
+$mech->content_contains( 'report_edit/' . $report->id );
+$mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->submit_form_ok( { with_fields => { state => 'unconfirmed' } } );
+$mech->submit_form_ok( { with_fields => { body_external => 4, third_personal => 1 } } );
+$mech->get_ok( '/report/' . $report->id );
+$mech->content_contains('Erledigt');
+$mech->content_contains('Third Test');
+$mech->content_contains('An Fachbereich zuweisen: External Body');
+FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+$email = $mech->get_email;
+like $email->header('Subject'), qr/Neue Meldung/, 'subject looks okay';
+like $email->header('To'), qr/external_body\@example.org/, 'to line looks correct';
+like $email->body, qr/External Body/, 'body has right name';
+like $email->body, qr/test\@example.com/, 'body does contain email address';
 $mech->clear_emails_ok;
 
 $mech->delete_problems_for_body( 2 );

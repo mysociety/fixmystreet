@@ -474,7 +474,7 @@ msgstr "An Fachbereich zuweisen:"
 
 #: templates/web/zurich/report/updates.html:11
 msgid "Assigned to %s"
-msgstr "An Fachbereich zuweisen:"
+msgstr "An Fachbereich zuweisen: %s"
 
 #: templates/web/default/open311/index.html:17
 msgid ""

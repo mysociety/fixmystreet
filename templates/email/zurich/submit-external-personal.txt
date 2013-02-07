@@ -10,4 +10,4 @@ Reporter name: <?=$values['name']?>
 
 Reporter email: <?=$values['email']?>
 
-Reporter phone: <?=$values['phone']?>
+<?=$values['phone_line']?>
