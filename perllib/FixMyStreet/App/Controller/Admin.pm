@@ -1339,8 +1339,6 @@ sub rotate_photo : Private {
     my $fileid = sha1_hex($photo);
     $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
 
-    $c->stash->{rotated} = 1;
-
     my $fh = $file->open('w');
     print $fh $photo;
     close $fh;
