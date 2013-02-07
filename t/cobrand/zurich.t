@@ -61,6 +61,7 @@ $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'Erfasst' );
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
 $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
 $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Aufgenommen');
@@ -149,6 +150,7 @@ $report->extra ( { %$extra } );
 $report->update;
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->content_lacks( 'Unbest&auml;tigt' ); # Confirmed email
 $mech->submit_form_ok( { with_fields => { status_update => 'FINAL UPDATE' } } );
 $mech->form_with_fields( 'status_update' );
 $mech->submit_form_ok( { button => 'publish_response' } );
