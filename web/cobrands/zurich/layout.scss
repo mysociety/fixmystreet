@@ -205,7 +205,13 @@ body.twothirdswidthpage {
 }
 
 #fms_pan_zoom {
-  top: 7.75em !important;
+    top: 9em !important;
+}
+#fms_pan_zoom_zoomin {
+    top: 0 !important;
+}
+#fms_pan_zoom_zoomout {
+    top: 44px !important;
 }
 
 // Admin specific changes

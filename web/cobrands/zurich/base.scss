@@ -112,3 +112,10 @@ input[type=file] {
   padding: 0;
   border: none;
 }
+
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown,
+#fms_pan_zoom_panleft,
+#fms_pan_zoom_panright {
+    display: none;
+}
