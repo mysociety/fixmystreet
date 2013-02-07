@@ -450,16 +450,18 @@ sub get_photo_params {
 
     my $pre = "/photo$key/" . $self->id;
     my $post = '.jpeg';
-    my $str = \$self->photo;
     my $photo = {};
 
     if (length($self->photo) == 40) {
         $post .= '?' . $self->photo;
         $photo->{url_full} = "$pre.full$post";
-        $str = FixMyStreet->config('UPLOAD_DIR') . $self->photo . '.jpeg';
+        # XXX Can't use size here because {url} (currently 250px height) may be
+        # being used, but at this point it doesn't yet exist to find the width
+        # $str = FixMyStreet->config('UPLOAD_DIR') . $self->photo . '.jpeg';
+    } else {
+        my $str = \$self->photo;
+        ( $photo->{width}, $photo->{height} ) = Image::Size::imgsize( $str );
     }
-
-    ( $photo->{width}, $photo->{height} ) = Image::Size::imgsize( $str );
 
     $photo->{url} = "$pre$post";
     $photo->{url_tn} = "$pre.tn$post";
