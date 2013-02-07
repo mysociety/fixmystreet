@@ -621,13 +621,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('get_token');
 
-    if ( $c->req->param('rotate_photo') ) {
-        $c->forward('rotate_photo');
-        return 1;
-    }
-
     if ( $c->cobrand->moniker eq 'zurich' ) {
-
         FixMyStreet::Map::display_map(
             $c,
             latitude  => $problem->latitude,
@@ -641,7 +635,14 @@ sub report_edit : Path('report_edit') : Args(1) {
               } ]
             : [],
         );
+    }
 
+    if ( $c->req->param('rotate_photo') ) {
+        $c->forward('rotate_photo');
+        return 1;
+    }
+
+    if ( $c->cobrand->moniker eq 'zurich' ) {
         my $done = $c->cobrand->admin_report_edit();
         return if $done;
     }
@@ -1320,7 +1321,7 @@ sub rotate_photo : Private {
     my ( $self, $c ) =@_;
 
     my $direction = $c->req->param('rotate_photo');
-    return unless $direction =~ /Left/ or $direction =~ /Right/;
+    return unless $direction eq _('Rotate Left') or $direction eq _('Rotate Right');
 
     my $photo = $c->stash->{problem}->photo;
     my $file;
@@ -1331,14 +1332,12 @@ sub rotate_photo : Private {
         $photo = $file->slurp;
     }
 
-    $photo = _rotate_image( $photo, $direction =~ /Left/ ? -90 : 90 );
+    $photo = _rotate_image( $photo, $direction eq _('Rotate Left') ? -90 : 90 );
     return unless $photo;
 
-    my $fileid;
-    if ( !$file ) {
-        $fileid = sha1_hex($photo);
-        $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
-    }
+    # Write out to new location
+    my $fileid = sha1_hex($photo);
+    $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
 
     $c->stash->{rotated} = 1;
 
@@ -1348,10 +1347,8 @@ sub rotate_photo : Private {
 
     unlink glob FixMyStreet->path_to( 'web', 'photo', $c->stash->{problem}->id . '.*' );
 
-    if ( $fileid ) {
-        $c->stash->{problem}->photo( $fileid );
-        $c->stash->{problem}->update();
-    }
+    $c->stash->{problem}->photo( $fileid );
+    $c->stash->{problem}->update();
 
     return 1;
 }

@@ -443,18 +443,27 @@ Hashref contains height, width and url keys.
 
 sub get_photo_params {
     my ($self, $key) = @_;
-    $key = ($key eq 'id') ? '' : "/$key";
 
     return {} unless $self->photo;
 
+    $key = ($key eq 'id') ? '' : "/$key";
+
+    my $pre = "/photo$key/" . $self->id;
+    my $post = '.jpeg';
+    my $str = \$self->photo;
     my $photo = {};
+
     if (length($self->photo) == 40) {
-        $photo->{url_full} = '/photo' . $key . '/' . $self->id . '.full.jpeg';
-    } else {
-        ( $photo->{width}, $photo->{height} ) =
-          Image::Size::imgsize( \$self->photo );
+        $post .= '?' . $self->photo;
+        $photo->{url_full} = "$pre.full$post";
+        $str = FixMyStreet->config('UPLOAD_DIR') . $self->photo . '.jpeg';
     }
-    $photo->{url} = '/photo' . $key . '/' . $self->id . '.jpeg';
+
+    ( $photo->{width}, $photo->{height} ) = Image::Size::imgsize( $str );
+
+    $photo->{url} = "$pre$post";
+    $photo->{url_tn} = "$pre.tn$post";
+    $photo->{url_fp} = "$pre.fp$post";
 
     return $photo;
 }

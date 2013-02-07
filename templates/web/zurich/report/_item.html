@@ -1,7 +1,9 @@
 <li>
 <a class="text" href="[% c.uri_for('/report', problem.id ) %]">
-    [% IF problem.state != 'unconfirmed' AND problem.photo AND problem.extra.publish_photo %]
-        <img class="img" height="60" width="90" src="/photo/[% problem.id %].fp.jpeg" alt="">
+    [% IF problem.state != 'unconfirmed' AND problem.photo AND problem.extra.publish_photo;
+        photo = problem.get_photo_params
+    %]
+        <img class="img" height="60" width="90" src="[% photo.url_fp %]" alt="">
     [% END %]
       [% IF problem.state != 'unconfirmed' %]
         <h4>[% problem.title | html %]</h4>

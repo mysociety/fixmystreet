@@ -47,8 +47,7 @@ kinds of problems like missed bins use our
         <section class="full-width">
             <ul class="issue-list-a">
             [% FOREACH problem IN recent_photos %]
-            [%  problem.photo = 1; # Definitely is
-                INCLUDE 'report/_item.html', no_fixed = 1 %]
+            [% INCLUDE 'report/_item.html', no_fixed = 1 %]
             [% END %]
             </ul>
         </section>

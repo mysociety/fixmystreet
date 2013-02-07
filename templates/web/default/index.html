@@ -41,9 +41,11 @@
     <h2>[% loc('Recently reported problems') %]</h2>
     [% IF recent_photos.size %]
         <p id="front_photos">
-        [% FOREACH p IN recent_photos %]
+        [% FOREACH p IN recent_photos;
+            photo = p.get_photo_params;
+        %]
             <a href="/report/[% p.id %]"><img border="0" height="100"
-                src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+                src="[% photo.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
         [% END %]
         </p>
     [% END %]
