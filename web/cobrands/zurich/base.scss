@@ -106,3 +106,9 @@ h4.static-with-rule {
     padding-left: 0.8em;
     padding-right: 0.8em;
 }
+
+input[type=file] {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
