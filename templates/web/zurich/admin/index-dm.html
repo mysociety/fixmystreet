@@ -15,7 +15,7 @@
 
 [% INCLUDE 'admin/footer.html' %]
 
-[% BLOCK sort_link %][% IF order == choice %][% c.uri_with( d => 1 - c.req.params.d ) %][% ELSE %][% c.uri_with( { o => choice } ) %][% END %][% END %]
+[% BLOCK sort_link %][% IF order == choice %][% c.uri_with( d => 1 - (c.req.params.d||0) ) %][% ELSE %][% c.uri_with( { o => choice } ) %][% END %][% END %]
 
 [% BLOCK list %]
 <table cellspacing="0" cellpadding="2" border="1">
