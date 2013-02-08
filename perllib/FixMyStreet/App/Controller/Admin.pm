@@ -550,7 +550,7 @@ sub reports : Path('reports') {
             $query,
             {
                 prefetch => 'user',
-                order_by => [ \"(state='hidden')", $order ]
+                order_by => [ \"(state='hidden')", \$order ]
             }
         );
 
@@ -593,7 +593,7 @@ sub reports : Path('reports') {
                 {
                     -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
                     prefetch => [qw/user problem/],
-                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", "me.$order" ]
+                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", \"me.$order" ]
                 }
             );
             $c->stash->{updates} = [ $updates->all ];
