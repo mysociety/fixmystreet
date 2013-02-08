@@ -139,6 +139,12 @@ body.mappage {
   background-color: inherit;
   color: inherit;
   margin: 0 0 2em 0;
+  #postcodeForm div {
+    border-color: $dark_blue;
+    input#pc {
+      max-width: none;
+    }
+  }
 }
 
 /* TODO Change the main-nav to be what is wanted */

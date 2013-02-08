@@ -66,6 +66,22 @@
     background-color: $mobile_header_blue;
 }
 
+//  fix here:
+//  a percentage width on input#pc breaks iPhone landscape/portrait switching
+//  and the other changes make this fix pretty
+
+#front-main #postcodeForm div {
+  background: inherit;
+  border-color:transparent;
+  input#pc {
+    max-width: 15em;
+    background-color: #fff;
+  }
+  input#sub {
+    width: 3em;
+  }
+}
+
 // No grey background or other bits
 // The amount of resetting here shows this needs refactoring, so that it is FMS making the changes
 // Also look into why full-width pulls things out, but then it is its children
