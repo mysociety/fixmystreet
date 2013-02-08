@@ -3,14 +3,14 @@
 
 [% status_message %]
 
-<h2>[% loc('Submitted') %]</h2>
-[% INCLUDE list, problems = unconfirmed.all %]
+<h2 id="submitted">[% loc('Submitted') %]</h2>
+[% INCLUDE list, problems = unconfirmed.all, hash = 'submitted' %]
 
-<h2>[% loc('Planned') %]</h2>
-[% INCLUDE list, problems = approval.all %]
+<h2 id="planned">[% loc('Planned') %]</h2>
+[% INCLUDE list, problems = approval.all, hash = 'planned' %]
 
 <h2 id="alle">[% loc('All reports') %]</h2>
-[% INCLUDE list, problems = other.all, include_subdiv = 1 %]
+[% INCLUDE list, problems = other.all, include_subdiv = 1, hash = 'alle' %]
 [% INCLUDE 'pagination.html', admin = 1, param = 'p', hash = 'alle' %]
 
 [% INCLUDE 'admin/footer.html' %]
@@ -20,10 +20,10 @@
     <tr>
         <th>[% loc('ID') %]</th>
         <th>[% loc('Description') %]</th>
-        <th><a href="[% INCLUDE sort_link choice = 'category' %]">[% loc('Category') %]</a></th>
-        <th><a href="[% INCLUDE sort_link choice = 'created' %]">[% loc('Submitted') %]</a></th>
-        <th><a href="[% INCLUDE sort_link choice = 'lastupdate' %]">[% loc('Updated') %]</a></th>
-        <th><a href="[% INCLUDE sort_link choice = 'state' %]">[% loc('Status') %]</a></th>
+        <th><a href="[% INCLUDE sort_link choice = 'category' %]#[% hash %]">[% loc('Category') %]</a></th>
+        <th><a href="[% INCLUDE sort_link choice = 'created' %]#[% hash %]">[% loc('Submitted') %]</a></th>
+        <th><a href="[% INCLUDE sort_link choice = 'lastupdate' %]#[% hash %]">[% loc('Updated') %]</a></th>
+        <th><a href="[% INCLUDE sort_link choice = 'state' %]#[% hash %]">[% loc('Status') %]</a></th>
     [% IF include_subdiv %]
         <th>[% loc('Subdivision/Body') %]</th>
     [% END %]
