@@ -306,7 +306,7 @@ sub admin_report_edit {
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
         # Make sure we have a copy of the original detail field
-        $extra->{original_detail} = $problem->detail unless $extra->{original_detail};
+        $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $problem->detail ne $c->req->params->{detail};
         $problem->extra( { %$extra } );
 
         # Workflow things
