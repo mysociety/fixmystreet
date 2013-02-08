@@ -41,6 +41,9 @@
 [% END %]
 
 <li><span class="mock-label">[% loc('Co-ordinates:') %]</span> [% problem.local_coords.join(',') %]
+	<input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
+	<input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
+
 ([%
     SET safe = problem.postcode | html;
     tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )

@@ -10,6 +10,35 @@ $(function(){
         $(this).text('Stadtplan');
         fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
     });
+
+    /* Admin dragging of pin */
+    if (fixmystreet.page == 'admin') {
+        var admin_drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+            onComplete: function(feature, e) {
+                var lonlat = feature.geometry.clone();
+                lonlat.transform(
+                    fixmystreet.map.getProjectionObject(),
+                    new OpenLayers.Projection("EPSG:4326")
+                );
+                if (window.confirm( 'Richtiger Ort?' ) ) {
+                    // Store new co-ordinates
+                    document.getElementById('fixmystreet.latitude').value = lonlat.y;
+                    document.getElementById('fixmystreet.longitude').value = lonlat.x;
+                } else {
+                    // Put it back
+                    var lat = document.getElementById('fixmystreet.latitude').value;
+                    var lon = document.getElementById('fixmystreet.longitude').value;
+                    lonlat = new OpenLayers.LonLat(lon, lat).transform(
+                        new OpenLayers.Projection("EPSG:4326"),
+                        fixmystreet.map.getProjectionObject()
+                    );
+                    fixmystreet.markers.features[0].move(lonlat);
+                }
+            }
+        } );
+        fixmystreet.map.addControl( admin_drag );
+        admin_drag.activate();
+    }
 });
 
 /* 

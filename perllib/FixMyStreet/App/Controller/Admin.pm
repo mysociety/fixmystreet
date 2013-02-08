@@ -622,6 +622,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     $c->forward('get_token');
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->stash->{page} = 'admin';
         FixMyStreet::Map::display_map(
             $c,
             latitude  => $problem->latitude,

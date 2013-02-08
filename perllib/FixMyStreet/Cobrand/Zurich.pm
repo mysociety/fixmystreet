@@ -340,6 +340,8 @@ sub admin_report_edit {
 
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
+        $problem->latitude( $c->req->param('latitude') );
+        $problem->longitude( $c->req->param('longitude') );
 
         # Final, public, Update from DM
         if (my $update = $c->req->param('status_update')) {
@@ -389,13 +391,21 @@ sub admin_report_edit {
         } elsif ($c->req->param('submit')) {
             $c->forward('check_token');
 
+            my $db_update = 0;
+            if ( $c->req->param('latitude') != $problem->latitude || $c->req->param('longitude') != $problem->longitude ) {
+                $problem->latitude( $c->req->param('latitude') );
+                $problem->longitude( $c->req->param('longitude') );
+                $db_update = 1;
+            }
+
             my $extra = $problem->extra || {};
             $extra->{internal_notes} ||= '';
             if ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes}) {
                 $extra->{internal_notes} = $c->req->param('internal_notes');
                 $problem->extra( { %$extra } );
-                $problem->update;
             }
+
+            $problem->update if $db_update;
 
             # Add new update from status_update
             if (my $update = $c->req->param('status_update')) {
