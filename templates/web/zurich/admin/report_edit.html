@@ -19,7 +19,7 @@
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
 
 [% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
-    <li>[% loc('Details:') %] [% problem.detail | html %]
+    <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
     [% IF problem.extra.original_detail %]
     <br>[%
         SET detail_safe = problem.extra.original_detail | html;
@@ -164,6 +164,12 @@ $(function(){
     <textarea name='status_update' id='status_update' cols=60 rows=5>[% problem.extra.public_response | html %]</textarea>
     </li>
 </ul>
+
+[% ELSIF problem.state == 'fixed - council' %]
+
+<p><span class="mock-label">[% loc('Public response:') %]</span>
+[% problem.extra.public_response | html %]
+</p>
 
 [% END %]
 
