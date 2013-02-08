@@ -23,4 +23,20 @@
     [% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
 [%- END %]
 
-[% BLOCK sort_link %][% IF order == choice %][% c.uri_with( d => 1 - (c.req.params.d||0) ) %][% ELSE %][% c.uri_with( { o => choice, d => 0 } ) %][% END %][% END %]
+[% BLOCK sort_link %][% IF order == choice %][% c.uri_with( d => 1 - dir ) %][% ELSE %][% c.uri_with( { o => choice, d => 0 } ) %][% END %][% END %]
+
+[% BLOCK sort_arrow %]
+    [% IF order == choice %]
+        <span style="font-size:50%">
+        [% IF dir %]
+            &#9660;
+        [% ELSE %]
+            &#9650;
+        [% END %]
+        </span>
+    [% ELSE %]
+        <span style="font-size:50%; color: #999;">
+        &#9650;
+        </span>
+    [% END %]
+[% END %]
