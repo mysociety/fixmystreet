@@ -23,4 +23,4 @@
     [% ELSE %][% no_time || '&nbsp;' %][% END %][% no_time = '' %]
 [%- END %]
 
-[% BLOCK sort_link %][% IF order == choice %][% c.uri_with( d => 1 - (c.req.params.d||0) ) %][% ELSE %][% c.uri_with( { o => choice } ) %][% END %][% END %]
+[% BLOCK sort_link %][% IF order == choice %][% c.uri_with( d => 1 - (c.req.params.d||0) ) %][% ELSE %][% c.uri_with( { o => choice, d => 0 } ) %][% END %][% END %]
