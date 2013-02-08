@@ -52,7 +52,8 @@ $(function(){
     var form_submitted = 0;
     var submitted = false;
 
-    $("form.validate").validate({
+    $("form.validate").each(function(){
+      $(this).validate({
         rules: validation_rules,
         messages: translation_strings,
         onkeyup: false,
@@ -85,6 +86,7 @@ $(function(){
             submitted = false;
         },
         invalidHandler: function(form, validator) { submitted = true; }
+      });
     });
 
     $('input[type=submit]').click( function(e) { form_submitted = 1; } );
