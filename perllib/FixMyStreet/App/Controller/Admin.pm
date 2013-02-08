@@ -498,6 +498,12 @@ sub reports : Path('reports') {
         }
     }
 
+    my $order = $c->req->params->{o} || 'created';
+    my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+    $c->stash->{order} = $order;
+    $c->stash->{dir} = $dir;
+    $order .= ' desc' if $dir;
+
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = $search;
 
@@ -544,7 +550,7 @@ sub reports : Path('reports') {
             $query,
             {
                 prefetch => 'user',
-                order_by => [\"(state='hidden')",'created']
+                order_by => [ \"(state='hidden')", $order ]
             }
         );
 
@@ -587,7 +593,7 @@ sub reports : Path('reports') {
                 {
                     -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
                     prefetch => [qw/user problem/],
-                    order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
+                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", "me.$order" ]
                 }
             );
             $c->stash->{updates} = [ $updates->all ];
@@ -600,7 +606,7 @@ sub reports : Path('reports') {
         my $page = $c->req->params->{p} || 1;
         my $problems = $c->cobrand->problems->search(
             $query,
-            { order_by => 'created desc' }
+            { order_by => $order }
         )->page( $page );
         $c->stash->{problems} = [ $problems->all ];
         $c->stash->{pager} = $problems->pager;

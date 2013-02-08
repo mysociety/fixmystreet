@@ -229,18 +229,24 @@ sub admin {
 
         my $body = $c->stash->{body};
 
+        my $order = $c->req->params->{o} || 'created';
+        my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+        $c->stash->{order} = $order;
+        $c->stash->{dir} = $dir;
+        $order .= ' desc' if $dir;
+
         # XXX No multiples or missing bodies
         $c->stash->{reports_new} = $c->cobrand->problems->search( {
             state => 'in progress',
             bodies_str => $body->id,
         }, {
-            order_by => 'created'
+            order_by => $order
         } );
         $c->stash->{reports_unpublished} = $c->cobrand->problems->search( {
             state => 'planned',
             bodies_str => $body->parent->id,
         }, {
-            order_by => 'created desc'
+            order_by => $order
         } );
 
         my $page = $c->req->params->{p} || 1;
@@ -248,7 +254,7 @@ sub admin {
             state => 'fixed - council',
             bodies_str => $body->parent->id,
         }, {
-            order_by => 'created desc'
+            order_by => $order
         } )->page( $page );
         $c->stash->{pager} = $c->stash->{reports_published}->pager;
     }
