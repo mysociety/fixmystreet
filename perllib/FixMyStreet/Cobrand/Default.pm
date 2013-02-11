@@ -810,5 +810,13 @@ sub prettify_dt {
     return Utils::prettify_dt( $dt, 1 );
 }
 
+=head2 email_indent
+
+Set to an indent string if you wish to override the default email handling.
+
+=cut
+
+sub email_indent { undef; }
+
 1;
 

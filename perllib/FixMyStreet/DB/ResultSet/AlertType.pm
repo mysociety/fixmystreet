@@ -236,6 +236,7 @@ sub _send_aggregated_alert_email(%) {
         {
             _template_ => $template,
             _parameters_ => \%data,
+            _line_indent => $cobrand->email_indent,
             From => [ $sender, _($cobrand->contact_name) ],
             To => $data{alert_email},
         },

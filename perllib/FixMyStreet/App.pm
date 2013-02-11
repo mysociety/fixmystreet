@@ -315,6 +315,7 @@ sub send_email {
         {
             _template_ => $email->body,    # will get line wrapped
             _parameters_ => {},
+            _line_indent => $c->cobrand->email_indent,
             $email->header_pairs
         }
     ) };

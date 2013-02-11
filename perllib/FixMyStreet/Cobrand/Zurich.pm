@@ -132,6 +132,8 @@ sub overdue {
     }
 }
 
+sub email_indent { ''; }
+
 # Specific administrative displays
 
 sub admin_pages {
