@@ -122,6 +122,7 @@ sub add_links {
     $text =~ s/\r//g;
     $text = ent($text);
     $text =~ s{(https?://[^\s]+)}{<a href="$1">$1</a>}g;
+    $text =~ s{">(.*?)<}{">$1<}ge;
     return $text;
 }
 
