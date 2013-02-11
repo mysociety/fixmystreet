@@ -43,7 +43,7 @@ Det här meddelandet skickades via Fixa Min Gata, ett projekt som drivs
 av Föreningen Sambruk. Om det finns en lämpligare adress dit liknande
 meddelanden kan skickas kan du kontakta oss via tjänstens hemsida:
 
-<http://www.fixmystreet.com/contact>
+<http://beta.fixamingata.se/contact>
 
 Vi tar också tacksamt emot all annan återkoppling du har angående
 tjänsten.
