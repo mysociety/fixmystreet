@@ -19,12 +19,12 @@ body {
         border: none;
     }
 }
-// Except on map pages
-body.mappage .content {
+// Except on map pages (which includes the front page)
+body.mappage .content, body.frontpage .content {
     @include box-shadow(0 0 6px 1px #000);
 }
 .ie6, .ie7, .ie8  {
-    body.mappage .content {
+    body.mappage .content, body.frontpage .content {
         border: 1px solid #666;
     }
 }
@@ -51,6 +51,27 @@ body.frontpage #site-logo, #site-logo {
     left: auto; // base set this to 0
 }
 
+// Static map on front page
+body.frontpage {
+    .table-cell {
+        background-position: 50% 117px;
+        background-repeat: no-repeat;
+        background-image: url(mapbg-1024.jpg);
+        @media all and (min-width: 1025px) {
+            background-image: url(mapbg-1600.jpg);
+        }
+        .content {
+            margin: 2em auto; // Spacing around front content on top of static map
+        }
+    }
+
+    #site-header {
+        height: 117px;
+        background-color: #fff;
+        @include box-shadow(0 0 6px 1px #000);
+    }
+}
+
 #site-logo-text {
     position: absolute;
     top: 0;
@@ -63,7 +84,11 @@ body.frontpage #site-logo, #site-logo {
 
 .nav-wrapper {
     .nav-wrapper-2 {
-        border-top: solid 18px white;
+        border-top: none;
+    }
+    .nav-wrapper-3 {
+        height: 99px;
+        padding-top: 18px;
     }
 }
 
