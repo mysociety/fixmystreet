@@ -121,9 +121,14 @@ sub add_links {
 
     $text =~ s/\r//g;
     $text = ent($text);
-    $text =~ s{(https?://[^\s]+)}{<a href="$1">$1</a>}g;
-    #$text =~ s{">(.*?)<}{">$1<}ge;
+    $text =~ s{(https?://)([^\s]+)}{"<a href='$1$2'>$1" . _space_slash($2) . '</a>'}ge;
     return $text;
+}
+
+sub _space_slash {
+    my $t = shift;
+    $t =~ s{/(?!$)}{/ }g;
+    return $t;
 }
 
 =head2 escape_js
