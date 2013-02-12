@@ -826,5 +826,13 @@ sub problem_as_hashref {
     return $problem->as_hashref( $ctx );
 }
 
+sub updates_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    return {};
+}
+
 1;
 

@@ -173,7 +173,10 @@ sub format_problem_for_display : Private {
     if ( $c->stash->{ajax} ) {
         $c->res->content_type('application/json; charset=utf-8');
         my $content = JSON->new->utf8(1)->encode(
-            $c->cobrand->problem_as_hashref( $problem, $c )
+            {
+                report => $c->cobrand->problem_as_hashref( $problem, $c ),
+                updates => $c->cobrand->updates_as_hashref( $problem, $c ),
+            }
         );
         $c->res->body( $content );
         return 1;

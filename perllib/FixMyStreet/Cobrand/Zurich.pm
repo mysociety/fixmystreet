@@ -81,6 +81,26 @@ sub problem_as_hashref {
     return $hashref;
 }
 
+sub updates_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    my $hashref = {};
+
+    if ( $problem->state eq 'fixed - council' || $problem->state eq 'closed' ) {
+        $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate_local );
+
+        if ( $problem->state eq 'fixed - council' ) {
+            $hashref->{details} = FixMyStreet::App::View::Web->add_links( $ctx, $problem->extra->{public_response} );
+        } elsif ( $problem->state eq 'closed' ) {
+            $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body($ctx)->name );
+        }
+    }
+
+    return $hashref;
+}
+
 sub remove_redundant_areas {
     my $self = shift;
     my $all_areas = shift;
