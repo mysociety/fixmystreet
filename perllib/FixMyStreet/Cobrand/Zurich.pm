@@ -62,7 +62,7 @@ sub problem_as_hashref {
         for my $var ( qw( photo category detail state state_t is_fixed meta ) ) {
             delete $hashref->{ $var };
         }
-        $hashref->{detail} = _('This report is awaiting moderation');
+        $hashref->{detail} = _('This report is awaiting moderation.');
         $hashref->{state} = 'submitted';
         $hashref->{state_t} = _('Submitted');
     } else {
