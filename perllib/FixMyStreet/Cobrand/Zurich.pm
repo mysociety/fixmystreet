@@ -59,7 +59,7 @@ sub problem_as_hashref {
     my $hashref = $problem->as_hashref( $ctx );
 
     if ( $problem->state eq 'unconfirmed' ) {
-        for my $var ( qw( photo category detail state state_t is_fixed meta ) ) {
+        for my $var ( qw( photo detail state state_t is_fixed meta ) ) {
             delete $hashref->{ $var };
         }
         $hashref->{detail} = _('This report is awaiting moderation.');
