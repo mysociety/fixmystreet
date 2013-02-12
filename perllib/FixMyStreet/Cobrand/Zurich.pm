@@ -51,6 +51,36 @@ sub prettify_dt {
     return Utils::prettify_dt( $dt, 'zurich' );
 }
 
+sub problem_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    my $hashref = $problem->as_hashref( $ctx );
+
+    if ( $problem->state eq 'unconfirmed' ) {
+        for my $var ( qw( photo category detail state state_t is_fixed meta ) ) {
+            delete $hashref->{ $var };
+        }
+        $hashref->{detail} = _('This report is awating moderation');
+        $hashref->{state} = 'submitted';
+        $hashref->{state_t} = _('Submitted');
+    } else {
+        if ( $problem->state eq 'confirmed' ) {
+            $hashref->{state} = 'open';
+            $hashref->{state_t} = _('Open');
+        } elsif ( $problem->is_fixed ) {
+            $hashref->{state} = 'closed';
+            $hashref->{state_t} = _('Closed');
+        } elsif ( $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
+            $hashref->{state} = 'in progress';
+            $hashref->{state_t} = _('In progress');
+        }
+    }
+
+    return $hashref;
+}
+
 sub remove_redundant_areas {
     my $self = shift;
     my $all_areas = shift;

@@ -818,5 +818,13 @@ Set to an indent string if you wish to override the default email handling.
 
 sub email_indent { undef; }
 
+sub problem_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    return $problem->as_hashref( $ctx );
+}
+
 1;
 
