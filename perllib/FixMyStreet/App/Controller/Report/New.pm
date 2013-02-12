@@ -598,7 +598,6 @@ sub setup_categories_and_bodies : Private {
     # variables to populate
     my %bodies_to_list = ();       # Bodies with categories assigned
     my @category_options = ();       # categories to show
-    my $category_label   = undef;    # what to call them
     my %category_extras  = ();       # extra fields to fill in for open311
     my %non_public_categories =
       ();    # categories for which the reports are not public
@@ -621,7 +620,6 @@ sub setup_categories_and_bodies : Private {
             _('Empty pub or bar'),
             _('Empty public building - school, hospital, etc.')
         );
-        $category_label = _('Property type:');
 
     } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
 
@@ -636,7 +634,6 @@ sub setup_categories_and_bodies : Private {
             _('-- Pick a category --'),
             @local_categories 
         );
-        $category_label = _('Category');
 
     } else {
 
@@ -663,7 +660,6 @@ sub setup_categories_and_bodies : Private {
             # If there's an Other category present, put it at the bottom
             @category_options = ( _('-- Pick a category --'), grep { $_ ne _('Other') } @category_options );
             push @category_options, _('Other') if $seen{_('Other')};
-            $category_label = _('Category');
         }
     }
 
@@ -671,7 +667,6 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{bodies} = \%bodies;
     $c->stash->{all_body_names} = [ map { $_->name } values %bodies ];
     $c->stash->{bodies_to_list} = [ keys %bodies_to_list ];
-    $c->stash->{category_label}   = $category_label;
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{non_public_categories}  = \%non_public_categories;

@@ -3,7 +3,7 @@
     [% IF category;
         category = category | lower;
        END; %]
-    <label for='form_category' class="select">[% category_label | html %]</label>
+    <label for='form_category' class="select">[% loc('Category') %]</label>
     <select name='category' data-theme="c" id='form_category'[% ' onchange="form_category_onchange()"' IF category_extras.size %]>
         [% FOREACH cat_op IN category_options %]
         [% cat_op_lc = cat_op | lower %]
