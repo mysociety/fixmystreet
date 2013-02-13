@@ -310,6 +310,7 @@ sub send_reports {
             my $sender = "FixMyStreet::SendReport::EmptyHomes";
             $reporters{ $sender } = $sender->new() unless $reporters{$sender};
             $reporters{ $sender }->add_body( $body );
+            $sender_count = 1;
 
         } else {
 
@@ -378,7 +379,7 @@ sub send_reports {
 
         if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING')) {
             # on a staging server send emails to ourselves rather than the bodies
-            %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI)/ } keys %reporters;
+            %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes)/ } keys %reporters;
             unless (%reporters) {
                 %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
             }

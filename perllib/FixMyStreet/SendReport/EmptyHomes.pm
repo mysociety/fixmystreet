@@ -33,7 +33,7 @@ sub build_recipient_list {
         push @{ $self->to }, [ $body_email, $body->name ];
         $recips{$body_email} = 1;
 
-        my $area_info = mySociety::MaPit::call('area', $body->area_id);
+        my $area_info = mySociety::MaPit::call('area', $body->body_areas->first->area_id);
         my $country = $area_info->{country};
         if ($country eq 'W') {
             $recips{ 'wales@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
