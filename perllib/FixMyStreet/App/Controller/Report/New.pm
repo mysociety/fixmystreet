@@ -833,6 +833,12 @@ sub process_report : Private {
         $bodies = join( ',', @{ $c->stash->{bodies_to_list} } ) || -1;
         $report->bodies_str( $bodies );
 
+        my %extra;
+        $c->cobrand->process_extras( $c, undef, \%extra );
+        if ( %extra ) {
+            $report->extra( \%extra );
+        }
+
     } elsif ( $first_area->{id} == COUNCIL_ID_BARNET ) {
 
         unless ( exists Utils::barnet_categories()->{ $report->category } ) {

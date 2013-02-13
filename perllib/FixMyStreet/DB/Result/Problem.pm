@@ -424,7 +424,7 @@ sub check_for_errors {
     {
         $errors{name} = _(
 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
-        );
+        ) unless $self->cobrand eq 'emptyhomes';
     }
 
     if (   $self->category

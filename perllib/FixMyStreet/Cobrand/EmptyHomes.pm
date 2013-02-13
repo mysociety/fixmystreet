@@ -107,6 +107,18 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
+sub process_extras {
+    my $self    = shift;
+    my $ctx     = shift;
+    my $body_id = shift;
+    my $extra   = shift;
+
+    my $value = $ctx->request->params->{address} || '';
+    $ctx->stash->{field_errors}->{address} = _('This information is required')
+        unless $value;
+    $extra->{address} = $value;
+}
+
 # A record of the number of reports from the Channel 4 site and other old data
 sub old_site_stats {
     return {
