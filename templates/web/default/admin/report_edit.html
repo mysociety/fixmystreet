@@ -22,6 +22,9 @@
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
 <li>[% loc('For council(s):') %] [% IF problem.bodies_str %][% problem.bodies_str %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
+[% IF problem.extra.address %]
+<li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
+[% END %]
 <li><label class="inline" for="state">[% loc('State:') %]</label> <select name="state"  id="state">
     [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
     loc('Investigating')], ['planned', loc('Planned')], ['in progress',
