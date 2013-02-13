@@ -5,18 +5,9 @@ Dear Empty Property Officer,
 This is a new referral of an empty property in your area made by a user of the
 website ReportEmptyHomes.com; the website user has been told that the case has
 been referred to you.  We would be grateful if you could do whatever you can to
-help get this property back into use. We will contact the user in a month and
-again in six months and ask them what has happened to the property.  
+help get this property back into use.
 
-We'd encourage you to tell us what you have done, and when the property comes
-back into use, by filling in an update against the property referral on the
-website:
-
-    <?=$values['url']?>
-
-This gives useful feedback to website users and helps them understand what
-action you are taking. We will offer advice to the user on other action they
-might take if the property isn't successfully dealt with.  
+<?=$values['url']?>
 
 <?=$values['has_photo']?>If you would like help or advice on getting empty properties back into use
 there is lots of useful information on the Empty Homes Agency's website
