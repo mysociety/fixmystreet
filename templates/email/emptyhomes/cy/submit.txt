@@ -34,6 +34,8 @@ E-bost: <?=$values['email']?>
 
 Math o eiddo: <?=$values['category']?>
 
+Address: <?=$values['address']?>
+
 Manylion: <?=$values['detail']?>
 
 <?=$values['closest_address']?>----------

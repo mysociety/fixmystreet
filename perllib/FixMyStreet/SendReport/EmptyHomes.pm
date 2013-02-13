@@ -36,11 +36,16 @@ sub build_recipient_list {
         my $area_info = mySociety::MaPit::call('area', $body->area_id);
         my $country = $area_info->{country};
         if ($country eq 'W') {
-            $recips{ 'shelter@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
+            $recips{ 'wales@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
+        } elsif ($country eq 'S') {
+            $recips{ 'scotland@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
         } else {
             $recips{ 'eha@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
         }
     }
+
+    # Set address email parameter from added data
+    $h->{address} = $row->extra->{address};
 
     return () unless $all_confirmed;
     return keys %recips;

@@ -32,6 +32,8 @@ Email: <?=$values['email']?>
 
 Property type: <?=$values['category']?>
 
+Address: <?=$values['address']?>
+
 Details: <?=$values['detail']?>
 
 <?=$values['closest_address']?>----------
