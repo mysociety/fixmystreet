@@ -27,7 +27,7 @@
         <td>[% update.state %]</td> 
         <td>[% update.name | html %]</td> 
         <td>[% update.user.email | html %]</td> 
-        <td>[% PROCESS format_time time=update.created %]</td> 
+        <td>[% PROCESS format_time time=update.created_local %]</td> 
         <td>[% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
         <td>[% IF update.user.id == update.problem.user_id %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
         <td>[% IF update.user.belongs_to_body( update.problem.bodies_str ) %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>

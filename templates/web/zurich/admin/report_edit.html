@@ -55,7 +55,7 @@
 [% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
 </li>
 <li><span class="mock-label">[% loc('Phone:') %]</span> [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
-<li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
+<li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created_local %] [% problem.created_local.hms %]</li>
 
 
 [% IF problem.photo %]

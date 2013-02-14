@@ -10,7 +10,7 @@
 [% FOREACH update IN updates -%]
     <tr[% ' class="adminhidden"' IF update.state == 'hidden' || update.problem.state == 'hidden' %]>
         <td>[%- update.id %]</td>
-        <td>[% PROCESS format_date this_date=update.created %] [% update.created.hms %]</td>
+        <td>[% PROCESS format_date this_date=update.created_local %] [% update.created_local.hms %]</td>
         <td>[% update.text | html %]</td>
     </tr>
 [% END -%]
