@@ -602,9 +602,9 @@ sub admin_stats {
     # Reports assigned to third party
     my $closed = $c->model('DB::Problem')->search( { state => 'closed', %date_params } )->count;
     # Reports moderated within 1 day
-    my $moderated = $c->model('DB::Problem')->search( { extra => { like => 'moderated_overdue,I1:0%' }, %params } )->count;
+    my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %params } )->count;
     # Reports solved within 5 days
-    my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => 'subdiv_overdue,I1:0%' }, %params } )->count;
+    my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
     # Reports per category
     my $per_category = $c->model('DB::Problem')->search( \%params, {
         select   => [ 'category', { count => 'id' } ],
@@ -612,16 +612,16 @@ sub admin_stats {
         group_by => [ 'category' ],
     });
     # How many reports have had their category changed by a DM (wrong category chosen by user)
-    my $changed = $c->model('DB::Problem')->search( { extra => { like => 'changed_category,I1:1%' }, %params } )->count;
+    my $changed = $c->model('DB::Problem')->search( { extra => { like => '%changed_category,I1:1%' }, %params } )->count;
     # pictures taken
     my $pictures_taken = $c->model('DB::Problem')->search( { photo => { '!=', undef }, %params } )->count;
     # pictures published
-    my $pictures_published = $c->model('DB::Problem')->search( { extra => { like => 'publish_photo,I1:1%' }, %params } )->count;
+    my $pictures_published = $c->model('DB::Problem')->search( { extra => { like => '%publish_photo,I1:1%' }, %params } )->count;
     # how many times was a telephone number provided
     # XXX => How many users have a telephone number stored
     # my $phone = $c->model('DB::User')->search( { phone => { '!=', undef } } )->count;
     # how many times was the email address confirmed
-    my $email_confirmed = $c->model('DB::Problem')->search( { extra => { like => 'email_confirmed' }, %params } )->count;
+    my $email_confirmed = $c->model('DB::Problem')->search( { extra => { like => '%email_confirmed%' }, %params } )->count;
     # how many times was the name provided
     my $name = $c->model('DB::Problem')->search( { name => { '!=', '' }, %params } )->count;
     # how many times was the geolocation used vs. addresssearch
