@@ -5,7 +5,7 @@
     </div>
 [% END %]
 
-[% IF c.cobrand.moniker != 'bromley' AND problem.council != '2482' AND problem.is_open AND date.now - problem.lastupdate_local.epoch > 8 * 7 * 24 * 60 * 60 %]
+[% IF c.cobrand.moniker != 'bromley' AND problem.council != '2482' AND problem.is_open AND date.now - problem.lastupdate.epoch > 8 * 7 * 24 * 60 * 60 %]
     [% INCLUDE banner, id = 'unknown', text = loc('Unknown') %]
 [% END %]
 [% IF problem.is_fixed %]

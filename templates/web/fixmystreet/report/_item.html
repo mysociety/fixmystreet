@@ -6,10 +6,10 @@
         <img class="img" height="60" width="90" src="[% photo.url_fp %]" alt="">
     [% END %]
         <h4>[% problem.title | html %]</h4>
-        <small>[% prettify_dt( problem.confirmed_local, 1 ) %]
+        <small>[% prettify_dt( problem.confirmed, 1 ) %]
             [%- IF dist %], [% dist %]km[% END %]
             [%- IF include_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
-                [% tprintf('last updated %s', prettify_dt( problem.lastupdate_local, 1 ) ) %]
+                [% tprintf('last updated %s', prettify_dt( problem.lastupdate, 1 ) ) %]
             [%- END %]
         [% IF include_lastupdate %]
             [% IF problem.bodies_str_ids.size > 1 %] [% loc('(sent to both)') %]

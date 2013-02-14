@@ -44,23 +44,25 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:NGlSRjoBpDoIvK3EueqN6Q
 
 use DateTime::TimeZone;
+use Moose;
+use namespace::clean -except => [ 'meta' ];
 
 my $tz = DateTime::TimeZone->new( name => "local" );
 
-sub whensent_local {
-    my $self = shift;
+my $tz_f;
+$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
+    if FixMyStreet->config('TIME_ZONE');
 
-    return $self->whensent
-      ? $self->whensent->set_time_zone($tz)
-      : $self->whensent;
-}
+my $stz = sub {
+    my ( $orig, $self ) = ( shift, shift );
+    my $s = $self->$orig(@_);
+    return $s unless $s && UNIVERSAL::isa($s, "DateTime");
+    $s->set_time_zone($tz);
+    $s->set_time_zone($tz_f) if $tz_f;
+    return $s;
+};
 
-sub whenanswered_local {
-    my $self = shift;
-
-    return $self->whenanswered
-      ? $self->whenanswered->set_time_zone($tz)
-      : $self->whenanswered;
-}
+around whensent => $stz;
+around whenanswered => $stz;
 
 1;

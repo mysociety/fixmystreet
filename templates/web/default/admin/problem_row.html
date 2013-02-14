@@ -20,14 +20,14 @@
         <td>[% PROCESS value_or_nbsp value=problem.category %]</td> 
         <td>[% IF problem.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
         <td>[% problem.cobrand %]<br>[% problem.cobrand_data | html %]</td> 
-        <td>[% PROCESS format_time time=problem.created_local %]</td> 
+        <td>[% PROCESS format_time time=problem.created %]</td> 
         <td>[% problem.state %]<small>
-                [%- IF problem.is_visible %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed_local %][% END -%]
-                [%- IF problem.is_fixed %]<br>[% loc('Fixed:') %] [% PROCESS format_time time=problem.lastupdate_local %][% END -%]
-                [%- IF problem.is_closed %]<br>[% loc('Closed:') %] [% PROCESS format_time time=problem.lastupdate_local %][% END -%]
-                [%- IF problem.is_open %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate_local %][% END -%]</small>
+                [%- IF problem.is_visible %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
+                [%- IF problem.is_fixed %]<br>[% loc('Fixed:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
+                [%- IF problem.is_closed %]<br>[% loc('Closed:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]
+                [%- IF problem.is_open %]<br>[% loc('Last&nbsp;update:') %] [% PROCESS format_time time=problem.lastupdate %][% END -%]</small>
         </td> 
-        <td>[% PROCESS format_time time=problem.whensent_local %]</td> 
+        <td>[% PROCESS format_time time=problem.whensent %]</td> 
         <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
 [%- END -%]

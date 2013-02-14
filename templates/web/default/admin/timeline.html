@@ -34,7 +34,7 @@
             [% CASE 'alertSub' %]
                  [% tprintf(loc("Alert %d created for %s, type %s, parameters %s / %s"), item.obj.id, item.obj.user.email, item.obj.alert_type.ref, item.obj.parameter, item.obj.parameter2) | html %]
             [% CASE 'alertDel' %]
-                 [% tprintf(loc("Alert %d disabled (created %s)"), item.obj.id, item.obj.whensubscribed_local.strftime('%H:%M:%S %e %B %Y') ) %]
+                 [% tprintf(loc("Alert %d disabled (created %s)"), item.obj.id, item.obj.whensubscribed.strftime('%H:%M:%S %e %B %Y') ) %]
         [%- END %]
         <br />
     [%- END %] 

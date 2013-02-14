@@ -55,7 +55,7 @@
         [% FOREACH p IN probs %]
             <li>
                 <a href="/report/[% p.id %]">[% p.title | html %]</a>
-                <small>[% prettify_dt( p.confirmed_local, 1 ) %]</small>
+                <small>[% prettify_dt( p.confirmed, 1 ) %]</small>
             </li>    
         [% END %]
         </ul>

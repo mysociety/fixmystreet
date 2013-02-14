@@ -77,22 +77,21 @@ with 'FixMyStreet::Roles::Abuser';
 
 my $tz = DateTime::TimeZone->new( name => "local" );
 
+my $tz_f;
+$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
+    if FixMyStreet->config('TIME_ZONE');
 
-sub whensubscribed_local {
-    my $self = shift;
+my $stz = sub {
+    my ( $orig, $self ) = ( shift, shift );
+    my $s = $self->$orig(@_);
+    return $s unless $s && UNIVERSAL::isa($s, "DateTime");
+    $s->set_time_zone($tz);
+    $s->set_time_zone($tz_f) if $tz_f;
+    return $s;
+};
 
-    return $self->whensubscribed
-      ? $self->whensubscribed->set_time_zone($tz)
-      : $self->whensubscribed;
-}
-
-sub whendisabled_local {
-    my $self = shift;
-
-    return $self->whendisabled
-      ? $self->whendisabled->set_time_zone($tz)
-      : $self->whendisabled;
-}
+around whensubscribed => $stz;
+around whendisabled => $stz;
 
 =head2 confirm
 

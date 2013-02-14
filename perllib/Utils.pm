@@ -226,12 +226,7 @@ sub prettify_dt {
     $type ||= '';
     $type = 'short' if $type eq '1';
 
-    $dt->set_time_zone( FixMyStreet->config('TIME_ZONE') )
-        if FixMyStreet->config('TIME_ZONE');
-
-    my $now = DateTime->now( time_zone => 'local' );
-    $now->set_time_zone( FixMyStreet->config('TIME_ZONE') )
-        if FixMyStreet->config('TIME_ZONE');
+    my $now = DateTime->now( time_zone => FixMyStreet->config('TIME_ZONE') || 'local' );
 
     my $tt = '';
     $tt = $dt->strftime('%H:%M') unless $type eq 'date';

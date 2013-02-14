@@ -38,10 +38,10 @@
 <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% problem.name | html %]'></li>
 <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% problem.user.email | html %]'> [% PROCESS abuse_button %] [% PROCESS flag_button user=problem.user %]</li>
 <li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
-<li>[% loc('Created:') %] [% PROCESS format_time time=problem.created_local %]</li>
-<li>[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed_local no_time='-' %]</li>
-<li>[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent_local %] [% IF problem.state == 'confirmed' %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]</li>
-<li>[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate_local %]</li>
+<li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
+<li>[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
+<li>[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %] [% IF problem.state == 'confirmed' %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]</li>
+<li>[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
 <li>[% loc('Service:') %] [% problem.service %]</li>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]</li>
 <li>[% loc('Cobrand data:') %] [% problem.cobrand_data %]</li>

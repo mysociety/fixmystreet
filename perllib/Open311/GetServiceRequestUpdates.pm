@@ -120,7 +120,7 @@ sub update_comments {
                 # if the comment is older than the last update
                 # do not change the status of the problem as it's
                 # tricky to determine the right thing to do.
-                if ( $comment->created_local > $p->lastupdate_local ) {
+                if ( $comment->created > $p->lastupdate ) {
                     my $state = $self->map_state( $request->{status} );
 
                     # don't update state unless it's an allowed state and it's

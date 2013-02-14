@@ -26,7 +26,7 @@
 [% END %]
 </li>
 
-<li>[% loc('Created:') %] [% PROCESS format_date this_date=update.created_local %] [% update.created_local.hms %]</li>
+<li>[% loc('Created:') %] [% PROCESS format_date this_date=update.created %] [% update.created.hms %]</li>
 
 [% IF update.photo %]
 [% photo = update.get_photo_params %]

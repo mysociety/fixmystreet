@@ -342,37 +342,23 @@ sub council_states {
 
 my $tz = DateTime::TimeZone->new( name => "local" );
 
-sub confirmed_local {
-    my $self = shift;
+my $tz_f;
+$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
+    if FixMyStreet->config('TIME_ZONE');
 
-    return $self->confirmed
-      ? $self->confirmed->set_time_zone($tz)
-      : $self->confirmed;
-}
+my $stz = sub {
+    my ( $orig, $self ) = ( shift, shift );
+    my $s = $self->$orig(@_);
+    return $s unless $s && UNIVERSAL::isa($s, "DateTime");
+    $s->set_time_zone($tz);
+    $s->set_time_zone($tz_f) if $tz_f;
+    return $s;
+};
 
-sub created_local {
-    my $self = shift;
-
-    return $self->created
-      ? $self->created->set_time_zone($tz)
-      : $self->created;
-}
-
-sub whensent_local {
-    my $self = shift;
-
-    return $self->whensent
-      ? $self->whensent->set_time_zone($tz)
-      : $self->whensent;
-}
-
-sub lastupdate_local {
-    my $self = shift;
-
-    return $self->lastupdate
-      ? $self->lastupdate->set_time_zone($tz)
-      : $self->lastupdate;
-}
+around created => $stz;
+around confirmed => $stz;
+around whensent => $stz;
+around lastupdate => $stz;
 
 around service => sub {
     my ( $orig, $self ) = ( shift, shift );
@@ -574,7 +560,7 @@ meta data about the report.
 sub meta_line {
     my ( $problem, $c ) = @_;
 
-    my $date_time = Utils::prettify_dt( $problem->confirmed_local );
+    my $date_time = Utils::prettify_dt( $problem->confirmed );
     my $meta = '';
 
     # FIXME Should be in cobrand
@@ -709,7 +695,7 @@ sub duration_string {
     my ( $problem, $c ) = @_;
     my $body = $problem->body( $c );
     return sprintf(_('Sent to %s %s later'), $body,
-        Utils::prettify_duration($problem->whensent_local->epoch - $problem->confirmed_local->epoch, 'minute')
+        Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
 }
 
@@ -832,8 +818,8 @@ sub as_hashref {
         is_fixed  => $self->fixed_states->{ $self->state } ? 1 : 0,
         photo     => $self->get_photo_params,
         meta      => $self->confirmed ? $self->meta_line( $c ) : '',
-        confirmed_pp => $self->confirmed ? $c->cobrand->prettify_dt( $self->confirmed_local ): '',
-        created_pp => $c->cobrand->prettify_dt( $self->created_local ),
+        confirmed_pp => $self->confirmed ? $c->cobrand->prettify_dt( $self->confirmed ): '',
+        created_pp => $c->cobrand->prettify_dt( $self->created ),
     };
 }
 

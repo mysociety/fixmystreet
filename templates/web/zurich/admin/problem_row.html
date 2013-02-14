@@ -18,8 +18,8 @@
         </td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
         <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
-        <td>[% PROCESS format_date this_date=problem.created_local %]</td>
-        <td>[% PROCESS format_date this_date=problem.lastupdate_local %]</td>
+        <td>[% PROCESS format_date this_date=problem.created %]</td>
+        <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
         <td>[% states.${problem.state} %]</td>
 
         [% IF include_subdiv %]

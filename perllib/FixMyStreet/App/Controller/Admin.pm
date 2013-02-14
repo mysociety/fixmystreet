@@ -145,34 +145,34 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     my $probs = $c->cobrand->problems->timeline;
 
     foreach ($probs->all) {
-        push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created_local, obj => $_ };
-        push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed_local, obj => $_ } if $_->confirmed;
-        push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent_local, obj => $_ } if $_->whensent;
+        push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created, obj => $_ };
+        push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed, obj => $_ } if $_->confirmed;
+        push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent, obj => $_ } if $_->whensent;
     }
 
     my $questionnaires = $c->model('DB::Questionnaire')->timeline( $c->cobrand->restriction );
 
     foreach ($questionnaires->all) {
-        push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent_local, obj => $_ };
-        push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered_local, obj => $_ } if $_->whenanswered;
+        push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent, obj => $_ };
+        push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered, obj => $_ } if $_->whenanswered;
     }
 
     my $updates = $c->model('DB::Comment')->timeline( $site_restriction );
 
     foreach ($updates->all) {
-        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created_local, obj => $_} ;
+        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_} ;
     }
 
     my $alerts = $c->model('DB::Alert')->timeline_created( $c->cobrand->restriction );
 
     foreach ($alerts->all) {
-        push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed_local, obj => $_ };
+        push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed, obj => $_ };
     }
 
     $alerts = $c->model('DB::Alert')->timeline_disabled( $c->cobrand->restriction );
 
     foreach ($alerts->all) {
-        push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled_local, obj => $_ };
+        push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled, obj => $_ };
     }
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '' );

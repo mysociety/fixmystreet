@@ -708,7 +708,7 @@ Returns the colour of pin to be used for a particular report
 =cut
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    #return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
+    #return 'green' if time() - $p->confirmed->epoch < 7 * 24 * 60 * 60;
     return 'yellow' if $context eq 'around' || $context eq 'reports';
     return $p->is_fixed ? 'green' : 'red';
 }

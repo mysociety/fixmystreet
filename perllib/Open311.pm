@@ -322,7 +322,7 @@ sub _populate_service_request_update_params {
     }
 
     my $params = {
-        updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed_local->set_nanosecond(0)),
+        updated_datetime => DateTime::Format::W3CDTF->format_datetime($comment->confirmed->set_nanosecond(0)),
         service_request_id => $comment->problem->external_id,
         status => $status,
         email => $comment->user->email,
