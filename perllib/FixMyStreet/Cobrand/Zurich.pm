@@ -604,7 +604,7 @@ sub admin_stats {
     # Reports moderated within 1 day
     my $moderated = $c->model('DB::Problem')->search( { extra => { like => 'moderated_overdue,I1:0%' }, %params } )->count;
     # Reports solved within 5 days
-    my $solved = $c->model('DB::Problem')->search( { extra => { like => 'subdiv_overdue,I1:0%' }, %params } )->count;
+    my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => 'subdiv_overdue,I1:0%' }, %params } )->count;
     # Reports per category
     my $per_category = $c->model('DB::Problem')->search( \%params, {
         select   => [ 'category', { count => 'id' } ],
@@ -634,7 +634,7 @@ sub admin_stats {
         reports_spam => $hidden,
         reports_assigned => $closed,
         reports_moderated => $moderated,
-        reports_solved => $solved,
+        reports_dealtwith => $subdiv_dealtwith,
         reports_category_changed => $changed,
         pictures_taken => $pictures_taken,
         pictures_published => $pictures_published,
