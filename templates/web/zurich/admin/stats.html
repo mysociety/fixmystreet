@@ -1,0 +1,51 @@
+[% INCLUDE 'admin/header.html' title=loc('Stats') %]
+[% PROCESS 'admin/report_blocks.html' %]
+[% USE date %]
+
+[% IF start_date AND end_date %]
+<p><strong>[% tprintf( loc( 'All reports between %s and %s' ), start_date.ymd, end_date.ymd ) | html %]</strong></p>
+[% END %]
+
+<form method="get" action="[% c.uri_for('stats') %]">
+<p><select name="ym">
+    <option value="">[% loc('All reports') %]</option>
+    [% FOR y IN [ 2013 .. date.format(date.now, '%Y') ];
+        SET max = 12;
+        max = date.format(date.now, '%m') IF y == date.format(date.now, '%Y');
+        FOR m IN [ 1 .. max ];
+            m = m | format('%02d');
+            SET v = m _ '.' _ y;
+        %]
+            <option[% ' selected' IF v == ym %]>[% v %]</option>
+        [% END %]
+    [% END %]
+</select>
+
+<input type="submit" value="[% loc('Go') %]">
+</form>
+
+<ul>
+<li>[% loc('Closed') %]: [% reports_solved || 0 %]
+<li>[% loc('Hidden') %]: [% reports_spam || 0 %]
+<li>Externe Adressen: [% reports_assigned || 0 %]
+<li>[% loc('Moderated by division within one working day') %]: [% reports_moderated || 0 %]
+<li>[% loc('Dealt with by subdivision within 5 working days') %]: [% reports_solved || 0 %]
+<li>[% loc('Assign to different category:') %] [% reports_category_changed || 0 %]
+<li>[% loc('Photo') %]: [% pictures_taken || 0 %]
+<li>[% loc('Publish photo') %]: [% pictures_published || 0 %]
+<!-- <li>[% loc('Phone:') %] [% users_phone || 0 %] -->
+<li>[% loc('Confirmed') %]: [% email_confirmed || 0 %]
+<li>[% loc('Name:') %] [% name_provided || 0 %]
+</ul>
+
+<table>
+<tr><th>[% loc('Service:') %]</th><th>[% loc('Count') %]</th></tr>
+[% WHILE ( s = per_service.next ) %]<tr><td>[% s.service || 'Web' %]</td><td>[% s.get_column('c') %]</td></tr>[% END %]
+</table>
+
+<table>
+<tr><th>[% loc('Category') %]</th><th>[% loc('Count') %]</th></tr>
+[% WHILE ( c = per_category.next ) %]<tr><td>[% c.category %]</td><td>[% c.get_column('c') %]</td></tr>[% END %]
+</table>
+
+[% INCLUDE 'admin/footer.html' %]

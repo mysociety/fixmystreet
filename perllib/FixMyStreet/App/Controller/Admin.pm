@@ -1022,7 +1022,7 @@ sub stats : Path('stats') : Args(0) {
 
     $c->forward('fetch_all_bodies');
 
-    if ( $c->cobrand->moniker eq 'seesomething' ) {
+    if ( $c->cobrand->moniker eq 'seesomething' || $c->cobrand->moniker eq 'zurich' ) {
         return $c->cobrand->admin_stats();
     }
 

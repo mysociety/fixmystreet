@@ -172,11 +172,11 @@ sub overdue {
     if ( $problem->state eq 'unconfirmed' || $problem->state eq 'confirmed' ) {
         # One working day
         $w = add_days( $w, 1 );
-        return $w < DateTime->now();
+        return $w < DateTime->now() ? 1 : 0;
     } elsif ( $problem->state eq 'in progress' ) {
         # Five working days
         $w = add_days( $w, 5 );
-        return $w < DateTime->now();
+        return $w < DateTime->now() ? 1 : 0;
     } else {
         return 0;
     }
@@ -208,6 +208,7 @@ sub admin_pages {
 
     $pages = { %$pages,
         'users' => [_('Users'), 3],
+        'stats' => [_('Stats'), 4],
         'user_edit' => [undef, undef],
     };
     return $pages if $type eq 'super';
@@ -365,7 +366,6 @@ sub admin_report_edit {
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
         # Make sure we have a copy of the original detail field
         $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
-        $problem->extra( { %$extra } );
 
         # Workflow things
         my $redirect = 0;
@@ -376,14 +376,17 @@ sub admin_report_edit {
             $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
             $problem->whensent( undef );
+            $extra->{changed_category} = 1;
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
+            $extra->{moderated_overdue} = $self->overdue( $problem );
             $problem->state( 'in progress' );
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
         } elsif ( my $external = $c->req->params->{body_external} ) {
+            $extra->{moderated_overdue} = $self->overdue( $problem );
             $problem->state( 'closed' );
             $problem->external_body( $external );
             $problem->whensent( undef );
@@ -396,6 +399,7 @@ sub admin_report_edit {
             }
         }
 
+        $problem->extra( { %$extra } );
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
         $problem->latitude( $c->req->param('latitude') );
@@ -461,6 +465,7 @@ sub admin_report_edit {
             if ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes}) {
                 $extra->{internal_notes} = $c->req->param('internal_notes');
                 $problem->extra( { %$extra } );
+                $db_update = 1;
             }
 
             $problem->update if $db_update;
@@ -484,9 +489,11 @@ sub admin_report_edit {
             if ($c->req->param('no_more_updates')) {
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
+                my $extra = $problem->extra || {};
+                $extra->{subdiv_overdue} = $self->overdue( $problem );
+                $problem->extra( { %$extra } );
                 $problem->state( 'planned' );
                 $problem->update;
-                # log here
                 $c->res->redirect( '/admin/summary' );
             }
         }
@@ -561,6 +568,83 @@ sub admin_fetch_all_bodies {
     my @out;
     tree_sort( 0, 0, \%sorted, \@out );
     return @out;
+}
+
+sub admin_stats {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my %date_params;
+    my $ym = $c->req->params->{ym};
+    my ($m, $y) = $ym =~ /^(\d+)\.(\d+)$/;
+    $c->stash->{ym} = $ym;
+    if ($y && $m) {
+        my $start_date = DateTime->new( year => $y, month => $m, day => 1 );
+        my $end_date = $start_date + DateTime::Duration->new( months => 1 );
+        $date_params{created} = { '>=', $start_date, '<', $end_date };
+    }
+
+    my %params = (
+        %date_params,
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+    );
+
+    # Device for apps (iOS/Android)
+    my $per_service = $c->model('DB::Problem')->search( \%params, {
+        select   => [ 'service', { count => 'id' } ],
+        as       => [ 'service', 'c' ],
+        group_by => [ 'service' ],
+    });
+    # Reports solved
+    my $solved = $c->model('DB::Problem')->search( { state => 'fixed - council', %date_params } )->count;
+    # Reports marked as spam
+    my $hidden = $c->model('DB::Problem')->search( { state => 'hidden', %date_params } )->count;
+    # Reports assigned to third party
+    my $closed = $c->model('DB::Problem')->search( { state => 'closed', %date_params } )->count;
+    # Reports moderated within 1 day
+    my $moderated = $c->model('DB::Problem')->search( { extra => { like => 'moderated_overdue,I1:0%' }, %params } )->count;
+    # Reports solved within 5 days
+    my $solved = $c->model('DB::Problem')->search( { extra => { like => 'subdiv_overdue,I1:0%' }, %params } )->count;
+    # Reports per category
+    my $per_category = $c->model('DB::Problem')->search( \%params, {
+        select   => [ 'category', { count => 'id' } ],
+        as       => [ 'category', 'c' ],
+        group_by => [ 'category' ],
+    });
+    # How many reports have had their category changed by a DM (wrong category chosen by user)
+    my $changed = $c->model('DB::Problem')->search( { extra => { like => 'changed_category,I1:1%' }, %params } )->count;
+    # pictures taken
+    my $pictures_taken = $c->model('DB::Problem')->search( { photo => { '!=', undef }, %params } )->count;
+    # pictures published
+    my $pictures_published = $c->model('DB::Problem')->search( { extra => { like => 'publish_photo,I1:1%' }, %params } )->count;
+    # how many times was a telephone number provided
+    # XXX => How many users have a telephone number stored
+    # my $phone = $c->model('DB::User')->search( { phone => { '!=', undef } } )->count;
+    # how many times was the email address confirmed
+    my $email_confirmed = $c->model('DB::Problem')->search( { extra => { like => 'email_confirmed' }, %params } )->count;
+    # how many times was the name provided
+    my $name = $c->model('DB::Problem')->search( { name => { '!=', '' }, %params } )->count;
+    # how many times was the geolocation used vs. addresssearch
+    # ?
+
+    $c->stash(
+        per_service => $per_service,
+        per_category => $per_category,
+        reports_solved => $solved,
+        reports_spam => $hidden,
+        reports_assigned => $closed,
+        reports_moderated => $moderated,
+        reports_solved => $solved,
+        reports_category_changed => $changed,
+        pictures_taken => $pictures_taken,
+        pictures_published => $pictures_published,
+        #users_phone => $phone,
+        email_confirmed => $email_confirmed,
+        name_provided => $name,
+        # GEO
+    );
+
+    return 1;
 }
 
 1;
