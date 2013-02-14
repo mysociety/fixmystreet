@@ -89,7 +89,7 @@ sub updates_as_hashref {
     my $hashref = {};
 
     if ( $problem->state eq 'fixed - council' || $problem->state eq 'closed' ) {
-        $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate_local );
+        $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
         if ( $problem->state eq 'fixed - council' ) {
             $hashref->{details} = FixMyStreet::App::View::Web->add_links( $ctx, $problem->extra->{public_response} );
@@ -579,15 +579,25 @@ sub admin_stats {
     my ($m, $y) = $ym =~ /^(\d+)\.(\d+)$/;
     $c->stash->{ym} = $ym;
     if ($y && $m) {
-        my $start_date = DateTime->new( year => $y, month => $m, day => 1 );
-        my $end_date = $start_date + DateTime::Duration->new( months => 1 );
-        $date_params{created} = { '>=', $start_date, '<', $end_date };
+        $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
+        $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
+        $date_params{created} = { '>=', $c->stash->{start_date}, '<', $c->stash->{end_date} };
     }
 
     my %params = (
         %date_params,
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
+
+    if ( $c->req->params->{export} ) {
+        my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand' ] } );
+        my $body = '';
+        while (my $report = $problems->next) {
+            $body .= join( ',', $report->id, $report->created, $report->local_coords ) . "\n";
+        }
+        $c->res->content_type('text/csv; charset=utf-8');
+        $c->res->body($body);
+    }
 
     # Device for apps (iOS/Android)
     my $per_service = $c->model('DB::Problem')->search( \%params, {
