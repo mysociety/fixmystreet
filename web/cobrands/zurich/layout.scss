@@ -74,13 +74,15 @@ body.frontpage {
 
 #site-logo-text {
     position: absolute;
-    position: fixed;
     top: 0;
     z-index: 3;
     padding-top: 83px;
     padding-left: 10px;
     color: #585858;
     font-size: 85%;
+}
+body.mappage #site-logo-text {
+    position: fixed;
 }
 
 .nav-wrapper {
