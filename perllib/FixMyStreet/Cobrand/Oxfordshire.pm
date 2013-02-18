@@ -49,6 +49,9 @@ sub example_places {
     return ( 'OX20 1SZ', 'Park St, Woodstock' );
 }
 
+# don't send questionnaires to people who used the OCC cobrand to report their problem
+sub send_questionnaires { return 0; }
+
 sub default_show_name { 0 }
 
 1;
