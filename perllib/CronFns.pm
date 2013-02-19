@@ -24,10 +24,12 @@ sub options {
     die "Either no arguments, --nomail or --verbose" if (@ARGV>1);
     my $nomail = 0;
     my $verbose = 0;
+    my $debug = 0;
     $nomail = 1 if (@ARGV==1 && $ARGV[0] eq '--nomail');
     $verbose = 1 if (@ARGV==1 && $ARGV[0] eq '--verbose');
+    $debug = 1 if (@ARGV==1 && $ARGV[0] eq '--debug');
     $verbose = 1 if $nomail;
-    return ($verbose, $nomail);
+    return ($verbose, $nomail, $debug);
 }
 
 sub site {

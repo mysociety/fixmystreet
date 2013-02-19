@@ -156,7 +156,7 @@ sub around_map {
 sub timeline {
     my ( $rs ) = @_;
 
-    my $prefetch = 
+    my $prefetch =
         FixMyStreet::App->model('DB')->schema->storage->sql_maker->quote_char ?
         [ qw/user/ ] :
         [];
@@ -220,7 +220,8 @@ sub send_reports {
     my ( $rs, $site_override ) = @_;
 
     # Set up site, language etc.
-    my ($verbose, $nomail) = CronFns::options();
+    my ($verbose, $nomail, $debug_mode) = CronFns::options();
+
     my $base_url = mySociety::Config::get('BASE_URL');
     my $site = $site_override || CronFns::site($base_url);
 
@@ -237,18 +238,31 @@ sub send_reports {
     my $senders = $send_report->get_senders;
     my %sending_skipped_by_method;
 
+    my $debug_unsent_count = 0;
+    debug_print("starting to loop through unsent problem reports...") if $debug_mode;
     while (my $row = $unsent->next) {
 
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
 
-        # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
-        # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
+        if ($debug_mode) {
+            $debug_unsent_count++;
+            print "\n";
+            debug_print("state=" . $row->state . ", bodies_str=" . $row->bodies_str . ($row->cobrand? ", cobrand=" . $row->cobrand : ""), $row->id);
+        }
+
+        # Cobranded and non-cobranded messages can share a database. In this case, the conf file
+        # should specify a vhost to send the reports for each cobrand, so that they don't get sent
         # more than once if there are multiple vhosts running off the same database. The email_host
         # call checks if this is the host that sends mail for this cobrand.
-        next unless $cobrand->email_host();
+        if (! $cobrand->email_host()) {
+            debug_print("skipping because this host does not send reports for cobrand " . $cobrand->moniker, $row->id) if $debug_mode;
+            next;
+        }
+
         $cobrand->set_lang_and_domain($row->lang, 1);
         if ( $row->is_from_abuser ) {
             $row->update( { state => 'hidden' } );
+            debug_print("hiding because its sender is flagged as an abuser", $row->id) if $debug_mode;
             next;
         }
 
@@ -333,9 +347,11 @@ sub send_reports {
                 $reporters{ $sender } ||= $sender->new();
 
                 if ( $reporters{ $sender }->should_skip( $row ) ) {
-                    $sending_skipped_by_method{ $sender }++ if 
+                    debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;
+                    $sending_skipped_by_method{ $sender }++ if
                         $reporters{ $sender }->skipped;
                 } else {
+                    debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $body->send_method, $row->id) if $debug_mode;
                     push @dear, $body->name;
                     $reporters{ $sender }->add_body( $body, $sender_info->{config} );
                 }
@@ -361,7 +377,7 @@ sub send_reports {
                 $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue.") . " ]\n\n"
                     : '';
             }
-            $h{missing} = ''; 
+            $h{missing} = '';
             if ($missing) {
                 $h{missing} = '[ '
                   . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $missing->name)
@@ -375,7 +391,10 @@ sub send_reports {
             die 'Report not going anywhere for ID ' . $row->id . '!';
         }
 
-        next unless $sender_count;
+        if (! $sender_count) {
+            debug_print("can't send because sender count is zero", $row->id) if $debug_mode;
+            next;
+        }
 
         if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING')) {
             # on a staging server send emails to ourselves rather than the bodies
@@ -389,6 +408,7 @@ sub send_reports {
         my $result = -1;
 
         for my $sender ( keys %reporters ) {
+            debug_print("sending using " . $sender, $row->id) if $debug_mode;
             $result *= $reporters{ $sender }->send( $row, \%h );
             if ( $reporters{ $sender }->unconfirmed_counts) {
                 foreach my $e (keys %{ $reporters{ $sender }->unconfirmed_counts } ) {
@@ -411,6 +431,7 @@ sub send_reports {
             if ( $cobrand->report_sent_confirmation_email && !$h{anonymous_report}) {
                 _send_report_sent_email( $row, \%h, $nomail );
             }
+            debug_print("send successful: OK", $row->id) if $debug_mode;
         } else {
             my @errors;
             for my $sender ( keys %reporters ) {
@@ -419,10 +440,19 @@ sub send_reports {
                 }
             }
             $row->update_send_failed( join( '|', @errors ) );
+            debug_print("send FAILED: " . join( '|', @errors ), $row->id) if $debug_mode;
+        }
+    }
+    if ($debug_mode) {
+        print "\n";
+        if ($debug_unsent_count) {
+            debug_print("processed all unsent reports (total: $debug_unsent_count)");
+        } else {
+            debug_print("no unsent reports were found (must have whensent=null and suitable bodies_str & state) -- nothing to send");
         }
     }
 
-    if ($verbose) {
+    if ($verbose || $debug_mode) {
         print "Council email addresses that need checking:\n" if keys %notgot;
         foreach my $e (keys %notgot) {
             foreach my $c (keys %{$notgot{$e}}) {
@@ -480,6 +510,13 @@ sub _send_report_sent_email {
         [ $row->user->email ],
         $nomail
     );
+}
+
+sub debug_print {
+    my $msg = shift;
+    my $id = shift || '';
+    $id = "report $id: " if $id;
+    print "[] $id$msg\n";
 }
 
 1;
