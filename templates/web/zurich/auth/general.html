@@ -1,7 +1,5 @@
 [% INCLUDE 'header.html', title = loc('Sign in or create an account') %]
 
-<h1>[% loc('Sign in') %]</h1>
-
 [% IF email_error;
 
     # other keys include fqdn, mxcheck if you'd like to write a custom error message
@@ -16,6 +14,9 @@ END %]
 
 <form action="[% c.uri_for() %]" method="post" name="general_auth_login" class="validate">
     <fieldset>
+
+        <h1>[% loc('Sign in') %]</h1>
+
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
         <div id="form_sign_in_yes" class="form-box">
@@ -45,7 +46,7 @@ END %]
     <fieldset>
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
-        <h3>[% loc('<strong>No</strong> let me sign in by email') %]</h3>
+        <h1>[% loc('<strong>No</strong> let me sign in by email') %]</h1>
         <div id="form_sign_in_no" class="form-box">
 
             <label class="n" for="email2">[% loc('Email') %]</label>
