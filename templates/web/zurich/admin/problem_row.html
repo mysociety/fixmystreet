@@ -10,10 +10,8 @@
         <td class="record-id">
           [% IF no_edit AND problem.is_visible %]
             <a href="[% c.uri_for_email( '/report', problem.id ) %]">[% problem.id %]</a>
-          [% ELSIF no_edit %]
-            [% problem.id %]
           [% ELSE %]
-            <a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% problem.id %]</a>
+            [% problem.id %]
           [% END %]
         </td>
         <td>[% PROCESS value_or_nbsp value=problem.title %]</td>
