@@ -301,6 +301,7 @@ sub all_states {
         'confirmed'                   => 1,
         'investigating'               => 1,
         'in progress'                 => 1,
+        'planned'                     => 1,
         'action scheduled'            => 1,
         'fixed'                       => 1,
         'fixed - council'             => 1,
