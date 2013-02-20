@@ -6,8 +6,8 @@ Diese Meldung wurde Ihnen von der Stadt Zürich gesendet, da es Ihr Zuständigke
 
 Öffentliche URL: <?=$values['url']?>
 
-Reporter name: <?=$values['name']?>
+Name des Meldenden: <?=$values['name']?>
 
-Reporter email: <?=$values['email']?>
+Email des Meldenden: <?=$values['email']?>
 
-<?=$values['phone_line']?>
+Telefonnummer des Meldenden: <?=$values['phone']?>
