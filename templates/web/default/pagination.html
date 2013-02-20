@@ -4,13 +4,13 @@
 [% END %]
     <p class="pagination">
         [% IF pager.previous_page %]
-            <a class="prev" href="[% c.req.uri_with({ $param => pager.previous_page }) %][% '#' _ hash IF hash %]">Previous</a>
+            <a class="prev" href="[% c.req.uri_with({ $param => pager.previous_page }) %][% '#' _ hash IF hash %]">[% loc('Previous') %]</a>
         [% END %]
 
-        [% pager.first %] to [% pager.last %] of [% pager.total_entries %]
+        [% tprintf( loc('%d to %d of %d'), pager.first, pager.last, pager.total_entries ) %]
 
         [% IF pager.next_page %]
-            <a class="next" href="[% c.req.uri_with({ $param => pager.next_page }) %][% '#' _ hash IF hash %]">Next</a>
+            <a class="next" href="[% c.req.uri_with({ $param => pager.next_page }) %][% '#' _ hash IF hash %]">[% loc('Next') %]</a>
         [% END %]
     </p>
 [% IF NOT admin %]
