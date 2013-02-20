@@ -590,8 +590,8 @@ sub admin_stats {
     );
 
     if ( $c->req->params->{export} ) {
-        my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand' ] } );
-        my $body = 'ID,Created,E,N,Category';
+        my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand', 'category' ] } );
+        my $body = "ID,Created,E,N,Category\n";
         while (my $report = $problems->next) {
             $body .= join( ',', $report->id, $report->created, $report->local_coords, $report->category ) . "\n";
         }
