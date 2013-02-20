@@ -591,9 +591,9 @@ sub admin_stats {
 
     if ( $c->req->params->{export} ) {
         my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand' ] } );
-        my $body = '';
+        my $body = 'ID,Created,E,N,Category';
         while (my $report = $problems->next) {
-            $body .= join( ',', $report->id, $report->created, $report->local_coords ) . "\n";
+            $body .= join( ',', $report->id, $report->created, $report->local_coords, $report->category ) . "\n";
         }
         $c->res->content_type('text/csv; charset=utf-8');
         $c->res->body($body);
