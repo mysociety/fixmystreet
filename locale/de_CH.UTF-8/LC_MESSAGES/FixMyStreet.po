@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-01-31 15:59+0000\n"
-"PO-Revision-Date: 2013-02-04 12:02+0100\n"
+"PO-Revision-Date: 2013-02-19 16:27+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "MIME-Version: 1.0\n"
@@ -71,7 +71,7 @@ msgstr ""
 #: templates/web/emptyhomes/reports/body.html:11
 #: templates/web/emptyhomes/reports/body.html:13
 msgid "%s - Summary reports"
-msgstr ""
+msgstr "Alle Meldungen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:627
 msgid "%s ref:&nbsp;%s"
@@ -291,7 +291,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/auth/general.html:50
 msgid "<strong>No</strong> let me sign in by email"
-msgstr "Erstmalige Anmeldung"
+msgstr "Registrierung"
 
 #: templates/web/default/auth/general.html:55
 msgid "<strong>No</strong>, I do not, let me sign in by email:"
@@ -381,7 +381,7 @@ msgstr "Alle Meldungen"
 
 #: templates/web/default/admin/stats.html:5
 msgid "All reports between %s and %s"
-msgstr "Gemeldet von %s um %s"
+msgstr "Gemeldet von %s bis %s"
 
 #: templates/web/default/report/new/councils_text_some.html:2
 msgid "All the information you provide here will be sent to"
@@ -755,7 +755,7 @@ msgstr ""
 
 #: templates/web/default/email_sent.html:1
 msgid "Create a report"
-msgstr "Erfasse eine Meldung"
+msgstr "Erfassen Sie eine Meldung"
 
 #: templates/web/default/admin/body.html:103
 #: templates/web/zurich/admin/body.html:53
@@ -899,7 +899,7 @@ msgstr ""
 
 #: templates/web/default/report/display.html:30
 msgid "Email me updates"
-msgstr "Schicken sie mir Aktualisierungen"
+msgstr "Schicken Sie mir Aktualisierungen"
 
 #: templates/web/default/admin/body.html:80
 #: templates/web/default/admin/body_edit.html:26
@@ -1149,7 +1149,7 @@ msgstr "Ihr Passwort"
 #: templates/web/fixmystreet/static/privacy.html:1
 #: templates/web/zurich/faq/faq-de-ch.html:1
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "Hilfe"
 
 #: templates/web/emptyhomes/static/about.html:34
 msgid "Further information about our work on empty homes."
@@ -1267,7 +1267,7 @@ msgstr ""
 #: templates/web/default/index-steps.html:1
 #: templates/web/emptyhomes/index.html:53
 msgid "How to report a problem"
-msgstr "Erfasse eine neue Meldung:"
+msgstr "Erfassen Sie eine neue Meldung:"
 
 #: templates/web/default/js/translation_strings.html:27
 msgid "How to send successful reports"
@@ -1292,8 +1292,8 @@ msgid ""
 "I'm afraid we couldn't validate that token. If you've copied the URL from an "
 "email, please check that you copied it exactly.\n"
 msgstr ""
-"Leider konnte ihre URL nicht aufgel&ouml;st werden. Falls sie die URL aus "
-"einer Mail kopiert haben, &uuml;berpr&uuml;fen sie bitte ob sie die gesamte "
+"Leider konnte ihre URL nicht aufgel&ouml;st werden. Falls Sie die URL aus "
+"einer Mail kopiert haben, &uuml;berpr&uuml;fen Sie bitte ob Sie die gesamte "
 "URL kopiert haben.\n"
 
 #: templates/web/default/admin/flagged.html:9
@@ -1385,7 +1385,7 @@ msgstr "In Bearbeitung"
 
 #: templates/web/zurich/admin/report_edit.html:118
 msgid "Include reporter personal details"
-msgstr "Pers&oumol;nliche Angaben des Meldenden mitsenden"
+msgstr "Pers&ouml;nliche Angaben des Meldenden mitsenden"
 
 #: templates/web/default/admin/stats.html:76
 msgid "Include unconfirmed reports"
@@ -1616,7 +1616,7 @@ msgstr ""
 
 #: templates/web/default/email_sent.html:3
 msgid "Nearly Done! Now check your email..."
-msgstr "Fast Fertig! Bitte checken Sie ihre Mailbox..."
+msgstr "Fast Fertig! Bitte checken Sie Ihre Mailbox..."
 
 #: templates/web/default/reports/index.html:16
 #: templates/web/fixmybarangay/reports/index.html:20
@@ -1725,7 +1725,7 @@ msgstr "Nein"
 
 #: templates/web/default/admin/user-form.html:8
 msgid "No body"
-msgstr ""
+msgstr "Keine"
 
 #: templates/web/default/admin/stats.html:85
 msgid "No council"
@@ -1749,7 +1749,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:46
 msgid "No further updates"
-msgstr "Bearbeitung abschliessen"
+msgstr "Abschliessen"
 
 #: templates/web/default/around/around_map_list_items.html:17
 #: templates/web/fixmystreet/around/around_map_list_items.html:8
@@ -2039,7 +2039,7 @@ msgstr ""
 
 #: templates/web/default/auth/token.html:17
 msgid "Please check your email"
-msgstr "Bitte &uuml;berpr&uuml;fen sie ihr E-Mail"
+msgstr "Bitte &uuml;berpr&uuml;fen Sie ihr E-Mail"
 
 #: templates/web/default/auth/general.html:14
 #: templates/web/default/auth/general.html:8
@@ -2112,7 +2112,7 @@ msgstr "Bitte geben Sie eine g&uuml;ltige E-Mail Adresse an"
 #: perllib/FixMyStreet/DB/Result/Problem.pm:342
 #: templates/web/default/js/translation_strings.html:4
 msgid "Please enter some details"
-msgstr "Bitte geben Sie einiges Details an"
+msgstr "Bitte geben Sie einige Details an"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:96
 #: perllib/FixMyStreet/DB/Result/User.pm:112
@@ -2197,10 +2197,10 @@ msgid ""
 "and if possible describe the exact location of\n"
 "the problem (e.g. if there is a streetlight number or road name)."
 msgstr ""
-"Bitte beschreiben sie Ihre Meldung weiter unten. Wir k&ouml;nnen den Mangel "
+"Bitte beschreiben Sie Ihre Meldung weiter unten. Wir k&ouml;nnen den Mangel "
 "nur beheben, wenn Sie soviel Details wie m&ouml;glich angeben: Beschreiben "
-"sie die exakte Lage (z.B. An der Wand Richtung Strasse), was genau der "
-"Mangel ist, wie lange dieser schon da ist und laden sie wenn m&ouml;glich "
+"Sie die exakte Lage (z.B. An der Wand Richtung Strasse), was genau der "
+"Mangel ist, wie lange dieser schon da ist und laden Sie wenn m&ouml;glich "
 "ein Photo des Mangels hoch."
 
 #: templates/web/default/report/new/fill_in_details_text.html:1
@@ -2213,10 +2213,10 @@ msgid ""
 "description (and a\n"
 "photo of the problem if you have one), etc."
 msgstr ""
-"Bitte beschreiben sie Ihre Meldung weiter unten. Wir k&ouml;nnen den Mangel "
+"Bitte beschreiben Sie Ihre Meldung weiter unten. Wir k&ouml;nnen den Mangel "
 "nur beheben, wenn Sie soviel Details wie m&ouml;glich angeben: Beschreiben "
-"sie die exakte Lage (z.B. An der Wand Richtung Strasse), was genau der "
-"Mangel ist, wie lange dieser schon da ist und laden sie wenn m&ouml;glich "
+"Sie die exakte Lage (z.B. An der Wand Richtung Strasse), was genau der "
+"Mangel ist, wie lange dieser schon da ist und laden Sie wenn m&ouml;glich "
 "ein Photo des Mangels hoch."
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:70
@@ -2609,10 +2609,10 @@ msgid ""
 "site remember that you can contact your council directly using their own "
 "website."
 msgstr ""
-"Züri wie neu dient dazu M&auml;ngel an der Infrastruktur zu melden. "
+"Z&uuml;ri wie neu dient dazu M&auml;ngel an der Infrastruktur zu melden. "
 "Meldungen und W&uuml;nsche bez&uuml;glich Verbesserungen an der "
-"Infrastruktur sowie Gestaltungsvorschl&auml;ge k&ouml;nnen über Fix My "
-"Z&uuml;rich nicht ber&uuml;cksichtigt werden. Notf&auml;lle m&uuml;ssen der "
+"Infrastruktur sowie Gestaltungsvorschl&auml;ge k&ouml;nnen über Z&uuml;ri "
+"wie neu nicht ber&uuml;cksichtigt werden. Notf&auml;lle m&uuml;ssen der "
 "Polizei gemeldet werden via Telefon 117."
 
 #: templates/web/fixmybarangay/report/new/notes.html:9
@@ -2781,7 +2781,7 @@ msgstr "Rechts drehen"
 
 #: templates/web/default/admin/body_edit.html:76
 msgid "Save changes"
-msgstr "&Auml;nderungen speichern"
+msgstr "Speichern"
 
 #: templates/web/default/admin/flagged.html:1
 #: templates/web/default/admin/reports.html:1
@@ -2992,7 +2992,7 @@ msgstr "Status:"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1092
 #: templates/web/default/admin/stats.html:1
 msgid "Stats"
-msgstr ""
+msgstr "Statistik"
 
 #: templates/web/zurich/admin/index-dm.html:25
 #: templates/web/zurich/admin/index-sdm.html:23
@@ -3126,7 +3126,7 @@ msgid ""
 "the site."
 msgstr ""
 "Danke &amp;mdash; Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s"
-"\">auf der Webseite anschauen</a>"
+"\">auf der Webseite anschauen</a>."
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:6
 #: templates/web/emptyhomes/tokens/confirm_problem.html:8
@@ -3195,7 +3195,7 @@ msgid ""
 "offshore or outside the country. Please try again."
 msgstr ""
 "Sie k&ouml;nnen M&auml;ngel nur innerhalb der Stadt Z&uuml;rich melden. "
-"Verwenden Sie daf&uuml;r die Adressuche."
+"Verwenden Sie daf&uuml;r die Adresssuche."
 
 #: perllib/FixMyStreet/App/Controller/Location.pm:121
 msgid "That location does not appear to be in the UK; please try again."
@@ -3212,11 +3212,11 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:117
 msgid "That report cannot be viewed on FixMyStreet."
-msgstr "Diese Meldung wurde von Züri wie neu entfernt."
+msgstr "Diese Meldung wurde von Z&uuml;ri wie neu entfernt."
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:111
 msgid "That report has been removed from FixMyStreet."
-msgstr "Diese Meldung wurde von Züri wie neu entfernt."
+msgstr "Diese Meldung wurde von Z&uuml;ri wie neu entfernt."
 
 #: templates/web/emptyhomes/static/about.html:7
 msgid "The Empty Homes Agency"
@@ -3599,7 +3599,7 @@ msgstr ""
 #: templates/web/default/admin/body-form.html:77
 #: templates/web/zurich/admin/body-form.html:47
 msgid "Update body"
-msgstr "Beschreibung"
+msgstr "Speichern"
 
 #: templates/web/default/admin/index.html:30
 msgid "Update breakdown by state"
@@ -3946,6 +3946,8 @@ msgid ""
 "You have already attached a photo to this report, attaching another one will "
 "replace it."
 msgstr ""
+"Sie haben bereits ein Foto ausgew&auml;hlt. Machen Sie ein neues um dieses "
+"zu ersetzen."
 
 #: templates/web/bromley/report/display.html:106
 #: templates/web/default/report/update-form.html:57
@@ -3978,7 +3980,7 @@ msgstr ""
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:6
 msgid "You have successfully confirmed your email address."
-msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt"
+msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt."
 
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:15
