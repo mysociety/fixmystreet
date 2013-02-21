@@ -559,9 +559,6 @@ sub reports : Path('reports') {
         # will have been turned off
         $c->stash->{problems} = [ $problems->all ];
 
-        $c->stash->{edit_body_contacts} = 1
-            if ( grep {$_ eq 'body'} keys %{$c->stash->{allowed_pages}});
-
         if (is_valid_email($search)) {
             $query = [
                 'user.email' => { ilike => $like_search },
@@ -611,6 +608,10 @@ sub reports : Path('reports') {
         $c->stash->{problems} = [ $problems->all ];
         $c->stash->{pager} = $problems->pager;
     }
+
+    $c->stash->{edit_body_contacts} = 1
+        if ( grep {$_ eq 'body'} keys %{$c->stash->{allowed_pages}});
+
 }
 
 sub report_edit : Path('report_edit') : Args(1) {
