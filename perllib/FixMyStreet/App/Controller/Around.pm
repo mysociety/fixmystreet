@@ -40,9 +40,10 @@ sub around_index : Path : Args(0) {
     my $partial_report = $c->forward('load_partial');
 
     # Try to create a location for whatever we have
-    return
-      unless $c->forward('/location/determine_location_from_coords')
-          || $c->forward('/location/determine_location_from_pc');
+    my $ret = $c->forward('/location/determine_location_from_coords')
+        || $c->forward('/location/determine_location_from_pc');
+    return unless $ret;
+    return $c->res->redirect('/') if $ret == -1 && !$partial_report;
 
     # Check to see if the spot is covered by a area - if not show an error.
     return unless $c->cobrand->moniker eq 'fixmybarangay' || $c->forward('check_location_is_acceptable');

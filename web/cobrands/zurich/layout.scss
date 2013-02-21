@@ -19,12 +19,12 @@ body {
         border: none;
     }
 }
-// Except on map pages
-body.mappage .content {
+// Except on map pages (which includes the front page)
+body.mappage .content, body.frontpage .content {
     @include box-shadow(0 0 6px 1px #000);
 }
 .ie6, .ie7, .ie8  {
-    body.mappage .content {
+    body.mappage .content, body.frontpage .content {
         border: 1px solid #666;
     }
 }
@@ -45,20 +45,53 @@ body.mappage.admin .nav-wrapper-2 {
 
 body.frontpage #site-logo, #site-logo {
     width: 415px;
-    height: 16px;
+    height: 83px;
     background: url(logo_portal.jpg) top left no-repeat;
     top: 0;
-    text-indent: 0;
-    padding-left: 10px;
+    left: auto; // base set this to 0
+}
+
+// Static map on front page
+body.frontpage {
+    .table-cell {
+        background-position: 50% 117px;
+        background-repeat: no-repeat;
+        background-image: url(mapbg-1024.jpg);
+        @media all and (min-width: 1025px) {
+            background-image: url(mapbg-1600.jpg);
+        }
+        .content {
+            margin: 2em auto; // Spacing around front content on top of static map
+        }
+    }
+
+    #site-header {
+        height: 117px;
+        background-color: #fff;
+        @include box-shadow(0 0 6px 1px #000);
+    }
+}
+
+#site-logo-text {
+    position: absolute;
+    top: 0;
+    z-index: 3;
     padding-top: 83px;
+    padding-left: 10px;
     color: #585858;
     font-size: 85%;
-    left: auto; // base set this to 0
+}
+body.mappage #site-logo-text {
+    position: fixed;
 }
 
 .nav-wrapper {
     .nav-wrapper-2 {
-        border-top: solid 18px white;
+        border-top: none;
+    }
+    .nav-wrapper-3 {
+        height: 99px;
+        padding-top: 18px;
     }
 }
 
@@ -109,9 +142,14 @@ body.mappage {
   background-color: inherit;
   color: inherit;
   margin: 0 0 2em 0;
+  #postcodeForm div {
+    border-color: $dark_blue;
+    input#pc {
+      max-width: none;
+    }
+  }
 }
 
-/* TODO Change the main-nav to be what is wanted */
 #main-nav {
     ul#main-menu {
         li {
@@ -160,6 +198,9 @@ body.mappage {
 }
 
 body.mappage {
+    #main-nav {
+        width: auto;
+    }
     #main-nav ul#main-menu li a,
     #main-nav ul#main-menu li span {
         padding: 0.75em;
@@ -191,6 +232,10 @@ body.twothirdswidthpage {
             background: $col_fixed_label;
             @include background(linear-gradient(#769643, $col_fixed_label 4px));
         }
+        &#closed {
+            padding-top: 2em;
+            background-image: none;
+        }
     }
 }
 .ie6 .banner p {
@@ -200,7 +245,13 @@ body.twothirdswidthpage {
 }
 
 #fms_pan_zoom {
-  top: 7.75em !important;
+    top: 9em !important;
+}
+#fms_pan_zoom_zoomin {
+    top: 0 !important;
+}
+#fms_pan_zoom_zoomout {
+    top: 44px !important;
 }
 
 // Admin specific changes
@@ -212,12 +263,24 @@ body.fullwidthpage.admin .content {
 body.mappage.admin .content {
     margin-top: 6em;
     margin-left: 0.5em;
-
 }
 .admin {
     .content {
         margin: 2em 0 1em;
         padding: 0 0 0 0;
+        ul.no-bullets {
+            margin-left: 0;
+            > li {
+              list-style: none;
+            }
+        }
+        li.assignation {
+          list-style: none;
+        }
+        .mock-label {
+          font-weight: bold;
+          padding-right: 0.333em;
+        }
     }
 
     #zurich-footer {
@@ -228,7 +291,8 @@ body.mappage.admin .content {
         width: 100%;
         font-size: 0.9em;
         border: 1px solid $table_border_color;
-        border-collapse:collapse;
+        border-collapse: collapse;
+        margin-bottom: 1em;
         th, td {
             padding: 0.666em 0.5em;
             border: 1px solid $table_border_color;
@@ -239,6 +303,9 @@ body.mappage.admin .content {
             border-bottom: 2px solid $table_heading_underline_col;
             border-left: 1px solid $table_heading_border_col;
             border-right: 1px solid $table_heading_border_col;
+            a:link, a:visited {
+                color: white;
+            }
         }
         td.record-id {
             text-align: center;

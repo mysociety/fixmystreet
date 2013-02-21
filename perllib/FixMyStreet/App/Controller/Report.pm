@@ -173,7 +173,10 @@ sub format_problem_for_display : Private {
     if ( $c->stash->{ajax} ) {
         $c->res->content_type('application/json; charset=utf-8');
         my $content = JSON->new->utf8(1)->encode(
-            $problem->as_hashref( $c )
+            {
+                report => $c->cobrand->problem_as_hashref( $problem, $c ),
+                updates => $c->cobrand->updates_as_hashref( $problem, $c ),
+            }
         );
         $c->res->body( $content );
         return 1;
@@ -196,7 +199,7 @@ sub generate_map_tags : Private {
         ? [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => 'yellow',
+            colour    => $c->cobrand->moniker eq 'zurich'? $c->cobrand->pin_colour($problem) : 'yellow',
             type      => 'big',
           } ]
         : [],

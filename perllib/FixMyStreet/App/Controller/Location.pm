@@ -50,6 +50,8 @@ sub determine_location_from_coords : Private {
 
 User has searched for a location - try to find it for them.
 
+Return -1 if nothing provided.
+
 If one match is found returns true and lat/lng is set.
 
 If several possible matches are found puts an array onto stash so that user can be prompted to pick one and returns false.
@@ -62,7 +64,7 @@ sub determine_location_from_pc : Private {
     my ( $self, $c, $pc ) = @_;
 
     # check for something to search
-    $pc ||= $c->req->param('pc') || return;
+    $pc ||= $c->req->param('pc') || return -1;
     $c->stash->{pc} = $pc;    # for template
 
     if ( $pc =~ /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/ ) {

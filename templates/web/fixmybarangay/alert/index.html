@@ -30,9 +30,11 @@ FixMyBarangay has a RSS feeds and email alerts for local problems.
 <div class="sticky-sidebar" id="alert_recent">
   <aside>
     <h2>[% loc('Some photos of recent reports') %]</h2>
-    [% FOREACH p IN photos %]
+    [% FOREACH p IN photos;
+        photo = p.get_photo_params
+    %]
         <a href="/report/[% p.id %]"><img border="0" height="100"
-            src="/photo/[% p.id %].tn.jpeg" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+            src="[% photo.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
     [% END %]
   </aside>
 </div>

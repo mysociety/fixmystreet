@@ -708,7 +708,7 @@ Returns the colour of pin to be used for a particular report
 =cut
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    #return 'green' if time() - $p->confirmed_local->epoch < 7 * 24 * 60 * 60;
+    #return 'green' if time() - $p->confirmed->epoch < 7 * 24 * 60 * 60;
     return 'yellow' if $context eq 'around' || $context eq 'reports';
     return $p->is_fixed ? 'green' : 'red';
 }
@@ -793,6 +793,45 @@ Whether reports in state 'unconfirmed' should still be shown on the public site.
 
 sub show_unconfirmed_reports {
     0;
+}
+
+=head2 prettify_dt
+
+    my $date = $c->prettify_dt( $datetime );
+
+Takes a datetime object and returns a string representation.
+
+=cut
+
+sub prettify_dt {
+    my $self = shift;
+    my $dt = shift;
+
+    return Utils::prettify_dt( $dt, 1 );
+}
+
+=head2 email_indent
+
+Set to an indent string if you wish to override the default email handling.
+
+=cut
+
+sub email_indent { undef; }
+
+sub problem_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    return $problem->as_hashref( $ctx );
+}
+
+sub updates_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    return {};
 }
 
 1;

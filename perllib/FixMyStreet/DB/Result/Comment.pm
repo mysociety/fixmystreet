@@ -116,23 +116,21 @@ with 'FixMyStreet::Roles::Abuser';
 
 my $tz = DateTime::TimeZone->new( name => "local" );
 
-sub created_local {
-    my $self = shift;
+my $tz_f;
+$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
+    if FixMyStreet->config('TIME_ZONE');
 
-    return $self->created
-      ? $self->created->set_time_zone($tz)
-      : $self->created;
-}
+my $stz = sub {
+    my ( $orig, $self ) = ( shift, shift );
+    my $s = $self->$orig(@_);
+    return $s unless $s && UNIVERSAL::isa($s, "DateTime");
+    $s->set_time_zone($tz);
+    $s->set_time_zone($tz_f) if $tz_f;
+    return $s;
+};
 
-sub confirmed_local {
-    my $self = shift;
-
-    # if confirmed is null then it doesn't get inflated so don't
-    # try and set the timezone
-    return $self->confirmed
-      ? $self->confirmed->set_time_zone($tz)
-      : $self->confirmed;
-}
+around created => $stz;
+around confirmed => $stz;
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 

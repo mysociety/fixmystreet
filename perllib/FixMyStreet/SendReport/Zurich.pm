@@ -9,12 +9,14 @@ sub build_recipient_list {
 
     # Only one body ever, most of the time with an email endpoint
     my $body = @{ $self->bodies }[0];
-    $body = FixMyStreet::App->model("DB::Body")->find( { id => $row->external_body } )
-        if $row->external_body;
+    if ( $row->external_body ) {
+        $body = FixMyStreet::App->model("DB::Body")->find( { id => $row->external_body } );
+        $h->{bodies_name} = $body->name;
+    }
     my $body_email = $body->endpoint;
 
-    my @bodies = $body->bodies;
-    if ($body->parent && @bodies) {
+    my $parent = $body->parent;
+    if ($parent && !$parent->parent) {
         # Division, might have an individual contact email address
         my $contact = FixMyStreet::App->model("DB::Contact")->find( {
             body_id => $body->id,

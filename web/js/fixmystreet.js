@@ -52,7 +52,8 @@ $(function(){
     var form_submitted = 0;
     var submitted = false;
 
-    $("form.validate").validate({
+    $("form.validate").each(function(){
+      $(this).validate({
         rules: validation_rules,
         messages: translation_strings,
         onkeyup: false,
@@ -85,6 +86,7 @@ $(function(){
             submitted = false;
         },
         invalidHandler: function(form, validator) { submitted = true; }
+      });
     });
 
     $('input[type=submit]').click( function(e) { form_submitted = 1; } );
@@ -142,7 +144,8 @@ $(function(){
             if($('.mobile').length){
                 $link.append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
             }else{
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-yellow.gif" alt="" align="bottom">');
+                var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color")? 'white' : 'yellow';
+                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
             }
             geo_position_js.getCurrentPosition(function(pos) {
                 $link.find('img').remove();

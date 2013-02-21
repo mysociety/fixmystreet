@@ -32,10 +32,10 @@ my $problem = $problem_rs->new(
     }
 );
 
-is $problem->confirmed_local,  undef, 'inflating null confirmed ok';
-is $problem->whensent_local,   undef, 'inflating null confirmed ok';
-is $problem->lastupdate_local, undef, 'inflating null confirmed ok';
-is $problem->created_local,  undef, 'inflating null confirmed ok';
+is $problem->confirmed,  undef, 'inflating null confirmed ok';
+is $problem->whensent,   undef, 'inflating null confirmed ok';
+is $problem->lastupdate, undef, 'inflating null confirmed ok';
+is $problem->created,  undef, 'inflating null confirmed ok';
 
 for my $test ( 
     {

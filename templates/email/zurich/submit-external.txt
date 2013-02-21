@@ -1,4 +1,4 @@
-Subject: FixMyZurich: Neue Meldung #<?=$values['id']?>
+Subject: Züri wie neu: Neue Meldung #<?=$values['id']?>
 
 Guten Tag <?=$values['bodies_name']?>,
 

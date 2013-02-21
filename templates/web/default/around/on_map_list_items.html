@@ -2,7 +2,7 @@
     [% FOREACH p IN on_map %]
         <li>
             <a href="[% c.uri_for('/report', p.id ) %]">[% p.title | html %]</a>
-            <small>[% prettify_dt( p.confirmed_local, 1 ) %]</small>
+            <small>[% prettify_dt( p.confirmed, 1 ) %]</small>
             [% IF p.is_fixed %]
                 <small>[% loc('(fixed)') %]</small>
             [% ELSIF p.is_closed %]

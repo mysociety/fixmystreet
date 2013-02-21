@@ -51,7 +51,7 @@
 #site-logo {
     background: url(logo_portal.jpg) 0px -24px no-repeat;
     width: 200px;
-    height:44px;
+    height: 48px;
     left:0; 
     top:4px;
 }
@@ -64,6 +64,22 @@
 #front-howto #front_stats,
 #front-main #postcodeForm {
     background-color: $mobile_header_blue;
+}
+
+//  fix here:
+//  a percentage width on input#pc breaks iPhone landscape/portrait switching
+//  and the other changes make this fix pretty
+
+#front-main #postcodeForm div {
+  background: inherit;
+  border-color:transparent;
+  input#pc {
+    max-width: 15em;
+    background-color: #fff;
+  }
+  input#sub {
+    width: 3em;
+  }
 }
 
 // No grey background or other bits
@@ -105,4 +121,11 @@ h4.static-with-rule {
     width:auto; // 28% is too narrow
     padding-left: 0.8em;
     padding-right: 0.8em;
+}
+
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown,
+#fms_pan_zoom_panleft,
+#fms_pan_zoom_panright {
+    display: none;
 }

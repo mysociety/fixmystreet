@@ -14,9 +14,20 @@
 %]
 <style type="text/css">
     .adminhidden { color: #666666; }
+    .active { background-color: #ffffee; cursor: pointer; }
     .error { color: red; }
     .overdue { background-color: #ffcccc; }
     select { width: auto; }
+    #fms_pan_zoom { top: 13em !important; }
 </style>
+<script>
+$(function(){
+    $('.row-link').hover(function(){
+        $(this).toggleClass("active");
+    }).click(function(){
+        window.location = this.getElementsByTagName('a')[0];
+    }).find('td:last').hide();
+    $('th.edit').hide();
+});
+</script>
 
-    <h1 style="clear:both;">[% title %]</h1>

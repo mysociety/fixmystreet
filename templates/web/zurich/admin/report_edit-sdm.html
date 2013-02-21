@@ -1,5 +1,13 @@
-[% PROCESS 'admin/header.html' title=tprintf(loc('Editing problem %d'), problem.id ) -%]
-[% PROCESS 'admin/report_blocks.html' %]
+[%
+    PROCESS "maps/zurich.html";
+    PROCESS 'admin/header.html'
+        title = tprintf(loc('Editing problem %d'), problem.id ),
+        bodyclass = 'mappage';
+    PROCESS 'admin/report_blocks.html'
+-%]
+
+[% map_html %]
+</div>
 
 [% status_message %]
 
@@ -9,9 +17,9 @@
 
 <p align="right"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 
-<ul>
+<ul class="no-bullets">
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
-<li>[% loc('Details:') %] [% problem.detail | html %]
+<li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
 [% IF problem.extra.original_detail %]
 <br>[%
     SET safe = problem.extra.original_detail | html;
@@ -19,26 +27,28 @@
 %]
 [% END %]
 </li>
-<li>[% loc('Co-ordinates:') %] [% problem.local_coords.join(',') %]
+<li><span class="mock-label">[% loc('Co-ordinates:') %]</span> [% problem.local_coords.join(',') %]
+	<input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
+	<input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
 ([%
     SET safe = problem.postcode | html;
     tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
 %],
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
-<li>[% loc('Category:') %] [% problem.category | html %] </li>
-<li>[% loc('Name:') %] [% problem.name | html %]
-<li>[% loc('Email:') %] [% problem.user.email | html %]
+<li><span class="mock-label">[% loc('Category:') %]</span> [% problem.category | html %] </li>
+<li><span class="mock-label">[% loc('Name:') %]</span> [% problem.name | html %]
+<li><span class="mock-label">[% loc('Email:') %]</span> [% problem.user.email | html %]
 [% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
-<li>[% loc('Phone:') %] [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
-<li>[% loc('Created:') %] [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
+<li><span class="mock-label">[% loc('Phone:') %]</span> [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
+<li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
 
 [% IF problem.photo %]
 [% photo = problem.get_photo_params %]
 <li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]"></li>
 [% END %]
 
-<li>[% loc('State:') %] [% states.${problem.state} %]</li>
+<li><span class="mock-label">[% loc('State:') %]</span> [% states.${problem.state} %]</li>
 
 <li><label for="internal_notes">[% loc('Internal notes:') %]</label>
 <textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></li>

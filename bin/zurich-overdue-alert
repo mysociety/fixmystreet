@@ -72,6 +72,7 @@ sub send_alert {
         {
             _template_ => $template,
             _parameters_ => $h,
+            _line_indent => $cobrand->email_indent,
             To => $to,
             From => [ FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') ],
         },

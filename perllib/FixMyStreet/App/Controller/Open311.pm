@@ -240,8 +240,8 @@ sub output_requests : Private {
             'long' => [ $problem->longitude ],
             'status' => [ $problem->state ],
 #            'status_notes' => [ {} ],
-            'requested_datetime' => [ w3date($problem->confirmed_local) ],
-            'updated_datetime' => [ w3date($problem->lastupdate_local) ],
+            'requested_datetime' => [ w3date($problem->confirmed) ],
+            'updated_datetime' => [ w3date($problem->lastupdate) ],
 #            'expected_datetime' => [ {} ],
 #            'address' => [ {} ],
 #            'address_id' => [ {} ],
@@ -260,7 +260,7 @@ sub output_requests : Private {
         if ( $problem->whensent ) {
             # Not in Open311 v2
             $request->{'agency_sent_datetime'} =
-                [ w3date($problem->whensent_local) ];
+                [ w3date($problem->whensent) ];
         }
 
         # Extract number of updates

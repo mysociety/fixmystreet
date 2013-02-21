@@ -17,7 +17,7 @@ ok -e $sample_file, "sample file $sample_file exists";
 subtest "test that bare requests to /report/new get redirected" => sub {
 
     $mech->get_ok('/report/new');
-    is $mech->uri->path, '/around', "went to /around";
+    is $mech->uri->path, '/', "went to /";
     is_deeply { $mech->uri->query_form }, {}, "query empty";
 
     $mech->get_ok('/report/new?pc=SW1A%201AA');

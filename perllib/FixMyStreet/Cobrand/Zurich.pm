@@ -39,9 +39,66 @@ sub languages { [ 'de-ch,Deutsch,de_CH', 'en-gb,English,en_GB' ] };
 sub uri {
     my ( $self, $uri ) = @_;
 
-    $uri->query_param( zoom => 7 )
+    $uri->query_param( zoom => 6 )
       if $uri->query_param('lat') && !$uri->query_param('zoom');
     return $uri;
+}
+
+sub prettify_dt {
+    my $self = shift;
+    my $dt = shift;
+
+    return Utils::prettify_dt( $dt, 'zurich' );
+}
+
+sub problem_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    my $hashref = $problem->as_hashref( $ctx );
+
+    if ( $problem->state eq 'unconfirmed' ) {
+        for my $var ( qw( photo detail state state_t is_fixed meta ) ) {
+            delete $hashref->{ $var };
+        }
+        $hashref->{detail} = _('This report is awaiting moderation.');
+        $hashref->{state} = 'submitted';
+        $hashref->{state_t} = _('Submitted');
+    } else {
+        if ( $problem->state eq 'confirmed' ) {
+            $hashref->{state} = 'open';
+            $hashref->{state_t} = _('Open');
+        } elsif ( $problem->is_fixed ) {
+            $hashref->{state} = 'closed';
+            $hashref->{state_t} = _('Closed');
+        } elsif ( $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
+            $hashref->{state} = 'in progress';
+            $hashref->{state_t} = _('In progress');
+        }
+    }
+
+    return $hashref;
+}
+
+sub updates_as_hashref {
+    my $self = shift;
+    my $problem = shift;
+    my $ctx = shift;
+
+    my $hashref = {};
+
+    if ( $problem->state eq 'fixed - council' || $problem->state eq 'closed' ) {
+        $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
+
+        if ( $problem->state eq 'fixed - council' ) {
+            $hashref->{details} = FixMyStreet::App::View::Web->add_links( $ctx, $problem->extra->{public_response} );
+        } elsif ( $problem->state eq 'closed' ) {
+            $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body($ctx)->name );
+        }
+    }
+
+    return $hashref;
 }
 
 sub remove_redundant_areas {
@@ -115,15 +172,17 @@ sub overdue {
     if ( $problem->state eq 'unconfirmed' || $problem->state eq 'confirmed' ) {
         # One working day
         $w = add_days( $w, 1 );
-        return $w < DateTime->now();
+        return $w < DateTime->now() ? 1 : 0;
     } elsif ( $problem->state eq 'in progress' ) {
         # Five working days
         $w = add_days( $w, 5 );
-        return $w < DateTime->now();
+        return $w < DateTime->now() ? 1 : 0;
     } else {
         return 0;
     }
 }
+
+sub email_indent { ''; }
 
 # Specific administrative displays
 
@@ -149,6 +208,7 @@ sub admin_pages {
 
     $pages = { %$pages,
         'users' => [_('Users'), 3],
+        'stats' => [_('Stats'), 4],
         'user_edit' => [undef, undef],
     };
     return $pages if $type eq 'super';
@@ -188,37 +248,68 @@ sub admin {
         my @children = map { $_->id } $body->bodies->all;
         my @all = (@children, $body->id);
 
+        my $order = $c->req->params->{o} || 'created';
+        my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+        $c->stash->{order} = $order;
+        $c->stash->{dir} = $dir;
+        $order .= ' desc' if $dir;
+
         # XXX No multiples or missing bodies
         $c->stash->{unconfirmed} = $c->cobrand->problems->search({
             state => [ 'unconfirmed', 'confirmed' ],
             bodies_str => $c->stash->{body}->id,
+        }, {
+            order_by => $order,
         });
         $c->stash->{approval} = $c->cobrand->problems->search({
             state => 'planned',
             bodies_str => $c->stash->{body}->id,
+        }, {
+            order_by => $order,
         });
+
+        my $page = $c->req->params->{p} || 1;
         $c->stash->{other} = $c->cobrand->problems->search({
             state => { -not_in => [ 'unconfirmed', 'confirmed', 'planned' ] },
             bodies_str => \@all,
-        });
+        }, {
+            order_by => $order,
+        })->page( $page );
+        $c->stash->{pager} = $c->stash->{other}->pager;
+
     } elsif ($type eq 'sdm') {
         $c->stash->{template} = 'admin/index-sdm.html';
 
         my $body = $c->stash->{body};
 
+        my $order = $c->req->params->{o} || 'created';
+        my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+        $c->stash->{order} = $order;
+        $c->stash->{dir} = $dir;
+        $order .= ' desc' if $dir;
+
         # XXX No multiples or missing bodies
         $c->stash->{reports_new} = $c->cobrand->problems->search( {
             state => 'in progress',
             bodies_str => $body->id,
+        }, {
+            order_by => $order
         } );
         $c->stash->{reports_unpublished} = $c->cobrand->problems->search( {
             state => 'planned',
             bodies_str => $body->parent->id,
+        }, {
+            order_by => $order
         } );
+
+        my $page = $c->req->params->{p} || 1;
         $c->stash->{reports_published} = $c->cobrand->problems->search( {
             state => 'fixed - council',
             bodies_str => $body->parent->id,
-        } );
+        }, {
+            order_by => $order
+        } )->page( $page );
+        $c->stash->{pager} = $c->stash->{reports_published}->pager;
     }
 }
 
@@ -274,8 +365,7 @@ sub admin_report_edit {
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
         # Make sure we have a copy of the original detail field
-        $extra->{original_detail} = $problem->detail unless $extra->{original_detail};
-        $problem->extra( { %$extra } );
+        $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
 
         # Workflow things
         my $redirect = 0;
@@ -286,14 +376,17 @@ sub admin_report_edit {
             $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
             $problem->whensent( undef );
+            $extra->{changed_category} = 1;
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
+            $extra->{moderated_overdue} = $self->overdue( $problem );
             $problem->state( 'in progress' );
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
         } elsif ( my $external = $c->req->params->{body_external} ) {
+            $extra->{moderated_overdue} = $self->overdue( $problem );
             $problem->state( 'closed' );
             $problem->external_body( $external );
             $problem->whensent( undef );
@@ -306,8 +399,11 @@ sub admin_report_edit {
             }
         }
 
+        $problem->extra( { %$extra } );
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
+        $problem->latitude( $c->req->param('latitude') );
+        $problem->longitude( $c->req->param('longitude') );
 
         # Final, public, Update from DM
         if (my $update = $c->req->param('status_update')) {
@@ -357,13 +453,22 @@ sub admin_report_edit {
         } elsif ($c->req->param('submit')) {
             $c->forward('check_token');
 
+            my $db_update = 0;
+            if ( $c->req->param('latitude') != $problem->latitude || $c->req->param('longitude') != $problem->longitude ) {
+                $problem->latitude( $c->req->param('latitude') );
+                $problem->longitude( $c->req->param('longitude') );
+                $db_update = 1;
+            }
+
             my $extra = $problem->extra || {};
             $extra->{internal_notes} ||= '';
             if ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes}) {
                 $extra->{internal_notes} = $c->req->param('internal_notes');
                 $problem->extra( { %$extra } );
-                $problem->update;
+                $db_update = 1;
             }
+
+            $problem->update if $db_update;
 
             # Add new update from status_update
             if (my $update = $c->req->param('status_update')) {
@@ -384,9 +489,11 @@ sub admin_report_edit {
             if ($c->req->param('no_more_updates')) {
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
+                my $extra = $problem->extra || {};
+                $extra->{subdiv_overdue} = $self->overdue( $problem );
+                $problem->extra( { %$extra } );
                 $problem->state( 'planned' );
                 $problem->update;
-                # log here
                 $c->res->redirect( '/admin/summary' );
             }
         }
@@ -412,9 +519,15 @@ sub _admin_send_email {
         ? [ $problem->user->email, $problem->name ]
         : $problem->user->email;
 
+    # Similar to what SendReport::Zurich does to find address to send to
+    my $body = ( values %{$problem->bodies} )[0];
+    my $sender = $body->endpoint || $c->cobrand->contact_email;
+    my $sender_name = $c->cobrand->contact_name; # $body->name?
+
     $c->send_email( $template, {
         to => [ $to ],
         url => $c->uri_for_email( $problem->url ),
+        from => [ $sender, $sender_name ],
     } );
 }
 
@@ -455,6 +568,96 @@ sub admin_fetch_all_bodies {
     my @out;
     tree_sort( 0, 0, \%sorted, \@out );
     return @out;
+}
+
+sub admin_stats {
+    my $self = shift;
+    my $c = $self->{c};
+
+    my %date_params;
+    my $ym = $c->req->params->{ym};
+    my ($m, $y) = $ym =~ /^(\d+)\.(\d+)$/;
+    $c->stash->{ym} = $ym;
+    if ($y && $m) {
+        $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
+        $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
+        $date_params{created} = { '>=', $c->stash->{start_date}, '<', $c->stash->{end_date} };
+    }
+
+    my %params = (
+        %date_params,
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+    );
+
+    if ( $c->req->params->{export} ) {
+        my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand', 'category' ] } );
+        my $body = "ID,Created,E,N,Category\n";
+        while (my $report = $problems->next) {
+            $body .= join( ',', $report->id, $report->created, $report->local_coords, $report->category ) . "\n";
+        }
+        $c->res->content_type('text/csv; charset=utf-8');
+        $c->res->body($body);
+    }
+
+    # Total reports (non-hidden)
+    my $total = $c->model('DB::Problem')->search( \%params )->count;
+    # Device for apps (iOS/Android)
+    my $per_service = $c->model('DB::Problem')->search( \%params, {
+        select   => [ 'service', { count => 'id' } ],
+        as       => [ 'service', 'c' ],
+        group_by => [ 'service' ],
+    });
+    # Reports solved
+    my $solved = $c->model('DB::Problem')->search( { state => 'fixed - council', %date_params } )->count;
+    # Reports marked as spam
+    my $hidden = $c->model('DB::Problem')->search( { state => 'hidden', %date_params } )->count;
+    # Reports assigned to third party
+    my $closed = $c->model('DB::Problem')->search( { state => 'closed', %date_params } )->count;
+    # Reports moderated within 1 day
+    my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %params } )->count;
+    # Reports solved within 5 days
+    my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
+    # Reports per category
+    my $per_category = $c->model('DB::Problem')->search( \%params, {
+        select   => [ 'category', { count => 'id' } ],
+        as       => [ 'category', 'c' ],
+        group_by => [ 'category' ],
+    });
+    # How many reports have had their category changed by a DM (wrong category chosen by user)
+    my $changed = $c->model('DB::Problem')->search( { extra => { like => '%changed_category,I1:1%' }, %params } )->count;
+    # pictures taken
+    my $pictures_taken = $c->model('DB::Problem')->search( { photo => { '!=', undef }, %params } )->count;
+    # pictures published
+    my $pictures_published = $c->model('DB::Problem')->search( { extra => { like => '%publish_photo,I1:1%' }, %params } )->count;
+    # how many times was a telephone number provided
+    # XXX => How many users have a telephone number stored
+    # my $phone = $c->model('DB::User')->search( { phone => { '!=', undef } } )->count;
+    # how many times was the email address confirmed
+    my $email_confirmed = $c->model('DB::Problem')->search( { extra => { like => '%email_confirmed%' }, %params } )->count;
+    # how many times was the name provided
+    my $name = $c->model('DB::Problem')->search( { name => { '!=', '' }, %params } )->count;
+    # how many times was the geolocation used vs. addresssearch
+    # ?
+
+    $c->stash(
+        per_service => $per_service,
+        per_category => $per_category,
+        reports_total => $total,
+        reports_solved => $solved,
+        reports_spam => $hidden,
+        reports_assigned => $closed,
+        reports_moderated => $moderated,
+        reports_dealtwith => $subdiv_dealtwith,
+        reports_category_changed => $changed,
+        pictures_taken => $pictures_taken,
+        pictures_published => $pictures_published,
+        #users_phone => $phone,
+        email_confirmed => $email_confirmed,
+        name_provided => $name,
+        # GEO
+    );
+
+    return 1;
 }
 
 1;

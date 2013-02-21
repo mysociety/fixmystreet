@@ -6,12 +6,6 @@
     <li>[% tprintf( loc('%d council contacts &ndash; %d confirmed, %d unconfirmed'), contacts.total, contacts.1, contacts.0) %]</li>
 </ul>
 
-[% IF c.cobrand.admin_show_creation_graph -%]
-    <p>
-        <a href="[% c.config.BASE_URL %]/fms-live-creation.png">[% loc('Graph of problem creation by status over time') %]</a>
-    </p>
-[% END -%]
-
 <h2>[% loc('Problem breakdown by state') %]</h2>
 <ul>
   [% FOREACH state IN problems.keys.sort %]

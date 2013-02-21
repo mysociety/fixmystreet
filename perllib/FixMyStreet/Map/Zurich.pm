@@ -13,9 +13,10 @@ use Geo::Coordinates::CH1903;
 use Math::Trig;
 use Utils;
 
-use constant ZOOM_LEVELS    => 7;
+use constant ZOOM_LEVELS    => 8;
 use constant DEFAULT_ZOOM   => 5;
 use constant MIN_ZOOM_LEVEL => 0;
+use constant ID_OFFSET      => 2;
 
 sub map_tiles {
     my ( $self, %params ) = @_;
@@ -45,31 +46,24 @@ sub copyright {
 sub display_map {
     my ($self, $c, %params) = @_;
 
-    my $numZoomLevels = ZOOM_LEVELS;
-    my $zoomOffset = MIN_ZOOM_LEVEL;
-#    if ($params{any_zoom}) {
-#        $numZoomLevels = 10;
-#        $zoomOffset = 0;
-#    }
-
-    # TODO Adjust zoom level dependent upon population density
-    my $default_zoom = DEFAULT_ZOOM;
-
     # Map centre may be overridden in the query string
     $params{latitude} = Utils::truncate_coordinate($c->req->params->{lat} + 0)
         if defined $c->req->params->{lat};
     $params{longitude} = Utils::truncate_coordinate($c->req->params->{lon} + 0)
         if defined $c->req->params->{lon};
 
-    my $zoom = defined $c->req->params->{zoom} ? $c->req->params->{zoom} + 0 : $default_zoom;
-    $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
+    my $zoom = defined $c->req->params->{zoom}
+        ? $c->req->params->{zoom} + 0
+        : $c->stash->{page} eq 'report'
+            ? DEFAULT_ZOOM+1
+            : DEFAULT_ZOOM;
+    $zoom = ZOOM_LEVELS - 1 if $zoom >= ZOOM_LEVELS;
     $zoom = 0 if $zoom < 0;
-    $params{zoom_act} = $zoomOffset + $zoom;
 
-    ($params{x_tile}, $params{y_tile}, $params{matrix_id}) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $params{zoom_act});
+    ($params{x_tile}, $params{y_tile}, $params{matrix_id}) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom);
 
     foreach my $pin (@{$params{pins}}) {
-        ($pin->{px}, $pin->{py}) = latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $params{zoom_act});
+        ($pin->{px}, $pin->{py}) = latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $zoom);
     }
 
     $c->stash->{map} = {
@@ -79,8 +73,8 @@ sub display_map {
         tiles => $self->map_tiles( %params ),
         copyright => $self->copyright(),
         zoom => $zoom,
-        zoomOffset => $zoomOffset,
-        numZoomLevels => $numZoomLevels,
+        zoomOffset => MIN_ZOOM_LEVEL,
+        numZoomLevels => ZOOM_LEVELS,
     };
 }
 
@@ -90,13 +84,11 @@ sub latlon_to_tile($$$) {
 
     my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($lat, $lon);
 
-    my $matrix_id = $zoom;
-    $matrix_id = 0 if $matrix_id < 0;
-
-    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000' );
+    my $matrix_id = $zoom + ID_OFFSET;
+    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500' );
     my $tileOrigin = { lat => 30814423, lon => -29386322 };
     my $tileSize = 256;
-    my $res = $scales[$zoom] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
+    my $res = $scales[$matrix_id] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
 
     my $fx = ( $x - $tileOrigin->{lon} ) / ($res * $tileSize);
     my $fy = ( $tileOrigin->{lat} - $y ) / ($res * $tileSize);
@@ -124,10 +116,11 @@ sub latlon_to_tile_with_adjust($$$) {
 sub tile_to_latlon {
     my ($fx, $fy, $zoom) = @_;
 
+    my $matrix_id = $zoom + ID_OFFSET;
     my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500' );
     my $tileOrigin = { lat => 30814423, lon => -29386322 };
     my $tileSize = 256;
-    my $res = $scales[$zoom] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
+    my $res = $scales[$matrix_id] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
 
     my $x = $fx * $res * $tileSize + $tileOrigin->{lon};
     my $y = $tileOrigin->{lat} - $fy * $res * $tileSize;
@@ -164,12 +157,11 @@ sub click_to_tile {
 
 # Given some click co-ords (the tile they were on, and where in the
 # tile they were), convert to WGS84 and return.
-# XXX Note use of MIN_ZOOM_LEVEL here. (Copied from OSM, needed here?)
 sub click_to_wgs84 {
     my ($self, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);
     my $tile_y = click_to_tile($pin_tile_y, $pin_y);
-    my $zoom = MIN_ZOOM_LEVEL + (defined $c->req->params->{zoom} ? $c->req->params->{zoom} : DEFAULT_ZOOM);
+    my $zoom = (defined $c->req->params->{zoom} ? $c->req->params->{zoom} : DEFAULT_ZOOM);
     my ($lat, $lon) = tile_to_latlon($tile_x, $tile_y, $zoom);
     return ( $lat, $lon );
 }

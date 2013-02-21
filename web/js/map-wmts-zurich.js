@@ -2,6 +2,34 @@
  * Maps for FMZ using Zurich council's WMTS tile server 
  */
 
+function fixmystreet_zurich_admin_drag() {
+    var admin_drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+        onComplete: function(feature, e) {
+            var lonlat = feature.geometry.clone();
+            lonlat.transform(
+                fixmystreet.map.getProjectionObject(),
+                new OpenLayers.Projection("EPSG:4326")
+            );
+            if (window.confirm( 'Richtiger Ort?' ) ) {
+                // Store new co-ordinates
+                document.getElementById('fixmystreet.latitude').value = lonlat.y;
+                document.getElementById('fixmystreet.longitude').value = lonlat.x;
+            } else {
+                // Put it back
+                var lat = document.getElementById('fixmystreet.latitude').value;
+                var lon = document.getElementById('fixmystreet.longitude').value;
+                lonlat = new OpenLayers.LonLat(lon, lat).transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    fixmystreet.map.getProjectionObject()
+                );
+                fixmystreet.markers.features[0].move(lonlat);
+            }
+        }
+    } );
+    fixmystreet.map.addControl( admin_drag );
+    admin_drag.activate();
+}
+
 $(function(){
     $('#map_layer_toggle').toggle(function(){
         $(this).text('Luftbild');
@@ -10,6 +38,15 @@ $(function(){
         $(this).text('Stadtplan');
         fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
     });
+
+    /* Admin dragging of pin */
+    if (fixmystreet.page == 'admin') {
+        if ($.browser.msie) {
+            $(window).load(fixmystreet_zurich_admin_drag);
+        } else {
+            fixmystreet_zurich_admin_drag();
+        }
+    }
 });
 
 /* 
@@ -32,6 +69,11 @@ $(function(){
     ];
     if ( fixmystreet.page != 'report' || !$('html').hasClass('mobile') ) {
         fixmystreet.controls.push( new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' }) );
+    }
+
+    /* Linking back to around from report page, keeping track of map moves */
+    if ( fixmystreet.page == 'report' ) {
+        fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
     }
 
     fixmystreet.map_type = OpenLayers.Layer.WMTS;

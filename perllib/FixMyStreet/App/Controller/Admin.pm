@@ -145,34 +145,34 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     my $probs = $c->cobrand->problems->timeline;
 
     foreach ($probs->all) {
-        push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created_local, obj => $_ };
-        push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed_local, obj => $_ } if $_->confirmed;
-        push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent_local, obj => $_ } if $_->whensent;
+        push @{$time{$_->created->epoch}}, { type => 'problemCreated', date => $_->created, obj => $_ };
+        push @{$time{$_->confirmed->epoch}}, { type => 'problemConfirmed', date => $_->confirmed, obj => $_ } if $_->confirmed;
+        push @{$time{$_->whensent->epoch}}, { type => 'problemSent', date => $_->whensent, obj => $_ } if $_->whensent;
     }
 
     my $questionnaires = $c->model('DB::Questionnaire')->timeline( $c->cobrand->restriction );
 
     foreach ($questionnaires->all) {
-        push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent_local, obj => $_ };
-        push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered_local, obj => $_ } if $_->whenanswered;
+        push @{$time{$_->whensent->epoch}}, { type => 'quesSent', date => $_->whensent, obj => $_ };
+        push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered, obj => $_ } if $_->whenanswered;
     }
 
     my $updates = $c->model('DB::Comment')->timeline( $site_restriction );
 
     foreach ($updates->all) {
-        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created_local, obj => $_} ;
+        push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_} ;
     }
 
     my $alerts = $c->model('DB::Alert')->timeline_created( $c->cobrand->restriction );
 
     foreach ($alerts->all) {
-        push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed_local, obj => $_ };
+        push @{$time{$_->whensubscribed->epoch}}, { type => 'alertSub', date => $_->whensubscribed, obj => $_ };
     }
 
     $alerts = $c->model('DB::Alert')->timeline_disabled( $c->cobrand->restriction );
 
     foreach ($alerts->all) {
-        push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled_local, obj => $_ };
+        push @{$time{$_->whendisabled->epoch}}, { type => 'alertDel', date => $_->whendisabled, obj => $_ };
     }
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
@@ -485,6 +485,25 @@ sub body_edit : Path('body_edit') : Args(2) {
 sub reports : Path('reports') {
     my ( $self, $c ) = @_;
 
+    my $query = {};
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        my $type = $c->stash->{admin_type};
+        my $body = $c->stash->{body};
+        if ( $type eq 'dm' ) {
+            my @children = map { $_->id } $body->bodies->all;
+            my @all = (@children, $body->id);
+            $query = { bodies_str => \@all };
+        } elsif ( $type eq 'sdm' ) {
+            $query = { bodies_str => $body->id };
+        }
+    }
+
+    my $order = $c->req->params->{o} || 'created';
+    my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+    $c->stash->{order} = $order;
+    $c->stash->{dir} = $dir;
+    $order .= ' desc' if $dir;
+
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = $search;
 
@@ -503,21 +522,20 @@ sub reports : Path('reports') {
         $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
         $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
 
-        my $query;
         if (is_valid_email($search)) {
-            $query = [
+            $query->{'-or'} = [
                 'user.email' => { ilike => $like_search },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
-            $query = [
+            $query->{'-or'} = [
                 'me.id' => int($1),
             ];
         } elsif ($search =~ /^area:(\d+)$/) {
-            $query = [
+            $query->{'-or'} = [
                 'me.areas' => { like => "%,$1,%" }
             ];
         } else {
-            $query = [
+            $query->{'-or'} = [
                 'me.id' => $search_n,
                 'user.email' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
@@ -527,13 +545,12 @@ sub reports : Path('reports') {
                 cobrand_data => { like => $like_search },
             ];
         }
+
         my $problems = $c->cobrand->problems->search(
-            {
-                -or => $query,
-            },
+            $query,
             {
                 prefetch => 'user',
-                order_by => [\"(state='hidden')",'created']
+                order_by => [ \"(state='hidden')", \$order ]
             }
         );
 
@@ -576,7 +593,7 @@ sub reports : Path('reports') {
                 {
                     -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
                     prefetch => [qw/user problem/],
-                    order_by => [\"(me.state='hidden')",\"(problem.state='hidden')",'me.created']
+                    order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", 'me.created' ]
                 }
             );
             $c->stash->{updates} = [ $updates->all ];
@@ -584,6 +601,15 @@ sub reports : Path('reports') {
 
         # Switch quoting back off. See above for explanation of this.
         $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
+    } else {
+
+        my $page = $c->req->params->{p} || 1;
+        my $problems = $c->cobrand->problems->search(
+            $query,
+            { order_by => $order }
+        )->page( $page );
+        $c->stash->{problems} = [ $problems->all ];
+        $c->stash->{pager} = $problems->pager;
     }
 }
 
@@ -601,13 +627,8 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('get_token');
 
-    if ( $c->req->param('rotate_photo') ) {
-        $c->forward('rotate_photo');
-        return 1;
-    }
-
     if ( $c->cobrand->moniker eq 'zurich' ) {
-
+        $c->stash->{page} = 'admin';
         FixMyStreet::Map::display_map(
             $c,
             latitude  => $problem->latitude,
@@ -616,12 +637,19 @@ sub report_edit : Path('report_edit') : Args(1) {
             ? [ {
                 latitude  => $problem->latitude,
                 longitude => $problem->longitude,
-                colour    => 'yellow',
+                colour    => $c->cobrand->pin_colour($problem),
                 type      => 'big',
               } ]
             : [],
         );
+    }
 
+    if ( $c->req->param('rotate_photo') ) {
+        $c->forward('rotate_photo');
+        return 1;
+    }
+
+    if ( $c->cobrand->moniker eq 'zurich' ) {
         my $done = $c->cobrand->admin_report_edit();
         return if $done;
     }
@@ -782,6 +810,16 @@ sub users: Path('users') : Args(0) {
     } else {
         $c->forward('get_token');
         $c->forward('fetch_all_bodies');
+
+        # Admin users by default
+        my $users = $c->model('DB::User')->search(
+            { from_body => { '!=', undef } },
+            { order_by => 'name' }
+        );
+        my @users = $users->all;
+        my %email2user = map { $_->email => $_ } @users;
+        $c->stash->{users} = \@users;
+
     }
 
     return 1;
@@ -903,6 +941,8 @@ sub user_add : Path('user_edit') : Args(0) {
 
     $c->forward('check_token');
 
+    return unless $c->req->param('name') && $c->req->param('email');
+
     my $user = $c->model('DB::User')->find_or_create( {
         name => $c->req->param('name'),
         email => $c->req->param('email'),
@@ -982,7 +1022,7 @@ sub stats : Path('stats') : Args(0) {
 
     $c->forward('fetch_all_bodies');
 
-    if ( $c->cobrand->moniker eq 'seesomething' ) {
+    if ( $c->cobrand->moniker eq 'seesomething' || $c->cobrand->moniker eq 'zurich' ) {
         return $c->cobrand->admin_stats();
     }
 
@@ -1288,7 +1328,7 @@ sub rotate_photo : Private {
     my ( $self, $c ) =@_;
 
     my $direction = $c->req->param('rotate_photo');
-    return unless $direction =~ /Left/ or $direction =~ /Right/;
+    return unless $direction eq _('Rotate Left') or $direction eq _('Rotate Right');
 
     my $photo = $c->stash->{problem}->photo;
     my $file;
@@ -1299,16 +1339,12 @@ sub rotate_photo : Private {
         $photo = $file->slurp;
     }
 
-    $photo = _rotate_image( $photo, $direction =~ /Left/ ? -90 : 90 );
+    $photo = _rotate_image( $photo, $direction eq _('Rotate Left') ? -90 : 90 );
     return unless $photo;
 
-    my $fileid;
-    if ( !$file ) {
-        $fileid = sha1_hex($photo);
-        $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
-    }
-
-    $c->stash->{rotated} = 1;
+    # Write out to new location
+    my $fileid = sha1_hex($photo);
+    $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
 
     my $fh = $file->open('w');
     print $fh $photo;
@@ -1316,10 +1352,8 @@ sub rotate_photo : Private {
 
     unlink glob FixMyStreet->path_to( 'web', 'photo', $c->stash->{problem}->id . '.*' );
 
-    if ( $fileid ) {
-        $c->stash->{problem}->photo( $fileid );
-        $c->stash->{problem}->update();
-    }
+    $c->stash->{problem}->photo( $fileid );
+    $c->stash->{problem}->update();
 
     return 1;
 }

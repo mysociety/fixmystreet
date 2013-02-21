@@ -31,7 +31,7 @@ sub general : Path : Args(0) {
     my $req = $c->req;
 
     $c->detach( 'redirect_on_signin', [ $req->param('r') ] )
-        if $c->user && $req->param('r') && $req->param('r') !~ /admin/;
+        if $c->user && $req->param('r');
 
     # all done unless we have a form posted to us
     return unless $req->method eq 'POST';
@@ -182,6 +182,10 @@ Used after signing in to take the person back to where they were.
 sub redirect_on_signin : Private {
     my ( $self, $c, $redirect ) = @_;
     $redirect = 'my' unless $redirect;
+    if ( $c->cobrand->moniker eq 'zurich' ) {
+        $redirect = 'my' if $redirect eq 'admin';
+        $redirect = 'admin' if $c->user->from_body;
+    }
     $c->res->redirect( $c->uri_for( "/$redirect" ) );
 }
 

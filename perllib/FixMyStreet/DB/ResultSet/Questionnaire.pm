@@ -101,6 +101,7 @@ sub send_questionnaires_period {
             {
                 _template_ => $template,
                 _parameters_ => \%h,
+                _line_indent => $cobrand->email_indent,
                 To => [ [ $row->user->email, $row->name ] ],
                 From => [ $sender, $sender_name ],
             },

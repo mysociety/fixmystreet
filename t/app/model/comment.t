@@ -23,5 +23,5 @@ my $comment = $comment_rs->new(
     }
 );
 
-is $comment->confirmed_local,  undef, 'inflating null confirmed ok';
-is $comment->created_local,  undef, 'inflating null confirmed ok';
+is $comment->confirmed,  undef, 'inflating null confirmed ok';
+is $comment->created,  undef, 'inflating null confirmed ok';
