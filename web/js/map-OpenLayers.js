@@ -418,7 +418,19 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
             href = href.substring( 0, href.indexOf(separator) );
         }
 
-        href += separator + OpenLayers.Util.getParameterString(this.createParams(null, this.map.getZoom()+fixmystreet.zoomOffset));
+        var center = this.map.getCenter();
+        if ( center && fixmystreet.state_map && fixmystreet.state_map == 'full' ) {
+            // Translate the permalink co-ords so that 'centre' is accurate
+            var $content = $('.content'), mb = $('#map_box'),
+                q = ( $content.offset().left - mb.offset().left + $content.width() ) / 2;
+            if (q < 0) { q = 0; }
+            var p = this.map.getViewPortPxFromLonLat(center);
+            p.x += q;
+            p.y += 25;
+            center = this.map.getLonLatFromViewPortPx(p);
+        }
+
+        href += separator + OpenLayers.Util.getParameterString(this.createParams(center, this.map.getZoom()+fixmystreet.zoomOffset));
         // Could use mlat/mlon here as well if we are on a page with a marker
         if (this.anchor && !this.element) {
             window.location.href = href;
