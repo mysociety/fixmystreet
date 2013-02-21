@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-02-21 12:36+0000\n"
+"POT-Creation-Date: 2013-02-21 15:57+0000\n"
 "PO-Revision-Date: 2011-12-08 10:56+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Nynorsk <i18n-nn@lister.ping.uio.no>\n"
@@ -67,10 +67,6 @@ msgstr "%d aktive oppdateringar"
 #: templates/web/default/admin/index.html:18
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
 msgstr "%d spørjeskjema sendt &ndash; %d svart (%s%%)"
-
-#: templates/web/default/report/_support.html:3
-msgid "%d supporters"
-msgstr ""
 
 #: templates/web/default/pagination.html:10
 msgid "%d to %d of %d"
@@ -188,10 +184,6 @@ msgstr "-- Vel ein kategori --"
 #: perllib/FixMyStreet/DB/Result/Problem.pm:424
 msgid "-- Pick a property type --"
 msgstr "-- Vel ein eigedomstype --"
-
-#: templates/web/default/report/_support.html:3
-msgid "1 supporter"
-msgstr ""
 
 #: templates/web/default/questionnaire/completed.html:20
 msgid ""
@@ -1978,7 +1970,8 @@ msgstr "Ingen problem er rapporterte"
 msgid "No result returned"
 msgstr ""
 
-#: templates/web/default/report/_support.html:3
+#: templates/web/default/report/_support.html:2
+#: templates/web/default/report/_support.html:4
 msgid "No supporters"
 msgstr ""
 
@@ -4876,6 +4869,13 @@ msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d time"
 msgstr[1] "%d timar"
+
+#: templates/web/default/report/_support.html:6
+#, perl-format
+msgid "%d supporter"
+msgid_plural "%d supporters"
+msgstr[0] ""
+msgstr[1] ""
 
 #: perllib/Utils.pm:284
 #, perl-format

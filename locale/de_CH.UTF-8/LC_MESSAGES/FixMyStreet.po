@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-02-21 12:36+0000\n"
+"POT-Creation-Date: 2013-02-21 15:57+0000\n"
 "PO-Revision-Date: 2013-02-04 12:02+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -61,10 +61,6 @@ msgstr ""
 
 #: templates/web/default/admin/index.html:18
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
-msgstr ""
-
-#: templates/web/default/report/_support.html:3
-msgid "%d supporters"
 msgstr ""
 
 #: templates/web/default/pagination.html:10
@@ -178,10 +174,6 @@ msgstr "-- Wählen Sie eine Kategorie --"
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:615
 #: perllib/FixMyStreet/DB/Result/Problem.pm:424
 msgid "-- Pick a property type --"
-msgstr ""
-
-#: templates/web/default/report/_support.html:3
-msgid "1 supporter"
 msgstr ""
 
 #: templates/web/default/questionnaire/completed.html:20
@@ -1849,7 +1841,8 @@ msgstr "Bisher wurden noch keine Meldungen erfasst."
 msgid "No result returned"
 msgstr ""
 
-#: templates/web/default/report/_support.html:3
+#: templates/web/default/report/_support.html:2
+#: templates/web/default/report/_support.html:4
 msgid "No supporters"
 msgstr ""
 
@@ -4531,6 +4524,13 @@ msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d Stunde"
 msgstr[1] "%d Stunden"
+
+#: templates/web/default/report/_support.html:6
+#, perl-format
+msgid "%d supporter"
+msgid_plural "%d supporters"
+msgstr[0] ""
+msgstr[1] ""
 
 #: perllib/Utils.pm:284
 #, perl-format

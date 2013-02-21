@@ -1,11 +1,17 @@
 [% IF c.cobrand.can_support_problems %]
-<p id="supporter"><small>
-    [% IF !problem.interest_count %][% text=loc('No supporters') %][% ELSIF problem.interest_count == 1 %][% text = loc('1 supporter') %][% ELSE %][% text = tprintf( loc('%d supporters' ), problem.interest_count ) %][% END %]
-    [% IF c.user && c.user.from_body %]<form action="[% c.uri_for( '/report/support' ) %]">
-        [% text %] <input type="hidden" name="id" value="[% problem.id %]"><input type="submit" class="green-btn" value="Add support">
+[%
+    IF !problem.interest_count;
+        SET text = loc('No supporters');
+    ELSE;
+        SET text = tprintf( nget( "%d supporter", "%d supporters", problem.interest_count ), problem.interest_count );
+    END;
+%]
+
+    [% IF c.user AND c.user.from_body %]
+    <form action="[% c.uri_for( '/report/support' ) %]">
+        <p id="supporter"><small>[% text %] <input type="hidden" name="id" value="[% problem.id %]"><input type="submit" class="green-btn" value="Add support"></small></p>
     </form>
     [% ELSE %]
-        [% text %]
+        <p id="supporter"><small>[% text %]</small></p>
     [% END %]
-</small></p>
 [% END %]

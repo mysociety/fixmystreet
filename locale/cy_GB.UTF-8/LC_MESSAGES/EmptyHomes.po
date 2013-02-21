@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-02-21 12:36+0000\n"
+"POT-Creation-Date: 2013-02-21 15:57+0000\n"
 "PO-Revision-Date: 2009-07-10 14:20-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -68,10 +68,6 @@ msgstr "Anfonwch ddiweddariadau ataf i drwy'r e-bost"
 
 #: templates/web/default/admin/index.html:18
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
-msgstr ""
-
-#: templates/web/default/report/_support.html:3
-msgid "%d supporters"
 msgstr ""
 
 #: templates/web/default/pagination.html:10
@@ -196,10 +192,6 @@ msgstr "-- Dewiswch fath o eiddo --"
 #: perllib/FixMyStreet/DB/Result/Problem.pm:424
 msgid "-- Pick a property type --"
 msgstr "-- Dewiswch fath o eiddo --"
-
-#: templates/web/default/report/_support.html:3
-msgid "1 supporter"
-msgstr ""
 
 #: templates/web/default/questionnaire/completed.html:20
 #, fuzzy
@@ -2087,7 +2079,8 @@ msgstr "Ni roddwyd gwybod eto am unrhyw eiddo gwag."
 msgid "No result returned"
 msgstr ""
 
-#: templates/web/default/report/_support.html:3
+#: templates/web/default/report/_support.html:2
+#: templates/web/default/report/_support.html:4
 msgid "No supporters"
 msgstr ""
 
@@ -5021,6 +5014,13 @@ msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "awr"
 msgstr[1] "awr"
+
+#: templates/web/default/report/_support.html:6
+#, perl-format
+msgid "%d supporter"
+msgid_plural "%d supporters"
+msgstr[0] ""
+msgstr[1] ""
 
 #: perllib/Utils.pm:284
 #, fuzzy, perl-format
