@@ -22,7 +22,7 @@
         <th><a href="[% INCLUDE sort_link choice = col.0 %]#[% hash %]">[% col.1 %] [% INCLUDE sort_arrow choice = col.0 %]</a></th>
       [% END %]
         [% IF NOT no_edit %]
-        <th>*</th>
+        <th class='edit'>*</th>
         [% END %]
     </tr>
     <tr class="filter-row">
