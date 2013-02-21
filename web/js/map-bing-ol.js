@@ -19,6 +19,11 @@ function set_map_config(perm) {
         new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
+    /* Linking back to around from report page, keeping track of map moves */
+    if ( fixmystreet.page == 'report' ) {
+        fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
+    }
+
     if (fixmystreet.map_type) {
         tile_base = fixmystreet.map_type;
     }
