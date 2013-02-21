@@ -1050,7 +1050,7 @@ subtest 'report search' => sub {
     $report->update;
 
     $mech->get_ok('/admin/reports?search=' . $report->user->email);
-    $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td> \s* $r_id \s* </td>}xs );
+    $mech->content_like( qr{<tr [^>]*hidden[^>]*> \s* <td[^>]*> \s* $r_id \s* </td>}xs );
 
     $report->state('fixed - user');
     $report->update;
