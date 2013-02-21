@@ -258,7 +258,6 @@ fieldset {
 input[type=text],
 input[type=password],
 input[type=email],
-input[type=file],
 textarea {
   @include box-sizing(border-box);
   width: 100%;
@@ -269,7 +268,6 @@ textarea {
     input[type=text],
     input[type=password],
     input[type=email],
-    input[type=file],
     textarea {
         max-width: 95%;
     }
@@ -295,16 +293,12 @@ textarea {
 
 input[type=text],
 input[type=password],
-input[type=email],
-input[type=file] {
+input[type=email] {
   border: 0.125em solid #888888;
   @include border-radius(0.25em);
   display: block;
   font-size: 1em;
   line-height: 1em;
-}
-input[type=file] {
-  margin-bottom:1em;
 }
 
 label{
