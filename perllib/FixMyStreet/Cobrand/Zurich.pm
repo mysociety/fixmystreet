@@ -63,6 +63,7 @@ sub problem_as_hashref {
             delete $hashref->{ $var };
         }
         $hashref->{detail} = _('This report is awaiting moderation.');
+        $hashref->{title} = _('This report is awaiting moderation.');
         $hashref->{state} = 'submitted';
         $hashref->{state_t} = _('Submitted');
     } else {
