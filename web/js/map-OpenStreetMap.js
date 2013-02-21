@@ -7,8 +7,8 @@ function set_map_config(perm) {
         new OpenLayers.Control.ArgParser(),
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.Permalink(permalink_id),
-        new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
+        new OpenLayers.Control.PermalinkFMS(permalink_id),
+        new OpenLayers.Control.PermalinkFMSz('osm_link', 'http://www.openstreetmap.org/'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
 }

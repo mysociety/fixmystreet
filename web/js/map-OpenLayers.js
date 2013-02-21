@@ -411,7 +411,7 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
 
 /* Overriding Permalink so that it can pass the correct zoom to OSM */
 OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink, {
-    updateLink: function() {
+    _updateLink: function(alter_zoom) {
         var separator = this.anchor ? '#' : '?';
         var href = this.base;
         if (href.indexOf(separator) != -1) {
@@ -430,7 +430,11 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
             center = this.map.getLonLatFromViewPortPx(p);
         }
 
-        href += separator + OpenLayers.Util.getParameterString(this.createParams(center, this.map.getZoom()+fixmystreet.zoomOffset));
+        var zoom = this.map.getZoom();
+        if ( alter_zoom ) {
+            zoom += fixmystreet.zoomOffset;
+        }
+        href += separator + OpenLayers.Util.getParameterString(this.createParams(center, zoom));
         // Could use mlat/mlon here as well if we are on a page with a marker
         if (this.anchor && !this.element) {
             window.location.href = href;
@@ -438,6 +442,14 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
         else {
             this.element.href = href;
         }
+    },
+    updateLink: function() {
+        this._updateLink(0);
+    }
+});
+OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.PermalinkFMS, {
+    updateLink: function() {
+        this._updateLink(1);
     }
 });
 
