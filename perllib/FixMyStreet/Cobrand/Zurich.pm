@@ -599,6 +599,8 @@ sub admin_stats {
         $c->res->body($body);
     }
 
+    # Total reports (non-hidden)
+    my $total = $c->model('DB::Problem')->search( \%params )->count;
     # Device for apps (iOS/Android)
     my $per_service = $c->model('DB::Problem')->search( \%params, {
         select   => [ 'service', { count => 'id' } ],
@@ -640,6 +642,7 @@ sub admin_stats {
     $c->stash(
         per_service => $per_service,
         per_category => $per_category,
+        reports_total => $total,
         reports_solved => $solved,
         reports_spam => $hidden,
         reports_assigned => $closed,
