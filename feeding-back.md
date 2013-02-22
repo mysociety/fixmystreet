@@ -8,13 +8,31 @@ title: Feeding back your changes
 We want people using the code to keep it as up to date as they can, so that
 they gain the benefits of any changes made to the code by us or by other users.
 To do this, we need your help when you are making changes to the code, feeding
-them back to us and [updating your code](/updating/).
+the changes back to us and [updating your code](/updating/).
+
+## What to do if you haven't done this
+
+*Don't panic!* Everything is solvable, and we fully understand that what little
+time you have has been better spent getting the code to work at all for you
+than to make sure it was done in the best possible way for the future. Get in
+touch to discuss how best we can bring things together.
+
+## Make small, atomic changes
+
+Git is easiest to work with if you make small, coherent commits, with good
+commit messages. That way, it is easier to rearrange and adjust in order to get
+things back upstream with pull requests and merges.
+
+Even if you're working on your own on a fork, please do use git appropriately,
+because that will only make it easier to integrate changes in the future. If
+you simply edit files without any sort of version control, you will make things
+very hard for yourself as well as for us.
 
 ## Only make the minimal changes necessary
 
-Firstly, please do not copy all the templates and all the stylesheets into your
-own cobrand directories and then hack them until they work how you want. If you
-do that, you will find it very hard to incorporate any changes and fixes to the
+Please do not copy all the templates and all the stylesheets into your own
+cobrand directories and then hack them until they work how you want. If you do
+that, you will find it very hard to incorporate any changes and fixes to the
 parent templates/CSS that are made, as your own forked copies will override
 them.
 
@@ -50,21 +68,4 @@ Please implement your changes in a fork of the repository on github and submit
 a pull request as soon as you can so that the changes can be discussed and
 incorporated as soon as possible, reducing the amount of time your code and
 upstream are apart.
-
-## What to do if you haven't done this
-
-*Don't panic!* Everything is solvable, and we fully understand that what little
-time you have has been better spent getting the code to work at all for you
-than to make sure it was done in the best possible way for the future. Get in
-touch to discuss how best we can bring things together.
-
-<!--
-However, there are things you can do if you have time that can help.
-Say you have a repository where you forked from FixMyStreet some time ago, and
-have made numerous commits on top of it, such that you think merging with
-upstream master (see our [page on updating](/updating/)) will cause many
-conflicts and anguish. As one example, you've manually altered some text in a
-JavaScript file in to your language, whilst upstream has moved that text into
-the .po file for easier translation.
--->
 
