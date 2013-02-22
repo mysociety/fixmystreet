@@ -185,3 +185,12 @@ be found in `perllib/FixMyStreet/Cobrands/`. There is a default Cobrand
 then override any of the methods from the default Cobrand.
 [More information on Cobrand modules](/customising/cobrand-module/).
 
+## Feeding back changes
+
+It would be great if the changes you make to the code could be fed back
+upstream to benefit other users. Obviously if you've only customised templates
+and CSS you may not feel you have to, but it's likely you'll have needed to
+make actual code changes for your particular environment, and feeding these
+back means it is easier to update the code from upstream in future to gain new
+features and bugfixes.
+[More information on feeding back changes](/feeding-back/).
