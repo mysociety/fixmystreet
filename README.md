@@ -14,10 +14,12 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.1.
+Platform is now at version 1.1.1.
 
 ## Releases
 
+* v1.1.1 (22nd February 2013)
+    - Hotfix to fix missed iPhone width bug
 * v1.1 (22nd February 2013)
     - Addition of bodies so that the organisations that reports are sent to can
       cover multiple MapIt administrative areas, or multiple bodies can cover
