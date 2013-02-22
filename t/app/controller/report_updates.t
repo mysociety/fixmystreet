@@ -807,7 +807,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
             user          => $user,
             problem_id    => $report->id,
             text          => 'update text',
-            confirmed     => DateTime->now,
+            confirmed     => DateTime->now + DateTime::Duration->new( minutes => 1 ),
             problem_state => 'confirmed',
             anonymous     => 0,
             mark_open     => 0,
