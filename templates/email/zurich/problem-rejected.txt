@@ -1,12 +1,12 @@
 Subject: Züri wie neu: Meldung #[% problem.id %]
 
-Guten Tag [% problem.name %]
+Grüezi [% problem.name %]
 
 Ihre Meldung wurde aufgrund des Inhalts zurückgewiesen.
 
-Ihre Meldung:
+Ihre Meldung lautet:
 
 [% problem.detail %]
 
-Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.
+Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht darauf.
 

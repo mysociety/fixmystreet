@@ -1,12 +1,14 @@
 Subject: Züri wie neu: Meldung #[% report.id %]
 
-Guten Tag [% report.name %]
 
-Bitte klicken Sie auf den untenstehenden Link, um Ihre Meldung zu bestätigen. Falls der Link nicht funktioniert, kopieren Sie ihn in Ihren Browser:
+
+Grüezi [% report.name %]
+
+Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Bitte klicken Sie auf den untenstehenden Link, um sie zu bestätigen. Falls der Link nicht funktioniert, kopieren Sie ihn in Ihren Browser:
 
 [% token_url %]
 
-Ihre Meldung:
+Ihre Meldung lautet:
 
 [% report.detail %]
 
