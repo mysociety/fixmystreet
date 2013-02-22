@@ -47,14 +47,17 @@ the address in reports and RSS feeds or alerts.
 
     Return 0 to disable the display of uploaded photos.
 
-* remove_redundant_councils
+* remove_redundant_areas
 
     This is used to filter out any overlapping jurisdictions from MapIt results
-where only one of the authorities actually has reponsability for the events
-reported by the site. An example would be be a report in a city where MapIt
+where only one of the authorities actually has responsibility for the events
+reported by the site. An example would be a report in a city where MapIt
 has an ID for the city council and the state council (and they are both the
 same MapIt area type) but problems are only reported to the state. In this case
-you would remove the ID for the city council from the results.
+you could remove the ID for the city council from the results.
+
+    With the new bodies handling, a better way to handle this would be to simply
+have a body that only covered the state council administrative area.
 
 * short_name
 

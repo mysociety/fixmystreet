@@ -107,6 +107,11 @@ img {
   max-width:100%;
 }
 
+.r {
+    float: right;
+    margin: 0 0 1em 1em;
+}
+
 .side {
   width: 20em;
   float: left;
