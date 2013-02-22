@@ -1,9 +1,0 @@
-[% IF pretty_pc %]
-    [%
-        pretty_pc = pretty_pc | html | replace(' ', '&nbsp;');
-    %]
-[% END %]
-
-<div id="alerts">
-  [% INCLUDE 'alert/_list.html' %]
-</div>

@@ -1,9 +1,0 @@
-[% IF around_map.size %]
-    [% FOREACH p IN around_map %]
-        [% INCLUDE 'report/_item.html'
-            problem = p.problem,
-            dist = tprintf("%.1f", (p.distance || 0) ) %]
-    [% END %]
-[% ELSE %]
-    <li><p>[% loc('No problems found.') %]</p></li>
-[% END %]
