@@ -255,6 +255,10 @@ fieldset {
   margin: 1em;
 }
 
+input[type=file] {
+    width: 100%;
+}
+
 input[type=text],
 input[type=password],
 input[type=email],
