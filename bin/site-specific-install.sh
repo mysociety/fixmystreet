@@ -29,7 +29,7 @@ misuse() {
 install_nginx
 
 # Check out the current released version
-(cd "$REPOSITORY" && su -l -c "git checkout '$VERSION'" "$UNIX_USER")
+su -l -c "cd '$REPOSITORY' && git checkout '$VERSION'" "$UNIX_USER"
 
 install_website_packages
 
