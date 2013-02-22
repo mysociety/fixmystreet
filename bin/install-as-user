@@ -101,7 +101,7 @@ fi
 
 # Install the required Perl modules - this may take a very long time:
 
-cd "$FMS_REPOSITORY"
+cd "$REPOSITORY"
 bin/install_perl_modules
 
 # Generate po and mo files (these invocations taken from Kagee's script):

@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Set this to the version we want to check out
+VERSION=v1.1
+
 PARENT_SCRIPT_URL=https://github.com/mysociety/commonlib/blob/master/bin/install-site.sh
 
 misuse() {
@@ -24,6 +27,9 @@ misuse() {
 [ -z "$VERSION" ] && misuse VERSION
 
 install_nginx
+
+# Check out the current released version
+(cd "$REPOSITORY" && su -l -c "git checkout '$VERSION'" "$UNIX_USER")
 
 install_website_packages
 
