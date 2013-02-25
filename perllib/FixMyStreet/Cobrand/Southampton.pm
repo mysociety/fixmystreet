@@ -20,5 +20,7 @@ sub disambiguate_location {
     };
 }
 
+sub send_questionnaires { return 0; }
+
 1;
 
