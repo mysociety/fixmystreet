@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="mobile">
+<html>
   <head>
   <title></title>
 
@@ -10,73 +10,28 @@
     <link rel="stylesheet" href="css/mobile.css">
     <link rel="stylesheet" href="jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.css">
 
-    <script type="text/javascript" src="js/report.js"></script>
+    <script type="text/javascript">
+        var FMS = {};
+    </script>
+
     <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="js/mobile_config.js"></script>
     <script type="text/javascript" src="jquery.mobile-1.2.0/jquery.mobile-1.2.0.min.js"></script>
     <script type="text/javascript" src="cordova-independent.js"></script>
 
+    <script type="text/javascript" src="js/lodash.min.js"></script>
+    <script type="text/javascript" src="js/backbone-min.js"></script>
+
     <script type="text/javascript" src="js/json2.js"></script>
     <script type="text/javascript" src="js/config.js"></script>
     <script src="js/jquery.validate.min.js" type="text/javascript" charset="utf-8"></script>
 
-    <script type="text/javascript" src="js/geo.min.js"></script>
-    <script type="text/javascript" src="js/fixmystreet.js"></script>
-    <script type="text/javascript" src="js/mobile.js"></script>
-    <script type="text/javascript" src="js/OpenLayers.fixmystreet.js"></script>
-    <script type="text/javascript" src="js/map-OpenLayers.js"></script>
-    <script type="text/javascript" src="js/map-bing-ol.js"></script>
+    <script type="text/javascript" src="js/views/fms.js"></script>
+    <script type="text/javascript" src="js/views/home.js"></script>
 
-    <script type="text/javascript">
-        validation_strings = {
-            update: 'Please enter a message',
-            title: 'Please enter a subject',
-            detail: 'Please enter some details',
-            name: {
-                required: 'Please enter your name',
-                validName: 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
-            },
-            category: 'Please choose a category',
-            rznvy: {
-                required: 'Please enter your email',
-                email: 'Please enter a valid email'
-            },
-            email: {
-                required: 'Please enter your email',
-                email: 'Please enter a valid email'
-            }
-        };
-        </script>
+    <script type="text/javascript" src="js/router.js"></script>
+    <script type="text/javascript" src="js/app.js"></script>
+
     </head>
-    <body id="container" class="frontpage fullwidthpage">
-        <div class="wrapper" id="front-page" data-role="page">
-            <div data-id="locate" id="index-header" data-role="header" data-position="fixed">
-                <a href="frontpage-form.html" data-transition="slideup" class="ui-btn-left">Search</a>
-                <h1>Locate</h1>
-            </div>
-            <div class="table-cell">
-                <div class="container">
-                    <div class="content" role="main">
-                        <div class="tablewrapper">
-                            <div id="locating" class="nodisplay" style="text-align: center; padding-top: 50%">
-                                Determining location<br>
-                                <span id="accuracy"></span>
-                            </div>
-                            <div id="have_saved" class="nodisplay">
-                                <p>
-                                You have an incomplete report saved. Would you like to:
-                                </p>
-                                <ul>
-                                    <li><input type="button" id="use_saved" value="Complete Saved Report"></li>
-                                    <li>Or create a new report and:</li>
-                                    <li><input type="button" id="delete_saved" value="Delete Saved Report"></li>
-                                    <li><input type="button" id="continue" value="Keep Saved Report"></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- .wrapper -->
-    </body>
+    <body id="container" class="frontpage fullwidthpage"></body>
 </html>
