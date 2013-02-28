@@ -19,6 +19,8 @@
 
             afterRender: function() {},
 
+            afterDisplay: function() {},
+
             onClickButtonPrev: function() {
                 this.navigate( this.prev, 'right' );
             },
@@ -26,6 +28,8 @@
             onClickButtonNext: function() {
                 this.navigate( this.next, 'left' );
             },
+
+            destroy: function() { console.log('destory for ' + this.id); this.remove(); }
         })
     });
 })(FMS, Backbone, _, $);

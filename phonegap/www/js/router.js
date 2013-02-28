@@ -6,6 +6,7 @@
             routes: {
                 '': 'home',
                 'home': 'home',
+                'around': 'around'
             },
 
             initialize: function() {
@@ -15,6 +16,11 @@
                 if (this.currentView && this.currentView.prev) {
                     this.currentView.onClickButtonPrev();
                 }
+            },
+
+            around: function(){
+                var aroundView = new FMS.AroundView();
+                this.changeView(aroundView);
             },
 
             home: function(){
@@ -27,6 +33,11 @@
                 view.render();
                 $('body').append($(view.el));
                 $.mobile.changePage($(view.el), { changeHash: false });
+                if(!_.isNull(this.currentView)) {
+                    var oldView = this.currentView;
+                    oldView.destroy();
+                }
+                view.afterDisplay();
                 this.currentView = view;
             }
         })

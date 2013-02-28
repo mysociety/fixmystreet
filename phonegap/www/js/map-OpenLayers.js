@@ -314,17 +314,17 @@ function show_map(event) {
 
 
     if ( fixmystreet.page == 'around' ) {
-        if ( localStorage.currentReport ) {
-            mark_here();
-        } else {
-            fixmystreet.nav.activate();
+        //if ( localStorage.currentReport ) {
+            //mark_here();
+        //} else {
+            //fixmystreet.nav.activate();
             $('#mark-here').show();
-        }
+        //}
     }
 }
 
-$(document).delegate('#around-page', 'pageshow', show_map );
-$(document).delegate('#report-page', 'pageshow', show_map );
+//$(document).delegate('#around-page', 'pageshow', show_map );
+//$(document).delegate('#report-page', 'pageshow', show_map );
 
 
 OpenLayers.Control.Crosshairs = OpenLayers.Class.create();

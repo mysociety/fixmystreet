@@ -38,7 +38,7 @@ var tpl = {
 ;(function (FMS, Backbone, _, $) {
     _.extend(FMS, {
         templates: [
-            'home'
+            'home', 'around'
         ],
 
         initialized: 0,
