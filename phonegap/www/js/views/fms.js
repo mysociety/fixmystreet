@@ -1,6 +1,14 @@
 ;(function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         FMSView: Backbone.View.extend({
+            tag: 'div',
+
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay',
+                'click .ui-btn-left': 'onClickButtonPrev',
+                'click .ui-btn-right': 'onClickButtonNext'
+            },
 
             render: function(){
                 if ( !this.template ) {
