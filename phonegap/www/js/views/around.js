@@ -2,7 +2,6 @@
     _.extend( FMS, {
         AroundView: FMS.FMSView.extend({
             template: 'around',
-            tag: 'div',
             id: 'around-page',
 
             events: {

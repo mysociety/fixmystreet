@@ -2,13 +2,7 @@
     _.extend( FMS, {
         HomeView: FMS.FMSView.extend({
             template: 'home',
-            tag: 'div',
             id: 'front-page',
-
-            events: {
-                'pagehide': 'destroy',
-                'pageshow': 'afterDisplay'
-            },
 
             afterRender: function() {
                 /*
