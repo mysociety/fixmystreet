@@ -96,7 +96,7 @@ sub send {
               COUNTY => "",          # char30
               CITY => "",            # char30
               POSTALCODE => $postcode,   # char10
-              STREET => truncate_string_with_entities(ent(encode_utf8($nearest_street)), 30), # char30
+              STREET => truncate_string_with_entities(ent(encode_utf8($nearest_street)), 60), # char60
               STREETNUMBER => "",    # char5
               GEOCODE => $geo_code,  # char32
             },
