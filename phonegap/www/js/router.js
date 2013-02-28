@@ -6,7 +6,8 @@
             routes: {
                 '': 'home',
                 'home': 'home',
-                'around': 'around'
+                'around': 'around',
+                'photo': 'photo'
             },
 
             initialize: function() {
@@ -28,17 +29,22 @@
                 this.changeView(homeView);
             },
 
+            photo: function(){
+                var photoView = new FMS.PhotoView();
+                this.changeView(photoView);
+            },
+
             changeView: function(view) {
                 console.log( 'change View to ' + view.id );
                 $(view.el).attr('data-role', 'page');
+                if ( view.prev ) {
+                    $(view.el).attr('data-add-back-btn', 'true');
+                }
                 view.render();
                 $('body').append($(view.el));
                 $.mobile.changePage($(view.el), { changeHash: false });
 
-                if(!_.isNull(this.currentView)) {
-                    this.currentView.destroy();
-                }
-                view.afterDisplay();
+                console.log('changed View to ' + view.id);
                 this.currentView = view;
             }
         })

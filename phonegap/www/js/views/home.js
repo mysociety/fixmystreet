@@ -5,6 +5,11 @@
             tag: 'div',
             id: 'front-page',
 
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay'
+            },
+
             afterRender: function() {
                 /*
                 if ( !can_geolocate && ( !navigator.network || !navigator.network.connection ) ) {
@@ -27,9 +32,9 @@
                 if ( navigator && navigator.network && ( navigator.network.connection.type == Connection.NONE ||
                         navigator.network.connection.type == Connection.UNKNOWN ) ) {
                     localStorage.offline = 1;
-                    FMS.router.navigate( 'no_connection' );
+                    this.navigate( 'no_connection' );
                 } else {
-                    FMS.router.navigate( 'around', { trigger: true } );
+                    this.navigate( 'around' );
                 }
             }
         })

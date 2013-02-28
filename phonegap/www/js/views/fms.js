@@ -21,6 +21,14 @@
 
             afterDisplay: function() {},
 
+            navigate: function( route, direction ) {
+                if ( !direction ) {
+                    direction == 'left';
+                }
+
+                FMS.router.navigate( route, { trigger: true } );
+            },
+
             onClickButtonPrev: function() {
                 this.navigate( this.prev, 'right' );
             },
@@ -33,7 +41,10 @@
                 alert(msg);
             },
 
-            destroy: function() { console.log('destory for ' + this.id); this.remove(); }
+            destroy: function() { console.log('destory for ' + this.id); this._destroy(); this.remove(); },
+
+            _destroy: function() {}
         })
     });
+    _.extend( FMS.FMSView, Backbone.Events );
 })(FMS, Backbone, _, $);

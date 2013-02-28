@@ -5,6 +5,12 @@
             tag: 'div',
             id: 'around-page',
 
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay',
+                'click #mark-here': 'onClickReport'
+            },
+
             afterDisplay: function() {
                 this.locate();
             },
@@ -45,6 +51,41 @@
                     this.displayError( STRINGS.location_problem );
                 }
             },
+
+           onClickReport: function() {
+                var position = this.getCrossHairPosition();
+
+                var l = new Locate();
+                _.extend(l, Backbone.Events);
+                l.on('failed', this.noMap, this );
+                l.on('located', this.goPhoto, this );
+                l.check_location( { latitude: position.lat, longitude: position.lon } );
+            },
+
+            goPhoto: function(info) {
+                //this.model.set('lat', info.coordinates.latitude );
+                //this.model.set('lon', info.coordinates.longitude );
+                //this.model.set('categories', info.details.category );
+
+                this.navigate( 'photo' );
+            },
+
+            getCrossHairPosition: function() {
+                var cross = fixmystreet.map.getControlsByClass(
+                "OpenLayers.Control.Crosshairs");
+
+                var position = cross[0].getMapPosition();
+                position.transform(
+                    fixmystreet.map.getProjectionObject(),
+                    new OpenLayers.Projection("EPSG:4326")
+                );
+
+                return position;
+            },
+
+            _destroy: function() {
+                delete fixmystreet;
+            }
         })
     });
 })(FMS, Backbone, _, $);
