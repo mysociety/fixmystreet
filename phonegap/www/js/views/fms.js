@@ -29,6 +29,10 @@
                 this.navigate( this.next, 'left' );
             },
 
+            displayError: function(msg) {
+                alert(msg);
+            },
+
             destroy: function() { console.log('destory for ' + this.id); this.remove(); }
         })
     });

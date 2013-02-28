@@ -317,7 +317,7 @@ function show_map(event) {
         //if ( localStorage.currentReport ) {
             //mark_here();
         //} else {
-            //fixmystreet.nav.activate();
+            fixmystreet.nav.activate();
             $('#mark-here').show();
         //}
     }

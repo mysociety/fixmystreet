@@ -29,7 +29,6 @@
                     localStorage.offline = 1;
                     FMS.router.navigate( 'no_connection' );
                 } else {
-                    alert('pause');
                     FMS.router.navigate( 'around', { trigger: true } );
                 }
             }

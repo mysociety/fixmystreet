@@ -29,13 +29,14 @@
             },
 
             changeView: function(view) {
+                console.log( 'change View to ' + view.id );
                 $(view.el).attr('data-role', 'page');
                 view.render();
                 $('body').append($(view.el));
                 $.mobile.changePage($(view.el), { changeHash: false });
+
                 if(!_.isNull(this.currentView)) {
-                    var oldView = this.currentView;
-                    oldView.destroy();
+                    this.currentView.destroy();
                 }
                 view.afterDisplay();
                 this.currentView = view;
