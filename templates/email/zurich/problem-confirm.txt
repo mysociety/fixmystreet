@@ -12,4 +12,5 @@ Ihre Meldung lautet:
 
 [% report.detail %]
 
-Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.
+
+Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht darauf.
