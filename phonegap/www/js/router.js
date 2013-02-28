@@ -7,7 +7,8 @@
                 '': 'home',
                 'home': 'home',
                 'around': 'around',
-                'photo': 'photo'
+                'photo': 'photo',
+                'details': 'details'
             },
 
             initialize: function() {
@@ -32,6 +33,11 @@
             photo: function(){
                 var photoView = new FMS.PhotoView();
                 this.changeView(photoView);
+            },
+
+            details: function(){
+                var detailsView = new FMS.DetailsView();
+                this.changeView(detailsView);
             },
 
             changeView: function(view) {
