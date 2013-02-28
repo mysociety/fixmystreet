@@ -83,11 +83,11 @@ sub send {
             },
             IT_PROBLEM_DESC =>  { # MyTypes::TABLE_OF_CRMT_SERVICE_REQUEST_TEXT
               item =>  [ # MyTypes::CRMT_SERVICE_REQUEST_TEXT
-                map { { TEXT_LINE => $_ } } split_text_with_entities(ent(encode_utf8($h{message})), 132) # char132
+                map { { TEXT_LINE => $_ } } split_text_with_entities(encode_utf8($h{message}), 132) # char132
               ],
             },
-            IV_CUST_EMAIL => truncate_string_with_entities(ent(encode_utf8($h{email})), 241), # char241
-            IV_CUST_NAME  => truncate_string_with_entities(ent(encode_utf8($h{name})),   50), # char50
+            IV_CUST_EMAIL => truncate_string_with_entities(encode_utf8($h{email}), 241), # char241
+            IV_CUST_NAME  => truncate_string_with_entities(encode_utf8($h{name}),   50), # char50
             IV_KBID => $kbid,        # char50
             IV_PROBLEM_ID => $h{id}, # char35
             IV_PROBLEM_LOC =>  {     # MyTypes::BAPI_TTET_ADDRESS_COM
@@ -100,7 +100,7 @@ sub send {
               STREETNUMBER => "",    # char5
               GEOCODE => $geo_code,  # char32
             },
-            IV_PROBLEM_SUB => truncate_string_with_entities(ent(encode_utf8($h{title})), 40), # char40
+            IV_PROBLEM_SUB => truncate_string_with_entities(encode_utf8($h{title}), 40), # char40
           },
         );
         if ($result) {
