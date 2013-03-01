@@ -21,22 +21,22 @@
             },
 
             around: function(){
-                var aroundView = new FMS.AroundView();
+                var aroundView = new FMS.AroundView({ model: FMS.currentReport });
                 this.changeView(aroundView);
             },
 
             home: function(){
-                var homeView = new FMS.HomeView();
+                var homeView = new FMS.HomeView({ model: FMS.currentReport });
                 this.changeView(homeView);
             },
 
             photo: function(){
-                var photoView = new FMS.PhotoView();
+                var photoView = new FMS.PhotoView({ model: FMS.currentReport });
                 this.changeView(photoView);
             },
 
             details: function(){
-                var detailsView = new FMS.DetailsView();
+                var detailsView = new FMS.DetailsView({ model: FMS.currentReport });
                 this.changeView(detailsView);
             },
 

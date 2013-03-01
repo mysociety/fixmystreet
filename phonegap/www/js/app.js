@@ -45,6 +45,8 @@ var tpl = {
         currentUser: null,
         currentLocation: null,
 
+        currentReport: new FMS.Report(),
+
         reportToView: null,
 
         initialize: function () {

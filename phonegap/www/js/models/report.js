@@ -1,0 +1,157 @@
+;(function(FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        Report: Backbone.Model.extend({
+            urlRoot: CONFIG.FMS_URL + 'report/ajax',
+
+            defaults: {
+                lat: 0,
+                lon: 0,
+                title: '',
+                details: '',
+                may_show_name: '',
+                category: '',
+                phone: '',
+                pc: ''
+            },
+
+            sync: function(method, model, options) {
+                switch (method) {
+                    case 'create':
+                        this.post(model,options);
+                        break;
+                    case 'read':
+                        Backbone.ajaxSync(method, model, options);
+                        break;
+                    default:
+                        return true;
+                }
+            },
+
+            parse: function(res) {
+                if ( res.report && res.report.latitude ) {
+                    return {
+                        lat: res.report.latitude,
+                        lon: res.report.longitude,
+                        title: res.report.title,
+                        details: res.report.detail,
+                        photo: res.report.photo && res.report.photo.url ? CONFIG.FMS_URL + res.report.photo.url : null,
+                        meta: res.report.meta,
+                        confirmed_pp: res.report.confirmed_pp,
+                        created_pp: res.report.created_pp,
+                        category: res.report.category,
+                        state: res.report.state,
+                        state_t: res.report.state_t,
+                        is_fixed: res.report.is_fixed,
+                        used_map: res.report.used_map,
+                        update_time: res.updates ? res.updates.update_pp : null,
+                        update: res.updates ? res.updates.details : null
+                    };
+                }
+                return false;
+            },
+
+            post: function(model,options) {
+
+                var params = {
+                    service: device.platform,
+                    title: modek.get('title'),
+                    detail: model.get('details'),
+                    category: model.get('category'),
+                    lat: model.get('lat'),
+                    lon: model.get('lon'),
+                    pc: model.get('pc'),
+                    used_map: 1
+                };
+
+                if ( FMS.currentUser ) {
+                    params.name = FMS.currentUser.get('name');
+                    params.email = FMS.currentUser.get('email');
+                    params.phone = FMS.currentUser.get('phone');
+                } else {
+                    params.name = $('#form_name').val();
+                    params.email = $('#form_email').val();
+                    params.phone = $('#form_phone').val();
+
+                    FMS.currentUser = new FMS.User( {
+                        name: params.name,
+                        email: params.email,
+                        phone: params.phone
+                    });
+                }
+
+                if ( model.get('file') && model.get('file') !== '' ) {
+                    var handlers = options;
+                    var fileUploadSuccess = function(r) {
+                        $('#ajaxOverlay').hide();
+                        if ( r.response ) {
+                            var data;
+                            try {
+                                data = JSON.parse( decodeURIComponent(r.response) );
+                            }
+                            catch(err) {
+                                data = {};
+                            }
+                            handlers.success(data);
+                        } else {
+                            handlers.error(STRINGS.report_send_error);
+                        }
+                    };
+
+                    var fileUploadFail = function() {
+                        $('#ajaxOverlay').hide();
+                        handlers.error(STRINGS.report_send_error);
+                    };
+
+                    fileURI = model.get('file');
+
+                    var options = new FileUploadOptions();
+                    options.fileKey="photo";
+                    options.fileName=fileURI.substr(fileURI.lastIndexOf('/')+1);
+                    options.mimeType="image/jpeg";
+                    options.params = params;
+                    options.chunkedMode = false;
+
+                    $('#ajaxOverlay').show();
+                    var ft = new FileTransfer();
+                    ft.upload(fileURI, CONFIG.FMS_URL + "report/new/mobile", fileUploadSuccess, fileUploadFail, options);
+                } else {
+                    $.ajax( {
+                        url: CONFIG.FMS_URL + "report/new/mobile",
+                        type: 'POST',
+                        data: params,
+                        dataType: 'json',
+                        timeout: 30000,
+                        success: function(data) {
+                            if ( data.success ) {
+                                options.success( data );
+                            } else {
+                                options.error( data );
+                            }
+                        },
+                        error: function (data, status, errorThrown ) {
+                            console.log(STRINGS.report_send_error);
+                            options.error( data );
+                        }
+                    } );
+                }
+            },
+
+            getLastUpdate: function(time) {
+                if ( time ) {
+                    props.time = time;
+                }
+
+                if ( !props.time ) {
+                    return '';
+                }
+
+                var t;
+                if ( typeof props.time === 'String' ) {
+                    t = new Date( parseInt(props.time, 10) );
+                } else {
+                    t = props.time;
+                }
+            }
+        })
+    });
+})(FMS, Backbone, _, $);

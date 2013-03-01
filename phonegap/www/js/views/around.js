@@ -62,9 +62,9 @@
             },
 
             goPhoto: function(info) {
-                //this.model.set('lat', info.coordinates.latitude );
-                //this.model.set('lon', info.coordinates.longitude );
-                //this.model.set('categories', info.details.category );
+                this.model.set('lat', info.coordinates.latitude );
+                this.model.set('lon', info.coordinates.longitude );
+                this.model.set('categories', info.details.category );
 
                 this.navigate( 'photo' );
             },
