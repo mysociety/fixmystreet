@@ -3,7 +3,8 @@
         DetailsView: FMS.FMSView.extend({
             template: 'details',
             id: 'details-page',
-            prev: 'photo'
+            prev: 'photo',
+            next: 'submit'
         })
     });
 })(FMS, Backbone, _, $);

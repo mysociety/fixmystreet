@@ -8,7 +8,8 @@
                 'home': 'home',
                 'around': 'around',
                 'photo': 'photo',
-                'details': 'details'
+                'details': 'details',
+                'submit': 'submit'
             },
 
             initialize: function() {
@@ -38,6 +39,11 @@
             details: function(){
                 var detailsView = new FMS.DetailsView({ model: FMS.currentReport });
                 this.changeView(detailsView);
+            },
+
+            submit: function(){
+                var submitView = new FMS.SubmitView({ model: FMS.currentReport });
+                this.changeView(submitView);
             },
 
             changeView: function(view) {
