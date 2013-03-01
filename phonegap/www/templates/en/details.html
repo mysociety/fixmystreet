@@ -9,10 +9,10 @@
                 <div id="problem_form">
 
                     <label for="form_title">Subject</label>
-                    <input type="text" value="" name="title" id="form_title" placeholder="Provide a title" value="<%= title %>" required>
+                    <input type="text" name="title" id="form_title" placeholder="Provide a title" value="<%= title %>" required>
 
                     <label for="form_detail">Details</label>
-                    <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." value="<%= details %>"required></textarea>
+                    <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><%= details %></textarea>
 
                     <%= categories %>
                     <!--

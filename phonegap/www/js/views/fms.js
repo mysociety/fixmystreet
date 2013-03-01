@@ -49,6 +49,21 @@
                 alert(msg);
             },
 
+            validationError: function( id, error ) {
+                var el_id = '#' + id;
+                var el = $(el_id);
+                var err = '<div for="' + id + '" class="form-error">' + error + '</div>';
+                if ( $('div[for='+id+']').length === 0 ) {
+                    el.before(err);
+                    el.addClass('form-error');
+                }
+            },
+
+            clearValidationErrors: function() {
+                $('div.form-error').remove();
+                $('.form-error').removeClass('form-error');
+            },
+
             destroy: function() { console.log('destory for ' + this.id); this._destroy(); this.remove(); },
 
             _destroy: function() {}
