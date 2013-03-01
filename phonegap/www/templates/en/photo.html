@@ -1,21 +1,29 @@
 <div data-role="header" data-position="fixed" >
         <h1>Add Photo</h1>
-        <a id="next" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Skip</a>
+        <a href="details.html" id="photo-next-btn" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Skip</a>
 </div>
 <div class="container" data-enhance="false">
     <div class="content" role="main">
         <div id="side-form">
             <fieldset>
                 <div id="problem_form">
+                    <% if ( file != '' ) { %>
+                    <div id="add_photo" style="display: none">
+                    <% } else { %>
                     <div id="add_photo">
+                    <% } %>
                         <label>Optionally Add a Photo</label>
                         <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" class="green-btn"> Or 
                         <input value="Choose" type="button" name="existing" id="id_existing" class="green-btn">
                     </div>
 
+                    <% if ( file == '' ) { %>
                     <div id="display_photo" style="display: none">
+                    <% } else { %>
+                    <div id="display_photo">
+                    <% } %>
                         <label>Your Photo</label>
-                        <img id="photo" src="" width="200" />
+                        <img id="photo" src="<%= file %>" width="200" />
                         <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" class="green-btn">
                     </div>
 
