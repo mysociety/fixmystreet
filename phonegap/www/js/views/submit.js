@@ -15,6 +15,11 @@
                 'click #submit_register': 'onClickSubmit'
             },
 
+            initialize: function() {
+                this.model.on('sync', this.onReportSync, this );
+                this.model.on('error', this.onReportError, this );
+            },
+
             render: function(){
                 if ( !this.template ) {
                     console.log('no template to render');
@@ -33,9 +38,6 @@
             onClickSubmit: function(e) {
                 this.model.set( 'submit_clicked', $(e.target).attr('id') );
 
-                this.model.on('sync', this.onReportSync, this );
-                this.model.on('error', this.onReportError, this );
-
                 this.model.save();
             },
 
@@ -45,6 +47,11 @@
 
             onReportError: function(model, err, options) {
                 alert( FMS.strings.sync_error + ': ' + err.errors);
+            },
+
+            _destroy: function() {
+                this.model.off('sync');
+                this.model.off('error');
             }
         })
     });
