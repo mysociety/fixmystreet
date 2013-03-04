@@ -64,6 +64,7 @@
                     lat: model.get('lat'),
                     lon: model.get('lon'),
                     pc: model.get('pc'),
+                    may_show_name: $('#form_may_show_name').val() || 0,
                     used_map: 1
                 };
 
