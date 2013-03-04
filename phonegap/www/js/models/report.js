@@ -109,15 +109,15 @@
                             catch(err) {
                                 data = {};
                             }
-                            handlers.success(data);
+                            that.trigger('sync', that, data, options);
                         } else {
-                            handlers.error(STRINGS.report_send_error);
+                            that.trigger('error', that, FMS.strings.report_send_error, options);
                         }
                     };
 
                     var fileUploadFail = function() {
                         $('#ajaxOverlay').hide();
-                        handlers.error(STRINGS.report_send_error);
+                        that.trigger('error', that, STRINGS.report_send_error, options);
                     };
 
                     fileURI = model.get('file');
