@@ -53,9 +53,12 @@
 
             post: function(model,options) {
 
+                console.log(model.toJSON());
+                console.log(options);
+
                 var params = {
                     service: device.platform,
-                    title: modek.get('title'),
+                    title: model.get('title'),
                     detail: model.get('details'),
                     category: model.get('category'),
                     lat: model.get('lat'),
