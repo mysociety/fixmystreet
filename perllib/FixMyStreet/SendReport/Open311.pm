@@ -43,7 +43,7 @@ sub send {
         my $revert = 0;
 
         # Extra bromley fields
-        if ( $row->bodies_str == 2482 ) {
+        if ( $row->bodies_str eq '2482' ) {
 
             $revert = 1;
 
