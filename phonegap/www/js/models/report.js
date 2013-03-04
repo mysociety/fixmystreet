@@ -53,9 +53,6 @@
 
             post: function(model,options) {
 
-                console.log(model.toJSON());
-                console.log(options);
-
                 var params = {
                     service: device.platform,
                     title: model.get('title'),
