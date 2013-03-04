@@ -147,7 +147,7 @@
                             }
                         },
                         error: function (data, status, errorThrown ) {
-                            console.log(STRINGS.report_send_error);
+                            console.log(FMS.strings.report_send_error);
                             options.error( data );
                         }
                     } );
