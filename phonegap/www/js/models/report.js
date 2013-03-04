@@ -71,18 +71,31 @@
                     params.name = FMS.currentUser.get('name');
                     params.email = FMS.currentUser.get('email');
                     params.phone = FMS.currentUser.get('phone');
+                    params.password_sign_in = FMS.currentUser.get('password');
+                    params.submit_sign_in = 1;
                 } else {
                     params.name = $('#form_name').val();
                     params.email = $('#form_email').val();
                     params.phone = $('#form_phone').val();
+                    params.password_sign_in = $('#password_sign_in').val();
 
+                    if ( this.submit_clicked == 'submit_sign_in' ) {
+                        params.submit_sign_in = 1;
+                    } else {
+                        params.submit_register = 1;
+                    }
+
+                    /*
                     FMS.currentUser = new FMS.User( {
                         name: params.name,
                         email: params.email,
-                        phone: params.phone
+                        phone: params.phone,
+                        password: params.password
                     });
+                   */
                 }
 
+                var that = this;
                 if ( model.get('file') && model.get('file') !== '' ) {
                     var handlers = options;
                     var fileUploadSuccess = function(r) {
@@ -127,9 +140,9 @@
                         timeout: 30000,
                         success: function(data) {
                             if ( data.success ) {
-                                options.success( data );
+                                that.trigger('sync', that, data, options);
                             } else {
-                                options.error( data );
+                                that.trigger('error', that, data, options);
                             }
                         },
                         error: function (data, status, errorThrown ) {

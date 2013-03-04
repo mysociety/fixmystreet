@@ -5,10 +5,10 @@
 <div class="container" data-role="content" data-enhance="false">
     <div class="content" role="main">
 
-        <form action="" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate" data-ajax="false">
 
                 <fieldset>
                     <div id="problem_form">
+                        <% if ( user ) { %>
                         <div id="signed_in">
                             <p>
                             You are signed in as <span id="username"></span>
@@ -29,10 +29,10 @@
                             </div>
 
                             <div class="form-txt-submit-box">
-                                <input class="green-btn" type="submit" id="submit_signed_in" name="submit_signed_in" value="Report">
+                                <input class="green-btn" type="button" id="submit_signed_in" name="submit_signed_in" value="Report">
                             </div>
                         </div>
-
+                        <% } else { %>
                         <div id="signed_out">
                         <label for="form_email" id="email_label">Your email</label>
                         <input type="email" value="" name="email" id="form_email" placeholder="Please enter your email address" required>
@@ -47,13 +47,25 @@
                                     <label class="hidden-js n" for="password_sign_in">Yes I have a password</label>
                                     <div class="form-txt-submit-box">
                                         <input type="password" name="password_sign_in" id="password_sign_in" placeholder="Your password" value="">
-                                        <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="Report">
+                                        <input class="green-btn" type="button" id="submit_sign_in" name="submit_sign_in" value="Report">
                                     </div>
                                 </div>
 
                                 <div id="form_sign_in_no" class="form-box">
                                     <h5 id="let_me_confirm"><strong>No</strong> Let me confirm my report by email</h5>
 
+                                    <div id="name_details">
+                                        <label for="form_may_show_name">Name</label>
+                                        <input type="text" class="validName" value="" name="name" id="form_name" placeholder="Your name">
+
+                                        <div class="checkbox-group">
+                                            <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1" checked>
+                                            <label class="inline" for="form_may_show_name">Show my name publicly</label>
+                                        </div>
+
+                                        <label for="form_phone">Phone number</label>
+                                        <input type="text" value="" name="phone" id="form_phone" placeholder="Your phone number (optional)">
+                                    </div>
 
                                     <div id="password_surround">
                                         <label class="form-focus-hidden" for="password_register" id="password_label">Password</label>
@@ -61,12 +73,13 @@
 
                                     <div class="form-txt-submit-box form-focus-hidden">
                                         <input type="password" name="password_register" id="password_register" value="" placeholder="Enter a password (optional)">
-                                        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="Report">
+                                        <input class="green-btn" type="button" id="submit_register" name="submit_register" value="Report">
                                     </div>
 
                                 </div>
                             </div>
                             </div>
+                        <% } %>
 
                             <div id="report_save" class="form-box">
                                 <h5>Save this report for completion later</h5>
@@ -81,6 +94,5 @@
             </div>
 
         </div>
-        </form>
     </div>
 </div>
