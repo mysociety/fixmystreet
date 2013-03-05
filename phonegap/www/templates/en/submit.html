@@ -8,16 +8,16 @@
 
                 <fieldset>
                     <div id="problem_form">
-                        <% if ( user ) { %>
+                        <% if ( user && user.password ) { %>
                         <div id="signed_in">
                             <p>
-                            You are signed in as <span id="username"></span>
+                            You are signed in as <span id="username"><%= user.name %></span>
                             </p>
 
                             <p id="confirm_details">Confirm details</p>
                             <div id="name_details">
                                 <label for="form_may_show_name">Name</label>
-                                <input type="text" class="validName" value="" name="name" id="form_name" placeholder="Your name">
+                                <input type="text" class="validName" value="<%= user.name %>" name="name" id="form_name" placeholder="Your name">
 
                                 <div class="checkbox-group">
                                     <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1" checked>
@@ -25,7 +25,7 @@
                                 </div>
 
                                 <label for="form_phone">Phone number</label>
-                                <input type="text" value="" name="phone" id="form_phone" placeholder="Your phone number (optional)">
+                                <input type="text" value="<%= user.phone %>" name="phone" id="form_phone" placeholder="Your phone number (optional)">
                             </div>
 
                             <div class="form-txt-submit-box">
@@ -35,7 +35,7 @@
                         <% } else { %>
                         <div id="signed_out">
                         <label for="form_email" id="email_label">Your email</label>
-                        <input type="email" value="" name="email" id="form_email" placeholder="Please enter your email address" required>
+                        <input type="email" value="<%= user.email %>" name="email" id="form_email" placeholder="Please enter your email address" required>
 
                             <div id="form_sign_in">
                                 <h4 id="have_password">Do you have a FixMyStreet password?</h4>
@@ -56,7 +56,7 @@
 
                                     <div id="name_details">
                                         <label for="form_may_show_name">Name</label>
-                                        <input type="text" class="validName" value="" name="name" id="form_name" placeholder="Your name">
+                                        <input type="text" class="validName" value="<%= user.name %>" name="name" id="form_name" placeholder="Your name">
 
                                         <div class="checkbox-group">
                                             <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1" checked>
@@ -64,7 +64,7 @@
                                         </div>
 
                                         <label for="form_phone">Phone number</label>
-                                        <input type="text" value="" name="phone" id="form_phone" placeholder="Your phone number (optional)">
+                                        <input type="text" value="<%= user.phone %>" name="phone" id="form_phone" placeholder="Your phone number (optional)">
                                     </div>
 
                                     <div id="password_surround">

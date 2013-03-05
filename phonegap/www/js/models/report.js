@@ -65,7 +65,7 @@
                     used_map: 1
                 };
 
-                if ( FMS.currentUser ) {
+                if ( FMS.currentUser && FMS.currentUser.get('password') ) {
                     params.name = FMS.currentUser.get('name');
                     params.email = FMS.currentUser.get('email');
                     params.phone = FMS.currentUser.get('phone');
@@ -83,14 +83,12 @@
                         params.submit_register = 1;
                     }
 
-                    /*
-                    FMS.currentUser = new FMS.User( {
+                    FMS.currentUser.set({
                         name: params.name,
                         email: params.email,
                         phone: params.phone,
                         password: params.password
                     });
-                   */
                 }
 
                 var that = this;

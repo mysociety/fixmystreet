@@ -27,7 +27,7 @@
                 }
                 template = _.template( tpl.get( this.template ) );
                 if ( this.model ) {
-                    this.$el.html(template({ model: this.model.toJSON(), user: FMS.currentUser }));
+                    this.$el.html(template({ model: this.model.toJSON(), user: FMS.currentUser.toJSON() }));
                 } else {
                     this.$el.html(template());
                 }
@@ -42,6 +42,9 @@
             },
 
             onReportSync: function(model, resp, options) {
+                if ( FMS.currentUser ) {
+                    FMS.currentUser.save();
+                }
                 this.navigate( 'sent', 'left' );
             },
 

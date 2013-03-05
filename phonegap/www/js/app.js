@@ -42,6 +42,7 @@ var tpl = {
         ],
 
         initialized: 0,
+        users: new FMS.Users(),
         currentUser: null,
         currentLocation: null,
 
@@ -58,6 +59,15 @@ var tpl = {
                 _.extend(FMS, {
                     router: new FMS.appRouter()
                 });
+
+                // we only ever have the details of one user
+                FMS.users.fetch();
+                if ( FMS.users.length > 0 ) {
+                    FMS.currentUser = FMS.users.get(1);
+                }
+                if ( !FMS.currentUser ) {
+                    FMS.currentUser = new FMS.User({id: 1});
+                }
 
                 document.addEventListener('backbutton', function() { FMS.router.back(); }, true);
 
