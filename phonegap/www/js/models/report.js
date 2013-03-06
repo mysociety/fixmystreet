@@ -68,7 +68,7 @@
                     phone: model.get('user').get('phone')
                 };
 
-                if ( this.submit_clicked == 'submit_sign_in' ) {
+                if ( model.get('submit_clicked') == 'submit_sign_in' ) {
                     params.submit_sign_in = 1;
                     params.password_sign_in = model.get('user').get('password');
                 } else {

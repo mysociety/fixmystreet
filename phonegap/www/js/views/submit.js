@@ -185,9 +185,34 @@
                 'pageshow': 'afterDisplay',
                 'click .ui-btn-left': 'onClickButtonPrev',
                 'click #report': 'onClickSubmit',
+                'click #confirm_name': 'onClickSubmit'
             },
 
-            validate: function() { return 1; }
+            initialize: function() {
+                this.model.on('sync', this.onReportSync, this );
+                this.model.on('error', this.onReportError, this );
+            },
+
+            validate: function() { return 1; },
+
+            beforeSubmit: function() {
+                if ( $('#form_name').val() ) {
+                    this.model.set('submit_clicked', '');
+                    FMS.currentUser.set('name', $('#form_name').val());
+                } else {
+                    this.model.set('submit_clicked', 'submit_sign_in');
+                    FMS.currentUser.set('password', $('#form_password').val());
+                }
+            },
+
+            onReportError: function(model, err, options) {
+                if ( err.check_name ) {
+                    $('#form_name').val(err.check_name);
+                    $('#password_row').hide();
+                    $('#check_name').show();
+                }
+            }
+
         })
     });
 })(FMS, Backbone, _, $);
