@@ -16,8 +16,8 @@
             },
 
             initialize: function() {
-                this.model.on('sync', this.onReportSync, this );
-                this.model.on('error', this.onReportError, this );
+                this.listenTo(this.model, 'sync', this.onReportSync );
+                this.listenTo( this.model, 'error', this.onReportError );
             },
 
             render: function(){
@@ -58,8 +58,7 @@
             beforeSubmit: function() {},
 
             _destroy: function() {
-                this.model.off('sync');
-                this.model.off('error');
+                this.stopListening();
             }
         })
     });
@@ -134,8 +133,8 @@
 
             initialize: function() {
                 console.log('submit name initalize');
-                this.model.on('sync', this.onReportSync, this );
-                this.model.on('error', this.onReportError, this );
+                this.listenTo(this.model, 'sync', this.onReportSync );
+                this.listenTo( this.model, 'error', this.onReportError );
             },
 
             validate: function() {
@@ -189,8 +188,8 @@
             },
 
             initialize: function() {
-                this.model.on('sync', this.onReportSync, this );
-                this.model.on('error', this.onReportError, this );
+                this.listenTo(this.model, 'sync', this.onReportSync );
+                this.listenTo( this.model, 'error', this.onReportError );
             },
 
             validate: function() {
