@@ -158,6 +158,7 @@
 
             onClickPassword: function() {
                 if ( this.validate() ) {
+                    this.model.set('submit_clicked', 'submit_register');
                     FMS.currentUser.set('name', $('#form_name').val());
                     FMS.currentUser.set('phone', $('#form_phone').val());
                     this.navigate( 'submit-password' );
@@ -208,7 +209,10 @@
                     this.model.set('submit_clicked', '');
                     FMS.currentUser.set('name', $('#form_name').val());
                 } else {
-                    this.model.set('submit_clicked', 'submit_sign_in');
+                    // if this is set then we are registering a password
+                    if ( ! this.model.get('submit_clicked') ) {
+                        this.model.set('submit_clicked', 'submit_sign_in');
+                    }
                     FMS.currentUser.set('password', $('#form_password').val());
                 }
             },
