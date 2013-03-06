@@ -61,34 +61,19 @@
                     lat: model.get('lat'),
                     lon: model.get('lon'),
                     pc: model.get('pc'),
-                    may_show_name: $('#form_may_show_name').val() || 0,
-                    used_map: 1
+                    may_show_name: model.get('may_show_name'),
+                    used_map: 1,
+                    name: model.get('user').get('name'),
+                    email: model.get('user').get('email'),
+                    phone: model.get('user').get('phone')
                 };
 
-                if ( FMS.currentUser && FMS.currentUser.get('password') ) {
-                    params.name = FMS.currentUser.get('name');
-                    params.email = FMS.currentUser.get('email');
-                    params.phone = FMS.currentUser.get('phone');
-                    params.password_sign_in = FMS.currentUser.get('password');
+                if ( this.submit_clicked == 'submit_sign_in' ) {
                     params.submit_sign_in = 1;
+                    params.password_sign_in = model.get('user').get('password');
                 } else {
-                    params.name = $('#form_name').val();
-                    params.email = $('#form_email').val();
-                    params.phone = $('#form_phone').val();
-                    params.password_sign_in = $('#password_sign_in').val();
-
-                    if ( this.submit_clicked == 'submit_sign_in' ) {
-                        params.submit_sign_in = 1;
-                    } else {
-                        params.submit_register = 1;
-                    }
-
-                    FMS.currentUser.set({
-                        name: params.name,
-                        email: params.email,
-                        phone: params.phone,
-                        password: params.password
-                    });
+                    params.password_register = model.get('user').get('password') || '';
+                    params.submit_register = 1;
                 }
 
                 var that = this;

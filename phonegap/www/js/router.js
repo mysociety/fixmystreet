@@ -10,6 +10,9 @@
                 'photo': 'photo',
                 'details': 'details',
                 'submit': 'submit',
+                'submit-email': 'submitEmail',
+                'submit-name': 'submitName',
+                'submit-password': 'submitPassword',
                 'sent': 'sent'
             },
 
@@ -45,6 +48,21 @@
             submit: function(){
                 var submitView = new FMS.SubmitView({ model: FMS.currentReport });
                 this.changeView(submitView);
+            },
+
+            submitEmail: function(){
+                var submitEmailView = new FMS.SubmitEmailView({ model: FMS.currentReport });
+                this.changeView(submitEmailView);
+            },
+
+            submitName: function(){
+                var submitNameView = new FMS.SubmitNameView({ model: FMS.currentReport });
+                this.changeView(submitNameView);
+            },
+
+            submitPassword: function(){
+                var submitPasswordView = new FMS.SubmitPasswordView({ model: FMS.currentReport });
+                this.changeView(submitPasswordView);
             },
 
             sent: function(){

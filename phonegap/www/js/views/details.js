@@ -4,7 +4,7 @@
             template: 'details',
             id: 'details-page',
             prev: 'photo',
-            next: 'submit',
+            next: 'submit-email',
 
             onClickButtonPrev: function() {
                 this.model.set('title', $('#form_title').val());

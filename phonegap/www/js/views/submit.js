@@ -35,6 +35,52 @@
                 return this;
             },
 
+            onClickSubmit: function(e) {
+                this.beforeSubmit();
+
+                if ( this.validate() ) {
+                    this.model.set('user', FMS.currentUser);
+                    this.model.save();
+                }
+            },
+
+            onReportSync: function(model, resp, options) {
+                if ( FMS.currentUser ) {
+                    FMS.currentUser.save();
+                }
+                this.navigate( 'sent', 'left' );
+            },
+
+            onReportError: function(model, err, options) {
+                alert( FMS.strings.sync_error + ': ' + err.errors);
+            },
+
+            beforeSubmit: function() {},
+
+            _destroy: function() {
+                this.model.off('sync');
+                this.model.off('error');
+            }
+        })
+    });
+})(FMS, Backbone, _, $);
+
+
+;(function (FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        SubmitEmailView: FMS.SubmitView.extend({
+            template: 'submit_email',
+            id: 'submit-email-page',
+            prev: 'details',
+
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay',
+                'click .ui-btn-left': 'onClickButtonPrev',
+                'click #have_password': 'onClickPassword',
+                'click #email_confirm': 'onClickConfirm'
+            },
+
             validate: function() {
                 this.clearValidationErrors();
                 var isValid = 1;
@@ -48,6 +94,53 @@
                     isValid = 0;
                     this.validationError('form_email', FMS.validationStrings.email.email);
                 }
+
+                return isValid;
+            },
+
+            onClickPassword: function() {
+                if ( this.validate() ) {
+                    FMS.currentUser.set('email', $('#form_email').val());
+                    this.navigate( 'submit-password' );
+                }
+            },
+
+            onClickConfirm: function() {
+                if ( this.validate() ) {
+                    FMS.currentUser.set('email', $('#form_email').val());
+                    this.navigate( 'submit-name' );
+                }
+            },
+
+            _destroy: function() {}
+        })
+    });
+})(FMS, Backbone, _, $);
+
+;(function (FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        SubmitNameView: FMS.SubmitView.extend({
+            template: 'submit_name',
+            id: 'submit-name-page',
+            prev: 'submit-email',
+
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay',
+                'click .ui-btn-left': 'onClickButtonPrev',
+                'click #send_confirm': 'onClickSubmit',
+                'click #set_password': 'onClickPassword'
+            },
+
+            initialize: function() {
+                console.log('submit name initalize');
+                this.model.on('sync', this.onReportSync, this );
+                this.model.on('error', this.onReportError, this );
+            },
+
+            validate: function() {
+                this.clearValidationErrors();
+                var isValid = 1;
 
                 var name = $('#form_name').val();
                 if ( !name ) {
@@ -64,29 +157,38 @@
                 return isValid;
             },
 
-            onClickSubmit: function(e) {
-                this.model.set( 'submit_clicked', $(e.target).attr('id') );
-
+            onClickPassword: function() {
                 if ( this.validate() ) {
-                    this.model.save();
+                    FMS.currentUser.set('name', $('#form_name').val());
+                    FMS.currentUser.set('phone', $('#form_phone').val());
+                    this.navigate( 'submit-password' );
                 }
             },
 
-            onReportSync: function(model, resp, options) {
-                if ( FMS.currentUser ) {
-                    FMS.currentUser.save();
-                }
-                this.navigate( 'sent', 'left' );
-            },
-
-            onReportError: function(model, err, options) {
-                alert( FMS.strings.sync_error + ': ' + err.errors);
-            },
-
-            _destroy: function() {
-                this.model.off('sync');
-                this.model.off('error');
+            beforeSubmit: function() {
+                FMS.currentUser.set('name', $('#form_name').val());
+                FMS.currentUser.set('phone', $('#form_phone').val());
             }
         })
     });
 })(FMS, Backbone, _, $);
+
+;(function (FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        SubmitPasswordView: FMS.SubmitView.extend({
+            template: 'submit_password',
+            id: 'submit-password-page',
+            prev: 'submit-email',
+
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay',
+                'click .ui-btn-left': 'onClickButtonPrev',
+                'click #report': 'onClickSubmit',
+            },
+
+            validate: function() { return 1; }
+        })
+    });
+})(FMS, Backbone, _, $);
+
