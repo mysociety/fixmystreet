@@ -193,7 +193,16 @@
                 this.model.on('error', this.onReportError, this );
             },
 
-            validate: function() { return 1; },
+            validate: function() {
+                var isValid = 1;
+
+                if ( !$('#form_password').val() ) {
+                    isValid = 0;
+                    this.validationError('form_password', FMS.validationStrings.password );
+                }
+
+                return isValid;
+            },
 
             beforeSubmit: function() {
                 if ( $('#form_name').val() ) {
