@@ -219,6 +219,10 @@
                     $('#form_name').val(err.check_name);
                     $('#password_row').hide();
                     $('#check_name').show();
+                } else {
+                    if ( err.errors && err.errors.password ) {
+                        this.validationError('form_password', err.errors.password );
+                    }
                 }
             }
 
