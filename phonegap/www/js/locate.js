@@ -47,6 +47,7 @@ var Locate = ( function() { return {
                     console.log( 'located with accuracy of ' + location.coords.accuracy );
                     that.locating = 0;
                     navigator.geolocation.clearWatch( that.watch_id );
+                    delete that.watch_id;
 
                     that.check_location(location.coords);
                 }
@@ -55,8 +56,7 @@ var Locate = ( function() { return {
                 if ( that.watch_id == undefined ) { return; }
                 that.locating = 0;
                 navigator.geolocation.clearWatch( that.watch_id );
-
-                $('#ajaxOverlay').hide();
+                delete that.watch_id;
                 that.trigger('failed', { msg: FMS.strings.geolocation_failed } );
             },
             { timeout: 7000, enableHighAccuracy: true }
