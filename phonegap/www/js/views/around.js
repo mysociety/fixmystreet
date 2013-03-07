@@ -83,7 +83,7 @@
             },
 
             _destroy: function() {
-                delete fixmystreet;
+                fixmystreet = null;
             }
         })
     });
