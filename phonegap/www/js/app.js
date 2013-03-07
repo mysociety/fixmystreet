@@ -35,7 +35,7 @@ var tpl = {
 };
 
 
-;(function (FMS, Backbone, _, $) {
+(function (FMS, Backbone, _, $) {
     _.extend(FMS, {
         templates: [
             'home', 'around', 'photo', 'details', 'submit', 'submit_email', 'submit_name', 'submit_password', 'sent'
@@ -93,7 +93,7 @@ var androidStartUp = function() {
     } else {
         window.setTimeout( androidStartUp, 1000 );
     }
-}
+};
 
 document.addEventListener('deviceready', FMS.initialize, false);
 window.setTimeout( androidStartUp, 2000 );

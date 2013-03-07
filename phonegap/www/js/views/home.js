@@ -1,4 +1,4 @@
-;(function (FMS, Backbone, _, $) {
+(function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         HomeView: FMS.FMSView.extend({
             template: 'home',

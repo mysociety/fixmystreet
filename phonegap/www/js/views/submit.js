@@ -1,4 +1,4 @@
-;(function (FMS, Backbone, _, $) {
+(function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         SubmitView: FMS.FMSView.extend({
             template: 'submit',
@@ -65,7 +65,7 @@
 })(FMS, Backbone, _, $);
 
 
-;(function (FMS, Backbone, _, $) {
+(function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         SubmitEmailView: FMS.SubmitView.extend({
             template: 'submit_email',
@@ -116,7 +116,7 @@
     });
 })(FMS, Backbone, _, $);
 
-;(function (FMS, Backbone, _, $) {
+(function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         SubmitNameView: FMS.SubmitView.extend({
             template: 'submit_name',
@@ -173,7 +173,7 @@
     });
 })(FMS, Backbone, _, $);
 
-;(function (FMS, Backbone, _, $) {
+(function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         SubmitPasswordView: FMS.SubmitView.extend({
             template: 'submit_password',

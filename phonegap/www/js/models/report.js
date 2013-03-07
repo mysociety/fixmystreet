@@ -1,4 +1,4 @@
-;(function(FMS, Backbone, _, $) {
+(function(FMS, Backbone, _, $) {
     _.extend( FMS, {
         Report: Backbone.Model.extend({
             urlRoot: CONFIG.FMS_URL + 'report/ajax',

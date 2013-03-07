@@ -1,4 +1,4 @@
-;(function (FMS, Backbone, _, $) {
+(function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         AroundView: FMS.FMSView.extend({
             template: 'around',
