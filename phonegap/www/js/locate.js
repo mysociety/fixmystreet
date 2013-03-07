@@ -4,7 +4,7 @@ var Locate = ( function() { return {
     lookup: function(q) {
         var that = this;
         if (!q) {
-            this.trigger('failed', { msg: STRINGS.missing_location } );
+            this.trigger('failed', { msg: FMS.strings.missing_location } );
             return false;
         }
 
@@ -24,11 +24,11 @@ var Locate = ( function() { return {
                         that.trigger( 'failed', { msg: data.error } );
                     }
                 } else {
-                    that.trigger( 'failed', { msg: STRINGS.location_problem } );
+                    that.trigger( 'failed', { msg: FMS.strings.location_problem } );
                 }
             },
             error: function(data, status, errorThrown) {
-                that.trigger( 'failed', { msg: STRINGS.location_problem } );
+                that.trigger( 'failed', { msg: FMS.strings.location_problem } );
             }
         } );
     },
@@ -57,7 +57,7 @@ var Locate = ( function() { return {
                 navigator.geolocation.clearWatch( that.watch_id );
 
                 $('#ajaxOverlay').hide();
-                that.trigger('failed', { msg: STRINGS.geolocation_failed } );
+                that.trigger('failed', { msg: FMS.strings.geolocation_failed } );
             },
             { timeout: 7000, enableHighAccuracy: true }
         );
@@ -81,7 +81,7 @@ var Locate = ( function() { return {
                 that.trigger('located', { coordinates: coords, details: data } )
             },
             error: function (data, status, errorThrown) {
-                that.trigger('failed', { msg: STRINGS.location_check_failed } );
+                that.trigger('failed', { msg: FMS.strings.location_check_failed } );
             }
         } );
     }

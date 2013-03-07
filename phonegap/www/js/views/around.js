@@ -53,9 +53,9 @@
                 if ( details.msg ) {
                     this.displayError( details.msg );
                 } else if ( details.locs ) {
-                    this.displayError( STRINGS.multiple_locations );
+                    this.displayError( FMS.strings.multiple_locations );
                 } else {
-                    this.displayError( STRINGS.location_problem );
+                    this.displayError( FMS.strings.location_problem );
                 }
             },
 
