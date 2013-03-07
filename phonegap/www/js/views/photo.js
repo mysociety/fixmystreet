@@ -37,8 +37,7 @@
             addPhotoFail: function() {
                 if ( message != 'no image selected' &&
                     message != 'Selection cancelled.' &&
-                    message != 'Camera cancelled.'
-                    ) {
+                    message != 'Camera cancelled.' ) {
                     this.displayError(FMS.strings.photo_failed);
                 }
             },
