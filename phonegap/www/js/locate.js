@@ -40,7 +40,8 @@ var Locate = ( function() { return {
         var that = this;
         this.watch_id = navigator.geolocation.watchPosition(
             function(location) {
-                if ( that.watch_id == undefined ) { console.log( 'no watch id' ); return; }
+                if ( that.watch_id === undefined ) { console.log( 'no watch id' ); return; }
+
                 if ( minAccuracy && location.coords.accuracy > minAccuracy ) {
                     that.trigger('locating', location.coords.accuracy);
                 } else {
@@ -53,7 +54,7 @@ var Locate = ( function() { return {
                 }
             },
             function() {
-                if ( that.watch_id == undefined ) { return; }
+                if ( that.watch_id === undefined ) { return; }
                 that.locating = 0;
                 navigator.geolocation.clearWatch( that.watch_id );
                 delete that.watch_id;
@@ -78,7 +79,7 @@ var Locate = ( function() { return {
                     that.trigger('failed', { msg: data.error } );
                     return;
                 }
-                that.trigger('located', { coordinates: coords, details: data } )
+                that.trigger('located', { coordinates: coords, details: data } );
             },
             error: function (data, status, errorThrown) {
                 that.trigger('failed', { msg: FMS.strings.location_check_failed } );
@@ -86,4 +87,4 @@ var Locate = ( function() { return {
         } );
     }
 
-}});
+};});

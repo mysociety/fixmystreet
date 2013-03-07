@@ -1,4 +1,4 @@
-;(function (FMS, _) {
+(function (FMS, _) {
     _.extend( FMS, {
         validationStrings: {
             update: 'Please enter a message',
@@ -6,7 +6,7 @@
             detail: 'Please enter some details',
             name: {
                 required: 'Please enter your name',
-                validName: 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
+                validName: 'Please enter your full name, councils need this information - if you do not wish your name to be shown on the site, untick the box below'
             },
             category: 'Please choose a category',
             rznvy: {
@@ -35,5 +35,5 @@
             no_connection: 'No network connection available for submitting your report. Please try again later',
             more_details: 'More details'
         }
-    })
+    });
 })(FMS, _);
