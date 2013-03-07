@@ -59,7 +59,7 @@ var Locate = ( function() { return {
                 delete that.watch_id;
                 that.trigger('failed', { msg: FMS.strings.geolocation_failed } );
             },
-            { timeout: 7000, enableHighAccuracy: true }
+            { timeout: 20000, enableHighAccuracy: true }
         );
     },
 
