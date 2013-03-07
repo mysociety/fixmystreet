@@ -78,7 +78,6 @@
 
                 var that = this;
                 if ( model.get('file') && model.get('file') !== '' ) {
-                    var handlers = options;
                     var fileUploadSuccess = function(r) {
                         $('#ajaxOverlay').hide();
                         if ( r.response ) {
@@ -102,16 +101,16 @@
 
                     fileURI = model.get('file');
 
-                    var options = new FileUploadOptions();
-                    options.fileKey="photo";
-                    options.fileName=fileURI.substr(fileURI.lastIndexOf('/')+1);
-                    options.mimeType="image/jpeg";
-                    options.params = params;
-                    options.chunkedMode = false;
+                    var fileOptions = new FileUploadfileOptions();
+                    fileOptions.fileKey="photo";
+                    fileOptions.fileName=fileURI.substr(fileURI.lastIndexOf('/')+1);
+                    fileOptions.mimeType="image/jpeg";
+                    fileOptions.params = params;
+                    fileOptions.chunkedMode = false;
 
                     $('#ajaxOverlay').show();
                     var ft = new FileTransfer();
-                    ft.upload(fileURI, CONFIG.FMS_URL + "report/new/mobile", fileUploadSuccess, fileUploadFail, options);
+                    ft.upload(fileURI, CONFIG.FMS_URL + "report/new/mobile", fileUploadSuccess, fileUploadFail, fileOptions);
                 } else {
                     $.ajax( {
                         url: CONFIG.FMS_URL + "report/new/mobile",
