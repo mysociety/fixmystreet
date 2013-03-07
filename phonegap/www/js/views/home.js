@@ -23,8 +23,8 @@
             },
 
             afterDisplay: function() {
-                if ( navigator && navigator.network && ( navigator.network.connection.type == Connection.NONE ||
-                        navigator.network.connection.type == Connection.UNKNOWN ) ) {
+                if ( navigator && navigator.connection && ( navigator.connection.type == Connection.NONE ||
+                        navigator.connection.type == Connection.UNKNOWN ) ) {
                     localStorage.offline = 1;
                     this.navigate( 'no_connection' );
                 } else {
