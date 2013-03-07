@@ -24,13 +24,42 @@
                 l.on('locating', this.locationUpdate, this);
 
                 l.geolocate(100);
+                this.startLocateProgress();
             },
 
             locationUpdate: function( accuracy ) {
-                $('#accuracy').text(parseInt(myLocation.coords.accuracy, 10) + 'm');
+                if ( accuracy && accuracy < 500 ) {
+                    $('#progress-bar').css( 'background-color', 'orange' );
+                } else if ( accuracy && accuracy < 250 ) {
+                    $('#progress-bar').css( 'background-color', 'yellow' );
+                } else {
+                    $('#progress-bar').css( 'background-color', 'grey' );
+                }
+
+                $('#accuracy').text(parseInt(accuracy, 10) + 'm');
+                console.log('accuracy is ' + accuracy);
+            },
+
+            startLocateProgress: function() {
+                this.locateCount = 1;
+                var that = this;
+                window.setTimeout( function() {that.showLocateProgress();}, 1000);
+            },
+
+            showLocateProgress: function() {
+                if ( this.locateCount > 20 ) {
+                    return;
+                }
+                var percent = ( ( 20 - this.locateCount ) / 20 ) * 100;
+                $('#progress-bar').css( 'width', percent + '%' );
+                this.locateCount++;
+                var that = this;
+                window.setTimeout( function() {that.showLocateProgress();}, 1000);
             },
 
             showMap: function( info ) {
+                this.locateCount = 21;
+                $('#progress-bar').css( 'background-color', 'green' );
                 $('#locating').hide();
                 var coords = info.coordinates;
                 fixmystreet.latitude = coords.latitude;
@@ -48,6 +77,7 @@
             },
 
             noMap: function( details ) {
+                this.locateCount = 21;
                 $('#locating').hide();
                 $('#ajaxOverlay').hide();
                 if ( details.msg ) {
