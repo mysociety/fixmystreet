@@ -15,16 +15,23 @@
             },
 
             locate: function() {
+                $('#locating').show();
                 var that = this;
                 var l = new Locate();
                 _.extend(l, Backbone.Events);
                 l.on('located', this.showMap, this );
                 l.on('failed', this.noMap, this );
+                l.on('locating', this.locationUpdate, this);
 
-                l.geolocate();
+                l.geolocate(100);
+            },
+
+            locationUpdate: function( accuracy ) {
+                $('#accuracy').text(parseInt(myLocation.coords.accuracy, 10) + 'm');
             },
 
             showMap: function( info ) {
+                $('#locating').hide();
                 var coords = info.coordinates;
                 fixmystreet.latitude = coords.latitude;
                 fixmystreet.longitude = coords.longitude;
@@ -41,6 +48,7 @@
             },
 
             noMap: function( details ) {
+                $('#locating').hide();
                 $('#ajaxOverlay').hide();
                 if ( details.msg ) {
                     this.displayError( details.msg );
