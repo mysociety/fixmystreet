@@ -31,7 +31,7 @@
 
             navigate: function( route, direction ) {
                 if ( !direction ) {
-                    direction == 'left';
+                    direction = 'left';
                 }
 
                 FMS.router.navigate( route, { trigger: true } );
