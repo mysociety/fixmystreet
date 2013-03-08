@@ -168,8 +168,8 @@ a:hover, a:active {
     clear: both;
     font-size: 83%;
     border-top: solid 2em #ffffff;
-    background-color: #80AE7D;
-    color: #FFFFFF;
+    background-color: #fe6500;
+    color: #000;
     margin: 2em 0 1em 0;
     padding: 20px;
     overflow: auto;
@@ -185,7 +185,7 @@ a:hover, a:active {
 }
 
 #emptyhomes-footer a {
-    color: #FFFFFF;
+    color: #000;
 }
 
 #mysociety #postcodeForm {
