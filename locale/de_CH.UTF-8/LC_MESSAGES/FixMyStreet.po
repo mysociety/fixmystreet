@@ -4390,7 +4390,7 @@ msgstr "von %d verschiedenen Personen"
 #: templates/web/fixmystreet/report/_item.html:12
 #: templates/web/zurich/report/_item.html:16
 msgid "last updated %s"
-msgstr "letzte Bearbeitung"
+msgstr "letzte Bearbeitung %s"
 
 #: perllib/Utils.pm:263
 msgid "less than a minute"
