@@ -36,7 +36,9 @@
 
 <div id="front_stats">
     <div>[% tprintf( new_text,     stats.new     ) | comma %]</div>
-    [% IF c.cobrand.moniker != 'emptyhomes' %]
+    [% IF c.cobrand.moniker == 'emptyhomes' %]
+    <div><a href="/local/">Find latest local and national news</a></div>
+    [% ELSE %]
     <div>[% tprintf( fixed_text,   stats.fixed   ) | comma %]</div>
     [% IF c.cobrand.moniker != 'zurich' %]
     <div>[% tprintf( updates_text, stats.updates ) | comma %]</div>

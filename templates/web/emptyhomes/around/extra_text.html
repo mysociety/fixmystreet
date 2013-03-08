@@ -1,0 +1,9 @@
+[%
+# Need to ignore any county council
+FOR c IN all_areas.values;
+    SET council = c IF c.type != 'CTY';
+END;
+%]
+<a href="/local/[% c.cobrand.short_name(council) | lower %]">
+    Find out local news and stats for [% council.name %]
+</a>

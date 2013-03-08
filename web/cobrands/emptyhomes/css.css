@@ -195,10 +195,14 @@ a:hover, a:active {
 }
 
 #mysociety #front_stats div {
+    vertical-align: middle;
     background-color: #80AE7D;
     color: #000000;
     /*padding: 0.5em 0; */
-    width: 9em;
+    width: 7em;
+}
+#mysociety #front_stats div a {
+    color: #000000;
 }
 
 #mysociety #problem_form {
