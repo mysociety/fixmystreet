@@ -119,6 +119,22 @@ sub process_extras {
     $extra->{address} = $value;
 }
 
+sub front_stats_data {
+    my ( $self ) = @_;
+    my $key = "recent_new";
+    my $result = Memcached::get($key);
+    unless ($result) {
+        $result = $self->problems->search(
+            { state => [ FixMyStreet::DB::Result::Problem->visible_states() ] }
+        )->count;
+        foreach my $v (values %{$self->old_site_stats}) {
+            $result += $v;
+        }
+        Memcached::set($key, $result, 3600);
+    }
+    return $result;
+}
+
 # A record of the number of reports from the Channel 4 site and other old data
 sub old_site_stats {
     return {

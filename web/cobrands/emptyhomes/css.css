@@ -198,7 +198,7 @@ a:hover, a:active {
     vertical-align: middle;
     background-color: #80AE7D;
     color: #000000;
-    /*padding: 0.5em 0; */
+    padding: 0.5em;
     width: 7em;
 }
 #mysociety #front_stats div a {

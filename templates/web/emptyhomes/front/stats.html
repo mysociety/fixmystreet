@@ -1,0 +1,7 @@
+[% USE Comma %]
+[% stats = c.cobrand.front_stats_data %]
+
+<div id="front_stats">
+    <div>[% tprintf( loc("<big>%s</big> reports"), stats ) | comma %]</div>
+    <div><a href="/local/">[% loc('Find latest local and national news') %]</a></div>
+</div>
