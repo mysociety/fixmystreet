@@ -690,7 +690,7 @@ msgstr ""
 #: templates/web/zurich/tokens/confirm_problem.html:1
 #: templates/web/zurich/tokens/confirm_problem.html:3
 msgid "Confirmation"
-msgstr "Best&auml;tigung"
+msgstr "Bestätigung"
 
 #: templates/web/default/admin/body.html:37
 #: templates/web/default/admin/body.html:85
