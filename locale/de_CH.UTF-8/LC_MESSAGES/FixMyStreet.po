@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-02-21 12:36+0000\n"
-"PO-Revision-Date: 2013-02-28 11:22+0100\n"
+"PO-Revision-Date: 2013-03-07 17:00+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "MIME-Version: 1.0\n"
@@ -136,7 +136,7 @@ msgstr "(erledigt)"
 #: templates/web/fixmystreet/report/_item.html:20
 #: templates/web/zurich/report/_item.html:19
 msgid "(fixed)"
-msgstr "(gel&ouml;st)"
+msgstr "(erledigt)"
 
 #: templates/web/default/index.html:11 templates/web/default/index.html:15
 #: templates/web/fixmystreet/around/intro.html:2
@@ -394,7 +394,7 @@ msgstr "Alle Meldungen"
 #: templates/web/default/admin/stats.html:5
 #: templates/web/zurich/admin/stats.html:8
 msgid "All reports between %s and %s"
-msgstr "Gemeldet von %s um %s"
+msgstr "Alle Meldungen von %s bis %s"
 
 #: templates/web/default/report/new/councils_text_some.html:2
 msgid "All the information you provide here will be sent to"
@@ -1126,7 +1126,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:32
 msgid "Fixed"
-msgstr "Gel&ouml;st"
+msgstr "Erledigt"
 
 #: templates/web/default/admin/report_edit.html:29
 #: templates/web/default/admin/report_edit.html:32
@@ -1978,7 +1978,7 @@ msgstr "Aufgenommen"
 
 #: templates/web/default/my/my.html:22 templates/web/fixmystreet/my/my.html:26
 msgid "Open reports"
-msgstr ""
+msgstr "Offene Meldungen"
 
 #: templates/web/default/open311/index.html:3
 msgid "Open311 API for the mySociety FixMyStreet server"
@@ -2536,7 +2536,7 @@ msgstr "Meldungen auf der Karte"
 
 #: db/alert_types.pl:14
 msgid "Problems recently reported fixed on FixMyStreet"
-msgstr "Meldungen, welche k&uuml;rzlich gel&ouml;st wurden"
+msgstr "Meldungen, welche k&uuml;rzlich erledigt wurden"
 
 #: templates/web/default/alert/_list.html:19
 #: templates/web/fixmystreet/alert/_list.html:21
@@ -2735,12 +2735,12 @@ msgstr ""
 #: templates/web/default/reports/index.html:19
 #: templates/web/fixmybarangay/reports/index.html:19
 msgid "Recently <br>fixed"
-msgstr "K&uuml;rzlich <br>gel&ouml;st"
+msgstr "K&uuml;rzlich <br>erledigt"
 
 #: templates/web/fiksgatami/nn/reports/index.html:13
 #: templates/web/fiksgatami/reports/index.html:13
 msgid "Recently fixed"
-msgstr "K&uuml;rzlich gel&ouml;st"
+msgstr "K&uuml;rzlich erledigt"
 
 #: templates/web/default/index.html:41 templates/web/fixmystreet/index.html:45
 msgid "Recently reported problems"
@@ -3284,7 +3284,7 @@ msgstr "Zusammenfassung"
 #: templates/web/zurich/reports/index.html:0
 #: templates/web/zurich/reports/index.html:4
 msgid "Summary reports"
-msgstr ""
+msgstr "Alle Meldungen"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1134
 msgid "Survey"
@@ -3314,8 +3314,8 @@ msgid ""
 "Thank you &mdash; you can <a href=\"%s\">view your updated problem</a> on "
 "the site."
 msgstr ""
-"Danke &amp;mdash; Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s"
-"\">auf der Webseite anschauen</a>"
+"Danke &mdash; Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s\">auf "
+"der Webseite anschauen</a>."
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:6
 #: templates/web/emptyhomes/tokens/confirm_problem.html:8
@@ -3908,13 +3908,13 @@ msgstr ""
 #: templates/web/seesomething/around/display_location.html:0
 #: templates/web/seesomething/around/display_location.html:16
 msgid "Viewing a location"
-msgstr ""
+msgstr "Meldung erfassen"
 
 #: templates/web/bromley/report/display.html:0
 #: templates/web/default/report/display.html:0
 #: templates/web/fixmystreet/report/display.html:0
 msgid "Viewing a problem"
-msgstr ""
+msgstr "Meldung anschauen"
 
 #: templates/web/default/reports/body.html:14
 msgid "Wards of this council"
@@ -3934,6 +3934,8 @@ msgstr ""
 #: templates/web/default/auth/token.html:19
 msgid "We have sent you an email containing a link to confirm your account."
 msgstr ""
+"Sie werden in K&uuml;rze ein E-Mail erhalten um Ihren Account zu best&auml;"
+"tigen."
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:18
 #: templates/web/emptyhomes/tokens/confirm_problem.html:20
@@ -4105,7 +4107,7 @@ msgstr ""
 msgid "You can <a href=\"%s%s\">view the problem on this site</a>."
 msgstr ""
 "Danke! Sie k&ouml;nnen Ihre aktualisierte Meldung <a href=\"%s%s\">auf der "
-"Webseite anschauen</a>"
+"Webseite anschauen</a>."
 
 #: templates/web/default/report/new/councils_text_none.html:11
 #: templates/web/default/report/new/councils_text_none.html:13
@@ -4138,6 +4140,8 @@ msgid ""
 "You have already attached a photo to this report, attaching another one will "
 "replace it."
 msgstr ""
+"Sie haben bereits ein Photo angeh&auml;ngt. Laden Sie ein neues hoch um es "
+"zu ersetzen."
 
 #: templates/web/bromley/report/display.html:108
 #: templates/web/default/report/update-form.html:59
@@ -4172,7 +4176,7 @@ msgstr ""
 #: templates/web/zurich/tokens/confirm_problem.html:5
 #: templates/web/zurich/tokens/confirm_problem.html:6
 msgid "You have successfully confirmed your email address."
-msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt."
+msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt. "
 
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:15
@@ -4216,7 +4220,7 @@ msgstr ""
 #: templates/web/fixmystreet/my/my.html:14
 #: templates/web/fixmystreet/my/my.html:3
 msgid "Your Reports"
-msgstr ""
+msgstr "Ihre Meldungen"
 
 #: templates/web/bromley/report/display.html:41
 #: templates/web/bromley/report/display.html:43
@@ -4398,7 +4402,7 @@ msgstr ""
 
 #: templates/web/default/report/updates.html:27
 msgid "marked as fixed"
-msgstr "als gel&ouml;st markiert"
+msgstr "als erledigt markiert"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:128
 #: templates/web/default/admin/questionnaire.html:15

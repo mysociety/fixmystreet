@@ -2,7 +2,9 @@ Subject: Züri wie neu: Meldung #[% problem.id %]
 
 Grüezi [% problem.name %]
 
-Ihre Meldung wurde aufgrund des Inhalts zurückgewiesen.
+Ihre Meldung wurde aufgrund des Inhalts zurückgewiesen:
+Die Stadt Zürich toleriert keine beleidigenden, rassistischen oder sexistischen Meldungen. Offensichtliche Falschmeldungen werden nicht behandelt.
+
 
 Ihre Meldung lautet:
 
