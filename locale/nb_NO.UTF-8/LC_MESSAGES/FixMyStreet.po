@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FixMyStreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-02-21 12:36+0000\n"
+"POT-Creation-Date: 2013-03-11 18:53+0000\n"
 "PO-Revision-Date: 2012-09-14 00:22+0100\n"
 "Last-Translator: Anders Einar Hilden <hildenae@gmail.com>\n"
 "Language-Team: Norwegian Bokmål <i18n-nb@lister.ping.uio.no>\n"
@@ -513,21 +513,21 @@ msgstr "Der du fra den lokale administrasjonen?"
 msgid "Area covered"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:111
+#: templates/web/zurich/admin/report_edit.html:117
 #: templates/web/zurich/admin/stats.html:36
 msgid "Assign to different category:"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:120
+#: templates/web/zurich/admin/report_edit.html:126
 msgid "Assign to external body:"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:152
-#: templates/web/zurich/admin/report_edit.html:99
+#: templates/web/zurich/admin/report_edit.html:103
+#: templates/web/zurich/admin/report_edit.html:158
 msgid "Assign to subdivision:"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:97
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:98
 #: templates/web/zurich/report/updates.html:11
 #, fuzzy
 msgid "Assigned to %s"
@@ -567,7 +567,7 @@ msgid ""
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1131
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:203
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:204
 #: templates/web/default/admin/bodies.html:1
 #: templates/web/zurich/header.html:64
 msgid "Bodies"
@@ -631,8 +631,8 @@ msgstr "Løsningsrate fordelt på kategori for problemer > 4 uker gamle"
 #: templates/web/default/report/new/fill_in_details_form.html:67
 #: templates/web/emptyhomes/report/new/fill_in_details_form.html:50
 #: templates/web/zurich/admin/body.html:36
-#: templates/web/zurich/admin/report_edit-sdm.html:39
-#: templates/web/zurich/admin/report_edit.html:110
+#: templates/web/zurich/admin/report_edit-sdm.html:42
+#: templates/web/zurich/admin/report_edit.html:116
 msgid "Category:"
 msgstr "Kategori:"
 
@@ -651,7 +651,7 @@ msgstr "Bytt passord"
 msgid "Click map to report a problem"
 msgstr "Klikk i kartet for å rapportere et problem"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:74
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:75
 #: templates/web/default/admin/report_edit.html:29
 #: templates/web/default/admin/report_edit.html:31
 #: templates/web/default/dashboard/index.html:142
@@ -660,8 +660,8 @@ msgstr "Klikk i kartet for å rapportere et problem"
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:10
 #: templates/web/zurich/admin/header.html:12
-#: templates/web/zurich/admin/report_edit.html:87
-#: templates/web/zurich/admin/report_edit.html:89
+#: templates/web/zurich/admin/report_edit.html:90
+#: templates/web/zurich/admin/report_edit.html:92
 #: templates/web/zurich/admin/stats.html:31
 #: templates/web/zurich/report/banner.html:13
 msgid "Closed"
@@ -685,8 +685,8 @@ msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
 msgstr "De nærmeste problemene <small>(innenfor&nbsp;%skm)</small>"
 
 #: templates/web/default/admin/report_edit.html:17
-#: templates/web/zurich/admin/report_edit-sdm.html:30
-#: templates/web/zurich/admin/report_edit.html:43
+#: templates/web/zurich/admin/report_edit-sdm.html:33
+#: templates/web/zurich/admin/report_edit.html:46
 msgid "Co-ordinates:"
 msgstr "Koordinater:"
 
@@ -836,8 +836,8 @@ msgstr "Opprettet"
 
 #: templates/web/default/admin/report_edit.html:44
 #: templates/web/default/admin/update_edit.html:45
-#: templates/web/zurich/admin/report_edit-sdm.html:44
-#: templates/web/zurich/admin/report_edit.html:58
+#: templates/web/zurich/admin/report_edit-sdm.html:47
+#: templates/web/zurich/admin/report_edit.html:61
 #: templates/web/zurich/admin/update_edit.html:29
 msgid "Created:"
 msgstr "Opprettet:"
@@ -879,9 +879,9 @@ msgstr "Detaljer"
 #: templates/web/default/admin/report_edit.html:14
 #: templates/web/default/report/new/fill_in_details_form.html:61
 #: templates/web/emptyhomes/report/new/fill_in_details_form.html:79
-#: templates/web/zurich/admin/report_edit-sdm.html:22
-#: templates/web/zurich/admin/report_edit.html:22
-#: templates/web/zurich/admin/report_edit.html:32
+#: templates/web/zurich/admin/report_edit-sdm.html:25
+#: templates/web/zurich/admin/report_edit.html:25
+#: templates/web/zurich/admin/report_edit.html:35
 msgid "Details:"
 msgstr "Detaljer:"
 
@@ -995,8 +995,8 @@ msgstr "Send meg oppdateringer"
 #: templates/web/default/alert/updates.html:13
 #: templates/web/default/report/display.html:38
 #: templates/web/zurich/admin/body.html:41
-#: templates/web/zurich/admin/report_edit-sdm.html:41
-#: templates/web/zurich/admin/report_edit.html:54
+#: templates/web/zurich/admin/report_edit-sdm.html:44
+#: templates/web/zurich/admin/report_edit.html:57
 msgid "Email:"
 msgstr "E-post:"
 
@@ -1361,8 +1361,8 @@ msgstr "Hei, %s"
 #: templates/web/default/admin/update_edit.html:22
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:11
-#: templates/web/zurich/admin/report_edit.html:78
-#: templates/web/zurich/admin/report_edit.html:82
+#: templates/web/zurich/admin/report_edit.html:81
+#: templates/web/zurich/admin/report_edit.html:85
 #: templates/web/zurich/admin/stats.html:32
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Hidden"
@@ -1462,7 +1462,7 @@ msgstr ""
 "inn din rapport, slik at vi kan vise administrasjonen aktiviteten i deres "
 "område."
 
-#: templates/web/default/auth/token.html:25
+#: templates/web/default/auth/token.html:22
 #: templates/web/default/email_sent.html:9
 msgid ""
 "If you use web-based email or have 'junk mail' filters, you may wish to "
@@ -1515,13 +1515,13 @@ msgstr ""
 "del av description), interface_used, comment_count, requestor_name (kun "
 "tilstede hvis innsender tillot at navnet kunne vises på dette nettstedet)."
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:77
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:78
 #: templates/web/default/admin/report_edit.html:29
 #: templates/web/default/admin/report_edit.html:31
 #: templates/web/fixmystreet/report/banner.html:19
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:8
-#: templates/web/zurich/admin/report_edit.html:91
+#: templates/web/zurich/admin/report_edit.html:94
 #: templates/web/zurich/report/banner.html:15
 msgid "In progress"
 msgstr "Under arbeid"
@@ -1531,7 +1531,7 @@ msgstr "Under arbeid"
 msgid "Incident Category"
 msgstr "Kategori"
 
-#: templates/web/zurich/admin/report_edit.html:130
+#: templates/web/zurich/admin/report_edit.html:136
 #, fuzzy
 msgid "Include reporter personal details"
 msgstr "Legg inn opplysninger om problemet"
@@ -1544,8 +1544,8 @@ msgstr "Inkluder ubekreftede problemer"
 msgid "Incorrect has_photo value \"%s\""
 msgstr "Feil has_photo-verdi \"%s\""
 
-#: templates/web/zurich/admin/report_edit-sdm.html:53
-#: templates/web/zurich/admin/report_edit.html:73
+#: templates/web/zurich/admin/report_edit-sdm.html:56
+#: templates/web/zurich/admin/report_edit.html:76
 msgid "Internal notes:"
 msgstr ""
 
@@ -1745,8 +1745,8 @@ msgstr "(valgfritt)"
 #: templates/web/default/admin/report_edit.html:41
 #: templates/web/default/admin/update_edit.html:26
 #: templates/web/default/admin/user-form.html:5
-#: templates/web/zurich/admin/report_edit-sdm.html:40
-#: templates/web/zurich/admin/report_edit.html:53
+#: templates/web/zurich/admin/report_edit-sdm.html:43
+#: templates/web/zurich/admin/report_edit.html:56
 #: templates/web/zurich/admin/stats.html:41
 msgid "Name:"
 msgstr "Navn:"
@@ -1880,7 +1880,7 @@ msgstr "Nye rapporter innenfor grensen til {{NAME}} på reportemptyhomes.com"
 msgid "New state"
 msgstr "Ny tilstand"
 
-#: templates/web/zurich/admin/report_edit-sdm.html:56
+#: templates/web/zurich/admin/report_edit-sdm.html:59
 #, fuzzy
 msgid "New update:"
 msgstr "Få oppdateringer"
@@ -1938,7 +1938,7 @@ msgstr "Ingen flaggede problemer ble funnet"
 msgid "No flagged users found"
 msgstr "Ingen flaggede brukere ble funnet"
 
-#: templates/web/zurich/admin/report_edit-sdm.html:62
+#: templates/web/zurich/admin/report_edit-sdm.html:65
 #, fuzzy
 msgid "No further updates"
 msgstr "Dine oppdateringer"
@@ -1966,8 +1966,8 @@ msgid "Non Public"
 msgstr ""
 
 #: templates/web/default/admin/report_edit.html:24
-#: templates/web/zurich/admin/report_edit-sdm.html:43
-#: templates/web/zurich/admin/report_edit.html:57
+#: templates/web/zurich/admin/report_edit-sdm.html:46
+#: templates/web/zurich/admin/report_edit.html:60
 msgid "None"
 msgstr "Ingen"
 
@@ -1980,7 +1980,7 @@ msgstr "Ingen"
 msgid "Not Responsible"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit-sdm.html:18
+#: templates/web/zurich/admin/report_edit-sdm.html:21
 msgid "Not for my subdivision"
 msgstr ""
 
@@ -2079,7 +2079,7 @@ msgstr "Eldre løste"
 msgid "Older problems"
 msgstr "Eldre problemer"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:71
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:72
 #: templates/web/bromley/report/display.html:80
 #: templates/web/default/admin/report_edit.html:29
 #: templates/web/default/admin/update_edit.html:22
@@ -2088,8 +2088,8 @@ msgstr "Eldre problemer"
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:7
-#: templates/web/zurich/admin/report_edit.html:78
-#: templates/web/zurich/admin/report_edit.html:80
+#: templates/web/zurich/admin/report_edit.html:81
+#: templates/web/zurich/admin/report_edit.html:83
 #: templates/web/zurich/admin/update_edit.html:18
 #: templates/web/zurich/report/banner.html:11
 msgid "Open"
@@ -2191,8 +2191,8 @@ msgstr "Telefonnummer (valgfritt)"
 #: templates/web/default/admin/report_edit.html:43
 #: templates/web/default/report/new/fill_in_details_form.html:215
 #: templates/web/emptyhomes/report/new/fill_in_details_form.html:138
-#: templates/web/zurich/admin/report_edit-sdm.html:43
-#: templates/web/zurich/admin/report_edit.html:57
+#: templates/web/zurich/admin/report_edit-sdm.html:46
+#: templates/web/zurich/admin/report_edit.html:60
 #: templates/web/zurich/admin/stats.html:39
 msgid "Phone:"
 msgstr "Telefon:"
@@ -2230,8 +2230,8 @@ msgstr ""
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:9
 #: templates/web/zurich/admin/index-dm.html:9
-#: templates/web/zurich/admin/report_edit.html:78
 #: templates/web/zurich/admin/report_edit.html:81
+#: templates/web/zurich/admin/report_edit.html:84
 msgid "Planned"
 msgstr "Planlagt"
 
@@ -2254,7 +2254,7 @@ msgstr "Vær høflig, poengtert og kortfattet."
 msgid "Please check the passwords and try again"
 msgstr "Vennligst sjekk passordene og prøv igjen"
 
-#: templates/web/default/auth/token.html:17
+#: templates/web/default/auth/token.html:14
 msgid "Please check your email"
 msgstr "Vennligst sjekk e-posten du oppgav"
 
@@ -2777,17 +2777,17 @@ msgstr ""
 msgid "Public information (shown on site)"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:162
-#: templates/web/zurich/admin/report_edit.html:170
+#: templates/web/zurich/admin/report_edit.html:168
+#: templates/web/zurich/admin/report_edit.html:176
 msgid "Public response:"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:69
+#: templates/web/zurich/admin/report_edit.html:72
 #: templates/web/zurich/admin/stats.html:38
 msgid "Publish photo"
 msgstr ""
 
-#: templates/web/zurich/admin/report_edit.html:178
+#: templates/web/zurich/admin/report_edit.html:184
 msgid "Publish the response"
 msgstr ""
 
@@ -3053,7 +3053,7 @@ msgid "Reporting a problem"
 msgstr "Legger til et problem"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1132
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:196
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:197
 #: templates/web/seesomething/admin/stats.html:1
 #: templates/web/zurich/header.html:60
 #, fuzzy
@@ -3102,13 +3102,13 @@ msgstr "Veioperatør for denne navngitte veien (fra OpenStreetMap): %s"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1331
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1342
 #: templates/web/default/admin/report_edit.html:60
-#: templates/web/zurich/admin/report_edit.html:65
+#: templates/web/zurich/admin/report_edit.html:68
 msgid "Rotate Left"
 msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1331
 #: templates/web/default/admin/report_edit.html:61
-#: templates/web/zurich/admin/report_edit.html:66
+#: templates/web/zurich/admin/report_edit.html:69
 msgid "Rotate Right"
 msgstr ""
 
@@ -3332,14 +3332,14 @@ msgstr "Tilstand"
 #: templates/web/default/admin/report_edit.html:28
 #: templates/web/default/admin/update_edit.html:21
 #: templates/web/default/report/update-form.html:28
-#: templates/web/zurich/admin/report_edit-sdm.html:51
-#: templates/web/zurich/admin/report_edit.html:76
+#: templates/web/zurich/admin/report_edit-sdm.html:54
+#: templates/web/zurich/admin/report_edit.html:79
 #: templates/web/zurich/admin/update_edit.html:17
 msgid "State:"
 msgstr "Tilstand:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1137
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:211
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:212
 #: templates/web/default/admin/stats.html:1
 #: templates/web/zurich/admin/stats.html:1 templates/web/zurich/header.html:72
 msgid "Stats"
@@ -3375,7 +3375,7 @@ msgstr "Emne"
 #: templates/web/default/contact/index.html:83
 #: templates/web/default/report/new/fill_in_details_form.html:52
 #: templates/web/emptyhomes/report/new/fill_in_details_form.html:70
-#: templates/web/zurich/admin/report_edit.html:31
+#: templates/web/zurich/admin/report_edit.html:34
 msgid "Subject:"
 msgstr "Emne:"
 
@@ -3398,8 +3398,8 @@ msgstr "Send inn"
 #: templates/web/default/admin/report_edit.html:67
 #: templates/web/default/admin/update_edit.html:54
 #: templates/web/default/admin/user-form.html:17
-#: templates/web/zurich/admin/report_edit-sdm.html:61
-#: templates/web/zurich/admin/report_edit.html:180
+#: templates/web/zurich/admin/report_edit-sdm.html:64
+#: templates/web/zurich/admin/report_edit.html:186
 #: templates/web/zurich/admin/update_edit.html:38
 msgid "Submit changes"
 msgstr "Send inn endringer"
@@ -3409,14 +3409,14 @@ msgstr "Send inn endringer"
 msgid "Submit questionnaire"
 msgstr "Send inn spørreskjema"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:67
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:68
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:6
 #: templates/web/zurich/admin/index-dm.html:23
 #: templates/web/zurich/admin/index-dm.html:6
 #: templates/web/zurich/admin/index-sdm.html:21
-#: templates/web/zurich/admin/report_edit.html:78
-#: templates/web/zurich/admin/report_edit.html:79
+#: templates/web/zurich/admin/report_edit.html:81
+#: templates/web/zurich/admin/report_edit.html:82
 #: templates/web/zurich/admin/reports.html:13
 #: templates/web/zurich/report/banner.html:9
 #, fuzzy
@@ -3445,7 +3445,7 @@ msgstr ""
 "hører inn under:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1130
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:195
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:196
 #: templates/web/default/admin/index.html:1
 #: templates/web/zurich/admin/index-dm.html:1
 #: templates/web/zurich/admin/index-sdm.html:1
@@ -3622,7 +3622,7 @@ msgstr ""
 "administrasjonene som mottok problemrapporten, noe som ikke helt stemmer med "
 "hvordan atributten er definert i Open311 v2-spesifikasjonen."
 
-#: templates/web/default/auth/token.html:22
+#: templates/web/default/auth/token.html:19
 #: templates/web/default/email_sent.html:6
 msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
@@ -3882,6 +3882,12 @@ msgstr ""
 "Dette er en opplisting av alle problemene i denne tjenesten; velg en bestemt "
 "administrasjon for å se problemer som er sendt dit."
 
+#: templates/web/default/auth/token.html:9
+msgid ""
+"This may be because the link is too old or already used, or the address was "
+"not copied correctly."
+msgstr ""
+
 #: templates/web/default/report/banner.html:15
 msgid "This problem has been closed"
 msgstr "Dette problemet er lukket"
@@ -3909,6 +3915,7 @@ msgid "This problem is old and of unknown status."
 msgstr "Dette problemet er gammel og med ukjent status."
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:65
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:66
 #: templates/web/zurich/report/_main.html:14
 #, fuzzy
 msgid "This report is awaiting moderation."
@@ -3994,8 +4001,8 @@ msgstr ""
 #: templates/web/default/admin/report_edit.html:29
 #: templates/web/default/admin/report_edit.html:32
 #: templates/web/default/admin/update_edit.html:22
-#: templates/web/zurich/admin/report_edit-sdm.html:42
-#: templates/web/zurich/admin/report_edit.html:55
+#: templates/web/zurich/admin/report_edit-sdm.html:45
+#: templates/web/zurich/admin/report_edit.html:58
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Unconfirmed"
 msgstr "Ubekreftet"
@@ -4082,8 +4089,8 @@ msgstr "Oppdatert!"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:906
 #: perllib/FixMyStreet/App/Controller/Admin.pm:959
 #: perllib/FixMyStreet/App/Controller/Admin.pm:998
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:422
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:486
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:423
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:487
 msgid "Updated!"
 msgstr "Oppdatert!"
 
@@ -4122,7 +4129,7 @@ msgid "User flagged"
 msgstr "Bruker flagget"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1135
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:210
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:211
 #: templates/web/default/admin/flagged.html:30
 #: templates/web/zurich/header.html:69
 msgid "Users"
@@ -4135,8 +4142,8 @@ msgstr "Verdier oppdatert"
 
 #: templates/web/default/admin/report_edit.html:12
 #: templates/web/default/admin/update_edit.html:12
-#: templates/web/zurich/admin/report_edit-sdm.html:21
-#: templates/web/zurich/admin/report_edit.html:19
+#: templates/web/zurich/admin/report_edit-sdm.html:24
+#: templates/web/zurich/admin/report_edit.html:22
 #: templates/web/zurich/admin/update_edit.html:10
 msgid "View report on site"
 msgstr "Se rapport på nettstedet"
@@ -4177,7 +4184,13 @@ msgstr ""
 "Vi fant mer en ett treff for den plassen.  Vi viser opp til ti treff, så "
 "forsøk et annet søk hvis din plass ikke er her."
 
-#: templates/web/default/auth/token.html:19
+#: templates/web/default/auth/token.html:8
+#, fuzzy
+msgid "We have not been able to confirm your account - sorry."
+msgstr ""
+"Vi har sendt deg en epost som inneholder link for å bekrefte din konto."
+
+#: templates/web/default/auth/token.html:16
 msgid "We have sent you an email containing a link to confirm your account."
 msgstr ""
 "Vi har sendt deg en epost som inneholder link for å bekrefte din konto."
@@ -4650,8 +4663,8 @@ msgid "council ref:&nbsp;%s"
 msgstr "%s ref:&nbsp;%s"
 
 #: templates/web/default/admin/report_edit.html:22
-#: templates/web/zurich/admin/report_edit-sdm.html:37
-#: templates/web/zurich/admin/report_edit.html:51
+#: templates/web/zurich/admin/report_edit-sdm.html:40
+#: templates/web/zurich/admin/report_edit.html:54
 msgid "didn't use map"
 msgstr "brukte ikke kart"
 
@@ -4716,16 +4729,16 @@ msgstr ""
 
 #: templates/web/default/admin/report_edit.html:18
 #: templates/web/default/admin/report_edit.html:20
-#: templates/web/zurich/admin/report_edit-sdm.html:24
-#: templates/web/zurich/admin/report_edit-sdm.html:26
-#: templates/web/zurich/admin/report_edit-sdm.html:33
-#: templates/web/zurich/admin/report_edit-sdm.html:35
-#: templates/web/zurich/admin/report_edit.html:24
-#: templates/web/zurich/admin/report_edit.html:26
-#: templates/web/zurich/admin/report_edit.html:35
-#: templates/web/zurich/admin/report_edit.html:37
-#: templates/web/zurich/admin/report_edit.html:47
-#: templates/web/zurich/admin/report_edit.html:49
+#: templates/web/zurich/admin/report_edit-sdm.html:27
+#: templates/web/zurich/admin/report_edit-sdm.html:29
+#: templates/web/zurich/admin/report_edit-sdm.html:36
+#: templates/web/zurich/admin/report_edit-sdm.html:38
+#: templates/web/zurich/admin/report_edit.html:27
+#: templates/web/zurich/admin/report_edit.html:29
+#: templates/web/zurich/admin/report_edit.html:38
+#: templates/web/zurich/admin/report_edit.html:40
+#: templates/web/zurich/admin/report_edit.html:50
+#: templates/web/zurich/admin/report_edit.html:52
 #, fuzzy
 msgid "originally entered: &ldquo;%s&rdquo;"
 msgstr "søkte etter"
@@ -4778,8 +4791,8 @@ msgid "today"
 msgstr "idag"
 
 #: templates/web/default/admin/report_edit.html:22
-#: templates/web/zurich/admin/report_edit-sdm.html:37
-#: templates/web/zurich/admin/report_edit.html:51
+#: templates/web/zurich/admin/report_edit-sdm.html:40
+#: templates/web/zurich/admin/report_edit.html:54
 msgid "used map"
 msgstr "brukte kart"
 
