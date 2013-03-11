@@ -169,6 +169,31 @@ like $email->header('From'), qr/division\@example.org/, 'from line looks correct
 like $email->body, qr/FINAL UPDATE/, 'body looks correct';
 $mech->clear_emails_ok;
 
+# Assign directly to planned, don't confirm email
+@reports = $mech->create_problems_for_body( 1, 2, 'Second', {
+    state              => 'unconfirmed',
+    confirmed          => undef,
+    cobrand            => 'zurich',
+});
+$report = $reports[0];
+
+$mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->submit_form_ok( { with_fields => { state => 'planned' } } );
+$mech->get_ok( '/report/' . $report->id );
+$mech->content_contains('In Bearbeitung');
+$mech->content_contains('Second Test');
+
+$mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->content_contains( 'Unbest&auml;tigt' );
+$mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
+
+$mech->get_ok( '/report/' . $report->id );
+$mech->content_contains('Erledigt');
+$mech->content_contains('Second Test');
+$mech->content_contains('FINAL UPDATE');
+
+$mech->email_count_is(0);
+
 # Report assigned to third party
 
 @reports = $mech->create_problems_for_body( 1, 2, 'Third', {
