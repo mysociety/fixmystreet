@@ -51,9 +51,22 @@ sub get_template {
     return $template;
 }
 
-# Zurich emails come from the site itself
+# Zurich emails come from the site itself, unless it's to an external body,
+# in which case it's from the category/body
 sub send_from {
     my ( $self, $row ) = @_;
+
+    if ( $row->external_body ) {
+        my $body = @{ $self->bodies }[0];
+        my $body_email = $body->endpoint;
+        my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+            body_id => $body->id,
+            category => $row->category
+        } );
+        $body_email = $contact->email if $contact && $contact->email;
+        return [ $body_email, FixMyStreet->config('CONTACT_NAME') ];
+    }
+
     return [ FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') ];
 }
 
