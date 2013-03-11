@@ -20,14 +20,14 @@
             <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
         <![endif]-->
 
-<!-- CDN for now FIXME --><link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/redmond/jquery-ui.css">
+        <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/redmond/jquery-ui.css">
 
         <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
         <script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = 'Züri wie neu' %]
         [% extra_js %]
 
-<!-- CDN for now FIXME --><script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js" charset="utf-8"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" charset="utf-8"></script>
 
         [% INCLUDE 'tracking_code.html' %]
 
