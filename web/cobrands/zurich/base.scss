@@ -40,6 +40,14 @@
         &:before {
             display: none;
         }
+        &#closed {
+            color: #1a1a1a;
+            background: #e25436;
+        }
+        &#progress {
+            color: #1a1a1a;
+            background: #f3d74b;
+        }
     }
 }
 
