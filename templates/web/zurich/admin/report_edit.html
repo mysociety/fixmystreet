@@ -164,7 +164,14 @@ $(function(){
 
     <li><label for="status_update">[% loc('Public response:') %]</label>
 
-    <textarea name='status_update' id='status_update' cols=60 rows=5>[% problem.extra.public_response | html %]</textarea>
+    <textarea name='status_update' id='status_update' cols=60 rows=5>
+      [%- IF problem.extra.public_response -%]
+        [%- problem.extra.public_response | html -%]
+      [%- ELSE -%]
+
+Freundliche Grüsse
+Ihre Stadt Zürich
+    [%- END %]</textarea>
     </li>
 </ul>
 
