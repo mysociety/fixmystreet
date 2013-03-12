@@ -221,16 +221,13 @@ sub admin_type {
     my $body = $c->user->from_body;
     $c->stash->{body} = $body;
 
-    my $parent = $body->parent;
-    my $children = $body->bodies->count;
-
     my $type;
+    my $parent = $body->parent;
     if (!$parent) {
         $type = 'super';
-    } elsif ($parent && $children) {
-        $type = 'dm';
-    } elsif ($parent) {
-        $type = 'sdm';
+    } else {
+        my $grandparent = $parent->parent;
+        $type = $grandparent ? 'sdm' : 'dm';
     }
 
     $c->stash->{admin_type} = $type;

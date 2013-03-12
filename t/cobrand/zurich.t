@@ -19,6 +19,8 @@ $mech->content_like( qr/zurich/i );
 
 # Set up bodies
 my $zurich = $mech->create_body_ok( 1, 'Zurich' );
+$zurich->parent( undef );
+$zurich->update;
 my $division = $mech->create_body_ok( 2, 'Division 1' );
 $division->parent( $zurich->id );
 $division->send_method( 'Zurich' );
