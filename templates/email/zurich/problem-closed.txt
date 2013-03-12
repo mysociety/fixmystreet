@@ -2,7 +2,7 @@ Subject: Züri wie neu: Meldung #[% problem.id %]
 
 Grüezi [% problem.name %]
 
-Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Ihr Anliegen wurde wiefolgt beantwortet:
+Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Ihr Anliegen wurde wie folgt beantwortet:
 
 [% problem.extra.public_response %]
 
