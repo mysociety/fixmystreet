@@ -1,8 +1,11 @@
-[% IF c.config.BASE_URL == "http://zurich.fixmystreet.staging.mysociety.org" %]
+[%
+    SET ga_code = 'UA-38427437-1';
+    SET ga_code = 'UA-39223200-1' IF c.config.BASE_URL == "http://www.zueriwieneu.ch";
+%]
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-38427437-1']);
+  _gaq.push(['_setAccount', '[% ga_code %]']);
   _gaq.push (['_gat._anonymizeIp']);
   _gaq.push(['_trackPageview']);
 
@@ -13,6 +16,3 @@
   })();
 
 </script>
-[% ELSE %]
-<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "http://www.fixmystreet.com" -->
-[% END %]
