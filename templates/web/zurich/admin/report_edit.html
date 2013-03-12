@@ -98,15 +98,19 @@
 [% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
 
 <ul class="no-bullets">
-<li class="assignation">
-<label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
+[% list = FOR body IN bodies %]
+    [%- NEXT UNLESS body.parent.id == c.user.from_body.id %]
+    <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
+[% END %]
+  [% IF list %]
+    <li class="assignation">
+        <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision">
             <option value="">--</option>
-        [% FOR body IN bodies %]
-            [% NEXT UNLESS body.parent.id == c.user.from_body.id %]
-            <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
-        [% END %]
+            [% list %]
         </select>
+    </li>
+  [% END %]
 
 <li class="assignation">
 <label for="category">
@@ -151,16 +155,19 @@ $(function(){
 [% ELSIF problem.state == 'planned' %]
 
 <ul class="no-bullets">
+[% list = FOR body IN bodies %]
+    [%- NEXT UNLESS body.parent.id == c.user.from_body.id %]
+    <option value="[% body.id %]">[% body.name %]</option>
+[% END %]
+  [% IF list %]
     <li class="assignation">
     <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision">
             <option value="" selected>--</option>
-        [% FOR body IN bodies %]
-            [% NEXT UNLESS body.parent.id == c.user.from_body.id %]
-            <option value="[% body.id %]">[% body.name %]</option>
-        [% END %]
+            [% list %]
         </select>
     </li>
+  [% END %]
 
     <li><label for="status_update">[% loc('Public response:') %]</label>
 
