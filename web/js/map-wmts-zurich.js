@@ -93,7 +93,7 @@ $(function(){
         layer: "Hybrid",
         matrixSet: "nativeTileMatrixSet",
         requestEncoding: "REST",
-        url: "http://www.wmts.stadt-zuerich.ch/Hybrid/MapServer/WMTS/tile/",
+        url: "/maps/Hybrid/",
         style: "default",
         matrixIds: [
             //{ identifier: "0", matrixHeight: 2, matrixWidth: 2, scaleDenominator: 250000,  supportedCRS: "urn:ogc:def:crs:EPSG::21781", tileHeight: 256, tileWidth: 256, topLeftCorner: { lat: 30814423, lon: -29386322 } },
@@ -112,7 +112,7 @@ $(function(){
         layer_options, OpenLayers.Util.applyDefaults({
             name: "Stadtplan",
             layer: "Stadtplan",
-            url:  "http://www.wmts.stadt-zuerich.ch/Stadtplan/MapServer/WMTS/tile/"
+            url:  "/maps/Stadtplan/"
         }, layer_options)
     ];
 

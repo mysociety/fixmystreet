@@ -31,7 +31,7 @@ sub map_tiles {
 }
 
 sub base_tile_url {
-    return 'http://www.wmts.stadt-zuerich.ch/Hybrid/MapServer/WMTS/tile/1.0.0/Hybrid/default/nativeTileMatrixSet';
+    return '/maps/Hybrid/1.0.0/Hybrid/default/nativeTileMatrixSet';
 }
 
 sub copyright {
