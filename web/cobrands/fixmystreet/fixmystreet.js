@@ -61,7 +61,7 @@ $(function(){
     } else if (window.location.href.indexOf('oxfordshire') != -1) {
         cobrand = 'oxfordshire';
         is_small_map = true;
-    } else if (window.location.href.indexOf('zurich') != -1) {
+    } else if (window.location.href.indexOf('zurich') != -1 || window.location.href.indexOf('zueri') != -1) {
         cobrand = 'zurich';
     }
 
