@@ -73,7 +73,7 @@ $(document).ready(function() {
 	// call this to push the auto-refresh timeout off so it's only triggered
 	// if there's no activity for a while
 	function reset_timeout() {
-		if (refresh_period && can_refresh) {
+		if (mm_url && refresh_period && can_refresh) {
 			if (timeout_id) {
 				clearTimeout(timeout_id);
 			}

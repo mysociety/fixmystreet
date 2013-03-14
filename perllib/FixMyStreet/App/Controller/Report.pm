@@ -221,7 +221,7 @@ sub delete :Local :Args(1) {
     my $body = $c->user->obj->from_body;
     return $c->res->redirect($uri) unless $body;
 
-    return $c->res->redirect($uri) unless $p->bodies->{$body};
+    return $c->res->redirect($uri) unless $p->bodies->{$body->id};
 
     $p->state('hidden');
     $p->lastupdate( \'ms_current_timestamp()' );

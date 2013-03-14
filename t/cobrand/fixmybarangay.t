@@ -90,6 +90,34 @@ ok $dps_report->whensent, 'DPS report marked as sent';
 is $dps_report->send_method_used, 'Open311', 'DPS report sent via Open311';
 is $dps_report->external_id, 248, 'DPS report has right external ID';
 
+my $fmb_test_email = 'luz_test_user@example.com';
+my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $fmb_test_email, from_body => 1, password => 'fmbsecret' } );
+ok $user, "test user does exist";
+
+$mech->log_out_ok;
+$mech->get_ok( '/report/' . $luz_report->id );
+$mech->content_lacks( "Remove from site" );
+$mech->content_contains( "Report abuse" );
+
+$mech->post_ok('/report/delete/' . $luz_report->id);
+is $mech->uri->path, '/report/' . $luz_report->id, "should redirect to report page, deletion ignored";
+$luz_report->discard_changes;
+is $luz_report->state, 'confirmed', 'should be confirmed';
+
+$user = $mech->log_in_ok($fmb_test_email);
+
+$mech->get_ok( '/report/' . $luz_report->id );
+$mech->content_contains( "Remove from site" );
+$mech->content_lacks( "Report abuse" );
+
+$mech->form_id('remove-from-site-form');
+$mech->submit_form();
+is $mech->uri->path, '/report/' . $luz_report->id, "should redirect to report page, deletion successful";
+$luz_report->discard_changes;
+is $luz_report->state, 'hidden', 'should be hidden';
+
+$mech->delete_user($fmb_test_email);
+
 $mech->delete_problems_for_body( 1 );
 $mech->delete_problems_for_body( 3 );
 
