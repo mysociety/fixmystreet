@@ -52,6 +52,9 @@ sub example_places {
 # don't send questionnaires to people who used the OCC cobrand to report their problem
 sub send_questionnaires { return 0; }
 
+# let staff hide OCC reports
+sub users_can_hide { return 1; }
+
 sub default_show_name { 0 }
 
 1;
