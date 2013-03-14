@@ -313,7 +313,7 @@ sub strip {
         }
     }
     from_to($s, 'utf8', 'Windows-1252') if $ENCODE_TO_WIN1252;
-    return $max_len? substr($s, 0, 2000) : $s;
+    return $max_len? substr($s, 0, $max_len) : $s;
 }
 
 #------------------------------------------------------------------
