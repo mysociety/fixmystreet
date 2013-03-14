@@ -1,0 +1,22 @@
+[% IF c.config.BASE_URL == "http://www.fixmystreet.com" %]
+
+<script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-22094787-2']);
+    _gaq.push(['_setDomainName', '.oxfordshire.gov.uk']);
+    _gaq.push(['_setCustomVar',1,'level1','Roads and transport',3]);
+    _gaq.push(['_setCustomVar',2,'level2','FixMyStreet',3]);
+    _gaq.push(['_trackPageview']);
+    jQuery(document).ready( function () {
+     jQuery.occ.gaico({
+      messageIcon: '/cms/sites/all/themes/publicsite/images/gaico_exclamation.png',
+      permanentMessageIcon: '/cms/sites/all/themes/publicsite/images/gaico_question.png'
+     });
+    });
+
+</script>
+
+[% ELSE %]
+<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "http://www.fixmystreet.com" -->
+[% END %]
