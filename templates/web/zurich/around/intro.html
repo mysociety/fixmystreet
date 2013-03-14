@@ -5,11 +5,6 @@
     $(function() {
         $( "#pc" ).autocomplete({
             minLength: 3,
-            select: function(event, ui) {
-                $(this).val(ui.item.value);
-                this.form.submit();
-                return true;
-            },
             source: "/ajax/geocode"
         });
     });

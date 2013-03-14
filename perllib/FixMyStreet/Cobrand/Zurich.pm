@@ -63,6 +63,7 @@ sub problem_as_hashref {
             delete $hashref->{ $var };
         }
         $hashref->{detail} = _('This report is awaiting moderation.');
+        $hashref->{title} = _('This report is awaiting moderation.');
         $hashref->{state} = 'submitted';
         $hashref->{state_t} = _('Submitted');
     } else {
@@ -92,7 +93,7 @@ sub updates_as_hashref {
         $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
         if ( $problem->state eq 'fixed - council' ) {
-            $hashref->{details} = FixMyStreet::App::View::Web->add_links( $ctx, $problem->extra->{public_response} );
+            $hashref->{details} = FixMyStreet::App::View::Web->add_links( $ctx, $problem->extra ? $problem->extra->{public_response} : '' );
         } elsif ( $problem->state eq 'closed' ) {
             $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body($ctx)->name );
         }
@@ -220,16 +221,13 @@ sub admin_type {
     my $body = $c->user->from_body;
     $c->stash->{body} = $body;
 
-    my $parent = $body->parent;
-    my $children = $body->bodies->count;
-
     my $type;
+    my $parent = $body->parent;
     if (!$parent) {
         $type = 'super';
-    } elsif ($parent && $children) {
-        $type = 'dm';
-    } elsif ($parent) {
-        $type = 'sdm';
+    } else {
+        my $grandparent = $parent->parent;
+        $type = $grandparent ? 'sdm' : 'dm';
     }
 
     $c->stash->{admin_type} = $type;

@@ -25,14 +25,17 @@ my @sending = qw(
     demo.fixmybarangay.com
     www.fixmybarangay.com
     zurich.fixmystreet.staging.mysociety.org
+    www.zueriwieneu.ch
     seesomething.mysociety.org
 );
 my @no_alerts = qw(
     zurich.fixmystreet.staging.mysociety.org
+    www.zueriwieneu.ch
     seesomething.mysociety.org
 );
 my @no_open311 = qw(
     zurich.fixmystreet.staging.mysociety.org
+    www.zueriwieneu.ch
     seesomething.mysociety.org
 );
 my %sending = map { $_ => 1 } @sending;
@@ -75,6 +78,6 @@ my %no_alerts = map { $_ => 1 } @no_alerts;
 43 2 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/problem-creation-graph
 00 8 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/check-for-zombies !!(*= $user *)!!
 
-!!(* if ($vhost =~ /zurich/) { *)!!
+!!(* if ($vhost =~ /zurich|zueri/) { *)!!
 30 0 * * * !!(*= $user *)!! /data/vhost/!!(*= $vhost *)!!/fixmystreet/bin/cron-wrapper zurich-overdue-alert
 !!(* } *)!!

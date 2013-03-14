@@ -1,6 +1,6 @@
 Subject: eskalierte Meldungen auf Züri wie neu
 
-Die folgenden Meldungen auf Züri wie neu sind älter als einen Tag und müssen dringend bearbeitet werden:
+Die folgenden Meldungen auf <<Züri wie neu>> sind älter als einen Tag und müssen dringend bearbeitet werden:
 
 <?=$values['data']?>
 

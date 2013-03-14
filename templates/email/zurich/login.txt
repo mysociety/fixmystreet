@@ -1,0 +1,6 @@
+Subject: Ihr Züri wie neu Konto
+
+Bitte klicken Sie auf den Link um Ihre E-Mail-Adresse zu bestätigen und sich direkt einzuloggen.
+
+[% c.uri_for_action( 'auth/token', token ) %]
+

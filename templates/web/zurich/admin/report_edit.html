@@ -7,6 +7,9 @@
 -%]
 
 [% map_html %]
+    <p id='sub_map_links'>
+        <a class="hidden-nojs" id="map_layer_toggle" href="">Stadtplan</a>
+    </p>
 </div>
 
 [% status_message %]
@@ -95,15 +98,19 @@
 [% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
 
 <ul class="no-bullets">
-<li class="assignation">
-<label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
+[% list = FOR body IN bodies %]
+    [%- NEXT UNLESS body.parent.id == c.user.from_body.id %]
+    <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
+[% END %]
+  [% IF admin_type != 'super' AND list %]
+    <li class="assignation">
+        <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision">
             <option value="">--</option>
-        [% FOR body IN bodies %]
-            [% NEXT UNLESS body.parent.id == c.user.from_body.id %]
-            <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
-        [% END %]
+            [% list %]
         </select>
+    </li>
+  [% END %]
 
 <li class="assignation">
 <label for="category">
@@ -147,21 +154,32 @@ $(function(){
 
 [% ELSIF problem.state == 'planned' %]
 
-<ul>
+<ul class="no-bullets">
+[% list = FOR body IN bodies %]
+    [%- NEXT UNLESS body.parent.id == c.user.from_body.id %]
+    <option value="[% body.id %]">[% body.name %]</option>
+[% END %]
+  [% IF admin_type != 'super' AND list %]
     <li class="assignation">
     <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision">
             <option value="" selected>--</option>
-        [% FOR body IN bodies %]
-            [% NEXT UNLESS body.parent.id == c.user.from_body.id %]
-            <option value="[% body.id %]">[% body.name %]</option>
-        [% END %]
+            [% list %]
         </select>
     </li>
+  [% END %]
 
     <li><label for="status_update">[% loc('Public response:') %]</label>
 
-    <textarea name='status_update' id='status_update' cols=60 rows=5>[% problem.extra.public_response | html %]</textarea>
+    <textarea name='status_update' id='status_update' cols=60 rows=5>
+      [%- IF problem.extra.public_response -%]
+        [%- problem.extra.public_response | html -%]
+      [%- ELSE -%]
+
+Freundliche Grüsse
+
+Ihre Stadt Zürich
+    [%- END %]</textarea>
     </li>
 </ul>
 

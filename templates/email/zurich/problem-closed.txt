@@ -1,17 +1,18 @@
 Subject: Züri wie neu: Meldung #[% problem.id %]
 
-Guten Tag [% problem.name %]
+Grüezi [% problem.name %]
 
-Antwort auf Ihre Meldung:
+Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Ihr Anliegen wurde wie folgt beantwortet:
 
 [% problem.extra.public_response %]
 
-Um die Meldung auf der Webseite zu betrachen, klicken Sie auf folgenden Link:
+Unter:
     [% url %]
+finden Sie Ihre Meldung auf der Website.
 
-Ihre Meldung:
+Ihre Meldung lautet:
 
 [% problem.detail %]
 
-Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht auf dieses E-Mail.
+Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht darauf.
 

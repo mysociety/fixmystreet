@@ -86,6 +86,13 @@ __PACKAGE__->config(
 # Start the application
 __PACKAGE__->setup();
 
+# Due to some current issues with proxyings, need to manually
+# tell the code we're secure if we are.
+after 'prepare_headers' => sub {
+    my $self = shift;
+    $self->req->secure( 1 ) if $self->config->{BASE_URL} eq 'https://www.zueriwieneu.ch';
+};
+
 # set up DB handle for old code
 FixMyStreet->configure_mysociety_dbhandle;
 

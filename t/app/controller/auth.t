@@ -95,7 +95,7 @@ $mech->not_logged_in_ok;
     $mech->log_out_ok;
     $mech->get_ok($link);
     is $mech->uri, $link, "not logged in";
-    $mech->content_contains( 'Link too old or already used',
+    $mech->content_contains( 'too old or already used',
         'token now invalid' );
     $mech->not_logged_in_ok;
 }
