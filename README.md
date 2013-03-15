@@ -14,10 +14,13 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.1.1.
+Platform is now at version 1.1.2.
 
 ## Releases
 
+* v1.1.2 (15th March 2013)
+    - Include the 'cpanfile' now required by carton, the Perl package
+      management program we use.
 * v1.1.1 (22nd February 2013)
     - Hotfix to fix missed iPhone width bug
 * v1.1 (22nd February 2013)
