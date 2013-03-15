@@ -22,7 +22,6 @@ function position_map_box() {
             "Click on a pin and then on the “details” link to see an individual report detail.</p></div>");
     }
     var mb_y = $('#map_box').position().top + map_box_height ;
-    console.log(" $('#occ-map-instructions')=" +  $('#occ-map-instructions') + ", y=" + mb_y);
     $('#occ-map-instructions').show().css({
         left: '', 
         right: oxfordshire_right, 
