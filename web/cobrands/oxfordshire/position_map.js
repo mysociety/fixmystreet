@@ -19,7 +19,7 @@ function position_map_box() {
     
     if (1 || ! $('#occ-map-instructions').count) {
         $('#map_box').after("<div id='occ-map-instructions'><p>" +
-            "Click on a pin and then on the “details” link to see an individual report detail.</p></div>");
+            "Click on a pin and then on the &ldquo;details&rdquo; link to see an individual report detail.</p></div>");
     }
     var mb_y = $('#map_box').position().top + map_box_height ;
     $('#occ-map-instructions').show().css({
