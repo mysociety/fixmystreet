@@ -2,6 +2,9 @@ package FixMyStreet::App;
 use Moose;
 use namespace::autoclean;
 
+# Should move away from Email::Send, but until then:
+$Return::Value::NO_CLUCK = 1;
+
 use Catalyst::Runtime 5.80;
 use DateTime;
 use FixMyStreet;
@@ -46,7 +49,7 @@ __PACKAGE__->config(
     default_view => 'Web',
 
     # Serve anything in web dir that is not a .cgi script
-    static => {    #
+    'Plugin::Static::Simple' => {
         include_path      => [ FixMyStreet->path_to("web") . "" ],
         ignore_extensions => ['cgi'],
     },
