@@ -72,7 +72,10 @@ sub process_services {
     my $list = shift;
 
     $self->found_contacts( [] );
-    foreach my $service ( @{ $list->{service} } ) {
+    my $services = $list->{service};
+    # XML might only have one result and then squashed the 'array'-ness
+    $services = [ $services ] unless ref $services eq 'ARRAY';
+    foreach my $service ( @$services ) {
         $self->_current_service( $service );
         $self->process_service;
     }
