@@ -63,9 +63,6 @@ sub confirm_problem : Path('/P') {
             confirmed => \'ms_current_timestamp()',
         } );
 
-        $c->stash->{report} = $c->stash->{problem};
-        $c->forward( '/report/new/create_reporter_alert' );
-
         if ( ref($data) && ( $data->{name} || $data->{password} ) ) {
             $problem->user->name( $data->{name} ) if $data->{name};
             $problem->user->phone( $data->{phone} ) if $data->{phone};
