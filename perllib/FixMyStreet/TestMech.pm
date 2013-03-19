@@ -243,7 +243,7 @@ sub import_errors {
     my @errors =    #
       grep { $_ }   #
       map { s{^ERROR:\s*(.*)$}{$1}g ? $_ : undef; }    #
-      split m/\n+/, $mech->response->content;
+      split m/\n+/, $mech->content;
     return \@errors;
 }
 
