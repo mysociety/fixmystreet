@@ -52,6 +52,7 @@ requires 'HTTP::Request::Common';
 requires 'Image::Size';
 requires 'IO::String';
 requires 'JSON';
+requires 'JSON::XS';
 requires 'LWP::Simple';
 requires 'LWP::UserAgent';
 requires 'Math::Trig';
