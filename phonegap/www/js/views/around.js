@@ -17,13 +17,11 @@
             locate: function() {
                 $('#locating').show();
                 var that = this;
-                var l = new Locate();
-                _.extend(l, Backbone.Events);
-                l.on('located', this.showMap, this );
-                l.on('failed', this.noMap, this );
-                l.on('locating', this.locationUpdate, this);
+                FMS.locator.on('gps_located', this.showMap, this );
+                FMS.locator.on('gps_failed', this.noMap, this );
+                FMS.locator.on('gps_locating', this.locationUpdate, this);
 
-                l.geolocate(100);
+                FMS.locator.geolocate(100);
                 this.startLocateProgress();
             },
 
@@ -92,11 +90,9 @@
            onClickReport: function() {
                 var position = this.getCrossHairPosition();
 
-                var l = new Locate();
-                _.extend(l, Backbone.Events);
-                l.on('failed', this.noMap, this );
-                l.on('located', this.goPhoto, this );
-                l.check_location( { latitude: position.lat, longitude: position.lon } );
+                FMS.locator.on('search_failed', this.noMap, this );
+                FMS.locator.on('search_located', this.goPhoto, this );
+                FMS.locator.check_location( { latitude: position.lat, longitude: position.lon } );
             },
 
             goPhoto: function(info) {

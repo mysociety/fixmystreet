@@ -57,8 +57,10 @@ var tpl = {
             FMS.initialized = 1;
             tpl.loadTemplates( FMS.templates, function() {
                 _.extend(FMS, {
-                    router: new FMS.appRouter()
+                    router: new FMS.appRouter(),
+                    locator: new FMS.Locate()
                 });
+                _.extend( FMS.locator, Backbone.Events );
 
                 // we only ever have the details of one user
                 FMS.users.fetch();
