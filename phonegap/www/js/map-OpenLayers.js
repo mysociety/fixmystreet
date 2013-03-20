@@ -290,6 +290,7 @@ function show_map(event) {
             new OpenLayers.Projection("EPSG:4326"),
             fixmystreet.map.getProjectionObject()
         );
+        FMS.currentPosition = centre;
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 4);
     }
 

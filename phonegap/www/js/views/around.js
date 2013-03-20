@@ -72,6 +72,7 @@
                         new OpenLayers.Projection("EPSG:4326"),
                         fixmystreet.map.getProjectionObject()
                     );
+                    FMS.currentPosition = centre;
                     fixmystreet.map.panTo(centre);
                 }
                 FMS.locator.updatePosition();
