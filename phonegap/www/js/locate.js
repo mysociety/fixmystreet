@@ -2,6 +2,7 @@
     _.extend( FMS, {
         Locate: function() { return {
             locating: 0,
+            updating: 0,
 
             lookup: function(q) {
                 var that = this;
@@ -72,6 +73,7 @@
 
             updatePosition: function() {
                 console.log('updatePosition');
+                this.updating = 1;
                 var that = this;
                 this.update_watch_id = navigator.geolocation.watchPosition(
                     function(location) {
@@ -85,6 +87,7 @@
             },
 
             stopUpdating: function() {
+                this.updating = 0;
                 if ( this.update_watch_id ) {
                     navigator.geolocation.clearupdate_watch( this.watch_id );
                     delete this.update_watch_id;
