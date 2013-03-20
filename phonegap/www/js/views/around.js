@@ -110,6 +110,11 @@
 
             centerMapOnPosition: function(e) {
                 e.preventDefault();
+                if ( !fixmystreet.map ) {
+                    return;
+                }
+                // if there isn't a currentPosition then something
+                // is up so we probably should not recenter
                 if ( FMS.currentPosition ) {
                     fixmystreet.map.panTo(FMS.currentPosition);
                 }
