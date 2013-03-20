@@ -147,6 +147,9 @@ function fixmystreet_onload() {
     }
     fixmystreet.map.addLayer(fixmystreet.markers);
 
+    fixmystreet.location = new OpenLayers.Layer.Vector('location');
+    fixmystreet.map.addLayer(fixmystreet.location);
+
     if ( fixmystreet.zoomToBounds ) {
         var bounds = fixmystreet.markers.getDataExtent();
         if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }

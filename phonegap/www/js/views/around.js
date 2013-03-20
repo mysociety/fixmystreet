@@ -20,6 +20,7 @@
                 FMS.locator.on('gps_located', this.showMap, this );
                 FMS.locator.on('gps_failed', this.noMap, this );
                 FMS.locator.on('gps_locating', this.locationUpdate, this);
+                FMS.locator.on('gps_current_position', this.positionUpdate, this);
 
                 FMS.locator.geolocate(100);
                 this.startLocateProgress();
@@ -72,6 +73,35 @@
                     );
                     fixmystreet.map.panTo(centre);
                 }
+                FMS.locator.updatePosition();
+            },
+
+            positionUpdate: function( info ) {
+                var coords = info.coordinates;
+                var centre = new OpenLayers.LonLat( coords.longitude, coords.latitude );
+
+                centre.transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    fixmystreet.map.getProjectionObject()
+                );
+
+                var point = new OpenLayers.Geometry.Point( centre.lon, centre.lat );
+
+                fixmystreet.location.removeAllFeatures();
+                    var x = new OpenLayers.Feature.Vector(
+                        point,
+                        {},
+                        {
+                            graphicZIndex: 3000,
+                            graphicName: 'circle',
+                            strokeColor: '#00f',
+                            strokeWidth: 1,
+                            fillOpacity: 1,
+                            fillColor: '#00f',
+                            pointRadius: 10
+                        }
+                    );
+                fixmystreet.location.addFeatures([ x ]);
             },
 
             noMap: function( details ) {

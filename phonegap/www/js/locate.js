@@ -70,6 +70,26 @@
                 );
             },
 
+            updatePosition: function() {
+                console.log('updatePosition');
+                var that = this;
+                this.update_watch_id = navigator.geolocation.watchPosition(
+                    function(location) {
+                        if ( that.update_watch_id === undefined ) { console.log( 'no update watch id' ); return; }
+
+                        that.trigger('gps_current_position', { coordinates: location.coords } );
+                    },
+                    function() {},
+                    { timeout: 20000, enableHighAccuracy: true }
+                );
+            },
+
+            stopUpdating: function() {
+                if ( this.update_watch_id ) {
+                    navigator.geolocation.clearupdate_watch( this.watch_id );
+                    delete this.update_watch_id;
+                }
+            },
 
             check_location: function(coords) {
                 console.log('check_location');
