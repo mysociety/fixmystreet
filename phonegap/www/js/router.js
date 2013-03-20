@@ -7,6 +7,7 @@
                 '': 'home',
                 'home': 'home',
                 'around': 'around',
+                'search': 'search',
                 'photo': 'photo',
                 'details': 'details',
                 'submit': 'submit',
@@ -28,6 +29,11 @@
             around: function(){
                 var aroundView = new FMS.AroundView({ model: FMS.currentReport });
                 this.changeView(aroundView);
+            },
+
+            search: function(){
+                var searchView = new FMS.SearchView({ model: FMS.currentReport });
+                this.changeView(searchView);
             },
 
             home: function(){

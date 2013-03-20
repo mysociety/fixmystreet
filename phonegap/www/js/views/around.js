@@ -7,12 +7,20 @@
             events: {
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay',
+                'click #search': 'goSearch',
                 'click #relocate': 'centerMapOnPosition',
                 'click #mark-here': 'onClickReport'
             },
 
             afterDisplay: function() {
-                this.locate();
+                if ( FMS.currentLocation ) {
+                    var info = { coordinates: FMS.currentLocation };
+                    FMS.currentLocation = null;
+                    FMS.locator.on('gps_current_position', this.positionUpdate, this);
+                    this.showMap(info);
+                } else {
+                    this.locate();
+                }
             },
 
             locate: function() {
@@ -148,6 +156,16 @@
                 this.model.set('categories', info.details.category );
 
                 this.navigate( 'photo' );
+            },
+
+            goSearch: function(e) {
+                e.preventDefault();
+                FMS.locator.off('gps_located');
+                FMS.locator.off('gps_failed');
+                FMS.locator.off('gps_locating');
+                FMS.locator.off('gps_current_position');
+                FMS.locator.stopUpdating();
+                this.navigate( 'search' );
             },
 
             getCrossHairPosition: function() {
