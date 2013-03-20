@@ -7,6 +7,7 @@
             events: {
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay',
+                'click #relocate': 'centerMapOnPosition',
                 'click #mark-here': 'onClickReport'
             },
 
@@ -85,6 +86,8 @@
                     fixmystreet.map.getProjectionObject()
                 );
 
+                FMS.currentPosition = centre;
+
                 var point = new OpenLayers.Geometry.Point( centre.lon, centre.lat );
 
                 fixmystreet.location.removeAllFeatures();
@@ -102,6 +105,13 @@
                         }
                     );
                 fixmystreet.location.addFeatures([ x ]);
+            },
+
+            centerMapOnPosition: function(e) {
+                e.preventDefault();
+                if ( FMS.currentPosition ) {
+                    fixmystreet.map.panTo(FMS.currentPosition);
+                }
             },
 
             noMap: function( details ) {
