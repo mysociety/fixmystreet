@@ -18,6 +18,10 @@
                     FMS.currentLocation = null;
                     this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
                     this.showMap(info);
+                } else if ( this.model && this.model.get('lat') ) {
+                    var modelInfo = { coordinates: { latitude: this.model.get('lat'), longitude: this.model.get('lon') } };
+                    this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
+                    this.showMap(modelInfo);
                 } else {
                     this.locate();
                 }
