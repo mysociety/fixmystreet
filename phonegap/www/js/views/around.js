@@ -81,11 +81,7 @@
                 if ( !fixmystreet.map ) {
                     show_map();
                 } else {
-                    var centre = new OpenLayers.LonLat( coords.longitude, coords.latitude );
-                    centre.transform(
-                        new OpenLayers.Projection("EPSG:4326"),
-                        fixmystreet.map.getProjectionObject()
-                    );
+                    var centre = this.projectCoords( coords );
                     FMS.currentPosition = centre;
                     fixmystreet.map.panTo(centre);
                 }
@@ -93,13 +89,7 @@
             },
 
             positionUpdate: function( info ) {
-                var coords = info.coordinates;
-                var centre = new OpenLayers.LonLat( coords.longitude, coords.latitude );
-
-                centre.transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    fixmystreet.map.getProjectionObject()
-                );
+                var centre = this.projectCoords( info.coordinates );
 
                 FMS.currentPosition = centre;
 
@@ -186,6 +176,16 @@
                 );
 
                 return position;
+            },
+
+            projectCoords: function( coords ) {
+                var centre = new OpenLayers.LonLat( coords.longitude, coords.latitude );
+                centre.transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    fixmystreet.map.getProjectionObject()
+                );
+
+                return centre;
             },
 
             _destroy: function() {
