@@ -22,7 +22,7 @@
                             if ( data.latitude ) {
                                 that.trigger('search_located', { coordinates: { latitude: data.latitude, longitude: data.longitude } } );
                             } else if ( data.suggestions ) {
-                                that.trigger( 'search_failed', { locs: data.suggestions } );
+                                that.trigger( 'search_failed', { suggestions: data.suggestions, locations: data.locations } );
                             } else {
                                 that.trigger( 'search_failed', { msg: data.error } );
                             }
