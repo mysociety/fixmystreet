@@ -29,7 +29,6 @@
 
             locate: function() {
                 $('#locating').show();
-                var that = this;
                 this.listenTo(FMS.locator, 'gps_located', this.showMap);
                 this.listenTo(FMS.locator, 'gps_failed', this.noMap );
                 this.listenTo(FMS.locator, 'gps_locating', this.locationUpdate);
