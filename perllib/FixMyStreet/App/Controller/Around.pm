@@ -315,7 +315,7 @@ sub _geocode : Private {
     my ( $lat, $long, $suggestions ) =
         FixMyStreet::Geocode::lookup( $c->req->param('term'), $c );
 
-    my ($response, @addresses);
+    my ($response, @addresses, @locations);
 
     if ( $lat && $long ) {
         $response = { latitude => $lat, longitude => $long };
@@ -323,8 +323,9 @@ sub _geocode : Private {
         if ( ref($suggestions) eq 'ARRAY' ) {
             foreach (@$suggestions) {
                 push @addresses, decode_utf8($_->{address});
+		push @locations, { address => decode_utf8($_->{address}), lat => $_->{latitude}, long => $_->{longitude} };
             }
-            $response = { suggestions => \@addresses };
+            $response = { suggestions => \@addresses, locations => \@locations };
         } else {
             $response = { error => $suggestions };
         }
