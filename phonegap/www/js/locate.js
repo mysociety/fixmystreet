@@ -66,10 +66,10 @@
                 );
             },
 
-            updatePosition: function() {
+            trackPosition: function() {
                 this.updating = 1;
                 var that = this;
-                this.update_watch_id = navigator.geolocation.watchPosition(
+                this.track_watch_id = navigator.geolocation.watchPosition(
                     function(location) {
                         that.trigger('gps_current_position', { coordinates: location.coords } );
                     },
@@ -78,11 +78,11 @@
                 );
             },
 
-            stopUpdating: function() {
+            stopTracking: function() {
                 this.updating = 0;
-                if ( this.update_watch_id ) {
-                    navigator.geolocation.clearWatch( this.update_watch_id );
-                    delete this.update_watch_id;
+                if ( this.track_watch_id ) {
+                    navigator.geolocation.clearWatch( this.track_watch_id );
+                    delete this.track_watch_id;
                 }
             },
 

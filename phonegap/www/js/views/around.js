@@ -86,7 +86,7 @@
                     FMS.currentPosition = centre;
                     fixmystreet.map.panTo(centre);
                 }
-                FMS.locator.updatePosition();
+                FMS.locator.trackPosition();
             },
 
             positionUpdate: function( info ) {
@@ -151,7 +151,7 @@
 
             goPhoto: function(info) {
                 this.stopListening(FMS.locator);
-                FMS.locator.stopUpdating();
+                FMS.locator.stopTracking();
                 this.model.set('lat', info.coordinates.latitude );
                 this.model.set('lon', info.coordinates.longitude );
                 this.model.set('categories', info.details.category );
@@ -162,7 +162,7 @@
             goSearch: function(e) {
                 e.preventDefault();
                 this.stopListening(FMS.locator);
-                FMS.locator.stopUpdating();
+                FMS.locator.stopTracking();
                 this.navigate( 'search' );
             },
 
