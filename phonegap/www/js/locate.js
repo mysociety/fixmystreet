@@ -77,8 +77,6 @@
                 var that = this;
                 this.update_watch_id = navigator.geolocation.watchPosition(
                     function(location) {
-                        if ( that.update_watch_id === undefined ) { console.log( 'no update watch id' ); return; }
-
                         that.trigger('gps_current_position', { coordinates: location.coords } );
                     },
                     function() {},
