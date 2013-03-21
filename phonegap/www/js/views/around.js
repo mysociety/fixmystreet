@@ -72,11 +72,13 @@
                 this.stopListening(FMS.locator, 'gps_located');
                 this.stopListening(FMS.locator, 'gps_failed');
                 this.locateCount = 21;
-                $('#progress-bar').css( 'background-color', 'green' );
+                $('#ajaxOverlay').hide();
                 $('#locating').hide();
+
                 var coords = info.coordinates;
                 fixmystreet.latitude = coords.latitude;
                 fixmystreet.longitude = coords.longitude;
+
                 if ( !fixmystreet.map ) {
                     show_map();
                 } else {
