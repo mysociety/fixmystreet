@@ -16,11 +16,9 @@
                 if ( FMS.currentLocation ) {
                     var info = { coordinates: FMS.currentLocation };
                     FMS.currentLocation = null;
-                    this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
                     this.showMap(info);
                 } else if ( this.model && this.model.get('lat') ) {
                     var modelInfo = { coordinates: { latitude: this.model.get('lat'), longitude: this.model.get('lon') } };
-                    this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
                     this.showMap(modelInfo);
                 } else {
                     this.locate();
@@ -32,7 +30,6 @@
                 this.listenTo(FMS.locator, 'gps_located', this.showMap);
                 this.listenTo(FMS.locator, 'gps_failed', this.noMap );
                 this.listenTo(FMS.locator, 'gps_locating', this.locationUpdate);
-                this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
 
                 FMS.locator.geolocate(100);
                 this.startLocateProgress();
@@ -71,6 +68,9 @@
                 this.stopListening(FMS.locator, 'gps_locating');
                 this.stopListening(FMS.locator, 'gps_located');
                 this.stopListening(FMS.locator, 'gps_failed');
+
+                this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
+
                 this.locateCount = 21;
                 $('#ajaxOverlay').hide();
                 $('#locating').hide();
