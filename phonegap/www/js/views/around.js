@@ -16,7 +16,7 @@
                 if ( FMS.currentLocation ) {
                     var info = { coordinates: FMS.currentLocation };
                     FMS.currentLocation = null;
-                    FMS.locator.on('gps_current_position', this.positionUpdate, this);
+                    this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
                     this.showMap(info);
                 } else {
                     this.locate();
@@ -26,10 +26,10 @@
             locate: function() {
                 $('#locating').show();
                 var that = this;
-                FMS.locator.on('gps_located', this.showMap, this );
-                FMS.locator.on('gps_failed', this.noMap, this );
-                FMS.locator.on('gps_locating', this.locationUpdate, this);
-                FMS.locator.on('gps_current_position', this.positionUpdate, this);
+                this.listenTo(FMS.locator, 'gps_located', this.showMap);
+                this.listenTo(FMS.locator, 'gps_failed', this.noMap );
+                this.listenTo(FMS.locator, 'gps_locating', this.locationUpdate);
+                this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
 
                 FMS.locator.geolocate(100);
                 this.startLocateProgress();
@@ -66,6 +66,9 @@
             },
 
             showMap: function( info ) {
+                this.stopListening(FMS.locator, 'gps_locating');
+                this.stopListening(FMS.locator, 'gps_located');
+                this.stopListening(FMS.locator, 'gps_failed');
                 this.locateCount = 21;
                 $('#progress-bar').css( 'background-color', 'green' );
                 $('#locating').hide();
@@ -129,6 +132,9 @@
             },
 
             noMap: function( details ) {
+                this.stopListening(FMS.locator, 'gps_locating');
+                this.stopListening(FMS.locator, 'gps_located');
+                this.stopListening(FMS.locator, 'gps_failed');
                 this.locateCount = 21;
                 $('#locating').hide();
                 $('#ajaxOverlay').hide();
@@ -144,12 +150,13 @@
            onClickReport: function() {
                 var position = this.getCrossHairPosition();
 
-                FMS.locator.on('search_failed', this.noMap, this );
-                FMS.locator.on('search_located', this.goPhoto, this );
+                this.listenTo(FMS.locator, 'gps_located', this.goPhoto);
+                this.listenTo(FMS.locator, 'gps_failed', this.noMap );
                 FMS.locator.check_location( { latitude: position.lat, longitude: position.lon } );
             },
 
             goPhoto: function(info) {
+                this.stopListening(FMS.locator);
                 FMS.locator.stopUpdating();
                 this.model.set('lat', info.coordinates.latitude );
                 this.model.set('lon', info.coordinates.longitude );
@@ -160,10 +167,7 @@
 
             goSearch: function(e) {
                 e.preventDefault();
-                FMS.locator.off('gps_located');
-                FMS.locator.off('gps_failed');
-                FMS.locator.off('gps_locating');
-                FMS.locator.off('gps_current_position');
+                this.stopListening(FMS.locator);
                 FMS.locator.stopUpdating();
                 this.navigate( 'search' );
             },
