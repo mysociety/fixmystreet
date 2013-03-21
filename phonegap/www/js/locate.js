@@ -37,22 +37,17 @@
             },
 
             geolocate: function( minAccuracy ) {
-                console.log('geolocation');
                 this.locating = 1;
 
                 $('#ajaxOverlay').show();
-                console.log(this);
                 var that = this;
                 this.watch_id = navigator.geolocation.watchPosition(
                     function(location) {
-                    console.log('success');
-                    console.log(location);
                         if ( that.watch_id === undefined ) { console.log( 'no watch id' ); return; }
 
                         if ( minAccuracy && location.coords.accuracy > minAccuracy ) {
                             that.trigger('gps_locating', location.coords.accuracy);
                         } else {
-                            console.log( 'located with accuracy of ' + location.coords.accuracy );
                             that.locating = 0;
                             navigator.geolocation.clearWatch( that.watch_id );
                             delete that.watch_id;
@@ -72,7 +67,6 @@
             },
 
             updatePosition: function() {
-                console.log('updatePosition');
                 this.updating = 1;
                 var that = this;
                 this.update_watch_id = navigator.geolocation.watchPosition(
@@ -93,7 +87,6 @@
             },
 
             check_location: function(coords) {
-                console.log('check_location');
                 var that = this;
                 $.ajax( {
                     url: CONFIG.FMS_URL + 'report/new/ajax',

@@ -49,7 +49,6 @@
                 }
 
                 $('#accuracy').text(parseInt(accuracy, 10) + 'm');
-                console.log('accuracy is ' + accuracy);
             },
 
             startLocateProgress: function() {
