@@ -89,7 +89,7 @@
             stopUpdating: function() {
                 this.updating = 0;
                 if ( this.update_watch_id ) {
-                    navigator.geolocation.clearWatch( this.watch_id );
+                    navigator.geolocation.clearWatch( this.update_watch_id );
                     delete this.update_watch_id;
                 }
             },
