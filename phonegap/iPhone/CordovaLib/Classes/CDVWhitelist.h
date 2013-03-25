@@ -17,24 +17,20 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
+#import <Foundation/Foundation.h>
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+extern NSString* const kCDVDefaultWhitelistRejectionString;
 
-@interface MainViewController : CDVViewController
+@interface CDVWhitelist : NSObject
 
-@end
+@property (nonatomic, readonly, strong) NSArray* whitelist;
+@property (nonatomic, readonly, strong) NSArray* expandedWhitelist;
+@property (nonatomic, readonly, assign) BOOL allowAll;
+@property (nonatomic, copy) NSString* whitelistRejectionFormatString;
 
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
+- (id)initWithArray:(NSArray*)array;
+- (BOOL)URLIsAllowed:(NSURL*)url;
+- (BOOL)schemeIsAllowed:(NSString*)scheme;
+- (NSString*)errorStringForURL:(NSURL*)url;
 
-@interface MainCommandQueue : CDVCommandQueue
 @end

@@ -17,24 +17,30 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
+//  Bridge implementation file for using Cordova plugins in PhoneGap 0.9.6.
 //
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+#ifdef PHONEGAP_FRAMEWORK
+    #import <PhoneGap/PGPlugin.h>
+#else
+    #import "PGPlugin.h"
+#endif
 
-@interface MainViewController : CDVViewController
+typedef enum {
+    CDVCommandStatus_NO_RESULT = 0,
+    CDVCommandStatus_OK,
+    CDVCommandStatus_CLASS_NOT_FOUND_EXCEPTION,
+    CDVCommandStatus_ILLEGAL_ACCESS_EXCEPTION,
+    CDVCommandStatus_INSTANTIATION_EXCEPTION,
+    CDVCommandStatus_MALFORMED_URL_EXCEPTION,
+    CDVCommandStatus_IO_EXCEPTION,
+    CDVCommandStatus_INVALID_ACTION,
+    CDVCommandStatus_JSON_EXCEPTION,
+    CDVCommandStatus_ERROR
+} CDVCommandStatus;
 
+@interface CDVPlugin : PGPlugin
 @end
 
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
-
-@interface MainCommandQueue : CDVCommandQueue
+@interface CDVPluginResult : PluginResult
 @end

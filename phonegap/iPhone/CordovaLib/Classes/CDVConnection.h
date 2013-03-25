@@ -17,24 +17,18 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
+#import <Foundation/Foundation.h>
+#import "CDVPlugin.h"
+#import "CDVReachability.h"
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+@interface CDVConnection : CDVPlugin {
+    NSString* type;
+    NSString* _callbackId;
 
-@interface MainViewController : CDVViewController
+    CDVReachability* internetReach;
+}
 
-@end
+@property (copy) NSString* connectionType;
+@property (strong) CDVReachability* internetReach;
 
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
-
-@interface MainCommandQueue : CDVCommandQueue
 @end

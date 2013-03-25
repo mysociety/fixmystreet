@@ -17,24 +17,22 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
+#import "CDVLogger.h"
+#import "CDV.h"
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+@implementation CDVLogger
 
-@interface MainViewController : CDVViewController
+/* log a message */
+- (void)logLevel:(CDVInvokedUrlCommand*)command
+{
+    id level = [command.arguments objectAtIndex:0];
+    id message = [command.arguments objectAtIndex:1];
 
-@end
+    if ([level isEqualToString:@"LOG"]) {
+        NSLog(@"%@", message);
+    } else {
+        NSLog(@"%@: %@", level, message);
+    }
+}
 
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
-
-@interface MainCommandQueue : CDVCommandQueue
 @end

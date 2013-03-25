@@ -17,24 +17,30 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
+#import <Foundation/Foundation.h>
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+@class CDVInvokedUrlCommand;
+@class CDVViewController;
 
-@interface MainViewController : CDVViewController
+@interface CDVCommandQueue : NSObject {
+    @private
+    NSInteger _lastCommandQueueFlushRequestId;
+    __weak CDVViewController* _viewController;
+    NSMutableArray* _queue;
+    BOOL _currentlyExecuting;
+}
 
-@end
+@property (nonatomic, readonly) BOOL currentlyExecuting;
 
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
+- (id)initWithViewController:(CDVViewController*)viewController;
+- (void)dispose;
 
-@interface MainCommandQueue : CDVCommandQueue
+- (void)resetRequestId;
+- (void)enqueCommandBatch:(NSString*)batchJSON;
+
+- (void)maybeFetchCommandsFromJs:(NSNumber*)requestId;
+- (void)fetchCommandsFromJs;
+- (void)executePending;
+- (BOOL)execute:(CDVInvokedUrlCommand*)command;
+
 @end

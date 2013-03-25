@@ -17,24 +17,33 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
+#import "CDVSplashScreen.h"
+#import "CDVViewController.h"
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+@implementation CDVSplashScreen
 
-@interface MainViewController : CDVViewController
+- (void)__show:(BOOL)show
+{
+    // Legacy support - once deprecated classes removed, clean this up
+    id <UIApplicationDelegate> delegate = [[UIApplication sharedApplication] delegate];
 
-@end
+    if ([delegate respondsToSelector:@selector(viewController)]) {
+        id vc = [delegate performSelector:@selector(viewController)];
+        if ([vc isKindOfClass:[CDVViewController class]]) {
+            ((CDVViewController*)vc).imageView.hidden = !show;
+            ((CDVViewController*)vc).activityView.hidden = !show;
+        }
+    }
+}
 
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
+- (void)show:(CDVInvokedUrlCommand*)command
+{
+    [self __show:YES];
+}
 
-@interface MainCommandQueue : CDVCommandQueue
+- (void)hide:(CDVInvokedUrlCommand*)command
+{
+    [self __show:NO];
+}
+
 @end

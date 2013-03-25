@@ -17,24 +17,20 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <AudioToolbox/AudioServices.h>
+#import "CDVPlugin.h"
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+@interface CDVNotification : CDVPlugin <UIAlertViewDelegate>{}
 
-@interface MainViewController : CDVViewController
+- (void)alert:(CDVInvokedUrlCommand*)command;
+- (void)confirm:(CDVInvokedUrlCommand*)command;
+- (void)vibrate:(CDVInvokedUrlCommand*)command;
 
 @end
 
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
+@interface CDVAlertView : UIAlertView {}
+@property (nonatomic, copy) NSString* callbackId;
 
-@interface MainCommandQueue : CDVCommandQueue
 @end

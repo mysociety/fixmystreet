@@ -17,24 +17,24 @@
  under the License.
  */
 
-//
-//  MainViewController.h
-//  tmp_ios
-//
-//  Created by ___FULLUSERNAME___ on ___DATE___.
-//  Copyright ___ORGANIZATIONNAME___ ___YEAR___. All rights reserved.
-//
+#import <Foundation/Foundation.h>
+#import "CDVPlugin.h"
 
-#import <Cordova/CDVViewController.h>
-#import <Cordova/CDVCommandDelegateImpl.h>
-#import <Cordova/CDVCommandQueue.h>
+@interface CDVBattery : CDVPlugin {
+    UIDeviceBatteryState state;
+    float level;
+    bool isPlugged;
+    NSString* callbackId;
+}
 
-@interface MainViewController : CDVViewController
+@property (nonatomic) UIDeviceBatteryState state;
+@property (nonatomic) float level;
+@property (nonatomic) bool isPlugged;
+@property (strong) NSString* callbackId;
 
-@end
-
-@interface MainCommandDelegate : CDVCommandDelegateImpl
-@end
-
-@interface MainCommandQueue : CDVCommandQueue
+- (void)updateBatteryStatus:(NSNotification*)notification;
+- (NSDictionary*)getBatteryStatus;
+- (void)start:(CDVInvokedUrlCommand*)command;
+- (void)stop:(CDVInvokedUrlCommand*)command;
+- (void)dealloc;
 @end
