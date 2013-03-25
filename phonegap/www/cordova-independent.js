@@ -2,7 +2,7 @@
     var scriptElement = document.createElement("script");
     scriptElement.type = "text/javascript";
     if (navigator.userAgent.match(/(iPhone|iPod|iPad)/)) {
-	scriptElement.src = 'cordova-ios-2.3.0.js';
+	scriptElement.src = 'cordova-ios-2.4.0.js';
     } else if (navigator.userAgent.match(/Android/)) {
 	scriptElement.src = 'cordova-android-2.2.0.js';
     } else {

@@ -9,6 +9,7 @@
 	<preference name="ShowSplashScreenSpinner" value="true"/>
 	<preference name="TopActivityIndicator" value="gray"/>
 	<preference name="UIWebViewBounce" value="true"/>
+  <content src="index.html" />
 	<plugins>
 		<plugin name="Accelerometer" value="CDVAccelerometer"/>
 		<plugin name="Battery" value="CDVBattery"/>
