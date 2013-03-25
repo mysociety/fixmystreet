@@ -7,6 +7,7 @@
             events: {
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay',
+                'click #locate_search': 'goSearch',
                 'click #search': 'goSearch',
                 'click #relocate': 'centerMapOnPosition',
                 'click #mark-here': 'onClickReport'
