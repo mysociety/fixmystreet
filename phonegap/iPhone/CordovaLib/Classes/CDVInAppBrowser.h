@@ -31,7 +31,7 @@
 
 @end
 
-@interface CDVInAppBrowser : CDVPlugin <CDVInAppBrowserNavigationDelegate>{}
+@interface CDVInAppBrowser : CDVPlugin <CDVInAppBrowserNavigationDelegate>
 
 @property (nonatomic, retain) CDVInAppBrowserViewController* inAppBrowserViewController;
 @property (nonatomic, copy) NSString* callbackId;
@@ -41,7 +41,13 @@
 
 @end
 
-@interface CDVInAppBrowserViewController : UIViewController <UIWebViewDelegate>{}
+@interface CDVInAppBrowserViewController : UIViewController <UIWebViewDelegate>{
+    @private
+    NSURL* _requestedURL;
+    NSString* _userAgent;
+    NSString* _prevUserAgent;
+    NSInteger _userAgentLockToken;
+}
 
 @property (nonatomic, strong) IBOutlet UIWebView* webView;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem* closeButton;
@@ -53,19 +59,26 @@
 
 @property (nonatomic, weak) id <CDVScreenOrientationDelegate> orientationDelegate;
 @property (nonatomic, weak) id <CDVInAppBrowserNavigationDelegate> navigationDelegate;
-@property (nonatomic, strong) NSString* userAgent;
 
 - (void)close;
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;
 
-- (id)initWithUserAgent:(NSString*)userAgent;
+- (id)initWithUserAgent:(NSString*)userAgent prevUserAgent:(NSString*)prevUserAgent;
 
 @end
 
 @interface CDVInAppBrowserOptions : NSObject {}
 
 @property (nonatomic, assign) BOOL location;
+@property (nonatomic, copy) NSString* presentationstyle;
+@property (nonatomic, copy) NSString* transitionstyle;
+
+@property (nonatomic, assign) BOOL enableviewportscale;
+@property (nonatomic, assign) BOOL mediaplaybackrequiresuseraction;
+@property (nonatomic, assign) BOOL allowinlinemediaplayback;
+@property (nonatomic, assign) BOOL keyboarddisplayrequiresuseraction;
+@property (nonatomic, assign) BOOL suppressesincrementalrendering;
 
 + (CDVInAppBrowserOptions*)parseOptions:(NSString*)options;
 

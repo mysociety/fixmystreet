@@ -18,7 +18,7 @@
  */
 
 #import "CDVCommandDelegateImpl.h"
-
+#import "CDVJSON.h"
 #import "CDVCommandQueue.h"
 #import "CDVPluginResult.h"
 #import "CDVViewController.h"
@@ -78,13 +78,17 @@
 
 - (void)sendPluginResult:(CDVPluginResult*)result callbackId:(NSString*)callbackId
 {
+    // This occurs when there is are no win/fail callbacks for the call.
+    if ([@"INVALID" isEqualToString:callbackId]) {
+        return;
+    }
     int status = [result.status intValue];
     BOOL keepCallback = [result.keepCallback boolValue];
     id message = result.message == nil ? [NSNull null] : result.message;
 
     // Use an array to encode the message as JSON.
     message = [NSArray arrayWithObject:message];
-    NSString* encodedMessage = [message cdvjk_JSONString];
+    NSString* encodedMessage = [message JSONString];
     // And then strip off the outer []s.
     encodedMessage = [encodedMessage substringWithRange:NSMakeRange(1, [encodedMessage length] - 2)];
     NSString* js = [NSString stringWithFormat:@"cordova.require('cordova/exec').nativeCallback('%@',%d,%@,%d)",
@@ -126,6 +130,22 @@
 - (void)runInBackground:(void (^)())block
 {
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), block);
+}
+
+- (NSString*)userAgent
+{
+    return [_viewController userAgent];
+}
+
+- (BOOL)URLIsWhitelisted:(NSURL*)url
+{
+    return ![_viewController.whitelist schemeIsAllowed:[url scheme]] ||
+           [_viewController.whitelist URLIsAllowed:url];
+}
+
+- (NSDictionary*)settings
+{
+    return _viewController.settings;
 }
 
 @end

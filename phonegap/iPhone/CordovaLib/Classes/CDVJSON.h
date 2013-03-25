@@ -17,13 +17,14 @@
  under the License.
  */
 
-#import <Foundation/Foundation.h>
-#import "CDVAvailability.h"
+@interface NSArray (CDVJSONSerializing)
+- (NSString*)JSONString;
+@end
 
-@class CDVViewController;
+@interface NSDictionary (CDVJSONSerializing)
+- (NSString*)JSONString;
+@end
 
-@interface CDVURLProtocol : NSURLProtocol {}
-
-+ (void)registerViewController:(CDVViewController*)viewController;
-+ (void)unregisterViewController:(CDVViewController*)viewController;
+@interface NSString (CDVJSONSerializing)
+- (id)JSONObject;
 @end
