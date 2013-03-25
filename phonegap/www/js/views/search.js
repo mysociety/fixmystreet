@@ -7,6 +7,7 @@
             events: {
                 'click a.address': 'goAddress',
                 'click #submit': 'search',
+                'click #locate': 'goLocate',
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay'
             },
@@ -52,6 +53,11 @@
                 } else {
                     this.displayError( FMS.strings.location_problem );
                 }
+            },
+
+            goLocate: function() {
+                e.preventDefault();
+                this.navigate( 'around' );
             },
 
             destroy: function() {
