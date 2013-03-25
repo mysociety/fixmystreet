@@ -41,4 +41,5 @@ blog/conf/general.deployed
 phonegap/www/js/config.js
 phonegap/Android/bin/
 phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
+iPhone/FixMyStreet.xcodeproj/xcuserdata
 phonegap/Android/gen/
