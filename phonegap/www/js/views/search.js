@@ -13,15 +13,15 @@
 
             search: function() {
                 var pc = this.$('#pc').val();
-                FMS.locator.on('search_located', this.searchSuccess, this );
-                FMS.locator.on('search_failed', this.searchFail, this );
+                this.listenTo(FMS.locator, 'search_located', this.searchSuccess );
+                this.listenTo(FMS.locator, 'search_failed', this.searchFail);
 
                 $('#ajaxOverlay').show();
                 FMS.locator.lookup(pc);
             },
 
-
             searchSuccess: function( info ) {
+                this.stopListening(FMS.locator);
                 var coords = info.coordinates;
                 FMS.currentLocation = coords;
                 this.navigate('around');
@@ -37,6 +37,7 @@
             },
 
             searchFail: function( details ) {
+                this.stopListening(FMS.locator);
                 $('#ajaxOverlay').hide();
                 if ( details.msg ) {
                     this.displayError( details.msg );
@@ -51,6 +52,10 @@
                 } else {
                     this.displayError( FMS.strings.location_problem );
                 }
+            },
+
+            destroy: function() {
+                this.stopListening(FMS.locator);
             }
         })
     });
