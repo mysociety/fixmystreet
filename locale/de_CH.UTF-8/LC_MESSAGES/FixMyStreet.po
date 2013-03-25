@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-03-11 18:53+0000\n"
-"PO-Revision-Date: 2013-03-07 17:00+0100\n"
+"PO-Revision-Date: 2013-03-25 12:27+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "Language: \n"
@@ -3076,7 +3076,7 @@ msgstr ""
 #: templates/web/seesomething/auth/sign_out.html:1
 #: templates/web/zurich/auth/sign_out.html:1
 msgid "Sign out"
-msgstr ""
+msgstr "Ausloggen"
 
 #: templates/web/default/header.html:29
 #: templates/web/emptyhomes/header.html:45

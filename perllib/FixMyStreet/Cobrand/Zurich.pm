@@ -486,11 +486,11 @@ sub admin_report_edit {
 
             # If they clicked the no more updates button, we're done.
             if ($c->req->param('no_more_updates')) {
-                $problem->bodies_str( $body->parent->id );
-                $problem->whensent( undef );
                 my $extra = $problem->extra || {};
                 $extra->{subdiv_overdue} = $self->overdue( $problem );
                 $problem->extra( { %$extra } );
+                $problem->bodies_str( $body->parent->id );
+                $problem->whensent( undef );
                 $problem->state( 'planned' );
                 $problem->update;
                 $c->res->redirect( '/admin/summary' );
