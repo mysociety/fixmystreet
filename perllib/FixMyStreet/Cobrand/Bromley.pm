@@ -29,9 +29,8 @@ sub disambiguate_location {
     my $town = 'Bromley';
     # Bing turns High St Bromley into Bromley High St which is in 
     # Bromley by Bow.
-    if ( $string =~ /^high\s+st(reet)?$/i ) {
-        $town .= ', BR1';
-    }
+    $town .= ', BR1' if $string =~ /^high\s+st(reet)?$/i;
+    $town = '' if $string =~ /orpington/i;
     return {
         %{ $self->SUPER::disambiguate_location() },
         town => $town,
