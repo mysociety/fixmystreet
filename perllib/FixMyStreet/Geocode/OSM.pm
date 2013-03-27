@@ -35,18 +35,19 @@ sub string {
     my $params = $c->cobrand->disambiguate_location($s);
 
     $s = FixMyStreet::Geocode::escape($s);
-    $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
+    # $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
 
     my $url = "${nominatimbase}search?";
     my %query_params = (
         q => $s,
         format => 'json',
 	addressdetails => 1,
+	limit => 20,
         #'accept-language' => '',
         email => 'info' . chr(64) . 'morus.se',
     );
-    $query_params{viewbox} = $params->{bounds}[1] . ',' . $params->{bounds}[2] . ',' . $params->{bounds}[3] . ',' . $params->{bounds}[0]
-        if $params->{bounds};
+    # $query_params{viewbox} = $params->{bounds}[1] . ',' . $params->{bounds}[2] . ',' . $params->{bounds}[3] . ',' . $params->{bounds}[0]
+    #     if $params->{bounds};
     $query_params{countrycodes} = $params->{country}
         if $params->{country};
     $url .= join('&', map { "$_=$query_params{$_}" } keys %query_params);
@@ -70,54 +71,34 @@ sub string {
 
     $js = JSON->new->utf8->allow_nonref->decode($js);
 
-    my ( $error, @valid_locations, $latitude, $longitude );
+    my ( %locations, $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
         # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-	next unless	$_->{type} eq "town" ||
-			$_->{type} eq "locality" ||
-			$_->{type} eq "suburb" ||
-			$_->{type} eq "city" ||
-			$_->{type} eq "village" ||
-			$_->{type} eq "hamlet" ||
-			$_->{type} eq "secondary" ||
-			$_->{type} eq "pedestrian" ||
-			$_->{type} eq "tertiary" ||
-			$_->{type} eq "square" ||
-			$_->{type} eq "park" ||
-			$_->{type} eq "primary" ||
-			$_->{type} eq "unclassified" ||
-			$_->{type} eq "residential";
+	next if $_->{class} eq "boundary";
 
-	my $address = $_->{address}->{road}.", ".$_->{address}->{administrative};
-	$address = $_->{address}->{locality}.", ".$_->{address}->{administrative} if $_->{type} eq "locality";
-	$address = $_->{address}->{suburb}.", ".$_->{address}->{administrative} if $_->{type} eq "suburb";
-	$address = $_->{address}->{town}.", ".$_->{address}->{state} if $_->{type} eq "town";
-	$address = $_->{address}->{administrative}.", ".$_->{address}->{state} if $_->{type} eq "city";
-	$address = $_->{address}->{village}.", ".$_->{address}->{administrative} if $_->{type} eq "village";
-	$address = $_->{address}->{hamlet}.", ".$_->{address}->{state} if $_->{type} eq "hamlet";
-	$address = $_->{address}->{leisure}.", ".$_->{address}->{administrative} if $_->{type} eq "square";
-	$address = $_->{address}->{park}.", ".$_->{address}->{administrative} if $_->{type} eq "park";
-	$address = $_->{address}->{pedestrian}.", ".$_->{address}->{administrative} if $_->{type} eq "pedestrian";
+	my @s = split(/,/, $_->{display_name});
 
-        ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
+	my $address = join(",", @s[0,1,2]);
+
+        $locations{$address} = [$_->{lat}, $_->{lon}];
+    }
+
+    my ($key) = keys %locations;
+
+    return { latitude => $locations{$key}[0], longitude => $locations{$key}[1] } if scalar keys %locations == 1;
+    return { error => _('Sorry, we could not find that location.') } if scalar keys %locations == 0;
+
+    foreach $key (keys %locations) {
+        ( $latitude, $longitude ) = ($locations{$key}[0], $locations{$key}[1]);
         mySociety::Locale::in_gb_locale {
             push (@$error, {
-		address => $address,
+		address => $key,
                 latitude => sprintf('%0.6f', $latitude),
                 longitude => sprintf('%0.6f', $longitude)
             });
         };
-
-        push (@valid_locations, $_);
     }
 
-    my %seen;
-    my @final_valid_locations = grep { $seen{$_->{address}}++ } @{$error};
-open(OUT, '>', '/tmp/moo');
-print OUT Dumper @valid_locations;
-close OUT;
-    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1 or scalar keys %seen == 1;
-    return { error => _('Sorry, we could not find that location.') } if scalar keys %seen == 0;
     return { error => $error };
 }
 
