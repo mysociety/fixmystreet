@@ -1,0 +1,63 @@
+#!/usr/bin/perl -w
+#
+# handlemail-support:
+# Handle an individual incoming mail message.
+#
+# This script should be invoked through the .forward mechanism. It processes
+# emails to the support address to remove out of office and so on, before
+# forwarding on.
+#
+# Copyright (c) 2013 UK Citizens Online Democracy. All rights reserved.
+# Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
+
+use strict;
+require 5.8.0;
+
+# Horrible boilerplate to set up appropriate library paths.
+use FindBin;
+use lib "$FindBin::Bin/../perllib";
+use lib "$FindBin::Bin/../commonlib/perllib";
+
+use mySociety::Config;
+BEGIN {
+    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+}
+use mySociety::EmailUtil;
+use mySociety::HandleMail;
+
+my %data = mySociety::HandleMail::get_message();
+forward_on() if $data{is_bounce_message};
+exit 0 if is_ignorable($data{message});
+forward_on();
+
+# ---
+
+sub forward_on {
+    my ($l, $d) = split /\@/, mySociety::Config::get('CONTACT_EMAIL');
+    if (mySociety::EmailUtil::EMAIL_SUCCESS
+            != mySociety::EmailUtil::send_email(
+                join("\n", @{$data{lines}}) . "\n",
+                $data{return_path},
+                join('@', join('_deli', $l, 'very'), $d)
+            )) {
+        exit 75;
+    }
+    exit 0;
+}
+
+sub is_ignorable {
+    my $m = shift;
+    my $head = $m->head();
+    my ($from, $subject, $body) = ($head->get('From'), $head->get('Subject'), $m->body);
+    $body = join("\n", @$body);
+
+    open my $fp, "$FindBin::Bin/../../data/ignored-emails.csv" or exit 75;
+    while (<$fp>) {
+        chomp;
+        my ($f, $s, $b) = split /,/;
+        next unless $f || $s || $b;
+        return 1 unless ( $f && $from !~ /$f/ ) || ( $s && $subject !~ /$s/ ) || ( $b && $body !~ /$b/ );
+    }
+    return 0;
+}
+
