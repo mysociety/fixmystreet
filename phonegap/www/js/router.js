@@ -20,6 +20,12 @@
             initialize: function() {
             },
 
+            pause: function() {
+                if (this.currentView && this.currentView.updateCurrentReport) {
+                    this.currentView.updateCurrentReport();
+                }
+            },
+
             back: function() {
                 if (this.currentView && this.currentView.prev) {
                     this.currentView.onClickButtonPrev();

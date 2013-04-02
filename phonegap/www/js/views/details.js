@@ -35,11 +35,15 @@
 
                 if ( valid ) {
                     this.clearValidationErrors();
-                    this.model.set('title', $('#form_title').val());
-                    this.model.set('details', $('#form_detail').val());
-                    this.model.set('category', $('#form_category').val());
+                    this.updateCurrentReport();
                     this.navigate( this.next );
                 }
+            },
+
+            updateCurrentReport: function() {
+                this.model.set('category', $('#form_category').val());
+                this.model.set('title', $('#form_title').val());
+                this.model.set('details', $('#form_detail').val());
             }
         })
     });

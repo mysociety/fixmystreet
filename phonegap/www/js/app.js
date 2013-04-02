@@ -48,8 +48,28 @@ var tpl = {
         currentPosition: null,
 
         currentReport: new FMS.Report(),
+        allReports: new FMS.Reports(),
 
         reportToView: null,
+
+        saveCurrentReport: function() {
+            this.router.pause();
+            this.allReports.add( FMS.currentReport );
+            FMS.currentReport.localSave();
+            if ( this.currentReport.id ) {
+                localStorage.currentReportID = this.currentReport.id;
+            } else {
+                localStorage.currentReportID = this.currentReport.cid;
+            }
+        },
+
+        loadCurrentReport: function() {
+            console.log( 'loading report' );
+            if ( localStorage.currentReportID ) {
+                this.currentReport = FMS.allReports.get( localStorage.currentReportID );
+            }
+            localStorage.currentReportID = null;
+        },
 
         initialize: function () {
             if ( this.initialized == 1 ) {
@@ -72,6 +92,8 @@ var tpl = {
                     FMS.currentUser = new FMS.User({id: 1});
                 }
 
+                document.addEventListener('pause', function() { FMS.saveCurrentReport(); }, false);
+                document.addEventListener('resume', function() { FMS.loadCurrentReport(); }, false);
                 document.addEventListener('backbutton', function() { FMS.router.back(); }, true);
 
                 Backbone.history.start();

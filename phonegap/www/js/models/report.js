@@ -2,6 +2,7 @@
     _.extend( FMS, {
         Report: Backbone.Model.extend({
             urlRoot: CONFIG.FMS_URL + 'report/ajax',
+            localStorage: new Backbone.LocalStorage(CONFIG.NAMESPACE + '-reports'),
 
             defaults: {
                 lat: 0,
@@ -13,6 +14,14 @@
                 phone: '',
                 pc: '',
                 file: ''
+            },
+
+            localSave: function() {
+                var method = 'create';
+                if ( this.id ) {
+                    method = 'update';
+                }
+                Backbone.localSync(method, this);
             },
 
             sync: function(method, model, options) {
@@ -149,6 +158,15 @@
                     t = props.time;
                 }
             }
+        })
+    });
+})(FMS, Backbone, _, $);
+
+(function(FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        Reports: Backbone.Collection.extend({
+            model: FMS.Report,
+            localStorage: new Backbone.LocalStorage(CONFIG.NAMESPACE + '-reports')
         })
     });
 })(FMS, Backbone, _, $);
