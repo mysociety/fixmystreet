@@ -8,7 +8,9 @@
     %]
 [% END %]
 
-[% IF c.cobrand.is_council %]
+[% IF c.cobrand.moniker == 'oxfordshire' %]
+    [% ward_text = 'View reports by division' %]
+[% ELSIF c.cobrand.is_council %]
     [% ward_text = loc( 'View reports by ward' ) %]
 [% ELSE %]
     [% ward_text = loc( 'Wards of this council' ) %]
