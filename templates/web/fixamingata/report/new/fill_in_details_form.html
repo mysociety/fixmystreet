@@ -9,10 +9,23 @@
                 loc('the local council')
             );
         %]
+        [% IF c.cobrand.moniker != 'fixamingata' %]
+	[%# fixamingata cobrand has a longer text on the
+	    legal implications of filing a report.
+	    We start with a test for all other cobrands,
+	    so that the original text stays before the text for fixamingata %]
+
+        	[% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
+
+	[% ELSE %] [%# This clause is for the Swedish cobrand fixamingata. %]
+
         Informationen du anger här kommer att bli en offentlig handling när
         rapporten skickats till kommunen och kommer samtidigt att visas
         publikt på Fixa Min Gata. Ditt namn kommer dock att visas endast om
         du medger att vi visar det.
+
+	[% END %] [%# Reason for this IF statement is that the translation
+	              with the PO file just didn't work here for some reason. %]
         </p>
     [% ELSE %]
         [% PROCESS 'report/new/councils_text.html' %]
@@ -111,13 +124,8 @@
                 [% END %]
                 
                 <label for="form_photo">[% loc('Photo') %]</label>
-                <p>Iaktta försiktighet när du laddar upp en bild och undvik att få med personer, registreringsnummer och liknande detaljer som inte har med problemet i sig att göra.</p>
                 <input type="file" name="photo" id="form_photo">
             [% END %]
-
-<p>
-När du registrerar din anmälan samtycker du samtidigt till att dina personuppgifterna lagras i en databas och behandlas enligt personuppgiftslagen (PuL). <a href="/privacy">Läs mer</a>
-</p>
 
             [% IF c.user_exists %]
                 <div class="form-box">
@@ -159,29 +167,9 @@ När du registrerar din anmälan samtycker du samtidigt till att dina personuppg
 
                 <div id="form_sign_in">
                     <h3>[% loc("Now to submit your report&hellip;") %]</h3>
-                    <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
-
-                    <div id="form_sign_in_yes" class="form-box">
-
-                        <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
-
-                        <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
-                        <div class="form-txt-submit-box">
-                            [% IF field_errors.password %]
-                                <p class='form-error'>[% field_errors.password %]</p>
-                            [% END %]
-                            <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
-                            <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
-                        </div>
-                        
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-                            <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
-                        </div>
-                    </div>
 
                     <div id="form_sign_in_no" class="form-box">
-                        <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
+                        <h5>Om du inte har ett lösenord fyller du i ditt namn och eventuellt telefonnummer och nytt lösenord (valfria) här. Om du redan har ett lösenord fyller du i detta längre ner på sidan.</h5>
 
                         [% INCLUDE 'report/new/extra_name.html' %]
 
@@ -203,16 +191,35 @@ När du registrerar din anmälan samtycker du samtidigt till att dina personuppg
                             <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
                         </div>
 
-                        <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
-                        <input class="form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+                        <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+                        <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
                 
-                        <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
+                        <label for="password_register">[% loc('Password (optional)') %]</label>
 
-                        <div class="form-txt-submit-box form-focus-hidden">
+                        <div class="form-txt-submit-box">
                             <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
-                            <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
                         </div>
                     </div>
+                    <div id="form_sign_in_yes" class="form-box">
+
+                        <h5>Jag har ett lösenord sedan tidigare:</h5>
+
+                        <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
+                        <div class="form-txt-submit-box">
+                            [% IF field_errors.password %]
+                                <p class='form-error'>[% field_errors.password %]</p>
+                            [% END %]
+                            <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
+                            <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
+                        </div>
+                        
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                            <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                        </div>
+                    </div>
+
                 </div>
 
             [% END %]
