@@ -26,7 +26,6 @@ use mySociety::EmailUtil;
 use mySociety::HandleMail;
 
 my %data = mySociety::HandleMail::get_message();
-forward_on() if $data{is_bounce_message};
 exit 0 if is_ignorable($data{message});
 forward_on();
 
