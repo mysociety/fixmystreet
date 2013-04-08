@@ -56,7 +56,7 @@ var tpl = {
             FMS.router.pause();
             FMS.allDrafts.add( FMS.currentDraft );
             FMS.currentDraft.save();
-            localStorage.currentDraftID = FMS.currentDraft.cid;
+            localStorage.currentDraftID = FMS.currentDraft.id;
         },
 
         loadCurrentDraft: function() {
