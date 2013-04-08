@@ -1,0 +1,14 @@
+[% map_js = BLOCK %]
+<script type="text/javascript" src="[% version('/js/OpenLayers.fixmystreet.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-OpenStreetMap.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/jquery.ba-hashchange.min.js') %]"></script>
+<!--[if lte IE 6]>
+  <link rel="stylesheet" href="/jslib/OpenLayers-2.10/theme/default/ie6-style.css" type="text/css" />
+<![endif]-->
+[% END %]
+
+[% map_html = BLOCK %]
+[% INCLUDE maps/openlayers.html %]
+<div class="olControlAttribution" style="position: absolute; z-index: 1005;">Data, imagery and map information provided by <a href="http://www.mapquest.com/">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png" />, <a href="http://openstreetmap.org/">Open Street Map</a> and contributors, <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a></div>
+[% END %]
