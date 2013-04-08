@@ -21,8 +21,8 @@
             },
 
             pause: function() {
-                if (this.currentView && this.currentView.updateCurrentReport) {
-                    this.currentView.updateCurrentReport();
+                if (this.currentView && this.currentView.updateCurrentDraft) {
+                    this.currentView.updateCurrentDraft();
                 }
             },
 
@@ -33,52 +33,52 @@
             },
 
             around: function(){
-                var aroundView = new FMS.AroundView({ model: FMS.currentReport });
+                var aroundView = new FMS.AroundView({ model: FMS.currentDraft });
                 this.changeView(aroundView);
             },
 
             search: function(){
-                var searchView = new FMS.SearchView({ model: FMS.currentReport, msg: FMS.searchMessage });
+                var searchView = new FMS.SearchView({ model: FMS.currentDraft, msg: FMS.searchMessage });
                 this.changeView(searchView);
             },
 
             home: function(){
-                var homeView = new FMS.HomeView({ model: FMS.currentReport });
+                var homeView = new FMS.HomeView({ model: FMS.currentDraft });
                 this.changeView(homeView);
             },
 
             photo: function(){
-                var photoView = new FMS.PhotoView({ model: FMS.currentReport });
+                var photoView = new FMS.PhotoView({ model: FMS.currentDraft });
                 this.changeView(photoView);
             },
 
             details: function(){
-                var detailsView = new FMS.DetailsView({ model: FMS.currentReport });
+                var detailsView = new FMS.DetailsView({ model: FMS.currentDraft });
                 this.changeView(detailsView);
             },
 
             submit: function(){
-                var submitView = new FMS.SubmitView({ model: FMS.currentReport });
+                var submitView = new FMS.SubmitView({ model: FMS.currentDraft });
                 this.changeView(submitView);
             },
 
             submitEmail: function(){
-                var submitEmailView = new FMS.SubmitEmailView({ model: FMS.currentReport });
+                var submitEmailView = new FMS.SubmitEmailView({ model: FMS.currentDraft });
                 this.changeView(submitEmailView);
             },
 
             submitName: function(){
-                var submitNameView = new FMS.SubmitNameView({ model: FMS.currentReport });
+                var submitNameView = new FMS.SubmitNameView({ model: FMS.currentDraft });
                 this.changeView(submitNameView);
             },
 
             submitPassword: function(){
-                var submitPasswordView = new FMS.SubmitPasswordView({ model: FMS.currentReport });
+                var submitPasswordView = new FMS.SubmitPasswordView({ model: FMS.currentDraft });
                 this.changeView(submitPasswordView);
             },
 
             sent: function(){
-                var sentView = new FMS.SentView({ model: FMS.currentReport });
+                var sentView = new FMS.SentView({ model: FMS.currentDraft });
                 this.changeView(sentView);
             },
 

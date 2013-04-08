@@ -15,11 +15,6 @@
                 'click #submit_register': 'onClickSubmit'
             },
 
-            initialize: function() {
-                this.listenTo(this.model, 'sync', this.onReportSync );
-                this.listenTo( this.model, 'error', this.onReportError );
-            },
-
             render: function(){
                 if ( !this.template ) {
                     console.log('no template to render');
@@ -40,7 +35,10 @@
 
                 if ( this.validate() ) {
                     this.model.set('user', FMS.currentUser);
-                    this.model.save();
+                    this.report = new FMS.Report( this.model.toJSON() );
+                    this.listenTo( this.report, 'sync', this.onReportSync );
+                    this.listenTo( this.report, 'error', this.onReportError );
+                    this.report.save();
                 }
             },
 
@@ -48,6 +46,8 @@
                 if ( FMS.currentUser ) {
                     FMS.currentUser.save();
                 }
+                FMS.currentDraft = new FMS.Draft();
+                FMS.createdReport = this.report;
                 this.navigate( 'sent', 'left' );
             },
 

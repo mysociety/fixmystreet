@@ -47,28 +47,27 @@ var tpl = {
         currentLocation: null,
         currentPosition: null,
 
-        currentReport: new FMS.Report(),
-        allReports: new FMS.Reports(),
+        currentDraft: new FMS.Draft(),
+        allDrafts: new FMS.Drafts(),
 
         reportToView: null,
 
-        saveCurrentReport: function() {
-            this.router.pause();
-            this.allReports.add( FMS.currentReport );
-            FMS.currentReport.localSave();
-            if ( this.currentReport.id ) {
-                localStorage.currentReportID = this.currentReport.id;
-            } else {
-                localStorage.currentReportID = this.currentReport.cid;
-            }
+        saveCurrentDraft: function() {
+            FMS.router.pause();
+            FMS.allDrafts.add( FMS.currentDraft );
+            FMS.currentDraft.save();
+            localStorage.currentDraftID = FMS.currentDraft.cid;
         },
 
-        loadCurrentReport: function() {
+        loadCurrentDraft: function() {
             console.log( 'loading report' );
-            if ( localStorage.currentReportID ) {
-                this.currentReport = FMS.allReports.get( localStorage.currentReportID );
+            if ( localStorage.currentDraftID && localStorage.currentDraftID != 'null' ) {
+                var r = FMS.allDrafts.get( localStorage.currentDraftID );
+                if ( r ) {
+                    FMS.currentDraft = r;
+                }
             }
-            localStorage.currentReportID = null;
+            localStorage.currentDraftID = null;
         },
 
         initialize: function () {
@@ -92,9 +91,12 @@ var tpl = {
                     FMS.currentUser = new FMS.User({id: 1});
                 }
 
-                document.addEventListener('pause', function() { FMS.saveCurrentReport(); }, false);
-                document.addEventListener('resume', function() { FMS.loadCurrentReport(); }, false);
+                document.addEventListener('pause', function() { FMS.saveCurrentDraft(); }, false);
+                document.addEventListener('resume', function() { FMS.loadCurrentDraft(); }, false);
                 document.addEventListener('backbutton', function() { FMS.router.back(); }, true);
+
+                FMS.allDrafts.fetch();
+                FMS.loadCurrentDraft();
 
                 Backbone.history.start();
                 navigator.splashscreen.hide();
