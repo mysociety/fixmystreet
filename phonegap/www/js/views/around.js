@@ -49,13 +49,16 @@
             },
 
             startLocateProgress: function() {
+                this.located = false;
                 this.locateCount = 1;
                 var that = this;
                 window.setTimeout( function() {that.showLocateProgress();}, 1000);
             },
 
             showLocateProgress: function() {
-                if ( this.locateCount > 20 ) {
+                if ( !this.located && this.locateCount > 20 ) {
+                    FMS.searchMessage = FMS.strings.geolocation_failed;
+                    this.navigate('search');
                     return;
                 }
                 var percent = ( ( 20 - this.locateCount ) / 20 ) * 100;
@@ -72,6 +75,7 @@
 
                 this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
 
+                this.located = true;
                 this.locateCount = 21;
                 $('#ajaxOverlay').hide();
                 $('#locating').hide();
@@ -134,12 +138,11 @@
                 $('#locating').hide();
                 $('#ajaxOverlay').hide();
                 if ( details.msg ) {
-                    this.displayError( details.msg );
-                } else if ( details.locs ) {
-                    this.displayError( FMS.strings.multiple_locations );
+                    FMS.searchMessage = details.msg;
                 } else {
-                    this.displayError( FMS.strings.location_problem );
+                    FMS.searchMessage = FMS.strings.location_problem;
                 }
+                this.navigate('search');
             },
 
            onClickReport: function() {

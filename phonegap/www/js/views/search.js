@@ -61,6 +61,7 @@
             },
 
             destroy: function() {
+                delete FMS.searchMessage;
                 this.stopListening(FMS.locator);
             }
         })

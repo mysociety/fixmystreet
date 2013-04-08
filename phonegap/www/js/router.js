@@ -38,7 +38,7 @@
             },
 
             search: function(){
-                var searchView = new FMS.SearchView({ model: FMS.currentReport });
+                var searchView = new FMS.SearchView({ model: FMS.currentReport, msg: FMS.searchMessage });
                 this.changeView(searchView);
             },
 

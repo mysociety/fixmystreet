@@ -20,6 +20,9 @@
 
             <div class="tablewrapper">
                 <div id="front-howto">
+                    <% if (msg) { %>
+                        <h2><%= msg %></h2>
+                    <% } else { %>
                     <h2>How to report a problem</h2>
 
                     <ol class="big-numbers">
@@ -28,6 +31,7 @@
                         <li>Enter details of the problem</li>
                         <li>We send it to the council on your behalf</li>
                     </ol>
+                    <% } %>
                 </div>
             </div>
         </div>

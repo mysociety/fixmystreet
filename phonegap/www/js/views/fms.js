@@ -16,11 +16,18 @@
                     return;
                 }
                 template = _.template( tpl.get( this.template ) );
-                if ( this.model ) {
-                    this.$el.html(template(this.model.toJSON()));
-                } else {
-                    this.$el.html(template());
+                var args = null;
+                if ( this.options.msg ) {
+                    args = { msg: this.options.msg };
                 }
+                if ( this.model ) {
+                    if ( args ) {
+                        args.model = this.model.toJSON();
+                    } else {
+                        args = this.model.toJSON();
+                    }
+                }
+                this.$el.html(template(args));
                 this.afterRender();
                 return this;
             },
