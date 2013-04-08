@@ -29,6 +29,7 @@
             addPhotoSuccess: function(imgURI) {
                 $('#photo').attr('src', imgURI );
                 this.model.set('file', imgURI);
+                FMS.saveCurrentDraft();
 
                 $('#display_photo').show();
                 $('#add_photo').hide();
@@ -44,6 +45,7 @@
 
             deletePhoto: function() {
                 this.model.set('file', '');
+                FMS.saveCurrentDraft();
                 $('#photo').attr('src', '');
 
                 $('#display_photo').hide();

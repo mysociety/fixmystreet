@@ -6,10 +6,18 @@
             prev: 'photo',
             next: 'submit-email',
 
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay',
+                'click .ui-btn-left': 'onClickButtonPrev',
+                'click .ui-btn-right': 'onClickButtonNext',
+                'change textarea': 'updateCurrentReport',
+                'change select': 'updateCurrentReport',
+                'blur input': 'updateCurrentReport'
+            },
+
             onClickButtonPrev: function() {
-                this.model.set('title', $('#form_title').val());
-                this.model.set('details', $('#form_detail').val());
-                this.model.set('category', $('#form_category').val());
+                this.updateCurrentReport();
                 this.navigate( this.prev );
             },
 
@@ -44,6 +52,7 @@
                 this.model.set('category', $('#form_category').val());
                 this.model.set('title', $('#form_title').val());
                 this.model.set('details', $('#form_detail').val());
+                FMS.saveCurrentDraft();
             }
         })
     });

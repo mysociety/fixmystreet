@@ -159,6 +159,7 @@
                 this.model.set('lat', info.coordinates.latitude );
                 this.model.set('lon', info.coordinates.longitude );
                 this.model.set('categories', info.details.category );
+                FMS.saveCurrentDraft();
 
                 this.navigate( 'photo' );
             },
