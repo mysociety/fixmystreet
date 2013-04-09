@@ -27,6 +27,8 @@
             },
 
             addPhotoSuccess: function(imgURI) {
+                //TODO move this file somewhere permanent rather than temp
+                //     storage so it doesn't get randomly cleaned up by the OS
                 $('#photo').attr('src', imgURI );
                 this.model.set('file', imgURI);
                 FMS.saveCurrentDraft();
