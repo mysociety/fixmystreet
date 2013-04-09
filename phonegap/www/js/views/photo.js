@@ -33,6 +33,7 @@
                 this.model.set('file', imgURI);
                 FMS.saveCurrentDraft();
 
+                $('#photo-next-btn .ui-btn-text').text('Next');
                 $('#display_photo').show();
                 $('#add_photo').hide();
             },
@@ -50,6 +51,7 @@
                 FMS.saveCurrentDraft();
                 $('#photo').attr('src', '');
 
+                $('#photo-next-btn .ui-btn-text').text('Skip');
                 $('#display_photo').hide();
                 $('#add_photo').show();
             }
