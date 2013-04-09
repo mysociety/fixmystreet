@@ -13,6 +13,7 @@ use_ok( 'Open311' );
 
 use_ok( 'Open311::GetServiceRequestUpdates' );
 use DateTime;
+use DateTime::Format::W3CDTF;
 use FixMyStreet::App;
 
 my $user = FixMyStreet::App->model('DB::User')->find_or_create(
@@ -380,7 +381,8 @@ foreach my $test (
         $dt->subtract( minutes => 10 );
         my $local_requests_xml = $requests_xml;
 
-        my $updated = sprintf( '<updated_datetime>%s</updated_datetime>', $dt );
+        my $updated = sprintf( '<updated_datetime>%s</updated_datetime>', DateTime::Format::W3CDTF->format_datetime( $dt ) );
+
         $local_requests_xml =~ s/UPDATED_DATETIME/$updated/;
         $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>@{[$problem->external_id]}</service_request_id>#;
         $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>@{[$problem->id]}</service_request_id_ext>#;

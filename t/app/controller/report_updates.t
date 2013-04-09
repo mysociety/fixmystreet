@@ -639,7 +639,7 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
             user          => $user,
             problem_id    => $report->id,
             text          => 'update text',
-            confirmed     => DateTime->now,
+            confirmed     => DateTime->now( time_zone => 'local' ),
             problem_state => 'confirmed',
             anonymous     => 0,
             mark_open     => 0,
@@ -751,7 +751,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         unlike $update_meta->[1], qr/marked as/, 'second update meta does not include state change';
         like $update_meta->[2], qr/marked as investigating/, 'third update meta says investigating';
 
-        my $dt = DateTime->now->add( seconds => 1 );
+        my $dt = DateTime->now( time_zone => "local" )->add( seconds => 1 );
         $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
             {
                 problem_id => $report_id,
@@ -789,7 +789,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
             user          => $user,
             problem_id    => $report->id,
             text          => 'update text',
-            confirmed     => DateTime->now,
+            confirmed     => DateTime->now( time_zone => 'local'),
             problem_state => 'fixed - user',
             anonymous     => 0,
             mark_open     => 0,
@@ -807,7 +807,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
             user          => $user,
             problem_id    => $report->id,
             text          => 'update text',
-            confirmed     => DateTime->now + DateTime::Duration->new( minutes => 1 ),
+            confirmed     => DateTime->now( time_zone => 'local' ) + DateTime::Duration->new( minutes => 1 ),
             problem_state => 'confirmed',
             anonymous     => 0,
             mark_open     => 0,
