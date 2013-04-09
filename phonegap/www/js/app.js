@@ -60,7 +60,6 @@ var tpl = {
         },
 
         loadCurrentDraft: function() {
-            console.log( 'loading report' );
             if ( localStorage.currentDraftID && localStorage.currentDraftID != 'null' ) {
                 var r = FMS.allDrafts.get( localStorage.currentDraftID );
                 if ( r ) {
