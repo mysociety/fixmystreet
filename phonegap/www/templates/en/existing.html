@@ -1,0 +1,28 @@
+<div data-role="header" data-position="fixed" >
+        <h1>Draft Report</h1>
+</div>
+<div class="container" data-enhance="false">
+    <div class="content" role="main">
+        <h1>You have an unsubmitted report</h1>
+
+        <% if ( title ) { %>
+            <p>title: <%= title %></p>
+        <% } %>
+
+        <% if ( details ) { %>
+            <p>details: <%= details %></p>
+        <% } %>
+
+        <% if ( category && category != '-- Pick a category --' ) { %>
+            <p>category: <%= category %></p>
+        <% } %>
+
+
+        <% if ( file ) { %>
+            <p><img src="<%= file %>" width="200"></p>
+        <% } %>
+
+        <input id="use_report" type="button" value="use" />
+        <input id="discard" type="button" value="discard" />
+    </div>
+</div>

@@ -27,6 +27,8 @@
                         navigator.connection.type == Connection.UNKNOWN ) ) {
                     localStorage.offline = 1;
                     this.navigate( 'no_connection' );
+                } else if ( FMS.currentDraft && FMS.currentDraft.get('lat') ) {
+                    this.navigate( 'existing' );
                 } else {
                     this.navigate( 'around' );
                 }

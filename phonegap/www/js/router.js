@@ -8,6 +8,7 @@
                 'home': 'home',
                 'around': 'around',
                 'search': 'search',
+                'existing': 'existing',
                 'photo': 'photo',
                 'details': 'details',
                 'submit': 'submit',
@@ -40,6 +41,11 @@
             search: function(){
                 var searchView = new FMS.SearchView({ model: FMS.currentDraft, msg: FMS.searchMessage });
                 this.changeView(searchView);
+            },
+
+            existing: function(){
+                var existingView = new FMS.ExistingView({ model: FMS.currentDraft });
+                this.changeView(existingView);
             },
 
             home: function(){
