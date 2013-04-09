@@ -13,7 +13,7 @@ use Math::Trig;
 use mySociety::Gaze;
 use Utils;
 
-use constant ZOOM_LEVELS    => 5;
+use constant ZOOM_LEVELS    => 6;
 use constant MIN_ZOOM_LEVEL => 13;
 
 sub map_type {
@@ -55,15 +55,15 @@ sub display_map {
     my $numZoomLevels = ZOOM_LEVELS;
     my $zoomOffset = MIN_ZOOM_LEVEL;
     if ($params{any_zoom}) {
-        $numZoomLevels = 18;
+        $numZoomLevels = 19;
         $zoomOffset = 0;
     }
 
     # Adjust zoom level dependent upon population density
     my $dist = $c->stash->{distance}
         || mySociety::Gaze::get_radius_containing_population( $params{latitude}, $params{longitude}, 200_000 );
-    my $default_zoom = $c->cobrand->default_map_zoom() ? $c->cobrand->default_map_zoom() : $numZoomLevels - 3;
-    $default_zoom = $numZoomLevels - 2 if $dist < 10;
+    my $default_zoom = $c->cobrand->default_map_zoom() ? $c->cobrand->default_map_zoom() : $numZoomLevels - 4;
+    $default_zoom = $numZoomLevels - 3 if $dist < 10;
 
     # Map centre may be overridden in the query string
     $params{latitude} = Utils::truncate_coordinate($c->req->params->{lat} + 0)

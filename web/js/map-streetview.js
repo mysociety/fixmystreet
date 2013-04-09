@@ -63,7 +63,7 @@ OpenLayers.Layer.StreetView = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
             maxResolution: 156543.0339/Math.pow(2, options.zoomOffset || 0),
-            numZoomLevels: 18,
+            numZoomLevels: 19,
             transitionEffect: "resize",
             sphericalMercator: true,
             attribution: "Contains Ordnance Survey data © Crown copyright and database right 2010"
