@@ -199,3 +199,25 @@ input.green-btn:hover {
 .ui-btn-icon-notext .ui-btn-inner {
     border: 0px !important;
 }
+
+div.photo {
+    margin: 0.1em 0em;
+    text-align: center;
+}
+
+img.small {
+    max-width: 85%;
+    max-height: 45%;
+}
+
+.right {
+    text-align: right;
+}
+
+ul#existing {
+    margin: 0px;
+}
+
+ul#existing li {
+    list-style: none;
+}

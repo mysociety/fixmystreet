@@ -5,24 +5,27 @@
     <div class="content" role="main">
         <h1>You have an unsubmitted report</h1>
 
+        <ul id="existing">
         <% if ( title ) { %>
-            <p>title: <%= title %></p>
+            <li>title: <%= title %></li>
         <% } %>
 
         <% if ( details ) { %>
-            <p>details: <%= details %></p>
+            <li>details: <%= details %></li>
         <% } %>
 
         <% if ( category && category != '-- Pick a category --' ) { %>
-            <p>category: <%= category %></p>
+            <li>category: <%= category %></li>
         <% } %>
-
+        </ul>
 
         <% if ( file ) { %>
-            <p><img src="<%= file %>" width="200"></p>
+            <div class="photo"><img class="small" src="<%= file %>"></div>
         <% } %>
 
-        <input id="use_report" type="button" value="use" />
-        <input id="discard" type="button" value="discard" />
+        <div class="right">
+        <input id="use_report" type="button" value="use" class="green-btn" />
+        <input id="discard" type="button" value="discard" class="green-btn" />
+        </div>
     </div>
 </div>

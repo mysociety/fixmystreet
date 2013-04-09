@@ -8,32 +8,28 @@
 </div>
 <div class="container" data-enhance="false">
     <div class="content" role="main">
-        <div id="side-form">
-            <fieldset>
-                <div id="problem_form">
-                    <% if ( file != '' ) { %>
-                    <div id="add_photo" style="display: none">
-                    <% } else { %>
-                    <div id="add_photo">
-                    <% } %>
-                        <label>Optionally Add a Photo</label>
-                        <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" class="green-btn"> Or 
-                        <input value="Choose" type="button" name="existing" id="id_existing" class="green-btn">
-                    </div>
+        <% if ( file != '' ) { %>
+        <div id="add_photo" style="display: none">
+        <% } else { %>
+        <div id="add_photo">
+        <% } %>
+            <label>Optionally Add a Photo</label>
+            <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" class="green-btn"> Or 
+            <input value="Choose" type="button" name="existing" id="id_existing" class="green-btn">
+        </div>
 
-                    <% if ( file == '' ) { %>
-                    <div id="display_photo" style="display: none">
-                    <% } else { %>
-                    <div id="display_photo">
-                    <% } %>
-                        <label>Your Photo</label>
-                        <img id="photo" src="<%= file %>" width="200" />
-                        <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" class="green-btn">
-                    </div>
-
-                    <input type="hidden" name="photo" id="form_photo" value="">
-                </div>
-            </fieldset>
+        <% if ( file == '' ) { %>
+        <div id="display_photo" style="display: none">
+        <% } else { %>
+        <div id="display_photo">
+        <% } %>
+            <label>Your Photo</label>
+            <div class="photo">
+            <img class="small" id="photo" src="<%= file %>" />
+            </div>
+            <div class="right">
+            <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" class="green-btn">
+            <div>
         </div>
     </div>
 </div>
