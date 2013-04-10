@@ -43,12 +43,26 @@
             },
 
             onReportSync: function(model, resp, options) {
+                this.stopListening();
                 if ( FMS.currentUser ) {
                     FMS.currentUser.save();
                 }
-                FMS.currentDraft = new FMS.Draft();
+                var id = FMS.currentDraft.id;
+                var uri = FMS.currentDraft.get('file');
+                FMS.allDrafts.remove(FMS.currentDraft);
+                FMS.currentDraft.destroy();
+                localStorage.currentDraftID = null;
                 FMS.createdReport = this.report;
-                this.navigate( 'sent', 'left' );
+
+                if ( uri ) {
+                    var del = FMS.files.deleteURI( this.photoURI );
+
+                    var that = this;
+                    del.done( function() { that.navigate( 'sent' ); } );
+
+                } else {
+                    this.navigate( 'sent', 'left' );
+                }
             },
 
             onReportError: function(model, err, options) {
