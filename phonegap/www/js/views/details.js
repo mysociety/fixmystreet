@@ -16,6 +16,12 @@
                 'blur input': 'updateCurrentReport'
             },
 
+            afterRender: function() {
+                if ( this.model.get('category') ) {
+                    this.$('#form_category').val( this.model.get('category') );
+                }
+            },
+
             onClickButtonPrev: function() {
                 this.updateCurrentReport();
                 this.navigate( this.prev );
