@@ -27,15 +27,20 @@
             },
 
             addPhotoSuccess: function(imgURI) {
-                //TODO move this file somewhere permanent rather than temp
-                //     storage so it doesn't get randomly cleaned up by the OS
-                $('#photo').attr('src', imgURI );
-                this.model.set('file', imgURI);
-                FMS.saveCurrentDraft();
+                var move = FMS.files.moveURI( imgURI );
 
-                $('#photo-next-btn .ui-btn-text').text('Next');
-                $('#display_photo').show();
-                $('#add_photo').hide();
+                var that = this;
+                move.done( function( file ) {
+                    $('#photo').attr('src', file.toURL());
+                    that.model.set('file', file.toURL());
+                    FMS.saveCurrentDraft();
+
+                    $('#photo-next-btn .ui-btn-text').text('Next');
+                    $('#display_photo').show();
+                    $('#add_photo').hide();
+                });
+
+                move.fail( function() { that.addPhotoFail(); } );
             },
 
             addPhotoFail: function() {
@@ -47,13 +52,19 @@
             },
 
             deletePhoto: function() {
-                this.model.set('file', '');
-                FMS.saveCurrentDraft();
-                $('#photo').attr('src', '');
+                var that = this;
+                var del = FMS.files.deleteURI( this.model.get('file') );
 
-                $('#photo-next-btn .ui-btn-text').text('Skip');
-                $('#display_photo').hide();
-                $('#add_photo').show();
+                del.done( function() {
+                    that.model.set('file', '');
+                    FMS.saveCurrentDraft();
+                    $('#photo').attr('src', '');
+
+                    $('#photo-next-btn .ui-btn-text').text('Skip');
+                    $('#display_photo').hide();
+                    $('#add_photo').show();
+                });
+
             }
         })
     });
