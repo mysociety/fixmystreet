@@ -17,6 +17,7 @@
 
             sync: function(method, model, options) {
                 switch (method) {
+                    case 'update':
                     case 'create':
                         this.post(model,options);
                         break;
