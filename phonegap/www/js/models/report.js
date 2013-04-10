@@ -102,7 +102,7 @@
 
                     fileURI = model.get('file');
 
-                    var fileOptions = new FileUploadfileOptions();
+                    var fileOptions = new FileUploadOptions();
                     fileOptions.fileKey="photo";
                     fileOptions.fileName=fileURI.substr(fileURI.lastIndexOf('/')+1);
                     fileOptions.mimeType="image/jpeg";
