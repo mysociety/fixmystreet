@@ -321,7 +321,9 @@ sub ward_check : Private {
     # Could be from RSS area, or body...
     my $parent_id;
     if ( $c->stash->{body} ) {
-        $parent_id = $c->stash->{body}->body_areas->first->area_id;
+        $parent_id = $c->stash->{body}->body_areas->first;
+        $c->detach( 'redirect_body' ) unless $parent_id;
+        $parent_id = $parent_id->area_id;
     } else {
         $parent_id = $c->stash->{area}->{id};
     }
