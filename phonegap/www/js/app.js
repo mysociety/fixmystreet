@@ -86,7 +86,7 @@ var tpl = {
                 if ( FMS.users.length > 0 ) {
                     FMS.currentUser = FMS.users.get(1);
                 }
-                if ( !FMS.currentUser ) {
+                if ( FMS.currentUser === null ) {
                     FMS.currentUser = new FMS.User({id: 1});
                 }
 
