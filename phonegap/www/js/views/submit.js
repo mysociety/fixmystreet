@@ -51,6 +51,7 @@
                 var uri = FMS.currentDraft.get('file');
                 FMS.allDrafts.remove(FMS.currentDraft);
                 FMS.currentDraft.destroy();
+                FMS.currentDraft = new FMS.Draft();
                 localStorage.currentDraftID = null;
                 FMS.createdReport = this.report;
 
