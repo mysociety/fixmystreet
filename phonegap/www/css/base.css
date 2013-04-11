@@ -642,6 +642,7 @@ input[type=text],
 input[type=password],
 input[type=email],
 input[type=file],
+input[type=tel],
 textarea {
   width: 100%;
   padding: 0.5em;
@@ -664,6 +665,7 @@ textarea {
 }
 
 input[type=text],
+input[type=tel],
 input[type=password],
 input[type=email],
 input[type=file] {
