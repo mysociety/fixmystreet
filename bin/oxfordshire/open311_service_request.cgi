@@ -210,7 +210,7 @@ sub insert_into_pem {
     $bindings{":ce_surname"}       = strip($$h{$F{LAST_NAME}}, 30);      # 'STEWART'
     $bindings{":ce_work_phone"}    = strip($$h{$F{PHONE}}, 25);          # '0117 600 4200'
     $bindings{":ce_email"}         = strip($$h{$F{EMAIL}}, 50);          # 'info@exor.co.uk'
-    $bindings{":ce_description"}   = strip($description, 2000, $F{DESCRIPTION});          # 'Large Pothole'
+    $bindings{":ce_description"}   = strip($description, 1970, $F{DESCRIPTION});          # 'Large Pothole'
 
     # nearest address guesstimate
     $bindings{":ce_location"}      = strip($location, 254);
