@@ -195,7 +195,12 @@ sub confirm_update : Path('/C') {
     $c->authenticate( { email => $comment->user->email }, 'no_password' );
     $c->set_session_cookie_expire(0);
 
-    $c->forward('/report/update/confirm');
+    if ( $comment->confirmed ) {
+        my $report_uri = $c->cobrand->base_url_for_report( $comment->problem ) . $comment->problem->url;
+        $c->res->redirect($report_uri);
+    } else {
+        $c->forward('/report/update/confirm');
+    }
 
     return 1;
 }
