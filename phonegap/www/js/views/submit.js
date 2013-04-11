@@ -56,7 +56,7 @@
                 FMS.createdReport = this.report;
 
                 if ( uri ) {
-                    var del = FMS.files.deleteURI( this.photoURI );
+                    var del = FMS.files.deleteURI( uri );
 
                     var that = this;
                     del.done( function() { that.navigate( 'sent' ); } );
