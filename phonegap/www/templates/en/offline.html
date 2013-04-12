@@ -1,0 +1,40 @@
+<div data-role="header" data-position="fixed" >
+        <a id="offline-prev-btn" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">Try Again</a>
+        <h1>Offline</h1>
+        <a id="offline-next-btn" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Save</a>
+</div>
+<div class="container" data-enhance="false">
+    <div class="content" role="main">
+        <p>
+        Sorry, there doesn't seem to be any internet connection. You can save this report for sending later though
+        </p>
+
+        <input type="text" value="" name="title" id="form_title" placeholder="Provide a title" required>
+
+        <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required></textarea>
+
+        <% if ( file != '' ) { %>
+        <div id="add_photo" style="display: none">
+        <% } else { %>
+        <div id="add_photo">
+        <% } %>
+            <label>Optionally Add a Photo</label>
+            <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" class="green-btn"> Or 
+            <input value="Choose" type="button" name="existing" id="id_existing" class="green-btn">
+        </div>
+
+        <% if ( file == '' ) { %>
+        <div id="display_photo" style="display: none">
+        <% } else { %>
+        <div id="display_photo">
+        <% } %>
+            <label>Your Photo</label>
+            <div class="photo">
+            <img class="small" id="photo" src="<%= file %>" />
+            </div>
+            <div class="right">
+            <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" class="green-btn">
+            <div>
+        </div>
+    </div>
+</div>

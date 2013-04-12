@@ -38,7 +38,7 @@ var tpl = {
 (function (FMS, Backbone, _, $) {
     _.extend(FMS, {
         templates: [
-            'home', 'around', 'address_search', 'existing', 'photo', 'details', 'submit', 'submit_email', 'submit_name', 'submit_password', 'sent'
+            'home', 'around', 'offline', 'reports', 'address_search', 'existing', 'photo', 'details', 'submit', 'submit_email', 'submit_name', 'submit_password', 'sent'
         ],
 
         initialized: 0,

@@ -6,6 +6,7 @@
             routes: {
                 '': 'home',
                 'home': 'home',
+                'offline': 'offline',
                 'around': 'around',
                 'search': 'search',
                 'existing': 'existing',
@@ -15,7 +16,8 @@
                 'submit-email': 'submitEmail',
                 'submit-name': 'submitName',
                 'submit-password': 'submitPassword',
-                'sent': 'sent'
+                'sent': 'sent',
+                'reports': 'reports'
             },
 
             initialize: function() {
@@ -53,6 +55,11 @@
                 this.changeView(homeView);
             },
 
+            offline: function() {
+                var offlineView = new FMS.OfflineView({ model: FMS.currentDraft });
+                this.changeView(offlineView);
+            },
+
             photo: function(){
                 var photoView = new FMS.PhotoView({ model: FMS.currentDraft });
                 this.changeView(photoView);
@@ -86,6 +93,11 @@
             sent: function(){
                 var sentView = new FMS.SentView({ model: FMS.currentDraft });
                 this.changeView(sentView);
+            },
+
+            reports: function() {
+                var reportsView = new FMS.ReportsView({ model: FMS.currentDraft });
+                this.changeView(reportsView);
             },
 
             changeView: function(view) {

@@ -26,8 +26,11 @@
                 if ( navigator && navigator.connection && ( navigator.connection.type == Connection.NONE ||
                         navigator.connection.type == Connection.UNKNOWN ) ) {
                     localStorage.offline = 1;
-                    this.navigate( 'no_connection' );
-                } else if ( FMS.currentDraft && FMS.currentDraft.get('lat') ) {
+                    this.navigate( 'offline' );
+                } else if ( FMS.currentDraft && (
+                    FMS.currentDraft.get('title') || FMS.currentDraft.get('lat') ||
+                    FMS.currentDraft.get('details') || FMS.currentDraft.get('file') )
+                ) {
                     this.navigate( 'existing' );
                 } else {
                     this.navigate( 'around' );
