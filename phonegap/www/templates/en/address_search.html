@@ -19,7 +19,7 @@
 
             <div class="tablewrapper">
                 <div id="front-howto">
-                    <% if (msg) { %>
+                    <% if (typeof msg != 'undefined' && msg !== '') { %>
                         <h2><%= msg %></h2>
                     <% } else { %>
                     <h2>How to report a problem</h2>
