@@ -55,7 +55,7 @@
                 }
             },
 
-            goLocate: function() {
+            goLocate: function(e) {
                 e.preventDefault();
                 this.navigate( 'around' );
             },
