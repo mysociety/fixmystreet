@@ -97,7 +97,7 @@
 
                     var fileUploadFail = function() {
                         $('#ajaxOverlay').hide();
-                        that.trigger('error', that, STRINGS.report_send_error, options);
+                        that.trigger('error', that, FMS.strings.report_send_error, options);
                     };
 
                     fileURI = model.get('file');
