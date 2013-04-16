@@ -9,9 +9,9 @@
         Sorry, there doesn't seem to be any internet connection. You can save this report for sending later though
         </p>
 
-        <input type="text" value="" name="title" id="form_title" placeholder="Provide a title" required>
+        <input type="text" value="<% title %>" name="title" id="form_title" placeholder="Provide a title" required>
 
-        <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required></textarea>
+        <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><% details %></textarea>
 
         <% if ( file != '' ) { %>
         <div id="add_photo" style="display: none">
