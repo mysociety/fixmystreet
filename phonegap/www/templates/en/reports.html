@@ -7,5 +7,7 @@
         <h1>Holding page :)</h1>
     </div>
 
-    <% drafts.each(function(draft) { if ( draft ) { print( draft.get('title') + '<br>' ); } else { print( 'no<br>'); } } ); %>
+    <ul>
+        <% drafts.each(function(draft) { if ( draft ) { print( '<li>' + draft.get('title') + '<a id="' + draft.id + '" class="del_report">X</a></li>' ); } else { print( '<li>no/li<>'); } } ); %>
+    </ul>
 </div>
