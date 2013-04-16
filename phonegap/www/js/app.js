@@ -69,6 +69,22 @@ var tpl = {
             localStorage.currentDraftID = null;
         },
 
+        removeDraft: function(draftID, removePhoto) {
+            console.log( draftID );
+            var draft = FMS.allDrafts.get(draftID);
+            console.log( draft );
+            var uri = draft.get('file');
+            FMS.allDrafts.remove(draft);
+            draft.destroy();
+
+            if ( removePhoto && uri ) {
+                return FMS.files.deleteURI( uri );
+            }
+            var p = $.Deferred();
+            p.resolve();
+            return p;
+        },
+
         initialize: function () {
             if ( this.initialized == 1 ) {
                 return this;

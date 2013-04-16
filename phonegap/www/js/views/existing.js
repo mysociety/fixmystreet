@@ -17,21 +17,13 @@
             },
 
             discardReport: function() {
-                var uri = FMS.currentDraft.get('file');
-                FMS.allDrafts.remove(FMS.currentDraft);
-                FMS.currentDraft.destroy();
-                localStorage.currentDraftID = null;
-                FMS.currentDraft = new FMS.Draft();
+                var reset = FMS.removeDraft(FMS.currentDraft.id, true);
+                var that = this;
+                reset.done( function() { that.onDraftRemove(); } );
+            },
 
-                if ( uri ) {
-                    var del = FMS.files.deleteURI( uri );
-
-                    var that = this;
-                    del.done( function() { that.navigate( 'around' ); } );
-
-                } else {
-                    this.navigate( 'around', 'left' );
-                }
+            onDraftRemove: function() {
+                this.navigate( 'around', 'left' );
             }
         })
     });

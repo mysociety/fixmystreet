@@ -47,23 +47,16 @@
                 if ( FMS.currentUser ) {
                     FMS.currentUser.save();
                 }
-                var id = FMS.currentDraft.id;
-                var uri = FMS.currentDraft.get('file');
-                FMS.allDrafts.remove(FMS.currentDraft);
-                FMS.currentDraft.destroy();
+                var reset = FMS.removeDraft( FMS,currentDraftID, true);
+                var that = this;
+                reset.done( function() { that.onRemoveDraft(); } );
+            },
+
+            onRemoveDraft: function() {
                 FMS.currentDraft = new FMS.Draft();
                 localStorage.currentDraftID = null;
                 FMS.createdReport = this.report;
-
-                if ( uri ) {
-                    var del = FMS.files.deleteURI( uri );
-
-                    var that = this;
-                    del.done( function() { that.navigate( 'sent' ); } );
-
-                } else {
-                    this.navigate( 'sent', 'left' );
-                }
+                this.navigate( 'sent', 'left' );
             },
 
             onReportError: function(model, err, options) {
