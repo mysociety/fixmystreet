@@ -8,6 +8,7 @@
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay',
                 'click #locate_search': 'goSearch',
+                'click #reports': 'goReports',
                 'click #search': 'goSearch',
                 'click #relocate': 'centerMapOnPosition',
                 'click #mark-here': 'onClickReport'
@@ -169,6 +170,13 @@
                 this.stopListening(FMS.locator);
                 FMS.locator.stopTracking();
                 this.navigate( 'search' );
+            },
+
+            goReports: function(e) {
+                e.preventDefault();
+                this.stopListening(FMS.locator);
+                FMS.locator.stopTracking();
+                this.navigate( 'reports' );
             },
 
             getCrossHairPosition: function() {

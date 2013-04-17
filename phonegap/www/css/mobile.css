@@ -221,3 +221,7 @@ ul#existing {
 ul#existing li {
     list-style: none;
 }
+
+#sub_map_links a {
+    padding: 0.6em 2em 0.5em 1em;
+}
