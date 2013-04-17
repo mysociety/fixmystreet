@@ -1,4 +1,4 @@
-(function(FMS, Backbone, _, $) {
+(function(FMS, Backbone, _, $, moment) {
     _.extend( FMS, {
         Draft: Backbone.Model.extend({
             localStorage: new Backbone.LocalStorage(CONFIG.NAMESPACE + '-drafts'),
@@ -12,11 +12,26 @@
                 category: '',
                 phone: '',
                 pc: '',
-                file: ''
+                file: '',
+                created: moment.utc()
+            },
+
+            description: function() {
+                var desc = '';
+                if ( this.get('title') ) {
+                    desc += this.get('title');
+                }
+                desc += ', ' + this.createdDate();
+
+                return desc;
+            },
+
+            createdDate: function() {
+                return moment.utc( this.get('created') ).format( 'H:m Mo MMM' );
             }
         })
     });
-})(FMS, Backbone, _, $);
+})(FMS, Backbone, _, $, moment);
 
 (function(FMS, Backbone, _, $) {
     _.extend( FMS, {

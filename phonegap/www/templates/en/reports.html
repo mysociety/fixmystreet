@@ -8,6 +8,6 @@
     </div>
 
     <ul>
-        <% drafts.each(function(draft) { if ( draft ) { print( '<li id="' + draft.id + '">' + draft.get('title') + '<a class="del_report">X</a> <a class="use_report">&#8594;</a></li>' ); } else { print( '<li>no/li<>'); } } ); %>
+        <% drafts.each(function(draft) { if ( draft ) { print( '<li id="' + draft.id + '">' + draft.description() + ' <a class="del_report">X</a> <a class="use_report">&#8594;</a></li>' ); } else { print( '<li>no/li<>'); } } ); %>
     </ul>
 </div>
