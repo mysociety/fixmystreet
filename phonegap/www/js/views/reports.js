@@ -9,15 +9,24 @@
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay',
                 'click .del_report': 'deleteReport',
+                'click .use_report': 'useReport',
                 'click .ui-btn-left': 'onClickButtonPrev',
                 'click .ui-btn-right': 'onClickButtonNext'
             },
 
             deleteReport: function(e) {
                 var el = $(e.target);
-                var del = FMS.removeDraft( el.attr('id'), true );
+                var id = el.parent('li').attr('id');
+                var del = FMS.removeDraft( id, true );
                 var that = this;
                 del.done( function() { that.onRemoveDraft(el); } );
+            },
+
+            useReport: function(e) {
+                var el = $(e.target);
+                var id = el.parent('li').attr('id');
+                FMS.currentDraft = FMS.allDrafts.get(id);
+                this.navigate('around');
             },
 
             onRemoveDraft: function(el) {
