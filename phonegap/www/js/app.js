@@ -41,6 +41,7 @@ var tpl = {
             'home', 'around', 'offline', 'reports', 'address_search', 'existing', 'photo', 'details', 'submit', 'submit_email', 'submit_name', 'submit_password', 'sent'
         ],
 
+        isOffline: 0,
         initialized: 0,
         users: new FMS.Users(),
         currentUser: null,
@@ -51,6 +52,14 @@ var tpl = {
         allDrafts: new FMS.Drafts(),
 
         reportToView: null,
+
+        online: function() {
+            FMS.isOffline = 0;
+        },
+
+        offline: function() {
+            FMS.isOffline = 1;
+        },
 
         saveCurrentDraft: function() {
             FMS.router.pause();
@@ -67,6 +76,10 @@ var tpl = {
                 }
             }
             localStorage.currentDraftID = null;
+            if ( navigator && navigator.connection && ( navigator.connection.type == Connection.NONE ||
+                    navigator.connection.type == Connection.UNKNOWN ) ) {
+                FMS.offline();
+            }
         },
 
         removeDraft: function(draftID, removePhoto) {
@@ -109,6 +122,8 @@ var tpl = {
                 document.addEventListener('pause', function() { FMS.saveCurrentDraft(); }, false);
                 document.addEventListener('resume', function() { FMS.loadCurrentDraft(); }, false);
                 document.addEventListener('backbutton', function() { FMS.router.back(); }, true);
+                document.addEventListener('offline', function() { FMS.offline(); }, true);
+                document.addEventListener('online', function() { FMS.online(); }, true);
 
                 FMS.allDrafts.fetch();
                 FMS.loadCurrentDraft();
