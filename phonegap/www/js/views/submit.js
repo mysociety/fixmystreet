@@ -35,10 +35,14 @@
 
                 if ( this.validate() ) {
                     this.model.set('user', FMS.currentUser);
-                    this.report = new FMS.Report( this.model.toJSON() );
-                    this.listenTo( this.report, 'sync', this.onReportSync );
-                    this.listenTo( this.report, 'error', this.onReportError );
-                    this.report.save();
+                    if ( FMS.isOffline ) {
+                        this.navigate( 'save_offline' );
+                    } else {
+                        this.report = new FMS.Report( this.model.toJSON() );
+                        this.listenTo( this.report, 'sync', this.onReportSync );
+                        this.listenTo( this.report, 'error', this.onReportError );
+                        this.report.save();
+                    }
                 }
             },
 

@@ -16,6 +16,7 @@
                 'submit-email': 'submitEmail',
                 'submit-name': 'submitName',
                 'submit-password': 'submitPassword',
+                'save_offline': 'saveOffline',
                 'sent': 'sent',
                 'reports': 'reports'
             },
@@ -88,6 +89,11 @@
             submitPassword: function(){
                 var submitPasswordView = new FMS.SubmitPasswordView({ model: FMS.currentDraft });
                 this.changeView(submitPasswordView);
+            },
+
+            saveOffline: function(){
+                var saveOfflineView = new FMS.saveOfflineView({ model: FMS.currentDraft });
+                this.changeView(saveOfflineView);
             },
 
             sent: function(){

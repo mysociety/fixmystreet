@@ -50,7 +50,11 @@
                 if ( valid ) {
                     this.clearValidationErrors();
                     this.updateCurrentReport();
-                    this.navigate( this.next );
+                    if ( FMS.isOffline ) {
+                        this.navigate( 'save_offline' );
+                    } else {
+                        this.navigate( this.next );
+                    }
                 }
             },
 
