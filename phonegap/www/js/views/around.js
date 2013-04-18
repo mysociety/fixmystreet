@@ -149,9 +149,13 @@
            onClickReport: function() {
                 var position = this.getCrossHairPosition();
 
-                this.listenTo(FMS.locator, 'gps_located', this.goPhoto);
-                this.listenTo(FMS.locator, 'gps_failed', this.noMap );
-                FMS.locator.check_location( { latitude: position.lat, longitude: position.lon } );
+                if ( FMS.isOffline ) {
+                    this.navigate( 'offline' );
+                } else {
+                    this.listenTo(FMS.locator, 'gps_located', this.goPhoto);
+                    this.listenTo(FMS.locator, 'gps_failed', this.noMap );
+                    FMS.locator.check_location( { latitude: position.lat, longitude: position.lon } );
+                }
             },
 
             goPhoto: function(info) {
