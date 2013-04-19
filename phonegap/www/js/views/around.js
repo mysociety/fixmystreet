@@ -1,6 +1,6 @@
 (function (FMS, Backbone, _, $) {
     _.extend( FMS, {
-        AroundView: FMS.FMSView.extend({
+        AroundView: FMS.LocatorView.extend({
             template: 'around',
             id: 'around-page',
 
@@ -18,68 +18,23 @@
                 if ( FMS.currentLocation ) {
                     var info = { coordinates: FMS.currentLocation };
                     FMS.currentLocation = null;
-                    this.showMap(info);
+                    this.gotLocation(info);
                 } else if ( this.model && this.model.get('lat') ) {
                     var modelInfo = { coordinates: { latitude: this.model.get('lat'), longitude: this.model.get('lon') } };
-                    this.showMap(modelInfo);
+                    this.gotLocation(modelInfo);
                 } else {
                     this.locate();
                 }
             },
 
-            locate: function() {
-                $('#locating').show();
-                this.listenTo(FMS.locator, 'gps_located', this.showMap);
-                this.listenTo(FMS.locator, 'gps_failed', this.noMap );
-                this.listenTo(FMS.locator, 'gps_locating', this.locationUpdate);
-
-                FMS.locator.geolocate(100);
-                this.startLocateProgress();
-            },
-
-            locationUpdate: function( accuracy ) {
-                if ( accuracy && accuracy < 500 ) {
-                    $('#progress-bar').css( 'background-color', 'orange' );
-                } else if ( accuracy && accuracy < 250 ) {
-                    $('#progress-bar').css( 'background-color', 'yellow' );
-                } else {
-                    $('#progress-bar').css( 'background-color', 'grey' );
-                }
-
-                $('#accuracy').text(parseInt(accuracy, 10) + 'm');
-            },
-
-            startLocateProgress: function() {
-                this.located = false;
-                this.locateCount = 1;
-                var that = this;
-                window.setTimeout( function() {that.showLocateProgress();}, 1000);
-            },
-
-            showLocateProgress: function() {
-                if ( !this.located && this.locateCount > 20 ) {
-                    FMS.searchMessage = FMS.strings.geolocation_failed;
-                    this.navigate('search');
-                    return;
-                }
-                var percent = ( ( 20 - this.locateCount ) / 20 ) * 100;
-                $('#progress-bar').css( 'width', percent + '%' );
-                this.locateCount++;
-                var that = this;
-                window.setTimeout( function() {that.showLocateProgress();}, 1000);
-            },
-
-            showMap: function( info ) {
-                this.stopListening(FMS.locator, 'gps_locating');
-                this.stopListening(FMS.locator, 'gps_located');
-                this.stopListening(FMS.locator, 'gps_failed');
+            gotLocation: function( info ) {
+                this.finishedLocating();
 
                 this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
 
                 this.located = true;
                 this.locateCount = 21;
                 $('#ajaxOverlay').hide();
-                $('#locating').hide();
 
                 var coords = info.coordinates;
                 fixmystreet.latitude = coords.latitude;
@@ -131,12 +86,9 @@
                 }
             },
 
-            noMap: function( details ) {
-                this.stopListening(FMS.locator, 'gps_locating');
-                this.stopListening(FMS.locator, 'gps_located');
-                this.stopListening(FMS.locator, 'gps_failed');
+            failedLocation: function( details ) {
+                this.finishedLocating();
                 this.locateCount = 21;
-                $('#locating').hide();
                 $('#ajaxOverlay').hide();
                 if ( details.msg ) {
                     FMS.searchMessage = details.msg;

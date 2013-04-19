@@ -36,7 +36,7 @@
                 } );
             },
 
-            geolocate: function( minAccuracy ) {
+            geolocate: function( minAccuracy, skipLocationCheck ) {
                 this.locating = 1;
 
                 $('#ajaxOverlay').show();
@@ -52,7 +52,11 @@
                             navigator.geolocation.clearWatch( that.watch_id );
                             delete that.watch_id;
 
-                            that.check_location(location.coords);
+                            if ( skipLocationCheck ) {
+                                that.trigger('gps_located', { coordinates: location.coords } );
+                            } else {
+                                that.check_location(location.coords);
+                            }
                         }
                     },
                     function() {

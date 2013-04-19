@@ -53,6 +53,8 @@ var tpl = {
 
         reportToView: null,
 
+        locationAccuracy: 100,
+
         online: function() {
             FMS.isOffline = 0;
         },
