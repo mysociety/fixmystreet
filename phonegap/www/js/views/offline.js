@@ -18,6 +18,17 @@
                 'click #locate': 'locate'
             },
 
+            draftHasContent: function() {
+                var hasContent = false;
+
+                if ( $('#form_title').val() || $('#form_detail').val() ||
+                     this.model.get('lat') || this.model.get('file') ) {
+                    hasContent = true;
+                }
+
+                return hasContent;
+            },
+
             failedLocation: function(details) {
                 this.finishedLocating();
                 this.locateCount = 21;
@@ -86,6 +97,21 @@
 
             onClickButtonNext: function() {
                 this.updateCurrentReport();
+                if ( !this.draftHasContent() && this.model.id ) {
+                    var del = FMS.removeDraft( this.model.id );
+
+                    var that = this;
+                    del.done( function() { that.draftDeleted(); } );
+                } else {
+                    localStorage.currentDraftID = null;
+                    localStorage.currentDraft = new FMS.Draft();
+                    this.navigate( this.next, 'left' );
+                }
+            },
+
+            draftDeleted: function() {
+                localStorage.currentDraftID = null;
+                localStorage.currentDraft = new FMS.Draft();
                 this.navigate( this.next, 'left' );
             },
 
@@ -93,7 +119,6 @@
                 this.model.set('title', $('#form_title').val());
                 this.model.set('details', $('#form_detail').val());
                 FMS.saveCurrentDraft();
-                localStorage.currentDraftID = FMS.currentDraft.id;
             }
         })
     });
