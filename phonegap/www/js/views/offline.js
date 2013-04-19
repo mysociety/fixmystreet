@@ -31,7 +31,7 @@
                 this.model.set('lat', info.coordinates.latitude);
                 this.model.set('lon', info.coordinates.longitude);
 
-                $('#locate_result').html('Got position (' + info.coordinates.latitude + ', ' + info.coordinates.longitude + ')');
+                $('#locate_result').html('Got position (' + info.coordinates.latitude.toFixed(2) + ', ' + info.coordinates.longitude.toFixed(2) + ')');
             },
 
             takePhoto: function() {
