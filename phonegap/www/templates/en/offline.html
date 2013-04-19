@@ -3,10 +3,29 @@
         <h1>Offline</h1>
         <a id="offline-next-btn" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Save</a>
 </div>
-<div class="container" data-enhance="false">
-    <div class="content" role="main">
+<div class="table-cell">
+    <div id="locating" class="nodisplay" style="background: white; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 3000; text-align: center; padding-top: 50%">
+        <p>
+        Getting Your Location
+        </p>
+
+        <p>
+        Current accuracy is <span id="accuracy">unknown</span> - we'll add the 
+        location to the draft when it's 100m or less.
+        </p>
+
+        <div style="width:100%; height:10px; border:1px solid black;">
+            <div id="progress-bar" style="width:0%; background-color: grey; height:10px;">
+            </div>
+        </div>
+    </div>
+    <div class="container" data-enhance="false">
         <p>
         Sorry, there doesn't seem to be any internet connection. You can save this report for sending later though
+        </p>
+
+        <p id="locate_result">
+        <input type="button" class="green-btn" id="locate" value="locate" >
         </p>
 
         <input type="text" value="<% title %>" name="title" id="form_title" placeholder="Provide a title" required>

@@ -1,10 +1,11 @@
 (function (FMS, Backbone, _, $) {
     _.extend( FMS, {
-        OfflineView: FMS.FMSView.extend({
+        OfflineView: FMS.LocatorView.extend({
             template: 'offline',
             id: 'offline',
             prev: 'home',
             next: 'reports',
+            skipLocationCheck: true,
 
             events: {
                 'pagehide': 'destroy',
@@ -13,7 +14,24 @@
                 'click .ui-btn-right': 'onClickButtonNext',
                 'click #id_photo_button': 'takePhoto',
                 'click #id_existing': 'addPhoto',
-                'click #id_del_photo_button': 'deletePhoto'
+                'click #id_del_photo_button': 'deletePhoto',
+                'click #locate': 'locate'
+            },
+
+            failedLocation: function(details) {
+                this.finishedLocating();
+                this.locateCount = 21;
+
+                $('#locate_result').html('Could not get position');
+            },
+
+            gotLocation: function(info) {
+                this.finishedLocating();
+
+                this.model.set('lat', info.coordinates.latitude);
+                this.model.set('lon', info.coordinates.longitude);
+
+                $('#locate_result').html('Got position (' + info.coordinates.latitude + ', ' + info.coordinates.longitude + ')');
             },
 
             takePhoto: function() {
