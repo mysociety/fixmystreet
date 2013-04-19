@@ -27,7 +27,7 @@
             },
 
             createdDate: function() {
-                return moment.utc( this.get('created') ).format( 'H:m Mo MMM' );
+                return moment.utc( this.get('created') ).format( 'H:m Do MMM' );
             }
         })
     });
