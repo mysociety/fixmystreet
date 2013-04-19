@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-03-11 18:53+0000\n"
-"PO-Revision-Date: 2013-03-25 12:27+0100\n"
+"PO-Revision-Date: 2013-04-19 14:28+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "Language: \n"
@@ -126,14 +126,14 @@ msgstr ""
 #: templates/web/fixmystreet/report/_item.html:22
 #: templates/web/zurich/report/_item.html:21
 msgid "(closed)"
-msgstr "(erledigt)"
+msgstr "(beantwortet)"
 
 #: templates/web/default/around/around_map_list_items.html:10
 #: templates/web/default/around/on_map_list_items.html:7
 #: templates/web/fixmystreet/report/_item.html:20
 #: templates/web/zurich/report/_item.html:19
 msgid "(fixed)"
-msgstr "(erledigt)"
+msgstr "(beantwortet)"
 
 #: templates/web/default/index.html:11 templates/web/default/index.html:15
 #: templates/web/fixmystreet/around/intro.html:2
@@ -607,7 +607,7 @@ msgstr "Mangel lokalisieren"
 #: templates/web/zurich/admin/stats.html:31
 #: templates/web/zurich/report/banner.html:13
 msgid "Closed"
-msgstr "Erledigt"
+msgstr "Beantwortet"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:778
 msgid "Closed by council"
@@ -619,7 +619,7 @@ msgstr ""
 
 #: templates/web/default/admin/problem_row.html:27
 msgid "Closed:"
-msgstr "Erledigt:"
+msgstr "Beantwortet:"
 
 #: templates/web/default/around/tabbed_lists.html:10
 #: templates/web/default/around/tabbed_lists.html:12
@@ -1119,7 +1119,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:32
 msgid "Fixed"
-msgstr "Erledigt"
+msgstr "Beantwortet"
 
 #: templates/web/default/admin/report_edit.html:29
 #: templates/web/default/admin/report_edit.html:32
@@ -2530,7 +2530,7 @@ msgstr "Meldungen auf der Karte"
 
 #: db/alert_types.pl:14
 msgid "Problems recently reported fixed on FixMyStreet"
-msgstr "Meldungen, welche k&uuml;rzlich erledigt wurden"
+msgstr "Meldungen, welche k&uuml;rzlich beantwortet wurden"
 
 #: templates/web/default/alert/_list.html:19
 #: templates/web/fixmystreet/alert/_list.html:21
@@ -2729,12 +2729,12 @@ msgstr ""
 #: templates/web/default/reports/index.html:19
 #: templates/web/fixmybarangay/reports/index.html:19
 msgid "Recently <br>fixed"
-msgstr "K&uuml;rzlich <br>erledigt"
+msgstr "K&uuml;rzlich <br>beantwortet"
 
 #: templates/web/fiksgatami/nn/reports/index.html:13
 #: templates/web/fiksgatami/reports/index.html:13
 msgid "Recently fixed"
-msgstr "K&uuml;rzlich erledigt"
+msgstr "K&uuml;rzlich beantwortet"
 
 #: templates/web/default/index.html:41 templates/web/fixmystreet/index.html:45
 msgid "Recently reported problems"
@@ -2907,7 +2907,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/index-sdm.html:10
 msgid "Reports published"
-msgstr "Erledigt"
+msgstr "Beantwortet"
 
 #: templates/web/default/admin/report_edit.html:46
 msgid "Resend report"
@@ -4410,7 +4410,7 @@ msgstr ""
 
 #: templates/web/default/report/updates.html:27
 msgid "marked as fixed"
-msgstr "als erledigt markiert"
+msgstr "als beantwortet markiert"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:128
 #: templates/web/default/admin/questionnaire.html:15

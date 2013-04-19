@@ -422,13 +422,13 @@ subtest "Zurich banners are displayed correctly" => sub {
             description => 'fixed report',
             state => 'fixed - council',
             banner_id => 'fixed',
-            banner_text => 'Erledigt',
+            banner_text => 'Beantwortet',
         },
         {
             description => 'closed report',
             state => 'closed',
             banner_id => 'fixed',
-            banner_text => 'Erledigt',
+            banner_text => 'Beantwortet',
         },
         {
             description => 'in progress report',

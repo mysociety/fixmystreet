@@ -161,7 +161,7 @@ $mech->form_with_fields( 'status_update' );
 $mech->submit_form_ok( { button => 'publish_response' } );
 
 $mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('Erledigt');
+$mech->content_contains('Beantwortet');
 $mech->content_contains('Test Test');
 $mech->content_contains('FINAL UPDATE');
 
@@ -190,7 +190,7 @@ $mech->content_contains( 'Unbest&auml;tigt' );
 $mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
 
 $mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('Erledigt');
+$mech->content_contains('Beantwortet');
 $mech->content_contains('Second Test');
 $mech->content_contains('FINAL UPDATE');
 
@@ -208,9 +208,9 @@ $report = $reports[0];
 $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->submit_form_ok( { with_fields => { body_external => 4 } } );
 $mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('Erledigt');
+$mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
-$mech->content_contains('An Fachbereich zuweisen: External Body');
+$mech->content_contains('Weitergeleitet an: External Body');
 FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Neue Meldung/, 'subject looks okay';
@@ -227,9 +227,9 @@ $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->submit_form_ok( { with_fields => { state => 'unconfirmed' } } );
 $mech->submit_form_ok( { with_fields => { body_external => 4, third_personal => 1 } } );
 $mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('Erledigt');
+$mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
-$mech->content_contains('An Fachbereich zuweisen: External Body');
+$mech->content_contains('Weitergeleitet an: External Body');
 FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Neue Meldung/, 'subject looks okay';
