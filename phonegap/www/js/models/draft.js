@@ -20,6 +20,8 @@
                 var desc = '';
                 if ( this.get('title') ) {
                     desc += this.get('title');
+                } else {
+                    desc += 'Untitled draft';
                 }
                 desc += ', ' + this.createdDate();
 
