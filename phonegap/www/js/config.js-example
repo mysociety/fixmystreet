@@ -1,5 +1,13 @@
 var CONFIG = {
+    // URL of the fixmystreet install to report to
     FMS_URL: '',
-    MAPIT_URL: '',
-    BING_API_KEY: ''
+
+    // namespace for storing drafts etc in. Should not need to change
+    NAMESPACE: 'fixmystreet',
+
+    // directory to store draft photos in. Should not need to change
+    FILES_DIR: 'photos',
+
+    // accuracy in meters required before geolocation is successful
+    ACCURACY: 100
 };
