@@ -12,6 +12,12 @@
                 'pageshow': 'afterDisplay'
             },
 
+            afterDisplay: function() {
+                if ( FMS.isOffline ) {
+                    this.navigate('offline');
+                }
+            },
+
             search: function() {
                 var pc = this.$('#pc').val();
                 this.listenTo(FMS.locator, 'search_located', this.searchSuccess );
