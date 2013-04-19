@@ -64,7 +64,7 @@ while ( my @problem = $problems->next ) {
             $fixed{$body}{$duration_str}++;
         } else {
             # Open problems are either unknown, older, or new
-            $open{$body}{$type}++ if $problem{state} eq 'confirmed';
+            $open{$body}{$type}++;
         }
     }
 }

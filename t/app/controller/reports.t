@@ -21,6 +21,12 @@ my @westminster_problems = $mech->create_problems_for_body(5, 2504, 'All reports
 is scalar @westminster_problems, 5, 'correct number of westminster problems created';
 is scalar @edinburgh_problems, 3, 'correct number of edinburgh problems created';
 
+$edinburgh_problems[1]->update( {
+    state => 'in progress',
+    confirmed => DateTime->now()->subtract( weeks => 6 ),
+    lastupdate => DateTime->now()->subtract( weeks => 5 ),
+} );
+
 # Run the cron script that makes the data for /reports so we don't get an error.
 system( "bin/cron-wrapper update-all-reports" );
 
@@ -31,7 +37,9 @@ $mech->content_contains('Birmingham');
 
 my $stats = $mech->extract_report_stats;
 
-is $stats->{'City of Edinburgh Council'}->[1], 3, 'correct number of reports for Edinburgh';
+is $stats->{'City of Edinburgh Council'}->[1], 2, 'correct number of new reports for Edinburgh';
+is $stats->{'City of Edinburgh Council'}->[2], 1, 'correct number of older reports for Edinburgh';
+
 is $stats->{'Westminster City Council'}->[1], 5, 'correct number of reports for Westminster';
 
 $mech->follow_link_ok( { text_regex => qr/Birmingham/ } );
