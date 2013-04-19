@@ -125,6 +125,7 @@ var tpl = {
                 document.addEventListener('offline', function() { FMS.offline(); }, true);
                 document.addEventListener('online', function() { FMS.online(); }, true);
 
+                FMS.allDrafts.comparator = function(a,b) { var a_date = a.get('created'), b_date = b.get('created'); return a_date === b_date ? 0 : a_date < b_date ? 1 : -1; };
                 FMS.allDrafts.fetch();
                 FMS.loadCurrentDraft();
 
