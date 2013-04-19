@@ -15,7 +15,9 @@
             },
 
             afterDisplay: function() {
-                if ( FMS.currentLocation ) {
+                if ( FMS.isOffline ) {
+                    this.navigate( 'offline' );
+                } else if ( FMS.currentLocation ) {
                     var info = { coordinates: FMS.currentLocation };
                     FMS.currentLocation = null;
                     this.gotLocation(info);
