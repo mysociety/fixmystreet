@@ -15,7 +15,9 @@
                 'click #id_photo_button': 'takePhoto',
                 'click #id_existing': 'addPhoto',
                 'click #id_del_photo_button': 'deletePhoto',
-                'click #locate': 'locate'
+                'click #locate': 'locate',
+                'blur input': 'toggleNextButton',
+                'blur textarea': 'toggleNextButton'
             },
 
             draftHasContent: function() {
@@ -27,6 +29,14 @@
                 }
 
                 return hasContent;
+            },
+
+            toggleNextButton: function() {
+                if ( this.draftHasContent() ) {
+                    $('#offline-next-btn .ui-btn-text').text('Save');
+                } else {
+                    $('#offline-next-btn .ui-btn-text').text('Skip');
+                }
             },
 
             failedLocation: function(details) {
