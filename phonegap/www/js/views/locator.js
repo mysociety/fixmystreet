@@ -9,7 +9,7 @@
                 this.listenTo(FMS.locator, 'gps_failed', this.failedLocation);
                 this.listenTo(FMS.locator, 'gps_locating', this.locationUpdate);
 
-                FMS.locator.geolocate(FMS.locationAccuracy, this.skipLocationCheck);
+                FMS.locator.geolocate(CONFIG.ACCURACY, this.skipLocationCheck);
                 this.startLocateProgress();
             },
 
