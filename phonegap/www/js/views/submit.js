@@ -57,8 +57,7 @@
             },
 
             onRemoveDraft: function() {
-                FMS.currentDraft = new FMS.Draft();
-                localStorage.currentDraftID = null;
+                FMS.clearCurrentDraft();
                 FMS.createdReport = this.report;
                 this.navigate( 'sent', 'left' );
             },

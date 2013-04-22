@@ -97,6 +97,16 @@ var tpl = {
             return p;
         },
 
+        setCurrentDraft: function(draft) {
+            FMS.currentDraft = draft;
+            localStorage.currentDraftID = draft.id;
+        },
+
+        clearCurrentDraft: function() {
+            FMS.currentDraftID = new FMS.Draft();
+            localStorage.currentDraftID = null;
+        },
+
         initialize: function () {
             if ( this.initialized == 1 ) {
                 return this;

@@ -13,18 +13,17 @@
             },
 
             useReport: function() {
-                localStorage.currentDraftID = FMS.currentDraft.id;
+                FMS.setCurrentDraft(this.model);
                 this.navigate('around');
             },
 
             saveReport: function() {
-                localStorage.currentDraftID = null;
-                FMS.currentDraft = new FMS.Draft();
+                FMS.clearCurrentDraft();
                 this.navigate('around');
             },
 
             discardReport: function() {
-                var reset = FMS.removeDraft(FMS.currentDraft.id, true);
+                var reset = FMS.removeDraft(this.model.id, true);
                 var that = this;
                 reset.done( function() { that.onDraftRemove(); } );
             },

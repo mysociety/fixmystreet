@@ -113,15 +113,13 @@
                     var that = this;
                     del.done( function() { that.draftDeleted(); } );
                 } else {
-                    localStorage.currentDraftID = null;
-                    localStorage.currentDraft = new FMS.Draft();
+                    FMS.clearCurrentDraft();
                     this.navigate( this.next, 'left' );
                 }
             },
 
             draftDeleted: function() {
-                localStorage.currentDraftID = null;
-                localStorage.currentDraft = new FMS.Draft();
+                FMS.clearCurrentDraft();
                 this.navigate( this.next, 'left' );
             },
 
