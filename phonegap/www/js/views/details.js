@@ -11,7 +11,7 @@
                 'pageshow': 'afterDisplay',
                 'click .ui-btn-left': 'onClickButtonPrev',
                 'click .ui-btn-right': 'onClickButtonNext',
-                'change textarea': 'updateCurrentReport',
+                'blur textarea': 'updateCurrentReport',
                 'change select': 'updateCurrentReport',
                 'blur input': 'updateCurrentReport'
             },
@@ -59,6 +59,11 @@
             },
 
             updateCurrentReport: function() {
+                if ( $('#form_category').val() && $('#form_title').val() && $('#form_detail').val() ) {
+                    $('#next').addClass('page_complete_btn');
+                } else {
+                    $('#next').removeClass('page_complete_btn');
+                }
                 this.model.set('category', $('#form_category').val());
                 this.model.set('title', $('#form_title').val());
                 this.model.set('details', $('#form_detail').val());
