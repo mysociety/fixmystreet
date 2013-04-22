@@ -6,6 +6,10 @@
         <h1>You have an unsubmitted report</h1>
 
         <ul id="existing">
+        <% if (lat) { %>
+            <li>This report has a location</li>
+        <% } %>
+
         <% if ( title ) { %>
             <li>title: <%= title %></li>
         <% } %>
