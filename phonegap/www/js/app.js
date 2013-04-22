@@ -125,6 +125,9 @@ var tpl = {
                 document.addEventListener('offline', function() { FMS.offline(); }, true);
                 document.addEventListener('online', function() { FMS.online(); }, true);
 
+                $(document).on('ajaxStart', function() { console.log('ajax on'); $.mobile.loading('show'); } );
+                $(document).on('ajaxStop', function() { console.log('ajax off'); $.mobile.loading('hide'); } );
+
                 FMS.allDrafts.comparator = function(a,b) { var a_date = a.get('created'), b_date = b.get('created'); return a_date === b_date ? 0 : a_date < b_date ? 1 : -1; };
                 FMS.allDrafts.fetch();
                 FMS.loadCurrentDraft();
