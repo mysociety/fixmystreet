@@ -8,11 +8,18 @@
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay',
                 'click #use_report': 'useReport',
+                'click #save_report': 'saveReport',
                 'click #discard': 'discardReport'
             },
 
             useReport: function() {
                 localStorage.currentDraftID = FMS.currentDraft.id;
+                this.navigate('around');
+            },
+
+            saveReport: function() {
+                localStorage.currentDraftID = null;
+                FMS.currentDraft = new FMS.Draft();
                 this.navigate('around');
             },
 
