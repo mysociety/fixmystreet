@@ -39,7 +39,6 @@
             geolocate: function( minAccuracy, skipLocationCheck ) {
                 this.locating = 1;
 
-                $('#ajaxOverlay').show();
                 var that = this;
                 this.watch_id = navigator.geolocation.watchPosition(
                     function(location) {
