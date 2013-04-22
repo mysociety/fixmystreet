@@ -29,6 +29,7 @@
             },
 
             onDraftRemove: function() {
+                FMS.clearCurrentDraft();
                 this.navigate( 'around', 'left' );
             }
         })
