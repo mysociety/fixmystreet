@@ -51,7 +51,7 @@
                 if ( FMS.currentUser ) {
                     FMS.currentUser.save();
                 }
-                var reset = FMS.removeDraft( FMS,currentDraftID, true);
+                var reset = FMS.removeDraft( model.id, true);
                 var that = this;
                 reset.done( function() { that.onRemoveDraft(); } );
             },
