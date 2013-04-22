@@ -23,7 +23,6 @@
                 this.listenTo(FMS.locator, 'search_located', this.searchSuccess );
                 this.listenTo(FMS.locator, 'search_failed', this.searchFail);
 
-                $('#ajaxOverlay').show();
                 FMS.locator.lookup(pc);
             },
 
@@ -45,7 +44,6 @@
 
             searchFail: function( details ) {
                 this.stopListening(FMS.locator);
-                $('#ajaxOverlay').hide();
                 if ( details.msg ) {
                     this.displayError( details.msg );
                 } else if ( details.locations ) {

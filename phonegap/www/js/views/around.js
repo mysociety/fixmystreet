@@ -36,7 +36,6 @@
 
                 this.located = true;
                 this.locateCount = 21;
-                $('#ajaxOverlay').hide();
 
                 var coords = info.coordinates;
                 fixmystreet.latitude = coords.latitude;
@@ -90,7 +89,6 @@
             failedLocation: function( details ) {
                 this.finishedLocating();
                 this.locateCount = 21;
-                $('#ajaxOverlay').hide();
                 if ( details.msg ) {
                     FMS.searchMessage = details.msg;
                 } else {

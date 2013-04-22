@@ -80,7 +80,6 @@
                 var that = this;
                 if ( model.get('file') && model.get('file') !== '' ) {
                     var fileUploadSuccess = function(r) {
-                        $('#ajaxOverlay').hide();
                         if ( r.response ) {
                             var data;
                             try {
@@ -96,7 +95,6 @@
                     };
 
                     var fileUploadFail = function() {
-                        $('#ajaxOverlay').hide();
                         that.trigger('error', that, FMS.strings.report_send_error, options);
                     };
 
@@ -109,7 +107,6 @@
                     fileOptions.params = params;
                     fileOptions.chunkedMode = false;
 
-                    $('#ajaxOverlay').show();
                     var ft = new FileTransfer();
                     ft.upload(fileURI, CONFIG.FMS_URL + "report/new/mobile", fileUploadSuccess, fileUploadFail, fileOptions);
                 } else {
