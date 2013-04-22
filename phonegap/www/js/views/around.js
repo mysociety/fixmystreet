@@ -17,9 +17,9 @@
             afterDisplay: function() {
                 if ( FMS.isOffline ) {
                     this.navigate( 'offline' );
-                } else if ( FMS.currentLocation ) {
-                    var info = { coordinates: FMS.currentLocation };
-                    FMS.currentLocation = null;
+                } else if ( FMS.currentPosition ) {
+                    var info = { coordinates: FMS.currentPosition };
+                    FMS.currentPosition = null;
                     this.gotLocation(info);
                 } else if ( this.model && this.model.get('lat') ) {
                     var modelInfo = { coordinates: { latitude: this.model.get('lat'), longitude: this.model.get('lon') } };

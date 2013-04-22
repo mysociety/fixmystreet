@@ -30,7 +30,7 @@
             searchSuccess: function( info ) {
                 this.stopListening(FMS.locator);
                 var coords = info.coordinates;
-                FMS.currentLocation = coords;
+                FMS.currentPosition = coords;
                 this.navigate('around');
             },
 
@@ -39,7 +39,7 @@
                 var lat = t.attr('data-lat');
                 var long = t.attr('data-long');
 
-                FMS.currentLocation = { latitude: lat, longitude: long };
+                FMS.currentPosition = { latitude: lat, longitude: long };
                 this.navigate('around');
             },
 

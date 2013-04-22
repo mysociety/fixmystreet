@@ -45,7 +45,6 @@ var tpl = {
         initialized: 0,
         users: new FMS.Users(),
         currentUser: null,
-        currentLocation: null,
         currentPosition: null,
 
         currentDraft: new FMS.Draft(),
