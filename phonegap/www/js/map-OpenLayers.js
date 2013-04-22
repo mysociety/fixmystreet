@@ -286,11 +286,11 @@ function show_map(event) {
 
     if (!fixmystreet.map.getCenter()) {
         var centre = new OpenLayers.LonLat( fixmystreet.longitude, fixmystreet.latitude );
+        FMS.currentPosition = { latitude: centre.lat, longitude: centre.lon };
         centre.transform(
             new OpenLayers.Projection("EPSG:4326"),
             fixmystreet.map.getProjectionObject()
         );
-        FMS.currentPosition = centre;
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 4);
     }
 

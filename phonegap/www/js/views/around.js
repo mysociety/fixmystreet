@@ -45,17 +45,16 @@
                 if ( !fixmystreet.map ) {
                     show_map();
                 } else {
+                    FMS.currentPosition = coords;
                     var centre = this.projectCoords( coords );
-                    FMS.currentPosition = centre;
                     fixmystreet.map.panTo(centre);
                 }
                 FMS.locator.trackPosition();
             },
 
             positionUpdate: function( info ) {
+                FMS.currentPosition = info.coordinates;
                 var centre = this.projectCoords( info.coordinates );
-
-                FMS.currentPosition = centre;
 
                 var point = new OpenLayers.Geometry.Point( centre.lon, centre.lat );
 
