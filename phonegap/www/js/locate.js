@@ -55,7 +55,7 @@
                             if ( skipLocationCheck ) {
                                 that.trigger('gps_located', { coordinates: location.coords } );
                             } else {
-                                that.check_location(location.coords);
+                                that.check_location(location.coords, false);
                             }
                         }
                     },
@@ -90,10 +90,14 @@
                 }
             },
 
-            check_location: function(coords) {
+            check_location: function(coords, showSpinner) {
+                if ( typeof( showSpinner ) === 'undefined' ) {
+                    showSpinner = true;
+                }
                 var that = this;
                 $.ajax( {
                     url: CONFIG.FMS_URL + 'report/new/ajax',
+                    global: showSpinner,
                     dataType: 'json',
                     data: {
                         latitude: coords.latitude,
