@@ -103,7 +103,7 @@ var tpl = {
         },
 
         clearCurrentDraft: function() {
-            FMS.currentDraftID = new FMS.Draft();
+            FMS.currentDraft = new FMS.Draft();
             localStorage.currentDraftID = null;
         },
 
