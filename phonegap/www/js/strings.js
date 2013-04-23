@@ -28,6 +28,7 @@
             missing_location: 'Please enter a location',
             location_check_failed: 'Could not check your location',
             geolocation_failed: 'Could not determine your location',
+            geolocation_denied: 'Could not access location services. Please check permissions.',
             select_category: '-- Pick a categoy --',
             required: 'required',
             invalid_email: 'Invalid email',

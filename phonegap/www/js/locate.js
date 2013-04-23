@@ -58,12 +58,17 @@
                             }
                         }
                     },
-                    function() {
+                    function(err) {
                         if ( that.watch_id === undefined ) { return; }
                         that.locating = 0;
                         navigator.geolocation.clearWatch( that.watch_id );
                         delete that.watch_id;
-                        that.trigger('gps_failed', { msg: FMS.strings.geolocation_failed } );
+                        var errorMsg = FMS.strings.geolocation_failed;
+
+                        if ( err && err.code == PositionError.PERMISSION_DENIED ) {
+                            errorMsg = FMS.strings.geolocation_denied;
+                        }
+                        that.trigger('gps_failed', { msg: errorMsg } );
                     },
                     { timeout: 20000, enableHighAccuracy: true }
                 );
