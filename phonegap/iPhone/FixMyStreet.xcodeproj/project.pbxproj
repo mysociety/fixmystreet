@@ -473,6 +473,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: UK Citizens Online Democracy";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: UK Citizens Online Democracy";
 				COPY_PHASE_STRIP = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FixMyStreet/FixMyStreet-Prefix.pch";
@@ -481,6 +483,8 @@
 				INFOPLIST_FILE = "FixMyStreet/FixMyStreet-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = FixMyStreet;
+				PROVISIONING_PROFILE = "E72551C3-165F-4055-B771-3D70EEB811C5";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "E72551C3-165F-4055-B771-3D70EEB811C5";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
