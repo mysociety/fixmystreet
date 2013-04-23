@@ -138,6 +138,7 @@ input.green-btn:hover {
     border-right: #BCEF58;
 }
 
+#confirm,
 #mark-here {
     font-size: 1.2em;
     -moz-border-radius: 0.25em;

@@ -297,7 +297,7 @@ function show_map(event) {
     fixmystreet_onload();
     fixContentHeight(fixmystreet.map);
 
-    var crosshairsControls, i, markHere, newX, newY;
+    var crosshairsControls, i, markHere, confirm, newX, newY;
 
     if (typeof fixmystreet !== 'undefined' && typeof fixmystreet.map !== "undefined") {
         // Update the position of any crosshairs controls:
@@ -308,9 +308,14 @@ function show_map(event) {
         }
         // Also reposition the "Tap here to mark this point" button:
         markHere = $('#mark-here');
+        confirm = $('#confirm');
         newX = $(window).width() / 2 - markHere.width() / 2;
         newY = $(window).height() * 4 / 5 - markHere.height() / 2;
         markHere.css({
+            left: newX + "px",
+            top: newY + "px"
+        });
+        confirm.css({
             left: newX + "px",
             top: newY + "px"
         });

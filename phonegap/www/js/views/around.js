@@ -6,12 +6,19 @@
 
             events: {
                 'pagehide': 'destroy',
+                'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'click #locate_search': 'goSearch',
                 'click #reports': 'goReports',
                 'click #search': 'goSearch',
                 'click #relocate': 'centerMapOnPosition',
-                'click #mark-here': 'onClickReport'
+                'click #cancel': 'onClickCancel',
+                'click #confirm': 'onClickReport',
+                'click #mark-here': 'onClickMark'
+            },
+
+            beforeDisplay: function() {
+                $('#cancel').hide();
             },
 
             afterDisplay: function() {
@@ -48,6 +55,7 @@
                     var centre = this.projectCoords( coords );
                     fixmystreet.map.panTo(centre);
                 }
+                this.displayButtons();
                 FMS.locator.trackPosition();
             },
 
@@ -95,6 +103,33 @@
                     FMS.searchMessage = FMS.strings.location_problem;
                 }
                 this.navigate('search');
+            },
+
+            displayButtons: function() {
+                if ( this.model.get('lat') ) {
+                    $('#cancel').show();
+                    $('#confirm').show();
+                    $('#mark-here').hide();
+                } else {
+                    $('#cancel').hide();
+                    $('#confirm').hide();
+                    $('#mark-here').show();
+                }
+            },
+
+            onClickMark: function() {
+                $('#cancel').show();
+                $('#confirm').show();
+                $('#mark-here').hide();
+            },
+
+            onClickCancel: function(e) {
+                e.preventDefault();
+                $('#cancel').hide();
+                $('#confirm').hide();
+                $('#mark-here').show();
+                this.model.set('lat', null);
+                this.model.set('lon', null);
             },
 
            onClickReport: function() {
