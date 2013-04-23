@@ -165,5 +165,7 @@ var androidStartUp = function() {
     }
 };
 
-document.addEventListener('deviceready', FMS.initialize, false);
-window.setTimeout( androidStartUp, 2000 );
+function onload() {
+    document.addEventListener('deviceready', FMS.initialize, false);
+    window.setTimeout( androidStartUp, 2000 );
+}
