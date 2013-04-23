@@ -6,9 +6,11 @@ title: Welcome
 Welcome to FixMyStreet Platform
 ===============================
 
+<p class="lead">mySociety's geographic problem reporting platform.</p>
+
 [FixMyStreet](http://www.fixmystreet.com/) Platform is an open source project
 to help people run websites for reporting common street problems such as
-potholes and broken street lights to the appropriate authority.
+potholes and broken street lights to an appropriate authority.
 
 Users locate problems using a combination of address and sticking a pin in a
 map without worrying about the correct authority to report it to. FixMyStreet

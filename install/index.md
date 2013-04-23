@@ -5,13 +5,19 @@ title: Installing
 
 # Installing FixMyStreet Platform
 
-There are several options for installing the FixMyStreet platform.
+<p class="lead">There are several options for installing the FixMyStreet platform.
 The rest of this page describes how to do this manually, for people
 who are used to setting up web applications, but there are two other
-options that may be easier:
+options that may be easier:</p>
 
-* [A FixMyStreet AMI for Amazon EC2](ami/)
-* [An install script for Debian squeeze or Ubuntu precise servers](install-script/)
+<div class="row-fluid">
+<div class="span6">
+<ul class="nav nav-pills nav-stacked">
+<li><a href="ami/">A FixMyStreet AMI for Amazon EC2</a></li>
+<li><a href="install-script/">An install script for Debian squeeze or Ubuntu precise servers</a></li>
+</ul>
+</div>
+</div>
 
 If you prefer to set up each required component of FixMyStreet
 yourself, proceed with the instructions below.
