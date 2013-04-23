@@ -38,17 +38,78 @@ footer a {
     position: relative;
 }
 
+.row-fluid .head-span-logo {
+    /* span6 */
+    width: 48.93617021276595%;
+    *width: 48.88297872340425%;
+}
+
+.row-fluid .head-span-nav {
+    /* span6 */
+    width: 48.93617021276595%;
+    *width: 48.88297872340425%;
+}
+
+.row-fluid .head-span-gh {
+    /* span6 */
+    width: 48.93617021276595%;
+    *width: 48.88297872340425%;
+}
+
+.row-fluid .head-span-gh ul {
+    float: left;
+}
+
+@media (min-width: 480px) {
+    .row-fluid .head-span-logo {
+        /* span4 */
+        width: 31.914893617021278%;
+        *width: 31.861702127659576%;
+    }
+    .row-fluid .head-span-nav {
+        /* span6 */
+        width: 48.93617021276595%;
+        *width: 48.88297872340425%;
+    }
+    .row-fluid .head-span-gh {
+        /* span2 */
+        width: 14.893617021276595%;
+        *width: 14.840425531914894%;
+    }
+    .row-fluid .head-span-gh ul {
+        float: right;
+    }
+}
+
+@media (min-width: 601px) {
+    .row-fluid .head-span-logo {
+        /* span3 */
+        width: 23.404255319148934%;
+        *width: 23.351063829787233%;
+    }
+
+    .row-fluid .head-span-nav {
+        /* span7 */
+        width: 57.44680851063829%;
+        *width: 57.39361702127659%;
+    }
+}
+
 .nav > li > a:hover , .nav > li > a:focus {
     background-color: #000000;
     color: #ffdd00;
 }
 
 .nav-tabs {
-    position: absolute;
     bottom: 0;
     margin-bottom: 0;
     font-weight: bold;
     border-bottom: none;
+}
+@media (min-width: 480px) {
+    .nav-tabs {
+        position: absolute;
+    }
 }
 
 .nav-tabs > li {
