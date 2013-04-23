@@ -114,7 +114,15 @@
                 }
                 view.render();
                 $('body').append($(view.el));
-                $.mobile.changePage($(view.el), { changeHash: false });
+
+                // if we are coming from the front page then we don't want to do
+                // any transitions as they just add visual distraction to no end
+                var options = { changeHash: false };
+                if ( !this.currentView || this.currentView.id == 'front-page' ) {
+                    options.transition = 'none';
+                }
+
+                $.mobile.changePage($(view.el), options);
 
                 console.log('changed View to ' + view.id);
                 this.currentView = view;
