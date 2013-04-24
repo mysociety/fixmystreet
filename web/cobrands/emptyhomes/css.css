@@ -168,7 +168,7 @@ a:hover, a:active {
     clear: both;
     font-size: 83%;
     border-top: solid 2em #ffffff;
-    background-color: #fe6500;
+    background-color: #B1BECF;
     color: #000;
     margin: 2em 0 1em 0;
     padding: 20px;
@@ -189,20 +189,26 @@ a:hover, a:active {
 }
 
 #mysociety #postcodeForm {
-    background-color: #B1BECF;
+    background-color: #fe6500;
     color: #000000;
     font-size: 130%;
 }
 
+#mysociety #postcodeForm a, #mysociety #postcodeForm a:hover {
+    color: #000000;
+    background-color: inherit;
+}
+
 #mysociety #front_stats div {
     vertical-align: middle;
-    background-color: #B1BECF;
+    background-color: #fe6500;
     color: #000000;
     padding: 0.5em;
     width: 7em;
 }
 #mysociety #front_stats div a {
     color: #000000;
+    background-color: inherit;
 }
 
 #mysociety #problem_form {
