@@ -20,6 +20,7 @@
             password: 'Please enter a password'
         },
         strings: {
+            login_error: 'There was a problem logging you in. Please check your email and password',
             location_error: 'Location error',
             location_problem: 'There was a problem looking up your location',
             multiple_locations: 'More than one location matched that name',

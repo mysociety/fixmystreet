@@ -19,7 +19,8 @@
                 'submit-password': 'submitPassword',
                 'save_offline': 'saveOffline',
                 'sent': 'sent',
-                'reports': 'reports'
+                'reports': 'reports',
+                'login': 'login'
             },
 
             initialize: function() {
@@ -115,6 +116,11 @@
             reports: function() {
                 var reportsView = new FMS.ReportsView({ model: FMS.currentDraft });
                 this.changeView(reportsView);
+            },
+
+            login: function() {
+                var loginView = new FMS.LoginView({ model: FMS.currentUser });
+                this.changeView(loginView);
             },
 
             changeView: function(view) {

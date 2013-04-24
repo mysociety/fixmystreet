@@ -9,6 +9,7 @@
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'click #locate_search': 'goSearch',
+                'click #login': 'goLogin',
                 'click #reports': 'goReports',
                 'click #search': 'goSearch',
                 'click #relocate': 'centerMapOnPosition',
@@ -160,6 +161,13 @@
                 this.stopListening(FMS.locator);
                 FMS.locator.stopTracking();
                 this.navigate( 'search' );
+            },
+
+            goLogin: function(e) {
+                e.preventDefault();
+                this.stopListening(FMS.locator);
+                FMS.locator.stopTracking();
+                this.navigate( 'login' );
             },
 
             goReports: function(e) {
