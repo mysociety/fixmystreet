@@ -38,7 +38,7 @@ var tpl = {
 (function (FMS, Backbone, _, $) {
     _.extend(FMS, {
         templates: [
-            'home', 'around', 'offline', 'save_offline', 'reports', 'address_search', 'existing', 'photo', 'details', 'submit', 'submit_email', 'submit_name', 'submit_password', 'sent'
+            'home', 'around', 'offline', 'save_offline', 'reports', 'address_search', 'existing', 'photo', 'details', 'submit', 'submit_email', 'submit_name', 'submit_password', 'submit_confirm', 'sent'
         ],
 
         isOffline: 0,
@@ -103,6 +103,11 @@ var tpl = {
         clearCurrentDraft: function() {
             FMS.currentDraft = new FMS.Draft();
             localStorage.currentDraftID = null;
+        },
+
+        isLoggedIn: function() {
+            return FMS.currentUser && FMS.currentUser.get('email') && 
+                FMS.currentUser.get('password') && FMS.currentUser.get('name');
         },
 
         initialize: function () {

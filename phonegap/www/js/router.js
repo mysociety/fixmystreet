@@ -12,6 +12,7 @@
                 'existing': 'existing',
                 'photo': 'photo',
                 'details': 'details',
+                'submit-start': 'submitStart',
                 'submit': 'submit',
                 'submit-email': 'submitEmail',
                 'submit-name': 'submitName',
@@ -69,6 +70,16 @@
             details: function(){
                 var detailsView = new FMS.DetailsView({ model: FMS.currentDraft });
                 this.changeView(detailsView);
+            },
+
+            submitStart: function() {
+                var submitView;
+                if ( FMS.currentUser && FMS.isLoggedIn() ) {
+                    submitView = new FMS.SubmitConfirmView({ model: FMS.currentDraft });
+                } else {
+                    submitView = new FMS.SubmitEmailView({ model: FMS.currentDraft });
+                }
+                this.changeView(submitView);
             },
 
             submit: function(){

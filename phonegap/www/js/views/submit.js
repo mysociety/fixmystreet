@@ -244,3 +244,54 @@
     });
 })(FMS, Backbone, _, $);
 
+(function (FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        SubmitConfirmView: FMS.SubmitView.extend({
+            template: 'submit_confirm',
+            id: 'submit-confirm-page',
+            prev: 'details',
+
+            events: {
+                'pagehide': 'destroy',
+                'pageshow': 'afterDisplay',
+                'click .ui-btn-left': 'onClickButtonPrev',
+                'click #report': 'onClickSubmit'
+            },
+
+            validate: function() {
+                this.clearValidationErrors();
+                var isValid = 1;
+
+                var name = $('#form_name').val();
+                if ( !name ) {
+                    isValid = 0;
+                    this.validationError('form_name', FMS.validationStrings.name.required );
+                } else {
+                    var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
+                    if ( name.length < 6 || !name.match( /\S/ ) || name.match( validNamePat ) ) {
+                        isValid = 0;
+                        this.validationError('form_name', FMS.validationStrings.name.validName);
+                    }
+                }
+
+                return isValid;
+            },
+
+            beforeSubmit: function() {
+                this.model.set('submit_clicked', 'submit_sign_in');
+            },
+
+            onReportError: function(model, err, options) {
+                // TODO: this is a temporary measure which should be replaced by a more
+                // sensible login mechanism
+                if ( err.check_name ) {
+                    this.onClickSubmit();
+                } else {
+                    if ( err.errors && err.errors.password ) {
+                        this.validationError('form_password', err.errors.password );
+                    }
+                }
+            }
+        })
+    });
+})(FMS, Backbone, _, $);

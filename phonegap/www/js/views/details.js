@@ -4,7 +4,7 @@
             template: 'details',
             id: 'details-page',
             prev: 'photo',
-            next: 'submit-email',
+            next: 'submit-start',
 
             events: {
                 'pagehide': 'destroy',
