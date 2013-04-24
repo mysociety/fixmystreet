@@ -19,7 +19,10 @@ template depending on language, will need extending at some point.
 
 sub about : Global : Args(0) {
     my ( $self, $c ) = @_;
-    # don't need to do anything here - should just pass through.
+
+    my $lang_code = $c->stash->{lang_code};
+    my $template  = "static/about-$lang_code.html";
+    $c->stash->{template} = $template;
 }
 
 sub privacy : Global : Args(0) {
