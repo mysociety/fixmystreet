@@ -12,6 +12,7 @@
             },
 
             saveReport: function() {
+                FMS.clearCurrentDraft();
                 this.navigate('reports');
             },
 
