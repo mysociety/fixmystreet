@@ -104,7 +104,7 @@
             },
 
             saveOffline: function(){
-                var saveOfflineView = new FMS.saveOfflineView({ model: FMS.currentDraft });
+                var saveOfflineView = new FMS.SaveOfflineView({ model: FMS.currentDraft });
                 this.changeView(saveOfflineView);
             },
 
