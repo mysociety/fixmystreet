@@ -25,12 +25,16 @@
         </p>
 
         <p id="locate_result">
+        <% if ( lat ) { %>
+        Report has position ( <% print( lat.toFixed(2) + ', ' + lon.toFixed(2) ) %> )
+        <% } else { %>
         <input type="button" class="green-btn" id="locate" value="locate" >
+        <% } %>
         </p>
 
-        <input type="text" value="<% title %>" name="title" id="form_title" placeholder="Provide a title" required>
+        <input type="text" value="<%= title %>" name="title" id="form_title" placeholder="Provide a title" required>
 
-        <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><% details %></textarea>
+        <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><%= details %></textarea>
 
         <% if ( file != '' ) { %>
         <div id="add_photo" style="display: none">
