@@ -9,6 +9,7 @@
 
             events: {
                 'pagehide': 'destroy',
+                'pagebeforeshow': 'toggleNextButton',
                 'pageshow': 'afterDisplay',
                 'click .ui-btn-left': 'onClickButtonPrev',
                 'click .ui-btn-right': 'onClickButtonNext',
