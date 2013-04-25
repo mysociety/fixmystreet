@@ -138,6 +138,13 @@
                 var position = this.getCrossHairPosition();
 
                 if ( FMS.isOffline ) {
+                    this.stopListening(FMS.locator);
+                    FMS.locator.stopTracking();
+                    // these may be out of the area but lets just save them
+                    // for now and they can be checked when we are online.
+                    this.model.set('lat', position.lat );
+                    this.model.set('lon', position.lon );
+                    FMS.saveCurrentDraft();
                     this.navigate( 'offline' );
                 } else {
                     this.listenTo(FMS.locator, 'gps_located', this.goPhoto);
