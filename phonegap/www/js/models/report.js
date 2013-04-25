@@ -88,7 +88,11 @@
                             catch(err) {
                                 data = {};
                             }
-                            that.trigger('sync', that, data, options);
+                            if ( data.success ) {
+                                that.trigger('sync', that, data, options);
+                            } else {
+                                that.trigger('error', that, data, options);
+                            }
                         } else {
                             that.trigger('error', that, FMS.strings.report_send_error, options);
                         }
