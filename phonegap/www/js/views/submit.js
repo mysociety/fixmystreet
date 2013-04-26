@@ -284,7 +284,10 @@
             },
 
             beforeSubmit: function() {
-                this.model.set('submit_clicked', 'submit_sign_in');
+                this.model.set('name', $('#form_name').val());
+                this.model.set('phone', $('#form_phone').val());
+                this.model.set('may_show_name', $('#form_may_show_name').val());
+                this.model.set('submit_clicked', 'submit_register');
             },
 
             onReportError: function(model, err, options) {
