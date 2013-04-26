@@ -32,6 +32,7 @@
                                 that.model.set('email', $('#form_email').val());
                                 that.model.set('name', data.name);
                                 that.model.save();
+                                FMS.isLoggedIn = 1;
                                 $('#password_row').hide();
                                 $('#success_row').show();
                             } else {

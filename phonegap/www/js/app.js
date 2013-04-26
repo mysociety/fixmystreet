@@ -41,6 +41,7 @@ var tpl = {
             'home', 'around', 'offline', 'save_offline', 'reports', 'login', 'address_search', 'existing', 'photo', 'details', 'submit', 'submit_email', 'submit_name', 'submit_password', 'submit_confirm', 'sent'
         ],
 
+        isLoggedIn: 0,
         isOffline: 0,
         initialized: 0,
         users: new FMS.Users(),
@@ -64,6 +65,26 @@ var tpl = {
             if ( navigator && navigator.connection && ( navigator.connection.type == Connection.NONE ||
                     navigator.connection.type == Connection.UNKNOWN ) ) {
                 FMS.offline();
+            }
+        },
+
+        checkLoggedInStatus: function() {
+            if ( FMS.isOffline ) {
+            } else {
+                $.ajax( {
+                    url: CONFIG.FMS_URL + '/auth/ajax/check_auth',
+                    type: 'GET',
+                    dataType: 'json',
+                    timeout: 30000,
+                    success: function( data, status ) {
+                        console.log(data);
+                        console.log(status);
+                        FMS.isLoggedIn = 1;
+                    },
+                    error: function() {
+                        FMS.isLoggedIn = 0;
+                    }
+                } );
             }
         },
 
@@ -108,11 +129,6 @@ var tpl = {
             localStorage.currentDraftID = null;
         },
 
-        isLoggedIn: function() {
-            return FMS.currentUser && FMS.currentUser.get('email') && 
-                FMS.currentUser.get('password') && FMS.currentUser.get('name');
-        },
-
         initialize: function () {
             if ( this.initialized == 1 ) {
                 return this;
@@ -147,6 +163,7 @@ var tpl = {
                 FMS.allDrafts.fetch();
                 FMS.checkOnlineStatus();
                 FMS.loadCurrentDraft();
+                FMS.checkLoggedInStatus();
 
                 Backbone.history.start();
                 navigator.splashscreen.hide();

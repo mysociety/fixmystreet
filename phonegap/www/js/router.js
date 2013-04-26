@@ -75,7 +75,7 @@
 
             submitStart: function() {
                 var submitView;
-                if ( FMS.currentUser && FMS.isLoggedIn() ) {
+                if ( FMS.currentUser && FMS.isLoggedIn ) {
                     submitView = new FMS.SubmitConfirmView({ model: FMS.currentDraft });
                 } else {
                     submitView = new FMS.SubmitEmailView({ model: FMS.currentDraft });

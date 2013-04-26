@@ -48,6 +48,7 @@
 
             onReportSync: function(model, resp, options) {
                 this.stopListening();
+                this.afterSubmit();
                 if ( FMS.currentUser ) {
                     FMS.currentUser.save();
                 }
@@ -67,6 +68,7 @@
             },
 
             beforeSubmit: function() {},
+            afterSubmit: function() {},
 
             _destroy: function() {
                 this.stopListening();
@@ -226,6 +228,10 @@
                     }
                     FMS.currentUser.set('password', $('#form_password').val());
                 }
+            },
+
+            afterSubmit: function() {
+                FMS.isLoggedIn = 1;
             },
 
             onReportError: function(model, err, options) {
