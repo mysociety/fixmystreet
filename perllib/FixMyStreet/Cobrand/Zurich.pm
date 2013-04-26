@@ -168,16 +168,16 @@ sub sub_days {
 sub overdue {
     my ( $self, $problem ) = @_;
 
-    my $w = $problem->whensent;
+    my $w = $problem->created;
     return 0 unless $w;
 
     if ( $problem->state eq 'unconfirmed' || $problem->state eq 'confirmed' ) {
         # One working day
         $w = add_days( $w, 1 );
         return $w < DateTime->now() ? 1 : 0;
-    } elsif ( $problem->state eq 'in progress' ) {
-        # Five working days
-        $w = add_days( $w, 5 );
+    } elsif ( $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
+        # Six working days from creation
+        $w = add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
     } else {
         return 0;
