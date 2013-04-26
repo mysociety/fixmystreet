@@ -60,6 +60,13 @@ var tpl = {
             FMS.isOffline = 1;
         },
 
+        checkOnlineStatus: function() {
+            if ( navigator && navigator.connection && ( navigator.connection.type == Connection.NONE ||
+                    navigator.connection.type == Connection.UNKNOWN ) ) {
+                FMS.offline();
+            }
+        },
+
         saveCurrentDraft: function() {
             FMS.router.pause();
             FMS.allDrafts.add( FMS.currentDraft );
@@ -75,10 +82,6 @@ var tpl = {
                 }
             }
             localStorage.currentDraftID = null;
-            if ( navigator && navigator.connection && ( navigator.connection.type == Connection.NONE ||
-                    navigator.connection.type == Connection.UNKNOWN ) ) {
-                FMS.offline();
-            }
         },
 
         removeDraft: function(draftID, removePhoto) {
@@ -132,7 +135,7 @@ var tpl = {
                 }
 
                 document.addEventListener('pause', function() { FMS.saveCurrentDraft(); }, false);
-                document.addEventListener('resume', function() { FMS.loadCurrentDraft(); }, false);
+                document.addEventListener('resume', function() { FMS.checkOnlineStatus(); FMS.loadCurrentDraft(); }, false);
                 document.addEventListener('backbutton', function() { FMS.router.back(); }, true);
                 document.addEventListener('offline', function() { FMS.offline(); }, true);
                 document.addEventListener('online', function() { FMS.online(); }, true);
@@ -142,6 +145,7 @@ var tpl = {
 
                 FMS.allDrafts.comparator = function(a,b) { var a_date = a.get('created'), b_date = b.get('created'); return a_date === b_date ? 0 : a_date < b_date ? 1 : -1; };
                 FMS.allDrafts.fetch();
+                FMS.checkOnlineStatus();
                 FMS.loadCurrentDraft();
 
                 Backbone.history.start();
