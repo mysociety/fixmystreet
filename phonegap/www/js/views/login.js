@@ -22,7 +22,8 @@
                         type: 'POST',
                         data: {
                             email: $('#form_email').val(),
-                            password_sign_in: $('#form_password').val()
+                            password_sign_in: $('#form_password').val(),
+                            remember_me: 1
                         },
                         dataType: 'json',
                         timeout: 30000,
