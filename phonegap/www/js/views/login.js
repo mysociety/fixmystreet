@@ -48,10 +48,26 @@
             },
 
             onClickLogout: function() {
-                this.model.set('password', '');
-                this.model.save();
-                $('#signed_in_row').hide();
-                $('#password_row').show();
+                var that = this;
+                $.ajax( {
+                    url: CONFIG.FMS_URL + '/auth/ajax/sign_out',
+                    type: 'GET',
+                    dataType: 'json',
+                    timeout: 30000,
+                    success: function( data, status ) {
+                        FMS.isLoggedIn = 0;
+                        $('#password_row').hide();
+                        $('#success_row').show();
+                        that.model.set('password', '');
+                        that.model.save();
+                        $('#signed_in_row').hide();
+                        $('#password_row').show();
+                    },
+                    error: function() {
+                        // TODO fix this
+                        alert( 'There was a problem signing you out');
+                    }
+                } );
             },
 
             validate: function() {
