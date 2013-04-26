@@ -24,14 +24,15 @@ my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('zurich')->new();
 my %bodies = map { $_->id => $_ } FixMyStreet::App->model("DB::Body")->all;
 
 loop_through( 'alert-moderation-overdue.txt', 0, 1, [ 'unconfirmed', 'confirmed' ] );
-loop_through( 'alert-overdue.txt', 1, 5, 'in progress' );
+loop_through( 'alert-overdue.txt', 1, 6, 'in progress' );
+loop_through( 'alert-overdue.txt', 0, 6, 'planned' );
 
 sub loop_through {
     my ( $template, $include_parent, $days, $states ) = @_;
 
     my $reports = FixMyStreet::App->model("DB::Problem")->search( {
         state => $states,
-        whensent => { '<', FixMyStreet::Cobrand::Zurich::sub_days( $now, $days ) },
+        created => { '<', FixMyStreet::Cobrand::Zurich::sub_days( $now, $days ) },
         bodies_str => { '!=', undef },
     } );
 
