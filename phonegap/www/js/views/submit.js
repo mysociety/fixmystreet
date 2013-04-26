@@ -179,8 +179,9 @@
             },
 
             beforeSubmit: function() {
-                FMS.currentUser.set('name', $('#form_name').val());
-                FMS.currentUser.set('phone', $('#form_phone').val());
+                this.model.set('name', $('#form_name').val());
+                this.model.set('phone', $('#form_phone').val());
+                this.model.set('may_show_name', $('#form_may_show_name').val());
             }
         })
     });
@@ -219,8 +220,10 @@
 
             beforeSubmit: function() {
                 if ( $('#form_name').val() ) {
-                    this.model.set('submit_clicked', '');
-                    FMS.currentUser.set('name', $('#form_name').val());
+                    this.model.set('submit_clicked', 'submit_register');
+                    this.model.set('phone', $('#form_phone').val());
+                    this.model.set('name', $('#form_name').val());
+                    this.model.set('may_show_name', $('#form_may_show_name').val());
                 } else {
                     // if this is set then we are registering a password
                     if ( ! this.model.get('submit_clicked') ) {
