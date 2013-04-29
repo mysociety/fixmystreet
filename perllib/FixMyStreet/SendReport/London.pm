@@ -79,7 +79,6 @@ sub send {
     my $response = $browser->post( mySociety::Config::get('LONDON_REPORTIT_URL'), \%params );
     my $out = $response->content;
     if ($response->code ne 200) {
-        print "Failed to post $h->{id} to London API, response was " . $response->code . " $out\n";
         $self->error( "Failed to post $h->{id} to London API, response was " . $response->code . " $out" );
         return 1;
     }
