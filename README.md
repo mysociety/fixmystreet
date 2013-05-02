@@ -14,10 +14,17 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.1.2.
+Platform is now at version 1.2.
 
 ## Releases
 
+* v1.2 (3rd May 2013)
+    - Add MAPIT_ID_WHITELIST to allow easier use of global MapIt
+    - Add postfix to the install script/ AMI so emailing works out of the box
+    - Add an extra zoom level to the OSM maps
+    - Add the Catalyst gzip plugin so HTML pages are gzipped
+    - Fix an issue with the All Reports summary statistics not including some
+      open states, such as 'in progress'
 * v1.1.2 (15th March 2013)
     - Include the 'cpanfile' now required by carton, the Perl package
       management program we use.
@@ -44,4 +51,6 @@ help and documentation in installing FixMyStreet Platform.
 
 * <http://www.fixmystreet.com/>
 * <http://www.fiksgatami.no/>
+* <http://fixmystreet.ie/>
+* <https://www.zueriwieneu.ch/>
 
