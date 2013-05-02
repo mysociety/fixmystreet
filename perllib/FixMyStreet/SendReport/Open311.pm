@@ -13,17 +13,6 @@ use Readonly;
 
 Readonly::Scalar my $COUNCIL_ID_OXFORDSHIRE => 2237;
 
-sub should_skip {
-    my $self = shift;
-    my $row  = shift;
-
-    if ( $row->send_fail_count > 0 ) {
-        if ( bromley_retry_timeout($row) ) {
-            return 1;
-        }
-    }
-}
-
 sub send {
     my $self = shift;
     my ( $row, $h ) = @_;
@@ -162,19 +151,6 @@ sub send {
     $self->error( 'Failed to send over Open311' ) unless $self->success;
 
     return $result;
-}
-
-sub bromley_retry_timeout {
-    my $row = shift;
-
-    my $tz = DateTime::TimeZone->new( name => 'local' );
-    my $now = DateTime->now( time_zone => $tz );
-    my $diff = $now - $row->send_fail_timestamp;
-    if ( $diff->in_units( 'minutes' ) < 30 ) {
-        return 1;
-    }
-
-    return 0;
 }
 
 1;

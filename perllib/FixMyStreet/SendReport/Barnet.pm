@@ -10,30 +10,9 @@ use Utils;
 use mySociety::Config;
 use mySociety::Web qw(ent);
 
-# maximum number of webservice attempts to send before not trying any more (XXX may be better in config?)
-use constant SEND_FAIL_RETRIES_CUTOFF => 3;
-
 # specific council numbers
 use constant COUNCIL_ID_BARNET     => 2489;
 use constant MAX_LINE_LENGTH       => 132;
-
-sub should_skip {
-    my $self = shift;
-    my $row = shift;
-
-    my $council_name = 'Barnet';
-    my $err_msg = "";
-
-    if ($row->send_fail_count >= SEND_FAIL_RETRIES_CUTOFF) {
-        $council_name &&= " to $council_name";
-        $err_msg = "skipped: problem id=" . $row->id . " send$council_name has failed " 
-                . $row->send_fail_count . " times, cutoff is " . SEND_FAIL_RETRIES_CUTOFF;
-
-        $self->skipped( $err_msg );
-
-        return 1;
-    }
-}
 
 sub construct_message {
     my %h = @_;

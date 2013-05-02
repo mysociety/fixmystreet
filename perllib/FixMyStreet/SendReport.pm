@@ -12,13 +12,22 @@ has 'bodies' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'to' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has 'success' => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'error' => ( is => 'rw', isa => 'Str', default => '' );
-has 'skipped' => ( 'is' => 'rw', isa => 'Str', default => '' );
 has 'unconfirmed_counts' => ( 'is' => 'rw', isa => 'HashRef', default => sub { {} } );
 has 'unconfirmed_notes' => ( 'is' => 'rw', isa => 'HashRef', default => sub { {} } );
 
 
 sub should_skip {
-    return 0;
+    my $self = shift;
+    my $row  = shift;
+
+    return 0 unless $row->send_fail_count;
+
+    my $tz = DateTime::TimeZone->new( name => 'local' );
+    my $now = DateTime->now( time_zone => $tz );
+    my $diff = $now - $row->send_fail_timestamp;
+
+    my $backoff = $row->send_fail_count > 1 ? 30 : 5;
+    return $diff->in_units( 'minutes' ) < $backoff;
 }
 
 sub get_senders {

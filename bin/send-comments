@@ -26,9 +26,6 @@ use mySociety::EmailUtil;
 
 use Open311;
 
-# maximum number of webservice attempts to send before not trying any more (XXX may be better in config?)
-use constant SEND_FAIL_RETRIES_CUTOFF => 3;
-
 # send_method config values found in by-area config data, for selecting to appropriate method
 use constant SEND_METHOD_EMAIL      => 'email';
 use constant SEND_METHOD_OPEN311    => 'Open311';

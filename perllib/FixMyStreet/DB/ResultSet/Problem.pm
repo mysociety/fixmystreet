@@ -236,7 +236,6 @@ sub send_reports {
 
     my $send_report = FixMyStreet::SendReport->new();
     my $senders = $send_report->get_senders;
-    my %sending_skipped_by_method;
 
     my $debug_unsent_count = 0;
     debug_print("starting to loop through unsent problem reports...") if $debug_mode;
@@ -348,8 +347,6 @@ sub send_reports {
 
                 if ( $reporters{ $sender }->should_skip( $row ) ) {
                     debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;
-                    $sending_skipped_by_method{ $sender }++ if
-                        $reporters{ $sender }->skipped;
                 } else {
                     debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $body->send_method, $row->id) if $debug_mode;
                     push @dear, $body->name;
@@ -458,15 +455,6 @@ sub send_reports {
             foreach my $c (keys %{$notgot{$e}}) {
                 print "    " . $notgot{$e}{$c} . " problem, to $e category $c (" . $note{$e}{$c}. ")\n";
             }
-        }
-        if (keys %sending_skipped_by_method) {
-            my $c = 0;
-            print "\nProblem reports that send-reports did not attempt to send the following:\n";
-            foreach my $send_method (sort keys %sending_skipped_by_method) {
-                printf "    %-24s %4d\n", "$send_method:", $sending_skipped_by_method{$send_method};
-                $c+=$sending_skipped_by_method{$send_method};
-            }
-            printf "    %-24s %4d\n", "Total:", $c;
         }
         my $sending_errors = '';
         my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
