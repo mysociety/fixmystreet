@@ -34,10 +34,9 @@ file to set a couple of parameters.  That configuration file is
     fms@ip-10-58-191-98:~$ cd fixmystreet
     fms@ip-10-58-191-98:~/fixmystreet$ nano conf/general.yml
 
-You should set `EMAIL_CONTACT` to your email address.  For outgoing
-email to work, you will either need to set the `SMTP_SMARTHOST`
-variable in the same file, or configure an MTA on the server so that
-the default (`localhost`) will work.
+You should set `CONTACT_EMAIL` and `DO_NOT_REPLY_EMAIL` to your email address
+or whatever you wish to use. postfix is installed so that outgoing email will
+work, but this may need further configuration.
 
 Then you should restart the Catalyst FastCGI server with:
 

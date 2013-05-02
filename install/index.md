@@ -144,6 +144,7 @@ Some others you might want to look at, though the defaults are enough for it to 
 
 * EMAIL_DOMAIN - the email domain that emails will be sent from
 * CONTACT_EMAIL - the email address to be used on the site for the contact us form.
+* DO_NOT_REPLY_EMAIL - the email address to be used on the site for e.g. confirmation emails.
 * STAGING_SITE - if this is 1 then all email (alerts and reports) will be sent to the contact email address. Use this for development sites.
 * UPLOAD_DIR - this is the location where images will be stored when they are uploaded. It should be accessible by and writeable by the FixMyStreet process.
 * GEO_CACHE - this is the location where Geolocation data will be cached. It should be accessible by and writeable by the FixMyStreet process.

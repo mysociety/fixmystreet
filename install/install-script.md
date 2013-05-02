@@ -63,6 +63,5 @@ command from the `apache2-utils` packages, as follows:
     Re-type new password:
     Adding password for user fmsadmin
 
-You should then make sure that your local MTA is correctly configured
-to allow the `fms` user to send email, or change the `SMTP_SMARTHOST`
-variable in `conf/general.yml` to use a different smarthost.
+The script will install postfix to allow outgoing email; you can change the
+`SMTP_SMARTHOST` variable in `conf/general.yml` to use a different smarthost.
