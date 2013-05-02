@@ -72,6 +72,12 @@ GEO_CACHE: '../cache/'
 MAPIT_URL: ''
 MAPIT_TYPES: [ 'ZZZ' ]
 
+# If you are using global MapIt, you might want to restrict FixMyStreet usage
+# to only one or more areas, rather than all O04, for example. Provide MapIt
+# IDs here in a list that FixMyStreet should recognise.
+#   MAPIT_ID_WHITELIST: [ 240838, 246176, 246733 ]
+MAPIT_ID_WHITELIST: []
+
 # If your MapIt has the concept of council wards (subareas of councils, where
 # people can sign up for alerts, but not report things), then you can give the
 # MapIt type codes for them here.

@@ -278,8 +278,10 @@ sub body_form_dropdowns : Private {
     my ( $self, $c ) = @_;
 
     my $areas;
-    if ($c->cobrand->moniker eq 'zurich') {
-        $areas = mySociety::MaPit::call('areas', 274456);
+    my $whitelist = $c->config->{MAPIT_ID_WHITELIST};
+
+    if ( $whitelist && ref $whitelist eq 'ARRAY' && @$whitelist ) {
+        $areas = mySociety::MaPit::call('areas', $whitelist);
     } else {
         $areas = mySociety::MaPit::call('areas', $c->cobrand->area_types);
     }

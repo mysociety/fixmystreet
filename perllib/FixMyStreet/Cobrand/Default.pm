@@ -562,8 +562,16 @@ Remove areas whose reports go to another area (XXX)
 =cut
 
 sub remove_redundant_areas {
-  my $self = shift;
-  my $all_areas = shift;
+    my $self = shift;
+    my $all_areas = shift;
+
+    my $whitelist = FixMyStreet->config('MAPIT_ID_WHITELIST');
+    return unless $whitelist && ref $whitelist eq 'ARRAY' && @$whitelist;
+
+    my %whitelist = map { $_ => 1 } @$whitelist;
+    foreach (keys %$all_areas) {
+        delete $all_areas->{$_} unless $whitelist{$_};
+    }
 }
 
 =item short_name
