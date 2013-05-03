@@ -24,7 +24,8 @@ To fetch new upstream code, but not yet use it, use:
 
     fms@ip-10-58-191-98:~/fixmystreet$ git fetch origin
 
-Then to merge your code to the new version:
+Then merging the new version of the upstream code into your version will bring
+your code up-to-date.  You can do that with:
 
     fms@ip-10-58-191-98:~/fixmystreet$ git merge v1.2
 
