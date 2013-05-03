@@ -33,7 +33,7 @@ If you have made alterations to your local repository, then you will need to
 make sure they are all committed to your local branch and fork first, see
 [setting up a fork](/feeding-back/) for more information. You may want
 to try checking out your repository elsewhere and trying the merge there first,
-to see if it throws up any issues.
+to see if it there are any problems.
 
 Then you will want to run:
     
