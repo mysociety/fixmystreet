@@ -34,7 +34,7 @@ fork, replacing username with your GitHub username:
 You can then make commits on the our-master branch. To then push your commits
 to your fork, you would use:
 
-    git push fork master
+    git push fork our-master
 
 ## 1. Make small, atomic changes
 
