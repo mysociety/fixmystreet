@@ -5,7 +5,7 @@ layout: default
 <div class="post">
     <div class="meta">
         <h1>{{ page.title }}</h1>
-        <p>by {{ author.display_name }}</p>
+        <p>by {{ author.display_name }}, on {{ page.date | date: "%d %B %Y" }}</p>
     </div>
     {{ content }}
 
