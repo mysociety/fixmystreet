@@ -9,6 +9,9 @@ title: Updating an AMI installation
 version 1.1.2, and you now want to upgrade to version 1.2. This page should
 help.</p>
 
+(If you forked the code on GitHub and cloned it yourself, you probably want to see our
+main [update help](/updating/).)
+
 Firstly, log in to your EC2 instance as the `ubuntu` user, as you did when
 setting up the instance. You should become the fms user and switch to the right
 directory:
