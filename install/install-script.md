@@ -9,7 +9,7 @@ If you have a new installation of Debian squeeze or Ubuntu precise,
 you can use an install script to set up a basic installation of
 FixMyStreet on your server.
 
-*Warning: only use this script on a newly installed server - it will
+*Warning: only use this script on a newly installed server -- it will
 make significant changes to your server's setup, including modifying
 your nginx setup, creating a user account, creating a database,
 installing new packages etc.*
@@ -26,7 +26,7 @@ The `<UNIX-USER>` parameter is the name of the Unix user that you want
 to own and run the code.  (This user will be created by the script.)
 
 The `HOST` parameter is a hostname for the server that will be usable
-externally - a virtualhost for this name will be created by the
+externally -- a virtualhost for this name will be created by the
 script, unless you specified the `--default` option..  This parameter
 is optional if you are on an EC2 instance, in which case the hostname
 of that instance will be used.
@@ -65,3 +65,6 @@ command from the `apache2-utils` packages, as follows:
 
 The script will install postfix to allow outgoing email; you can change the
 `SMTP_SMARTHOST` variable in `conf/general.yml` to use a different smarthost.
+
+Please also see the instructions for [updating your installation](/updating/ami/).
+

@@ -63,3 +63,5 @@ command from the `apache2-utils` packages, as follows:
 This basic installation uses the default cobrand, with a
 (deliberately) rather garish colour scheme.  You should then proceed
 to [customise your installation](/customising/).
+
+Please also see the instructions for [updating your installation](/updating/ami/).
