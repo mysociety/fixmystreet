@@ -9,16 +9,14 @@ use FixMyStreet::TestMech;
 use DateTime;
 use mySociety::Locale;
 
+use Catalyst::Test 'FixMyStreet::App';
+
 my $mech = FixMyStreet::TestMech->new;
 
 mySociety::Locale::gettext_domain('FixMyStreet');
 
 FixMyStreet::Map::set_map_class();
-my $r = Catalyst::Request->new( { base => URI->new('/'), uri => URI->new('http://fixmystreet.com/test'), parameters => { bbox => '-7.6,49.7,-7.5,49.8' } } );
-
-my $c = FixMyStreet::App->new( {
-    request => $r,
-});
+my $c = ctx_request('http://fixmystreet.com/test?bbox=-7.6,49.7,-7.5,49.8');
 
 $mech->delete_user('test@example.com');
 my $user =

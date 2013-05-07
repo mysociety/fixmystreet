@@ -2,8 +2,13 @@ use strict;
 use warnings;
 use Test::More;
 
-plan skip_all => 'Skipping Zurich test without FixMyBarangay cobrand'
+plan skip_all => 'Skipping FixMyBarangay test without FixMyBarangay cobrand'
     unless FixMyStreet::Cobrand->exists('fixmybarangay');
+
+BEGIN {
+    use FixMyStreet;
+    FixMyStreet->test_mode(1);
+}
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;

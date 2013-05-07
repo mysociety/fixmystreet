@@ -86,13 +86,14 @@ EOT
 ;
 
     my $c = CGI::Simple->new( $results->{ req }->content );
+    (my $c_description = $c->param('description')) =~ s/\r\n/\n/g;
 
     is $c->param('email'), $user->email, 'correct email';
     is $c->param('first_name'), 'Test', 'correct first name';
     is $c->param('last_name'), 'User', 'correct last name';
     is $c->param('lat'), 1, 'latitide correct';
     is $c->param('long'), 2, 'longitude correct';
-    is $c->param('description'), $description, 'description correct';
+    is $c_description, $description, 'description correct';
     is $c->param('service_code'), 'pothole', 'service code correct';
 };
 

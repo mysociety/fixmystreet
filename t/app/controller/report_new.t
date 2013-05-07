@@ -955,7 +955,7 @@ subtest "check that a lat/lon off coast leads to /around" => sub {
 for my $test (
     {
         desc  => 'user title not set if not bromley problem',
-        host  => 'http://www.fixmystreet.com',
+        host  => 'www.fixmystreet.com',
         postcode => 'EH99 1SP',
         fms_extra_title => '',
         extra => undef,
@@ -963,7 +963,7 @@ for my $test (
     },
     {
         desc  => 'title shown for bromley problem on main site',
-        host  => 'http://www.fixmystreet.com',
+        host  => 'www.fixmystreet.com',
         postcode => 'BR1 3UH',
         fms_extra_title => 'MR',
         extra => [
@@ -978,7 +978,7 @@ for my $test (
     {
         desc =>
           'title, first and last name shown for bromley problem on cobrand',
-        host       => 'http://bromley.fixmystreet.com',
+        host       => 'bromley.fixmystreet.com',
         postcode => 'BR1 3UH',
         first_name => 'Test',
         last_name  => 'User',
@@ -1093,7 +1093,7 @@ for my $test (
 
 subtest 'user title not reset if no user title in submission' => sub {
         $mech->log_out_ok;
-        $mech->host( 'http://fixmystreet.com' );
+        $mech->host( 'fixmystreet.com' );
 
         my $user = $mech->log_in_ok( 'userwithtitle@example.com' );
 
@@ -1174,7 +1174,7 @@ SKIP: {
     ) {
         subtest $test->{ desc } => sub {
             my $test_email = 'test-22@example.com';
-            $mech->host( 'http://lichfielddc.fixmystreet.com/' );
+            $mech->host( 'lichfielddc.fixmystreet.com' );
             $mech->clear_emails_ok;
             $mech->log_out_ok;
 

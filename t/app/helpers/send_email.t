@@ -9,23 +9,14 @@ BEGIN {
     FixMyStreet->test_mode(1);
 }
 
-use Test::More tests => 6;
+use Test::More tests => 5;
+
+use Catalyst::Test 'FixMyStreet::App';
 
 use Email::Send::Test;
 use Path::Class;
 
-use_ok 'FixMyStreet::App';
-my $c = FixMyStreet::App->new(
-    {
-        request => Catalyst::Request->new(
-            {
-                base => URI->new('http://fixmystreet.com/'),
-                uri  => URI->new('http://fixmystreet.com/')
-            }
-        ),
-    }
-);
-$c->setup_request();
+my $c = ctx_request("/");
 
 # set some values in the stash
 $c->stash->{foo} = 'bar';
