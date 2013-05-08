@@ -6,7 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Path::Class;
 use POSIX qw(strftime strcoll);
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email);
 use if !$ENV{TRAVIS}, 'Image::Magick';
 

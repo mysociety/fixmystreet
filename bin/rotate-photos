@@ -16,7 +16,7 @@ use FindBin;
 use lib "$FindBin::Bin/../perllib";
 use lib "$FindBin::Bin/../commonlib/perllib";
 
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 
 use Utils;
 use mySociety::Config;

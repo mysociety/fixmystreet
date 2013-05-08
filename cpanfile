@@ -36,7 +36,7 @@ requires 'DBIx::Class::InflateColumn::DateTime';
 requires 'DBIx::Class::ResultSet';
 requires 'DBIx::Class::Schema::Loader';
 requires 'Digest::MD5';
-requires 'Digest::SHA1';
+requires 'Digest::SHA';
 requires 'Email::Send';
 requires 'Email::Send::SMTP';
 requires 'Email::Simple';

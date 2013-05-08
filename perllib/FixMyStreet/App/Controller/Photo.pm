@@ -5,7 +5,7 @@ use namespace::autoclean;
 BEGIN {extends 'Catalyst::Controller'; }
 
 use DateTime::Format::HTTP;
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use File::Path;
 use File::Slurp;
 use Path::Class;

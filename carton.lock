@@ -13406,62 +13406,6 @@
          "target" : "Digest::HMAC_MD5",
          "version" : "1.03"
       },
-      "Digest::SHA1" : {
-         "dist" : "Digest-SHA1-2.13",
-         "mymeta" : {
-            "abstract" : "Perl interface to the SHA-1 algorithm",
-            "author" : [
-               "Gisle Aas <gisle@activestate.com>"
-            ],
-            "dynamic_config" : 0,
-            "generated_by" : "ExtUtils::MakeMaker version 6.56, CPAN::Meta::Converter version 2.120921",
-            "license" : [
-               "perl_5"
-            ],
-            "meta-spec" : {
-               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-               "version" : "2"
-            },
-            "name" : "Digest-SHA1",
-            "no_index" : {
-               "directory" : [
-                  "t",
-                  "inc"
-               ]
-            },
-            "prereqs" : {
-               "build" : {
-                  "requires" : {
-                     "ExtUtils::MakeMaker" : "0"
-                  }
-               },
-               "configure" : {
-                  "requires" : {
-                     "ExtUtils::MakeMaker" : "0"
-                  }
-               },
-               "runtime" : {
-                  "requires" : {
-                     "Digest::base" : "1.00",
-                     "perl" : "5.004"
-                  }
-               }
-            },
-            "release_status" : "stable",
-            "version" : "2.13",
-            "x_repository" : "http://github.com/gisle/digest-sha1"
-         },
-         "name" : "Digest::SHA1",
-         "pathname" : "G/GA/GAAS/Digest-SHA1-2.13.tar.gz",
-         "provides" : {
-            "Digest::SHA1" : {
-               "file" : "Digest/SHA1.pm",
-               "version" : "2.13"
-            }
-         },
-         "target" : "Digest::SHA1",
-         "version" : "2.13"
-      },
       "Dir::Self" : {
          "dist" : "Dir-Self-0.10",
          "mymeta" : {
