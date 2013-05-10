@@ -157,11 +157,8 @@ sub token : Path('/M') : Args(1) {
     # Sign out in case we are another user
     $c->logout();
 
-    # get the email and scrap the token
-    my $data = $token_obj->data;
-    $token_obj->delete;
-
     # find or create the user related to the token.
+    my $data = $token_obj->data;
     my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
     $user->name( $data->{name} ) if $data->{name};
     $user->password( $data->{password}, 1 ) if $data->{password};
