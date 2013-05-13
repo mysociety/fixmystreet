@@ -73,7 +73,9 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(full|tn|fp))?\.jpeg$') {
 
     $c->detach( 'no_photo' ) unless @photo;
 
-    my $photo = $photo[0]->photo;
+    my $item = $photo[0];
+    $c->detach( 'no_photo' ) unless $c->cobrand->allow_photo_display($item); # Should only be for reports, not updates
+    my $photo = $item->photo;
 
     # If photo field contains a hash
     if (length($photo) == 40) {
