@@ -364,7 +364,10 @@ Return a boolean indicating whether the cobrand allows photo display
 
 =cut
 
-sub allow_photo_display { return 1; }
+sub allow_photo_display {
+    my ( $self, $r ) = @_;
+    return 1;
+}
 
 =head2 allow_update_reporting
 

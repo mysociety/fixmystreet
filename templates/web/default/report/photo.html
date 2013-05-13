@@ -1,4 +1,4 @@
-[% IF c.cobrand.allow_photo_display && object.photo %]
+[% IF c.cobrand.allow_photo_display(object) && object.photo %]
 [% photo = object.get_photo_params %]
 <div class="update-img">
     [% IF photo.url_full %]<a href="[% photo.url_full %]" rel="fancy">[% END

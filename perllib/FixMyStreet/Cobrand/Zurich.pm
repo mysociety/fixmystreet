@@ -103,6 +103,12 @@ sub updates_as_hashref {
     return $hashref;
 }
 
+sub allow_photo_display {
+    my ( $self, $r ) = @_;
+    my $extra = ref($r) eq 'HASH' ? $r->{extra} : $r->extra;
+    return $extra->{publish_photo};
+}
+
 sub show_unconfirmed_reports {
     1;
 }

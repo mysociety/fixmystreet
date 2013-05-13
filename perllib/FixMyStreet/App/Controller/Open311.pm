@@ -272,7 +272,7 @@ sub output_requests : Private {
             $request->{'comment_count'} = [ $updates ];
         }
 
-        my $display_photos = $c->cobrand->allow_photo_display;
+        my $display_photos = $c->cobrand->allow_photo_display($problem);
         if ($display_photos && $problem->photo) {
             my $url = $c->cobrand->base_url();
             my $imgurl = $url . "/photo/$id.full.jpeg";

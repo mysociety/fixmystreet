@@ -6,7 +6,7 @@
     </p>
 
   [% IF problem.state != 'unconfirmed' %]
-    [% IF problem.extra.publish_photo %]
+    [% IF c.cobrand.allow_photo_display(problem) %]
       [% INCLUDE 'report/photo.html' object=problem %]
     [% END %]
     [% add_links( problem.detail ) | html_para %]

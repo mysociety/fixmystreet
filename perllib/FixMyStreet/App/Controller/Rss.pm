@@ -280,7 +280,7 @@ sub add_row : Private {
     $item{pubDate} = $pubDate if $pubDate;
     $item{category} = $row->{category} if $row->{category};
 
-    if ($c->cobrand->allow_photo_display && $row->{photo}) {
+    if ($c->cobrand->allow_photo_display($row) && $row->{photo}) {
         my $key = $alert_type->item_table eq 'comment' ? 'c/' : '';
         $item{description} .= ent("\n<br><img src=\"". $base_url . "/photo/$key$row->{id}.jpeg\">");
     }
