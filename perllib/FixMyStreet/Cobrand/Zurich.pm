@@ -3,6 +3,7 @@ use base 'FixMyStreet::Cobrand::Default';
 
 use DateTime;
 use POSIX qw(strcoll);
+use RABX;
 
 use strict;
 use warnings;
@@ -105,7 +106,13 @@ sub updates_as_hashref {
 
 sub allow_photo_display {
     my ( $self, $r ) = @_;
-    my $extra = ref($r) eq 'HASH' ? $r->{extra} : $r->extra;
+    if (ref($r) ne 'HASH') {
+        return $r->extra->{publish_photo};
+    }
+    my $extra = $r->{extra};
+    utf8::encode($extra) if utf8::is_utf8($extra);
+    my $h = new IO::String($extra);
+    $extra = RABX::wire_rd($h);
     return $extra->{publish_photo};
 }
 
