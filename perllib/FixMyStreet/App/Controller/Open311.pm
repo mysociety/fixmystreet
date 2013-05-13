@@ -248,10 +248,14 @@ sub output_requests : Private {
             'service_code' => [ $problem->category ],
             'service_name' => [ $problem->category ],
 #            'service_notice' => [ {} ],
-            'agency_responsible' =>  $problem->bodies , # FIXME Not according to Open311 v2
 #            'zipcode' => [ {} ],
             'interface_used' => [ $problem->service ], # Not in Open311 v2
         };
+
+        if ( $c->cobrand->moniker ne 'zurich' ) { # XXX
+            # FIXME Not according to Open311 v2
+            $request->{agency_responsible} = $problem->bodies;
+        }
 
         if ( !$problem->anonymous ) {
             # Not in Open311 v2
