@@ -91,13 +91,8 @@ $mech->not_logged_in_ok;
     is $mech->uri->path, '/my', "redirected to the 'my' section of site";
     $mech->logged_in_ok;
 
-    # logout and try to use the token again
+    # logout
     $mech->log_out_ok;
-    $mech->get_ok($link);
-    is $mech->uri, $link, "not logged in";
-    $mech->content_contains( 'too old or already used',
-        'token now invalid' );
-    $mech->not_logged_in_ok;
 }
 
 # get a sign in email and change password
