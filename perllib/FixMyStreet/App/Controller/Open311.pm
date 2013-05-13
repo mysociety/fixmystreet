@@ -303,8 +303,10 @@ sub get_requests : Private {
     my $max_requests = $c->req->param('max_requests') || 0;
 
     # Only provide access to the published reports
+    my $states = FixMyStreet::DB::Result::Problem->visible_states();
+    delete $states->{unconfirmed};
     my $criteria = {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ]
+        state => [ keys %$states ]
     };
 
     my %rules = (
@@ -403,8 +405,10 @@ sub get_request : Private {
         return;
     }
 
+    my $states = FixMyStreet::DB::Result::Problem->visible_states();
+    delete $states->{unconfirmed};
     my $criteria = {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        state => [ keys %$states ],
         id => $id,
     };
     $c->forward( 'output_requests', [ $criteria ] );
