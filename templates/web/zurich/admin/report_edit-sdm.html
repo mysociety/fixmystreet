@@ -47,8 +47,7 @@
 <li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
 
 [% IF problem.photo %]
-[% photo = problem.get_photo_params %]
-<li><img alt="" src="[% c.cobrand.base_url %][% photo.url %]"></li>
+<li><img alt="" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg"></li>
 [% END %]
 
 <li><span class="mock-label">[% loc('State:') %]</span> [% states.${problem.state} %]</li>

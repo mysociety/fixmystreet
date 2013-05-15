@@ -107,7 +107,7 @@ sub updates_as_hashref {
 sub allow_photo_display {
     my ( $self, $r ) = @_;
     if (ref($r) ne 'HASH') {
-        return $r->extra->{publish_photo};
+        return $r->extra && $r->extra->{publish_photo};
     }
     my $extra = $r->{extra};
     utf8::encode($extra) if utf8::is_utf8($extra);
