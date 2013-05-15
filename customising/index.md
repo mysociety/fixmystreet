@@ -36,6 +36,7 @@ make actual code changes for your particular environment, and feeding these
 back means it is easier to update the code from upstream in future to gain new
 features and bugfixes.
 [More information on feeding back changes](/feeding-back/).
+
 ## Administrative area mapping
 
 FixMyStreet works by mapping points to administrative areas to which reports
@@ -81,13 +82,16 @@ is in `templates/web/fixmystreet/faq/faq-en-gb.html`.
 
 ## Translations and Language
 
-The translations for FixMyStreet are stored as gettext files and the
-language for a Cobrand is set in the `set_lang_and_domain` call of
-the Cobrand module.
+The translations for FixMyStreet are stored as standard gettext files, in
+`FixMyStreet.po` files under `locale/<lang>/LC_MESSAGES/`. Set the `LANGUAGES`
+configuration option to the languages your site uses. <small>(Details: the language
+for a Cobrand is set in the `set_lang_and_domain` call, but in most cases you
+won't need that.)</small>
 
 The templates use the `loc` function to pass strings to gettext for
-translation. The `commonlib/bin/gettext-makemo` script may be useful
-for compiling the .po files for use with Apache.
+translation. If you create or update a .po file, you will need to run the
+`commonlib/bin/gettext-makemo` script to compile these files into the machine
+readable format used by the site.
 
 If you use a new language, you must make sure that the locale for that language
 is installed on the server in order for the translations to work properly.
