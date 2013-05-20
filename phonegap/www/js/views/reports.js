@@ -20,6 +20,7 @@
                 var del = FMS.removeDraft( id, true );
                 var that = this;
                 del.done( function() { that.onRemoveDraft(el); } );
+                del.fail( function() { that.onRemoveDraft(el); } );
             },
 
             useReport: function(e) {

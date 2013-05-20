@@ -113,6 +113,7 @@
 
                     var that = this;
                     del.done( function() { that.draftDeleted(); } );
+                    del.fail( function() { that.draftDeleted(); } );
                 } else {
                     FMS.clearCurrentDraft();
                     this.navigate( this.next, 'left' );

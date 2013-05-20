@@ -55,6 +55,7 @@
                 var reset = FMS.removeDraft( model.id, true);
                 var that = this;
                 reset.done( function() { that.onRemoveDraft(); } );
+                reset.fail( function() { that.onRemoveDraft(); } );
             },
 
             onRemoveDraft: function() {

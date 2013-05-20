@@ -20,6 +20,7 @@
                 var reset = FMS.removeDraft(FMS.currentDraft.id, true);
                 var that = this;
                 reset.done( function() { that.onDraftRemove(); } );
+                reset.fail( function() { that.onDraftRemove(); } );
             },
 
             onDraftRemove: function() {
