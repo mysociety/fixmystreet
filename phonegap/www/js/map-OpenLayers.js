@@ -289,9 +289,6 @@ function show_map(event) {
     }
 }
 
-//$(document).delegate('#around-page', 'pageshow', show_map );
-//$(document).delegate('#report-page', 'pageshow', show_map );
-
 
 OpenLayers.Control.Crosshairs = OpenLayers.Class.create();
 OpenLayers.Control.Crosshairs.CROSSHAIR_SIDE = 100;
