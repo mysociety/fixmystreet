@@ -111,10 +111,14 @@
                 if ( this.model.get('lat') ) {
                     $('#cancel').show();
                     $('#confirm').show();
+                    $('#view-my-reports').hide();
+                    $('#login-options').hide();
                     $('#mark-here').hide();
                 } else {
                     $('#cancel').hide();
                     $('#confirm').hide();
+                    $('#view-my-reports').show();
+                    $('#login-options').show();
                     $('#mark-here').show();
                 }
             },
@@ -122,6 +126,8 @@
             onClickMark: function() {
                 $('#cancel').show();
                 $('#confirm').show();
+                $('#view-my-reports').hide();
+                $('#login-options').hide();
                 $('#mark-here').hide();
             },
 
@@ -129,6 +135,8 @@
                 e.preventDefault();
                 $('#cancel').hide();
                 $('#confirm').hide();
+                $('#view-my-reports').show();
+                $('#login-options').show();
                 $('#mark-here').show();
                 this.model.set('lat', null);
                 this.model.set('lon', null);

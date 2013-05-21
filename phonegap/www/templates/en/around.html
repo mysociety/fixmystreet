@@ -3,7 +3,7 @@
     <a href="#" id="cancel" class="ui-btn-right nodisplay">Cancel</a>
 </div>
 
-<div class="table-cell">
+<div data-role="content">
     <div id="locating" class="nodisplay" style="text-align: center; padding-top: 50%">
         <p>
         Getting Your Location
@@ -27,51 +27,48 @@
         <input type="button" id="locate_search" value="Search">
         </p>
     </div>
-    <div class="container" data-enhance="false">
-            <a id="mark-here" class="nodisplay">
-            New Report Here
-            </a>
-            <a id="confirm" class="nodisplay">
-            Confirm location
-            </a>
-        <div class="content" role="main">
-            <form action="" method="post" name="mapForm" id="mapForm" enctype="multipart/form-data" class="validate">
+    <script type="text/javascript">
+        var fixmystreet = {
+            'page': 'around',
+            'area': '',
+            'all_pins': '',
+            'latitude': localStorage.latitude,
+            'longitude': localStorage.longitude,
 
-            <input type="hidden" name="pc" id="pc" value="">
-            <input type="hidden" name="latitude" id="fixmystreet.latitude" value="">
-            <input type="hidden" name="longitude" id="fixmystreet.longitude" value="">
-            <script type="text/javascript">
-                var fixmystreet = {
-                    'page': 'around',
-                    'area': '',
-                    'all_pins': '',
-                    'latitude': localStorage.latitude,
-                    'longitude': localStorage.longitude,
+            'zoom': 4,
+            'numZoomLevels': 5,
+            'zoomOffset': 13,
+            'map_type': "",
+            'pins': [  ]
 
-                    'zoom': 4,
-                    'numZoomLevels': 5,
-                    'zoomOffset': 13,
-                    'map_type': "",
-                    'pins': [  ]
+        };
+    </script>
 
-                };
+    <div id="map_box" class="mapbox">
+        <div id="map"></div>
+            <p id="sub_map_links">
+                <a id="hide_pins_link" rel="nofollow" href="">Hide pins</a>
+                <a id="relocate" rel="nofollow" href="">Recenter</a>
+                <a id="search" rel="nofollow" href="">Search</a>
+                <a id="reports" rel="nofollow" href="">R</a>
+                <a id="login" rel="nofollow" href="">L</a>
+            </p>
+    </div>
+    <div class="frontpage-menu">
+        <a id="view-my-reports" class="nodisplay" data-role="button" href="#">
+            <strong>My Reports</strong>
+            <span class="draft_count">2</span> Draft Reports
+        </a>
+        <a id="login-options" class="nodisplay loggedin" data-role="button" href="#">
+            <strong class="signout">Sign Out</strong>
+            (Signed in as <strong>Timothy Jones</strong>)
+        </a>
 
-                $('#fixmystreet\\.latitude').val( localStorage.latitude );
-                $('#fixmystreet\\.longitude').val( localStorage.longitude );
-                $('#pc').val( localStorage.pc );
-            </script>
-
-            <div id="map_box">
-                <div id="map"></div>
-                    <p id="sub_map_links">
-                        <a id="hide_pins_link" rel="nofollow" href="">Hide pins</a>
-                        <a id="relocate" rel="nofollow" href="">Recenter</a>
-                        <a id="search" rel="nofollow" href="">Search</a>
-                        <a id="reports" rel="nofollow" href="">R</a>
-                        <a id="login" rel="nofollow" href="">L</a>
-                    </p>
-            </div>
-            </form>
-        </div>
+        <a id="mark-here" data-role="button" data-theme="a" style="position:absolute;bottom:0;left:15px;right:15px;">
+        New Report Here
+        </a>
+        <a id="confirm" data-role="button" data-theme="a" class="nodisplay" style="position:absolute;bottom:0;left:15px;right:15px;">
+        Confirm location
+        </a>
     </div>
 </div>

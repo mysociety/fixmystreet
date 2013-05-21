@@ -214,34 +214,6 @@ OpenLayers.Map.prototype.getCurrentSize = function() {
     return new OpenLayers.Size(mapDiv.width(), mapDiv.height());
 };
 
-function fixContentHeight(olMap) {
-    var footer = $("div[data-role='footer']:visible"),
-        content = $("div[data-role='content']:visible:visible"),
-        viewHeight = $(window).height(),
-        contentHeight = viewHeight - footer.outerHeight();
-
-    if ((content.outerHeight() + footer.outerHeight()) !== viewHeight) {
-        contentHeight -= (content.outerHeight() - content.height() + 1);
-        content.height(contentHeight);
-    }
-    content.width($(window).width());
-    olMap.updateSize();
-}
-
-function ensureNonZeroHeight(containerid) {
-    var footer = $("div[id='" + containerid + "'] > div[data-role='footer']"),
-        header = $("div[id='" + containerid + "'] > div[data-role='header']"),
-        content = $("div[id='" + containerid + "'] > div[data-role='content']"),
-        viewHeight = $(window).height(),
-        contentHeight = viewHeight - footer.outerHeight() - header.outerHeight();
-
-    if ((content.outerHeight() + footer.outerHeight() + header.outerHeight()) !== viewHeight) {
-        contentHeight -= (content.outerHeight() - content.height() + 1);
-        content.height(contentHeight);
-        content.width($(window).width());
-    }
- }
-
 function show_map(event) {
     if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
         // Immediately go full screen map if on around page
@@ -265,7 +237,6 @@ function show_map(event) {
         });
     }
 
-    ensureNonZeroHeight();
     set_map_config();
     $('#mark-here').hide();
 
@@ -273,8 +244,6 @@ function show_map(event) {
         controls: fixmystreet.controls,
         displayProjection: new OpenLayers.Projection("EPSG:4326")
     });
-
-    fixContentHeight(fixmystreet.map);
 
     fixmystreet.layer_options = OpenLayers.Util.extend({
         zoomOffset: fixmystreet.zoomOffset,
@@ -295,7 +264,6 @@ function show_map(event) {
     }
 
     fixmystreet_onload();
-    fixContentHeight(fixmystreet.map);
 
     var crosshairsControls, i, markHere, confirm, newX, newY;
 
@@ -306,19 +274,6 @@ function show_map(event) {
         for (i = 0; i < crosshairsControls.length; ++i) {
             crosshairsControls[i].reposition();
         }
-        // Also reposition the "Tap here to mark this point" button:
-        markHere = $('#mark-here');
-        confirm = $('#confirm');
-        newX = $(window).width() / 2 - markHere.width() / 2;
-        newY = $(window).height() * 4 / 5 - markHere.height() / 2;
-        markHere.css({
-            left: newX + "px",
-            top: newY + "px"
-        });
-        confirm.css({
-            left: newX + "px",
-            top: newY + "px"
-        });
     }
 
 
@@ -327,6 +282,8 @@ function show_map(event) {
             //mark_here();
         //} else {
             fixmystreet.nav.activate();
+            $('#view-my-reports').show();
+            $('#login-options').show();
             $('#mark-here').show();
         //}
     }
