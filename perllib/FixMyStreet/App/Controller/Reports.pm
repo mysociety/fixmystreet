@@ -47,6 +47,11 @@ sub index : Path : Args(0) {
         return 1;
     }
 
+    if ( my $body = $c->cobrand->all_reports_single_body ) {
+        $c->stash->{body} = $body;
+        $c->detach( 'redirect_body' );
+    }
+
     # Fetch all areas of the types we're interested in
     my @bodies = $c->model('DB::Body')->all;
     @bodies = sort { strcoll($a->name, $b->name) } @bodies;

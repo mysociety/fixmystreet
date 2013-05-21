@@ -488,14 +488,14 @@ AREAS pass any extra checks. CONTEXT is where we are on the site.
 
 sub area_check { return ( 1, '' ); }
 
-=head2 all_councils_report
+=head2 all_reports_single_body
 
 Return a boolean indicating whether the cobrand displays a report of all
 councils
 
 =cut
 
-sub all_councils_report { 1 }
+sub all_reports_single_body { 0 }
 
 =head2 ask_ever_reported
 

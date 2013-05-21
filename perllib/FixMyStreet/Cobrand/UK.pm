@@ -192,6 +192,7 @@ sub reports_body_check {
         }
     }
 
+    return;
 }
 
 sub council_rss_alert_options {

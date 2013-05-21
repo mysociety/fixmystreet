@@ -15,7 +15,6 @@ NB: this is moderately specific to producing cobrands for UK councils
         enter_postcode_text
         area_check
         base_url
-        all_councils_report should return 0
         disambiguate_location - see below for details on this
 
 2: create a web/cobrands/examplecom folder and put custom css/images/js in here
