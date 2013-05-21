@@ -2,27 +2,20 @@
         <h1>Details</h1>
         <a id="next" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Next</a>
 </div>
-<div class="container" data-enhance="false">
-    <div class="content" role="main">
-        <div id="side-form">
-            <fieldset>
-                <div id="problem_form">
+<div data-role="content">
+    <div class="gmailstyletest">
+        <div>
+            <label for="form_title">Subject</label>
+            <input data-role="none" type="text" name="title" id="form_title" placeholder="Provide a title" value="<%= title %>" required>
+        </div>
 
-                    <label for="form_title">Subject</label>
-                    <input type="text" name="title" id="form_title" placeholder="Provide a title" value="<%= title %>" required>
+        <div>
+            <%= categories %>
+        </div>
 
-                    <label for="form_detail">Details</label>
-                    <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><%= details %></textarea>
-
-                    <%= categories %>
-                    <!--
-                    <div id="form_category_row">
-                        <label class="inline" for="form_category">Category</label>
-                        <select name="category" id="form_category" required><option>Loading...</option></select>
-                    </div>
-                    -->
-                </div>
-            </fieldset>
+        <div>
+            <label for="form_detail">Details</label>
+            <textarea data-role="none" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><%= details %></textarea>
         </div>
     </div>
 </div>

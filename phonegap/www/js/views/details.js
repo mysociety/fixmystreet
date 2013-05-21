@@ -20,6 +20,10 @@
                 if ( this.model.get('category') ) {
                     this.$('#form_category').val( this.model.get('category') );
                 }
+
+                this.$('#form_category')
+                    .attr('data-role', 'none')
+                    .addClass('noselection');
             },
 
             onClickButtonPrev: function() {

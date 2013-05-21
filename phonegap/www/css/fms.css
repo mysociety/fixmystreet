@@ -16,6 +16,7 @@
     .gmailstyletest{
         /*width:100%;*/
         /*max-width:100%;*/
+        font-size: 16px;
         border: 1px solid #ccc;
         padding:0;
         margin-left: -15px;
@@ -23,6 +24,15 @@
     }
     .gmailstyletest > div{
         border-bottom: 1px solid #ccc;
+    }
+
+    .gmailstyletest input,
+    .gmailstyletest input[type="password"],
+    .gmailstyletest input[type="search"],
+    .gmailstyletest textarea,
+    .gmailstyletest select,
+    .gmailstyletest input[type="range"] {
+        font-size: 16px;
     }
     select{
         -webkit-appearance: none;
