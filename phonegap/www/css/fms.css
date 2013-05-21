@@ -1,0 +1,147 @@
+    *{
+        box-sizing:border-box;
+    }
+    label{
+        display:none;
+    }
+    input, textarea{
+        border:none;
+        width:100%;
+        padding: 0.5em;
+        border-radius:0;
+    }
+    textarea{
+        min-height: 10em;
+    }
+    .gmailstyletest{
+        /*width:100%;*/
+        /*max-width:100%;*/
+        border: 1px solid #ccc;
+        padding:0;
+        margin-left: -15px;
+        margin-right: -15px;
+    }
+    .gmailstyletest > div{
+        border-bottom: 1px solid #ccc;
+    }
+    select{
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        
+        width:100%;
+        border:none;
+        background:none;
+        background-color: #fff;
+        
+        background-image: url(../dropdown-arrow.png);
+        background-image: url(../dropdown-arrow.svg);
+        background-size: auto 35%;
+        background-repeat: no-repeat;
+        background-position: 95% 50%;
+        
+        padding: 0.5em;
+        border-radius:0;
+        -webkit-border-radius:0;
+    }
+    select.noselection{
+        color: #777;
+    }
+    
+    h2{
+        /*padding: 0 0.25em;*/
+    }
+    .frontpage-menu{
+        /*padding:0 15px;*/
+    }
+    .nodisplay {
+        display: none;
+    }
+    .mapbox{
+        position:absolute;
+        top: 0, left: 0, right: 0, bottom: 0;
+        padding: 0px;
+        display:block;
+        height: 100%;
+        width: 100%;
+        margin: -15px;
+    }
+
+    .mapbox #map {
+        width: 100%;
+        height: 100%;
+    }
+
+    .olControlPermalink,
+    #fms_pan_zoom {
+        display: none !important;
+    }
+
+    .olControlAttribution {
+        bottom: 5px !important;
+    }
+
+    #confirm,
+    #view-my-reports,
+    #login-options,
+    #mark-here {
+        display: block;
+        z-index: 3000;
+    }
+    #mark-here .ui-btn-text{
+        font-size:1.2em;
+        padding: 0.5em 0;
+        display:block;
+    }
+    #view-my-reports,
+    #login-options a.loggedin
+    {
+        text-align:left;
+        font-weight:normal;
+    }
+    #view-my-reports strong{
+        display:block;
+        margin-bottom: 0.25em;
+    }
+    #view-my-reports .draft_count{
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        background-color: #ffaf22;
+        padding: 0 0.25em;
+        color: #fff;
+        text-shadow:none;
+        font-weight:bold;
+        border: 1px solid #ffea3d;
+    }
+    #login-options a.loggedin .signout{
+        display:block;
+        
+    }
+    
+    ::-webkit-input-placeholder { /* WebKit browsers */
+        color:    #777;
+    }
+    :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color:    #777;
+    }
+    ::-moz-placeholder { /* Mozilla Firefox 19+ */
+        color:    #777;
+    }
+    :-ms-input-placeholder { /* Internet Explorer 10+ */
+        color:    #777;
+    }
+    
+    
+    .error::-webkit-input-placeholder { /* WebKit browsers */
+        color:    red;
+    }
+    .error:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color:    red;
+    }
+    .error::-moz-placeholder { /* Mozilla Firefox 19+ */
+        color:    red;
+    }
+    .error:-ms-input-placeholder { /* Internet Explorer 10+ */
+        color:    red;
+    }
+    select.error{ border: 1px solid red; }
