@@ -145,3 +145,13 @@
         color:    red;
     }
     select.error{ border: 1px solid red; }
+
+    div.photo {
+        margin: 0.1em 0em;
+        text-align: center;
+    }
+
+    img.small {
+        max-width: 85%;
+        max-height: 45%;
+    }
