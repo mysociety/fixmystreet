@@ -1,13 +1,13 @@
-@import "../fixmystreet/h5bp";
-@import "colours";
-@import "../fixmystreet/mixins";
+@import "../fixmystreet/_h5bp";
+@import "./_colours";
+@import "../fixmystreet/_mixins";
 @import "compass";
 
 $body-font: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
 $meta-font: $body-font;
 $heading-font: 'PTSansCaptionRegular', "PT Sans Caption", Verdana, Arial, sans-serif;
 
-@import "../fixmystreet/base";
+@import "../fixmystreet/_base";
 
 @import "council_header";
 
