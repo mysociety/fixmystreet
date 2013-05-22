@@ -13,8 +13,8 @@
     <div id="add_photo">
     <% } %>
         <label>Optionally Add a Photo</label>
-        <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" class="green-btn"> Or 
-        <input value="Choose" type="button" name="existing" id="id_existing" class="green-btn">
+        <input value="Take Photo" type="button" name="photo_button" id="id_photo_button" data-role="button" data-theme="a"> Or 
+        <input value="Choose" type="button" name="existing" id="id_existing" data-role="button" data-theme="a">
     </div>
 
     <% if ( file == '' ) { %>
@@ -27,7 +27,7 @@
         <img class="small" id="photo" src="<%= file %>" />
         </div>
         <div class="right">
-        <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" class="green-btn">
+        <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" data-role="button" data-theme="a">
         <div>
     </div>
 </div>
