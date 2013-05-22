@@ -33,7 +33,7 @@
                 viewHeight = $(window).height(),
                 contentHeight = viewHeight - header.outerHeight();
 
-                detail.css('height', contentHeight - top );
+                detail.height( contentHeight - top );
             },
 
             onClickButtonPrev: function() {
