@@ -4,16 +4,28 @@
     label{
         display:none;
     }
-    label.inline {
-      display: inline;
-      padding: 0 2em 0 1em;
-      font-weight: normal;
-    }
     input, textarea{
         border:none;
         width:100%;
         padding: 0.5em;
         border-radius:0;
+    }
+    .ui-checkbox,
+    .ui-controlgroup .ui-checkbox
+    {
+        -webkit-border-radius: 0;
+        border-radius:0;
+        margin: 0 -1px;
+    }
+    .ui-icon.ui-icon-checkbox-on,
+    .ui-icon.ui-icon-checkbox-off
+    {
+        background-image: url(images/icons-18-white.png);
+    }
+    .ui-controlgroup-controls .ui-checkbox label,
+    .ui-controlgroup-controls .ui-checkbox label
+    {
+        border: none; border-width: 0;
     }
     textarea{
         min-height: 10em;
@@ -27,8 +39,14 @@
         margin-left: -15px;
         margin-right: -15px;
     }
-    .gmailstyletest > div{
+    .gmailstyletest > div,
+    .ui-field-contain 
+    {
+        border:none;
         border-bottom: 1px solid #ccc;
+    }
+    .ui-field-contain{
+        padding: 0;
     }
 
     .gmailstyletest input,

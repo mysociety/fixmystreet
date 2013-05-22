@@ -6,10 +6,12 @@
     <div class="gmailstyletest">
         <input data-role="none" type="text" value="<%= user.name %>" name="name" id="form_name" placeholder="Please enter your name" required>
         <input data-role="none" type="tel" value="<%= user.phone %>" name="name" id="form_phone" placeholder="Please enter your phone number">
-    </div>
-    <div class="checkbox-group">
-        <input data-role="none" type="checkbox" name="may_show_name" id="form_may_show_name" value="1" checked>
-        <label data-role="none" class="inline" for="form_may_show_name">Show my name publicly</label>
+        <div data-role="fieldcontain">
+            <fieldset data-role="controlgroup">
+                <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1" checked>
+                <label for="form_may_show_name">Show my name publicly</label>
+            </fieldset>
+        </div>
     </div>
     <input data-role="button" data-theme="a" type="button" id="send_confirm" name="send_confirm" value="Send confirmation email">
     <input data-role="button" data-theme="a" type="button" id="set_password" name="set_password" value="Set a password">
