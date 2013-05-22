@@ -2,8 +2,10 @@
     <h1>Your details</h1>
 </div>
 
-<div class="container" data-role="content" data-enhance="false">
-    <input type="email" value="<%= user.email %>" name="email" id="form_email" placeholder="Please enter your email address" required>
-    <input class="green-btn" type="button" id="have_password" name="have_password" value="I have a password">
-    <input class="green-btn" type="button" id="email_confirm" name="email_confirm" value="I don't">
+<div data-role="content">
+    <div class="gmailstyletest">
+        <input data-role="none" type="email" value="<%= user.email %>" name="email" id="form_email" placeholder="Please enter your email address" required>
+        <input data-role="button" data-theme="a" type="button" id="have_password" name="have_password" value="I have a password">
+        <input data-role="button" data-theme="a" type="button" id="email_confirm" name="email_confirm" value="I don't">
+    </div>
 </div>

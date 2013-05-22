@@ -4,6 +4,11 @@
     label{
         display:none;
     }
+    label.inline {
+      display: inline;
+      padding: 0 2em 0 1em;
+      font-weight: normal;
+    }
     input, textarea{
         border:none;
         width:100%;
@@ -29,6 +34,7 @@
     .gmailstyletest input,
     .gmailstyletest input[type="password"],
     .gmailstyletest input[type="search"],
+    .gmailstyletest input[type="email"],
     .gmailstyletest textarea,
     .gmailstyletest select,
     .gmailstyletest input[type="range"] {
