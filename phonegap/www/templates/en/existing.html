@@ -1,36 +1,34 @@
 <div data-role="header" data-position="fixed" >
         <h1>Draft Report</h1>
 </div>
-<div class="container" data-enhance="false">
-    <div class="content" role="main">
-        <h1>You have an unsubmitted report</h1>
+<div data-role="content" role="main">
+    <h1>You have an unsubmitted report</h1>
 
-        <ul id="existing">
-        <% if (lat) { %>
-            <li>This report has a location</li>
-        <% } %>
+    <ul id="existing">
+    <% if (lat) { %>
+        <li>This report has a location</li>
+    <% } %>
 
-        <% if ( title ) { %>
-            <li>title: <%= title %></li>
-        <% } %>
+    <% if ( title ) { %>
+        <li>title: <%= title %></li>
+    <% } %>
 
-        <% if ( details ) { %>
-            <li>details: <%= details %></li>
-        <% } %>
+    <% if ( details ) { %>
+        <li>details: <%= details %></li>
+    <% } %>
 
-        <% if ( category && category != '-- Pick a category --' ) { %>
-            <li>category: <%= category %></li>
-        <% } %>
-        </ul>
+    <% if ( category && category != '-- Pick a category --' ) { %>
+        <li>category: <%= category %></li>
+    <% } %>
+    </ul>
 
-        <% if ( file ) { %>
-            <div class="photo"><img class="small" src="<%= file %>"></div>
-        <% } %>
+    <% if ( file ) { %>
+        <div class="photo"><img class="small" src="<%= file %>"></div>
+    <% } %>
 
-        <div class="right">
-        <input id="use_report" type="button" value="use" class="green-btn" />
-        <input id="save_report" type="button" value="save" class="green-btn" />
-        <input id="discard" type="button" value="discard" class="green-btn" />
-        </div>
+    <div class="right">
+    <input id="use_report" type="button" value="use" data-role="button" data-theme="a" />
+    <input id="save_report" type="button" value="save" data-role="button" data-theme="a" />
+    <input id="discard" type="button" value="discard" data-role="button" data-theme="a" />
     </div>
 </div>
