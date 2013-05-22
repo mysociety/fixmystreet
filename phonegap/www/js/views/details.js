@@ -26,6 +26,16 @@
                     .addClass('noselection');
             },
 
+            afterDisplay: function() {
+                var header = $("div[data-role='header']:visible"),
+                detail = this.$('#form_detail'),
+                top = detail.position().top,
+                viewHeight = $(window).height(),
+                contentHeight = viewHeight - header.outerHeight();
+
+                detail.css('height', contentHeight - top );
+            },
+
             onClickButtonPrev: function() {
                 this.updateCurrentReport();
                 this.navigate( this.prev );

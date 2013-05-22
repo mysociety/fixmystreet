@@ -34,7 +34,7 @@
         /*width:100%;*/
         /*max-width:100%;*/
         font-size: 16px;
-        border: 1px solid #ccc;
+        border-top: 1px solid #ccc;
         padding:0;
         margin-left: -15px;
         margin-right: -15px;
@@ -44,6 +44,9 @@
     {
         border:none;
         border-bottom: 1px solid #ccc;
+    }
+    .gmailstyletest > div.noborder {
+        border:none;
     }
     .ui-field-contain{
         padding: 0;
@@ -188,4 +191,8 @@
     img.small {
         max-width: 85%;
         max-height: 45%;
+    }
+
+    #details-page {
+        background: white !important;
     }
