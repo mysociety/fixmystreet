@@ -9,13 +9,28 @@
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'click #locate_search': 'goSearch',
-                'click #login': 'goLogin',
+                'click #login-options': 'goLogin',
                 'click #reports': 'goReports',
                 'click #search': 'goSearch',
                 'click #relocate': 'centerMapOnPosition',
                 'click #cancel': 'onClickCancel',
                 'click #confirm': 'onClickReport',
                 'click #mark-here': 'onClickMark'
+            },
+
+            render: function(){
+                if ( !this.template ) {
+                    console.log('no template to render');
+                    return;
+                }
+                template = _.template( tpl.get( this.template ) );
+                if ( this.model ) {
+                    this.$el.html(template({ model: this.model.toJSON(), user: FMS.currentUser.toJSON() }));
+                } else {
+                    this.$el.html(template());
+                }
+                this.afterRender();
+                return this;
             },
 
             beforeDisplay: function() {

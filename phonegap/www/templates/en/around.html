@@ -59,10 +59,16 @@
             <strong>My Reports</strong>
             <span class="draft_count">2</span> Draft Reports
         </a>
+        <% if ( FMS.isLoggedIn ) { %>
         <a id="login-options" class="nodisplay loggedin" data-role="button" href="#">
             <strong class="signout">Sign Out</strong>
-            (Signed in as <strong>Timothy Jones</strong>)
+            (Signed in as <strong><%= user.name %></strong>)
         </a>
+        <% } else { %>
+        <a id="login-options" class="nodisplay loggedout" data-role="button" href="#">
+            <strong class="signin">Sign In</strong>
+        </a>
+        <% } %>
 
         <a id="mark-here" data-role="button" data-theme="a" style="position:absolute;bottom:0;left:15px;right:15px;">
         New Report Here
