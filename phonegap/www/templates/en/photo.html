@@ -7,27 +7,15 @@
         <% } %>
 </div>
 <div data-role="content">
-    <% if ( file != '' ) { %>
-    <div id="add_photo" style="display: none">
-    <% } else { %>
-    <div id="add_photo">
-    <% } %>
-        <h2>Add a Photo <em>(optional)</em>:</h2>
-        <input value="Take a new photo" type="button" name="photo_button" id="id_photo_button" data-role="button" data-theme="a"> Or 
-        <input value="Add and existing photo" type="button" name="existing" id="id_existing" data-role="button" data-theme="c">
-    </div>
-
+    <h2>Add a Photo <em>(optional)</em>:</h2>
+    <div class="photo">
     <% if ( file == '' ) { %>
-    <div id="display_photo" style="display: none">
+        <img class="small" src="images/placeholder-photo.png" alt="" id="photo">
     <% } else { %>
-    <div id="display_photo">
-    <% } %>
-        <label>Your Photo</label>
-        <div class="photo">
         <img class="small" id="photo" src="<%= file %>" />
-        </div>
-        <div class="right">
-        <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" data-role="button" data-theme="a">
-        <div>
+    <% } %>
     </div>
+    <a data-role="button" id="id_existing" data-theme="c">Add an existing photo</a>
+    <a id="id_photo_button" data-role="button" data-theme="a">Take a new photo</a>
+    <a id="id_del_photo_button" data-role="button" data-theme="a">Remove Photo</a>
 </div>

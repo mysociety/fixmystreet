@@ -17,6 +17,16 @@
                 'click #id_del_photo_button': 'deletePhoto'
             },
 
+            beforeDisplay: function() {
+                this.fixPageHeight();
+                if ( this.model.get('file') ) {
+                    $('#id_photo_button').hide();
+                    $('#id_existing').hide();
+                } else {
+                    this.$('#id_del_photo_button').hide();
+                }
+            },
+
             takePhoto: function() {
                 var that = this;
                 navigator.camera.getPicture( function(imgURI) { that.addPhotoSuccess(imgURI); }, function(error) { that.addPhotoFail(error); }, { saveToPhotoAlbum: true, quality: 49, destinationType: Camera.DestinationType.FILE_URI, sourceType: navigator.camera.PictureSourceType.CAMERA, correctOrientation: true });
@@ -37,8 +47,9 @@
                     FMS.saveCurrentDraft();
 
                     $('#photo-next-btn .ui-btn-text').text('Next');
-                    $('#display_photo').show();
-                    $('#add_photo').hide();
+                    $('#id_del_photo_button').show();
+                    $('#id_photo_button').hide();
+                    $('#id_existing').hide();
                 });
 
                 move.fail( function() { that.addPhotoFail(); } );
@@ -59,11 +70,12 @@
                 del.done( function() {
                     that.model.set('file', '');
                     FMS.saveCurrentDraft();
-                    $('#photo').attr('src', '');
+                    $('#photo').attr('src', 'images/placeholder-photo.png');
 
                     $('#photo-next-btn .ui-btn-text').text('Skip');
-                    $('#display_photo').hide();
-                    $('#add_photo').show();
+                    $('#id_del_photo_button').hide();
+                    $('#id_photo_button').show();
+                    $('#id_existing').show();
                 });
 
             }
