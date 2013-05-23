@@ -5,6 +5,7 @@
 
             events: {
                 'pagehide': 'destroy',
+                'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'click .ui-btn-left': 'onClickButtonPrev',
                 'click .ui-btn-right': 'onClickButtonNext'
@@ -32,7 +33,19 @@
                 return this;
             },
 
+            fixPageHeight: function() {
+                var screen = $(window).height(),
+                header = $('[data-role=header]').height(),
+                footer = $('[data-role=footer]').height(),
+                content = screen - header - footer;
+                $('[data-role=content]').css({'height': content });
+            },
+
             afterRender: function() {},
+
+            beforeDisplay: function() {
+                this.fixPageHeight();
+            },
 
             afterDisplay: function() {},
 

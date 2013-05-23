@@ -7,6 +7,7 @@
 
             events: {
                 'pagehide': 'destroy',
+                'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'click .del_report': 'deleteReport',
                 'click .use_report': 'useReport',

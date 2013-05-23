@@ -6,6 +6,7 @@
 
             events: {
                 'pagehide': 'destroy',
+                'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'click #use_report': 'useReport',
                 'click #save_report': 'saveReport',

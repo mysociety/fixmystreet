@@ -9,6 +9,7 @@
                 'click #submit': 'search',
                 'click #locate': 'goLocate',
                 'pagehide': 'destroy',
+                'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay'
             },
 

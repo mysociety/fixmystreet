@@ -7,6 +7,7 @@
 
             events: {
                 'pagehide': 'destroy',
+                'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'click #login': 'onClickLogin',
                 'click #logout': 'onClickLogout',
