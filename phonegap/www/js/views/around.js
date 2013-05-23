@@ -35,7 +35,6 @@
 
             beforeDisplay: function() {
                 $('#cancel').hide();
-                this.fixPageHeight();
             },
 
             afterDisplay: function() {
