@@ -57,7 +57,7 @@
     <div class="frontpage-menu">
         <a id="view-my-reports" class="nodisplay" data-role="button" href="#">
             <strong>My Reports</strong>
-            <span class="draft_count">2</span> Draft Reports
+            <span class="draft_count"><% print( FMS.allDrafts.length ) %></span> Draft Reports
         </a>
         <% if ( FMS.isLoggedIn ) { %>
         <a id="login-options" class="nodisplay loggedin" data-role="button" href="#">

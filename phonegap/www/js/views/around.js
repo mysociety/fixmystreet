@@ -10,7 +10,7 @@
                 'pageshow': 'afterDisplay',
                 'click #locate_search': 'goSearch',
                 'click #login-options': 'goLogin',
-                'click #reports': 'goReports',
+                'click #view-my-reports': 'goReports',
                 'click #search': 'goSearch',
                 'click #relocate': 'centerMapOnPosition',
                 'click #cancel': 'onClickCancel',
