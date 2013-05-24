@@ -14,10 +14,10 @@
 DIRECTORY=$(cd `dirname $0`/../web && pwd)
 
 # FixMyStreet uses compass
-NEWSTYLE=${1:-"fixmystreet bromley fixmybarangay barnet zurich default stevenage oxfordshire"}
-NEWSTYLE_REGEX=${NEWSTYLE// /\\|}
+NEWSTYLE=${1:-`find $DIRECTORY -name "config.rb" -exec dirname {} \;`}
+NEWSTYLE_REGEX=$(sed 's/ /\\|/g' <<< $NEWSTYLE)
 for site in $NEWSTYLE; do
-    compass compile --output-style compressed $DIRECTORY/cobrands/$site
+    compass compile --output-style compressed $site
 done
 
 # If given a command line argument, assume was a compass directory and exit
@@ -26,7 +26,7 @@ if [ -n "$1" ]; then
 fi
 
 # The rest are plain sass
-for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v "cobrands/\($NEWSTYLE_REGEX\)"`
+for scss in `find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq | grep -v "\($NEWSTYLE_REGEX\)"`
 do
     sass --scss --update --style compressed $scss
 done
