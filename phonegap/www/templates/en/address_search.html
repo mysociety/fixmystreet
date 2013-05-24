@@ -2,37 +2,20 @@
     <a href="#" id="locate" data-transition="slidedown" class="ui-btn-left">Locate</a>
     <h1>Locate</h1>
 </div>
-<div class="table-cell">
-    <div class="container">
-        <div class="content" role="main">
-            <div id="front-main">
-                <div id="front-main-container" data-enhance="false">
-                    <form name="postcodeForm" id="postcodeForm">
-                        <label for="pc">Enter a nearby GB postcode, or street name and area:</label>
-                        <div>
-                            <input type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B2 4QA’ or ‘Tib St, Manchester’">
-                            <input type="button" value="Go" id="submit"> 
-                        </div>
-                    </form>
-                </div>
+<div data-role="content">
+    <div id="front-main">
+        <h3>Enter a nearby GB postcode, or street name and area</h3>
+        <form class="gmailstyletest" name="postcodeForm" id="postcodeForm">
+            <div>
+                <input data-role="none" type="text" name="pc" value="" id="pc" size="10" maxlength="200" placeholder="e.g. ‘B2 4QA’ or ‘Tib St, Manchester’">
             </div>
+        </form>
+        <input type="button" value="Go" id="submit" data-theme="a"> 
+    </div>
 
-            <div class="tablewrapper">
-                <div id="front-howto">
-                    <% if (typeof msg != 'undefined' && msg !== '') { %>
-                        <h2><%= msg %></h2>
-                    <% } else { %>
-                    <h2>How to report a problem</h2>
-
-                    <ol class="big-numbers">
-                        <li>Enter a nearby GB postcode, or street name and area</li>
-                        <li>Locate the problem on a map of the area</li>
-                        <li>Enter details of the problem</li>
-                        <li>We send it to the council on your behalf</li>
-                    </ol>
-                    <% } %>
-                </div>
-            </div>
-        </div>
+    <div id="front-howto">
+        <% if (typeof msg != 'undefined' && msg !== '') { %>
+            <h2><%= msg %></h2>
+        <% } %>
     </div>
 </div>
