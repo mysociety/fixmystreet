@@ -2,7 +2,7 @@
 
 $image-sprite: 'images/sprite.png';
 
-@import "../fixmystreet/_layout";
+@import "../sass/layout";
 
 @mixin box_round($radius) {
   -webkit-border-radius: $radius; /* Safari 3-4, iOS 1-3.2, Android ≤1.6 */
