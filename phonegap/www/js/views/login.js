@@ -35,8 +35,8 @@
                                 that.model.set('name', data.name);
                                 that.model.save();
                                 FMS.isLoggedIn = 1;
-                                $('#password_row').hide();
-                                $('#success_row').show();
+                                that.$('#password_row').hide();
+                                that.$('#success_row').show();
                             } else {
                                 that.validationError('form_email', FMS.strings.login_error);
                             }
@@ -57,12 +57,13 @@
                     timeout: 30000,
                     success: function( data, status ) {
                         FMS.isLoggedIn = 0;
-                        $('#password_row').hide();
-                        $('#success_row').show();
                         that.model.set('password', '');
                         that.model.save();
-                        $('#signed_in_row').hide();
-                        $('#password_row').show();
+                        that.$('#form_email').val('');
+                        that.$('#form_password').val('');
+                        that.$('#success_row').hide();
+                        that.$('#signed_in_row').hide();
+                        that.$('#password_row').show();
                     },
                     error: function() {
                         // TODO fix this

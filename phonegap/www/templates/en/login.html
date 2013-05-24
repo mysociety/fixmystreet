@@ -1,0 +1,33 @@
+<div id="submit-header" data-role="header" data-position="fixed" data-id="locate">
+    <h1>Login</h1>
+    <a id="reports-next-btn" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Home</a>
+</div>
+
+<div data-role="content">
+    <% if ( FMS.isLoggedIn ) { %>
+    <div id="signed_in_row">
+        <p>You are signed in as <%= email %></p>
+        <input type="button" id="logout" name="logout" value="Sign Out" data-theme="a">
+    </div>
+    <div id="password_row" class="gmailstyletest nodisplay">
+        <p>
+        Signed out!
+        </p>
+    <% } else { %>
+    <div id="password_row" class="gmailstyletest">
+    <% } %>
+        <div>
+            <input data-role="none" type="email" value="" name="email" id="form_email" placeholder="Your Email" required>
+        </div>
+        <div>
+            <input data-role="none" type="password" value="" name="password" id="form_password" placeholder="Your password" required>
+        </div>
+        <input type="button" id="login" name="login" value="Login" data-theme="a">
+    </div>
+    <div id="success_row" class="nodisplay">
+        <p>
+        Signed in!
+        </p>
+        <input type="button" id="logout" name="logout" value="Sign Out" data-theme="a">
+    </div>
+</div>
