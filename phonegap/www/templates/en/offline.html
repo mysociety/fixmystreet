@@ -27,7 +27,7 @@
     <% if ( lat ) { %>
     Report has position ( <% print( lat.toFixed(2) + ', ' + lon.toFixed(2) ) %> )
     <% } else { %>
-    <input type="button" data-role="button" data-theme="a" id="locate" value="locate" >
+    <input type="button" data-role="button" data-theme="a" id="locate" value="Locate" >
     <% } %>
     </p>
 
@@ -46,7 +46,7 @@
         <div id="add_photo">
         <% } %>
             <label>Add a Photo <em>(optional)</em></label>
-            <input value="Take a new photo" type="button" name="photo_button" id="id_photo_button" data-role="button" data-theme="a"> Or 
+            <input value="Take a new photo" type="button" name="photo_button" id="id_photo_button" data-role="button" data-theme="a">
             <input value="Add an existing photo" type="button" name="existing" id="id_existing" data-role="button" data-theme="c">
         </div>
 
