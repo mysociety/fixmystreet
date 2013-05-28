@@ -3,9 +3,11 @@
 </div>
 
 <div data-role="content">
-    <div class="gmailstyletest">
-        <input data-role="none" type="email" value="<%= user.email %>" name="email" id="form_email" placeholder="Please enter your email address" required>
-        <input data-role="button" data-theme="a" type="button" id="have_password" name="have_password" value="I have a password">
-        <input data-role="button" data-theme="a" type="button" id="email_confirm" name="email_confirm" value="I don't">
+    <div class="inputcard">
+        <div>
+            <input data-role="none" type="email" value="<%= user.email %>" name="email" id="form_email" placeholder="Please enter your email address" required>
+        </div>
     </div>
+    <input data-role="button" data-theme="a" type="button" id="have_password" name="have_password" value="I have a password">
+    <input data-role="button" data-theme="a" type="button" id="email_confirm" name="email_confirm" value="I don't">
 </div>

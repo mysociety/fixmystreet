@@ -1,11 +1,15 @@
-<div id="submit-header" data-role="header" data-position="fixed" data-id="locate">
+<div id="submit-header" data-role="header">
     <h1>Your details</h1>
 </div>
 
 <div data-role="content">
-    <div class="gmailstyletest">
-        <input data-role="none" type="text" value="<%= user.name %>" name="name" id="form_name" placeholder="Please enter your name" required>
-        <input data-role="none" type="tel" value="<%= user.phone %>" name="name" id="form_phone" placeholder="Please enter your phone number">
+    <div class="inputcard">
+        <div>
+            <input data-role="none" type="text" value="<%= user.name %>" name="name" id="form_name" placeholder="Please enter your name" required>
+        </div>
+        <div>
+            <input data-role="none" type="tel" value="<%= user.phone %>" name="name" id="form_phone" placeholder="Please enter your phone number">
+        </div>
         <div data-role="fieldcontain">
             <fieldset data-role="controlgroup">
                 <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1" checked>

@@ -3,21 +3,25 @@
 </div>
 
 <div data-role="content">
-    <div class="gmailstyletest">
-        <p>
-        You are logged in as <%= user.email %>.
-        </p>
+    <p>
+    You are logged in as <%= user.email %>.
+    </p>
 
-        <p>
-        Please confirm your name, if you want it to be public and optionally your phone number.
-        </p>
+    <p>
+    Please confirm your name, if you want it to be public and optionally your phone number.
+    </p>
 
-        <input data-role="none" type="text" value="<%= user.name %>" name="name" id="form_name" placeholder="Please enter your name" required>
-        <input data-role="none" type="tel" value="<%= user.phone %>" name="name" id="form_phone" placeholder="Please enter your phone number">
+    <div class="inputcard">
+        <div>
+            <input data-role="none" type="text" value="<%= user.name %>" name="name" id="form_name" placeholder="Please enter your name" required>
+        </div>
+        <div>
+            <input data-role="none" type="tel" value="<%= user.phone %>" name="name" id="form_phone" placeholder="Please enter your phone number">
+        </div>
         <div class="checkbox-group">
             <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1" checked>
             <label class="inline" for="form_may_show_name">Show my name publicly</label>
         </div>
-        <input data-role="button" data-theme="a" type="button" id="report" name="report" value="Report">
     </div>
+    <input data-role="button" data-theme="a" type="button" id="report" name="report" value="Report">
 </div>

@@ -31,10 +31,14 @@
     <% } %>
     </p>
 
-    <div class="gmailstyletest">
-        <input data-role="none" type="text" value="<%= title %>" name="title" id="form_title" placeholder="Provide a title" required>
+    <div class="inputcard">
+        <div>
+            <input data-role="none" type="text" value="<%= title %>" name="title" id="form_title" placeholder="Provide a title" required>
+        </div>
 
-        <textarea data-role="none" rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><%= details %></textarea>
+        <div>
+            <textarea data-role="none" rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><%= details %></textarea>
+        </div>
 
         <% if ( file != '' ) { %>
         <div id="add_photo" style="display: none">

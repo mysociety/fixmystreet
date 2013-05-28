@@ -30,6 +30,14 @@
     textarea{
         min-height: 10em;
     }
+    .inputcard {
+        font-size: 16px;
+        padding:0;
+    }
+    .inputcard .ui-checkbox,
+    .inputcard .ui-controlgroup .ui-checkboxo{
+        margin: 0px;
+    }
     .gmailstyletest{
         /*width:100%;*/
         /*max-width:100%;*/
@@ -39,6 +47,7 @@
         margin-left: -15px;
         margin-right: -15px;
     }
+    .inputcard > div,
     .gmailstyletest > div,
     .ui-field-contain 
     {
