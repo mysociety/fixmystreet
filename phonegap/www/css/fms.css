@@ -97,6 +97,11 @@
     h2{
         /*padding: 0 0.25em;*/
     }
+
+    p.notopmargin {
+        margin-top: 0em;
+    }
+
     .frontpage-menu{
         /*padding:0 15px;*/
     }
