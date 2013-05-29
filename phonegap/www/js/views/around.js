@@ -34,6 +34,7 @@
             },
 
             beforeDisplay: function() {
+                $('a[data-role="button"]').hide();
                 $('#cancel').hide();
             },
 
