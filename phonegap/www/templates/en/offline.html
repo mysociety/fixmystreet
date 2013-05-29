@@ -39,29 +39,27 @@
         <div>
             <textarea data-role="none" rows="7" cols="26" name="detail" id="form_detail" placeholder="Please fill in details of the problem." required><%= details %></textarea>
         </div>
+    </div>
 
-        <% if ( file != '' ) { %>
-        <div id="add_photo" style="display: none">
-        <% } else { %>
-        <div id="add_photo">
-        <% } %>
-            <label>Add a Photo <em>(optional)</em></label>
-            <input value="Take a new photo" type="button" name="photo_button" id="id_photo_button" data-role="button" data-theme="a">
-            <input value="Add an existing photo" type="button" name="existing" id="id_existing" data-role="button" data-theme="c">
-        </div>
+    <% if ( file != '' ) { %>
+    <div id="add_photo" style="display: none">
+    <% } else { %>
+    <div id="add_photo">
+    <% } %>
+        <label>Add a Photo <em>(optional)</em></label>
+        <input value="Take a new photo" type="button" name="photo_button" id="id_photo_button" data-role="button" data-theme="a">
+        <input value="Add an existing photo" type="button" name="existing" id="id_existing" data-role="button" data-theme="c">
+    </div>
 
-        <% if ( file == '' ) { %>
-        <div id="display_photo" style="display: none">
-        <% } else { %>
-        <div id="display_photo">
-        <% } %>
-            <label>Your Photo</label>
-            <div class="photo">
-            <img class="small" id="photo" src="<%= file %>" />
-            </div>
-            <div class="right">
-            <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" data-role="button" data-theme="a">
-            <div>
+    <% if ( file == '' ) { %>
+    <div id="display_photo" style="display: none">
+    <% } else { %>
+    <div id="display_photo">
+    <% } %>
+        <label>Your Photo</label>
+        <div class="photo">
+        <img class="small" id="photo" src="<%= file %>" />
         </div>
+        <input value="Remove Photo" type="button" name="del_photo_button" id="id_del_photo_button" data-role="button" data-theme="a">
     </div>
 </div>
