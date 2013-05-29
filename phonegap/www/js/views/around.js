@@ -130,12 +130,16 @@
                     $('#view-my-reports').hide();
                     $('#login-options').hide();
                     $('#mark-here').hide();
+                    fixmystreet.markers.setVisibility(false);
+                    fixmystreet.select_feature.deactivate();
                 } else {
                     $('#cancel').hide();
                     $('#confirm').hide();
                     $('#view-my-reports').show();
                     $('#login-options').show();
                     $('#mark-here').show();
+                    fixmystreet.markers.setVisibility(true);
+                    fixmystreet.select_feature.activate();
                 }
             },
 
@@ -145,6 +149,8 @@
                 $('#view-my-reports').hide();
                 $('#login-options').hide();
                 $('#mark-here').hide();
+                fixmystreet.markers.setVisibility(false);
+                fixmystreet.select_feature.deactivate();
             },
 
             onClickCancel: function(e) {
@@ -156,6 +162,8 @@
                 $('#mark-here').show();
                 this.model.set('lat', null);
                 this.model.set('lon', null);
+                fixmystreet.markers.setVisibility(true);
+                fixmystreet.select_feature.activate();
             },
 
            onClickReport: function() {
