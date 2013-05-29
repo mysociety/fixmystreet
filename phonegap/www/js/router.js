@@ -2,6 +2,7 @@
     _.extend(FMS, {
         appRouter: Backbone.Router.extend({
             currentView: null,
+            reverse: false,
 
             routes: {
                 '': 'home',
@@ -36,6 +37,10 @@
                 if (this.currentView && this.currentView.prev) {
                     this.currentView.onClickButtonPrev();
                 }
+            },
+
+            reverseTransition: function() {
+                this.reverse = true;
             },
 
             around: function(){
@@ -138,6 +143,10 @@
                 if ( !this.currentView || this.currentView.id == 'front-page' ) {
                     options.transition = 'none';
                 }
+                if ( this.reverse ) {
+                    options.reverse = true;
+                }
+                this.reverse = false;
 
                 $.mobile.changePage($(view.el), options);
 

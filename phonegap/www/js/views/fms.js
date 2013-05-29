@@ -49,20 +49,20 @@
 
             afterDisplay: function() {},
 
-            navigate: function( route, direction ) {
-                if ( !direction ) {
-                    direction = 'left';
+            navigate: function( route, reverse ) {
+                if ( reverse ) {
+                    FMS.router.reverseTransition();
                 }
 
                 FMS.router.navigate( route, { trigger: true } );
             },
 
             onClickButtonPrev: function() {
-                this.navigate( this.prev, 'right' );
+                this.navigate( this.prev, true );
             },
 
             onClickButtonNext: function() {
-                this.navigate( this.next, 'left' );
+                this.navigate( this.next );
             },
 
             displayError: function(msg) {

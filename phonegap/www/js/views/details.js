@@ -39,7 +39,7 @@
 
             onClickButtonPrev: function() {
                 this.updateCurrentReport();
-                this.navigate( this.prev );
+                this.navigate( this.prev, true );
             },
 
             onClickButtonNext: function() {
