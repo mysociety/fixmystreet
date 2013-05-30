@@ -20,10 +20,10 @@
             beforeDisplay: function() {
                 this.fixPageHeight();
                 if ( this.model.get('file') ) {
-                    $('#id_photo_button').hide();
-                    $('#id_existing').hide();
+                    $('#id_photo_button').parents('.ui-btn').hide();
+                    $('#id_existing').parents('.ui-btn').hide();
                 } else {
-                    this.$('#id_del_photo_button').hide();
+                    this.$('#id_del_photo_button').parents('.ui-btn').hide();
                 }
             },
 
