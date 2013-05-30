@@ -62,7 +62,7 @@
             onRemoveDraft: function() {
                 FMS.clearCurrentDraft();
                 FMS.createdReport = this.report;
-                this.navigate( 'sent', 'left' );
+                this.navigate( 'sent' );
             },
 
             onReportError: function(model, err, options) {
