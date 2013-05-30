@@ -9,7 +9,7 @@
   <preference name="FadeSplashScreen" value="true" />
   <preference name="FadeSplashScreenDuration" value="2" />
 	<preference name="TopActivityIndicator" value="gray"/>
-	<preference name="UIWebViewBounce" value="true"/>
+	<preference name="UIWebViewBounce" value="false"/>
   <content src="index.html" />
 	<plugins>
 		<plugin name="Accelerometer" value="CDVAccelerometer"/>
