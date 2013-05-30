@@ -227,7 +227,6 @@ function show_map(event) {
             height: content,
             margin: 0
         });
-        $('#fms_pan_zoom').css({ top: '2.75em !important' });
     } else {
         $('#map_box').css({
             zIndex: '', position: '',
