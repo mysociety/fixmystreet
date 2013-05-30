@@ -124,6 +124,7 @@
             },
 
             displayButtons: function() {
+                $('#relocate').show();
                 if ( this.model.get('lat') ) {
                     $('#cancel').show();
                     $('#confirm').show();
