@@ -217,14 +217,14 @@ OpenLayers.Map.prototype.getCurrentSize = function() {
 function show_map(event) {
     if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
         // Immediately go full screen map if on around page
-        var footer = $("div[data-role='footer']:visible"),
-            content = $("div[data-role='content']:visible"),
-            viewHeight = $(window).height(),
-            contentHeight = viewHeight - footer.outerHeight();
+        var screen = $(window).height(),
+            header = $('[data-role=header]').height(),
+            footer = $('[data-role=footer]').height(),
+            content = screen - header - footer;
         $('#map_box').css({
             position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            height: contentHeight,
+            top: 45, left: 0, right: 0, bottom: 0,
+            height: content,
             margin: 0
         });
         $('#fms_pan_zoom').css({ top: '2.75em !important' });
