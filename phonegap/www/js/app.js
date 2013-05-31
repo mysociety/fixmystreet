@@ -129,6 +129,13 @@ var tpl = {
             localStorage.currentDraftID = null;
         },
 
+        openExternal: function(e) {
+            e.preventDefault();
+            var el = $(e.srcElement);
+            window.open(el.attr('href'), '_system');
+            return false;
+        },
+
         initialize: function () {
             if ( this.initialized == 1 ) {
                 return this;

@@ -127,6 +127,9 @@ function fixmystreet_onload() {
             fixmystreet.map.removePopup(popup);
             popup.destroy();
             feature.popup = null;
+            $('#view-my-reports').show();
+            $('#login-options').show();
+            $('#OpenLayers_Control_Crosshairs_crosshairs').show();
         });
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
             var feature = evt.feature;
@@ -134,11 +137,14 @@ function fixmystreet_onload() {
             var popup = new OpenLayers.Popup.FramedCloud("popup",
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
-                feature.attributes.title + "<br><a href=" + CONFIG.FMS_URL + "/report/" + feature.attributes.id + ">More details</a>",
+                feature.attributes.title + "<br><a onclick=\"FMS.openExternal(event); return false;\" href=\"" + CONFIG.FMS_URL + "/report/" + feature.attributes.id + "\">More details</a>",
                 { size: new OpenLayers.Size(0,0), offset: new OpenLayers.Pixel(0,-40) },
                 true, onPopupClose);
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
+            $('#view-my-reports').hide();
+            $('#login-options').hide();
+            $('#OpenLayers_Control_Crosshairs_crosshairs').hide();
         });
         fixmystreet.map.addControl( fixmystreet.select_feature );
         fixmystreet.select_feature.activate();

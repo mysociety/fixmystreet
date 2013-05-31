@@ -74,6 +74,9 @@
                 }
                 this.displayButtons();
                 FMS.locator.trackPosition();
+                // FIXME: not sure why I need to do this
+                fixmystreet.select_feature.deactivate();
+                fixmystreet.select_feature.activate();
             },
 
             positionUpdate: function( info ) {
