@@ -316,14 +316,14 @@ subtest "Test two-tier council alerts" => sub {
         { feed => "area:2326:Cheltenham",               result => '/rss/area/Cheltenham' },
         { feed => "area:2326:4544:Cheltenham:Lansdown", result => '/rss/area/Cheltenham/Lansdown'  },
         { feed => "area:2226:Gloucestershire",          result => '/rss/area/Gloucestershire' },
-        { feed => "area:2226:14949:Gloucestershire:Lansdown%2C_Park_and_Warden_Hill",
-          result => '/rss/area/Gloucestershire/Lansdown%2C+Park+and+Warden+Hill'
+        { feed => "area:2226:14949:Gloucestershire:Lansdown_and_Park",
+          result => '/rss/area/Gloucestershire/Lansdown+and+Park'
         },
         { feed => "council:2326:Cheltenham",            result => '/rss/reports/Cheltenham' },
         { feed => "ward:2326:4544:Cheltenham:Lansdown", result => '/rss/reports/Cheltenham/Lansdown' },
         { feed => "council:2226:Gloucestershire",       result => '/rss/reports/Gloucestershire' },
-        { feed => "ward:2226:14949:Gloucestershire:Lansdown%2C_Park_and_Warden_Hill",
-          result => '/rss/reports/Gloucestershire/Lansdown%2C+Park+and+Warden+Hill'
+        { feed => "ward:2226:14949:Gloucestershire:Lansdown_and_Park",
+          result => '/rss/reports/Gloucestershire/Lansdown+and+Park'
         },
     ) {
         $mech->get_ok( '/alert/list?pc=GL502PR' );
