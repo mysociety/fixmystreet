@@ -37,7 +37,7 @@
                 var screen = $(window).height(),
                 header = $('[data-role=header]').height(),
                 footer = $('[data-role=footer]').height(),
-                content = screen - header - footer;
+                content = screen - header - footer - 5;
                 $('[data-role=content]').css({'height': content });
             },
 
