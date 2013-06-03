@@ -67,6 +67,16 @@ mkdir -p "$GEM_HOME"
 export GEM_PATH=
 export PATH="$GEM_HOME/bin:$PATH"
 
+if ! grep -q 'Set up local gem directory for FixMyStreet' $HOME/.bashrc; then
+    cat >>$HOME/.bashrc <<EOBRC
+
+# Set up local gem directory for FixMyStreet
+export GEM_HOME="$DIRECTORY/gems"
+export GEM_PATH=
+export PATH="\$GEM_HOME/bin:\$PATH"
+EOBRC
+fi
+
 gem install --no-ri --no-rdoc compass
 
 # Use compass to generate the CSS, if it doesn't seem to already
