@@ -6,4 +6,7 @@ $(document).bind("mobileinit", function(){
     $.mobile.ignoreContentEnabled = true;
     $.mobile.defaultPageTransition = 'slide';
     $.mobile.buttonMarkup.hoverDelay = 0;
+    // turn of scrollTop support as that stops annoying post
+    // transition 1 px jumps on iOS
+    $.support.scrollTop = 0;
 });
