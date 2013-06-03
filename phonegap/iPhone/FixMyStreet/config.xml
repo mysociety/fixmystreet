@@ -23,6 +23,7 @@
 		<plugin name="File" value="CDVFile"/>
 		<plugin name="FileTransfer" value="CDVFileTransfer"/>
 		<plugin name="Geolocation" value="CDVLocation"/>
+		<plugin name="InAppBrowser" value="CDVInAppBrowser"/>
 		<plugin name="Media" value="CDVSound"/>
 		<plugin name="NetworkStatus" value="CDVConnection"/>
 		<plugin name="Notification" value="CDVNotification"/>
