@@ -16,7 +16,7 @@
     </div>
 
 [% 
-    recent_photos = c.cobrand.recent_photos('front', 3);
+    recent_photos = c.cobrand.recent_photos('front', 1);
     probs         = c.cobrand.recent();
 %]
 [% IF probs.size || recent_photos.size %]
