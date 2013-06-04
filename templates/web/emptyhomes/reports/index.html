@@ -1,8 +1,7 @@
 [% INCLUDE 'header.html', title = loc('Summary reports') %]
 
 <p>
-[% loc('This is a summary of all reports on this site; select a particular council to see the reports sent there.') %]
-[% loc('Greyed-out lines are councils that no longer exist.') %]
+[% loc("This is a summary of all reports on this site; select a particular council to see the empty homes news for that area.") %]
 </p>
 
 <table cellpadding="3" cellspacing="1" border="0">
@@ -18,7 +17,7 @@
 [%- ELSIF loop.count % 2 %] class="a"
 [%- END -%]
 >
-<td align="left"><a href="[% body.url(c) %]">[% body.name %]</a></td>
+<td align="left"><a href="/local/[% c.cobrand.short_name(body) | lower %]/">[% body.name %]</a></td>
 <td>[% open.${body.id}.new or 0 %]</td>
 <td>[% (open.${body.id}.older or 0) + (open.${body.id}.unknown or 0) + (fixed.${body.id}.new or 0) + (fixed.${body.id}.old or 0) %]</td>
 </tr>
