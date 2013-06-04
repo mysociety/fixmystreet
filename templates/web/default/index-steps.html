@@ -33,8 +33,10 @@
 [% END %]
 </ol>
 
+[% IF c.cobrand.moniker != 'emptyhomes' %]
 <section class="full-width">
 [% INCLUDE "front/stats.html" %]
 [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
 </section>
+[% END %]
 

@@ -199,16 +199,37 @@ a:hover, a:active {
     background-color: inherit;
 }
 
+#mysociety #front_stats {
+    display: block;
+}
 #mysociety #front_stats div {
     vertical-align: middle;
     background-color: #fe6500;
     color: #000000;
     padding: 0.5em;
-    width: 7em;
+    width: auto;
+    display: block;
+    margin-bottom: 0.5em;
 }
 #mysociety #front_stats div a {
     color: #000000;
     background-color: inherit;
+}
+#mysociety #front_stats div big {
+    display: inline;
+}
+
+#mysociety #front_stats div#eha-app-link {
+    padding-top: 16px;
+    padding-left: 120px;
+    color: #fe6500;
+    background-color: #fff;
+    background-image: url("/cobrands/emptyhomes/app.png");
+    background-repeat: no-repeat;
+}
+#mysociety #front_stats div#eha-app-link a {
+    color: #fe6500;
+    background-color: #000;
 }
 
 #mysociety #problem_form {
@@ -244,3 +265,54 @@ a:hover, a:active {
 .channel4 > li:first-child + li {
     margin-bottom: 1em;
 }
+
+/* Front page how to report big */
+
+#eha_steps {
+    background-image: url("/cobrands/emptyhomes/street-r.jpeg");
+    background-repeat: no-repeat;
+    padding: 0.5em 2% 0.5em 8%;
+}
+#eha_steps h2 {
+    color: #000;
+    background-color: #fe6500;
+    margin-top: 0;
+    margin-bottom: 0.4em;
+}
+#eha_steps ol {
+    list-style-position: inside;
+    padding: 0 0 0 40%;
+    margin: 0;
+}
+#eha_steps li {
+    color: #fff;
+    background-color: #000;
+    padding: 0.25em;
+    margin-bottom: 0.5em;
+}
+
+.bl {
+    color: #fff;
+    background-color: #000;
+}
+
+/* Noddy half grid */
+
+.grid-50 {
+    float: right;
+    width: 48%;
+    margin-right: 2%;
+}
+.grid-50:first-child {
+    margin-right: 0;
+}
+.grid-50 > h2:first-child {
+    margin-top: 0;
+}
+@media all and (max-width: 50em) {
+    #mysociety .grid-50 {
+        float: none;
+        width: auto;
+    }
+}
+

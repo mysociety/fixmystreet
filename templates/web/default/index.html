@@ -5,22 +5,16 @@
 [% END %]
 
 <p id="expl">        
-  [% IF c.cobrand.moniker == 'emptyhomes' %]
-    <strong>[% loc('Report Empty Homes') %]</strong>
-  [% ELSE %]
     [% 
         subhead
             = c.cobrand.moniker == 'southampton'
             ? ''
             : loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
     %]
-    
     <strong>[% loc('Report, view, or discuss local problems') %]</strong>
-    
     [% IF subhead != ' ' %]
         <small>[% subhead %]</small>
     [% END %]
-  [% END %]
 </p>
 
 [% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %]
