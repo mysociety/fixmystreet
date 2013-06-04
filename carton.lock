@@ -932,6 +932,104 @@
          "target" : "CPAN::Meta::Requirements",
          "version" : "2.122"
       },
+      "CPAN::Meta::YAML" : {
+         "dist" : "CPAN-Meta-YAML-0.008",
+         "module" : "CPAN::Meta::YAML",
+         "mymeta" : {
+            "abstract" : "Read and write a subset of YAML for CPAN Meta files",
+            "author" : [
+               "Adam Kennedy <adamk@cpan.org>",
+               "David Golden <dagolden@cpan.org>"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "Dist::Zilla version 4.300009, CPAN::Meta::Converter version 2.120630, CPAN::Meta::Converter version 2.131490",
+            "license" : [
+               "perl_5"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "CPAN-Meta-YAML",
+            "no_index" : {
+               "directory" : [
+                  "t",
+                  "xt",
+                  "examples",
+                  "corpus"
+               ],
+               "package" : [
+                  "DB"
+               ]
+            },
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "File::Find" : "0",
+                     "File::Spec" : "0",
+                     "File::Spec::Functions" : "0",
+                     "File::Temp" : "0",
+                     "Test::More" : "0",
+                     "vars" : "0",
+                     "warnings" : "0"
+                  }
+               },
+               "configure" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "6.17"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "Carp" : "0",
+                     "Exporter" : "0",
+                     "Scalar::Util" : "0",
+                     "strict" : "0"
+                  }
+               },
+               "test" : {
+                  "requires" : {
+                     "File::Find" : "0",
+                     "File::Spec" : "0",
+                     "File::Spec::Functions" : "0",
+                     "File::Temp" : "0",
+                     "Test::More" : "0",
+                     "vars" : "0",
+                     "warnings" : "0"
+                  }
+               }
+            },
+            "provides" : {
+               "CPAN::Meta::YAML" : {
+                  "file" : "lib/CPAN/Meta/YAML.pm",
+                  "version" : "0.008"
+               }
+            },
+            "release_status" : "stable",
+            "resources" : {
+               "bugtracker" : {
+                  "mailto" : "bug-cpan-meta-yaml at rt.cpan.org",
+                  "web" : "http://rt.cpan.org/Public/Dist/Display.html?Name=CPAN-Meta-YAML"
+               },
+               "homepage" : "https://github.com/dagolden/cpan-meta-yaml",
+               "repository" : {
+                  "type" : "git",
+                  "url" : "https://github.com/dagolden/cpan-meta-yaml.git",
+                  "web" : "https://github.com/dagolden/cpan-meta-yaml"
+               }
+            },
+            "version" : "0.008"
+         },
+         "name" : "CPAN::Meta::YAML",
+         "pathname" : "D/DA/DAGOLDEN/CPAN-Meta-YAML-0.008.tar.gz",
+         "provides" : {
+            "CPAN::Meta::YAML" : {
+               "file" : "CPAN/Meta/YAML.pm",
+               "version" : "0.008"
+            }
+         },
+         "version" : "0.008"
+      },
       "Cache::Memcached" : {
          "dist" : "Cache-Memcached-1.30",
          "mymeta" : {
@@ -15259,6 +15357,52 @@
          },
          "target" : "File::ChangeNotify",
          "version" : "0.23"
+      },
+      "File::Copy::Recursive" : {
+         "dist" : "File-Copy-Recursive-0.38",
+         "module" : "File::Copy::Recursive",
+         "mymeta" : {
+            "abstract" : "unknown",
+            "author" : [
+               "unknown"
+            ],
+            "dynamic_config" : 0,
+            "generated_by" : "ExtUtils::MakeMaker version 6.30, CPAN::Meta::Converter version 2.131490",
+            "license" : [
+               "unknown"
+            ],
+            "meta-spec" : {
+               "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+               "version" : "2"
+            },
+            "name" : "File-Copy-Recursive",
+            "prereqs" : {
+               "build" : {
+                  "requires" : {
+                     "ExtUtils::MakeMaker" : "0"
+                  }
+               },
+               "runtime" : {
+                  "requires" : {
+                     "File::Copy" : "0",
+                     "File::Spec" : "0"
+                  }
+               }
+            },
+            "release_status" : "stable",
+            "version" : "0.38",
+            "x_installdirs" : "site",
+            "x_version_from" : "Recursive.pm"
+         },
+         "name" : "File::Copy::Recursive",
+         "pathname" : "D/DM/DMUEY/File-Copy-Recursive-0.38.tar.gz",
+         "provides" : {
+            "File::Copy::Recursive" : {
+               "file" : "File/Copy/Recursive.pm",
+               "version" : "0.38"
+            }
+         },
+         "version" : "0.38"
       },
       "File::Find::Rule" : {
          "dist" : "File-Find-Rule-0.33",
