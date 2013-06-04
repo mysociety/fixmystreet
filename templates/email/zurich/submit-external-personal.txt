@@ -1,8 +1,8 @@
-Subject: Züri wie neu: Neue Meldung #<?=$values['id']?>
+Subject: Züri wie neu: Weitergeleitete Meldung #<?=$values['id']?>
 
 Grüezi <?=$values['bodies_name']?>,
 
-Diese Meldung wurde Ihnen von der Stadt Zürich gesendet, da es Ihr Zuständigkeitsgebiet betreffen könnte.
+Die folgende Meldung wurde auf http://www.stadt-zuerich.ch/zueriwieneu erfasst:
 
 Öffentliche URL: <?=$values['url']?>
 
@@ -11,3 +11,16 @@ Name des Meldenden: <?=$values['name']?>
 Email des Meldenden: <?=$values['email']?>
 
 Telefonnummer des Meldenden: <?=$values['phone']?>
+
+"Züri wie neu" ist ein Pilotprojekt der Stadt Zürich zum Thema
+Bürgerbeteiligung. Auf dieser Plattform kann die Bevölkerung auf Schäden und
+Mängel an der städtischen Infrastruktur hinweisen.  Diese Meldung wurde Ihnen
+von der Stadt Zürich gesendet, da es Ihr Zuständigkeitsgebiet betreffen könnte.
+
+Bei Fragen zum Pilotprojekt "Züri wie neu" wenden Sie sich bitte an
+gis-zentrum@zuerich.ch.
+
+
+Freundliche Grüsse
+
+Ihre Stadt Zürich

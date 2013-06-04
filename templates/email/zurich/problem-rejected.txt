@@ -17,5 +17,13 @@ Ihre Meldung lautet:
 
 [% problem.detail %]
 
+
+
+Freundliche Grüsse
+
+Ihre Stadt Zürich
+
+
+
 Dieses E-Mail wurde automatisch generiert. Bitte antworten Sie nicht darauf.
 

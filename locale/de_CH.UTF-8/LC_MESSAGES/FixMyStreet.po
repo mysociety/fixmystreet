@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-04-24 08:59+0100\n"
-"PO-Revision-Date: 2013-04-19 14:28+0100\n"
+"PO-Revision-Date: 2013-06-03 11:59+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
 "Language: \n"
@@ -446,7 +446,7 @@ msgstr "An Fachbereich zuweisen:"
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:99
 #: templates/web/zurich/report/updates.html:11
 msgid "Assigned to %s"
-msgstr "Weitergeleitet an: %s"
+msgstr "Besten Dank f&uuml;r Ihre Meldung. Wir haben Ihr Anliegen an %s weitergeleitet, da es nicht in den Zust&auml;ndigkeitsbereich der am Pilot beteiligten Fachbereiche f&auml;llt.<br/>Freundliche Gr&uuml;sse <br/>Ihre Stadt Z&uuml;rich"
 
 #: templates/web/default/open311/index.html:17
 msgid "At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date."
@@ -3186,7 +3186,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
 msgid "The council won&rsquo;t be able to help unless you leave as much detail as you can. Please describe the exact location of the problem (e.g. on a wall), what it is, how long it has been there, a description (and a photo of the problem if you have one), etc."
-msgstr "Bitte machen Sie so genaue Angaben wie m&ouml;glich: Beschreiben Sie die Art des Mangels und wo er sich befindet (z.B. an der Wand). Senden Sie uns ein Photo des Mangels."
+msgstr "Bitte machen Sie so genaue Angaben wie m&ouml;glich: Beschreiben Sie die Art des Mangels und wo er sich befindet (z.B. an der Wand). Senden Sie uns ein Foto des Mangels (inkl. Umgebung). <br/>Beschreiben Sie nur einen Mangel pro Meldung."
 
 #: templates/web/fixmystreet/questionnaire/index.html:43
 msgid "The details of your problem are available from the other tab above."

@@ -2,7 +2,7 @@ Subject: Züri wie neu: Neue Meldung #<?=$values['id']?>
 
 Guten Tag <?=$values['bodies_name']?>,
 
-Diese Meldung wurde Ihnen von Ihrer FMZ-Verantworltichen Stelle zugeteilt.
+Diese Meldung wurde Ihnen von Ihrer <<Züri wie neu>>-Kommunikationsstelle zugeteilt.
 
 Öffentliche URL: <?=$values['url']?>
 
