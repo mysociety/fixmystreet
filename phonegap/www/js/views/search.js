@@ -65,7 +65,7 @@
                 this.navigate( 'around' );
             },
 
-            destroy: function() {
+            _destroy: function() {
                 delete FMS.searchMessage;
                 this.stopListening(FMS.locator);
             }
