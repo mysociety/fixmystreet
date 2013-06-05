@@ -14,10 +14,18 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.2.
+Platform is now at version 1.2.1.
 
 ## Releases
 
+* v1.2.1 (5th June 2013)
+    - Maintenance release to deal with failing carton installation
+    - Test and module fixes for installation on Debian wheezy
+    - Module fixes for running on Travis
+    - The install script adds gem environment variables to the user's .bashrc
+      so that make_css can be run directly after installation
+    - make_css automatically spots which cobrands use compass
+    - Some missing states added to the admin report edit page
 * v1.2 (3rd May 2013)
     - Add MAPIT_ID_WHITELIST to allow easier use of global MapIt
     - Add postfix to the install script/ AMI so emailing works out of the box
