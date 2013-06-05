@@ -1032,13 +1032,13 @@ subtest 'report search' => sub {
 
     $mech->content_contains( $report->title );
     my $r_id = $report->id;
-    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id">$r_id</a>} );
 
     $mech->get_ok('/admin/reports?search=' . $report->user->email);
 
     my $u_id = $update->id;
-    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
-    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/#update_$u_id">$u_id</a>} );
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id">$r_id</a>} );
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id#update_$u_id">$u_id</a>} );
 
     $update->state('hidden');
     $update->update;
@@ -1056,7 +1056,7 @@ subtest 'report search' => sub {
     $report->update;
 
     $mech->get_ok('/admin/reports?search=' . $report->user->email);
-    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id/">$r_id</a>} );
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id">$r_id</a>} );
 };
 
 subtest 'search abuse' => sub {

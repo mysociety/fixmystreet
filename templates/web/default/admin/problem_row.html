@@ -1,9 +1,15 @@
 [%- FOR problem IN problems %]
     <tr[% ' class="adminhidden"' IF problem.state == 'hidden' %]>
         <td class="record-id">[%- IF problem.is_visible -%]
-        [%- cobrand_data = problem.cobrand_data %]
-        [%- cobrand_data = c.data_for_generic_problem IF !problem.cobrand %]
-        <a href="[% c.uri_for_email( '/report', problem.id, cobrand_data ) %]">[% problem.id %]</a>
+        [%- cobrand_data = problem.cobrand_data;
+            cobrand_data = c.data_for_generic_problem IF !problem.cobrand;
+            IF cobrand_data;
+                uri = c.uri_for_email( '/report', problem.id, cobrand_data );
+            ELSE;
+                uri = c.uri_for_email( '/report', problem.id );
+            END;
+        %]
+        <a href="[% uri %]">[% problem.id %]</a>
         [%- ELSE %]
         [%- problem.id %]
         [%- END -%]</td> 
