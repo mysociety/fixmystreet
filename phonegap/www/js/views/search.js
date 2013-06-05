@@ -23,6 +23,7 @@
             search: function(e) {
                 // this is to stop form submission
                 e.preventDefault();
+                this.clearValidationErrors();
                 var pc = this.$('#pc').val();
                 this.listenTo(FMS.locator, 'search_located', this.searchSuccess );
                 this.listenTo(FMS.locator, 'search_failed', this.searchFail);
@@ -51,7 +52,7 @@
                 $('#submit').focus();
                 this.stopListening(FMS.locator);
                 if ( details.msg ) {
-                    this.displayError( details.msg );
+                    this.validationError( 'pc', details.msg );
                 } else if ( details.locations ) {
                     var multiple = '';
                     for ( var i = 0; i < details.locations.length; i++ ) {
@@ -59,9 +60,9 @@
                         var li = '<li><a class="address" id="location_' + i + '" data-lat="' + loc.lat + '" data-long="' + loc.long + '">' + loc.address + '</a></li>';
                         multiple = multiple + li;
                     }
-                    $('#front-howto').html('<ul>' + multiple + '</ul>');
+                    $('#front-howto').html('<p>Multiple matches found</p><ul>' + multiple + '</ul>');
                 } else {
-                    this.displayError( FMS.strings.location_problem );
+                    this.validationError( 'pc', FMS.strings.location_problem );
                 }
             },
 
