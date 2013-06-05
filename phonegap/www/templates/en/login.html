@@ -7,6 +7,7 @@
     <% if ( FMS.isLoggedIn ) { %>
     <div id="signed_in_row">
         <p>You are signed in as <%= email %></p>
+        <div id="err" class="nodisplay"></div>
         <input type="button" id="logout" name="logout" value="Sign Out" data-theme="a">
     </div>
     <div id="password_row" class="nodisplay">
@@ -30,6 +31,7 @@
         <p>
         Signed in!
         </p>
+        <div id="err" class="nodisplay"></div>
         <input type="button" id="logout" name="logout" value="Sign Out" data-theme="a">
     </div>
 </div>
