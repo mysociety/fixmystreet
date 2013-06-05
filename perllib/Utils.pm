@@ -123,10 +123,25 @@ sub london_categories {
 }
 
 sub barnet_categories {
-    # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting 
-    if (mySociety::Config::get('STAGING_SITE')) { # note staging site must use different KBIDs
+    # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting
+    if (mySociety::Config::get('STAGING_SITE')) {
+        # note staging site must use different KBIDs 
+        # these are for Barnet's QA/test server
         return {
-             'Street scene misc'        => 14 # for test
+             'Gullies-Blocked'            => 255,
+             'Animals-Dead-Removal'       => 286,
+             'Dog Fouling-Clear'          => 288,
+             'Fly tipping-Clear'          => 347,
+             'Pavements-Damaged/Cracked'  => 195,
+             'Litter Bins-Overflowing'    => 205,
+             'Graffiti-Removal'           => 292,
+             'Accumulated Litter'         => 349,
+             'Pothole'                    => 204,
+             'Roads Signs - Maintenance'  => 432,
+             'Street Lighting'            => 251,
+             'Traffic Lights'             => 103,
+             'Tree Section'               => 162,
+             'Complaint-Highways Maintenance' => 190,
         }
     } else {
         return {
