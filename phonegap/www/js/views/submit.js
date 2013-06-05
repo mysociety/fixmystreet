@@ -32,6 +32,8 @@
             },
 
             onClickSubmit: function(e) {
+                // in case we are getting here from a form submission
+                e.preventDefault();
                 this.beforeSubmit();
 
                 if ( this.validate() ) {
@@ -204,7 +206,8 @@
                 'pageshow': 'afterDisplay',
                 'click .ui-btn-left': 'onClickButtonPrev',
                 'click #report': 'onClickSubmit',
-                'click #confirm_name': 'onClickSubmit'
+                'click #confirm_name': 'onClickSubmit',
+                'submit #passwordForm': 'onClickSubmit'
             },
 
             initialize: function() {
@@ -247,10 +250,12 @@
                     $('#form_name').val(err.check_name);
                     $('#password_row').hide();
                     $('#check_name').show();
+                    $('#confirm_name').focus();
                 } else {
                     if ( err.errors && err.errors.password ) {
                         this.validationError('form_password', err.errors.password );
                     }
+                    $('#report').focus();
                 }
             }
 

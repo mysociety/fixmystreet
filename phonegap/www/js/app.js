@@ -142,6 +142,11 @@ var tpl = {
             }
             FMS.initialized = 1;
             tpl.loadTemplates( FMS.templates, function() {
+
+                if ( device.platform === 'Android' ) {
+                    $.mobile.defaultPageTransition = 'none';
+                }
+
                 _.extend(FMS, {
                     router: new FMS.appRouter(),
                     locator: new FMS.Locate()

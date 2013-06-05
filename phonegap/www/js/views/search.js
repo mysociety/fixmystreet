@@ -10,7 +10,8 @@
                 'click #locate': 'goLocate',
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
-                'pageshow': 'afterDisplay'
+                'pageshow': 'afterDisplay',
+                'submit #postcodeForm': 'search'
             },
 
             afterDisplay: function() {
@@ -19,7 +20,9 @@
                 }
             },
 
-            search: function() {
+            search: function(e) {
+                // this is to stop form submission
+                e.preventDefault();
                 var pc = this.$('#pc').val();
                 this.listenTo(FMS.locator, 'search_located', this.searchSuccess );
                 this.listenTo(FMS.locator, 'search_failed', this.searchFail);
@@ -44,6 +47,8 @@
             },
 
             searchFail: function( details ) {
+                // this makes sure any onscreen keyboard is dismissed
+                $('#submit').focus();
                 this.stopListening(FMS.locator);
                 if ( details.msg ) {
                     this.displayError( details.msg );
@@ -65,7 +70,7 @@
                 this.navigate( 'around' );
             },
 
-            destroy: function() {
+            _destroy: function() {
                 delete FMS.searchMessage;
                 this.stopListening(FMS.locator);
             }

@@ -13,18 +13,18 @@
                 'click .ui-btn-left': 'onClickButtonPrev',
                 'click .ui-btn-right': 'onClickButtonNext',
                 'blur textarea': 'updateCurrentReport',
-                'change select': 'updateCurrentReport',
+                'change select': 'updateSelect',
                 'blur input': 'updateCurrentReport'
             },
 
             afterRender: function() {
+                this.$('#form_category').attr('data-role', 'none');
+
                 if ( this.model.get('category') ) {
                     this.$('#form_category').val( this.model.get('category') );
+                    this.setSelectClass();
                 }
 
-                this.$('#form_category')
-                    .attr('data-role', 'none')
-                    .addClass('noselection');
             },
 
             afterDisplay: function() {
@@ -71,6 +71,20 @@
                         this.navigate( this.next );
                     }
                 }
+            },
+
+            setSelectClass: function() {
+                var cat = $('#form_category');
+                if ( cat.val() !== "" && cat.val() !== '-- Pick a category --' ) {
+                    cat.removeClass('noselection');
+                } else {
+                    cat.addClass('noselection');
+                }
+            },
+
+            updateSelect: function() {
+                this.updateCurrentReport();
+                this.setSelectClass();
             },
 
             updateCurrentReport: function() {

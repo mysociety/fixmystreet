@@ -9,20 +9,22 @@
         <p>You are signed in as <%= email %></p>
         <input type="button" id="logout" name="logout" value="Sign Out" data-theme="a">
     </div>
-    <div id="password_row" class="inputcard nodisplay">
+    <div id="password_row" class="nodisplay">
         <p>
         Signed out!
         </p>
     <% } else { %>
-    <div id="password_row" class="inputcard">
+    <div id="password_row">
     <% } %>
+        <form name="signinForm" class="inputcard" id="signinForm">
         <div>
             <input data-role="none" type="email" value="" name="email" id="form_email" placeholder="Your Email" required>
         </div>
         <div>
             <input data-role="none" type="password" value="" name="password" id="form_password" placeholder="Your password" required>
         </div>
-        <input type="button" id="login" name="login" value="Login" data-theme="a">
+        <input type="submit" id="login" name="login" value="Login" data-theme="a">
+        </form>
     </div>
     <div id="success_row" class="nodisplay">
         <p>
