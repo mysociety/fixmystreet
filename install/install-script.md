@@ -32,11 +32,13 @@ is optional if you are on an EC2 instance, in which case the hostname
 of that instance will be used.
 
 For example, if you wish to use a new user called `fms` and the
-hostname `fms.example.org`, creating a virtualhost just for that
-hostname, you could download and run the script with:
+hostname `fixmystreet.127.0.0.1.xip.io` (xip.io is a very helpful service for
+development, allowing easy domain/wildcard domain usage without having to edit
+your hosts file), creating a virtualhost just for that hostname, you could
+download and run the script with:
 
     curl https://raw.github.com/mysociety/commonlib/master/bin/install-site.sh | \
-        sudo sh -s fixmystreet fms fms.example.org
+        sudo sh -s fixmystreet fms fixmystreet.127.0.0.1.xip.io
 
 Or, if you want to set this up as the default site on an EC2 instance,
 you could download the script and then invoke it with:
