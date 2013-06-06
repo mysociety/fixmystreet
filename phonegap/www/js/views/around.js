@@ -147,7 +147,8 @@
                 }
             },
 
-            onClickMark: function() {
+            onClickMark: function(e) {
+                e.preventDefault();
                 $('#cancel').show();
                 $('#confirm').show();
                 $('#view-my-reports').hide();
