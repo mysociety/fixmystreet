@@ -70,6 +70,20 @@
     .gmailstyletest input[type="range"] {
         font-size: 16px;
     }
+
+    @media only screen and (max-width: 800px) and (min-width: 600px)
+       and (min-resolution: 320dpi) {
+            .gmailstyletest input,
+            .gmailstyletest input[type="password"],
+            .gmailstyletest input[type="search"],
+            .gmailstyletest input[type="email"],
+            .gmailstyletest textarea,
+            .gmailstyletest select,
+            .gmailstyletest input[type="range"] {
+                font-size: 24px;
+            }
+    }
+
     select{
         -webkit-appearance: none;
         -moz-appearance: none;
