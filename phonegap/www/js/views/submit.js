@@ -121,14 +121,16 @@
                 return isValid;
             },
 
-            onClickPassword: function() {
+            onClickPassword: function(e) {
+                e.preventDefault();
                 if ( this.validate() ) {
                     FMS.currentUser.set('email', $('#form_email').val());
                     this.navigate( 'submit-password' );
                 }
             },
 
-            onClickConfirm: function() {
+            onClickConfirm: function(e) {
+                e.preventDefault();
                 if ( this.validate() ) {
                     FMS.currentUser.set('email', $('#form_email').val());
                     this.navigate( 'submit-name' );
