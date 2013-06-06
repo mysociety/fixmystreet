@@ -55,6 +55,12 @@
                 if ( FMS.currentUser ) {
                     FMS.currentUser.save();
                 }
+                if (resp.report) {
+                    this.report.set('site_id', resp.report);
+                    this.report.set('site_url', CONFIG.FMS_URL + '/report/' + resp.report);
+                } else {
+                    this.report.set('email_confirm', 1);
+                }
                 var reset = FMS.removeDraft( model.id, true);
                 var that = this;
                 reset.done( function() { that.onRemoveDraft(); } );
