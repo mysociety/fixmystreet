@@ -8,9 +8,9 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click #use_report': 'useReport',
-                'click #save_report': 'saveReport',
-                'click #discard': 'discardReport'
+                'vclick #use_report': 'useReport',
+                'vclick #save_report': 'saveReport',
+                'vclick #discard': 'discardReport'
             },
 
             useReport: function() {

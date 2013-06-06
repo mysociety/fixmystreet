@@ -8,14 +8,14 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click #locate_search': 'goSearch',
-                'click #login-options': 'goLogin',
-                'click #view-my-reports': 'goReports',
-                'click #search': 'goSearch',
-                'click #relocate': 'centerMapOnPosition',
-                'click #cancel': 'onClickCancel',
-                'click #confirm': 'onClickReport',
-                'click #mark-here': 'onClickMark'
+                'vclick #locate_search': 'goSearch',
+                'vclick #login-options': 'goLogin',
+                'vclick #view-my-reports': 'goReports',
+                'vclick #search': 'goSearch',
+                'vclick #relocate': 'centerMapOnPosition',
+                'vclick #cancel': 'onClickCancel',
+                'vclick #confirm': 'onClickReport',
+                'vclick #mark-here': 'onClickMark'
             },
 
             render: function(){
@@ -147,7 +147,8 @@
                 }
             },
 
-            onClickMark: function() {
+            onClickMark: function(e) {
+                e.preventDefault();
                 $('#cancel').show();
                 $('#confirm').show();
                 $('#view-my-reports').hide();

@@ -9,11 +9,11 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click .ui-btn-right': 'onClickButtonNext',
-                'click #submit_signed_in': 'onClickSubmit',
-                'click #submit_sign_in': 'onClickSubmit',
-                'click #submit_register': 'onClickSubmit'
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick .ui-btn-right': 'onClickButtonNext',
+                'vclick #submit_signed_in': 'onClickSubmit',
+                'vclick #submit_sign_in': 'onClickSubmit',
+                'vclick #submit_register': 'onClickSubmit'
             },
 
             render: function(){
@@ -93,9 +93,9 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click #have_password': 'onClickPassword',
-                'click #email_confirm': 'onClickConfirm'
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick #have_password': 'onClickPassword',
+                'vclick #email_confirm': 'onClickConfirm'
             },
 
             validate: function() {
@@ -145,9 +145,9 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click #send_confirm': 'onClickSubmit',
-                'click #set_password': 'onClickPassword'
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick #send_confirm': 'onClickSubmit',
+                'vclick #set_password': 'onClickPassword'
             },
 
             initialize: function() {
@@ -204,9 +204,9 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click #report': 'onClickSubmit',
-                'click #confirm_name': 'onClickSubmit',
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick #report': 'onClickSubmit',
+                'vclick #confirm_name': 'onClickSubmit',
                 'submit #passwordForm': 'onClickSubmit'
             },
 
@@ -274,8 +274,8 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click #report': 'onClickSubmit'
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick #report': 'onClickSubmit'
             },
 
             validate: function() {

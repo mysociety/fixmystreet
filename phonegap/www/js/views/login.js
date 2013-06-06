@@ -9,11 +9,11 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click #login': 'onClickLogin',
+                'vclick #login': 'onClickLogin',
                 'submit #signinForm': 'onClickLogin',
-                'click #logout': 'onClickLogout',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click .ui-btn-right': 'onClickButtonNext'
+                'vclick #logout': 'onClickLogout',
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick .ui-btn-right': 'onClickButtonNext'
             },
 
             onClickLogin: function(e) {
@@ -43,11 +43,11 @@
                                 $('#logout').focus();
                             } else {
                                 $('#login').focus();
-                                that.validationError('form_email', FMS.strings.login_error);
+                                that.validationError('form_email', FMS.strings.login_details_error);
                             }
                         },
                         error: function() {
-                            alert('boo :(');
+                            that.validationError('form_email', FMS.strings.login_error);
                         }
                     } );
                 }
@@ -71,8 +71,7 @@
                         that.$('#password_row').show();
                     },
                     error: function() {
-                        // TODO fix this
-                        alert( 'There was a problem signing you out');
+                        that.validationError('err', FMS.strings.logout_error);
                     }
                 } );
             },

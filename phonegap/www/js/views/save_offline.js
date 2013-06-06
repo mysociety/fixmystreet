@@ -7,8 +7,8 @@
             events: {
                 'pagehide': 'destroy',
                 'pageshow': 'afterDisplay',
-                'click #save_report': 'saveReport',
-                'click #discard': 'discardReport'
+                'vclick #save_report': 'saveReport',
+                'vclick #discard': 'discardReport'
             },
 
             saveReport: function() {
