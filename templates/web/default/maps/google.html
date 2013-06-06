@@ -1,13 +1,31 @@
 [% map_js = BLOCK %]
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<style>
+#map_box img {
+    max-width: none;
+}
+#map_box {
+    color: #000;
+}
+</style>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="[% version('/js/map-google.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/jquery.ba-hashchange.min.js') %]"></script>
 [% END %]
 
 [% map_html = BLOCK %]
 <script type="text/javascript">
 var fixmystreet = {
+    'page': '[% page %]',
+    'area': [ [% map.area.join(',') %] ],
+    'all_pins': '[% all_pins %]',
     'latitude': [% map.latitude %],
     'longitude': [% map.longitude %],
+[% IF map.any_zoom -%]
+    'zoomToBounds': 1,
+[%- END %]
+[% IF map.zoom -%]
+    'zoom': [% map.zoom %],
+[%- END %]
     'pins': [% INCLUDE maps/pins_js.html %]
 }
 </script>
