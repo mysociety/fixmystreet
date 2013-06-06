@@ -10,8 +10,8 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click .ui-btn-right': 'onClickButtonNext',
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick .ui-btn-right': 'onClickButtonNext',
                 'blur textarea': 'updateCurrentReport',
                 'change select': 'updateSelect',
                 'blur input': 'updateCurrentReport'

@@ -9,10 +9,10 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .del_report': 'deleteReport',
-                'click .use_report': 'useReport',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click .ui-btn-right': 'onClickButtonNext'
+                'vclick .del_report': 'deleteReport',
+                'vclick .use_report': 'useReport',
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick .ui-btn-right': 'onClickButtonNext'
             },
 
             deleteReport: function(e) {

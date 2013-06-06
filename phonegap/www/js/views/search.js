@@ -5,9 +5,9 @@
             id: 'search-page',
 
             events: {
-                'click a.address': 'goAddress',
-                'click #submit': 'search',
-                'click #locate': 'goLocate',
+                'vclick a.address': 'goAddress',
+                'vclick #submit': 'search',
+                'vclick #locate': 'goLocate',
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',

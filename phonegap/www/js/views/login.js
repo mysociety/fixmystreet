@@ -9,11 +9,11 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click #login': 'onClickLogin',
+                'vclick #login': 'onClickLogin',
                 'submit #signinForm': 'onClickLogin',
-                'click #logout': 'onClickLogout',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click .ui-btn-right': 'onClickButtonNext'
+                'vclick #logout': 'onClickLogout',
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick .ui-btn-right': 'onClickButtonNext'
             },
 
             onClickLogin: function(e) {

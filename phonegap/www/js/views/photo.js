@@ -10,11 +10,11 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'click .ui-btn-left': 'onClickButtonPrev',
-                'click .ui-btn-right': 'onClickButtonNext',
-                'click #id_photo_button': 'takePhoto',
-                'click #id_existing': 'addPhoto',
-                'click #id_del_photo_button': 'deletePhoto'
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick .ui-btn-right': 'onClickButtonNext',
+                'vclick #id_photo_button': 'takePhoto',
+                'vclick #id_existing': 'addPhoto',
+                'vclick #id_del_photo_button': 'deletePhoto'
             },
 
             beforeDisplay: function() {
