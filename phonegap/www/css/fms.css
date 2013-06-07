@@ -10,6 +10,10 @@
         padding: 0.5em;
         border-radius:0;
     }
+
+    .ui-icon-plus, .ui-icon-minus, .ui-icon-delete, .ui-icon-arrow-r, .ui-icon-arrow-l, .ui-icon-arrow-u, .ui-icon-arrow-d, .ui-icon-check, .ui-icon-gear, .ui-icon-refresh, .ui-icon-forward, .ui-icon-back, .ui-icon-grid, .ui-icon-star, .ui-icon-alert, .ui-icon-info, .ui-icon-home, .ui-icon-bars, .ui-icon-edit, .ui-icon-search, .ui-icon-searchfield::after, .ui-icon-checkbox-off, .ui-icon-checkbox-on, .ui-icon-radio-off, .ui-icon-radio-on {
+        background-size: 810px 54px;
+    }
     .ui-checkbox,
     .ui-controlgroup .ui-checkbox
     {
