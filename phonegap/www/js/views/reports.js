@@ -16,8 +16,9 @@
             },
 
             deleteReport: function(e) {
+                e.preventDefault();
                 var el = $(e.target);
-                var id = el.parent('li').attr('id');
+                var id = el.parents('li').attr('id');
                 var del = FMS.removeDraft( id, true );
                 var that = this;
                 del.done( function() { that.onRemoveDraft(el); } );
@@ -25,14 +26,15 @@
             },
 
             useReport: function(e) {
+                e.preventDefault();
                 var el = $(e.target);
-                var id = el.parent('li').attr('id');
+                var id = el.parents('li').attr('id');
                 FMS.currentDraft = FMS.allDrafts.get(id);
                 this.navigate('around');
             },
 
             onRemoveDraft: function(el) {
-                el.parent('li').remove();
+                el.parents('li').remove();
             },
 
             render: function(){
