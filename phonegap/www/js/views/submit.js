@@ -188,7 +188,7 @@
                     this.model.set('submit_clicked', 'submit_register');
                     FMS.currentUser.set('name', $('#form_name').val());
                     FMS.currentUser.set('phone', $('#form_phone').val());
-                    this.navigate( 'submit-password' );
+                    this.navigate( 'submit-set-password' );
                 }
             },
 
@@ -267,6 +267,16 @@
                 }
             }
 
+        })
+    });
+})(FMS, Backbone, _, $);
+
+(function (FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        SubmitSetPasswordView: FMS.SubmitPasswordView.extend({
+            template: 'submit_password',
+            id: 'submit--set-password-page',
+            prev: 'submit-name'
         })
     });
 })(FMS, Backbone, _, $);
