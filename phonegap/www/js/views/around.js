@@ -165,8 +165,12 @@
                 $('#view-my-reports').show();
                 $('#login-options').show();
                 $('#mark-here').show();
-                this.model.set('lat', null);
-                this.model.set('lon', null);
+                if ( this.model.isPartial() ) {
+                    FMS.clearCurrentDraft();
+                } else {
+                    this.model.set('lat', null);
+                    this.model.set('lon', null);
+                }
                 fixmystreet.markers.setVisibility(true);
                 fixmystreet.select_feature.activate();
             },
