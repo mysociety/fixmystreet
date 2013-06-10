@@ -199,11 +199,13 @@
         -webkit-border-radius: 50%;
         border-radius: 50%;
         background-color: #ffaf22;
-        padding: 0 0.25em;
+        padding: 0 0.4em;
         color: #fff;
-        text-shadow:none;
-        font-weight:bold;
+        text-shadow: none;
+        font-weight: bold;
         border: 1px solid #ffea3d;
+        min-width: 1em;
+        display: inline-block;
     }
 
     #relocate {
