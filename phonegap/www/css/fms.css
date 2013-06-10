@@ -231,7 +231,8 @@
         
     }
     #map_box{
-        background-color: #000;
+        background-color: #534741;
+        background-image: url('../images/mapbg.png');
     }
     #map{
         opacity: 0.85;
