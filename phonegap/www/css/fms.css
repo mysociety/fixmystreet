@@ -260,13 +260,13 @@
     }
 
     .ui-loader {
-        padding-top: 75%;
         height: 100%;
         width: 100%;
         top: 0px !important;
         left: 0px;
         margin: 0px;
         opacity: .58;
+        border-radius: 0px;
     }
 
     .ui-loader .ui-icon-loading {
