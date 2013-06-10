@@ -230,6 +230,12 @@
         display:block;
         
     }
+    #map_box{
+        background-color: #000;
+    }
+    #map{
+        opacity: 0.85;
+    }
     
     ::-webkit-input-placeholder { /* WebKit browsers */
         color:    #777;

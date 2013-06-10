@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="25px"
+
+	 height="25px" viewBox="0 0 25 25" enable-background="new 0 0 25 25" xml:space="preserve">
+
+<g id="dot">
+
+	<g>
+
+		<path fill="#00395E" d="M-107.5-11.26c13.102,0,23.761,10.659,23.761,23.76c0,13.102-10.659,23.76-23.761,23.76
+
+			c-13.101,0-23.76-10.658-23.76-23.76C-131.26-0.601-120.601-11.26-107.5-11.26 M-107.5-14.5c-14.913,0-27,12.089-27,27
+
+			c0,14.912,12.087,27,27,27c14.911,0,27-12.088,27-27C-80.5-2.411-92.589-14.5-107.5-14.5L-107.5-14.5z"/>
+
+		<g>
+
+			<circle fill="#00558D" cx="-107.5" cy="12.501" r="25"/>
+
+			<path fill="#29ABE2" d="M-107.5-9.499c12.131,0,22,9.869,22,22c0,12.13-9.869,21.999-22,21.999s-22-9.869-22-21.999
+
+				C-129.5,0.37-119.631-9.499-107.5-9.499 M-107.5-12.499c-13.808,0-25,11.192-25,25c0,13.807,11.192,24.999,25,24.999
+
+				c13.807,0,25-11.192,25-24.999C-82.5-1.307-93.693-12.499-107.5-12.499L-107.5-12.499z"/>
+
+		</g>
+
+		<circle fill="#0071BC" cx="-107.5" cy="12.5" r="17.6"/>
+
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="-107.5005" y1="-5.0996" x2="-107.5005" y2="21.3013">
+
+			<stop  offset="0" style="stop-color:#FFFFFF"/>
+
+			<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0"/>
+
+		</linearGradient>
+
+		<path opacity="0.3" fill="url(#SVGID_1_)" d="M-107.5,12.5c6.513,0,12.196,3.542,15.239,8.801c1.499-2.59,2.36-5.594,2.36-8.801
+
+			c0-9.719-7.88-17.6-17.6-17.6s-17.6,7.881-17.6,17.6c0,3.207,0.862,6.211,2.36,8.801C-119.696,16.042-114.013,12.5-107.5,12.5z"/>
+
+	</g>
+
+	<g>
+
+		<path fill="#00395E" d="M12.5,4.5c-4.418,0-8,3.583-8,8c0,4.418,3.582,8,8,8c4.417,0,8-3.582,8-8C20.5,8.083,16.917,4.5,12.5,4.5
+
+			L12.5,4.5z"/>
+
+		<g>
+
+			<circle fill="#0071BC" cx="12.5" cy="12.5" r="6"/>
+
+			<linearGradient id="SVGID_2_" gradientUnits="userSpaceOnUse" x1="12.5" y1="6.5005" x2="12.5" y2="15.5015">
+
+				<stop  offset="0" style="stop-color:#FFFFFF"/>
+
+				<stop  offset="1" style="stop-color:#FFFFFF;stop-opacity:0"/>
+
+			</linearGradient>
+
+			<path opacity="0.5" fill="url(#SVGID_2_)" d="M12.5,12.5c2.217,0,4.158,1.208,5.192,3c0.514-0.883,0.808-1.907,0.808-3
+
+				c0-3.312-2.686-6-6-6s-6,2.688-6,6c0,1.093,0.294,2.118,0.806,3C8.342,13.708,10.277,12.5,12.5,12.5z">
+                <animate id="anim1" attributeName="opacity" from="0" to="0.4" dur="1.5s" begin="0s; anim2.end" />
+                <animate id="anim2" attributeName="opacity" from="0.4" to="0" dur="1.5s" begin="anim1.end" />
+            </path>
+
+		</g>
+
+	</g>
+
+</g>
+
+</svg>
+
