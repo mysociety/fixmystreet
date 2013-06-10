@@ -57,11 +57,13 @@
                 FMS.router.navigate( route, { trigger: true } );
             },
 
-            onClickButtonPrev: function() {
+            onClickButtonPrev: function(e) {
+                e.preventDefault();
                 this.navigate( this.prev, true );
             },
 
-            onClickButtonNext: function() {
+            onClickButtonNext: function(e) {
+                e.preventDefault();
                 this.navigate( this.next );
             },
 

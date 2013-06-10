@@ -2,12 +2,10 @@
         <h1>My Reports</h1>
         <a id="reports-next-btn" data-icon="arrow-r" data-iconpos="right" class="ui-btn-right">Home</a>
 </div>
-<div class="container" data-enhance="false">
-    <div class="content" role="main">
-        <h1>Draft reports</h1>
-    </div>
+<div data-role="content">
+    <h3>Draft reports</h3>
 
-    <ul>
-        <% drafts.each(function(draft) { if ( draft ) { print( '<li id="' + draft.id + '">' + draft.description() + ' <a class="del_report">X</a> <a class="use_report">&#8594;</a></li>' ); } else { print( '<li>no/li<>'); } } ); %>
+    <ul data-role="listview" data-split-theme="c" data-inset="true" data-split-icon="delete" class="reports">
+        <% drafts.each(function(draft) { if ( draft ) { print( '<li id="' + draft.id + '"' +  ( draft.get('lat') ? ' class="with_location"' : '' ) + '><a href="#" class="use_report">' + draft.description() + ( draft.get('lat') ? ' L' : '' ) + '</a><a class="del_report" href="#" title="delete">Delete</a></li>' ); } else { print( '<li>no/li<>'); } } ); %>
     </ul>
 </div>

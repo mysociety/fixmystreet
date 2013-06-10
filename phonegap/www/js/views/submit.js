@@ -55,6 +55,12 @@
                 if ( FMS.currentUser ) {
                     FMS.currentUser.save();
                 }
+                if (resp.report) {
+                    this.report.set('site_id', resp.report);
+                    this.report.set('site_url', CONFIG.FMS_URL + '/report/' + resp.report);
+                } else {
+                    this.report.set('email_confirm', 1);
+                }
                 var reset = FMS.removeDraft( model.id, true);
                 var that = this;
                 reset.done( function() { that.onRemoveDraft(); } );
@@ -115,14 +121,16 @@
                 return isValid;
             },
 
-            onClickPassword: function() {
+            onClickPassword: function(e) {
+                e.preventDefault();
                 if ( this.validate() ) {
                     FMS.currentUser.set('email', $('#form_email').val());
                     this.navigate( 'submit-password' );
                 }
             },
 
-            onClickConfirm: function() {
+            onClickConfirm: function(e) {
+                e.preventDefault();
                 if ( this.validate() ) {
                     FMS.currentUser.set('email', $('#form_email').val());
                     this.navigate( 'submit-name' );
@@ -180,7 +188,7 @@
                     this.model.set('submit_clicked', 'submit_register');
                     FMS.currentUser.set('name', $('#form_name').val());
                     FMS.currentUser.set('phone', $('#form_phone').val());
-                    this.navigate( 'submit-password' );
+                    this.navigate( 'submit-set-password' );
                 }
             },
 
@@ -259,6 +267,16 @@
                 }
             }
 
+        })
+    });
+})(FMS, Backbone, _, $);
+
+(function (FMS, Backbone, _, $) {
+    _.extend( FMS, {
+        SubmitSetPasswordView: FMS.SubmitPasswordView.extend({
+            template: 'submit_password',
+            id: 'submit--set-password-page',
+            prev: 'submit-name'
         })
     });
 })(FMS, Backbone, _, $);

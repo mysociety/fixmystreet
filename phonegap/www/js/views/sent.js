@@ -10,6 +10,17 @@
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'vclick .ui-btn-left': 'onClickButtonPrev'
+            },
+
+            render: function(){
+                if ( !this.template ) {
+                    console.log('no template to render');
+                    return;
+                }
+                template = _.template( tpl.get( this.template ) );
+                this.$el.html(template(FMS.createdReport.toJSON()));
+                this.afterRender();
+                return this;
             }
         })
     });

@@ -10,6 +10,17 @@
         padding: 0.5em;
         border-radius:0;
     }
+
+    .ui-icon-plus, .ui-icon-minus, .ui-icon-delete, .ui-icon-arrow-r, .ui-icon-arrow-l, .ui-icon-arrow-u, .ui-icon-arrow-d, .ui-icon-check, .ui-icon-gear, .ui-icon-refresh, .ui-icon-forward, .ui-icon-back, .ui-icon-grid, .ui-icon-star, .ui-icon-alert, .ui-icon-info, .ui-icon-home, .ui-icon-bars, .ui-icon-edit, .ui-icon-search, .ui-icon-searchfield::after, .ui-icon-checkbox-off, .ui-icon-checkbox-on, .ui-icon-radio-off, .ui-icon-radio-on {
+        background-size: 810px 54px;
+    }
+
+    .ui-li .ui-btn-up-c {
+        border-top-width: 0px;
+        border-bottom-width: 0px;
+        border-right-width: 0px;
+        border-left-width: 1px;
+    }
     .ui-checkbox,
     .ui-controlgroup .ui-checkbox
     {
@@ -70,6 +81,20 @@
     .gmailstyletest input[type="range"] {
         font-size: 16px;
     }
+
+    @media only screen and (max-width: 800px) and (min-width: 600px)
+       and (min-resolution: 320dpi) {
+            .gmailstyletest input,
+            .gmailstyletest input[type="password"],
+            .gmailstyletest input[type="search"],
+            .gmailstyletest input[type="email"],
+            .gmailstyletest textarea,
+            .gmailstyletest select,
+            .gmailstyletest input[type="range"] {
+                font-size: 24px;
+            }
+    }
+
     select{
         -webkit-appearance: none;
         -moz-appearance: none;

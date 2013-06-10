@@ -22,8 +22,8 @@
 
                 if ( this.model.get('category') ) {
                     this.$('#form_category').val( this.model.get('category') );
-                    this.setSelectClass();
                 }
+                this.setSelectClass();
 
             },
 
@@ -74,7 +74,7 @@
             },
 
             setSelectClass: function() {
-                var cat = $('#form_category');
+                var cat = this.$('#form_category');
                 if ( cat.val() !== "" && cat.val() !== '-- Pick a category --' ) {
                     cat.removeClass('noselection');
                 } else {

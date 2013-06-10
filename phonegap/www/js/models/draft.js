@@ -28,6 +28,19 @@
                 return desc;
             },
 
+            isPartial: function() {
+                if (
+                    this.get('title') ||
+                    this.get('details') ||
+                    this.get('category') ||
+                    this.get('file')
+                ) {
+                    return true;
+                }
+
+                return false;
+            },
+
             createdDate: function() {
                 return moment.utc( this.get('created') ).format( 'H:mm Do MMM' );
             }
