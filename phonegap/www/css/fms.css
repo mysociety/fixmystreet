@@ -154,8 +154,16 @@
     }
 
     .olControlAttribution {
-        left: 5px;
-        bottom: 5px !important;
+        left: 0;
+        right: 0 !important;
+        bottom: 0 !important;
+        font-size: 8px !important;
+        text-align:center;
+        background-color: rgba(255,255,255,0.5);
+    }
+    .olControlAttribution img{
+        max-height: 15px;
+        vertical-align:middle;
     }
 
     .map-bottom-btn {
