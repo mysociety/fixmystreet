@@ -9,7 +9,8 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'vclick .ui-btn-left': 'onClickButtonPrev'
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick #rate_app': 'onClickRateApp'
             },
 
             render: function(){
@@ -21,6 +22,14 @@
                 this.$el.html(template(FMS.createdReport.toJSON()));
                 this.afterRender();
                 return this;
+            },
+
+            onClickRateApp: function(e) {
+                e.preventDefault();
+                var el = $('#rate_app');
+                var href = el.attr('href');
+                window.open(href, '_system');
+                return false;
             }
         })
     });
