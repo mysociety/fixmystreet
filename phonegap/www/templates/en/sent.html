@@ -15,4 +15,10 @@
 
     <p><a onclick="FMS.openExternal(event); return false;" href="<%= site_url %>">View it on the site</a></p>
     <% } %>
+
+    <% if ( device.platform == 'iOS' ) { %>
+    <p><a data-role="button" href="itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=<% print( CONFIG.APP_ID ) %>&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software">Please rate this app</a></p>
+    <% } else if ( device.platform == 'Android' ) { %>
+    <p><a id="rate_app" data-role="button" href="https://play.google.com/store/apps/details?id=<% print( CONFIG.PLAY_ID ) %>">Please rate this app</a></p>
+    <% } %>
 </div>
