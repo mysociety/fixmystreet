@@ -280,9 +280,31 @@
     #details-page {
         background: white !important;
     }
+    .ui-loader {
+        padding-top: 75%;
+        height: 100%;
+        width: 100%;
+        top: 0px !important;
+        left: 0px;
+        margin: 0px;
+        opacity: .58;
+    }
 
-.ui-header .ui-title, 
-.ui-footer .ui-title
-{
-    text-shadow:none;
-}
+    .ui-loader .ui-icon-loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: -23px;
+        margin-top: -23px;
+        width: 46px;
+        height: 46px;
+        background-size: 46px 46px;
+        opacity: 1;
+        background: url('images/ajax-loader.gif');
+    }
+    
+    .ui-header .ui-title, 
+    .ui-footer .ui-title
+    {
+        text-shadow:none;
+    }
