@@ -72,6 +72,7 @@
                 if ( model.get('submit_clicked') == 'submit_sign_in' ) {
                     params.submit_sign_in = 1;
                     params.password_sign_in = model.get('user').get('password');
+                    params.remember_me = 1;
                 } else {
                     params.password_register = model.get('user').get('password') || '';
                     params.submit_register = 1;
