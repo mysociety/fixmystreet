@@ -47,9 +47,9 @@
                     FMS.saveCurrentDraft();
 
                     $('#photo-next-btn .ui-btn-text').text('Next');
-                    $('#id_del_photo_button').show();
-                    $('#id_photo_button').hide();
-                    $('#id_existing').hide();
+                    $('#id_del_photo_button').parents('.ui-btn').show();
+                    $('#id_photo_button').parents('.ui-btn').hide();
+                    $('#id_existing').parents('.ui-btn').hide();
                 });
 
                 move.fail( function() { that.addPhotoFail(); } );
@@ -73,9 +73,9 @@
                     $('#photo').attr('src', 'images/placeholder-photo.png');
 
                     $('#photo-next-btn .ui-btn-text').text('Skip');
-                    $('#id_del_photo_button').hide();
-                    $('#id_photo_button').show();
-                    $('#id_existing').show();
+                    $('#id_del_photo_button').parents('.ui-btn').hide();
+                    $('#id_photo_button').parents('.ui-btn').show();
+                    $('#id_existing').parents('.ui-btn').show();
                 });
 
             }
