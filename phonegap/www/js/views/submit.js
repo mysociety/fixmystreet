@@ -235,6 +235,7 @@
             },
 
             beforeSubmit: function() {
+                $('#report').focus();
                 if ( $('#form_name').val() ) {
                     this.model.set('submit_clicked', 'submit_register');
                     this.model.set('phone', $('#form_phone').val());
