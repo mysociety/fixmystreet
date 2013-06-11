@@ -1,6 +1,9 @@
     *{
         box-sizing:border-box;
     }
+    div[data-role="content"] {
+        background-color: white;
+    }
     label{
         display:none;
     }
@@ -125,6 +128,76 @@
 
     .notopmargin {
         margin-top: 0em;
+    }
+
+    #existing h3 {
+        margin-top: 0em;
+    }
+
+    #existing_report h3 {
+        margin-bottom: 5px;
+    }
+
+    #existing_report div.meta {
+        font-weight: italic;
+        font-size: 0.8em;
+        margin-bottom: 0.5em;
+    }
+
+    #existing_report div.photo {
+        text-align: right;
+        float: right;
+        margin: 0em 0em 0.5em 0em;
+    }
+
+    #existing_report div.photo img.small {
+        width: 200px;
+    }
+
+    /* taken from http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/ */
+    #existing_report div.details {
+        max-height: 200px;
+        overflow: hidden;
+        line-height: 20px;
+    }
+
+    #existing_report div.details:before {
+        content:"";
+        float: left;
+        width: 5px; height: 200px;
+    }
+
+    #existing_report div.details > *:first-child {
+        float: right;
+        width: 100%;
+        margin-left: -5px;
+    }
+
+    #existing_report div.details:after {
+        content: "\02026";
+
+        box-sizing: content-box;
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+
+        float: right; position: relative;
+        top: -20px; left: 100%;
+        width: 3em; margin-left: -3em;
+        padding-right: 5px;
+
+        text-align: right;
+
+        background: -webkit-gradient(linear, left top, right top,
+            from(rgba(255, 255, 255, 0)), to(white), color-stop(50%, white));
+        background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+        background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+        background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+    }
+
+    #existing div.right {
+        clear: both;
+        margin-top: 0.5em;
     }
 
     .frontpage-menu{
