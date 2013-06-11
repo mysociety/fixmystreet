@@ -13,17 +13,20 @@
                 'vclick #discard': 'discardReport'
             },
 
-            useReport: function() {
+            useReport: function(e) {
+                e.preventDefault();
                 FMS.setCurrentDraft(this.model);
                 this.navigate('around');
             },
 
-            saveReport: function() {
+            saveReport: function(e) {
+                e.preventDefault();
                 FMS.clearCurrentDraft();
                 this.navigate('around');
             },
 
-            discardReport: function() {
+            discardReport: function(e) {
+                e.preventDefault();
                 var reset = FMS.removeDraft(this.model.id, true);
                 var that = this;
                 reset.done( function() { that.onDraftRemove(); } );
