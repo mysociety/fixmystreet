@@ -27,12 +27,14 @@
                 }
             },
 
-            takePhoto: function() {
+            takePhoto: function(e) {
+                e.preventDefault();
                 var that = this;
                 navigator.camera.getPicture( function(imgURI) { that.addPhotoSuccess(imgURI); }, function(error) { that.addPhotoFail(error); }, { saveToPhotoAlbum: true, quality: 49, destinationType: Camera.DestinationType.FILE_URI, sourceType: navigator.camera.PictureSourceType.CAMERA, correctOrientation: true });
             },
 
-            addPhoto: function() {
+            addPhoto: function(e) {
+                e.preventDefault();
                 var that = this;
                 navigator.camera.getPicture( function(imgURI) { that.addPhotoSuccess(imgURI); }, function(error) { that.addPhotoFail(error); }, { saveToPhotoAlbum: false, quality: 49, destinationType: Camera.DestinationType.FILE_URI, sourceType: navigator.camera.PictureSourceType.PHOTOLIBRARY, correctOrientation: true });
             },
@@ -63,7 +65,8 @@
                 }
             },
 
-            deletePhoto: function() {
+            deletePhoto: function(e) {
+                e.preventDefault();
                 var that = this;
                 var del = FMS.files.deleteURI( this.model.get('file') );
 
