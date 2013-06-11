@@ -211,6 +211,11 @@
         background-color: rgb(248,248,248);
         box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
     }
+
+    #locating p {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
     #login-options a.loggedin .signout{
         display:block;
         
