@@ -92,11 +92,8 @@
                         {
                             graphicZIndex: 3000,
                             graphicName: 'circle',
-                            strokeColor: '#00f',
-                            strokeWidth: 1,
-                            fillOpacity: 1,
-                            fillColor: '#00f',
-                            pointRadius: 10
+                            'externalGraphic': 'images/gps-marker.svg', 
+                            pointRadius: 16
                         }
                     );
                 fixmystreet.location.addFeatures([ x ]);
