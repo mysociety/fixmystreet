@@ -43,6 +43,7 @@
                     } else {
                         this.report = new FMS.Report( this.model.toJSON() );
                         this.listenTo( this.report, 'sync', this.onReportSync );
+                        this.listenTo( this.report, 'invalid', this.onReportInvalid );
                         this.listenTo( this.report, 'error', this.onReportError );
                         this.report.save();
                     }
@@ -71,6 +72,19 @@
                 FMS.clearCurrentDraft();
                 FMS.createdReport = this.report;
                 this.navigate( 'sent' );
+            },
+
+            onReportInvalid: function(model, err, options) {
+                var errors = err.errors;
+                var errorList = '<ul><li class="plain">Invalid report</li>';
+                for ( var k in errors ) {
+                    // FIXME! to stop jslint complaining for now
+                    if ( k !== '' ) {
+                        errorList += '<li>' + errors[k] + '</li>';
+                    }
+                }
+                errorList += '</ul>';
+                $('#errors').html(errorList).show();
             },
 
             onReportError: function(model, err, options) {

@@ -93,7 +93,7 @@
                             if ( data.success ) {
                                 that.trigger('sync', that, data, options);
                             } else {
-                                that.trigger('error', that, data, options);
+                                that.trigger('invalid', that, data, options);
                             }
                         } else {
                             that.trigger('error', that, FMS.strings.report_send_error, options);
@@ -128,7 +128,7 @@
                             if ( data.success ) {
                                 that.trigger('sync', that, data, options);
                             } else {
-                                that.trigger('error', that, data, options);
+                                that.trigger('invalid', that, data, options);
                             }
                         },
                         error: function (data, status, errorThrown ) {

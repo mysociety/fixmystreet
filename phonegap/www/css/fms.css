@@ -360,6 +360,21 @@
     #details-page {
         background: white !important;
     }
+
+    #errors {
+        display: none;
+    }
+
+    #errors ul {
+        padding: 0px 0px 0px 20px;
+    }
+
+    #errors li.plain {
+        font-weight: bold;
+        margin-left: -20px;
+        list-style: none;
+    }
+
     .ui-loader {
         height: 100%;
         width: 100%;
