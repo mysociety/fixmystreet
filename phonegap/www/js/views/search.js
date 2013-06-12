@@ -60,7 +60,8 @@
                         var li = '<li><a class="address" id="location_' + i + '" data-lat="' + loc.lat + '" data-long="' + loc.long + '">' + loc.address + '</a></li>';
                         multiple = multiple + li;
                     }
-                    $('#front-howto').html('<p>Multiple matches found</p><ul>' + multiple + '</ul>');
+                    $('#front-howto').html('<p>Multiple matches found</p><ul data-role="listview" data-inset="true">' + multiple + '</ul>');
+                    $('.ui-page').trigger('create');
                 } else {
                     this.validationError( 'pc', FMS.strings.location_problem );
                 }
