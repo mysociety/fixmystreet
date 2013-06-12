@@ -310,6 +310,7 @@
 
     }
     #map_box{
+        margin: -15px;
         background-color: #534741;
         background-image: url('../images/mapbg.png');
     }
