@@ -1,9 +1,6 @@
     *{
         box-sizing:border-box;
     }
-    div[data-role="content"] {
-        background-color: white;
-    }
     label{
         display:none;
     }
@@ -128,6 +125,10 @@
 
     .notopmargin {
         margin-top: 0em;
+    }
+
+    #existing div[data-role='content'] {
+        background-color: white;
     }
 
     #existing h3 {
