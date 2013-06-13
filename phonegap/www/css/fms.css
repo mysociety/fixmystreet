@@ -331,7 +331,14 @@
     .error:-ms-input-placeholder { /* Internet Explorer 10+ */
         color:    red;
     }
-    select.error{ border: 1px solid red; }
+    input.form-error,
+    select.error {
+        border: 1px solid red;
+    }
+
+    div.form-error {
+        color: red;
+    }
 
     div.photo {
         margin: 0.1em 0em;
