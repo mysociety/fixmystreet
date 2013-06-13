@@ -73,6 +73,22 @@
                 }
             },
 
+            validationError: function(id, error) {
+                var el_id = '#' + id;
+                var el = $(el_id);
+
+                el.addClass('error');
+                if ( el.val() === '' ) {
+                    el.attr('orig-placeholder', el.attr('placeholder'));
+                    el.attr('placeholder', error);
+                }
+            },
+
+            clearValidationErrors: function() {
+                $('.error').removeClass('error');
+                $('.error').each(function(el) { if ( el.attr('orig-placeholder') ) { el.attr('placeholder', el.attr('orig-placeholder') ); } } );
+            },
+
             setSelectClass: function() {
                 var cat = this.$('#form_category');
                 if ( cat.val() !== "" && cat.val() !== '-- Pick a category --' ) {
