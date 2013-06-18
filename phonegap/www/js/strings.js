@@ -23,6 +23,7 @@
             login_error: 'There was a problem logging you in. Please try later',
             logout_error: 'There was a problem logging you out. Please try later',
             login_details_error: 'There was a problem logging you in. Please check your email and password',
+            password_problem: 'There was a problem with your email/password combination',
             location_error: 'Location error',
             location_problem: 'There was a problem looking up your location',
             multiple_locations: 'More than one location matched that name',

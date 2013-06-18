@@ -78,10 +78,13 @@
                 var errors = err.errors;
                 var errorList = '<ul><li class="plain">Invalid report</li>';
                 for ( var k in errors ) {
-                    // FIXME! to stop jslint complaining for now
-                    if ( k !== '' ) {
-                        errorList += '<li>' + errors[k] + '</li>';
+                    error = '';
+                    if ( k === 'password' ) {
+                        error = FMS.strings.password_problem;
+                    } else {
+                        error = errors[k];
                     }
+                    errorList += '<li>' + error + '</li>';
                 }
                 errorList += '</ul>';
                 $('#errors').html(errorList).show();
