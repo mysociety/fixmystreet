@@ -77,14 +77,16 @@
             onReportInvalid: function(model, err, options) {
                 var errors = err.errors;
                 var errorList = '<ul><li class="plain">Invalid report</li>';
+                var validErrors = [ 'password', 'category', 'name' ];
                 for ( var k in errors ) {
-                    error = '';
-                    if ( k === 'password' ) {
-                        error = FMS.strings.password_problem;
-                    } else {
-                        error = errors[k];
+                    if ( validErrors.inidexOf(k) >= 0 || errors[k].match(/required/) ) {
+                        if ( k === 'password' ) {
+                            error = FMS.strings.password_problem;
+                        } else if ( k !== '') {
+                            error = errors[k];
+                        }
+                        errorList += '<li>' + error + '</li>';
                     }
-                    errorList += '<li>' + error + '</li>';
                 }
                 errorList += '</ul>';
                 $('#errors').html(errorList).show();
