@@ -462,6 +462,8 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = NO;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Struan Donald (UGVUU9A9US)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Struan Donald (UGVUU9A9US)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -472,6 +474,8 @@
 				INFOPLIST_FILE = "FixMyStreet/FixMyStreet-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = FixMyStreet;
+				PROVISIONING_PROFILE = "292D4D07-F19C-44F9-A9C3-7EF8BBE5B672";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "292D4D07-F19C-44F9-A9C3-7EF8BBE5B672";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
