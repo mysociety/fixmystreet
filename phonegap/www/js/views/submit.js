@@ -76,7 +76,7 @@
 
             onReportInvalid: function(model, err, options) {
                 var errors = err.errors;
-                var errorList = '<ul><li class="plain">Invalid report</li>';
+                var errorList = '<ul><li class="plain">' + FMS.strings.invalid_report + '</li>';
                 var validErrors = [ 'password', 'category', 'name' ];
                 for ( var k in errors ) {
                     if ( validErrors.inidexOf(k) >= 0 || errors[k].match(/required/) ) {

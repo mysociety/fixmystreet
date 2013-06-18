@@ -36,6 +36,7 @@
             select_category: '-- Pick a categoy --',
             required: 'required',
             invalid_email: 'Invalid email',
+            invalid_report: 'Invalid report',
             photo_failed: 'There was a problem taking your photo',
             no_connection: 'No network connection available for submitting your report. Please try again later',
             more_details: 'More details'
