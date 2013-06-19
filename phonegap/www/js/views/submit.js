@@ -79,7 +79,7 @@
                 var errorList = '<ul><li class="plain">' + FMS.strings.invalid_report + '</li>';
                 var validErrors = [ 'password', 'category', 'name' ];
                 for ( var k in errors ) {
-                    if ( validErrors.inidexOf(k) >= 0 || errors[k].match(/required/) ) {
+                    if ( validErrors.indexOf(k) >= 0 || errors[k].match(/required/) ) {
                         if ( k === 'password' ) {
                             error = FMS.strings.password_problem;
                         } else if ( k !== '') {
