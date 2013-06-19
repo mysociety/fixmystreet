@@ -30,9 +30,19 @@
             onClickButtonNext: function() {
                 this.clearValidationErrors();
                 var valid = 1;
+                var that = this;
 
+                var isRequired = function(index) {
+                    var el = $(this);
+                    if ( el.attr('required') && el.val() === '' ) {
+                        valid = 0;
+                        that.validationError(el.attr('id'), FMS.strings.required);
+                    }
+                };
                 // do validation
-
+                $('input').each(isRequired);
+                $('textarea').each(isRequired);
+                $('select').each(isRequired);
 
                 if ( valid ) {
                     this.clearValidationErrors();
