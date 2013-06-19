@@ -66,7 +66,8 @@
                     used_map: 1,
                     name: model.get('name') || model.get('user').get('name'),
                     email: model.get('email') || model.get('user').get('email'),
-                    phone: model.get('phone')
+                    phone: model.get('phone'),
+                    fms_extra_title: model.get('user').get('title')
                 };
 
                 var extra_fields = model.get('extra_details');

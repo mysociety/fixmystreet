@@ -197,6 +197,9 @@
                 this.model.set('lat', info.coordinates.latitude );
                 this.model.set('lon', info.coordinates.longitude );
                 this.model.set('categories', info.details.category );
+                if ( info.details.title_list ) {
+                    this.model.set('title_list', info.details.title_list);
+                }
                 FMS.saveCurrentDraft();
 
                 this.navigate( 'photo' );

@@ -5,6 +5,14 @@
 <div data-role="content">
     <div id="errors"></div>
     <div class="inputcard">
+        <% if ( typeof model.title_list !== 'undefined' ) { %>
+        <div>
+            <select data-role="none" placeholder="Title" id="form_title" name="title" required>
+                <option value="">Title</option>
+                <% for ( var i = 0; i < model.title_list.length; i++ ) { var title = model.title_list[i]; print( '<option value="' + title + '">' + title + '</option>' ); } %>
+            </select>
+        </div>
+        <% } %>
         <div>
             <input data-role="none" type="text" value="<%= user.name %>" name="name" id="form_name" placeholder="Please enter your name" required>
         </div>

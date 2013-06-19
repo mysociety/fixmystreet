@@ -199,6 +199,13 @@
                     }
                 }
 
+                if ( this.model.get('title_list') && this.model.get('title_list').length > 0 ) {
+                    if ( $('#form_title').val() === '' ) {
+                        this.validationError('form_title', FMS.strings.required);
+                        isValid = 0;
+                    }
+                }
+
                 return isValid;
             },
 
@@ -207,6 +214,9 @@
                     this.model.set('submit_clicked', 'submit_register');
                     FMS.currentUser.set('name', $('#form_name').val());
                     FMS.currentUser.set('phone', $('#form_phone').val());
+                    if ( this.model.get('title_list') && this.model.get('title_list').length > 0 ) {
+                        FMS.currentUser.set('title', $('#form_title').val());
+                    }
                     this.navigate( 'submit-set-password' );
                 }
             },
@@ -215,6 +225,9 @@
                 this.model.set('name', $('#form_name').val());
                 this.model.set('phone', $('#form_phone').val());
                 this.model.set('may_show_name', $('#form_may_show_name').val());
+                if ( this.model.get('title_list') && this.model.get('title_list').length > 0 ) {
+                    FMS.currentUser.set('title', $('#form_title').val());
+                }
             }
         })
     });
