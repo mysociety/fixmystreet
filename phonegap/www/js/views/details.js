@@ -80,15 +80,15 @@
                             dataType: 'json',
                             timeout: 30000,
                             success: function( data, status ) {
-                                if ( data ) {
+                                if ( data && data.category_extra && data.category_extra.length > 0 ) {
                                     that.model.set('category_extras', data.category_extra);
                                     that.navigate('details_extra');
                                 } else {
-                                    that.navigate( this.next );
+                                    that.navigate( that.next );
                                 }
                             },
                             error: function() {
-                                this.navigate( this.next );
+                                this.navigate( that.next );
                             }
                         } );
                     }
