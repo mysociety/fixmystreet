@@ -316,6 +316,8 @@ sub send_email {
     $email->header_set( ucfirst($_), $vars->{$_} )
       for grep { $vars->{$_} } qw( to from subject);
 
+    return if $c->is_abuser( $email->header('To') );
+
     $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
         time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
     ) );
@@ -339,6 +341,8 @@ sub send_email {
 
 sub send_email_cron {
     my ( $c, $params, $env_from, $env_to, $nomail ) = @_;
+
+    return 1 if $c->is_abuser( $env_to );
 
     $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@mysociety.org>', time(),
         unpack('h*', random_bytes(5, 1))
@@ -480,6 +484,12 @@ sub get_photo_params {
     $photo->{url_fp} = "$pre.fp$post";
 
     return $photo;
+}
+
+sub is_abuser {
+    my ($c, $email) = @_;
+    my ($domain) = $email =~ m{ @ (.*) \z }x;
+    return $c->model('DB::Abuse')->search( { email => [ $email, $domain ] } )->first;
 }
 
 =head1 SEE ALSO
