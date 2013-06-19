@@ -13,6 +13,7 @@
                 'existing': 'existing',
                 'photo': 'photo',
                 'details': 'details',
+                'details_extra': 'details_extra',
                 'submit-start': 'submitStart',
                 'submit': 'submit',
                 'submit-email': 'submitEmail',
@@ -77,6 +78,11 @@
             details: function(){
                 var detailsView = new FMS.DetailsView({ model: FMS.currentDraft });
                 this.changeView(detailsView);
+            },
+
+            details_extra: function(){
+                var detailsExtraView = new FMS.DetailsExtraView({ model: FMS.currentDraft });
+                this.changeView(detailsExtraView);
             },
 
             submitStart: function() {

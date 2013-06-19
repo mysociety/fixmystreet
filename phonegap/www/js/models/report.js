@@ -69,6 +69,13 @@
                     phone: model.get('phone')
                 };
 
+                var extra_fields = model.get('extra_details');
+                if ( extra_fields && extra_fields.length > 0 ) {
+                    for ( var i = 0; i < extra_fields.length; i++ ) {
+                        params[extra_fields[i]] = model.get(extra_fields[i]);
+                    }
+                }
+
                 if ( model.get('submit_clicked') == 'submit_sign_in' ) {
                     params.submit_sign_in = 1;
                     params.password_sign_in = model.get('user').get('password');

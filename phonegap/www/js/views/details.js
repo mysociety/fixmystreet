@@ -68,7 +68,29 @@
                     if ( FMS.isOffline ) {
                         this.navigate( 'save_offline' );
                     } else {
-                        this.navigate( this.next );
+                        var that = this;
+                        $.ajax( {
+                            url: CONFIG.FMS_URL + '/report/new/category_extras',
+                            type: 'POST',
+                            data: {
+                                category: this.model.get('category'),
+                                latitude: this.model.get('lat'),
+                                longitude: this.model.get('lon')
+                            },
+                            dataType: 'json',
+                            timeout: 30000,
+                            success: function( data, status ) {
+                                if ( data ) {
+                                    that.model.set('category_extras', data.category_extra);
+                                    that.navigate('details_extra');
+                                } else {
+                                    that.navigate( this.next );
+                                }
+                            },
+                            error: function() {
+                                this.navigate( this.next );
+                            }
+                        } );
                     }
                 }
             },

@@ -118,7 +118,33 @@
     select.noselection{
         color: #777;
     }
-    
+
+    #details-extra-page div[data-role="content"] {
+        height: auto !important;
+    }
+
+    #category_meta {
+        margin: 0px 15px 15px 15px;
+    }
+
+    #category_meta h4 {
+        display: none;
+    }
+
+    #category_meta label,
+    #category_meta input,
+    #category_meta textarea,
+    #category_meta select {
+        display: block;
+    }
+
+    #category_meta label:first {
+        padding-top: 1em;
+    }
+    #category_meta label {
+        padding-top: 0.5em;
+    }
+
     h2{
         /*padding: 0 0.25em;*/
     }
