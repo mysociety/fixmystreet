@@ -1,8 +1,9 @@
 <div data-id="locate" id="around-header" data-role="header">
-    <a href="#" id="cancel" class="ui-btn-left nodisplay">Cancel</a>
+    <a id="view-my-reports" class="nodisplay" data-role="button" href="#">
+        Drafts <span class="draft_count"><% print( FMS.allDrafts.length ) %></span>
+    </a>
     <h1>Find problem</h1>
-    <a id="search" class="ui-btn-right">Search</a>
-    
+    <a id="login-options" class="ui-btn-right">Account</a>
 </div>
 
 <div data-role="content">
@@ -47,20 +48,6 @@
     </script>
 
     <div class="frontpage-menu">
-        <a id="view-my-reports" class="nodisplay" data-role="button" href="#">
-            <strong>My Reports</strong>
-            <span class="draft_count"><% print( FMS.allDrafts.length ) %></span> Draft Reports
-        </a>
-        <% if ( FMS.isLoggedIn ) { %>
-        <a id="login-options" class="nodisplay loggedin" data-role="button" href="#">
-            <strong class="signout">Sign Out</strong>
-            (Signed in as <strong><%= user.name %></strong>)
-        </a>
-        <% } else { %>
-        <a id="login-options" class="nodisplay loggedout" data-role="button" href="#">
-            <strong class="signin">Sign In</strong>
-        </a>
-        <% } %>
     </div>
 
 

@@ -153,6 +153,19 @@
         margin-top: 0em;
     }
 
+    div[data-role='content'] {
+        width: 90%;
+        margin: 20px auto;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    #around-page div[data-role='content'] {
+        margin: auto;
+        width: auto;
+        height: auto;
+        background-color: rgba(255, 255, 255, 0);
+    }
+
     #existing div[data-role='content'] {
         background-color: white;
     }
