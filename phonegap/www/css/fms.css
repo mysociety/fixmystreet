@@ -53,10 +53,9 @@
         /*width:100%;*/
         /*max-width:100%;*/
         font-size: 16px;
-        border-top: 1px solid #ccc;
         padding:0;
-        margin-left: -15px;
-        margin-right: -15px;
+        border: solid rgba( 0, 0, 0, 0.7 ) 1px;
+        background: rgba(255, 255, 255, 0.7) !important;
     }
     .inputcard > div,
     .gmailstyletest > div,
@@ -80,6 +79,7 @@
     .gmailstyletest select,
     .gmailstyletest input[type="range"] {
         font-size: 16px;
+        background: rgba(255, 255, 255, 0.7) !important;
     }
 
     @media only screen and (max-width: 800px) and (min-width: 600px)
@@ -389,8 +389,8 @@
         max-height: 45%;
     }
 
-    #details-page {
-        background: white !important;
+    #details-page div[data-role="content"] {
+        background: rgba(255, 255, 255, 0) !important;
     }
 
     #errors {
