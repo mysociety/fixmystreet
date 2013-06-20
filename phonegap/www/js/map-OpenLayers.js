@@ -89,6 +89,18 @@ function fixmystreet_onload() {
             backgroundHeight: 40,
             backgroundXOffset: -10,
             backgroundYOffset: -35
+        },
+        'location': {
+            externalGraphic: "i/pin.svg",
+            graphicWidth: 70,
+            graphicHeight: 110,
+            graphicXOffset: -35,
+            graphicYOffset: -110,
+            backgroundGraphic: "i/pin_shadow.svg",
+            backgroundWidth: 186,
+            backgroundHeight: 110,
+            backgroundXOffset: -93,
+            backgroundYOffset: -110 
         }
     });
     var pin_layer_options = {

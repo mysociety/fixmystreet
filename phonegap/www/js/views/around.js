@@ -156,8 +156,10 @@
                 $('#login-options').hide();
                 $('#mark-here').hide();
                 $('#postcodeForm').hide();
-                fixmystreet.markers.setVisibility(false);
-                fixmystreet.select_feature.deactivate();
+                var lonlat = this.getCrossHairPosition();
+                var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green', 'location', '', 'location' ] ], true );
+                fixmystreet.markers.removeAllFeatures();
+                fixmystreet.markers.addFeatures( markers );
             },
 
             onClickCancel: function(e) {
