@@ -128,7 +128,7 @@
             displayButtons: function() {
                 $('#relocate').show();
                 if ( this.model.get('lat') ) {
-                    $('#cancel').show();
+                    $('#cancel').addClass('ui-btn-left').show();
                     $('#confirm').show();
                     $('#view-my-reports').hide();
                     $('#login-options').hide();
@@ -137,7 +137,7 @@
                     fixmystreet.markers.setVisibility(false);
                     fixmystreet.select_feature.deactivate();
                 } else {
-                    $('#cancel').hide();
+                    $('#cancel').hide().removeClass('ui-btn-left');
                     $('#confirm').hide();
                     $('#view-my-reports').show();
                     $('#login-options').show();
@@ -150,7 +150,7 @@
 
             onClickMark: function(e) {
                 e.preventDefault();
-                $('#cancel').show();
+                $('#cancel').addClass('ui-btn-left').show();
                 $('#confirm').show();
                 $('#view-my-reports').hide();
                 $('#login-options').hide();
@@ -162,7 +162,7 @@
 
             onClickCancel: function(e) {
                 e.preventDefault();
-                $('#cancel').hide();
+                $('#cancel').hide().removeClass('ui-btn-left');
                 $('#confirm').hide();
                 $('#view-my-reports').show();
                 $('#login-options').show();
