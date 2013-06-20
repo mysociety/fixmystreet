@@ -147,7 +147,7 @@
                     $(view.el).attr('data-add-back-btn', 'true');
                 }
                 view.render();
-                $('body').append($(view.el));
+                $('.jquerymobile').append($(view.el));
 
                 // if we are coming from the front page then we don't want to do
                 // any transitions as they just add visual distraction to no end
