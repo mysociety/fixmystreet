@@ -458,3 +458,8 @@
     .ui-btn {
         pointer-events: all;
     }
+
+    .ui-btn-corner-all {
+        -webkit-border-radius: 0px;
+        border-radius: 0px;
+    }
