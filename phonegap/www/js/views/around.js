@@ -303,10 +303,6 @@
                 );
 
                 return centre;
-            },
-
-            _destroy: function() {
-                fixmystreet = null;
             }
         })
     });
