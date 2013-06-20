@@ -459,6 +459,11 @@
         pointer-events: all;
     }
 
+    .ui-input-search {
+        background-image: none;
+        background-color: rgba(255,255,255,0.8);
+    }
+
     .ui-btn-corner-all {
         -webkit-border-radius: 0px;
         border-radius: 0px;

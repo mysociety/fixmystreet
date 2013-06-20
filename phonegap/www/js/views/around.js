@@ -15,7 +15,9 @@
                 'vclick #relocate': 'centerMapOnPosition',
                 'vclick #cancel': 'onClickCancel',
                 'vclick #confirm': 'onClickReport',
-                'vclick #mark-here': 'onClickMark'
+                'vclick #mark-here': 'onClickMark',
+                'vclick a.address': 'goAddress',
+                'submit #postcodeForm': 'search'
             },
 
             render: function(){
@@ -131,6 +133,7 @@
                     $('#view-my-reports').hide();
                     $('#login-options').hide();
                     $('#mark-here').hide();
+                    $('#postcodeForm').hide();
                     fixmystreet.markers.setVisibility(false);
                     fixmystreet.select_feature.deactivate();
                 } else {
@@ -139,6 +142,7 @@
                     $('#view-my-reports').show();
                     $('#login-options').show();
                     $('#mark-here').show();
+                    $('#postcodeForm').show();
                     fixmystreet.markers.setVisibility(true);
                     fixmystreet.select_feature.activate();
                 }
@@ -151,6 +155,7 @@
                 $('#view-my-reports').hide();
                 $('#login-options').hide();
                 $('#mark-here').hide();
+                $('#postcodeForm').hide();
                 fixmystreet.markers.setVisibility(false);
                 fixmystreet.select_feature.deactivate();
             },
@@ -162,6 +167,7 @@
                 $('#view-my-reports').show();
                 $('#login-options').show();
                 $('#mark-here').show();
+                $('#postcodeForm').show();
                 if ( this.model.isPartial() ) {
                     FMS.clearCurrentDraft();
                 } else {
@@ -188,6 +194,56 @@
                     this.listenTo(FMS.locator, 'gps_located', this.goPhoto);
                     this.listenTo(FMS.locator, 'gps_failed', this.noMap );
                     FMS.locator.check_location( { latitude: position.lat, longitude: position.lon } );
+                }
+            },
+
+            search: function(e) {
+                $('#pc').blur();
+                // this is to stop form submission
+                e.preventDefault();
+                $('#front-howto').hide();
+                this.clearValidationErrors();
+                var pc = this.$('#pc').val();
+                this.listenTo(FMS.locator, 'search_located', this.searchSuccess );
+                this.listenTo(FMS.locator, 'search_failed', this.searchFail);
+
+                FMS.locator.lookup(pc);
+            },
+
+            searchSuccess: function( info ) {
+                this.stopListening(FMS.locator);
+                var coords = info.coordinates;
+                fixmystreet.map.panTo(this.projectCoords( coords ));
+            },
+
+            goAddress: function(e) {
+                $('#front-howto').html('').hide();
+                var t = $(e.target);
+                var lat = t.attr('data-lat');
+                var long = t.attr('data-long');
+
+                var coords  = { latitude: lat, longitude: long };
+                fixmystreet.map.panTo(this.projectCoords( coords ));
+            },
+
+            searchFail: function( details ) {
+                // this makes sure any onscreen keyboard is dismissed
+                $('#submit').focus();
+                this.stopListening(FMS.locator);
+                if ( details.msg ) {
+                    this.validationError( 'pc', details.msg );
+                } else if ( details.locations ) {
+                    var multiple = '';
+                    for ( var i = 0; i < details.locations.length; i++ ) {
+                        var loc = details.locations[i];
+                        var li = '<li><a class="address" id="location_' + i + '" data-lat="' + loc.lat + '" data-long="' + loc.long + '">' + loc.address + '</a></li>';
+                        multiple = multiple + li;
+                    }
+                    $('#front-howto').html('<p>Multiple matches found</p><ul data-role="listview" data-inset="true">' + multiple + '</ul>');
+                    $('.ui-page').trigger('create');
+                    $('#front-howto').show();
+                } else {
+                    this.validationError( 'pc', FMS.strings.location_problem );
                 }
             },
 
