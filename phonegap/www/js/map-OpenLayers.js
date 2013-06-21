@@ -169,56 +169,6 @@ function fixmystreet_onload() {
         if (bounds) { fixmystreet.map.zoomToExtent( bounds ); }
     }
 
-    $('#hide_pins_link').on('vclick', function(e) {
-        e.preventDefault();
-        var showhide = [
-            'Show pins', 'Hide pins',
-            'Dangos pinnau', 'Cuddio pinnau',
-            "Vis nåler", "Gjem nåler"
-        ];
-        for (var i=0; i<showhide.length; i+=2) {
-            if (this.innerHTML == showhide[i]) {
-                fixmystreet.markers.setVisibility(true);
-                fixmystreet.select_feature.activate();
-                this.innerHTML = showhide[i+1];
-            } else if (this.innerHTML == showhide[i+1]) {
-                fixmystreet.markers.setVisibility(false);
-                fixmystreet.select_feature.deactivate();
-                this.innerHTML = showhide[i];
-            }
-        }
-    });
-
-    $('#all_pins_link').on('vclick', function(e) {
-        e.preventDefault();
-        fixmystreet.markers.setVisibility(true);
-        var texts = [
-            'en', 'Show old', 'Hide old',
-            'nb', 'Inkluder utdaterte problemer', 'Skjul utdaterte rapporter',
-            'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
-        ];
-        for (var i=0; i<texts.length; i+=3) {
-            if (this.innerHTML == texts[i+1]) {
-                this.innerHTML = texts[i+2];
-                fixmystreet.markers.protocol.options.params = { all_pins: 1 };
-                fixmystreet.markers.refresh( { force: true } );
-                lang = texts[i];
-            } else if (this.innerHTML == texts[i+2]) {
-                this.innerHTML = texts[i+1];
-                fixmystreet.markers.protocol.options.params = { };
-                fixmystreet.markers.refresh( { force: true } );
-                lang = texts[i];
-            }
-        }
-        if (lang == 'cy') {
-            document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
-        } else if (lang == 'nb') {
-            document.getElementById('hide_pins_link').innerHTML = 'Gjem nåler';
-        } else {
-            document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
-        }
-    });
-
     if (fixmystreet.page == 'around' ) {
         fixmystreet.map.addControl( new OpenLayers.Control.ActionAfterDrag({'autoActivate': true}) );
         fixmystreet.map.addControl( new OpenLayers.Control.Crosshairs(null) );
@@ -290,16 +240,11 @@ function show_map(event) {
         }
     }
 
-
     if ( fixmystreet.page == 'around' ) {
-        //if ( localStorage.currentReport ) {
-            //mark_here();
-        //} else {
-            fixmystreet.nav.activate();
-            $('#view-my-reports').show();
-            $('#login-options').show();
-            $('#mark-here').show();
-        //}
+        fixmystreet.nav.activate();
+        $('#view-my-reports').show();
+        $('#login-options').show();
+        $('#mark-here').show();
     }
 }
 
