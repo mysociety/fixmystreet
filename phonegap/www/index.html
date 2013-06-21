@@ -62,6 +62,22 @@
         <script type="text/javascript" src="js/router.js"></script>
         <script type="text/javascript" src="js/app.js"></script>
 
+        <script type="text/javascript">
+            var fixmystreet = {
+                'page': 'around',
+                'area': '',
+                'all_pins': '',
+                'latitude': localStorage.latitude,
+                'longitude': localStorage.longitude,
+
+                'zoom': 4,
+                'numZoomLevels': 5,
+                'zoomOffset': 13,
+                'map_type': "",
+                'pins': [  ]
+
+            };
+        </script>
     </head>
     <body onload="onload()">
     <div id="map_box" class="mapbox">
