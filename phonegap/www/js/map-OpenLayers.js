@@ -139,8 +139,6 @@ function fixmystreet_onload() {
             fixmystreet.map.removePopup(popup);
             popup.destroy();
             feature.popup = null;
-            $('#view-my-reports').show();
-            $('#login-options').show();
             $('#OpenLayers_Control_Crosshairs_crosshairs').show();
         });
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
@@ -154,8 +152,6 @@ function fixmystreet_onload() {
                 true, onPopupClose);
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
-            $('#view-my-reports').hide();
-            $('#login-options').hide();
             $('#OpenLayers_Control_Crosshairs_crosshairs').hide();
         });
         fixmystreet.map.addControl( fixmystreet.select_feature );

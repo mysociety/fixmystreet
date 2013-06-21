@@ -129,7 +129,7 @@
                 $('#relocate').show();
                 if ( this.model.get('lat') ) {
                     $('#cancel').addClass('ui-btn-left').show();
-                    $('#confirm').show();
+                    $('#confirm').addClass('ui-btn-right ui-btn-icon-right').show();
                     $('#view-my-reports').hide();
                     $('#login-options').hide();
                     $('#mark-here').hide();
@@ -138,7 +138,7 @@
                     fixmystreet.select_feature.deactivate();
                 } else {
                     $('#cancel').hide().removeClass('ui-btn-left');
-                    $('#confirm').hide();
+                    $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
                     $('#view-my-reports').show();
                     $('#login-options').show();
                     $('#mark-here').show();
@@ -151,7 +151,7 @@
             onClickMark: function(e) {
                 e.preventDefault();
                 $('#cancel').addClass('ui-btn-left').show();
-                $('#confirm').show();
+                $('#confirm').addClass('ui-btn-right ui-btn-icon-right').show();
                 $('#view-my-reports').hide();
                 $('#login-options').hide();
                 $('#mark-here').hide();
@@ -166,7 +166,7 @@
             onClickCancel: function(e) {
                 e.preventDefault();
                 $('#cancel').hide().removeClass('ui-btn-left');
-                $('#confirm').hide();
+                $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
                 $('#view-my-reports').show();
                 $('#login-options').show();
                 $('#mark-here').show();
