@@ -119,6 +119,7 @@
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
                 'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick #set_password': 'onClickSetPassword',
                 'vclick #have_password': 'onClickPassword',
                 'vclick #email_confirm': 'onClickConfirm'
             },
@@ -138,6 +139,14 @@
                 }
 
                 return isValid;
+            },
+
+            onClickSetPassword: function(e) {
+                e.preventDefault();
+                if ( this.validate() ) {
+                    FMS.currentUser.set('email', $('#form_email').val());
+                    this.navigate( 'submit-set-password' );
+                }
             },
 
             onClickPassword: function(e) {
@@ -307,9 +316,27 @@
 (function (FMS, Backbone, _, $) {
     _.extend( FMS, {
         SubmitSetPasswordView: FMS.SubmitPasswordView.extend({
-            template: 'submit_password',
-            id: 'submit--set-password-page',
-            prev: 'submit-name'
+            template: 'submit_set_password',
+            id: 'submit-set-password-page',
+            prev: 'submit-email',
+            next: 'submit-name',
+
+            events: {
+                'pagehide': 'destroy',
+                'pagebeforeshow': 'beforeDisplay',
+                'pageshow': 'afterDisplay',
+                'vclick .ui-btn-left': 'onClickButtonPrev',
+                'vclick #continue': 'onClickContinue',
+                'submit #passwordForm': 'onClickContinue'
+            },
+
+            onClickContinue: function(e) {
+                e.preventDefault();
+                $('#continue').focus();
+                this.model.set('submit_clicked', 'submit_sign_in');
+                FMS.currentUser.set('password', $('#form_password').val());
+                this.navigate( this.next );
+            }
         })
     });
 })(FMS, Backbone, _, $);

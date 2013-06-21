@@ -416,6 +416,23 @@
         list-style: none;
     }
 
+    #password-options {
+        width: 100%;
+    }
+
+    #password-options > div {
+        width: 100%;
+    }
+
+    #password-options a {
+        border-radius: 0px !important;
+        width: 50%;
+    }
+
+    #password-options .ui-btn-inner {
+        padding: 0.6em 0px;
+    }
+
     .ui-loader {
         height: 100%;
         width: 100%;
