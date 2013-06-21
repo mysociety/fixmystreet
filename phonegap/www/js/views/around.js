@@ -158,6 +158,7 @@
                 $('#login-options').hide();
                 $('#mark-here').hide();
                 $('#postcodeForm').hide();
+                fixmystreet.select_feature.deactivate();
                 fixmystreet.bbox_strategy.deactivate();
                 var lonlat = this.getCrossHairPosition();
                 var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green', 'location', '', 'location' ] ], true );
