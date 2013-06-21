@@ -80,6 +80,7 @@
                 // FIXME: not sure why I need to do this
                 fixmystreet.select_feature.deactivate();
                 fixmystreet.select_feature.activate();
+                fixmystreet.nav.activate();
             },
 
             positionUpdate: function( info ) {
@@ -272,6 +273,7 @@
                     this.model.set('title_list', info.details.title_list);
                 }
                 FMS.saveCurrentDraft();
+                fixmystreet.nav.deactivate();
 
                 this.navigate( 'photo' );
             },
