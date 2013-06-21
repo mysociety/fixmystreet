@@ -16,6 +16,7 @@
                 'vclick #cancel': 'onClickCancel',
                 'vclick #confirm': 'onClickReport',
                 'vclick #mark-here': 'onClickMark',
+                'vclick #reposition': 'onClickReposition',
                 'vclick a.address': 'goAddress',
                 'submit #postcodeForm': 'search'
             },
@@ -179,7 +180,17 @@
                 }
                 fixmystreet.bbox_strategy.activate();
                 fixmystreet.select_feature.activate();
-                fixmystreet_activate_drag();
+            },
+
+            onClickReposition: function(e) {
+                e.preventDefault();
+                var lonlat = this.getCrossHairPosition();
+                lonlat.transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    fixmystreet.map.getProjectionObject()
+                );
+                fixmystreet.markers.features[0].move(lonlat);
+                $('#reposition').hide();
             },
 
            onClickReport: function() {

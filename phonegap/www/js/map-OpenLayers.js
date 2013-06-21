@@ -220,6 +220,7 @@ function fixmystreet_onload() {
     });
 
     if (fixmystreet.page == 'around' ) {
+        fixmystreet.map.addControl( new OpenLayers.Control.ActionAfterDrag({'autoActivate': true}) );
         fixmystreet.map.addControl( new OpenLayers.Control.Crosshairs(null) );
     }
 }
@@ -432,4 +433,35 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         return markers;
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
+});
+
+OpenLayers.Control.ActionAfterDrag = OpenLayers.Class(OpenLayers.Control, {
+
+    defaultHandlerOptions: {
+        'stopDown': false
+        /* important, otherwise it prevent the click-drag event from 
+           triggering the normal click-drag behavior on the map to pan it */
+    },
+
+    initialize: function(options) {
+        this.handlerOptions = OpenLayers.Util.extend(
+            {}, this.defaultHandlerOptions
+        );
+        OpenLayers.Control.prototype.initialize.apply(
+            this, arguments
+        ); 
+        this.handler = new OpenLayers.Handler.Drag(
+            this, {
+                'up': this.onDragEnd //could be also 'move', 'up' or 'out'
+            }, this.handlerOptions
+        );
+    }, 
+
+    onDragEnd: function(evt) {
+        // do something when the user clic on the map (so on drag start)
+        console.log('drag ended');
+        if ( $('#confirm').css('display') == 'block' ) {
+            $('#reposition').show();
+        }
+    }
 });
