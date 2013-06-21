@@ -154,7 +154,7 @@
     }
 
     div[data-role='content'] {
-        width: 90%;
+        width: 95%;
         margin: 20px auto;
         background-color: rgba(255, 255, 255, 0.8);
     }
@@ -168,6 +168,14 @@
 
     #existing div[data-role='content'] {
         background-color: white;
+    }
+
+    #details-page div[data-role='content'] {
+        padding: 0px;
+    }
+
+    div[data-role='content'] h2 {
+        margin-top: 0px;
     }
 
     #existing h3 {
