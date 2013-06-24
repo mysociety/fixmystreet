@@ -47,24 +47,22 @@
                     this.navigate( 'offline' );
                 } else if ( this.model && this.model.get('lat') ) {
                     var modelInfo = { coordinates: { latitude: this.model.get('lat'), longitude: this.model.get('lon') } };
-                    this.gotLocation(modelInfo);
+                    this.setMapPosition(modelInfo);
+                    this.displayButtons(true);
+                    this.setReportPosition({ lat: this.model.get('lat'), lon: this.model.get('lon') }, true);
+                    this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
                 } else if ( FMS.currentPosition ) {
                     var info = { coordinates: FMS.currentPosition };
                     FMS.currentPosition = null;
-                    this.gotLocation(info);
+                    this.setMapPosition(info);
+                    this.displayButtons(false);
+                    this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
                 } else {
                     this.locate();
                 }
             },
 
-            gotLocation: function( info ) {
-                this.finishedLocating();
-
-                this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
-
-                this.located = true;
-                this.locateCount = 21;
-
+            setMapPosition: function( info ) {
                 var coords = info.coordinates;
                 fixmystreet.latitude = coords.latitude;
                 fixmystreet.longitude = coords.longitude;
@@ -76,7 +74,18 @@
                     var centre = this.projectCoords( coords );
                     fixmystreet.map.panTo(centre);
                 }
-                this.displayButtons();
+            },
+
+            gotLocation: function( info ) {
+                this.finishedLocating();
+
+                this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
+
+                this.located = true;
+                this.locateCount = 21;
+
+                this.setMapPosition( info );
+
                 FMS.locator.trackPosition();
                 // FIXME: not sure why I need to do this
                 fixmystreet.select_feature.deactivate();
@@ -131,9 +140,9 @@
                 $('#front-howto').show();
             },
 
-            displayButtons: function() {
+            displayButtons: function(isLocationSet) {
                 $('#relocate').show();
-                if ( this.model.get('lat') ) {
+                if (isLocationSet) {
                     $('#cancel').addClass('ui-btn-left').show();
                     $('#confirm').addClass('ui-btn-right ui-btn-icon-right').show();
                     $('#confirm-map').show();
@@ -143,6 +152,7 @@
                     $('#postcodeForm').hide();
                     fixmystreet.markers.setVisibility(false);
                     fixmystreet.select_feature.deactivate();
+                    fixmystreet.bbox_strategy.deactivate();
                 } else {
                     $('#cancel').hide().removeClass('ui-btn-left');
                     $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
@@ -151,46 +161,40 @@
                     $('#login-options').show();
                     $('#mark-here').show();
                     $('#postcodeForm').show();
+                    $('#reposition').hide();
+                    fixmystreet.bbox_strategy.activate();
                     fixmystreet.markers.setVisibility(true);
                     fixmystreet.select_feature.activate();
                 }
             },
 
-            onClickMark: function(e) {
-                e.preventDefault();
-                $('#cancel').addClass('ui-btn-left').show();
-                $('#confirm').addClass('ui-btn-right ui-btn-icon-right').show();
-                $('#confirm-map').show();
-                $('#view-my-reports').hide();
-                $('#login-options').hide();
-                $('#mark-here').hide();
-                $('#postcodeForm').hide();
-                fixmystreet.select_feature.deactivate();
-                fixmystreet.bbox_strategy.deactivate();
-                var lonlat = this.getCrossHairPosition();
-                var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green', 'location', '', 'location' ] ], true );
+            setReportPosition: function(lonlat, convertPosition) {
+                var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green', 'location', '', 'location' ] ], convertPosition );
                 fixmystreet.markers.removeAllFeatures();
                 fixmystreet.markers.addFeatures( markers );
+                fixmystreet.markers.setVisibility(true);
+            },
+
+            onClickMark: function(e) {
+                e.preventDefault();
+                this.displayButtons(true);
+                $('#reposition').hide();
+
+                var lonlat = this.getCrossHairPosition();
+                this.setReportPosition(lonlat, true);
             },
 
             onClickCancel: function(e) {
                 e.preventDefault();
-                $('#cancel').hide().removeClass('ui-btn-left');
-                $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
-                $('#confirm-map').hide();
-                $('#reposition').hide();
-                $('#view-my-reports').show();
-                $('#login-options').show();
-                $('#mark-here').show();
-                $('#postcodeForm').show();
+                fixmystreet.markers.removeAllFeatures();
+                fixmystreet_activate_drag();
+                this.displayButtons(false);
                 if ( this.model.isPartial() ) {
                     FMS.clearCurrentDraft();
                 } else {
                     this.model.set('lat', null);
                     this.model.set('lon', null);
                 }
-                fixmystreet.bbox_strategy.activate();
-                fixmystreet.select_feature.activate();
             },
 
             onClickReposition: function(e) {
@@ -242,7 +246,7 @@
                 if ( fixmystreet.map ) {
                     fixmystreet.map.panTo(this.projectCoords( coords ));
                 } else {
-                    this.gotLocation(info);
+                    this.setMapPosition(info);
                 }
             },
 
@@ -254,7 +258,11 @@
                 var long = t.attr('data-long');
 
                 var coords  = { latitude: lat, longitude: long };
-                fixmystreet.map.panTo(this.projectCoords( coords ));
+                if ( fixmystreet.map ) {
+                    fixmystreet.map.panTo(this.projectCoords( coords ));
+                } else {
+                    this.setMapPosition({ coordinates: coords });
+                }
             },
 
             searchFail: function( details ) {
