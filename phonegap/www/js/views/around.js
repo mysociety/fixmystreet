@@ -170,6 +170,7 @@
                 e.preventDefault();
                 $('#cancel').hide().removeClass('ui-btn-left');
                 $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
+                $('#reposition').hide();
                 $('#view-my-reports').show();
                 $('#login-options').show();
                 $('#mark-here').show();
