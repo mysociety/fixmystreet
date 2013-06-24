@@ -397,12 +397,12 @@ OpenLayers.Control.ActionAfterDrag = OpenLayers.Class(OpenLayers.Control, {
         ); 
         this.handler = new OpenLayers.Handler.Drag(
             this, {
-                'up': this.onDragEnd //could be also 'move', 'up' or 'out'
+                'move': this.onDragStart
             }, this.handlerOptions
         );
     }, 
 
-    onDragEnd: function(evt) {
+    onDragStart: function(evt) {
         // do something when the user clic on the map (so on drag start)
         console.log('drag ended');
         if ( $('#confirm').css('display') == 'block' ) {
