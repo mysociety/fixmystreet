@@ -15,6 +15,7 @@
                 'vclick #relocate': 'centerMapOnPosition',
                 'vclick #cancel': 'onClickCancel',
                 'vclick #confirm': 'onClickReport',
+                'vclick #confirm-map': 'onClickReport',
                 'vclick #mark-here': 'onClickMark',
                 'vclick #reposition': 'onClickReposition',
                 'vclick a.address': 'goAddress',
@@ -132,6 +133,7 @@
                 if ( this.model.get('lat') ) {
                     $('#cancel').addClass('ui-btn-left').show();
                     $('#confirm').addClass('ui-btn-right ui-btn-icon-right').show();
+                    $('#confirm-map').show();
                     $('#view-my-reports').hide();
                     $('#login-options').hide();
                     $('#mark-here').hide();
@@ -141,6 +143,7 @@
                 } else {
                     $('#cancel').hide().removeClass('ui-btn-left');
                     $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
+                    $('#confirm-map').hide();
                     $('#view-my-reports').show();
                     $('#login-options').show();
                     $('#mark-here').show();
@@ -154,6 +157,7 @@
                 e.preventDefault();
                 $('#cancel').addClass('ui-btn-left').show();
                 $('#confirm').addClass('ui-btn-right ui-btn-icon-right').show();
+                $('#confirm-map').show();
                 $('#view-my-reports').hide();
                 $('#login-options').hide();
                 $('#mark-here').hide();
@@ -170,6 +174,7 @@
                 e.preventDefault();
                 $('#cancel').hide().removeClass('ui-btn-left');
                 $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
+                $('#confirm-map').hide();
                 $('#reposition').hide();
                 $('#view-my-reports').show();
                 $('#login-options').show();

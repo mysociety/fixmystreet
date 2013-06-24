@@ -282,6 +282,7 @@
     }
 
     #confirm,
+    #confirm-map,
     #reposition,
     #view-my-reports,
     #login-options,
@@ -294,6 +295,11 @@
         padding: 0.5em 0;
         display:block;
     }
+
+    #reposition {
+        bottom: 85px;
+    }
+
     #view-my-reports,
     #login-options a.loggedin
     {
