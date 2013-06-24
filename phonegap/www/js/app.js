@@ -143,7 +143,7 @@ var tpl = {
             FMS.initialized = 1;
             tpl.loadTemplates( FMS.templates, function() {
 
-                if ( device.platform === 'Android' && parseInt(device.version, 10) < 4 ) {
+                if ( device.platform === 'Android' ) {
                     $.mobile.defaultPageTransition = 'none';
                 }
 
