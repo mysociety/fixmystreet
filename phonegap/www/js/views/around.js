@@ -120,12 +120,15 @@
             failedLocation: function( details ) {
                 this.finishedLocating();
                 this.locateCount = 21;
+                var msg = '';
                 if ( details.msg ) {
-                    FMS.searchMessage = details.msg;
+                    msg = details.msg;
                 } else {
-                    FMS.searchMessage = FMS.strings.location_problem;
+                    msg = FMS.strings.location_problem;
                 }
-                this.navigate('search');
+                $('#front-howto').html('<p>' + msg + '</msg>');
+                $('#relocate').hide(); // TODO: not sure we want to do this
+                $('#front-howto').show();
             },
 
             displayButtons: function() {
@@ -236,10 +239,15 @@
             searchSuccess: function( info ) {
                 this.stopListening(FMS.locator);
                 var coords = info.coordinates;
-                fixmystreet.map.panTo(this.projectCoords( coords ));
+                if ( fixmystreet.map ) {
+                    fixmystreet.map.panTo(this.projectCoords( coords ));
+                } else {
+                    this.gotLocation(info);
+                }
             },
 
             goAddress: function(e) {
+                $('#relocate').show();
                 $('#front-howto').html('').hide();
                 var t = $(e.target);
                 var lat = t.attr('data-lat');
@@ -264,6 +272,7 @@
                     }
                     $('#front-howto').html('<p>Multiple matches found</p><ul data-role="listview" data-inset="true">' + multiple + '</ul>');
                     $('.ui-page').trigger('create');
+                    $('#relocate').hide();
                     $('#front-howto').show();
                 } else {
                     this.validationError( 'pc', FMS.strings.location_problem );

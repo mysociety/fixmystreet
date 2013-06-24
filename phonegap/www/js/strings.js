@@ -31,7 +31,7 @@
             report_send_error: 'There was a problem submitting your report. Please try again',
             missing_location: 'Please enter a location',
             location_check_failed: 'Could not check your location',
-            geolocation_failed: 'Could not determine your location',
+            geolocation_failed: 'Could not determine your location, please search for a location instead.',
             geolocation_denied: 'Could not access location services. Please check permissions.',
             select_category: '-- Pick a categoy --',
             required: 'required',

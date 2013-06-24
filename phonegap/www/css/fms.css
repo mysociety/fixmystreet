@@ -238,6 +238,12 @@
     .frontpage-menu{
         padding: 0px;
     }
+
+    #front-howto {
+        padding: 0.3em;
+        background-color: rgba(255,255,255,0.8);
+    }
+
     .nodisplay {
         display: none;
     }
