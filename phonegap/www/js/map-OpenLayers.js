@@ -403,8 +403,6 @@ OpenLayers.Control.ActionAfterDrag = OpenLayers.Class(OpenLayers.Control, {
     }, 
 
     onDragStart: function(evt) {
-        // do something when the user clic on the map (so on drag start)
-        console.log('drag ended');
         if ( $('#confirm').css('display') == 'block' ) {
             $('#reposition').show();
         }
