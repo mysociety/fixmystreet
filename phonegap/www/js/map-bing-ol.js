@@ -1,9 +1,4 @@
-function set_map_config(perm) {
-    var permalink_id;
-    if ($('#map_permalink').length) {
-        permalink_id = 'map_permalink';
-    }
-
+function set_map_config() {
     var nav_opts = { zoomWheelEnabled: false };
     //if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
         nav_opts = {};
@@ -14,7 +9,6 @@ function set_map_config(perm) {
         new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
         fixmystreet.nav_control,
-        new OpenLayers.Control.Permalink(permalink_id),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
     fixmystreet.map_type = OpenLayers.Layer.Bing;

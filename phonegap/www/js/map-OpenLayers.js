@@ -349,26 +349,6 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
 });
 
 
-/* Overriding Permalink so that it can pass the correct zoom to OSM */
-OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink, {
-    updateLink: function() {
-        var separator = this.anchor ? '#' : '?';
-        var href = this.base;
-        if (href.indexOf(separator) != -1) {
-            href = href.substring( 0, href.indexOf(separator) );
-        }
-
-        href += separator + OpenLayers.Util.getParameterString(this.createParams(null, this.map.getZoom()+fixmystreet.zoomOffset));
-        // Could use mlat/mlon here as well if we are on a page with a marker
-        if (this.anchor && !this.element) {
-            window.location.href = href;
-        }
-        else {
-            this.element.href = href;
-        }
-    }
-});
-
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {

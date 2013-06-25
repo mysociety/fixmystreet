@@ -6,8 +6,6 @@ function set_map_config(perm) {
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
         //new OpenLayers.Control.Navigation(),
-        new OpenLayers.Control.Permalink(permalink_id),
-        new OpenLayers.Control.PermalinkFMS('osm_link', 'http://www.openstreetmap.org/'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
 }
