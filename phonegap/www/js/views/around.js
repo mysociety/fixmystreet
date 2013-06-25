@@ -39,6 +39,8 @@
 
             beforeDisplay: function() {
                 $('a[data-role="button"]').hide();
+                $('#login-options').hide();
+                $('#postcodeForm').hide();
                 $('#cancel').hide();
             },
 
@@ -59,6 +61,7 @@
                     this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
                 } else {
                     this.locate();
+                    this.displayButtons(false);
                 }
             },
 
