@@ -163,6 +163,7 @@
                     $('#postcodeForm').show();
                     $('#reposition').hide();
                     fixmystreet.bbox_strategy.activate();
+                    fixmystreet.report_location.setVisibility(false);
                     fixmystreet.markers.setVisibility(true);
                     fixmystreet.select_feature.activate();
                 }
@@ -170,9 +171,9 @@
 
             setReportPosition: function(lonlat, convertPosition) {
                 var markers = fms_markers_list( [ [ lonlat.lat, lonlat.lon, 'green', 'location', '', 'location' ] ], convertPosition );
-                fixmystreet.markers.removeAllFeatures();
-                fixmystreet.markers.addFeatures( markers );
-                fixmystreet.markers.setVisibility(true);
+                fixmystreet.report_location.removeAllFeatures();
+                fixmystreet.report_location.addFeatures( markers );
+                fixmystreet.report_location.setVisibility(true);
             },
 
             onClickMark: function(e) {
@@ -204,7 +205,7 @@
                     new OpenLayers.Projection("EPSG:4326"),
                     fixmystreet.map.getProjectionObject()
                 );
-                fixmystreet.markers.features[0].move(lonlat);
+                fixmystreet.report_location.features[0].move(lonlat);
                 $('#reposition').hide();
             },
 
