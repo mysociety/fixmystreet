@@ -27,8 +27,8 @@
 
             },
 
-            afterDisplay: function() {
-                var header = $("div[data-role='header']:visible"),
+            beforeDisplay: function() {
+                var header = this.$("div[data-role='header']:visible"),
                 detail = this.$('#form_detail'),
                 top = detail.position().top,
                 viewHeight = $(window).height(),
