@@ -42,6 +42,7 @@
                 $('#login-options').hide();
                 $('#postcodeForm').hide();
                 $('#cancel').hide();
+                this.fixPageHeight();
             },
 
             afterDisplay: function() {
