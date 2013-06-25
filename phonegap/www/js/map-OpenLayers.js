@@ -110,6 +110,10 @@ function fixmystreet_onload() {
         styleMap: pin_layer_style_map
     };
 
+    // This layer is for displaying the location of the current report.
+    // It's in its own layer as that means canceling a report means we only
+    // need to switch layer visibility rather than fetching the position of the
+    // existing reports all over again. 
     fixmystreet.report_location = new OpenLayers.Layer.Vector("Report", pin_layer_options);
     fixmystreet.report_location.setVisibility(false)
     fixmystreet.map.addLayer(fixmystreet.report_location);
@@ -166,6 +170,7 @@ function fixmystreet_onload() {
     }
     fixmystreet.map.addLayer(fixmystreet.markers);
 
+    // this layer is for the position of the 'You are here' blue dot
     fixmystreet.location = new OpenLayers.Layer.Vector('location');
     fixmystreet.map.addLayer(fixmystreet.location);
 
