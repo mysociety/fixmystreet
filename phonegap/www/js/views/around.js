@@ -150,9 +150,11 @@
                     $('#login-options').hide();
                     $('#mark-here').hide();
                     $('#postcodeForm').hide();
-                    fixmystreet.markers.setVisibility(false);
-                    fixmystreet.select_feature.deactivate();
-                    fixmystreet.bbox_strategy.deactivate();
+                    if ( fixmystreet.map ) {
+                        fixmystreet.markers.setVisibility(false);
+                        fixmystreet.select_feature.deactivate();
+                        fixmystreet.bbox_strategy.deactivate();
+                    }
                 } else {
                     $('#cancel').hide().removeClass('ui-btn-left');
                     $('#confirm').hide().removeClass('ui-btn-right ui-btn-icon-right');
@@ -162,10 +164,12 @@
                     $('#mark-here').show();
                     $('#postcodeForm').show();
                     $('#reposition').hide();
-                    fixmystreet.bbox_strategy.activate();
-                    fixmystreet.report_location.setVisibility(false);
-                    fixmystreet.markers.setVisibility(true);
-                    fixmystreet.select_feature.activate();
+                    if ( fixmystreet.map ) {
+                        fixmystreet.bbox_strategy.activate();
+                        fixmystreet.report_location.setVisibility(false);
+                        fixmystreet.markers.setVisibility(true);
+                        fixmystreet.select_feature.activate();
+                    }
                 }
             },
 
