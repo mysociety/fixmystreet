@@ -154,6 +154,7 @@
     }
 
     div[data-role='content'] {
+        position: relative;
         width: 95%;
         margin: 20px auto;
         background-color: rgba(255, 255, 255, 0.8);
@@ -171,6 +172,7 @@
     }
 
     #details-page div[data-role='content'] {
+        position: static;
         padding: 0px;
         margin-bottom: 0px;
     }
@@ -284,6 +286,13 @@
     .map-bottom-btn {
         position: absolute;
         bottom: 35px;
+        left: 15px;
+        right: 15px;
+    }
+
+    .bottom-btn {
+        position: absolute;
+        bottom: 5px;
         left: 15px;
         right: 15px;
     }
