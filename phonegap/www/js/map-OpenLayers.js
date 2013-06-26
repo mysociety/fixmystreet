@@ -279,7 +279,7 @@ OpenLayers.Control.Crosshairs.prototype =
         OpenLayers.Control.prototype.draw.apply(this, arguments);
         position = this.getIdealPosition();
         this.buttons = new Array();
-        var imgLocation = OpenLayers.Util.getImagesLocation() + "crosshairs-100.png";
+        var imgLocation = OpenLayers.Util.getImagesLocation() + "crosshairs.png";
         return OpenLayers.Util.createAlphaImageDiv(OpenLayers.Control.Crosshairs.DIV_ID,
                  position, this.imageSize, imgLocation, "absolute");
     },
