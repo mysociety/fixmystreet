@@ -513,3 +513,35 @@
         -webkit-border-radius: 0px;
         border-radius: 0px;
     }
+
+    #locating {
+        position: absolute; 
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 3010;
+        text-align: center;
+        background: #F6BE41;
+        padding-top:40px;
+    }
+
+    #locating .radar {
+        background: transparent url('../images/radar.svg') no-repeat top center;
+        width: 320px;
+        height: 320px;
+        background-size: 320px 320px;
+    }
+
+    #locating #progress {
+        margin-top: 1em;
+        width:100%;
+        height:15px;
+        border:1px solid black;
+    }
+
+    #locating #progress-bar {
+        width: 0%;
+        background-color: grey;
+        height: 13px;
+    }

@@ -8,7 +8,7 @@
                 'pagehide': 'destroy',
                 'pagebeforeshow': 'beforeDisplay',
                 'pageshow': 'afterDisplay',
-                'vclick #locate_search': 'goSearch',
+                'vclick #locate_cancel': 'goSearch',
                 'vclick #login-options': 'goLogin',
                 'vclick #view-my-reports': 'goReports',
                 'vclick #search': 'goSearch',
@@ -314,9 +314,7 @@
 
             goSearch: function(e) {
                 e.preventDefault();
-                this.stopListening(FMS.locator);
-                FMS.locator.stopTracking();
-                this.navigate( 'search' );
+                this.finishedLocating();
             },
 
             goLogin: function(e) {

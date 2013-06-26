@@ -8,30 +8,22 @@
     <a id="confirm" class="nodisplay" data-role="button" data-iconpos="right" data-icon="arrow-r">Next</a>
 </div>
 
-<div data-role="content">
-    <div id="locating" class="nodisplay" style="background: white; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 3010; text-align: center; padding-top: 50%">
-        <p>
-        Getting Your Location
-        </p>
-
-        <p>
-        Current accuracy is <span id="accuracy">unknown</span> - we'll load
-        the map when it's <% print( CONFIG.ACCURACY ) %>m or better.
-        </p>
-
-        <div style="width:100%; height:15px; border:1px solid black;">
-            <div id="progress-bar" style="width:0%; background-color: grey; height:13px;">
+    <div id="locating" class="nodisplay">
+        <div class="radar"></div>
+        <div id="progress">
+            <div id="progress-bar">
             </div>
         </div>
 
         <p>
-        Or hit search below to manually enter a location
+        Or hit cancel below to manually enter a location
         </p>
 
         <p>
-        <input data-theme="a" type="button" id="locate_search" value="Search">
+        <input data-theme="c" type="button" id="locate_cancel" value="Cancel">
         </p>
     </div>
+<div data-role="content">
     <div class="frontpage-menu">
         <form class="inputcard" name="postcodeForm" id="postcodeForm">
         <input type="search" id="pc" name="pc" placeholder="Search or scroll the map">
