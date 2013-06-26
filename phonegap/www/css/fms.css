@@ -172,6 +172,7 @@
 
     #details-page div[data-role='content'] {
         padding: 0px;
+        margin-bottom: 0px;
     }
 
     div[data-role='content'] h2 {

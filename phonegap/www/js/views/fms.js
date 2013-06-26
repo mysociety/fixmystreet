@@ -2,6 +2,7 @@
     _.extend( FMS, {
         FMSView: Backbone.View.extend({
             tag: 'div',
+            bottomMargin: 20,
 
             events: {
                 'pagehide': 'destroy',
@@ -34,11 +35,13 @@
             },
 
             fixPageHeight: function() {
-                var screen = $(window).height(),
-                header = $('[data-role=header]').height(),
-                footer = $('[data-role=footer]').height(),
-                content = screen - header - footer - 5;
-                $('[data-role=content]').css({'height': content });
+                var header = this.$("div[data-role='header']:visible"),
+                content = this.$('[data-role="content"]'),
+                top = content.position().top,
+                viewHeight = $(window).height(),
+                contentHeight = viewHeight - header.outerHeight() - this.bottomMargin;
+
+                content.height( contentHeight - top );
             },
 
             afterRender: function() {},

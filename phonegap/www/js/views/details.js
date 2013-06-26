@@ -5,6 +5,7 @@
             id: 'details-page',
             prev: 'photo',
             next: 'submit-start',
+            bottomMargin: -20,
 
             events: {
                 'pagehide': 'destroy',
@@ -28,11 +29,12 @@
             },
 
             beforeDisplay: function() {
+                this.fixPageHeight();
                 var header = this.$("div[data-role='header']:visible"),
                 detail = this.$('#form_detail'),
                 top = detail.position().top,
                 viewHeight = $(window).height(),
-                contentHeight = viewHeight - header.outerHeight();
+                contentHeight = viewHeight - header.outerHeight() + 15;
 
                 detail.height( contentHeight - top );
             },
