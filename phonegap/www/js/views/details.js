@@ -39,12 +39,14 @@
                 detail.height( contentHeight - top );
             },
 
-            onClickButtonPrev: function() {
+            onClickButtonPrev: function(e) {
+                e.preventDefault();
                 this.updateCurrentReport();
                 this.navigate( this.prev, true );
             },
 
-            onClickButtonNext: function() {
+            onClickButtonNext: function(e) {
+                e.preventDefault();
                 this.clearValidationErrors();
                 var valid = 1;
 

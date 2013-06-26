@@ -217,7 +217,8 @@
                 $('#reposition').hide();
             },
 
-           onClickReport: function() {
+           onClickReport: function(e) {
+                e.preventDefault();
                 var position = this.getCrossHairPosition();
 
                 if ( FMS.isOffline ) {
