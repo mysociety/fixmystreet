@@ -77,6 +77,7 @@
             },
 
             validate: function() {
+                this.clearValidationErrors();
                 var isValid = 1;
 
                 if ( !$('#form_password').val() ) {
