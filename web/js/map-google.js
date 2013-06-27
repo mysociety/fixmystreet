@@ -86,16 +86,16 @@ function fms_map_clicked(e) {
         /* Already have a pin */
         fixmystreet.report_marker.setPosition(lonlat);
     } else {
-        var m = new google.maps.Marker({
+        var marker = new google.maps.Marker({
             position: lonlat,
             draggable: true,
             animation: google.maps.Animation.DROP,
             map: fixmystreet.map
         });
-        var l = google.maps.event.addListener(m, 'dragend', function(){
-            fixmystreet_update_pin( m.getPosition() );
+        var l = google.maps.event.addListener(marker, 'dragend', function(){
+            fixmystreet_update_pin( marker.getPosition() );
         });
-        fixmystreet.report_marker = m;
+        fixmystreet.report_marker = marker;
         google.maps.event.removeListener(fixmystreet.event_update_map);
         for (m=0; m<fixmystreet.markers.length; m++) {
             fixmystreet.markers[m].setMap(null);
