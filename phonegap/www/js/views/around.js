@@ -149,6 +149,9 @@
 
             displayButtons: function(isLocationSet) {
                 $('#relocate').show();
+                if ( fixmystreet.map ) {
+                    fixmystreet.nav.activate();
+                }
                 if (isLocationSet) {
                     $('#cancel').addClass('ui-btn-left').show();
                     $('#confirm').addClass('ui-btn-right ui-btn-icon-right').show();
@@ -301,9 +304,16 @@
                 }
             },
 
-            goPhoto: function(info) {
+            pauseMap: function() {
                 this.stopListening(FMS.locator);
                 FMS.locator.stopTracking();
+                if ( fixmystreet.map ) {
+                    fixmystreet.nav.deactivate();
+                }
+            },
+
+            goPhoto: function(info) {
+                this.pauseMap();
                 this.model.set('lat', info.coordinates.latitude );
                 this.model.set('lon', info.coordinates.longitude );
                 this.model.set('categories', info.details.category );
@@ -311,7 +321,6 @@
                     this.model.set('title_list', info.details.title_list);
                 }
                 FMS.saveCurrentDraft();
-                fixmystreet.nav.deactivate();
 
                 this.navigate( 'photo' );
             },
@@ -329,15 +338,13 @@
 
             goLogin: function(e) {
                 e.preventDefault();
-                this.stopListening(FMS.locator);
-                FMS.locator.stopTracking();
+                this.pauseMap();
                 this.navigate( 'login' );
             },
 
             goReports: function(e) {
                 e.preventDefault();
-                this.stopListening(FMS.locator);
-                FMS.locator.stopTracking();
+                this.pauseMap();
                 this.navigate( 'reports' );
             },
 
