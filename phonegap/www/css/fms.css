@@ -1,4 +1,5 @@
     *{
+        -webkit-user-select: none;
         box-sizing:border-box;
     }
     label{
@@ -510,6 +511,12 @@
     a,
     .ui-btn {
         pointer-events: all;
+    }
+
+    input,
+    textarea,
+    select {
+        -webkit-user-select: auto;
     }
 
     .ui-input-search {
