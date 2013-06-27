@@ -153,11 +153,17 @@
         margin-top: 0em;
     }
 
+    #drafts,
     div[data-role='content'] {
         position: relative;
         width: 95%;
         margin: 20px auto;
         background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    #drafts {
+        padding: 15px;
+        pointer-events: none;
     }
 
     #around-page div[data-role='content'] {
@@ -178,6 +184,7 @@
         margin-bottom: 0px;
     }
 
+    #drafts h2,
     div[data-role='content'] h2 {
         margin-top: 0px;
     }
@@ -510,6 +517,7 @@
         background-color: rgba(255,255,255,0.95);
     }
 
+    .ui-corner-all,
     .ui-btn-corner-all {
         -webkit-border-radius: 0px;
         border-radius: 0px;
