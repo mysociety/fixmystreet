@@ -161,6 +161,7 @@
     }
 
     #around-page div[data-role='content'] {
+        position: static;
         margin: auto;
         width: auto;
         height: auto;
@@ -285,7 +286,7 @@
 
     .map-bottom-btn {
         position: absolute;
-        bottom: 35px;
+        bottom: 20px;
         left: 15px;
         right: 15px;
     }
@@ -313,7 +314,7 @@
     }
 
     #reposition {
-        bottom: 85px;
+        bottom: 65px;
     }
 
     #view-my-reports,
