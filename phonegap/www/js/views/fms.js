@@ -3,6 +3,7 @@
         FMSView: Backbone.View.extend({
             tag: 'div',
             bottomMargin: 20,
+            contentSelector: '[data-role="content"]',
 
             events: {
                 'pagehide': 'destroy',
@@ -36,7 +37,7 @@
 
             fixPageHeight: function() {
                 var header = this.$("div[data-role='header']:visible"),
-                content = this.$('[data-role="content"]'),
+                content = this.$(this.contentSelector),
                 top = content.position().top,
                 viewHeight = $(window).height(),
                 contentHeight = viewHeight - header.outerHeight() - this.bottomMargin;

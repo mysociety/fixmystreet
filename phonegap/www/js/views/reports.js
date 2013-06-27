@@ -4,6 +4,7 @@
             template: 'reports',
             id: 'reports',
             next: 'home',
+            contentSelector: '#drafts',
 
             events: {
                 'pagehide': 'destroy',
