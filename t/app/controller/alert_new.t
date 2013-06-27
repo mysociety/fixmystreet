@@ -277,28 +277,7 @@ for my $test (
 
         ok $alert, "Found the alert";
 
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        like $email->body, qr/$test->{email_text}/i, "Correct email text";
-
-        my ( $url, $url_token ) = $email->body =~ m{(http://\S+/A/)(\S+)};
-        ok $url, "extracted confirm url '$url'";
-
-        my $token = FixMyStreet::App->model('DB::Token')->find(
-            {
-                token => $url_token,
-                scope => 'alert'
-            }
-        );
-        ok $token, 'Token found in database';
-        ok $alert->id == $token->data->{id}, 'token alertid matches alert id';
-
         $mech->clear_emails_ok;
-
-        $mech->get_ok("/A/$url_token");
-        $mech->content_contains('error confirming');
-
-        $alert->discard_changes;
 
         ok !$alert->confirmed, 'alert not set to confirmed';
 

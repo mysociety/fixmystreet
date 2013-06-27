@@ -62,6 +62,20 @@ to be resized then return 0;
 
 sub default_photo_resize { return '195x'; }
 
+sub short_name {
+    my $self = shift;
+    my ($area) = @_;
+
+    my $name = $area->{name} || $area->name;
+    $name =~ s/ (Borough|City|District|County) Council$//;
+    $name =~ s/ Council$//;
+    $name =~ s/ & / and /;
+    $name =~ s{/}{_}g;
+    $name = URI::Escape::uri_escape_utf8($name);
+    $name =~ s/%20/-/g;
+    return $name;
+}
+
 =item council_rss_alert_options
 
 Generate a set of options for council rss alerts. 

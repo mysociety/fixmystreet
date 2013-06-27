@@ -156,6 +156,7 @@ sub email_alerts ($) {
     while (my $alert = $query->next) {
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($alert->cobrand)->new();
         next unless $cobrand->email_host;
+        next if $alert->is_from_abuser;
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
@@ -211,6 +212,11 @@ sub _send_aggregated_alert_email(%) {
         } );
         $data{alert_email} = $user->email;
     }
+
+    my ($domain) = $data{alert_email} =~ m{ @ (.*) \z }x;
+    return if FixMyStreet::App->model('DB::Abuse')->search( {
+        email => [ $data{alert_email}, $domain ]
+    } )->first;
 
     my $token = FixMyStreet::App->model("DB::Token")->new_result( {
         scope => 'alert',
