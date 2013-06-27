@@ -139,8 +139,11 @@
                 } else {
                     msg = FMS.strings.location_problem;
                 }
+                if ( !fixmystreet.map ) {
+                    $('#relocate').hide();
+                    $('#mark-here').hide();
+                }
                 $('#front-howto').html('<p>' + msg + '</msg>');
-                $('#relocate').hide(); // TODO: not sure we want to do this
                 $('#front-howto').show();
             },
 
