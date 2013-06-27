@@ -225,7 +225,7 @@
 
            onClickReport: function(e) {
                 e.preventDefault();
-                var position = this.getCrossHairPosition();
+                var position = this.getMarkerPosition();
 
                 if ( FMS.isOffline ) {
                     this.stopListening(FMS.locator);
@@ -353,6 +353,18 @@
                 "OpenLayers.Control.Crosshairs");
 
                 var position = cross[0].getMapPosition();
+                position.transform(
+                    fixmystreet.map.getProjectionObject(),
+                    new OpenLayers.Projection("EPSG:4326")
+                );
+
+                return position;
+            },
+
+            getMarkerPosition: function() {
+                var marker = fixmystreet.report_location.features[0].geometry;
+
+                var position = new OpenLayers.LonLat( marker.x, marker.y );
                 position.transform(
                     fixmystreet.map.getProjectionObject(),
                     new OpenLayers.Projection("EPSG:4326")
