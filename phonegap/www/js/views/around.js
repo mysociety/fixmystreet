@@ -257,6 +257,7 @@
                     fixmystreet.map.panTo(this.projectCoords( coords ));
                 } else {
                     this.setMapPosition(info);
+                    this.displayButtons(false);
                 }
             },
 
@@ -314,6 +315,12 @@
 
             goSearch: function(e) {
                 e.preventDefault();
+                if ( !fixmystreet.map ) {
+                    this.$('#mark-here').hide();
+                    this.$('#relocate').hide();
+                    $('#front-howto').html('<p>' + FMS.strings.locate_dismissed + '</msg>');
+                    $('#front-howto').show();
+                }
                 this.finishedLocating();
             },
 
