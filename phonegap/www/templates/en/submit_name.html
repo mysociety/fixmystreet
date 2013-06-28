@@ -4,6 +4,12 @@
 
 <div data-role="content">
     <div id="errors"></div>
+    <p>
+    <% if ( nopassword ) { %>
+    No problem - we don't like faffing with passwords either. 
+    <% } %>
+    Please give us some basic details, and you're nearly done.
+    </p>
     <div class="inputcard">
         <% if ( typeof model.title_list !== 'undefined' ) { %>
         <div>

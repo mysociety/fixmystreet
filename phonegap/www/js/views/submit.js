@@ -4,6 +4,7 @@
             template: 'submit',
             id: 'submit-page',
             prev: 'details',
+            nopassword: 0,
 
             events: {
                 'pagehide': 'destroy',
@@ -23,7 +24,7 @@
                 }
                 template = _.template( tpl.get( this.template ) );
                 if ( this.model ) {
-                    this.$el.html(template({ model: this.model.toJSON(), user: FMS.currentUser.toJSON() }));
+                    this.$el.html(template({ model: this.model.toJSON(), user: FMS.currentUser.toJSON(), nopassword: this.nopassword }));
                 } else {
                     this.$el.html(template());
                 }
@@ -180,6 +181,7 @@
             template: 'submit_name',
             id: 'submit-name-page',
             prev: 'submit-email',
+            nopassword: 1,
 
             events: {
                 'pagehide': 'destroy',
@@ -251,7 +253,8 @@
         SubmitNameSetPasswordView: FMS.SubmitNameView.extend({
             template: 'submit_name',
             id: 'submit-name-page-set-password',
-            prev: 'submit-set-password'
+            prev: 'submit-set-password',
+            nopassword: 0
         })
     });
 })(FMS, Backbone, _, $);
