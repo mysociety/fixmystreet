@@ -81,6 +81,7 @@
             },
 
             gotLocation: function( info ) {
+                $('#relocate').show();
                 this.finishedLocating();
 
                 this.listenTo(FMS.locator, 'gps_current_position', this.positionUpdate);
@@ -98,6 +99,7 @@
             },
 
             positionUpdate: function( info ) {
+                $('#relocate').show();
                 FMS.currentPosition = info.coordinates;
                 var centre = this.projectCoords( info.coordinates );
 
@@ -148,7 +150,6 @@
             },
 
             displayButtons: function(isLocationSet) {
-                $('#relocate').show();
                 if ( fixmystreet.map ) {
                     fixmystreet.nav.activate();
                 }
