@@ -248,6 +248,16 @@
 
 (function (FMS, Backbone, _, $) {
     _.extend( FMS, {
+        SubmitNameSetPasswordView: FMS.SubmitNameView.extend({
+            template: 'submit_name',
+            id: 'submit-name-page-set-password',
+            prev: 'submit-set-password'
+        })
+    });
+})(FMS, Backbone, _, $);
+
+(function (FMS, Backbone, _, $) {
+    _.extend( FMS, {
         SubmitPasswordView: FMS.SubmitView.extend({
             template: 'submit_password',
             id: 'submit-password-page',
@@ -323,7 +333,7 @@
             template: 'submit_set_password',
             id: 'submit-set-password-page',
             prev: 'submit-email',
-            next: 'submit-name',
+            next: 'submit-name-set-password',
 
             events: {
                 'pagehide': 'destroy',

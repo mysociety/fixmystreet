@@ -18,6 +18,7 @@
                 'submit': 'submit',
                 'submit-email': 'submitEmail',
                 'submit-name': 'submitName',
+                'submit-name-set-password': 'submitNameSetPassword',
                 'submit-password': 'submitPassword',
                 'submit-set-password': 'submitSetPassword',
                 'save_offline': 'saveOffline',
@@ -108,6 +109,11 @@
             submitName: function(){
                 var submitNameView = new FMS.SubmitNameView({ model: FMS.currentDraft });
                 this.changeView(submitNameView);
+            },
+
+            submitNameSetPassword: function(){
+                var submitNameSetPasswordView = new FMS.SubmitNameSetPasswordView({ model: FMS.currentDraft });
+                this.changeView(submitNameSetPasswordView);
             },
 
             submitPassword: function(){
