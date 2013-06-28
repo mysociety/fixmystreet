@@ -23,7 +23,7 @@
             login_error: 'There was a problem logging you in. Please try later',
             logout_error: 'There was a problem logging you out. Please try later',
             login_details_error: 'There was a problem logging you in. Please check your email and password',
-            password_problem: 'There was a problem with your email/password combination. If you have forgotten your password you can set a new one by returning to the email screen and selecting the set password option',
+            password_problem: 'There was a problem with your email/password combination. If you have forgotten your password, or do not have one, you can set one by returning to the email screen and selecting the set password option',
             location_error: 'Location error',
             location_problem: 'There was a problem looking up your location',
             multiple_locations: 'More than one location matched that name. Select one below or try entering street name and area, or a postcode.',
