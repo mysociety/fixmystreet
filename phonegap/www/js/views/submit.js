@@ -93,7 +93,11 @@
             },
 
             onReportError: function(model, err, options) {
-                alert( FMS.strings.sync_error + ': ' + err.errors);
+                if ( err.errors ) {
+                    alert( FMS.strings.sync_error + ': ' + err.errors);
+                } else {
+                    alert( FMS.strings.unknown_sync_error );
+                }
             },
 
             beforeSubmit: function() {},
