@@ -180,7 +180,8 @@ function fixmystreet_onload() {
     }
 
     if (fixmystreet.page == 'around' ) {
-        fixmystreet.map.addControl( new OpenLayers.Control.ActionAfterDrag({'autoActivate': true}) );
+        fixmystreet.actionafterdrag = new OpenLayers.Control.ActionAfterDrag({'autoActivate': true});
+        fixmystreet.map.addControl(fixmystreet.actionafterdrag);
         fixmystreet.map.addControl( new OpenLayers.Control.Crosshairs(null) );
     }
 }

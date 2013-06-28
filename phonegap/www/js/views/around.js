@@ -152,6 +152,7 @@
             displayButtons: function(isLocationSet) {
                 if ( fixmystreet.map ) {
                     fixmystreet.nav.activate();
+                    fixmystreet.actionafterdrag.activate();
                 }
                 if (isLocationSet) {
                     $('#cancel').addClass('ui-btn-left').show();
@@ -310,6 +311,7 @@
                 FMS.locator.stopTracking();
                 if ( fixmystreet.map ) {
                     fixmystreet.nav.deactivate();
+                    fixmystreet.actionafterdrag.deactivate();
                 }
             },
 
