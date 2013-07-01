@@ -1,14 +1,13 @@
 /* COLOURS */
+$green: #4db848;
+$blue: #083f88;
 
-$orange: #ff9900;
-$bluey: #6688ff;
-
-$primary: $orange;
+$primary: $green;
 $primary_b: #000000;
 $primary_text: #222222;
 
-$col_click_map: $bluey;
-$col_click_map_dark: darken($bluey, 10%);
+$col_click_map: $blue;
+$col_click_map_dark: darken($blue, 10%);
 
 $col_fixed_label: #00BD08;
 $col_fixed_label_dark: #4B8304;
