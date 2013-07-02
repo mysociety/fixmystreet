@@ -364,8 +364,18 @@
         margin-right: 15px;
     }
 
-    #OpenLayers_Control_Crosshairs_crosshairs{
+    #OpenLayers_Control_Crosshairs_crosshairs {
         pointer-events: none;
+        background-image: url(../images/crosshairs.png);
+        background-size: 100px 100px;
+    }
+
+    /* it seems the mobile safari doesn't support resolution */
+    @media only screen and (min-resolution: 320dpi), 
+    only screen and (-webkit-min-device-pixel-ratio: 2) {
+        #OpenLayers_Control_Crosshairs_crosshairs {
+            background-image: url(../images/crosshairs@x2.png);
+        }
     }
 
     #login-options a.loggedin .signout{

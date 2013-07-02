@@ -280,7 +280,9 @@ OpenLayers.Control.Crosshairs.prototype =
         OpenLayers.Control.prototype.draw.apply(this, arguments);
         position = this.getIdealPosition();
         this.buttons = new Array();
-        var imgLocation = OpenLayers.Util.getImagesLocation() + "crosshairs.png";
+        // we set the background image in CSS so we can use media queries for retina
+        // screens so we want an blank image here
+        var imgLocation = OpenLayers.Util.getImagesLocation() + "blank.gif";
         return OpenLayers.Util.createAlphaImageDiv(OpenLayers.Control.Crosshairs.DIV_ID,
                  position, this.imageSize, imgLocation, "absolute");
     },
