@@ -338,7 +338,7 @@
     #view-my-reports .draft_count{
         -webkit-border-radius: 50%;
         border-radius: 50%;
-        background-color: #ffaf22;
+        background-color: rgb(186,21,28);
         padding: 0 0.4em;
         color: #fff;
         text-shadow: none;
