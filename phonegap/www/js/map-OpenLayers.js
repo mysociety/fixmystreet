@@ -65,6 +65,15 @@ function fixmystreet_onload() {
             backgroundGraphicZIndex: 10
         })
     });
+    var location_img = 'i/location_pin.png';
+    var location_bg_img = 'i/location_pin_shadow.png';
+    if ( typeof device !== 'undefined' &&
+        (device.platform == 'Android' && parseInt(device.version, 10) > 2) ||
+        (device.platform !== 'Android') ) {
+        location_img = 'i/pin.svg';
+        location_bg_img = 'i/pin_shadow.svg';
+    }
+
     pin_layer_style_map.addUniqueValueRules('default', 'size', {
         'normal': {
             externalGraphic: "i/pin-${colour}.png",
@@ -91,12 +100,12 @@ function fixmystreet_onload() {
             backgroundYOffset: -35
         },
         'location': {
-            externalGraphic: "i/pin.svg",
+            externalGraphic: location_img,
             graphicWidth: 70,
             graphicHeight: 110,
             graphicXOffset: -35,
             graphicYOffset: -110,
-            backgroundGraphic: "i/pin_shadow.svg",
+            backgroundGraphic: location_bg_img,
             backgroundWidth: 186,
             backgroundHeight: 110,
             backgroundXOffset: -93,
