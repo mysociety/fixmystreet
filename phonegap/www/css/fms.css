@@ -571,3 +571,42 @@
         background-color: grey;
         height: 13px;
     }
+
+    .ui-icon {
+        -webkit-border-radius: 0px;
+        border-radius: 0px;
+        background-color: rgba(0,0,0,0);
+    }
+    .ui-icon-shadow {
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+    .ui-icon-fms-photo-existing,
+    .ui-icon-fms-photo-new {
+        position: static;
+        float: left;
+        background-size: 18px 18px;
+    }
+    .ui-icon-fms-account {
+        background-image: url(../i/user.png);
+        background-size: 18px 18px;
+    }
+    .ui-icon-fms-photo-new {
+        background-image: url(../i/camera.png);
+    }
+    .ui-icon-fms-photo-existing {
+        background-image: url(../i/photos.png);
+    }
+
+    @media only screen and (min-resolution: 320dpi), 
+    only screen and (-webkit-min-device-pixel-ratio: 2) {
+        .ui-icon-fms-account {
+            background-image: url(../i/user@x2.png);
+        }
+        .ui-icon-fms-photo-new {
+            background-image: url(../i/camera@x2.png);
+        }
+        .ui-icon-fms-photo-existing {
+            background-image: url(../i/photos@x2.png);
+        }
+    }
