@@ -7,6 +7,7 @@ $image-sprite: 'images/sprite.png';
 
 @import "../sass/base";
 
+
 #site-logo{
   width: 225px !important;
   background: url($image-sprite) -3px -3px no-repeat;
@@ -20,4 +21,9 @@ $image-sprite: 'images/sprite.png';
   color: #fff;
   border-top: 3px solid  $mindelo_green;
   border-bottom: 3px solid $mindelo_green;
+}
+
+#nav-link {
+  top: -6x;
+  background: url('images/sprite.png') -8px -915px no-repeat;
 }
