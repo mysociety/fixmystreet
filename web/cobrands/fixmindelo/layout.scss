@@ -37,6 +37,9 @@ body.mappage {
         }
         &#main-menu {
             li {
+                a.report-a-problem-btn {
+                  color: #fff;
+                }
                 a:hover {
                     background: $primary;
                 }
@@ -71,3 +74,4 @@ body.frontpage {
       border-bottom: 3px solid $mindelo_green;
     }
 }
+
