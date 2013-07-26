@@ -12,3 +12,12 @@ $image-sprite: 'images/sprite.png';
   background: url($image-sprite) -3px -3px no-repeat;
 }
 
+#site-header {
+  background: url('images/fixmindelo-header.png') 30% 0% repeat-x;
+}
+
+#front-main-container #postcodeForm, #front-howto #front_stats {
+  color: #fff;
+  border-top: 3px solid  $mindelo_green;
+  border-bottom: 3px solid $mindelo_green;
+}
