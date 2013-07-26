@@ -14909,14 +14909,15 @@
          "version" : "0.280205"
       },
       "ExtUtils::MakeMaker" : {
-         "dist" : "ExtUtils-MakeMaker-6.64",
+         "dist" : "ExtUtils-MakeMaker-6.72",
+         "module" : "ExtUtils::MakeMaker",
          "mymeta" : {
             "abstract" : "Create a module Makefile",
             "author" : [
                "Michael G Schwern <schwern@pobox.com>"
             ],
             "dynamic_config" : 0,
-            "generated_by" : "ExtUtils::MakeMaker version 6.64, CPAN::Meta::Converter version 2.112621, CPAN::Meta::Converter version 2.120921",
+            "generated_by" : "ExtUtils::MakeMaker version 6.72, CPAN::Meta::Converter version 2.120351, CPAN::Meta::Converter version 2.131560",
             "license" : [
                "perl_5"
             ],
@@ -14970,117 +14971,129 @@
                },
                "x_MailingList" : "makemaker@perl.org"
             },
-            "version" : "6.64"
+            "version" : "6.72"
          },
          "name" : "ExtUtils::MakeMaker",
-         "pathname" : "M/MS/MSCHWERN/ExtUtils-MakeMaker-6.64.tar.gz",
+         "pathname" : "B/BI/BINGOS/ExtUtils-MakeMaker-6.72.tar.gz",
          "provides" : {
             "DynaLoader" : {
                "file" : "ExtUtils/Mkbootstrap.pm"
             },
             "ExtUtils::Command::MM" : {
                "file" : "ExtUtils/Command/MM.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::Liblist" : {
                "file" : "ExtUtils/Liblist.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::Liblist::Kid" : {
                "file" : "ExtUtils/Liblist/Kid.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM" : {
                "file" : "ExtUtils/MM.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_AIX" : {
                "file" : "ExtUtils/MM_AIX.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_Any" : {
                "file" : "ExtUtils/MM_Any.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_BeOS" : {
                "file" : "ExtUtils/MM_BeOS.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_Cygwin" : {
                "file" : "ExtUtils/MM_Cygwin.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_DOS" : {
                "file" : "ExtUtils/MM_DOS.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_Darwin" : {
                "file" : "ExtUtils/MM_Darwin.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_MacOS" : {
                "file" : "ExtUtils/MM_MacOS.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_NW5" : {
                "file" : "ExtUtils/MM_NW5.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_OS2" : {
                "file" : "ExtUtils/MM_OS2.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_QNX" : {
                "file" : "ExtUtils/MM_QNX.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_UWIN" : {
                "file" : "ExtUtils/MM_UWIN.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_Unix" : {
                "file" : "ExtUtils/MM_Unix.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_VMS" : {
                "file" : "ExtUtils/MM_VMS.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_VOS" : {
                "file" : "ExtUtils/MM_VOS.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_Win32" : {
                "file" : "ExtUtils/MM_Win32.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MM_Win95" : {
                "file" : "ExtUtils/MM_Win95.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MY" : {
                "file" : "ExtUtils/MY.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MakeMaker" : {
                "file" : "ExtUtils/MakeMaker.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::MakeMaker::Config" : {
                "file" : "ExtUtils/MakeMaker/Config.pm",
-               "version" : "6.64"
+               "version" : "6.72"
+            },
+            "ExtUtils::Manifest" : {
+               "file" : "ExtUtils/Manifest.pm",
+               "version" : "1.60"
             },
             "ExtUtils::Mkbootstrap" : {
                "file" : "ExtUtils/Mkbootstrap.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::Mksymlists" : {
                "file" : "ExtUtils/Mksymlists.pm",
-               "version" : "6.64"
+               "version" : "6.72"
             },
             "ExtUtils::testlib" : {
                "file" : "ExtUtils/testlib.pm",
-               "version" : "6.64"
+               "version" : "6.72"
+            },
+            "File::Copy::Recursive" : {
+               "file" : "File/Copy/Recursive.pm",
+               "version" : "0.38"
+            },
+            "JSON::PP::Compat5006" : {
+               "file" : "JSON/PP/Compat5006.pm",
+               "version" : "1.09"
             },
             "MM" : {
                "file" : "ExtUtils/MM.pm"
@@ -15089,8 +15102,7 @@
                "file" : "ExtUtils/MakeMaker.pm"
             }
          },
-         "target" : "File::Copy::Recursive",
-         "version" : "6.64"
+         "version" : "6.72"
       },
       "ExtUtils::ParseXS" : {
          "dist" : "ExtUtils-ParseXS-3.18",

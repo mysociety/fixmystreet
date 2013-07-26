@@ -4,7 +4,6 @@ use Moose;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
-use BarnetInterfaces::service::ZLBB_SERVICE_ORDER;
 use Encode;
 use Utils;
 use mySociety::Config;
@@ -45,6 +44,7 @@ sub send {
 
     my $geo_code = "$h{easting} $h{northing}"; 
 
+    require BarnetInterfaces::service::ZLBB_SERVICE_ORDER;
     my $interface = BarnetInterfaces::service::ZLBB_SERVICE_ORDER->new();
     
     my ($nearest_postcode, $nearest_street) = ('', '');

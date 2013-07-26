@@ -4,10 +4,6 @@ set -e
 
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd | sed -e 's/\/bin$//' )"
 
-# Before anything else is installed, install the carton.lock version of
-# ExtUtils::MakeMaker to work around a dependency bug only just fixed, sigh
-$DIR/bin/cpanm -l $DIR/local MSCHWERN/ExtUtils-MakeMaker-6.64.tar.gz
-
 $DIR/bin/cpanm -l $DIR/local Carton
 
 export PATH=$DIR/local/bin:$PATH
