@@ -20,7 +20,6 @@ requires 'Catalyst::View::TT';
 requires 'Cache::Memcached';
 requires 'Carp';
 requires 'CGI';
-requires 'Class::Std::Fast::Storable';
 requires 'Crypt::Eksblowfish::Bcrypt';
 requires 'DateTime';
 requires 'DateTime::Format::HTTP';
@@ -67,7 +66,8 @@ requires 'Readonly';
 requires 'Regexp::Common';
 requires 'Scalar::Util';
 requires 'SOAP::Lite';
-requires 'SOAP::WSDL';
+# Required by Barnet sending, currently fails to install, no-one else needs it.
+# requires 'SOAP::WSDL';
 requires 'Statistics::Distributions';
 requires 'Storable';
 requires 'Template::Plugin::Comma';

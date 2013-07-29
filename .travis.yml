@@ -18,7 +18,12 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq jhead libgmp-dev
 # A couple of other modules that normally come from packages, but no system stuff here
-  - cpanm -q Carton Locale::gettext Math::BigInt::GMP SOAP::Lite
+  - cpanm -q Carton Locale::gettext Math::BigInt::GMP
+# This is because of a bug in its test (it's empty), and SOAP::Lite depends on it.
+# Would be good to not have SOAP::Lite as a dependency at all really.
+  - cpanm -q DIME::Tools --force
+# And let's install the same version the carton.lock file currently has.
+  - cpanm -q MKUTTER/SOAP-Lite-0.715.tar.gz
   - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8
 install:
   - carton install --deployment

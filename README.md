@@ -14,10 +14,13 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.2.1.
+Platform is now at version 1.2.2.
 
 ## Releases
 
+* v1.2.2 (26th July 2013)
+    - Maintenance release to deal with failing installation
+    - Improve Google Maps plugin somewhat, though still needs work
 * v1.2.1 (5th June 2013)
     - Maintenance release to deal with failing carton installation
     - Test and module fixes for installation on Debian wheezy
