@@ -120,8 +120,11 @@ looks different simply by copying these files to your own cobrand CSS
 directory, and changing the colours.
 * config.rb
 This is the config script used by compass; to base your CSS off of FixMyStreet,
-you can just copy the one from `web/cobrands/fixmystreet/` and add your
-directory to `bin/make_css`.
+you can just copy the one from `web/cobrands/fixmystreet/`.
+
+Our `.gitignore` file assumes that any CSS files directly in a `cobrands/*`
+directory are generated from SCSS - if you have CSS files that you want to use
+directly, put them in a `css` directory within your cobrand directory.
 
 ## Configuration options
 
