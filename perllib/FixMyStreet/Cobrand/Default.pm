@@ -691,6 +691,14 @@ sub example_places {
     return $e;
 }
 
+=head2 title_list
+
+Returns an arrayref of possible titles for a person to send to the mobile app.
+
+=cut
+
+sub title_list { return undef; }
+
 =head2 only_authed_can_create
 
 If true, only users with the from_body flag set are able to create reports.

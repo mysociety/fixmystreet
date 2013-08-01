@@ -921,8 +921,13 @@ subtest "test report creation for a category that is non public" => sub {
 
 $contact2->category( "Pothol\xc3\xa9s" );
 $contact2->update;
-$mech->get_ok( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
+
+my $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
 $mech->content_contains( "Pothol\xc3\xa9s" );
+ok !$extra_details->{titles_list}, 'Non Bromley does not send back list of titles';
+
+$extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.4021&longitude=0.01578');
+ok $extra_details->{titles_list}, 'Bromley sends back list of titles';
 
 #### test uploading an image
 
