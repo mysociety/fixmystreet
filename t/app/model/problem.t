@@ -596,13 +596,14 @@ subtest 'check can turn on report sent email alerts' => sub {
 
     $problem->discard_changes;
     $problem->update( {
-        council => 2651,
+        bodies_str => 2651,
         state => 'confirmed',
         confirmed => \'ms_current_timestamp()',
         whensent => undef,
         category => 'potholes',
         name => 'Test User',
         cobrand => 'fixmystreet',
+        send_fail_count => 0,
     } );
 
     my $m = new Test::MockModule(
