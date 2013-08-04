@@ -130,6 +130,9 @@ sub index : Path : Args(0) {
 
     $c->stash->{categories} = $c->cobrand->problems->categories_summary();
 
+	if ($c->config->{SHOW_ADMIN_HINTS}) {
+		$c->stash->{total_bodies} = $c->model('DB::Body')->count();
+	}
     return 1;
 }
 
