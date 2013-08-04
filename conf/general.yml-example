@@ -166,3 +166,8 @@ LONDON_REPORTIT_KEY: ''
 LONDON_REPORTIT_SECRET: ''
 AUTH_SHARED_SECRET: ''
 HEARFROMYOURMP_BASE_URL: ''
+
+# if you want hints shown in the admin interface, set SHOW_ADMIN_HINTS to 1
+# (mostly useful if you're installing FixMyStreet and are not familiar with the admin:
+# recommended for new installations)
+SHOW_ADMIN_HINTS: 1
