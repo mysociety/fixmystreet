@@ -18,7 +18,6 @@
     [% IF c.config.SHOW_ADMIN_HINTS AND areas.size == 0 %]
       [% IF c.config.MAPIT_URL AND (NOT c.config.MAPIT_TYPES OR c.config.MAPIT_TYPES.size==O) %]
         <p class="fms-admin-warning">
-          [% loc('Graph of problem creation by status over time') %]
           [% tprintf( loc(
               '<code>MAPIT_URL</code> is set (<code>%s</code>) but no <code>MAPIT_TYPES</code>.<br>
               This is probably why "area covered" is empty (below).<br>
