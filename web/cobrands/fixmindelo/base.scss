@@ -1,0 +1,29 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+$image-sprite: 'images/sprite.png';
+
+@import "../sass/base";
+
+
+#site-logo{
+  width: 225px !important;
+  background: url($image-sprite) -3px -3px no-repeat;
+}
+
+#site-header {
+  background: url('images/fixmindelo-header.png') 30% 0% repeat-x;
+}
+
+#front-main-container #postcodeForm, #front-howto #front_stats {
+  color: #fff;
+  border-top: 3px solid  $mindelo_green;
+  border-bottom: 3px solid $mindelo_green;
+}
+
+#nav-link {
+  top: -6x;
+  background: url('images/sprite.png') -8px -915px no-repeat;
+}

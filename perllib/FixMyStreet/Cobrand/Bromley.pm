@@ -97,6 +97,9 @@ sub tweak_all_reports_map {
     }
 }
 
+sub title_list {
+    return ["MR", "MISS", "MRS", "MS", "DR"];
+}
 
 1;
 

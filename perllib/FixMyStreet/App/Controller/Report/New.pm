@@ -189,11 +189,14 @@ sub report_form_ajax : Path('ajax') : Args(0) {
         ? $c->render_fragment('report/new/extra_name.html')
         : '';
 
+    my $extra_titles_list = $c->cobrand->title_list($c->stash->{all_areas});
+
     my $body = JSON->new->utf8(1)->encode(
         {
             councils_text   => $councils_text,
             category        => $category,
             extra_name_info => $extra_name_info,
+            titles_list     => $extra_titles_list,
             categories      => $c->stash->{category_options},
         }
     );

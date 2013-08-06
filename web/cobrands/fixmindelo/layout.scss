@@ -1,0 +1,77 @@
+@import "_colours";
+
+$image-sprite: 'images/sprite.png';
+
+@import "../sass/layout";
+
+
+body {
+  background-color: #fff;
+  background-image: url(images/tropical-sea-pattern.jpg);
+  color: $primary_text;
+  
+  .wrapper{
+  background-color: #fff;
+    background: url('images/fixmindelo-header.png') 30% 0% repeat-x;
+  }
+  #site-logo {
+    left:8px;
+  }
+}
+
+
+body.mappage {
+    .nav-wrapper {
+        .nav-wrapper-2 {
+            background: #fff;
+        }
+    }
+}
+
+#main-nav {
+    ul {
+        li {
+            a, span {
+                color: #000;
+            }
+        }
+        &#main-menu {
+            li {
+                a.report-a-problem-btn {
+                  color: #fff;
+                }
+                a:hover {
+                    background: $primary;
+                }
+            }
+        }
+    }
+}
+
+body.frontpage {
+    #site-logo {
+        width: 370px !important;
+        height: 70px;
+        background: url('images/sprite.png') -3px -106px no-repeat;
+        top: 2em;
+        left: 1em;
+    }
+
+    .wrapper {    
+        background: url('images/fixmindelo-header.png') 30% 0% repeat-x;
+    }
+    
+    #front-main-container {
+      color: #fff;
+      #postcodeForm {
+      border-top: none;
+      border-bottom: none;
+      }
+    }
+    
+    #front-main {
+      border-top: 3px solid  $mindelo_green;
+      border-bottom: 3px solid $mindelo_green;
+    }
+}
+
