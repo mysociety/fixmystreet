@@ -50,6 +50,14 @@
     [% END %]
 
     <p>
+        <div class="admin-hint">
+          <p>
+            [% loc(
+              "This body will only be sent reports for problems that are located in the <strong>area covered</strong>.
+              A body will not receive any reports unless it covers at least one area."
+            ) %]
+          </p>
+        </div>
         <label for="area_ids">[% loc('Area covered') %]</label>
         <select name="area_ids" id="area_ids" multiple>
             <option value=""> -- [% loc('Select an area') %] -- </option>
