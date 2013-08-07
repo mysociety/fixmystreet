@@ -1053,9 +1053,47 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
       padding:1em;
       margin: 1em 0;
     }
+    .admin-hint {
+      cursor: pointer;
+      display: inline-block;
+      float:left;
+      overflow: hidden;
+      padding: 0.2em;
+      margin-right: 0.666em;
+      text-align: center;
+      color: #fff;
+      font-weight: bold;
+      background-color: #f93;
+      -moz-border-radius: 0.333em;
+      -webkit-border-radius: 0.333em;
+      border-radius: 0.333em;
+      p {
+        display:none;
+      }
+      &:before { content: "?" }
+      &.admin-hint-show {
+        text-align: left;
+        display: block;
+        float:none;
+        margin:1em 0;
+        &:before { content: "" }
+        background-color: inherit !important;
+        p {
+          font-weight: normal;
+          display: block;
+          font-size: 80%;
+          background-color: #ff9;
+          color: #000;
+          border-style: solid;
+          border-width: 1px;
+          border-left-width: 1em;
+          border-color: #f93;
+          padding:1em;
+          margin: 0;
+        }
+      }
+    }
 }
-
-
 
 /* MEDIA QUERIES */
 @media only screen and (min-width: 48em) and (max-width: 61em) {
