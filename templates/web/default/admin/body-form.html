@@ -48,6 +48,7 @@
         </select>
     </p>
 
+    <div class="admin-open311-only">
     <p>
         <label for="endpoint">[% loc('Endpoint') %]</label>
         <input type="text" name="endpoint" id="endpoint" value="[% body.endpoint %]" size="50">
@@ -87,7 +88,8 @@
         <label for="send_extended_statuses">Send extended open311 statuses with service request updates</label>:
         <input type="checkbox" id="send_extended_statuses" name="send_extended_statuses"[% ' checked' IF conf.send_extended_statuses %]>
     </p>
-
+    </div>
+    
     <p>
     <input type="hidden" name="posted" value="body">
     <input type="hidden" name="token" value="[% token %]">
