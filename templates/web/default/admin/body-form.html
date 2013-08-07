@@ -1,5 +1,11 @@
     <form method="post" action="[% body ? c.uri_for('body', body.id) : c.uri_for('bodies') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-
+    <div class="fms-admin-info">
+        [% loc(
+          "Add a <strong>body</strong> for each administrative body, such as a council or department
+          to which problem reports can be sent. You can add one or more contacts (for different
+          categories of problem) to each body."
+        ) %]
+    </div>
     <p>
         <label for="name">[% loc('Name') %]</label>
         <input type="text" name="name" id="name" value="[% body.name %]" size="50">
