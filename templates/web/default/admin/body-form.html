@@ -20,6 +20,14 @@
     </p>
 
     <p>
+        <div class="admin-hint">
+          <p>
+            [% loc(
+              "Identify a <strong>parent</strong> if this body is itself part of another body.
+              For basic installations, you don't need to join bodies in this way."
+            ) %]
+          </p>
+        </div>
         <label for="parent">[% loc('Parent') %]</label>
         <select name="parent" id="parent">
             <option value=""> -- [% loc('Select a body') %] -- </option>
