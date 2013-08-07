@@ -21,5 +21,15 @@ $(function(){
         $('#send_method').on('change', hide_or_show_open311);
         hide_or_show_open311();
     }
+
+    // admin hints: maybe better implemented as tooltips?
+    $(".admin-hint").on('click', function(){
+        if ($(this).hasClass('admin-hint-show')) {
+            $(this).removeClass('admin-hint-show');
+        } else {
+            $(this).addClass('admin-hint-show');
+        }
+    });
+
 });
 
