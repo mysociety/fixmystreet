@@ -7,6 +7,14 @@
         ) %]
     </div>
     <p>
+        <div class="admin-hint">
+          <p>
+            [% loc(
+              "The body's <strong>name</strong> identifies the body (for example, <em>Borsetshire District Council</em>)
+              and may be displayed publically."
+            ) %]
+          </p>
+        </div>
         <label for="name">[% loc('Name') %]</label>
         <input type="text" name="name" id="name" value="[% body.name %]" size="50">
     </p>
