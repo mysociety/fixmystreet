@@ -49,6 +49,15 @@
     </p>
 
     <div class="admin-open311-only">
+      [% IF c.config.SHOW_ADMIN_HINTS %]
+        <p class="fms-admin-info">
+          [% loc(
+            "These settings are for bodies that use Open311 (or other back-end integration) to receive problem reports.<br>
+             You don't need to set them if the Send Method is email."
+          ) %]
+        </p>
+      [% END %]
+
     <p>
         <label for="endpoint">[% loc('Endpoint') %]</label>
         <input type="text" name="endpoint" id="endpoint" value="[% body.endpoint %]" size="50">
