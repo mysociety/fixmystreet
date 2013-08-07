@@ -69,6 +69,14 @@
     </p>
 
     <p>
+        <div class="admin-hint">
+          <p>
+            [% loc(
+              "The <strong>send method</strong> determines how problem reports will be sent to the body.
+               If you leave this blank, <strong>send method defaults to email</strong>."
+            ) %]
+          </p>
+        </div>
         <label for="send_method">Send Method</label>
         <select name="send_method" id="send_method">
             <option value=""> -- Select a method -- </option>
