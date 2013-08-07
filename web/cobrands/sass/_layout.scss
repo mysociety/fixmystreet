@@ -1039,6 +1039,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
       border-style: solid;
       border-width: 1px;
       border-left-width: 1em;
+      margin-bottom: 1em;
     }
     .fms-admin-warning {
         border-color: #f99;
@@ -1056,7 +1057,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     .admin-hint {
       font-size: 80%; // little question marks are small
       cursor: pointer;
-      display: inline-block;
+      display: block;
       float:left;
       overflow: hidden;
       padding: 0.2em;
