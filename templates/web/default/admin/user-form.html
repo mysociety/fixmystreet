@@ -2,7 +2,17 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
     <ul class="no-bullets">
-        <li>[% loc('Name:') %] <input type='text' name='name' id='name' value='[% user.name | html %]'></li>
+        <li>
+          <div class="admin-hint">
+            <p>
+              [% loc(
+                "The user's <strong>name</strong> is displayed publicly on reports that have not been marked <em>anonymous</em>.
+                Names are not necessarily unique.")
+              %]
+            </p>
+          </div>
+          [% loc('Name:') %] <input type='text' name='name' id='name' value='[% user.name | html %]'>
+        </li>
         <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
         <li>[% loc('Body:') %] <select id='body' name='body'>
             <option value=''>[% loc('No body') %]</option>
