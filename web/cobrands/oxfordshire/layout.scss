@@ -105,7 +105,7 @@ body.twothirdswidthpage {
 .full-width { width: 464px; }
 .shadow-wrap { width: 464px; }
 
-#map_box { width: 464px; }
+#map_box { width: 956px; }
 .content { width: 432px; }
 
 body.fullwidthpage .content { width: auto; }
@@ -135,7 +135,7 @@ body.twothirdswidthpage .content {
     border: solid 1px #999;
     top: 1em;
     right: 0em;
-    margin: 0;
+    margin: 0 1em;
 }
 
 // Perhaps fix map location (should be in central?)
