@@ -40,7 +40,7 @@ body, body a {
 
 // White background, so no shadow or margin needed.
 .content {
-    margin: 0;
+    margin: 3em 0 0 1em;
     @include box-shadow(none);
 }
 .ie6, .ie7, .ie8  {
@@ -123,6 +123,13 @@ body.twothirdswidthpage .content {
         }
     }
 }
+
+body.mappage {
+  .content {
+    padding: 1em;
+  }
+}
+
 .ie6, .ie7 {
     body.mappage .container {
         width: 464px;
