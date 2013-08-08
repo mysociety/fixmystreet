@@ -38,10 +38,8 @@ body, body a {
   display: none;
 }
 
-// White background, so no shadow or margin needed.
 .content {
     margin: 3em 0 0 1em;
-    @include box-shadow(none);
 }
 .ie6, .ie7, .ie8  {
     .content {
