@@ -33,7 +33,19 @@
         </li>
         </select>
       [% IF c.cobrand.moniker != 'zurich' %]
-        <li>[% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]></li>
+        <li>
+          <div class="admin-hint">
+            <p>
+              [% loc("Mark abusive users as <strong>flagged</strong>.") %]
+              <br>
+              [% loc("Reports made by flagged users are never sent through to bodies, but are automatically hidden instead.") %]
+              <br>
+              [% tprintf(loc("Flagged users are listed on the <a href='%s'>flagged</a> page."), c.uri_for( 'flagged' )) %]
+            </p>
+          </div>
+          
+          [% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]>
+        </li>
       [% END %]
     </ul>
     <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
