@@ -14,11 +14,23 @@
           [% loc('Name:') %] <input type='text' name='name' id='name' value='[% user.name | html %]'>
         </li>
         <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
-        <li>[% loc('Body:') %] <select id='body' name='body'>
+        <li>
+          <div class="admin-hint">
+            <p>
+              [% loc(
+                "Normal (public) users should not be associated with any <strong>body</strong>.<br>
+                Authorised staff users can be associated with the body they represent.<br>
+                Depending on the implementation, staff users may have access to the dashboard (summary of
+                activity across their body), the ability to hide reports or set special report statuses.")
+              %]
+            </p>
+          </div>
+          [% loc('Body:') %] <select id='body' name='body'>
             <option value=''>[% loc('No body') %]</option>
         [% FOR body IN bodies %]
             <option value="[% body.id %]"[% ' selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
         [% END %]
+        </li>
         </select>
       [% IF c.cobrand.moniker != 'zurich' %]
         <li>[% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]></li>
