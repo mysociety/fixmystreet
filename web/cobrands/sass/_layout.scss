@@ -1032,6 +1032,12 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
             border: none;
             padding: 3px 0.5em;
         }
+        tr.is-deleted {
+          background-color: #ffdddd;
+          td.contact-category {
+            text-decoration: line-through;
+          }
+        }
     }
     .fms-admin-warning, .fms-admin-info {
       padding: 1em;

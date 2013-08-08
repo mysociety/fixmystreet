@@ -44,11 +44,11 @@
             <th>[% loc('Confirm') %]</th>
         </tr>
         [% WHILE ( contact = contacts.next ) %]
-            <tr>
-                <td><a href="[% c.uri_for( 'body_edit', body_id, contact.category ) %]">[% contact.category %]</a></td>
+            <tr [% IF contact.deleted %]class="is-deleted"[% END %]>
+                <td class="contact-category"><a href="[% c.uri_for( 'body_edit', body_id, contact.category ) %]">[% contact.category %]</a></td>
                 <td>[% contact.email | html %]</td>
                 <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-                <td>[% IF contact.deleted %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+                <td>[% IF contact.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]</td>
                 <td>[% IF body.can_be_devolved && contact.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
                 <td>[% contact.editor %]</td>
                 <td>[% contact.note | html %]</td>
