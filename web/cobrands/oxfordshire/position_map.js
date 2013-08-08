@@ -1,3 +1,9 @@
+/**
+ * Position the map box correctly on window resize.
+ *
+ * Called from fixmystreet.js when the window 'resize' event is fired
+ * and the page is transitioning to a desktop version.
+ */
 function position_map_box() {
     var $html = $('html');
     var oxfordshire_right;
