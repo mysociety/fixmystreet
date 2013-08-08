@@ -6,7 +6,7 @@ function position_map_box() {
     } else {
         oxfordshire_right = '0em';
     }
-    
+
     var map_box_width = 464;
     var map_box_height = 464;
     // Do the same as CSS (in case resized from mobile).
@@ -30,9 +30,8 @@ function position_map_box() {
             width: map_box_width
         });
     }
-    
+
 }
 
 function map_fix() {}
 var slide_wards_down = 1;
-
