@@ -1095,6 +1095,12 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         }
       }
     }
+    .no-bullets {
+      margin-left: 0;
+      > li {
+        list-style: none;
+      }
+    }
 }
 
 /* MEDIA QUERIES */
