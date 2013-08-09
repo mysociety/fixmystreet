@@ -99,7 +99,10 @@ body.twothirdswidthpage {
 }
 
 // To prevent font size larger interfering with the fixed Oxfordshire layout
-.container { width: auto; }
+.container {
+    width: auto;
+    min-height: 550px;
+}
 .full-width { width: 464px; }
 .shadow-wrap { width: 464px; }
 
