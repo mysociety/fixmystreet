@@ -6,23 +6,23 @@ author: dave
 
 # How FixMyStreet uses MapIt
 
-<p class="lead">
-When you add a body to FixMyStreet, you specify which areas it covers. The
-areas are typically defined by administrative boundaries: these are *not* part
-of FixMyStreet, buy are made available through our service called MapIt.
-</p>
+<p class="lead"> When you add a body to FixMyStreet, you specify which areas
+it covers. The areas are typically defined by administrative boundaries: these
+are <em>not</em> part of FixMyStreet, but are made available through our
+service called MapIt. </p>
 
 ## How this works
 
 When someone places a pin on the FixMyStreet map to report a problem,
 FixMyStreet sends the coordinates (lat, long) of that position to MapIt. MapIt
-responds with a list of areas that the pin lies within. FixMyStreet then looks
-in its own database to find all the bodies that cover that area. The contacts
-that you've added for those bodies are the potential contacts to which a
-report for this problem can be sent. Because each contact is associated with a
-category of problem (for example, "Potholes" or "Graffiti"), FixMyStreet can
-build a list of all the problem categories that *can* be reported at this
-location. In fact, this list appears as a drop-down menu on the report-a-problem page.
+responds with a list of the areas that the pin lies within. FixMyStreet then
+looks in its own database to find all the bodies that cover that area, and the
+contacts (which are usually email addresses) that you have added for each of
+those bodies. Because each contact is associated with a category of problem
+(for example, "Potholes" or "Graffiti"), FixMyStreet can build a list of all
+the problem categories that *can* be reported at this location. In fact, this
+list appears as the drop-down menu ("Pick a category") on the report-a-problem
+page.
 
 This means that your FixMyStreet installation must be able to connect to a
 MapIt service which knows about the administrative areas in your part of the
@@ -37,10 +37,9 @@ world.
 
 There are three ways to use MapIt with your FixMyStreet installation.
 
-    1. just assume everywhere is within one boundless area
-    2. use mySociety's MapIt servers (OpenStreetMap data)
-    3. use your own MapIt server with custom data
-
+1. just assume everywhere is within one boundless area
+2. use mySociety's MapIt servers (OpenStreetMap data)
+3. use your own MapIt server with custom data
 
 
 ## 1. FakeMapIt: Everything is in One Area
@@ -89,7 +88,7 @@ you can set up your own MapIt instance that just covers what you need to get
 your FixMyStreet working.
 
 
-## 3. set up your own MapIt
+## 3. Set up your own MapIt
 
 If neither 1. or 2. work for you, you can set up your own installation of
 MapIt, and add your own areas. The code is at `www.github.com/mysociety/mapit`
