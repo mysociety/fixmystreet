@@ -57,6 +57,7 @@ body.twothirdswidthpage {
             @include box-shadow(none);
         }
         .sticky-sidebar {
+            z-index: 5;
             aside {
                 position: fixed;
                 top: 10em;
