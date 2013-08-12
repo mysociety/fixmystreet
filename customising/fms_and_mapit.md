@@ -89,18 +89,18 @@ types of area have a different code. For example, for UK FixMyStreet, we use:
 
 which covers all the UK council types (for example, `DIS` is district council,
 `CTY` is county council). If you're using global mapit, the area types look
-like may look something like `[ 'O05', 'O06' ]`. (Note those contain capital
-letter O followed by digits). To determine what types you need, look for the
-codes marked "Administrative Boundary Levels" that MapIt returns -- for
-example, here's [global MapIt's data for
+something like `[ 'O05', 'O06' ]`. (Note those contain capital letter O
+followed by digits). To determine what types you need, look for the codes
+marked "Administrative Boundary Levels" that MapIt returns -- for example,
+here's [global MapIt's data for
 Zurich](http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html).
 
 ### Whitelisting specific areas
 
 It's quite common for people setting up localised FixMyStreet to know exactly
 which areas they are interested in. If this applies to you, you can specify a
-`MAPIT_ID_WHITELIST` which explicitly lists the *only* those area IDs
-(returned by global MapIt) that your installation will use. For example,
+`MAPIT_ID_WHITELIST` which explicitly lists *only* those area IDs (returned by
+global MapIt) that your installation will use. For example,
 
     MAPIT_ID_WHITELIST: [ 240838, 246176, 246733 ]
 
@@ -161,19 +161,4 @@ pin in an area covered not by your FixMyStreet (for example, in the middle of
 the sea), the application will be able to tell the user that that location is
 not supported. Of course, this is the drawback of using FakeMapIt: every
 location is always _within_ the boundary of the "Default area".
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
