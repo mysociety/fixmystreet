@@ -222,7 +222,10 @@ input.green-btn{
     display: none;
     position: absolute;
     color: #666;
-    margin: 0;
+    margin: 0 0 0 400px;
+    .ie6 &, .ie7 & {
+        margin: 0;
+    }
     p {
       padding: 0.5em;
     }
