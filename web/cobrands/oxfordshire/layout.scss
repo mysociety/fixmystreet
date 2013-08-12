@@ -85,19 +85,6 @@ body.twothirdswidthpage {
     }
 }
 
-// show the sidebar tips and notices in the document flow, i.e., in the
-// left-hand column, rather than in smaller text above the map
-.general-sidebar-notes,
-#report-a-problem-sidebar {
-  position: static;
-  width: auto;
-  @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
-  .sidebar-tips,
-  .sidebar-notes {
-    font-size:1em;
-  }
-}
-
 // To prevent font size larger interfering with the fixed Oxfordshire layout
 .container {
     width: auto;
