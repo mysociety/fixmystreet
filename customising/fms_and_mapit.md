@@ -126,8 +126,9 @@ FixMyStreet working, which is described below.
 
 ## 3. Set up your own MapIt
 
-If neither 1. or 2. work for you, you can set up your own installation of
-MapIt, and add your own areas. The 
+If neither 1. or 2. work for you, you can
+[set up your own installation of MapIt](http://code.mapit.mysociety.org/install/),
+and add your own areas. The
 [code is on github](http://github.com/mysociety/mapit)
 and is a simple Django project. Once you've got that running, it's easy to add
 new areas: the admin lets you draw your boundary over a map in the web browser
