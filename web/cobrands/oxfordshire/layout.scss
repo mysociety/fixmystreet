@@ -90,7 +90,11 @@ body.twothirdswidthpage {
 .general-sidebar-notes,
 #report-a-problem-sidebar {
     top: 1em;
-    left: 25.7em;
+    left: 23.5em;
+}
+
+#forgotten-pw {
+    left: 21.6em;
 }
 
 // To prevent font size larger interfering with the fixed Oxfordshire layout
@@ -99,14 +103,14 @@ body.twothirdswidthpage {
     min-height: 550px;
     z-index: auto;
 }
-.full-width { width: 412px; }
-.shadow-wrap { width: 412px; }
+.full-width { width: 377px; }
+.shadow-wrap { width: 377px; }
 
 #map_box {
     width: 956px;
     height: 600px;
 }
-.content { width: 380px; }
+.content { width: 345px; }
 
 body.fullwidthpage .content { width: auto; }
 body.twothirdswidthpage .content {
@@ -210,6 +214,16 @@ input.green-btn{
     padding: 0.5em 2em 0.5em 0.5em;
     line-height: 1.3;
     background: #339e00 url("/cobrands/fixmystreet/images/sprite.png") right -2177px no-repeat;
+}
+
+.extra-text {
+    font-family: "Museo300-display",MuseoSans,Helmet,Freesans,sans-serif;
+    font-size: 14px;
+}
+
+.extra-text__image {
+    float: left;
+    margin-right: 1em;
 }
 
 @import "oxfordshire";
