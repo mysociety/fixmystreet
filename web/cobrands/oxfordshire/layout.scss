@@ -102,7 +102,10 @@ body.twothirdswidthpage {
 .full-width { width: 412px; }
 .shadow-wrap { width: 412px; }
 
-#map_box { width: 956px; }
+#map_box {
+    width: 956px;
+    height: 600px;
+}
 .content { width: 380px; }
 
 body.fullwidthpage .content { width: auto; }

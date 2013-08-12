@@ -14,7 +14,7 @@ function position_map_box() {
     }
 
     var map_box_width = "956px";
-    var map_box_height = "464px";
+    var map_box_height = "600px";
     // Do the same as CSS (in case resized from mobile).
     $('#map_box').prependTo('.wrapper').css({
         zIndex: 1, position: 'absolute',
