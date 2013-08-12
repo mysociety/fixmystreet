@@ -53,16 +53,10 @@ function tabs(elem, indirect) {
 $(function(){
     var $html = $('html');
 
-    var cobrand;
+    var cobrand = $('meta[name="cobrand"]').attr('content');
     var is_small_map = false;
-    if (window.location.href.indexOf('bromley') != -1) {
-        cobrand = 'bromley';
+    if (cobrand === 'bromley' || cobrand === 'oxfordshire') {
         is_small_map = true;
-    } else if (window.location.href.indexOf('oxfordshire') != -1) {
-        cobrand = 'oxfordshire';
-        is_small_map = true;
-    } else if (window.location.href.indexOf('zurich') != -1 || window.location.href.indexOf('zueri') != -1) {
-        cobrand = 'zurich';
     }
 
     // Deal with switching between mobile and desktop versions on resize
