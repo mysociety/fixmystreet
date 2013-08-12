@@ -102,6 +102,7 @@ body.twothirdswidthpage {
 .container {
     width: auto;
     min-height: 550px;
+    z-index: auto;
 }
 .full-width { width: 464px; }
 .shadow-wrap { width: 464px; }
@@ -128,6 +129,8 @@ body.twothirdswidthpage .content {
 body.mappage {
   .content {
     padding: 1em;
+    position: relative;
+    z-index: 1;
   }
 }
 
