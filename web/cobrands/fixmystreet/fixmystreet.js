@@ -447,8 +447,6 @@ $.fn.drawer = function(id, ajax) {
             var offset = -18 * 16;
             if (cobrand == 'bromley') {
                 offset = -110;
-            } else if (cobrand == 'oxfordshire') {
-                offset = -110;
             }
             heightFix(window, '.content', offset, 1);
             // in case we have a map that isn't full screen
