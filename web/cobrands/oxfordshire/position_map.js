@@ -33,7 +33,8 @@ function position_map_box() {
             right: oxfordshire_right,
             bottom: '',
             top: mb_y +'px',
-            width: map_box_width
+            width: '525px',
+            marginLeft: '400px'
         });
     }
 
