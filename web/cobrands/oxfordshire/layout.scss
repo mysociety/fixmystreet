@@ -101,19 +101,15 @@ body.twothirdswidthpage {
 }
 
 // To prevent font size larger interfering with the fixed Oxfordshire layout
-.container {
-    width: auto;
-    min-height: 550px;
-    z-index: auto;
-}
-.full-width { width: 377px; }
-.shadow-wrap { width: 377px; }
+.container { width: auto; }
+.full-width { width: 464px; }
+.shadow-wrap { width: 464px; }
 
 #map_box {
     width: 956px;
     height: 600px;
 }
-.content { width: 345px; }
+.content { width: 432px; }
 
 body.fullwidthpage .content { width: auto; }
 body.twothirdswidthpage .content {
@@ -133,6 +129,7 @@ body.twothirdswidthpage .content {
 
 body.mappage {
     .content {
+        width: 345px;
         padding: 1em;
         position: relative;
         z-index: 1;
@@ -142,6 +139,14 @@ body.mappage {
         margin: 3em 0 0 1em;
         @include box-shadow(0px 0px 6px 1px #000);
     }
+
+    .container {
+        width: auto;
+        min-height: 550px;
+        z-index: auto;
+    }
+    .full-width { width: 377px; }
+    .shadow-wrap { width: 377px; }
 }
 
 .ie6, .ie7 {
