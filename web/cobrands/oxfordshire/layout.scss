@@ -219,16 +219,11 @@ input.green-btn{
 // map instructions (click on 'details' to see details) are a specific requirement from OCC management
 // populated dynamically by position_map.js
 #occ-map-instructions {
-    display: none;
     position: absolute;
     color: #666;
-    margin: 0 0 0 400px;
-    .ie6 &, .ie7 & {
-        margin: 0;
-    }
-    p {
-      padding: 0.5em;
-    }
+    margin: 0 0 0 430px;
+    width: 540px;
+    bottom: 0;
 }
 
 .big-green-banner {
