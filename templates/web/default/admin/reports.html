@@ -20,6 +20,12 @@
 
 [% INCLUDE 'pagination.html', admin = 1, param = 'p' IF pager %]
 
+[% ELSIF searched %]
+
+<div class="fms-admin-warning">
+    [% loc("Searching found no reports.") %]
+</div>
+
 [% END %]
 
 [% INCLUDE 'admin/list_updates.html' %]
