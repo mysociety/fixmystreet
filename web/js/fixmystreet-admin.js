@@ -3,25 +3,27 @@ $(function(){
 
     // hide the open311_only section and reveal it only when send_method is relevant
     var $open311_only = $('.admin-open311-only');
-    if ($open311_only) {
-        function hide_or_show_open311(hide_fast) {
-            var send_method = $('#send_method').val();
-            var show_open311 = false;
-            if ($('#endpoint').val()) {
-                show_open311 = true; // always show the form if there is an endpoint value
-            } else if (send_method && send_method.toLowerCase() != 'email') {
-                show_open311 = true;
-            }
-            if (show_open311) {
-                $open311_only.slideDown();
+ 
+    function hide_or_show_open311(hide_fast) {
+        var send_method = $('#send_method').val();
+        var show_open311 = false;
+        if ($('#endpoint').val()) {
+            show_open311 = true; // always show the form if there is an endpoint value
+        } else if (send_method && send_method.toLowerCase() != 'email') {
+            show_open311 = true;
+        }
+        if (show_open311) {
+            $open311_only.slideDown();
+        } else {
+            if (hide_fast) {
+                $open311_only.hide();
             } else {
-                if (hide_fast) {
-                    $open311_only.hide();
-                } else {
-                    $open311_only.slideUp();
-                }
+                $open311_only.slideUp();
             }
         }
+    }
+
+    if ($open311_only) {
         $('#send_method').on('change', hide_or_show_open311);
         hide_or_show_open311(true);
     }
@@ -51,7 +53,7 @@ $(function(){
                 $cols.show();
                 $(this).prop("value", 'Hide deleted contacts');
             }
-        })
+        });
     }
 
 });
