@@ -194,7 +194,7 @@
     <div class="admin-hint">
       <p>
         [% loc(
-          "Enable this <strong>contact can override</strong> setting if one or more contacts have a 
+          "Enable this <strong>can be devolved</strong> setting if one or more contacts have a 
           different endpoint (and send method) from the body's. For example, if reports for some categories of
           problem must be emailed, while others can be sent over Open311."
         ) %]
@@ -202,7 +202,7 @@
     </div>
     <p>
         <input type="checkbox" id="can_be_devolved" name="can_be_devolved"[% ' checked' IF body.can_be_devolved %]>
-        <label for="can_be_devolved" class="inline">Contacts' own endpoint can override the body's endpoint</label>
+        <label for="can_be_devolved" class="inline">Send method or endpoints can be devolved to contacts (i.e, can be different from the body's)</label>
     </p>
     
     <p>
