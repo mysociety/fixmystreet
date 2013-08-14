@@ -179,20 +179,6 @@
     <div class="admin-hint">
       <p>
         [% loc(
-          "Enable this <strong>contact can override</strong> setting if one or more contacts have a 
-          different endpoint (and send method) from the body's. For example, if reports for some categories of
-          problem must be emailed, while others can be sent over Open311."
-        ) %]
-      </p>
-    </div>
-    <p>
-        <input type="checkbox" id="can_be_devolved" name="can_be_devolved"[% ' checked' IF body.can_be_devolved %]>
-        <label for="can_be_devolved" class="inline">Contacts' own endpoint can override the body's endpoint</label>
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc(
           "If you've enabled Open311 update-sending above, Open311 usually only accepts OPEN or CLOSED status in 
           its updates. Enable <strong>extended Open311 stauses</strong> if you want to allow extra states to be passed.
           Check that your cobrand supports this feature before switching it on."
@@ -204,6 +190,20 @@
         <label for="send_extended_statuses" class="inline">Send extended Open311 statuses with service request updates</label>
     </p>
     </div>
+    
+    <div class="admin-hint">
+      <p>
+        [% loc(
+          "Enable this <strong>contact can override</strong> setting if one or more contacts have a 
+          different endpoint (and send method) from the body's. For example, if reports for some categories of
+          problem must be emailed, while others can be sent over Open311."
+        ) %]
+      </p>
+    </div>
+    <p>
+        <input type="checkbox" id="can_be_devolved" name="can_be_devolved"[% ' checked' IF body.can_be_devolved %]>
+        <label for="can_be_devolved" class="inline">Contacts' own endpoint can override the body's endpoint</label>
+    </p>
     
     <p>
     <input type="hidden" name="posted" value="body">
