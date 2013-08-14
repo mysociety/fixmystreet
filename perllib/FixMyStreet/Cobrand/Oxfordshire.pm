@@ -39,8 +39,9 @@ sub disambiguate_location {
     my $string  = shift;
     return {
         %{ $self->SUPER::disambiguate_location() },
+        town   => 'Oxfordshire',
         centre => '51.765765,-1.322324',
-        span   => '0.154963,0.24347', # NB span is not correct
+        span   => '0.709058,0.849434',
         bounds => [ 51.459413, -1.719500, 52.168471, -0.870066 ],
     };
 }
