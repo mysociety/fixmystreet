@@ -33,12 +33,17 @@
 [%- END -%]
 </table>
 
+[% ELSIF searched %]
+
+<div class="fms-admin-warning">
+    [% loc("Searching found no users.") %]
+</div>
+
 [% END %]
 
 [% IF NOT searched %]
 <h2>[% loc('Add user') %]</h2>
 [% INCLUDE 'admin/user-form.html', user = '' %]
-
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]
