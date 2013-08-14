@@ -1,6 +1,6 @@
 [% INCLUDE 'admin/header.html' title=loc('Summary') -%]
 
-[% IF c.config.SHOW_ADMIN_HINTS AND total_bodies == 0 %]
+[% IF total_bodies == 0 %]
   <p class="fms-admin-info">
     [% loc('Currently no bodies have been created.') %]
     <br>

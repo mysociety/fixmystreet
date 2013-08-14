@@ -1,15 +1,13 @@
 [% INCLUDE 'admin/header.html' title=loc('Flagged reports and users') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
-[% IF c.config.SHOW_ADMIN_HINTS %]
-  <p class="fms-admin-info">
-    [% loc("You can flag any report or user by editing them, and they will be listed on this page.
-            For example, this can useful if you want to keep an eye on a user who has posted inappropriate
-            reports in the past.") %]
-    <br>
-    [% loc("Reports made by flagged users are never sent through to bodies, but are automatically hidden instead.") %]
-  </p>
-[% END %]
+<p class="fms-admin-info">
+  [% loc("You can flag any report or user by editing them, and they will be listed on this page.
+          For example, this can useful if you want to keep an eye on a user who has posted inappropriate
+          reports in the past.") %]
+  <br>
+  [% loc("Reports made by flagged users are never sent through to bodies, but are automatically hidden instead.") %]
+</p>
 
 <h2>[% loc( 'Problems' ) %]</h2>
 [% IF problems.size > 0 %]

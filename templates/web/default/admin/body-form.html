@@ -37,8 +37,7 @@
         </select>
     </p>
 
-    [% IF c.config.SHOW_ADMIN_HINTS AND areas.size == 0 %]
-      [% IF c.config.MAPIT_URL AND (NOT c.config.MAPIT_TYPES OR c.config.MAPIT_TYPES.size==O) %]
+    [% IF areas.size == 0 AND c.config.MAPIT_URL AND (NOT c.config.MAPIT_TYPES OR c.config.MAPIT_TYPES.size==O) %]
         <p class="fms-admin-warning">
           [% tprintf( loc(
               '<code>MAPIT_URL</code> is set (<code>%s</code>) but no <code>MAPIT_TYPES</code>.<br>
@@ -46,7 +45,6 @@
               Maybe add some <code>MAPIT_TYPES</code> to your config file?'), c.config.MAPIT_URL)
           %]
         </p>
-      [% END %]
     [% END %]
 
     <div class="admin-hint">
@@ -87,17 +85,15 @@
     </p>
 
     <div class="admin-open311-only">
-      [% IF c.config.SHOW_ADMIN_HINTS %]
-        <p class="fms-admin-info">
-          [% loc(
-            "These settings are for bodies that use Open311 (or other back-end integration) to receive problem reports.<br>
-             <strong>You don't need to set them if the Send Method is email.</strong>.
-             For more information on Open311, see 
-             <a href='http://www.mysociety.org/2013/01/17/open311-explained//'>this article</a>.
-             "
-          ) %]
-        </p>
-      [% END %]
+      <p class="fms-admin-info">
+        [% loc(
+          "These settings are for bodies that use Open311 (or other back-end integration) to receive problem reports.<br>
+           <strong>You don't need to set them if the Send Method is email.</strong>.
+           For more information on Open311, see 
+           <a href='http://www.mysociety.org/2013/01/17/open311-explained//'>this article</a>.
+           "
+        ) %]
+      </p>
 
       <div class="admin-hint">
         <p>

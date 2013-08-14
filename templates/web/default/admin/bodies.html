@@ -2,7 +2,7 @@
 
 [% INCLUDE 'admin/edit-league.html' %]
 
-[% IF c.config.SHOW_ADMIN_HINTS AND bodies.size == 0 %]
+[% IF bodies.size == 0 %]
   <p class="fms-admin-info">
     [% loc('Currently no bodies have been created.') %]
     <br>
