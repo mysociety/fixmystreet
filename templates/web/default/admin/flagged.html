@@ -5,8 +5,6 @@
   [% loc("You can flag any report or user by editing them, and they will be listed on this page.
           For example, this can useful if you want to keep an eye on a user who has posted inappropriate
           reports in the past.") %]
-  <br>
-  [% loc("Reports made by flagged users are never sent through to bodies, but are automatically hidden instead.") %]
 </p>
 
 <h2>[% loc( 'Problems' ) %]</h2>
@@ -29,6 +27,10 @@
 [% END %]
 
 <h2>[% loc( 'Users' ) %]</h2>
+<p class="fms-admin-info">
+  [% loc("Flagged users are not restricted in any way. This is just a list of users that have been marked for attention.") %]
+</p>
+
 [% IF users.count > 0 %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
