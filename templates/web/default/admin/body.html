@@ -28,6 +28,14 @@
 <p class="error">Do not give these out except to people at the council.</p>
 [% END %]
 
+[% IF live_contacts == 0 %]
+  <p class="fms-admin-warning">
+    [% loc("This body has no contacts. This means that currently problems reported to this body <strong>will not be sent</strong>.") %]
+    <br>
+    [% loc("Add a contact using the form below.") %]
+  </p>
+[% END %]
+
 <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
     <table cellspacing="0" cellpadding="2" border="1">
