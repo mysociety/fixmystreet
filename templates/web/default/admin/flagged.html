@@ -29,7 +29,7 @@
 [% END %]
 
 <h2>[% loc( 'Users' ) %]</h2>
-[% IF users%]
+[% IF users.count > 0 %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('Name') %]</th>
