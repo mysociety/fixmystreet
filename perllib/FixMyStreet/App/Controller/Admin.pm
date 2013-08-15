@@ -422,6 +422,7 @@ sub display_contacts : Private {
 
     my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
     $c->stash->{contacts} = $contacts;
+    $c->stash->{live_contacts} = $contacts->search({ deleted => 0 });
 
     if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
