@@ -1,5 +1,3 @@
-<h2>[% loc('Diligency prize league table') %]</h2>
-[% IF edit_activity.count %]
 <div class="admin-hint">
   <p>
     [% loc(
@@ -7,6 +5,8 @@
     ) %]
   </p>
 </div>
+<h2>[% loc('Diligency prize league table') %]</h2>
+[% IF edit_activity.count %]
 <ul>
     [% WHILE ( editor = edit_activity.next ) %]
     <li>[% tprintf( loc('%d edits by %s'), editor.get_column('c'), editor.editor ) %]</li>
