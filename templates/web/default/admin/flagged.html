@@ -23,9 +23,9 @@
     [% INCLUDE 'admin/problem_row.html' %]
 </table>
 [% ELSE %]
-<p>
-[% loc('No flagged problems found') %]
-</p>
+  <p class="fms-admin-warning">
+    [% loc('No flagged problems found.') %]
+  </p>
 [% END %]
 
 <h2>[% loc( 'Users' ) %]</h2>
@@ -44,8 +44,8 @@
 [%- END %]
 </table>
 [%- ELSE %]
-<p>
-[% loc('No flagged users found') %]
+<p class="fms-admin-warning">
+  [% loc('No flagged users found.') %]
 </p>
 [%- END %]
 
