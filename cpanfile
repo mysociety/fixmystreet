@@ -1,5 +1,6 @@
 # setenv script
 requires 'List::MoreUtils';
+requires 'local::lib';
 requires 'Class::Unload';
 
 # Catalyst itself, and modules/plugins used

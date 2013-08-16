@@ -21,7 +21,6 @@ DISTRIBUTIONS
       App::FatPacker 0.009018
       App::FatPacker::Trace undef
     requirements:
-      ExtUtils::MakeMaker 0
   App-cpanminus-1.6940
     pathname: M/MI/MIYAGAWA/App-cpanminus-1.6940.tar.gz
     provides:
@@ -162,21 +161,6 @@ DISTRIBUTIONS
     provides:
       Capture::Tiny 0.22
     requirements:
-      Carp 0
-      Config 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.30
-      File::Find 0
-      File::Spec 0
-      File::Spec::Functions 0
-      File::Temp 0
-      IO::File 0
-      IO::Handle 0
-      List::Util 0
-      Scalar::Util 0
-      Test::More 0.62
-      strict 0
-      warnings 0
   Carp-1.26
     pathname: Z/ZE/ZEFRAM/Carp-1.26.tar.gz
     provides:
@@ -218,7 +202,7 @@ DISTRIBUTIONS
   Carton-v1.0.7
     pathname: M/MI/MIYAGAWA/Carton-v1.0.7.tar.gz
     provides:
-      Carton 1.000007
+      Carton v1.0.7
       Carton::Builder undef
       Carton::CLI undef
       Carton::CPANfile undef
@@ -2434,8 +2418,6 @@ DISTRIBUTIONS
     provides:
       Devel::Hide 0.0009
     requirements:
-      ExtUtils::MakeMaker 0
-      Test::More 0
   Devel-StackTrace-1.30
     pathname: D/DR/DROLSKY/Devel-StackTrace-1.30.tar.gz
     provides:
@@ -2812,21 +2794,6 @@ DISTRIBUTIONS
     provides:
       File::pushd 1.005
     requirements:
-      Carp 0
-      Cwd 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.30
-      File::Basename 0
-      File::Find 0
-      File::Path 0
-      File::Spec 0
-      File::Spec::Functions 0
-      File::Temp 0
-      List::Util 0
-      Test::More 0
-      overload 0
-      strict 0
-      warnings 0
   Filesys-Notify-Simple-0.10
     pathname: M/MI/MIYAGAWA/Filesys-Notify-Simple-0.10.tar.gz
     provides:
@@ -2851,8 +2818,6 @@ DISTRIBUTIONS
       Getopt::Long::CallBack undef
       Getopt::Long::Parser undef
     requirements:
-      ExtUtils::MakeMaker 0
-      Pod::Usage 1.14
   Getopt-Long-Descriptive-0.093
     pathname: R/RJ/RJBS/Getopt-Long-Descriptive-0.093.tar.gz
     provides:
@@ -4487,24 +4452,6 @@ DISTRIBUTIONS
     provides:
       Path::Tiny 0.028
     requirements:
-      Carp 0
-      Cwd 0
-      Digest 1.03
-      Digest::SHA 5.45
-      Exporter 5.57
-      ExtUtils::MakeMaker 6.30
-      Fcntl 0
-      File::Copy 0
-      File::Path 2.07
-      File::Spec 3.40
-      File::Temp 0.18
-      File::stat 0
-      autodie::exception 2.14
-      constant 0
-      overload 0
-      strict 0
-      threads 0
-      warnings 0
   PathTools-3.40
     pathname: S/SM/SMUELLER/PathTools-3.40.tar.gz
     provides:
@@ -4519,11 +4466,6 @@ DISTRIBUTIONS
       File::Spec::VMS 3.40
       File::Spec::Win32 3.40
     requirements:
-      Carp 0
-      ExtUtils::MakeMaker 0
-      File::Basename 0
-      Scalar::Util 0
-      Test 0
   Perl-OSType-1.003
     pathname: D/DA/DAGOLDEN/Perl-OSType-1.003.tar.gz
     provides:
@@ -5219,12 +5161,6 @@ DISTRIBUTIONS
       Test::Deep::SuperHashKeys undef
       Test::Deep::SuperHashKeysOnly undef
     requirements:
-      ExtUtils::MakeMaker 0
-      List::Util 1.09
-      Scalar::Util 1.09
-      Test::More 0
-      Test::NoWarnings 0.02
-      Test::Tester 0.04
   Test-Differences-0.61
     pathname: O/OV/OVID/Test-Differences-0.61.tar.gz
     provides:
@@ -5251,26 +5187,11 @@ DISTRIBUTIONS
     provides:
       Test::FailWarnings 0.005
     requirements:
-      Carp 0
-      ExtUtils::MakeMaker 6.30
-      Test::More 0.86
-      strict 0
-      warnings 0
   Test-Fatal-0.010
     pathname: R/RJ/RJBS/Test-Fatal-0.010.tar.gz
     provides:
       Test::Fatal 0.010
     requirements:
-      Carp 0
-      Exporter 5.57
-      ExtUtils::MakeMaker 6.30
-      Test::Builder 0
-      Test::Builder::Tester 0
-      Test::More 0.47
-      Try::Tiny 0.07
-      overload 0
-      strict 0
-      warnings 0
   Test-LongString-0.15
     pathname: R/RG/RGARCIA/Test-LongString-0.15.tar.gz
     provides:
@@ -5343,9 +5264,6 @@ DISTRIBUTIONS
       Test::More 0.98
       Test::Simple 0.98
     requirements:
-      ExtUtils::MakeMaker 0
-      Test::Harness 2.03
-      perl 5.006
   Test-TCP-1.21
     pathname: T/TO/TOKUHIROM/Test-TCP-1.21.tar.gz
     provides:
@@ -5366,8 +5284,6 @@ DISTRIBUTIONS
       Test::Tester::CaptureRunner undef
       Test::Tester::Delegate undef
     requirements:
-      ExtUtils::MakeMaker 0
-      Test::Builder 0
   Test-Trap-v0.2.2
     pathname: E/EB/EBHANSSEN/Test-Trap-v0.2.2.tar.gz
     provides:
@@ -5628,13 +5544,6 @@ DISTRIBUTIONS
     provides:
       Try::Tiny 0.16
     requirements:
-      Carp 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.30
-      base 0
-      constant 0
-      strict 0
-      warnings 0
   UNIVERSAL-require-0.13
     pathname: M/MS/MSCHWERN/UNIVERSAL-require-0.13.tar.gz
     provides:
@@ -5966,31 +5875,10 @@ DISTRIBUTIONS
       autodie::hints 2.20
       autodie::skip 2.20
     requirements:
-      B 0
-      Carp 0
-      Config 0
-      Exporter 0
-      ExtUtils::MakeMaker 6.30
-      Fcntl 0
-      POSIX 0
-      Scalar::Util 0
-      Tie::RefHash 0
-      base 0
-      constant 0
-      if 0
-      overload 0
-      strict 0
-      warnings 0
   common-sense-3.6
     pathname: M/ML/MLEHMANN/common-sense-3.6.tar.gz
     provides:
       common::sense 3.6
-    requirements:
-      ExtUtils::MakeMaker 0
-  install-0.01
-    pathname: D/DA/DAGOLDEN/install-0.01.tar.gz
-    provides:
-      install 0.01
     requirements:
       ExtUtils::MakeMaker 0
   libwww-perl-6.05
@@ -6089,8 +5977,6 @@ DISTRIBUTIONS
     provides:
       parent 0.225
     requirements:
-      ExtUtils::MakeMaker 0
-      Test::More 0.4
   strictures-1.004004
     pathname: E/ET/ETHER/strictures-1.004004.tar.gz
     provides:
