@@ -75,10 +75,12 @@ the whole world. The data we use for global MapIt is from
 administrative boundary data for your country into OSM, before too long global
 MapIt will have it too.
 
-We rate-limit calls to MapIt, so if your site gets really busy, you should set
-up your own instance (we can help you, and the [code is on
-github](http://github.com/mysociety/mapit)). But when you're setting your site
-up to begin with, you can get it running using one of these two servers.
+Please get in touch with us if you are expecting to generate a lot of requests
+or **if you are using it commercially**. We rate-limit calls to MapIt, so if
+your site gets really busy, you should set up your own instance (we can help
+you, and the [code is on github](http://github.com/mysociety/mapit)). But when
+you're setting your site up to begin with, you can get it running using one of
+these two servers.
 
 To use the mySociety MapIt instances, set `MAPIT_URL` either to
 `http://mapit.mysociety.org/` (UK) or `http://global.mapit.mysociety.org/`.
@@ -142,14 +144,17 @@ to be different areas, the chances are you don't need super-accurate official
 boundary data: just draw a close polygon around the coast). You only need to
 be as accurate as your FixMyStreet requires.
 
-If you want to run your own MapIt, set the `MAPIT_URL` to the URL of your custom installation, and list the `MAPIT_TYPES` that match the types you entered when you added your own areas, for example, `[ 'ABC', 'XYZ ]`.
+If you want to run your own MapIt, set the `MAPIT_URL` to the URL of your
+custom installation, and list the `MAPIT_TYPES` that match the types you
+entered when you added your own areas, for example, `[ 'ABC', 'XYZ ]`.
 
 
 ## Some notes
 
 If you do want to use our UK or global MapIt services, but need it to not be
-rate-limited, let us know. We can either help you set up your own (with the
-OSM data in it), or perhaps arrange to run one for you.
+rate-limited, or **if you will be using it commercially**, let us know. We can
+either help you set up your own (with the OSM data in it), or perhaps arrange
+to run one for you.
 
 Note that **more than one body can cover the same area** (actually it's quite
 common) -- for example two national bodies (the Highways Department and the

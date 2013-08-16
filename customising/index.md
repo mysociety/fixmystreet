@@ -46,13 +46,11 @@ any point to the same administrative area, to allow for ease of set up and
 testing (and if you only need reports to be sent to one place, this might be
 enough!).
 
-If you are in the UK then you might be able to use mySociety's UK MapIt at
-<http://mapit.mysociety.org> although please check with us if you are
-expecting to generate a lot of requests or are using it commercially. We also
-have a global MapIt at <http://global.mapit.mysociety.org> using OpenStreetMap
-data that may be suitable for you. If you have some other boundary data, you
-can set up your own MapIt server to serve it out; for more details on how to
-install MapIt see our documentation at <http://code.mapit.mysociety.org>.
+Alternatively you can use our MapIt severs (with UK or global data), or set up
+one of your own.
+
+See [how FixMyStreet uses MapIt](fms_and_mapit) for a full explanation of how
+to get this working.
 
 ## Templates
 
