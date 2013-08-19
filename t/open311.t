@@ -38,6 +38,7 @@ my $p = FixMyStreet::App->model('DB::Problem')->new( {
     detail => 'detail',
     user => $u,
     id => 1,
+    name => 'A User',
 } );
 
 my $expected_error = qr{Failed to submit problem 1 over Open311}ism;
@@ -61,6 +62,7 @@ my $problem = FixMyStreet::App->model('DB::Problem')->new( {
     latitude => 1,
     longitude => 2,
     user => $user,
+    name => 'Test User',
 } );
 
 subtest 'posting service request' => sub {
@@ -185,6 +187,31 @@ for my $test (
         }
     };
 }
+
+for my $test ( 
+    {
+        title => 'Check uses report name over user name',
+        name => 'Nom de Report',
+        first_name => 'Nom',
+        last_name => 'de Report',
+    },
+) {
+    subtest $test->{desc} => sub {
+        $problem->extra( undef );
+        $problem->name( $test->{name} );
+        my $extra = { url => 'http://example.com/report/1', };
+
+        my $results = make_service_req( $problem, $extra, $problem->category,
+'<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>'
+        );
+        my $req = $o->test_req_used;
+        my $c   = CGI::Simple->new( $results->{req}->content );
+
+        is $c->param( 'first_name' ), $test->{first_name}, 'correct first name';
+        is $c->param( 'last_name' ), $test->{last_name}, 'correct last name';
+    };
+}
+
 
 my $comment = FixMyStreet::App->model('DB::Comment')->new( {
     id => 38362,
