@@ -2232,7 +2232,7 @@ msgstr "Fyll i information om problemet nedan. Kommunen kommer inte att kunna hj
 #: templates/web/seesomething/report/new/fill_in_details_form.html:20
 #: templates/web/zurich/report/new/fill_in_details_form.html:46
 msgid "Please fill in details of the problem."
-msgstr "Fyll i information om problemet nedan."
+msgstr "Fyll i information om problemet nedan. Ange gärna en adress då detta gör det lättare för kommunen att hitta till platsen."
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:28
 #: templates/web/default/report/new/fill_in_details_form.html:27
