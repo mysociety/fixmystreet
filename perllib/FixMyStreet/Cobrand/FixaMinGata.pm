@@ -106,12 +106,11 @@ sub guess_road_operator {
 
     my $highway = $inforef->{highway} || "unknown";
     my $refs    = $inforef->{ref}     || "unknown";
-    # What should we put in place of "Statens vegvesen"? "Trafikverket"
-    return "Statens vegvesen"
+    return "Trafikverket"
         if $highway eq "trunk" || $highway eq "primary";
 
     for my $ref (split(/;/, $refs)) {
-        return "Statens vegvesen"
+        return "Trafikverket"
             if $ref =~ m/E ?\d+/ || $ref =~ m/Fv\d+/i;
     }
     return '';
