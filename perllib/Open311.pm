@@ -108,7 +108,7 @@ sub _populate_service_request_params {
         $description = $problem->detail;
     }
 
-    my ( $firstname, $lastname ) = ( $problem->user->name =~ /(\w+)\.?\s+(.+)/ );
+    my ( $firstname, $lastname ) = ( $problem->name =~ /(\w+)\.?\s+(.+)/ );
 
     my $params = {
         email => $problem->user->email,
