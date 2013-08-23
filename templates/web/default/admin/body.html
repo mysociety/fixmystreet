@@ -100,8 +100,14 @@
         </p>
         [% END %]
 
+        <div class="admin-hint">
+          <p>
+            [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent. 
+            Other categories for this body may have the same email address.") %]
+          </p>
+        </div>
         <p>
-        <strong>[% loc('Email:') %] </strong><input type="text" name="email" size="30">
+        <strong>[% loc('Email address:') %] </strong><input type="text" name="email" size="30">
         </p>
 
         <p>
