@@ -1017,8 +1017,20 @@ sub flagged : Path('flagged') : Args(0) {
     $c->stash->{problems} = [ $problems->all ];
 
     my $users = $c->model('DB::User')->search( { flagged => 1 } );
+    my @users = $users->all;
+    my %email2user = map { $_->email => $_ } @users;
+    $c->stash->{users} = [ @users ];
 
-    $c->stash->{users} = $users;
+    my @abuser_emails = $c->model('DB::Abuse')->all();
+
+    foreach my $email (@abuser_emails) {
+        # Slight abuse of the boolean flagged value
+        if ($email2user{$email->email}) {
+            $email2user{$email->email}->flagged( 2 );
+        } else {
+            push @{$c->stash->{users}}, { email => $email->email, flagged => 2 };
+        }
+    }
 
     return 1;
 }
