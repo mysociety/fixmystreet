@@ -116,10 +116,18 @@
         <strong>[% loc('Email address:') %] </strong><input type="text" name="email" size="30">
         </p>
 
+        <div class="admin-hint">
+          <p>
+            [% loc("Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.
+                    If you are not sure of the origin or validity of the contact, leave this unchecked.") %]
+          </p>
+        </div>
         <p>
         <input type="checkbox" name="confirmed" value="1" id="confirmed"> 
         <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
+        </p>
 
+        <p>
         <input type="checkbox" name="deleted" value="1" id="deleted"> 
         <label for="deleted" class="inline">[% loc('Deleted') %]</label>
         </p>
