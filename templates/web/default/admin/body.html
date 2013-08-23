@@ -127,6 +127,12 @@
         <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
         </p>
 
+        <div class="admin-hint">
+          <p>
+            [% loc("Check <strong>deleted</strong> to remove the category from use. 
+            It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
+          </p>
+        </div>
         <p>
         <input type="checkbox" name="deleted" value="1" id="deleted"> 
         <label for="deleted" class="inline">[% loc('Deleted') %]</label>
