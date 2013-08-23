@@ -31,19 +31,27 @@
   [% loc("Flagged users are not restricted in any way. This is just a list of users that have been marked for attention.") %]
 </p>
 
-[% IF users.count > 0 %]
+[% IF users.size %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
+        <th>[% loc('In abuse table?') %]</th>
+        <th>&nbsp;</th>
     </tr>
-[% WHILE ( user = users.next ) -%]
-    <tr>
+    [%- FOREACH user IN users %]
+    <tr [% IF user.flagged == 2 %]class="is-deleted"[% END %]>
         <td>[% user.name | html %]</td>
         <td>[% user.email | html %]</td>
-        <td><a href="[% c.uri_for( 'reports', search => user.email ) %]">list content</a></td>
+        <td>
+          [% IF user.flagged == 2 %] <strong>[% loc('Yes') %]</strong> [% ELSE %] &nbsp; [% END %]
+        </td>
+        <td>
+          <a href="[% c.uri_for( 'reports', search => user.email ) %]">list content</a>
+          [% IF user.id %] | <a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('edit user') %]</a>[% END %]
+        </td>
     </tr>
-[%- END %]
+    [%- END %]
 </table>
 [%- ELSE %]
 <p class="fms-admin-warning">
