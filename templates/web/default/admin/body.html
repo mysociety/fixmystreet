@@ -147,6 +147,17 @@
         <strong>[% loc('Note:') %] </strong> <textarea name="note" rows="3" cols="40"></textarea>
         </p>
 
+        <div class="admin-hint">
+          <p>
+            [% loc("Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.
+                    <br>
+                    Normally, categories are not private.
+                    <br>
+                    This is suitable for issues that you want to allow users to report to the body, but for which there is no public
+                    interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin
+                    at a specific address.") %]
+          </p>
+        </div>
         <p>
         <input type="checkbox" name="non_public" value="1" id="non_public"> 
         <label for="non_public" class="inline">[% loc('Private') %]</label>
