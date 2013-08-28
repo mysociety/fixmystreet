@@ -54,7 +54,7 @@ When your site is up and running, the [admin documentation](running/) should
 help you with common tasks.
 
 * administrator's guide (coming soon!) \[Sept 2013\]
-* how to [manage bodies and contacts](running/) (or: _who do the reports get sent to?_)
+* how to [manage bodies and contacts](running/bodies_and_contacts) (or: _who do the reports get sent to?_)
 
 Examples
 --------
