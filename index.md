@@ -36,7 +36,25 @@ in making the code easier to install and develop.
 Installation
 ------------
 
-See the [installation documentation](install/).
+Begin with the [installation documentation](install/).
+
+Customising
+-----------
+
+Once you've installed your site, you need to configure and customise it to
+your local requirements.
+
+* how to [customise your installation](customising/)
+* information about [setting up administrative boundaries](customising/fms_and_mapit) using Mapit
+
+Running your site
+-----------------
+
+When your site is up and running, the [admin documentation](running/) should
+help you with common tasks.
+
+* administrator's guide (coming soon!) \[Sept 2013\]
+* how to [manage bodies and contacts](running/) (or: _who do the reports get sent to?_)
 
 Examples
 --------
