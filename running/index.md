@@ -37,4 +37,4 @@ you can use `htaccess` to do this.
   </p>
 </div>
 
-If you can configure your webserver to only allow access to the admin URLs over https, then you should do that, and deny access any other way. It's also a good idea to IP-restrict access to admin URLs if you know where your authorised users will be accessing it from.
+If you can configure your webserver to only allow access to the admin URLs over https, then you should do that, and deny access any other way. It's also a good idea to IP-restrict access to admin URLs if you know where your authorised users will be accessing them from.
