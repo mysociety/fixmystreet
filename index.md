@@ -59,6 +59,8 @@ help you with common tasks.
 Examples
 --------
 
-* <http://www.fixmystreet.com/>
-* <http://www.fiksgatami.no/>
+* <http://www.fixmystreet.com/> -- FixMyStreet in the UK
+* <http://www.fiksgatami.no/> -- FixMyStreet in Norway
+* [https://www.zueriwieneu.ch/](https://www.zueriwieneu.ch/) -- FixMyStreet in the city of Zurich
+
 
