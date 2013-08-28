@@ -138,3 +138,18 @@ footer a {
     color: #000;
     background-color: #ffdd00;
 }
+
+.attention-box {
+    border-width: 1px;
+    border-style: solid;
+    padding:0.5em 1em;
+    margin:1em;
+}
+.attention-box.info {
+    border-color: #f93;
+    background-color: #ff9;
+}
+.attention-box.warning {
+    border-color: #f99;
+    background-color: #ffe1e1;
+}
