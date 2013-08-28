@@ -11,7 +11,7 @@ reports will be sent. Each body needs one or more <strong>contacts</strong>
 (typically these are email addresses) to which particular
 <strong>categories</strong> of problem are sent. </p>
 
-In the UK, bodies are councils (county, district, and metropolitan).
+For [FixMyStreet in the UK](http://www.fixmystreet.com/), bodies are councils (county, district, and metropolitan).
 
 ## How to add (or edit) a body
 
