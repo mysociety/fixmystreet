@@ -22,13 +22,6 @@ function position_map_box() {
         width: map_box_width, height: map_box_height,
         margin: "0 1em"
     });
-    if($('#map_box').length) {
-        if (! $('#occ-map-instructions').length) {
-            $('#map_box').after("<div id='occ-map-instructions'><p>" +
-                "Click on a pin and then on the &ldquo;details&rdquo; link to see an individual report detail.</p></div>");
-        }
-    }
-
 }
 
 function map_fix() {}
