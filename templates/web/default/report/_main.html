@@ -5,11 +5,7 @@
     [% problem.meta_line(c) | html %]
     [%- IF !problem.used_map AND c.cobrand.moniker != 'emptyhomes' %]; <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>[% END %]
     [% IF problem.bodies_str %]
-        [% IF problem.whensent || problem.can_display_external_id %]
-            <small class="council_sent_info"><br>
-                [% problem.processed_summary_string(c) %]
-            </small>
-        [% END %]
+        [% INCLUDE 'report/_council_sent_info.html' %]
     [% ELSE %]
         <br><small>[% loc('Not reported to council') %]</small>
     [% END %]

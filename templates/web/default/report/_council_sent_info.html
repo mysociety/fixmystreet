@@ -1,0 +1,5 @@
+[% IF problem.whensent || problem.can_display_external_id %]
+    <small class="council_sent_info"><br>
+        [% problem.processed_summary_string(c) %]
+    </small>
+[% END %]
