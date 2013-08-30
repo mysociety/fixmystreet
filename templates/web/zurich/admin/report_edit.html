@@ -62,7 +62,13 @@
 
 
 [% IF problem.photo %]
-<li><img alt="" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg">
+<li>
+[% photo = problem.get_photo_params %]
+<div class="update-img">
+    [% IF photo.url_full %]<a href="[% photo.url_full %]" rel="fancy">[% END
+    %]<img alt="Photo of this report" [% IF photo.height %]height="[% photo.height %]" width="[% photo.width %]"[% END %] src="[% photo.url %]">
+    [%- IF photo.url_full %]<span>zoom</span></a>[% END %]
+</div>
 <br>
 <input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
 <input type="submit" name="rotate_photo" value="[% loc('Rotate Right') %]">
