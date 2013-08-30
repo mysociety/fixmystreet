@@ -14,7 +14,9 @@
 <script type="text/javascript" src="[% version(js_override || '/js/fixmystreet-old-box.js') %]"></script>
 
 [% IF admin %]
-<script type="text/javascript" src="[% version(start _ '/js/fixmystreet-admin.js') %]"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+  <script type="text/javascript" src="[% version(start _ '/js/fixmystreet-admin.js') %]"></script>
 [% END %]
 
 [% map_js %]
