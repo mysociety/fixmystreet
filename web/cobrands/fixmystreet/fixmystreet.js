@@ -379,7 +379,7 @@ $.fn.drawer = function(id, ajax) {
 
     //add permalink on desktop, force hide on mobile
     if (cobrand != 'zurich') {
-        $('#sub_map_links').append('<a href="#" id="map_permalink">Permalink</a>');
+        $('#sub_map_links').append('<a href="#" id="map_permalink">' + translation_strings.permalink + '</a>');
     }
 
     if($('.mobile').length){
