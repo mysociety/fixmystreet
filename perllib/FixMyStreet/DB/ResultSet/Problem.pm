@@ -464,7 +464,8 @@ sub send_reports {
             send_fail_count => { '>', 0 }
         } );
         while (my $row = $unsent->next) {
-            $sending_errors .= "* http://www.fixmystreet.com/report/" . $row->id . ", failed "
+            my $base_url = mySociety::Config::get('BASE_URL');
+            $sending_errors .= "* " . $base_url . "/report/" . $row->id . ", failed "
                 . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
                 . ", reason " . $row->send_fail_reason . "\n";
         }

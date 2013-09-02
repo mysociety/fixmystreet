@@ -210,7 +210,7 @@ $mech->submit_form_ok( { with_fields => { body_external => 4 } } );
 $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
-$mech->content_contains('Weitergeleitet an: External Body');
+$mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
 FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
@@ -229,7 +229,7 @@ $mech->submit_form_ok( { with_fields => { body_external => 4, third_personal => 
 $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
-$mech->content_contains('Weitergeleitet an: External Body');
+$mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
 FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
