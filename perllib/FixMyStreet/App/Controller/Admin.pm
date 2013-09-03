@@ -296,6 +296,7 @@ sub body : Path('body') : Args(1) {
 
     $c->stash->{body_id} = $body_id;
 
+    $c->forward( 'check_for_super_user' );
     $c->forward( 'get_token' );
     $c->forward( 'lookup_body' );
     $c->forward( 'fetch_all_bodies' );
@@ -309,6 +310,13 @@ sub body : Path('body') : Args(1) {
     $c->forward('display_contacts');
 
     return 1;
+}
+
+sub check_for_super_user : Private {
+    my ( $self, $c ) = @_;
+    if ( $c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} ne 'super' ) {
+        $c->detach('/page_error_404_not_found', []);
+    }
 }
 
 sub update_contacts : Private {
