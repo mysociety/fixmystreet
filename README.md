@@ -14,10 +14,16 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.2.2.
+Platform is now at version 1.2.3.
 
 ## Releases
 
+* v1.2.3 (2nd September 2013)
+    - Maintenance release to deal with failing installation
+    - Improve reuse of make_css and shared CSS
+    - Remove hardcoded UK URLs on couple of admin error emails
+    - Mark couple of strings missing translation
+    - mapquest URL update
 * v1.2.2 (26th July 2013)
     - Maintenance release to deal with failing installation
     - Improve Google Maps plugin somewhat, though still needs work
