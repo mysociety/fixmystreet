@@ -9,6 +9,21 @@ title: Customising
 of FixMyStreet to your requirements, including limiting the geographic area it
 accepts queries for, translating the text, and changing the look and feel.</p>
 
+<div class="row-fluid">
+  <div class="span6">
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#overview">Customising FixMyStreet: main issues</a></li>
+      <li><a href="fms_and_mapit">How FixMyStreet uses MapIt</a></li>
+      <li><a href="send_reports">How FixMyStreet sends reports</a></li>
+      <li><a href="/feeding-back">About feeding back your changes</a></li>
+    </ul>
+  </div>
+</div>
+
+<a name="overview">&nbsp;</a>
+
+# Customising FixMyStreet: main issues
+
 ## Overview
 
 FixMyStreet implements a "Cobrand" system in order to allow customisation of
