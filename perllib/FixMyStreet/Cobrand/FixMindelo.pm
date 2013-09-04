@@ -4,11 +4,12 @@ use base 'FixMyStreet::Cobrand::Default';
 use strict;
 use warnings;
 
-
 sub country {
     return 'CV';
 }
 
+sub languages { [ 'pt-cv,Portuguese,pt_CV', 'en-gb,English,en_GB' ] }
+sub language_override { 'pt-cv' }
 sub language_domain { 'FixMindelo' }
 
 sub disambiguate_location {
