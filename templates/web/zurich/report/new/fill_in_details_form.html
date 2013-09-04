@@ -103,7 +103,7 @@
                 [% END %]
                 <input type="text" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
-                <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+                <label for="form_phone">[% loc('Phone number') %]</label>
                 [% IF field_errors.phone %]
                     <p class='form-error'>[% field_errors.phone %]</p>
                 [% END %]
