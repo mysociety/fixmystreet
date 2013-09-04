@@ -245,7 +245,7 @@ $mech->get( '/admin/body/' . $zurich->id );
 is $mech->res->code, 404, "only superuser should be able to edit bodies";
 $mech->log_out_ok;
 
-# Test only superuser can add bodies
+# Test only superuser can see "Add body" form
 $user = $mech->log_in_ok( 'dm1@example.org') ;
 $mech->get_ok( '/admin/bodies' );
 $mech->content_lacks( '<form method="post" action="bodies"' );
