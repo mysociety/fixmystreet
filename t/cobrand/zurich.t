@@ -247,7 +247,7 @@ $mech->log_out_ok;
 
 # Test only superuser can add bodies
 $user = $mech->log_in_ok( 'dm1@example.org') ;
-$mech->get( '/admin/bodies' );
+$mech->get_ok( '/admin/bodies' );
 $mech->content_lacks( '<form method="post" action="bodies"' );
 $mech->log_out_ok;
 
