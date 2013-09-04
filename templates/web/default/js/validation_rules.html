@@ -3,5 +3,8 @@
         detail: { required: true },
         email: { required: true },
         update: { required: true },
+        [% IF c.cobrand.moniker == 'zurich' %]
+        phone: { required: true },
+        [% END %]
         rznvy: { required: true }
     };
