@@ -48,7 +48,14 @@
 [%- END %]
 </table>
 
-<h2>[% loc('Add body') %]</h2>
-[% INCLUDE 'admin/body-form.html', body='' %]
+[% IF c.cobrand.moniker == 'zurich' %]
+    [% IF c.admin_type == 'super' %]
+        <h2>[% loc('Add body') %]</h2>
+        [% INCLUDE 'admin/body-form.html', body='' %]
+    [% END %]
+[% ELSE %]
+    <h2>[% loc('Add body') %]</h2>
+    [% INCLUDE 'admin/body-form.html', body='' %]
+[% END %]
 
 [% INCLUDE 'admin/footer.html' %]
