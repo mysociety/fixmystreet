@@ -10,7 +10,6 @@ sub country {
 
 sub languages { [ 'pt-cv,Portuguese,pt_CV', 'en-gb,English,en_GB' ] }
 sub language_override { 'pt-cv' }
-sub language_domain { 'FixMindelo' }
 
 sub disambiguate_location {
     return {
