@@ -234,6 +234,7 @@ sub bodies : Path('bodies') : Args(0) {
 
     my $posted = $c->req->param('posted') || '';
     if ( $posted eq 'body' ) {
+        $c->forward('check_for_super_user');
         $c->forward('check_token');
 
         my $params = $c->forward('body_params');
@@ -385,6 +386,7 @@ sub update_contacts : Private {
 
         $c->stash->{updated} = _('Values updated');
     } elsif ( $posted eq 'body' ) {
+        $c->forward('check_for_super_user');
         $c->forward('check_token');
 
         my $params = $c->forward( 'body_params' );
