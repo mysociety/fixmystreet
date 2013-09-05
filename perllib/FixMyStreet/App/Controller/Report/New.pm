@@ -957,7 +957,7 @@ sub check_for_errors : Private {
         my $report = $c->stash->{report};
         $report->title( Utils::cleanup_text( substr($report->detail, 0, 25) ) );
         if ( ! $c->req->param('phone') ) {
-            $field_errors{phone} = "This field is required.";
+            $field_errors{phone} = _("This information is required");
         }
     }
 
