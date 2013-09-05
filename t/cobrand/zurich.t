@@ -9,6 +9,24 @@ use Test::More;
 plan skip_all => 'Skipping Zurich test without Zurich cobrand'
     unless FixMyStreet::Cobrand->exists('zurich');
 
+# To run this test ensure that you have the following in general.yml:
+#
+#     BASE_URL: 'http://zurich.127.0.0.1.xip.io'
+#
+#     ALLOWED_COBRANDS:
+#       - zurich
+#
+#     SEND_REPORTS_ON_STAGING: 1
+#
+# Check that you have the required locale installed - the following
+# should return a line with de_CH.utf8 in. If not install that locale.
+#
+#     locale -a | grep de_CH
+#
+# To generate the translations use:
+#
+#     commonlib/bin/gettext-makemo FixMyStreet
+
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -44,6 +62,9 @@ my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
 my $report = $reports[0];
 
 $mech->get_ok( '/report/' . $report->id );
+#diag "------------------------------\n";
+#diag $mech->content();
+#diag "------------------------------\n";
 $mech->content_contains('&Uuml;berpr&uuml;fung ausstehend');
 
 # Check logging in to deal with this report
