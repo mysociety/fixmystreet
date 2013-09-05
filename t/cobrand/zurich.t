@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use DateTime;
 use Test::More;
+use Sub::Override;
 
 plan skip_all => 'Skipping Zurich test without Zurich cobrand'
     unless FixMyStreet::Cobrand->exists('zurich');
@@ -16,8 +17,6 @@ plan skip_all => 'Skipping Zurich test without Zurich cobrand'
 #     ALLOWED_COBRANDS:
 #       - zurich
 #
-#     SEND_REPORTS_ON_STAGING: 1
-#
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
 #
@@ -26,6 +25,39 @@ plan skip_all => 'Skipping Zurich test without Zurich cobrand'
 # To generate the translations use:
 #
 #     commonlib/bin/gettext-makemo FixMyStreet
+
+
+# This is a helper method that will send the reports but with the config
+# correctly set - notably SEND_REPORTS_ON_STAGING needs to be true.
+sub send_reports_for_zurich {
+
+    # Capture the bits of the original config that the following code will use
+    my %config =
+        map {$_ => mySociety::Config::get($_)}
+        qw(BASE_URL STAGING_SITE CONTACT_EMAIL SEND_REPORTS_ON_STAGING);
+
+    # Change the SEND_REPORTS_ON_STAGING value to true for this test
+    $config{SEND_REPORTS_ON_STAGING} = 1;
+
+    # Override the get function to return values from our captured config. This
+    # override will be cleared at the end of this block when the $override guard
+    # falls out of scope.
+    my $override_guard = Sub::Override->new(
+        "mySociety::Config::get",
+        sub ($;$) {
+            my ($key, $default) = @_;
+            exists $config{$key}
+                ? return $config{$key}
+                : die "Need to cache config key '$key' here";
+        }
+    );
+
+    # Actually send the report
+    FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+
+    # tidy up explicitly
+    $override_guard->restore();
+}
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -115,7 +147,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('In Bearbeitung');
 $mech->content_contains('Test Test');
 
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 my $email = $mech->get_email;
 like $email->header('Subject'), qr/Neue Meldung/, 'subject looks okay';
 like $email->header('To'), qr/subdivision\@example.org/, 'to line looks correct';
@@ -150,7 +182,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('In Bearbeitung');
 $mech->content_contains('Test Test');
 
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Feedback/, 'subject looks okay';
 like $email->header('To'), qr/division\@example.org/, 'to line looks correct';
@@ -229,7 +261,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
 $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
 like $email->header('To'), qr/external_body\@example.org/, 'to line looks correct';
@@ -248,7 +280,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
 $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
 like $email->header('To'), qr/external_body\@example.org/, 'to line looks correct';
