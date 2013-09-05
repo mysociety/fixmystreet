@@ -31,7 +31,8 @@
             [% IF admin_type == 'super' %]
               <a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
             [% ELSE %]
-              <a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
+              [% body.name %]
+            [% END %]
             [% IF c.cobrand.moniker != 'zurich' %]
               [%- ', ' _ body.parent.name IF body.parent -%]
             [% END %]
