@@ -63,7 +63,7 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 # Front page test
-ok $mech->host("zurich.fixmystreet.com"), "change host to Zurich";
+ok $mech->host("zurich.example.com"), "change host to Zurich";
 $mech->get_ok('/');
 $mech->content_like( qr/zurich/i );
 
