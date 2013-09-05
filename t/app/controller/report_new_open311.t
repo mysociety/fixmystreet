@@ -3,7 +3,12 @@ use warnings;
 use Test::More;
 
 use FixMyStreet::TestMech;
+use FixMyStreet::App;
 use Web::Scraper;
+
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
 
 my $mech = FixMyStreet::TestMech->new;
 
