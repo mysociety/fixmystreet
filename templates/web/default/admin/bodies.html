@@ -19,7 +19,7 @@
           [% IF c.cobrand.moniker == 'zurich' %]
             [% FILTER repeat(4*body.api_key) %]&nbsp;[% END %]
           [% END %]
-          [% IF c.admin_type == 'super' %]
+          [% IF admin_type == 'super' %]
             <a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
           [% ELSE %]
             [% body.name %]
@@ -48,7 +48,7 @@
 [%- END %]
 </table>
 
-[% IF cobrand.moniker == 'zurich' %]
+[% IF c.cobrand.moniker == 'zurich' %]
     [% IF admin_type == 'super' %]
         <h2>[% loc('Add body') %]</h2>
         [% INCLUDE 'admin/body-form.html', body='' %]
