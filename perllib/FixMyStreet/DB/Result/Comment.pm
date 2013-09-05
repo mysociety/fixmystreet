@@ -179,8 +179,8 @@ sub get_photo_params {
 
 =head2 meta_problem_state
 
-Returns a string suitable for display in the update meta section. 
-Mostly removes the '- council/user' bit from fixed states
+Returns a string suitable for display lookup in the update meta section.
+Removes the '- council/user' bit from fixed states.
 
 =cut
 
@@ -189,10 +189,6 @@ sub meta_problem_state {
 
     my $state = $self->problem_state;
     $state =~ s/ -.*$//;
-
-    $state = _("not the council's responsibility") 
-        if $state eq 'not responsible';
-    $state = _('duplicate report') if $state eq 'duplicate';
 
     return $state;
 }
