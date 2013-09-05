@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2013-09-03 09:26+0100\n"
+"POT-Creation-Date: 2013-09-05 17:39+0100\n"
 "PO-Revision-Date: 2013-05-03 09:41-0000\n"
 "Last-Translator: Mark Smith <Mark.Smith@trosol.co.uk>\n"
 "Language-Team: mySociety\n"
@@ -43,7 +43,7 @@ msgstr " a <strong>byddwn nawr yn ei anfon at y cyngor</strong>"
 msgid " or "
 msgstr "neu"
 
-#: templates/web/default/admin/bodies.html:32
+#: templates/web/default/admin/bodies.html:36
 msgid "%d addresses"
 msgstr "%d addresses"
 
@@ -344,7 +344,8 @@ msgstr "Amdanom ni"
 msgid "Action Scheduled"
 msgstr "Action Scheduled"
 
-#: templates/web/default/admin/bodies.html:47
+#: templates/web/default/admin/bodies.html:53
+#: templates/web/default/admin/bodies.html:57
 #: templates/web/default/admin/body-form.html:82
 #: templates/web/zurich/admin/body-form.html:47
 msgid "Add body"
@@ -517,7 +518,7 @@ msgstr "Ban email address"
 msgid "Be sure to choose the right category, because we use that to determine to whom the report is sent."
 msgstr "Be sure to choose the right category, because we use that to determine to whom the report is sent."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1134
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1144
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:208
 #: templates/web/default/admin/bodies.html:1
 #: templates/web/zurich/header.html:64
@@ -649,7 +650,7 @@ msgstr "Cobrand data:"
 msgid "Cobrand:"
 msgstr "Cobrand:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:397
+#: perllib/FixMyStreet/App/Controller/Admin.pm:407
 msgid "Configuration updated - contacts will be generated automatically later"
 msgstr "Configuration updated - contacts will be generated automatically later"
 
@@ -726,8 +727,8 @@ msgstr "Cysylltwch â Ni"
 msgid "Contact the team"
 msgstr "Cysylltu â'r tîm"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1267
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1295
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1277
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1305
 msgid "Could not find user"
 msgstr "Could not find user"
 
@@ -907,11 +908,11 @@ msgstr "Editor"
 msgid "Email"
 msgstr "Email"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1243
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1253
 msgid "Email added to abuse list"
 msgstr "Email added to abuse list"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1240
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1250
 msgid "Email already in abuse list"
 msgstr "Email already in abuse list"
 
@@ -1146,7 +1147,7 @@ msgstr "Fixed:"
 msgid "Flag user"
 msgstr "Flag user"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1139
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1149
 #: templates/web/default/admin/users.html:16
 msgid "Flagged"
 msgstr "Flagged"
@@ -1175,6 +1176,7 @@ msgstr "Forgotten your password?"
 #: templates/web/emptyhomes/faq/faq-en-gb.html:1
 #: templates/web/fiksgatami/faq/faq-nb.html:1
 #: templates/web/fiksgatami/nn/faq/faq-nn.html:1
+#: templates/web/fixmindelo/faq/faq-pt-cv.html:1
 #: templates/web/fixmybarangay/faq/faq-en-gb.html:1
 #: templates/web/fixmystreet/faq/faq-en-gb.html:1
 #: templates/web/fixmystreet/static/privacy.html:1
@@ -1308,7 +1310,7 @@ msgstr "Sut i roi gwybod am eiddo gwag"
 msgid "How to send successful reports"
 msgstr "How to send successful reports"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:702
+#: perllib/FixMyStreet/App/Controller/Admin.pm:712
 msgid "I am afraid you cannot confirm unconfirmed reports."
 msgstr "I am afraid you cannot confirm unconfirmed reports."
 
@@ -1440,7 +1442,7 @@ msgstr "Internal notes:"
 msgid "Invalid agency_responsible value %s"
 msgstr "Invalid agency_responsible value %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1054
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1064
 msgid "Invalid end date"
 msgstr "Invalid end date"
 
@@ -1448,7 +1450,7 @@ msgstr "Invalid end date"
 msgid "Invalid format %s specified."
 msgstr "Invalid format %s specified."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1044
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1054
 msgid "Invalid start date"
 msgstr "Invalid start date"
 
@@ -1665,11 +1667,11 @@ msgstr "Bron â gorffen! Nawr, ewch at eich negeseuon e-bost..."
 msgid "New <br>empty properties"
 msgstr "New <br>empty properties"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:249
+#: perllib/FixMyStreet/App/Controller/Admin.pm:250
 msgid "New body added"
 msgstr "New body added"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:353
+#: perllib/FixMyStreet/App/Controller/Admin.pm:362
 msgid "New category contact added"
 msgstr "New category contact added"
 
@@ -2449,7 +2451,7 @@ msgstr "Empty property %s sent to council %s"
 msgid "Empty property breakdown by state"
 msgstr "Empty property breakdown by state"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:919
+#: perllib/FixMyStreet/App/Controller/Admin.pm:929
 msgid "Empty property marked as open."
 msgstr "Ewch i fwrw golwg "
 
@@ -2818,7 +2820,7 @@ msgstr "Adroddwyd yn y categori %s gan %s am %s"
 msgid "Reporting an empty property"
 msgstr "Adrodd am eiddo gwag"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1135
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1145
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:201
 #: templates/web/seesomething/admin/stats.html:1
 #: templates/web/zurich/header.html:60
@@ -2857,14 +2859,14 @@ msgstr "Road operator for this named road (derived from road reference number an
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "Road operator for this named road (from OpenStreetMap): %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1334
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1345
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1344
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1355
 #: templates/web/default/admin/report_edit.html:85
 #: templates/web/zurich/admin/report_edit.html:74
 msgid "Rotate Left"
 msgstr "Rotate Left"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1334
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1344
 #: templates/web/default/admin/report_edit.html:86
 #: templates/web/zurich/admin/report_edit.html:75
 msgid "Rotate Right"
@@ -3065,7 +3067,7 @@ msgstr "State"
 msgid "State:"
 msgstr "State:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1140
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1150
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:216
 #: templates/web/default/admin/stats.html:1
 #: templates/web/zurich/admin/stats.html:1 templates/web/zurich/header.html:72
@@ -3165,7 +3167,7 @@ msgstr "Dymunaf danysgrifio i rybuddion drwy e-bost"
 msgid "Subscribe to an alert based upon what baranagay you&rsquo;re in:"
 msgstr "Subscribe to an alert based upon what baranagay you&rsquo;re in:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1133
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1143
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:200
 #: templates/web/default/admin/index.html:1
 #: templates/web/zurich/admin/index-dm.html:1
@@ -3185,7 +3187,7 @@ msgstr "Summary"
 msgid "Summary reports"
 msgstr "Adroddiadau cryno"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1137
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1147
 msgid "Survey"
 msgstr "Survey"
 
@@ -3273,7 +3275,7 @@ msgstr "That location does not appear to be in the UK; please try again."
 msgid "That postcode was not recognised, sorry."
 msgstr "Ni chafodd y cod post hwnnw ei gydnabod, sori."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:673
+#: perllib/FixMyStreet/App/Controller/Admin.pm:683
 msgid "That empty property will now be resent."
 msgstr "That empty property will now be resent."
 
@@ -3520,7 +3522,7 @@ msgstr "Cyflwynwyd yr adroddiad hwn yn ddi-enw"
 msgid "This web page also contains a photo of the empty property, provided by the user."
 msgstr "Mae'r dudalen we hon hefyd yn cynnwys ffotograff o'r eiddo gwag, wedi'i ddarparu gan y defnyddiwr."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1136
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1146
 #: templates/web/default/admin/timeline.html:1
 msgid "Timeline"
 msgstr "Timeline"
@@ -3653,10 +3655,10 @@ msgstr "Diweddariad:"
 msgid "Updated"
 msgstr "Updated"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1001
-#: perllib/FixMyStreet/App/Controller/Admin.pm:765
-#: perllib/FixMyStreet/App/Controller/Admin.pm:909
-#: perllib/FixMyStreet/App/Controller/Admin.pm:962
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1011
+#: perllib/FixMyStreet/App/Controller/Admin.pm:775
+#: perllib/FixMyStreet/App/Controller/Admin.pm:919
+#: perllib/FixMyStreet/App/Controller/Admin.pm:972
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:424
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:488
 msgid "Updated!"
@@ -3687,23 +3689,23 @@ msgstr "Diweddariadau am {{title}}"
 msgid "Updates to this empty property, reportemptyhomes.com"
 msgstr "Diweddariadau i'r eiddo gwag hwn, reportemptyhomes.com"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1299
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1309
 msgid "User flag removed"
 msgstr "User flag removed"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1271
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1281
 msgid "User flagged"
 msgstr "User flagged"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1138
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1148
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:215
 #: templates/web/default/admin/flagged.html:24
 #: templates/web/zurich/header.html:69
 msgid "Users"
 msgstr "Users"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:348
-#: perllib/FixMyStreet/App/Controller/Admin.pm:378
+#: perllib/FixMyStreet/App/Controller/Admin.pm:357
+#: perllib/FixMyStreet/App/Controller/Admin.pm:387
 msgid "Values updated"
 msgstr "Values updated"
 
@@ -4128,10 +4130,6 @@ msgstr "council ref:&nbsp;%s"
 msgid "didn't use map"
 msgstr "didn't use map"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:195
-msgid "duplicate report"
-msgstr "duplicate report"
-
 #: templates/web/default/alert/index.html:33
 #: templates/web/fixmystreet/around/postcode_form.html:20
 #: templates/web/seesomething/around/postcode_form.html:9
@@ -4152,12 +4150,54 @@ msgstr "last updated %s"
 msgid "less than a minute"
 msgstr "llai na munud"
 
-#: templates/web/default/report/updates.html:38
-msgid "marked as %s"
+#: templates/web/default/report/updates.html:57
+#, fuzzy
+msgid "marked as a duplicate report"
+msgstr "duplicate report"
+
+#: templates/web/default/report/updates.html:47
+#, fuzzy
+msgid "marked as action scheduled"
+msgstr "Action Scheduled"
+
+#: templates/web/default/report/updates.html:59
+#, fuzzy
+msgid "marked as an internal referral"
+msgstr "Internal notes:"
+
+#: templates/web/default/report/updates.html:49
+#, fuzzy
+msgid "marked as closed"
 msgstr "marked as %s"
 
-#: templates/web/default/report/updates.html:27
+#: templates/web/default/report/updates.html:28
+#: templates/web/default/report/updates.html:51
 msgid "marked as returned to use"
+msgstr "cofnodwyd bod hyn wedi'i adfer i'w ddefnyddio"
+
+#: templates/web/default/report/updates.html:45
+#, fuzzy
+msgid "marked as in progress"
+msgstr "marked as %s"
+
+#: templates/web/default/report/updates.html:41
+#, fuzzy
+msgid "marked as investigating"
+msgstr "Investigating"
+
+#: templates/web/default/report/updates.html:55
+#, fuzzy
+msgid "marked as not the council's responsibility"
+msgstr "not the council's responsibility"
+
+#: templates/web/default/report/updates.html:43
+#, fuzzy
+msgid "marked as planned"
+msgstr "marked as %s"
+
+#: templates/web/default/report/updates.html:53
+#, fuzzy
+msgid "marked as unable to fix"
 msgstr "cofnodwyd bod hyn wedi'i adfer i'w ddefnyddio"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:128
@@ -4165,14 +4205,6 @@ msgstr "cofnodwyd bod hyn wedi'i adfer i'w ddefnyddio"
 #: templates/web/default/admin/questionnaire.html:16
 msgid "n/a"
 msgstr "n/a"
-
-#: templates/web/default/report/updates.html:32
-msgid "no further action"
-msgstr "unrhyw gamau pellach"
-
-#: perllib/FixMyStreet/DB/Result/Comment.pm:193
-msgid "not the council's responsibility"
-msgstr "not the council's responsibility"
 
 #: templates/web/default/alert/_list.html:87
 #: templates/web/fixmybarangay/alert/_list.html:32
@@ -4203,8 +4235,8 @@ msgstr "originally entered: &ldquo;%s&rdquo;"
 msgid "other areas:"
 msgstr "other areas:"
 
-#: templates/web/default/report/updates.html:28
-#: templates/web/default/report/updates.html:36
+#: templates/web/default/report/updates.html:29
+#: templates/web/default/report/updates.html:39
 msgid "reopened"
 msgstr "wedi'i ailagor"
 
@@ -4233,10 +4265,6 @@ msgstr "y cyngor lleol"
 #: templates/web/zurich/report/_main.html:5
 msgid "there is no pin shown as the user did not use the map"
 msgstr "there is no pin shown as the user did not use the map"
-
-#: templates/web/default/report/updates.html:33
-msgid "third party responsibility"
-msgstr "third party responsibility"
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:358
 msgid "this type of local empty property"
@@ -4341,6 +4369,12 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d diwrnod"
 msgstr[1] "%d diwrnod"
+
+#~ msgid "no further action"
+#~ msgstr "unrhyw gamau pellach"
+
+#~ msgid "third party responsibility"
+#~ msgstr "third party responsibility"
 
 #, fuzzy
 #~ msgid "All the information you provide here will be sent to <strong>%s</strong>. On the site, we will show the subject and details of the empty property, plus your name if you give us permission."
