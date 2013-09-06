@@ -28,32 +28,34 @@ $(function(){
         hide_or_show_open311(true);
     }
 
-    // admin hints: maybe better implemented as tooltips?
-    $(".admin-hint").on('click', function(){
-        if ($(this).hasClass('admin-hint-show')) {
-            $(this).removeClass('admin-hint-show');
-        } else {
-            $(this).addClass('admin-hint-show');
-        }
-    });
+    if ($('body').hasClass("show-admin-notes")) {
 
-    // on a body's page, hide/show deleted contact categories
-    var $table_with_deleted_contacts = $('table tr.is-deleted td.contact-category').closest('table');
-    if ($table_with_deleted_contacts.length == 1) {
-        var $toggle_deleted_btn = $("<input type='submit' class='btn' value='Hide deleted contacts' id='toggle-deleted-contacts-btn' style='margin:1em 0;'/>");
-        $table_with_deleted_contacts.before($toggle_deleted_btn);
-        $toggle_deleted_btn.on('click', function(e){
-            e.preventDefault();
-            var $cols = $table_with_deleted_contacts.find('tr.is-deleted');
-            if ($cols.first().is(':visible')) {
-                $cols.hide();
-                $(this).prop("value", 'Show deleted contacts');
+        // admin hints: maybe better implemented as tooltips?
+        $(".admin-hint").on('click', function(){
+            if ($(this).hasClass('admin-hint-show')) {
+                $(this).removeClass('admin-hint-show');
             } else {
-                $cols.show();
-                $(this).prop("value", 'Hide deleted contacts');
+                $(this).addClass('admin-hint-show');
             }
         });
-    }
 
+        // on a body's page, hide/show deleted contact categories
+        var $table_with_deleted_contacts = $('table tr.is-deleted td.contact-category').closest('table');
+        if ($table_with_deleted_contacts.length == 1) {
+            var $toggle_deleted_btn = $("<input type='submit' class='btn' value='Hide deleted contacts' id='toggle-deleted-contacts-btn' style='margin:1em 0;'/>");
+            $table_with_deleted_contacts.before($toggle_deleted_btn);
+            $toggle_deleted_btn.on('click', function(e){
+                e.preventDefault();
+                var $cols = $table_with_deleted_contacts.find('tr.is-deleted');
+                if ($cols.first().is(':visible')) {
+                    $cols.hide();
+                    $(this).prop("value", 'Show deleted contacts');
+                } else {
+                    $cols.show();
+                    $(this).prop("value", 'Hide deleted contacts');
+                }
+            });
+        }
+    }
 });
 

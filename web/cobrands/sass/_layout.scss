@@ -1039,6 +1039,19 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
           }
         }
     }
+    .no-bullets {
+      margin-left: 0;
+      > li {
+        list-style: none;
+      }
+    }
+  .fms-admin-warning, .fms-admin-info, .admin-hint {
+    display: none; // don't display admin-notes unless .show-admin-notes class is present
+  }
+  &.show-admin-notes {
+    .fms-admin-warning, .fms-admin-info, .admin-hint {
+      display: block;
+    }
     .fms-admin-warning, .fms-admin-info {
       padding: 1em;
       font-size: 90%;
@@ -1101,13 +1114,9 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         }
       }
     }
-    .no-bullets {
-      margin-left: 0;
-      > li {
-        list-style: none;
-      }
-    }
+  }
 }
+
 
 /* MEDIA QUERIES */
 @media only screen and (min-width: 48em) and (max-width: 61em) {
