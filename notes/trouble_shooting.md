@@ -18,3 +18,13 @@ ALLOWED_COBRANDS:
 ````
 
 Then a domain like `zurich.fixmystreet.com` will match `fixmystreet` first and that is the cobrand that will be served.
+
+## Account creation emails not arriving
+
+Your receiving email servers may be rejecting them because:
+
+* your VM IP address has been blacklisted
+* your ISP blocks outgoing connections to port 25 (mobile broadband providers often do this)
+* sender verification has failed (applies to `@mysociety.org` servers) - check that your `DO_NOT_REPLY_EMAIL` conf setting passes sender verification (using your own email address works well).
+
+Perhaps check the entries in `/var/log/mail.log` to check that the message has been sent by the app, and if it has been possible to send them on.
