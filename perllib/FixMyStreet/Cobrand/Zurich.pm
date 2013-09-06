@@ -592,10 +592,10 @@ sub admin_stats {
     );
 
     if ( $c->req->params->{export} ) {
-        my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand', 'category', 'state' ] } );
-        my $body = "ID,Created,E,N,Category,Status\n";
+        my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand', 'category', 'state', 'user_id' ] } );
+        my $body = "ID,Created,E,N,Category,Status,UserID\n";
         while (my $report = $problems->next) {
-            $body .= join( ',', $report->id, $report->created, $report->local_coords, $report->category, $report->state ) . "\n";
+            $body .= join( ',', $report->id, $report->created, $report->local_coords, $report->category, $report->state, $report->user_id ) . "\n";
         }
         $c->res->content_type('text/csv; charset=utf-8');
         $c->res->body($body);
