@@ -138,7 +138,7 @@ So FixMyStreet uses the email address as the key piece of information when
 identifying a user. It sends a confirmation link -- with a unique token within
 it -- to the specified email address when an unidentified user performs a task
 that requires authentication, such as submitting a report, or changing their
-password (see below).
+password.
 
 Clicking on a valid email confirmation link not only confirms the action it
 was created for (for example, the report is marked as *confirmed*, or the
