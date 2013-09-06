@@ -27,13 +27,13 @@
           <td>
             [% IF c.cobrand.moniker == 'zurich' %]
               [% FILTER repeat(4*body.api_key) %]&nbsp;[% END %]
-            [% END %]
-            [% IF admin_type == 'super' %]
+              [% IF admin_type == 'super' %]
+                <a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
+              [% ELSE %]
+                [% body.name %]
+              [% END %]
+            [% ELSE %] [%# not Zurich: all bodies should be links %]
               <a href="[% c.uri_for( 'body', id ) %]">[% body.name %]</a>
-            [% ELSE %]
-              [% body.name %]
-            [% END %]
-            [% IF c.cobrand.moniker != 'zurich' %]
               [%- ', ' _ body.parent.name IF body.parent -%]
             [% END %]
           </td>
