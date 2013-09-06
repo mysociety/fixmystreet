@@ -8,6 +8,47 @@ use RABX;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Zurich FixMyStreet cobrand
+
+=head1 DESCRIPTION
+
+This module provides the specific functionality for the Zurich FMS cobrand.
+
+=head1 DEVELOPMENT NOTES
+
+The admin for Zurich is different to the other cobrands. To access it you need
+to be logged in as a user associated with an appropriate body.
+
+You can create the bodies needed to develop by running the 't/cobrand/zurich.t'
+test script with the three C<$mech->delete...> lines at the end commented out.
+This should leave you with the bodies and users correctly set up.
+
+The entries will be something like this (but with different ids).
+
+    Bodies:
+         id |     name      | parent |         endpoint
+        ----+---------------+--------+---------------------------
+          1 | Zurich        |        |
+          2 | Division 1    |      1 | division@example.org
+          3 | Subdivision A |      2 | subdivision@example.org
+          4 | External Body |        | external_body@example.org
+
+    Users:
+         id |      email       | from_body
+        ----+------------------+-----------
+          2 | dm1@example.org  |         2
+          3 | sdm1@example.org |         3
+
+The passwords for the users is 'secret'.
+
+Note: the password hashes are salted with the user's id so cannot be easily
+changed. High ids have been used so that it should not conflict with anything
+you already have, and the countres set so that they shouldn't in future.
+
+=cut
+
 sub shorten_recency_if_new_greater_than_fixed {
     return 0;
 }
