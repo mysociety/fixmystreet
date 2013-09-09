@@ -156,6 +156,7 @@ $mech->clear_emails_ok;
 $mech->log_out_ok;
 
 $user = $mech->log_in_ok( 'sdm1@example.org') ;
+$user->update({ from_body => undef });
 $mech->get_ok( '/admin' );
 is $mech->uri->path, '/my', "got sent to /my";
 $user->from_body( 3 );
