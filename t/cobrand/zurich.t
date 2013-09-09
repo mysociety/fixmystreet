@@ -132,8 +132,10 @@ $mech->content_contains('photo/' . $report->id . '.jpeg');
 
 # Internal notes
 $mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { internal_notes => 'Some internal notes.' } } );
-$mech->content_contains( 'Some internal notes' );
+$mech->submit_form_ok( { with_fields => { new_internal_note => 'Initial internal note.' } } );
+$mech->submit_form_ok( { with_fields => { new_internal_note => 'Another internal note.' } } );
+$mech->content_contains( 'Initial internal note.' );
+$mech->content_contains( 'Another internal note.' );
 
 # Original description
 $mech->submit_form_ok( { with_fields => { detail => 'Edited details text.' } } );
@@ -170,7 +172,7 @@ $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'In Bearbeitung' );
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->content_contains( 'Some internal notes' );
+$mech->content_contains( 'Initial internal note' );
 
 $mech->submit_form_ok( { with_fields => { status_update => 'This is an update.' } } );
 is $mech->uri->path, '/admin/report_edit/' . $report->id, "still on edit page";

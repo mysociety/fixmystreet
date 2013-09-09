@@ -397,18 +397,37 @@ sub admin_report_edit {
 
     }
 
-    # Problem updates upon submission
+    # If super or sdm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         $c->forward('check_token');
+    }
 
+    # All types of users can add internal notes
+    if ( ($type eq 'super' || $type eq 'dm' || $type eq 'sdm') && $c->req->param('submit') ) {
+        # If there is a new note add it as a comment to the problem (with is_internal_note set true in extra).
+        if ( my $new_internal_note = $c->req->params->{new_internal_note} ) {
+            $problem->add_to_comments( {
+                text => $new_internal_note,
+                user => $c->user->obj,
+                state => 'hidden', # seems best fit, should not be shown publicly
+                mark_fixed => 0,
+                problem_state => $problem->state,
+                anonymous => 1,
+                extra => { is_internal_note => 1 },
+            } );
+        }
+    }
+
+    # Problem updates upon submission
+    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         # Predefine the hash so it's there for lookups
         # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
         my $extra = $problem->extra || {};
-        $extra->{internal_notes} = $c->req->param('internal_notes');
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
         # Make sure we have a copy of the original detail field
         $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
+
 
         # Workflow things
         my $redirect = 0;
@@ -500,14 +519,6 @@ sub admin_report_edit {
             if ( $c->req->param('latitude') != $problem->latitude || $c->req->param('longitude') != $problem->longitude ) {
                 $problem->latitude( $c->req->param('latitude') );
                 $problem->longitude( $c->req->param('longitude') );
-                $db_update = 1;
-            }
-
-            my $extra = $problem->extra || {};
-            $extra->{internal_notes} ||= '';
-            if ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes}) {
-                $extra->{internal_notes} = $c->req->param('internal_notes');
-                $problem->extra( { %$extra } );
                 $db_update = 1;
             }
 
