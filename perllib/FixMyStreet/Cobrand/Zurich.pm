@@ -612,9 +612,10 @@ sub admin_stats {
                 $body_name = $external_body->name;
             }
             $body .= join( ',',
-                $report->id, $report->created,
+                $report->id,           $report->created,
                 $report->local_coords, $report->category,
-                $report->state, $report->user_id, "\"$body_name\"" )
+                $report->state,        $report->user_id,
+                "\"$body_name\"" )
               . "\n";
         }
         $c->res->content_type('text/csv; charset=utf-8');
