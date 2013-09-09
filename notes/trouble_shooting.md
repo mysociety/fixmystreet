@@ -34,3 +34,9 @@ Perhaps check the entries in `/var/log/mail.log` to check that the message has b
 The locale needs to be installed too or the translations will not be used. Use
 `locale -a` to list them all and ensure the one your translation uses is in the
 list.
+
+
+## Database connection errors trying to run update-schema
+
+Make sure that you specify a database host and password in `general.yml`. You
+may need to explicitly give your user a password.
