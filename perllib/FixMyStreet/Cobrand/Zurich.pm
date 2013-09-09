@@ -596,17 +596,25 @@ sub admin_stats {
             {%params},
             {
                 columns => [
-                    'id',      'created',  'latitude', 'longitude',
-                    'cobrand', 'category', 'state',    'user_id'
+                    'id',       'created',
+                    'latitude', 'longitude',
+                    'cobrand',  'category',
+                    'state',    'user_id',
+                    'external_body'
                 ]
             }
         );
-        my $body = "ID,Created,E,N,Category,Status,UserID\n";
+        my $body = "ID,Created,E,N,Category,Status,UserID,External Body\n";
         while ( my $report = $problems->next ) {
+            my $external_body;
+            my $body_name = "";
+            if ( $external_body = $report->body($c) ) {
+                $body_name = $external_body->name;
+            }
             $body .= join( ',',
-                $report->id,           $report->created,
+                $report->id, $report->created,
                 $report->local_coords, $report->category,
-                $report->state,        $report->user_id )
+                $report->state, $report->user_id, $body_name )
               . "\n";
         }
         $c->res->content_type('text/csv; charset=utf-8');
