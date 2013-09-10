@@ -34,8 +34,6 @@ __PACKAGE__->set_primary_key("scope", "token");
 # use mySociety::DBHandle qw(dbh);
 
 use mySociety::AuthToken;
-use IO::String;
-use RABX;
 
 =head1 NAME
 
@@ -54,26 +52,9 @@ ms_current_timestamp.
 
 =cut
 
-__PACKAGE__->filter_column(
-    data => {
-        filter_from_storage => sub {
-            my $self = shift;
-            my $ser  = shift;
-            return undef unless defined $ser;
-            utf8::encode($ser) if utf8::is_utf8($ser);
-            my $h = new IO::String($ser);
-            return RABX::wire_rd($h);
-        },
-        filter_to_storage => sub {
-            my $self = shift;
-            my $data = shift;
-            my $ser  = '';
-            my $h    = new IO::String($ser);
-            RABX::wire_wr( $data, $h );
-            return $ser;
-        },
-    }
-);
+__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
+__PACKAGE__->rabx_column('data');
+
 
 sub new {
     my ( $class, $attrs ) = @_;
