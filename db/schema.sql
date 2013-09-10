@@ -64,7 +64,8 @@ create table body (
     comment_user_id int references users(id),
     suppress_alerts boolean not null default 'f',
     can_be_devolved boolean not null default 'f',
-    send_extended_statuses boolean not null default 'f'
+    send_extended_statuses boolean not null default 'f',
+    deleted boolean not null default 'f'
 );
 
 create table body_areas (
