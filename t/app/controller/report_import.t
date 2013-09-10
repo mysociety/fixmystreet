@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 
 use FixMyStreet::TestMech;
+use FixMyStreet::App;
 use Web::Scraper;
 use Path::Class;
 
@@ -11,6 +12,10 @@ $mech->get_ok('/import');
 
 my $sample_file = file(__FILE__)->parent->file("sample.jpg")->stringify;
 ok -e $sample_file, "sample file $sample_file exists";
+
+# disable info logs for this test run
+FixMyStreet::App->log->disable('info');
+END { FixMyStreet::App->log->enable('info'); }
 
 # submit an empty report to import - check we get all errors
 subtest "Test creating bad partial entries" => sub {

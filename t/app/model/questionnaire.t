@@ -32,8 +32,6 @@ my $problem = FixMyStreet::App->model('DB::Problem')->create(
     }
 );
 
-diag $problem->id;
-
 my $mech = FixMyStreet::TestMech->new;
 
 for my $test ( 

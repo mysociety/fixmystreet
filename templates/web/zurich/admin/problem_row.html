@@ -32,6 +32,14 @@
             </td>
         [% END %]
 
+        <td>
+        [% IF problem.photo;
+            photo = problem.get_photo_params
+        %]
+            <img class="img" height="60" width="90" src="[% photo.url_fp %]" alt="">
+        [% END %]
+        </td>
+
         [% IF NOT no_edit %]
             <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
         [% END %]

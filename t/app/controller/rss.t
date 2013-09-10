@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 
 use FixMyStreet::TestMech;
+use FixMyStreet::App;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -15,6 +16,8 @@ my $dt = DateTime->new(
 my $user1 = FixMyStreet::App->model('DB::User')
   ->find_or_create( { email => 'reporter-rss@example.com', name => 'Reporter User' } );
 
+my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
     postcode           => 'eh1 1BB',
     bodies_str         => '2651',
@@ -26,9 +29,9 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
     name               => $user1->name,
     anonymous          => 0,
     state              => 'confirmed',
-    confirmed          => $dt,
-    lastupdate         => $dt,
-    whensent           => $dt->clone->add( minutes => 5 ),
+    confirmed          => $dt_parser->format_datetime($dt),
+    lastupdate         => $dt_parser->format_datetime($dt),
+    whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
     lang               => 'en-gb',
     service            => '',
     cobrand            => 'default',

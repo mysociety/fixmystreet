@@ -237,6 +237,19 @@ like $email->header('To'), qr/external_body\@example.org/, 'to line looks correc
 like $email->body, qr/External Body/, 'body has right name';
 like $email->body, qr/test\@example.com/, 'body does contain email address';
 $mech->clear_emails_ok;
+$mech->log_out_ok;
+
+# Test only superuser can edit bodies
+$user = $mech->log_in_ok( 'dm1@example.org') ;
+$mech->get( '/admin/body/' . $zurich->id );
+is $mech->res->code, 404, "only superuser should be able to edit bodies";
+$mech->log_out_ok;
+
+# Test only superuser can see "Add body" form
+$user = $mech->log_in_ok( 'dm1@example.org') ;
+$mech->get_ok( '/admin/bodies' );
+$mech->content_lacks( '<form method="post" action="bodies"' );
+$mech->log_out_ok;
 
 $mech->delete_problems_for_body( 2 );
 $mech->delete_user( 'dm1@example.org' );

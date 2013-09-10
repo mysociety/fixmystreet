@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 
 use FixMyStreet::TestMech;
+use FixMyStreet::App;
 
 my $mech = FixMyStreet::TestMech->new;
 
@@ -362,6 +363,8 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
 
     my $dt = DateTime->now()->add( days => 2);
 
+    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
     my $report_time = '2011-03-01 12:00:00';
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
@@ -374,9 +377,9 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         name               => $user1->name,
         anonymous          => 0,
         state              => 'fixed - user',
-        confirmed          => $dt,
-        lastupdate         => $dt,
-        whensent           => $dt->clone->add( minutes => 5 ),
+        confirmed          => $dt_parser->format_datetime($dt),
+        lastupdate         => $dt_parser->format_datetime($dt),
+        whensent           => $dt_parser->format_datetime($dt->clone->add( minutes => 5 )),
         lang               => 'en-gb',
         service            => '',
         cobrand            => 'default',
@@ -514,6 +517,8 @@ for my $test (
         my $alert_user1 = FixMyStreet::App->model('DB::Alert')->create( $alert_params );
         ok $alert_user1, "alert created";
 
+        my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
         my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
             postcode           => 'EH1 1BB',
             bodies_str         => '2651',
@@ -525,9 +530,9 @@ for my $test (
             name               => $user2->name,
             anonymous          => 0,
             state              => 'confirmed',
-            confirmed          => $r_dt,
-            lastupdate         => $r_dt,
-            whensent           => $r_dt->clone->add( minutes => 5 ),
+            confirmed          => $dt_parser->format_datetime($r_dt),
+            lastupdate         => $dt_parser->format_datetime($r_dt),
+            whensent           => $dt_parser->format_datetime($r_dt->clone->add( minutes => 5 )),
             lang               => 'en-gb',
             service            => '',
             cobrand            => 'default',
@@ -573,6 +578,8 @@ subtest 'check new updates alerts for non public reports only go to report owner
     my $dt = DateTime->now->add( minutes => -30 );
     my $r_dt = $dt->clone->add( minutes => 20 );
 
+    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
         bodies_str         => '2651',
@@ -584,9 +591,9 @@ subtest 'check new updates alerts for non public reports only go to report owner
         name               => $user2->name,
         anonymous          => 0,
         state              => 'confirmed',
-        confirmed          => $r_dt,
-        lastupdate         => $r_dt,
-        whensent           => $r_dt->clone->add( minutes => 5 ),
+        confirmed          => $dt_parser->format_datetime($r_dt),
+        lastupdate         => $dt_parser->format_datetime($r_dt),
+        whensent           => $dt_parser->format_datetime($r_dt->clone->add( minutes => 5 )),
         lang               => 'en-gb',
         service            => '',
         cobrand            => 'default',

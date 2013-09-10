@@ -130,6 +130,8 @@ sub index : Path : Args(0) {
 
     $c->stash->{categories} = $c->cobrand->problems->categories_summary();
 
+    $c->stash->{total_bodies} = $c->model('DB::Body')->count();
+
     return 1;
 }
 
@@ -234,6 +236,7 @@ sub bodies : Path('bodies') : Args(0) {
 
     my $posted = $c->req->param('posted') || '';
     if ( $posted eq 'body' ) {
+        $c->forward('check_for_super_user');
         $c->forward('check_token');
 
         my $params = $c->forward('body_params');
@@ -296,6 +299,7 @@ sub body : Path('body') : Args(1) {
 
     $c->stash->{body_id} = $body_id;
 
+    $c->forward( 'check_for_super_user' );
     $c->forward( 'get_token' );
     $c->forward( 'lookup_body' );
     $c->forward( 'fetch_all_bodies' );
@@ -309,6 +313,13 @@ sub body : Path('body') : Args(1) {
     $c->forward('display_contacts');
 
     return 1;
+}
+
+sub check_for_super_user : Private {
+    my ( $self, $c ) = @_;
+    if ( $c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} ne 'super' ) {
+        $c->detach('/page_error_404_not_found', []);
+    }
 }
 
 sub update_contacts : Private {
@@ -377,6 +388,7 @@ sub update_contacts : Private {
 
         $c->stash->{updated} = _('Values updated');
     } elsif ( $posted eq 'body' ) {
+        $c->forward('check_for_super_user');
         $c->forward('check_token');
 
         my $params = $c->forward( 'body_params' );
@@ -420,6 +432,7 @@ sub display_contacts : Private {
 
     my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
     $c->stash->{contacts} = $contacts;
+    $c->stash->{live_contacts} = $contacts->search({ deleted => 0 });
 
     if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
@@ -1014,8 +1027,20 @@ sub flagged : Path('flagged') : Args(0) {
     $c->stash->{problems} = [ $problems->all ];
 
     my $users = $c->model('DB::User')->search( { flagged => 1 } );
+    my @users = $users->all;
+    my %email2user = map { $_->email => $_ } @users;
+    $c->stash->{users} = [ @users ];
 
-    $c->stash->{users} = $users;
+    my @abuser_emails = $c->model('DB::Abuse')->all();
+
+    foreach my $email (@abuser_emails) {
+        # Slight abuse of the boolean flagged value
+        if ($email2user{$email->email}) {
+            $email2user{$email->email}->flagged( 2 );
+        } else {
+            push @{$c->stash->{users}}, { email => $email->email, flagged => 2 };
+        }
+    }
 
     return 1;
 }

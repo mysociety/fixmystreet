@@ -537,6 +537,7 @@ for my $test (
             state => 'internal referral',
         },
         state => 'internal referral',
+        meta  => "an internal referral",
     },
     {
         desc => 'from authority user marks report as not responsible',
@@ -562,7 +563,7 @@ for my $test (
             state => 'duplicate',
         },
         state => 'duplicate',
-        meta  => 'duplicate report',
+        meta  => 'a duplicate report',
     },
     {
         desc => 'from authority user marks report as internal referral',
@@ -575,7 +576,7 @@ for my $test (
             state => 'internal referral',
         },
         state => 'internal referral',
-        meta  => 'internal referral',
+        meta  => 'an internal referral',
     },
     {
         desc => 'from authority user marks report sent to two councils as fixed',
