@@ -20,6 +20,8 @@ __PACKAGE__->add_columns(
   },
   "name",
   { data_type => "text", is_nullable => 0 },
+  "parent",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "endpoint",
   { data_type => "text", is_nullable => 1 },
   "jurisdiction",
@@ -38,8 +40,6 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "send_extended_statuses",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "parent",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -59,10 +59,10 @@ __PACKAGE__->belongs_to(
   "FixMyStreet::DB::Result::User",
   { id => "comment_user_id" },
   {
-    is_deferrable => 1,
+    is_deferrable => 0,
     join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
   },
 );
 __PACKAGE__->has_many(
@@ -76,10 +76,10 @@ __PACKAGE__->belongs_to(
   "FixMyStreet::DB::Result::Body",
   { id => "parent" },
   {
-    is_deferrable => 1,
+    is_deferrable => 0,
     join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
   },
 );
 __PACKAGE__->has_many(
@@ -90,8 +90,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-19 12:47:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DdtXjMWRpz20ZHjtY3oP2w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JT0w76BWaDpjAV61WVSYHg
 
 sub url {
     my ( $self, $c ) = @_;
