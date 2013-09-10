@@ -31,6 +31,11 @@
         </select>
     </p>
 
+    <p>
+        <label for="deleted">[% loc('Flag as deleted') %]</label>
+        <input type="checkbox" name="deleted" id="deleted" value="1"[% ' checked' IF body.deleted %] />
+    </p>
+
         <input type="hidden" name="send_method" value="Email">
         <input type="hidden" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction %]">
         <input type="hidden" name="api_key" id="api_key" value="[% body.api_key %]">
