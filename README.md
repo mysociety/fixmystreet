@@ -22,6 +22,11 @@ We've been working hard to make the FixMyStreet Platform easy to install and
 re-use in other countries - please see our site at <http://code.fixmystreet.com/>
 for help and documentation in installing the FixMyStreet Platform.
 
+## Mobile apps
+
+We've extracted all of the mobile apps from this repository into the
+[fixmystreet-mobile repository](https://github.com/mysociety/fixmystreet-mobile).
+
 ## Releases
 
 * v1.3 (12th November 2013)
