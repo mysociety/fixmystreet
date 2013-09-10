@@ -135,54 +135,15 @@ __PACKAGE__->has_one(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-__PACKAGE__->filter_column(
-    extra => {
-        filter_from_storage => sub {
-            my $self = shift;
-            my $ser  = shift;
-            return undef unless defined $ser;
-            utf8::encode($ser) if utf8::is_utf8($ser);
-            my $h = new IO::String($ser);
-            return RABX::wire_rd($h);
-        },
-        filter_to_storage => sub {
-            my $self = shift;
-            my $data = shift;
-            my $ser  = '';
-            my $h    = new IO::String($ser);
-            RABX::wire_wr( $data, $h );
-            return $ser;
-        },
-    }
-);
-
-__PACKAGE__->filter_column(
-    geocode => {
-        filter_from_storage => sub {
-            my $self = shift;
-            my $ser  = shift;
-            return undef unless defined $ser;
-            utf8::encode($ser) if utf8::is_utf8($ser);
-            my $h = new IO::String($ser);
-            return RABX::wire_rd($h);
-        },
-        filter_to_storage => sub {
-            my $self = shift;
-            my $data = shift;
-            my $ser  = '';
-            my $h    = new IO::String($ser);
-            RABX::wire_wr( $data, $h );
-            return $ser;
-        },
-    }
-);
+__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
+__PACKAGE__->rabx_column('extra');
+__PACKAGE__->rabx_column('geocode');
 
 use DateTime::TimeZone;
 use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
-use RABX;
 
 with 'FixMyStreet::Roles::Abuser';
 
