@@ -40,6 +40,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "send_extended_statuses",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "deleted",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -90,8 +92,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JT0w76BWaDpjAV61WVSYHg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 18:11:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hTOxxiiHmC8nmQK/p8dXhQ
 
 sub url {
     my ( $self, $c ) = @_;
