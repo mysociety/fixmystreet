@@ -103,6 +103,11 @@
   [% END %]
 </select></p>
 
+<p>
+    <span class="mock-label">automatische Antwort</span>
+    <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" checked="checked" />
+</p>
+
 [% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
 
 <ul class="no-bullets">
