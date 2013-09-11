@@ -21,12 +21,12 @@ __PACKAGE__->belongs_to(
   "body",
   "FixMyStreet::DB::Result::Body",
   { id => "body_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-19 12:47:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aAr+Nadyu8IckZlK6+PTNg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+hzie6kHleUBoEt199c/nQ
 
  __PACKAGE__->set_primary_key(__PACKAGE__->columns);
 

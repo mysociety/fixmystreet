@@ -120,12 +120,12 @@ __PACKAGE__->belongs_to(
   "user",
   "FixMyStreet::DB::Result::User",
   { id => "user_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 15:13:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:H2P3Og37G569nQdQA1IWaA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U/4BT8EGfcCLKA/7LX+qyQ
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
