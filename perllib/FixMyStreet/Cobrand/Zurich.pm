@@ -411,7 +411,6 @@ sub admin_report_edit {
                 user => $c->user->obj,
                 state => 'hidden', # seems best fit, should not be shown publicly
                 mark_fixed => 0,
-                problem_state => $problem->state,
                 anonymous => 1,
                 extra => { is_internal_note => 1 },
             } );
