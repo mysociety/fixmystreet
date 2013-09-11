@@ -115,6 +115,44 @@ $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'Erfasst' );
 
+
+subtest "changing of categories" => sub {
+    # create a few categories (which are actually contacts)
+    foreach my $name ( qw/Cat1 Cat2/ ) {
+        FixMyStreet::App->model('DB::Contact')->find_or_create({
+            body => $division,
+            category => $name,
+            email => "$name\@example.org",
+            confirmed => 1,
+            deleted => 0,
+            editor => "editor",
+            whenedited => DateTime->now(),
+            note => "note for $name",
+        });
+    }
+
+    # put report into know category
+    my $original_category = $report->category;
+    $report->update({ category => 'Cat1' });
+    is( $report->category, "Cat1", "Category set to Cat1" );
+
+    # get the latest comment
+    my $comments_rs = $report->comments->search({},{ order_by => { -desc => "created" } });
+    my $pre_change_comment = $comments_rs->first;
+
+    # change the category via the web interface
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { category => 'Cat2' } } );
+
+    # check changes correctly saved
+    $report->discard_changes();
+    is( $report->category, "Cat2", "Category changed to Cat2 as expected" );
+
+    # restore report to original state.
+    $report->update({category => $original_category });
+};
+
+
 $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
 $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
