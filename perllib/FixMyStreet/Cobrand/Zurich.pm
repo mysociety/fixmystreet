@@ -484,7 +484,8 @@ sub admin_report_edit {
           '<p><em>' . _('Updated!') . '</em></p>';
 
         # do this here otherwise lastupdate and confirmed times
-        # do not display correctly
+        # do not display correctly (reloads problem from database, including
+        # fields modified by the database when saving)
         $problem->discard_changes;
 
         if ( $redirect ) {
