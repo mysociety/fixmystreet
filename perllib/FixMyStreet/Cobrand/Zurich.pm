@@ -421,7 +421,6 @@ sub admin_report_edit {
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         # Predefine the hash so it's there for lookups
-        # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
         my $extra = $problem->extra || {};
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
@@ -461,7 +460,7 @@ sub admin_report_edit {
             }
         }
 
-        $problem->extra( { %$extra } );
+        $problem->extra( $extra );
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
         $problem->latitude( $c->req->param('latitude') );
@@ -470,7 +469,7 @@ sub admin_report_edit {
         # Final, public, Update from DM
         if (my $update = $c->req->param('status_update')) {
             $extra->{public_response} = $update;
-            $problem->extra( { %$extra } );
+            $problem->extra( $extra );
             if ($c->req->params->{publish_response}) {
                 $problem->state( 'fixed - council' );
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
@@ -544,7 +543,7 @@ sub admin_report_edit {
             if ($c->req->param('no_more_updates')) {
                 my $extra = $problem->extra || {};
                 $extra->{subdiv_overdue} = $self->overdue( $problem );
-                $problem->extra( { %$extra } );
+                $problem->extra( $extra );
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
                 $problem->state( 'planned' );
