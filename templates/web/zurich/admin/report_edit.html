@@ -136,7 +136,7 @@
     <select name="body_external" id="body_external">
         <option value="">--</option>
     [% FOR body IN bodies %]
-        [% NEXT IF body.parent OR body.bodies %]
+        [% NEXT IF body.parent OR body.bodies OR body.deleted %]
         <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
     [% END %]
     </select>

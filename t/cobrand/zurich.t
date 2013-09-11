@@ -251,6 +251,20 @@ $mech->get_ok( '/admin/bodies' );
 $mech->content_lacks( '<form method="post" action="bodies"' );
 $mech->log_out_ok;
 
+# Test problems can't be assigned to deleted bodies
+$user = $mech->log_in_ok( 'dm1@example.org' );
+$user->from_body( 1 );
+$user->update;
+$report->state( 'confirmed' );
+$report->update;
+$mech->get_ok( '/admin/body/' . $external_body->id );
+$mech->submit_form_ok( { with_fields => { deleted => 1 } } );
+$mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->content_lacks( $external_body->name );
+$user->from_body( 2 );
+$user->update;
+$mech->log_out_ok;
+
 $mech->delete_problems_for_body( 2 );
 $mech->delete_user( 'dm1@example.org' );
 $mech->delete_user( 'sdm1@example.org' );

@@ -16,6 +16,7 @@
           <th>[% loc('Name') %]</th>
         [% IF c.cobrand.moniker == 'zurich' %]
           <th>[% loc('Email') %]</th>
+          <th>[% loc('Deleted') %]</th>
         [% ELSE %]
           <th>[% loc('Category') %]</th>
         [% END %]
@@ -23,7 +24,7 @@
   [%- FOREACH body IN bodies %]
       [%- SET id = body.id %]
       [% NEXT IF c.cobrand.moniker == 'zurich' AND admin_type == 'dm' AND (body.parent OR body.bodies) %]
-      <tr>
+      <tr[% IF c.cobrand.moniker == 'zurich' AND body.deleted %] class="muted"[% END %]>
           <td>
             [% IF c.cobrand.moniker == 'zurich' %]
               [% FILTER repeat(4*body.api_key) %]&nbsp;[% END %]
@@ -39,6 +40,7 @@
           </td>
       [% IF c.cobrand.moniker == 'zurich' %]
           <td>[% body.endpoint %]</td>
+          <td>[% IF body.deleted %]Yes[% END %]</td>
       [% ELSE %]
           <td>
           [% IF counts.$id %]
