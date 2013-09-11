@@ -1,0 +1,63 @@
+[%# Assumes fixmystreet cobrand is using FMS map template - for bonus points preload all the right map elements. %]
+[% map_js = BLOCK %]
+<script>
+yepnope.addPrefix( 'preload', function ( resource ) {
+    resource.noexec = true;
+    return resource;
+});
+Modernizr.load({
+    load: [
+        "preload![% version('/js/OpenLayers.fixmystreet.js') %]",
+        "preload![% version('/js/map-OpenLayers.js') %]",
+        "preload![% version('/js/map-bing-ol.js') %]",
+        "preload![% version('/js/jquery.ba-hashchange.min.js') %]"
+    ]
+});
+</script>
+[% END %]
+
+[% pre_container_extra = PROCESS 'around/postcode_form.html' %]
+[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
+
+[% IF error %]
+    <p class="form-error">[% error %]</p>
+[% END %]
+
+[% IF c.cobrand.moniker == 'bromley' %]
+<p>This is primarily for reporting physical problems that can be fixed
+like graffiti, cleansing issues or road defects. To report other
+kinds of problems like missed bins use our
+<a href="http://www.bromley.gov.uk/report">online report it forms</a>.
+</p>
+[% END %]
+
+<div class="tablewrapper">
+    <div id="front-howto">
+        [% INCLUDE 'index-steps.html' %]
+    </div>
+
+    [% 
+        recent_photos = c.cobrand.recent_photos('front', 5);
+    %]
+
+    [% IF recent_photos.size %]
+    <div id="front-recently">
+        <h2>[% loc('Recently reported problems') %]</h2>
+
+        <section class="full-width">
+            <ul class="issue-list-a">
+            [% FOREACH problem IN recent_photos %]
+            [% INCLUDE 'report/_item.html', no_fixed = 1 %]
+            [% END %]
+            </ul>
+        </section>
+
+    </div>
+    [% END %]
+</div>
+
+
+<!-- [% TRY %][% INCLUDE 'front/news.html' %][% CATCH file %][% END %] -->
+
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
