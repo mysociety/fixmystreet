@@ -1,5 +1,5 @@
 # TODO
-# Overdue alerts 
+# Overdue alerts
 
 use strict;
 use warnings;
@@ -131,14 +131,14 @@ subtest "changing of categories" => sub {
         });
     }
 
-    # put report into know category
+    # put report into known category
     my $original_category = $report->category;
     $report->update({ category => 'Cat1' });
     is( $report->category, "Cat1", "Category set to Cat1" );
 
     # get the latest comment
     my $comments_rs = $report->comments->search({},{ order_by => { -desc => "created" } });
-    my $pre_change_comment = $comments_rs->first;
+    ok ( !$comments_rs->first, "There are no comments yet" );
 
     # change the category via the web interface
     $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -147,6 +147,10 @@ subtest "changing of categories" => sub {
     # check changes correctly saved
     $report->discard_changes();
     is( $report->category, "Cat2", "Category changed to Cat2 as expected" );
+
+    # Check that a new comment has been created.
+    my $new_comment = $comments_rs->first();
+    is( $new_comment->text, "Weitergeleitet von Cat1 an Cat2", "category change comment created" );
 
     # restore report to original state.
     $report->update({category => $original_category });

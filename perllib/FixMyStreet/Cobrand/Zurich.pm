@@ -426,17 +426,22 @@ sub admin_report_edit {
         # Make sure we have a copy of the original detail field
         $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
 
+        # Some changes will be accompanied by an internal note, which if needed
+        # should be stored in this variable.
+        my $internal_note_text = "";
 
         # Workflow things
         my $redirect = 0;
         my $new_cat = $c->req->params->{category};
         if ( $new_cat && $new_cat ne $problem->category ) {
             my $cat = $c->model('DB::Contact')->search( { category => $c->req->params->{category} } )->first;
+            my $old_cat = $problem->category;
             $problem->category( $new_cat );
             $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
             $problem->whensent( undef );
             $extra->{changed_category} = 1;
+            $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $extra->{moderated_overdue} = $self->overdue( $problem );
@@ -485,6 +490,18 @@ sub admin_report_edit {
         # do not display correctly (reloads problem from database, including
         # fields modified by the database when saving)
         $problem->discard_changes;
+
+        # Create an internal note if required
+        if ($internal_note_text) {
+            $problem->add_to_comments( {
+                text => $internal_note_text,
+                user => $c->user->obj,
+                state => 'hidden', # seems best fit, should not be shown publicly
+                mark_fixed => 0,
+                anonymous => 1,
+                extra => { is_internal_note => 1 },
+            } );
+        }
 
         if ( $redirect ) {
             $c->detach('index');
