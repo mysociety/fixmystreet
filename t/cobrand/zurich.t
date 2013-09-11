@@ -251,6 +251,22 @@ $mech->get_ok( '/admin/bodies' );
 $mech->content_lacks( '<form method="post" action="bodies"' );
 $mech->log_out_ok;
 
+# Test hidden report email are only sent when requested
+$user = $mech->log_in_ok( 'dm1@example.org') ;
+my $extra = $report->extra;
+$extra->{email_confirmed} = 1;
+$report->extra ( { %$extra } );
+$report->update;
+$mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => 1 } } );
+$mech->email_count_is(1);
+$mech->clear_emails_ok;
+$mech->get_ok( '/admin/report_edit/' . $report->id );
+$mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => undef } } );
+$mech->email_count_is(0);
+$mech->clear_emails_ok;
+$mech->log_out_ok;
+
 $mech->delete_problems_for_body( 2 );
 $mech->delete_user( 'dm1@example.org' );
 $mech->delete_user( 'sdm1@example.org' );
