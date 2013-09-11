@@ -396,7 +396,7 @@ sub admin_report_edit {
             $redirect = 1;
         } else {
             $problem->state( $c->req->params->{state} ) if $c->req->params->{state};
-            if ( $problem->state eq 'hidden' ) {
+            if ( $problem->state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
                 _admin_send_email( $c, 'problem-rejected.txt', $problem );
             }
         }
