@@ -103,6 +103,24 @@
   [% END %]
 </select></p>
 
+<p id="automatic-reply">
+    <span class="mock-label">automatische Antwort</span>
+    <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" checked="checked" />
+</p>
+
+<script type="text/javascript">
+$(function(){
+    // Show or hide the automatic reply field
+    $('#state').change(function(){
+        if ($(this).val() === 'hidden') {
+            $('#automatic-reply').show();
+        } else {
+            $('#automatic-reply').hide();
+        }
+    }).change();
+});
+</script>
+
 [% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
 
 <ul class="no-bullets">
