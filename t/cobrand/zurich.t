@@ -346,37 +346,38 @@ $mech->get_ok( '/admin/bodies' );
 $mech->content_lacks( '<form method="post" action="bodies"' );
 $mech->log_out_ok;
 
-# Test phone number is mandatory
-$user = $mech->log_in_ok( 'dm1@example.org' );
+subtest "phone number is mandatory" => sub {
+    # Capture the bits of the original config that the following code will use
+    my %config =
+        map {$_ => FixMyStreet->config($_)}
+        qw(ALLOWED_COBRANDS FMS_DB_NAME MAPIT_ID_WHITELIST STAGING_SITE);
 
-# Capture the bits of the original config that the following code will use
-my %config =
-    map {$_ => FixMyStreet->config($_)}
-    qw(ALLOWED_COBRANDS FMS_DB_NAME MAPIT_ID_WHITELIST STAGING_SITE);
+    # Change the MAPIT_TYPES and MAPIT_URL values for this test
+    $config{MAPIT_TYPES} = [ 'O08' ];
+    $config{MAPIT_URL} = 'http://global.mapit.mysociety.org/';
+    mySociety::MaPit::configure($config{MAPIT_URL});
 
-# Change the MAPIT_TYPES value for this test
-$config{MAPIT_TYPES} = [ 'O08' ];
-$config{MAPIT_URL} = 'http://global.mapit.mysociety.org/';
-mySociety::MaPit::configure($config{MAPIT_URL});
+    # Override the get function to return values from our captured config. This
+    # override will be cleared at the end of this block when the $override guard
+    # falls out of scope.
+    my $override_guard = Sub::Override->new(
+        "FixMyStreet::config",
+        sub {
+            my ($self, $key, $default) = @_;
+            exists $config{$key}
+                ? return $config{$key}
+                : die "Need to cache config key '$key' here";
+        }
+    );
 
-# Override the get function to return values from our captured config. This
-# override will be cleared at the end of this block when the $override guard
-# falls out of scope.
-my $override_guard = Sub::Override->new(
-    "FixMyStreet::config",
-    sub {
-        my ($self, $key, $default) = @_;
-        exists $config{$key}
-            ? return $config{$key}
-            : die "Need to cache config key '$key' here";
-    }
-);
+    $user = $mech->log_in_ok( 'dm1@example.org' );
+    $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
+    $mech->submit_form( with_fields => { phone => "" } );
+    $mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
+    $mech->log_out_ok;
 
-$mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
-$mech->submit_form( with_fields => { phone => "" } );
-$mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
-$override_guard->restore();
-$mech->log_out_ok;
+    $override_guard->restore();
+};
 
 # Test problems can't be assigned to deleted bodies
 $user = $mech->log_in_ok( 'dm1@example.org' );
