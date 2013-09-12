@@ -39,7 +39,7 @@ sub string {
         $url .=  '&components=country:' . $params->{country};
     }
     $url .=  '&language=' . $params->{lang} if $params->{lang};
-    $url .= '&sensor=false';
+    $url .= '&sensor=false' . ;
 
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'google/';
     my $cache_file = $cache_dir . md5_hex($url);
@@ -69,11 +69,15 @@ sub string {
         next unless $c->cobrand->geocoded_string_check( $address );
         $latitude = $_->{geometry}->{location}->{lat};
         $longitude = $_->{geometry}->{location}->{lng};
-	push(@$error, {
-	    address => $address,
-	    latitude => sprintf('%0.6f', $latitude),
-	    longitude => sprintf('%0.6f', $longitude)	  
-	     });
+        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
+	mySociety::Locale::in_gb_locale {
+            push(@$error, {
+                address => $address,
+                latitude => sprintf('%0.6f', $latitude),
+		longitude => sprintf('%0.6f', $longitude)      
+	    });
+	};
+	push (@valid_locations, $_);
     }
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
     return { error => $error };
