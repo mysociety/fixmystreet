@@ -630,6 +630,35 @@ subtest 'check can turn on report sent email alerts' => sub {
     like $email->body, qr/Your report about/, 'report sent body correct';
 };
 
+
+subtest 'check iOS app store test reports not sent' => sub {
+    $mech->clear_emails_ok;
+
+    FixMyStreet::App->model('DB::Problem')->search(
+        {
+            whensent => undef
+        }
+    )->update( { whensent => \'ms_current_timestamp()' } );
+
+    $problem->discard_changes;
+    $problem->update( {
+        title => 'App store test',
+        state => 'confirmed',
+        confirmed => \'ms_current_timestamp()',
+        whensent => undef,
+        category => 'potholes',
+        send_fail_count => 0,
+    } );
+
+    FixMyStreet::App->model('DB::Problem')->send_reports();
+
+    $mech->email_count_is( 0 );
+
+    $problem->discard_changes();
+    is $problem->state, 'hidden', 'iOS test reports are hidden automatically';
+    is $problem->whensent, undef, 'iOS test reports are not sent';
+};
+
 subtest 'check reports from abuser not sent' => sub {
     $mech->clear_emails_ok;
 
