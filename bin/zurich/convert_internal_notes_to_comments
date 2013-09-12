@@ -1,0 +1,74 @@
+#!/usr/bin/env perl
+
+=head1 DESCRIPTION
+
+This is a Zurich specific migration script.
+
+It converts the internal notes that used to be stored on the problem in the
+extra hash into comments instead.
+
+    ./bin/zurich/convert_internal_notes_to_comments user_id
+
+You need to select a user to have the internal notes be associated with, perhaps
+the superuser, or one created just for this purpose?
+
+=cut
+
+use strict;
+use warnings;
+
+use FixMyStreet::App;
+
+# Because it is not possible to determine the user that last edited the
+# internal_notes we need require a user to assign all the comments to.
+my $comment_user_id = $ARGV[0]
+  || die "Usage: $0 id_of_user_for_comments";
+my $comment_user = FixMyStreet::App    #
+  ->model('DB::User')                  #
+  ->find($comment_user_id)
+  || die "Could not find user with id '$comment_user_id'";
+
+# We use now as the time for the internal note. This is not the time it was
+# actually created, but I don't think that can be extracted from the problem.
+my $comment_timestamp = DateTime->now();
+
+# The state of 'hidden' seems most appropriate for these internal_notes - as
+# they should not be shown to the public. Certainly more suitable than
+# 'unconfirmed' or 'confirmed'.
+my $comment_state = 'hidden';
+
+# Load all the comments, more reliable than trying to search on the contents of
+# the extra field.
+my $problems = FixMyStreet::App->model('DB::Problem')->search();
+
+while ( my $problem = $problems->next() ) {
+
+    my $problem_id  = $problem->id;
+
+    # Extract the bits we are interested in. May not exist, in which case
+    # skip on.
+    my $extra = $problem->extra || {};
+    next unless exists $extra->{internal_notes};
+
+    # If there is something to save create a comment with the notes in them
+    if ( my $internal_notes = $extra->{internal_notes} ) {
+        print "Creating internal note comment for problem '$problem_id'\n";
+        $problem->add_to_comments(
+            {
+                text          => $internal_notes,
+                created       => $comment_timestamp,
+                user          => $comment_user,
+                state         => $comment_state,
+                mark_fixed    => 0,
+                problem_state => $problem->state,
+                anonymous     => 1,
+                extra         => { is_internal_note => 1 },
+            }
+        );
+    }
+
+    # Remove the notes from extra and save back to the problem
+    delete $extra->{internal_notes};
+    $problem->update({ extra => $extra });
+}
+

@@ -1,19 +1,69 @@
 # TODO
-# Overdue alerts 
+# Overdue alerts
 
 use strict;
 use warnings;
 use DateTime;
 use Test::More;
+use Sub::Override;
 
 plan skip_all => 'Skipping Zurich test without Zurich cobrand'
     unless FixMyStreet::Cobrand->exists('zurich');
+
+# To run this test ensure that you have the following in general.yml:
+#
+#     BASE_URL: 'http://zurich.127.0.0.1.xip.io'
+#
+#     ALLOWED_COBRANDS:
+#       - zurich
+#
+# Check that you have the required locale installed - the following
+# should return a line with de_CH.utf8 in. If not install that locale.
+#
+#     locale -a | grep de_CH
+#
+# To generate the translations use:
+#
+#     commonlib/bin/gettext-makemo FixMyStreet
+
+
+# This is a helper method that will send the reports but with the config
+# correctly set - notably SEND_REPORTS_ON_STAGING needs to be true.
+sub send_reports_for_zurich {
+
+    # Capture the bits of the original config that the following code will use
+    my %config =
+        map {$_ => mySociety::Config::get($_)}
+        qw(BASE_URL STAGING_SITE CONTACT_EMAIL SEND_REPORTS_ON_STAGING);
+
+    # Change the SEND_REPORTS_ON_STAGING value to true for this test
+    $config{SEND_REPORTS_ON_STAGING} = 1;
+
+    # Override the get function to return values from our captured config. This
+    # override will be cleared at the end of this block when the $override guard
+    # falls out of scope.
+    my $override_guard = Sub::Override->new(
+        "mySociety::Config::get",
+        sub ($;$) {
+            my ($key, $default) = @_;
+            exists $config{$key}
+                ? return $config{$key}
+                : die "Need to cache config key '$key' here";
+        }
+    );
+
+    # Actually send the report
+    FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+
+    # tidy up explicitly
+    $override_guard->restore();
+}
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 # Front page test
-ok $mech->host("zurich.fixmystreet.com"), "change host to Zurich";
+ok $mech->host("zurich.example.com"), "change host to Zurich";
 $mech->get_ok('/');
 $mech->content_like( qr/zurich/i );
 
@@ -65,6 +115,48 @@ $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'Erfasst' );
 
+
+subtest "changing of categories" => sub {
+    # create a few categories (which are actually contacts)
+    foreach my $name ( qw/Cat1 Cat2/ ) {
+        FixMyStreet::App->model('DB::Contact')->find_or_create({
+            body => $division,
+            category => $name,
+            email => "$name\@example.org",
+            confirmed => 1,
+            deleted => 0,
+            editor => "editor",
+            whenedited => DateTime->now(),
+            note => "note for $name",
+        });
+    }
+
+    # put report into known category
+    my $original_category = $report->category;
+    $report->update({ category => 'Cat1' });
+    is( $report->category, "Cat1", "Category set to Cat1" );
+
+    # get the latest comment
+    my $comments_rs = $report->comments->search({},{ order_by => { -desc => "created" } });
+    ok ( !$comments_rs->first, "There are no comments yet" );
+
+    # change the category via the web interface
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { category => 'Cat2' } } );
+
+    # check changes correctly saved
+    $report->discard_changes();
+    is( $report->category, "Cat2", "Category changed to Cat2 as expected" );
+
+    # Check that a new comment has been created.
+    my $new_comment = $comments_rs->first();
+    is( $new_comment->text, "Weitergeleitet von Cat1 an Cat2", "category change comment created" );
+
+    # restore report to original state.
+    $report->update({category => $original_category });
+};
+
+
 $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
 $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
@@ -82,8 +174,10 @@ $mech->content_contains('photo/' . $report->id . '.jpeg');
 
 # Internal notes
 $mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { internal_notes => 'Some internal notes.' } } );
-$mech->content_contains( 'Some internal notes' );
+$mech->submit_form_ok( { with_fields => { new_internal_note => 'Initial internal note.' } } );
+$mech->submit_form_ok( { with_fields => { new_internal_note => 'Another internal note.' } } );
+$mech->content_contains( 'Initial internal note.' );
+$mech->content_contains( 'Another internal note.' );
 
 # Original description
 $mech->submit_form_ok( { with_fields => { detail => 'Edited details text.' } } );
@@ -97,7 +191,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('In Bearbeitung');
 $mech->content_contains('Test Test');
 
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 my $email = $mech->get_email;
 like $email->header('Subject'), qr/Neue Meldung/, 'subject looks okay';
 like $email->header('To'), qr/subdivision\@example.org/, 'to line looks correct';
@@ -106,6 +200,7 @@ $mech->clear_emails_ok;
 $mech->log_out_ok;
 
 $user = $mech->log_in_ok( 'sdm1@example.org') ;
+$user->update({ from_body => undef });
 $mech->get_ok( '/admin' );
 is $mech->uri->path, '/my', "got sent to /my";
 $user->from_body( 3 );
@@ -119,7 +214,7 @@ $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'In Bearbeitung' );
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->content_contains( 'Some internal notes' );
+$mech->content_contains( 'Initial internal note' );
 
 $mech->submit_form_ok( { with_fields => { status_update => 'This is an update.' } } );
 is $mech->uri->path, '/admin/report_edit/' . $report->id, "still on edit page";
@@ -132,7 +227,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('In Bearbeitung');
 $mech->content_contains('Test Test');
 
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Feedback/, 'subject looks okay';
 like $email->header('To'), qr/division\@example.org/, 'to line looks correct';
@@ -211,7 +306,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
 $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
 like $email->header('To'), qr/external_body\@example.org/, 'to line looks correct';
@@ -230,7 +325,7 @@ $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
 $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
-FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+send_reports_for_zurich();
 $email = $mech->get_email;
 like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
 like $email->header('To'), qr/external_body\@example.org/, 'to line looks correct';
