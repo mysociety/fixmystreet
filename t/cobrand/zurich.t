@@ -348,9 +348,33 @@ $mech->log_out_ok;
 
 # Test phone number is mandatory
 $user = $mech->log_in_ok( 'dm1@example.org' );
-$mech->get_ok( '/report/new?latitude=51.500802;longitude=-0.143005' );
+
+# Capture the bits of the original config that the following code will use
+my %config =
+    map {$_ => FixMyStreet->config($_)}
+    qw(ALLOWED_COBRANDS FMS_DB_NAME MAPIT_ID_WHITELIST STAGING_SITE);
+
+# Change the MAPIT_TYPES value for this test
+$config{MAPIT_TYPES} = [ 'O08' ];
+$config{MAPIT_URL} = 'http://global.mapit.mysociety.org/';
+
+# Override the get function to return values from our captured config. This
+# override will be cleared at the end of this block when the $override guard
+# falls out of scope.
+my $override_guard = Sub::Override->new(
+    "FixMyStreet::config",
+    sub {
+        my ($self, $key, $default) = @_;
+        exists $config{$key}
+            ? return $config{$key}
+            : die "Need to cache config key '$key' here";
+    }
+);
+
+$mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
 $mech->submit_form( with_fields => { phone => "" } );
 $mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
+$override_guard->restore();
 $mech->log_out_ok;
 
 # Test problems can't be assigned to deleted bodies
