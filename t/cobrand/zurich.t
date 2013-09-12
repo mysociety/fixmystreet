@@ -334,23 +334,25 @@ like $email->body, qr/test\@example.com/, 'body does contain email address';
 $mech->clear_emails_ok;
 $mech->log_out_ok;
 
-# Test only superuser can edit bodies
-$user = $mech->log_in_ok( 'dm1@example.org' );
-$mech->get( '/admin/body/' . $zurich->id );
-is $mech->res->code, 404, "only superuser should be able to edit bodies";
-$mech->log_out_ok;
+subtest "only superuser can edit bodies" => sub {
+    $user = $mech->log_in_ok( 'dm1@example.org' );
+    $mech->get( '/admin/body/' . $zurich->id );
+    is $mech->res->code, 404, "only superuser should be able to edit bodies";
+    $mech->log_out_ok;
+};
 
-# Test only superuser can see "Add body" form
-$user = $mech->log_in_ok( 'dm1@example.org' );
-$mech->get_ok( '/admin/bodies' );
-$mech->content_lacks( '<form method="post" action="bodies"' );
-$mech->log_out_ok;
+subtest "only superuser can see 'Add body' form" => sub {
+    $user = $mech->log_in_ok( 'dm1@example.org' );
+    $mech->get_ok( '/admin/bodies' );
+    $mech->content_lacks( '<form method="post" action="bodies"' );
+    $mech->log_out_ok;
+};
 
 subtest "phone number is mandatory" => sub {
     # Capture the bits of the original config that the following code will use
     my %config =
         map {$_ => FixMyStreet->config($_)}
-        qw(ALLOWED_COBRANDS FMS_DB_NAME MAPIT_ID_WHITELIST STAGING_SITE);
+        qw(ALLOWED_COBRANDS BASE_URL FMS_DB_NAME MAPIT_ID_WHITELIST STAGING_SITE);
 
     # Change the MAPIT_TYPES and MAPIT_URL values for this test
     $config{MAPIT_TYPES} = [ 'O08' ];
@@ -377,37 +379,40 @@ subtest "phone number is mandatory" => sub {
     $mech->log_out_ok;
 
     $override_guard->restore();
+    mySociety::MaPit::configure();
 };
 
-# Test problems can't be assigned to deleted bodies
-$user = $mech->log_in_ok( 'dm1@example.org' );
-$user->from_body( 1 );
-$user->update;
-$report->state( 'confirmed' );
-$report->update;
-$mech->get_ok( '/admin/body/' . $external_body->id );
-$mech->submit_form_ok( { with_fields => { deleted => 1 } } );
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->content_lacks( $external_body->name );
-$user->from_body( 2 );
-$user->update;
-$mech->log_out_ok;
+subtest "problems can't be assigned to deleted bodies" => sub {
+    $user = $mech->log_in_ok( 'dm1@example.org' );
+    $user->from_body( 1 );
+    $user->update;
+    $report->state( 'confirmed' );
+    $report->update;
+    $mech->get_ok( '/admin/body/' . $external_body->id );
+    $mech->submit_form_ok( { with_fields => { deleted => 1 } } );
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_lacks( $external_body->name );
+    $user->from_body( 2 );
+    $user->update;
+    $mech->log_out_ok;
+};
 
-# Test hidden report email are only sent when requested
-$user = $mech->log_in_ok( 'dm1@example.org') ;
-$extra = $report->extra;
-$extra->{email_confirmed} = 1;
-$report->extra ( { %$extra } );
-$report->update;
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => 1 } } );
-$mech->email_count_is(1);
-$mech->clear_emails_ok;
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => undef } } );
-$mech->email_count_is(0);
-$mech->clear_emails_ok;
-$mech->log_out_ok;
+subtest "hidden report email are only sent when requested" => sub {
+    $user = $mech->log_in_ok( 'dm1@example.org') ;
+    $extra = $report->extra;
+    $extra->{email_confirmed} = 1;
+    $report->extra ( { %$extra } );
+    $report->update;
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => 1 } } );
+    $mech->email_count_is(1);
+    $mech->clear_emails_ok;
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => undef } } );
+    $mech->email_count_is(0);
+    $mech->clear_emails_ok;
+    $mech->log_out_ok;
+};
 
 $mech->delete_problems_for_body( 2 );
 $mech->delete_user( 'dm1@example.org' );
