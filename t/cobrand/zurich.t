@@ -357,6 +357,7 @@ my %config =
 # Change the MAPIT_TYPES value for this test
 $config{MAPIT_TYPES} = [ 'O08' ];
 $config{MAPIT_URL} = 'http://global.mapit.mysociety.org/';
+mySociety::MaPit::configure($config{MAPIT_URL});
 
 # Override the get function to return values from our captured config. This
 # override will be cleared at the end of this block when the $override guard
