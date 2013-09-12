@@ -411,7 +411,6 @@ sub admin_report_edit {
                 user => $c->user->obj,
                 state => 'hidden', # seems best fit, should not be shown publicly
                 mark_fixed => 0,
-                problem_state => $problem->state,
                 anonymous => 1,
                 extra => { is_internal_note => 1 },
             } );
@@ -421,24 +420,28 @@ sub admin_report_edit {
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         # Predefine the hash so it's there for lookups
-        # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
         my $extra = $problem->extra || {};
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
         # Make sure we have a copy of the original detail field
         $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
 
+        # Some changes will be accompanied by an internal note, which if needed
+        # should be stored in this variable.
+        my $internal_note_text = "";
 
         # Workflow things
         my $redirect = 0;
         my $new_cat = $c->req->params->{category};
         if ( $new_cat && $new_cat ne $problem->category ) {
             my $cat = $c->model('DB::Contact')->search( { category => $c->req->params->{category} } )->first;
+            my $old_cat = $problem->category;
             $problem->category( $new_cat );
             $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
             $problem->whensent( undef );
             $extra->{changed_category} = 1;
+            $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $extra->{moderated_overdue} = $self->overdue( $problem );
@@ -461,7 +464,7 @@ sub admin_report_edit {
             }
         }
 
-        $problem->extra( { %$extra } );
+        $problem->extra( $extra );
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
         $problem->latitude( $c->req->param('latitude') );
@@ -470,7 +473,7 @@ sub admin_report_edit {
         # Final, public, Update from DM
         if (my $update = $c->req->param('status_update')) {
             $extra->{public_response} = $update;
-            $problem->extra( { %$extra } );
+            $problem->extra( $extra );
             if ($c->req->params->{publish_response}) {
                 $problem->state( 'fixed - council' );
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
@@ -484,8 +487,21 @@ sub admin_report_edit {
           '<p><em>' . _('Updated!') . '</em></p>';
 
         # do this here otherwise lastupdate and confirmed times
-        # do not display correctly
+        # do not display correctly (reloads problem from database, including
+        # fields modified by the database when saving)
         $problem->discard_changes;
+
+        # Create an internal note if required
+        if ($internal_note_text) {
+            $problem->add_to_comments( {
+                text => $internal_note_text,
+                user => $c->user->obj,
+                state => 'hidden', # seems best fit, should not be shown publicly
+                mark_fixed => 0,
+                anonymous => 1,
+                extra => { is_internal_note => 1 },
+            } );
+        }
 
         if ( $redirect ) {
             $c->detach('index');
@@ -543,7 +559,7 @@ sub admin_report_edit {
             if ($c->req->param('no_more_updates')) {
                 my $extra = $problem->extra || {};
                 $extra->{subdiv_overdue} = $self->overdue( $problem );
-                $problem->extra( { %$extra } );
+                $problem->extra( $extra );
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
                 $problem->state( 'planned' );

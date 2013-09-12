@@ -1,5 +1,5 @@
 # TODO
-# Overdue alerts 
+# Overdue alerts
 
 use strict;
 use warnings;
@@ -114,6 +114,48 @@ is $mech->uri->path, '/admin', "am logged in";
 $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'Erfasst' );
+
+
+subtest "changing of categories" => sub {
+    # create a few categories (which are actually contacts)
+    foreach my $name ( qw/Cat1 Cat2/ ) {
+        FixMyStreet::App->model('DB::Contact')->find_or_create({
+            body => $division,
+            category => $name,
+            email => "$name\@example.org",
+            confirmed => 1,
+            deleted => 0,
+            editor => "editor",
+            whenedited => DateTime->now(),
+            note => "note for $name",
+        });
+    }
+
+    # put report into known category
+    my $original_category = $report->category;
+    $report->update({ category => 'Cat1' });
+    is( $report->category, "Cat1", "Category set to Cat1" );
+
+    # get the latest comment
+    my $comments_rs = $report->comments->search({},{ order_by => { -desc => "created" } });
+    ok ( !$comments_rs->first, "There are no comments yet" );
+
+    # change the category via the web interface
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { category => 'Cat2' } } );
+
+    # check changes correctly saved
+    $report->discard_changes();
+    is( $report->category, "Cat2", "Category changed to Cat2 as expected" );
+
+    # Check that a new comment has been created.
+    my $new_comment = $comments_rs->first();
+    is( $new_comment->text, "Weitergeleitet von Cat1 an Cat2", "category change comment created" );
+
+    # restore report to original state.
+    $report->update({category => $original_category });
+};
+
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
