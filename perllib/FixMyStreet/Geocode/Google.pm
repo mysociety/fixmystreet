@@ -39,7 +39,7 @@ sub string {
         $url .=  '&components=country:' . $params->{country};
     }
     $url .=  '&language=' . $params->{lang} if $params->{lang};
-    $url .= '&sensor=false' . ;
+    $url .= '&sensor=false';
 
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'google/';
     my $cache_file = $cache_dir . md5_hex($url);
