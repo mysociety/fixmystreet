@@ -10,7 +10,6 @@
         <input type="text" name="endpoint" id="email" value="[% body.endpoint %]" size="50">
     </p>
 
-[% IF admin_type == 'super' %]
     <p>
         <label for="parent">[% loc('Parent') %]</label>
         <select name="parent" id="parent">
@@ -31,7 +30,11 @@
             [% END %]
         </select>
     </p>
-[% END %]
+
+    <p>
+        <label for="deleted">[% loc('Flag as deleted') %]</label>
+        <input type="checkbox" name="deleted" id="deleted" value="1"[% ' checked' IF body.deleted %] />
+    </p>
 
         <input type="hidden" name="send_method" value="Email">
         <input type="hidden" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction %]">
