@@ -642,6 +642,7 @@ subtest 'check iOS app store test reports not sent' => sub {
 
     $problem->discard_changes;
     $problem->update( {
+        bodies_str => 2651,
         title => 'App store test',
         state => 'confirmed',
         confirmed => \'ms_current_timestamp()',
@@ -670,6 +671,7 @@ subtest 'check reports from abuser not sent' => sub {
 
     $problem->discard_changes;
     $problem->update( {
+        bodies_str => 2651,
         title => 'Report',
         state => 'confirmed',
         confirmed => \'ms_current_timestamp()',
