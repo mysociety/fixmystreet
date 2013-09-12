@@ -293,15 +293,22 @@ $mech->clear_emails_ok;
 $mech->log_out_ok;
 
 # Test only superuser can edit bodies
-$user = $mech->log_in_ok( 'dm1@example.org') ;
+$user = $mech->log_in_ok( 'dm1@example.org' );
 $mech->get( '/admin/body/' . $zurich->id );
 is $mech->res->code, 404, "only superuser should be able to edit bodies";
 $mech->log_out_ok;
 
 # Test only superuser can see "Add body" form
-$user = $mech->log_in_ok( 'dm1@example.org') ;
+$user = $mech->log_in_ok( 'dm1@example.org' );
 $mech->get_ok( '/admin/bodies' );
 $mech->content_lacks( '<form method="post" action="bodies"' );
+$mech->log_out_ok;
+
+# Test phone number is mandatory
+$user = $mech->log_in_ok( 'dm1@example.org' );
+$mech->get_ok( '/report/new?latitude=51.500802;longitude=-0.143005' );
+$mech->submit_form( with_fields => { phone => "" } );
+$mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
 $mech->log_out_ok;
 
 $mech->delete_problems_for_body( 2 );

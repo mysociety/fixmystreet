@@ -956,6 +956,9 @@ sub check_for_errors : Private {
         delete $field_errors{name};
         my $report = $c->stash->{report};
         $report->title( Utils::cleanup_text( substr($report->detail, 0, 25) ) );
+        if ( ! $c->req->param('phone') ) {
+            $field_errors{phone} = _("This information is required");
+        }
     }
 
     # FIXME: need to check for required bromley fields here
