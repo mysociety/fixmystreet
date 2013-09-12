@@ -68,9 +68,9 @@
 <li>
 [% photo = problem.get_photo_params %]
 <div class="update-img">
-    [% IF photo.url_full %]<a href="[% photo.url_full %]" rel="fancy">[% END %]
+    <a href="[% c.cobrand.base_url %]/photo/[% problem.photo %].fulltemp.jpeg" rel="fancy">
         <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg">
-    [%- IF photo.url_full %]<span>zoom</span></a>[% END %]
+    <span>zoom</span></a>
 </div>
 <br>
 <input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
