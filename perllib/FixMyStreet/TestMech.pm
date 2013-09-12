@@ -87,8 +87,8 @@ sub log_in_ok {
 
     my $user = $mech->create_user_ok($email);
 
-    # store the old password and then change it
-    my $old_password = $user->password;
+    # remember the old password and then change it to a known one
+    my $old_password = $user->password || '';
     $user->update( { password => 'secret' } );
 
     # log in
@@ -99,7 +99,19 @@ sub log_in_ok {
     $mech->logged_in_ok;
 
     # restore the password (if there was one)
-    $user->update( { password => $old_password } ) if $old_password;
+    if ($old_password) {
+
+        # Use store_column and then make_column_dirty to bypass the filters that
+        # would hash the password, otherwise the password required ito log in
+        # would be the hash of the previous one.
+        $user->store_column("password", $old_password);
+        $user->make_column_dirty("password");
+        $user->update();
+
+        # Belt and braces, check that the password has been correctly saved.
+        die "password not correctly restored after log_in_ok"
+            if $user->password ne $old_password;
+    }
 
     return $user;
 }
@@ -296,7 +308,7 @@ sub extract_location {
 
     $meta = $mech->extract_problem_meta;
 
-Returns the problem meta information ( submitted by, at etc ) from a 
+Returns the problem meta information ( submitted by, at etc ) from a
 problem report page
 
 =cut

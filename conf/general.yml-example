@@ -130,6 +130,7 @@ MAP_TYPE: 'OSM'
 ALLOWED_COBRANDS:
   - cobrand_one
   - cobrand_two: 'hostname_substring2'
+  - cobrand_three
 
 # This is only used in "offensive report" emails to provide a link directly to
 # the admin interface. If wanted, set to the full URL of your admin interface.

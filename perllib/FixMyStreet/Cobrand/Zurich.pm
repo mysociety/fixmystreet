@@ -8,6 +8,47 @@ use RABX;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Zurich FixMyStreet cobrand
+
+=head1 DESCRIPTION
+
+This module provides the specific functionality for the Zurich FMS cobrand.
+
+=head1 DEVELOPMENT NOTES
+
+The admin for Zurich is different to the other cobrands. To access it you need
+to be logged in as a user associated with an appropriate body.
+
+You can create the bodies needed to develop by running the 't/cobrand/zurich.t'
+test script with the three C<$mech->delete...> lines at the end commented out.
+This should leave you with the bodies and users correctly set up.
+
+The entries will be something like this (but with different ids).
+
+    Bodies:
+         id |     name      | parent |         endpoint
+        ----+---------------+--------+---------------------------
+          1 | Zurich        |        |
+          2 | Division 1    |      1 | division@example.org
+          3 | Subdivision A |      2 | subdivision@example.org
+          4 | External Body |        | external_body@example.org
+
+    Users:
+         id |      email       | from_body
+        ----+------------------+-----------
+          2 | dm1@example.org  |         2
+          3 | sdm1@example.org |         3
+
+The passwords for the users is 'secret'.
+
+Note: the password hashes are salted with the user's id so cannot be easily
+changed. High ids have been used so that it should not conflict with anything
+you already have, and the countres set so that they shouldn't in future.
+
+=cut
+
 sub shorten_recency_if_new_greater_than_fixed {
     return 0;
 }
@@ -356,18 +397,37 @@ sub admin_report_edit {
 
     }
 
-    # Problem updates upon submission
+    # If super or sdm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         $c->forward('check_token');
+    }
 
+    # All types of users can add internal notes
+    if ( ($type eq 'super' || $type eq 'dm' || $type eq 'sdm') && $c->req->param('submit') ) {
+        # If there is a new note add it as a comment to the problem (with is_internal_note set true in extra).
+        if ( my $new_internal_note = $c->req->params->{new_internal_note} ) {
+            $problem->add_to_comments( {
+                text => $new_internal_note,
+                user => $c->user->obj,
+                state => 'hidden', # seems best fit, should not be shown publicly
+                mark_fixed => 0,
+                problem_state => $problem->state,
+                anonymous => 1,
+                extra => { is_internal_note => 1 },
+            } );
+        }
+    }
+
+    # Problem updates upon submission
+    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         # Predefine the hash so it's there for lookups
         # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
         my $extra = $problem->extra || {};
-        $extra->{internal_notes} = $c->req->param('internal_notes');
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
         # Make sure we have a copy of the original detail field
         $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
+
 
         # Workflow things
         my $redirect = 0;
@@ -459,14 +519,6 @@ sub admin_report_edit {
             if ( $c->req->param('latitude') != $problem->latitude || $c->req->param('longitude') != $problem->longitude ) {
                 $problem->latitude( $c->req->param('latitude') );
                 $problem->longitude( $c->req->param('longitude') );
-                $db_update = 1;
-            }
-
-            my $extra = $problem->extra || {};
-            $extra->{internal_notes} ||= '';
-            if ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes}) {
-                $extra->{internal_notes} = $c->req->param('internal_notes');
-                $problem->extra( { %$extra } );
                 $db_update = 1;
             }
 
