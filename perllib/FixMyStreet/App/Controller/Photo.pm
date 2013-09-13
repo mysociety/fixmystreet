@@ -30,17 +30,19 @@ Display a photo
 
 =cut
 
-sub during :LocalRegex('^([0-9a-f]{40})\.temp\.jpeg$') {
+sub during :LocalRegex('^([0-9a-f]{40})\.(temp|fulltemp)\.jpeg$') {
     my ( $self, $c ) = @_;
-    my ( $hash ) = @{ $c->req->captures };
+    my ( $hash, $size ) = @{ $c->req->captures };
 
     my $file = file( $c->config->{UPLOAD_DIR}, "$hash.jpeg" );
     my $photo = $file->slurp;
 
-    if ( $c->cobrand->default_photo_resize ) {
-        $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
-    } else {
-        $photo = _shrink( $photo, '250x250' );
+    if ( $size eq 'temp' ) {
+        if ( $c->cobrand->default_photo_resize ) {
+            $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
+        } else {
+            $photo = _shrink( $photo, '250x250' );
+        }
     }
 
     $c->forward( 'output', [ $photo ] );

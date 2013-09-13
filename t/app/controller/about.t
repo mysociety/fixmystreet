@@ -24,7 +24,7 @@ SKIP: {
     # check that geting the page as EHA in welsh produces a different page
     ok $mech->host("cy.reportemptyhomes.co.uk"), 'host to cy.reportemptyhomes';
     $mech->get_ok('/about');
-    $mech->content_like(qr{Amdanom ni ::\s+Adrodd am Eiddo Gwag});
+    $mech->content_like(qr{Amdanom ni ::\s+Rhoi gwybod am eiddo gwag});
     $mech->content_contains('html lang="cy"');
 }
 

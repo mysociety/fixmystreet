@@ -259,9 +259,13 @@ sub send_reports {
         }
 
         $cobrand->set_lang_and_domain($row->lang, 1);
-        if ( $row->is_from_abuser ) {
+        if ( $row->is_from_abuser) {
             $row->update( { state => 'hidden' } );
             debug_print("hiding because its sender is flagged as an abuser", $row->id) if $debug_mode;
+            next;
+        } elsif ( $row->title =~ /app store test/i ) {
+            $row->update( { state => 'hidden' } );
+            debug_print("hiding because it is an app store test message", $row->id) if $debug_mode;
             next;
         }
 
@@ -464,7 +468,8 @@ sub send_reports {
             send_fail_count => { '>', 0 }
         } );
         while (my $row = $unsent->next) {
-            $sending_errors .= "* http://www.fixmystreet.com/report/" . $row->id . ", failed "
+            my $base_url = mySociety::Config::get('BASE_URL');
+            $sending_errors .= "* " . $base_url . "/report/" . $row->id . ", failed "
                 . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
                 . ", reason " . $row->send_fail_reason . "\n";
         }

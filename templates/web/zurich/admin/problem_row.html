@@ -32,6 +32,12 @@
             </td>
         [% END %]
 
+        <td>
+        [% IF problem.photo %]
+            <img class="img" height="60" width="90" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg" alt="">
+        [% END %]
+        </td>
+
         [% IF NOT no_edit %]
             <td><a href="[% c.uri_for( 'report_edit', problem.id ) %]">[% loc('Edit') %]</a></td>
         [% END %]

@@ -26,12 +26,12 @@ __PACKAGE__->belongs_to(
   "alert",
   "FixMyStreet::DB::Result::Alert",
   { id => "alert_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oN+36hDWJuc0hqkCW9BHOw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:COwsprqRSNZS1IxJrPYgMQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

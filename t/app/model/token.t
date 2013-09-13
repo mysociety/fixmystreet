@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 45;
+use Test::More;
 
 use FixMyStreet;
 use FixMyStreet::App;
@@ -94,3 +94,47 @@ foreach my $test_data_name ( sort keys %tests ) {
       undef, "token gone with m::AT";
 
 }
+
+
+
+# Test that the inflation and deflation works as expected
+{
+    my $token =
+      $token_rs->create( { scope => 'testing', data => {} } );
+    END { $token->delete() };
+
+    # Add in temporary check to test that the data is updated as expected.
+    is_deeply($token->data, {}, "data is empty");
+
+    # store something in it
+    $token->update({ data => { foo => 'bar' } });
+    $token->discard_changes();
+    is_deeply($token->data, { foo => 'bar' }, "data has content");
+
+    # change the hash stored
+    $token->update({ data => { baz => 'bundy' } });
+    $token->discard_changes();
+    is_deeply($token->data, { baz => 'bundy' }, "data has new content");
+
+    # change the hashref in place
+    {
+        my $data = $token->data;
+        $data->{baz} = 'new';
+        $token->data( $data );
+        $token->update();
+        $token->discard_changes();
+        is_deeply($token->data, { baz => 'new' }, "data has been updated");
+    }
+
+    # change the hashref in place
+    {
+        my $data = $token->data;
+        $data->{baz} = 'new';
+        $token->update({ data => $data });
+        $token->discard_changes();
+        is_deeply($token->data, { baz => 'new' }, "data has been updated");
+    }
+
+}
+
+done_testing();

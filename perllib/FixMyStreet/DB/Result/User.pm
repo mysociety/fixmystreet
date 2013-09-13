@@ -58,10 +58,10 @@ __PACKAGE__->belongs_to(
   "FixMyStreet::DB::Result::Body",
   { id => "from_body" },
   {
-    is_deferrable => 1,
+    is_deferrable => 0,
     join_type     => "LEFT",
-    on_delete     => "CASCADE",
-    on_update     => "CASCADE",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
   },
 );
 __PACKAGE__->has_many(
@@ -72,8 +72,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-14 09:23:59
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:aw374WQraL5ysOvUmUIU3w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jRAtXRLRNozCmthAg9p0dA
 
 __PACKAGE__->add_columns(
     "password" => {

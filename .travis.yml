@@ -24,7 +24,7 @@ before_install:
   - cpanm -q DIME::Tools --force
 # And let's install the same version the carton.lock file currently has.
   - cpanm -q MKUTTER/SOAP-Lite-0.715.tar.gz
-  - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8
+  - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8
 install:
   - carton install --deployment
 before_script:
@@ -34,8 +34,8 @@ before_script:
   - psql fms postgres < db/generate_secret.sql
   - >
     sed -r -e "s,(FMS_DB_USER:) 'fms',\\1 'postgres',"
-    -e "s,cobrand_one,fixmystreet,"
-    -e "s,cobrand_two: 'hostname_substring2',fixmystreet: 'localhost',"
+    -e "s,cobrand_one,barnet\\n  - bromley\\n  - emptyhomes\\n  - fiksgatami\\n  - fixmybarangay\\n  - lichfielddc\\n  - reading\\n  - seesomething\\n  - southampton\\n  - zurich,"
+    -e "s,cobrand_two: 'hostname_substring2',fixmystreet: '.',"
     -e "s,(BASE_URL:) 'http://www.example.org',\\1 'http://localhost',"
     -e "s,(MAPIT_URL:) '',\\1 'http://mapit.mysociety.org/',"
     conf/general.yml-example > conf/general.yml

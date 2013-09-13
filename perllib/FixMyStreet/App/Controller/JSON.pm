@@ -8,6 +8,7 @@ use JSON;
 use DateTime;
 use DateTime::Format::ISO8601;
 use List::MoreUtils 'uniq';
+use FixMyStreet::App;
 
 =head1 NAME
 
@@ -80,11 +81,13 @@ sub problems : Local {
         $date_col = 'lastupdate';
     }
 
+    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
     my $one_day = DateTime::Duration->new( days => 1 );
     my $query = {
         $date_col => {
-            '>=' => $start_dt,
-            '<=' => $end_dt + $one_day,
+            '>=' => $dt_parser->format_datetime($start_dt),
+            '<=' => $dt_parser->format_datetime($end_dt + $one_day),
         },
         state => [ @state ],
     };

@@ -9,6 +9,7 @@ use FixMyStreet;
 use FixMyStreet::App;
 use FixMyStreet::TestMech;
 use mySociety::Locale;
+use Sub::Override;
 
 mySociety::Locale::gettext_domain('FixMyStreet');
 
@@ -583,9 +584,10 @@ foreach my $test ( {
 }
 
 subtest 'check can turn on report sent email alerts' => sub {
-    eval 'use Test::MockModule; 1' or
-        plan skip_all => 'Skipping tests that rely on Test::MockModule';
-
+    my $send_confirmation_mail_override = Sub::Override->new(
+        "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
+        sub { return 1; }
+    );
     $mech->clear_emails_ok;
 
     FixMyStreet::App->model('DB::Problem')->search(
@@ -606,9 +608,6 @@ subtest 'check can turn on report sent email alerts' => sub {
         send_fail_count => 0,
     } );
 
-    my $m = new Test::MockModule(
-        'FixMyStreet::Cobrand::FixMyStreet' );
-    $m->mock( report_sent_confirmation_email => 1 );
     FixMyStreet::App->model('DB::Problem')->send_reports();
 
     $mech->email_count_is( 2 );
@@ -628,7 +627,87 @@ subtest 'check can turn on report sent email alerts' => sub {
     $email = $emails[1];
     like $email->header('Subject'), qr/Problem Report Sent/, 'report sent email title correct';
     like $email->body, qr/Your report about/, 'report sent body correct';
+
+    $send_confirmation_mail_override->restore();
 };
+
+
+subtest 'check iOS app store test reports not sent' => sub {
+    $mech->clear_emails_ok;
+
+    FixMyStreet::App->model('DB::Problem')->search(
+        {
+            whensent => undef
+        }
+    )->update( { whensent => \'ms_current_timestamp()' } );
+
+    $problem->discard_changes;
+    $problem->update( {
+        bodies_str => 2651,
+        title => 'App store test',
+        state => 'confirmed',
+        confirmed => \'ms_current_timestamp()',
+        whensent => undef,
+        category => 'potholes',
+        send_fail_count => 0,
+    } );
+
+    FixMyStreet::App->model('DB::Problem')->send_reports();
+
+    $mech->email_count_is( 0 );
+
+    $problem->discard_changes();
+    is $problem->state, 'hidden', 'iOS test reports are hidden automatically';
+    is $problem->whensent, undef, 'iOS test reports are not sent';
+};
+
+subtest 'check reports from abuser not sent' => sub {
+    $mech->clear_emails_ok;
+
+    FixMyStreet::App->model('DB::Problem')->search(
+        {
+            whensent => undef
+        }
+    )->update( { whensent => \'ms_current_timestamp()' } );
+
+    $problem->discard_changes;
+    $problem->update( {
+        bodies_str => 2651,
+        title => 'Report',
+        state => 'confirmed',
+        confirmed => \'ms_current_timestamp()',
+        whensent => undef,
+        category => 'potholes',
+        send_fail_count => 0,
+    } );
+
+    FixMyStreet::App->model('DB::Problem')->send_reports();
+
+    $mech->email_count_is( 1 );
+
+    $problem->discard_changes();
+    ok $problem->whensent, 'Report has been sent';
+
+    $problem->update( {
+        state => 'confirmed',
+        confirmed => \'ms_current_timestamp()',
+        whensent => undef,
+    } );
+
+    my $abuse = FixMyStreet::App->model('DB::Abuse')->create( { email => $problem->user->email } );
+
+    $mech->clear_emails_ok;
+    FixMyStreet::App->model('DB::Problem')->send_reports();
+
+    $mech->email_count_is( 0 );
+
+    $problem->discard_changes();
+    is $problem->state, 'hidden', 'reports from abuse user are hidden automatically';
+    is $problem->whensent, undef, 'reports from abuse user are not sent';
+
+    ok $abuse->delete(), 'user removed from abuse table';
+};
+
 
 $problem->comments->delete;
 $problem->delete;

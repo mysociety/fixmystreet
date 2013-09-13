@@ -120,12 +120,12 @@ __PACKAGE__->belongs_to(
   "user",
   "FixMyStreet::DB::Result::User",
   { id => "user_id" },
-  { is_deferrable => 1, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-12-13 15:13:48
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:H2P3Og37G569nQdQA1IWaA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U/4BT8EGfcCLKA/7LX+qyQ
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -135,54 +135,15 @@ __PACKAGE__->has_one(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
-__PACKAGE__->filter_column(
-    extra => {
-        filter_from_storage => sub {
-            my $self = shift;
-            my $ser  = shift;
-            return undef unless defined $ser;
-            utf8::encode($ser) if utf8::is_utf8($ser);
-            my $h = new IO::String($ser);
-            return RABX::wire_rd($h);
-        },
-        filter_to_storage => sub {
-            my $self = shift;
-            my $data = shift;
-            my $ser  = '';
-            my $h    = new IO::String($ser);
-            RABX::wire_wr( $data, $h );
-            return $ser;
-        },
-    }
-);
-
-__PACKAGE__->filter_column(
-    geocode => {
-        filter_from_storage => sub {
-            my $self = shift;
-            my $ser  = shift;
-            return undef unless defined $ser;
-            utf8::encode($ser) if utf8::is_utf8($ser);
-            my $h = new IO::String($ser);
-            return RABX::wire_rd($h);
-        },
-        filter_to_storage => sub {
-            my $self = shift;
-            my $data = shift;
-            my $ser  = '';
-            my $h    = new IO::String($ser);
-            RABX::wire_wr( $data, $h );
-            return $ser;
-        },
-    }
-);
+__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
+__PACKAGE__->rabx_column('extra');
+__PACKAGE__->rabx_column('geocode');
 
 use DateTime::TimeZone;
 use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
-use RABX;
 
 with 'FixMyStreet::Roles::Abuser';
 

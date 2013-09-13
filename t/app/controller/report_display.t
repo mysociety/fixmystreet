@@ -100,7 +100,7 @@ subtest "Zurich unconfirmeds are 200" => sub {
     if ( !FixMyStreet::Cobrand->exists('zurich') ) {
         plan skip_all => 'Skipping Zurich test without Zurich cobrand';
     }
-    $mech->host( 'zurich.fixmystreet.com' );
+    $mech->host( 'zurich.example.com' );
     ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
     $mech->get_ok("/report/$report_id");
     $mech->content_contains( '&Uuml;berpr&uuml;fung ausstehend' );
@@ -403,7 +403,7 @@ subtest "Zurich banners are displayed correctly" => sub {
     if ( !FixMyStreet::Cobrand->exists('zurich') ) {
         plan skip_all => 'Skipping Zurich test without Zurich cobrand';
     }
-    $mech->host( 'zurich.fixmystreet.com' );
+    $mech->host( 'zurich.example.com' );
 
     for my $test (
         {

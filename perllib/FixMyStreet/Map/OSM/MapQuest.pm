@@ -28,7 +28,7 @@ sub map_tiles {
 }
 
 sub base_tile_url {
-    return 'mqcdn.com/tiles/1.0.0/osm/';
+    return 'mqcdn.com/tiles/1.0.0/map/';
 }
 
 1;

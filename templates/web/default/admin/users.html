@@ -1,6 +1,9 @@
 [% INCLUDE 'admin/header.html' title=loc('Search Users') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
+<div class="fms-admin-info">
+    [% loc("User search finds matches in users' names and email addresses.") %]
+</div>
 <form method="get" action="[% c.uri_for('users') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search" value="[% searched | html %]">
 </form>
@@ -30,12 +33,17 @@
 [%- END -%]
 </table>
 
+[% ELSIF searched %]
+
+<div class="fms-admin-warning">
+    [% loc("Searching found no users.") %]
+</div>
+
 [% END %]
 
 [% IF NOT searched %]
 <h2>[% loc('Add user') %]</h2>
 [% INCLUDE 'admin/user-form.html', user = '' %]
-
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]

@@ -8,6 +8,47 @@ use RABX;
 use strict;
 use warnings;
 
+=head1 NAME
+
+Zurich FixMyStreet cobrand
+
+=head1 DESCRIPTION
+
+This module provides the specific functionality for the Zurich FMS cobrand.
+
+=head1 DEVELOPMENT NOTES
+
+The admin for Zurich is different to the other cobrands. To access it you need
+to be logged in as a user associated with an appropriate body.
+
+You can create the bodies needed to develop by running the 't/cobrand/zurich.t'
+test script with the three C<$mech->delete...> lines at the end commented out.
+This should leave you with the bodies and users correctly set up.
+
+The entries will be something like this (but with different ids).
+
+    Bodies:
+         id |     name      | parent |         endpoint
+        ----+---------------+--------+---------------------------
+          1 | Zurich        |        |
+          2 | Division 1    |      1 | division@example.org
+          3 | Subdivision A |      2 | subdivision@example.org
+          4 | External Body |        | external_body@example.org
+
+    Users:
+         id |      email       | from_body
+        ----+------------------+-----------
+          2 | dm1@example.org  |         2
+          3 | sdm1@example.org |         3
+
+The passwords for the users is 'secret'.
+
+Note: the password hashes are salted with the user's id so cannot be easily
+changed. High ids have been used so that it should not conflict with anything
+you already have, and the countres set so that they shouldn't in future.
+
+=cut
+
 sub shorten_recency_if_new_greater_than_fixed {
     return 0;
 }
@@ -356,29 +397,51 @@ sub admin_report_edit {
 
     }
 
-    # Problem updates upon submission
+    # If super or sdm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         $c->forward('check_token');
+    }
 
+    # All types of users can add internal notes
+    if ( ($type eq 'super' || $type eq 'dm' || $type eq 'sdm') && $c->req->param('submit') ) {
+        # If there is a new note add it as a comment to the problem (with is_internal_note set true in extra).
+        if ( my $new_internal_note = $c->req->params->{new_internal_note} ) {
+            $problem->add_to_comments( {
+                text => $new_internal_note,
+                user => $c->user->obj,
+                state => 'hidden', # seems best fit, should not be shown publicly
+                mark_fixed => 0,
+                anonymous => 1,
+                extra => { is_internal_note => 1 },
+            } );
+        }
+    }
+
+    # Problem updates upon submission
+    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         # Predefine the hash so it's there for lookups
-        # XXX Note you need to shallow copy each time you set it, due to a bug? in FilterColumn.
         my $extra = $problem->extra || {};
-        $extra->{internal_notes} = $c->req->param('internal_notes');
         $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
         $extra->{third_personal} = $c->req->params->{third_personal} || 0;
         # Make sure we have a copy of the original detail field
         $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
+
+        # Some changes will be accompanied by an internal note, which if needed
+        # should be stored in this variable.
+        my $internal_note_text = "";
 
         # Workflow things
         my $redirect = 0;
         my $new_cat = $c->req->params->{category};
         if ( $new_cat && $new_cat ne $problem->category ) {
             my $cat = $c->model('DB::Contact')->search( { category => $c->req->params->{category} } )->first;
+            my $old_cat = $problem->category;
             $problem->category( $new_cat );
             $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
             $problem->whensent( undef );
             $extra->{changed_category} = 1;
+            $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $extra->{moderated_overdue} = $self->overdue( $problem );
@@ -396,12 +459,12 @@ sub admin_report_edit {
             $redirect = 1;
         } else {
             $problem->state( $c->req->params->{state} ) if $c->req->params->{state};
-            if ( $problem->state eq 'hidden' ) {
+            if ( $problem->state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
                 _admin_send_email( $c, 'problem-rejected.txt', $problem );
             }
         }
 
-        $problem->extra( { %$extra } );
+        $problem->extra( $extra );
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
         $problem->latitude( $c->req->param('latitude') );
@@ -410,7 +473,7 @@ sub admin_report_edit {
         # Final, public, Update from DM
         if (my $update = $c->req->param('status_update')) {
             $extra->{public_response} = $update;
-            $problem->extra( { %$extra } );
+            $problem->extra( $extra );
             if ($c->req->params->{publish_response}) {
                 $problem->state( 'fixed - council' );
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
@@ -424,8 +487,21 @@ sub admin_report_edit {
           '<p><em>' . _('Updated!') . '</em></p>';
 
         # do this here otherwise lastupdate and confirmed times
-        # do not display correctly
+        # do not display correctly (reloads problem from database, including
+        # fields modified by the database when saving)
         $problem->discard_changes;
+
+        # Create an internal note if required
+        if ($internal_note_text) {
+            $problem->add_to_comments( {
+                text => $internal_note_text,
+                user => $c->user->obj,
+                state => 'hidden', # seems best fit, should not be shown publicly
+                mark_fixed => 0,
+                anonymous => 1,
+                extra => { is_internal_note => 1 },
+            } );
+        }
 
         if ( $redirect ) {
             $c->detach('index');
@@ -462,14 +538,6 @@ sub admin_report_edit {
                 $db_update = 1;
             }
 
-            my $extra = $problem->extra || {};
-            $extra->{internal_notes} ||= '';
-            if ($c->req->param('internal_notes') && $c->req->param('internal_notes') ne $extra->{internal_notes}) {
-                $extra->{internal_notes} = $c->req->param('internal_notes');
-                $problem->extra( { %$extra } );
-                $db_update = 1;
-            }
-
             $problem->update if $db_update;
 
             # Add new update from status_update
@@ -491,7 +559,7 @@ sub admin_report_edit {
             if ($c->req->param('no_more_updates')) {
                 my $extra = $problem->extra || {};
                 $extra->{subdiv_overdue} = $self->overdue( $problem );
-                $problem->extra( { %$extra } );
+                $problem->extra( $extra );
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
                 $problem->state( 'planned' );
@@ -592,10 +660,31 @@ sub admin_stats {
     );
 
     if ( $c->req->params->{export} ) {
-        my $problems = $c->model('DB::Problem')->search( { %params }, { columns => [ 'id', 'created', 'latitude', 'longitude', 'cobrand', 'category' ] } );
-        my $body = "ID,Created,E,N,Category\n";
-        while (my $report = $problems->next) {
-            $body .= join( ',', $report->id, $report->created, $report->local_coords, $report->category ) . "\n";
+        my $problems = $c->model('DB::Problem')->search(
+            {%params},
+            {
+                columns => [
+                    'id',       'created',
+                    'latitude', 'longitude',
+                    'cobrand',  'category',
+                    'state',    'user_id',
+                    'external_body'
+                ]
+            }
+        );
+        my $body = "ID,Created,E,N,Category,Status,UserID,External Body\n";
+        while ( my $report = $problems->next ) {
+            my $external_body;
+            my $body_name = "";
+            if ( $external_body = $report->body($c) ) {
+                $body_name = $external_body->name;
+            }
+            $body .= join( ',',
+                $report->id,           $report->created,
+                $report->local_coords, $report->category,
+                $report->state,        $report->user_id,
+                "\"$body_name\"" )
+              . "\n";
         }
         $c->res->content_type('text/csv; charset=utf-8');
         $c->res->body($body);

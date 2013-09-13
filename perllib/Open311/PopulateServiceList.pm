@@ -42,8 +42,9 @@ sub process_body {
     my $list = $open311->get_service_list;
     unless ( $list ) {
         my $id = $self->_current_body->id;
+        my $mapit_url = mySociety::Config::get('MAPIT_URL');
         my $areas = join( ",", keys %{$self->_current_body->areas} );
-        warn "Body $id for areas $areas - http://mapit.mysociety.org/areas/$areas.html - did not return a service list\n"
+        warn "Body $id for areas $areas - $mapit_url/areas/$areas.html - did not return a service list\n"
             if $self->verbose >= 1;
         return;
     }

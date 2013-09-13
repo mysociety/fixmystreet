@@ -1,6 +1,11 @@
-[% INCLUDE 'admin/header.html' title=loc('Search Reports') %]
+[% INCLUDE 'admin/header.html' title=loc('Flagged reports and users') %]
 [% PROCESS 'admin/report_blocks.html' %]
 
+<p class="fms-admin-info">
+  [% loc("You can flag any report or user by editing them, and they will be listed on this page.
+          For example, this can useful if you want to keep an eye on a user who has posted inappropriate
+          reports in the past.") %]
+</p>
 
 <h2>[% loc( 'Problems' ) %]</h2>
 [% IF problems.size > 0 %]
@@ -16,29 +21,41 @@
     [% INCLUDE 'admin/problem_row.html' %]
 </table>
 [% ELSE %]
-<p>
-[% loc('No flagged problems found') %]
-</p>
+  <p class="fms-admin-warning">
+    [% loc('No flagged problems found.') %]
+  </p>
 [% END %]
 
 <h2>[% loc( 'Users' ) %]</h2>
-[% IF users%]
+<p class="fms-admin-info">
+  [% loc("Flagged users are not restricted in any way. This is just a list of users that have been marked for attention.") %]
+</p>
+
+[% IF users.size %]
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('Name') %]</th>
         <th>[% loc('Email') %]</th>
+        <th>[% loc('In abuse table?') %]</th>
+        <th>&nbsp;</th>
     </tr>
-[% WHILE ( user = users.next ) -%]
-    <tr>
+    [%- FOREACH user IN users %]
+    <tr [% IF user.flagged == 2 %]class="is-deleted"[% END %]>
         <td>[% user.name | html %]</td>
         <td>[% user.email | html %]</td>
-        <td><a href="[% c.uri_for( 'reports', search => user.email ) %]">list content</a></td>
+        <td>
+          [% IF user.flagged == 2 %] <strong>[% loc('Yes') %]</strong> [% ELSE %] &nbsp; [% END %]
+        </td>
+        <td>
+          <a href="[% c.uri_for( 'reports', search => user.email ) %]">list content</a>
+          [% IF user.id %] | <a href="[% c.uri_for( 'user_edit', user.id ) %]">[% loc('edit user') %]</a>[% END %]
+        </td>
     </tr>
-[%- END %]
+    [%- END %]
 </table>
 [%- ELSE %]
-<p>
-[% loc('No flagged users found') %]
+<p class="fms-admin-warning">
+  [% loc('No flagged users found.') %]
 </p>
 [%- END %]
 

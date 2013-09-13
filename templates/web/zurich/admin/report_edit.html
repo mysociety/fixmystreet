@@ -1,4 +1,5 @@
 [%
+    PROCESS "report/photo-js.html";
     PROCESS "maps/zurich.html";
     INCLUDE 'admin/header.html'
         title = tprintf(loc('Editing problem %d'), problem.id ),
@@ -20,6 +21,8 @@
 
 <ul class="no-bullets">
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
+
+<li><a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=UP&Search=Koord&West=[% problem.local_coords.1 %]&Nord=[% problem.local_coords.0 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
 
 [% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
     <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
@@ -62,7 +65,13 @@
 
 
 [% IF problem.photo %]
-<li><img alt="" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg">
+<li>
+[% photo = problem.get_photo_params %]
+<div class="update-img">
+    <a href="[% c.cobrand.base_url %]/photo/[% problem.photo %].fulltemp.jpeg" rel="fancy">
+        <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg">
+    <span>zoom</span></a>
+</div>
 <br>
 <input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
 <input type="submit" name="rotate_photo" value="[% loc('Rotate Right') %]">
@@ -72,8 +81,8 @@
 [% END %]
 </ul>
 
-<p><label for="internal_notes">[% loc('Internal notes:') %]</label>
-<textarea name='internal_notes' id='internal_notes' cols=60 rows=5>[% problem.extra.internal_notes | html %]</textarea></p>
+<p><label for="new_internal_note">[% loc('New internal note:') %]</label>
+<textarea name='new_internal_note' id='new_internal_note' cols=60 rows=5>[% new_internal_note | html %]</textarea></p>
 
 <p><span class="mock-label">[% loc('State:') %]</span> <select name="state"  id="state">
     <option value="">--</option>
@@ -93,6 +102,24 @@
     <option selected value="in progress">[% loc('In progress') %]</option>
   [% END %]
 </select></p>
+
+<p id="automatic-reply">
+    <span class="mock-label">automatische Antwort</span>
+    <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" checked="checked" />
+</p>
+
+<script type="text/javascript">
+$(function(){
+    // Show or hide the automatic reply field
+    $('#state').change(function(){
+        if ($(this).val() === 'hidden') {
+            $('#automatic-reply').show();
+        } else {
+            $('#automatic-reply').hide();
+        }
+    }).change();
+});
+</script>
 
 [% IF problem.state == 'unconfirmed' OR problem.state == 'confirmed' %]
 
@@ -127,7 +154,7 @@
     <select name="body_external" id="body_external">
         <option value="">--</option>
     [% FOR body IN bodies %]
-        [% NEXT IF body.parent OR body.bodies %]
+        [% NEXT IF body.parent OR body.bodies OR body.deleted %]
         <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
     [% END %]
     </select>
