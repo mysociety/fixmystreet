@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use DateTime;
 use Test::More;
-use Sub::Override;
 
 plan skip_all => 'Skipping Zurich test without Zurich cobrand'
     unless FixMyStreet::Cobrand->exists('zurich');
@@ -26,37 +25,15 @@ plan skip_all => 'Skipping Zurich test without Zurich cobrand'
 #
 #     commonlib/bin/gettext-makemo FixMyStreet
 
+use FixMyStreet;
 
 # This is a helper method that will send the reports but with the config
 # correctly set - notably SEND_REPORTS_ON_STAGING needs to be true.
 sub send_reports_for_zurich {
-
-    # Capture the bits of the original config that the following code will use
-    my %config =
-        map {$_ => mySociety::Config::get($_)}
-        qw(BASE_URL STAGING_SITE CONTACT_EMAIL SEND_REPORTS_ON_STAGING);
-
-    # Change the SEND_REPORTS_ON_STAGING value to true for this test
-    $config{SEND_REPORTS_ON_STAGING} = 1;
-
-    # Override the get function to return values from our captured config. This
-    # override will be cleared at the end of this block when the $override guard
-    # falls out of scope.
-    my $override_guard = Sub::Override->new(
-        "mySociety::Config::get",
-        sub ($;$) {
-            my ($key, $default) = @_;
-            exists $config{$key}
-                ? return $config{$key}
-                : die "Need to cache config key '$key' here";
-        }
-    );
-
-    # Actually send the report
-    FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
-
-    # tidy up explicitly
-    $override_guard->restore();
+    FixMyStreet::override_config { SEND_REPORTS_ON_STAGING => 1 }, sub {
+        # Actually send the report
+        FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+    };
 }
 
 use FixMyStreet::TestMech;
@@ -349,37 +326,16 @@ subtest "only superuser can see 'Add body' form" => sub {
 };
 
 subtest "phone number is mandatory" => sub {
-    # Capture the bits of the original config that the following code will use
-    my %config =
-        map {$_ => FixMyStreet->config($_)}
-        qw(ALLOWED_COBRANDS BASE_URL FMS_DB_NAME MAPIT_ID_WHITELIST STAGING_SITE);
-
-    # Change the MAPIT_TYPES and MAPIT_URL values for this test
-    $config{MAPIT_TYPES} = [ 'O08' ];
-    $config{MAPIT_URL} = 'http://global.mapit.mysociety.org/';
-    mySociety::MaPit::configure($config{MAPIT_URL});
-
-    # Override the get function to return values from our captured config. This
-    # override will be cleared at the end of this block when the $override guard
-    # falls out of scope.
-    my $override_guard = Sub::Override->new(
-        "FixMyStreet::config",
-        sub {
-            my ($self, $key, $default) = @_;
-            exists $config{$key}
-                ? return $config{$key}
-                : die "Need to cache config key '$key' here";
-        }
-    );
-
-    $user = $mech->log_in_ok( 'dm1@example.org' );
-    $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
-    $mech->submit_form( with_fields => { phone => "" } );
-    $mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
-    $mech->log_out_ok;
-
-    $override_guard->restore();
-    mySociety::MaPit::configure();
+    FixMyStreet::override_config {
+        MAPIT_TYPES => [ 'O08' ],
+        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+    }, sub {
+        $user = $mech->log_in_ok( 'dm1@example.org' );
+        $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
+        $mech->submit_form( with_fields => { phone => "" } );
+        $mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
+        $mech->log_out_ok;
+    };
 };
 
 subtest "problems can't be assigned to deleted bodies" => sub {

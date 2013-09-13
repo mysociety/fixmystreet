@@ -7,6 +7,7 @@ use Path::Class;
 my $ROOT_DIR = file(__FILE__)->parent->parent->absolute->resolve;
 
 use Readonly;
+use Sub::Override;
 
 use mySociety::Config;
 use mySociety::DBHandle;
@@ -83,6 +84,41 @@ sub config {
 
     my $key = shift;
     return exists $CONFIG{$key} ? $CONFIG{$key} : undef;
+}
+
+sub override_config($&) {
+    my $config = shift;
+    my $code = \&{shift @_};
+
+    mySociety::MaPit::configure($config->{MAPIT_URL}) if $config->{MAPIT_URL};
+
+    # For historical reasons, we have two ways of askig for config variables.
+    # Override them both, I'm sure we'll find time to get rid of one eventually.
+    my $override_guard1 = Sub::Override->new(
+        "FixMyStreet::config",
+        sub {
+            my ($class, $key) = @_;
+            return $config->{$key} if exists $config->{$key};
+            my $orig_config = mySociety::Config::load_default();
+            return $orig_config->{$key} if exists $orig_config->{$key};
+        }
+    );
+    my $override_guard2 = Sub::Override->new(
+        "mySociety::Config::get",
+        sub ($;$) {
+            my ($key, $default) = @_;
+            return $config->{$key} if exists $config->{$key};
+            my $orig_config = mySociety::Config::load_default();
+            return $orig_config->{$key} if exists $orig_config->{$key};
+            return $default if @_ == 2;
+        }
+    );
+
+    $code->();
+
+    $override_guard1->restore();
+    $override_guard2->restore();
+    mySociety::MaPit::configure() if $config->{MAPIT_URL};;
 }
 
 =head2 dbic_connect_info
