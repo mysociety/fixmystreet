@@ -7,14 +7,15 @@ $whypoll_grey: #ddd;
 
 $orange: yellow;
 $bluey: $whypoll_base_bgcol;
+$whypoll_click_map: #773333;
 
 
 $primary: $whypoll_grey;
 $primary_b: #000000;
 $primary_text: #222222;
 
-$col_click_map: red;
-$col_click_map_dark: yellow; //darken($mindelo_green, 10%);
+$col_click_map: $whypoll_click_map;
+$col_click_map_dark: darken($whypoll_click_map, 10%);
 
 $col_fixed_label: #00BD08;
 $col_fixed_label_dark: #4B8304;
