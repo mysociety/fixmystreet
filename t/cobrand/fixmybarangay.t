@@ -80,7 +80,11 @@ $mech->get_ok( '/report/' . $dps_report->id );
 
 $mech->email_count_is(0);
 
-FixMyStreet::App->model('DB::Problem')->send_reports('fixmybarangay');
+FixMyStreet::override_config {
+    SEND_REPORTS_ON_STAGING => 1,
+}, sub {
+    FixMyStreet::App->model('DB::Problem')->send_reports('fixmybarangay');
+};
 
 # Check BGY one sent by email
 my $email = $mech->get_email;
