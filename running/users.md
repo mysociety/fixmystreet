@@ -103,19 +103,31 @@ they have created. Click on **ban email address**.
 
 Users are not automatically notified that they have been banned.
 
+### How you know when a user is misbehaving
+
+The default behaviour of FixMyStreet is **not** to moderate reports before
+they are displayed (although at least one cobrand does support this). Instead,
+every report displayed on the FixMyStreet site has a "report abuse" link, so
+anyone can notify you if inappropriate content has been posted. You can hide a
+report (go to `/admin/reports` to find it, and mark it as hidden) and
+optionally flag or ban its creator. On some installations, staff users can
+hide reports themselves. Hiding a report usually occurs *after* it's already
+been sent to the body responsible (you're simply hiding it from view on the
+FixMyStreet website).
+
 ## Staff user accounts (associated with a body)
 
 You can mark any FixMyStreet user as belonging to a body. This marks them as a
-"staff user" for that body. Staff users have extra privileges:
+"staff user" for that body. Staff users have extra privileges *which only apply to problem reports under the jurisdiction of the body to which the use belongs*:
 
-* when updating an existing report, most users can only change its status to
+* When updating an existing report, most users can only change its status to
   *Fixed* (or, sometimes, *Open*). But staff users can choose from a range of
-  statuses, for example, *Investigating*, *In progress*, and so on. Note that
-  this only applies to problems under the jurisdiction of the body to which
-  the user belongs.
+  statuses, for example, *Investigating*, *In progress*, and so on.
 
-* staff users can access the dashboard (at `/dashboard`) which shows summary
+* Staff users can access the dashboard (at `/dashboard`) which shows summary
   statistics for the body to which they belong.
+  
+* Staff users can hide abusive reports from public view.
 
 To set (or revoke) staff user status, choose **Users** in the admin, and enter
 the email or name. (It's also possible to access a user via the reports they
