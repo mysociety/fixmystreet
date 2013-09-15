@@ -39,6 +39,14 @@ If the contact is an email (which is the simplest and most common form of report
 
 If you want to change this (which is a good idea) add your own `submit.txt` to `templates/email/your-cobrand-name/`.
 
+## How to know if a report has been sent
+
+The public view of the report shows this: it says how long after creation the
+report was sent (for example, "Sent to South Borsetshire District Council two
+minutes later"). Alternatively, find the report in `admin/reports` -- the
+report will show a "when sent" date if the `send_reports` task has processed
+it successfully.
+
 ## Alternatives to email
 
 Although by default FixMyStreet sends reports by email, it's possible to inject reports *directly* into some bodies' databases or back-end systems. This is usually much better than using email because it's more convenient for the staff working at the receiving end. You can only do this if the body provides a way of doing it -- there's an open standard called Open311 that some systems support, and others that offer an integration point will need custom code. FixMyStreet already supports Open311, and there are examples of custom integrations we've done for some UK councils in the FMS repository. Get in touch with mySociety if you want to do any integration work.
