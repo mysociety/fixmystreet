@@ -19,13 +19,14 @@ use mySociety::DBHandle qw(dbh);
 use mySociety::MaPit;
 
 mySociety::Config::set_file("$FindBin::Bin/../conf/general");
-mySociety::DBHandle::configure(
+my %args = (
     Name => mySociety::Config::get('FMS_DB_NAME'),
     User => mySociety::Config::get('FMS_DB_USER'),
     Password => mySociety::Config::get('FMS_DB_PASS'),
-    Host => mySociety::Config::get('FMS_DB_HOST', undef),
-    Port => mySociety::Config::get('FMS_DB_PORT', undef)
 );
+$args{Host} = mySociety::Config::get('FMS_DB_HOST', undef) if mySociety::Config::get('FMS_DB_HOST');
+$args{Port} = mySociety::Config::get('FMS_DB_PORT', undef) if mySociety::Config::get('FMS_DB_PORT');
+mySociety::DBHandle::configure( %args );
 
 my $commit = 0;
 $commit = 1 if @ARGV && $ARGV[0] eq '--commit';

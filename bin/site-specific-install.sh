@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set this to the version we want to check out
-VERSION=${VERSION_OVERRIDE:-v1.2.4}
+VERSION=${VERSION_OVERRIDE:-v1.2.5}
 
 PARENT_SCRIPT_URL=https://github.com/mysociety/commonlib/blob/master/bin/install-site.sh
 
@@ -25,25 +25,33 @@ misuse() {
 [ -z "$HOST" ] && misuse HOST
 [ -z "$DISTRIBUTION" ] && misuse DISTRIBUTION
 [ -z "$VERSION" ] && misuse VERSION
+[ -z "$DEVELOPMENT_INSTALL" ] && misuse DEVELOPMENT_INSTALL
 
-install_nginx
+add_locale cy_GB
+add_locale nb_NO
+add_locale de_CH
 
 install_postfix
 
-# Check out the current released version
-su -l -c "cd '$REPOSITORY' && git checkout '$VERSION'" "$UNIX_USER"
+if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
+    install_nginx
+    add_website_to_nginx
+    # Check out the current released version
+    su -l -c "cd '$REPOSITORY' && git checkout '$VERSION' && git submodule update" "$UNIX_USER"
+fi
 
 install_website_packages
 
 su -l -c "touch '$DIRECTORY/admin-htpasswd'" "$UNIX_USER"
 
-add_website_to_nginx
-
 add_postgresql_user
 
-su -l -c "$REPOSITORY/bin/install-as-user '$UNIX_USER' '$HOST' '$DIRECTORY'" "$UNIX_USER"
+export DEVELOPMENT_INSTALL
+su -c "$REPOSITORY/bin/install-as-user '$UNIX_USER' '$HOST' '$DIRECTORY'" "$UNIX_USER"
 
-install_sysvinit_script
+if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
+    install_sysvinit_script
+fi
 
 if [ $DEFAULT_SERVER = true ] && [ x != x$EC2_HOSTNAME ]
 then

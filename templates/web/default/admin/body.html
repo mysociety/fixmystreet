@@ -28,6 +28,16 @@
 <p class="error">Do not give these out except to people at the council.</p>
 [% END %]
 
+[% IF body.areas.size == 0 %]
+  <p class="fms-admin-warning">
+    [% loc("This body covers no area. This means that it has no jurisdiction over problems reported <em>at any location</em>.
+            Consequently, none of its categories will appear in the drop-down category menu when users report problems.
+            Currently, users <strong>cannot report problems to this body</strong>.") %]
+    <br>
+    [% loc("Fix this by choosing an <strong>area covered</strong> in the <em>Edit body details</em> form below.") %]
+  </p>
+[% END %]
+
 [% IF live_contacts == 0 %]
   <p class="fms-admin-warning">
     [% loc("This body has no contacts. This means that currently problems reported to this body <strong>will not be sent</strong>.") %]

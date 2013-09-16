@@ -1,7 +1,10 @@
 #!/bin/sh
 
 set -e
-set -x
+error_msg() { printf "\033[31m%s\033[0m\n" "$*"; }
+notice_msg() { printf "\033[33m%s\033[0m " "$*"; }
+done_msg() { printf "\033[32m%s\033[0m\n" "$*"; }
+DONE_MSG=$(done_msg done)
 
 if [ $# -ne 3 ]
 then
@@ -14,6 +17,15 @@ fi
 UNIX_USER="$1"
 HOST="$2"
 DIRECTORY="$3"
+
+misuse() {
+  echo The variable $1 was not defined, and it should be.
+  echo This script should not be run directly.
+  exit 1
+}
+
+[ -z "$DEVELOPMENT_INSTALL" ] && misuse DEVELOPMENT_INSTALL
+
 DB_NAME="fixmystreet"
 
 # Check that the arguments we've been passed are sensible:
@@ -22,19 +34,19 @@ IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
 
 if [ x = x"$IP_ADDRESS_FOR_HOST" ]
 then
-    echo "The hostname $HOST didn't resolve to an IP address"
+    error_msg "The hostname $HOST didn't resolve to an IP address"
     exit 1
 fi
 
 if ! id "$UNIX_USER" 2> /dev/null > /dev/null
 then
-    echo "The user '$UNIX_USER' didn't exist."
+    error_msg "The user '$UNIX_USER' didn't exist."
     exit 1
 fi
 
 if [ "$(whoami)" != "$UNIX_USER" ]
 then
-    echo "This script should be run by the user '$UNIX_USER'."
+    error_msg "This script should be run by the user '$UNIX_USER'."
     exit 1
 fi
 
@@ -44,24 +56,23 @@ LINK_DESTINATION="$HOME/fixmystreet"
 ln -sfn "$REPOSITORY" $LINK_DESTINATION
 cd "$REPOSITORY"
 
-# Add regularly scheduled tasks to cron:
-
-TEMPORARY_CRONTAB=$(mktemp)
-
-echo crontab file is $TEMPORARY_CRONTAB
-
-cp "$REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
-
-sed -i \
-    -e 's,$FMS,'"$REPOSITORY,g" \
-    -e 's,$LOCK_DIR,'"$DIRECTORY,g" \
-    "$TEMPORARY_CRONTAB"
-
-crontab $TEMPORARY_CRONTAB
+if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
+    echo -n "Adding crontab... "
+    # Add regularly scheduled tasks to cron:
+    TEMPORARY_CRONTAB=$(mktemp)
+    echo crontab file is $TEMPORARY_CRONTAB
+    cp "$REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
+    sed -i \
+        -e 's,$FMS,'"$REPOSITORY,g" \
+        -e 's,$LOCK_DIR,'"$DIRECTORY,g" \
+        "$TEMPORARY_CRONTAB"
+    crontab $TEMPORARY_CRONTAB
+    echo $DONE_MSG
+fi
 
 # Install the compass gem locally - it's required for generating the
 # CSS:
-
+echo "Setting up CSS... "
 export GEM_HOME="$DIRECTORY/gems"
 mkdir -p "$GEM_HOME"
 export GEM_PATH=
@@ -81,25 +92,29 @@ gem install --no-ri --no-rdoc compass
 
 # Use compass to generate the CSS, if it doesn't seem to already
 # exist:
-
 if [ ! -f web/cobrands/default/base.css ]
 then
     bin/make_css
 fi
+echo $DONE_MSG
 
-# Write sensible values into the config file:
-
-sed -r \
-    -e "s,^( *FMS_DB_HOST:).*,\\1 ''," \
-    -e "s,^( *FMS_DB_NAME:).*,\\1 '$DB_NAME'," \
-    -e "s,^( *FMS_DB_USER:).*,\\1 '$UNIX_USER'," \
-    -e "s,^( *BASE_URL:).*,\\1 'http://$HOST'," \
-    -e "s,^( *EMAIL_DOMAIN:).*,\\1 '$HOST'," \
-    -e "s,^( *CONTACT_EMAIL:).*,\\1 'help@$HOST'," \
-    -e "s,^( *DO_NOT_REPLY_EMAIL:).*,\\1 'help@$HOST'," \
-    conf/general.yml-example > conf/general.yml
+# Write sensible values into the config file, if it doesn't already exist
+if [ ! -f conf/general.yml ]; then
+    echo -n "Setting up default conf/general.yml file... "
+    sed -r \
+        -e "s,^( *FMS_DB_HOST:).*,\\1 ''," \
+        -e "s,^( *FMS_DB_NAME:).*,\\1 '$DB_NAME'," \
+        -e "s,^( *FMS_DB_USER:).*,\\1 '$UNIX_USER'," \
+        -e "s,^( *BASE_URL:).*,\\1 'http://$HOST'," \
+        -e "s,^( *EMAIL_DOMAIN:).*,\\1 '$HOST'," \
+        -e "s,^( *CONTACT_EMAIL:).*,\\1 'help@$HOST'," \
+        -e "s,^( *DO_NOT_REPLY_EMAIL:).*,\\1 'help@$HOST'," \
+        conf/general.yml-example > conf/general.yml
+    echo $DONE_MSG
+fi
 
 # Create the database if it doesn't exist:
+echo -n "Setting up database... "
 if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
 then
     createdb --owner "$UNIX_USER" "$DB_NAME"
@@ -107,16 +122,21 @@ then
     psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/schema.sql
     psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/alert_types.sql
     psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/generate_secret.sql
+else
+    bin/cron-wrapper update-schema --commit
 fi
+echo $DONE_MSG
 
-# Install the required Perl modules - this may take a very long time:
-
+echo "Installing required Perl modules - this may take some time"
 cd "$REPOSITORY"
 bin/install_perl_modules
+echo $DONE_MSG
 
 # Generate po and mo files (these invocations taken from Kagee's script):
-
+echo "Creating locale .mo files"
 bin/cron-wrapper bin/make_po FixMyStreet-EmptyHomes
 bin/cron-wrapper bin/make_emptyhomes_welsh_po
-
 commonlib/bin/gettext-makemo FixMyStreet
+echo $DONE_MSG
+
+bin/cron-wrapper update-all-reports
