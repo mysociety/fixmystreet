@@ -37,7 +37,11 @@
 [% INCLUDE with_cobrand value="ADMIN_BASE_URL" cob=c.cobrand.admin_base_url %]
 
 [% INCLUDE subsection heading="Display" %]
-[% INCLUDE just_value value="ALLOWED_COBRANDS" %]
+[% allowed_conf = FOR k IN c.config.ALLOWED_COBRANDS %]
+    [% IF k.keys %][% k.items.join(':') %][% ELSE %][% k %][% END %]
+    [%- ',' IF NOT loop.last %]
+[% END %]
+[% INCLUDE just_value value="ALLOWED_COBRANDS" conf = allowed_conf %]
 <tr>
 <td>Web templates</td>
 <td colspan=2>[% c.cobrand.path_to_web_templates.join('<br>') %]</td>
