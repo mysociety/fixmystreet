@@ -135,6 +135,9 @@ sub index : Path : Args(0) {
     return 1;
 }
 
+sub config_page : Path( 'config' ) : Args(0) {
+}
+
 sub timeline : Path( 'timeline' ) : Args(0) {
     my ($self, $c) = @_;
 
@@ -1164,6 +1167,7 @@ sub set_allowed_pages : Private {
              'users' => [_('Users'), 5],
              'flagged'  => [_('Flagged'), 6],
              'stats'  => [_('Stats'), 6],
+             'config' => [ undef, undef ],
              'user_edit' => [undef, undef], 
              'body' => [undef, undef],
              'body_edit' => [undef, undef],

@@ -19,7 +19,7 @@ __PACKAGE__->config(
     render_die     => 1,
     expose_methods => [
         'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_dt',
-        'add_links', 'version',
+        'add_links', 'version', 'decode',
     ],
     FILTERS => {
         escape_js => \&escape_js,
@@ -179,6 +179,12 @@ sub version {
     }
     $version_hash{$file} ||= '';
     return "$file?$version_hash{$file}";
+}
+
+sub decode {
+    my ( $self, $c, $text ) = @_;
+    utf8::decode($text) unless utf8::is_utf8($text);
+    return $text;
 }
 
 1;
