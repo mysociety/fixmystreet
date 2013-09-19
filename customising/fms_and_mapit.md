@@ -110,6 +110,35 @@ FixMyStreet will work fine if you leave the whitelist blank, which is the
 default. But if your FixMyStreet is only using a few areas, it's more
 efficient to specify them in this way.
 
+### Finding the right global MapIt values: example
+
+Here's an example of the steps to follow to find the data you need to use
+global MapIt. This example uses Zurich as an example city.
+
+1. Go to [OpenStreetMap's geocoder](http://nominamtim.openstreetmap.org) and
+   enter the name of the city, e.g., "Zurich, Switzerland".
+
+2. Check that's found the right place (and, if you want, check the map is how
+   you expected). Click on the **details** link just below the name of the top
+   hit. The details page lists lots of data, including the centre point
+   (lat/long values that will look something like `-34.9059039,-56.1913569`).
+
+3. Go to [global MapIt](http://global.mapit.mysociety.org) and paste those
+   lat/long values into the text input.
+
+4. MapIt will show you all the [admin
+boundaries](http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html)
+   that contain that point. You're interested in the ones that relate to 
+   bodies that serve those areas. For example, if a district council fixes the
+   potholes in that district. Specifically, you need the **Administrative
+   Boundary Levels** (which will look like `O04` or `O05`), which are the
+   values for your `MAPIT_TYPES`. Remember this data is boundary data from
+   OpenStreetMap -- if the boundaries you need are not shown, you may have to
+   set up your own (described below). You can also click on any of the 
+   boundaries listed on MapIt to see the areas they actually cover on the map.
+
+5. The individual *area_id*s are also useful, because you put them into the
+   `MAPIT_ID_WHITELIST`.
 
 ### Missing OSM boundary data?
 
