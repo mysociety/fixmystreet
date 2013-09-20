@@ -162,7 +162,7 @@ $mech->content_contains( 'Edited details text.' );
 $mech->content_contains( 'Originaltext: &ldquo;Test Test 1 for 2 Detail&rdquo;' );
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { body_subdivision => 3 } } );
+$mech->submit_form_ok( { with_fields => { body_subdivision => 3, send_rejected_email => 1 } } );
 
 $mech->get_ok( '/report/' . $report->id );
 $mech->content_contains('In Bearbeitung');
