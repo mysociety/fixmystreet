@@ -37,6 +37,11 @@ body.mappage.admin .nav-wrapper-2 {
     @include box-shadow(none);
 }
 
+/* Fix positioning of images in the admin */
+body.admin .admin-nav-wrapper {
+    z-index: 1;
+}
+
 // Different header and logo
 #site-header .container {
     height: 99px;
