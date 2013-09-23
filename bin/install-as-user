@@ -113,6 +113,11 @@ if [ ! -f conf/general.yml ]; then
     echo $DONE_MSG
 fi
 
+echo "Installing required Perl modules - this may take some time"
+cd "$REPOSITORY"
+bin/install_perl_modules
+echo $DONE_MSG
+
 # Create the database if it doesn't exist:
 echo -n "Setting up database... "
 if ! psql -l | egrep "^ *$DB_NAME *\|" > /dev/null
@@ -125,11 +130,6 @@ then
 else
     bin/cron-wrapper update-schema --commit
 fi
-echo $DONE_MSG
-
-echo "Installing required Perl modules - this may take some time"
-cd "$REPOSITORY"
-bin/install_perl_modules
 echo $DONE_MSG
 
 # Generate po and mo files (these invocations taken from Kagee's script):
