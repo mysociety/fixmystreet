@@ -75,3 +75,7 @@ body.frontpage {
     }
 }
 
+body.admin table {
+    background: white; // force bg colour since it may overhang the colourful background
+}
+

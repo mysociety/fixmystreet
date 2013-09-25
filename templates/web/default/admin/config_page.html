@@ -1,0 +1,144 @@
+[% INCLUDE 'admin/header.html' title=loc('Configuration') -%]
+
+[% BLOCK subsection %]
+<tr><td colspan=3><strong>[% heading %]</strong></td></tr>
+[% END %]
+
+[% BLOCK just_value %]
+[% SET conf = c.config.$value IF NOT conf;
+    conf = conf.join(', ') IF conf.size %]
+<tr>
+    <td>[% value %]</td>
+    <td colspan=2>[% conf or conf_default %]</td>
+</tr>
+[% END %]
+
+[% BLOCK with_cobrand %]
+[% SET conf = c.config.$value IF NOT conf;
+    conf = conf.join(', ') IF conf.size;
+    cob = cob.join(', ') IF conf.size %]
+<tr>
+    <td>[% value %]</td>
+    <td>[% conf %]</td>
+    <td>[% cob IF cob != conf %]</td>
+</tr>
+[% END %]
+
+<p>A summary of this site's configuration.</p>
+
+<table>
+<tr><th>Variable</th>
+    <th>general.yml value</th>
+    <th>Cobrand module override</th>
+</tr>
+
+[% INCLUDE subsection heading="URLs" %]
+[% INCLUDE with_cobrand value="BASE_URL" cob=c.cobrand.base_url %]
+[% INCLUDE with_cobrand value="ADMIN_BASE_URL" cob=c.cobrand.admin_base_url %]
+
+[% INCLUDE subsection heading="Display" %]
+[% allowed_conf = FOR k IN c.config.ALLOWED_COBRANDS %]
+    [% IF k.keys %][% k.items.join(':') %][% ELSE %][% k %][% END %]
+    [%- ',' IF NOT loop.last %]
+[% END %]
+[% INCLUDE just_value value="ALLOWED_COBRANDS" conf = allowed_conf %]
+<tr>
+<td>Web templates</td>
+<td colspan=2>[% c.cobrand.path_to_web_templates.join('<br>') %]</td>
+</tr>
+[% INCLUDE with_cobrand value="MAP_TYPE" cob=c.cobrand.map_type %]
+[% INCLUDE with_cobrand value="EXAMPLE_PLACES"
+    conf = decode(c.config.EXAMPLE_PLACES.join(', '))
+    cob = c.cobrand.example_places %]
+[% INCLUDE with_cobrand value="LANGUAGES"
+    cob = c.cobrand.languages %]
+<tr><td>Language override</td>
+    <td>-</td>
+    <td>
+        [% 'domain=' _ c.cobrand.language_domain IF c.cobrand.language_domain %]
+        [% 'language=' _ c.cobrand.language_override IF c.cobrand.language_override %]
+    </td>
+</tr>
+[% INCLUDE with_cobrand value="ALL_REPORTS_PER_PAGE" cob=c.cobrand.reports_per_page %]
+[% INCLUDE just_value value="RSS_LIMIT" %]
+[% INCLUDE just_value value="AREA_LINKS_FROM_PROBLEMS" %]
+
+[% INCLUDE subsection heading="Geocoder" %]
+[% INCLUDE just_value value="GEOCODER"
+    conf_default = '<em>(None; default Nominatim OSM)</em>'
+%]
+[% disconf = FOR k IN c.config.GEOCODING_DISAMBIGUATION %]
+    [% k.key %]=[% k.value %][% ',' IF NOT loop.last %]
+[% END %]
+[% discob = FOR k IN c.cobrand.disambiguate_location %]
+    [% k.key %]=[% k.value %][% ',' IF NOT loop.last %]
+[% END %]
+[% INCLUDE with_cobrand value="GEOCODING_DISAMBIGUATION"
+    conf = disconf
+    cob = discob %]
+
+[% INCLUDE subsection heading="MapIt" %]
+[% INCLUDE just_value value="MAPIT_URL" %]
+[% INCLUDE with_cobrand value="MAPIT_TYPES"
+    cob = c.cobrand.area_types %]
+[% INCLUDE just_value value="MAPIT_ID_WHITELIST" %]
+[% INCLUDE with_cobrand value="MAPIT_TYPES_CHILDREN"
+    cob = c.cobrand.area_types_children %]
+
+[% INCLUDE subsection heading="Database" %]
+[% INCLUDE just_value value="FMS_DB_HOST" %]
+[% INCLUDE just_value value="FMS_DB_PORT" %]
+[% INCLUDE just_value value="FMS_DB_NAME" %]
+[% INCLUDE just_value value="FMS_DB_USER" %]
+
+[% INCLUDE subsection heading="Email" %]
+[% INCLUDE just_value value="EMAIL_DOMAIN" %]
+[% INCLUDE with_cobrand value="CONTACT_NAME" cob=c.cobrand.contact_name %]
+[% INCLUDE with_cobrand value="CONTACT_EMAIL" cob=c.cobrand.contact_email %]
+[% INCLUDE just_value value="DO_NOT_REPLY_EMAIL" %]
+
+[% INCLUDE subsection heading="Development" %]
+[% INCLUDE just_value value="STAGING_SITE" %]
+[% INCLUDE just_value value="SEND_REPORTS_ON_STAGING" %]
+[% INCLUDE just_value value="UPLOAD_DIR" %]
+[% INCLUDE just_value value="GEO_CACHE" %]
+[% INCLUDE just_value value="TESTING_COUNCILS" %]
+[% INCLUDE just_value value="SMTP_SMARTHOST" %]
+[% INCLUDE just_value value="TIME_ZONE" %]
+[% INCLUDE just_value value="GAZE_URL" %]
+
+</table>
+
+<h2>Cobrand module</h2>
+
+Other things can be changed on a cobrand basis by using functions in an
+(optional) Cobrand .pm module, as explained in the
+<a href="http://code.fixmystreet.com/customising/">customising section of our
+documentation</a>. If you wish to add new functionality just for your cobrand
+that can't be done simply by changes to your cobrand's templates, you might
+need to add a new Cobrand function.
+
+<p>Examples of cobrand functions are below; this is not exhaustive.
+Many were added for one specific cobrand, so didn't need a general
+configuration option. Please feel free to discuss on <a
+href="http://code.fixmystreet.com/community/">our mailing list</a> if you think
+something should be moved to the general.yml file, done differently,
+or have any questions.</p>
+
+<ul style="font-size: 80%">
+<li>allow_photo_upload: [% c.cobrand.allow_photo_upload %],
+    allow_photo_display: [% c.cobrand.allow_photo_display %]</li>
+<li>send_questionnaires: [% c.cobrand.send_questionnaires %],
+    ask_ever_reported: [% c.cobrand.ask_ever_reported %]</li>
+<li>default_map_zoom: [% c.cobrand.default_map_zoom or '-' %]</li>
+<li>default_show_name: [% c.cobrand.default_show_name %]</li>
+<li>users_can_hide: [% c.cobrand.users_can_hide %]</li>
+<li>report_sent_confirmation_email: [% c.cobrand.report_sent_confirmation_email %]</li>
+<li>never_confirm_reports: [% c.cobrand.never_confirm_reports %],
+    allow_anonymous_reports: [% c.cobrand.allow_anonymous_reports %],
+    show_unconfirmed_reports: [% c.cobrand.show_unconfirmed_reports %]</li>
+<li>email_indent: [% c.cobrand.email_indent %]</li>
+</ul>
+
+[% INCLUDE 'admin/footer.html' %]
+

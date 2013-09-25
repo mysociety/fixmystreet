@@ -1,4 +1,26 @@
 [% IF updates.size %]
+
+<h2>[% loc('Internal notes') %]</h3>
+
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('Created') %]</th>
+        <th>[% loc('User') %]</th>
+        <th>[% loc('Text') %]</th>
+    </tr>
+[% FOREACH update IN updates -%]
+    [% IF update.extra.is_internal_note %]
+    <tr class="[% 'admininternal' IF update.extra.is_internal_note %]">
+        <td>[% update.id %]</td>
+        <td>[% PROCESS format_date this_date=update.created %] [% update.created.hms %]</td>
+        <td><a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a></td>
+        <td>[% update.text | html %]</td>
+    </tr>
+    [% END %]
+[% END -%]
+</table>
+
 <h2>[% loc('Updates') %]</h2>
 
 <table cellspacing="0" cellpadding="2" border="1">
@@ -9,12 +31,15 @@
         <th>[% loc('Text') %]</th>
     </tr>
 [% FOREACH update IN updates -%]
-    <tr class="[% 'adminhidden' IF update.state == 'hidden' || update.problem.state == 'hidden' %] [% 'admininternal' IF update.extra.is_internal_note %]">
+    [% IF ! update.extra.is_internal_note %]
+    <tr class="[% 'adminhidden' IF update.state == 'hidden' || update.problem.state == 'hidden' %]">
         <td>[% update.id %]</td>
         <td>[% PROCESS format_date this_date=update.created %] [% update.created.hms %]</td>
         <td><a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a></td>
         <td>[% update.text | html %]</td>
     </tr>
+    [% END %]
 [% END -%]
 </table>
+
 [% END %]
