@@ -40,3 +40,28 @@ $image-sprite: 'images/sprite.png';
 .wrapper {
   position: relative; // to make the staging-banner not affect top/left positioning of logo
 }
+
+#footer-help ul li {
+  padding-right: 3em;
+  a {
+    display: block;
+  }
+  a.link-fb, a.link-fabap {
+    padding-left: 30px;
+    background-image: url('images/link_sprites.png');
+    background-repeat: no-repeat;
+    background-position-x: 0;
+  }
+  a.link-fb {
+    background-position-y: -282px;
+    &:hover {
+      background-position-y: -222px;
+    }
+  }
+  a.link-fabap {
+    background-position-y: -78px;
+    &:hover {
+      background-position-y: -28px;
+    }
+  }
+}
