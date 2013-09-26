@@ -153,3 +153,58 @@ footer a {
     border-color: #f99;
     background-color: #ffe1e1;
 }
+a.glossary {
+    padding-right: 14px;
+    background-image: url(../images/glossary-link.png);
+    background-repeat: no-repeat;
+    background-position: right top;
+    color: black;
+}
+a.glossary:hover {
+color: #f93;
+}
+dl.glossary {
+    margin: 2em 0 8em 0; /* big margin helps scroll-to #name at bottom of page */
+}
+dl.glossary dt {
+    clear: both;
+    background-color: #ffeecc;
+    padding: 0.666em 1em;
+    font-weight: bold;
+    margin: 3em 0 0;
+    border:1px solid #999;
+    border-bottom:none;
+}
+dl.glossary dt a {
+    color:#000;
+    font-size: 120%;
+}
+dl.glossary dt a:hover {
+    color:#000;
+    text-decoration: none;
+}
+dl.glossary dd {
+    border:1px solid #999;
+    border-top:none;
+    padding: 1em 2em;
+    margin: 0;
+}
+dl.glossary dd p {
+    margin-top:0.666em;
+}
+dl.glossary dd div.more-info {
+    margin: 1em 0 0 0;
+}
+dl.glossary dd div.more-info > p {
+    float: left;
+    font-style: italic;
+    color: #999;
+    width: 8em;
+    margin: 0;
+}
+dl.glossary dd div.more-info ul {
+    margin-top: 0.5em;
+    margin-left: 10em;
+}
+
+
