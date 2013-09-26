@@ -83,7 +83,7 @@ Definitions
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="customising/fms_and_mapit">How FixMyStreet uses MapIt</a> for more about how bodies relate to
+          See <a href="/customising/fms_and_mapit">How FixMyStreet uses MapIt</a> for more about how bodies relate to
           <a href="#areas" class="glossary">areas</a>.
         </li>
         <li>
@@ -146,10 +146,10 @@ Definitions
       <p>More information:</p>
       <ul>
         <li>
-          <a href="customising/">more about customising</a>
+          <a href="/customising">more about customising</a>
         </li>
         <li>
-          See <a href="customising/cobrand-module">Cobrand module</a> for information about the Perl class your
+          See <a href="/customising/cobrand-module">Cobrand module</a> for information about the Perl class your
           can override.
         </li>
       </ul>
@@ -212,7 +212,7 @@ Definitions
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="customising/fms_and_mapit">How FixMyStreet uses MapIt</a> for more about how the geocoder is used.
+          See <a href="/customising/fms_and_mapit">How FixMyStreet uses MapIt</a> for more about how the geocoder is used.
         </li>
       </ul>
     </div>
@@ -302,7 +302,7 @@ Definitions
       <p>More information:</p>
       <ul>
         <li>
-          <a href="customising/fms_and_mapit">How FixMyStreet uses MapIt</a>
+          <a href="/customising/fms_and_mapit">How FixMyStreet uses MapIt</a>
         </li>
         <li>
           <a href="http://global.mapit.mysociety.org">global.mapit.mysociety.org</a> is the global MapIt service
@@ -378,7 +378,7 @@ Definitions
       <p>More information:</p>
       <ul>
         <li>
-          <a href="customising/send_reports">How FixMyStreet sends reports</a>.
+          <a href="/customising/send_reports">How FixMyStreet sends reports</a>.
         </li>
       </ul>
     </div>
@@ -391,14 +391,14 @@ Definitions
     The <strong>send method</strong> is the way that a <a href="#report" class="glossary">problem report</a> is sent
     to the <a href="#body" class="glossary">body</a> responsible for fixing it. <em>By default, the send method is email.</em>
     <p>
-      Alternatives to email are only available if some <a href="integration" class="glossary">integration</a> with
+      Alternatives to email are only available if some <a href="#integration" class="glossary">integration</a> with
       the target body's back-end is available (for example, if they are using <a href="#open311" class="glossary">Open311</a>).
     </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
         <li>
-          <a href="customising/send_reports">How FixMyStreet sends reports</a>.
+          <a href="/customising/send_reports">How FixMyStreet sends reports</a>.
         </li>
       </ul>
     </div>
