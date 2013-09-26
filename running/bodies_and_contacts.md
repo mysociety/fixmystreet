@@ -20,7 +20,7 @@ By default, this is at `/admin`.
 
 Click on **Bodies** and fill in the form. Normally, you _must_ provide a name
 and pick at least one area it covers. See [How FixMyStreet uses
-Mapit](fms_and_mapit) for more information on how these areas are chosen.
+Mapit](/customising/fms_and_mapit) for more information on how these areas are chosen.
 
 You can specify a <strong><a href="/glossary/#send-method" class="glossary">send method</a></strong>. This is *how* FixMyStreet will send the
 problem reports to this body. 
