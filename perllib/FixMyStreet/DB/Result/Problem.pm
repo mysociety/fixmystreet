@@ -390,11 +390,11 @@ sub check_for_errors {
 
     if ( $self->bodies_str && $self->detail ) {
         if ( $self->bodies_str eq '2482' && length($self->detail) > 2000 ) {
-            $errors{detail} = _('Reports are limited to 2000 characters in length. Please shorten your report');
+            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 2000 );
         }
 
         if ( $self->bodies_str eq '2237' && length($self->detail) > 1700 ) {
-            $errors{detail} = _('Reports are limited to 1700 characters in length. Please shorten your report');
+            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1700 );
         }
     }
 
