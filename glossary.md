@@ -84,7 +84,7 @@ Definitions
       <ul>
         <li>
           See <a href="/customising/fms_and_mapit">How FixMyStreet uses MapIt</a> for more about how bodies relate to
-          <a href="#areas" class="glossary">areas</a>.
+          <a href="#area" class="glossary">areas</a>.
         </li>
         <li>
           See the <a href="http://global.mapit.mysociety.org">global MapIt website</a> for more about the service.
@@ -109,7 +109,7 @@ Definitions
         </li>
         <li>
           See <a href="/customising/fms_and_mapit">How FixMyStreet uses MapIt</a> for more about how bodies relate
-          to <a href="#areas" class="glossary">areas</a>.
+          to <a href="#area" class="glossary">areas</a>.
         </li>
       </ul>
     </div>
