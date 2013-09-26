@@ -25,7 +25,10 @@ Definitions
 [flagged](#flagged) |
 [geocoder](#geocoder) |
 [integration](#integration) |
-[Open311](#Open311) |
+[lat-long](#latlong) |
+[map](#map) |
+[MapIt](#mapit) |
+[Open311](#open311) |
 [OpenStreetMap](#osm) |
 [problem report](#report) |
 [send method](#send-method)
@@ -251,7 +254,7 @@ Definitions
   </dd>
   
   <dt>
-    <a name="map">lat-long</a>
+    <a name="latlong">lat-long</a>
   </dt>
   <dd>
     A <strong>lat-long</strong> is a pair of coordinates (latitude and longitude) that describe a location.
@@ -283,7 +286,7 @@ Definitions
   </dd>
 
   <dt>
-    <a name="map">MapIt</a>
+    <a name="mapit">MapIt</a>
   </dt>
   <dd>
     <strong>MapIt</strong> is a web service that manages administrative boundary areas. More specifically,
