@@ -233,7 +233,7 @@ Definitions
       <li>problem reports created in the back end (that is, not initiated on FixMyStreet) are passed into FixMyStreet</li>
     </ol>
     <p>
-      Integration is often related to <a href="#cobrand">cobranding</a>, which is how you can customise the look
+      Integration is often related to <a href="#cobrand" class="glossary">cobranding</a>, which is how you can customise the look
       and behaviour of your FixMyStreet installation.
     </p>
     <div class="more-info">
