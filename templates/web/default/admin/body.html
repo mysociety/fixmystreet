@@ -84,7 +84,7 @@
     </p>
     </form>
 
-
+    <div class="admin-box">
     <h2>[% loc('Add new category') %]</h2>
     <p class="fms-admin-info">
       [% loc("Each contact for the body has a category, which is displayed to the public. 
@@ -184,8 +184,9 @@
             <input type="hidden" name=".cgifields" value="deleted" >
         </div>
     </form>
-
+    </div>
+    <div class="admin-box">
     <h2>[% loc('Edit body details') %]</h2>
     [% INCLUDE 'admin/body-form.html' %]
-
+    </div>
 [% INCLUDE 'admin/footer.html' %]
