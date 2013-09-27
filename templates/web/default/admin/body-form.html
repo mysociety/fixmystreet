@@ -198,6 +198,9 @@
           different endpoint (and send method) from the body's. For example, if reports for some categories of
           problem must be emailed, while others can be sent over Open311."
         ) %]
+        <br>
+        [%# NB 'email' is a literal setting, so not translating it in following string? %]
+        [% tprintf( loc('Leave this blank if all reports to this body should be sent using the same send method (e.g., "%s").'), body.send_method or 'email' ) %]
       </p>
     </div>
     <p>
