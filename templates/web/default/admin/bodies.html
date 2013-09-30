@@ -66,8 +66,10 @@
         [% INCLUDE 'admin/body-form.html', body='' %]
     [% END %]
 [% ELSE %]
-    <h2>[% loc('Add body') %]</h2>
-    [% INCLUDE 'admin/body-form.html', body='' %]
+    <div class="admin-box">
+      <h2>[% loc('Add body') %]</h2>
+      [% INCLUDE 'admin/body-form.html', body='' %]
+    </div>
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]
