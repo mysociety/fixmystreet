@@ -84,10 +84,7 @@ sub all_reports_single_body {
 sub reports_body_check {
     my ( $self, $c, $code ) = @_;
 
-    # First, the normal UK checks
-    $self->SUPER::find_closest( $c, $code );
-
-    # Now we want to make sure we're only on our page.
+    # We want to make sure we're only on our page.
     unless ( $self->council_name =~ /^\Q$code\E/ ) {
         $c->res->redirect( 'http://www.fixmystreet.com' . $c->req->uri->path_query, 301 );
         $c->detach();
