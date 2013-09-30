@@ -88,6 +88,7 @@ export PATH="\$GEM_HOME/bin:\$PATH"
 EOBRC
 fi
 
+gem install --no-ri --no-rdoc sass --version 3.2.10 #http://stackoverflow.com/questions/19068382/sass-compile-error-stalenesscheckermutex-nameerror
 gem install --no-ri --no-rdoc compass
 
 # Use compass to generate the CSS, if it doesn't seem to already
