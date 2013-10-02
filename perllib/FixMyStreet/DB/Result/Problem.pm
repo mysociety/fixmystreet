@@ -544,11 +544,11 @@ sub meta_line {
                 and $problem->category && $problem->category ne _('Other') )
             {
                 $meta =
-                sprintf( _('Reported by %s in the %s category anonymously at %s'),
+                sprintf( _('Reported via %s in the %s category anonymously at %s'),
                     $problem->service, $problem->category, $date_time );
             }
             elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported by %s anonymously at %s'),
+                $meta = sprintf( _('Reported via %s anonymously at %s'),
                     $problem->service, $date_time );
             }
             elsif ( $problem->category and $problem->category ne _('Other') ) {
@@ -564,13 +564,13 @@ sub meta_line {
                 and $problem->category && $problem->category ne _('Other') )
             {
                 $meta = sprintf(
-                    _('Reported by %s in the %s category by %s at %s'),
+                    _('Reported via %s in the %s category by %s at %s'),
                     $problem->service, $problem->category,
                     $problem->name,    $date_time
                 );
             }
             elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported by %s by %s at %s'),
+                $meta = sprintf( _('Reported via %s by %s at %s'),
                     $problem->service, $problem->name, $date_time );
             }
             elsif ( $problem->category and $problem->category ne _('Other') ) {

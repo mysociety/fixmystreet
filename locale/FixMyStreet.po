@@ -2146,7 +2146,7 @@ msgid "Reported before"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:551
-msgid "Reported by %s anonymously at %s"
+msgid "Reported via %s anonymously at %s"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:582 templates/web/default/contact/index.html:47 templates/web/fixmystreet/contact/index.html:60
@@ -2154,15 +2154,15 @@ msgid "Reported by %s at %s"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:573
-msgid "Reported by %s by %s at %s"
+msgid "Reported via %s by %s at %s"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:547
-msgid "Reported by %s in the %s category anonymously at %s"
+msgid "Reported via %s in the %s category anonymously at %s"
 msgstr ""
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:567
-msgid "Reported by %s in the %s category by %s at %s"
+msgid "Reported via %s in the %s category by %s at %s"
 msgstr ""
 
 #: templates/web/zurich/report/_main.html:2

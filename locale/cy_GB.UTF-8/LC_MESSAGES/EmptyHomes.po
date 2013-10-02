@@ -2771,7 +2771,7 @@ msgid "Reported before"
 msgstr "Wedi adrodd o'r blaen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:585
-msgid "Reported by %s anonymously at %s"
+msgid "Reported via %s anonymously at %s"
 msgstr "Adroddwyd gan %s yn ddi-enw am %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:616
@@ -2781,15 +2781,15 @@ msgid "Reported by %s at %s"
 msgstr "Adroddwyd gan %s am %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:607
-msgid "Reported by %s by %s at %s"
+msgid "Reported via %s by %s at %s"
 msgstr "Adroddwyd gan %s trwy %s am %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:581
-msgid "Reported by %s in the %s category anonymously at %s"
+msgid "Reported via %s in the %s category anonymously at %s"
 msgstr "Adroddwyd am hyn gan %s yn y categori %s yn ddi-enw, am %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:601
-msgid "Reported by %s in the %s category by %s at %s"
+msgid "Reported via %s in the %s category by %s at %s"
 msgstr "Adroddwyd gan %s yn y categori %s trwy %s am %s"
 
 #: templates/web/zurich/report/_main.html:2
