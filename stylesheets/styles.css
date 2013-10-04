@@ -227,6 +227,10 @@ dl.dir-structure dd {
     padding: 0 0 0em 40px;
     margin: 0;    
 }
+dl.dir-structure dd p {
+    margin:0;
+    padding: 0 0 0.5em 0;
+}
 dl.dir-structure dt.last {
     background: url(../images/tree-last.png) no-repeat;
 }
