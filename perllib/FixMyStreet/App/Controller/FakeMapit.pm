@@ -12,13 +12,13 @@ FixMyStreet::App::Controller::FakeMapit - Catalyst Controller
 
 A controller to fake mapit when we don't have it. If you set MAPIT_URL to
 .../fakemapit/ it should all just work, with a mapit that assumes the whole
-world is one area, with ID 161 and name "Default Area".
+world is one area, with ID 161 and name "Everywhere".
 
 =head1 METHODS
 
 =cut
 
-my $area = { "name" => "Default Area", "type" => "ZZZ", "id" => 161 };
+my $area = { "name" => "Everywhere", "type" => "ZZZ", "id" => 161 };
 
 sub output : Private {
     my ( $self, $c, $data ) = @_;
