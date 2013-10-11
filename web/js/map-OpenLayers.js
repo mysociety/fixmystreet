@@ -285,7 +285,11 @@ $(function(){
     }
     for (var i=0; i<fixmystreet.layer_options.length; i++) {
         fixmystreet.layer_options[i] = OpenLayers.Util.extend({
+            // This option is used by XYZ-based layers
             zoomOffset: fixmystreet.zoomOffset,
+            // This option is used by FixedZoomLevels-based layers
+            minZoomLevel: fixmystreet.zoomOffset,
+            // This option is thankfully used by them both
             numZoomLevels: fixmystreet.numZoomLevels
         }, fixmystreet.layer_options[i]);
         if (fixmystreet.layer_options[i].matrixIds) {
