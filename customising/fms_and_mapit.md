@@ -50,7 +50,7 @@ There are three ways to use MapIt with your FixMyStreet installation.
 ## 1. FakeMapIt: Everything is in One Area
 
 The simplest setup is to assume *everywhere* is covered by a single area
-(called `Default area`). This is so simple that actually the default setup for
+(called `Everywhere`). This is so simple that actually the default setup for
 FixMyStreet behaves in this way. It connects to its own internal "FakeMapIt",
 which responds with the same area every time.
 
@@ -61,7 +61,7 @@ different places.
 To use this approach, in the configuration, set `MAPIT_URL` to be blank
 (because you're not really connecting to a real MapIt service at all), and set
 `MAPIT_TYPES` to `[ 'ZZZ' ]`, which is a list containing the single type that
-FakeMapIt always returns for the Default Area.
+FakeMapIt always returns for everywhere.
 
 
 ## 2. Use mapit.mysociety.org
@@ -196,5 +196,5 @@ not in an area covered by a body**. This means, if someone tries to place a
 pin in an area covered not by your FixMyStreet (for example, in the middle of
 the sea), the application will be able to tell the user that that location is
 not supported. Of course, this is the drawback of using FakeMapIt: every
-location is always _within_ the boundary of the "Default area".
+location is always _within_ the boundary of the default area.
 
