@@ -40,7 +40,7 @@
           </td>
       [% IF c.cobrand.moniker == 'zurich' %]
           <td>[% body.endpoint %]</td>
-          <td>[% IF body.deleted %]Yes[% END %]</td>
+          <td>[% IF body.deleted %][% loc('Yes') %][% END %]</td>
       [% ELSE %]
           <td>
           [% IF counts.$id %]
