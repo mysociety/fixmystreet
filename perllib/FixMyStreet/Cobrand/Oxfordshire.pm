@@ -53,6 +53,9 @@ sub example_places {
 # don't send questionnaires to people who used the OCC cobrand to report their problem
 sub send_questionnaires { return 0; }
 
+# increase map zoom level so street names are visible
+sub default_map_zoom { return 3; }
+
 # let staff hide OCC reports
 sub users_can_hide { return 1; }
 

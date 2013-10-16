@@ -1,0 +1,16 @@
+[% IF problem.whensent || problem.can_display_external_id %]
+    <small class="council_sent_info"><br>
+        [% IF problem.whensent %]
+        [% problem.duration_string(c) %]<br>
+        [% END %]
+        <strong>
+        [% IF problem.can_display_external_id %]
+            [% IF problem.whensent %]
+                Council ref:&nbsp;[% problem.external_id %]
+            [% ELSE %]
+                [% problem.external_body %] ref:&nbsp;[% problem.external_id %]
+            [% END %]
+        [% END %]
+        </strong>
+    </small>
+[% END %]
