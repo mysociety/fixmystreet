@@ -85,9 +85,8 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         var url = [];
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
-            maxResolution: 156543.0339/Math.pow(2, options.zoomOffset || 0),
+            maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),
             numZoomLevels: 19,
-            transitionEffect: "resize",
             sphericalMercator: true,
             buffer: 0
             //attribution: "© Microsoft / OS 2010"

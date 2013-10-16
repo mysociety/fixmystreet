@@ -39,3 +39,12 @@ body.frontpage #zurich-footer-wrapper {
 .muted, .muted a {
     color: #aaa;
 }
+
+#form_sign_in_yes {
+    .form-txt-submit-box {
+        clear: both;
+        div.form-error {
+            width: 61%;
+        }
+    }
+}

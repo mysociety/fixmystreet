@@ -53,6 +53,16 @@
           "This body will only be sent reports for problems that are located in the <strong>area covered</strong>.
           A body will not receive any reports unless it covers at least one area."
         ) %]
+        <br>
+        [% IF c.config.MAPIT_URL %]
+          [% tprintf( loc("The list of available areas is being provided by the MapIt service at %s."), c.config.MAPIT_URL) %]
+        [% ELSE %]
+          [% loc(
+            "No specific areas are currently available, because the <code>MAPIT_URL</code> in
+            your config file is not pointing to a live MapIt service.") %]
+        [% END %]
+        <br>
+        [% loc("For more information, see <a href='http://code.fixmystreet.com/customising/fms_and_mapit'>How FixMyStreet uses Mapit</a>.")%]
       </p>
     </div>
     <p>
@@ -198,6 +208,9 @@
           different endpoint (and send method) from the body's. For example, if reports for some categories of
           problem must be emailed, while others can be sent over Open311."
         ) %]
+        <br>
+        [%# NB 'email' is a literal setting, so not translating it in following string? %]
+        [% tprintf( loc('Leave this blank if all reports to this body should be sent using the same send method (e.g., "%s").'), body.send_method or 'email' ) %]
       </p>
     </div>
     <p>

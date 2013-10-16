@@ -35,8 +35,10 @@ END %]
                 <input class="green-btn" type="submit" name="sign_in" value="[% loc('Sign in') %]">
             </div>
 
-            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-            <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+            <div class="form-txt-submit-box">
+                <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+            </div>
 
         </div>
     </fieldset>

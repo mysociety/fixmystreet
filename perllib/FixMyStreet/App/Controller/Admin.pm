@@ -961,6 +961,11 @@ sub user_add : Path('user_edit') : Args(0) {
 
     $c->forward('check_token');
 
+    if ( $c->cobrand->moniker eq 'zurich' and $c->req->param('email') eq '' ) {
+        $c->stash->{field_errors}->{email} = _('The email field is required');
+        return 1;
+    }
+
     return unless $c->req->param('name') && $c->req->param('email');
 
     my $user = $c->model('DB::User')->find_or_create( {
@@ -1008,6 +1013,11 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->email( $c->req->param('email') );
         $user->from_body( $c->req->param('body') || undef );
         $user->flagged( $c->req->param('flagged') || 0 );
+
+        if ( $c->cobrand->moniker eq 'zurich' and $user->email eq '' ) {
+            $c->stash->{field_errors}->{email} = _('The email field is required');
+            return 1;
+        }
         $user->update;
 
         if ($edited) {

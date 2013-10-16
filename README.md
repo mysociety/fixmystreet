@@ -14,12 +14,18 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.2.5.
+Platform is now at version 1.2.6.
 
 ## Releases
 
+* v1.2.6 (11th October 2013)
+    - Upgrades OpenLayers to 2.13.1, for e.g. animated zooming.
+    - Adds facility for using Google Maps via OpenLayers. #587
+    - Swaps installation order of Perl modules/database, more robust. #573
+    - Renames default FakeMapIt "Default Area" to "Everywhere". #566
+    - Adds a "current configuration" admin page. #561
 * v1.2.5 (13th September 2013)
-    - Adds various useful hints and notices to the admin interface
+    - Adds various useful hints and notices to the admin interface. #184
     - Improves the install script, including an example Vagrantfile
     - It is now easier for tests to override particular configuration
       variables should they need to.

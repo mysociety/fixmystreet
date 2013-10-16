@@ -2736,7 +2736,7 @@ msgid "Reported before"
 msgstr "Prije prijavljeno"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:585
-msgid "Reported by %s anonymously at %s"
+msgid "Reported via %s anonymously at %s"
 msgstr "Prijavio %s anonimno %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:616
@@ -2746,15 +2746,15 @@ msgid "Reported by %s at %s"
 msgstr "Prijavio %s za %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:607
-msgid "Reported by %s by %s at %s"
+msgid "Reported via %s by %s at %s"
 msgstr "Prijavio %s %s u %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:581
-msgid "Reported by %s in the %s category anonymously at %s"
+msgid "Reported via %s in the %s category anonymously at %s"
 msgstr "Prijavio %s u kategoriju %s anonimno u %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:601
-msgid "Reported by %s in the %s category by %s at %s"
+msgid "Reported via %s in the %s category by %s at %s"
 msgstr "Prijavio %s u %s kategoriju %s u %s"
 
 #: templates/web/zurich/report/_main.html:2

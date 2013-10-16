@@ -40,7 +40,7 @@
           </td>
       [% IF c.cobrand.moniker == 'zurich' %]
           <td>[% body.endpoint %]</td>
-          <td>[% IF body.deleted %]Yes[% END %]</td>
+          <td>[% IF body.deleted %][% loc('Yes') %][% END %]</td>
       [% ELSE %]
           <td>
           [% IF counts.$id %]
@@ -66,8 +66,10 @@
         [% INCLUDE 'admin/body-form.html', body='' %]
     [% END %]
 [% ELSE %]
-    <h2>[% loc('Add body') %]</h2>
-    [% INCLUDE 'admin/body-form.html', body='' %]
+    <div class="admin-box">
+      <h2>[% loc('Add body') %]</h2>
+      [% INCLUDE 'admin/body-form.html', body='' %]
+    </div>
 [% END %]
 
 [% INCLUDE 'admin/footer.html' %]

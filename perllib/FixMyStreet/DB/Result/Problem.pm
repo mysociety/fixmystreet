@@ -390,11 +390,11 @@ sub check_for_errors {
 
     if ( $self->bodies_str && $self->detail ) {
         if ( $self->bodies_str eq '2482' && length($self->detail) > 2000 ) {
-            $errors{detail} = _('Reports are limited to 2000 characters in length. Please shorten your report');
+            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 2000 );
         }
 
         if ( $self->bodies_str eq '2237' && length($self->detail) > 1700 ) {
-            $errors{detail} = _('Reports are limited to 1700 characters in length. Please shorten your report');
+            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1700 );
         }
     }
 
@@ -544,11 +544,11 @@ sub meta_line {
                 and $problem->category && $problem->category ne _('Other') )
             {
                 $meta =
-                sprintf( _('Reported by %s in the %s category anonymously at %s'),
+                sprintf( _('Reported via %s in the %s category anonymously at %s'),
                     $problem->service, $problem->category, $date_time );
             }
             elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported by %s anonymously at %s'),
+                $meta = sprintf( _('Reported via %s anonymously at %s'),
                     $problem->service, $date_time );
             }
             elsif ( $problem->category and $problem->category ne _('Other') ) {
@@ -564,13 +564,13 @@ sub meta_line {
                 and $problem->category && $problem->category ne _('Other') )
             {
                 $meta = sprintf(
-                    _('Reported by %s in the %s category by %s at %s'),
+                    _('Reported via %s in the %s category by %s at %s'),
                     $problem->service, $problem->category,
                     $problem->name,    $date_time
                 );
             }
             elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported by %s by %s at %s'),
+                $meta = sprintf( _('Reported via %s by %s at %s'),
                     $problem->service, $problem->name, $date_time );
             }
             elsif ( $problem->category and $problem->category ne _('Other') ) {

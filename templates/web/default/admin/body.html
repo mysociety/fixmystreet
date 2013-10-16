@@ -1,31 +1,31 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
 
 [% IF updated %]
-<p>
-<em>[% updated %]</em>
-</p>
+  <p>
+    <em>[% updated %]</em>
+  </p>
 [% END %]
 
 <p>
-[% IF example_pc %]
-<a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
-[% END %]
-[% IF c.cobrand.moniker == 'emptyhomes' %]
-<a href="[% c.uri_for( 'reports', search => 'body:' _ body_id ) %]">[% loc('List all reported problems' ) %]</a> |
-[% ELSE %]
-<a href="[% c.uri_for_email( '/reports/' _ body_id ) %]">[% loc('List all reported problems' ) %]</a> |
-[% END %]
-<a href="[% c.uri_for( 'body', body_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
+  [% IF example_pc %]
+    <a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
+  [% END %]
+  [% IF c.cobrand.moniker == 'emptyhomes' %]
+    <a href="[% c.uri_for( 'reports', search => 'body:' _ body_id ) %]">[% loc('List all reported problems' ) %]</a> |
+  [% ELSE %]
+    <a href="[% c.uri_for_email( '/reports/' _ body_id ) %]">[% loc('List all reported problems' ) %]</a> |
+  [% END %]
+  <a href="[% c.uri_for( 'body', body_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
 
 [% IF body.send_method == 'Open311' %]
-    <h2>
+  <h2>
     Council contacts configured via Open311
-    </h2>
+  </h2>
 [% END %]
 
 [% IF c.cobrand.moniker == 'fixmystreet' %]
-<p class="error">Do not give these out except to people at the council.</p>
+  <p class="error">Do not give these out except to people at the council.</p>
 [% END %]
 
 [% IF body.areas.size == 0 %]
@@ -48,144 +48,145 @@
 
 <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
-    <table cellspacing="0" cellpadding="2" border="1">
-        <tr>
-            <th>[% loc('Category') %]</th>
-            <th>[% loc('Email') %]</th>
-            <th>[% loc('Confirmed') %]</th>
-            <th>[% loc('Deleted') %]</th>
-            <th>[% loc('Devolved') %]</th>
-            <th>[% loc('Last editor') %]</th>
-            <th>[% loc('Note') %]</th>
-            <th>[% loc('Public') %]</th>
-            <th>[% loc('When edited') %]</th>
-            <th>[% loc('Confirm') %]</th>
-        </tr>
-        [% WHILE ( contact = contacts.next ) %]
-            <tr [% IF contact.deleted %]class="is-deleted"[% END %]>
-                <td class="contact-category"><a href="[% c.uri_for( 'body_edit', body_id, contact.category ) %]">[% contact.category %]</a></td>
-                <td>[% contact.email | html %]</td>
-                <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-                <td>[% IF contact.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]</td>
-                <td>[% IF body.can_be_devolved && contact.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-                <td>[% contact.editor %]</td>
-                <td>[% contact.note | html %]</td>
-                <td>[% contact.non_public ? loc('Non Public') : loc('Public') %]</td>
-                <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
-                <td><input type="checkbox" name="confirmed" value="[% contact.category %]"></td>
-            </tr>
-        [% END %]
-    </table>
+  <table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+      <th>[% loc('Category') %]</th>
+      <th>[% loc('Email') %]</th>
+      <th>[% loc('Confirmed') %]</th>
+      <th>[% loc('Deleted') %]</th>
+      <th>[% loc('Devolved') %]</th>
+      <th>[% loc('Last editor') %]</th>
+      <th>[% loc('Note') %]</th>
+      <th>[% loc('Public') %]</th>
+      <th>[% loc('When edited') %]</th>
+      <th>[% loc('Confirm') %]</th>
+    </tr>
+    [% WHILE ( contact = contacts.next ) %]
+      <tr [% IF contact.deleted %]class="is-deleted"[% END %]>
+        <td class="contact-category"><a href="[% c.uri_for( 'body_edit', body_id, contact.category ) %]">[% contact.category %]</a></td>
+        <td>[% contact.email | html %]</td>
+        <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+        <td>[% IF contact.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]</td>
+        <td>[% IF body.can_be_devolved && contact.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+        <td>[% contact.editor %]</td>
+        <td>[% contact.note | html %]</td>
+        <td>[% contact.non_public ? loc('Non Public') : loc('Public') %]</td>
+        <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
+        <td><input type="checkbox" name="confirmed" value="[% contact.category %]"></td>
+      </tr>
+    [% END %]
+  </table>
 
-    <p>
+  <p>
     <input type="hidden" name="posted" value="update">
     <input type="hidden" name="token" value="[% token %]">
     <input type="submit" name="Update statuses" value="[% loc('Update statuses') %]">
-    </p>
-    </form>
+  </p>
+</form>
 
+<div class="admin-box">
+  <h2>[% loc('Add new category') %]</h2>
+  <p class="fms-admin-info">
+    [% loc("Each contact for the body has a category, which is displayed to the public. 
+            Different categories <strong>can have the same contact</strong> (email address).
+            This means you can add many categories even if you only have one contact for the body.
+    ") %]
+  </p>
 
-    <h2>[% loc('Add new category') %]</h2>
-    <p class="fms-admin-info">
-      [% loc("Each contact for the body has a category, which is displayed to the public. 
-              Different categories <strong>can have the same contact</strong> (email address).
-              This means you can add many categories even if you only have one contact for the body.
-      ") %]
-    </p>
+  <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
-    <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-
-        [% IF c.cobrand.moniker != 'emptyhomes' %]
-        <div class="admin-hint">
-          <p>
-            [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
-                    to the body too. These will appear in the drop-down menu on the report-a-problem page.') %]
-            <br>
-            [% loc("If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in
-                    the menu. Make sure you use the same category name in the bodies if you want this to happen.") %]
-          </p>
-        </div>
+    [% IF c.cobrand.moniker != 'emptyhomes' %]
+      <div class="admin-hint">
         <p>
+          [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
+                  to the body too. These will appear in the drop-down menu on the report-a-problem page.') %]
+          <br>
+          [% loc("If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in
+                  the menu. Make sure you use the same category name in the bodies if you want this to happen.") %]
+        </p>
+      </div>
+      <p>
         <strong>[% loc('Category:') %] </strong><input type="text" name="category" size="30">
-        </p>
-        [% END %]
+      </p>
+    [% END %]
 
-        <div class="admin-hint">
-          <p>
-            [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent. 
-            Other categories for this body may have the same email address.") %]
-          </p>
-          [% IF (body.send_method AND body.send_method != 'Email') OR body.can_be_devolved  %]
-            <p>
-                [% loc("If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here.") %]
-            </p>
-          [% END %]
-        </div>
-
+    <div class="admin-hint">
+      <p>
+        [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent. 
+        Other categories for this body may have the same email address.") %]
+      </p>
+      [% IF (body.send_method AND body.send_method != 'Email') OR body.can_be_devolved  %]
         <p>
-        <strong>[% loc('Email address:') %] </strong><input type="text" name="email" size="30">
+            [% loc("If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here.") %]
         </p>
+      [% END %]
+    </div>
 
-        <div class="admin-hint">
-          <p>
-            [% loc("Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.
-                    If you are not sure of the origin or validity of the contact, leave this unchecked.") %]
-          </p>
-        </div>
-        <p>
-        <input type="checkbox" name="confirmed" value="1" id="confirmed"> 
-        <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
-        </p>
+    <p>
+      <strong>[% loc('Email address:') %] </strong><input type="text" name="email" size="30">
+    </p>
 
-        <div class="admin-hint">
-          <p>
-            [% loc("Check <strong>deleted</strong> to remove the category from use. 
-            It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
-          </p>
-        </div>
-        <p>
-        <input type="checkbox" name="deleted" value="1" id="deleted"> 
-        <label for="deleted" class="inline">[% loc('Deleted') %]</label>
-        </p>
+    <div class="admin-hint">
+      <p>
+        [% loc("Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.
+                If you are not sure of the origin or validity of the contact, leave this unchecked.") %]
+      </p>
+    </div>
+    <p>
+      <input type="checkbox" name="confirmed" value="1" id="confirmed"> 
+      <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
+    </p>
 
-        <div class="admin-hint">
-          <p>
-            [% loc("Use the <strong>note</strong> to record details that are only displayed in the admin. Notes are not shown publicly, and are not sent to the body.") %]
-          </p>
-        </div>
-        <p>
-        <strong>[% loc('Note:') %] </strong> <textarea name="note" rows="3" cols="40"></textarea>
-        </p>
+    <div class="admin-hint">
+      <p>
+        [% loc("Check <strong>deleted</strong> to remove the category from use. 
+        It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
+      </p>
+    </div>
+    <p>
+      <input type="checkbox" name="deleted" value="1" id="deleted"> 
+      <label for="deleted" class="inline">[% loc('Deleted') %]</label>
+    </p>
 
-        <div class="admin-hint">
-          <p>
-            [% loc("Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.
-                    <br>
-                    Normally, categories are not private.
-                    <br>
-                    This is suitable for issues that you want to allow users to report to the body, but for which there is no public
-                    interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin
-                    at a specific address.") %]
-          </p>
-        </div>
-        <p>
-        <input type="checkbox" name="non_public" value="1" id="non_public"> 
-        <label for="non_public" class="inline">[% loc('Private') %]</label>
-        </p>
+    <div class="admin-hint">
+      <p>
+        [% loc("Use the <strong>note</strong> to record details that are only displayed in the admin. Notes are not shown publicly, and are not sent to the body.") %]
+      </p>
+    </div>
+    <p>
+      <strong>[% loc('Note:') %] </strong> <textarea name="note" rows="3" cols="40"></textarea>
+    </p>
 
-        <p>
-        <input type="hidden" name="posted" value="new" >
-        <input type="hidden" name="token" value="[% token %]" >
-        <input type="submit" name="Create category" value="[% loc('Create category') %]" >
-        </p>
+    <div class="admin-hint">
+      <p>
+        [% loc("Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.
+                <br>
+                Normally, categories are not private.
+                <br>
+                This is suitable for issues that you want to allow users to report to the body, but for which there is no public
+                interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin
+                at a specific address.") %]
+      </p>
+    </div>
+    <p>
+      <input type="checkbox" name="non_public" value="1" id="non_public"> 
+      <label for="non_public" class="inline">[% loc('Private') %]</label>
+    </p>
 
-        <div>
-            <input type="hidden" name=".cgifields" value="confirmed" >
-            <input type="hidden" name=".cgifields" value="deleted" >
-        </div>
-    </form>
+    <p>
+      <input type="hidden" name="posted" value="new" >
+      <input type="hidden" name="token" value="[% token %]" >
+      <input type="submit" name="Create category" value="[% loc('Create category') %]" >
+    </p>
 
-    <h2>[% loc('Edit body details') %]</h2>
-    [% INCLUDE 'admin/body-form.html' %]
-
+    <div>
+      <input type="hidden" name=".cgifields" value="confirmed" >
+      <input type="hidden" name=".cgifields" value="deleted" >
+    </div>
+  </form>
+</div>
+<div class="admin-box">
+  <h2>[% loc('Edit body details') %]</h2>
+  [% INCLUDE 'admin/body-form.html' %]
+</div>
 [% INCLUDE 'admin/footer.html' %]

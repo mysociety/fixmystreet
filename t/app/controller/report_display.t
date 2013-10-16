@@ -183,14 +183,14 @@ foreach my $meta (
         category  => '',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service by Test User at 15:47, Sat 16 April 2011'
+'Reported via Transport service by Test User at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 'f',
         category  => 'Roads',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service in the Roads category by Test User at 15:47, Sat 16 April 2011'
+'Reported via Transport service in the Roads category by Test User at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 't',
@@ -210,14 +210,14 @@ foreach my $meta (
         category  => '',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service anonymously at 15:47, Sat 16 April 2011'
+'Reported via Transport service anonymously at 15:47, Sat 16 April 2011'
     },
     {
         anonymous => 't',
         category  => 'Roads',
         service   => 'Transport service',
         meta =>
-'Reported by Transport service in the Roads category anonymously at 15:47, Sat 16 April 2011'
+'Reported via Transport service in the Roads category anonymously at 15:47, Sat 16 April 2011'
     },
   )
 {

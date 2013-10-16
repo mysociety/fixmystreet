@@ -2720,7 +2720,7 @@ msgid "Reported before"
 msgstr "Signalé avant"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:585
-msgid "Reported by %s anonymously at %s"
+msgid "Reported via %s anonymously at %s"
 msgstr "Signalé par %s anonymement à %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:616
@@ -2730,15 +2730,15 @@ msgid "Reported by %s at %s"
 msgstr "Signalé par %s à %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:607
-msgid "Reported by %s by %s at %s"
+msgid "Reported via %s by %s at %s"
 msgstr "Signalé par %s par %s à %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:581
-msgid "Reported by %s in the %s category anonymously at %s"
+msgid "Reported via %s in the %s category anonymously at %s"
 msgstr "Signalé par %s dans la catégorie %s anonymement à %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:601
-msgid "Reported by %s in the %s category by %s at %s"
+msgid "Reported via %s in the %s category by %s at %s"
 msgstr "Signalé par %s dans la catégorie %s par %s"
 
 #: templates/web/zurich/report/_main.html:2
