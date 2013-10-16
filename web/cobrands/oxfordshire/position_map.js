@@ -1,3 +1,9 @@
+/**
+ * Position the map box correctly on window resize.
+ *
+ * Called from fixmystreet.js when the window 'resize' event is fired
+ * and the page is transitioning to a desktop version.
+ */
 function position_map_box() {
     var $html = $('html');
     var oxfordshire_right;
@@ -6,33 +12,17 @@ function position_map_box() {
     } else {
         oxfordshire_right = '0em';
     }
-    
-    var map_box_width = 464;
-    var map_box_height = 464;
+
+    var map_box_width = "956px";
+    var map_box_height = "600px";
     // Do the same as CSS (in case resized from mobile).
-    $('#map_box').prependTo('.content').css({
+    $('#map_box').prependTo('.wrapper').css({
         zIndex: 1, position: 'absolute',
         top: '1em', left: '', right: oxfordshire_right, bottom: '',
-        width: map_box_width + 'px', height: map_box_height +'px',
-        margin: 0
+        width: map_box_width, height: map_box_height,
+        margin: "0 1em"
     });
-    if($('#map_box').length) {
-        if (! $('#occ-map-instructions').length) {
-            $('#map_box').after("<div id='occ-map-instructions'><p>" +
-                "Click on a pin and then on the &ldquo;details&rdquo; link to see an individual report detail.</p></div>");
-        }
-        var mb_y = $('#map_box').position().top + map_box_height ;
-        $('#occ-map-instructions').show().css({
-            left: '',
-            right: oxfordshire_right,
-            bottom: '',
-            top: mb_y +'px',
-            width: map_box_width
-        });
-    }
-    
 }
 
 function map_fix() {}
 var slide_wards_down = 1;
-

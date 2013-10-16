@@ -89,15 +89,14 @@ body.twothirdswidthpage {
 
 // show the sidebar tips and notices in the document flow, i.e., in the
 // left-hand column, rather than in smaller text above the map
-.general-sidebar-notes,
-#report-a-problem-sidebar {
-  position: static;
-  width: auto;
-  @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
-  .sidebar-tips,
-  .sidebar-notes {
-    font-size:1em;
-  }
+.general-sidebar-notes {
+    position: static;
+    width: auto;
+    @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
+    .sidebar-tips,
+    .sidebar-notes {
+        font-size:1em;
+    }
 }
 
 // To prevent font size larger interfering with the fixed Oxfordshire layout
@@ -105,7 +104,10 @@ body.twothirdswidthpage {
 .full-width { width: 464px; }
 .shadow-wrap { width: 464px; }
 
-#map_box { width: 464px; }
+#map_box {
+    width: 956px;
+    height: 600px;
+}
 .content { width: 432px; }
 
 body.fullwidthpage .content { width: auto; }
@@ -123,6 +125,39 @@ body.twothirdswidthpage .content {
         }
     }
 }
+
+body.mappage {
+    .content {
+        width: 345px;
+        padding: 1em;
+        position: relative;
+        z-index: 1;
+    }
+
+    .content, .ie7 .content, .ie9 .content {
+        margin: 3em 0 0 1em;
+        @include box-shadow(0px 0px 6px 1px #000);
+    }
+
+    .container {
+        width: auto;
+        min-height: 635px;
+        z-index: auto;
+    }
+    .full-width { width: 377px; }
+    .shadow-wrap { width: 377px; }
+
+    .general-sidebar-notes,
+    #report-a-problem-sidebar {
+        top: 1em;
+        left: 23.5em;
+    }
+
+    #forgotten-pw {
+        left: 21.6em;
+    }
+}
+
 .ie6, .ie7 {
     body.mappage .container {
         width: 464px;
@@ -134,8 +169,9 @@ body.twothirdswidthpage .content {
 #map_box {
     border: solid 1px #999;
     top: 1em;
-    right: 0em;
-    margin: 0;
+    right: 0;
+    left: 0;
+    margin: 0 1em;
 }
 
 // Perhaps fix map location (should be in central?)
@@ -154,8 +190,14 @@ body.twothirdswidthpage .content {
     }
 }
 
-#front-main #postcodeForm div {
+#oxford-wrapper #front-main #postcodeForm div {
   border: 1px solid #fff; // because orange "Go" button (see below) abuts this border, looks a tiny bit better if it's not dark green
+
+  #pc {
+    padding: 0 2%;
+    width: 89%;
+    height: 38px;
+  }
 }
 
 // styled Oxfordshire buttons -- including the "Go" button on the postcode form -- to be orange:
@@ -180,16 +222,24 @@ input.green-btn{
   cursor: pointer;
 }
 
-// map instructions (click on 'details' to see details) are a specific requirement from OCC management
-// populated dynamically by position_map.js
-#occ-map-instructions {
-    display: none;
-    position: absolute;
-    color: #666;
-    margin: 0;
-    p {
-      padding: 0.5em;
+.big-green-banner {
+    text-align: left;
+    text-transform: inherit;
+    font-family: inherit;
+    font-size: 1.5em;
+    padding: 0.5em 2em 0.5em 0.5em;
+    line-height: 1.3;
+    background: #339e00 url("/cobrands/fixmystreet/images/sprite.png") right -2177px no-repeat;
+
+    .ie6 &, .ie7 & {
+        zoom: 1;
+        position: relative;
     }
+}
+
+.extra-text__image {
+    float: left;
+    margin-right: 1em;
 }
 
 @import "oxfordshire";
