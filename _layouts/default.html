@@ -64,5 +64,23 @@
       </p>
     </footer>
 
+    <script src="{{ site.baseurl }}bootstrap/js/jquery-1.7.0.min.js"></script>
+    <script>
+      $(function(){
+
+        $('.reveal-on-click dd').hide();        
+        $('.reveal-on-click dt').on('click', function(){
+          // $(this).find('+ dd').toggle();
+          var $dd = $(this).find('+ dd');
+          if ($dd.is(':visible')) {
+            $(this).removeClass('revealed');
+            $dd.slideUp();
+          } else {
+            $(this).addClass('revealed');
+            $dd.slideDown();            
+          }
+        })
+      });
+    </script>
   </body>
 </html>
