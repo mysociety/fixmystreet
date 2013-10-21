@@ -231,12 +231,16 @@ dl.reveal-on-click dt {
 }
 dl.reveal-on-click dt.revealed {
     background-position: 4px -212px; /* 240px, down 8px, 20px image */
+    background-color: #ffeeaa;
 }
 dl.reveal-on-click dt:hover {
     background-color: #ffdd00;
 }
 dl.reveal-on-click dd {
-    margin: 0.5em 0 1em 2.5em;
+    margin: 0 0 1em 0;
+    padding: 1em 1em 1em 2em;
+    border: 1px solid #ccc;
+    border-top: none;
 }
 dl.reveal-on-click dd p {
     margin: 0 0 0.666em 0;
