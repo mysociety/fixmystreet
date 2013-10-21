@@ -79,7 +79,29 @@
             $(this).addClass('revealed');
             $dd.slideDown();            
           }
-        })
+        });
+        
+        var reveal_all_text = {'reveal': 'Show all', 'hide': 'Hide all'};
+        
+        $('dl.reveal-on-click').before("<div class='reveal-all'/>");
+        $('.reveal-all').text(reveal_all_text['reveal']).on('click', function(){
+          console.log("reveal all clicked");
+          var $dl = $(this).find('+ dl.reveal-on-click');
+          if ($(this).hasClass('revealed')) {
+            console.log("hiding all");
+            $dl.find('dt').removeClass('revealed');
+            $dl.find('dd').slideUp();
+            $(this).removeClass('revealed');
+            $(this).text(reveal_all_text['reveal']);
+          } else {
+            console.log("showing all");
+            $dl.find('dt').addClass('revealed');
+            $dl.find('dd').slideDown();            
+            $(this).addClass('revealed');
+            $(this).text(reveal_all_text['hide']);
+          }
+        });
+        
       });
     </script>
   </body>

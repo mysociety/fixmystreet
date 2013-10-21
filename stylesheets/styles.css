@@ -228,12 +228,13 @@ dl.reveal-on-click dt {
     background-image:url(/images/reveal-on-click.png);
     background-position: 4px 8px;
     background-repeat: no-repeat;
+    clear: right;
 }
-dl.reveal-on-click dt.revealed {
+dl.reveal-on-click dt.revealed, div.reveal-all.revealed {
     background-position: 4px -212px; /* 240px, down 8px, 20px image */
     background-color: #ffeeaa;
 }
-dl.reveal-on-click dt:hover {
+dl.reveal-on-click dt:hover, div.reveal-all:hover {
     background-color: #ffdd00;
 }
 dl.reveal-on-click dd {
@@ -244,6 +245,16 @@ dl.reveal-on-click dd {
 }
 dl.reveal-on-click dd p {
     margin: 0 0 0.666em 0;
+}
+div.reveal-all {
+    width: 5em;
+    float: right;
+    border:1px solid #ccc;
+    background-image:url(/images/reveal-on-click.png);
+    background-position: 4px 8px;
+    background-repeat: no-repeat;
+    padding: 8px 8px 8px 30px;
+    margin: 0 0 0.5em 0;
 }
 
 dl.dir-structure, dl.dir-structure dl {
@@ -277,4 +288,3 @@ dl.dir-structure dd.last {
     background-image: none;
     padding-bottom: 0; /* gap at bottom of nested trees is big enough as it is */
 }
-
