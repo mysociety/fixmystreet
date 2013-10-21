@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use DateTime;
 use Test::More;
+use JSON;
 
 plan skip_all => 'Skipping Zurich test without Zurich cobrand'
     unless FixMyStreet::Cobrand->exists('zurich');
@@ -335,6 +336,28 @@ subtest "phone number is mandatory" => sub {
         $mech->submit_form( with_fields => { phone => "" } );
         $mech->content_contains( 'Diese Information wird ben&ouml;tigt' );
         $mech->log_out_ok;
+    };
+};
+
+subtest "phone number is not mandatory for reports from mobile apps" => sub {
+    FixMyStreet::override_config {
+        MAPIT_TYPES => [ 'O08' ],
+        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+    }, sub {
+        $mech->post_ok( '/report/new/mobile?lat=47.381817&lon=8.529156' , {
+            service => 'iPhone',
+            detail => 'Problem-Bericht',
+            lat => 47.381817,
+            lon => 8.529156,
+            email => 'user@example.org',
+            pc => '',
+            name => '',
+        });
+        my $res = $mech->response;
+        ok $res->header('Content-Type') =~ m{^application/json\b}, 'response should be json';
+        unlike $res->content, qr/Diese Information wird ben&ouml;tigt/, 'response should not contain phone error';
+        # Clear out the mailq
+        $mech->clear_emails_ok;
     };
 };
 

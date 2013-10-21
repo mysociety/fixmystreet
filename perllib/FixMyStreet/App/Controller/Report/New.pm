@@ -956,7 +956,11 @@ sub check_for_errors : Private {
         delete $field_errors{name};
         my $report = $c->stash->{report};
         $report->title( Utils::cleanup_text( substr($report->detail, 0, 25) ) );
-        if ( ! $c->req->param('phone') ) {
+
+        # We only want to validate the phone number web requests (where the
+        # service parameter is blank) because previous versions of the mobile
+        # apps don't validate the presence of a phone number.
+        if ( ! $c->req->param('phone') and ! $c->req->param('service') ) {
             $field_errors{phone} = _("This information is required");
         }
     }
