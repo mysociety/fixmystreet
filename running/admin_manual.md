@@ -121,7 +121,7 @@ link at the top of any admin page:
 A <a href="/glossary/#report" class="glossary">problem report</a> can be in
 one of these states:
 
-<dl class="reveal-on-click">
+<dl class="reveal-on-click" data-reveal-noun="report states">
   <dt>
     Unconfirmed
   </dt>
@@ -230,7 +230,7 @@ that all the hard work is done for you by the website.
 
 For the UK site the most common maintenance tasks are described below:
 
-<dl class="reveal-on-click">
+<dl class="reveal-on-click" data-reveal-noun="types of task">
   <dt>
     Bounce-backs / dead email addresses from the bodies
   </dt>
@@ -369,8 +369,7 @@ To help you anticipate the sort of support work you may need to do -- and to
 help you do it -- here is a list of the most common user support queries we
 get on the UK FixMyStreet site.
 
-<!-- TODO inconcsistent parts of speech -->
-<dl class="reveal-on-click">
+<dl class="reveal-on-click" data-reveal-noun="support queries">
   <dt>
     Body wants to know what email addresses you have on file
   </dt>
