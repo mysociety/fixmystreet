@@ -121,59 +121,102 @@ link at the top of any admin page:
 A <a href="/glossary/#report" class="glossary">problem report</a> can be in
 one of these states:
 
-* **Unconfirmed**
-  <br/>
-  If FixMyStreet is not certain that the report's creator is genuine, its
-  state remains *unconfirmed*. Unconfirmed reports do not appear on the
-  website. A report is confirmed (and its state becomes *open*) when:
-  
-   * its creator clicks on the confirmation email that was sent to them as
-     soon as the report was created, or
-   * its creator was already logged in when the report was created, or
-   * an administrator explicitly confirms it (by searching in **Reports**
-     and changing the state by clicking **edit**)
-
-* **Open**
-  <br/>
-  An *open* report has not been fixed or closed. This generally means the
-  problem has not yet been attended to. Furthermore, this implies that the
-  report is not *unconfirmed* (see above). Staff users can set problems to
-  have alternative "open" states:
-
-   * *investigating*
-   * *in progress* 
-   * *action scheduled*
-
-* **Fixed**
-  <br/>
-  Fixed reports are marked in two possible ways:
-  
-   * *fixed - user* 
-     <br>
-     If a user marks them as fixed in an update.
-   * *fixed - council*
-     <br>
-     If updated by a staff user from the body responsible for that report.
-
-* **Closed**
-  <br/>
-  A staff user associated with the report's body (or an administrator) can
-  mark reports as closed without declaring it to be fixed. Possible states are:
-
-  * *unable to fix*
-  * *not responsible*
-  * *duplicate*
-  * *internal referral*
-
-* **Hidden**
-  <br/>
-  Reports can be hidden by an administrator, or (if the cobrand allows it) by
-  a staff user associated with the body to which it was sent. Usually this is
-  because the report is abusive or inappropriate. Hidden reports remain in the
-  database but are not shown on the public site. Remember that this means the
-  report will probably already have been sent to the body responsible (so it
-  can still be fixed) -- so hiding a report simply prevents it being
-  displayed.
+<dl class="reveal-on-click">
+  <dt>
+    Unconfirmed
+  </dt>
+  <dd>
+    <p>
+      If FixMyStreet is not certain that the report's creator is genuine, its
+      state remains <em>unconfirmed</em>. Unconfirmed reports do not appear on the
+      website. A report is confirmed (and its state becomes <em>open</em>) when:
+    </p>
+    <ul>
+      <li>
+        its creator clicks on the confirmation email that was sent to them as soon as
+        the report was created, or
+      </li>
+      <li>
+        its creator was already logged in when the report was created, or
+      </li>
+      <li>
+        an administrator explicitly confirms it (by searching in <strong>Reports</strong>
+        and changing the state by clicking <strong>edit</strong>)
+      </li>
+    </ul>
+  </dd>
+  <dt>
+    Open
+  </dt>
+  <dd>
+    <p>      
+      An <em>open</em> report has not been fixed or closed. This generally
+      means the problem has not yet been attended to. Furthermore, this
+      implies that the report is not *unconfirmed* (see above). Staff users
+      can set problems to have alternative "open" states:
+    </p>
+    <ul>
+      <li>
+        <em>investigating</em>
+      </li>
+      <li>
+        <em>in progress</em>
+      </li>
+      <li>
+        <em>action scheduled</em>
+      </li>
+    </ul>
+  </dd>
+  <dt>
+    Fixed
+  </dt>
+  <dd>
+    <p>
+      <em>Fixed</em> reports are marked in two possible ways:
+    </p>
+    <ul>
+      <li>
+        <em>fixed - user</em>
+        <br>
+        If a user marks them as fixed in an update.
+      </li>
+      <li>
+        <em>fixed - council</em>
+        <br>
+        If updated by a staff user from the body responsible for that report.
+      </li>
+    </ul>
+  </dd>
+  <dt>
+    Closed
+  </dt>
+  <dd>
+    <p>
+      A staff user associated with the report's body (or an administrator) can
+      mark reports as closed without declaring it to be fixed. Possible states are:
+    </p>
+    <ul>
+      <li><em>unable to fix</em></li>
+      <li><em>not responsible</em></li>
+      <li><em>duplicate</em></li>
+      <li><em>internal referral</em></li>
+    </ul>
+  </dd>
+  <dt>
+    Hidden
+  </dt>
+  <dd>
+    <p>
+      Reports can be hidden by an administrator, or (if the cobrand allows it) by
+      a staff user associated with the body to which it was sent. Usually this is
+      because the report is abusive or inappropriate. Hidden reports remain in the
+      database but are not shown on the public site. Remember that this means the
+      report will probably already have been sent to the body responsible (so it
+      can still be fixed) -- so hiding a report simply prevents it being
+      displayed.
+    </p>
+  </dd>
+</dl>
 
 ## Types of Tasks 
 
