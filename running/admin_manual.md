@@ -7,7 +7,7 @@ author: dave
 # Administrator's Manual
 
 <p class="lead">This guide will give you a broad overview of what it takes to
-administer a FixMyStreet site and the types problems that you might face when
+administer a FixMyStreet site and the types of problem that you might face when
 running it. It includes some examples of how mySociety's own 
 <a href="http://www.fixmystreet.com">fixmystreet.com</a> administrator deals with
 these issues.</p>
@@ -20,7 +20,7 @@ well find that your own solutions work best.
 
 Please feel free to contribute and discuss what is in this document.
 We have a lovely [community](/community) of re-users that have all been
-through the set-up and administration of one of these sites. They’re a great
+through the set-up and administration of one of these sites. They're a great
 resource for answers and you should feel free to join in or ask for help.
 
 ## Other helpful documents
@@ -41,8 +41,8 @@ regular requirement and you will need to think about who could be responsible
 for it.
 
 <div class="attention-box info"> 
-If you're just starting with your FixMyStreet site, it’s possible that you
-have not got an administrator yet, or that you didn’t realise you needed one.
+If you're just starting with your FixMyStreet site, it's possible that you
+have not got an administrator yet, or that you didn't realise you needed one.
 Don't worry! Look through this document to see the kind of things you need to
 think about when finding someone.
 </div>
@@ -50,14 +50,14 @@ think about when finding someone.
 **To set up a new installation**, we recommend you have at least **one
 developer** and **one administrator** who can work on the site.
 
-At the beginning it’s likely these roles would be quite labour intensive as
+At the beginning it's likely these roles would be quite labour intensive as
 you customise your site, collect the email addresses and work on promoting
 your project.
 
 **Once your site is up and running**, and being used every day, you can manage
 with just **one administrator**.
 
-For mySociety’s UK FixMyStreet site, which has been running since 2007, we
+For mySociety's UK FixMyStreet site, which has been running since 2007, we
 need a maximum of one hour per day to manage the user support and site
 administration. User support will naturally take slightly longer after
 weekends than towards the end of the week. In the UK, the support emails are
@@ -247,7 +247,7 @@ For the UK site the most common maintenance tasks are described below:
       that body. Check that the email address looks correct (for example, if
       there are several, see if they look similar). If everything looks OK,
       you'll need to contact the body in question and confirm the correct
-      email address to use. It’s likely that this will take up a little time,
+      email address to use. It's likely that this will take up a little time,
       because you can't route such problems to the body until you've found a
       correct email address.
     </p>
@@ -262,30 +262,40 @@ For the UK site the most common maintenance tasks are described below:
     Removing personal data from reports or making them anonymous
   </dt>
   <dd>
-    Sometimes someone will write their name and address into the description
-    field on the website. Or they will forget to tick the box to make their
-    reports anonymous. Sometimes a user decides to make their report anonymous
-    after they have submitted it.
+    <p>
+      Sometimes someone will write their name and address into the description
+      field on the website. Or they will forget to tick the box to make their
+      reports anonymous. Sometimes a user decides to make their report
+      anonymous after they have submitted it.
+    </p>
+    <p>
+      In all cases, you can edit the report in the admin by going to <strong>Reports</strong>,
+      and finding the report you want, and clicking on **Edit**. You can remove the
+      details that should not be shown (we recommend replacing them with something like
+      <em>[address redacted]). Alternatively, you can mark the report as anonymous with
+      a yes/no selection.
+    <p>
+      Be sure to save your changes (click **submit changes**) when you've finished editing.
+    </p>
   </dd>
-<!-- TODO check that you can mark existing report as anon in the admin interface -->
   <dt>
     Removing reports where users say they didn't realise it would be public
   </dt>
   <dd>
     <p>
-      Occasionally people who are reporting issues don’t understand that the
-      site is public, and for whatever reason they don’t want their name
+      Occasionally people who are reporting issues don't understand that the
+      site is public, and for whatever reason they don't want their name
       associated with the report.
     </p>
     <p>
-      In the UK, mySociety’s first step is to anonymise the report. If the
+      In the UK, mySociety's first step is to anonymise the report. If the
       user insists that the report has to be removed, you can hide it instead.
       We're generally happy to hide such reports because even though this
       removes them from the website, the problem report will still have been
       sent to the body responsible.
     </p>
     <p>
-      If you hide a report, it’s generally a good idea to also let the
+      If you hide a report, it's generally a good idea to also let the
       user/reporter know once this has been done.
     </p>
   </dd>
@@ -308,7 +318,7 @@ For the UK site the most common maintenance tasks are described below:
       **Reports**, search for it, and changing its state to *hidden*.
     </p>
     <p>
-      It’s generally a good idea to also let the user who reported the problem
+      It's generally a good idea to also let the user who reported the problem
       know this has been done.
     </p>
   </dd>
@@ -324,7 +334,7 @@ For the UK site the most common maintenance tasks are described below:
       carefully worded response reminding the user who runs the site.
     </p>
     <p>
-      mySociety’s response currently reads: 
+      mySociety's response currently reads: 
     </p>
     <div class="correspondence">
       <p>
@@ -351,14 +361,13 @@ For the UK site the most common maintenance tasks are described below:
     </p>
   </dd>
   <dt>
-    Manually changing users’ email addresses when requested
+    Manually changing users' email addresses when requested
   </dt>
   <dd>
     <p>
       Users cannot change their email addresses themselves. Do this in the
       admin: go to <strong>Users</strong>, find the user required (search by
       old email address) and edit the email address to be the new one.
-      <!-- TODO CHECK THIS -->
     </p>
   </dd>
 </dl>
@@ -401,7 +410,6 @@ get on the UK FixMyStreet site.
       and point out the correct email address to use (FixMyStreet sends its
       emails with the reply-to field set to that of the user who reported the
       problem).
-      <!-- TODO check this -->
     </p>
   </dd>
   <dt>  
@@ -425,9 +433,9 @@ get on the UK FixMyStreet site.
   </dt>
   <dd>
     <p>
-      Sometimes you may get an email from a user saying they can’t use the
-      site. Often this is because they haven’t seen the submit button, or they
-      can’t upload a photo, or a similar request. A quick step-by-step email
+      Sometimes you may get an email from a user saying they can't use the
+      site. Often this is because they haven't seen the submit button, or they
+      can't upload a photo, or a similar request. A quick step-by-step email
       can help solve this.
     </p>
   </dd>
@@ -442,13 +450,13 @@ get on the UK FixMyStreet site.
       domain as "not spam" so future emails don't get caught in the same way).
     </p>
     <p>
-      If you’re running FixMyStreet on your own server, you (or your system
+      If you're running FixMyStreet on your own server, you (or your system
       administrator) can check your outgoing email logs to confirm that the
       user's mail server accepted delivery from your end.
     </p>
   </dd>
   <dt>
-    User says the site isn’t working 
+    User says the site isn't working 
   </dt>
   <dd>
     <p>
@@ -502,10 +510,17 @@ get on the UK FixMyStreet site.
     <p>
       A user cannot change their message once they have submitted it -- and
       remember that the report will have already been sent to the body
-      responsible. However, if there is a good case for changing the post on
-      the website, you can do this in the admin.
+      responsible.
     </p>
-    <!-- can edit in the admin TODO -->
+    <p>
+      However, if there is a good case for changing the post on the website,
+      you can do this in the admin. Go to <strong>Reports</strong>, and
+      finding the report you want, and clicking on **Edit**.
+    <p>
+      Be sure to save your changes (click **submit changes**) when you've
+      finished editing.
+    </p>
+
   </dd>
   <dt>
     User requests a new feature
@@ -516,7 +531,7 @@ get on the UK FixMyStreet site.
       developer to submit) the request as an issue in the public FixMyStreet
       <a href="http://github.com/mysociety/fixmystreet/issues">github
       repository</a>. Always search the issues first to check that this one
-      hasn’t already been raised. If it has, you can add a comment noting that
+      hasn't already been raised. If it has, you can add a comment noting that
       it's been requested again by another user.
     </p>
     <p>
@@ -585,7 +600,7 @@ get on the UK FixMyStreet site.
     <p>
       Alerts are sent as emails: there's an unsubscribe link at the foot of
       each one, so it's a matter of just pointing this out politely.
-      <!-- TODO can we unsubscribe them -->
+      <!-- TODO should be able to unsubscribe them in the admin -->
     </p>
   </dd>
   <dt>
@@ -593,8 +608,8 @@ get on the UK FixMyStreet site.
   </dt>
   <dd>
     <p>
-      It’s nice to hear! Normally mySociety’s FixMyStreet admin shares these
-      with the team and writes back to the user to thank them.
+      It's nice to hear! Normally mySociety's FixMyStreet administrator shares
+      these with the team and writes back to the user to thank them.
     </p>
   </dd>
   <dt>
@@ -613,10 +628,10 @@ get on the UK FixMyStreet site.
       problem will be different in different locations.
     </p>
     <p>
-      However, OpenStreetMap is an editable project, so it is possible to
-      encourage users -- or your own team -- to update the map information. It
-      will take a while for the map tiles to update, so these changes will not
-      appear on your own site quickly.
+      OpenStreetMap is an editable project, so it is possible to encourage
+      users -- or your own team -- to update the map information. It will take
+      a while for the map tiles to update, so these changes might not appear
+      on your own site quickly.
     </p>
   </dd>
 </dl>
@@ -664,7 +679,7 @@ FixMyStreet site:
 </div>
 
 That lets people know from the first instance that the views found on
-FixMyStreet are not the view of mySociety. We don’t perform proactive
+FixMyStreet are not the view of mySociety. We don't perform proactive
 moderation (that is, checking everything *before* publishing it on the site)
 for two reasons. First, for the quantity of traffic we handle, this would be
 impracticable. Second, doing so would make us liable for the content under UK
@@ -716,20 +731,26 @@ make sure all your administrators know what it is.
 The FixMyStreet platform is under constant development. This means that new
 features and improvements are made from time to time: we announce new releases
 (which have version numbers) on the [code.fixmystreet.com blog](/blog), and on
-the mailing list (see [more about staying in touch](/community)). Updating is
-a technical activity, so ask your developer to do this for you.
+the mailing list (see [more about staying in touch](/community)).
+
+Updating is a technical activity, and you'll need to log into the server's
+"command shell" to do it -- so ask your developer to do this for you if
+you're not confident.
 
 If you've installed FixMyStreet as a git repository cloned from
 [github.com/mysociety/fixmystreet](http://github.com/mysociety/fixmystreet)
+-- which will be the case if you've followed our installation instructions --
 your developer should find it easy to update. Make sure they know that
 sometimes these updates do require changes to the database schema too (look
-for new migration files in the `db` directory).
+for new migration files in the `db` directory). Always check the version
+release notes (for example, on the blog) because we'll mention such things
+there.
 
 
 ## And finally...
 
 We wish you all the best with your FixMyStreet problem reporting site. If
-you're running an installation outside the UK and have any questions, don’t
-hesitate to email international@mysociety.org and we’ll get back to you as
+you're running an installation outside the UK and have any questions, don't
+hesitate to email international@mysociety.org and we'll get back to you as
 soon as possible with an answer.
 
