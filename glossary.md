@@ -18,6 +18,7 @@ Definitions
 
 [abuse list](#abuse-list) |
 [area](#area) |
+[area type](#area_type) |
 [body](#body) |
 [category](#category) |
 [cobrand](#cobrand) |
@@ -70,7 +71,6 @@ Definitions
     </div>
   </dd>
   
-  
   <dt>
     <a name="area">area</a>
   </dt>
@@ -79,6 +79,33 @@ Definitions
     problems at a specific location. For example, when a user clicks on the <a href="#map" class="glossary">map</a>, FixMyStreet
     finds all the bodies which cover that area.  Technically, an area comprises one or more polygons on a map --
     either those areas already exist (from <a href="#osm" class="glossary">OpenStreetMap</a>, for example) or you can draw your own.
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See <a href="/customising/fms_and_mapit">How FixMyStreet uses MapIt</a> for more about how bodies relate to
+          <a href="#area" class="glossary">areas</a>.
+        </li>
+        <li>
+          See the <a href="http://global.mapit.mysociety.org">global MapIt website</a> for more about the service.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="area_type">area type</a>
+  </dt>
+  <dd>
+    The <a href="#area" class="glossary">areas</a> that <a href="#mapit"
+    class="glossary">MapIt</a> returns describe administrative boundaries. In
+    addition to each boundary's geometry (that is, its actual shape on the
+    map), MapIt also identifies what <strong>area type</strong> it is. These
+    types vary depending on the source of the data. For example, if you're
+    using our global MapIt, these will look like <code>O03</code>,
+    <code>O04</code> and so on (because those are the values <a href="#osm"
+    class="glossary">OpenStreetMap</a> uses, from where global MapIt gets its
+    data).
     <div class="more-info">
       <p>More information:</p>
       <ul>
