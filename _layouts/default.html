@@ -66,6 +66,10 @@
 
     <script src="{{ site.baseurl }}bootstrap/js/jquery-1.7.0.min.js"></script>
     <script>
+      function replace_str(base, replacement) {
+        return base + replacement; // FIXME TODO should replace %s
+      }
+
       $(function(){
 
         $('.reveal-on-click dd').hide();        
@@ -81,27 +85,30 @@
           }
         });
         
-        var reveal_all_text = {'reveal': 'Show all', 'hide': 'Hide all'};
+        var reveal_all_text = {'reveal': 'Show all ', 'hide': 'Collapse all '}; // TODO add %s
         
-        $('dl.reveal-on-click').before("<div class='reveal-all'/>");
-        $('.reveal-all').text(reveal_all_text['reveal']).on('click', function(){
+        $('dl.reveal-on-click').each(function(){
+          $(this).before("<div class='reveal-all revealed'>&nbsp;</div>");
+        });
+        $('.reveal-all').on('click', function(){
           console.log("reveal all clicked");
           var $dl = $(this).find('+ dl.reveal-on-click');
+          var noun = $dl.data('reveal-noun');
           if ($(this).hasClass('revealed')) {
             console.log("hiding all");
             $dl.find('dt').removeClass('revealed');
             $dl.find('dd').slideUp();
             $(this).removeClass('revealed');
-            $(this).text(reveal_all_text['reveal']);
+            $(this).text(replace_str(reveal_all_text['reveal'], noun));
           } else {
             console.log("showing all");
             $dl.find('dt').addClass('revealed');
             $dl.find('dd').slideDown();            
             $(this).addClass('revealed');
-            $(this).text(reveal_all_text['hide']);
+            $(this).text(replace_str(reveal_all_text['hide'], noun));
           }
         });
-        
+        $('.reveal-all').trigger('click');
       });
     </script>
   </body>

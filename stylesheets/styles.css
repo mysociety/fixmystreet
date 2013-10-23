@@ -247,7 +247,7 @@ dl.reveal-on-click dd p {
     margin: 0 0 0.666em 0;
 }
 div.reveal-all {
-    width: 5em;
+    width: auto;
     float: right;
     border:1px solid #ccc;
     background-image:url(/images/reveal-on-click.png);
