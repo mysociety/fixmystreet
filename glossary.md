@@ -23,6 +23,7 @@ Definitions
 [category](#category) |
 [cobrand](#cobrand) |
 [contact](#contact) |
+[council](#council) |
 [flagged](#flagged) |
 [geocoder](#geocoder) |
 [integration](#integration) |
@@ -201,6 +202,15 @@ Definitions
         </li>
       </ul>
     </div>
+  </dd>
+
+  <dt>
+    <a name="council">council</a>
+  </dt>
+  <dd>
+    A <strong>council</strong> is an example of a <a href="#body" class="glossary">body</a>. We sometimes
+    use the term because in the UK, where we first launched FixMyStreet, the bodies to which the site
+    sends its <a href="#report" class="glossary">problem reports</a> were all called councils.
   </dd>
 
   <dt>
