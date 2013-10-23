@@ -2,9 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 
-plan skip_all => 'Skipping FixMyBarangay test without FixMyBarangay cobrand'
-    unless FixMyStreet::Cobrand->exists('fixmybarangay');
-
 BEGIN {
     use FixMyStreet;
     FixMyStreet->test_mode(1);
@@ -16,7 +13,11 @@ my $mech = FixMyStreet::TestMech->new;
 # Front page test
 
 ok $mech->host("www.fixmybarangay.com"), "change host to FixMyBarangay";
-$mech->get_ok('/');
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmybarangay' ],
+}, sub {
+    $mech->get_ok('/');
+};
 $mech->content_like( qr/FixMyBarangay/ );
 
 # Set up bodies
@@ -115,7 +116,11 @@ is $luz_report->state, 'confirmed', 'should be confirmed';
 
 $user = $mech->log_in_ok($fmb_test_email);
 
-$mech->get_ok( '/report/' . $luz_report->id );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmybarangay' ],
+}, sub {
+    $mech->get_ok( '/report/' . $luz_report->id );
+};
 $mech->content_contains( "Remove from site" );
 $mech->content_lacks( "Report abuse" );
 

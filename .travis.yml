@@ -34,10 +34,6 @@ before_script:
   - psql fms postgres < db/generate_secret.sql
   - >
     sed -r -e "s,(FMS_DB_USER:) 'fms',\\1 'postgres',"
-    -e "s,cobrand_one,barnet\\n  - bromley\\n  - emptyhomes\\n  - fiksgatami\\n  - fixmybarangay\\n  - lichfielddc\\n  - reading\\n  - seesomething\\n  - southampton\\n  - zurich,"
-    -e "s,cobrand_two: 'hostname_substring2',fixmystreet: '.',"
-    -e "s,(BASE_URL:) 'http://www.example.org',\\1 'http://localhost',"
-    -e "s,(MAPIT_URL:) '',\\1 'http://mapit.mysociety.org/',"
     conf/general.yml-example > conf/general.yml
   - ./bin/cron-wrapper ./bin/make_po FixMyStreet-EmptyHomes
   - ./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po

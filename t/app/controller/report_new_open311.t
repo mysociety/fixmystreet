@@ -116,17 +116,22 @@ foreach my $test (
         $mech->get_ok('/around');
 
         # submit initial pc form
-        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-            "submit location" );
-        is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+                "submit location" );
+            is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
 
-        # click through to the report page
-        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-            "follow 'skip this step' link" );
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
 
-        # submit the main form
-        $mech->submit_form_ok( { with_fields => $test->{fields} },
-            "submit form" );
+            # submit the main form
+            $mech->submit_form_ok( { with_fields => $test->{fields} },
+                "submit form" );
+        };
 
         # check that we got the errors expected
         is_deeply $mech->page_errors, $test->{errors}, "check errors";
@@ -152,7 +157,12 @@ foreach my $test (
             %{ $test->{fields} },
             %{ $test->{submit_with} },
         };
-        $mech->submit_form_ok( { with_fields => $new_values } );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => $new_values } );
+        };
 
         $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
         ok $user, 'created user';

@@ -47,7 +47,11 @@ subtest "does pc, (x,y), (e,n) or (lat,lon) go to /around" => sub {
         $uri->query_form( $test->{in} );
 
         # get the uri and check for 302
-        $mech->get_ok($uri);
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->get_ok($uri);
+        };
 
         # check that we are at /around
         is $mech->uri->path, '/around', "Got to /around";

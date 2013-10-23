@@ -185,7 +185,11 @@ subtest "correct text for title after URL" => sub {
             parameter => $report->id,
         }
     )->delete;
-    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    };
 
     my $email = $mech->get_email;
     (my $title = $report->title) =~ s/ /\\s+/;
@@ -318,7 +322,11 @@ foreach my $test (
         $report->geocode( $g );
         $report->update();
 
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        };
 
         my $email = $mech->get_email;
         my $body = $email->body;
@@ -423,7 +431,11 @@ subtest "check alerts from cobrand send main site url for alerts for different c
         }
     )->delete;
 
-    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    };
 
     my $email = $mech->get_email;
     my $body = $email->body;

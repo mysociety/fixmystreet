@@ -497,7 +497,7 @@ foreach my $test ( {
         dear          => qr'Dear Staffordshire County Council,',
         body          => '2240',
         cobrand       => 'lichfielddc',
-        url           => '',
+        url           => 'www.',
     }, {
         %common,
         desc          => 'directs NI correctly, 1',
@@ -526,8 +526,13 @@ foreach my $test ( {
     },
 ) {
     subtest $test->{ desc } => sub {
-        if ( $test->{cobrand} && $test->{cobrand} =~ /lichfielddc/ && !FixMyStreet::Cobrand->exists('lichfielddc') ) {
-            plan skip_all => 'Skipping Lichfield tests without Lichfield cobrand';
+        my $override = {
+            ALLOWED_COBRANDS => [ 'fixmystreet' ],
+            BASE_URL => 'http://www.fixmystreet.com',
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        };
+        if ( $test->{cobrand} && $test->{cobrand} =~ /lichfielddc/ ) {
+            $override->{ALLOWED_COBRANDS} = [ 'lichfielddc' ];
         }
 
         $mech->clear_emails_ok;
@@ -549,7 +554,9 @@ foreach my $test ( {
             cobrand => $test->{ cobrand } || 'fixmystreet',
         } );
 
-        FixMyStreet::App->model('DB::Problem')->send_reports();
+        FixMyStreet::override_config $override, sub {
+            FixMyStreet::App->model('DB::Problem')->send_reports();
+        };
 
         $mech->email_count_is( $test->{ email_count } );
         if ( $test->{ email_count } ) {
@@ -568,9 +575,8 @@ foreach my $test ( {
             }
 
             if ( $test->{url} ) {
-                (my $base_url = FixMyStreet->config('BASE_URL')) =~ s{http://}{};
                 my $id = $problem->id;
-                like $email->body, qr[$test->{url}$base_url/report/$id], 'URL present is correct';
+                like $email->body, qr[$test->{url}fixmystreet.com/report/$id], 'URL present is correct';
             }
 
             $problem->discard_changes;

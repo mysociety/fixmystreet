@@ -383,10 +383,9 @@ for my $test (
     };
 }
 
-SKIP: {
-    skip( "Need 'emptyhomes' in ALLOWED_COBRANDS config", 18 )
-        unless FixMyStreet::Cobrand->exists('emptyhomes');
-
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'emptyhomes' ],
+}, sub {
     # EHA extra checking
     ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
 
@@ -436,12 +435,11 @@ SKIP: {
     ok $questionnaire, 'found questionnaire';
 
     $questionnaire2->delete;
-}
+};
 
-SKIP: {
-    skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 5 )
-        unless FixMyStreet::Cobrand->exists('fiksgatami');
-
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fiksgatami' ],
+}, sub {
     # I18N Unicode extra testing using FiksGataMi
     $report->send_questionnaire( 1 );
     $report->cobrand( 'fiksgatami' );
@@ -455,7 +453,7 @@ SKIP: {
     like $email->body, qr/Testing =96 Detail/, 'email contains encoded character from user';
     like $email->body, qr/sak p=E5 FiksGataMi/, 'email contains encoded character from template';
     is $email->header('Content-Type'), 'text/plain; charset="windows-1252"', 'email is in right encoding';
-}
+};
 
 $mech->delete_user('test@example.com');
 done_testing();

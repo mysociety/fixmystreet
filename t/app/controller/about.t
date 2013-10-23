@@ -11,10 +11,9 @@ $mech->get_ok('/about');
 $mech->content_like(qr{About us ::\s+FixMyStreet});
 $mech->content_contains('html class="no-js" lang="en-gb"');
 
-SKIP: {
-    skip( "Need 'emptyhomes' in ALLOWED_COBRANDS config", 8 )
-        unless FixMyStreet::Cobrand->exists('emptyhomes');
-
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'emptyhomes' ],
+}, sub {
     # check that geting the page as EHA produces a different page
     ok $mech->host("reportemptyhomes.co.uk"), 'change host to reportemptyhomes';
     $mech->get_ok('/about');
@@ -26,6 +25,6 @@ SKIP: {
     $mech->get_ok('/about');
     $mech->content_like(qr{Amdanom ni ::\s+Rhoi gwybod am eiddo gwag});
     $mech->content_contains('html lang="cy"');
-}
+};
 
 done_testing();

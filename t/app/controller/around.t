@@ -14,7 +14,11 @@ subtest "check that if no query we get sent back to the homepage" => sub {
 # historic links
 subtest "redirect x,y requests to lat/lon (301 - permanent)" => sub {
 
-    $mech->get_ok('/around?x=3281&y=1113');
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->get_ok('/around?x=3281&y=1113');
+    };
 
     # did we redirect to lat,lon?
     is $mech->uri->path, '/around', "still on /around";
@@ -75,8 +79,13 @@ foreach my $test (
 {
     subtest "check lat/lng for '$test->{pc}'" => sub {
         $mech->get_ok('/');
-        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-            "good location" );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+                "good location" );
+        };
         is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
         is_deeply $mech->extract_location, $test,
           "got expected location for pc '$test->{pc}'";
@@ -93,8 +102,13 @@ subtest 'check non public reports are not displayed on around page' => sub {
       $mech->create_problems_for_body( 5, 2651, 'Around page', $params );
 
     $mech->get_ok('/');
-    $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },
-        "good location" );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP' } },
+            "good location" );
+    };
     $mech->content_contains( 'Around page Test 3 for 2651',
         'problem to be marked non public visible' );
 

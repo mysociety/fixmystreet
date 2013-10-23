@@ -2,9 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 
-plan skip_all => 'Skipping Bromley test without Bromley cobrand'
-    unless FixMyStreet::Cobrand->exists('bromley');
-
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 

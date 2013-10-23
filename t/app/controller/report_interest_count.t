@@ -51,10 +51,9 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
-SKIP: {
-    skip( "Need 'fixmybarangay' in ALLOWED_COBRANDS config", 29 )
-        unless FixMyStreet::Cobrand->exists('fixmybarangay');
-
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmybarangay' ],
+}, sub {
     $mech->create_body_ok(2504, 'Westminster City Council');
 
     for my $test (

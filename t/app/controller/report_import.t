@@ -63,10 +63,14 @@ subtest "Test creating bad partial entries" => sub {
     {
         $mech->get_ok('/import');
 
-        $mech->submit_form_ok(    #
-            { with_fields => $test->{fields} },
-            "fill in form"
-        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        }, sub {
+            $mech->submit_form_ok(    #
+                { with_fields => $test->{fields} },
+                "fill in form"
+            );
+        };
 
         is_deeply( $mech->import_errors, $test->{errors}, "expected errors" );
     }
@@ -103,7 +107,11 @@ subtest "Submit a correct entry" => sub {
     ok $token_url, "Found a token url $token_url";
 
     # go to the token url
-    $mech->get_ok($token_url);
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->get_ok($token_url);
+    };
 
     # check that we are on '/around'
     is $mech->uri->path, '/around', "sent to /around";
@@ -112,10 +120,15 @@ subtest "Submit a correct entry" => sub {
     is_deeply $mech->visible_form_values, { pc => '' },
       "check only pc field is shown";
 
-    $mech->submit_form_ok(    #
-        { with_fields => { pc => 'SW1A 1AA' } },
-        "fill in postcode"
-    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok(
+            { with_fields => { pc => 'SW1A 1AA' } },
+            "fill in postcode"
+        );
+    };
 
     is $mech->uri->path, '/report/new', "sent to report page";
 
@@ -136,14 +149,19 @@ subtest "Submit a correct entry" => sub {
     $mech->content_contains( '<img align="right" src="/photo/' );
     $mech->content_contains('latitude" value="51.50101"', 'Check latitude');
     $mech->content_contains('longitude" value="-0.141587"', 'Check longitude');
-    $mech->submit_form_ok(
-        {
-            button => 'tile_32742.21793',
-            x => 10,
-            y => 10,
-        },
-        "New map location"
-    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok(
+            {
+                button => 'tile_32742.21793',
+                x => 10,
+                y => 10,
+            },
+            "New map location"
+        );
+    };
     $mech->content_contains( '<img align="right" src="/photo/' );
     $mech->content_contains('latitude" value="51.50519"', 'Check latitude');
     $mech->content_contains('longitude" value="-0.142608"', 'Check longitude');
@@ -162,19 +180,24 @@ subtest "Submit a correct entry" => sub {
       "check imported fields are shown";
 
     # change the details
-    $mech->submit_form_ok(    #
-        {
-            with_fields => {
-                name          => 'New Test User',
-                title         => 'New Test report',
-                detail        => 'This is a test report',
-                phone         => '01234 567 890',
-                may_show_name => '1',
-                category      => 'Street lighting',
-            }
-        },
-        "Update details and save"
-    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    name          => 'New Test User',
+                    title         => 'New Test report',
+                    detail        => 'This is a test report',
+                    phone         => '01234 567 890',
+                    may_show_name => '1',
+                    category      => 'Street lighting',
+                }
+            },
+            "Update details and save"
+        );
+    };
 
     # check that report has been created
     my $user =
@@ -221,7 +244,12 @@ subtest "Submit a correct entry (with location)" => sub {
     ok $token_url, "Found a token url $token_url";
 
     # go to the token url
-    $mech->get_ok($token_url);
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->get_ok($token_url);
+    };
 
     # check that we are on '/report/new'
     is $mech->uri->path, '/report/new', "sent to /report/new";
@@ -240,19 +268,24 @@ subtest "Submit a correct entry (with location)" => sub {
       "check imported fields are shown";
 
     # change the details
-    $mech->submit_form_ok(    #
-        {
-            with_fields => {
-                name          => 'New Test User ll',
-                title         => 'New Test report ll',
-                detail        => 'This is a test report ll',
-                phone         => '01234 567 890',
-                may_show_name => '1',
-                category      => 'Street lighting',
-            }
-        },
-        "Update details and save"
-    );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok(    #
+            {
+                with_fields => {
+                    name          => 'New Test User ll',
+                    title         => 'New Test report ll',
+                    detail        => 'This is a test report ll',
+                    phone         => '01234 567 890',
+                    may_show_name => '1',
+                    category      => 'Street lighting',
+                }
+            },
+            "Update details and save"
+        );
+    };
 
     # check that report has been created
     my $user =
@@ -268,72 +301,71 @@ subtest "Submit a correct entry (with location)" => sub {
 };
 
 subtest "Submit a correct entry (with location) to cobrand" => sub {
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fiksgatami' ],
+    MAPIT_URL => 'http://mapit.nuug.no/',
+  }, sub {
+    ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
 
-    SKIP: {
-        skip( "Need 'fiksgatami' in ALLOWED_COBRANDS config", 20 )
-            unless FixMyStreet::Cobrand->exists('fiksgatami');
-        mySociety::MaPit::configure('http://mapit.nuug.no/');
-        ok $mech->host("fiksgatami.no"), 'change host to fiksgatami';
+    $mech->get_ok('/import');
 
-        $mech->get_ok('/import');
+    $mech->submit_form_ok(    #
+        {
+            with_fields => {
+                service => 'test-script',
+                lat     => '59',
+                lon     => '10',
+                name    => 'Test User ll',
+                email   => 'test-ll@example.com',
+                subject => 'Test report ll',
+                detail  => 'This is a test report ll',
+                photo   => $sample_file,
+            }
+        },
+        "fill in form"
+    );
 
-        $mech->submit_form_ok(    #
-            {
-                with_fields => {
-                    service => 'test-script',
-                    lat     => '59',
-                    lon     => '10',
-                    name    => 'Test User ll',
-                    email   => 'test-ll@example.com',
-                    subject => 'Test report ll',
-                    detail  => 'This is a test report ll',
-                    photo   => $sample_file,
-                }
-            },
-            "fill in form"
-        );
+    is_deeply( $mech->import_errors, [], "got no errors" );
+    is $mech->content, 'SUCCESS', "Got success response";
 
-        is_deeply( $mech->import_errors, [], "got no errors" );
-        is $mech->content, 'SUCCESS', "Got success response";
+    # check that we have received the email
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    $mech->clear_emails_ok;
 
-        # check that we have received the email
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        $mech->clear_emails_ok;
+    my ($token_url) = $email->body =~ m{(http://\S+)};
+    ok $token_url, "Found a token url $token_url";
 
-        my ($token_url) = $email->body =~ m{(http://\S+)};
-        ok $token_url, "Found a token url $token_url";
+    # go to the token url
+    $mech->get_ok($token_url);
 
-        # go to the token url
-        $mech->get_ok($token_url);
+    # check that we are on '/report/new'
+    is $mech->uri->path, '/report/new', "sent to /report/new";
 
-        # check that we are on '/report/new'
-        is $mech->uri->path, '/report/new', "sent to /report/new";
+    # check that fields are prefilled for us
+    is_deeply $mech->visible_form_values,
+      {
+        name          => 'Test User ll',
+        title         => 'Test report ll',
+        detail        => 'This is a test report ll',
+        photo         => '',
+        phone         => '',
+        may_show_name => '1',
+      },
+      "check imported fields are shown";
 
-        # check that fields are prefilled for us
-        is_deeply $mech->visible_form_values,
-          {
-            name          => 'Test User ll',
-            title         => 'Test report ll',
-            detail        => 'This is a test report ll',
-            photo         => '',
-            phone         => '',
-            may_show_name => '1',
-          },
-          "check imported fields are shown";
+    my $user =
+      FixMyStreet::App->model('DB::User')
+      ->find( { email => 'test-ll@example.com' } );
+    ok $user, "Found a user";
 
-        my $user =
-          FixMyStreet::App->model('DB::User')
-          ->find( { email => 'test-ll@example.com' } );
-        ok $user, "Found a user";
+    my $report = $user->problems->first;
+    is $report->state, 'partial',        'is still partial';
+    is $report->title, 'Test report ll', 'title is correct';
+    is $report->lang, 'nb',              'language is correct';
 
-        my $report = $user->problems->first;
-        is $report->state, 'partial',        'is still partial';
-        is $report->title, 'Test report ll', 'title is correct';
-        is $report->lang, 'nb',              'language is correct';
-
-        $mech->delete_user($user);
-    }
+    $mech->delete_user($user);
+  };
 };
 
 done_testing();

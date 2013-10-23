@@ -42,8 +42,13 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
     user_id            => $user1->id,
 } );
 
-
-$mech->get_ok("/rss/pc/EH11BB/2");
+$mech->host('www.fixmystreet.com');
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+}, sub {
+    $mech->get_ok("/rss/pc/EH11BB/2");
+};
 $mech->content_contains( "Testing, 10th October" );
 $mech->content_lacks( 'Nearest road to the pin' );
 
@@ -111,7 +116,12 @@ $report->geocode(
 );
 $report->update();
 
-$mech->get_ok("/rss/pc/EH11BB/2");
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+}, sub {
+    $mech->get_ok("/rss/pc/EH11BB/2");
+};
 $mech->content_contains( "Testing, 10th October" );
 $mech->content_contains( '18 North Bridge, Edinburgh' );
 
@@ -168,11 +178,17 @@ my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_c
 
 subtest "check RSS feeds on cobrand have correct URLs for non-cobrand reports" => sub {
     $mech->host('lichfielddc.fixmystreet.com');
-    $mech->get_ok("/rss/area/Lichfield");
-
     my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
-    my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
+    my $expected2;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'lichfielddc' ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->get_ok("/rss/area/Lichfield");
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
+        $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
+    };
 
     $mech->content_contains($expected1, 'non cobrand area report point to fixmystreet.com');
     $mech->content_contains($expected2, 'cobrand area report point to cobrand url');
