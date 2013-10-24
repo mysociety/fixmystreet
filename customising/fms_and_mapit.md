@@ -58,7 +58,7 @@ This is all you need if you just want to get your installation up and running,
 or don't need to send reports to different bodies simply because they are in
 different places.
 
-To use this approach, in the configuration, set `MAPIT_URL` to be blank
+To use this approach, in the `conf/general.yml` file, set `MAPIT_URL` to be blank
 (because you're not really connecting to a real MapIt service at all), and set
 `MAPIT_TYPES` to `[ 'ZZZ' ]`, which is a list containing the single type that
 FakeMapIt always returns for everywhere.
@@ -161,12 +161,18 @@ FixMyStreet working, which is described below.
 If neither 1. or 2. work for you, you can
 [set up your own installation of MapIt](http://code.mapit.mysociety.org/install/),
 and add your own areas. The
-[code is on github](http://github.com/mysociety/mapit)
-and is a simple Django project. Once you've got that running, it's easy to add
-new areas: the admin lets you draw your boundary over a map in the web browser
-and save it. You have to specify what kind of area it is too, with a type: use
-any three-letter code that makes sense (in the UK we use `DIS` for District
-councils, but you can use anything you want).
+[code is on github](http://github.com/mysociety/mapit) and is a simple Django
+project. Ideally, if you have KML or Shapefile data for the admin boundaries you need,
+or if you have GIS software that can produce these formats, you can
+[import KML or Shapefiles into MapIt](http://code.mapit.mysociety.org/import/boundaries/).
+Alternatively, you can add new areas just using MapIt: the admin lets you draw
+your boundary over a map in the web browser and save it. (If you require accurate boundary
+data, we recommend you use GIS software to do this, simply because MapIt's drawing tool
+is rather basic).
+
+When you add a new admin boundary to MapIt, you have to specify what kind of
+area it is too, with a type: use a code that makes sense (in the UK we use
+`DIS` for District councils, but you can use anything you want).
 
 The advantage of this is you can just add the data you need (for example, if
 you're getting FixMyStreet to work on a couple of islands, and you need them
@@ -174,10 +180,10 @@ to be different areas, the chances are you don't need super-accurate official
 boundary data: just draw a close polygon around the coast). You only need to
 be as accurate as your FixMyStreet requires.
 
-If you want to run your own MapIt, set the `MAPIT_URL` to the URL of your
-custom installation, and list the `MAPIT_TYPES` that match the types you
-entered when you added your own areas, for example, `[ 'ABC', 'XYZ ]`.
-
+If you want to run your own MapIt, in the `conf/general.yml` file you must set
+the `MAPIT_URL` to the URL of your custom installation, and list the
+`MAPIT_TYPES` that match the types you entered when you added your own areas,
+for example, `[ 'ABC', 'XYZ ]`.
 
 ## Some notes
 
@@ -196,5 +202,6 @@ not in an area covered by a body**. This means, if someone tries to place a
 pin in an area covered not by your FixMyStreet (for example, in the middle of
 the sea), the application will be able to tell the user that that location is
 not supported. Of course, this is the drawback of using FakeMapIt: every
-location is always _within_ the boundary of the default area.
+location is always _within_ boundary of FakeMapIt's default area (which is
+`Everywhere`).
 
