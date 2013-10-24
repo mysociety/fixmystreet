@@ -92,12 +92,13 @@ sub override_config($&) {
 
     mySociety::MaPit::configure($config->{MAPIT_URL}) if $config->{MAPIT_URL};
 
-    # For historical reasons, we have two ways of askig for config variables.
+    # For historical reasons, we have two ways of asking for config variables.
     # Override them both, I'm sure we'll find time to get rid of one eventually.
     my $override_guard1 = Sub::Override->new(
         "FixMyStreet::config",
         sub {
             my ($class, $key) = @_;
+            return { %CONFIG, %$config } unless $key;
             return $config->{$key} if exists $config->{$key};
             my $orig_config = mySociety::Config::load_default();
             return $orig_config->{$key} if exists $orig_config->{$key};

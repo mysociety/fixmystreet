@@ -377,7 +377,9 @@ subtest "only superuser can see 'Add body' form" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_TYPES  => [ 'O08' ],
+        MAPIT_ID_WHITELIST => [ 423017 ],
     }, sub {
         $mech->get_ok( '/admin/bodies' );
     };
@@ -429,7 +431,9 @@ subtest "problems can't be assigned to deleted bodies" => sub {
     $report->update;
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_TYPES => [ 'O08' ],
+        MAPIT_ID_WHITELIST => [ 423017 ],
     }, sub {
         $mech->get_ok( '/admin/body/' . $external_body->id );
         $mech->submit_form_ok( { with_fields => { deleted => 1 } } );

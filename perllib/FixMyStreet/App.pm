@@ -208,6 +208,14 @@ sub setup_request {
         DateTime->DefaultLocale( 'en_US' );
     }
 
+    if (FixMyStreet->test_mode) {
+        # Is there a better way of altering $c->config that may have
+        # override_config involved?
+        $c->setup_finished(0);
+        $c->config( %{ FixMyStreet->config() } );
+        $c->setup_finished(1);
+    }
+
     return $c;
 }
 
