@@ -22,11 +22,11 @@ Definitions
 [administrator](#administrator) |
 [alert](#alert) |
 [area](#area) |
-[area type](#area-type) |
+[area&nbsp;type](#area-type) |
 [body](#body) |
 [category](#category) |
 [cobrand](#cobrand) |
-[config variable](#config-variable) |
+[config&nbsp;variable](#config-variable) |
 [contact](#contact) |
 [council](#council) |
 [dashboard](#dashboard) |
@@ -39,34 +39,18 @@ Definitions
 [MapIt](#mapit) |
 [Open311](#open311) |
 [OpenStreetMap](#osm) |
-[problem report](#report) |
-[send method](#send-method) |
-[staff users](#staff-user) |
+[problem&nbsp;report](#report) |
+[send&nbsp;method](#send-method) |
+[staff&nbsp;users](#staff-user) |
 [state](#state) |
 [template](#template) |
 [update](#update) |
-[user account](#user-account)
+[user&nbsp;account](#user-account)
 
 ---
 
 <dl class="glossary">
 
-<!--
-  <dt>
-    <a name="example">example</a>
-  </dt>
-  <dd>
-    An <strong>example</strong> is something that is explained here.
-    <div class="more-info">
-      <p>More information:</p>
-      <ul>
-        <li>
-          See <a href="customising/fms_and_mapit">how FixMyStreet uses MapIt</a> for more about examples.
-        </li>
-      </ul>
-    </div>
-  </dd>
--->
   <dt>
     <a name="abuse-list">abuse list</a>
   </dt>
@@ -141,7 +125,7 @@ Definitions
     class="glossary">bodies</a> are responsible for handling problems at a
     specific location. For example, when a user clicks on the <a href="#map"
     class="glossary">map</a>, FixMyStreet finds all the bodies which cover
-    that area. Technically, an area comprises one or more polygons on a map --
+    that area. Technically, an area comprises one or more polygons on a map &mdash;
     either those areas already exist (from <a href="#osm"
     class="glossary">OpenStreetMap</a>, for example) or you can draw your own.
     <p>
@@ -181,7 +165,7 @@ Definitions
     addition to each boundary's geometry (that is, its actual shape on the
     map), MapIt also identifies what <strong>area type</strong> it is. The
     area type indicates what level of administrative boundary that area
-    represents -- for example, a national border, or the boundary of a
+    represents &mdash; for example, a national border, or the boundary of a
     province, or a ward, and so on.
     <p>
       The <a href="#config-variable" class="glossary">config variable</a>
@@ -770,7 +754,7 @@ Definitions
     different from the default ones.
     <p>
       Templates are in the <code>templates/web</code> and
-      <code>templates/email</code> directories -- themselves containing
+      <code>templates/email</code> directories &mdash; themselves containing
       directories for every cobrand.
     </p>
     <p>
@@ -803,8 +787,8 @@ Definitions
     class="glossary">state</a>.
     <p>
       For example, someone can leave an update on a pothole report to say, "I
-      think it's getting worse!", and add a photograph. Or they can mark the
-      problem as fixed.
+      think the hole is getting bigger!", and add a photograph. Or they can
+      mark the problem as fixed.
     </p>
     <p>
       <a href="#staff-user" class="glossary">Staff users</a> can add more
