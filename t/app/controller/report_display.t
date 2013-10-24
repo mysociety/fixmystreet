@@ -97,15 +97,16 @@ subtest "change report to unconfirmed and check for 404 status" => sub {
 
 
 subtest "Zurich unconfirmeds are 200" => sub {
-    if ( !FixMyStreet::Cobrand->exists('zurich') ) {
-        plan skip_all => 'Skipping Zurich test without Zurich cobrand';
-    }
-    $mech->host( 'zurich.example.com' );
-    ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
-    $mech->get_ok("/report/$report_id");
-    $mech->content_contains( '&Uuml;berpr&uuml;fung ausstehend' );
-    ok $report->update( { state => 'confirmed' } ), 'confirm report again';
-    $mech->host( 'www.fixmystreet.com' );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->host( 'zurich.example.com' );
+        ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains( '&Uuml;berpr&uuml;fung ausstehend' );
+        ok $report->update( { state => 'confirmed' } ), 'confirm report again';
+        $mech->host( 'www.fixmystreet.com' );
+    };
 };
 
 subtest "change report to hidden and check for 410 status" => sub {
@@ -400,9 +401,9 @@ for my $test (
 }
 
 subtest "Zurich banners are displayed correctly" => sub {
-    if ( !FixMyStreet::Cobrand->exists('zurich') ) {
-        plan skip_all => 'Skipping Zurich test without Zurich cobrand';
-    }
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+  }, sub {
     $mech->host( 'zurich.example.com' );
 
     for my $test (
@@ -466,6 +467,7 @@ subtest "Zurich banners are displayed correctly" => sub {
     }
 
     $mech->host( 'www.fixmystreet.com' );
+  };
 };
 
 $mech->create_body_ok(2504, 'Westminster City Council');

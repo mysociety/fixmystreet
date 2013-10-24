@@ -93,7 +93,11 @@ subtest 'check summary counts' => sub {
     my $alerts =  FixMyStreet::App->model('DB::Alert')->search( { confirmed => { '>' => 0 } } );
     my $a_count = $alerts->count;
 
-    $mech->get_ok('/admin');
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    }, sub {
+        $mech->get_ok('/admin');
+    };
 
     $mech->title_like(qr/Summary/);
 
@@ -105,10 +109,9 @@ subtest 'check summary counts' => sub {
 
     $mech->content_contains( "$q_count questionnaires sent" );
 
-    SKIP: {
-        skip( "Need 'barnet' in ALLOWED_COBRANDS config", 7 )
-            unless FixMyStreet::Cobrand->exists('barnet');
-
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'barnet' ],
+    }, sub {
         ok $mech->host('barnet.fixmystreet.com');
 
         $mech->get_ok('/admin');
@@ -137,19 +140,23 @@ subtest 'check summary counts' => sub {
 
         $alert->cobrand('');
         $alert->update;
-    }
+    };
 
     FixMyStreet::App->model('DB::Problem')->search( { bodies_str => 1 } )->update( { bodies_str => 2489 } );
     ok $mech->host('fixmystreet.com');
 };
 
-my $host = FixMyStreet->config('BASE_URL');
-
 my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
-$mech->get_ok('/admin/body/2650');
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAPIT_TYPES => [ 'UTA' ],
+    BASE_URL => 'http://www.example.org',
+}, sub {
+    $mech->get_ok('/admin/body/2650');
+};
 $mech->content_contains('Aberdeen City Council');
 $mech->content_like(qr{AB\d\d});
-$mech->content_contains("$host/around");
+$mech->content_contains("http://www.example.org/around");
 
 subtest 'check contact creation' => sub {
     my $contact = FixMyStreet::App->model('DB::Contact')->search(

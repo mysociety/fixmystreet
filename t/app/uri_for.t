@@ -44,25 +44,29 @@ is(
     'FiksGataMi url with lat not zoom'
 );
 
-SKIP: {
-    skip( "Need 'emptyhomes' in ALLOWED_COBRANDS config", 2 )
-        unless FixMyStreet::Cobrand->exists('emptyhomes');
-
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'emptyhomes' ],
+}, sub {
     like(
         $reh_en_c->uri_for_email( '/foo' ),
         qr{^http://en.},
         'adds en to retain language'
     );
+};
 
-    # instantiate this here otherwise sets locale to cy and breaks test
-    # above
-    my $reh_cy_c = ctx_request('http://cy.reportemptyhomes.com/');
+# instantiate this here otherwise sets locale to cy and breaks test
+# above
+my $reh_cy_c;
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'emptyhomes' ],
+}, sub {
+    $reh_cy_c = ctx_request('http://cy.reportemptyhomes.com/');
 
     like(
         $reh_cy_c->uri_for_email( '/foo' ),
         qr{^http://cy.},
         'retains language'
     );
-}
+};
 
 done_testing();

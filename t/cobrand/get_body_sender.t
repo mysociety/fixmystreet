@@ -21,10 +21,15 @@ my $body = FixMyStreet::App->model('DB::Body')->find_or_create({
 });
 my $body_area = $body->body_areas->find_or_create({ area_id => 1000 });
 
-is_deeply $c->get_body_sender( $body ), { method => 'Email' }, 'defaults to email';
+FixMyStreet::override_config {
+    MAPIT_TYPES => [ 'LBO' ],
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+}, sub {
+    is_deeply $c->get_body_sender( $body ), { method => 'Email' }, 'defaults to email';
 
-$body_area->update({ area_id => 2481 }); # Croydon LBO
-is_deeply $c->get_body_sender( $body ), { method => 'London' }, 'returns london report it if London borough';
+    $body_area->update({ area_id => 2481 }); # Croydon LBO
+    is_deeply $c->get_body_sender( $body ), { method => 'London' }, 'returns london report it if London borough';
+};
 
 $body->send_method( 'TestMethod' );
 is $c->get_body_sender( $body )->{ method }, 'TestMethod', 'uses send_method in preference to London';

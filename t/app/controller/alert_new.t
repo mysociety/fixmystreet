@@ -207,7 +207,12 @@ foreach my $test (
         $mech->log_in_ok( $test->{email} );
         $mech->clear_emails_ok;
 
-        $mech->get_ok('/alert/list?pc=EH991SP');
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->get_ok('/alert/list?pc=EH991SP');
+        };
         $mech->set_visible( [ radio => 'council:2651:City_of_Edinburgh' ] );
         $mech->click('alert');
 
@@ -306,13 +311,18 @@ subtest "Test two-tier council alerts" => sub {
           result => '/rss/reports/Gloucestershire/Lansdown+and+Park'
         },
     ) {
-        $mech->get_ok( '/alert/list?pc=GL502PR' );
-        $mech->submit_form_ok( {
-            button => 'rss',
-            with_fields => {
-                feed => $alert->{feed},
-            }
-        } );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->get_ok( '/alert/list?pc=GL502PR' );
+            $mech->submit_form_ok( {
+                button => 'rss',
+                with_fields => {
+                    feed => $alert->{feed},
+                }
+            } );
+        };
         is $mech->uri->path, $alert->{result}, 'Redirected to right RSS feed';
     }
 };
@@ -344,11 +354,16 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         },
     ) {
         $mech->get_ok( '/alert' );
-        $mech->submit_form_ok( { with_fields => { pc => 'EH11BB' } } );
-        $mech->submit_form_ok( {
-            button => 'alert',
-            with_fields => $alert->{fields},
-        } );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'EH11BB' } } );
+            $mech->submit_form_ok( {
+                button => 'alert',
+                with_fields => $alert->{fields},
+            } );
+        };
         if ( $alert->{email_confirm} ) {
             my $email = $mech->get_email;
             $mech->clear_emails_ok;
@@ -425,7 +440,11 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     $update_id = $update->id;
     ok $update, "created test update - $update_id";
 
-    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    };
     # TODO Note the below will fail if the db has an existing alert that matches
     $mech->email_count_is(3);
     my @emails = $mech->get_email;
@@ -545,11 +564,19 @@ for my $test (
         } );
 
         $mech->clear_emails_ok;
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        };
         $mech->email_count_is(0);
 
         $report->update( { non_public => 0 } );
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        };
         $mech->email_count_is(1);
         my $email = $mech->get_email;
         like $email->body, qr/Alert\s+test\s+for\s+non\s+public\s+reports/, 'alert contains public report';

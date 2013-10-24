@@ -7,16 +7,6 @@ use DateTime;
 use Test::More;
 use JSON;
 
-plan skip_all => 'Skipping Zurich test without Zurich cobrand'
-    unless FixMyStreet::Cobrand->exists('zurich');
-
-# To run this test ensure that you have the following in general.yml:
-#
-#     BASE_URL: 'http://zurich.127.0.0.1.xip.io'
-#
-#     ALLOWED_COBRANDS:
-#       - zurich
-#
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
 #
@@ -42,7 +32,11 @@ my $mech = FixMyStreet::TestMech->new;
 
 # Front page test
 ok $mech->host("zurich.example.com"), "change host to Zurich";
-$mech->get_ok('/');
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok('/');
+};
 $mech->content_like( qr/zurich/i );
 
 # Set up bodies
@@ -71,22 +65,30 @@ my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
 });
 my $report = $reports[0];
 
-$mech->get_ok( '/report/' . $report->id );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/report/' . $report->id );
+};
 $mech->content_contains('&Uuml;berpr&uuml;fung ausstehend');
 
 # Check logging in to deal with this report
-$mech->get_ok( '/admin' );
-is $mech->uri->path, '/auth', "got sent to the sign in page";
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin' );
+    is $mech->uri->path, '/auth', "got sent to the sign in page";
 
-my $user = $mech->log_in_ok( 'dm1@example.org') ;
-$user->from_body( undef );
-$user->update;
-$mech->get_ok( '/admin' );
-is $mech->uri->path, '/my', "got sent to /my";
-$user->from_body( 2 );
-$user->update;
+    my $user = $mech->log_in_ok( 'dm1@example.org') ;
+    $user->from_body( undef );
+    $user->update;
+    $mech->get_ok( '/admin' );
+    is $mech->uri->path, '/my', "got sent to /my";
+    $user->from_body( 2 );
+    $user->update;
 
-$mech->get_ok( '/admin' );
+    $mech->get_ok( '/admin' );
+};
 is $mech->uri->path, '/admin', "am logged in";
 
 $mech->content_contains( 'report_edit/' . $report->id );
@@ -119,8 +121,12 @@ subtest "changing of categories" => sub {
     ok ( !$comments_rs->first, "There are no comments yet" );
 
     # change the category via the web interface
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { category => 'Cat2' } } );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { category => 'Cat2' } } );
+    };
 
     # check changes correctly saved
     $report->discard_changes();
@@ -135,39 +141,47 @@ subtest "changing of categories" => sub {
 };
 
 
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
-$mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
-$mech->get_ok( '/report/' . $report->id );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
+    $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+    $mech->get_ok( '/report/' . $report->id );
+};
 $mech->content_contains('Aufgenommen');
 $mech->content_contains('Test Test');
 $mech->content_lacks('photo/' . $report->id . '.jpeg');
 $mech->email_count_is(0);
 
-# Photo publishing
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { publish_photo => 1 } } );
-$mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('photo/' . $report->id . '.jpeg');
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    # Photo publishing
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { publish_photo => 1 } } );
+    $mech->get_ok( '/report/' . $report->id );
+    $mech->content_contains('photo/' . $report->id . '.jpeg');
 
-# Internal notes
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { new_internal_note => 'Initial internal note.' } } );
-$mech->submit_form_ok( { with_fields => { new_internal_note => 'Another internal note.' } } );
-$mech->content_contains( 'Initial internal note.' );
-$mech->content_contains( 'Another internal note.' );
+    # Internal notes
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { new_internal_note => 'Initial internal note.' } } );
+    $mech->submit_form_ok( { with_fields => { new_internal_note => 'Another internal note.' } } );
+    $mech->content_contains( 'Initial internal note.' );
+    $mech->content_contains( 'Another internal note.' );
 
-# Original description
-$mech->submit_form_ok( { with_fields => { detail => 'Edited details text.' } } );
-$mech->content_contains( 'Edited details text.' );
-$mech->content_contains( 'Originaltext: &ldquo;Test Test 1 for 2 Detail&rdquo;' );
+    # Original description
+    $mech->submit_form_ok( { with_fields => { detail => 'Edited details text.' } } );
+    $mech->content_contains( 'Edited details text.' );
+    $mech->content_contains( 'Originaltext: &ldquo;Test Test 1 for 2 Detail&rdquo;' );
 
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { body_subdivision => 3, send_rejected_email => 1 } } );
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { body_subdivision => 3, send_rejected_email => 1 } } );
 
-$mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('In Bearbeitung');
-$mech->content_contains('Test Test');
+    $mech->get_ok( '/report/' . $report->id );
+    $mech->content_contains('In Bearbeitung');
+    $mech->content_contains('Test Test');
+};
 
 send_reports_for_zurich();
 my $email = $mech->get_email;
@@ -177,33 +191,45 @@ $mech->clear_emails_ok;
 
 $mech->log_out_ok;
 
-$user = $mech->log_in_ok( 'sdm1@example.org') ;
+my $user = $mech->log_in_ok( 'sdm1@example.org') ;
 $user->update({ from_body => undef });
-$mech->get_ok( '/admin' );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin' );
+};
 is $mech->uri->path, '/my', "got sent to /my";
 $user->from_body( 3 );
 $user->update;
 
-$mech->get_ok( '/admin' );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin' );
+};
 is $mech->uri->path, '/admin', "am logged in";
 
 $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'In Bearbeitung' );
 
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->content_contains( 'Initial internal note' );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains( 'Initial internal note' );
 
-$mech->submit_form_ok( { with_fields => { status_update => 'This is an update.' } } );
-is $mech->uri->path, '/admin/report_edit/' . $report->id, "still on edit page";
-$mech->content_contains('This is an update');
-ok $mech->form_with_fields( 'status_update' );
-$mech->submit_form_ok( { button => 'no_more_updates' } );
-is $mech->uri->path, '/admin/summary', "redirected now finished with report.";
+    $mech->submit_form_ok( { with_fields => { status_update => 'This is an update.' } } );
+    is $mech->uri->path, '/admin/report_edit/' . $report->id, "still on edit page";
+    $mech->content_contains('This is an update');
+    ok $mech->form_with_fields( 'status_update' );
+    $mech->submit_form_ok( { button => 'no_more_updates' } );
+    is $mech->uri->path, '/admin/summary', "redirected now finished with report.";
 
-$mech->get_ok( '/report/' . $report->id );
-$mech->content_contains('In Bearbeitung');
-$mech->content_contains('Test Test');
+    $mech->get_ok( '/report/' . $report->id );
+    $mech->content_contains('In Bearbeitung');
+    $mech->content_contains('Test Test');
+};
 
 send_reports_for_zurich();
 $email = $mech->get_email;
@@ -216,7 +242,11 @@ is $report->state, 'planned', 'Report now in planned state';
 
 $mech->log_out_ok;
 $user = $mech->log_in_ok( 'dm1@example.org') ;
-$mech->get_ok( '/admin' );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin' );
+};
 
 $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
@@ -227,13 +257,17 @@ $extra->{email_confirmed} = 1;
 $report->extra ( { %$extra } );
 $report->update;
 
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->content_lacks( 'Unbest&auml;tigt' ); # Confirmed email
-$mech->submit_form_ok( { with_fields => { status_update => 'FINAL UPDATE' } } );
-$mech->form_with_fields( 'status_update' );
-$mech->submit_form_ok( { button => 'publish_response' } );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_lacks( 'Unbest&auml;tigt' ); # Confirmed email
+    $mech->submit_form_ok( { with_fields => { status_update => 'FINAL UPDATE' } } );
+    $mech->form_with_fields( 'status_update' );
+    $mech->submit_form_ok( { button => 'publish_response' } );
 
-$mech->get_ok( '/report/' . $report->id );
+    $mech->get_ok( '/report/' . $report->id );
+};
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Test Test');
 $mech->content_contains('FINAL UPDATE');
@@ -254,15 +288,23 @@ $report = $reports[0];
 
 $mech->get_ok( '/admin/report_edit/' . $report->id );
 $mech->submit_form_ok( { with_fields => { state => 'planned' } } );
-$mech->get_ok( '/report/' . $report->id );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/report/' . $report->id );
+};
 $mech->content_contains('In Bearbeitung');
 $mech->content_contains('Second Test');
 
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->content_contains( 'Unbest&auml;tigt' );
-$mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->content_contains( 'Unbest&auml;tigt' );
+    $mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
 
-$mech->get_ok( '/report/' . $report->id );
+    $mech->get_ok( '/report/' . $report->id );
+};
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Second Test');
 $mech->content_contains('FINAL UPDATE');
@@ -278,9 +320,13 @@ $mech->email_count_is(0);
 });
 $report = $reports[0];
 
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { body_external => 4 } } );
-$mech->get_ok( '/report/' . $report->id );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { body_external => 4 } } );
+    $mech->get_ok( '/report/' . $report->id );
+};
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
 $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
@@ -293,13 +339,17 @@ unlike $email->body, qr/test\@example.com/, 'body does not contain email address
 $mech->clear_emails_ok;
 
 # Test calling back, and third_personal boolean setting
-$mech->get_ok( '/admin' );
-is $mech->uri->path, '/admin', "am logged in";
-$mech->content_contains( 'report_edit/' . $report->id );
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { state => 'unconfirmed' } } );
-$mech->submit_form_ok( { with_fields => { body_external => 4, third_personal => 1 } } );
-$mech->get_ok( '/report/' . $report->id );
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin' );
+    is $mech->uri->path, '/admin', "am logged in";
+    $mech->content_contains( 'report_edit/' . $report->id );
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { state => 'unconfirmed' } } );
+    $mech->submit_form_ok( { with_fields => { body_external => 4, third_personal => 1 } } );
+    $mech->get_ok( '/report/' . $report->id );
+};
 $mech->content_contains('Beantwortet');
 $mech->content_contains('Third Test');
 $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
@@ -314,14 +364,25 @@ $mech->log_out_ok;
 
 subtest "only superuser can edit bodies" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
-    $mech->get( '/admin/body/' . $zurich->id );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get( '/admin/body/' . $zurich->id );
+    };
     is $mech->res->code, 404, "only superuser should be able to edit bodies";
     $mech->log_out_ok;
 };
 
 subtest "only superuser can see 'Add body' form" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
-    $mech->get_ok( '/admin/bodies' );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_TYPES  => [ 'O08' ],
+        MAPIT_ID_WHITELIST => [ 423017 ],
+    }, sub {
+        $mech->get_ok( '/admin/bodies' );
+    };
     $mech->content_lacks( '<form method="post" action="bodies"' );
     $mech->log_out_ok;
 };
@@ -330,6 +391,7 @@ subtest "phone number is mandatory" => sub {
     FixMyStreet::override_config {
         MAPIT_TYPES => [ 'O08' ],
         MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        ALLOWED_COBRANDS => [ 'zurich' ],
     }, sub {
         $user = $mech->log_in_ok( 'dm1@example.org' );
         $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
@@ -367,10 +429,17 @@ subtest "problems can't be assigned to deleted bodies" => sub {
     $user->update;
     $report->state( 'confirmed' );
     $report->update;
-    $mech->get_ok( '/admin/body/' . $external_body->id );
-    $mech->submit_form_ok( { with_fields => { deleted => 1 } } );
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_lacks( $external_body->name );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_TYPES => [ 'O08' ],
+        MAPIT_ID_WHITELIST => [ 423017 ],
+    }, sub {
+        $mech->get_ok( '/admin/body/' . $external_body->id );
+        $mech->submit_form_ok( { with_fields => { deleted => 1 } } );
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->content_lacks( $external_body->name );
+    };
     $user->from_body( 2 );
     $user->update;
     $mech->log_out_ok;
@@ -382,15 +451,19 @@ subtest "hidden report email are only sent when requested" => sub {
     $extra->{email_confirmed} = 1;
     $report->extra ( { %$extra } );
     $report->update;
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => 1 } } );
-    $mech->email_count_is(1);
-    $mech->clear_emails_ok;
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => undef } } );
-    $mech->email_count_is(0);
-    $mech->clear_emails_ok;
-    $mech->log_out_ok;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => 1 } } );
+        $mech->email_count_is(1);
+        $mech->clear_emails_ok;
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => undef } } );
+        $mech->email_count_is(0);
+        $mech->clear_emails_ok;
+        $mech->log_out_ok;
+    };
 };
 
 $mech->delete_problems_for_body( 2 );

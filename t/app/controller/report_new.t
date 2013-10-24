@@ -454,17 +454,22 @@ foreach my $test (
         $mech->get_ok('/around');
 
         # submit initial pc form
-        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-            "submit location" );
-        is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+                "submit location" );
+            is_deeply $mech->page_errors, [], "no errors for pc '$test->{pc}'";
 
-        # click through to the report page
-        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-            "follow 'skip this step' link" );
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
 
-        # submit the main form
-        $mech->submit_form_ok( { with_fields => $test->{fields} },
-            "submit form" );
+            # submit the main form
+            $mech->submit_form_ok( { with_fields => $test->{fields} },
+                "submit form" );
+        };
 
         # check that we got the errors expected
         is_deeply $mech->page_errors, $test->{errors}, "check errors";
@@ -522,30 +527,35 @@ foreach my $test (
 
     # submit initial pc form
     $mech->get_ok('/around');
-    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
-        "submit location" );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+            "submit location" );
 
-    # click through to the report page
-    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-        "follow 'skip this step' link" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
 
-    $mech->submit_form_ok(
-        {
-            button      => 'submit_register',
-            with_fields => {
-                title         => 'Test Report',
-                detail        => 'Test report details.',
-                photo         => '',
-                name          => 'Joe Bloggs',
-                may_show_name => '1',
-                email         => 'test-1@example.com',
-                phone         => '07903 123 456',
-                category      => 'Street lighting',
-                password_register => $test->{password} ? 'secret' : '',
-            }
-        },
-        "submit good details"
-    );
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo         => '',
+                    name          => 'Joe Bloggs',
+                    may_show_name => '1',
+                    email         => 'test-1@example.com',
+                    phone         => '07903 123 456',
+                    category      => 'Street lighting',
+                    password_register => $test->{password} ? 'secret' : '',
+                }
+            },
+            "submit good details"
+        );
+    };
 
     # check that we got the errors expected
     is_deeply $mech->page_errors, [], "check there were no errors";
@@ -635,27 +645,32 @@ subtest "test password errors for a user who is signing in as they report" => su
 
     # submit initial pc form
     $mech->get_ok('/around');
-    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
-        "submit location" );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+            "submit location" );
 
-    # click through to the report page
-    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-        "follow 'skip this step' link" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
 
-    $mech->submit_form_ok(
-        {
-            button      => 'submit_sign_in',
-            with_fields => {
-                title         => 'Test Report',
-                detail        => 'Test report details.',
-                photo         => '',
-                email         => 'test-2@example.com',
-                password_sign_in => 'secret1',
-                category      => 'Street lighting',
-            }
-        },
-        "submit with wrong password"
-    );
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_sign_in',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo         => '',
+                    email         => 'test-2@example.com',
+                    password_sign_in => 'secret1',
+                    category      => 'Street lighting',
+                }
+            },
+            "submit with wrong password"
+        );
+    };
 
     # check that we got the errors expected
     is_deeply $mech->page_errors, [
@@ -682,42 +697,47 @@ subtest "test report creation for a user who is signing in as they report" => su
 
     # submit initial pc form
     $mech->get_ok('/around');
-    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
-        "submit location" );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+            "submit location" );
 
-    # click through to the report page
-    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-        "follow 'skip this step' link" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
 
-    $mech->submit_form_ok(
-        {
-            button      => 'submit_sign_in',
-            with_fields => {
-                title         => 'Test Report',
-                detail        => 'Test report details.',
-                photo         => '',
-                email         => 'test-2@example.com',
-                password_sign_in => 'secret2',
-                category      => 'Street lighting',
-            }
-        },
-        "submit good details"
-    );
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_sign_in',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo         => '',
+                    email         => 'test-2@example.com',
+                    password_sign_in => 'secret2',
+                    category      => 'Street lighting',
+                }
+            },
+            "submit good details"
+        );
 
-    # check that we got the errors expected
-    is_deeply $mech->page_errors, [
-        'You have successfully signed in; please check and confirm your details are accurate:',
-    ], "check there were errors";
+        # check that we got the errors expected
+        is_deeply $mech->page_errors, [
+            'You have successfully signed in; please check and confirm your details are accurate:',
+        ], "check there were errors";
 
-    # Now submit with a name
-    $mech->submit_form_ok(
-        {
-            with_fields => {
-                name => 'Joe Bloggs',
-            }
-        },
-        "submit good details"
-    );
+        # Now submit with a name
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    name => 'Joe Bloggs',
+                }
+            },
+            "submit good details"
+        );
+    };
 
     # find the report
     my $report = $user->problems->first;
@@ -776,42 +796,47 @@ foreach my $test (
 
         # submit initial pc form
         $mech->get_ok('/around');
-        $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR', } },
-            "submit location" );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR', } },
+                "submit location" );
 
-        # click through to the report page
-        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-            "follow 'skip this step' link" );
+            # click through to the report page
+            $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link" );
 
-        # check that the fields are correctly prefilled
-        is_deeply(
-            $mech->visible_form_values,
-            {
-                title         => '',
-                detail        => '',
-                may_show_name => '1',
-                name          => 'Test User',
-                phone         => '01234 567 890',
-                photo         => '',
-                category      => '-- Pick a category --',
-            },
-            "user's details prefilled"
-        );
-
-        $mech->submit_form_ok(
-            {
-                with_fields => {
-                    title         => "Test Report at café", 
-                    detail        => 'Test report details.',
-                    photo         => '',
-                    name          => 'Joe Bloggs',
+            # check that the fields are correctly prefilled
+            is_deeply(
+                $mech->visible_form_values,
+                {
+                    title         => '',
+                    detail        => '',
                     may_show_name => '1',
-                    phone         => '07903 123 456',
-                    category      => $test->{category},
-                }
-            },
-            "submit good details"
-        );
+                    name          => 'Test User',
+                    phone         => '01234 567 890',
+                    photo         => '',
+                    category      => '-- Pick a category --',
+                },
+                "user's details prefilled"
+            );
+
+            $mech->submit_form_ok(
+                {
+                    with_fields => {
+                        title         => "Test Report at café", 
+                        detail        => 'Test report details.',
+                        photo         => '',
+                        name          => 'Joe Bloggs',
+                        may_show_name => '1',
+                        phone         => '07903 123 456',
+                        category      => $test->{category},
+                    }
+                },
+                "submit good details"
+            );
+        };
 
         # find the report
         my $report = $user->problems->first;
@@ -870,27 +895,32 @@ subtest "test report creation for a category that is non public" => sub {
 
     # submit initial pc form
     $mech->get_ok('/around');
-    $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
-        "submit location" );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } },
+            "submit location" );
 
-    # click through to the report page
-    $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
-        "follow 'skip this step' link" );
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
 
-    $mech->submit_form_ok(
-        {
-            button      => 'submit_register',
-            with_fields => {
-                title         => 'Test Report',
-                detail        => 'Test report details.',
-                photo         => '',
-                email         => 'test-2@example.com',
-                name          => 'Joe Bloggs',
-                category      => 'Street lighting',
-            }
-        },
-        "submit good details"
-    );
+        $mech->submit_form_ok(
+            {
+                button      => 'submit_register',
+                with_fields => {
+                    title         => 'Test Report',
+                    detail        => 'Test report details.',
+                    photo         => '',
+                    email         => 'test-2@example.com',
+                    name          => 'Joe Bloggs',
+                    category      => 'Street lighting',
+                }
+            },
+            "submit good details"
+        );
+    };
 
     # find the report
     my $report = $user->problems->first;
@@ -927,11 +957,22 @@ subtest "test report creation for a category that is non public" => sub {
 $contact2->category( "Pothol\xc3\xa9s" );
 $contact2->update;
 
-my $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
+my $extra_details;
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+}, sub {
+    $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=' . $saved_lat . '&longitude=' . $saved_lon );
+};
 $mech->content_contains( "Pothol\xc3\xa9s" );
 ok !$extra_details->{titles_list}, 'Non Bromley does not send back list of titles';
 
-$extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.4021&longitude=0.01578');
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+}, sub {
+    $extra_details = $mech->get_ok_json( '/report/new/ajax?latitude=51.4021&longitude=0.01578');
+};
 ok $extra_details->{titles_list}, 'Bromley sends back list of titles';
 
 #### test uploading an image
@@ -940,18 +981,22 @@ ok $extra_details->{titles_list}, 'Bromley sends back list of titles';
 
 #### possibly manual testing
 # create report without using map
-# create report by clicking on may with javascript off
+# create report by clicking on map with javascript off
 # create report with images off
 
 subtest "check that a lat/lon off coast leads to /around" => sub {
     my $off_coast_latitude  = 50.78301;
     my $off_coast_longitude = -0.646929;
 
-    $mech->get_ok(    #
-        "/report/new"
-          . "?latitude=$off_coast_latitude"
-          . "&longitude=$off_coast_longitude"
-    );
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->get_ok(    #
+            "/report/new"
+              . "?latitude=$off_coast_latitude"
+              . "&longitude=$off_coast_longitude"
+        );
+    };
 
     is $mech->uri->path, '/around', "redirected to '/around'";
 
@@ -1015,9 +1060,10 @@ for my $test (
   )
 {
     subtest $test->{desc} => sub {
-        if ( $test->{host} =~ /bromley/ && !FixMyStreet::Cobrand->exists('bromley') ) {
-            plan skip_all => 'Skipping Bromley tests without Bromley cobrand';
-        }
+        my $override = {
+            ALLOWED_COBRANDS => [ $test->{host} =~ /bromley/ ? 'bromley' : 'fixmystreet' ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        };
 
         $mech->host( $test->{host} );
 
@@ -1025,12 +1071,14 @@ for my $test (
         $mech->clear_emails_ok;
 
         $mech->get_ok('/');
-        $mech->submit_form_ok( { with_fields => { pc => $test->{postcode}, } },
-            "submit location" );
-        $mech->follow_link_ok(
-            { text_regex => qr/skip this step/i, },
-            "follow 'skip this step' link"
-        );
+        FixMyStreet::override_config $override, sub {
+            $mech->submit_form_ok( { with_fields => { pc => $test->{postcode}, } },
+                "submit location" );
+            $mech->follow_link_ok(
+                { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link"
+            );
+        };
 
         my $fields = $mech->visible_form_values('mapSkippedForm');
         if ( $test->{fms_extra_title} ) {
@@ -1072,8 +1120,10 @@ for my $test (
             $submission_fields->{name} = 'Test User';
         }
 
-        $mech->submit_form_ok( { with_fields => $submission_fields },
-            "submit good details" );
+        FixMyStreet::override_config $override, sub {
+            $mech->submit_form_ok( { with_fields => $submission_fields },
+                "submit good details" );
+        };
 
         my $email = $mech->get_email;
         ok $email, "got an email";
@@ -1128,18 +1178,23 @@ subtest 'user title not reset if no user title in submission' => sub {
         };
 
         $mech->get_ok('/');
-        $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP', } },
-            "submit location" );
-        $mech->follow_link_ok(
-            { text_regex => qr/skip this step/i, },
-            "follow 'skip this step' link"
-        );
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => 'EH99 1SP', } },
+                "submit location" );
+            $mech->follow_link_ok(
+                { text_regex => qr/skip this step/i, },
+                "follow 'skip this step' link"
+            );
 
-        my $fields = $mech->visible_form_values('mapSkippedForm');
-        ok !exists( $fields->{fms_extra_title} ), 'user title field not displayed';
+            my $fields = $mech->visible_form_values('mapSkippedForm');
+            ok !exists( $fields->{fms_extra_title} ), 'user title field not displayed';
 
-        $mech->submit_form_ok( { with_fields => $submission_fields },
-            "submit good details" );
+            $mech->submit_form_ok( { with_fields => $submission_fields },
+                "submit good details" );
+        };
 
         $user->discard_changes;
         my $report = $user->problems->first;
@@ -1148,10 +1203,7 @@ subtest 'user title not reset if no user title in submission' => sub {
         is $user->title, 'MR', 'User title unchanged';
 };
 
-SKIP: {
-    skip( "Need 'lichfielddc' in ALLOWED_COBRANDS config", 100 )
-        unless FixMyStreet::Cobrand->exists('lichfielddc');
-
+subtest "test Lichfield" => sub {
     for my $test (
         {
             desc      => 'confirm link for cobrand council in two tier cobrand links to cobrand site',
@@ -1190,32 +1242,38 @@ SKIP: {
 
             my $user = $mech->log_in_ok($test_email) if $test->{redirect};
 
-            $mech->get_ok('/around');
-            $mech->content_contains( "Lichfield District Council FixMyStreet" );
-            $mech->submit_form_ok( { with_fields => { pc => 'WS13 7RD' } }, "submit location" );
-            $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
-            my %optional_fields = $test->{redirect} ?  () :
-                ( email => $test_email, phone => '07903 123 456' );
+            FixMyStreet::override_config {
+                ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                BASE_URL => 'http://www.fixmystreet.com',
+                MAPIT_URL => 'http://mapit.mysociety.org/',
+            }, sub {
+                $mech->get_ok('/around');
+                $mech->content_contains( "Lichfield District Council FixMyStreet" );
+                $mech->submit_form_ok( { with_fields => { pc => 'WS13 7RD' } }, "submit location" );
+                $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+                my %optional_fields = $test->{redirect} ?  () :
+                    ( email => $test_email, phone => '07903 123 456' );
 
-            # we do this as otherwise test::www::mechanize::catalyst
-            # goes to the value set in ->host above irregardless and
-            # that is a 404. It works but it is not pleasant.
-            $mech->clear_host if $test->{redirect} && $test->{national};
-            $mech->submit_form_ok(
-                {
-                    button      => $test->{button},
-                    with_fields => {
-                        title         => 'Test Report',
-                        detail        => 'Test report details.',
-                        photo         => '',
-                        name          => 'Joe Bloggs',
-                        may_show_name => '1',
-                        category      => $test->{category},
-                        %optional_fields
-                    }
-                },
-                "submit good details"
-            );
+                # we do this as otherwise test::www::mechanize::catalyst
+                # goes to the value set in ->host above irregardless and
+                # that is a 404. It works but it is not pleasant.
+                $mech->clear_host if $test->{redirect} && $test->{national};
+                $mech->submit_form_ok(
+                    {
+                        button      => $test->{button},
+                        with_fields => {
+                            title         => 'Test Report',
+                            detail        => 'Test report details.',
+                            photo         => '',
+                            name          => 'Joe Bloggs',
+                            may_show_name => '1',
+                            category      => $test->{category},
+                            %optional_fields
+                        }
+                    },
+                    "submit good details"
+                );
+            };
             is_deeply $mech->page_errors, [], "check there were no errors";
 
             # check that the user has been created/ not changed
@@ -1232,9 +1290,8 @@ SKIP: {
 
             if ( $test->{redirect} ) {
                 is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
-                my $base = FixMyStreet->config('BASE_URL');
-                $base =~ s{http://}{};
-                $base = "lichfielddc.$base" unless $test->{national};
+                my $base = 'www.fixmystreet.com';
+                $base = "lichfielddc.fixmystreet.com" unless $test->{national};
                 is $mech->uri->host, $base, 'redirected to correct site';
             } else {
                 # receive token
@@ -1246,21 +1303,34 @@ SKIP: {
                 ok $url, "extracted confirm url '$url'";
 
                 # confirm token
-                $mech->get_ok($url);
+                FixMyStreet::override_config {
+                    ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                    BASE_URL => 'http://www.fixmystreet.com',
+                }, sub {
+                    $mech->get_ok($url);
+                };
 
-                my $base = FixMyStreet->config('BASE_URL');
-                $base =~ s{http://}{http://lichfielddc.} unless $test->{national};
+                my $base = 'www.fixmystreet.com';
+                $base = 'lichfielddc.fixmystreet.com' unless $test->{national};
                 $mech->content_contains( $base . '/report/' .
                     $report->id, 'confirm page links to correct site' );
 
                 if ( $test->{national} ) {
                     # Shouldn't be found, as it was a county problem
-                    is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
+                    FixMyStreet::override_config {
+                        ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                    }, sub {
+                        is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
+                    };
 
                     # But should be on the main site
                     $mech->host( 'www.fixmystreet.com' );
                 }
-                $mech->get_ok( '/report/' . $report->id );
+                FixMyStreet::override_config {
+                    ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                }, sub {
+                    $mech->get_ok( '/report/' . $report->id );
+                };
             }
 
             $report->discard_changes;
@@ -1271,12 +1341,9 @@ SKIP: {
             $mech->delete_user($user);
         };
     }
-}
+};
 
-SKIP: {
-    skip( "Need 'seesomething' in ALLOWED_COBRANDS config", 100 )
-        unless FixMyStreet::Cobrand->exists('seesomething');
-
+subtest "test SeeSomething" => sub {
     $mech->host('seesomething.fixmystreet.com');
     $mech->clear_emails_ok;
     $mech->log_out_ok;
@@ -1346,22 +1413,27 @@ SKIP: {
             }
 
             $mech->get_ok( '/around' );
-            $mech->submit_form_ok(
-                {
-                    with_fields => {
-                        pc => $test->{pc},
+            FixMyStreet::override_config {
+                ALLOWED_COBRANDS => [ 'seesomething' ],
+                MAPIT_URL => 'http://mapit.mysociety.org/',
+            }, sub {
+                $mech->submit_form_ok(
+                    {
+                        with_fields => {
+                            pc => $test->{pc},
+                        },
                     },
-                },
-                'submit around form',
-            );
-            $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
+                    'submit around form',
+                );
+                $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
 
-            $mech->submit_form_ok(
-                {
-                    with_fields => $test->{fields},
-                },
-                'Submit form details with no user details',
-            );
+                $mech->submit_form_ok(
+                    {
+                        with_fields => $test->{fields},
+                    },
+                    'Submit form details with no user details',
+                );
+            };
             is_deeply $mech->page_errors, [], "check there were no errors";
 
             $user =
@@ -1385,7 +1457,7 @@ SKIP: {
     }
 
     $bus_contact->delete;
-}
+};
 
 $contact1->delete;
 $contact2->delete;
