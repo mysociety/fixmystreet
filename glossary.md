@@ -6,12 +6,14 @@ title: Glossary
 FixMyStreet glossary
 ====================
 
-<p class="lead">Glossary of terms for FixMyStreet, mySociety's geographic problem reporting platform.</p>
+<p class="lead">Glossary of terms for FixMyStreet, mySociety's geographic
+problem reporting platform.</p>
 
-The [FixMyStreet](http://www.fixmystreet.com/) Platform is an open source project
-to help people run websites for reporting common street problems such as
-potholes and broken street lights to an appropriate authority. For technical
-information, see [code.fixmystreet.com](http://code.fixmystreet.com).
+The [FixMyStreet](http://www.fixmystreet.com/) Platform is an open source
+project to help people run websites for reporting common street problems such
+as potholes and broken street lights to an appropriate authority. For
+technical information, see
+[code.fixmystreet.com](http://code.fixmystreet.com).
 
 Definitions
 -----------
