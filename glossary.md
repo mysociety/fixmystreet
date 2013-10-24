@@ -18,7 +18,7 @@ technical information, see
 Definitions
 -----------
 
-<!-- TODO: config-variable template -->
+<!-- TODO: template -->
 
 [abuse list](#abuse-list) |
 [administrator](#administrator) |
@@ -28,11 +28,13 @@ Definitions
 [body](#body) |
 [category](#category) |
 [cobrand](#cobrand) |
+[config variable](#config-variable) |
 [contact](#contact) |
 [council](#council) |
 [dashboard](#dashboard) |
 [flagged](#flagged) |
 [geocoder](#geocoder) |
+[git](#git) |
 [integration](#integration) |
 [lat-long](#latlong) |
 [map](#map) |
@@ -280,6 +282,42 @@ Definitions
       </ul>
     </div>
   </dd>
+
+  <dt>
+    <a name="config-variable">config variable</a> (also config setting, or config option)
+  </dt>
+  <dd>
+    A <strong>config variable</strong> is one of the settings in the
+    configuration file <code>conf/general.yml</code>. Config variables affect
+    the way your FixMyStreet installation behaves, and you must make sure they
+    are correct when you install and customise your site.
+    <p>
+      Note that <code>conf/general.yml</code> is <em>not</em> in the <a
+      href="#git" class="glossary">git repository</a> (it cannot be, because
+      it would contain your own private config settings, such as your database
+      password). Instead, there is an example file,
+      <code>cong/general.yml-example</code> you can
+      copy and edit.
+    </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See more about <a href="/install/">installation</a> for
+          key config settings to get your site running.
+        </li>
+        <li>
+          See more about <a href="/customising/">customising</a> for 
+          more config options.
+        </li>
+        <li>
+          See <a href="http://www.yaml.org">the YAML website</a> for
+          everything about YAML, which is the format of the
+          <code>general.yml</code> file
+        </li>
+      </ul>
+    </div>
+  </dd>
   
   <dt>
     <a name="contact">contact</a>
@@ -373,6 +411,44 @@ Definitions
         <li>
           See <a href="/customising/fms_and_mapit">How FixMyStreet uses
           MapIt</a> for more about how the geocoder is used.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="git">git</a> (also github,  git repository, and git repo)
+  </dt>
+  <dd>
+    We use a popular source code control system called <strong>git</strong>. This
+    helps us track changes to the code, and also makes it easy for other people
+    to duplicate and even contribute to our software.
+    <p>
+      The website <a href="github.com/mysociety">github.com</a> is a central, public
+      place where we make our software available. Because it's Open Source, you can
+      inspect the code there (FixMyStreet is mostly written in the programming language
+      Perl), report bugs, suggest features and many other useful things.
+    </p>
+    <p>
+      The entire set of files that form the FixMyStreet platform is called the
+      <strong>git repository</strong> or <strong>repo</strong>. When you
+      install FixMyStreet, you are effectively cloning our repository on your
+      own machine.
+    </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See the <a href="/install/">installation instructions</a> which will
+          clone the FixMyStreet repo.
+        </li>
+        <li>
+          Everything about git from the <a
+          href="//http://git-scm.com">official website</a>.
+        </li>
+        <li>
+          See <a href="http://github.com/mysociety">the mySociety projects on
+          github</a>.
         </li>
       </ul>
     </div>
