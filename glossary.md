@@ -18,8 +18,6 @@ technical information, see
 Definitions
 -----------
 
-<!-- TODO: template -->
-
 [abuse list](#abuse-list) |
 [administrator](#administrator) |
 [alert](#alert) |
@@ -45,6 +43,7 @@ Definitions
 [send method](#send-method) |
 [staff users](#staff-user) |
 [state](#state) |
+[template](#template) |
 [update](#update) |
 [user account](#user-account)
 
@@ -754,6 +753,41 @@ Definitions
         <li>
           See <a href="/running/users">About users</a> for more about managing
           users, including how to create a staff account.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="template">template</a>
+  </dt>
+  <dd>
+    FixMyStreet creates its web pages (and emails) using
+    <strong>templates</strong>. If you want to customise your installation
+    beyond just changing the colours and logo (that is, using CSS), you can
+    add new templates for your own <a href="#cobrand"
+    class="glossary">cobrand</a>. You only need to create templates that are
+    different from the default ones.
+    <p>
+      Templates are in the <code>templates/web</code> and
+      <code>templates/email</code> directories -- themselves containing
+      directories for every cobrand.
+    </p>
+    <p>
+      The web templates use the popular Template Toolkit system. You can
+      change the templates without needing to know how to write Perl (the
+      programming language the rest of FixMyStreet is written in).
+    </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See more about using templates to <a
+          href="/customising/">customise</a> your installation.
+        </li>
+        <li>
+          See the <a href="http://www.template-toolkit.org">Template Toolkit
+          website</a>, which is the system the FixMyStreet templates use.
         </li>
       </ul>
     </div>
