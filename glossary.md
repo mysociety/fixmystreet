@@ -16,10 +16,11 @@ information, see [code.fixmystreet.com](http://code.fixmystreet.com).
 Definitions
 -----------
 
-<!-- TODO: alert config-variable template update -->
+<!-- TODO: config-variable template -->
 
 [abuse list](#abuse-list) |
 [administrator](#administrator) |
+[alert](#alert) |
 [area](#area) |
 [area type](#area-type) |
 [body](#body) |
@@ -40,6 +41,7 @@ Definitions
 [send method](#send-method) |
 [staff users](#staff-user) |
 [state](#state) |
+[update](#update) |
 [user account](#user-account)
 
 ---
@@ -109,7 +111,25 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
+  <dt>
+    <a name="alert">alert</a>
+  </dt>
+  <dd>
+    FixMyStreet sends <strong>alerts</strong> to anyone who has subscribed to
+    be notified of new <a href="#report" class="glossary">reports</a> or <a
+    href="#update" class="glossary">updates</a>. Alerts are sent as emails
+    (although they are also available as RSS feeds).
+    <p>
+      Examples of the criteria for which alerts can be sent include: all
+      problems within a <a href="#body" class="glossary">body</a>, or all
+      problems within a certain distance of a particular location.
+    </p>
+    <p>
+      Alerts are available on the FixMyStreet site at <code>/alert</code>.
+    </p>
+  </dd>
+
   <dt>
     <a name="area">area</a>
   </dt>
@@ -656,6 +676,36 @@ Definitions
         <li>
           See <a href="/running/users">About users</a> for more about managing
           users, including how to create a staff account.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="update">update</a>
+  </dt>
+  <dd>
+    Anyone can add an <strong>update</strong> to an existing <a href="#report"
+    class="glossary">problem report</a>. The update can contain a message, a
+    picture, and even change the report's <a href="#state"
+    class="glossary">state</a>.
+    <p>
+      For example, someone can leave an update on a pothole report to say, "I
+      think it's getting worse!", and add a photograph. Or they can mark the
+      problem as fixed.
+    </p>
+    <p>
+      <a href="#staff-user" class="glossary">Staff users</a> can add more
+      specific states if they update a problem that belongs to the body they
+      work for.
+    </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          FixMyStreet supports <strong><a href="#integration"
+          class="glossary">integration</a></strong>, which can enable
+          automatic updates whenever a body fixes a problem.
         </li>
       </ul>
     </div>
