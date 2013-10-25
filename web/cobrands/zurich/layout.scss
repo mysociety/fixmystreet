@@ -4,11 +4,6 @@
 
 // Things to override from parent stylesheet
 
-body {
-    color: #3c3c3c;
-    background-color: #fff;
-}
-
 // White background, so no shadow or margin needed.
 .content {
     color: #3c3c3c;
@@ -104,7 +99,6 @@ body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
             border-top: none;
-            background: #fff;
             height: 117px; // 99px+18px for padding
             padding: 0 10px;
             box-sizing: border-box;
@@ -153,19 +147,6 @@ body.mappage {
       max-width: none;
     }
   }
-}
-
-#main-nav {
-    ul#main-menu {
-        li {
-            a:hover {
-                background: $primary/1.1;
-            }
-            span {
-                color: $primary_text;
-            }
-        }
-    }
 }
 
 #zurich-main-nav {

@@ -4,11 +4,6 @@
 // d523b431 - "Stevenage Home page styles"
 // 2a23e09f - Moved menu on map page and reverted to full header.
 
-body {
-    color: #222;
-    background: #dddddb;
-}
-
 // d523b431
 .nav-wrapper{
   .nav-wrapper-2{
@@ -60,9 +55,6 @@ body {
                     margin: 0;
                     @include border-radius(0.25em);
                 }
-                a:hover {
-                    background: #444;
-                }
                 a.report-a-problem-btn {
                     padding:0.5em 0.75em;
                     margin:0;
@@ -113,7 +105,6 @@ body.mappage {
             width: 29em;
             padding-top: 0.15em;
             z-index: 0;
-            background-color: #6b6969;
             @include background(linear-gradient(#6b6969, #555454));
         }
     }

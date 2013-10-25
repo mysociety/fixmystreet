@@ -6,12 +6,8 @@ $image-sprite: 'images/sprite.png';
 
 
 body {
-  background-color: #fff;
-  background-image: url(images/tropical-sea-pattern.jpg);
-  color: $primary_text;
-  
   .wrapper{
-  background-color: #fff;
+    background-color: #fff;
     background: url('images/fixmindelo-header.png') 30% 0% repeat-x;
   }
   #site-logo {
@@ -19,29 +15,12 @@ body {
   }
 }
 
-
-body.mappage {
-    .nav-wrapper {
-        .nav-wrapper-2 {
-            background: #fff;
-        }
-    }
-}
-
 #main-nav {
     ul {
-        li {
-            a, span {
-                color: #000;
-            }
-        }
         &#main-menu {
             li {
                 a.report-a-problem-btn {
                   color: #fff;
-                }
-                a:hover {
-                    background: $primary;
                 }
             }
         }

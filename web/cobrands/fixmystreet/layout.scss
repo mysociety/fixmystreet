@@ -66,17 +66,18 @@ h3, h4 {
 @import "_colours";
 @import "../sass/layout";
 
-// Tiled main body background
-body {
-    background: #1A1A1A url(/cobrands/fixmystreet/images/tile.jpg) 0 0 repeat;
-    color: #fff;
-}
-
 // Tiled background stripe, not plain colour
 #front-main {
     background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
 }
 #main-nav {
+    ul#main-menu {
+        li {
+            a:hover {
+                @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
+            }
+        }
+    }
     ul#mysoc-menu {
         background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
     }
@@ -86,4 +87,10 @@ body {
         @include border-image(url(/cobrands/fixmystreet/images/tile-y-border.jpg) 4 0 0 0);
     }
 }
-
+body.mappage {
+    .nav-wrapper {
+        .nav-wrapper-2 {
+              @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+        }
+    }
+}

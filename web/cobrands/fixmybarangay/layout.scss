@@ -13,10 +13,6 @@ $image-sprite: 'images/sprite.png';
 }
 
 body {
-  background: #C7B299;
-  background-image: url(images/pat3.png);
-  color: $primary_text;
-  
   .wrapper{
     background: url('images/fmb-header.png') 30% 0% repeat-x;
   }
@@ -42,6 +38,10 @@ body.frontpage {
 
 .ie6 body.frontpage #site-logo {
     background-image: url(images/ie_front_logo.gif);
+}
+
+body.mappage .nav-wrapper div.nav-wrapper-2 {
+  border-bottom: 2px solid #333;
 }
 
 #main-nav ul#mysoc-menu li a#mysoc-logo {
@@ -72,18 +72,6 @@ body.frontpage {
         }
         &#main-menu{
           padding: 3px 0;
-          li{
-            a{
-              //@extend .report-a-problem-btn;
-              color: #fff;
-              padding: 0.7em;
-              background-color: rgba(0,0,0,0);
-              background-image: none;
-              &:hover{
-                background-color: rgba(0,0,0,0.8);
-              }
-            }
-          }
         }
         
     }
