@@ -824,8 +824,9 @@ Definitions
           users.
         </li>
         <li>
-          A <strong>staff user</strong> is one whose user account is marked as
-          belonging to a <a href="#body" class="glossary">body</a>.
+          A <strong><a href="#staff-user" class="glossary">staff
+          user</a></strong> is one whose user account is marked as belonging
+          to a <a href="#body" class="glossary">body</a>.
         </li>
       </ul>
     </div>
