@@ -477,11 +477,6 @@ body.twothirdswidthpage {
   z-index:1;
 }
 
-// Pull OpenLayers navigation down a bit
-#fms_pan_zoom {
-  top: 4.75em !important;
-}
-
 // push zoom back over to right
 #fms_pan_zoom_zoomin {
   left:auto !important;

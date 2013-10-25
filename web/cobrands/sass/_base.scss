@@ -1018,11 +1018,10 @@ a:hover.button-left {
 // Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
   right: 0.5em !important;
-  top: 2.75em !important;
+  top: 0.5em;
   left: 0.5em !important;
 }
 // The left and right of the above causes the navigation to move off-screen left in IE6.
-// XXX Need to check IE7
 .ie6 #fms_pan_zoom {
   left: auto !important;
 }

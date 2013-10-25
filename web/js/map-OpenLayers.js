@@ -273,8 +273,13 @@ $(function(){
         }, fixmystreet.map_options)
     );
 
-    if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
-        $('#fms_pan_zoom').css({ top: '2.75em !important' });
+    // Need to do this here, after the map is created
+    if ($('html').hasClass('mobile')) {
+        if (fixmystreet.page == 'around') {
+            $('#fms_pan_zoom').css({ top: '2.75em' });
+        }
+    } else {
+        $('#fms_pan_zoom').css({ top: '4.75em' });
     }
 
     // Set it up our way
