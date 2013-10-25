@@ -250,6 +250,11 @@ body.mappage {
   #site-logo{
     position: fixed;
   }
+  #user-meta {
+    max-width: none;
+    left: 0;
+    margin-left: 1em;
+  }
 }
 .ie6, .ie7 {
   body.mappage {
@@ -267,6 +272,9 @@ body.mappage {
     }
     #site-logo {
       position: absolute;
+    }
+    #user-meta {
+      margin-left: 2em;
     }
   }
 }
@@ -531,6 +539,7 @@ body.twothirdswidthpage {
   position: relative;
   max-width: 57em;
   margin:0 auto;
+  left: 1em;
   p {
     @include inline-block;
     position:absolute;
@@ -848,9 +857,6 @@ body.frontpage {
     #site-logo {
       top:-1em;
     }
-    #user-meta p {
-      top:-2em;
-    }
   }
 }
 .ie6 body.frontpage #site-logo {
@@ -1161,20 +1167,6 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
   // Pull OpenLayers navigation down a bit more
   #fms_pan_zoom {
     top: 7em !important;
-  }
-
-  //fix the left margin on login bit
-  #user-meta {
-    p {
-      left:1em;
-    }
-  }
-  body.frontpage {
-    #user-meta {
-      p {
-        left:auto;
-      }
-    }
   }
 
   //Map becomes percentage width
