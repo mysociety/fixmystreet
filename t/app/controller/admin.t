@@ -562,7 +562,7 @@ foreach my $test (
         $report->discard_changes;
 
         if ( $report->state eq 'confirmed' ) {
-            $mech->content_contains( 'type="submit" name="resend"', 'no resend button' );
+            $mech->content_contains( 'type="submit" name="resend"', 'resend button' );
         } else {
             $mech->content_lacks( 'type="submit" name="resend"', 'no resend button' );
         }
@@ -1211,6 +1211,15 @@ for my $test (
         $mech->content_contains( 'Updated!' );
     };
 }
+
+subtest "Test setting a report from unconfirmed to something else doesn't cause a front end error" => sub {
+    $report->update( { confirmed => undef, state => 'unconfirmed', non_public => 0 } );
+    $mech->get_ok("/admin/report_edit/$report_id");
+    $mech->submit_form_ok( { with_fields => { state => 'investigating' } } );
+    $report->discard_changes;
+    ok( $report->confirmed, 'report has a confirmed timestamp' );
+    $mech->get_ok("/report/$report_id");
+};
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );

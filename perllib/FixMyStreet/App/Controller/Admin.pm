@@ -760,7 +760,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             $problem->photo(undef);
         }
 
-        if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
+        if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
             $problem->confirmed( \'ms_current_timestamp()' );
         }
 
