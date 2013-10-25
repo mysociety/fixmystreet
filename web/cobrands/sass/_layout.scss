@@ -32,7 +32,6 @@ h1 {
   padding: 0em;
   width: 60em;
   position: relative;
-  z-index:1;
 }
 
 //z-index stack order gets reset to 0 in ie6/7 if you position anything,
@@ -736,30 +735,30 @@ textarea.form-error {
   @include border-radius(0 0 0.25em 0.25em);
 }
 
+#report-a-problem-sidebar, .general-sidebar-notes {
+    position: absolute;
+    left: 29em;
+    width: 15em;
+    @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
+}
 
 // Report a problem sidebar notes
 #report-a-problem-sidebar {
-  position:absolute;
-  z-index:-1;//push behind .content, .container resets z-index for this
-  left:29.5em;
   top:5em;
-  width:15em;
-  @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
-  .sidebar-tips {
-    background:#eeeeee;
+  div {
     padding:1em;
     font-size:0.75em;
+    background:#eeeeee;
   }
   .sidebar-notes {
     background:#333333;
-    padding:1em;
     color:#ffffff;
-    font-size:0.75em;
   }
 }
 .ie6, .ie7 {
   #report-a-problem-sidebar, .general-sidebar-notes {
-    left: 29em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
+    left: 28.5em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
+    z-index: 1;
   }
 }
 
@@ -776,11 +775,6 @@ textarea.form-error {
 
 // More general sidebar notes
 .general-sidebar-notes {
-  position: absolute;
-  left:29.5em;
-  width:15em;
-  z-index: -1; //push behind .content, .container resets z-index for this
-  @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
   p {
     background:#eeeeee;
     font-size:0.75em;
@@ -796,7 +790,7 @@ textarea.form-error {
 /* Adjust the above so text flow can be different from display */
 #forgotten-pw {
     position: relative;
-    left: 27em;
+    left: 26.5em;
     top: -7em;
     margin-bottom: -7em; // So no gap in main flow
 }
