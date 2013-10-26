@@ -1035,6 +1035,9 @@ subtest 'report search' => sub {
     my $r_id = $report->id;
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id">$r_id</a>} );
 
+    $mech->get_ok('/admin/reports?search=' . $report->external_id);
+    $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id">$r_id</a>} );
+
     $mech->get_ok('/admin/reports?search=ref:' . $report->external_id);
     $mech->content_like( qr{href="http://[^/]*[^.]/report/$r_id">$r_id</a>} );
 
