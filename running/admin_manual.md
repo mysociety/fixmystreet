@@ -1,125 +1,228 @@
 ---
 layout: default
-title: FixMyStreet Administrator's Manual
+title: FixMyStreet's surveys
 author: dave
 ---
 
+
 # Administrator's Manual
 
-<p class="lead">This guide will give you a broad overview of what it takes to
-administer a FixMyStreet site and the types of problem that you might face when
-running it. It includes some examples of how mySociety's own 
-<a href="http://www.fixmystreet.com">fixmystreet.com</a> administrator deals with
-these issues.</p>
+<p class="lead">What is it like running a FixMyStreet site? This guide
+explains what you can expect, and the types of problem that you might
+encounter. It includes examples of how mySociety manages their own site, <a
+href="http://www.fixmystreet.com">fixmystreet.com</a>.</p>
 
 ## About this document
 
-This guide contains examples of suggestions and problems from our UK
-experience. This is not a definitive guide on how to solve issues and you may
-well find that your own solutions work best.
+We'll be giving suggestions and examples of problems from our experience in
+the UK. But there is more than one way to solve issues, and you may well find
+that your own solutions work best.
 
-Please feel free to contribute and discuss what is in this document.
-We have a lovely [community](/community) of re-users that have all been
-through the set-up and administration of one of these sites. They're a great
-resource for answers and you should feel free to join in or ask for help.
+We hope that you will contribute to this document with your own ideas and
+feedback. You can do this by [contacting us](http://www.mysociety.org/contact)
+directly, or joining the mailing list.
+
+The [FixMyStreet mailing list](/community) is a great place to share ideas or
+ask questions. Everyone on there has either built, or is building, a
+FixMyStreet site, so they have real-life knowledge and are keen to help.
+
+It's a friendly community, and we recommend that you join in and ask as many
+questions as you need to.
 
 ## Other helpful documents
 
 * **Before** you decide to run FixMyStreet, you should read the 
   ["Can we fix it?" DIY Guide](/The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf).
 
-* If you are hosting FixMyStreet yourself, you **must** read the 
-  [installation instructions](/install) first.
-  
-* There's more detailed information available on [running FixMyStreet](/running).
+* If you are hosting FixMyStreet yourself, you **must** read the [installation
+  instructions](/install) first. Once you've done that, you'll probably need
+  the information about [customising your site](/customising) too.
 
-## Who is the administrator?
+* As an administrator, you should also read our more detailed information on
+  [running FixMyStreet](/running).
 
-The team who sets up the site and the team who keeps it running day-to-day
-might not be the same people. Administrative work and user support is a
-regular requirement and you will need to think about who could be responsible
-for it.
+
+## Find your administrator
+
+Every FixMyStreet site needs an <a href="/glossary/#administrator"
+class="glossary">administrator</a>. Even when the site is running smoothly,
+your users will need help, and there will be regular administrative tasks to
+perform. So, sooner rather than later, you will need to think about who will
+be responsible.
 
 <div class="attention-box info"> 
-If you're just starting with your FixMyStreet site, it's possible that you
-have not got an administrator yet, or that you didn't realise you needed one.
-Don't worry! Look through this document to see the kind of things you need to
-think about when finding someone.
+  If you're just starting on your FixMyStreet project, it's possible that you
+  have not found an administrator yet, or that you didn't realise you needed
+  one. Don't worry! Look through this document to see why you need one, and
+  what sort of tasks they'll be doing.
 </div>
+
+## Who do I need?
+
+The team who sets up the site and those who keep it running day-to-day might
+(or might not) be the same people.
 
 **To set up a new installation**, we recommend you have at least **one
 developer** and **one administrator** who can work on the site.
 
-At the beginning it's likely these roles would be quite labour intensive as
-you customise your site, collect the email addresses and work on promoting
-your project.
+At the beginning you'll be quite busy. You'll be doing a lot of things, like
+customising your site, collecting the email addresses that you'll be sending
+your users' reports to, and perhaps promoting your project.
 
-**Once your site is up and running**, and being used every day, you can manage
-with just **one administrator**.
+**Once your site is up and running**, you can manage with just **one
+administrator**.
 
-For mySociety's UK FixMyStreet site, which has been running since 2007, we
-need a maximum of one hour per day to manage the user support and site
-administration. User support will naturally take slightly longer after
-weekends than towards the end of the week. In the UK, the support emails are
-typically checked twice daily, in the morning and at lunchtime, so the actual
-workload becomes very light.
+The administrator deals with problems and questions from users - we call this
+'user support'. He or she will also answer questions from the bodies you send
+your reports to.
+
+Each day, the administrator of mySociety's UK FixMyStreet site spends, on
+average, between 15 minutes and an hour on user support.
+
+Ideally, your administrator will work every day, as there may be urgent
+requests (see "Types of tasks", below). But if you cannot manage this, a
+couple of sessions a week will be sufficient.
+
+Our administrator usually checks support emails twice a day, in the morning
+and at lunchtime. This breaks the work into very short blocks, but also
+ensures that she can deal with any urgent problems promptly.
 
 ## The administration pages ("admin")
+
+### Security
 
 By default, the administration pages -- the "admin" -- can be found at
 `/admin`. These pages must be secured against public access.
 
 We strongly recommend you access your admin over a secure connection, such as
-HTTPS (this means that everything that goes between your computer and the
-server is encrypted, so can't easily be intercepted). Furthermore, it's a good
-idea to restrict access to only those IP addresses from which you know you
-will be accessing it. Both these things require system configuration (that is,
-it's outside FixMyStreet itself) so we can't describe how to do this here.
+HTTPS. This means that everything that goes between your computer and the
+server is encrypted, so can't easily be intercepted.
 
-The admin has the following sections, which you can access by clicking on the
-link at the top of any admin page:
+It's also a good idea to allow access to admin only from your own, trusted IP
+addresses.
 
-* **Summary page** - The summary page shows the number of live reports,
-  updates, confirmed/unconfirmed alerts, sent questionnaires and bodies'
-  contacts.
+Both of these precautions require system configuration (that is, they depend
+on settings outside FixMyStreet). If you're running an Apache webserver, you
+can do this using `htauth` -- see [the Apache htauth
+documentation](http://httpd.apache.org/docs/current/mod/mod_authn_file.html)
+If you're using an external hosting service, their technical support staff may
+be willing set this up for you if you can't do it yourself.
 
-* **Bodies** <br/> You can add or edit <a href="/glossary/#body" class="glossary">bodies</a> and
-  their categories and contacts. Bodies are associated with one or more 
-  <a href="/glossary/#area" class="glossary">areas</a>.
-  [More information on bodies](/running/bodies_and_contacts).
+It's very important that you do secure your admin: so if you really do have
+problems setting this up, [get in touch](/community/) and we'll try to help.
 
-* **Reports** <br/>  The reports page lets you search and edit 
-  <a href="/glossary/#report" class="glossary">problem reports</a> and updates
-  in the system. If your database is very large -- for example, the UK
-  FixMyStreet has tens of thousands of records -- some searches may be a
-  little slow. If you know the ID of a particular report, use "id:12345".
+### Contents
 
-* **Timeline** <br/>  The timeline is a log of FixMyStreet activity: report
+The Admin interface is divided into the following sections. You can access
+them by clicking on the link at the top of any admin page:
+
+* **Summary page** <br/> The summary page shows the number of live <a
+  href="/glossary/#report" class="glossary">reports</a>, <a
+  href="/glossary/#update" class="glossary">updates</a>, <a
+  href="/glossary/#alert" class="glossary">alerts</a>, sent 
+  <a href="/glossary/#survey" class="glossary">questionnaires</a> and
+  bodies' <a href="/glossary/#contact" class="glossary">contacts</a>.
+  <p>
+    This page is useful when the media ask how many reports your site has
+    processed. You can also use it to motivate your team, or to prove yourself
+    to official bodies.
+  </p>
+
+* **Bodies** <br/> <a href="/glossary/#body" class="glossary">Bodies</a> are the
+  authorities that your site sends reports to. Each body has its own page in
+  the admin, listing the categories of problem that they accept (eg, potholes,
+  street lights, etc) and the email address associated with the category.
+  <p>
+    Bodies sometimes change their email addresses, and dealing with this is a
+    regular task for an administrator. You can add or edit bodies from these
+    pages. You can also add or edit their <a href="/glossary/#category"
+    class="glossary">categories</a> and <a href="/glossary/#contact"
+    class="glossary">contact</a> email addresses. Bodies are associated with
+    one or more <a href="/glossary/#area" class="glossary">areas</a>. [More
+    information on bodies](/running/bodies_and_contacts).
+  </p>
+
+* **Reports** <br/> The reports page lets you search for, and edit <a
+  href="/glossary/#report" class="glossary">problem reports</a> and updates.
+  <p>
+    You will need to do this often - for example, when a user has emailed to
+    complain about a report, or to ask you to check if the report has been
+    sent.
+  </p>
+  <p>
+    You can search by the user's name, email address, or a word or phrase from
+    the report.
+  </p>
+  <p>
+    If your database is very large -- like the UK FixMyStreet, which has many
+    thousands of reports -- some searches may be a little slow. But if you
+    know the ID of the report, you can tell FixMyStreet to find it directly,
+    using <code>id:</code> first. The ID is in the URL of the live report: for
+    example, on our site, we can find
+    <code>http://www.fixmystreet.com/report/391267</code> by searching for
+    <code>id:391267</code>.
+  </p>
+
+* **Timeline** <br/> The timeline is a log of FixMyStreet activity: report
   updates, status changes, and so on.
 
-* **Survey** <br/>  By default, FixMyStreet sends out surveys (also
-  called questionnaires) to users four weeks after they reported a problem. 
-  We use these surveys to collect data on the performance of the bodies (in
-  the UK, these are local councils). The survey page shows statistics based on
-  the responses. If you don't want your FixMyStreet to send out surveys, you can
-  override this behaviour in a [cobrand module](/customising/cobrand-module/).
+* **Survey** <br/> By default, FixMyStreet sends out <a
+  href="/glossary/#survey" class="glossary">surveys</a> (also called
+  questionnaires) to users four weeks after they reported a problem.
+  <p>
+    We use these surveys to collect data on the performance of the bodies. The
+    survey page shows statistics based on the responses, which again can be
+    useful for the media, or for research when you are looking at how
+    effective your site has been.
+  </p>
+  <p>
+    If you don't want your FixMyStreet site to send out surveys, you can switch
+    off this behaviour in a [cobrand module](/customising/cobrand-module/).
+  </p>
 
-* **Users** <br/>  You can [manage users](/running/users), including adding new ones
-  or banning abusive ones. By default, any staff users (those that belong to
-  a body) are listed on this page, but you can use the search to find others.
+* **Users** <br/> You can [manage users](/running/users) from this section.
+  For example you can edit a <a href="/glossary/#user-account">user's</a>
+  email address, or <a href="/glossary/#flagged" class="glossary">flag</a> or
+  <a href="/glossary/#abuse-list" class="glossary">ban</a> or abusive one.
+  <p>
+    Each user has an individual page in the admin, and it is sometimes quicker
+    to search for a user than a report, if they have contacted you by email
+    and have not mentioned which report they are talking about. Each user's
+    page lists all their activity on the site.
+  </p>
+  <p>
+    By default, any staff users (those that belong to a body) are listed on
+    this page.
+  </p>
 
-* **Flagged** <br/>  You can flag any report or user. This simply marks it for 
-  attention, typically because it is potentially troublesome. This is especially
-  useful if your team has more than one administrator.
-  [More information about managing users](/running/users).
+* **Flagged** <br/> You can <a href="/glossary/#flag"
+  class="glossary">flag</a> any report or user. This does not <a
+  href="/glossary/#abuse-list" class="glossary">ban</a> the user or delete the
+  report - it is just a way of marking a person or a situation as potentially
+  troublesome. Note that you can only flag a report or user from the report
+  or page.
+  <p>
+    This can be useful if your team has more than one <a
+    href="/glossary/#administrator" class="glossary">administrator</a>. [More
+    information about managing users](/running/users).
+  </p>
 
-* **Stats** <br/>  The stats page lets you generate a statistics report of problem
-  reports over a particular date range (and, optionally, a body).
+* **Stats** <br/> The stats page lets you analyse the number and types of <a
+  href="/glossary/#report" class="glossary">report</a> over a particular date
+  range. Optionally, you can restrict it to report on a single <a
+  href="/glossary/#body" class="glossary">body</a>.
+  <p>
+    You might use this if you want to know how many reports have been sent
+    within, for example, the last three months, or how many reports have been
+    sent to a specific body since launch.
+  </p>
+
+<a name="report-states"></a>
 
 ## Report states
 
 A <a href="/glossary/#report" class="glossary">problem report</a> can be in
-one of these states:
+one of these <a href="/glossary/#state" class="glossary">states</a>:
 
 <dl class="reveal-on-click" data-reveal-noun="report states">
   <dt>
@@ -127,21 +230,23 @@ one of these states:
   </dt>
   <dd>
     <p>
-      If FixMyStreet is not certain that the report's creator is genuine, its
-      state remains <em>unconfirmed</em>. Unconfirmed reports do not appear on the
-      website. A report is confirmed (and its state becomes <em>open</em>) when:
+      Until FixMyStreet is certain that the report's creator is genuine, its
+      state remains <em>unconfirmed</em>. Unconfirmed reports do not appear on
+      the website. A report is confirmed (and its state becomes <em>open</em>)
+      when:
     </p>
     <ul>
       <li>
-        its creator clicks on the confirmation email that was sent to them as soon as
-        the report was created, or
+        its creator clicks on the link in FixMyStreet's confirmation email, or
       </li>
       <li>
         its creator was already logged in when the report was created, or
       </li>
       <li>
-        an administrator explicitly confirms it (by searching in <strong>Reports</strong>
-        and changing the state by clicking <strong>edit</strong>)
+        an <a href="/glossary/#administrator"
+        class="glossary">administrator</a> confirms it (by searching in
+        <strong>Reports</strong> and changing the state by clicking
+        <strong>edit</strong>).
       </li>
     </ul>
   </dd>
@@ -150,10 +255,11 @@ one of these states:
   </dt>
   <dd>
     <p>      
-      An <em>open</em> report has not been fixed or closed. This generally
-      means the problem has not yet been attended to. Furthermore, this
-      implies that the report is not *unconfirmed* (see above). Staff users
-      can set problems to have alternative "open" states:
+      An <em>open</em> report is one that has not been fixed or closed. This
+      generally means that the body has not yet attended to the problem. Also,
+      this implies that the report is not *unconfirmed* (see above). <a
+      href="/glossary/#staff-user" class="glossary">Staff users</a> can set
+      problems to have alternative "open" states:
     </p>
     <ul>
       <li>
@@ -178,12 +284,16 @@ one of these states:
       <li>
         <em>fixed - user</em>
         <br>
-        If a user marks them as fixed in an update.
+        If a user marks them as fixed in an <a href="/glossary/#update"
+        class="glossary">update</a>, or (for the report creator only) as part
+        of the process of answering the 4-week <a href="/glossary/#survey"
+        class="glossary">survey</a>.
       </li>
       <li>
         <em>fixed - council</em>
         <br>
-        If updated by a staff user from the body responsible for that report.
+        If updated by a <a href="/glossary/#staff-user" class="glossary">staff
+        user</a> from the body responsible for that report.
       </li>
     </ul>
   </dd>
@@ -192,8 +302,11 @@ one of these states:
   </dt>
   <dd>
     <p>
-      A staff user associated with the report's body (or an administrator) can
-      mark reports as closed without declaring it to be fixed. Possible states are:
+      A <a href="/glossary/#staff-user" class="glossary">staff user</a>
+      associated with the report's body (or an <a
+      href="/glossary/#administrator" class="glossary">administrator</a>) can
+      mark a report as <em>closed</em> without declaring it to be
+      <em>fixed</em>. Possible states are:
     </p>
     <ul>
       <li><em>unable to fix</em></li>
@@ -207,28 +320,37 @@ one of these states:
   </dt>
   <dd>
     <p>
-      Reports can be hidden by an administrator, or (if the cobrand allows it) by
-      a staff user associated with the body to which it was sent. Usually this is
-      because the report is abusive or inappropriate. Hidden reports remain in the
-      database but are not shown on the public site. Remember that this means the
-      report will probably already have been sent to the body responsible (so it
-      can still be fixed) -- so hiding a report simply prevents it being
-      displayed.
+      Reports can be hidden by an <a href="/glossary/#administrator"
+      class="glossary">administrator</a>, or (if the <a
+      href="/glossary/cobrand" class="glossary">cobrand</a> allows it) by a <a
+      href="/glossary/#staff-user" class="glossary">staff user</a> associated
+      with the body to which it was sent.
+    </p>
+    <p>
+      Hiding a report means that it is unpublished, and can no longer be seen
+      on the live site - usually because it is abusive or inappropriate.
+      Hidden reports remain in the database, and can be republished if
+      necessary.
+    </p>
+    <p>
+      Remember that a hidden report will probably have been sent to the <a
+      href="/glossary/#body" class="glossary">body</a> responsible (so it can
+      still be fixed) -- hiding a report simply prevents it being displayed.
     </p>
   </dd>
 </dl>
 
 ## Types of Tasks 
 
-Broadly speaking, there are two types of tasks for FixMyStreet administrators.
-**Maintenance** tasks are tasks that can be fixed through the online content
-management system of FixMyStreet. **User support** is generally handled using
-email contact with the users.
+There are two main types of tasks for FixMyStreet <a
+href="/glossary/#administrator" class="glossary">administrators</a>.
 
-There's not much to do to keep the site running: the beauty of FixMyStreet is
-that all the hard work is done for you by the website.
+**Maintenance** tasks can be fixed through the FixMyStreet admin interface.
 
-For the UK site the most common maintenance tasks are described below:
+**User support** is generally handled by email.
+
+The most common maintenance tasks are described below, based on our own
+experience with the UK site.
 
 <dl class="reveal-on-click" data-reveal-noun="types of task">
   <dt>
@@ -236,20 +358,28 @@ For the UK site the most common maintenance tasks are described below:
   </dt>
   <dd>
     <p>
-      When FixMyStreet sends a problem report to the body responsible,
-      sometimes that email bounces back. This usually means the email address
-      you've got for that body (and that category) is wrong, or has changed.
+      When FixMyStreet sends a <a href="/glossary/#report"
+      class="glossary">problem report</a> to the <a href="/glossary/#body"
+      class="glossary">body</a> responsible, sometimes that email bounces
+      back. This usually means the <a href="/glossary/#contact"
+      class="glossary">contact</a> email address you've got for that body (and
+      that <a href="/glossary/#category" class="glossary">category</a>) is
+      wrong, or has changed.
     </p>
     <p>
-      You can tell which report &mdash; and hence which body and category
-      &mdash; caused the problem by looking at the returned email. Then, in
-      the admin, go to <strong>Bodies</strong> and look at the contacts for
-      that body. Check that the email address looks correct (for example, if
-      there are several, see if they look similar). If everything looks OK,
-      you'll need to contact the body in question and confirm the correct
-      email address to use. It's likely that this will take up a little time,
-      because you can't route such problems to the body until you've found a
-      correct email address.
+      You can tell which report &mdash; and which body and category &mdash;
+      caused the problem by looking at the returned email.
+    </p>
+    <p>
+      Then, in admin, go to <strong>Bodies</strong> and look at the contact
+      email addresses for that body. Check that the email address looks
+      correct (for example, if there are several, see if they adhere to the
+      same format).
+    </p>
+    <p>
+      If everything looks OK, you can check online to see if you can find a
+      better address. Otherwise, you'll need to contact the body and confirm
+      the correct email address to use.
     </p>
     <p>
       Sometimes the email address may be correct, but there's another problem
@@ -257,143 +387,179 @@ For the UK site the most common maintenance tasks are described below:
       to check the error message that the mail server returned in the
       bounce-back message.
     </p>
+    <p>
+      When you have found the correct email address, make sure that you
+      re-send the report which bounced. And if you can't find an address, you
+      should contact the user to let them know that unfortunately you couldn't
+      deliver their report.
+    </p>
   </dd>
   <dt>
     Removing personal data from reports or making them anonymous
   </dt>
   <dd>
     <p>
-      Sometimes someone will write their name and address into the description
-      field on the website. Or they will forget to tick the box to make their
-      reports anonymous. Sometimes a user decides to make their report
-      anonymous after they have submitted it.
+      Sometimes people include personal details such as their address in their
+      report. Or they forget to tick the box to make their reports anonymous.
+      Sometimes a user decides to make their report anonymous after they have
+      submitted it.
     </p>
     <p>
-      In all cases, you can edit the report in the admin by going to <strong>Reports</strong>,
-      and finding the report you want, and clicking on **Edit**. You can remove the
-      details that should not be shown (we recommend replacing them with something like
-      <em>[address redacted]). Alternatively, you can mark the report as anonymous with
-      a yes/no selection.
+      In all cases, you can edit the report in admin by going to
+      <strong>Reports</strong>. Find the report you want, then click on
+      <strong>Edit</strong>.
+    </p>
     <p>
-      Be sure to save your changes (click **submit changes**) when you've finished editing.
+      Remove the details that should not be shown (we recommend replacing them
+      with something like “[address removed, but sent to
+      <em>name-of-body</em>]”).
+    </p>
+    <p>
+      If necessary, you can mark the report as anonymous with the yes/no
+      selection box.
+    </p>
+    <p>
+      Be sure to save your changes (click **submit changes**) when you've
+      finished editing.
     </p>
   </dd>
   <dt>
-    Removing reports where users say they didn't realise it would be public
+    Removing reports when users say they didn't realise their report would be
+    public
   </dt>
   <dd>
     <p>
       Occasionally people who are reporting issues don't understand that the
-      site is public, and for whatever reason they don't want their name
-      associated with the report.
+      site is public, and they don't want their name associated with the
+      report.
     </p>
     <p>
       In the UK, mySociety's first step is to anonymise the report. If the
-      user insists that the report has to be removed, you can hide it instead.
-      We're generally happy to hide such reports because even though this
-      removes them from the website, the problem report will still have been
-      sent to the body responsible.
+      user insists that the report must be removed, you can hide it instead -
+      then let your user know that you've made the changes they asked for.
     </p>
     <p>
-      If you hide a report, it's generally a good idea to also let the
-      user/reporter know once this has been done.
+      We're generally happy to hide such reports because we don't want to
+      anger our users. And although this removes them from the website, the
+      problem report will still have been sent to the body responsible.
     </p>
-  </dd>
+   </dd>
   <dt>
-    Removing reports that could potentially be libellous
+    Removing inappropriate reports 
   </dt>
   <dd>
     <p>
-      There can also be cases where potentially libellous material has been
-      drawn to your attention (there's a 'report abuse' link at the foot of
-      every report, which any user can use to tell you about a bad report).
+      There is a 'report abuse' link at the foot of every report, which any
+      user can use to alert you to a report. You will sometimes receive emails
+      to tell you that a report or update is inappropriate or potentially
+      libellous.
     </p>
     <p>
-      In the UK, this is an issue because we can be held legally responsible
-      for the content once we have been made aware of it. You should be aware
-      of your local laws and how these may affect your liability.
+      UK law states that we can be held legally responsible for the content,
+      but only if we have been made aware of it. You should make yourself
+      familiar with the law in your own jurisdiction, and how it may affect
+      your liability.
     </p>
     <p>
-      Normally, you should simply hide the report. In the admin, go to
-      **Reports**, search for it, and changing its state to *hidden*.
+      In most cases, if a report has been brought to your attention, you
+      should hide it - unless there is clearly nothing wrong with it.
     </p>
     <p>
-      It's generally a good idea to also let the user who reported the problem
-      know this has been done.
+      Abuse report emails contain the admin URL of the problem report, so you
+      can click on it and change its state to *hidden*.
+    </p>
+    <p>
+      It's generally a good idea to then tell the user who reported the abuse
+      that you have removed it. You may also wish to contact the abusive site
+      member to explain why their report has been removed.
     </p>
   </dd>
   <dt>
-    Correcting users who think you are the body to which the reports are sent
+    Users who send a report to the support email address 
   </dt>
   <dd>
     <p>
-      On the UK FixMyStreet site we are careful to explain that we are not the
-      bodies responsible for fixing the problems reported, but people will
-      still email us with queries for the local councils. We direct these
-      sorts of requests back to the local council, generally by sending a
-      carefully worded response reminding the user who runs the site.
+      On the UK FixMyStreet site we are careful to explain that we are an
+      independent organisation, and we do not fix street problems ourselves.
     </p>
     <p>
-      mySociety's response currently reads: 
+      But we still frequently receive email that should have gone to a local
+      council. In other words, people click on the 'support' button and submit
+      a report, rather than going through the normal report-making process on
+      the site.
+    </p>
+    <p>
+      We send a carefully-worded response like this:
     </p>
     <div class="correspondence">
       <p>
-      You have emailed the technical support team behind FixMyStreet, when it
-      looks as though you intended your message to go to your council.
+        You have emailed the technical support team behind FixMyStreet, when
+        it looks as though you intended your message to go to your council.
+        FixMyStreet is an independent website through which you can contact
+        any council in the UK.
       </p>
       <p>
-      If you wish to report a problem please visit http://fixmystreet.com/ and
-      enter a postcode or street name near where the problem is located. You
-      will then be invited to click on a map to show where the problem is
-      occurring.
+        If you wish to report a problem please visit www.fixmystreet.com and
+        enter a postcode or street name near where the problem is located. You
+        will then be invited to click on a map to show where the problem is
+        occurring.
       </p>
       <p>
-      Your message is below so that you can copy and paste it into the form.
-      Note that all messages appear on our website, as well as going to the
-      council. If you are able to take the time to let us know why you emailed
-      this address rather than file a report on the site, it would really help
-      us tighten things up and make the process clearer for future users.
+        Your message is below so that you can copy and paste it into the form.
+        *Note that all messages appear on our website, as well as going to the
+        council*.
+      </p>
+      <p>
+        If you are able to take the time to let us know why you emailed this
+        address rather than file a report on the site, it would really help us
+        to make the process clearer for future users.
       </p>
     </div>
     <p>
-      Of course, you'll need to change the URL to match your site, and
-      remember to include the original email message under your reply.
+      You are welcome to adapt this text to your own site's needs.
     </p>
   </dd>
   <dt>
-    Manually changing users' email addresses when requested
-  </dt>
+    Manually changing users' email addresses </dt>
   <dd>
     <p>
-      Users cannot change their email addresses themselves. Do this in the
-      admin: go to <strong>Users</strong>, find the user required (search by
-      old email address) and edit the email address to be the new one.
+      Users cannot change their email addresses themselves. In admin, go to
+      <strong>Users</strong>, find the user (search by their name or the old
+      email address) and edit the email address to be the new one.
     </p>
   </dd>
 </dl>
 
 ## Common user support queries
 
-To help you anticipate the sort of support work you may need to do -- and to
-help you do it -- here is a list of the most common user support queries we
-get on the UK FixMyStreet site.
+Here is a list of the most common user support queries we get on the UK
+FixMyStreet site.
 
 <dl class="reveal-on-click" data-reveal-noun="support queries">
   <dt>
-    Body wants to know what email addresses you have on file
+    A body wants to know what email addresses you have on file
   </dt>
   <dd>
     <p>
-      In the UK, it's common for each body to have multiple contacts (usually
-      email addresses) -- for more information, see <a
-      href="/running/bodies_and_contacts">About bodies and contacts</a>. It
-      could be that your site has bodies set up this way too.
+      In the UK, it's common for each body to have multiple <a
+      href="/glossary/#contact" class="glossary">contacts</a> (usually email
+      addresses) -- for more information, see <a
+      href="/running/bodies_and_contacts">About bodies and contacts</a>. Your
+      site may be the same.
     </p>
     <p>
-      Try to create a good relationship with the body -- ideally the staff
-      there will then tell you when they want to update the contact details
-      <em>before</em> you have to ask if they are wrong. This can help stop
-      emails bouncing back from incorrect body's email addresses.
+      Often, a body will make contact to ask where your reports are being
+      sent. Perhaps they are changing addresses, or they are puzzled because
+      they can see reports on the site but don't know who is receiving them.
+    </p>
+    <p>
+      It's worth being friendly and helpful - if you have a good relationship
+      with the body, they will inform you when their contact details change,
+      and are more likely to treat your users' reports with respect.
+    </p>
+    <p>
+      Note that you can quickly copy and paste all email addresses for a body
+      by clicking on <strong>text only version</strong> on that body's page.
     </p>
   </dd>
   <dt>
@@ -401,9 +567,9 @@ get on the UK FixMyStreet site.
   </dt>
   <dd>
     <p>
-      This can happen if the council has set up their auto-response system
-      incorrectly, for example, the council has used the mySociety helpline
-      email instead of responding directly to a user.
+      This can happen if the body has set up their auto-response system
+      incorrectly, for example, the body has used your support email address
+      instead of responding directly to a user.
     </p>
     <p>
       Forward the email to the user. Let the body know you've had to do this,
@@ -413,19 +579,20 @@ get on the UK FixMyStreet site.
     </p>
   </dd>
   <dt>  
-    Press enquiries or data/statistic enquiries 
+    Press enquiries or data/statistic enquiries
   </dt>
   <dd>
     <p>
-      A number of these requests come through. Currently any requests for data
-      or statistics that cannot be seen on the admin dashboard have to be
-      handled by a developer (by making SQL queries directly on the database).
+     Currently any requests for data or statistics that cannot be seen on the
+     admin summary page have to be handled by a developer, by making SQL
+     queries directly on the database.
     </p>
     <p>
-      Staff users can see the dashboard for their own body by going to
-      <code>/dashboard</code> when they are logged into the public site. If
-      they don't have a staff user set up, offer to do this for them: see
-      [managing users](/running/users/).
+      <a href="/glossary#staff-user" class="glossary">Staff users</a> can see
+      the <a href="/glossary#dashboard" class="glossary">dashboard</a> for
+      their own body by going to <code>/dashboard</code> when they are logged
+      into the public site. If they don't have a staff user set up, offer to
+      do this for them: see [managing users](/running/users/).
     </p>
   </dd>
   <dt>
@@ -433,21 +600,39 @@ get on the UK FixMyStreet site.
   </dt>
   <dd>
     <p>
-      Sometimes you may get an email from a user saying they can't use the
-      site. Often this is because they haven't seen the submit button, or they
-      can't upload a photo, or a similar request. A quick step-by-step email
-      can help solve this.
+      Sometimes you may get an email from a user saying the site isn't
+      working, or they can't use it. Remember that your users come from all
+      sectors of society, including the very elderly or those who are not used
+      to computers.
+    </p>
+    <p>
+      You will often need to write back to clarify the problem. Ask for as
+      much detail as possible about their operating system and browser - in
+      simple words - and ask them to describe the issue precisely.
+    </p>
+    <p>
+      Often there is no problem with the site (although you should never be
+      certain of that until you have checked). Maybe the user has not seen the
+      submit button, or doesn't understand how to upload a photo, or has not
+      understood how the site works for some other reason.
+    </p>
+    <p>
+      Step-by-step instructions by email can almost always help.
     </p>
   </dd>
   <dt>
-    User does not receiving report confirmation email 
+    User does not receive report confirmation email 
   </dt>
   <dd>
     <p>
-      **Almost always this is due to the user's spam or junk filter
-      intercepting the email and placing it in their spam folder**. Encourage
-      them to look in their spam folder (and maybe mark email coming from your
-      domain as "not spam" so future emails don't get caught in the same way).
+      **This is almost always because our automated confirmation email has
+      gone into the user's spam folder**.
+    </p>
+    <p>
+      Ask the user to look in their spam folder (and mark email coming from
+      your domain as "not spam" so future emails don't get caught in the same
+      way). If they still can't find it, you can confirm the report from
+      within admin (see <a href="#report-states">Report States</a>, above).
     </p>
     <p>
       If you're running FixMyStreet on your own server, you (or your system
@@ -456,42 +641,32 @@ get on the UK FixMyStreet site.
     </p>
   </dd>
   <dt>
-    User says the site isn't working 
+    User wants to know how to change their password
   </dt>
   <dd>
     <p>
-      You may not get any more information than this! First, check that the
-      site looks OK in your browser (in case your server really has failed,
-      for example). You can write back and ask for clarification of what
-      appears to be wrong, or else send step-by-step instructions on how to
-      use the site, which may solve the problem.
-    </p>
-  </dd>
-  <dt>
-    User wants to know how to change password
-  </dt>
-  <dd>
-    <p>
-      Many users use FixMyStreet without ever setting a password (because they
-      clicked the confirmation link in the email instead).
+      Users don't need a password to use FixMyStreet - they can click the link
+      in the confirmation email instead. But if a user makes a large number of
+      reports, it makes sense to have a password. If they are logged into the
+      site, they do not have to confirm reports via the email link.
     </p>
     <p>
-      However, any user can set a new password at any time, although most
-      don't realise it.
+      Any user can set a new password at any time.
     </p>
     <p>
-      We sometimes send this response to requests to change the password: 
+      We send this response to requests to change the password: 
     </p>
     <div class="correspondence">
-
-      When you next create a problem report or update simply choose the option
-      that says 'No, let me confirm by email'. You will be able to create a new
-      password at that point. This will send you a confirmation email. Clicking
-      the link in that email will update your password for you.
-
-      Alternatively, you can visit http://www.fixmystreet.com/auth and do the
-      same (that is, choose the 'no' option and input your new password).
-
+      When you next create a problem report or update, simply choose the
+      option that says 'No, let me confirm by email'. You will be able to
+      create a new password at that point. This will send you a confirmation
+      email. Clicking the link in that email will update your password for
+      you.
+      <p>
+        Alternatively, you can visit http://www.fixmystreet.com/auth and do
+        the same (that is, choose the 'no' option and input your new
+        password).
+      </p>
     </div>
     <p>
       Of course, make sure you change the URL in that message to match your
@@ -499,8 +674,7 @@ get on the UK FixMyStreet site.
     </p>
     <p>
       Note that there's no need to provide the old password, because the
-      change requires the user to click on the confirmation link in the email
-      anyway.
+      change requires the user to click on the confirmation link in the email.
     </p>
   </dd>
   <dt>
@@ -514,31 +688,34 @@ get on the UK FixMyStreet site.
     </p>
     <p>
       However, if there is a good case for changing the post on the website,
-      you can do this in the admin. Go to <strong>Reports</strong>, and
-      finding the report you want, and clicking on **Edit**.
+      you can do this in the admin. Go to <strong>Reports</strong>, find the
+      report you want, and click on <strong>Edit</strong>.
+    </p>
     <p>
       Be sure to save your changes (click **submit changes**) when you've
       finished editing.
     </p>
-
   </dd>
   <dt>
-    User requests a new feature
+    User requests a new feature or reports a bug
   </dt>
   <dd>
     <p>
-      You can deal with these by submitting (or, if you prefer, by asking your
-      developer to submit) the request as an issue in the public FixMyStreet
-      <a href="http://github.com/mysociety/fixmystreet/issues">github
-      repository</a>. Always search the issues first to check that this one
-      hasn't already been raised. If it has, you can add a comment noting that
-      it's been requested again by another user.
+      You can log feature requests and bug reports by submitting (or, if you
+      prefer, by asking your developer to submit) an issue to the public
+      FixMyStreet <a
+      href="http://github.com/mysociety/fixmystreet/issues">github
+      repository</a>.
+    </p>
+    <p>
+      Always search the issues first to check that it hasn't already been
+      raised. If it has, you can add a comment noting that it's been requested
+      again by another user.
     </p>
     <p>
       When users in the UK contact FixMyStreet support with a request for a
-      new feature, we forward the email to our developers for consideration,
-      and reply thanking the person for taking an interest in the site. We
-      really do change FixMyStreet in response to user feedback!
+      new feature, we also reply to thank the person for taking an interest in
+      the site. We really do change FixMyStreet in response to user feedback!
     </p>
   </dd>
   <dt>
@@ -547,27 +724,27 @@ get on the UK FixMyStreet site.
   <dd>
     <p>
       FixMyStreet constructs the list of <a
-      href="/glassary/#category">categories</a> of report (for example,
+      href="/glossary/#category">categories</a> of report (for example,
       "Pothole" or "Graffiti") based on what services the body (or bodies) *in
-      that area* provide. See <a href="/running/bodies_and_contacts/">Managing
-      bodies and contacts</a> to see how this works.
+      that <a href="/glossary/#area" class="glossary">area</a>* provide. See
+      <a href="/running/bodies_and_contacts/">Managing bodies and contacts</a>
+      to see how this works.
     </p>
     <p>
       This has two important consequences: it means the list of categories may
       be different depending on *where* the user is reporting the problem, and
-      it means that sometimes the the category the user wants is not
-      available. Ultimately, this means it depends on what categories you have
-      set up for each body in your installation.
+      it means that sometimes the category the user wants is not available.
     </p>
     <p>
       When you add categories for the bodies in your FixMyStreet installation,
       you should consider adding an "Other" category -- provided, of course,
-      that the body you are associating it with will respond to such requests.
+      that the body you are associating it with will respond to such
+      requests.[m]
     </p>
     <p>
       Be careful, though, because if multiple bodies at the same location
       offer a category called "Other", FixMyStreet -- correctly -- will send
-      such reports to all of them.
+      such reports to all of them.[n]
     </p>
     <p>
       To understand more about about this, see <a
@@ -575,17 +752,18 @@ get on the UK FixMyStreet site.
     </p>
   </dd>
   <dt>
-    Report has gone to wrong council 
+    Report has gone to wrong body
   </dt>
   <dd>
     <p>
-      This is normally because the user placed the pin on the wrong side of a
-      boundary on the map or selected the wrong problem category in
-      FixMyStreet. In this case mySociety normally replies to the user asking
-      them to resubmit the report with the pin more correctly positioned or
-      the right category selected. In some cases mySociety will send the
-      reports to both councils asking them to ignore the report if it is not
-      relevant for them.
+     Sometimes a report is sent to the wrong body because the user has placed
+     the pin wrongly, putting the report in a different administrative
+     jurisdiction. Or perhaps the user has chosen the wrong category, routing
+     the report to a different body.
+    </p>
+    <p>
+      mySociety replies to the user asking them to resubmit the report with
+      the pin more correctly positioned, or the right category selected.
     </p>
     <p>
       This problem may indicate that the boundary data you are using is either
@@ -599,7 +777,7 @@ get on the UK FixMyStreet site.
   <dd>
     <p>
       Alerts are sent as emails: there's an unsubscribe link at the foot of
-      each one, so it's a matter of just pointing this out politely.
+      each one, so usually you just need to point this out politely.
       <!-- TODO should be able to unsubscribe them in the admin -->
     </p>
   </dd>
@@ -608,8 +786,8 @@ get on the UK FixMyStreet site.
   </dt>
   <dd>
     <p>
-      It's nice to hear! Normally mySociety's FixMyStreet administrator shares
-      these with the team and writes back to the user to thank them.
+      It's nice to hear! mySociety's FixMyStreet administrator shares these
+      with the team and will always write back to the user to thank them.
     </p>
   </dd>
   <dt>
@@ -618,34 +796,34 @@ get on the UK FixMyStreet site.
   </dt>
   <dd>
     <p>
-      Your FixMyStreet installation will be using maps from an external source
-      -- by default this is <a href="/glossary/#openstreetmap"
+      Your FixMyStreet installation will normally be using maps from an
+      external source -- by default this is <a href="/glossary/#openstreetmap"
       class="glossary">OpenStreetMap</a>.
     </p>
     <p>
       For the UK FixMyStreet, we use maps produced by the government (Ordnance
-      Survey). Other installations use custom maps too, so the remedy to this
-      problem will be different in different locations.
+      Survey), and we advise our users to contact them with any errors. Other
+      installations use custom maps too, so the remedy to this problem will be
+      different in different locations.
     </p>
     <p>
       OpenStreetMap is an editable project, so it is possible to encourage
       users -- or your own team -- to update the map information. It will take
       a while for the map tiles to update, so these changes might not appear
-      on your own site quickly.
+      on your own site immediately.
     </p>
   </dd>
 </dl>
-
 <div class="attention-box helpful-hint">
   <p>
-    A tip from Myfanwy, who looks after the UK FixMyStreet site:
+    A tip from Myf, who looks after the UK FixMyStreet site:
   </p>
   <p>
-    “Things got much quicker for me once I assembled a spreadsheet with the
-    responses to all our most common questions and enquiries - it took a while
-    to assemble (because I was learning the ropes) but once it was done, I
-    could just copy and paste and I can now send the majority of replies off
-    with just a few modifications.
+    “User Support got much quicker for me once I assembled a spreadsheet with
+    the responses to all our most common questions and enquiries - it took a
+    while to put together (because I was learning the ropes) but once it was
+    done, I could just copy and paste, and I can now send the majority of
+    replies off with just a few modifications.
   </p>
   <p>
     I'd really recommend that approach. As well as saving me time, it means I
@@ -654,62 +832,82 @@ get on the UK FixMyStreet site.
   </p>
 </div>
 
-
 ## How the site may be abused
 
-The nature of any website that accepts input from the public is that it can be
-subjected to abuse. Our experience from the UK FixMyStreet site is that this
-is very rare. The following section discusses some things you should be aware
-of should the problem arise in your installation.
+Any website that accepts input from the public can attract abuse - but our
+experience from the UK FixMyStreet site is that it's rare. The following
+section discusses some issues you should be aware of.
 
 ### Obscene, rude or illegal material
 
-You may occasionally get people who misuse the site by posting rude,
-defamatory or vexatious material. Here's our official response from the UK
-FixMyStreet site:
+People may occasionally post rude, defamatory or vexatious material. Here's
+our official policy from the UK FixMyStreet site:
 
 <div class="correspondence">
   FixMyStreet does not moderate reports before they appear on the site, and we
   are not responsible for the content or accuracy of material submitted by our
   users. We will remove any problem report containing inappropriate details
   upon being informed, a process known as reactive moderation. Many sites
-  utilise this process, for example some of the BBC community areas as
-  explained here: 
+  utilise this process, for example the BBC, as explained here:
   <a href="http://news.bbc.co.uk/1/hi/help/4180404.stm">http://news.bbc.co.uk/1/hi/help/4180404.stm</a>.
 </div>
 
-That lets people know from the first instance that the views found on
-FixMyStreet are not the view of mySociety. We don't perform proactive
-moderation (that is, checking everything *before* publishing it on the site)
-for two reasons. First, for the quantity of traffic we handle, this would be
-impracticable. Second, doing so would make us liable for the content under UK
-law. You will need to check what the laws are like in your country and how to
-deal with issues such as these. The FixMyStreet code *does* support
-moderation-before-publication, although this is currently only enabled in the
-Zurich cobrand.
+If a user gets in touch to complain about a report, it is sometimes because
+they are offended or distressed by the content. Sometimes a report will
+contain their name and address, and may be a top result when they search for
+themselves on Google.
+
+Understandably, they may be upset or angry. Once you have made any necessary
+modifications to the report - or removed it completely - you should reply
+politely and calmly. Tell the user what action you have taken, and let them
+know about the site policy.
+
+It is important to make it clear that the views our users post on FixMyStreet
+are not the views of mySociety.
+
+We don't perform proactive moderation (that is, checking everything *before*
+publishing it on the site) for two reasons.
+
+First, for the quantity of traffic we handle, it would be impractical. Second,
+doing so would make us liable for the content under UK law. You will need to
+check what the law is in your country, and how best to deal with issues such
+as these.
+
+The FixMyStreet code *does* support moderation-before-publication, although
+this is currently only enabled in the Zurich cobrand.
 
 ### Spam reports
 
-On the UK FixMyStreet site, we do not receive many spam reports. By this we
-mean that there are no automated bots posting messages on the site. Currently
-this is largely prevented by the need to confirm reports by clicking on the
-emailed confirmation link. However, this is not to say that this will never
-happen and you will need to be aware of this possibility. If you do start to
-suffer from such behaviour, please do share your experience with mySociety and
-the community, because it's likely that solutions and responses to the problem
-will be useful to everyone.
+Many sites which publish user-generated content suffer from spam - that is,
+automated bots posting messages.
+
+On the UK FixMyStreet site, we do not receive many spam reports. Currently it
+is almost entirely prevented by the confirmation link process.
+
+However, we cannot say that this will always be true, and you will need to be
+aware of this possibility.
+
+If your site does start to suffer from spam, please share your experience with
+mySociety and the community, because it's likely that solutions and responses
+to the problem will be useful to everyone.
 
 ### Silly or time-wasting reports
 
-Occasionally a user will use a site to report a nonsensical report, and share
-the subsequent link, just for amusement. Although such things generally seem
-harmless, remember that the link will probably be shared (in the UK, we've had
-one memorable case where the report was publicised on the BBC) and ultimately
-you need to decide if the potential publicity the site may be getting is being
-undermined by the suggestion that it allows silly or unhelpful reporting.
-Remember that these reports do get sent through to the bodies responsible, and
-FixMyStreet's role as a credible source of reports may be undermined if this
-happens too often.
+Occasionally a user will post a nonsensical report, just for amusement.
+
+Although such things generally seem harmless, remember that, in the age of
+social media, a link to amusing content can spread fast.
+
+In the UK, we've had one memorable case where the comedy report was publicised
+in many media, and was eventually reported on the BBC website.
+
+You may be thinking that it's great publicity for your site, but remember that
+these reports do get sent through to the bodies responsible. FixMyStreet's
+role as a credible source of reports may be undermined if this happens too
+often.
+
+Also, unfortunately, once one silly report has been made, it often gives other
+users the idea to do the same.
 
 Consequently, on the UK FixMyStreet site we have a policy of hiding such
 reports as soon as we are aware of them, to prevent other users being
@@ -718,13 +916,12 @@ encouraged to copy the behaviour.
 ### Abuse: conclusion
 
 In practice, "problem users" are judged on a one-by-one basis. You can flag a
-user or a report as problematic and then, if they transgress again, you can
+user or a report as problematic, and then, if they transgress again, you can
 ban their email address by adding it to the "abuse list". See [managing
 users](/running/users/) for details.
 
 It's a good idea to agree on a policy for dealing with abuse issues, and to
 make sure all your administrators know what it is.
-
 
 ## Software updates
 
@@ -734,23 +931,25 @@ features and improvements are made from time to time: we announce new releases
 the mailing list (see [more about staying in touch](/community)).
 
 Updating is a technical activity, and you'll need to log into the server's
-"command shell" to do it -- so ask your developer to do this for you if
-you're not confident.
+"command shell" to do it -- so ask your developer to do this for you if you're
+not confident.
 
 If you've installed FixMyStreet as a git repository cloned from
-[github.com/mysociety/fixmystreet](http://github.com/mysociety/fixmystreet)
--- which will be the case if you've followed our installation instructions --
+[github.com/mysociety/fixmystreet](http://github.com/mysociety/fixmystreet) --
+which will be the case if you've followed our installation instructions --
 your developer should find it easy to update. Make sure they know that
 sometimes these updates do require changes to the database schema too (look
 for new migration files in the `db` directory). Always check the version
 release notes (for example, on the blog) because we'll mention such things
 there.
 
-
 ## And finally...
 
-We wish you all the best with your FixMyStreet problem reporting site. If
-you're running an installation outside the UK and have any questions, don't
+We wish you all the best with your FixMyStreet problem reporting site.
+
+If you're running an installation outside the UK and have any questions, don't
 hesitate to email international@mysociety.org and we'll get back to you as
 soon as possible with an answer.
+FiXME-p
+
 
