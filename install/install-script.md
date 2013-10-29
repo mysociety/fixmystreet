@@ -37,11 +37,12 @@ development, allowing easy domain/wildcard domain usage without having to edit
 your hosts file), creating a virtualhost just for that hostname, you could
 download and run the script with:
 
-    curl https://raw.github.com/mysociety/commonlib/master/bin/install-site.sh | \
-        sudo sh -s fixmystreet fms fixmystreet.127.0.0.1.xip.io
+    curl -O https://raw.github.com/mysociety/commonlib/master/bin/install-site.sh
+    sudo sh install-site.sh fixmystreet fms fixmystreet.127.0.0.1.xip.io
 
 Or, if you want to set this up as the default site on an EC2 instance,
-you could download the script and then invoke it with:
+you could download the script, make it executable and then invoke it
+with:
 
     sudo ./install-site.sh --default fixmystreet fms
 
