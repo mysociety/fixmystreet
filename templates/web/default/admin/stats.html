@@ -61,12 +61,14 @@
 
 <form method="post" action="[% c.uri_for('stats') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p>
-    <label for="start_date">[% loc('Start Date:') %]</label><input type="text" name="start_date" id="start_date" 
+    <label for="start_date">[% loc('Start Date:') %]</label><input type="text"
+      placeholder="Clik here or enter as dd/mm/yyyy" name="start_date" id="start_date"
       value="[% start_date ? start_date.strftime( '%d/%m/%Y') : '' | html %]" />
     </p>
 
     <p>
-    <label for="end_date">[% loc('End Date:') %]</label><input type="text" name="end_date" id="end_date" size="5" 
+    <label for="end_date">[% loc('End Date:') %]</label><input type="text"
+      placeholder="Clik here or enter as dd/mm/yyyy" name="end_date" id="end_date" size="5"
       value="[% end_date ? end_date.strftime( '%d/%m/%Y') : '' | html %]" />
     </p>
 
