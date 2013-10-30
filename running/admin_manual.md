@@ -1,6 +1,6 @@
 ---
 layout: default
-title: FixMyStreet's surveys
+title: FixMyStreet Administrator's Manual
 author: dave
 ---
 
