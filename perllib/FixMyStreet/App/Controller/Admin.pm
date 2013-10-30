@@ -1079,7 +1079,7 @@ sub stats : Path('stats') : Args(0) {
 
         my ( $start_date, $end_date, @errors );
         my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
-            
+
         $start_date = $parser-> parse_datetime ( $c->req->param('start_date') );
 
         push @errors, _('Invalid start date') unless defined $start_date;
