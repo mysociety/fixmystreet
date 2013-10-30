@@ -38,9 +38,10 @@ questions as you need to.
   instructions](/install) first. Once you've done that, you'll probably need
   the information about [customising your site](/customising) too.
 
-* As an administrator, you should also read our more detailed information on
-  [running FixMyStreet](/running).
-
+* This guide is just one of several useful pages for <a
+  href="/glossary/#administrator" class="glossary">administrators</a> in the
+  section about [running FixMyStreet](/running). This document is the most
+  general, so is a good place to start.
 
 ## Find your administrator
 
@@ -66,8 +67,9 @@ The team who sets up the site and those who keep it running day-to-day might
 developer** and **one administrator** who can work on the site.
 
 At the beginning you'll be quite busy. You'll be doing a lot of things, like
-customising your site, collecting the email addresses that you'll be sending
-your users' reports to, and perhaps promoting your project.
+customising your site, collecting the email addresses your users' <a
+href="/glossary/#report" class="glossary">problem reports</a> will be sent to,
+and perhaps promoting your project.
 
 **Once your site is up and running**, you can manage with just **one
 administrator**.
@@ -104,7 +106,7 @@ addresses.
 Both of these precautions require system configuration (that is, they depend
 on settings outside FixMyStreet). If you're running an Apache webserver, you
 can do this using `htauth` -- see [the Apache htauth
-documentation](http://httpd.apache.org/docs/current/mod/mod_authn_file.html)
+documentation](http://httpd.apache.org/docs/current/mod/mod_authn_file.html).
 If you're using an external hosting service, their technical support staff may
 be willing set this up for you if you can't do it yourself.
 
@@ -138,8 +140,8 @@ them by clicking on the link at the top of any admin page:
     pages. You can also add or edit their <a href="/glossary/#category"
     class="glossary">categories</a> and <a href="/glossary/#contact"
     class="glossary">contact</a> email addresses. Bodies are associated with
-    one or more <a href="/glossary/#area" class="glossary">areas</a>. [More
-    information on bodies](/running/bodies_and_contacts).
+    one or more <a href="/glossary/#area" class="glossary">areas</a>. <a
+    href="/running/bodies_and_contacts">More information on bodies</a>.
   </p>
 
 * **Reports** <br/> The reports page lets you search for, and edit <a
@@ -176,8 +178,9 @@ them by clicking on the link at the top of any admin page:
     effective your site has been.
   </p>
   <p>
-    If you don't want your FixMyStreet site to send out surveys, you can switch
-    off this behaviour in a [cobrand module](/customising/cobrand-module/).
+    If you don't want your FixMyStreet site to send out surveys, you can
+    switch off this behaviour in a <a
+    href="/customising/cobrand-module/">cobrand module</a>.
   </p>
 
 * **Users** <br/> You can [manage users](/running/users) from this section.
@@ -203,8 +206,8 @@ them by clicking on the link at the top of any admin page:
   or page.
   <p>
     This can be useful if your team has more than one <a
-    href="/glossary/#administrator" class="glossary">administrator</a>. [More
-    information about managing users](/running/users).
+    href="/glossary/#administrator" class="glossary">administrator</a>. <a
+    href="/running/users">More information about managing users</a>.
   </p>
 
 * **Stats** <br/> The stats page lets you analyse the number and types of <a
@@ -257,7 +260,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
     <p>      
       An <em>open</em> report is one that has not been fixed or closed. This
       generally means that the body has not yet attended to the problem. Also,
-      this implies that the report is not *unconfirmed* (see above). <a
+      this implies that the report is not <em>unconfirmed</em> (see above). <a
       href="/glossary/#staff-user" class="glossary">Staff users</a> can set
       problems to have alternative "open" states:
     </p>
@@ -345,9 +348,9 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
 There are two main types of tasks for FixMyStreet <a
 href="/glossary/#administrator" class="glossary">administrators</a>.
 
-**Maintenance** tasks can be fixed through the FixMyStreet admin interface.
+* **Maintenance** tasks can be fixed through the FixMyStreet admin interface.
 
-**User support** is generally handled by email.
+* **User support** is generally handled by email.
 
 The most common maintenance tasks are described below, based on our own
 experience with the UK site.
@@ -419,8 +422,8 @@ experience with the UK site.
       selection box.
     </p>
     <p>
-      Be sure to save your changes (click **submit changes**) when you've
-      finished editing.
+      Be sure to save your changes (click <strong>submit changes</strong>)
+      when you've finished editing.
     </p>
   </dd>
   <dt>
@@ -466,7 +469,7 @@ experience with the UK site.
     </p>
     <p>
       Abuse report emails contain the admin URL of the problem report, so you
-      can click on it and change its state to *hidden*.
+      can click on it and change its state to <em>hidden</em>.
     </p>
     <p>
       It's generally a good idea to then tell the user who reported the abuse
@@ -592,7 +595,7 @@ FixMyStreet site.
       the <a href="/glossary#dashboard" class="glossary">dashboard</a> for
       their own body by going to <code>/dashboard</code> when they are logged
       into the public site. If they don't have a staff user set up, offer to
-      do this for them: see [managing users](/running/users/).
+      do this for them: see <a href="/running/users/">managing users</a>.
     </p>
   </dd>
   <dt>
@@ -625,8 +628,8 @@ FixMyStreet site.
   </dt>
   <dd>
     <p>
-      **This is almost always because our automated confirmation email has
-      gone into the user's spam folder**.
+      <strong>This is almost always because the automated confirmation email
+      has gone into the user's spam folder</strong>.
     </p>
     <p>
       Ask the user to look in their spam folder (and mark email coming from
@@ -692,8 +695,8 @@ FixMyStreet site.
       report you want, and click on <strong>Edit</strong>.
     </p>
     <p>
-      Be sure to save your changes (click **submit changes**) when you've
-      finished editing.
+      Be sure to save your changes (click <strong>submit changes</strong>)
+      when you've finished editing.
     </p>
   </dd>
   <dt>
@@ -723,28 +726,28 @@ FixMyStreet site.
   </dt>
   <dd>
     <p>
-      FixMyStreet constructs the list of <a
-      href="/glossary/#category">categories</a> of report (for example,
-      "Pothole" or "Graffiti") based on what services the body (or bodies) *in
-      that <a href="/glossary/#area" class="glossary">area</a>* provide. See
-      <a href="/running/bodies_and_contacts/">Managing bodies and contacts</a>
-      to see how this works.
+      FixMyStreet constructs the list of <a href="/glossary/#category"
+      class="glossary">categories</a> of report (for example, "Pothole" or
+      "Graffiti") based on what services the body (or bodies) <em>in that <a
+      href="/glossary/#area" class="glossary">area</a></em> provide. See <a
+      href="/running/bodies_and_contacts/">Managing bodies and contacts</a> to
+      see how this works.
     </p>
     <p>
       This has two important consequences: it means the list of categories may
-      be different depending on *where* the user is reporting the problem, and
-      it means that sometimes the category the user wants is not available.
+      be different depending on <em>where</em> the user is reporting the
+      problem, and it means that sometimes the category the user wants is not
+      available.
     </p>
     <p>
       When you add categories for the bodies in your FixMyStreet installation,
       you should consider adding an "Other" category -- provided, of course,
-      that the body you are associating it with will respond to such
-      requests.[m]
+      that the body has a general email address for such requests to go to.
     </p>
     <p>
       Be careful, though, because if multiple bodies at the same location
       offer a category called "Other", FixMyStreet -- correctly -- will send
-      such reports to all of them.[n]
+      such reports to all of them.
     </p>
     <p>
       To understand more about about this, see <a
@@ -947,9 +950,9 @@ there.
 
 We wish you all the best with your FixMyStreet problem reporting site.
 
-If you're running an installation outside the UK and have any questions, don't
+If you're running an installation outside the UK please let us know by
+emailing international@mysociety.org. If you have any questions, don't
 hesitate to email international@mysociety.org and we'll get back to you as
 soon as possible with an answer.
-FiXME-p
 
 
