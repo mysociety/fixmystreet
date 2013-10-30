@@ -220,7 +220,7 @@ them by clicking on the link at the top of any admin page:
     sent to a specific body since launch.
   </p>
 
-<a name="report-states"></a>
+<a name="report-states">&nbsp;</a>
 
 ## Report states
 
