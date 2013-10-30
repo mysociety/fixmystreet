@@ -93,7 +93,7 @@ ensures that she can deal with any urgent problems promptly.
 
 ### Security
 
-By default, the administration pages -- the "admin" -- can be found at
+By default, the administration pages &mdash; the "admin" &mdash; can be found at
 `/admin`. These pages must be secured against public access.
 
 We strongly recommend you access your admin over a secure connection, such as
@@ -105,7 +105,7 @@ addresses.
 
 Both of these precautions require system configuration (that is, they depend
 on settings outside FixMyStreet). If you're running an Apache webserver, you
-can do this using `htauth` -- see [the Apache htauth
+can do this using `htauth` &mdash; see [the Apache htauth
 documentation](http://httpd.apache.org/docs/current/mod/mod_authn_file.html).
 If you're using an external hosting service, their technical support staff may
 be willing set this up for you if you can't do it yourself.
@@ -156,8 +156,8 @@ them by clicking on the link at the top of any admin page:
     the report.
   </p>
   <p>
-    If your database is very large -- like the UK FixMyStreet, which has many
-    thousands of reports -- some searches may be a little slow. But if you
+    If your database is very large &mdash; like the UK FixMyStreet, which has many
+    thousands of reports &mdash; some searches may be a little slow. But if you
     know the ID of the report, you can tell FixMyStreet to find it directly,
     using <code>id:</code> first. The ID is in the URL of the live report: for
     example, on our site, we can find
@@ -338,7 +338,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
     <p>
       Remember that a hidden report will probably have been sent to the <a
       href="/glossary/#body" class="glossary">body</a> responsible (so it can
-      still be fixed) -- hiding a report simply prevents it being displayed.
+      still be fixed) &mdash; hiding a report simply prevents it being displayed.
     </p>
   </dd>
 </dl>
@@ -546,7 +546,7 @@ FixMyStreet site.
     <p>
       In the UK, it's common for each body to have multiple <a
       href="/glossary/#contact" class="glossary">contacts</a> (usually email
-      addresses) -- for more information, see <a
+      addresses) &mdash; for more information, see <a
       href="/running/bodies_and_contacts">About bodies and contacts</a>. Your
       site may be the same.
     </p>
@@ -685,7 +685,7 @@ FixMyStreet site.
   </dt>
   <dd>
     <p>
-      A user cannot change their message once they have submitted it -- and
+      A user cannot change their message once they have submitted it &mdash; and
       remember that the report will have already been sent to the body
       responsible.
     </p>
@@ -741,12 +741,12 @@ FixMyStreet site.
     </p>
     <p>
       When you add categories for the bodies in your FixMyStreet installation,
-      you should consider adding an "Other" category -- provided, of course,
+      you should consider adding an "Other" category &mdash; provided, of course,
       that the body has a general email address for such requests to go to.
     </p>
     <p>
       Be careful, though, because if multiple bodies at the same location
-      offer a category called "Other", FixMyStreet -- correctly -- will send
+      offer a category called "Other", FixMyStreet &mdash; correctly &mdash; will send
       such reports to all of them.
     </p>
     <p>
@@ -770,7 +770,7 @@ FixMyStreet site.
     </p>
     <p>
       This problem may indicate that the boundary data you are using is either
-      incorrect, or not accurate enough -- for more information, see <a
+      incorrect, or not accurate enough &mdash; for more information, see <a
       href="/customising/fms_and_mapit/">How FixMyStreet uses MapIt</a>.
     </p>
   </dd>
@@ -800,7 +800,7 @@ FixMyStreet site.
   <dd>
     <p>
       Your FixMyStreet installation will normally be using maps from an
-      external source -- by default this is <a href="/glossary/#openstreetmap"
+      external source &mdash; by default this is <a href="/glossary/#openstreetmap"
       class="glossary">OpenStreetMap</a>.
     </p>
     <p>
@@ -811,7 +811,7 @@ FixMyStreet site.
     </p>
     <p>
       OpenStreetMap is an editable project, so it is possible to encourage
-      users -- or your own team -- to update the map information. It will take
+      users &mdash; or your own team &mdash; to update the map information. It will take
       a while for the map tiles to update, so these changes might not appear
       on your own site immediately.
     </p>
@@ -934,12 +934,12 @@ features and improvements are made from time to time: we announce new releases
 the mailing list (see [more about staying in touch](/community)).
 
 Updating is a technical activity, and you'll need to log into the server's
-"command shell" to do it -- so ask your developer to do this for you if you're
+"command shell" to do it &mdash; so ask your developer to do this for you if you're
 not confident.
 
 If you've installed FixMyStreet as a git repository cloned from
-[github.com/mysociety/fixmystreet](http://github.com/mysociety/fixmystreet) --
-which will be the case if you've followed our installation instructions --
+[github.com/mysociety/fixmystreet](http://github.com/mysociety/fixmystreet) &mdash;
+which will be the case if you've followed our installation instructions &mdash;
 your developer should find it easy to update. Make sure they know that
 sometimes these updates do require changes to the database schema too (look
 for new migration files in the `db` directory). Always check the version
