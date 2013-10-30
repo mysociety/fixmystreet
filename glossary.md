@@ -23,6 +23,7 @@ Definitions
 [alert](#alert) |
 [area](#area) |
 [area&nbsp;type](#area-type) |
+[banning](#abuse-list) |
 [body](#body) |
 [category](#category) |
 [cobrand](#cobrand) |
@@ -40,9 +41,11 @@ Definitions
 [Open311](#open311) |
 [OpenStreetMap](#osm) |
 [problem&nbsp;report](#report) |
+[questionnaire](#survey) |
 [send&nbsp;method](#send-method) |
 [staff&nbsp;users](#staff-user) |
 [state](#state) |
+[survey](#survey) |
 [template](#template) |
 [update](#update) |
 [user&nbsp;account](#user-account)
@@ -52,7 +55,7 @@ Definitions
 <dl class="glossary">
 
   <dt>
-    <a name="abuse-list">abuse list</a>
+    <a name="abuse-list">abuse list</a> (also banning)
   </dt>
   <dd>
     The <strong>abuse list</strong> is a list of email addresses that are
@@ -743,6 +746,35 @@ Definitions
   </dd>
 
   <dt>
+    <a name="survey">survey</a> (or questionnaire)
+  </dt>
+  <dd>
+      By default, FixMyStreet sends out <strong>surveys</strong> (also called
+      <strong>questionnaires</strong>) to users four weeks after they reported a
+      problem. These surveys help you collect data on the performance of the <a
+      href="#bodies" class="glossary">bodies</a>.
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          Survey data is available to <a href="#administrator"
+          class="glossary">administrators</a> on the Survey page of the admin
+        </li>
+        <li>
+          Survey <a href="#template" class="glossary">templates</a> are in
+          <code>/templates/email/default/questionnaire.txt</code> and
+          <code>/templates/web/default/questionnaire</code>
+        </li>
+        <li>
+          If you don't want your FixMyStreet site to send out surveys, you can
+          switch off this behaviour in a <a
+          href="/customising/cobrand-module/">cobrand module</a>.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
     <a name="template">template</a>
   </dt>
   <dd>
@@ -771,7 +803,7 @@ Definitions
         </li>
         <li>
           See the <a href="http://www.template-toolkit.org">Template Toolkit
-          website</a>, which is the system the FixMyStreet templates use.
+          website</a>, which is the system the FixMyStreet web templates use.
         </li>
       </ul>
     </div>
