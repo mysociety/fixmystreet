@@ -79,12 +79,16 @@ Definitions
   </dt>
   <dd>
     An <strong>administrator</strong> is a user who has access to the back-end
-    admin, which affects the way the whole FixMyStreet site is run.
+    admin (so can do things like add or edit <a href="#body"
+    class="glossary">bodies</a>, modify <a href="#report"
+    class="glossary">problem reports</a>, and <a href="/running/users">manage
+    users</a>). An administrator should also have access to the email account
+    to which user support emails are sent.
     <p>
       Depending on how the site has been configured, this may be a regular
       FixMyStreet <a href="#user-account" class="glossary">user</a>. However,
       often it's an <code>htauth</code> user instead (which is a user managed
-      by the webserver, rather than FixMyStreet application itself).
+      by the webserver, rather than the FixMyStreet application itself).
     </p>
     <div class="more-info">
       <p>More information:</p>
@@ -101,19 +105,17 @@ Definitions
       </ul>
     </div>
   </dd>
-
+ 
   <dt>
     <a name="alert">alert</a>
   </dt>
   <dd>
-    FixMyStreet sends <strong>alerts</strong> to anyone who has subscribed to
-    be notified of new <a href="#report" class="glossary">reports</a> or <a
-    href="#update" class="glossary">updates</a>. Alerts are sent as emails
-    (although they are also available as RSS feeds).
+    FixMyStreet users can subscribe to emails (or RSS feeds) which will notify
+    them when reports or updates are made within a certain area. These notifications
+    are called <strong>alerts</strong>.
     <p>
-      Examples of the criteria for which alerts can be sent include: all
-      problems within a <a href="#body" class="glossary">body</a>, or all
-      problems within a certain distance of a particular location.
+      Users can subscribe to various alerts - for example, all reports made
+      within a body, or within a certain distance of their chosen location
     </p>
     <p>
       Alerts are available on the FixMyStreet site at <code>/alert</code>.
@@ -127,9 +129,9 @@ Definitions
     FixMyStreet uses <strong>areas</strong> to determine which <a href="#body"
     class="glossary">bodies</a> are responsible for handling problems at a
     specific location. For example, when a user clicks on the <a href="#map"
-    class="glossary">map</a>, FixMyStreet finds all the bodies which cover
-    that area. Technically, an area comprises one or more polygons on a map &mdash;
-    either those areas already exist (from <a href="#osm"
+    class="glossary">map</a>, FixMyStreet finds all the bodies are responsible
+    for that area. Technically, an area comprises one or more polygons on a
+    map &mdash; either those areas already exist (from <a href="#osm"
     class="glossary">OpenStreetMap</a>, for example) or you can draw your own.
     <p>
       The <a href="#config-variable" class="glossary">config variable</a>
@@ -251,13 +253,30 @@ Definitions
     <a name="cobrand">cobrand</a>
   </dt>
   <dd>
-    FixMyStreet uses a system of <strong>cobranding</strong> to customise the
+    FixMyStreet uses a system of cobranding to customise the
     way the site looks and behaves. This can be as simple as changing the
     colour scheme and logo, right through to overriding specific behaviour with
-    custom Perl code.
+    custom Perl code. Each <strong>cobrand</strong> has a name which the FixMyStreet
+    code uses when deciding which style and behaviour to apply.
+    <p>
+      For a live example of cobranding, consider two sites in the UK. Our <a
+      href="http://www.fixmystreet.com/">FixMyStreet site</a> runs with the
+      <code>fixmystreet</code> cobrand, which has a yellow-and-asphalt
+      appearance, and has an example street from the city of Manchester in the
+      "enter a street name" box. But the <a
+      href="http://fixmystreet.oxfordshire.gov.uk">Oxfordshire site</a> is
+      running the <code>oxfordshire</code> cobrand, which makes the site green
+      and suggests a street name from Oxfordshire.
+    </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
+        <li>
+          The cobrands that FixMyStreet will use are defined in the <a
+          href="#config-variable" class="glossary">config variable</a>
+          <code>ALLOWED_COBRANDS</code>, based on the URL of the incoming
+          request.
+        </li>
         <li>
           <a href="/customising">more about customising</a>
         </li>
@@ -357,15 +376,19 @@ Definitions
     <a name="flagged">flagged</a>
   </dt>
   <dd>
-    A report or a user can be <strong>flagged</strong> if you, or any
-    administrator, wants to mark it as for special attention, typically
-    because it may be abusive or inappropriate. Flagged items are shown in the
-    admin on their own page (`flagged`) so can be more easily managed. This is
-    especially useful if you have a team of administrators, and want to
-    monitor troublesome users.
+    A report or a user can be <strong>flagged</strong> if an <a
+    href="#administrator" class="glossary">administrator</a> wants to mark it
+    as for special attention, typically because it may be abusive or
+    inappropriate. Flagged items are shown in the admin on their own page
+    (<code>/admim/flagged</code>) so can be more easily managed. This is
+    especially useful if you have more than one administrator, as you can see
+    whether other administrators have marked the user or report as
+    problematic.
     <p>
-      A user who persists in abusing your FixMyStreet site can be added to the
-      <a href="#abuse-list" class="glossary">abuse list</a>.
+      Flagging users is only advisory: it marks them for attention, but does
+      not ban them. You can ban a user who persists in abusing your
+      FixMyStreet site by adding them to the <a href="#abuse-list"
+      class="glossary">abuse list</a>.
     </p>
     <div class="more-info">
       <p>More information:</p>
@@ -505,7 +528,7 @@ Definitions
     <a name="map">map</a>
   </dt>
   <dd>
-    FixMyStreet displays a <strong>map</strong> so users can easily pin-point
+    FixMyStreet displays a <strong>map</strong> so users can easily pinpoint
     the location of the problem they are reporting. By default, these are <a
     href="#osm" class="glossary">OpenStreetMap</a> tiles displayed using
     OpenLayers, but you can configure your installation to use other maps,
@@ -629,12 +652,20 @@ Definitions
     <a name="report">problem report</a>
   </dt>
   <dd>
-    When a FixMyStreet user reports a pothole or a broken streetlight, that
-    <strong>problem report</strong> is sent to the <a href="#body"
-    class="glossary">body</a> responsible. It's also stored on the FixMyStreet
-    website. Problem reports can be hidden, or anonymous (that is, the user's
-    name is not shown on the web). The report includes the description entered
-    by the user and, optionally, a photograph.
+    When a FixMyStreet user reports a problem (for example, a pothole or a
+    broken streetlight), that <strong>problem report</strong> is sent to the
+    <a href="#body" class="glossary">body</a> responsible. Problem reports
+    remain unpublished until the user confirms them; they may also be hidden
+    by an administrator. In both cases, the report is still stored in
+    FixMyStreet's back-end database.
+    <p>
+      Users may choose to submit their report anonymously. This means that
+      their name is not displayed on the website, although it is still sent to
+      the body.
+    </p>
+    <p>
+      A report may include a photograph.
+    </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
