@@ -19,6 +19,7 @@ Definitions
 -----------
 
 [abuse list](#abuse-list) |
+[admin&nbsp;boundary](#area) |
 [administrator](#administrator) |
 [alert](#alert) |
 [area](#area) |
@@ -123,16 +124,19 @@ Definitions
   </dd>
 
   <dt>
-    <a name="area">area</a>
+    <a name="area">area</a> (also administrative boundary)
   </dt>
   <dd>
     FixMyStreet uses <strong>areas</strong> to determine which <a href="#body"
     class="glossary">bodies</a> are responsible for handling problems at a
-    specific location. For example, when a user clicks on the <a href="#map"
+    specific location. When a user clicks on the <a href="#map"
     class="glossary">map</a>, FixMyStreet finds all the bodies are responsible
     for that area. Technically, an area comprises one or more polygons on a
     map &mdash; either those areas already exist (from <a href="#osm"
-    class="glossary">OpenStreetMap</a>, for example) or you can draw your own.
+    class="glossary">OpenStreetMap</a>, for example) or you can provide your
+    own. You can add your own areas to <a href="#mapit"
+    class="glossary">MapIt</a> by drawing them on a map, or importing
+    shapefiles from other mapping applications.
     <p>
       The <a href="#config-variable" class="glossary">config variable</a>
       <code>MAPIT_ID_WHITELIST</code> can explicitly list the <em>only</em>
@@ -166,7 +170,7 @@ Definitions
   </dt>
   <dd>
     The <a href="#area" class="glossary">areas</a> that <a href="#mapit"
-    class="glossary">MapIt</a> returns describe administrative boundaries. In
+    class="glossary">MapIt</a> returns are administrative boundaries. In
     addition to each boundary's geometry (that is, its actual shape on the
     map), MapIt also identifies what <strong>area type</strong> it is. The
     area type indicates what level of administrative boundary that area
@@ -551,9 +555,9 @@ Definitions
     <a name="mapit">MapIt</a>
   </dt>
   <dd>
-    <strong>MapIt</strong> is a web service that manages administrative
-    boundary areas. More specifically, FixMyStreet uses this to determine
-    which <a href="#area" class="glossary">areas</a> (and hence which <a
+    <strong>MapIt</strong> is a web service that manages <a href="#area"
+    class="glossary">administrative boundary areas</a>. More specifically,
+    FixMyStreet uses this to determine which areas (and hence which <a
     href="#body" class="glossary">bodies</a>) cover any given location.
     <p>
       In a nutshell, MapIt accepts a <a href="#latlong"
