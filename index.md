@@ -37,8 +37,9 @@ Welcome to FixMyStreet Platform
     <p>
       Our <a href="/running">information for administrators</a> covers
       everything you need to do once your FixMyStreet site is up and running.
-      Help is available on everything from defining admin boundaries
-      to writing common user support emails.
+      Help is available on everything from defining <a href="/glossary/#area"
+      class="glossary">admin boundaries</a> to writing common user support
+      emails.
     </p>
   </div>
   <div class="span6">
@@ -74,21 +75,25 @@ In a nutshell: how does it work?
 
 Users locate problems quickly and easily without worrying about the correct
 authority to report it to. FixMyStreet takes care of that using the problem
-location and category, and sends a report, by email or using a web service
-such as Open311.
+location and <a href="/glossary/#category" class="glossary">category</a>, and
+sends a <a href="/glossary/#report" class="glossary">report</a>, by email or
+using a web service such as <a href="/glossary/#open311"
+class="glossary">Open311</a>.
 
 FixMyStreet doesn't just send problem reports -- it makes the reports visible
-to everyone. Anyone can see what's already been reported, leave updates, or
-subscribe to alerts. We help prevent duplicate reports and offer additional
-features for staff users working for the authorities who are actually fixing
-problems.
+to everyone. Anyone can see what's already been reported, leave <a
+href="/glossary/#update" class="glossary">updates</a>, or subscribe to <a
+href="/glossary/#alert" class="glossary">alerts</a>. We help prevent duplicate
+reports and offer additional features for <a href="/glossary/#staff-user"
+class="glossary">staff users</a> working for the authorities who are actually
+fixing problems.
 
 Could your location use a FixMyStreet site?
 -------------------------------------------
 
 We've written a clear guide for anyone who's thinking about [setting up and
 running FixMyStreet](The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). Anyone
-thinking of running such a porject **must** read it first -- it explains why
+thinking of running such a project **must** read it first -- it explains why
 these sites work, and what you need to think about before you start.
 
 If you're thinking of getting involved, we welcome questions about how it
