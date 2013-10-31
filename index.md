@@ -6,58 +6,102 @@ title: Welcome
 Welcome to FixMyStreet Platform
 ===============================
 
-<p class="lead">mySociety's geographic problem reporting platform.</p>
+<p class="lead">
+  mySociety's open source geographic problem-reporting platform
+</p>
 
-[FixMyStreet](http://www.fixmystreet.com/) Platform is an open source project
-to help people run websites for reporting common street problems such as
-potholes and broken street lights to an appropriate authority.
+<div class="row-fluid">
+  <div class="span6">
+    <h3>Install</h3>
+    <p>
+      Begin with the <a href="/install/">installation documentation</a>. Put
+      FixMyStreet on your own Debian/Ubunto server, or on Amazon EC2 (or, if
+      that's a problem for you, <a
+      href="http://www.mysociety.org/contact/">talk to us</a> about hosting).
+    </p>
+  </div>
+  <div class="span6">
+    <h3>Customise</h3>
+    <p>
+      FixMyStreet is <a href="/customising/">fully customisable</a> &mdash;
+      change the style, layout, maps, and behaviour of your installation.
+      It's international too: if FixMyStreet is not already available in your
+      language, you don't need any hard-core coding skills to provide a new
+      translation.
+    </p>
+  </div>
+</div>
+<div class="row-fluid">
+  <div class="span6">
+    <h3>Run</h3>
+    <p>
+      Our <a href="/running">information for administrators</a> covers
+      everything you need to do once your FixMyStreet site is up and running.
+      Help is available on everything from defining admin boundaries
+      to writing common user support emails.
+    </p>
+  </div>
+  <div class="span6">
+    <h3>Join in or get help</h3>
+    <p>
+      There's a friendly <a href="/community/">community</a> comprising
+      full-time mySociety staff, international volunteers, and <em>people like
+      you</em> who are already running their own FixMyStreet sites in their own
+      countries. They're happy to offer technical and non-technical support
+      &mdash; jump in and join!
+    </p>
+  </div>
+</div>
 
-Users locate problems using a combination of address and sticking a pin in a
-map without worrying about the correct authority to report it to. FixMyStreet
-then works out the correct authority using the problem location and type and
-sends a report, by email or using a web service such as Open311. Reported
-problems are visible to everyone so they can see if something has already been
-reported and leave updates. Users can also subscribe to email or RSS alerts of
-problems in their area.
+---
 
-It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
-problems to UK councils and has been copied around the world.
+About the FixMyStreet Platform
+------------------------------
 
-We're working hard to make FixMyStreet Platform easy to install and re-use in
-other countries and welcome questions about how it works
-[on our mailing list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
+The FixMyStreet Platform is an open source project from
+[mySociety](http://www.mysociety.org) to help people run websites for
+reporting common street problems such as potholes and broken street lights to
+an appropriate authority. It's been [running successfully in the
+UK](http://www.fixmystreet.com) since 2007 (in fact, it works so well some UK
+councils use it too), and we're still working on making it better.
 
-We also have a [guide](The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf) on the technical and non-technical how and why of
-using the FixMyStreet platform for your own site.
+FixMyStreet has been copied around the world, and is still under
+<strong>active development</strong>. We work hard to make sure it's easy to
+deploy, customise, and run in locations all over the world.
 
-We've also got a [blog](blog/) where we will post updates in our progress
-in making the code easier to install and develop.
+In a nutshell: how does it work?
+--------------------------------
 
-Installation
-------------
+Users locate problems quickly and easily without worrying about the correct
+authority to report it to. FixMyStreet takes care of that using the problem
+location and category, and sends a report, by email or using a web service
+such as Open311.
 
-Begin with the [installation documentation](install/).
+FixMyStreet doesn't just send problem reports -- it makes the reports visible
+to everyone. Anyone can see what's already been reported, leave updates, or
+subscribe to alerts. We help prevent duplicate reports and offer additional
+features for staff users working for the authorities who are actually fixing
+problems.
 
-Customising
------------
+Could your location use a FixMyStreet site?
+-------------------------------------------
 
-Once you've installed your site, you need to configure and customise it to
-your local requirements.
+We've written a clear guide for anyone who's thinking about [setting up and
+running FixMyStreet](The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). Anyone
+thinking of running such a porject **must** read it first -- it explains why
+these sites work, and what you need to think about before you start.
 
-* how to [customise your installation](customising/)
-* information about [setting up administrative boundaries](customising/fms_and_mapit) using Mapit
+If you're thinking of getting involved, we welcome questions about how it
+works [on our mailing
+list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
+Or, if you're outside the UK, email international@mysocieyt.org.
 
-Running your site
------------------
+There's also the [FixMyStreet blog](blog/) where we post version release
+information and other progress reports. And we often post FixMyStreet news on
+the <a href="http://www.mysociety.org/blog">mySociety blog</a> too.
 
-When your site is up and running, the [admin documentation](running/) should
-help you with common tasks.
 
-* administrator's guide (coming soon!) \[Sept 2013\]
-* how to [manage bodies and contacts](running/bodies_and_contacts) (or: _who do the reports get sent to?_)
-
-Examples
---------
+### Example sites
 
 * <http://www.fixmystreet.com/> -- FixMyStreet in the UK
 * <http://www.fiksgatami.no/> -- FixMyStreet in Norway
