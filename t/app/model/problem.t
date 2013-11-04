@@ -589,6 +589,52 @@ foreach my $test ( {
     };
 }
 
+subtest 'check can set mutiple emails as a single contact' => sub {
+    my $override = {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        BASE_URL => 'http://www.fixmystreet.com',
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    };
+
+    my $contact = {
+        body_id => 2651, # Edinburgh
+        category => 'trees',
+        email => '2636@example.com,2636-2@example.com',
+    };
+    my $new_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( {
+            %contact_params, 
+            %$contact } );
+    ok $new_contact, "created multiple email test contact";
+
+    $mech->clear_emails_ok;
+
+    FixMyStreet::App->model('DB::Problem')->search(
+        {
+            whensent => undef
+        }
+    )->update( { whensent => \'ms_current_timestamp()' } );
+
+    $problem->discard_changes;
+    $problem->update( {
+        bodies_str => $contact->{ body_id },
+        state => 'confirmed',
+        confirmed => \'ms_current_timestamp()',
+        whensent => undef,
+        category => 'trees',
+        name => 'Test User',
+        cobrand => 'fixmystreet',
+        send_fail_count => 0,
+    } );
+
+    FixMyStreet::override_config $override, sub {
+        FixMyStreet::App->model('DB::Problem')->send_reports();
+    };
+
+    $mech->email_count_is(1);
+    my $email = $mech->get_email;
+    is $email->header('To'), '"City of Edinburgh Council" <2636@example.com>, "City of Edinburgh Council" <2636-2@example.com>', 'To contains two email addresses';
+};
+
 subtest 'check can turn on report sent email alerts' => sub {
     my $send_confirmation_mail_override = Sub::Override->new(
         "FixMyStreet::Cobrand::Default::report_sent_confirmation_email",
