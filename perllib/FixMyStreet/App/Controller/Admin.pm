@@ -553,10 +553,15 @@ sub reports : Path('reports') {
             $query->{'-or'} = [
                 'me.areas' => { like => "%,$1,%" }
             ];
+        } elsif ($search =~ /^ref:(\d+)$/) {
+            $query->{'-or'} = [
+                'me.external_id' => { like => "%$1%" }
+            ];
         } else {
             $query->{'-or'} = [
                 'me.id' => $search_n,
                 'user.email' => { ilike => $like_search },
+                'me.external_id' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
                 'me.title' => { ilike => $like_search },
                 detail => { ilike => $like_search },
