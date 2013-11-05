@@ -28,19 +28,6 @@ $image-sprite: 'images/sprite.png';
   background: url('images/sprite.png') -8px -915px no-repeat;
 }
 
-#staging-banner {
-  background: #dd3333;
-  color: #fff;
-  padding: 0.2em;
-  margin:0;
-  text-align:center;
-  font-size:80%;
-}
-
-.wrapper {
-  position: relative; // to make the staging-banner not affect top/left positioning of logo
-}
-
 #footer-help ul li {
   padding-right: 3em;
   a {

@@ -4,6 +4,8 @@ use base 'FixMyStreet::Cobrand::Default';
 use strict;
 use warnings;
 
+sub site_title { return 'FixMindelo'; }
+
 sub country {
     return 'CV';
 }
