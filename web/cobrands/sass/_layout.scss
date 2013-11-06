@@ -1046,12 +1046,15 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         margin-top: 0;
       }
     }
-  .fms-admin-warning, .fms-admin-info, .admin-hint {
+  .fms-admin-warning, .fms-admin-info, .admin-hint, .admin-offsite-link {
     display: none; // don't display admin-notes unless .show-admin-notes class is present
   }
   &.show-admin-notes {
     .fms-admin-warning, .fms-admin-info, .admin-hint {
       display: block;
+    }
+    .admin-offsite-link {
+      display: inline;
     }
     .fms-admin-warning, .fms-admin-info {
       padding: 1em;
@@ -1114,6 +1117,12 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
           margin: 0;
         }
       }
+    }
+    .admin-offsite-link {
+      padding-right:12px;
+      background-image:url(/cobrands/fixmystreet/images/external-link.png);
+      background-position: right top;
+      background-repeat: no-repeat;
     }
   }
 }
