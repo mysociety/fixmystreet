@@ -21,6 +21,9 @@ options that may be easier:</p>
 
 Please also see the instructions for [updating your code](/updating/) once it's installed.
 
+If you want to know which bits of FixMyStreet are in which directory, see this
+[summary of the directory structure](/directory_structure).
+
 ## Manual installation
 
 If you prefer to set up each required component of FixMyStreet
