@@ -384,7 +384,7 @@ for my $test (
 }
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'emptyhomes' ],
+    ALLOWED_COBRANDS => [ 'emptyhomes', 'fixmystreet' ],
 }, sub {
     # EHA extra checking
     ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
