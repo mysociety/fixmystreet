@@ -6,8 +6,10 @@ title: Directory structure
 
 # The FixMyStreet platform's directory structure
 
-This page gives you an overview of where to find things in FixMyStreet's
-directories. You'll probably never need to worry about this if you're just
+<p class="lead">This page gives you an overview of where to find things in FixMyStreet's
+directories.</p>
+
+You'll probably never need to worry about this if you're just
 installing FixMyStreet -- this is really more useful if you're a developer
 planning on making more substantive changes to the code (and if you do,
 remember to read the page about [feeding your changes back](/feeding-back)).
