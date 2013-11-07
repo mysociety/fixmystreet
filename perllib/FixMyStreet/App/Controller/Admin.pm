@@ -9,6 +9,8 @@ use POSIX qw(strftime strcoll);
 use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email);
 use if !$ENV{TRAVIS}, 'Image::Magick';
+use DateTime::Format::Strptime;
+
 
 use FixMyStreet::SendReport;
 
@@ -1076,26 +1078,15 @@ sub stats : Path('stats') : Args(0) {
     if ( $c->req->param('getcounts') ) {
 
         my ( $start_date, $end_date, @errors );
+        my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
 
-        eval {
-            $start_date = DateTime->new(
-                year => $c->req->param('start_date_year'),
-                month => $c->req->param('start_date_month'),
-                day => $c->req->param('start_date_day'),
-            );
-        };
+        $start_date = $parser-> parse_datetime ( $c->req->param('start_date') );
 
-        push @errors, _('Invalid start date') if $@;
+        push @errors, _('Invalid start date') unless defined $start_date;
 
-        eval {
-            $end_date = DateTime->new(
-                year => $c->req->param('end_date_year'),
-                month => $c->req->param('end_date_month'),
-                day => $c->req->param('end_date_day'),
-            );
-        };
+        $end_date = $parser-> parse_datetime ( $c->req->param('end_date') ) ;
 
-        push @errors, _('Invalid end date') if $@;
+        push @errors, _('Invalid end date') unless defined $end_date;
 
         $c->stash->{errors} = \@errors;
         $c->stash->{start_date} = $start_date;
