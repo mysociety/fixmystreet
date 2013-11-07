@@ -68,7 +68,7 @@ h3, h4 {
 
 // Tiled background stripe, not plain colour
 #front-main {
-    background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+    background: $primary url(images/tile-y.jpg);
 }
 #main-nav {
     ul#main-menu {
@@ -79,12 +79,12 @@ h3, h4 {
         }
     }
     ul#mysoc-menu {
-        background: $primary url(/cobrands/fixmystreet/images/tile-y.jpg);
+        background: $primary url(images/tile-y.jpg);
     }
 }
 .nav-wrapper {
     .nav-wrapper-2 {
-        @include border-image(url(/cobrands/fixmystreet/images/tile-y-border.jpg) 4 0 0 0);
+        @include border-image(url(images/tile-y-border.jpg) 4 0 0 0);
     }
 }
 body.mappage {
