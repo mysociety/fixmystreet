@@ -26,7 +26,7 @@
                 uri = c.uri_for_email( '/report', update.problem.id );
             END;
         %]
-        <a href="[% uri %]#update_[% update.id %]">[% update.id %]</a>
+        <a href="[% uri %]#update_[% update.id %]" class="admin-offsite-link">[% update.id %]</a>
         [%- ELSE %]
         [%- update.id %]
         [%- END -%]</td> 

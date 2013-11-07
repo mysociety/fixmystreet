@@ -15,7 +15,7 @@
             uri = c.uri_for_email( '/report', problem.id );
         END;
     %]
-<li><a href="[% uri %]">[% loc('View report on site' )%]</a></li>
+<li><a href="[% uri %]" class="admin-offsite-link">[% loc('View report on site' )%]</a></li>
 <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
 <li><label for='detail'>[% loc('Details:') %]</label>
 <textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>

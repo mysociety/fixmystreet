@@ -9,7 +9,7 @@
                 uri = c.uri_for_email( '/report', problem.id );
             END;
         %]
-        <a href="[% uri %]">[% problem.id %]</a>
+        <a href="[% uri %]" class="admin-offsite-link">[% problem.id %]</a>
         [%- ELSE %]
         [%- problem.id %]
         [%- END -%]</td> 
