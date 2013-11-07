@@ -55,7 +55,7 @@ $(function(){
 
     var cobrand = $('meta[name="cobrand"]').attr('content');
     var is_small_map = false;
-    if (cobrand === 'bromley' || cobrand === 'oxfordshire') {
+    if (cobrand === 'bromley') {
         is_small_map = true;
     }
 
@@ -119,7 +119,7 @@ $(function(){
                 if (cobrand == 'bromley') {
                     banner_text += '<span>Yellow pins show existing reports</span>';
                 }
-                if (! is_small_map) {
+                if (! is_small_map && cobrand !== 'oxfordshire') {
                     $('#site-header').show();
                     banner_text = translation_strings.report_problem_heading;
                 }
