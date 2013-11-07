@@ -61,15 +61,15 @@
 
 <form method="post" action="[% c.uri_for('stats') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p>
-    <label for="start_date_year">[% loc('Start Year:') %]</label><input type="text" name="start_date_year" id="start_date_year" size="5" value="[% start_date ? start_date.year : '' | html %]" />
-    <label for="start_date_month">[% loc('Start month:') %]</label><input type="text" name="start_date_month" id="start_date_month" size="3" value="[% start_date ? start_date.month : '' | html %]" />
-    <label for="start_date_day">[% loc('Start day:') %]</label><input type="text" name="start_date_day" id="start_date_day" size="3" value="[% start_date ? start_date.day : '' | html %]" />
+    <label for="start_date">[% loc('Start Date:') %]</label><input type="text"
+      placeholder="[% loc('Click here or enter as dd/mm/yyyy') %]" name="start_date" id="start_date"
+      value="[% start_date ? start_date.strftime( '%d/%m/%Y') : '' | html %]" />
     </p>
 
     <p>
-    <label for="end_date_year">[% loc('End Year:') %]</label><input type="text" name="end_date_year" id="end_date_year" size="5" value="[% end_date ? end_date.year : '' | html %]" />
-    <label for="end_date_month">[% loc('End month:') %]</label><input type="text" name="end_date_month" id="end_date_month" size="3" value="[% end_date ? end_date.month : '' | html %]" />
-    <label for="end_date_day">[% loc('End day:') %]</label><input type="text" name="end_date_day" id="end_date_day" size="3" value="[% end_date ? end_date.day : '' | html %]" />
+    <label for="end_date">[% loc('End Date:') %]</label><input type="text"
+      placeholder="[% loc('Click here or enter as dd/mm/yyyy') %]" name="end_date" id="end_date" size="5"
+      value="[% end_date ? end_date.strftime( '%d/%m/%Y') : '' | html %]" />
     </p>
 
     <p>

@@ -57,5 +57,23 @@ $(function(){
             });
         }
     }
+
+    $( "#start_date" ).datepicker({
+      defaultDate: "-1w",
+      changeMonth: true,
+      dateFormat: 'dd/mm/yy' ,
+      // This sets the other fields minDate to our date
+      onClose: function( selectedDate ) {
+        $( "#end_date" ).datepicker( "option", "minDate", selectedDate );
+      }
+    });
+    $( "#end_date" ).datepicker({
+     /// defaultDate: "+1w",
+      changeMonth: true,
+      dateFormat: 'dd/mm/yy' ,
+      onClose: function( selectedDate ) {
+        $( "#start_date" ).datepicker( "option", "maxDate", selectedDate );
+      }
+    });
 });
 
