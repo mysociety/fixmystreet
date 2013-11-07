@@ -121,16 +121,28 @@ GEOCODING_DISAMBIGUATION: ''
 MAP_TYPE: 'OSM'
 
 # FixMyStreet uses a templating cobrand system to provide different looks for
-# different installations. If your site was at moon.example.org, and your templates
-# were in the templates/web/moon directory, you would use:
+# different installations. In the common case, if your templates are in the
+# templates/web/moon directory and CSS in web/cobrands/moon, you just specify:
 #   ALLOWED_COBRANDS:
-#     - moon: 'moon.example.org'
+#     - moon
+# If you wish to use multiple cobrands, specify them in a list, optionally with
+# hostname-matching regular expressions if the name of the cobrand is not
+# enough. For example:
+#   ALLOWED_COBRANDS:
+#     - moon
+#     - venus
+# Any hostname with 'moon' in it will use the moon cobrand, any with 'venus'
+# the venus cobrand (any other the Default cobrand). Whereas:
+#   ALLOWED_COBRANDS:
+#     - moon: 'orbital'
+#     - venus
+# Any hostname with 'orbital' in it will use the moon cobrand.
 # This also allows development servers to map to different cobrands if needed,
 # using DNS subdomains for example.
 ALLOWED_COBRANDS:
-  - cobrand_one
-  - cobrand_two: 'hostname_substring2'
-  - cobrand_three
+  - cobrand1
+  - cobrand2: 'hostname_substring2'
+  - cobrand3
 
 # This is only used in "offensive report" emails to provide a link directly to
 # the admin interface. If wanted, set to the full URL of your admin interface.

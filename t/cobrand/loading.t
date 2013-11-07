@@ -9,51 +9,92 @@ use FixMyStreet;
 use_ok 'FixMyStreet::Cobrand';
 
 # check that the allowed cobrands is correctly loaded from config
-{
+sub check_allowed_cobrands {
+    my $should = shift;
+    $should = [ map { { moniker => $_, host => $_ } } @$should ];
     my $allowed = FixMyStreet::Cobrand->get_allowed_cobrands;
-    ok $allowed,     "got the allowed_cobrands";
+    ok $allowed, "got the allowed_cobrands";
     isa_ok $allowed, "ARRAY";
-    cmp_ok scalar @$allowed, '>', 1, "got more than one";
+    is_deeply $allowed, $should, "allowed_cobrands matched";
 }
 
-# fake the allowed cobrands for testing
-my $override = Sub::Override->new(    #
-    'FixMyStreet::Cobrand::_get_allowed_cobrands' =>
-      sub { return ['emptyhomes'] }
-);
-is_deeply FixMyStreet::Cobrand->get_allowed_cobrands, [ { moniker => 'emptyhomes', host => 'emptyhomes' } ],
-  'overidden get_allowed_cobrands';
+FixMyStreet::override_config { ALLOWED_COBRANDS => 'fixmyhouse' },
+    sub { check_allowed_cobrands([ 'fixmyhouse' ]); };
+FixMyStreet::override_config { ALLOWED_COBRANDS => [ 'fixmyhouse' ] },
+    sub { check_allowed_cobrands([ 'fixmyhouse' ]); };
+FixMyStreet::override_config { ALLOWED_COBRANDS => [ 'fixmyhouse', 'fixmyshed' ] },
+    sub { check_allowed_cobrands([ 'fixmyhouse', 'fixmyshed' ]); };
 
 sub run_host_tests {
     my %host_tests = @_;
     for my $host ( sort keys %host_tests ) {
-        is FixMyStreet::Cobrand->get_class_for_host($host),
-          "FixMyStreet::Cobrand::$host_tests{$host}",
-          "does $host -> F::C::$host_tests{$host}";
+        # get the cobrand class by host
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_host($host);
+        my $test_class = $host_tests{$host};
+        my $test_moniker = lc $test_class;
+        is $cobrand, "FixMyStreet::Cobrand::$test_class", "does $host -> F::C::$test_class";
+        my $c = $cobrand->new();
+        is $c->moniker, $test_moniker;
     }
 }
 
-# get the cobrand class by host
-run_host_tests(
-    'www.fixmystreet.com'    => 'Default',
-    'reportemptyhomes.com'   => 'EmptyHomes',
-    'barnet.fixmystreet.com' => 'Default',    # not in the allowed_cobrands list
-    'some.odd.site.com'      => 'Default',
-);
+# Only one cobrand, always use it
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmystreet' ],
+}, sub {
+    run_host_tests(
+        'www.fixmystreet.com'    => 'FixMyStreet',
+        'reportemptyhomes.com'   => 'FixMyStreet',
+        'barnet.fixmystreet.com' => 'FixMyStreet',
+        'some.odd.site.com'      => 'FixMyStreet',
+    );
+};
+
+# Only one cobrand, no .pm file, should still work
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'nopmfile' ],
+}, sub {
+    run_host_tests(
+        'www.fixmystreet.com' => 'nopmfile',
+        'some.odd.site.com'   => 'nopmfile',
+    );
+};
+
+# Couple of cobrands, hostname checking and default fallback
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'emptyhomes', 'fixmystreet' ],
+}, sub {
+    run_host_tests(
+        'www.fixmystreet.com'    => 'FixMyStreet',
+        'reportemptyhomes.com'   => 'EmptyHomes',
+        'barnet.fixmystreet.com' => 'FixMyStreet',    # not in the allowed_cobrands list
+        'some.odd.site.com'      => 'Default',
+    );
+};
 
 # now enable barnet too and check that it works
-$override->replace(                           #
-    'FixMyStreet::Cobrand::_get_allowed_cobrands' =>
-      sub { return [ 'emptyhomes', 'barnet' ] }
-);
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'emptyhomes', 'barnet', 'fixmystreet' ],
+}, sub {
+    run_host_tests(
+        'www.fixmystreet.com'  => 'FixMyStreet',
+        'reportemptyhomes.com' => 'EmptyHomes',
+        'barnet.fixmystreet.com' => 'Barnet',  # found now it is in allowed_cobrands
+        'some.odd.site.com'      => 'Default',
+    );
+};
 
-# get the cobrand class by host
-run_host_tests(
-    'www.fixmystreet.com'  => 'Default',
-    'reportemptyhomes.com' => 'EmptyHomes',
-    'barnet.fixmystreet.com' => 'Barnet',  # found now it is in allowed_cobrands
-    'some.odd.site.com'      => 'Default',
-);
+# And a check with some regex matching
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ { 'fixmystreet' => 'empty' }, 'barnet', { 'testing' => 'fixmystreet' } ],
+}, sub {
+    run_host_tests(
+        'www.fixmystreet.com'  => 'testing',
+        'reportemptyhomes.com' => 'FixMyStreet',
+        'barnet.fixmystreet.com' => 'Barnet',
+        'some.odd.site.com'      => 'Default',
+    );
+};
 
 # check that the moniker works as expected both on class and object.
 is FixMyStreet::Cobrand::EmptyHomes->moniker, 'emptyhomes',

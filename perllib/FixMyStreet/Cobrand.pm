@@ -8,6 +8,7 @@ use warnings;
 
 use FixMyStreet;
 use Carp;
+use Moose;
 
 use Module::Pluggable
   sub_name    => '_cobrands',
@@ -38,7 +39,10 @@ Simply returns the config variable (so this function can be overridden in test s
 =cut
 
 sub _get_allowed_cobrands {
-    return FixMyStreet->config('ALLOWED_COBRANDS') || [];
+    my $allowed = FixMyStreet->config('ALLOWED_COBRANDS') || [];
+    # If the user has supplied a string, convert to an arrayref
+    $allowed = [ $allowed ] unless ref $allowed;
+    return $allowed;
 }
 
 =head2 available_cobrand_classes
@@ -92,7 +96,14 @@ sub get_class_for_host {
     my $class = shift;
     my $host  = shift;
 
-    foreach my $avail ( $class->available_cobrand_classes ) {
+    my @available = $class->available_cobrand_classes;
+
+    # If only one entry, always use it
+    return class($available[0]) if 1 == @available;
+
+    # If more than one entry, pick first whose regex (or
+    # name by default) matches hostname
+    foreach my $avail ( @available ) {
         return class($avail) if $host =~ /$avail->{host}/;
     }
 
