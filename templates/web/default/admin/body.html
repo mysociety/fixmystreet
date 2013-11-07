@@ -8,12 +8,12 @@
 
 <p>
   [% IF example_pc %]
-    <a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
+    <a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]" class="admin-offsite-link">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
   [% END %]
   [% IF c.cobrand.moniker == 'emptyhomes' %]
-    <a href="[% c.uri_for( 'reports', search => 'body:' _ body_id ) %]">[% loc('List all reported problems' ) %]</a> |
+    <a href="[% c.uri_for( 'reports', search => 'body:' _ body_id ) %]" class="admin-offsite-link">[% loc('List all reported problems' ) %]</a> |
   [% ELSE %]
-    <a href="[% c.uri_for_email( '/reports/' _ body_id ) %]">[% loc('List all reported problems' ) %]</a> |
+    <a href="[% c.uri_for_email( '/reports/' _ body_id ) %]" class="admin-offsite-link">[% loc('List all reported problems' ) %]</a> |
   [% END %]
   <a href="[% c.uri_for( 'body', body_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
