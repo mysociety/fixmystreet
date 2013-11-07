@@ -4,14 +4,11 @@
 <table cellspacing="0" cellpadding="2" border="1">
     <tr>
         <th>[% loc('ID') %]</th>
-        <th>[% loc('State') %]</th>
         <th>[% loc('Name') %]</th>
-        <th>[% loc('Email') %]</th>
-        <th>[% loc('Created') %]</th>
-        <th>[% loc('Anonymous') %]</th>
         <th>[% loc('Owner') %]</th>
         <th>[% loc('Council') %]</th>
         <th>[% loc('Cobrand') %]</th>
+        <th>[% loc('State') %]</th>
         <th>[% loc('Text') %]</th>
         <th>*</th>
     </tr>
@@ -30,14 +27,17 @@
         [%- ELSE %]
         [%- update.id %]
         [%- END -%]</td> 
-        <td>[% update.state %]</td> 
-        <td>[% update.name | html %]</td> 
-        <td>[% update.user.email | html %]</td> 
-        <td>[% PROCESS format_time time=update.created %]</td> 
-        <td>[% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td> 
+        <td>[% PROCESS value_or_nbsp value=update.name %]
+            <br>[% PROCESS value_or_nbsp value=update.user.email %]
+            <br>[% loc('Anonymous') %]: [% IF update.anonymous %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
+        </td>
         <td>[% IF update.user.id == update.problem.user_id %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
         <td>[% IF update.user.belongs_to_body( update.problem.bodies_str ) %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
         <td>[% update.cobrand %]<br>[% update.cobrand_data | html %]</td> 
+        <td>[% update.state %]<br><small>
+            [% loc('Created:') %] [% PROCESS format_time time=update.created %]
+            <br>[% loc('Confirmed:') %] [% PROCESS format_time time=update.confirmed %]
+        </small></td>
         <td>[% update.text | html %]</td> 
         <td><a href="[% c.uri_for( 'update_edit', update.id ) %]">[% loc('Edit') %]</a></td>
     </tr>
