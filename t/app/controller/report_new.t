@@ -1459,6 +1459,24 @@ subtest "test SeeSomething" => sub {
     $bus_contact->delete;
 };
 
+subtest "categories from deleted bodies shouldn't be visible for new reports" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->get_ok('/report/new/ajax?latitude=51.89&longitude=-2.09'); # Cheltenham
+        ok $mech->content_contains( $contact3->category );
+
+        # Delete the body which the contact belongs to.
+        $contact3->body->update( { deleted => 1 } );
+
+        $mech->get_ok('/report/new/ajax?latitude=51.89&longitude=-2.09'); # Cheltenham
+        ok $mech->content_lacks( $contact3->category );
+
+        $contact3->body->update( { deleted => 0 } );
+    };
+};
+
 $contact1->delete;
 $contact2->delete;
 $contact3->delete;
