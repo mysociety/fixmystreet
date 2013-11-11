@@ -585,7 +585,7 @@ sub setup_categories_and_bodies : Private {
     my $first_area = ( values %$all_areas )[0];
 
     my @bodies = $c->model('DB::Body')->search(
-        { 'body_areas.area_id' => [ keys %$all_areas ] },
+        { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
         { join => 'body_areas' }
     )->all;
     my %bodies = map { $_->id => $_ } @bodies;
