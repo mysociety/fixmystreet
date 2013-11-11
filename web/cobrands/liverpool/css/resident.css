@@ -1,0 +1,78 @@
+/* styles that make the resident section */
+header {border-bottom: 5px solid #806AAF;}
+
+header .navbar .brand {color: #522E91;}
+
+a {
+  color: #522f91;
+}
+
+#subheader {
+background-color: #806AAF;
+}
+
+
+footer.well {
+  border-color: #806AAF;
+}
+
+#footer-atoz {
+	background: #806AAF;
+}
+
+.navbar .nav > .active > a,
+.navbar .nav > .active > a:hover,
+.navbar .nav > .active > a:focus {
+  background-color: #806AAF !important;
+}
+
+caption {background-color:#806AAF;}
+
+.btn a, .btn a:hover {
+	color:#fff;
+}
+.btn {
+	color: #ffffff;
+	background-color:#e08a4e;
+}
+.btn:hover, .btn:active, .btn.active, .btn.disabled, .btn[disabled] {
+	color: #fff;
+	background-color: #e1714b;
+}
+.btn:hover, .btn:focus {
+	color: #fff;
+
+}
+
+.btn-primary {
+  color:#ffffff;
+  background-color: #806aaf;
+}
+
+.btn-primary:hover,
+.btn-primary:active,
+.btn-primary.active,
+.btn-primary.disabled,
+.btn-primary[disabled] {
+    color:#ffffff;
+    /*background-color: #000;*/
+	background-color: #68479d;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* EDITOR PROPERTIES - PLEASE DON'T DELETE THIS LINE TO AVOID DUPLICATE PROPERTIES */

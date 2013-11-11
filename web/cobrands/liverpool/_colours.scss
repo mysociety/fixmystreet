@@ -1,0 +1,25 @@
+/* COLOURS */
+
+$dark_blue: rgb(0, 79, 167);
+$liverpool_purple: #806AAF;
+
+$primary: $liverpool_purple;
+$primary_b: $dark_blue;
+$primary_text: #fff;
+
+$base_bg: #fff;
+$base_fg: #3c3c3c;
+
+$map_nav_bg: #fff;
+$nav_fg: $primary_text;
+$nav_fg_hover: $primary/1.1;
+
+
+$col_click_map: $liverpool_purple;
+$col_click_map_dark: darken($liverpool_purple, 20%);
+
+$col_fixed_label: #648721;
+$col_fixed_label_dark: #4B8304;
+
+$mobile_menu_tab_bg_col: #FFFFFF;
+$mobile_header_blue: #366AB6;
