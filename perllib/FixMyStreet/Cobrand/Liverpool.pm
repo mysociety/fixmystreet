@@ -9,6 +9,14 @@ sub council_area { return 'Liverpool'; }
 sub council_name { return 'Liverpool City Council'; }
 sub council_url { return 'liverpool'; }
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [
+        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
+        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
+    ];
+}
+
 sub disambiguate_location {
     my $self = shift;
     return {
