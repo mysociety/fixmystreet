@@ -12,6 +12,7 @@
         <meta name="mobileoptimized" content="0">
 
 [% SET start = c.config.ADMIN_BASE_URL IF admin %]
+        <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300" rel="stylesheet" type="text/css" />
 
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
