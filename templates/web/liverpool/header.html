@@ -23,6 +23,12 @@
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/css/font-awesome.css') %]">
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/css/lcc.tabs.css') %]">
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/css/resident.css') %]">
+        <!--[if lt IE 8]><link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/css/font-awesome-ie7.css') %]"><![endif]-->
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
 
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
