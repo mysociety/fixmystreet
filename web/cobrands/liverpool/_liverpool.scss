@@ -3,6 +3,7 @@ ul.nav li {
     list-style: none;
 }
 
+// Fix input sizes to work with Bootstrap.
 input[type=text], input[type=password], input[type=email], textarea {
     -ms-box-sizing: content-box;
     -o-box-sizing: content-box;
@@ -11,6 +12,46 @@ input[type=text], input[type=password], input[type=email], textarea {
     box-sizing: content-box;
 }
 
-.content {
-    width: auto;
+// Make sure the navbar always takes up at least 80px to match main site.
+.navbar {
+    min-height: 80px;
+}
+
+// Don't repeat the border, the liverpool header already has one.
+.nav-wrapper .nav-wrapper-2 {
+    border: none;
+}
+
+// Position the main nav at the top of the screen.
+#main-nav {
+    margin: 1em 0 0;
+    ul {
+        float: none;
+    }
+}
+
+#main-nav ul#main-menu li {
+    a {
+        color: #373b43;
+        background-color: #ededed;
+
+        &:hover {
+            background-color: #e3e3e3
+        }
+    }
+
+    span {
+        color: #fff;
+        background-color: #806AAF;
+    }
+}
+
+// Hide the site header on desktop version as it obscures the nav.
+#site-header {
+    display: none;
+}
+
+// Make sure there is enough room for the navigation with the site-header hidden.
+#front-main {
+    margin-top: 5em;
 }

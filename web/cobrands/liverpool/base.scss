@@ -4,3 +4,9 @@
 @import "compass";
 
 @import "../sass/base";
+
+// Disable the FMS logo for now.
+// TODO - see if this is still needed once the layout is sorted RE: Navigation position.
+#site-logo {
+    background: none !important;
+}
