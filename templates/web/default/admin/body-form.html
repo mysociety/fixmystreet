@@ -78,6 +78,14 @@
     </p>
 
     <div class="admin-hint">
+      <p>[% loc( "You can mark a body as deleted if you do not want it to be active on the site." ) %]</p>
+    </div>
+    <p>
+        <label for="deleted">[% loc('Flag as deleted') %]</label>
+        <input type="checkbox" name="deleted" id="deleted" value="1"[% ' checked' IF body.deleted %]>
+    </p>
+
+    <div class="admin-hint">
       <p>
         [% loc(
           "The <strong>send method</strong> determines how problem reports will be sent to the body.
