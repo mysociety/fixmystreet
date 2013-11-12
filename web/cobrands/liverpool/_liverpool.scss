@@ -55,3 +55,23 @@ input[type=text], input[type=password], input[type=email], textarea {
 #front-main {
     margin-top: 5em;
 }
+
+// Over-specific container widths to allow bootstrap to work.
+//
+// This is necessary because both Bootstrap and FMS use the .container class
+// in different conflicting ways.
+body.liverpool .container {
+    width: 940px;
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+    body.liverpool .container {
+        width: 724px;
+    }
+}
+@media (min-width: 1200px) {
+    body.liverpool .container {
+        width: 1170px;
+    }
+
+}
