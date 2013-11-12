@@ -14,10 +14,29 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.2.6.
+Platform is now at version 1.3.
+
+## Installation
+
+We've been working hard to make the FixMyStreet Platform easy to install and
+re-use in other countries - please see our site at <http://code.fixmystreet.com/>
+for help and documentation in installing the FixMyStreet Platform.
 
 ## Releases
 
+* v1.3 (12th November 2013)
+    - Changes cobrand behaviour so if only one is specified, always use it. #598
+    - Allows multiple email addresses to be given for a contact.
+    - Bugfixes to pan icon placement, and bottom navbar in Chrome. #597
+    - Admin improvements
+        - Search by external ID. #389
+        - Date picker in stats. #514
+        - Mark external links. #579
+        - Fix for bug when changing report state from 'unconfirmed'. #527
+        - Improve lists of report updates.
+        - Add marking of bodies as deleted.
+        - Show version number of code on config page.
+    - Test suite runs regardless of config file contents. #596
 * v1.2.6 (11th October 2013)
     - Upgrades OpenLayers to 2.13.1, for e.g. animated zooming.
     - Adds facility for using Google Maps via OpenLayers. #587
@@ -73,12 +92,6 @@ Platform is now at version 1.2.6.
       and coping if MapIt has its debug switched on)
 * v1.0 (24th October 2012)
     - Official launch of the FixMyStreet platform
-
-## Installation
-
-We've been working hard to make FixMyStreet Platform easy to install and re-use
-in other countries - please see our site at <http://code.fixmystreet.com/> for
-help and documentation in installing FixMyStreet Platform.
 
 ## Examples
 

@@ -976,7 +976,7 @@ sub user_add : Path('user_edit') : Args(0) {
     $c->forward('check_token');
 
     if ( $c->cobrand->moniker eq 'zurich' and $c->req->param('email') eq '' ) {
-        $c->stash->{field_errors}->{email} = _('The email field is required');
+        $c->stash->{field_errors}->{email} = _('Please enter a valid email');
         return 1;
     }
 
@@ -1029,7 +1029,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->flagged( $c->req->param('flagged') || 0 );
 
         if ( $c->cobrand->moniker eq 'zurich' and $user->email eq '' ) {
-            $c->stash->{field_errors}->{email} = _('The email field is required');
+            $c->stash->{field_errors}->{email} = _('Please enter a valid email');
             return 1;
         }
         $user->update;
