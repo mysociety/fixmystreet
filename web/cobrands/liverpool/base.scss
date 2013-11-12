@@ -3,6 +3,10 @@
 @import "../sass/mixins";
 @import "compass";
 
+$body-font: 'Open Sans', sans-serif, Helvetica, Arial, sans-serif;
+$meta-font: 'Open Sans', sans-serif, Helvetica, Arial, sans-serif;
+$heading-font: 'Open Sans', sans-serif, Helvetica, Arial, sans-serif;
+
 @import "../sass/base";
 
 // Disable the FMS logo for now.
