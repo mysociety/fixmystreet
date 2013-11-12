@@ -84,6 +84,17 @@ input[type=text], input[type=password], input[type=email], textarea {
     margin-top: 5em;
 }
 
+// Fix position of the user-meta div
+#user-meta {
+    float: right;
+
+    p {
+        position: static;
+        color: #fff;
+        background-color: $primary;
+    }
+}
+
 // Over-specific container widths to allow bootstrap to work.
 //
 // This is necessary because both Bootstrap and FMS use the .container class
