@@ -3,6 +3,11 @@
     display: block;
 }
 
+// Respect bootstrap's widths.
+body.liverpool .content {
+    width: auto;
+}
+
 // Remove squares from top navigation.
 ul.nav li {
     list-style: none;
