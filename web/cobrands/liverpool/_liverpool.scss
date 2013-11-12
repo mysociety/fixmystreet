@@ -91,7 +91,7 @@ body.liverpool {
 
     // Hide the site header on desktop version as it obscures the nav.
     #site-header {
-        display: none;
+        height: auto;
     }
 
     // Make sure there is enough room for the navigation with the site-header hidden.
