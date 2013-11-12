@@ -11,6 +11,12 @@ body.liverpool {
         width: auto;
     }
 
+    // Don't fix the nav.
+    &.mappage .nav-wrapper .nav-wrapper-2 {
+        position: absolute;
+        background: none;
+    }
+
     // Remove squares from top navigation.
     ul.nav li {
         list-style: none;
