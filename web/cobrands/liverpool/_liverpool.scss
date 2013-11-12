@@ -50,12 +50,28 @@ input[type=text], input[type=password], input[type=email], textarea {
         &:hover {
             background-color: #e3e3e3
         }
+
+        // Don't style the report a problem button differently when it's a link.
+        &.report-a-problem-btn {
+            margin: inherit;
+            padding: 0.75em;
+            -webkit-border-radius: 0;
+            -moz-border-radius: 0;
+            -ms-border-radius: 0;
+            -o-border-radius: 0;
+            border-radius: 0;
+        }
     }
 
     span {
         color: #fff;
         background-color: $primary;
     }
+
+    body.mappage & span, body.mappage & a {
+        padding: 0.75em;
+    }
+
 }
 
 // Hide the site header on desktop version as it obscures the nav.
