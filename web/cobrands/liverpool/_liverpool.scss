@@ -11,7 +11,7 @@ body.liverpool {
         width: auto;
     }
 
-    &.mappage .content {
+    .content {
         position: relative;
         z-index: 10;
     }
@@ -95,9 +95,14 @@ body.liverpool {
 
     }
 
-    // Hide the site header on desktop version as it obscures the nav.
+    // Make the site-header respect the height it's given.
     #site-header {
         height: auto;
+    }
+
+    // Don't display the site logo because we're using Liverpool's header, which contains their logo.
+    #site-logo {
+        display: none;
     }
 
     // Make sure there is enough room for the navigation with the site-header hidden.
@@ -107,12 +112,22 @@ body.liverpool {
 
     // Fix position of the user-meta div
     #user-meta {
-        float: right;
+        left: 0;
+        margin-left: 1em;
+        position: relative;
+        z-index: 5;
 
         p {
-            position: static;
             color: #fff;
             background-color: $primary;
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            box-shadow: none;
+
+            a {
+                background: #444;
+                color: #fff;
+            }
         }
     }
 
