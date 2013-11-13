@@ -9,7 +9,7 @@ function position_map_box() {
         });
     } else {
         // Move the map into the content div and remove inline CSS.
-        $('#map_box').prependTo('.container > .content').removeAttr('style');
+        $('#map_box').prependTo('.wrapper > .table-cell > .container').removeAttr('style');
     }
 }
 

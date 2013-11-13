@@ -11,6 +11,11 @@ body.liverpool {
         width: auto;
     }
 
+    &.mappage .content {
+        position: relative;
+        z-index: 10;
+    }
+
     // Don't fix the nav.
     &.mappage .nav-wrapper .nav-wrapper-2 {
         position: absolute;
