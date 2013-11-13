@@ -114,6 +114,12 @@ body.liverpool {
             background-color: $primary;
         }
     }
+
+    .shadow-wrap {
+        position: static;
+        padding-top: 0;
+        margin-bottom: 1em;
+    }
 }
 
 // Over-specific container widths to allow bootstrap to work.
