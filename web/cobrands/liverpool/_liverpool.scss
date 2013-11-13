@@ -7,7 +7,7 @@ body.liverpool {
     }
 
     // Respect bootstrap's widths.
-    .content {
+    &.frontpage .content {
         width: auto;
     }
 
