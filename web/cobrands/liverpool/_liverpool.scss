@@ -2,7 +2,7 @@
 body.liverpool {
 
     // Show header on larger layouts (this is hidden in base.css for mobiles).
-    .liverpool-header {
+    .liverpool-header, .liverpool-footer {
         display: block;
     }
 
