@@ -1,27 +1,26 @@
-                    </div><!-- .content role=main -->
-                </div><!-- .container -->
-            </div><!-- .table-cell -->
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
 
-            <div class="nav-wrapper">
-                <div class="nav-wrapper-2">
-                    <div id="main-nav" role="navigation">
-                        <ul id="main-menu">
-                            <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
-                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-                            %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
-                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-                            %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
-                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-                            %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
-                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-                            %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-                        </ul>
-                    </div>
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <ul id="main-menu">
+                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                        >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
+                        %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
+                        %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                        %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                        %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                    </ul>
                 </div>
             </div>
-        </div> <!-- .wrapper -->
-    </div> <!-- .container -->
+        </div>
+    </div> <!-- .wrapper -->
 
     <!--/section footer-->
     <div id="footer-bottom" class="liverpool-footer">

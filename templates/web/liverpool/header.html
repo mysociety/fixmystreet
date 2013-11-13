@@ -97,30 +97,29 @@
         </div>
     </header>
 
-    <div class="container">
-        <div class="wrapper">
-            <div class="table-cell">
-                <div id="site-header" role="banner">
-                    <div class="container">
-                        <a href="/" id="site-logo">[% c.cobrand.site_title | html %]</a>
-                        <a href="#main-nav" id="nav-link">Main Navigation</a>
-                    </div>
-                </div>
-
-                <div id="user-meta">
-                    [% IF c.user_exists %]
-                    <p>
-                        [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
-                        <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                    </p>
-                    [% ELSE %]
-                        <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
-                    [% END %]
-                </div>
-
-                [% pre_container_extra %]
-
+    <div class="wrapper">
+        <div class="table-cell">
+            <div id="site-header" role="banner">
                 <div class="container">
-                    <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+                    <a href="/" id="site-logo">[% c.cobrand.site_title | html %]</a>
+                    <a href="#main-nav" id="nav-link">Main Navigation</a>
+                </div>
+            </div>
 
-            <!-- [% INCLUDE 'debug_header.html' %] -->
+            <div id="user-meta">
+                [% IF c.user_exists %]
+                <p>
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                </p>
+                [% ELSE %]
+                    <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
+                [% END %]
+            </div>
+
+            [% pre_container_extra %]
+
+            <div class="container">
+                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+
+        <!-- [% INCLUDE 'debug_header.html' %] -->

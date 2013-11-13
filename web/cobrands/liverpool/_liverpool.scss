@@ -120,17 +120,18 @@ body.liverpool {
 //
 // This is necessary because both Bootstrap and FMS use the .container class
 // in different conflicting ways.
-body.liverpool .container {
+body.liverpool .container, body.liverpool .wrapper {
     width: 940px;
+    margin: 0 auto;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
-    body.liverpool .container {
+    body.liverpool .container, body.liverpool .wrapper {
         width: 724px;
     }
 }
 @media (min-width: 1200px) {
-    body.liverpool .container {
+    body.liverpool .container, body.liverpool .wrapper {
         width: 1170px;
     }
 
