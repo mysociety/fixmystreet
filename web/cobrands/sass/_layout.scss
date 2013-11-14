@@ -204,9 +204,7 @@ h1 {
 // The narrow single column box
 .content {
   width: 27em;
-  margin-top: 3em;
-  margin-bottom: -1em;
-  margin-left: 0.5em;
+  margin: 3em 0.5em -1em;
   padding: 1em 1em 3em;
   background: #fff;
   color: #222;
@@ -217,7 +215,7 @@ h1 {
     // If no box-shadow, just want a boring black border to stand it out from the map.
     border: 1px solid #666;
     //take off margins so we line up properly
-    margin: 0 0 0 0.5em;
+    margin: 0 0.5em;
   }
 }
 
@@ -249,8 +247,6 @@ body.mappage {
   }
   #user-meta {
     max-width: none;
-    left: 0;
-    margin-left: 1em;
   }
 }
 .ie6, .ie7 {
@@ -298,10 +294,7 @@ body.mappage {
 // full width page
 body.fullwidthpage {
   .content {
-    width: 57em;
-  }
-  .intro {
-    width:40em;
+    width: auto;
   }
 }
 // two thirds width page, also has option for a sidebar which can be sticky or not
@@ -534,13 +527,13 @@ body.twothirdswidthpage {
 #user-meta{
   display:block;
   position: relative;
-  max-width: 57em;
-  margin:0 auto;
-  left: 1em;
+  max-width: 60em;
+  margin: 0 auto;
   p {
     @include inline-block;
-    position:absolute;
-    top:1em;
+    position: absolute;
+    top: 1em;
+    left: 1em;
     height:2em;
     padding:0.25em 6em 0.5em 0.5em;
     @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
@@ -566,9 +559,8 @@ body.twothirdswidthpage {
   }
 }
 .ie6 #user-meta {
-  width:57em; //ie6 doesn't like max-width
+  width: 60em; //ie6 doesn't like max-width
 }
-
 
 
 // Wraps around #key-tools box - sticks to the bottom of the screen on desktop
@@ -798,7 +790,7 @@ textarea.form-error {
 body.frontpage {
   .table-cell {
     .content {
-      margin: 1em auto 0;
+      margin: 1em 0.5em 0;
     }
   }
   .nav-wrapper-2{
@@ -816,8 +808,9 @@ body.frontpage {
   #user-meta {
     z-index:10;
     p {
-      top:-4em;
-      right:0;
+      top: -4em;
+      left: auto;
+      right: 0;
       color:$primary;
       background:none;
       @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
@@ -862,8 +855,8 @@ body.frontpage {
   margin: 0;
   padding: 1em;
   #front-main-container {
-    max-width: 57em;
-    margin:0 auto;
+    max-width: 60em;
+    margin: 0 auto;
   }
   h2 {
     font-style:normal;
@@ -1193,11 +1186,6 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
   .full-width{
     width: auto;
     margin: 0em -1em 0 -1em;
-  }
-
-  //make fullpage auto width
-  body.fullwidthpage .content {
-    width: auto;
   }
 
   //make twothirdswidthpage nearly as small as main
