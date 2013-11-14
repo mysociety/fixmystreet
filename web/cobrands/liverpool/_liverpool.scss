@@ -40,6 +40,10 @@ body.liverpool {
         width: 100%;
     }
 
+    .sidebar-tips p, .sidebar-notes li {
+        line-height: initial;
+    }
+
     // Make sure the navbar always takes up at least 80px to match main site.
     .navbar {
         min-height: 80px;
