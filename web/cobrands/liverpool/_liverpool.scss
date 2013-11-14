@@ -36,6 +36,10 @@ body.liverpool {
         box-sizing: content-box;
     }
 
+    textarea {
+        width: 100%;
+    }
+
     // Make sure the navbar always takes up at least 80px to match main site.
     .navbar {
         min-height: 80px;
