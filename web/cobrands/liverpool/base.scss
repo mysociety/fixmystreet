@@ -9,10 +9,16 @@ $heading-font: 'Open Sans', sans-serif, Helvetica, Arial, sans-serif;
 
 @import "../sass/base";
 
+#site-header {
+    background: white;
+}
+
 // Disable the FMS logo for now.
 // TODO - see if this is still needed once the layout is sorted RE: Navigation position.
 #site-logo {
     background: none !important;
+    text-indent: 0;
+    font-size: 1.5em;
 }
 
 .liverpool-header, .liverpool-footer {
