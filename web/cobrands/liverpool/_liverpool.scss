@@ -149,6 +149,54 @@ body.liverpool {
         margin: 0 0 20px;
     }
 
+    // body.liverpool.mappage
+    &.mappage {
+        #map_box {
+            width: 25em;
+        }
+
+        .content {
+            width: 21em;
+        }
+
+        .full-width, .shadow-wrap {
+            width: 23em;
+        }
+
+        #report-a-problem-sidebar, .general-sidebar-notes {
+            left: 23em;
+        }
+        #forgotten-pw {
+            left: 22em;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        // body.liverpool.mappage
+        &.mappage {
+            #map_box {
+                width: 29em;
+            }
+
+            .content {
+                width: 27em;
+            }
+
+            .full-width, .shadow-wrap {
+                width: 29em;
+            }
+
+            #report-a-problem-sidebar, .general-sidebar-notes {
+                left: 29em;
+            }
+
+            #forgotten-pw {
+                left: 28em;
+            }
+        }
+
+    }
+
     // Over-specific container widths to allow bootstrap to work.
     //
     // This is necessary because both Bootstrap and FMS use the .container class
