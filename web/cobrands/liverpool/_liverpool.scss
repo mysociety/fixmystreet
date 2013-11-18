@@ -115,7 +115,7 @@ body.liverpool {
 
     // Make sure there is enough room for the navigation with the site-header hidden.
     #front-main {
-        margin-top: 5em;
+        margin-top: 3em;
     }
 
     // Fix position of the user-meta div
@@ -126,6 +126,9 @@ body.liverpool {
         z-index: 5;
 
         p {
+            top: 1em;
+            right: auto;
+            left: 0;
             color: #fff;
             background-color: $primary;
             -webkit-box-shadow: none;
@@ -135,6 +138,10 @@ body.liverpool {
             a {
                 background: #444;
                 color: #fff;
+                &:hover {
+                    background: #444;
+                    color: #fff;
+                }
             }
         }
     }
