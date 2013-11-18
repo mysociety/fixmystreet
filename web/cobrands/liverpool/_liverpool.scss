@@ -110,7 +110,7 @@ body.liverpool {
 
     // Don't display the site logo because we're using Liverpool's header, which contains their logo.
     #site-logo {
-        display: none;
+        display: none !important;
     }
 
     // Make sure there is enough room for the navigation with the site-header hidden.
