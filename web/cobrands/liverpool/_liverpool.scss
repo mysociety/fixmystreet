@@ -232,4 +232,11 @@ body.liverpool {
             width: 1170px;
         }
     }
+
+    // IE fixes
+    .ie8 & {
+        .content {
+            margin-top: 3em;
+        }
+    }
 }
