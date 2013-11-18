@@ -81,7 +81,7 @@ body.liverpool {
 
             // Don't style the report a problem button differently when it's a link.
             &.report-a-problem-btn {
-                margin: inherit;
+                margin: 0;
                 padding: 0.75em;
                 -webkit-border-radius: 0;
                 -moz-border-radius: 0;
@@ -237,6 +237,27 @@ body.liverpool {
     .ie8 & {
         .content {
             margin-top: 3em;
+        }
+    }
+
+    .ie6, .ie7 & {
+        #user-meta p {
+            top: -2em;
+            margin-left: 0;
+        }
+    }
+
+    .ie6, .ie7 &.mappage {
+        .container {
+            float: none;
+            width: auto;
+            margin-left: inherit;
+        }
+        .nav-wrapper{
+            z-index: auto;
+            .nav-wrapper-2 {
+                position: static;
+            }
         }
     }
 }
