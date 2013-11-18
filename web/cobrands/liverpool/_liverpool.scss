@@ -197,6 +197,14 @@ body.liverpool {
 
     }
 
+    #front-main #postcodeForm div {
+        width: 16em;
+
+        input#pc {
+            font-size: 14px;
+        }
+    }
+
     // Over-specific container widths to allow bootstrap to work.
     //
     // This is necessary because both Bootstrap and FMS use the .container class
