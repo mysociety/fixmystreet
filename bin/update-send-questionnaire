@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+
+=head1 DESCRIPTION
+
+Ad hoc script to update the send_questionnaire column on the
+reports in cobrands that don't send questionnaires at all.
+
+=cut
+
+use strict;
+use warnings;
+
+use FixMyStreet::App;
+
+my @cobrands;
+foreach my $cobrand ( FixMyStreet::Cobrand->available_cobrand_classes() ) {
+    next unless $cobrand->{class};
+    my $cls = $cobrand->{class}->new();
+    push @cobrands, $cls->moniker if !$cls->send_questionnaires();
+}
+
+my $problems = FixMyStreet::App->model('DB::Problem')->search({
+    cobrand => \@cobrands,
+    send_questionnaire => 1,
+});
+
+$problems->update( {
+    send_questionnaire => 0
+});
