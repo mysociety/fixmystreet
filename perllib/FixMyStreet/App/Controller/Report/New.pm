@@ -799,6 +799,7 @@ sub process_report : Private {
     $report->postcode( $params{pc} );
     $report->latitude( $c->stash->{latitude} );
     $report->longitude( $c->stash->{longitude} );
+    $report->send_questionnaire( $c->cobrand->send_questionnaires() );
 
     # set some simple bool values (note they get inverted)
     $report->anonymous( $params{may_show_name} ? 0 : 1 );
