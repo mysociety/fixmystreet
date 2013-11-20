@@ -770,8 +770,12 @@ sub report_edit : Path('report_edit') : Args(1) {
             $problem->user( $user );
         }
 
+        # Deal with photos
         if ( $c->req->param('remove_photo') ) {
             $problem->photo(undef);
+        }
+        if ( $new_state eq 'hidden' ) {
+            unlink glob FixMyStreet->path_to( 'web', 'photo', $problem->id . '.*' );
         }
 
         if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
@@ -915,7 +919,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         $update->name( $c->req->param('name') || '' );
         $update->text( $c->req->param('text') );
         $update->anonymous( $c->req->param('anonymous') );
-        $update->state( $c->req->param('state') );
+        $update->state( $new_state );
 
         if ( $c->req->param('email') ne $update->user->email ) {
             my $user =
@@ -933,6 +937,10 @@ sub update_edit : Path('update_edit') : Args(1) {
                 $update->problem->lastupdate( \'ms_current_timestamp()' );
                 $update->problem->update;
             }
+        }
+
+        if ( $new_state eq 'hidden' ) {
+            unlink glob FixMyStreet->path_to( 'web', 'photo', 'c', $update->id . '.*' );
         }
 
         $update->update;
