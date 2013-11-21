@@ -14,8 +14,8 @@ use FixMyStreet::App;
 my $problems = FixMyStreet::App->model('DB::Problem')->search();
 
 while ( my $problem = $problems->next() ) {
-
-    $problem->send_questionnaire( $problem->cobrand->send_questionnaires() )
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($problem->cobrand)->new();
+    $problem->send_questionnaire( $cobrand->send_questionnaires() );
     $problem->update();
 }
 
