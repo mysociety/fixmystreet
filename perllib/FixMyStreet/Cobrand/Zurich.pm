@@ -215,11 +215,11 @@ sub overdue {
     my $w = $problem->created;
     return 0 unless $w;
 
-    if ( $problem->state eq 'unconfirmed' || $problem->state eq 'confirmed' ) {
+    if ( $problem->state eq 'unconfirmed' ) {
         # One working day
         $w = add_days( $w, 1 );
         return $w < DateTime->now() ? 1 : 0;
-    } elsif ( $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
+    } elsif ( $problem->state eq 'confirmed' || $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
         # Six working days from creation
         $w = add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
@@ -444,23 +444,30 @@ sub admin_report_edit {
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
-            $extra->{moderated_overdue} = $self->overdue( $problem );
+            $extra->{moderated_overdue} //= $self->overdue( $problem );
             $problem->state( 'in progress' );
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
         } elsif ( my $external = $c->req->params->{body_external} ) {
-            $extra->{moderated_overdue} = $self->overdue( $problem );
+            $extra->{moderated_overdue} //= $self->overdue( $problem );
             $problem->state( 'closed' );
             $problem->external_body( $external );
             $problem->whensent( undef );
             _admin_send_email( $c, 'problem-external.txt', $problem );
             $redirect = 1;
         } else {
-            $problem->state( $c->req->params->{state} ) if $c->req->params->{state};
-            if ( $problem->state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
-                _admin_send_email( $c, 'problem-rejected.txt', $problem );
+            if (my $state = $c->req->params->{state}) {
+
+                if ($problem->state eq 'unconfirmed' and $state ne 'unconfirmed') {
+                    # only set this for the first state change
+                    $extra->{moderated_overdue} //= $self->overdue( $problem );
+                }
+                $problem->state( $state );
+                if ( $state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
+                    _admin_send_email( $c, 'problem-rejected.txt', $problem );
+                }
             }
         }
 
