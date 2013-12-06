@@ -215,12 +215,21 @@ sub overdue {
     my $w = $problem->created;
     return 0 unless $w;
 
+    # call with previous state
     if ( $problem->state eq 'unconfirmed' ) {
         # One working day
         $w = add_days( $w, 1 );
         return $w < DateTime->now() ? 1 : 0;
     } elsif ( $problem->state eq 'confirmed' || $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
+        # States which affect the subdiv_overdue statistic.  TODO: this may no longer be required
         # Six working days from creation
+        $w = add_days( $w, 6 );
+        return $w < DateTime->now() ? 1 : 0;
+
+    # call with new state
+    } elsif ( $problem->state eq 'fixed - council' || $problem->state eq 'closed' || $problem->state eq 'hidden' ) {
+        # States which affect the closed_overdue statistic
+        # Five working days from moderation (so 6 from creation)
         $w = add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
     } else {
@@ -453,6 +462,7 @@ sub admin_report_edit {
         } elsif ( my $external = $c->req->params->{body_external} ) {
             $extra->{moderated_overdue} //= $self->overdue( $problem );
             $problem->state( 'closed' );
+            $extra->{closed_overdue} //= $self->overdue( $problem );
             $problem->external_body( $external );
             $problem->whensent( undef );
             _admin_send_email( $c, 'problem-external.txt', $problem );
@@ -464,7 +474,12 @@ sub admin_report_edit {
                     # only set this for the first state change
                     $extra->{moderated_overdue} //= $self->overdue( $problem );
                 }
+
                 $problem->state( $state );
+
+                if ($state eq 'fixed - council' || $state eq 'closed' || $state eq 'hidden') {
+                    $extra->{closed_overdue} //= $self->overdue( $problem );
+                }
                 if ( $state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
                     _admin_send_email( $c, 'problem-rejected.txt', $problem );
                 }
@@ -483,6 +498,8 @@ sub admin_report_edit {
             $problem->extra( $extra );
             if ($c->req->params->{publish_response}) {
                 $problem->state( 'fixed - council' );
+                $extra->{closed_overdue} = $self->overdue( $problem );
+                $problem->extra( { %$extra } );
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
             }
         }
@@ -713,8 +730,10 @@ sub admin_stats {
     my $closed = $c->model('DB::Problem')->search( { state => 'closed', %date_params } )->count;
     # Reports moderated within 1 day
     my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %params } )->count;
-    # Reports solved within 5 days
+    # Reports solved within 5 days (sent back from subdiv)
     my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
+    # Reports solved within 5 days (marked as 'fixed - council', 'closed', or 'hidden'
+    my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { like => '%closed_overdue,I1:0%' }, %params } )->count;
     # Reports per category
     my $per_category = $c->model('DB::Problem')->search( \%params, {
         select   => [ 'category', { count => 'id' } ],
@@ -745,7 +764,7 @@ sub admin_stats {
         reports_spam => $hidden,
         reports_assigned => $closed,
         reports_moderated => $moderated,
-        reports_dealtwith => $subdiv_dealtwith,
+        reports_dealtwith => $fixed_in_time,
         reports_category_changed => $changed,
         pictures_taken => $pictures_taken,
         pictures_published => $pictures_published,
