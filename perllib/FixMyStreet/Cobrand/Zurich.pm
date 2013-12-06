@@ -38,6 +38,7 @@ The entries will be something like this (but with different ids).
     Users:
          id |      email       | from_body
         ----+------------------+-----------
+          1 | super@example.org|         1
           2 | dm1@example.org  |         2
           3 | sdm1@example.org |         3
 

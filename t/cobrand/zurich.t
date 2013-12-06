@@ -405,6 +405,29 @@ like $email->body, qr/test\@example.com/, 'body does contain email address';
 $mech->clear_emails_ok;
 $mech->log_out_ok;
 
+subtest "only superuser can see stats" => sub {
+    $user = $mech->log_in_ok( 'super@example.org' );
+    # a user from body $zurich is a superuser, as $zurich has no parent id!
+    $user->update({ from_body => $zurich->id }); 
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get( '/admin/stats' );
+    };
+    is $mech->res->code, 200, "superuser should be able to see stats page";
+    $mech->log_out_ok;
+
+    $user = $mech->log_in_ok( 'dm1@example.org' );
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get( '/admin/stats' );
+    };
+    is $mech->res->code, 404, "only superuser should be able to see stats page";
+    $mech->log_out_ok;
+};
+
 subtest "only superuser can edit bodies" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
     FixMyStreet::override_config {
@@ -507,6 +530,22 @@ subtest "hidden report email are only sent when requested" => sub {
         $mech->clear_emails_ok;
         $mech->log_out_ok;
     };
+};
+
+subtest "test stats" => sub {
+    $user = $mech->log_in_ok( 'super@example.org' );
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get( '/admin/stats' );
+    };
+    is $mech->res->code, 200, "superuser should be able to see stats page";
+
+    $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 1');
+    $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 1');
+
+    $mech->log_out_ok;
 };
 
 $mech->delete_problems_for_body( 2 );
