@@ -653,7 +653,7 @@ sub admin_stats {
 
     my %date_params;
     my $ym = $c->req->params->{ym};
-    my ($m, $y) = $ym =~ /^(\d+)\.(\d+)$/;
+    my ($m, $y) = $ym ? ($ym =~ /^(\d+)\.(\d+)$/) : ();
     $c->stash->{ym} = $ym;
     if ($y && $m) {
         $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
