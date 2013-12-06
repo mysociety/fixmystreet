@@ -140,6 +140,7 @@ subtest "changing of categories" => sub {
     $report->update({category => $original_category });
 };
 
+ok ( ! exists ${$report->extra}{moderated_overdue}, 'Report currently unmoderated' );
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
@@ -153,6 +154,48 @@ $mech->content_contains('Aufgenommen');
 $mech->content_contains('Test Test');
 $mech->content_lacks('photo/' . $report->id . '.jpeg');
 $mech->email_count_is(0);
+
+$report->discard_changes;
+is ( $report->extra->{moderated_overdue}, 0, 'Report now marked moderated' );
+
+# Set state back to 10 days ago so that report is overdue
+my $created = $report->created;
+$report->update({
+    state   => 'unconfirmed',
+    created => $created->subtract(days => 10),
+});
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+    $mech->get_ok( '/report/' . $report->id );
+};
+$report->discard_changes;
+is ( $report->extra->{moderated_overdue}, 0, 'Report still not overdue (subsequent time)' );
+
+$report->update({ created => $created }); # reset
+        
+# delete the {moderated_overdue} so that changing status will now reset moderation
+{
+    my $extra = $report->extra;
+    delete $extra->{moderated_overdue};
+    $report->update({
+        extra   => { %$extra },
+        state   => 'unconfirmed',
+    });
+}
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+}, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+    $mech->get_ok( '/report/' . $report->id );
+};
+$report->discard_changes;
+is ( $report->extra->{moderated_overdue}, 1, 'Report marked as moderated_overdue' );
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
