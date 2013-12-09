@@ -555,6 +555,16 @@ subtest "test stats" => sub {
     $mech->log_out_ok;
 };
 
+subtest "test admin_log" => sub {
+    diag $report->id;
+    my @entries = FixMyStreet::App->model('DB::AdminLog')->search({
+        object_type => 'problem',
+        object_id   => $report->id,
+    });
+    is scalar @entries, 4, 'State changes logged'; 
+    is $entries[-1]->action, 'state change to hidden', 'State change logged as expected';
+};
+
 cleanup();
 
 ok $mech->host("www.fixmystreet.com"), "change host back";

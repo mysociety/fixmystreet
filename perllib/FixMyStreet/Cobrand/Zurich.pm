@@ -238,6 +238,13 @@ sub overdue {
     }
 }
 
+sub set_problem_state {
+    my ($self, $c, $problem, $new_state) = @_;
+    return if $new_state eq $problem->state;
+    $problem->state( $new_state );
+    $c->forward( 'log_edit', [ $problem->id, 'problem', "state change to $new_state" ] );
+}
+
 sub email_indent { ''; }
 
 # Specific administrative displays
@@ -455,14 +462,14 @@ sub admin_report_edit {
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $extra->{moderated_overdue} //= $self->overdue( $problem );
-            $problem->state( 'in progress' );
+            $self->set_problem_state($c, $problem, 'in progress');
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
         } elsif ( my $external = $c->req->params->{body_external} ) {
             $extra->{moderated_overdue} //= $self->overdue( $problem );
-            $problem->state( 'closed' );
+            $self->set_problem_state($c, $problem, 'closed');
             $extra->{closed_overdue} //= $self->overdue( $problem );
             $problem->external_body( $external );
             $problem->whensent( undef );
@@ -476,7 +483,7 @@ sub admin_report_edit {
                     $extra->{moderated_overdue} //= $self->overdue( $problem );
                 }
 
-                $problem->state( $state );
+                $self->set_problem_state($c, $problem, $state);
 
                 if ($state eq 'fixed - council' || $state eq 'closed' || $state eq 'hidden') {
                     $extra->{closed_overdue} //= $self->overdue( $problem );
@@ -498,7 +505,7 @@ sub admin_report_edit {
             $extra->{public_response} = $update;
             $problem->extra( $extra );
             if ($c->req->params->{publish_response}) {
-                $problem->state( 'fixed - council' );
+                $self->set_problem_state($c, $problem, 'fixed - council');
                 $extra->{closed_overdue} = $self->overdue( $problem );
                 $problem->extra( { %$extra } );
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
@@ -548,7 +555,7 @@ sub admin_report_edit {
             $c->forward('check_token');
 
             $problem->bodies_str( $body->parent->id );
-            $problem->state( 'confirmed' );
+            $self->set_problem_state($c, $problem, 'confirmed');
             $problem->update;
             # log here
             $c->res->redirect( '/admin/summary' );
@@ -587,7 +594,7 @@ sub admin_report_edit {
                 $problem->extra( $extra );
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
-                $problem->state( 'planned' );
+                $self->set_problem_state($c, $problem, 'planned');
                 $problem->update;
                 $c->res->redirect( '/admin/summary' );
             }
