@@ -26,9 +26,16 @@ sub send_reports_for_zurich {
         FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
     };
 }
-
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
+
+sub cleanup {
+    $mech->delete_problems_for_body( 2 );
+    $mech->delete_user( 'dm1@example.org' );
+    $mech->delete_user( 'sdm1@example.org' );
+}
+
+cleanup();
 
 # Front page test
 ok $mech->host("zurich.example.com"), "change host to Zurich";
@@ -548,9 +555,7 @@ subtest "test stats" => sub {
     $mech->log_out_ok;
 };
 
-$mech->delete_problems_for_body( 2 );
-$mech->delete_user( 'dm1@example.org' );
-$mech->delete_user( 'sdm1@example.org' );
+cleanup();
 
 ok $mech->host("www.fixmystreet.com"), "change host back";
 
