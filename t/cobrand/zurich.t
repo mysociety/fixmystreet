@@ -336,11 +336,11 @@ $mech->clear_emails_ok;
 });
 $report = $reports[0];
 
-$mech->get_ok( '/admin/report_edit/' . $report->id );
-$mech->submit_form_ok( { with_fields => { state => 'planned' } } );
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
 }, sub {
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { state => 'planned' } } );
     $mech->get_ok( '/report/' . $report->id );
 };
 $mech->content_contains('In Bearbeitung');
