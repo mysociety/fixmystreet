@@ -448,9 +448,6 @@ create table admin_log (
       or object_type = 'user'
     ),
     object_id integer not null,
-    action text not null check (
-        action = 'edit'
-        or action = 'state_change' 
-        or action = 'resend'),
+    action text not null,
     whenedited timestamp not null default ms_current_timestamp()
 ); 

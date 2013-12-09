@@ -295,8 +295,11 @@ to null/0.
 sub uri {
     my ( $self, $uri ) = @_;
 
-    (my $map_class = $FixMyStreet::Map::map_class) =~ s/^FixMyStreet::Map:://;
-    return $uri unless $map_class =~ /OSM|FMS/;
+    {
+        no warnings 'once';
+        (my $map_class = $FixMyStreet::Map::map_class) =~ s/^FixMyStreet::Map:://;
+        return $uri unless $map_class =~ /OSM|FMS/;
+    }
 
     $uri->query_param( zoom => 3 )
       if $uri->query_param('lat') && !$uri->query_param('zoom');
