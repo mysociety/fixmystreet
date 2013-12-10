@@ -741,7 +741,7 @@ sub admin_stats {
     # Reports solved within 5 days (sent back from subdiv)
     my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
     # Reports solved within 5 days (marked as 'fixed - council', 'closed', or 'hidden'
-    my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { like => '%closed_overdue,I1:0%' }, %params } )->count;
+    my $fixed_in_time = $c->model('DB::Problem')->search( { extra => { like => '%closed_overdue,I1:0%' }, %date_params } )->count;
     # Reports per category
     my $per_category = $c->model('DB::Problem')->search( \%params, {
         select   => [ 'category', { count => 'id' } ],

@@ -180,7 +180,7 @@ sub get_moderated_count {
         return $1;
     }
     else {
-        fail "Could not get moderation results";
+        fail sprintf "Could not get moderation results (%d)", $mech->status;
         return undef;
     }
 }
@@ -622,7 +622,7 @@ subtest "test stats" => sub {
     is $mech->res->code, 200, "superuser should be able to see stats page";
 
     $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 2'); # now including hidden
-    $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 2');
+    $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 3');
     # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
     # diag Dumper(\@data); use Data::Dumper;
 
