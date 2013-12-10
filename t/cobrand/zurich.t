@@ -79,6 +79,13 @@ $external_body->send_method( 'Zurich' );
 $external_body->endpoint( 'external_body@example.org' );
 $external_body->update;
 
+subtest "set up superuser" => sub {
+    my $superuser = $mech->log_in_ok( 'super@example.org' );
+    # a user from body $zurich is a superuser, as $zurich has no parent id!
+    $superuser->update({ from_body => $zurich->id }); 
+    $mech->log_out_ok;
+};
+
 my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
     state              => 'unconfirmed',
     confirmed          => undef,
@@ -486,8 +493,6 @@ $mech->log_out_ok;
 
 subtest "only superuser can see stats" => sub {
     $user = $mech->log_in_ok( 'super@example.org' );
-    # a user from body $zurich is a superuser, as $zurich has no parent id!
-    $user->update({ from_body => $zurich->id }); 
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
