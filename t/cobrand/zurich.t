@@ -26,6 +26,20 @@ sub send_reports_for_zurich {
         FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
     };
 }
+sub reset_report_state {
+    my ($report, $created) = @_;
+    $report->discard_changes;
+    my $extra = $report->extra;
+    delete $extra->{moderated_overdue};
+    delete $extra->{subdiv_overdue};
+    delete $extra->{closed_overdue};
+    $report->update({
+        extra   => { %$extra },
+        state   => 'unconfirmed',
+        $created ? ( created => $created ) : (),
+    });
+}
+
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -143,73 +157,131 @@ subtest "changing of categories" => sub {
     my $new_comment = $comments_rs->first();
     is( $new_comment->text, "Weitergeleitet von Cat1 an Cat2", "category change comment created" );
 
-    # restore report to original state.
+    # restore report to original category.
     $report->update({category => $original_category });
 };
 
-ok ( ! exists ${$report->extra}{moderated_overdue}, 'Report currently unmoderated' );
+sub get_moderated_count {
+    # my %date_params = ( );
+    # my $moderated = FixMyStreet::App->model('DB::Problem')->search({
+    #     extra => { like => '%moderated_overdue,I1:0%' }, %date_params } )->count;
+    # return $moderated;
 
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'zurich' ],
-}, sub {
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
-    $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
-    $mech->get_ok( '/report/' . $report->id );
-};
-$mech->content_contains('Aufgenommen');
-$mech->content_contains('Test Test');
-$mech->content_lacks('photo/' . $report->id . '.jpeg');
-$mech->email_count_is(0);
+    # use a separate mech to avoid stomping on test state
+    my $mech = FixMyStreet::TestMech->new;
+    my $user = $mech->log_in_ok( 'super@example.org' );
 
-$report->discard_changes;
-is ( $report->extra->{moderated_overdue}, 0, 'Report now marked moderated' );
-
-# Set state back to 10 days ago so that report is overdue
-my $created = $report->created;
-$report->update({
-    state   => 'unconfirmed',
-    created => $created->subtract(days => 10),
-});
-
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'zurich' ],
-}, sub {
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
-    $mech->get_ok( '/report/' . $report->id );
-};
-$report->discard_changes;
-is ( $report->extra->{moderated_overdue}, 0, 'Report still not overdue (subsequent time)' );
-
-$report->update({ created => $created }); # reset
-        
-# delete the {moderated_overdue} so that changing status will now reset moderation
-{
-    my $extra = $report->extra;
-    delete $extra->{moderated_overdue};
-    $report->update({
-        extra   => { %$extra },
-        state   => 'unconfirmed',
-    });
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get( '/admin/stats' );
+    };
+    if ($mech->content =~/Innerhalb eines Arbeitstages moderiert: (\d+)/) {
+        return $1;
+    }
+    else {
+        fail "Could not get moderation results";
+        return undef;
+    }
 }
 
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'zurich' ],
-}, sub {
-    $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
-    $mech->get_ok( '/report/' . $report->id );
+subtest "report_edit" => sub {
+
+    ok ( ! exists ${$report->extra}{moderated_overdue}, 'Report currently unmoderated' );
+
+    is get_moderated_count(), 0;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
+        $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+        $mech->get_ok( '/report/' . $report->id );
+    };
+
+    $mech->content_contains('Aufgenommen');
+    $mech->content_contains('Test Test');
+    $mech->content_lacks('photo/' . $report->id . '.jpeg');
+    $mech->email_count_is(0);
+
+    $report->discard_changes;
+
+    is ( $report->extra->{moderated_overdue}, 0, 'Report now marked moderated' );
+    is get_moderated_count(), 1;
+
+
+    # Set state back to 10 days ago so that report is overdue
+    my $created = $report->created;
+    reset_report_state($report, $created->clone->subtract(days => 10));
+
+    is get_moderated_count(), 0;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+        $mech->get_ok( '/report/' . $report->id );
+    };
+    $report->discard_changes;
+    is ( $report->extra->{moderated_overdue}, 1, 'moderated_overdue set correctly when overdue' );
+    is get_moderated_count(), 0, 'Moderated count not increased when overdue';
+
+    reset_report_state($report, $created);
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+        $mech->get_ok( '/report/' . $report->id );
+    };
+    $report->discard_changes;
+    is ( $report->extra->{moderated_overdue}, 0, 'Marking confirmed sets moderated_overdue' );
+    is ( $report->extra->{closed_overdue}, undef, 'Marking confirmed does NOT set closed_overdue' );
+    is get_moderated_count(), 1;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { state => 'hidden' } } );
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+    };
+    $report->discard_changes;
+    is ( $report->extra->{moderated_overdue}, 0, 'Still marked moderated_overdue' );
+    is ( $report->extra->{closed_overdue},    0, 'Marking hidden also set closed_overdue' );
+    is get_moderated_count(), 1, 'Check still counted moderated'
+        or diag $report->get_column('extra');
+
+    reset_report_state($report);
+
+    is ( $report->extra->{moderated_overdue}, undef, 'Sanity check' );
+    is get_moderated_count(), 0;
+
+    # Check that setting to 'hidden' also triggers moderation
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { state => 'hidden' } } );
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+    };
+    $report->discard_changes;
+    is ( $report->extra->{moderated_overdue}, 0, 'Marking hidden from scratch sets moderated_overdue' );
+    is ( $report->extra->{closed_overdue},    0, 'Marking hidden from scratch also set closed_overdue' );
+    is get_moderated_count(), 1;
+
+    reset_report_state($report);
 };
-$report->discard_changes;
-is ( $report->extra->{moderated_overdue}, 1, 'Report marked as moderated_overdue' );
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
 }, sub {
     # Photo publishing
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { publish_photo => 1 } } );
+    $mech->submit_form_ok( { with_fields => { state => 'confirmed', publish_photo => 1 } } );
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('photo/' . $report->id . '.jpeg');
 
@@ -549,8 +621,10 @@ subtest "test stats" => sub {
     };
     is $mech->res->code, 200, "superuser should be able to see stats page";
 
-    $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 1');
-    $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 1');
+    $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 2'); # now including hidden
+    $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 2');
+    # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
+    # diag Dumper(\@data); use Data::Dumper;
 
     $mech->log_out_ok;
 };

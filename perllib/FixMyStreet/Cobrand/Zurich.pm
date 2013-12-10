@@ -737,7 +737,7 @@ sub admin_stats {
     # Reports assigned to third party
     my $closed = $c->model('DB::Problem')->search( { state => 'closed', %date_params } )->count;
     # Reports moderated within 1 day
-    my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %params } )->count;
+    my $moderated = $c->model('DB::Problem')->search( { extra => { like => '%moderated_overdue,I1:0%' }, %date_params } )->count;
     # Reports solved within 5 days (sent back from subdiv)
     my $subdiv_dealtwith = $c->model('DB::Problem')->search( { extra => { like => '%subdiv_overdue,I1:0%' }, %params } )->count;
     # Reports solved within 5 days (marked as 'fixed - council', 'closed', or 'hidden'
