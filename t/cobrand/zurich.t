@@ -43,14 +43,6 @@ sub reset_report_state {
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
-sub cleanup {
-    $mech->delete_problems_for_body( 2 );
-    $mech->delete_user( 'dm1@example.org' );
-    $mech->delete_user( 'sdm1@example.org' );
-}
-
-cleanup();
-
 # Front page test
 ok $mech->host("zurich.example.com"), "change host to Zurich";
 FixMyStreet::override_config {
@@ -78,6 +70,15 @@ my $external_body = $mech->create_body_ok( 4, 'External Body' );
 $external_body->send_method( 'Zurich' );
 $external_body->endpoint( 'external_body@example.org' );
 $external_body->update;
+
+sub cleanup {
+    $mech->delete_problems_for_body( $division->id );
+    $mech->delete_problems_for_body( $subdivision->id );
+    $mech->delete_user( 'dm1@example.org' );
+    $mech->delete_user( 'sdm1@example.org' );
+}
+
+cleanup();
 
 subtest "set up superuser" => sub {
     my $superuser = $mech->log_in_ok( 'super@example.org' );
