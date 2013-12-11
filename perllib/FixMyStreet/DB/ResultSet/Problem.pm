@@ -278,7 +278,7 @@ sub send_reports {
 
         $h{query} = $row->postcode;
         $h{url} = $email_base_url . $row->url;
-        $h{admin_url} = $cobrand->admin_base_url . 'report_edit/' . $row->id;
+        $h{admin_url} = $cobrand->admin_base_url . '/report_edit/' . $row->id;
         $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
         if ($row->photo) {
             $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";

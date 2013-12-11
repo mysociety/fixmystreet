@@ -38,7 +38,7 @@ sub area_types {
 }
 
 sub admin_base_url {
-    return 'http://www.fiksgatami.no/admin/';
+    return 'http://www.fiksgatami.no/admin';
 }
 
 # If lat/lon are present in the URL, OpenLayers will use that to centre the map.
