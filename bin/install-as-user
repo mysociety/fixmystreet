@@ -61,7 +61,7 @@ if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
     # Add regularly scheduled tasks to cron:
     TEMPORARY_CRONTAB=$(mktemp)
     echo crontab file is $TEMPORARY_CRONTAB
-    cp "$REPOSITORY"/conf/crontab.example "$TEMPORARY_CRONTAB"
+    cp "$REPOSITORY"/conf/crontab-example "$TEMPORARY_CRONTAB"
     sed -i \
         -e 's,$FMS,'"$REPOSITORY,g" \
         -e 's,$LOCK_DIR,'"$DIRECTORY,g" \
