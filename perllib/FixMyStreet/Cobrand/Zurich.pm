@@ -693,7 +693,7 @@ sub admin_stats {
 
     if ( $c->req->params->{export} ) {
         my $problems = $c->model('DB::Problem')->search(
-            {%params},
+            {%date_params},
             {
                 columns => [
                     'id',       'created',
