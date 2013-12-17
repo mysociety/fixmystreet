@@ -216,6 +216,11 @@ sub categories_summary {
     return \%categories;
 }
 
+sub get_admin_url {
+    my ($rs, $cobrand, $row) = @_;
+    return $cobrand->admin_base_url . '/report_edit/' . $row->id;
+}
+
 sub send_reports {
     my ( $rs, $site_override ) = @_;
 
@@ -278,7 +283,7 @@ sub send_reports {
 
         $h{query} = $row->postcode;
         $h{url} = $email_base_url . $row->url;
-        $h{admin_url} = $cobrand->admin_base_url . 'report_edit/' . $row->id;
+        $h{admin_url} = $rs->get_admin_url($cobrand, $row);
         $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
         if ($row->photo) {
             $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
