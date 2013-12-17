@@ -149,7 +149,7 @@ sub prepare_params_for_email : Private {
 
         my $problem_url = $base_url . '/report/' . $c->stash->{update}->problem_id
             . '#update_' . $c->stash->{update}->id;
-        my $admin_url = " - $admin_url" . 'update_edit/' . $c->stash->{update}->id
+        my $admin_url = " - $admin_url" . '/update_edit/' . $c->stash->{update}->id
             if $admin_url;
         $c->stash->{message} .= sprintf(
             " \n\n[ Complaint about update %d on report %d - %s%s ]",
@@ -161,7 +161,7 @@ sub prepare_params_for_email : Private {
     elsif ( $c->stash->{problem} ) {
 
         my $problem_url = $base_url . '/report/' . $c->stash->{problem}->id;
-        $admin_url = " - $admin_url" . 'report_edit/' . $c->stash->{problem}->id
+        $admin_url = " - $admin_url" . '/report_edit/' . $c->stash->{problem}->id
             if $admin_url;
         $c->stash->{message} .= sprintf(
             " \n\n[ Complaint about report %d - %s%s ]",
