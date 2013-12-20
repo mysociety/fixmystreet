@@ -280,7 +280,11 @@ subtest "report_edit" => sub {
     is ( $report->extra->{closed_overdue},    0, 'Marking hidden from scratch also set closed_overdue' );
     is get_moderated_count(), 1;
 
-    reset_report_state($report);
+    is (FixMyStreet::Cobrand::Zurich->new->get_or_check_overdue($report), 0, 'sanity check');
+    $report->update({ created => $created->clone->subtract(days => 10) });
+    is (FixMyStreet::Cobrand::Zurich->new->get_or_check_overdue($report), 0, 'overdue call not increased');
+
+    reset_report_state($report, $created);
 };
 
 FixMyStreet::override_config {
