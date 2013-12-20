@@ -3,7 +3,7 @@
     <tr[%
         SET classes = [];
         classes.push('adminhidden') IF problem.state == 'hidden';
-        classes.push('overdue') IF c.cobrand.overdue( problem );
+        classes.push('overdue') IF c.cobrand.get_or_check_overdue( problem );
         classes.push('row-link') IF NOT no_edit;
         ' class="' _ classes.join(' ') _ '"' IF classes.size;
     %]>
