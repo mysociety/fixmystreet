@@ -95,6 +95,27 @@ sub prettify_dt {
     return Utils::prettify_dt( $dt, 'zurich' );
 }
 
+# problem already has a concept of is_fixed/is_closed, but Zurich has different
+# workflow for this here.
+# 
+# TODO: look at more elegant way of doing this, for example having ::DB::Problem
+# consider cobrand specific state config?
+
+sub zurich_closed_states {
+    my $states = {
+        'fixed - council' => 1,
+        'closed'          => 1,
+        'hidden'          => 1,
+    };
+
+    return wantarray ? keys %{ $states } : $states;
+}
+
+sub problem_is_closed {
+    my ($self, $problem) = @_;
+    return exists $self->zurich_closed_states->{ $problem->state } ? 1 : 0;
+}
+
 sub problem_as_hashref {
     my $self = shift;
     my $problem = shift;
@@ -228,14 +249,26 @@ sub overdue {
         return $w < DateTime->now() ? 1 : 0;
 
     # call with new state
-    } elsif ( $problem->state eq 'fixed - council' || $problem->state eq 'closed' || $problem->state eq 'hidden' ) {
+    } elsif ( $self->problem_is_closed($problem) ) {
         # States which affect the closed_overdue statistic
         # Five working days from moderation (so 6 from creation)
+
         $w = add_days( $w, 6 );
         return $w < DateTime->now() ? 1 : 0;
     } else {
         return 0;
     }
+}
+
+sub get_or_check_overdue {
+    my ($self, $problem) = @_;
+
+    # use the cached version is it exists (e.g. when called from template)
+    my $extra = $problem->extra;
+    if (exists $extra->{closed_overdue} and defined $extra->{closed_overdue}) {
+        return $extra->{closed_overdue}
+    }
+    return $self->overdue($problem);
 }
 
 sub set_problem_state {
@@ -485,7 +518,7 @@ sub admin_report_edit {
 
                 $self->set_problem_state($c, $problem, $state);
 
-                if ($state eq 'fixed - council' || $state eq 'closed' || $state eq 'hidden') {
+                if ($self->problem_is_closed($problem)) {
                     $extra->{closed_overdue} //= $self->overdue( $problem );
                 }
                 if ( $state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
