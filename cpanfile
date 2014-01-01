@@ -106,6 +106,7 @@ requires 'Sort::Key';
 requires 'Sub::Override';
 requires 'Test::Exception';
 requires 'Test::LongString';
+requires 'Test::MockTime';
 requires 'Test::More', '0.88';
 requires 'Test::Warn';
 requires 'Test::WWW::Mechanize::Catalyst';
