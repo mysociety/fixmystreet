@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use Test::MockTime ':all';
 
 use FixMyStreet::TestMech;
 use Web::Scraper;
@@ -24,6 +25,9 @@ my $p_user = FixMyStreet::App->model('DB::User')->find_or_create( {
     email => 'p_user@example.com'
 } );
 
+# Dashboard tests assume we are not too early in year, to allow reporting
+# within same year, as a convenience.
+set_absolute_time('2014-03-01T12:00:00');
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
     MAPIT_URL => 'http://mapit.mysociety.org/',
@@ -610,7 +614,7 @@ FixMyStreet::override_config {
         is scalar @lines, 6, '1 (header) + 5 (reports) = 6 lines';
     };
 };
-
+restore_time;
 
 sub make_problem {
     my $args = shift;

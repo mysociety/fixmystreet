@@ -5404,6 +5404,15 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.03
       Test::More 0
+  Test-MockTime-0.12
+    pathname: D/DD/DDICK/Test-MockTime-0.12.tar.gz
+    provides:
+      Test::MockTime 0.12
+    requirements:
+      ExtUtils::MakeMaker 0
+      Test::More 0
+      Time::Local 0
+      Time::Piece 1.08
   Test-NoWarnings-1.04
     pathname: A/AD/ADAMK/Test-NoWarnings-1.04.tar.gz
     provides:
