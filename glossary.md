@@ -101,7 +101,7 @@ Definitions
           href="#body" class="glossary">body</a>.
         </li>
         <li>
-          See the <a href="/running/admin_manual">Administrator's Manual</a> for
+          See the <a href="/running/admin_manual/">Administrator's Manual</a> for
           details of what an administrator does.
         </li>
       </ul>
@@ -750,7 +750,7 @@ Definitions
       <p>More information:</p>
       <ul>
         <li>
-          See the <a href="/running/admin_manual">Administrator's manual</a>
+          See the <a href="/running/admin_manual/">Administrator's manual</a>
           for a more detailed list of problem states.
         </li>
       </ul>

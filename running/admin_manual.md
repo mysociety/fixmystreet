@@ -124,6 +124,7 @@ them by clicking on the link at the top of any admin page:
   href="/glossary/#alert" class="glossary">alerts</a>, sent 
   <a href="/glossary/#survey" class="glossary">questionnaires</a> and
   bodies' <a href="/glossary/#contact" class="glossary">contacts</a>.
+
   <p>
     This page is useful when the media ask how many reports your site has
     processed. You can also use it to motivate your team, or to prove yourself
@@ -134,6 +135,7 @@ them by clicking on the link at the top of any admin page:
   authorities that your site sends reports to. Each body has its own page in
   the admin, listing the categories of problem that they accept (eg, potholes,
   street lights, etc) and the email address associated with the category.
+
   <p>
     Bodies sometimes change their email addresses, and dealing with this is a
     regular task for an administrator. You can add or edit bodies from these
@@ -146,6 +148,7 @@ them by clicking on the link at the top of any admin page:
 
 * **Reports** <br/> The reports page lets you search for, and edit <a
   href="/glossary/#report" class="glossary">problem reports</a> and updates.
+
   <p>
     You will need to do this often - for example, when a user has emailed to
     complain about a report, or to ask you to check if the report has been
@@ -171,6 +174,7 @@ them by clicking on the link at the top of any admin page:
 * **Survey** <br/> By default, FixMyStreet sends out <a
   href="/glossary/#survey" class="glossary">surveys</a> (also called
   questionnaires) to users four weeks after they reported a problem.
+
   <p>
     We use these surveys to collect data on the performance of the bodies. The
     survey page shows statistics based on the responses, which again can be
@@ -187,6 +191,7 @@ them by clicking on the link at the top of any admin page:
   For example you can edit a <a href="/glossary/#user-account">user's</a>
   email address, or <a href="/glossary/#flagged" class="glossary">flag</a> or
   <a href="/glossary/#abuse-list" class="glossary">ban</a> or abusive one.
+
   <p>
     Each user has an individual page in the admin, and it is sometimes quicker
     to search for a user than a report, if they have contacted you by email
@@ -204,6 +209,7 @@ them by clicking on the link at the top of any admin page:
   report - it is just a way of marking a person or a situation as potentially
   troublesome. Note that you can only flag a report or user from the report
   or page.
+
   <p>
     This can be useful if your team has more than one <a
     href="/glossary/#administrator" class="glossary">administrator</a>. <a
@@ -214,13 +220,14 @@ them by clicking on the link at the top of any admin page:
   href="/glossary/#report" class="glossary">report</a> over a particular date
   range. Optionally, you can restrict it to report on a single <a
   href="/glossary/#body" class="glossary">body</a>.
+
   <p>
     You might use this if you want to know how many reports have been sent
     within, for example, the last three months, or how many reports have been
     sent to a specific body since launch.
   </p>
 
-<a name="report-states">&nbsp;</a>
+<a name="report-states"></a>
 
 ## Report states
 
