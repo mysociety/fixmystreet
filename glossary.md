@@ -37,6 +37,7 @@ Definitions
 [git](#git) |
 [integration](#integration) |
 [lat-long](#latlong) |
+[locale](#locale) |
 [map](#map) |
 [MapIt](#mapit) |
 [Open311](#open311) |
@@ -528,6 +529,36 @@ Definitions
     </p>
   </dd>
   
+  <dt>
+    <a name="locale">locale</a>
+  </dt>
+  <dd>
+    A <strong>locale</strong> defines the way things like language, date
+    formats, and currency should be handled. Locales are identified by codes
+    like <code>en_GB</code> or <code>hr_HR</code> (these are actually language
+    and region codes). If you need your installation to present FixMyStreet
+    using anything other than the default English translations, then the
+    locale you want <em>must</em> be installed on your server (note &mdash;
+    this is about your <em>server</em>'s configuration, not a FixMyStreet
+    setting). It's common for servers to support many locales, but not all
+    locales are installed by default.
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See more about <a href="/customising/">customising</a> your
+          installation, which includes language and translation considerations
+        </li>
+        <li>
+          To see what locales your server currently supports, do <code>locale
+          -a</code>. You can generate missing locales with
+          <code>locale-gen</code> &mdash; for example, <code>sudo locale-gen
+          fr_FR.UTF-8</code>
+        </li>
+      </ul>
+    </div>
+  </dd>
+
   <dt>
     <a name="map">map</a>
   </dt>
