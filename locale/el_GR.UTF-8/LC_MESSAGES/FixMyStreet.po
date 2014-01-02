@@ -35,7 +35,7 @@ msgstr "%d διευθύνσεις"
 
 #: templates/web/default/admin/index.html:25
 msgid "%d confirmed alerts, %d unconfirmed"
-msgstr ""
+msgstr "%d επιβεβαιωμένες, %d  ειδοποιήσεις"
 
 #: templates/web/default/admin/index.html:27 templates/web/zurich/admin/index.html:6
 msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
