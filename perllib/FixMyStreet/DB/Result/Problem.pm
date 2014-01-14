@@ -389,8 +389,9 @@ sub check_for_errors {
     }
 
     if ( $self->bodies_str && $self->detail ) {
-        if ( $self->bodies_str eq '2482' && length($self->detail) > 2000 ) {
-            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 2000 );
+        # Barnet Council custom character limit.
+        if ( $self->bodies_str eq '2482' && length($self->detail) > 1750 ) {
+            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1750 );
         }
 
         if ( $self->bodies_str eq '2237' && length($self->detail) > 1700 ) {
