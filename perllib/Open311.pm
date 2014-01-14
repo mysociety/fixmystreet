@@ -291,6 +291,7 @@ sub _populate_service_request_update_params {
 
     my $name = $comment->name || $comment->user->name;
     my ( $firstname, $lastname ) = ( $name =~ /(\w+)\.?\s+(.+)/ );
+    $lastname ||= '-';
 
     # fall back to problem state as it's probably correct
     my $state = $comment->problem_state || $comment->problem->state;
