@@ -54,8 +54,14 @@ body.frontpage {
     }
 }
 
-body.admin table {
-    background: white; // force bg colour since it may overhang the colourful background
+body.admin {
+	.container {
+		width: 94%;
+		margin: 0 auto;
+	}
+	table {
+    	background: white; // force bg colour since it may overhang the colourful background
+	}
 }
 
 #main-nav ul#mysoc-menu li a#mysoc-logo {
