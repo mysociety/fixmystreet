@@ -209,7 +209,7 @@ they are used by.
 
 If you need customistation beyond the above, you will need to make a Cobrand
 module. These are automatically loaded according to the current Cobrand and can
-be found in `perllib/FixMyStreet/Cobrands/`. There is a default Cobrand
+be found in `perllib/FixMyStreet/Cobrand/`. There is a default Cobrand
 ( `Default.pm` ) which all Cobrands should inherit from. A Cobrand module can
 then override any of the methods from the default Cobrand.
 [More information on Cobrand modules](/customising/cobrand-module/).

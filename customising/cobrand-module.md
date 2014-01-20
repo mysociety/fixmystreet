@@ -8,7 +8,7 @@ title: Customising with a Cobrand module
 If you need customistation beyond what templates, configuration variables, and
 translations can offer, then you will have to have a Cobrand module. These are
 automatically loaded according to the current Cobrand and can be found in
-`perllib/FixMyStreet/Cobrands/`. There is a default Cobrand (`Default.pm`)
+`perllib/FixMyStreet/Cobrand/`. There is a default Cobrand (`Default.pm`)
 which all Cobrands should inherit from. A Cobrand module can then override any
 of the methods from the default Cobrand.
 
