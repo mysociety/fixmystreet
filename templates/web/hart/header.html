@@ -46,11 +46,11 @@
         <div id="hart-wrapper"><div id="hart-ie_wrapper">
 
 <div id="hart-header" class="desk-only">
-	<ul class="header-nav"> 
-		<li><a href="http://www.hart.gov.uk/accessibility">Accessibility</a></li>
-		<li><a class="skiplink" href="http://www.hart.gov.uk/#user-meta" rel="nofollow">Skip to content</a></li>
-		<li><div id="google_translate_element"></div></li>
-	</ul>
+    <!-- <ul class="header-nav"> 
+        <li><a href="http://www.hart.gov.uk/accessibility">Accessibility</a></li>
+        <li><a class="skiplink" href="http://www.hart.gov.uk/#user-meta" rel="nofollow">Skip to content</a></li>
+        <li><div id="google_translate_element"></div></li>
+    </ul> -->
 			
 	<div class="logo">
 		<a href="http://www.hart.gov.uk"><img src="/cobrands/hart/hart-logo.png" alt="Hart District Council logo" /></a>
@@ -65,6 +65,8 @@
         [% END %]
 	</div>
 			
+</div>
+<div class="wrapper desk-only">
 	<div class="main-menu">
 		<ul>
         <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
@@ -79,7 +81,7 @@
             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
 		</ul>
 	</div>
-
+    
 </div>
 		
     <div class="wrapper">
