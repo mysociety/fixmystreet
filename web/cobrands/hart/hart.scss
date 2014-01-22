@@ -87,7 +87,8 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 //#search input.button { background: #fff; border: 1px solid #8596a8; color: #333; font-family: 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; font-size:133%; height: 27px; line-height: 27px; padding: 0; vertical-align: top; width: 70px; }
 
 // #footer renamed to #bromley-footer, fixed font size.
-#hart-footer { background-color: #4F5757; clear: both; width:100%; padding:30px 15px 50px; margin-left:-15px; color:#fff; font-size:92%;}
+#hart-footer, .hart-footer-wrapper { background-color: #4F5757; }
+#hart-footer { clear: both; width:100%; padding:30px 15px 50px; margin-left:-15px; color:#fff; font-size:92%;}
 #hart-footer a:link, 
 #hart-footer a:visited 				{ color: #fff; text-decoration: none; }
 #hart-footer a:hover,
