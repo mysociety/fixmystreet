@@ -58,7 +58,6 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 .sign-in a:hover, .sign-in a:active {text-decoration:underline;}
 
 .main-menu {
-    color: #000;
 }
 
 .main-menu li {
@@ -69,7 +68,7 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 }
 
 .main-menu li a:link, .main-menu li a:visited {
-  color: #000;
+  color: $hart_primary;
   display: block;
   text-decoration: none;
 }
@@ -137,7 +136,7 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 
 .main-menu li {
   list-style-type: none;
-  color: $hart_primary;
+  color: #000;
 }
 
 .main-menu li.last {
