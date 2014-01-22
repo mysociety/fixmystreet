@@ -1,0 +1,51 @@
+                </div><!-- .content role=main -->
+        <p id="hart-powered-by" class="desk-only">
+            <a href="http://www.mysociety.org/for-councils/fixmystreet/">Powered by <img src="/cobrands/hart/fms-logo.png" alt="FixMyStreet" style="height:20px;"></a>
+        </p>
+
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <ul id="mysoc-menu">
+                        <li><a href="http://www.mysociety.org/for-councils/fixmystreet/">Powered by <img src="/cobrands/hart/fms-logo.png" alt="FixMyStreet" style="height:20px;"></a></li>
+                    </ul>
+                    <ul id="main-menu">
+                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
+                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/reports/Hart' %]span[% ELSE %]a href="/reports/Hart"[% END
+                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div> <!-- .wrapper -->
+
+<div id="hart-footer" class="desk-only">
+	<p class="copy">&copy; 2014 Hart District Council </p>
+		
+    <!--
+	<a href="http://www.direct.gov.uk/"><img src="/site/images/directgov.jpg" alt="Directgov website link - Public services all in one place" /></a>
+    -->
+		
+	<ul class="footer-nav">
+		<li><a href="#hart-header">To the top</a></li>
+		<li><a href="http://www.hart.gov.uk/terms">Disclaimer</a></li>
+		<li><a href="http://www.hart.gov.uk/privacy" rel="nofollow">Privacy and cookies</a></li>
+		<li><a href="http://www.hart.gov.uk/accesstoinfo">Access to information</a></li>
+	</ul>
+
+</div>
+
+    </div></div>
+</body>
+</html>
