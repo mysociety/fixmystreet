@@ -8,6 +8,13 @@ sub council_id { return 2333; } # http://mapit.mysociety.org/area/2333.html
 sub council_area { return 'Hart'; }
 sub council_name { return 'Hart Council'; }
 sub council_url { return 'hart'; }
+sub is_two_tier { return 1; }
+
+# Different to councils parent due to this being a two-tier council. If we get
+# more, this can be genericised in the parent.
+sub problems_clause {
+    return { bodies_str => { like => '%2333%' } };
+}
 
 sub base_url {
     return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
@@ -28,11 +35,6 @@ sub disambiguate_location {
 
     my $town = 'Hart, Hampshire';
 
-    # Bing turns High St Bromley into Bromley High St which is in 
-    # Bromley by Bow.
-    # $town .= ', BR1' if $string =~ /^high\s+st(reet)?$/i;
-    # $town = '' if $string =~ /orpington/i;
-    #
     return {
         %{ $self->SUPER::disambiguate_location() },
         town => $town,
@@ -55,18 +57,6 @@ sub on_map_default_max_pin_age {
     return '1 month';
 }
 
-# Bromley pins always yellow
-sub ___pin_colour {
-    my ( $self, $p, $context ) = @_;
-    return 'yellow';
-}
-
-sub recent_photos {
-    my ( $self, $area, $num, $lat, $lon, $dist ) = @_;
-    $num = 3 if $num > 3 && $area eq 'alert';
-    return $self->problems->recent_photos( $num, $lat, $lon, $dist );
-}
-
 sub send_questionnaires {
     return 0;
 }
@@ -87,18 +77,6 @@ sub contact_email {
 sub contact_name { 'Hart District Council (do not reply)'; }
 
 sub reports_per_page { return 20; }
-
-sub ____tweak_all_reports_map {
-    my $self = shift;
-    my $c = shift;
-
-    if ( !$c->stash->{ward} ) {
-        $c->stash->{map}->{longitude} = 0.040622967881348;
-        $c->stash->{map}->{latitude} = 51.36690161822;
-        $c->stash->{map}->{any_zoom} = 0;
-        $c->stash->{map}->{zoom} = 11;
-    }
-}
 
 sub title_list {
     return ["MR", "MISS", "MRS", "MS", "DR"];
