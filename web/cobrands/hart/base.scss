@@ -1,0 +1,61 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+a, a:visited {
+    color: #369;
+    &:hover, &:active {
+        color: #369;
+    }
+}
+
+.issue-list-a {
+  li {
+      color:#666;
+      a {
+          color:#666;
+      }
+  }
+}
+
+h1.main {
+    color: $primary;
+    text-align: center;
+    margin: 0.5em 0;
+}
+
+// Want a white header, and logo is slightly bigger
+#site-header {
+    @include background(linear-gradient(#ddd, #fff 10%, #fff));
+    height: 4em;
+}
+
+// Colour tab to match colour scheme
+#nav-link {
+  width: 50px;
+  height: 48px;
+  background: url('/cobrands/hart/tab-blue.png') 0 0 no-repeat;
+}
+
+#problems-nav {
+    border-bottom:0.25em solid $primary;
+    ul li a {
+        text-transform: none;
+        color: #666;
+        &.active {
+            background: $primary;
+            color: #fff;
+        }
+    }
+}
+
+.big-green-banner {
+    text-transform: none;
+}
+
+#form_sign_in {
+    margin-top: 1em;
+}

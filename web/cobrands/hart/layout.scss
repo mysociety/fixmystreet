@@ -1,0 +1,12 @@
+@import "_colours";
+@import "../sass/layout";
+
+@media only screen and (min-width: 48em) {
+  .content {
+    margin-top: 11em;
+  }
+}
+
+#report-a-problem-sidebar {
+  top: 11em;
+}
