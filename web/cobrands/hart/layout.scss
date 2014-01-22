@@ -1,8 +1,8 @@
 @import "_colours";
 @import "../sass/layout";
 
-#hart-wrapper { background: #fff center 110px no-repeat; margin: 1px auto 0; padding: 0 15px; width: 955px;}
-.offline #hart-wrapper { padding: 0 15px 20px; }
+.hart-wrapper { background: #fff center 110px no-repeat; margin: 0 auto; width: 1024px;}
+.offline .hart-wrapper { padding-bottom: 20px; }
 
 // So that map appears underneath the header
 .wrapper {

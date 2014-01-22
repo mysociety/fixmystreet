@@ -34,8 +34,10 @@ h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Trebuchet MS', Ca
 body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: #fff;}
 
 // #header renamed to #hart-header
-#hart-header {
+.hart-header {
     padding: 0 18px 0 25px;
+}
+.hart-header, .hart-header-wrapper {
     background-color: $hart_primary;
 }
 
@@ -98,7 +100,7 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 // Bromley IE specific CSS
 .ie6 {
     div { zoom: 1; }
-    #hart-wrapper { padding: 0; }
+    .hart-wrapper { padding: 0; }
     #hart-footer { margin: 0; }
     //#search input { padding: 8px 5px 2px; }
     //#search input.button { padding: 0; width: 68px; line-height: 24px; }
@@ -116,7 +118,7 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 }
 
 // mySociety additions
-#hart-header {
+.hart-header {
   font-size: 12px;
   clear: both;
 }
