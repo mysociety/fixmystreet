@@ -3,3 +3,26 @@
     white-space: nowrap;
     overflow: hidden;
 }
+
+.container {
+    max-width: 71.25em;
+    padding: 0 1em;
+    margin: 0 auto;
+    position: relative;
+}
+.grid-column {
+    float: left;
+    margin-left: 3%;
+    &:first-child {
+        margin-left: 0;
+    }
+}
+.grid-column--three-of-four {
+    @extend .grid-column;
+    width: 75%;
+}
+
+.grid-column--one-of-four {
+    @extend .grid-column;
+    width: 25%;
+}
