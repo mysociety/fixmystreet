@@ -31,21 +31,46 @@ select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1d
 
 
 h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Trebuchet MS', Calibri, sans-serif; }
-body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: #fff;}
+body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
 
 // #header renamed to #hart-header
 .hart-header {
-    padding: 0 18px 0 25px;
+    padding: 20px 20px 0 20px;
 }
 .hart-header, .hart-header-wrapper {
     background-color: $hart_primary;
 }
 
-.header-nav {float:right; background:url('https://www.bromley.gov.uk/site/styles/css_img/header-nav.gif') no-repeat; overflow:hidden; width:651px; height:34px; line-height:34px; padding:0 20px;}
-.header-nav li {float:left; width:130px; text-align:center; background:url('https://www.bromley.gov.uk/site/styles/css_img/header-nav-divider.gif') top right no-repeat;}
-.header-nav li:last-child {background:none;}
-.header-nav a:link, .header-nav a:visited {color:#fff; text-decoration:none;}
-.header-nav a:hover, .header-nav a:active {text-decoration:underline;}
+.hart-header-wrapper {
+    height: 173px;
+}
+
+.header-nav {
+  display: inline-block;
+}
+
+.header-nav li {
+  float: left;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 0 15px;
+  font-size: 16px;
+  border-right: solid 1px white;
+}
+
+.header-nav li:last-child {
+    border-right: none;
+}
+
+.header-nav a:link, .header-nav a:visited {
+  color: #fff;
+}
+
+.header-nav li:hover, .header-nav li:hover a, {
+  background-color: white;
+  color: black;
+  text-decoration: none;
+}
 
 /* -------- For Google translate select box only */
 .header-nav div#google_translate_element .goog-te-gadget { font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif;    }
@@ -53,7 +78,10 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 .header-nav div#google_translate_element .goog-te-gadget .goog-te-combo option { background:#fff; color: #666; padding: 1px 0; margin: 0; }
 /* --- */
 
-.logo {padding:10px 0;}
+.logo {
+    padding:10px 0;
+    display: inline;
+}
 
 .sign-in {float:right; margin-top:-87px; width: 650px; text-align: right;}
 .sign-in a:link, .sign-in a:visited {color:#333; font-weight:bold; text-decoration:none;}
