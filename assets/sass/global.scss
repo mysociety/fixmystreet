@@ -25,3 +25,78 @@ a {
         text-decoration: underline;
     }
 }
+
+h1,
+.primary-heading {
+    font-size: 2.5em;
+    line-height: 1.1em;
+    font-weight: 700;
+}
+
+h2,
+.secondary-heading {
+    font-size: 1.625em;
+    font-weight: normal
+}
+
+h3,
+.tertiary-heading {
+    font-size: 1.3125em;
+    font-weight: 700;
+}
+
+h4,
+.quarternary-heading {
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+p {
+    font-size: .9375em;
+    line-height: 1.4375em;
+}
+
+/* mySociety header */
+.ms-header {
+    background: transparent;
+    border-top: 4px solid #424242;
+}
+
+.ms-header__row {
+    position: relative;
+}
+
+.ms-header__logo {
+    @extend .image-replacement;
+    display: block;
+    position: absolute;
+    right: 0.75em;
+    top: 0;
+    background-color: #424242;
+    background-repeat: no-repeat;
+    height: 38px;
+    width: 44px;
+    border-radius: 0 0 0.75em 0.75em;
+    background-size: 22px;
+    background-position: 11px 7px ;
+    background-image: url('../img/mysociety-bloom.png');
+
+    @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+        background-image: url('../img/mysociety-bloom@2.png');
+    }
+
+    @media (min-width: $medium-screen) {
+        border-radius: 0 0 1.25em 1.25em;
+        background-position: 16px 10px ;
+        background-size: 93px 19px;
+        background-image: url('../img/mysociety-logo.png');
+        width: 125px;
+        height: 39px;
+
+        @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+            background-image: url('../img/mysociety-logo@2.png');
+        }
+    }
+
+
+}
