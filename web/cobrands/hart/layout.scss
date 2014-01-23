@@ -105,6 +105,10 @@ body.frontpage {
     right: 0;
 }
 
+.big-green-banner:before {
+    display: none;
+}
+
 // OpenLayers navigation always top right
 #fms_pan_zoom {
     top: 0.5em !important;
