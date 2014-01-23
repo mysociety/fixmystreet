@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: Updating an AMI installation
 ---
 
@@ -36,7 +36,7 @@ to try checking out your repository elsewhere and trying the merge there first,
 to see if it there are any problems.
 
 Then you will want to run:
-    
+
     fms@ip-10-58-191-98:~/fixmystreet$ bin/install_perl_modules
 
 to make sure any new Perl modules needed are installed. Take a backup of

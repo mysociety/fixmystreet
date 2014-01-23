@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: Directory structure
 ---
 
@@ -40,11 +40,11 @@ you're doing is [customising your installation](/customising).
     <p><em>mySociety's library of common functions</em></p>
     <p>
       We maintain a <a href="https://github.com/mysociety/commonlib">common library</a> that
-      we use across many of our projects (not just FixMyStreet). This is implemented as a 
-      <a href="http://git-scm.com/book/en/Git-Tools-Submodules">git submodule</a>, 
+      we use across many of our projects (not just FixMyStreet). This is implemented as a
+      <a href="http://git-scm.com/book/en/Git-Tools-Submodules">git submodule</a>,
       so FixMyStreet contains it even though the code is separate. Normally, you
       don't need to think about this (because git handles it automatically)... but if you
-      really <em>do</em> need to change anything here, be aware that it is a separate git repository.      
+      really <em>do</em> need to change anything here, be aware that it is a separate git repository.
     </p>
   </dd>
   <dt>
@@ -107,8 +107,8 @@ you're doing is [customising your installation](/customising).
   <dd>
     <p><em>documentation notes</em></p>
     <p>
-      These are technical notes. This is in addition to the 
-      <a href="http://code.fixmystreet.com">core documentation</a> &mdash; which you are reading now &mdash; 
+      These are technical notes. This is in addition to the
+      <a href="http://code.fixmystreet.com">core documentation</a> &mdash; which you are reading now &mdash;
       which is actually stored in the git repository in the <code>gh-pages</code> branch, and published
       as GitHub pages.
     </p>
@@ -238,8 +238,8 @@ you're doing is [customising your installation](/customising).
     </p>
     <p>
       These are templates for the email messages that FixMyStreet sends, and the web pages it
-      shows, in cobrand-specific directories. If no template can be found for a specific 
-      email or web page in the required cobrand, FixMyStreet uses the template in 
+      shows, in cobrand-specific directories. If no template can be found for a specific
+      email or web page in the required cobrand, FixMyStreet uses the template in
       <code>default/</code>. In this way, cobrands only need to override templates that
       differ from FixMyStreet's default &mdash; it's feasible for your cobrand's template
       directories to be empty.
@@ -283,11 +283,11 @@ you're doing is [customising your installation](/customising).
       </dd>
       <dt>css</dt>
       <dd>
-        <p><em>some core SCSS definitions</em></p> 
+        <p><em>some core SCSS definitions</em></p>
       </dd>
       <dt>i</dt>
       <dd>
-        <p><em>images</em></p> 
+        <p><em>images</em></p>
         <p>
           Images, including navigation icons and sprites, used by the default site (and hence
           available to other cobrands too) &mdash; for example <code>pin-green.png</code>

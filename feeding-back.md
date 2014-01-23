@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: Feeding back your changes
 ---
 

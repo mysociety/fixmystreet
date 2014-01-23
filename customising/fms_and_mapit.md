@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: How FixMyStreet uses MapIt
 author: dave
 ---
@@ -129,13 +129,13 @@ global MapIt. This example uses Zurich as an example city.
 
 4. MapIt will show you all the [admin
 boundaries](http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html)
-   that contain that point. You're interested in the ones that relate to 
+   that contain that point. You're interested in the ones that relate to
    bodies that serve those areas. For example, if a district council fixes the
    potholes in that district. Specifically, you need the **Administrative
    Boundary Levels** (which will look like `O04` or `O05`), which are the
    values for your `MAPIT_TYPES`. Remember this data is boundary data from
    OpenStreetMap -- if the boundaries you need are not shown, you may have to
-   set up your own (described below). You can also click on any of the 
+   set up your own (described below). You can also click on any of the
    boundaries listed on MapIt to see the areas they actually cover on the map.
 
 5. The individual *area_id*s are also useful, because you put them into the

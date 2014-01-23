@@ -22,38 +22,22 @@
     </script>
   </head>
   <body>
-    <div class="ms-header">
-          <nav class="ms-header__row">
-             <a class="ms-header__logo" href="http://www.mysociety.org">mySociety</a>
-          </nav>
-      </div>
-    <header>
 
-          <a href="{{ site.baseurl }}"><img src="/images/fms-twitter-avatar-128.jpg" width="128" height="128" alt="FixMyStreet" border="0" id="logo"></a>
+  <div class="ms-header">
+    <nav class="ms-header__row">
+       <a class="ms-header__logo" href="http://www.mysociety.org">mySociety</a>
+    </nav>
+  </div>
 
+  <header class="site-header">
+    <div class="container">
+      <a href="{{ site.baseurl }}" class="site-title"><h1>FixMyStreet</h1></a>
+    </div>
+  </header>
 
-          <ul class="nav nav-tabs">
-            <li><a href="{{ site.baseurl }}">Overview</a></li>
-            <li><a href="{{ site.baseurl }}install/">Installing</a></li>
-            <li><a href="{{ site.baseurl }}customising/">Customising</a></li>
-            <li><a href="{{ site.baseurl }}running/">Running</a></li>
-            <li><a href="{{ site.baseurl }}community/">Community</a></li>
-            <li><a href="{{ site.baseurl }}blog/">Blog</a></li>
-          </ul>
+    {{ content }}
 
-
-          <ul>
-            <li><a href="https://github.com/mysociety/fixmystreet">View on <strong>GitHub</strong></a></li>
-          </ul>
-
-
-    </header>
-
-
-        {{ content }}
-
-
-    <footer>
+  <footer>
 
 
     </footer>

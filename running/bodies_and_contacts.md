@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: Bodies and Contacts in FixMyStreet
 author: dave
 ---
@@ -23,7 +23,7 @@ and pick at least one area it covers. See [How FixMyStreet uses
 Mapit](/customising/fms_and_mapit) for more information on how these areas are chosen.
 
 You can specify a <strong><a href="/glossary/#send-method" class="glossary">send method</a></strong>. This is *how* FixMyStreet will send the
-problem reports to this body. 
+problem reports to this body.
 
 If you leave it blank, **send method will default to email**.
 
@@ -45,7 +45,7 @@ Here's an example of a body and its contacts:
     Body: South Borsetshire District Council
 
     Contacts:
-    
+
       Category              Email
       ---------------------------------------------------
       Bridges               road_department@sbdc.gov.uk
@@ -68,7 +68,7 @@ its email addresses or even adds a new department after your site is running.
 <p>
 We do not recommend you run your installation of FixMyStreet with bodies that
 have no contacts. Problems submitted to such a body will remain on the site
-but will not be sent. Problems like this may never get fixed. 
+but will not be sent. Problems like this may never get fixed.
 </p>
 <p>
 You really need to find at least one working contact for each body to which
@@ -126,7 +126,7 @@ and specify their own send method and details.
 
 ## Deleting contacts
 
-If a contact is no longer valid, you can delete it. Find it on the body's admin page, click to edit it, and check **deleted**. 
+If a contact is no longer valid, you can delete it. Find it on the body's admin page, click to edit it, and check **deleted**.
 
 This does not remove the contact from the FixMyStreet database (because doing
 so might break any existing problem reports that used it), but it prevents the
