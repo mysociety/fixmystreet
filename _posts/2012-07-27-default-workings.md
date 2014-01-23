@@ -34,7 +34,7 @@ a UK cobrand (which is then in turn inherited by the various council cobrands
 we have made in the UK). This should mean that you find you have less to override,
 and more things should work by default.
 
-![Default screenshot](/images/2012-07-27-screenshot.png)
+![Default screenshot](/assets/img/2012-07-27-screenshot.png)
 
 Lastly, the default cobrand now uses the new style that you can see on
 <http://www.fixmystreet.com>. By default, we have picked a pretty yet garish
