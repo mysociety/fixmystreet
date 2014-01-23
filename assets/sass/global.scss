@@ -1,12 +1,15 @@
 @import 'normalize';
 @import 'variables';
 @import 'mixins';
-* {
-    box-sizing: border-box;
-}
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+ }
+
 html {
     height: 100%;
 }
+
 body {
     font-family: $source;
     background-color: $colour_background;
@@ -63,7 +66,7 @@ p {
 }
 
 .ms-header__row {
-    position: relative;
+    @extend .container;
 }
 
 .ms-header__logo {
@@ -92,11 +95,30 @@ p {
         background-image: url('../img/mysociety-logo.png');
         width: 125px;
         height: 39px;
-
         @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
             background-image: url('../img/mysociety-logo@2.png');
         }
     }
+}
 
+.page {
+    @extend .container;
+}
 
+.main-content-column {
+    @media (min-width: $medium-screen) {
+        @extend .grid-column--three-of-four;
+    }
+}
+
+.main-content {
+    background: #fff;
+    padding: 3%;
+    border: 1px solid $colour_borders;
+}
+
+.secondary-content-column {
+    @media (min-width: $medium-screen) {
+        @extend .grid-column--one-of-four;
+    }
 }

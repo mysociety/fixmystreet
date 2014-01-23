@@ -343,7 +343,27 @@ table {
   white-space: nowrap;
   overflow: hidden; }
 
-* {
+.container, .ms-header__row, .page {
+  max-width: 71.25em;
+  padding: 0 1em;
+  margin: 0 auto;
+  position: relative; }
+
+.grid-column, .grid-column--three-of-four, .grid-column--one-of-four {
+  float: left;
+  margin-left: 3%; }
+  .grid-column:first-child, .grid-column--three-of-four:first-child, .grid-column--one-of-four:first-child {
+    margin-left: 0; }
+
+.grid-column--three-of-four {
+  width: 75%; }
+
+.grid-column--one-of-four {
+  width: 25%; }
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box; }
 
 html {
@@ -393,9 +413,6 @@ p {
   background: transparent;
   border-top: 4px solid #424242; }
 
-.ms-header__row {
-  position: relative; }
-
 .ms-header__logo {
   display: block;
   position: absolute;
@@ -423,3 +440,8 @@ p {
     @media (min-width: 33.75em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 33.75em) and (min-resolution: 144dpi) {
       .ms-header__logo {
         background-image: url("../img/mysociety-logo@2.png"); } }
+
+.main-content {
+  background: #fff;
+  padding: 3%;
+  border: 1px solid #e4e3dd; }
