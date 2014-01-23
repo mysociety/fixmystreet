@@ -1,6 +1,7 @@
 @import 'normalize';
 @import 'variables';
 @import 'mixins';
+@import 'pygment_trac';
 
 *, *:before, *:after {
   -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
