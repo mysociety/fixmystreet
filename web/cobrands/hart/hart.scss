@@ -41,8 +41,10 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
     background-color: $hart_primary;
 }
 
-.hart-header-wrapper {
-    height: 173px;
+@media only screen and (min-width: 48em) {
+    .hart-header-wrapper {
+        height: 173px;
+    }
 }
 
 .header-nav {
