@@ -41,13 +41,23 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
     background-color: $hart_primary;
 }
 
-@media only screen and (min-width: 48em) {
+.hart-header-wrapper {
+    height: 173px;
+}
+
+#site-header {
+    display: none;
+}
+
+
+
+@media only screen and (max-width: 48em) {
     .hart-header-wrapper {
-        height: 173px;
+        height: auto;
     }
-    
+
     #site-header {
-        display: none;
+        display: block;
     }
 }
 
