@@ -52,7 +52,9 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 }
 
 .header-nav {
-  display: inline-block;
+  float: left;
+  margin-top: 96px;
+  margin-left: 6px;
 }
 
 .header-nav li {
@@ -85,8 +87,8 @@ body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvet
 /* --- */
 
 .logo {
-    padding:10px 0;
-    display: inline;
+    padding: 0;
+    float: left;
 }
 
 .sign-in {float:right; margin-top:-87px; width: 650px; text-align: right;}
