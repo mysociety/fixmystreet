@@ -12,7 +12,7 @@
 
         <link rel="stylesheet" href="[% version('/cobrands/hart/base.css') %]">
         <link rel="stylesheet" href="[% version('/cobrands/hart/layout.css') %]" media="(min-width:48em)">
-	<link rel="stylesheet" href="[% version('/cobrands/hart/hart.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/hart/hart.css') %]">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
             <link rel="stylesheet" href="[% version('/cobrands/hart/layout.css') %]">
@@ -22,117 +22,105 @@
         <script src="[% version('/cobrands/hart/position_map.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = "Hart District Council - Report a problem in Hart&rsquo;s streets or parks" %]
         <script type="text/javascript">
-
-          var _gaq = _gaq || [];
-          _gaq.push(['_setAccount', 'UA-TODO-1']); // TODO
-          _gaq.push(['_setDomainName', 'hart.gov.uk']);
-          _gaq.push(['_trackPageview']);
-
-          (function() {
-            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-          })();
-
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-TODO-1']); // TODO
+            _gaq.push(['_setDomainName', 'hart.gov.uk']);
+            _gaq.push(['_trackPageview']);
+            (function() {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
+            })();
         </script>
 
         [% extra_js %]
 
-	<link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/hart/favicon.ico">
-
+        <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/hart/favicon.ico">
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
-        [%# ie_wrapper is to prevent a horizontal scrollbar in IE7, it appears (from Bromley site) %]
         <div class="hart-header-wrapper">
-        
-        <div class="hart-wrapper"><div class="hart-ie_wrapper">
-
-<div class="desk-only hart-header">
-    <!-- <ul class="header-nav"> 
-        <li><a href="http://www.hart.gov.uk/accessibility">Accessibility</a></li>
-        <li><a class="skiplink" href="http://www.hart.gov.uk/#user-meta" rel="nofollow">Skip to content</a></li>
-        <li><div id="google_translate_element"></div></li>
-    </ul> -->
-			
-	<div class="logo">
-		<a href="http://www.hart.gov.uk"><img src="/cobrands/hart/hart-logo.png" alt="Hart District Council logo" /></a>
-	</div>
-    
-    <div class="header-nav">
-        <ul>
-            <li>
-                <a href="http://www.hart.gov.uk/home">Home</a>
-            </li>
-            <li>
-                <a href="http://www.hart.gov.uk/services">My Services</a>
-            </li>
-            <li>
-                <a href="http://www.hart.gov.uk/residents">Residents</a>
-            </li>
-            <li>
-                <a href="http://www.hart.gov.uk/businesses">Businesses</a>
-            </li>
-            <li>
-                <a href="http://www.hart.gov.uk/visiting">Visiting</a>
-            </li>
-            <li>
-                <a href="http://www.hart.gov.uk/the-council">The Council</a>
-            </li>
-        </ul>
-    </div>
-			
-	<div class="sign-in">
-        [% IF c.user_exists %]
-            <p>
-                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
-                <a href="/auth/sign_out">[% loc('sign out') %]</a>
-            </p>
-        [% END %]
-	</div>
-			
-</div>
-</div></div></div>
-<div class="hart-wrapper"><div class="hart-ie_wrapper">
-<div class="wrapper desk-only">
-	<div class="main-menu">
-		<ul>
-        <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
-            >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-        %]<li><[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
-            %]>[% loc("Your reports") %]</[% ( c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) ) ? 'span' : 'a' %]></li>[%
-        %]<li><[% IF c.req.uri.path == '/reports/Hart' %]span[% ELSE %]a href="/reports/Hart"[% END
-            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
-            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-        %]<li class="last"><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-		</ul>
-	</div>
-    
-</div>
-		
-    <div class="wrapper">
-        <div class="table-cell">
-            <div id="site-header" role="banner">
-                <div class="container">
-                    <a href="#main-nav" id="nav-link">Main Navigation</a>
+            <div class="hart-wrapper">
+                <div class="hart-ie_wrapper">
+                    <div class="desk-only hart-header">
+                        <!-- <ul class="header-nav"> 
+                            <li><a href="http://www.hart.gov.uk/accessibility">Accessibility</a></li>
+                            <li><a class="skiplink" href="http://www.hart.gov.uk/#user-meta" rel="nofollow">Skip to content</a></li>
+                            <li><div id="google_translate_element"></div></li>
+                        </ul> -->
+                        <div class="logo">
+                            <a href="http://www.hart.gov.uk"><img src="/cobrands/hart/hart-logo.png" alt="Hart District Council logo" /></a>
+                        </div>
+                        <div class="header-nav">
+                            <ul>
+                                <li>
+                                    <a href="http://www.hart.gov.uk/home">Home</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.hart.gov.uk/services">My Services</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.hart.gov.uk/residents">Residents</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.hart.gov.uk/businesses">Businesses</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.hart.gov.uk/visiting">Visiting</a>
+                                </li>
+                                <li>
+                                    <a href="http://www.hart.gov.uk/the-council">The Council</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="sign-in">
+                            [% IF c.user_exists %]
+                                <p>
+                                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                                </p>
+                            [% END %]
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div id="user-meta">
-                [% IF c.user_exists %]
-                <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                </p>
-                [% END %]
-            </div>
-
-            <h1 class="main desk-only">Reporting a problem in Hart&rsquo;s streets or parks</h1>
-
-            [% pre_container_extra %]
-
-            <div class="container">
-                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
-
-
+        </div>
+        <div class="hart-wrapper">
+            <div class="hart-ie_wrapper">
+                <div class="wrapper desk-only">
+                    <div class="main-menu">
+                        <ul>
+                            <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                                >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                            %]<li><[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
+                                %]>[% loc("Your reports") %]</[% ( c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) ) ? 'span' : 'a' %]></li>[%
+                            %]<li><[% IF c.req.uri.path == '/reports/Hart' %]span[% ELSE %]a href="/reports/Hart"[% END
+                                %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                            %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                                %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                            %]<li class="last"><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                                %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="wrapper">
+                    <div class="table-cell">
+                        <div id="site-header" role="banner">
+                            <div class="container">
+                                <a href="#main-nav" id="nav-link">Main Navigation</a>
+                            </div>
+                        </div>
+                        <div id="user-meta">
+                            [% IF c.user_exists %]
+                            <p>
+                                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                                <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                            </p>
+                            [% END %]
+                        </div>
+                        <h1 class="main desk-only">Reporting a problem in Hart&rsquo;s streets or parks</h1>
+                        [% pre_container_extra %]
+                        <div class="container">
+                            <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
