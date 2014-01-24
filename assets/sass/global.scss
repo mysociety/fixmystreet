@@ -15,6 +15,7 @@ html {
 body {
     font-family: $source;
     background-color: $colour_background;
+    color: $colour_black;
     font-size: 1em;
     line-height: 1.5em;
     height: 100%;
@@ -31,17 +32,21 @@ a {
     }
 }
 
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.66em;
+}
 h1,
 .primary-heading {
-    font-size: 2.5em;
+    font-size: 3em;
     line-height: 1.1em;
     font-weight: 700;
 }
 
 h2,
 .secondary-heading {
-    font-size: 1.625em;
-    font-weight: normal
+    font-size: 2em;
+    font-weight: 300;
 }
 
 h3,
@@ -57,8 +62,58 @@ h4,
 }
 
 p {
+    line-height: 1.4375em;
+}
+
+.lead {
+    font-size: 1.1875em;
+    color: $colour_dark_grey;
+    border-bottom: 1px solid $colour_borders;
+    padding-bottom: 1em;
+    margin-bottom: 1.2em;
+    margin-top: 0;
+}
+
+pre, code, kbd, samp {
+    font-family: Consolas, 'Liberation Mono', Courier, monospace;
+}
+
+code {
+    border: 1px solid $colour_borders;
+    border-radius: 3px;
+    padding: 0 0.2em;
+}
+
+pre {
+    display: block;
+    white-space: pre-wrap;
+    background-color: $colour_background;
+    border: 1px solid $colour_borders;
+    border-radius: 3px;
+    padding: 1em;
+    max-width: 100%;
+    overflow-x: scroll;
     font-size: .9375em;
     line-height: 1.4375em;
+    code {
+        border: none;
+        padding: 0;
+    }
+}
+
+hr {
+    border: none;
+    border-top: 1px solid $colour_borders;
+    margin: 0;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+ul {
+    padding-left: 1.3em;
 }
 
 /* mySociety header */
