@@ -14,10 +14,18 @@ project to help people run websites for reporting common street problems such
 as potholes and broken street lights to an appropriate authority. For
 technical information, see
 [code.fixmystreet.com](http://code.fixmystreet.com).
+## Definitions
 
-Definitions
------------
 
+<ul class="definitions">
+  <li><a href="#abuse-list">abuse list</a></li>
+  <li><a href="#area">admin boundary</a></li>
+  <li><a href="#administrator">administrator</a></li>
+  <li><a href="#alert">alert</a></li>
+  <li><a href="#area-type">area type</a></li>
+  <li><a href="#abuse-list">banning</a></li>
+  <li><a href="#body">body</a></li>
+</ul>
 [abuse list](#abuse-list) |
 [admin&nbsp;boundary](#area) |
 [administrator](#administrator) |
@@ -52,7 +60,6 @@ Definitions
 [update](#update) |
 [user&nbsp;account](#user-account)
 
----
 
 <dl class="glossary">
 
