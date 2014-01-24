@@ -189,10 +189,222 @@ ul {
     background: #fff;
     padding: 1.6em 5%;
     border: 1px solid $colour_borders;
+    top: -2.75em;
+    position: relative;
+    h2 {
+        border-top: 1px solid $colour_borders;
+        padding-top: 1.2em;
+    }
+    .lead + h2 {
+        border-top: none;
+        padding-top: 0;
+    }
+    .reveal-on-click + h2 {
+        border-top: none;
+    }
+
 }
 
 .secondary-content-column {
-    @media (min-width: $medium-screen) {
-        @extend .grid-column--one-of-four;
+    @extend .grid-column--one-of-four;
+}
+
+.sidebar {
+    ul {
+        @extend .unstyled-list;
     }
+    a {
+        color: $colour_black;
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 0.875em;
+        &:hover,
+        &:active,
+        &:focus {
+            color: $colour_links;
+        }
+    }
+    li {
+        li {
+            line-height: 1.4em;
+            a {
+                color: $colour_dark_grey;
+                font-weight: normal;
+                text-transform: none;
+                &:hover,
+                &:active,
+                &:focus {
+                    color: $colour_links;
+                }
+            }
+        }
+    }
+}
+
+.list-of-blog-posts {
+    @extend .unstyled-list;
+}
+
+.listed-blog-post {
+    border-bottom: 1px solid $colour_borders;
+    margin-bottom: 2em;
+    padding-bottom: 1em;
+    .blog-title {
+        font-weight: 700;
+        .meta {
+            font-weight: normal;
+        }
+    }
+}
+.blog-post-header {
+    .blog-title {
+        margin-bottom: 0;
+    }
+    .meta {
+        margin-top: 0;
+    }
+}
+
+.meta {
+    color: $colour_dark_grey;
+}
+
+.r,.l {
+    margin-bottom: 1em;
+    max-width: 50%;
+}
+
+.r {
+    float: right;
+    margin-left: 1em;
+}
+
+.l {
+    float: left;
+    margin-right: 1em;
+}
+
+
+.reveal-on-click {
+    border: 1px solid $colour_borders;
+    dt {
+        border-top: 1px solid $colour_borders;
+        padding: 1em;
+        cursor: pointer;
+        position: relative;
+        &:hover {
+            text-decoration: underline;
+        }
+        &:first-child {
+            border-top: none;
+        }
+        &:after {
+            content: "+";
+            position: absolute;
+            top: 0.8em;
+            right: 1em;
+            display: inline-block;
+            background: $colour_background;
+            border-radius: 50%;
+            height: 1.5em;
+            width: 1.5em;
+            text-align: center;
+            color: $colour_dark_grey;
+            transition: transform 0.2s ease-out;
+        }
+        &:hover {
+            &:after {
+                 background: $colour_links;
+                 color: #fff;
+            }
+        }
+         &.revealed {
+            &:after {
+                transform: rotate(45deg);
+                transition: transform 0.2s ease-out;
+            }
+        }
+    }
+    dd {
+        margin-left: 0;
+        padding: 0 1em 0;
+        position: relative;
+        top: -1em;
+    }
+}
+
+.attention-box {
+    // #todo: style these various boxes
+    padding: 1em;
+    border: 1px solid $colour_borders;
+    margin-bottom: 1.2em;
+}
+
+.definitions {
+    @extend .inline-list;
+    @extend .unstyled-list;
+    a {
+        display: inline-block;
+        background-color: $colour_background;
+        border-radius: 2em;
+        padding: 0.33em 0.66em;
+        color: $colour_black;
+        font-size: 0.875em;
+        &:hover,
+        &:active,
+        &:focus {
+            color: #fff;
+            background-color: $colour_black;
+            text-decoration: none;
+        }
+    }
+}
+
+.glossary {
+    margin: 2em 0 8em 0; /* big margin helps scroll-to #name at bottom of page */
+}
+
+.glossary dt {
+    background-color: $colour_background;;
+    padding: 0.66em 1em;
+    margin-top: 3em;
+    border: 1px solid $colour_borders;
+    border-bottom: none;
+    color: $colour_dark_grey;
+    a {
+        color: $colour_black;
+        font-size: 1.5em;
+        font-weight: 300;
+    }
+}
+
+.glossary dt a:hover {
+    text-decoration: none;
+}
+
+.glossary dd {
+    border:1px solid $colour_borders;
+    border-top:none;
+    padding: 1em 2em;
+    margin: 0;
+}
+
+.glossary dd p {
+    margin-top: 0.666em;
+}
+
+.glossary .more-info {
+    margin: 1em 0 0 0;
+}
+
+.glossary .more-info > p {
+    float: left;
+    color: $colour_dark_grey;
+    width: 8em;
+    margin: 0;
+}
+
+.glossary .more-info ul {
+    margin-top: 0.5em;
+    margin-left: 10em;
 }
