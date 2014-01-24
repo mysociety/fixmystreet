@@ -178,9 +178,11 @@ ul {
 }
 
 .main-content-column {
-    @media (min-width: $medium-screen) {
-        @extend .grid-column--three-of-four;
-    }
+    @extend .grid-column--three-of-four;
+}
+
+.main-content-column-full-width {
+    @extend .grid-column--one-of-one;
 }
 
 .main-content {
