@@ -10,6 +10,48 @@
     margin: 0 auto;
     position: relative;
 }
+
+.unstyled-list {
+    margin-left: 0;
+    padding-left: 0;
+    list-style: none outside none;
+}
+
+.unstyled {
+    @extend .unstyled-list;
+    //hangover from bootstrap
+}
+
+.inline-list {
+    margin-left: -0.5em;
+    margin-bottom: 0;
+    li {
+        display: inline-block;
+        margin-left: 0.5em;
+    }
+}
+
+@mixin clearfix {
+    &:before,
+    &:after {
+        content: " "; /* 1 */
+        display: table; /* 2 */
+    }
+
+    &:after {
+        clear: both;
+    }
+
+    /**
+     * For IE 6/7 only
+     * Include this rule to trigger hasLayout and contain floats.
+     */
+    &{
+        *zoom: 1;
+    }
+}
+
+
 .grid-column {
     float: left;
     margin-left: 3%;
