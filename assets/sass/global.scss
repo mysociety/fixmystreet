@@ -159,6 +159,20 @@ ul {
     }
 }
 
+.site-header {
+    padding-top: 3.75em;
+    padding-bottom: 3.75em;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-image: url('../img/default-bg.jpg');
+    background-color: #444;
+}
+
+.site-title {
+    color: #fff;
+}
+
 .page {
     @extend .container;
 }
