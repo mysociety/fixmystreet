@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: fullwidth
 title: Glossary
 ---
 
@@ -107,7 +107,7 @@ Definitions
       </ul>
     </div>
   </dd>
- 
+
   <dt>
     <a name="alert">alert</a>
   </dt>
@@ -208,7 +208,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="body">body</a>
   </dt>
@@ -317,7 +317,7 @@ Definitions
           key config settings to get your site running.
         </li>
         <li>
-          See more about <a href="/customising/">customising</a> for 
+          See more about <a href="/customising/">customising</a> for
           more config options.
         </li>
         <li>
@@ -328,7 +328,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="contact">contact</a>
   </dt>
@@ -467,7 +467,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="integration">integration</a> with bodies' back-end systems
   </dt>
@@ -515,7 +515,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="latlong">lat-long</a>
   </dt>
@@ -525,10 +525,10 @@ Definitions
     href="#mapit" class="glossary">MapIt</a> when the user clicks on the <a
     href="#map" class="glossary">map</a>.
     <p>
-      Example lat-long for London, UK: <code>51.5072759,-0.1276597</code> 
+      Example lat-long for London, UK: <code>51.5072759,-0.1276597</code>
     </p>
   </dd>
-  
+
   <dt>
     <a name="locale">locale</a>
   </dt>
@@ -622,7 +622,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="open311">Open311</a>
   </dt>
@@ -682,7 +682,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="report">problem report</a>
   </dt>
@@ -709,8 +709,8 @@ Definitions
         </li>
       </ul>
     </div>
-  </dd>  
-  
+  </dd>
+
   <dt>
     <a name="send-method">send method</a>
   </dt>
@@ -904,7 +904,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="user-account">user account</a>
   </dt>
