@@ -60,6 +60,11 @@
     }
 }
 
+.grid-column--one-of-one {
+    @extend .grid-column;
+    width: 100%;
+}
+
 .grid-column--three-of-four {
     @extend .grid-column;
     width: 75%;
