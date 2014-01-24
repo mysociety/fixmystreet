@@ -54,11 +54,12 @@
 
 .grid-column {
     float: left;
-    margin-left: 3%;
+    padding-left: 3%;
     &:first-child {
-        margin-left: 0;
+        padding-left: 0;
     }
 }
+
 .grid-column--three-of-four {
     @extend .grid-column;
     width: 75%;
