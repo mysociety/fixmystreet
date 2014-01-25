@@ -50,6 +50,9 @@ you already have, and the countres set so that they shouldn't in future.
 
 =cut
 
+sub show_reports_with_map { 1 }
+sub area_id { 274456 }
+
 sub shorten_recency_if_new_greater_than_fixed {
     return 0;
 }

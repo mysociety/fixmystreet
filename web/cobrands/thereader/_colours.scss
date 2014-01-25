@@ -1,0 +1,30 @@
+/* COLOURS */
+
+$thereader_dark: #000;
+$thereader_light: #aaa;
+$thereader_white: #fff;
+
+$primary: $thereader_light;
+$primary_b: $thereader_dark;
+$primary_text: #fff;
+
+$base_bg: #fff;
+$base_fg: #000;
+
+/* Unused here */
+$map_nav_bg: #222;
+$nav_fg: #fff;
+$nav_fg_hover: #444;
+
+$col_click_map: $thereader_light;
+$col_click_map_dark: $primary_text;
+
+$col_fixed_label: $thereader_light;
+$col_fixed_label_dark: $primary_text;
+
+// thereader have toasty orange buttons
+
+$thereader_button_base: #F35A0E;
+$thereader_button_top: #EC6816;
+$thereader_button_bottom: #FE4602;
+$thereader_button_border: #CCC;

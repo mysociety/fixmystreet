@@ -659,6 +659,15 @@ sub setup_categories_and_bodies : Private {
             $seen{$contact->category} = 1;
         }
 
+        if ($c->cobrand->can('other_category_options')) {
+            push @category_options, 
+                map { 
+                    my $trans = _($_);
+                    $seen{$trans}++;
+                    $trans;
+                } $c->cobrand->other_category_options;
+        }
+
         if (@category_options) {
             # If there's an Other category present, put it at the bottom
             @category_options = ( _('-- Pick a category --'), grep { $_ ne _('Other') } @category_options );

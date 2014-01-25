@@ -32,7 +32,7 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     # Zurich goes straight to map page, with all reports
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand->can('show_reports_with_map') and $c->cobrand->show_reports_with_map) {
         $c->forward( 'load_and_group_problems' );
         my $pins = $c->stash->{pins};
         $c->stash->{page} = 'reports';
@@ -40,7 +40,7 @@ sub index : Path : Args(0) {
             $c,
             latitude  => @$pins ? $pins->[0]{latitude} : 0,
             longitude => @$pins ? $pins->[0]{longitude} : 0,
-            area      => 274456,
+            area      => $c->cobrand->area_id(),
             pins      => $pins,
             any_zoom  => 1,
         );
