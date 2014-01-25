@@ -1,15 +1,22 @@
 #!/usr/bin/perl
 #
-# FixMyStreet:Geocode::OSM
+# FixMyStreet:Geocode::FixaMinGata
 # OpenStreetmap forward and reverse geocoding for FixMyStreet.
 #
 # Copyright (c) 2011 Petter Reinholdtsen. Some rights reserved.
 # Email: pere@hungry.com
 
-package FixMyStreet::Geocode::OSM;
+# This module is a slightly derived version of OSM.pm.
+
+# As of January 2014, the FixaMinGata developers are considering to make further
+# changes related to OSM, so it's probably best to keep this module separate
+# from the OSM module for now.
+
+package FixMyStreet::Geocode::FixaMinGata;
 
 use warnings;
 use strict;
+use Data::Dumper;
 
 use Digest::MD5 qw(md5_hex);
 use Encode;
@@ -34,17 +41,19 @@ sub string {
     my $params = $c->cobrand->disambiguate_location($s);
 
     $s = FixMyStreet::Geocode::escape($s);
-    $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
+    # $s .= '+' . $params->{town} if $params->{town} and $s !~ /$params->{town}/i;
 
     my $url = "${nominatimbase}search?";
     my %query_params = (
         q => $s,
         format => 'json',
+	addressdetails => 1,
+	limit => 20,
         #'accept-language' => '',
-        email => 'support' . chr(64) . 'fixmystreet.com',
+        email => 'info' . chr(64) . 'morus.se',
     );
-    $query_params{viewbox} = $params->{bounds}[1] . ',' . $params->{bounds}[2] . ',' . $params->{bounds}[3] . ',' . $params->{bounds}[0]
-        if $params->{bounds};
+    # $query_params{viewbox} = $params->{bounds}[1] . ',' . $params->{bounds}[2] . ',' . $params->{bounds}[3] . ',' . $params->{bounds}[0]
+    #     if $params->{bounds};
     $query_params{countrycodes} = $params->{country}
         if $params->{country};
     $url .= join('&', map { "$_=$query_params{$_}" } keys %query_params);
@@ -68,21 +77,34 @@ sub string {
 
     $js = JSON->new->utf8->allow_nonref->decode($js);
 
-    my ( $error, @valid_locations, $latitude, $longitude );
+    my ( %locations, $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
         # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-        ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
+	next if $_->{class} eq "boundary";
+
+	my @s = split(/,/, $_->{display_name});
+
+	my $address = join(",", @s[0,1,2]);
+
+        $locations{$address} = [$_->{lat}, $_->{lon}];
+    }
+
+    my ($key) = keys %locations;
+
+    return { latitude => $locations{$key}[0], longitude => $locations{$key}[1] } if scalar keys %locations == 1;
+    return { error => _('Sorry, we could not find that location.') } if scalar keys %locations == 0;
+
+    foreach $key (keys %locations) {
+        ( $latitude, $longitude ) = ($locations{$key}[0], $locations{$key}[1]);
         mySociety::Locale::in_gb_locale {
             push (@$error, {
-                address => $_->{display_name},
+		address => $key,
                 latitude => sprintf('%0.6f', $latitude),
                 longitude => sprintf('%0.6f', $longitude)
             });
         };
-        push (@valid_locations, $_);
     }
 
-    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
     return { error => $error };
 }
 

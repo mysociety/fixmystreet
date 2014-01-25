@@ -6,7 +6,7 @@ use warnings;
 
 use Carp;
 use mySociety::MaPit;
-use FixMyStreet::Geocode::OSM;
+use FixMyStreet::Geocode::FixaMinGata;
 use DateTime;
 
 
