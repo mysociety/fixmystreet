@@ -840,7 +840,8 @@ sub process_report : Private {
     my $first_area = ( values %$areas )[0];
     my $first_body = ( values %$bodies )[0];
 
-    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+    # TODO refactor
+    if ( $c->cobrand->moniker eq 'emptyhomes' or $c->cobrand->moniker eq 'thereader' ) {
 
         $bodies = join( ',', @{ $c->stash->{bodies_to_list} } ) || -1;
         $report->bodies_str( $bodies );
