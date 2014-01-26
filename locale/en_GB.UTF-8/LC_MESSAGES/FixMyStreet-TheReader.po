@@ -85,7 +85,7 @@ msgstr "(Don't worry &mdash; we'll hang on to your alert while you're checking y
 
 #: templates/web/default/email_sent.html:25
 msgid "(Don't worry &mdash; we'll hang on to your problem report while you're checking your email.)"
-msgstr "(Don't worry &mdash; we'll hang on to your story property report while you're checking your email.)"
+msgstr "(Don't worry &mdash; we'll hang on to your story report while you're checking your email.)"
 
 #: templates/web/default/email_sent.html:27
 msgid "(Don't worry &mdash; we'll hang on to your update while you're checking your email.)"
@@ -129,7 +129,7 @@ msgstr "(sent to both)"
 
 #: templates/web/default/report/new/fill_in_details_form.html:211
 msgid "(we never show your email address or phone number)"
-msgstr "(we never show your email address or phone number)"
+msgstr "(we never show your email address)"
 
 #: templates/web/default/report/update-form.html:158
 msgid "(we never show your email)"
@@ -1604,10 +1604,6 @@ msgstr "Please check your email address is correct"
 msgid "Please choose a category"
 msgstr "Please choose a category"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:387
-msgid "Please choose a property type"
-msgstr "Please choose a property type"
-
 #: templates/web/seesomething/js/translation_strings.html:6
 msgid "Please choose a transport category"
 msgstr "Please choose a transport category"
@@ -1676,7 +1672,7 @@ msgstr "Please enter your first name"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:374 templates/web/default/js/translation_strings.html:7 templates/web/oxfordshire/js/translation_strings.html:7 templates/web/seesomething/js/translation_strings.html:4
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
-msgstr "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
+msgstr "Please enter your full name – if you do not wish your name to be shown on the site, untick the box below"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:95 perllib/FixMyStreet/DB/Result/Comment.pm:123 perllib/FixMyStreet/DB/Result/Problem.pm:367 perllib/FixMyStreet/DB/Result/User.pm:108 templates/web/default/js/translation_strings.html:6 templates/web/oxfordshire/js/translation_strings.html:6
 msgid "Please enter your name"
@@ -1882,14 +1878,6 @@ msgstr "Stories within %s, City of Readers"
 #: templates/web/default/alert/_list.html:40 templates/web/fixmybarangay/alert/_list.html:13 templates/web/fixmystreet/alert/_list.html:42
 msgid "Problems within the boundary of:"
 msgstr "Stories within the boundary of:"
-
-#: templates/web/default/admin/report_edit.html:32 templates/web/emptyhomes/report/new/fill_in_details_form.html:115
-msgid "Property address:"
-msgstr "Property address:"
-
-#: templates/web/default/report/new/category.html:8
-msgid "Property type:"
-msgstr "Property type:"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:52 templates/web/fixmystreet/report/new/fill_in_details_form.html:64
 msgid "Provide a title"
@@ -2860,7 +2848,7 @@ msgstr "We never show your email"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:133 templates/web/bromley/report/new/fill_in_details_form.html:179 templates/web/fixmystreet/report/new/fill_in_details_form.html:134 templates/web/fixmystreet/report/new/fill_in_details_form.html:201 templates/web/zurich/report/new/fill_in_details_form.html:96
 msgid "We never show your email address or phone number."
-msgstr "We never show your email address or phone number."
+msgstr "We never show your email address."
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:384
 msgid "We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch."
