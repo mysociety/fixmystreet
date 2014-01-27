@@ -2,7 +2,7 @@
 @import 'variables';
 @import 'mixins';
 @import 'pygment_trac';
-@import 'fixmystreet';
+@import 'config';
 
 *, *:before, *:after {
   -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
@@ -159,13 +159,24 @@ ul {
     }
 }
 
+.site-title {
+    @extend .image-replacement;
+    height: $logo_height;
+    width: $logo_width;
+    display: block;
+    background-position: top left;
+    background-size: $logo_width $logo_height;
+    background-repeat: no-repeat;
+    background-image: url($logo_path);
+}
+
 .site-header {
     padding-top: 3.75em;
     padding-bottom: 3.75em;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
-    background-image: url('../img/default-bg.jpg');
+    background-image: url($background_image_path);
     background-color: #444;
 }
 

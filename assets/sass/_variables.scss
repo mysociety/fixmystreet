@@ -12,3 +12,9 @@ $colour_borders: $colour_light_grey;
 $giant-screen: 87.5em;
 $large-screen: 64em;
 $medium-screen: 33.75em;
+
+//These should always be overridden in _config.scss
+$logo_path: "../img/fixmystreet-logo.svg" !default;
+$logo_height: 60px !default;
+$logo_width: 320px !default;
+$background_image_path: "../img/default-bg.jpg" !default;
