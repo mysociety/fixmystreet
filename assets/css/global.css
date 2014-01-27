@@ -341,7 +341,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-.image-replacement, .site-title, .ms-header__logo {
+.image-replacement, .ms-header__logo, .site-title {
   text-indent: -1000%;
   white-space: nowrap;
   overflow: hidden; }
@@ -660,16 +660,6 @@ table {
 .type-csharp .highlight .sc {
   color: #a31515; }
 
-.site-title {
-  height: 60px;
-  width: 320px;
-  display: block;
-  background-position: top left;
-  -webkit-background-size: 320px 60px;
-  background-size: 320px 60px;
-  background-repeat: no-repeat;
-  background-image: url("../img/fixmystreet-logo.svg"); }
-
 *, *:before, *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -799,6 +789,16 @@ ul {
     @media (min-width: 33.75em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 33.75em) and (min-resolution: 144dpi) {
       .ms-header__logo {
         background-image: url("../img/mysociety-logo@2.png"); } }
+
+.site-title {
+  height: 60px;
+  width: 320px;
+  display: block;
+  background-position: top left;
+  -webkit-background-size: 320px 60px;
+  background-size: 320px 60px;
+  background-repeat: no-repeat;
+  background-image: url("../img/fixmystreet-logo.svg"); }
 
 .site-header {
   padding-top: 3.75em;
