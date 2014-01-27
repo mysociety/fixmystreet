@@ -388,52 +388,14 @@ body.twothirdswidthpage {
     color:#222;
     margin-top:0;
   }
-  ul {
-    @include list-reset;
-    li {
-      border-bottom:none;
-      float:left;
-      margin:0 1em 1em 0;
-      a {
-        color:#222;
-        padding:0;
-        width: 96px;
-        height: 32px;
-        margin:0 auto;
-        text-indent: -999999px;
-        background: url($image-sprite) -12px -3610px no-repeat;
-        opacity: 0.8;
-        &:hover {
-          opacity: 1;
-        }
-        &.m-app-iphone {
-          background-position: -12px -3610px;
-        }
-        &.m-app-droid {
-          background-position: -12px -3756px;
-        }
-        &.m-app-nokia {
-          background-position: -12px -3820px;
-          width:74px;
-        }
-      }
-    }
+  p {
+	  border-bottom:none;
   }
 }
 .ie6, .ie7 {
   #footer-mobileapps {
       margin:0 0.5em;
       margin-right:2%;
-  }
-}
-.ie6 #footer-mobileapps ul li a {
-  background:url(/cobrands/fixmystreet/images/ie_mobileapps.gif) -1px -1px no-repeat;
-  &.m-app-droid {
-    background-position: -1px -148px;
-  }
-  &.m-app-nokia {
-    background-position: -1px -212px;
-    width:74px;
   }
 }
 
