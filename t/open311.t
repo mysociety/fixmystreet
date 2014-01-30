@@ -154,7 +154,7 @@ for my $test (
         ],
     },
     {
-        title => 'magic fms_extra parameters handled correctly',
+        desc => 'magic fms_extra parameters handled correctly',
         extra => [
             {
                 name  => 'fms_extra_title',
@@ -190,7 +190,7 @@ for my $test (
 
 for my $test ( 
     {
-        title => 'Check uses report name over user name',
+        desc => 'Check uses report name over user name',
         name => 'Nom de Report',
         first_name => 'Nom',
         last_name => 'de Report',

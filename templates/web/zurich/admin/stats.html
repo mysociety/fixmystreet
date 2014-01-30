@@ -13,7 +13,7 @@
     <option value="">[% loc('All reports') %]</option>
     [% FOR y IN [ 2013 .. date.format(date.now, '%Y') ];
         SET max = 12;
-        max = date.format(date.now, '%m') IF y == date.format(date.now, '%Y');
+        SET max = date.format(date.now, '%m') IF y == date.format(date.now, '%Y');
         FOR m IN [ 1 .. max ];
             m = m | format('%02d');
             SET v = m _ '.' _ y;
