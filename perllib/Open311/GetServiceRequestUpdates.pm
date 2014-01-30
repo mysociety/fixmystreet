@@ -127,7 +127,9 @@ sub update_comments {
                     # actually changing the state of the problem
                     if ( FixMyStreet::DB::Result::Problem->council_states()->{$state} && $p->state ne $state &&
                         !( $p->is_fixed && FixMyStreet::DB::Result::Problem->fixed_states()->{$state} ) ) {
-                        $p->state($state);
+                        if ($p->is_visible) {
+                            $p->state($state);
+                        }
                         $comment->problem_state($state);
                     }
                 }

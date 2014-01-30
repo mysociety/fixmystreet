@@ -133,7 +133,6 @@ $problem->insert;
 for my $test (
     {
         desc => 'OPEN status for confirmed problem does not change state',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -145,7 +144,6 @@ for my $test (
     },
     {
         desc => 'bad state does not update states but does create update',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -158,7 +156,6 @@ for my $test (
 
     {
         desc => 'investigating status changes problem status',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -170,7 +167,6 @@ for my $test (
     },
     {
         desc => 'in progress status changes problem status',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -182,7 +178,6 @@ for my $test (
     },
     {
         desc => 'action scheduled status changes problem status',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -194,7 +189,6 @@ for my $test (
     },
     {
         desc => 'not responsible status changes problem status',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -206,7 +200,6 @@ for my $test (
     },
     {
         desc => 'internal referral status changes problem status',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -218,7 +211,6 @@ for my $test (
     },
     {
         desc => 'duplicate status changes problem status',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -230,7 +222,6 @@ for my $test (
     },
     {
         desc => 'fixed status marks report as fixed - council',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -242,7 +233,6 @@ for my $test (
     },
     {
         desc => 'status of CLOSED marks report as fixed - council',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -254,7 +244,6 @@ for my $test (
     },
     {
         desc => 'status of OPEN re-opens fixed report',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'fixed - user',
@@ -266,7 +255,6 @@ for my $test (
     },
     {
         desc => 'action sheduled re-opens fixed report as action scheduled',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'fixed - user',
@@ -278,7 +266,6 @@ for my $test (
     },
     {
         desc => 'open status re-opens closed report',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'not responsible',
@@ -290,7 +277,6 @@ for my $test (
     },
     {
         desc => 'fixed status leaves fixed - user report as fixed - user',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'fixed - user',
@@ -302,7 +288,6 @@ for my $test (
     },
     {
         desc => 'closed status updates fixed report',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'fixed - user',
@@ -314,7 +299,6 @@ for my $test (
     },
     {
         desc => 'no futher action status closes report',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'confirmed',
@@ -326,7 +310,6 @@ for my $test (
     },
     {
         desc => 'fixed status sets closed report as fixed',
-        updated_datetime => sprintf( '<updated_datetime>%s</updated_datetime>', $dt ),
         description => 'This is a note',
         external_id => 638344,
         start_state => 'unable to fix',
@@ -336,10 +319,22 @@ for my $test (
         problem_state => 'fixed - council',
         end_state => 'fixed - council',
     },
+    {
+        desc => 'open status does not re-open hidden report',
+        description => 'This is a note',
+        external_id => 638344,
+        start_state => 'hidden',
+        comment_status => 'OPEN',
+        mark_fixed => 0,
+        mark_open => 0,
+        problem_state => 'confirmed',
+        end_state => 'hidden',
+    },
 ) {
     subtest $test->{desc} => sub {
         my $local_requests_xml = $requests_xml;
-        $local_requests_xml =~ s/UPDATED_DATETIME/$test->{updated_datetime}/;
+        my $updated_datetime = sprintf( '<updated_datetime>%s</updated_datetime>', $dt );
+        $local_requests_xml =~ s/UPDATED_DATETIME/$updated_datetime/;
         $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#<service_request_id>@{[$problem->external_id]}</service_request_id>#;
         $local_requests_xml =~ s#<service_request_id_ext>\d+</service_request_id_ext>#<service_request_id_ext>@{[$problem->id]}</service_request_id_ext>#;
         $local_requests_xml =~ s#<status>\w+</status>#<status>$test->{comment_status}</status># if $test->{comment_status};
