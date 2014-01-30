@@ -84,7 +84,7 @@ sub send {
 
     # on a staging server send emails to ourselves rather than the bodies
     if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING') && !FixMyStreet->test_mode) {
-        @recips = ( mySociety::Config::get('CONTACT_EMAIL') );
+        @recips = ( $row->user->email );
     }
 
     unless ( @recips ) {
