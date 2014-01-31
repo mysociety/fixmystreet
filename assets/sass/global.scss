@@ -191,11 +191,13 @@ ul {
 }
 
 .main-content-column {
-    @extend .grid-column--three-of-four;
+    @media (min-width: $large-screen) {
+        @include grid-column--three-of-four;
+    }
 }
 
 .main-content-column-full-width {
-    @extend .grid-column--one-of-one;
+    @include grid-column--one-of-one;
 }
 
 .main-content {
@@ -219,7 +221,9 @@ ul {
 }
 
 .secondary-content-column {
-    @extend .grid-column--one-of-four;
+    @media (min-width: $large-screen) {
+        @include grid-column--one-of-four;
+    }
 }
 
 .sidebar {

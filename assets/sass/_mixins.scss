@@ -52,7 +52,7 @@
 }
 
 
-.grid-column {
+@mixin grid-column {
     float: left;
     padding-left: 3%;
     &:first-child {
@@ -60,17 +60,17 @@
     }
 }
 
-.grid-column--one-of-one {
-    @extend .grid-column;
+@mixin grid-column--one-of-one {
+    @include grid-column;
     width: 100%;
 }
 
-.grid-column--three-of-four {
-    @extend .grid-column;
+@mixin grid-column--three-of-four {
+    @include grid-column;
     width: 75%;
 }
 
-.grid-column--one-of-four {
-    @extend .grid-column;
+@mixin grid-column--one-of-four {
+    @include grid-column;
     width: 25%;
 }
