@@ -431,6 +431,7 @@ ul {
 }
 
 .homepage-feature {
+    @include clearfix;
     .column {
         @media (min-width: $medium-screen) {
             @include grid-column--one-of-two;
