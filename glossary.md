@@ -25,41 +25,31 @@ technical information, see
   <li><a href="#area-type">area type</a></li>
   <li><a href="#abuse-list">banning</a></li>
   <li><a href="#body">body</a></li>
+  <li><a href="#category">category</a></li>
+  <li><a href="#cobrand">cobrand</a></li>
+  <li><a href="#config-variable">config variable</a></li>
+  <li><a href="#contact">contact</a></li>
+  <li><a href="#council">council</a></li>
+  <li><a href="#dashboard">dashboard</a></li>
+  <li><a href="#flagged">flagged</a></li>
+  <li><a href="#geocoder">geocoder</a></li>
+  <li><a href="#git">git</a></li>
+  <li><a href="#integration">integration</a></li>
+  <li><a href="#latlong">lat-long</a></li>
+  <li><a href="#locale">locale</a></li>
+  <li><a href="#map">map</a></li>
+  <li><a href="#mapit">MapIt</a></li>
+  <li><a href="#open311">Open311</a></li>
+  <li><a href="#report">problem report</a></li>
+  <li><a href="#survey">questionnaire</a></li>
+  <li><a href="#send-method">send method</a></li>
+  <li><a href="#staff-user">staff users</a></li>
+  <li><a href="#state">state</a></li>
+  <li><a href="#survey">survey</a></li>
+  <li><a href="#template">template</a></li>
+  <li><a href="#update">update</a></li>
+  <li><a href="#user-account">user account</a></li>
 </ul>
-[abuse list](#abuse-list) |
-[admin&nbsp;boundary](#area) |
-[administrator](#administrator) |
-[alert](#alert) |
-[area](#area) |
-[area&nbsp;type](#area-type) |
-[banning](#abuse-list) |
-[body](#body) |
-[category](#category) |
-[cobrand](#cobrand) |
-[config&nbsp;variable](#config-variable) |
-[contact](#contact) |
-[council](#council) |
-[dashboard](#dashboard) |
-[flagged](#flagged) |
-[geocoder](#geocoder) |
-[git](#git) |
-[integration](#integration) |
-[lat-long](#latlong) |
-[locale](#locale) |
-[map](#map) |
-[MapIt](#mapit) |
-[Open311](#open311) |
-[OpenStreetMap](#osm) |
-[problem&nbsp;report](#report) |
-[questionnaire](#survey) |
-[send&nbsp;method](#send-method) |
-[staff&nbsp;users](#staff-user) |
-[state](#state) |
-[survey](#survey) |
-[template](#template) |
-[update](#update) |
-[user&nbsp;account](#user-account)
-
 
 <dl class="glossary">
 
