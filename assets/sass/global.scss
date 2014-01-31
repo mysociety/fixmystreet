@@ -229,6 +229,13 @@ ul {
 .sidebar {
     ul {
         @extend .unstyled-list;
+        @include columns;
+        @media (min-width: $large-screen) {
+            @include columns(1);
+        }
+        ul {
+            @include columns(1);
+        }
     }
     a {
         color: $colour_black;
