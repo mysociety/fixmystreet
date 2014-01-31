@@ -51,6 +51,12 @@
     }
 }
 
+@mixin columns($count:2) {
+    -webkit-column-count: $count;
+    -moz-column-count: $count;
+    -o-column-count: $count;
+    column-count: $count;
+}
 
 @mixin grid-column {
     float: left;
