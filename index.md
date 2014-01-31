@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: fullwidth
 title: Welcome
 ---
 
@@ -10,8 +10,8 @@ Welcome to FixMyStreet Platform
   mySociety's open source geographic problem-reporting platform
 </p>
 
-<div class="row-fluid">
-  <div class="span6">
+<div class="homepage-feature">
+  <div class="column">
     <h3>Install</h3>
     <p>
       Begin with the <a href="/install/">installation documentation</a>. Put
@@ -20,7 +20,7 @@ Welcome to FixMyStreet Platform
       href="http://www.mysociety.org/contact/">talk to us</a> about hosting).
     </p>
   </div>
-  <div class="span6">
+  <div class="column">
     <h3>Customise</h3>
     <p>
       FixMyStreet is <a href="/customising/">fully customisable</a> &mdash;
@@ -31,8 +31,8 @@ Welcome to FixMyStreet Platform
     </p>
   </div>
 </div>
-<div class="row-fluid">
-  <div class="span6">
+<div class="homepage-feature">
+  <div class="column">
     <h3>Run</h3>
     <p>
       Our <a href="/running">information for administrators</a> covers
@@ -42,7 +42,7 @@ Welcome to FixMyStreet Platform
       emails.
     </p>
   </div>
-  <div class="span6">
+  <div class="column">
     <h3>Join in or get help</h3>
     <p>
       There's a friendly <a href="/community/">community</a> comprising

@@ -429,3 +429,11 @@ ul {
     margin-top: 0.5em;
     margin-left: 10em;
 }
+
+.homepage-feature {
+    .column {
+        @media (min-width: $medium-screen) {
+            @include grid-column--one-of-two;
+        }
+    }
+}
