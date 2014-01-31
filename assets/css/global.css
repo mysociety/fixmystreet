@@ -685,7 +685,8 @@ a {
 
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
-  margin-bottom: 0.66em; }
+  margin-bottom: 0.66em;
+  text-rendering: optimizeLegibility; }
 
 h1,
 .primary-heading {
@@ -918,13 +919,16 @@ ul {
   border: 1px solid #e4e3dd;
   margin-bottom: 1.2em; }
 
+.definitions li {
+  margin-left: 0.25em; }
 .definitions a {
   display: inline-block;
   background-color: #f7f4f0;
   border-radius: 2em;
   padding: 0.33em 0.66em;
   color: #333333;
-  font-size: 0.875em; }
+  font-size: 0.875em;
+  margin-bottom: 1em; }
   .definitions a:hover, .definitions a:active, .definitions a:focus {
     color: #fff;
     background-color: #333333;
