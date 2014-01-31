@@ -54,8 +54,6 @@ Welcome to FixMyStreet Platform
   </div>
 </div>
 
----
-
 About the FixMyStreet Platform
 ------------------------------
 
