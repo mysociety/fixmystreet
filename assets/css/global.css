@@ -364,21 +364,6 @@ table {
     display: inline-block;
     margin-left: 0.5em; }
 
-.grid-column, .grid-column--one-of-one, .main-content-column-full-width, .grid-column--three-of-four, .main-content-column, .grid-column--one-of-four, .secondary-content-column {
-  float: left;
-  padding-left: 3%; }
-  .grid-column:first-child, .grid-column--one-of-one:first-child, .main-content-column-full-width:first-child, .grid-column--three-of-four:first-child, .main-content-column:first-child, .grid-column--one-of-four:first-child, .secondary-content-column:first-child {
-    padding-left: 0; }
-
-.grid-column--one-of-one, .main-content-column-full-width {
-  width: 100%; }
-
-.grid-column--three-of-four, .main-content-column {
-  width: 75%; }
-
-.grid-column--one-of-four, .secondary-content-column {
-  width: 25%; }
-
 .highlight {
   background: #ffffff; }
 
@@ -814,6 +799,24 @@ ul {
 .site-title {
   color: #fff; }
 
+@media (min-width: 64em) {
+  .main-content-column {
+    float: left;
+    padding-left: 3%;
+    width: 75%; }
+    .main-content-column:first-child {
+      padding-left: 0; } }
+
+.main-content-column-full-width {
+  float: left;
+  padding-left: 1.5%;
+  padding-right: 1.5%;
+  width: 100%; }
+  .main-content-column-full-width:nth-child(odd), .main-content-column-full-width:first-child {
+    padding-left: 0; }
+  .main-content-column-full-width:nth-child(even), .main-content-column-full-width:last-child {
+    padding-right: 0; }
+
 .main-content {
   background: #fff;
   padding: 1.6em 5%;
@@ -829,6 +832,30 @@ ul {
   .main-content .reveal-on-click + h2 {
     border-top: none; }
 
+@media (min-width: 64em) {
+  .secondary-content-column {
+    float: left;
+    padding-left: 3%;
+    width: 25%; }
+    .secondary-content-column:first-child {
+      padding-left: 0; } }
+
+.sidebar ul {
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  -o-column-count: 2;
+  column-count: 2; }
+  @media (min-width: 64em) {
+    .sidebar ul {
+      -webkit-column-count: 1;
+      -moz-column-count: 1;
+      -o-column-count: 1;
+      column-count: 1; } }
+  .sidebar ul ul {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    -o-column-count: 1;
+    column-count: 1; }
 .sidebar a {
   color: #333333;
   text-transform: uppercase;
@@ -974,4 +1001,29 @@ ul {
 .glossary .more-info ul {
   margin-top: 0.5em;
   margin-left: 10em; }
+
+.homepage-feature {
+  /**
+   * For IE 6/7 only
+   * Include this rule to trigger hasLayout and contain floats.
+   */ }
+  .homepage-feature:before, .homepage-feature:after {
+    content: " ";
+    /* 1 */
+    display: table;
+    /* 2 */ }
+  .homepage-feature:after {
+    clear: both; }
+  .homepage-feature {
+    *zoom: 1; }
+  @media (min-width: 33.75em) {
+    .homepage-feature .column {
+      float: left;
+      padding-left: 1.5%;
+      padding-right: 1.5%;
+      width: 50%; }
+      .homepage-feature .column:nth-child(odd), .homepage-feature .column:first-child {
+        padding-left: 0; }
+      .homepage-feature .column:nth-child(even), .homepage-feature .column:last-child {
+        padding-right: 0; } }
 
