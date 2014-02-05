@@ -176,8 +176,8 @@ ul {
     padding-top: 3.75em;
     padding-bottom: 3.75em;
     background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+    background-size: $background-size;
+    background-repeat: $background-repeat;
     background-image: url($background_image_path);
     background-color: #444;
 }
