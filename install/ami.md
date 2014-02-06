@@ -5,6 +5,16 @@ title: AMI for EC2
 
 # FixMyStreet AMI for EC2
 
+<div style="border: solid 2px #900; padding: 0.5em; margin: 0.5em; color: #900; background-color: #fff">
+Please note: FixMyStreet may currently sometimes, when running cron jobs, use
+too much memory to run successfully on an Amazon Micro instance. For more
+information and what to do if this happens, see <a
+href="https://github.com/mysociety/fixmystreet/issues/640">this GitHub
+ticket</a>. If you only have a Micro instance and are just wanting to work with
+translations or templates, for example, you can disable any cron jobs
+from running and run them manually when necessary.
+</div>
+
 To help people to get started with the FixMyStreet platform, we have
 created an AMI (Amazon Machine Image) with a basic installation of
 FixMyStreet, which you can use to create a running server on an Amazon
