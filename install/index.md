@@ -70,10 +70,10 @@ $
 You should be able to connect to the database with `psql -U fms fms` -- if not,
 you will need to investigate [how to allow access to your PostgreSQL database](database).
 
-Now you can use the sql in `db/schema.sql` to create the required
-tables, triggers and stored procedures. You will also need to run
-`db/alert_types.sql` which populates the alert_types table, and
-generate_secret to make a site-wide secret. For example, you might run:
+#### 2b. Install database schema
+
+Now you can use the provided SQL in `db` to create the required
+tables, triggers, and initial data. Run the following:
 
 {% highlight bash %}
 $ psql -U fms fms < db/schema.sql
