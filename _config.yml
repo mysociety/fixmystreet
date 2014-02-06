@@ -2,6 +2,7 @@ safe: true
 pygments: true
 baseurl: /
 permalink: pretty
+markdown: kramdown
 
 authors:
   struan:
