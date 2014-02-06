@@ -49,13 +49,13 @@ function grab_data {
 grab_data "" $SOURCEA
 grab_data "where state not in ('unconfirmed')" $SOURCEB
 grab_data "where state not in ('unconfirmed', 'confirmed')" $SOURCEC
-grab_data "where state not in ('unconfirmed', 'confirmed', 'fixed')" $SOURCED
-grab_data "where state not in ('unconfirmed', 'confirmed', 'fixed', 'hidden')" $SOURCEE
+grab_data "where state not in ('unconfirmed', 'confirmed', 'fixed', 'fixed - council', 'fixed - user')" $SOURCED
+grab_data "where state not in ('unconfirmed', 'confirmed', 'fixed', 'fixed - council', 'fixed - user', 'hidden')" $SOURCEE
 
 
 #state = 'unconfirmed'
 #or state = 'confirmed'
-#or state = 'fixed'
+#or state in ('fixed', 'fixed - council', 'fixed - user')
 #or state = 'hidden'
 #or state = 'partial'
 
@@ -96,7 +96,7 @@ if [ -s $SOURCED ]; then
 echo -n >>$GPSCRIPT " \"$SOURCED\" using 1:2 with impulses lt 6 lw 15 title \"hidden\","
 fi
 if [ -s $SOURCEE ]; then
-echo -n >>$GPSCRIPT " \"$SOURCEE\" using 1:2 with impulses lt 7 lw 15 title \"partial (and any other types)\","
+echo -n >>$GPSCRIPT " \"$SOURCEE\" using 1:2 with impulses lt 7 lw 15 title \"any other type\","
 fi
 cat >>$GPSCRIPT <<END 
     "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $SOURCEA" using 1:3 axes x1y2 with lines lt 2 title "cumulative total number of problems"
