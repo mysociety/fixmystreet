@@ -22,6 +22,15 @@ We've been working hard to make the FixMyStreet Platform easy to install and
 re-use in other countries - please see our site at <http://code.fixmystreet.com/>
 for help and documentation in installing the FixMyStreet Platform.
 
+## Contribution Guidelines
+
+Whilst many contributions come as part of people setting up their own
+installation for their area, we of course welcome stand-alone contributions as
+well. The *Suitable for Volunteers* label in our GitHub issues hopefully labels
+some potential tasks that might be suitable for that situation, though please
+do search through the other issues to see if what you're after has been
+suggested or discussed - or feel free to add your own issue if not.
+
 ## Mobile apps
 
 We've extracted all of the mobile apps from this repository into the
