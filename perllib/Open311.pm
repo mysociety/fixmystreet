@@ -173,16 +173,14 @@ sub _generate_service_request_description {
     my $extra = shift;
 
     my $description = <<EOT;
-detail: @{[$problem->detail()]}
+@{[$problem->detail()]}
 
-url: $extra->{url}
-
-Submitted via FixMyStreet
+$extra->{url}
 EOT
 ;
     if ($self->extended_description ne 'oxfordshire') {
         $description = <<EOT . $description;
-title: @{[$problem->title()]}
+@{[$problem->title()]}
 
 EOT
     }
