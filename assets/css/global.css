@@ -347,7 +347,7 @@ table {
   overflow: hidden; }
 
 .container, .ms-header__row, .page {
-  max-width: 71.25em;
+  max-width: 63.333333333em;
   padding: 0 1em;
   margin: 0 auto;
   position: relative; }
@@ -655,10 +655,10 @@ html {
 
 body {
   font-family: "Source Sans Pro", "Helvetica Neue", Arial, Helvetica, serif;
-  background-color: #f7f4f0;
+  background-color: #f3f1eb;
   color: #333333;
-  font-size: 1em;
-  line-height: 1.5em;
+  font-size: 1.125em;
+  line-height: 1.555555556em;
   height: 100%;
   min-height: 100%; }
 
@@ -670,24 +670,24 @@ a {
 
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
-  margin-bottom: 0.66em;
+  margin-bottom: 0.5em;
   text-rendering: optimizeLegibility; }
 
 h1,
 .primary-heading {
-  font-size: 3em;
+  font-size: 2.666666667em;
   line-height: 1.1em;
-  font-weight: 700; }
+  font-weight: 600; }
 
 h2,
 .secondary-heading {
-  font-size: 2em;
-  font-weight: 300; }
+  font-size: 1.666666667em;
+  font-weight: 600; }
 
 h3,
 .tertiary-heading {
-  font-size: 1.3125em;
-  font-weight: 700; }
+  font-size: 1.166666667em;
+  font-weight: 600; }
 
 h4,
 .quarternary-heading {
@@ -716,7 +716,7 @@ code {
 pre {
   display: block;
   white-space: pre-wrap;
-  background-color: #f7f4f0;
+  background-color: #f3f1eb;
   border: 1px solid #e4e3dd;
   border-radius: 3px;
   padding: 1em;
@@ -762,7 +762,7 @@ ul {
   @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
     .ms-header__logo {
       background-image: url("../img/mysociety-bloom@2.png"); } }
-  @media (min-width: 33.75em) {
+  @media (min-width: 30em) {
     .ms-header__logo {
       border-radius: 0 0 1.25em 1.25em;
       background-position: 16px 10px;
@@ -772,7 +772,7 @@ ul {
       background-image: url("../img/mysociety-logo.png");
       width: 125px;
       height: 39px; } }
-    @media (min-width: 33.75em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 33.75em) and (min-resolution: 144dpi) {
+    @media (min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi) {
       .ms-header__logo {
         background-image: url("../img/mysociety-logo@2.png"); } }
 
@@ -799,7 +799,7 @@ ul {
 .site-title {
   color: #fff; }
 
-@media (min-width: 64em) {
+@media (min-width: 56.88889em) {
   .main-content-column {
     float: left;
     padding-left: 3%;
@@ -832,7 +832,7 @@ ul {
   .main-content .reveal-on-click + h2 {
     border-top: none; }
 
-@media (min-width: 64em) {
+@media (min-width: 56.88889em) {
   .secondary-content-column {
     float: left;
     padding-left: 3%;
@@ -845,7 +845,7 @@ ul {
   -moz-column-count: 2;
   -o-column-count: 2;
   column-count: 2; }
-  @media (min-width: 64em) {
+  @media (min-width: 56.88889em) {
     .sidebar ul {
       -webkit-column-count: 1;
       -moz-column-count: 1;
@@ -918,7 +918,7 @@ ul {
       top: 0.8em;
       right: 1em;
       display: inline-block;
-      background: #f7f4f0;
+      background: #f3f1eb;
       border-radius: 50%;
       height: 1.5em;
       width: 1.5em;
@@ -950,7 +950,7 @@ ul {
   margin-left: 0.25em; }
 .definitions a {
   display: inline-block;
-  background-color: #f7f4f0;
+  background-color: #f3f1eb;
   border-radius: 2em;
   padding: 0.33em 0.66em;
   color: #333333;
@@ -966,7 +966,7 @@ ul {
   /* big margin helps scroll-to #name at bottom of page */ }
 
 .glossary dt {
-  background-color: #f7f4f0;
+  background-color: #f3f1eb;
   padding: 0.66em 1em;
   margin-top: 3em;
   border: 1px solid #e4e3dd;
@@ -1016,7 +1016,7 @@ ul {
     clear: both; }
   .homepage-feature {
     *zoom: 1; }
-  @media (min-width: 33.75em) {
+  @media (min-width: 30em) {
     .homepage-feature .column {
       float: left;
       padding-left: 1.5%;
@@ -1026,5 +1026,4 @@ ul {
         padding-left: 0; }
       .homepage-feature .column:nth-child(even), .homepage-feature .column:last-child {
         padding-right: 0; } }
-
 
