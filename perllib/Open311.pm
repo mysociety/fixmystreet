@@ -172,19 +172,18 @@ sub _generate_service_request_description {
     my $problem = shift;
     my $extra = shift;
 
-    my $description = <<EOT;
-detail: @{[$problem->detail()]}
-
-url: $extra->{url}
-
-Submitted via FixMyStreet
-EOT
-;
-    if ($self->extended_description ne 'oxfordshire') {
-        $description = <<EOT . $description;
-title: @{[$problem->title()]}
-
-EOT
+    my $description = "";
+    if ($problem->cobrand eq 'fixmystreet') {
+        $description .= "detail: " . $problem->detail . "\n\n";
+        $description .= "url: " . $extra->{url} . "\n\n";
+        $description .= "Submitted via FixMyStreet\n";
+        if ($self->extended_description ne 'oxfordshire') {
+            $description = "title: " . $problem->title . "\n\n$description";
+        }
+    } else {
+        $description .= $problem->title . "\n\n";
+        $description .= $problem->detail . "\n\n";
+        $description .= $extra->{url} . "\n";
     }
 
     return $description;
