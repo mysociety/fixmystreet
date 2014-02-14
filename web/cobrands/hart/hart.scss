@@ -59,7 +59,7 @@ body.frontpage .nav-wrapper-2 {
 @media only screen and (min-width:48em) {
 	#main-nav {
 	  margin-top: 106px;
-          margin-left: 132px;
+      margin-left: 148px;
 	  
 	  ul {
 	    float: none;
@@ -70,7 +70,7 @@ body.frontpage .nav-wrapper-2 {
 	  text-align: center;
 	  text-transform: uppercase;
 	  padding: 0 15px;
-	  font-size: 16px;
+	  font-size: 20px;
 	  border-right: solid 1px white;
 	  line-height: 1.5em;
 	}
@@ -131,7 +131,7 @@ body.frontpage #site-logo,
         .sign-in {
           float:right;
           margin-top:-87px;
-          height: 173px;
+          height: 2em;
         }
 }
 .sign-in a:link, .sign-in a:visited {color:#333; font-weight:bold; text-decoration:none;}
@@ -139,7 +139,7 @@ body.frontpage #site-logo,
 
 .main-menu-wrapper {
     position: absolute;
-    z-index:2;
+    /* z-index:2; */
     width:100%;
 }
 
