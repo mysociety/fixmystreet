@@ -801,6 +801,7 @@ ul {
 
 @media (min-width: 56.88889em) {
   .main-content-column {
+    /* Use for grids where the columns are different widths */
     float: left;
     padding-left: 3%;
     width: 75%; }
@@ -808,6 +809,7 @@ ul {
       padding-left: 0; } }
 
 .main-content-column-full-width {
+  /* Use for multi-column grids where all columns are equal width, it gives them equal spacing */
   float: left;
   padding-left: 1.5%;
   padding-right: 1.5%;
@@ -834,6 +836,7 @@ ul {
 
 @media (min-width: 56.88889em) {
   .secondary-content-column {
+    /* Use for grids where the columns are different widths */
     float: left;
     padding-left: 3%;
     width: 25%; }
@@ -1018,6 +1021,7 @@ ul {
     *zoom: 1; }
   @media (min-width: 30em) {
     .homepage-feature .column {
+      /* Use for multi-column grids where all columns are equal width, it gives them equal spacing */
       float: left;
       padding-left: 1.5%;
       padding-right: 1.5%;
