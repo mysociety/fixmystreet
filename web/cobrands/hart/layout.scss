@@ -3,7 +3,7 @@
 
 @media only screen and (min-width: 48em) {
   .content {
-    margin-top: 11em;
+    margin-top: 8em;
   }
 
   }
@@ -13,4 +13,19 @@
 
 #report-a-problem-sidebar {
   top: 11em;
+}
+
+body.twothirdswidthpage .content {
+    aside {
+        left: 672px;
+        width: 208px;
+        padding: 16px;
+    }
+    .sticky-sidebar {
+        left: 672px;
+        aside {
+            position: fixed;
+            top: 14em;
+        }
+    }
 }
