@@ -117,9 +117,12 @@ body.frontpage #site-logo,
     background: url("/cobrands/hart/hart-logo-mobile.png") 0 0 no-repeat;
     margin: 10px;
     padding-left: 10px;
-    position: inherit;
+    position: static;
     @media only screen and (min-width: 48em) {
+        position: relative;
+        top: 1em;
         margin: 0;
+        margin-left: 1em;
         padding: 0;
         background: url("/cobrands/hart/hart-logo.png") 0 0 no-repeat;
         width: 123px;
