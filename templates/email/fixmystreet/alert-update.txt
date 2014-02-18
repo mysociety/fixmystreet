@@ -1,0 +1,26 @@
+Subject: New updates on problem - '<?=$values['title']?>'
+
+We're running a survey to help us understand who uses our sites. 
+If you have 10-15 minutes to spare then we'd be grateful if you 
+could take part: 
+    http://questions.mysociety.org/S/fms/e/
+
+Thank you!
+
+------
+
+The following updates have been left on this problem:
+
+<?=$values['data']?>
+
+<?=$values['state_message']?>
+
+To view or reply to these updates, please visit the following URL:
+    <?=$values['problem_url']?>
+
+You cannot contact anyone by replying to this email.
+
+<?=$values['signature']?>
+
+To stop receiving emails when there are new updates on this problem,
+please follow this link: <?=$values['unsubscribe_url']?>

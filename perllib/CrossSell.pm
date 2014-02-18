@@ -142,6 +142,15 @@ details. You can unsubscribe at any time.</p>
 EOF
 }
 
+sub display_survey_link {
+    return <<EOF;
+<h1 style="padding-top:0.5em">User Survey</h1>
+<p>
+We're running a survey to help us understand who uses our sites. If you have 10-15 minutes to spare then we'd be grateful if you could <a href="http://questions.mysociety.org/S/fms/w/" target="_blank">take part</a>.
+</p>
+EOF
+}
+
 # Not currently used, needs more explanation and testing; perhaps in future.
 sub display_gny_groups {
     my ($lon, $lat) = @_;
@@ -201,6 +210,11 @@ sub display_advert ($$;$%) {
 #EOF
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
+    $c->stash->{scratch} = 'advert=survey';
+    return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
+        . display_survey_link()
+        . '</div>';
+
     $c->stash->{scratch} = 'advert=news';
     my $auth_signature = '';
     unless (defined $data{emailunvalidated} && $data{emailunvalidated}==1) {
