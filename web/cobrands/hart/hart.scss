@@ -7,6 +7,13 @@
 @import "compass";
 @import "_colours";
 
+/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before,
+.clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+/* For IE 6/7 only */
+.clearfix { *zoom: 1; }
+
 
 // Taken from Bromley's form css
 input[type=text],
@@ -39,14 +46,6 @@ select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1d
 h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Trebuchet MS', Calibri, sans-serif; }
 body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
 
-#site-header {
-    height: 6em;
-}
-
-body.frontpage #site-header {
-    height: 13em;
-}
-
 .nav-wrapper-2, 
 body.mappage .nav-wrapper .nav-wrapper-2,
 body.frontpage .nav-wrapper-2 {
@@ -57,6 +56,10 @@ body.frontpage .nav-wrapper-2 {
 }
 
 @media only screen and (min-width:48em) {
+    body.frontpage #site-header {
+        height: 13em;
+    }
+
 	#main-nav {
 	  margin-top: 106px;
       margin-left: 148px;
@@ -111,12 +114,13 @@ body.frontpage .nav-wrapper-2 {
 body.frontpage #site-logo,
 #site-logo {
     display: block;
-    top: 1em;
-    left: 1em;
-    background: url("/cobrands/hart/hart-logo-inverse-small.gif") 0 0 no-repeat;
-    width: 70px;
-    height: 75px;
+    background: url("/cobrands/hart/hart-logo-mobile.png") 0 0 no-repeat;
+    margin: 10px;
+    padding-left: 10px;
+    position: inherit;
     @media only screen and (min-width: 48em) {
+        margin: 0;
+        padding: 0;
         background: url("/cobrands/hart/hart-logo.png") 0 0 no-repeat;
         width: 123px;
         height: 132px;
@@ -191,13 +195,6 @@ body.frontpage .table-cell .content {
   margin-bottom: 2em;
 }
 
-//#search { float: right; padding: 10px 17px; width: 270px; }
-//#search label {display:none;}
-//#search input { background: #ececec; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; line-height: 9px; padding: 6px 5px 4px; width: 184px; }
-//#search input.button { background: #fff; border: 1px solid #8596a8; color: #333; font-family: 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; font-size:133%; height: 27px; line-height: 27px; padding: 0; vertical-align: top; width: 70px; }
-
-// #footer renamed to #hart-footer, fixed font size.
-
 .hart-footer-wrapper {
     #footer_outside_wrapper {
         display: block;
@@ -208,28 +205,25 @@ body.frontpage .table-cell .content {
             }
             #footer-right {
                 float: right;
-                width: 329px;
+                max-width: 329px;
                 .region-footer-right {
                     float: left;
-                    width: 319px;
+                    max-width: 319px;
                 }
             }
             #footer-images {
                 display: block;
-                width: 300px;
+                max-width: 300px;
             }
         }
     }
     .footer_border {
         display: block;
-        width: 1024px;
     }
     background-color: #4F5757;
     clear: both;
-    width:100%; 
     height: auto;
     overflow: hidden;
-    display: block;
     bottom: 0;
     padding-bottom: 60px;
     padding:30px 15px 50px; 

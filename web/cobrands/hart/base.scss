@@ -27,10 +27,31 @@ h1.main {
     margin: 0.5em 0;
 }
 
-// Want a white header, and logo is slightly bigger
+.container {
+    padding: 0 1em 1em; /* if remove this 1em, need to edit .full-width! */
+}
+
 #site-header {
-    @include background(linear-gradient(#ddd, #fff 10%, #fff));
-    height: 4em;
+    background: $primary;
+    height: 57px;
+
+    .mobile-header-nav {
+        height: 56px;
+        float: right;
+        li {
+            list-style-type: none;
+            float: left;
+            div {
+                height: 57px;
+                width: 57px;
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+            }
+            .home-icon { background-image: url('/cobrands/hart/home_mobile.png'); }
+            .search-icon { background-image: url('/cobrands/hart/search_mobile.png'); }
+            .menu-icon { background-image: url('/cobrands/hart/menu_mobile.png'); }
+        }
+    }
 }
 
 // Colour tab to match colour scheme
@@ -77,4 +98,8 @@ h1.main {
             }
         }
     }
+}
+
+.hart-footer-wrapper {
+    display: none;
 }
