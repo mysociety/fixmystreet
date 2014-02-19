@@ -6,7 +6,7 @@
 
     <div class="nav-wrapper clearfix">
         <div class="nav-wrapper-2 clearfix">
-            <div id="main-nav" role="navigation">
+            <div id="main-nav" class="clearfix" role="navigation">
                 <ul>
                     <li>
                         <a href="http://www.hart.gov.uk/home">Home</a>
@@ -37,9 +37,9 @@
                 [% END %]
             </div>
         </div>
-        <div class="main-menu-wrapper desk-only">
+        <div class="main-menu-wrapper">
             <div class="main-menu">
-            <ul>
+            <ul class="clearfix">
                 <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                     >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                 %]<li><[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
@@ -57,46 +57,46 @@
 
     <div class="hart-footer-wrapper">
         <div id="footer_outside_wrapper">
-            <div id="footer_inside_wrapper">
-                <div class="footer_wrapper">
-                    <div id="footer-right">
-                        <div class="region-footer-right">
-                            <div id="block-menu-menu-footer-right" role="navigation">
-                                <ul class="footer-nav">
-                                    <li> <a href="/sitemap">Site map</a> </li>
-                                    <li> <a href="/Accessibility">Accessibility</a> </li>
-                                </ul>
-                            </div>
-                            <div id="footer-images"><p>
-                                <a href="https://twitter.com/HartCouncil">
-                                    <img alt="" src="/cobrands/hart/twitter-logo.png" style="height:43px; width:43px" />
-                                </a> 
-                                <a href="http://www.facebook.com/HartDistrictCouncil">
-                                    <img alt="" src="/cobrands/hart/facebook-logo.png" style="height:43px; width:43px" />
-                                </a> 
-                                <a href="http://www.gov.uk">
-                                    <img alt="" src="/cobrands/hart/gov-logo.png" style="height:43px; margin-left:10px; width:172px" />
-                                </a>
-                            </p></div>
-                        </div>
-                    </div>
+            <div id="footer_inside_wrapper" class="clearfix">
+                <div id="footer-right" class="clearfix">
+                    <ul class="footer-nav">
+                        <li> <a href="/sitemap">Site map</a> </li>
+                        <li> <a href="/Accessibility">Accessibility</a> </li>
+                    </ul>
                 </div>
-                <footer id="hart-footer">
-                    <div id="copyright-block">
+                <footer id="hart-footer" class="clearfix">
+                    <div id="copyright-block" class="desk-only">
                         <strong>©</strong> &nbsp;
                             <a href="/disclaimer" title="More information on the Disclaimer">Hart District Council</a>
                     </div>
-                    <div>
-                        <ul class="footer-nav">
-                            <li> <a href="/disclaimer">Disclaimer</a></li>
-                            <li> <a href="/freedom-information">Freedom of Information</a></li>
-                            <li> <a href="/privacy">Privacy</a></li>
-                        </ul>
-                    </div>
+                    <ul class="footer-nav clearfix">
+                        <li> <a href="/disclaimer">Disclaimer</a></li>
+                        <li> <a href="/freedom-information">Freedom of Information</a></li>
+                        <li> <a href="/privacy">Privacy</a></li>
+                    </ul>
                 </footer>
-                <p id="hart-powered-by" class="desk-only">
-                    <a href="http://www.mysociety.org/for-councils/fixmystreet/">Powered by <img src="/cobrands/hart/fms-logo.png" alt="FixMyStreet" style="height:20px;"></a>
-                </p>
+                <div class="clearfix" id="footer-row-2">
+                    <div id="hart-powered-by">
+                        <a href="http://www.mysociety.org/for-councils/fixmystreet/">Powered by <img src="/cobrands/hart/fms-logo.png" alt="FixMyStreet" style="height:20px;"></a>
+                    </div>
+                    <div id="footer-images">
+                        <a href="https://twitter.com/HartCouncil">
+                            <img alt="" src="/cobrands/hart/twitter-logo.png" style="height:43px; width:43px" />
+                        </a> 
+                        <a href="http://www.facebook.com/HartDistrictCouncil">
+                            <img alt="" src="/cobrands/hart/facebook-logo.png" style="height:43px; margin-right: 10px; width:43px" />
+                        </a> 
+                        <a href="http://www.gov.uk">
+                            <img alt="" src="/cobrands/hart/gov-logo.png" style="height:43px; width:172px" />
+                        </a>
+                    </div>
+                </div>
+                <div id="footer-row-3">
+                    <div id="copyright-block-mobile" class="mob-only">
+                        <strong>©</strong> &nbsp;
+                            <a href="/disclaimer" title="More information on the Disclaimer">Hart District Council</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

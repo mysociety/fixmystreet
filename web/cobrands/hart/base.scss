@@ -34,11 +34,13 @@ h1.main {
 #site-header {
     background: $primary;
     height: 57px;
+    
 
     .mobile-header-nav {
         height: 56px;
         float: right;
         li {
+            a, a:hover {text-decoration:none;}
             list-style-type: none;
             float: left;
             div {
@@ -98,8 +100,4 @@ h1.main {
             }
         }
     }
-}
-
-.hart-footer-wrapper {
-    display: none;
 }

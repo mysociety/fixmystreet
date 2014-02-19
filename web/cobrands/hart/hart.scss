@@ -21,14 +21,14 @@ input[type=password],
 input[type=email],
 input[type=file],
 textarea, 
-select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif; padding: 8px;
+select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; color: #333; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica Neue', Helvetica, sans-serif; padding: 8px;
 @include border-radius(0); }
 
 .green-btn, button.green-btn, input.green-btn {
     background: #5b7189; 
     border: 1px solid #8e9eb0; 
     color: #fff; 
-    font-family: 'Gill Sans MT', 'Trebuchet MS', Calibri, sans-serif; 
+    font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; 
     font-weight: normal; 
     margin: 0; min-height: 23px; 
     /* outline: 1px solid #405062; */
@@ -43,8 +43,8 @@ select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1d
 }
 
 
-h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Trebuchet MS', Calibri, sans-serif; }
-body { color: #333; font-family: "Gill Sans MT", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
+h1, h2, h3, h4, h5, h6, legend { font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif; }
+body { color: #333; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica Neue', Helvetica, sans-serif; line-height: 1.4; background-color: $base_bg;}
 
 .nav-wrapper-2, 
 body.mappage .nav-wrapper .nav-wrapper-2,
@@ -52,7 +52,10 @@ body.frontpage .nav-wrapper-2 {
     border: 0;
     min-height: auto;
     background-color: $hart_primary;
-    height: 173px;
+
+    @media only screen and (min-width:48em) {
+        height: 173px;
+    }
 }
 
 @media only screen and (min-width:48em) {
@@ -62,9 +65,9 @@ body.frontpage .nav-wrapper-2 {
 
 	#main-nav {
 	  margin-top: 106px;
-      margin-left: 148px;
 	  
 	  ul {
+        margin-left: 132px;
 	    float: none;
 	  }
 	}
@@ -131,23 +134,25 @@ body.frontpage #site-logo,
 }
 
 .sign-in {
-    float:right;
-    margin: 1em 1em 0.5em 0em;
+    display: none;
 }
 @media only screen and (min-width:48em) {
-        .sign-in {
-          float:right;
-          margin-top:-87px;
-          height: 2em;
-        }
+    .sign-in {
+      display: block;
+      float:right;
+      margin-top:-87px;
+      height: 2em;
+    }
 }
 .sign-in a:link, .sign-in a:visited {color:#333; font-weight:bold; text-decoration:none;}
 .sign-in a:hover, .sign-in a:active {text-decoration:underline;}
 
 .main-menu-wrapper {
-    position: absolute;
     /* z-index:2; */
     width:100%;
+    @media only screen and (min-width:48em) {
+        position: absolute;
+    }
 }
 
 body.mappage .main-menu-wrapper {
@@ -155,28 +160,67 @@ body.mappage .main-menu-wrapper {
 }
 
 .main-menu {
-  margin-top: 173px;
   background-color: #FFF;
-  height: 2em;
-}
 
-.main-menu li {
-  float: left;
-  margin-left: 1em;
-  text-align: center;
-  font-family: 'Gill Sans MT', 'Trebuchet MS', Calibri, sans-serif;
-}
+  li {
+      font-family: 'Gill Sans MT', 'Gill Sans', 'Trebuchet MS', Calibri, sans-serif;
+      margin: 0;
 
-.main-menu li a:link, .main-menu li a:visited {
-  color: $hart_primary;
-  display: block;
-  text-decoration: none;
-}
+      span { display: none }
 
-.main-menu li a:hover, .main-menu li a:active {
-}
+      a {
+          padding: 0.5em 1em;
+          background: #f6f6f6;
+          color: #333;
+          font-size: 1.25em;
+          border-bottom: 0.25em solid #333;
+          display: block;
 
-.main-menu li.home a:hover, .main-menu li.home a:active {
+          &:link, &:visited {
+              color: $hart_primary;
+              text-decoration: none;
+          }
+          &:hover {
+              background-color: $hart_primary;
+              color: #FFF;
+          }
+      }
+  }
+  @media only screen and (min-width:48em) {
+    margin-top: 173px;
+    height: 2em;
+    max-width: 60em;
+    margin: 173px auto 0 auto;
+
+    li {
+      float: left;
+      margin-left: 1em;
+      text-align: center;
+
+      span { 
+        display: inline;
+      }
+
+      a {
+          padding: 0;
+          background: #fff;
+          color: #333;
+          font-size: 1em;
+          border-bottom: 0;
+          display: inline;
+
+          &:link, &:visited {
+              color: $hart_primary;
+              text-decoration: none;
+          }
+          &:hover {
+              background-color: #fff;
+              color: $hart_primary;
+              text-decoration: underline;
+          }
+      }
+    }
+  }
 }
 
 #front-main {
@@ -199,40 +243,51 @@ body.frontpage .table-cell .content {
 }
 
 .hart-footer-wrapper {
+
+    background-color: #4F5757;
+    clear: both;
+    height: auto;
+    overflow: hidden;
+    padding: 15px 15px 50px 15px;
+    color:#fff; 
+
+    @media only screen and (min-width:48em) {
+        margin-left:-15px; 
+    }
+
     #footer_outside_wrapper {
-        display: block;
+        max-width: 60em;
+        margin: 0 auto;
         #footer_inside_wrapper {
             display: block;
-            .footer_wrapper {
-                display: block;
-            }
+
             #footer-right {
-                float: right;
-                max-width: 329px;
+                @media only screen and (min-width:48em) {
+                    float: right;
+                    width: 30%;
+                }
+
                 .region-footer-right {
                     float: left;
                     max-width: 319px;
                 }
             }
             #footer-images {
-                display: block;
-                max-width: 300px;
+                width: 50%;
+                text-align: right;
+                padding-bottom: 10px;
+                margin-bottom: 0px;
+                float: right!important;
+                text-decoration: none!important;
+                img {
+                    margin-bottom: 5px;
+                }
             }
         }
     }
     .footer_border {
         display: block;
     }
-    background-color: #4F5757;
-    clear: both;
-    height: auto;
-    overflow: hidden;
-    bottom: 0;
-    padding-bottom: 60px;
-    padding:30px 15px 50px; 
-    margin-left:-15px; 
-    color:#fff; 
-    font-size:92%;
     p {
       margin: 0;
     }
@@ -243,30 +298,63 @@ body.frontpage .table-cell .content {
         text-decoration: underline;
     }
 
-    #hart-footer {
-        width: 709px;
+    footer#hart-footer {
+        margin-top: 0;
+
+        @media only screen and (min-width:48em) {
+            width: 70%;
+            float: left;
+        }
     }
 
     #copyright-block {
         float: left;
-        margin-left: 2em;
-        display: block;
-        line-height: 1.5em;
+        margin-left: 1em;
     }
+    #copyright-block-mobile {
+        margin-left: 10px;
+    }
+
+    #footer-row-2 {
+        margin-top: 2em;
+    }
+
     .footer-nav,  {
-        float: right; 
+        @media only screen and (min-width:48em) {
+            float: right; 
+        }
         height:35px; 
-        margin-top: -15px; 
+
+        margin-left: 0;
+        margin-bottom: 0;
 
         li { 
             list-style-type: none;
-            border-right:1px solid #fff; 
             float: left; 
-            line-height: 1; 
-            padding: 0 20px; 
-        }
-        li:last-child { 
-            border: none; 
+            width: 50%;
+            margin-bottom: 0;
+
+            a {
+                display: block;
+                border-bottom:1px solid #797f7f; 
+                padding: 10px 0;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+            @media only screen and (min-width:48em) {
+                border-right:1px solid #fff; 
+                width: auto;
+                a {
+                    border-bottom: none;
+                    padding: 0 10px;
+                    margin-left: 0;
+                    margin-right: 0;
+                }
+                &:last-child { 
+                    border: none; 
+                    padding-right: 0;
+                }
+            }
         }
     }
 }
@@ -331,8 +419,15 @@ body.mappage .hart-footer-wrapper {
 }
 #hart-powered-by {
     float: left;
-    margin-left: 2em;
-    margin-right: 4em;
+    width: 50%;
+    a {
+        margin-left: 10px;
+    }
+    @media only screen and (min-width:48em) {
+        a {
+            margin-left: 1em;
+        }
+    }
     img {
         float: none;
         margin-top: 0;

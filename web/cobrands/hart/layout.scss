@@ -5,13 +5,12 @@
   .content {
     margin-top: 8em;
   }
-  .hart-footer-wrapper {
-     display: block;
-  }
-
-  }
   #front-main-container {
       background-color: $hart_primary;
+  }
+  .hart-footer-wrapper {
+    display: block;
+  }
 }
 
 #report-a-problem-sidebar {
@@ -32,14 +31,4 @@ body.twothirdswidthpage .content {
             top: 14em;
         }
     }
-}
-
-#footer-images {
-    padding-bottom: 10px;
-    margin-bottom: 0px;
-    float: right!important;
-    clear: both;
-    text-decoration: none!important;
-    width: 300px;
-    padding-left: 30px;
 }
