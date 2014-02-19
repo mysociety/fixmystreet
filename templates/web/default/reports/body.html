@@ -39,6 +39,10 @@
     [% END %]
 </h1>
 
+[% IF c.cobrand.moniker == 'hart' %]
+    [% INCLUDE '_hart_hants_note.html' %]
+[% END %]
+
 [% IF NOT body.areas.size AND c.cobrand.country == 'GB' %]
     <p id="unknown" class="alert">This council no longer exists.
     [% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]

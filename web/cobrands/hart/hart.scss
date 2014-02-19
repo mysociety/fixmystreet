@@ -442,3 +442,8 @@ body.mappage .hart-footer-wrapper {
     top: 12em;
 }
 
+#hart_hants_note {
+    background-color: lighten($hart_primary, 30%);
+    padding: 0.5em;
+    font-size: 0.8em;
+}
