@@ -139,17 +139,19 @@ sub update_comments {
                 $comment->insert();
 
                 if ( $self->suppress_alerts ) {
-                    my $alert = FixMyStreet::App->model('DB::Alert')->find( {
+                    my @alerts = FixMyStreet::App->model('DB::Alert')->search( {
                         alert_type => 'new_updates',
                         parameter  => $p->id,
                         confirmed  => 1,
                         user_id    => $p->user->id,
                     } );
 
-                    my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->find_or_create( {
-                        alert_id  => $alert->id,
-                        parameter => $comment->id,
-                    } );
+                    for my $alert (@alerts) {
+                        my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->find_or_create( {
+                            alert_id  => $alert->id,
+                            parameter => $comment->id,
+                        } );
+                    }
                 }
             }
         }
