@@ -55,7 +55,7 @@ $(function(){
 
     var cobrand = $('meta[name="cobrand"]').attr('content');
     var is_small_map = false;
-    if (cobrand === 'bromley') {
+    if (cobrand === 'bromley' || cobrand === 'hart') {
         is_small_map = true;
     }
 
@@ -80,7 +80,7 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Immediately go full screen map if on around page
-                if (cobrand != 'bromley') {
+                if (cobrand !== 'bromley' && cobrand !== 'hart') {
                     $('#site-header').hide();
                 }
                 $('#map_box').prependTo('.wrapper').css({
@@ -116,7 +116,7 @@ $(function(){
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
                 var banner_text = translation_strings.report_problem_heading;
-                if (cobrand == 'bromley') {
+                if (cobrand === 'bromley') {
                     banner_text += '<span>Yellow pins show existing reports</span>';
                 }
                 if (! is_small_map && cobrand !== 'oxfordshire') {
@@ -441,7 +441,7 @@ $.fn.drawer = function(id, ajax) {
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
             var offset = -18 * 16;
-            if (cobrand == 'bromley') {
+            if (cobrand === 'bromley' || cobrand === 'hart') {
                 offset = -110;
             }
             heightFix(window, '.content', offset, 1);
