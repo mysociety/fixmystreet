@@ -627,10 +627,22 @@ foreach my $test ( {
 
 foreach my $test ( {
         desc => 'normally alerts are not suppressed',
+        num_alerts => 1,
         suppress_alerts => 0,
     },
     {
         desc => 'alerts suppressed if suppress_alerts set',
+        num_alerts => 1,
+        suppress_alerts => 1,
+    },
+    {
+        desc => 'alert suppression ok even if no alerts',
+        num_alerts => 0,
+        suppress_alerts => 1,
+    },
+    {
+        desc => 'alert suppression ok even if 2x alerts',
+        num_alerts => 2,
         suppress_alerts => 1,
     }
 ) {
@@ -652,12 +664,14 @@ foreach my $test ( {
         $problem->lastupdate( $dt->subtract( hours => 3 ) );
         $problem->update;
 
-        my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create( {
-            alert_type => 'new_updates',
-            parameter  => $problem->id,
-            confirmed  => 1,
-            user_id    => $problem->user->id,
-        } );
+        my @alerts = map {
+            my $alert = FixMyStreet::App->model('DB::Alert')->create( {
+                alert_type => 'new_updates',
+                parameter  => $problem->id,
+                confirmed  => 1,
+                user_id    => $problem->user->id,
+            } )
+        } (1..$test->{num_alerts});
 
         $requests_xml =~ s/UPDATED_DATETIME/$dt/;
 
@@ -674,19 +688,21 @@ foreach my $test ( {
 
         my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->search(
             {
-                alert_id => $alert->id,
+                alert_id => [ map $_->id, @alerts ],
                 parameter => $problem->comments->first->id,
             }
         );
 
         if ( $test->{suppress_alerts} ) {
-            ok $alerts_sent->count(), 'alerts suppressed';
+            is $alerts_sent->count(), $test->{num_alerts}, 'alerts suppressed';
         } else {
             is $alerts_sent->count(), 0, 'alerts not suppressed';
         }
 
         $alerts_sent->delete;
-        $alert->delete;
+        for my $alert (@alerts) {
+            $alert->delete;
+        }
     }
 }
 
