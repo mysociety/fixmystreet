@@ -7,6 +7,13 @@ mySociety::Locale::gettext_domain( 'FixMyStreet' );
 
 my $mech = FixMyStreet::TestMech->new();
 
+# cleanup
+FixMyStreet::App->model('DB::AlertSent')->delete();
+FixMyStreet::App->model('DB::Alert')->delete();
+
+my $old_suppress_alerts = FixMyStreet::App->model('DB::Body')->find({ id => 2504 })->suppress_alerts;
+FixMyStreet::App->model('DB::Body')->find({ id => 2504 })->update({ suppress_alerts => 1});
+
 # this is the easiest way to make sure we're not going
 # to get any emails sent by data kicking about in the database
 FixMyStreet::App->model('DB::AlertType')->email_alerts();
@@ -484,8 +491,10 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
     like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
     like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
 };
-
 $report->comments->delete();
 $report->delete();
+FixMyStreet::App->model('DB::Body')->find({ id => 2504 })->update(
+    { suppress_alerts => $old_suppress_alerts});
+
 done_testing();
 
