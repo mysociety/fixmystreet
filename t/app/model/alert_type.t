@@ -97,6 +97,7 @@ my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
         alert_type => 'new_updates',
         whensubscribed => $dt->ymd . ' ' . $dt->hms,
         confirmed => 1,
+        cobrand => 'default',
     }
 );
 
@@ -107,6 +108,7 @@ my $alert3 = FixMyStreet::App->model('DB::Alert')->find_or_create(
         alert_type => 'new_updates',
         whensubscribed => $dt->ymd . ' ' . $dt->hms,
         confirmed => 1,
+        cobrand => 'default',
     }
 );
 
@@ -485,7 +487,9 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
     like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
 };
 
-$report->comments->delete();
-$report->delete();
-done_testing();
-
+END {
+    $mech->delete_user($user) if $user;
+    $mech->delete_user($user2) if $user2;
+    $mech->delete_user($user3) if $user3;
+    done_testing();
+}
