@@ -340,7 +340,10 @@ sub send_reports {
             # XXX Only copes with at most one missing body
             my ($bodies, $missing) = $row->bodies_str =~ /^([\d,]+)(?:\|(\d+))?/;
             my @bodies = split(/,/, $bodies);
-            $bodies = FixMyStreet::App->model("DB::Body")->search({ id => \@bodies });
+            $bodies = FixMyStreet::App->model("DB::Body")->search(
+                { id => \@bodies },
+                { order_by => 'name' },
+            );
             $missing = FixMyStreet::App->model("DB::Body")->find($missing) if $missing;
             my @dear;
 

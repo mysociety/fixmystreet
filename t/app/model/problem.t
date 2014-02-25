@@ -465,8 +465,8 @@ foreach my $test ( {
         desc          => 'email to two tier council',
         unset_whendef => 1,
         email_count   => 1,
-        to            => qr'Gloucestershire County Council.*Cheltenham Borough Council',
-        dear          => qr'Dear Gloucestershire County Council and Cheltenham Borough',
+        to            => qr'Cheltenham Borough Council.*Gloucestershire County Council',
+        dear          => qr'Dear Cheltenham Borough Council and Gloucestershire County',
         body          => '2226,2326',
         multiple      => 1,
     }, {
