@@ -487,6 +487,31 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
     like $body, qr#$expected2#, 'cobrand area report point to cobrand url';
 };
 
+# Test that email alerts are sent in the right language.
+subtest "correct i18n-ed summary for state of closed" => sub {
+    $mech->clear_emails_ok;
+
+    $report->update( { state => 'closed' } );
+    $alert->update( { lang => 'nb', cobrand => 'fiksgatami' } );
+
+    FixMyStreet::App->model('DB::AlertSent')->search( {
+        alert_id => $alert->id,
+        parameter => $comment->id,
+    } )->delete;
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fiksgatami' ],
+    }, sub {
+        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    };
+
+    $mech->email_count_is( 1 );
+    my $email = $mech->get_email;
+    my $body = $email->body;
+    my $msg = 'Denne rapporten er for tiden markert som lukket';
+    like $body, qr/$msg/, 'email says problem is closed, in Norwegian';
+};
+
 END {
     $mech->delete_user($user) if $user;
     $mech->delete_user($user2) if $user2;

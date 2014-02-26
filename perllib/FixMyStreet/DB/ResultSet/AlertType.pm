@@ -58,6 +58,7 @@ sub email_alerts ($) {
         while (my $row = $query->fetchrow_hashref) {
 
             my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->{alert_cobrand})->new();
+            $cobrand->set_lang_and_domain( $row->{alert_lang}, 1, FixMyStreet->path_to('locale')->stringify );
 
             # Cobranded and non-cobranded messages can share a database. In this case, the conf file 
             # should specify a vhost to send the reports for each cobrand, so that they don't get sent 
@@ -204,7 +205,7 @@ sub _send_aggregated_alert_email(%) {
 
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($data{cobrand})->new();
 
-    $cobrand->set_lang_and_domain( $data{lang}, 1 );
+    $cobrand->set_lang_and_domain( $data{lang}, 1, FixMyStreet->path_to('locale')->stringify );
 
     if (!$data{alert_email}) {
         my $user = FixMyStreet::App->model('DB::User')->find( {

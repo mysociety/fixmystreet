@@ -3,15 +3,12 @@ use warnings;
 
 use Test::More;
 
-use FixMyStreet;
-use mySociety::Locale;
-use Encode;
-use Data::Dumper;
 use HTTP::Headers;
 use Sort::Key qw(keysort);
 use POSIX 'strcoll';
-local $Data::Dumper::Sortkeys = 1;
-use utf8;
+
+use FixMyStreet;
+use mySociety::Locale;
 
 # check that the mo files have been generated
 die "You need to run 'commonlib/bin/gettext-makemo --quiet FixMyStreet' "
@@ -58,10 +55,6 @@ my @random_sorted  = qw( Å Z Ø A );
 my @EN_sorted      = qw( A Å Ø Z );
 my @NO_sorted      = qw( A Z Ø Å );
 my @default_sorted = qw( A Z Å Ø );
-
-sub utf8_diag {
-    diag encode_utf8( Dumper(@_) );
-}
 
 {
 
