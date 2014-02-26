@@ -9,7 +9,6 @@ perlmagick
 libmath-bigint-gmp-perl
 gettext
 ruby-compass
-postgresql-9.1
 postgresql-server-dev-9.1
 gnuplot
 ttf-bitstream-vera
