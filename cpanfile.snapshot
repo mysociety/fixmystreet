@@ -754,6 +754,26 @@ DISTRIBUTIONS
       Class::Singleton 1.4
     requirements:
       ExtUtils::MakeMaker 0
+  Class-Std-0.011
+    pathname: D/DC/DCONWAY/Class-Std-0.011.tar.gz
+    provides:
+      Class::Std 0.011
+      Class::Std::SCR 0.011
+    requirements:
+      Data::Dumper 0
+      Scalar::Util 0
+      Test::More 0
+  Class-Std-Fast-v0.0.8
+    pathname: A/AC/ACID/Class-Std-Fast-v0.0.8.tar.gz
+    provides:
+      Class::Std::Fast 0.000008
+      Class::Std::Fast::Storable 0.000008
+    requirements:
+      Class::Std v0.0.8
+      Data::Dumper 0
+      Scalar::Util 0
+      Test::More 0
+      version 0
   Class-Unload-0.07
     pathname: I/IL/ILMARI/Class-Unload-0.07.tar.gz
     provides:
@@ -4792,6 +4812,152 @@ DISTRIBUTIONS
       XML::Parser 2.23
       constant 0
       perl 5.006
+  SOAP-WSDL-2.00.10
+    pathname: M/MK/MKUTTER/SOAP-WSDL-2.00.10.tar.gz
+    provides:
+      SOAP::WSDL 2.000010
+      SOAP::WSDL::Base 2.000010
+      SOAP::WSDL::Binding 2.000010
+      SOAP::WSDL::Client 2.000010
+      SOAP::WSDL::Client::Base 2.000010
+      SOAP::WSDL::Definitions 2.000010
+      SOAP::WSDL::Deserializer::Hash 2.000010
+      SOAP::WSDL::Deserializer::SOM 2.000010
+      SOAP::WSDL::Deserializer::XSD 2.000010
+      SOAP::WSDL::Expat::Base 2.000010
+      SOAP::WSDL::Expat::Message2Hash 2.000010
+      SOAP::WSDL::Expat::MessageParser 2.000010
+      SOAP::WSDL::Expat::MessageStreamParser 2.000010
+      SOAP::WSDL::Expat::WSDLParser 2.000010
+      SOAP::WSDL::Factory::Deserializer 2.000010
+      SOAP::WSDL::Factory::Generator 2.000010
+      SOAP::WSDL::Factory::Serializer 2.000010
+      SOAP::WSDL::Factory::Transport 2.000010
+      SOAP::WSDL::Generator::Iterator::WSDL11 2.000010
+      SOAP::WSDL::Generator::PrefixResolver 2.000010
+      SOAP::WSDL::Generator::Template 2.000010
+      SOAP::WSDL::Generator::Template::Plugin::XSD 2.000010
+      SOAP::WSDL::Generator::Template::XSD 2.000010
+      SOAP::WSDL::Generator::Visitor 2.000010
+      SOAP::WSDL::Generator::Visitor::Typemap 2.000010
+      SOAP::WSDL::Message 2.000010
+      SOAP::WSDL::OpMessage 2.000010
+      SOAP::WSDL::Operation 2.000010
+      SOAP::WSDL::Part 2.000010
+      SOAP::WSDL::Port 2.000010
+      SOAP::WSDL::PortType 2.000010
+      SOAP::WSDL::SOAP::Address 2.000010
+      SOAP::WSDL::SOAP::Body 2.000010
+      SOAP::WSDL::SOAP::Header 2.000010
+      SOAP::WSDL::SOAP::HeaderFault 2.000010
+      SOAP::WSDL::SOAP::Operation 2.000010
+      SOAP::WSDL::SOAP::Typelib::Fault 2.000010
+      SOAP::WSDL::SOAP::Typelib::Fault11 2.000010
+      SOAP::WSDL::Serializer::XSD 2.000010
+      SOAP::WSDL::Server 2.000010
+      SOAP::WSDL::Server::CGI 2.000010
+      SOAP::WSDL::Server::Mod_Perl2 2.000010
+      SOAP::WSDL::Server::Simple 2.000010
+      SOAP::WSDL::Service 2.000010
+      SOAP::WSDL::Transport::HTTP 2.000010
+      SOAP::WSDL::Transport::Loopback 2.000010
+      SOAP::WSDL::Transport::Test 2.000010
+      SOAP::WSDL::TypeLookup 2.000010
+      SOAP::WSDL::Types 2.000010
+      SOAP::WSDL::XSD::Annotation 2.000010
+      SOAP::WSDL::XSD::Attribute 2.000010
+      SOAP::WSDL::XSD::AttributeGroup 2.000010
+      SOAP::WSDL::XSD::Builtin 2.000010
+      SOAP::WSDL::XSD::ComplexType 2.000010
+      SOAP::WSDL::XSD::Element 2.000010
+      SOAP::WSDL::XSD::Enumeration 2.000010
+      SOAP::WSDL::XSD::FractionDigits 2.000010
+      SOAP::WSDL::XSD::Group 2.000010
+      SOAP::WSDL::XSD::Length 2.000010
+      SOAP::WSDL::XSD::MaxExclusive 2.000010
+      SOAP::WSDL::XSD::MaxInclusive 2.000010
+      SOAP::WSDL::XSD::MaxLength 2.000010
+      SOAP::WSDL::XSD::MinExclusive 2.000010
+      SOAP::WSDL::XSD::MinInclusive 2.000010
+      SOAP::WSDL::XSD::MinLength 2.000010
+      SOAP::WSDL::XSD::Pattern 2.000010
+      SOAP::WSDL::XSD::Schema 2.000010
+      SOAP::WSDL::XSD::Schema::Builtin 2.000010
+      SOAP::WSDL::XSD::SimpleType 2.000010
+      SOAP::WSDL::XSD::TotalDigits 2.000010
+      SOAP::WSDL::XSD::Typelib::Attribute 2.000010
+      SOAP::WSDL::XSD::Typelib::AttributeSet 2.000010
+      SOAP::WSDL::XSD::Typelib::Builtin 2.000010
+      SOAP::WSDL::XSD::Typelib::Builtin::ENTITY undef
+      SOAP::WSDL::XSD::Typelib::Builtin::ID undef
+      SOAP::WSDL::XSD::Typelib::Builtin::IDREF undef
+      SOAP::WSDL::XSD::Typelib::Builtin::IDREFS undef
+      SOAP::WSDL::XSD::Typelib::Builtin::NCName undef
+      SOAP::WSDL::XSD::Typelib::Builtin::NMTOKEN undef
+      SOAP::WSDL::XSD::Typelib::Builtin::NMTOKENS undef
+      SOAP::WSDL::XSD::Typelib::Builtin::NOTATION undef
+      SOAP::WSDL::XSD::Typelib::Builtin::Name undef
+      SOAP::WSDL::XSD::Typelib::Builtin::QName undef
+      SOAP::WSDL::XSD::Typelib::Builtin::anySimpleType undef
+      SOAP::WSDL::XSD::Typelib::Builtin::anyType 2.000010
+      SOAP::WSDL::XSD::Typelib::Builtin::anyURI undef
+      SOAP::WSDL::XSD::Typelib::Builtin::base64Binary undef
+      SOAP::WSDL::XSD::Typelib::Builtin::boolean 2.000010
+      SOAP::WSDL::XSD::Typelib::Builtin::byte undef
+      SOAP::WSDL::XSD::Typelib::Builtin::date undef
+      SOAP::WSDL::XSD::Typelib::Builtin::dateTime undef
+      SOAP::WSDL::XSD::Typelib::Builtin::decimal undef
+      SOAP::WSDL::XSD::Typelib::Builtin::double undef
+      SOAP::WSDL::XSD::Typelib::Builtin::duration undef
+      SOAP::WSDL::XSD::Typelib::Builtin::float undef
+      SOAP::WSDL::XSD::Typelib::Builtin::gDay undef
+      SOAP::WSDL::XSD::Typelib::Builtin::gMonth undef
+      SOAP::WSDL::XSD::Typelib::Builtin::gMonthDay undef
+      SOAP::WSDL::XSD::Typelib::Builtin::gYear undef
+      SOAP::WSDL::XSD::Typelib::Builtin::gYearMonth undef
+      SOAP::WSDL::XSD::Typelib::Builtin::hexBinary undef
+      SOAP::WSDL::XSD::Typelib::Builtin::int undef
+      SOAP::WSDL::XSD::Typelib::Builtin::integer undef
+      SOAP::WSDL::XSD::Typelib::Builtin::language undef
+      SOAP::WSDL::XSD::Typelib::Builtin::list undef
+      SOAP::WSDL::XSD::Typelib::Builtin::long undef
+      SOAP::WSDL::XSD::Typelib::Builtin::negativeInteger undef
+      SOAP::WSDL::XSD::Typelib::Builtin::nonNegativeInteger undef
+      SOAP::WSDL::XSD::Typelib::Builtin::nonPositiveInteger undef
+      SOAP::WSDL::XSD::Typelib::Builtin::normalizedString undef
+      SOAP::WSDL::XSD::Typelib::Builtin::positiveInteger undef
+      SOAP::WSDL::XSD::Typelib::Builtin::short undef
+      SOAP::WSDL::XSD::Typelib::Builtin::string undef
+      SOAP::WSDL::XSD::Typelib::Builtin::time 2.000010
+      SOAP::WSDL::XSD::Typelib::Builtin::token undef
+      SOAP::WSDL::XSD::Typelib::Builtin::unsignedByte undef
+      SOAP::WSDL::XSD::Typelib::Builtin::unsignedInt undef
+      SOAP::WSDL::XSD::Typelib::Builtin::unsignedLong undef
+      SOAP::WSDL::XSD::Typelib::Builtin::unsignedShort undef
+      SOAP::WSDL::XSD::Typelib::ComplexType 2.000010
+      SOAP::WSDL::XSD::Typelib::Element 2.000010
+      SOAP::WSDL::XSD::Typelib::SimpleType 2.000010
+      SOAP::WSDL::XSD::WhiteSpace 2.000010
+    requirements:
+      Class::Std::Fast v0.0.5
+      Cwd 0
+      Data::Dumper 0
+      Date::Format 0
+      Date::Parse 0
+      File::Basename 0
+      File::Path 0
+      File::Spec 0
+      Getopt::Long 0
+      LWP::UserAgent 0
+      List::Util 0
+      Module::Build 0
+      Storable 0
+      Template 2.18
+      Term::ReadKey 0
+      Test::More 0
+      URI 0
+      XML::Parser::Expat 0
+      perl v5.8.0
   SQL-Abstract-1.73
     pathname: F/FR/FREW/SQL-Abstract-1.73.tar.gz
     provides:
@@ -5091,6 +5257,13 @@ DISTRIBUTIONS
       File::Spec 0.8
       File::Temp 0.12
       Scalar::Util 0
+  TermReadKey-2.31
+    pathname: J/JS/JSTOWE/TermReadKey-2.31.tar.gz
+    provides:
+      Configure undef
+      Term::ReadKey 2.31
+    requirements:
+      ExtUtils::MakeMaker 0
   Test-Base-0.60
     pathname: I/IN/INGY/Test-Base-0.60.tar.gz
     provides:
