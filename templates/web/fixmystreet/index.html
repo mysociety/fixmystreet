@@ -42,7 +42,13 @@ kinds of problems like missed bins use our
 
     [% IF recent_photos.size %]
     <div id="front-recently">
-        <h2>[% loc('Recently reported problems') %]</h2>
+        <h2>
+            [% IF c.cobrand.moniker == 'hart' %]
+                Recently reported
+            [% ELSE %]
+                [% loc('Recently reported problems') %]
+            [% END %]
+        </h2>
 
         <section class="full-width">
             <ul class="issue-list-a">

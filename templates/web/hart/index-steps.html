@@ -1,9 +1,9 @@
-<h2>[% loc('How to report a problem') %]</h2>
+<h2> How to report </h2>
 
 <ol class="big-numbers">
     <li>[% question %]</li>
-    <li>[% loc('Locate the problem on a map of the area') %]</li>
-    <li>[% loc('Enter details of the problem') %]</li>
+    <li> Locate it on a map of the area </li>
+    <li> Enter its details </li>
     <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
 </ol>
 
@@ -11,10 +11,8 @@
     This site can also be used to report problems to Hampshire County Council via FixMyStreet.
 </div>
 
-[% IF c.cobrand.moniker != 'emptyhomes' %]
 <section class="full-width">
 [% INCLUDE "front/stats.html" %]
 [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
 </section>
-[% END %]
 
