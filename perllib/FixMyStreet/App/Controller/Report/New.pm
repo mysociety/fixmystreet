@@ -669,6 +669,7 @@ sub setup_categories_and_bodies : Private {
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
     $c->stash->{all_body_names} = [ map { $_->name } values %bodies ];
+    $c->stash->{all_body_urls} = [ map { $_->external_url } values %bodies ];
     $c->stash->{bodies_to_list} = [ keys %bodies_to_list ];
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;

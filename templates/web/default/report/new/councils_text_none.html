@@ -8,6 +8,13 @@
 [%
     loc("If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council.");
 %]
+[% IF c.cobrand.moniker == 'fixamingata' AND all_body_names.size == 1 %]
+[%
+    tprintf(
+        "Du kan istället kontakta %s via <a href='%s'>deras webbsida</a>.",
+        all_body_names.first, all_body_urls.first);
+%]
+[% ELSE %]
 [%
     tprintf(
         loc("You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."),
@@ -16,4 +23,6 @@
         c.cobrand.contact_email
     );
 
-%]</p>
+%]
+[% END %]
+</p>

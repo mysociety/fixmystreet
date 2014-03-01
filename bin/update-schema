@@ -84,6 +84,7 @@ print "Nothing to do\n" if $nothing;
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0031' if column_exists('body', 'external_url');
     return '0028' if table_exists('body');
     return '0027' if column_exists('problem', 'subcategory');
     return '0026' if column_exists('open311conf', 'send_extended_statuses');
