@@ -15,6 +15,10 @@ sub map_type {
     return 'OpenLayers.Layer.OSM.MapQuestOpen';
 }
 
+sub map_template {
+    return 'mapquest-attribution';
+}
+
 sub map_tiles {
     my ( $self, %params ) = @_;
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
