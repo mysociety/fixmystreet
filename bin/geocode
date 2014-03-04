@@ -1,0 +1,79 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+geocode - commandline tool to test geocoders
+
+=head1 SYNOPSIS
+
+    $  eval `perl setenv.pl`, or call with bin/cron-wrapper
+    
+    $ bin/geocode --geocoder=Bing --cobrand=bromley "Glebe Rd"
+
+    # ... if your conf/general.yml supplies GEOCODER:
+    $ bin/geocode --cobrand=bromley "Glebe Rd"
+
+    # ... if you want to use config that you have in conf/general.bing.yml
+    $ bin/geocode --override-config=general.bing --cobrand=bromley "Glebe Rd"
+
+    ## ... output from geocoder
+
+=cut
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use Data::Dumper;
+use Pod::Usage;
+use feature 'say';
+
+use Getopt::Long;
+
+my %options = ( help => sub { pod2usage(0) } );
+
+GetOptions \%options,
+    'geocoder=s',
+    'help|h',
+    'cobrand=s',
+    'override-config=s';
+
+my $s = join ' ', @ARGV
+    or pod2usage(0);
+
+pod2usage(0) unless $options{cobrand};
+
+local $ENV{FMS_OVERRIDE_CONFIG} = $options{'override-config'} if $options{'override-config'};
+
+eval 'use FixMyStreet';
+eval 'use FixMyStreet::App';
+eval 'use FixMyStreet::Cobrand';
+eval 'use FixMyStreet::Geocode';
+
+mySociety::Locale::gettext_domain( 'FixMyStreet' );
+
+my $geocoder_type = $options{geocoder} || do {
+    my $GEOCODER = FixMyStreet->config('GEOCODER');
+    ref $GEOCODER ? $GEOCODER->{type} : $GEOCODER;
+} or pod2usage(0);
+
+my $geocoder_name = "FixMyStreet::Geocode::${geocoder_type}";
+my $code_ref = $geocoder_name->can('string')
+    or die "$geocoder_name is not a valid geocoder?";
+
+my @allowed_cobrands = FixMyStreet::Cobrand->get_allowed_cobrands();
+
+my $cobrand_name = FixMyStreet::Cobrand->get_class_for_moniker($options{cobrand});
+my $cobrand = $cobrand_name->new();
+
+say "USING COBRAND $cobrand_name";
+if ($cobrand->moniker ne lc($options{cobrand})) {
+    say "!!! asked for $options{cobrand}";
+    say "!!! Check ALLOWED_COBRANDS setting in conf/general.yml (or supplied --override-config file)";
+    say Dumper(\@allowed_cobrands);
+}
+
+my $c = FixMyStreet::App->new();
+$c->stash->{cobrand} = $cobrand;
+
+say Dumper( $code_ref->( $s, $c ) );
