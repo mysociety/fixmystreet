@@ -31,13 +31,13 @@ a.mctv img {border:none;}
 .text {width:109px; color:#999;}
 .text2 {width:137px; color:#999;}
 
-ul#topNav {width:870px; height:17px; background:#1b4384; clear:both; margin:0 auto; padding:3px 0 1px 0;}
+ul#topNav {width:870px; height:40px; background:#1b4384; clear:both; margin:0 auto; padding:3px 0 1px 0;}
 ul#topNav li {float:left; list-style-type:none; background:url(../line.gif) no-repeat 0 2px;}
 ul#topNav li:first-child {background:none;}
 ul#topNav li a {color:#ffffff; font-size:1.2em; padding:0 7px 0 8px; font-size:1.2em; font-weight:400;}
 
 p.atoz {float:left; margin:8px 0 0 43px; padding:5px 5px 3px 0; font-size:1.2em; border-bottom:1px solid #E0DBEF;}
-ul#atoz {width:485px; float:left; margin:13px 0 0 0; border-bottom:1px solid #E0DBEF; padding:0 0 1px 0;}
+ul#atoz {width:420px; float:left; margin:13px 0 0 0; border-bottom:1px solid #E0DBEF; padding:0 0 1px 0;}
 ul#atoz li {list-style-type:none; display:inline;}
 ul#atoz li a {font-size:13px; font-weight:400;}
 
