@@ -99,13 +99,19 @@ sub recent_photos {
     return $self->problems->recent_photos( $num, $lat, $lon, $dist );
 }
 
+# Returns true if the cobrand owns the problem.
+sub owns_problem {
+    my ($self, $report) = @_;
+    my $bodies = $report->bodies;
+    my %areas = map { %{$_->areas} } values %$bodies;
+    return $areas{$self->council_id} ? 1 : undef;
+}
+
 # If we ever link to a county problem report, needs to be to main FixMyStreet
 sub base_url_for_report {
     my ( $self, $report ) = @_;
     if ( $self->is_two_tier ) {
-        my $bodies = $report->bodies;
-        my %areas = map { %{$_->areas} } values %$bodies;
-        if ( $areas{$self->council_id} ) {
+        if ( $self->owns_problem( $report ) ) {
             return $self->base_url;
         } else {
             return FixMyStreet->config('BASE_URL');

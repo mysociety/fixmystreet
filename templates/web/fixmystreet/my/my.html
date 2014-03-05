@@ -20,6 +20,8 @@
 
 [% IF c.cobrand.moniker == 'fixmybarangay' %]
     [% INCLUDE '_barangay_buttons.html' %]
+[% ELSIF c.cobrand.moniker == 'hart' %]
+    [% INCLUDE '_hart_hants_note.html' %]
 [% END %]
 
 [% INCLUDE 'pagination.html',

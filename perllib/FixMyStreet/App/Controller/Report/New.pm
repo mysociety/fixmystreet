@@ -666,6 +666,15 @@ sub setup_categories_and_bodies : Private {
         }
     }
 
+    if ($c->cobrand->can('hidden_categories')) {
+        my %hidden_categories = map { $_ => 1 }
+            $c->cobrand->hidden_categories;
+
+        @category_options = grep { 
+            !$hidden_categories{$_} 
+            } @category_options;
+    }
+
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
     $c->stash->{all_body_names} = [ map { $_->name } values %bodies ];

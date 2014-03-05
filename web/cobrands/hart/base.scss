@@ -1,0 +1,104 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+a, a:visited {
+    color: #369;
+    &:hover, &:active {
+        color: #369;
+    }
+}
+
+.issue-list-a {
+  li {
+      color:#666;
+      a {
+          color:#666;
+      }
+  }
+}
+
+h1.main {
+    color: $primary;
+    text-align: center;
+    margin: 0.5em 0;
+}
+
+.container {
+    padding: 0 1em 1em; /* if remove this 1em, need to edit .full-width! */
+}
+
+#site-header {
+    background: $primary;
+    height: 57px;
+    
+
+    .mobile-header-nav {
+        height: 56px;
+        float: right;
+        li {
+            a, a:hover {text-decoration:none;}
+            list-style-type: none;
+            float: left;
+            div {
+                height: 57px;
+                width: 57px;
+                background-repeat: no-repeat;
+                background-position: 50% 50%;
+            }
+            .home-icon { background-image: url('/cobrands/hart/home_mobile.png'); }
+            .search-icon { background-image: url('/cobrands/hart/search_mobile.png'); }
+            .menu-icon { background-image: url('/cobrands/hart/menu_mobile.png'); }
+        }
+    }
+}
+
+// Colour tab to match colour scheme
+#nav-link {
+  width: 50px;
+  height: 48px;
+  background: url('/cobrands/hart/tab-blue.png') 0 0 no-repeat;
+}
+
+#problems-nav {
+    border-bottom:0.25em solid $primary;
+    ul li a {
+        text-transform: none;
+        color: #666;
+        &.active {
+            background: $primary;
+            color: #fff;
+        }
+    }
+}
+
+.big-green-banner {
+    text-transform: none;
+    z-index: 0;
+}
+
+#form_sign_in {
+    margin-top: 1em;
+}
+
+#front-main {
+    /* default on mobile view, preventing jagged hart-green box */
+
+    margin: 0;
+    padding: 1em;
+
+    #postcodeForm {
+        padding: 1em;
+        div {
+            padding-top: 0px;
+            input#pc {
+            }
+            input#sub {
+                height: 100%;
+            }
+        }
+    }
+}
