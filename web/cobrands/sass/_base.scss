@@ -753,7 +753,6 @@ a:hover.button-left {
 
 .big-green-banner {
   position: relative;
-  z-index:1000;
   top:-1.75em;
   background: $col_click_map;
   color: #fff;
@@ -777,7 +776,6 @@ a:hover.button-left {
 
 .banner {
   position: relative;
-  z-index:1100;
   p {
     position: absolute;
     top:-1.95em;
@@ -1002,8 +1000,9 @@ a:hover.button-left {
   overflow: hidden;
   position: relative;
   #map {
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
   }
 }
 
@@ -1087,7 +1086,6 @@ a:hover.button-left {
   left: 0;
   right:0;
   bottom: 0;
-  z-index: 1100;
   background:#333;
   background:rgba(0, 0, 0, 0.7);
   margin:0;
@@ -1137,7 +1135,6 @@ a:hover.button-left {
 
 #mob_sub_map_links {
   position: absolute;
-  z-index:1100;
   bottom:0;
   display:table;
   margin:0;
