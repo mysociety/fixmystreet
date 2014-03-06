@@ -602,7 +602,14 @@ FixMyStreet::override_config {
             check_report_counts( $res, $test->{report_counts_after} );
         };
     }
+
+    subtest 'export as csv' => sub {
+        $mech->get_ok('/dashboard?export=1');
+        my @lines = split /\n/, $mech->content;
+        is scalar @lines, 6, '1 (header) + 5 (reports) = 6 lines';
+    };
 };
+
 
 sub make_problem {
     my $args = shift;
