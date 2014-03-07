@@ -1,10 +1,10 @@
 ---
 layout: default
-title: How FixMyStreet uses MapIt
+title: How FixMyStreet assigns reports to bodies
 author: dave
 ---
 
-# How FixMyStreet uses MapIt
+# How FixMyStreet assigns reports to bodies
 
 <p class="lead">When you add a <a href="/glossary/#body" class="glossary">body</a> toFixMyStreet,
 you specify which <a href="/glossary/#area" class="glossary">areas</a> it

@@ -1,15 +1,42 @@
 ---
 layout: default
-title: Changing colours
+title: Customising the CSS
 author: dave
 ---
 
-# Customisation example: changing the colours
+# Customising the CSS
 
 <p class="lead">
   This page describes how to change the colour scheme of your installation &mdash;
   which is a good starting point for further customisations.
 </p>
+
+## Background
+
+The CSS is stored in `web/cobrands/` under which there are directories for
+Cobrands. Note that FixMyStreet uses SCSS and Compass to generate its CSS so
+there are no CSS files until `bin/make_css` has been run.
+
+The CSS provided with FixMyStreet uses CSS3 media queries in a mobile first
+format order to adapt the layout to work on different devices. It is structured
+into these main files:
+
+* base.css -
+This contains all the styling for the content of the pages in a mobile sized browser.
+* layout.css -
+This contains all the styling for the content of the pages in a desktop sized browser.
+* \_colours.css -
+This contains basic colour information, so you can easily make a site that
+looks different simply by copying these files to your own cobrand CSS
+directory, and changing the colours, as we will describe below.
+* config.rb -
+This is the config script used by compass
+
+Our `.gitignore` file assumes that any CSS files directly in a `cobrands/*`
+directory are generated from SCSS - if you have CSS files that you want to use
+directly, put them in a `css` directory within your cobrand directory.
+
+# Tutorial
 
 You can override any of the CSS or HTML templates of your FixMyStreet
 installation, but to begin with it's a good idea to just change the colours.
@@ -238,51 +265,11 @@ class="glossary">templates</a>) but this is just so you can get going.
 
 ## Next steps...
 
-Now you have your own cobrand, ading your own HTML <a href="/glossary/#template" class="glossary">templates</a> is simple. 
+Now you have your own cobrand, ading your own HTML <a
+href="/glossary/#template" class="glossary">templates</a> is straightforward.
 
-When it's building a page, FixMyStreet always looks in your cobrand's web
-template directory first: if it finds a template there, it uses it, and if it
-doesn't it falls back and uses the `default` one instead.
-
-To see how this works, look at some of the cobrands that already exist in the
-`/templates/web` directory. You need to create a new directory with your
-cobrand's name: for example, do:
-
-    mkdir  /templates/web/fixmypark
-
-Then, to override an existing template, copy it into the
-`/templates/web/fixmypark/` directory and edit it there. You *must* use the
-same directory and file names as in the `default` cobrand (that is, in
-`templates/web/default`).
-
-For example, it's likely you'll want to change the footer template, which puts
-text right at the bottom of every page. Copy the footer template into your
-cobrand like this:
-
-    cp templates/web/default/footer.html templates/web/fixmypark
-
-The templates use the popular <a
-href="http://www.template-toolkit.org">Template Toolkit</a> system &mdash; look
-inside and you'll see HTML with placeholders like `[% THIS %]`. The `[% INCLUDE
-...%]` marker pulls in another template, which, just like the footer, you can
-copy into your own cobrand from `default` and edit.
-
-<div class="attention-box warning">
-    One thing to be careful of: <strong>only edit the <code>.html</code> files</strong>. FixMyStreet
-    generates <code>.ttc</code> versions, which are cached copies &mdash; don't edit these, they
-    automatically get created (and overwritten) when FixMyStreet is running.
-</div>
-
-There are also email templates that FixMyStreet uses when it constructs email
-messages to send out. You can override these in a similar way: look in the
-`templates/email` directory and you'll see cobrands overriding the templates in
-`templates/email/default`.
+Please see our separate [page on customising templates](../templates/).
 
 ### Feeding back changes
 
 Finally, when you've finished creating your cobrand you should consider [feeding it back to us]({{site.baseurl}}feeding-back) so it becomes part of the FixMyStreet repository.
-
-
-
-
-
