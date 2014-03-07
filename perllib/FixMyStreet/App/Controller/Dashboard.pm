@@ -125,12 +125,18 @@ sub index : Path : Args(0) {
     delete $prob_where->{'problem.state'};
     $c->stash->{prob_where} = $prob_where;
 
+    my $dtf = $c->model('DB')->storage->datetime_parser;
+
     my %counts;
     my $t = DateTime->today;
-    $counts{wtd} = $c->forward( 'updates_search', [ $t->subtract( days => $t->dow - 1 ) ] );
-    $counts{week} = $c->forward( 'updates_search', [ DateTime->now->subtract( weeks => 1 ) ] );
-    $counts{weeks} = $c->forward( 'updates_search', [ DateTime->now->subtract( weeks => 4 ) ] );
-    $counts{ytd} = $c->forward( 'updates_search', [ DateTime->today->set( day => 1, month => 1 ) ] );
+    $counts{wtd} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( $t->subtract( days => $t->dow - 1 ) ) ] );
+    $counts{week} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( DateTime->now->subtract( weeks => 1 ) ) ] );
+    $counts{weeks} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( DateTime->now->subtract( weeks => 4 ) ) ] );
+    $counts{ytd} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( DateTime->today->set( day => 1, month => 1 ) ) ] );
 
     $c->stash->{problems} = \%counts;
 
@@ -146,7 +152,7 @@ sub index : Path : Args(0) {
     }
     my $params = {
         %$prob_where,
-        'me.confirmed' => { '>=', DateTime->now->subtract( days => 30 ) },
+        'me.confirmed' => { '>=', $dtf->format_datetime( DateTime->now->subtract( days => 30 ) ) },
     };
     my @problems = $c->cobrand->problems->search( $params )->all;
     my %problems;
