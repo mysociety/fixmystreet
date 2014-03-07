@@ -25,7 +25,7 @@ sub languages { [ 'es-cl,Castellano,es_CL', 'en-gb,English,en_GB' ] }
 sub disambiguate_location {
     return {
         country => 'cl',
-        bing_country => 'Santiago',
+        town => 'Santiago',
     };
 }
 
