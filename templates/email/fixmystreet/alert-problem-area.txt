@@ -1,5 +1,12 @@
 Subject: New problems in <?=$values['area_name']?> on FixMyStreet
 
+The following new problems have been added within
+<?=$values['area_name']?>:
+
+<?=$values['data']?>
+
+-------
+
 We're running a survey to help us understand who uses our sites. 
 If you have 10-15 minutes to spare then we'd be grateful if you 
 could take part: 
@@ -7,12 +14,7 @@ could take part:
 
 Thank you!
 
-------
-
-The following new problems have been added within
-<?=$values['area_name']?>:
-
-<?=$values['data']?>
+-------
 
 <?=$values['signature']?>
 
