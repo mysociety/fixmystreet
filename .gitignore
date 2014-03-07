@@ -1,8 +1,7 @@
 *.ttc
-/cities_bin
-/private_locale
 *~
 ._*
+
 .DS_Store
 .carton
 local-lib5
@@ -25,11 +24,9 @@ FixMyBarangay.po
 /web/cobrands/seesomething
 /web/photo
 /local
+/local-carton
 
 /web/cobrands/fixmystreet/compass_app_log.txt
-blog/web/wp
-blog/conf/general
-blog/conf/general.deployed
 
 phonegap/www/js/config.js
 phonegap/Android/bin/
