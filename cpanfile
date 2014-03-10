@@ -70,6 +70,7 @@ requires 'SOAP::Lite';
 requires 'Statistics::Distributions';
 requires 'Storable';
 requires 'Template::Plugin::Comma';
+requires 'Text::CSV';
 requires 'URI';
 requires 'URI::Escape';
 requires 'URI::QueryParam';

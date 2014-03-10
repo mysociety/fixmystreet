@@ -5589,6 +5589,17 @@ DISTRIBUTIONS
       Test::Builder 0
       Test::Builder::Tester 0.09
       perl 5.007003
+  Text-CSV-1.32
+    pathname: M/MA/MAKAMAKA/Text-CSV-1.32.tar.gz
+    provides:
+      Text::CSV 1.32
+      Text::CSV::ErrorDiag 1.31
+      Text::CSV_PP 1.31
+    requirements:
+      ExtUtils::MakeMaker 0
+      IO::Handle 0
+      Test::Harness 0
+      Test::More 0
   Text-Diff-1.41
     pathname: O/OV/OVID/Text-Diff-1.41.tar.gz
     provides:
