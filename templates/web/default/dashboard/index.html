@@ -146,6 +146,7 @@
                 [% END %]
 </select>
 <input type="submit" value="Look up">
+<a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">Export as CSV</a>
 
 <table width="100%" id="reports">
     <tr>

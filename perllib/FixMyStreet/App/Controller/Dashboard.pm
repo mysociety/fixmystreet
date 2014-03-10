@@ -121,16 +121,22 @@ sub index : Path : Args(0) {
         if $c->stash->{category};
     $c->stash->{where} = \%where;
     my $prob_where = { %where };
-    $prob_where->{state} = $prob_where->{'problem.state'};
+    $prob_where->{'me.state'} = $prob_where->{'problem.state'};
     delete $prob_where->{'problem.state'};
     $c->stash->{prob_where} = $prob_where;
 
+    my $dtf = $c->model('DB')->storage->datetime_parser;
+
     my %counts;
     my $t = DateTime->today;
-    $counts{wtd} = $c->forward( 'updates_search', [ $t->subtract( days => $t->dow - 1 ) ] );
-    $counts{week} = $c->forward( 'updates_search', [ DateTime->now->subtract( weeks => 1 ) ] );
-    $counts{weeks} = $c->forward( 'updates_search', [ DateTime->now->subtract( weeks => 4 ) ] );
-    $counts{ytd} = $c->forward( 'updates_search', [ DateTime->today->set( day => 1, month => 1 ) ] );
+    $counts{wtd} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( $t->subtract( days => $t->dow - 1 ) ) ] );
+    $counts{week} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( DateTime->now->subtract( weeks => 1 ) ) ] );
+    $counts{weeks} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( DateTime->now->subtract( weeks => 4 ) ) ] );
+    $counts{ytd} = $c->forward( 'updates_search',
+        [ $dtf->format_datetime( DateTime->today->set( day => 1, month => 1 ) ) ] );
 
     $c->stash->{problems} = \%counts;
 
@@ -138,17 +144,19 @@ sub index : Path : Args(0) {
 
     $c->stash->{q_state} = $c->req->param('state') || '';
     if ( $c->stash->{q_state} eq 'fixed' ) {
-        $prob_where->{state} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
+        $prob_where->{'me.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
     } elsif ( $c->stash->{q_state} ) {
-        $prob_where->{state} = $c->stash->{q_state};
-        $prob_where->{state} = { IN => [ 'planned', 'action scheduled' ] }
-            if $prob_where->{state} eq 'action scheduled';
+        $prob_where->{'me.state'} = $c->stash->{q_state};
+        $prob_where->{'me.state'} = { IN => [ 'planned', 'action scheduled' ] }
+            if $prob_where->{'me.state'} eq 'action scheduled';
     }
     my $params = {
         %$prob_where,
-        'me.confirmed' => { '>=', DateTime->now->subtract( days => 30 ) },
+        'me.confirmed' => { '>=', $dtf->format_datetime( DateTime->now->subtract( days => 30 ) ) },
     };
-    my @problems = $c->cobrand->problems->search( $params )->all;
+    my $problems_rs = $c->cobrand->problems->search( $params );
+    my @problems = $problems_rs->all;
+
     my %problems;
     foreach (@problems) {
         if ($_->confirmed >= DateTime->now->subtract(days => 7)) {
@@ -160,6 +168,102 @@ sub index : Path : Args(0) {
         }
     }
     $c->stash->{lists} = \%problems;
+
+    if ( $c->req->params->{export} ) {
+        $self->export_as_csv($c, $problems_rs, $body);
+    }
+}
+
+sub export_as_csv {
+    my ($self, $c, $problems_rs, $body) = @_;
+    require Text::CSV;
+    my $problems = $problems_rs->search(
+        {}, { prefetch => 'comments' });
+
+    my $filename = do {
+        my %where = (
+            body     => $body->id,
+            category => $c->stash->{category},
+            state    => $c->stash->{q_state},
+            ward     => $c->stash->{ward},
+        );
+        join '-',
+            $c->req->uri->host,
+            map {
+                my $value = $where{$_};
+                (defined $value and length $value) ? ($_, $value) : ()
+            } sort keys %where };
+
+    my $csv = Text::CSV->new();
+    $csv->combine(
+            'Report ID',
+            'Title',
+            'Detail',
+            'User Name',
+            'Category',
+            'Created',
+            'Confirmed',
+            'Acknowledged',
+            'Fixed',
+            'Closed',
+            'Status',
+            'Latitude', 'Longitude',
+            'Nearest Postcode',
+            'Report URL',
+            );
+    my @body = ($csv->string);
+
+    my $fixed_states = FixMyStreet::DB::Result::Problem->fixed_states;
+    my $closed_states = FixMyStreet::DB::Result::Problem->closed_states;
+
+    while ( my $report = $problems->next ) {
+        my $external_body;
+        my $body_name = "";
+        if ( $external_body = $report->body($c) ) {
+            # seems to be a zurich specific thing
+            $body_name = $external_body->name if ref $external_body;
+        }
+        my $hashref = $report->as_hashref($c);
+
+        $hashref->{user_name_display} = $report->anonymous?
+            '(anonymous)' : $report->user->name;
+
+        for my $comment ($report->comments) {
+            my $problem_state = $comment->problem_state or next;
+            next if $problem_state eq 'confirmed';
+            $hashref->{acknowledged_pp} //= $c->cobrand->prettify_dt( $comment->created );
+            $hashref->{fixed_pp} //= $fixed_states->{ $problem_state } ?
+                $c->cobrand->prettify_dt( $comment->created ): undef;
+            if ($closed_states->{ $problem_state }) {
+                $hashref->{closed_pp} = $c->cobrand->prettify_dt( $comment->created );
+                last;
+            }
+        }
+
+        $csv->combine(
+            @{$hashref}{
+                'id',
+                'title',
+                'detail',
+                'user_name_display',
+                'category',
+                'created_pp',
+                'confirmed_pp',
+                'acknowledged_pp',
+                'fixed_pp',
+                'closed_pp',
+                'state',
+                'latitude', 'longitude',
+                'postcode',
+                },
+            (join '', $c->cobrand->base_url_for_report($report), $report->url),
+        );
+
+        push @body, $csv->string;
+    }
+    $c->res->content_type('text/csv; charset=utf-8');
+    $c->res->header('content-disposition' => "attachment; filename=${filename}.csv");
+    $c->res->body( join "\n", @body );
 }
 
 sub updates_search : Private {
