@@ -1,0 +1,31 @@
+/* Base stylesheet for FixMyStreet look
+ *
+ * In a mobile first way, this contains the look of the site, and a basic
+ * layout for browsers that can't handle media queries. Baseline grid of 1.5em.
+ */
+
+$image-sprite: '/cobrands/fixamingata/images/sprite.png';
+
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+#site-header {
+    @include background(linear-gradient(#000, #ccc 10%, #ccc 90%, #000));
+}
+
+#site-logo {
+    width: 185px;
+    margin-top: 8px;
+    margin-left: 10px;
+    background: url('/cobrands/fixamingata/images/fms-logo.png') no-repeat;
+}
+
+#front-main {
+    a#geolocate_link {
+        font-size: 0.9em;
+    }
+}

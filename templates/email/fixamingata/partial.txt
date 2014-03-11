@@ -1,0 +1,12 @@
+Subject: Bekräfta din rapport på Fixa Min gata
+
+Hej [% report.name || report.email %],
+
+För att bekräfta den rapport som du nyligen lade in i Fixa Min Gata
+via [% report.service %] måste du klicka på:
+
+[% token_url %]
+
+Tack!
+
+[% INCLUDE 'signature.txt' %]

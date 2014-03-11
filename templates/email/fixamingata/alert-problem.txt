@@ -1,0 +1,10 @@
+Subject: Nya rapporter på FixMyStreet
+
+Följande rapporter har nyligen lagts till på:
+
+<?=$values['data']?>
+
+<?=$values['signature']?>
+
+Om du vill avsluta din prenumeration på nya rapporter
+kan du klickan på följande länk: <?=$values['unsubscribe_url']?>

@@ -1,0 +1,3 @@
+Subject: [% subject %] (via Fixa Min Gata)
+
+[% message %]

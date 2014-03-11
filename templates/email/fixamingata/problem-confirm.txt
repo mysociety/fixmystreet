@@ -1,0 +1,20 @@
+Subject: Bekräfta din rapport på [% INCLUDE 'site-name.txt' | trim %]
+
+Hej [% report.name %],
+
+För att bekräfta den rapport som du nyligen lade in på Fixa Min Gata
+måste du klicka på nedanstående länk:
+
+[% token_url %]
+
+Om det inte går att klicka på länken kan du kopiera den och klistra in
+i adressfältet på din webläsare.
+
+Din rapport har titeln: [% report.title %]
+
+Du har angivit följande information om problemet:
+
+[% report.detail %]
+
+
+[% INCLUDE 'signature.txt' %]

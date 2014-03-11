@@ -1,0 +1,61 @@
+Subject: Ny rapport: <?=$values['title']?>
+
+Till <?=$values['councils_name']?>,
+
+Det här meddelandet rör en rapport om ett problem i gatumiljön som en
+medborgare lämnat via tjänsten Fixa Min Gata.
+
+<?=$values['missing']?><?=$values['multiple']?>Följande rapport
+tror medborgaren behöver er uppmärksamhet.
+
+<?=$values['fuzzy']?> eller uppdatera problemet, klicka på följande länk:
+
+    <?=$values['url']?>
+
+<?=$values['has_photo']?>
+
+** Uppgiftslämnare
+
+Namn: <?=$values['name']?>
+
+Epost: <?=$values['email']?>
+
+<?=$values['phone_line']?>
+
+** Information om ärendet
+
+<?=$values['category_line']?>Ärende: <?=$values['title']?>
+
+<?=$values['detail']?>
+
+** Geografisk position
+
+<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
+
+Longitude: <?=$values['longitude']?>
+
+<?=$values['closest_address']?>----------
+
+Svar på det här brevet kommer att skickas till den person som lämnade
+rapporten.
+
+Om det finns en lämpligare adress dit rapporter kan skickas kan ni
+kontakta oss för att ändra detta.
+
+Föreningen Sambruk som driver tjänsten ansvarar för en användargrupp
+som det går bra att gå med i för att få tillgång till ytterligare
+FixaMinGata-relaterade tjänster och support. Bland annat kan varje
+kategori ha sin egen e-postadress, och FixaMinGata kan även kopplas
+mot system som Open311.
+
+Om ni vill läsa mer om Fixa Min Gata och vad det innebär för er som kommun
+kan ni hitta ytterligare information på vår informationssida för kommuner:
+
+  <http://fixamingata.se/kommun>
+
+Kontakta Föreningen Sambruk via:
+
+  <http://fixamingata.se/contact>
+
+<?=$values['signature']?>
+

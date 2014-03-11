@@ -1,0 +1,13 @@
+Subject: Bekräfta din bevakning på [% INCLUDE 'site-name.txt' | trim %]
+
+Hej,
+
+vänligen klicka på länken nedan för att bekräfta den bevakning du
+just valde att prenumerera till på [% INCLUDE 'site-name.txt' | trim %]:
+
+    [% token_url %]
+
+Om du inte kan klicka på länken kan du kopiera den och klistra in den
+i adressfältet på din webbläsare.
+
+[% INCLUDE 'signature.txt' %]

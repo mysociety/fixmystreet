@@ -55,6 +55,7 @@ create table users (
 create table body (
     id           serial primary key,
     name         text not null,
+    external_url text,
     parent       integer references body(id),
     endpoint     text,
     jurisdiction text,

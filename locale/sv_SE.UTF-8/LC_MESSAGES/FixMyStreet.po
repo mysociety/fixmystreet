@@ -498,7 +498,7 @@ msgstr ""
 #: templates/web/default/js/translation_strings.html:32
 #: templates/web/oxfordshire/js/translation_strings.html:26
 msgid "Back"
-msgstr ""
+msgstr "Tillbaka"
 
 #: templates/web/default/admin/report_blocks.html:11
 msgid "Ban email address"
@@ -770,7 +770,7 @@ msgstr "Kan inte hitta användaren"
 #: templates/web/default/js/translation_strings.html:37
 #: templates/web/oxfordshire/js/translation_strings.html:31
 msgid "Could not look up location"
-msgstr ""
+msgstr "Kunde inte lokalisera dig automatiskt"
 
 #: templates/web/default/admin/list_updates.html:9
 msgid "Council"
@@ -1384,7 +1384,7 @@ msgstr "Historik"
 #: templates/web/default/js/translation_strings.html:31
 #: templates/web/oxfordshire/js/translation_strings.html:25
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: templates/web/default/index-steps.html:1
 msgid "How to report a problem"
@@ -1393,7 +1393,7 @@ msgstr "Hur man rapporterar ett problem"
 #: templates/web/default/js/translation_strings.html:33
 #: templates/web/oxfordshire/js/translation_strings.html:27
 msgid "How to send successful reports"
-msgstr ""
+msgstr "Hur man lyckas bäst med att rapportera fel"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:733
 msgid "I am afraid you cannot confirm unconfirmed reports."
@@ -1948,7 +1948,7 @@ msgstr "Inga problem har rapporteras än."
 #: templates/web/default/js/translation_strings.html:38
 #: templates/web/oxfordshire/js/translation_strings.html:32
 msgid "No result returned"
-msgstr ""
+msgstr "Inget resultat returnerades"
 
 #: templates/web/default/admin/body-form.html:60
 #: templates/web/default/admin/body-form.html:61
@@ -2233,7 +2233,7 @@ msgstr "Foton från närliggande rapporter"
 #: templates/web/default/js/translation_strings.html:30
 #: templates/web/oxfordshire/js/translation_strings.html:24
 msgid "Place pin on map"
-msgstr ""
+msgstr "Klicka på kartan"
 
 #: templates/web/default/admin/report_edit.html:35
 #: templates/web/default/admin/report_edit.html:38
@@ -2469,7 +2469,7 @@ msgstr "Fyll i information om problemet nedan. Kommunen kommer inte att kunna hj
 #: templates/web/seesomething/report/new/fill_in_details_form.html:20
 #: templates/web/zurich/report/new/fill_in_details_form.html:46
 msgid "Please fill in details of the problem."
-msgstr "Fyll i information om problemet nedan."
+msgstr "Fyll i information om problemet nedan. Ange gärna en adress då detta gör det lättare för kommunen att hitta till platsen."
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:28
 #: templates/web/default/report/new/fill_in_details_form.html:27
@@ -3502,7 +3502,7 @@ msgstr "Bekräftelsebrevet <strong>kan</strong> ta ett par minuter att komma fra
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
 msgid "The council won&rsquo;t be able to help unless you leave as much detail as you can. Please describe the exact location of the problem (e.g. on a wall), what it is, how long it has been there, a description (and a photo of the problem if you have one), etc."
-msgstr ""
+msgstr "Det är lättare för kommunen att hjälpa till om du lämnar så mycket detaljer som möjligt. Beskriv den exakta positionen (ex.v. på väggen), vad problemet är, hur länge det har funnits där, en beskrivning och foto (om du har), etc."
 
 #: templates/web/fixmystreet/questionnaire/index.html:43
 msgid "The details of your problem are available from the other tab above."
@@ -3601,7 +3601,7 @@ msgstr "Vår enklaste bevakning är för rapporter inom ett geografiskt område:
 #: templates/web/default/report/new/fill_in_details_form.html:17
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:12
 msgid "The subject and details of the problem will be public, plus your name if you give us permission."
-msgstr "Ärendet och informationen om problemet kommer att vara publikt. Ditt namn kommer också att vara publikt om du ger oss tillstånd att visa det."
+msgstr "Informationen du anger här kommer att bli en offentlig handling när rapporten skickats till kommunen och kommer samtidigt att visas publikt på Fixa Min Gata. Ditt namn kommer dock att visas endast om du medger att vi visar det."
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:291
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
@@ -3839,7 +3839,7 @@ msgstr "Okänd feltyp"
 #: templates/web/default/js/translation_strings.html:39
 #: templates/web/oxfordshire/js/translation_strings.html:33
 msgid "Unknown error"
-msgstr ""
+msgstr "Okänt fel"
 
 #: perllib/FixMyStreet/App/Controller/Report.pm:106
 msgid "Unknown problem ID"
@@ -4180,7 +4180,7 @@ msgstr ""
 #: templates/web/default/js/translation_strings.html:36
 #: templates/web/oxfordshire/js/translation_strings.html:30
 msgid "You declined; please fill in the box above"
-msgstr ""
+msgstr "Du tackade nej; var vänlig använd textrutan ovan"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:38
 msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
@@ -4460,7 +4460,7 @@ msgstr ""
 
 #: templates/web/default/report/updates.html:49
 msgid "marked as closed"
-msgstr ""
+msgstr "markerad som stängd"
 
 #: templates/web/default/report/updates.html:28
 #: templates/web/default/report/updates.html:51
@@ -4469,11 +4469,11 @@ msgstr "markerad som löst"
 
 #: templates/web/default/report/updates.html:45
 msgid "marked as in progress"
-msgstr ""
+msgstr "markerad som att arbete pågår"
 
 #: templates/web/default/report/updates.html:41
 msgid "marked as investigating"
-msgstr ""
+msgstr "markerad som att arbete pågår"
 
 #: templates/web/default/report/updates.html:55
 msgid "marked as not the council's responsibility"
@@ -4481,7 +4481,7 @@ msgstr ""
 
 #: templates/web/default/report/updates.html:43
 msgid "marked as planned"
-msgstr ""
+msgstr "markerad som att arbete planerat"
 
 #: templates/web/default/report/updates.html:53
 msgid "marked as unable to fix"
@@ -4502,7 +4502,7 @@ msgstr "eller"
 #: templates/web/default/js/translation_strings.html:27
 #: templates/web/oxfordshire/js/translation_strings.html:21
 msgid "or locate me automatically"
-msgstr ""
+msgstr "Klicka här för att försöka <strong>hitta min position automatiskt</strong>."
 
 #: templates/web/default/admin/report_edit.html:24
 #: templates/web/default/admin/report_edit.html:26

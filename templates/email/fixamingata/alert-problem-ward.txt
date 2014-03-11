@@ -1,0 +1,10 @@
+Subject: Nya rapporter i <?=$values['area_name']?> på Fixa Min Gata
+
+Följande nya rapporter har lagts till inom <?=$values['area_name']?>:
+
+<?=$values['data']?>
+
+<?=$values['signature']?>
+
+Om du vill avsluta din prenumeration på nya rapporter i <?=$values['area_name']?>
+kan du klickan på följande länk: <?=$values['unsubscribe_url']?>

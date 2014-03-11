@@ -39,6 +39,7 @@ my $p = FixMyStreet::App->model('DB::Problem')->new( {
     user => $u,
     id => 1,
     name => 'A User',
+    cobrand => 'fixmystreet',
 } );
 
 my $expected_error = qr{Failed to submit problem 1 over Open311}ism;
@@ -63,6 +64,7 @@ my $problem = FixMyStreet::App->model('DB::Problem')->new( {
     longitude => 2,
     user => $user,
     name => 'Test User',
+    cobrand => 'fixmystreet',
 } );
 
 subtest 'posting service request' => sub {

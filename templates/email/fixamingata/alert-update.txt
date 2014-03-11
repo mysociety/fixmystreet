@@ -1,0 +1,18 @@
+Subject: Ny uppdatering - '<?=$values['title']?>'
+
+Följande uppdatering har lämnats för rapporten
+<?=$values['title']?>:
+
+<?=$values['data']?>
+
+<?=$values['state_message']?>
+
+För att se eller svara på dessa uppdateringar, klicka på följande länk:
+    <?=$values['problem_url']?>
+
+Du kan inte kontakta någon genom att svara på detta brev.
+
+<?=$values['signature']?>
+
+För att avsluta din prenumeration på nya uppdateringar kring denna
+rapport, klicka på följande länk: <?=$values['unsubscribe_url']?>

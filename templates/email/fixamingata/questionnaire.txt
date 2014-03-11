@@ -1,0 +1,22 @@
+Subject: Frågeformulär om '<?=$values['title']?>'
+
+Hej <?=$values['name']?>,
+
+<?=$values['created']?> sedan lämnade du en rapport på Fixa Min Gata.
+För att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde
+klicka på länken nedan och svara på ett par korta frågor om det problem
+du rapporterade:
+
+    <?=$values['url']?>
+
+Var snäll och svara inte på det här brevet. Använd istället
+kommentarsfältet i frågeformuläret.
+
+<?=$values['signature']?>
+
+Ditt rapporterade problem var enligt nedan:
+
+<?=$values['title']?>
+
+<?=$values['detail']?>
+

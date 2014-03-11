@@ -39,6 +39,7 @@
             <link rel="canonical" href="http://www.fixmystreet.com[% c.req.uri.path_query %]">
         [% END %]
 
+        [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
         [% INCLUDE 'tracking_code.html' %]
 
     </head>
