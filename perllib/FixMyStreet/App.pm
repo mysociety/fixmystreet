@@ -352,8 +352,8 @@ sub send_email_cron {
 
     return 1 if $c->is_abuser( $env_to );
 
-    $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@mysociety.org>', time(),
-        unpack('h*', random_bytes(5, 1))
+    $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@%s>', time(),
+        unpack('h*', random_bytes(5, 1)), FixMyStreet->config('EMAIL_DOMAIN')
     );
 
     $params->{_parameters_}->{signature} = '';
