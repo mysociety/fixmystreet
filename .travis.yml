@@ -15,7 +15,7 @@ before_install:
   - sudo apt-get install -qq jhead libgmp-dev
 # A couple of other modules that normally come from packages, but no system stuff here
   - cpanm -q Carton Locale::gettext Math::BigInt::GMP
-  - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8
+  - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8 sv_SE.UTF-8
 install:
   - carton install --deployment
 before_script:
