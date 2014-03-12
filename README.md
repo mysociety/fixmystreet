@@ -22,6 +22,10 @@ We've been working hard to make the FixMyStreet Platform easy to install and
 re-use in other countries - please see our site at <http://code.fixmystreet.com/>
 for help and documentation in installing the FixMyStreet Platform.
 
+## Contribution Guidelines
+
+Please focus on issues labelled *Suitable for Volunteers*.
+
 ## Releases
 
 * v1.3 (12th November 2013)
