@@ -76,6 +76,7 @@ sub string {
             $result = $soap->call($method, $security, $search, $count);
         };
         if ($@) {
+            warn $@ if FixMyStreet->config('STAGING_SITE');
             return { error => 'The geocoder appears to be down.' };
         }
         $result = $result->result;
