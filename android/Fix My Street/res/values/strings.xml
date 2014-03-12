@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-<!-- Welcome screen -->
-    <string name="app_name">Fix My Street</string>
-
-    <!-- About screen -->
- <string name="instructions">1. Click \'Take photo\', then on the camera button to take a photo.\n2. Click \'Add details\', then give the problem a name (e.g. \'Broken street light\'), and add your own name and email address. \n3. Wait for a GPS fix (it\'ll take longer if it\'s cloudy). Then, click the \'Report\' button to upload the problem to Fix My Street. \n4. Check your email. You\'ll need to click on a link to confirm the problem and add a few more details. </string>
-</resources>
