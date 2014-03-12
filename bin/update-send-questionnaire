@@ -1,0 +1,21 @@
+#!/usr/bin/env perl
+
+=head1 DESCRIPTION
+
+Ad hoc script to update the state of Problem->send_questionnaire
+
+=cut
+
+use strict;
+use warnings;
+
+use FixMyStreet::App;
+
+my $problems = FixMyStreet::App->model('DB::Problem')->search();
+
+while ( my $problem = $problems->next() ) {
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($problem->cobrand)->new();
+    $problem->send_questionnaire( $cobrand->send_questionnaires() );
+    $problem->update();
+}
+

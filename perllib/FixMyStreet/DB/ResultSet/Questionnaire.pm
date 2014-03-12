@@ -49,6 +49,7 @@ sub send_questionnaires_period {
         $cobrand->set_lang_and_domain($row->lang, 1);
 
         # Not all cobrands send questionnaires
+        # next unless $row->send_questionnaire;
         next unless $cobrand->send_questionnaires;
         next if $row->is_from_abuser;
 
