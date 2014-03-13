@@ -105,6 +105,53 @@ has rx => (
                 }
             }
         );
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/value',
+            {
+                type => '//rec',
+                required => {
+                    key => '//str',
+                    name => '//str',
+                }
+            }
+        );
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/values_list',
+            {
+                type => '//arr',
+                contents => '/open311/value',
+            },
+        );
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/attribute',
+            {
+                type => '//rec',
+                required => {
+                    code => '//str',
+                    datatype => '//str', # actually Enum[qw/ string number datetime text singlevaluelist multivaluelist /],
+                    datatype_description => '//str',
+                    description => '//str',
+                    order => '//int',
+                    required => '/open311/bool',
+                    variable => '/open311/bool',
+                },
+                optional => {
+                    values => '/open311/values_list',
+                },
+            }
+        );
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/attribute_list',
+            {
+                type => '//arr',
+                contents => '/open311/attribute',
+            }
+        );
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/service_definition',
+            {
+                type => '//rec',
+                required => {
+                    service_code => '//str',
+                    attributes => '/open311/attribute_list',
+                },
+            }
+        );
         return $schema;
     },
 );
@@ -150,6 +197,17 @@ sub GET_Service_List {
     } $self->services;
     return {
         services => \@services,
+    };
+}
+
+sub GET_Service_Definition_output_schema {
+    return {
+        type => '//rec',
+        required => {
+            service_definition => {
+                type => '/open311/service_definition',
+            },
+        }
     };
 }
 
