@@ -79,7 +79,22 @@ has rx => (
                 open311 => 'tag:wiki.open311.org,GeoReport_v2:rx/',
             }
         });
+
         # TODO, turn these into proper type_plugin
+        
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/input_jurisdiction',
+            # jurisdiction_id is documented as "Required", but with the note
+            # 'This is only required if the endpoint serves multiple jurisdictions'
+            # i.e. it is optional as regards the schema, but the server may choose 
+            # to error if it is not provided.
+            {
+                type => '//rec',
+                optional => {
+                    jurisdiction_id => '//str',
+                },
+            }
+        );
+
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/bool',
             {
                 type => '//any',
@@ -158,16 +173,7 @@ has rx => (
 
 sub GET_Service_List_input_schema {
     return {
-        type => '//rec',
-        optional => {
-            # jurisdiction_id is documented as "Required", but with the note
-            # 'This is only required if the endpoint serves multiple jurisdictions'
-            # i.e. it is optional as regards the schema, but the server may choose 
-            # to error if it is not provided.
-            jurisdiction_id => {
-                type => '//str',
-            },
-        }
+        type => '/open311/input_jurisdiction',
     };
 }
 
@@ -200,6 +206,16 @@ sub GET_Service_List {
     };
 }
 
+sub GET_Service_Definition_input_schema {
+    return {
+        type => '//seq',
+        contents => [
+            '//str', # service_code
+            '/open311/input_jurisdiction',
+        ],
+    };
+}
+
 sub GET_Service_Definition_output_schema {
     return {
         type => '//rec',
@@ -216,7 +232,7 @@ sub GET_Service_Definition {
 
     my $service = $self->service($service_id, $args) or return;
     my $order = 0;
-    return {
+    my $service_definition = {
         service_definition => {
             service_code => $service_id,
             attributes => [
@@ -243,6 +259,7 @@ sub GET_Service_Definition {
             ],
         },
     };
+    return $service_definition;
 }
 
 sub services {
