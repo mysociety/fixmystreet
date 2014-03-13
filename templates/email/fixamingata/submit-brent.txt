@@ -1,6 +1,6 @@
 Subject: FMS Problem Report: <?=$values['title']?>
 
-Dear <?=$values['councils_name']?>,
+Dear <?=$values['name']?>,
 
 <?=$values['missing']?><?=$values['multiple']?>A user of
 FixMyStreet has submitted the following report
