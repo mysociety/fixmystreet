@@ -1,6 +1,6 @@
 Subject: Ny rapport: <?=$values['title']?>
 
-Till <?=$values['councils_name']?>,
+Till <?=$values['bodies_name']?>,
 
 Det här meddelandet rör en rapport om ett problem i gatumiljön som en
 medborgare lämnat via tjänsten Fixa Min Gata.
