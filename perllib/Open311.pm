@@ -180,6 +180,10 @@ sub _generate_service_request_description {
         if ($self->extended_description ne 'oxfordshire') {
             $description = "title: " . $problem->title . "\n\n$description";
         }
+    } elsif ($problem->cobrand eq 'fixamingata') {
+        $description .= "Beskrivning: " . $problem->detail . "\n\n";
+        $description .= "Länk till ärendet: " . $extra->{url} . "\n\n";
+        $description .= "Skickad via FixaMinGata\n";
     } else {
         $description .= $problem->title . "\n\n";
         $description .= $problem->detail . "\n\n";
