@@ -190,8 +190,8 @@ sub services {
     [];
 }
 sub service {
-    # this is a simple lookup on $self->services, and should 
-    # *probably* be overridden in your subclass!
+    # this stub implementation is a simple lookup on $self->services, and
+    # should *probably* be overridden in your subclass!
     # (for example, to look up in App DB, with $args->{jurisdiction_id})
 
     my ($self, $service_code, $args) = @_;
