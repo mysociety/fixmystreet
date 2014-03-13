@@ -120,34 +120,38 @@ subtest "GET Service List" => sub {
 <?xml version="1.0" encoding="utf-8"?>
 <service_definition>
   <attributes>
-    <code>depth</code>
-    <datatype>number</datatype>
-    <datatype_description>an integer</datatype_description>
-    <description>depth of pothole, in centimetres</description>
-    <order>1</order>
-    <required>true</required>
-    <variable>true</variable>
-  </attributes>
-  <attributes>
-    <code>shape</code>
-    <datatype>singlevaluelist</datatype>
-    <datatype_description>square | circle | triangle</datatype_description>
-    <description>shape of the pothole</description>
-    <order>2</order>
-    <required>false</required>
-    <values>
-      <name>Triangle</name>
-      <key>triangle</key>
-    </values>
-    <values>
-      <name>Circle</name>
-      <key>circle</key>
-    </values>
-    <values>
-      <name>Square</name>
-      <key>square</key>
-    </values>
-    <variable>true</variable>
+    <attribute>
+      <code>depth</code>
+      <datatype>number</datatype>
+      <datatype_description>an integer</datatype_description>
+      <description>depth of pothole, in centimetres</description>
+      <order>1</order>
+      <required>true</required>
+      <variable>true</variable>
+    </attribute>
+    <attribute>
+      <code>shape</code>
+      <datatype>singlevaluelist</datatype>
+      <datatype_description>square | circle | triangle</datatype_description>
+      <description>shape of the pothole</description>
+      <order>2</order>
+      <required>false</required>
+      <values>
+        <value>
+          <name>Triangle</name>
+          <key>triangle</key>
+        </value>
+        <value>
+          <name>Circle</name>
+          <key>circle</key>
+        </value>
+        <value>
+          <name>Square</name>
+          <key>square</key>
+        </value>
+      </values>
+      <variable>true</variable>
+    </attribute>
   </attributes>
   <service_code>POT</service_code>
 </service_definition>
@@ -194,4 +198,57 @@ CONTENT
             ],
         };
 };
+
+subtest "Spark test" => sub {
+    my $spark = $endpoint->spark;
+    my $struct = {
+        foo => {
+            bars => [ 1,2,3 ],
+            quxes => [
+                {
+                    values => [1,2],
+                },
+                {
+                    values => [3,4],
+                },
+            ],
+        },
+    };
+    is_deeply $spark->process_for_json($struct),
+        {
+            bars => [ 1,2,3 ],
+            quxes => [
+                {
+                    values => [1,2],
+                },
+                {
+                    values => [3,4],
+                },
+            ],
+        };
+        
+    my $xml_struct = $spark->process_for_xml($struct);
+    is_deeply $xml_struct,
+        {
+            foo => {
+                bars => { bar => [ 1,2,3 ] },
+                quxes => {
+                    quxe => [
+                        {
+                            values => {
+                                value => [1,2],
+                            },
+                        },
+                        {
+                            values => {
+                                value => [3,4],
+                            },
+                        },
+                    ]
+                },
+            }
+        }
+        or warn Dumper($xml_struct);
+};
+
 done_testing;

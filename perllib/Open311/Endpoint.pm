@@ -8,6 +8,7 @@ use Data::Rx;
 
 use Open311::Endpoint::Result;
 use Open311::Endpoint::Service;
+use Open311::Endpoint::Spark;
 
 use Data::Dumper;
 use Scalar::Util 'blessed';
@@ -62,6 +63,13 @@ sub dispatch_request {
         return bless [], 'Open311::Endpoint::Result';
     },
 }
+
+has spark => (
+    is => 'lazy',
+    default => sub {
+        Open311::Endpoint::Spark->new();
+    },
+);
 
 has rx => (
     is => 'lazy',
@@ -275,14 +283,10 @@ sub format_response {
         my $status = $response->status;
         my $data = $response->data;
         if ($ext eq 'json') {
-            # Spark convention
-            if (ref $data eq 'HASH' and scalar keys %$data == 1) {
-                $data = $data->{ (keys %$data)[0] };
-            }
             return [
                 $status, 
                 [ 'Content-Type' => 'application/json' ],
-                [ $json->encode( $data )]
+                [ $json->encode( $self->spark->process_for_json( $data ) )]
             ];
         }
         elsif ($ext eq 'xml') {
@@ -292,29 +296,12 @@ sub format_response {
                 SuppressEmpty => 0,
                 );
 
-            # Spark convention transform: http://wiki.open311.org/JSON_and_XML_Conversion#The_Spark_Convention
-            use Data::Visitor::Callback;
-            my $visitor;
-            $visitor = Data::Visitor::Callback->new(
-                hash => sub {
-                    my $hash = $_;
-                    for my $k (keys %$hash) {
-                        my $v = $hash->{$k};
-                        if (ref $v eq 'ARRAY') {
-                            (my $singular = $k)=~s/s$//;
-                            $hash->{$k} = { $singular => $v };
-                            $visitor->visit($v);
-                        }
-                    }
-                }
-            );
-            $visitor->visit($data);
             return [
                 $status,
                 [ 'Content-Type' => 'text/xml' ],
                 [ 
                     qq(<?xml version="1.0" encoding="utf-8"?>\n),
-                    $xs->XMLout( $data),
+                    $xs->XMLout( $self->spark->process_for_xml( $data )),
                 ],
             ];
         }
