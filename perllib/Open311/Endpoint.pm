@@ -4,11 +4,11 @@ use Web::Simple;
 
 use JSON;
 use XML::Simple;
-use Data::Rx;
 
 use Open311::Endpoint::Result;
 use Open311::Endpoint::Service;
 use Open311::Endpoint::Spark;
+use Open311::Endpoint::Schema;
 
 use Data::Dumper;
 use Scalar::Util 'blessed';
@@ -71,109 +71,27 @@ has spark => (
     },
 );
 
-has rx => (
+has schema => (
     is => 'lazy',
     default => sub {
-        my $schema = Data::Rx->new({
-            prefix => {
-                open311 => 'tag:wiki.open311.org,GeoReport_v2:rx/',
-            }
-        });
-
-        # TODO, turn these into proper type_plugin
-        
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/input_jurisdiction',
-            # jurisdiction_id is documented as "Required", but with the note
-            # 'This is only required if the endpoint serves multiple jurisdictions'
-            # i.e. it is optional as regards the schema, but the server may choose 
-            # to error if it is not provided.
-            {
-                type => '//rec',
-                optional => {
-                    jurisdiction_id => '//str',
-                },
-            }
-        );
-
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/bool',
-            {
-                type => '//any',
-                of => [
-                    { type => '//str', value => 'true' },
-                    { type => '//str', value => 'false' },
-                ],
-            }
-        );
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/service',
-            {
-                type => '//rec',
-                required => {
-                    service_name => '//str',
-                    type => '//str', # actually //any of (realtime, batch, blackbox)
-                    metadata => '/open311/bool',
-                    description => '//str',
-                    service_code => '//str',
-                },
-                optional => {
-                    keywords => '//str',
-                    group => '//str',
-                }
-            }
-        );
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/value',
-            {
-                type => '//rec',
-                required => {
-                    key => '//str',
-                    name => '//str',
-                }
-            }
-        );
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/values_list',
-            {
-                type => '//arr',
-                contents => '/open311/value',
-            },
-        );
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/attribute',
-            {
-                type => '//rec',
-                required => {
-                    code => '//str',
-                    datatype => '//str', # actually Enum[qw/ string number datetime text singlevaluelist multivaluelist /],
-                    datatype_description => '//str',
-                    description => '//str',
-                    order => '//int',
-                    required => '/open311/bool',
-                    variable => '/open311/bool',
-                },
-                optional => {
-                    values => '/open311/values_list',
-                },
-            }
-        );
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/attribute_list',
-            {
-                type => '//arr',
-                contents => '/open311/attribute',
-            }
-        );
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/service_definition',
-            {
-                type => '//rec',
-                required => {
-                    service_code => '//str',
-                    attributes => '/open311/attribute_list',
-                },
-            }
-        );
-        return $schema;
+        Open311::Endpoint::Schema->new,
+    },
+    handles => {
+        rx => 'schema',
+        format_boolean => 'format_boolean',
     },
 );
 
 sub GET_Service_List_input_schema {
     return {
-        type => '/open311/input_jurisdiction',
+        type => '//rec',
+        # jurisdiction_id is documented as "Required", but with the note
+        # 'This is only required if the endpoint serves multiple jurisdictions'
+        # i.e. it is optional as regards the schema, but the server may choose 
+        # to error if it is not provided.
+        optional => {
+            jurisdiction_id => '//str',
+        },
     };
 }
 
@@ -196,7 +114,7 @@ sub GET_Service_List {
         my $service = $_;
         {
             keywords => (join ',' => @{ $service->keywords } ),
-            metadata => $service->has_attributes ? 'true' : 'false',
+            metadata => $self->format_boolean( $service->has_attributes ),
             map { $_ => $service->$_ } 
                 qw/ service_name service_code description type group /,
         }
@@ -211,7 +129,12 @@ sub GET_Service_Definition_input_schema {
         type => '//seq',
         contents => [
             '//str', # service_code
-            '/open311/input_jurisdiction',
+            {
+                type => '//rec',
+                optional => {
+                    jurisdiction_id => '//str',
+                }
+            },
         ],
     };
 }
@@ -240,8 +163,8 @@ sub GET_Service_Definition {
                     my $attribute = $_;
                     {
                         order => ++$order,
-                        variable => $attribute->variable ? 'true' : 'false',
-                        required => $attribute->required ? 'true' : 'false',
+                        variable => $self->format_boolean( $attribute->variable ),
+                        required => $self->format_boolean( $attribute->required ),
                         $attribute->has_values ? (
                             values => [
                                 map { 
