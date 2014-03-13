@@ -70,6 +70,7 @@ my $problem = FixMyStreet::App->model('DB::Problem')->new( {
 subtest 'posting service request' => sub {
     my $extra = {
         url => 'http://example.com/report/1',
+        easting_northing => 'SET',
     };
 
     my $results = make_service_req( $problem, $extra, $problem->category, '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>' );

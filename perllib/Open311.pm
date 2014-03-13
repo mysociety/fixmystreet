@@ -173,7 +173,7 @@ sub _generate_service_request_description {
     my $extra = shift;
 
     my $description = "";
-    if ($problem->cobrand eq 'fixmystreet') {
+    if ($extra->{easting_northing}) { # Proxy for cobrand being in the UK
         $description .= "detail: " . $problem->detail . "\n\n";
         $description .= "url: " . $extra->{url} . "\n\n";
         $description .= "Submitted via FixMyStreet\n";
