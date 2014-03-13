@@ -92,6 +92,13 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     requires 'SOAP::WSDL';
 };
 
+feature 'open311-endpoint', 'Open311::Endpoint specific requirements' => sub {
+    requires 'Web::Simple';
+    requires 'Data::Rx';
+    requires 'MooX::HandlesVia';
+    requires 'Types::Standard';
+};
+
 #feature 'zurich', 'Zueri wie neu specific requirements' => sub {
 #    # Geocoder
 #    requires 'SOAP::Lite';
