@@ -53,9 +53,12 @@ has description => (
 has values => (
     is => 'ro',
     isa => HashRef,
+    default => sub { {} },
     handles_via => 'Hash',
     handles => {
         get_value => 'get',
+        has_values => 'count',
+        values_kv => 'kv',
     }
 );
 

@@ -28,35 +28,9 @@ sub dispatch_request {
         $self->call_api( GET_Service_List => $args );
     },
 
-    sub (GET + /services/*) {
-        my ($self, $service_id) = @_;
-        # requires jurisdiction_id
-        return bless {
-            service_definition => {
-                service_code => $service_id,
-                attributes => [
-                    {
-                        attribute => {
-                            variable => 'true|false',
-                            code => undef,
-                            datatype => 'string|number|datetime|text|singlevaluelist|multivaluelist',
-                            required => 'true|false',
-                            datatype_description => undef,
-                            order => undef, #int
-                            description => undef,
-                            values => [
-                                {
-                                    value => {
-                                        key => undef,
-                                        name => undef,
-                                    }
-                                }
-                            ],
-                        },
-                    },
-                ],
-            },
-        }, 'Open311::Endpoint::Result';
+    sub (GET + /services/* + ?*) {
+        my ($self, $service_id, $args) = @_;
+        $self->call_api( GET_Service_Definition => $service_id, $args );
     },
 
     sub (POST + /requests) {
@@ -112,7 +86,7 @@ has rx => (
                 type => '//rec',
                 required => {
                     service_name => '//str',
-                    type => '//str', # actually multi
+                    type => '//str', # actually //any of (realtime, batch, blackbox)
                     metadata => '/open311/bool',
                     description => '//str',
                     service_code => '//str',
@@ -123,17 +97,101 @@ has rx => (
                 }
             }
         );
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/_service',
-            {
-                type => '//rec',
-                required => {
-                    service => '/open311/service',
-                }
-            }
-        );
         return $schema;
     },
 );
+
+sub GET_Service_List_input_schema {
+    return {
+        type => '//rec',
+        optional => {
+            # jurisdiction_id is documented as "Required", but with the note
+            # 'This is only required if the endpoint serves multiple jurisdictions'
+            # i.e. it is optional as regards the schema, but the server may choose 
+            # to error if it is not provided.
+            jurisdiction_id => {
+                type => '//str',
+            },
+        }
+    };
+}
+
+sub GET_Service_List_output_schema {
+    return {
+        type => '//rec',
+        required => {
+            services => {
+                type => '//arr',
+                contents => '/open311/service',
+            },
+        }
+    };
+}
+
+sub GET_Service_List {
+    my ($self, @args) = @_;
+
+    my @services = map {
+        my $service = $_;
+        {
+            keywords => (join ',' => @{ $service->keywords } ),
+            metadata => $service->has_attributes ? 'true' : 'false',
+            map { $_ => $service->$_ } 
+                qw/ service_name service_code description type group /,
+        }
+    } $self->services;
+    return {
+        services => \@services,
+    };
+}
+
+sub GET_Service_Definition {
+    my ($self, $service_id, $args) = @_;
+
+    my $service = $self->service($service_id, $args) or return;
+    my $order = 0;
+    return {
+        service_definition => {
+            service_code => $service_id,
+            attributes => [
+                map {
+                    my $attribute = $_;
+                    {
+                        order => ++$order,
+                        variable => $attribute->variable ? 'true' : 'false',
+                        required => $attribute->required ? 'true' : 'false',
+                        $attribute->has_values ? (
+                            values => [
+                                map { 
+                                    my ($key, $name) = @$_;
+                                    +{ 
+                                        key => $key, 
+                                        name => $name,
+                                    }
+                                } $attribute->values_kv
+                            ]) : (),
+                        map { $_ => $attribute->$_ } 
+                            qw/ code datatype datatype_description description /,
+                    }
+                } $service->get_attributes,
+            ],
+        },
+    };
+}
+
+sub services {
+    # this should be overridden in your subclass!
+    [];
+}
+sub service {
+    # this is a simple lookup on $self->services, and should 
+    # *probably* be overridden in your subclass!
+    # (for example, to look up in App DB, with $args->{jurisdiction_id})
+
+    my ($self, $service_code, $args) = @_;
+
+    return first { $_->service_code eq $service_code } $self->services;
+}
 
 sub call_api {
     my ($self, $api_name, @args) = @_;
@@ -189,71 +247,24 @@ sub call_api {
 
     push @dispatchers, sub () {
         my $data = $self->$api_method(@args);
-        return Open311::Endpoint::Result->new({
-            status => 200,
-            data => $data,
-        });
+        if ($data) {
+            return Open311::Endpoint::Result->new({
+                status => 200,
+                data => $data,
+            });
+        }
+        else {
+            return Open311::Endpoint::Result->new({
+                status => 404,
+                data => {
+                    error => 'Resource not found',
+                }
+            });
+        }
     };
 
     (@dispatchers);
 }
-
-sub GET_Service_List_input_schema {
-    return {
-        type => '//rec',
-        optional => {
-            # jurisdiction_id is documented as "Required", but with the note
-            # 'This is only required if the endpoint serves multiple jurisdictions'
-            # i.e. it is optional as regards the schema, but the server may choose 
-            # to error if it is not provided.
-            jurisdiction_id => {
-                type => '//str',
-            },
-        }
-    };
-}
-
-sub GET_Service_List_output_schema {
-    return {
-        type => '//rec',
-        required => {
-            services => {
-                type => '//arr',
-                contents => '/open311/service',
-            },
-        }
-    };
-}
-
-sub GET_Service_List {
-    my ($self, @args) = @_;
-
-    my @services = map {
-        my $service = $_;
-        {
-            keywords => (join ',' => @{ $service->keywords } ),
-            metadata => $service->has_attributes ? 'true' : 'false',
-            map { $_ => $service->$_ } 
-                qw/ service_name service_code description type group /,
-        }
-    } $self->services;
-    return {
-        services => \@services,
-    };
-}
-
-sub services {
-    # this should be overridden in your subclass!
-    [];
-}
-sub service {
-    # this is a simple lookup on $self->services, and should 
-    # *probably* be overridden in your subclass!
-    my ($self, $service_code) = @_;
-
-    return first { $_->service_code eq $service_code } $self->services;
-}
-
 
 my $json = JSON->new->pretty->allow_blessed->convert_blessed;
 sub format_response {
@@ -301,18 +312,10 @@ sub format_response {
             return [
                 $status,
                 [ 'Content-Type' => 'text/xml' ],
-                [ $xs->XMLout( $data) ],
-            ];
-        }
-        elsif ($ext eq 'html') {
-            # TODO, refactor with json above
-            if (ref $data eq 'HASH' and scalar keys %$data == 1) {
-                $data = $data->{ (keys %$data)[0] };
-            }
-            return [
-                $status, 
-                [ 'Content-Type' => 'text/plain' ],
-                [ $json->encode( $data )]
+                [ 
+                    qq(<?xml version="1.0" encoding="utf-8"?>\n),
+                    $xs->XMLout( $data),
+                ],
             ];
         }
         else {

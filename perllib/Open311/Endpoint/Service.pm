@@ -36,11 +36,11 @@ has type => (
 
 has attributes => (
     is => 'ro',
-    isa => HashRef[ InstanceOf['Open311::Endpoint::Service::Attribute'] ],
-    handles_via => 'Hash',
+    isa => ArrayRef[ InstanceOf['Open311::Endpoint::Service::Attribute'] ],
+    handles_via => 'Array',
     handles => {
-        get_attribute => 'get',
         has_attributes => 'count',
+        get_attributes => 'elements',
     }
 );
 
