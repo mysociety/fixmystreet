@@ -22,27 +22,71 @@
     </script>
   </head>
   <body>
-
-  <div class="ms-header">
-    <nav class="ms-header__row">
-       <a class="ms-header__logo" href="http://www.mysociety.org">mySociety</a>
-    </nav>
-  </div>
-
-  <header class="site-header">
-    <div class="container">
-      <a href="{{ site.baseurl }}" class="site-title"><h1>FixMyStreet: Platform</h1></a>
+  <div class="page-wrapper">
+    <div class="ms-header">
+      <nav class="ms-header__row">
+         <a class="ms-header__logo" href="http://www.mysociety.org">mySociety</a>
+      </nav>
     </div>
-  </header>
 
-    {{ content }}
+    <header class="site-header">
+      <div class="container">
+        <a href="{{ site.baseurl }}" class="site-title"><h1>FixMyStreet: Platform</h1></a>
+      </div>
+    </header>
 
-  <footer>
+      {{ content }}
 
-
+    <footer class="site-footer">
+      <div class="container">
+        <div class="column">
+          <h3>mySociety</h3>      
+          <ul>
+            <li><a href="#">Get involed</a></li>
+            <li><a href="#">About us</a></li>
+            <li><a href="#">Our team</a></li>
+            <li><a href="#">Contact us</a></li>
+            <li><a href="#">Donate</a></li>
+          </ul>
+        </div>
+        <div class="column">
+          <h3>Our Apps</h3>   
+          <ul>
+            <li><a href="#">FixMyStreet</a></li>
+            <li><a href="#">WriteToThem</a></li>
+            <li><a href="#">WhatDoTheyKnow</a></li>
+            <li><a href="#">TheWorkForYou</a></li>
+          </ul>
+        </div>
+        <div class="column">
+          <ul class="no-title">
+            <li><a href="#">FixMyTransport</a></li>
+            <li><a href="#">HereFromYourMP</a></li>
+            <li><a href="#">Alavtelli</a></li>
+            <li><a href="#">Pombola</a></li>
+          </ul>
+        </div>
+        <div class="column">
+          <ul class="no-title">
+            <li><a href="#">PopIt</a></li>
+            <li><a href="#">SayIt</a></li>
+            <li><a href="#">MapIt</a></li>
+            <li><a href="#">PledgeBank</a></li>
+          </ul>
+        </div>
+        <div class="column">
+          <h3>Connect</h3>
+          <ul>
+            <li><a href="#">Github</a></li>
+            <li><a href="#">Instagram</a></li>
+            <li><a href="#">Twitter</a></li>
+            <li><a href="#">Facebook</a></li>
+          </ul>
+        </div>  
+      </div>
     </footer>
-
-   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+  </div>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <script>
       function replace_str(base, replacement) {
         return base + replacement; // FIXME TODO should replace %s

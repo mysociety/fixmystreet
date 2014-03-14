@@ -338,7 +338,7 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-.image-replacement, .ms-header__logo, .site-title {
+.image-replacement, .ms-header__logo, .site-title, .slider-nav a {
   text-indent: -1000%;
   white-space: nowrap;
   overflow: hidden; }
@@ -658,7 +658,7 @@ html {
 
 body {
   font-family: "Source Sans Pro", "Helvetica Neue", Arial, Helvetica, serif;
-  background-color: #f3f1eb;
+  background-color: #333333;
   color: #333333;
   font-size: 1.125em;
   line-height: 1.555555556em;
@@ -683,7 +683,8 @@ h1,
   font-weight: 600; }
 
 h2,
-.secondary-heading {
+.secondary-heading,
+.this-or-this .or {
   font-size: 1.666666667em;
   font-weight: 600; }
 
@@ -707,6 +708,9 @@ p {
   padding-bottom: 1em;
   margin-bottom: 1.2em;
   margin-top: 0; }
+
+.title {
+  font-weight: normal; }
 
 pre, code, kbd, samp {
   font-family: Consolas, 'Liberation Mono', Courier, monospace; }
@@ -742,6 +746,10 @@ img {
 
 ul {
   padding-left: 1.3em; }
+
+/* To avoid floaty footer, make background footer colour */
+.page-wrapper {
+  background: #fff; }
 
 /* mySociety header */
 .ms-header {
@@ -792,7 +800,7 @@ ul {
   padding-top: 3.75em;
   padding-bottom: 3.75em;
   background-position: center;
-  background-color: yellow;
+  background-color: #fff066;
   display: block;
   width: 100%;
   float: left; }
@@ -1055,11 +1063,10 @@ ul {
     width: 114px;
     height: 114px;
     display: block;
-    margin: 0 auto;
-    background-position: top left;
+    margin: 32px auto 16px;
+    background-position: center top;
     background-size: 114px 114px;
-    background-repeat: no-repeat;
-    float: left; }
+    background-repeat: no-repeat; }
   .summary-of-features .icon-opensource {
     background-image: url("../img/icon-opensource.svg"); }
   .summary-of-features .icon-paint {
@@ -1068,6 +1075,12 @@ ul {
     background-image: url("../img/icon-help.svg"); }
   .summary-of-features .icon-world {
     background-image: url("../img/icon-world.svg"); }
+  .summary-of-features h3 {
+    font-size: 1em;
+    margin-bottom: 16px; }
+  .summary-of-features p {
+    font-size: 1em;
+    margin: 8px 32px 32px; }
 
 .this-or-this {
   display: table;
@@ -1075,27 +1088,56 @@ ul {
   text-align: center; }
   .this-or-this .this,
   .this-or-this .or {
-    display: table-cell;
+    display: table-cell; }
+  .this-or-this .this {
+    width: 40%;
     vertical-align: middle; }
+  .this-or-this .or {
+    width: 20%;
+    vertical-align: top;
+    padding-top: 64px;
+    font-weight: normal;
+    color: #999;
+    font-style: italic; }
 
 .action-buttons li {
   width: 50%;
   float: left; }
   .action-buttons li a {
-    background: blue;
+    width: 160px;
+    margin-bottom: 32px;
     color: #fff;
-    padding: 5px 10px;
-    display: block;
-    margin: 10px 20px; }
+    display: block !important;
+    margin: 10px 32px !important; }
   .action-buttons li .icon {
     width: 30px;
-    height: 30px;
-    background-color: green;
+    height: 50px;
     display: block;
-    float: left; }
+    float: left;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px;
+    opacity: 0.6;
+    margin-left: -10px; }
+  .action-buttons li .icon-document {
+    background-image: url("../img/icon-document.svg"); }
+  .action-buttons li .icon-download {
+    background-image: url("../img/icon-download.svg"); }
+  .action-buttons li .icon-github {
+    background-image: url("../img/icon-github.svg"); }
+  .action-buttons li .icon-email {
+    background-image: url("../img/icon-email.svg"); }
+  .action-buttons li .icon-twitter {
+    background-image: url("../img/icon-twitter.svg"); }
+  .action-buttons li .icon-irc {
+    background-image: url("../img/icon-hash.svg"); }
+  .action-buttons li .icon-post {
+    background-image: url("../img/icon-mail.svg"); }
 
 .site-footer {
-  background: lightgreen;
+  margin-top: 64px;
+  background: #333333;
+  padding: 32px 0;
   /**
    * For IE 6/7 only
    * Include this rule to trigger hasLayout and contain floats.
@@ -1117,15 +1159,30 @@ ul {
       width: 20%; }
       .site-footer .column:first-child {
         padding-left: 0; } }
+  .site-footer h3 {
+    font-size: 1em;
+    font-weight: normal;
+    margin-bottom: 0;
+    color: #888; }
+  .site-footer ul {
+    margin: 0; }
+    .site-footer ul.no-title {
+      margin-top: 32px; }
+  .site-footer a {
+    color: #eeeeee; }
 
 .primary-nav {
   text-align: center; }
   .primary-nav li {
-    display: block;
-    padding: 48px; }
+    display: inline-block;
+    padding: 0 64px; }
     @media (min-width: 30em) {
       .primary-nav li {
         display: inline; } }
+  .primary-nav a {
+    display: inline-block;
+    padding: 10.66667px 0;
+    color: #333333; }
 
 .slider-nav {
   float: right; }
@@ -1133,6 +1190,70 @@ ul {
     display: inline; }
   .slider-nav a {
     display: block;
-    background: red;
+    background-color: #e4e3dd;
     float: left;
-    padding: 6px; }
+    background-position: center center;
+    background-size: 16px;
+    background-repeat: no-repeat;
+    height: 48px;
+    width: 48px;
+    margin-right: 2px; }
+    .slider-nav a.btn-prev {
+      background-image: url("../img/icon-arrow-left.svg");
+      border-radius: 3px 0 0 3px; }
+    .slider-nav a.btn-next {
+      background-image: url("../img/icon-arrow-right.svg");
+      border-radius: 0 3px 3px 0; }
+    .slider-nav a:hover {
+      background-color: #cfcec8; }
+
+.btn, .btn--green, .btn--blue {
+  display: inline-block;
+  vertical-align: middle;
+  white-space: nowrap;
+  font-family: inherit;
+  font-size: 100%;
+  cursor: pointer;
+  border: none;
+  margin: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 3;
+  padding-right: 1em;
+  padding-left: 1em;
+  border-radius: 3px;
+  transition-duration: 0.2s; }
+  .btn:hover, .btn--green:hover, .btn--blue:hover, .btn:active, .btn--green:active, .btn--blue:active {
+    text-decoration: none;
+    transition-duration: 0.2s; }
+
+.btn--green {
+  background: #61b252; }
+  .btn--green:hover {
+    background: #53a044; }
+  .btn--green:active {
+    background: #388924;
+    box-shadow: inset 0px 0px 6px #255b18; }
+
+.btn--blue {
+  background: #54b1e4; }
+  .btn--blue:hover {
+    background: #2b8cdb; }
+  .btn--blue:active {
+    background: #207cba;
+    box-shadow: inset 0px 0px 6px #15527c; }
+
+.bg-default {
+  background: #e4e3dd; }
+
+.spacer-top {
+  margin-top: 64px; }
+
+.spacer-bottom {
+  margin-bottom: 64px; }
+
+.monitor {
+  width: 469px;
+  height: 361px;
+  background: url("../img/monitor.png");
+  float: left; }

@@ -3,36 +3,33 @@ layout: landing
 title: Welcome
 ---
 
-
 <nav class="bg-default">
- <div class="container">
-   <ul class="primary-nav">
-     <li><a href="#">Documentation</a></li>
-     <li><a href="#">How it works</a></li>
-     <li><a href="#">Github</a></li>
-     <li><a href="#">Contact us</a></li>
-   </ul>
- </div> 
+  <div class="container">
+    <ul class="primary-nav">
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">How it works</a></li>
+      <li><a href="#">Github</a></li>
+      <li><a href="#">Contact us</a></li>
+    </ul>
+  </div> 
 </nav>
 
 
 <div class="container">
-
-  <div class="homepage-feature">
+  <div class="homepage-feature spacer-top">
     <div class="column">
-      <img src="http://dummyimage.com/300x300">
+      <div class="monitor">&nbsp;</div>
       <h3>FixMyStreet in Malasia</h3>
       <p>Run by Sinar Project</p>
 
       <ul class="slider-nav">
-        <li><a href="#">Previous</a></li>
-        <li><a href="#">Next</a></li>
+        <li><a href="#" class="btn-prev">Previous</a></li>
+        <li><a href="#" class="btn-next">Next</a></li>
       </ul>
-
-
     </div>
+
     <div class="column">
-      <h1>Run a website like FixMyStreet in your country or city, for free</h1>
+      <h1 class="secondary-heading title">Run a website like FixMyStreet in your country or city, for free</h1>
       <p>
       With FixMyStreet Platform you can easily launch a website that helps people to report street problems like potholes and broken street lights. Problem reports are then sent to authorities for fixing.
       </p>
@@ -43,26 +40,27 @@ title: Welcome
   </div>
 </div>
 
-<div class="bg-default">
+
+<div class="bg-default spacer-top">
   <div class="container">
     <ul class="summary-of-features">
       <li>
-        <div class="circle-icon icon-opensource"></div>
+        <div class="circle-icon icon-opensource">&nbsp;</div>
         <h3>Free software</h3>
         <p>Using open source technologies</p>
       </li>
       <li>
-        <div class="circle-icon icon-paint"></div>
+        <div class="circle-icon icon-paint">&nbsp;</div>
         <h3>Brandable</h3>
         <p>Add your own colour, fonts and logos</p>
       </li>
       <li>
-        <div class="circle-icon icon-help"></div>
+        <div class="circle-icon icon-help">&nbsp;</div>
         <h3>Friendly support</h3>
         <p>Backup from mySociety and a strong community</p>
       </li>
       <li>
-        <div class="circle-icon icon-world"></div>
+        <div class="circle-icon icon-world">&nbsp;</div>
         <h3>Many languages</h3>
         <p>Use existing languags or add your own</p>
       </li>
@@ -71,80 +69,32 @@ title: Welcome
 </div>
 
 <div class="container">
-  <h2 class="text--center">Let's get started</h2>
+  <h2 class="text--center spacer-top primary-heading title">Let's get started</h2>
 
   <div class="this-or-this">
     <div class="this">
-      <h3>Learn more</h3>
-      <p>Get your FixMyStreet site up and running</p>
-      <ul class="action-buttons">
-        <li><a href="#"><i class="icon icon-download"></i> Install</a></li>
-        <li><a href="#"><i class="icon icon-document"></i> Docs</a></li>
-        <li><a href="#"><i class="icon icon-github"></i> Github</a></li>
-        <li><a href="#"><i class="icon icon-document"></i> Licence Info</a></li>
+      <h3 class="secondary-heading spacer-top title">Learn more</h3>
+      <p class="tertiary-heading">Get your FixMyStreet <br>site up and running</p>
+      <ul class="action-buttons spacer-top">
+        <li><a href="#" class="btn--green"><i class="icon icon-download">&nbsp;</i> Install</a></li>
+        <li><a href="#" class="btn--green"><i class="icon icon-document">&nbsp;</i> Docs</a></li>
+        <li><a href="#" class="btn--green"><i class="icon icon-github">&nbsp;</i> Github</a></li>
+        <li><a href="#" class="btn--green"><i class="icon icon-document">&nbsp;</i> Licence Info</a></li>
       </ul>
     </div>
     <span class="or">or</span>
     <div class="this">
-      <h3>Get in touch</h3>
-      <p>Say hello, we'll help you make your new site awesome</p>
-      <ul class="action-buttons">
-        <li><a href="#"><i class="icon icon-email"></i> Email us</a></li>
-        <li><a href="#"><i class="icon icon-twitter"></i> Follow us</a></li>
-        <li><a href="#"><i class="icon icon-irc"></i> Chat on IRC</a></li>
-        <li><a href="#"><i class="icon icon-post"></i> Mailing list</a></li>
+      <h3 class="secondary-heading spacer-top title">Get in touch</h3>
+      <p class="tertiary-heading">Say hello, we'll help you make <br>your new site awesome</p>
+      <ul class="action-buttons spacer-top">
+        <li><a href="#" class="btn--blue"><i class="icon icon-email">&nbsp;</i> Email us</a></li>
+        <li><a href="#" class="btn--blue"><i class="icon icon-twitter">&nbsp;</i> Follow us</a></li>
+        <li><a href="#" class="btn--blue"><i class="icon icon-irc">&nbsp;</i> Chat on IRC</a></li>
+        <li><a href="#" class="btn--blue"><i class="icon icon-post">&nbsp;</i> Mailing list</a></li>
       </ul>
     </div>
   </div>
 </div>
 
-<footer class="site-footer">
-  <div class="container">
-      <div class="column">
-    <h3>mySociety</h3>      
-    <ul>
-      <li><a href="#">Get involed</a></li>
-      <li><a href="#">About us</a></li>
-      <li><a href="#">Our team</a></li>
-      <li><a href="#">Contact us</a></li>
-      <li><a href="#">Donate</a></li>
-    </ul>
-  </div>
-  <div class="column">
-    <h3>Our Apps</h3>   
-    <ul>
-      <li><a href="#">FixMyStreet</a></li>
-      <li><a href="#">WriteToThem</a></li>
-      <li><a href="#">WhatDoTheyKnow</a></li>
-      <li><a href="#">TheWorkForYou</a></li>
-    </ul>
-  </div>
-  <div class="column">
-    <ul>
-      <li><a href="#">FixMyTransport</a></li>
-      <li><a href="#">HereFromYourMP</a></li>
-      <li><a href="#">Alavtelli</a></li>
-      <li><a href="#">Pombola</a></li>
-    </ul>
-  </div>
-  <div class="column">
-    <ul>
-      <li><a href="#">PopIt</a></li>
-      <li><a href="#">SayIt</a></li>
-      <li><a href="#">MapIt</a></li>
-      <li><a href="#">PledgeBank</a></li>
-    </ul>
-  </div>
-  <div class="column">
-    <h3>Connect</h3>
-    <ul>
-      <li><a href="#">Github</a></li>
-      <li><a href="#">Instagram</a></li>
-      <li><a href="#">Twitter</a></li>
-      <li><a href="#">Facebook</a></li>
-    </ul>
-  </div>  
-  </div>
-</footer>
 
 

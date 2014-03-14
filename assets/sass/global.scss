@@ -14,7 +14,7 @@ html {
 
 body {
     font-family: $source;
-    background-color: $colour_background;
+    background-color: $colour_black;
     color: $colour_black;
     font-size: 1.125em;
     line-height: 1.555555556em;
@@ -76,6 +76,8 @@ p {
     margin-top: 0;
 }
 
+.title {font-weight: normal;}
+
 pre, code, kbd, samp {
     font-family: Consolas, 'Liberation Mono', Courier, monospace;
 }
@@ -116,6 +118,11 @@ img {
 
 ul {
     padding-left: 1.3em;
+}
+
+/* To avoid floaty footer, make background footer colour */
+.page-wrapper {
+    background: #fff;
 }
 
 /* mySociety header */
@@ -178,7 +185,7 @@ ul {
     padding-top: 3.75em;
     padding-bottom: 3.75em;
     background-position: center;
-    background-color: yellow;
+    background-color: $colour_brand;
     display: block;
     width: 100%;
     float: left;
@@ -463,18 +470,26 @@ ul {
         width: $circle_icon_width;
         height: $circle_icon_height;
         display: block;
-        margin: 0 auto;
-        background-position: top left;
+        margin: $base-spacing-unit auto $base-spacing-unit / 2;
+        background-position: center top;
         background-size: $circle_icon_width $circle_icon_width;
         background-repeat: no-repeat;
-        float: left;
     }
-
     .icon-opensource {background-image: url($icon_opensource_path);}
     .icon-paint {background-image: url($icon_paint_path);}
     .icon-help {background-image: url($icon_help_path);}
     .icon-world {background-image: url($icon_world_path);}
+    h3 {
+        font-size: 1em;
+        margin-bottom: $base-spacing-unit / 2;
+    }
+    p {
+        font-size: 1em;
+        margin: $base-spacing-unit / 4 $base-spacing-unit $base-spacing-unit;
+    }
 }
+
+
 
 .this-or-this {
     display: table;
@@ -483,7 +498,19 @@ ul {
     .this,
     .or {
         display: table-cell;
+    }
+    .this {
+        width: 40%;
         vertical-align: middle;
+    }
+    .or {
+        width: 20%;
+        vertical-align: top;
+        padding-top: $base-spacing-unit * 2;
+        @extend .secondary-heading;
+        font-weight: normal;
+        color: #999;
+        font-style: italic;
     }
 }
 
@@ -493,45 +520,72 @@ ul {
         width: 50%;
         float: left;
         a {
-            background: blue;
+            width: $base-spacing-unit *5;
+            margin-bottom: $base-spacing-unit;
             color: #fff;
-            padding: 5px 10px;
-            display: block;
-            margin: 10px 20px;
+            display: block !important;
+            margin: 10px $base-spacing-unit !important;
         }
         .icon {
             width: 30px;
-            height: 30px;
-            background-color: green;
+            height: 50px;
             display: block;
             float: left;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 20px;
+            opacity: 0.6;
+            margin-left: -10px;
         }
+        .icon-document {background-image: url($icon_docs_path);}
+        .icon-download {background-image: url($icon_download_path);}
+        .icon-github {background-image: url($icon_github_path);}
+        .icon-email {background-image: url($icon_email_path);}
+        .icon-twitter {background-image: url($icon_twitter_path);}
+        .icon-irc {background-image: url($icon_irc_path);}
+        .icon-post {background-image: url($icon_post_path);}
     }
 }
 
 
 .site-footer {
-    background: lightgreen;
+    margin-top: $base-spacing-unit *2;
+    background: $colour_black;
+    padding: $base-spacing-unit 0;
     @include clearfix;
     .column {
         @media (min-width: $medium-screen) {
         @include grid-column--one-of-five;
         }
     }
-    ul {
-        @extend .unstyled;
+    h3 {
+        font-size: 1em;
+        font-weight: normal;
+        margin-bottom: 0;
+        color: #888;
     }
+    ul {
+        margin: 0;
+        @extend .unstyled;
+        &.no-title {margin-top: $base-spacing-unit}
+    }
+    a {color: #eeeeee;}
 }
 
 .primary-nav {
     @extend .unstyled;
     text-align: center;
     li {
-        display: block;
-        padding: $base-spacing-unit * 2;
+        display: inline-block;
+        padding: 0 $base-spacing-unit * 2;
         @media (min-width: $medium-screen) {
             display: inline;
         }
+    }
+    a {
+        display: inline-block;
+        padding: ($base-spacing-unit / 3) 0;
+        color: $colour_black;
     }
 }
 
@@ -540,9 +594,83 @@ ul {
     @extend .unstyled;
     li {display: inline}
     a {
+        @extend .image-replacement;
         display: block;
-        background: red;
+        background-color: $colour_light_grey;
         float: left;
-        padding: $base-spacing-unit /4;
+        background-position: center center;
+        background-size: $base-spacing-unit * 0.5;
+        background-repeat: no-repeat;
+        height: $base-spacing-unit * 1.5;
+        width: $base-spacing-unit * 1.5;
+        margin-right: 2px;
+        &.btn-prev {
+            background-image: url($prev_arrow_path);
+            border-radius: 3px 0 0 3px;
+        }
+        &.btn-next {
+            background-image: url($next_arrow_path);
+            border-radius: 0 3px 3px 0;
+        }
+        &:hover {
+            background-color: $colour_light_grey / 1.1;
+        }
     }
 }
+
+.btn{
+    display:inline-block;
+    vertical-align:middle;
+    white-space:nowrap;
+    font-family:inherit;
+    font-size:100%;
+    cursor:pointer;
+    border:none;
+    margin:0;
+    padding-top:0;
+    padding-bottom:0;
+    line-height:3;
+    padding-right:1em;
+    padding-left: 1em;
+    border-radius: 3px;
+    transition-duration: 0.2s;
+    &:hover,
+    &:active {
+        text-decoration: none;
+        transition-duration: 0.2s;
+    }
+}
+
+.btn--green {
+    @extend .btn;
+    background: $colour_green;
+    &:hover {background: $colour_green_dark;}
+    &:active {
+        background: $colour_green_dark_2;
+        box-shadow: inset 0px 0px 6px $colour_green_dark_2 /1.5;
+    }
+}
+
+.btn--blue {
+    @extend .btn;
+    background: $colour_blue;
+    &:hover {background: $colour_blue_dark;}
+    &:active {
+        background: $colour_blue_dark_2;
+        box-shadow: inset 0px 0px 6px $colour_blue_dark_2 /1.5;
+    }
+}
+
+.bg-default { background: $colour_light_grey;}
+
+.spacer-top {margin-top: $base-spacing-unit *2}
+.spacer-bottom {margin-bottom: $base-spacing-unit *2}
+
+.monitor {
+    width: $monitor_width;
+    height: $monitor_height;
+    background: url($monitor_path);
+    float: left;
+}
+
+
