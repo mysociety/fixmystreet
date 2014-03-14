@@ -6,6 +6,8 @@ use warnings;
 
 sub site_title { return 'ZeroTB'; }
 
+sub enter_postcode_text { return _ ('Enter a nearby street name and area, postal code or district in Delhi'); }
+
 sub country {
     return 'IN';
 }
