@@ -188,25 +188,14 @@ sub POST_Service_Request_input_schema {
     my $service = $self->service($service_code)
         or return; # we can't fetch service, so signal error TODO
 
-    my $schema = $self->POST_Service_Request_input_schema_base;
-
-    my @attributes = $service->get_attributes
-        or return $schema;
-
-    for my $attribute (@attributes) {
+    my %attributes;
+    for my $attribute ($service->get_attributes) {
         my $section = $attribute->required ? 'required' : 'optional';
         my $key = sprintf 'attribute[%s]', $attribute->code;
         my $def = $attribute->schema_definition;
 
-        for (@{ $schema->{of} }) {
-            $_->{ $section }{ $key } = $def;
-        }
+        $attributes{ $section }{ $key } = $def;
     }
-
-    return $schema;
-}
-
-sub POST_Service_Request_input_schema_base {
 
     # we have to supply at least one of these, but can supply more
     my @address_options = (
@@ -216,13 +205,14 @@ sub POST_Service_Request_input_schema_base {
     );
 
     my @address_schemas;
-    while (my $required = shift @address_options) {
+    while (my $address_required = shift @address_options) {
         push @address_schemas,
         {
             type => '//rec',
             required => {
                 service_code => '//str',
-                %$required,
+                %{ $attributes{required} },
+                %{ $address_required },
             },
             optional => {
                 jurisdiction_id => '//str',
@@ -234,6 +224,7 @@ sub POST_Service_Request_input_schema_base {
                 phone => '//str',
                 description => '//str',
                 media_url => '//str',
+                %{ $attributes{optional} },
                 map %$_, @address_options,
             },
         };
