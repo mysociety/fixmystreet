@@ -65,3 +65,20 @@ body {
     padding: 0em 1em;
 }
 
+#front-main {
+    #front-main-container {
+        max-width: 40em;
+        h2 {
+            text-align: left;
+        }
+    }
+    #postcodeForm {
+        div {
+            width: 30em;
+            input#pc {
+                max-width: none;
+                width: 27em;
+            }
+        }
+    }
+}

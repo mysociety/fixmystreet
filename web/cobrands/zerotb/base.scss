@@ -15,6 +15,37 @@ body {
     font-weight: 300;
 }
 
+input {
+    background-color: $alt-background;
+}
+
+#front-main {
+    h2 {
+        font-weight: 300;
+    }
+
+    #postcodeForm {
+        div {
+            border: 0px;
+            background: $primary_b;
+            input#pc {
+                background-color: $alt-background;
+                border: 0px;
+                border-radius: 0px;
+                box-shadow: none;
+                width: 80%;
+            }
+            input#sub {
+                background-color: $button-color;
+                border: 1px solid $alt-background;
+                border-radius: 5px;
+                color: white;
+                margin-left: 5px;
+            }
+        }
+    }
+}
+
 #site-logo {
     background: none;
     text-indent: 0px;
