@@ -295,7 +295,7 @@ sub POST_Service_Request {
                     $_->service_notice 
                     || $service->default_service_notice
                     || $self->default_service_notice;
-                {
+                +{
                     ($service->type eq 'realtime') ? ( service_request_id => $_->service_request_id ) : (),
                     ($service->type eq 'batch')    ? ( token => $_->token ) : (),
                     $service_notice ? ( service_notice => $service_notice ) : (),

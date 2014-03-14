@@ -27,6 +27,60 @@ has account_id => (
     predicate => 1,
 );
 
-# + all the rest
+has status => (
+    is => 'rw',
+    isa => Enum[qw/ open closed /],
+    default => sub { 'open' },
+);
+
+has description => (
+    is => 'ro',
+    isa => Maybe[Str],
+);
+
+has agency_responsible => (
+    is => 'ro',
+    isa => Maybe[Str],
+);
+
+has requested_datetime => (
+    is => 'ro',
+    isa => Maybe[ InstanceOf['DateTime'] ],
+);
+
+has updated_datetime => (
+    is => 'ro',
+    isa => Maybe[ InstanceOf['DateTime'] ],
+);
+
+has expected_datetime => (
+    is => 'ro',
+    isa => Maybe[ InstanceOf['DateTime'] ],
+);
+
+has address => (
+    is => 'ro',
+    isa => Maybe[Str],
+);
+
+has address_id => (
+    is => 'ro',
+    isa => Maybe[Str],
+);
+
+has zipcode => (
+    is => 'ro',
+    isa => Maybe[Str],
+);
+
+has latlong => (
+    is => 'ro',
+    isa => Maybe[Tuple[ Num, Num ]],
+);
+
+has media_url => (
+    is => 'ro',
+    isa => Maybe[Str],
+);
 
 1;
