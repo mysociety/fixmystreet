@@ -1,0 +1,78 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use feature 'say';
+use File::ChangeNotify;
+use File::Find::Rule;
+use Path::Tiny;
+
+my @exts = qw/
+    scss
+/;
+
+my @dirs = qw/
+    web
+/;
+
+my $filter = do {
+    my $exts = join '|', @exts;
+    qr/\.(?:$exts)$/
+};
+
+my $watcher = File::ChangeNotify->instantiate_watcher(
+    directories => \@dirs,
+    filter => $filter,
+);
+
+sub title {
+    my $what = shift;
+    # TODO, check if xtitle is installed and if so, run following command:
+    # system 'xtitle', $what;
+}
+
+say sprintf "Watching [%s] for %s", (join ',' => @dirs), $filter;
+title 'watching';
+
+while ( my @events = $watcher->wait_for_events() ) {
+    my %seen;
+    my @update_dirs;
+    title 'updating';
+    for my $event (@events) {
+        my $file = path( $event->path );
+        say "$file was updated...";
+        my $dir = $file->dirname;
+        next if $seen{$dir}++;
+
+        if ($dir eq 'web/cobrands/sass/') {
+            # contains only partials, so we don't need to update
+            # this directory, but we *do* need to update everything else
+            push @update_dirs, 
+                grep {
+                    ! ($seen{$_}++)
+                }
+                map {
+                    path($_)->dirname
+                }
+                File::Find::Rule->file->name($filter)->in( @dirs );
+        }
+        else {
+            push @update_dirs, $dir;
+        }
+    }
+    for my $dir (@update_dirs) {
+        if (-e "$dir/config.rb") {
+            system compass =>
+                'compile',
+                '--output-style' => 'compressed',
+                $dir;
+        }
+        else {
+            system sass =>
+                '--scss',
+                '--update',
+                '--style' => 'compressed',
+                $dir;
+        }
+    }
+    title 'watching';
+}
