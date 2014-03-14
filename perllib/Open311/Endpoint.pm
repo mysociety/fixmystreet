@@ -7,6 +7,7 @@ use XML::Simple;
 
 use Open311::Endpoint::Result;
 use Open311::Endpoint::Service;
+use Open311::Endpoint::Service::Request;
 use Open311::Endpoint::Spark;
 use Open311::Endpoint::Schema;
 
@@ -280,20 +281,29 @@ sub POST_Service_Request_output_schema {
 
 sub POST_Service_Request {
     my ($self, $args) = @_;
-        # jurisdiction_id
-        # service_code
-        # lat/lon OR address_string OR address_id
-        # attribute: array of key/value responses, as per service definition
-        # NB: various optional arguments
+
+    # TODO: pass this through from earlier stages
+    my $service_code = $args->{service_code};
+    my $service = $self->service($service_code);
+
+    my @service_requests = $service->submit_request( $args );
         
-        return {
-            service_requests => [
+    return {
+        service_requests => [
+            map {
+                my $service_notice = 
+                    $_->service_notice 
+                    || $service->default_service_notice
+                    || $self->default_service_notice;
                 {
-                    service_request_id => 'DUMMY',
-                    service_notice => 'DUMMY',
-                },
-            ],
-        };
+                    ($service->type eq 'realtime') ? ( service_request_id => $_->service_request_id ) : (),
+                    ($service->type eq 'batch')    ? ( token => $_->token ) : (),
+                    $service_notice ? ( service_notice => $service_notice ) : (),
+                    $_->has_account_id ? ( account_id => $_->account_id ) : (),
+                }
+            } @service_requests,
+        ],
+    };
 }
 
 sub services {
