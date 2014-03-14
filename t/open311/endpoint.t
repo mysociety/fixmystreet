@@ -224,6 +224,25 @@ subtest "POST Service Request" => sub {
     ok $res->is_success
         or diag $res->content;
 
+    $res = $endpoint->run_test_request( 
+        POST => '/requests.json', 
+        service_code => 'POT',
+        address_string => '22 Acacia Avenue',
+        first_name => 'Bob',
+        last_name => 'Mould',
+    );
+    ok ! $res->is_success;
+
+    $res = $endpoint->run_test_request( 
+        POST => '/requests.json', 
+        service_code => 'POT',
+        address_string => '22 Acacia Avenue',
+        first_name => 'Bob',
+        last_name => 'Mould',
+        'attribute[depth]' => 100,
+        'attribute[shape]' => 'starfish',
+    );
+    ok ! $res->is_success;
 };
 
 done_testing;
