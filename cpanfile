@@ -93,6 +93,11 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
 #    requires 'SOAP::Lite';
 #};
 
+# Modules used by css watcher
+requires 'File::ChangeNotify';
+requires 'Path::Tiny';
+requires 'File::Find::Rule';
+
 # Modules used by the test suite
 requires 'CGI::Simple';
 requires 'HTTP::Headers';
