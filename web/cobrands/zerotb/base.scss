@@ -3,4 +3,14 @@
 @import "../sass/mixins";
 @import "compass";
 
+@import url(http://fonts.googleapis.com/css?family=Lato:300,700);
+
+$body-font: 'Lato', sans-serif !default;
+$meta-font: 'Lato', sans-serif !default;
+$heading-font: 'Lato', sans-serif !default;
+
 @import "../sass/base";
+
+body {
+    font-weight: 300;
+}
