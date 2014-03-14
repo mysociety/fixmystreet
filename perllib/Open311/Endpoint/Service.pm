@@ -14,6 +14,12 @@ has service_code => (
     isa => Str,
 );
 
+has default_service_notice => (
+    is => 'ro',
+    isa => Maybe[Str],
+    predicate => 1,
+);
+
 has description => (
     is => 'ro',
     isa => Str,

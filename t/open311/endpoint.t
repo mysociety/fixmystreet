@@ -63,9 +63,9 @@ my $json = JSON->new;
 
 subtest "GET Service List" => sub {
     my $res = $endpoint->run_test_request( GET => '/services.xml' );
-    ok $res->is_success
+    ok $res->is_success, 'xml success'
         or diag $res->content;
-    is_string $res->content, <<CONTENT;
+    is_string $res->content, <<CONTENT, 'xml string ok';
 <?xml version="1.0" encoding="utf-8"?>
 <services>
   <service>
@@ -90,7 +90,7 @@ subtest "GET Service List" => sub {
 CONTENT
 
     $res = $endpoint->run_test_request( GET => '/services.json' );
-    ok $res->is_success;
+    ok $res->is_success, 'json success';
     is_deeply $json->decode($res->content),
         [ {
                "keywords" => "deep,hole,wow",
@@ -108,15 +108,15 @@ CONTENT
                "metadata" => "false",
                "description" => "Bin Enforcement Service",
                "service_code" => "BIN"
-            } ];
+            } ], 'json structure ok';
 
 };
 
-subtest "GET Service List" => sub {
+subtest "GET Service Definition" => sub {
     my $res = $endpoint->run_test_request( GET => '/services/POT.xml' );
-    ok $res->is_success
+    ok $res->is_success, 'xml success',
         or diag $res->content;
-    is_string $res->content, <<CONTENT;
+    is_string $res->content, <<CONTENT, 'xml string ok';
 <?xml version="1.0" encoding="utf-8"?>
 <service_definition>
   <attributes>
@@ -158,7 +158,7 @@ subtest "GET Service List" => sub {
 CONTENT
 
     $res = $endpoint->run_test_request( GET => '/services/POT.json' );
-    ok $res->is_success;
+    ok $res->is_success, 'json success';
     is_deeply $json->decode($res->content),
         {
             "service_code" => "POT",
@@ -196,24 +196,31 @@ CONTENT
                     ],
                }
             ],
-        };
+        }, 'json structure ok';
 };
 
 subtest "POST Service Request" => sub {
     my $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
-        # no service_code!
     );
-    ok ! $res->is_success;
+    ok ! $res->is_success, 'no service_code';
 
     $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
+        service_code => 'BIN',
+    );
+    ok ! $res->is_success, 'no api_key';
+
+    $res = $endpoint->run_test_request( 
+        POST => '/requests.json', 
+        api_key => 'test',
         service_code => 'BADGER', # has moved the goalposts
     );
-    ok ! $res->is_success;
+    ok ! $res->is_success, 'bad service_code';
 
     $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
+        api_key => 'test',
         service_code => 'POT',
         address_string => '22 Acacia Avenue',
         first_name => 'Bob',
@@ -221,20 +228,22 @@ subtest "POST Service Request" => sub {
         'attribute[depth]' => 100,
         'attribute[shape]' => 'triangle',
     );
-    ok $res->is_success
+    ok $res->is_success, 'valid request'
         or diag $res->content;
 
     $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
+        api_key => 'test',
         service_code => 'POT',
         address_string => '22 Acacia Avenue',
         first_name => 'Bob',
         last_name => 'Mould',
     );
-    ok ! $res->is_success;
+    ok ! $res->is_success, 'no required attributes';
 
     $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
+        api_key => 'test',
         service_code => 'POT',
         address_string => '22 Acacia Avenue',
         first_name => 'Bob',
@@ -242,7 +251,7 @@ subtest "POST Service Request" => sub {
         'attribute[depth]' => 100,
         'attribute[shape]' => 'starfish',
     );
-    ok ! $res->is_success;
+    ok ! $res->is_success, 'bad attribute';
 };
 
 done_testing;

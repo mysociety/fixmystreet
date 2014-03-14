@@ -13,6 +13,7 @@ use Open311::Endpoint::Schema;
 use Data::Dumper;
 use Scalar::Util 'blessed';
 use List::Util 'first';
+use Types::Standard ':all';
 
 # http://wiki.open311.org/GeoReport_v2
 
@@ -51,6 +52,12 @@ sub dispatch_request {
         return bless [], 'Open311::Endpoint::Result';
     },
 }
+
+has default_service_notice => (
+    is => 'ro',
+    isa => Maybe[Str],
+    predicate => 1,
+);
 
 has spark => (
     is => 'lazy',
@@ -176,14 +183,16 @@ sub GET_Service_Definition {
 sub POST_Service_Request_input_schema {
     my ($self, $args) = @_;
 
-    my $service_code = $args->{service_code}
-        # if no service_code then return a simple validator
+    my $service_code = $args->{service_code};
+    unless ($service_code && $args->{api_key}) {
+        # return a simple validator
         # to give a nice error message
-        or return {
+        return {
             type => '//rec',
-            required => { service_code => '//str' },
+            required => { service_code => '//str', api_key => '//str' },
             rest => '//any',
         };
+    }
 
     my $service = $self->service($service_code)
         or return; # we can't fetch service, so signal error TODO
@@ -211,6 +220,7 @@ sub POST_Service_Request_input_schema {
             type => '//rec',
             required => {
                 service_code => '//str',
+                api_key => '//str',
                 %{ $attributes{required} },
                 %{ $address_required },
             },
@@ -231,8 +241,40 @@ sub POST_Service_Request_input_schema {
     }
 
     return { 
-        type => '//any',
-        of => \@address_schemas,
+            type => '//any',
+            of => \@address_schemas,
+        };
+}
+
+sub POST_Service_Request_output_schema {
+    my ($self, $args) = @_;
+
+    my $service_code = $args->{service_code};
+    my $service = $self->service($service_code);
+
+    my %return_schema = (
+        ($service->type eq 'realtime') ? ( service_request_id => '//str' ) : (),
+        ($service->type eq 'batch')    ? ( token => '//str' ) : (),
+    );
+
+    return {
+        type => '//rec',
+        required => {
+            service_requests => {
+                type => '//arr',
+                contents => {
+                    type => '//rec',
+                    required => {
+                        %return_schema,
+                    },
+                    optional => {
+                        service_notice => '//str',
+                        account_id => '//str',
+
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -244,14 +286,14 @@ sub POST_Service_Request {
         # attribute: array of key/value responses, as per service definition
         # NB: various optional arguments
         
-        return bless {
-            service_requests => {
-                request => {
-                    service_request_id => undef,
-                    service_notice => undef,
+        return {
+            service_requests => [
+                {
+                    service_request_id => 'DUMMY',
+                    service_notice => 'DUMMY',
                 },
-            },
-        }
+            ],
+        };
 }
 
 sub services {
