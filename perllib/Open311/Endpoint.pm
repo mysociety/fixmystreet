@@ -287,7 +287,13 @@ sub call_api {
 
     if (my $input_schema_method = $self->can("${api_name}_input_schema")) {
         push @dispatchers, sub () {
-            my $schema = $self->rx->make_schema( $self->$input_schema_method(@args) );
+            my $input_schema = $self->$input_schema_method(@args)
+                or return Open311::Endpoint::Result->new({
+                    status => 400,
+                    data => { error => 'Bad request' }, # TODO: better error reporting
+                });
+
+            my $schema = $self->rx->make_schema( $input_schema );
             my $input = (scalar @args == 1) ? $args[0] : [@args];
             eval {
                 $schema->assert_valid( $input );

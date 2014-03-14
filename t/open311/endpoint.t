@@ -208,6 +208,12 @@ subtest "POST Service Request" => sub {
 
     $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
+        service_code => 'BADGER', # has moved the goalposts
+    );
+    ok ! $res->is_success;
+
+    $res = $endpoint->run_test_request( 
+        POST => '/requests.json', 
         service_code => 'POT',
         address_string => '22 Acacia Avenue',
         first_name => 'Bob',
@@ -217,6 +223,7 @@ subtest "POST Service Request" => sub {
     );
     ok $res->is_success
         or diag $res->content;
+
 };
 
 done_testing;

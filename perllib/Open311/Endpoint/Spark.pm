@@ -62,11 +62,10 @@ So:
 sub process_for_json {
     my ($self, $data) = @_;
     if (ref $data eq 'HASH' and scalar keys %$data == 1) {
-        return $data->{ (keys %$data)[0] };
+        my $inner = $data->{ (keys %$data)[0] };
+        $data = $inner if ref $inner;
     }
-    else {
-        return $data;
-    }
+    return $data;
 }
 
 sub process_for_xml {
