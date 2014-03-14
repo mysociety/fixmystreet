@@ -1,114 +1,150 @@
 ---
-layout: fullwidth
+layout: landing
 title: Welcome
 ---
 
-Welcome to FixMyStreet Platform
-===============================
 
-<p class="lead">
-  mySociety's open source geographic problem-reporting platform
-</p>
+<nav class="bg-default">
+ <div class="container">
+   <ul class="primary-nav">
+     <li><a href="#">Documentation</a></li>
+     <li><a href="#">How it works</a></li>
+     <li><a href="#">Github</a></li>
+     <li><a href="#">Contact us</a></li>
+   </ul>
+ </div> 
+</nav>
 
-<div class="homepage-feature">
-  <div class="column">
-    <h3>Install</h3>
-    <p>
-      Begin with the <a href="/install/">installation documentation</a>. Put
-      FixMyStreet on your own Debian/Ubuntu server, or on Amazon EC2 (or, if
-      that's a problem for you, <a
-      href="http://www.mysociety.org/contact/">talk to us</a> about hosting).
-    </p>
-  </div>
-  <div class="column">
-    <h3>Customise</h3>
-    <p>
-      FixMyStreet is <a href="/customising/">fully customisable</a> &mdash;
-      change the style, layout, maps, and behaviour of your installation.
-      It's international too: if FixMyStreet is not already available in your
-      language, you don't need any hard-core coding skills to provide a new
-      translation.
-    </p>
-  </div>
-</div>
-<div class="homepage-feature">
-  <div class="column">
-    <h3>Run</h3>
-    <p>
-      Our <a href="/running">information for administrators</a> covers
-      everything you need to do once your FixMyStreet site is up and running.
-      Help is available on everything from defining <a href="/glossary/#area"
-      class="glossary">admin boundaries</a> to writing common user support
-      emails.
-    </p>
-  </div>
-  <div class="column">
-    <h3>Join in or get help</h3>
-    <p>
-      There's a friendly <a href="/community/">community</a> comprising
-      full-time mySociety staff, international volunteers, and <em>people like
-      you</em> who are already running their own FixMyStreet sites in their own
-      countries. They're happy to offer technical and non-technical support
-      &mdash; jump in and join!
-    </p>
+
+<div class="container">
+
+  <div class="homepage-feature">
+    <div class="column">
+      <img src="http://dummyimage.com/300x300">
+      <h3>FixMyStreet in Malasia</h3>
+      <p>Run by Sinar Project</p>
+
+      <ul class="slider-nav">
+        <li><a href="#">Previous</a></li>
+        <li><a href="#">Next</a></li>
+      </ul>
+
+
+    </div>
+    <div class="column">
+      <h1>Run a website like FixMyStreet in your country or city, for free</h1>
+      <p>
+      With FixMyStreet Platform you can easily launch a website that helps people to report street problems like potholes and broken street lights. Problem reports are then sent to authorities for fixing.
+      </p>
+      <p>
+        In the wrong place? To report problems in the UK, go here. To learn about FixMyStreet for Local Governments, go here. FixMyStreet Platform is for citizens who want to run their own sites. Welcome!
+      </p>
+    </div>
   </div>
 </div>
 
-About the FixMyStreet Platform
-------------------------------
+<div class="bg-default">
+  <div class="container">
+    <ul class="summary-of-features">
+      <li>
+        <div class="circle-icon icon-opensource"></div>
+        <h3>Free software</h3>
+        <p>Using open source technologies</p>
+      </li>
+      <li>
+        <div class="circle-icon icon-paint"></div>
+        <h3>Brandable</h3>
+        <p>Add your own colour, fonts and logos</p>
+      </li>
+      <li>
+        <div class="circle-icon icon-help"></div>
+        <h3>Friendly support</h3>
+        <p>Backup from mySociety and a strong community</p>
+      </li>
+      <li>
+        <div class="circle-icon icon-world"></div>
+        <h3>Many languages</h3>
+        <p>Use existing languags or add your own</p>
+      </li>
+    </ul>
+  </div>
+</div>
 
-The FixMyStreet Platform is an open source project from
-[mySociety](http://www.mysociety.org) to help people run websites for
-reporting common street problems such as potholes and broken street lights to
-an appropriate authority. It's been [running successfully in the
-UK](http://www.fixmystreet.com) since 2007 (in fact, it works so well some UK
-councils use it too), and we're still working on making it better.
+<div class="container">
+  <h2 class="text--center">Let's get started</h2>
 
-FixMyStreet has been copied around the world, and is still under
-<strong>active development</strong>. We work hard to make sure it's easy to
-deploy, customise, and run in locations all over the world.
+  <div class="this-or-this">
+    <div class="this">
+      <h3>Learn more</h3>
+      <p>Get your FixMyStreet site up and running</p>
+      <ul class="action-buttons">
+        <li><a href="#"><i class="icon icon-download"></i> Install</a></li>
+        <li><a href="#"><i class="icon icon-document"></i> Docs</a></li>
+        <li><a href="#"><i class="icon icon-github"></i> Github</a></li>
+        <li><a href="#"><i class="icon icon-document"></i> Licence Info</a></li>
+      </ul>
+    </div>
+    <span class="or">or</span>
+    <div class="this">
+      <h3>Get in touch</h3>
+      <p>Say hello, we'll help you make your new site awesome</p>
+      <ul class="action-buttons">
+        <li><a href="#"><i class="icon icon-email"></i> Email us</a></li>
+        <li><a href="#"><i class="icon icon-twitter"></i> Follow us</a></li>
+        <li><a href="#"><i class="icon icon-irc"></i> Chat on IRC</a></li>
+        <li><a href="#"><i class="icon icon-post"></i> Mailing list</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
 
-In a nutshell: how does it work?
---------------------------------
-
-Users locate problems quickly and easily without worrying about the correct
-authority to report it to. FixMyStreet takes care of that using the problem
-location and <a href="/glossary/#category" class="glossary">category</a>, and
-sends a <a href="/glossary/#report" class="glossary">report</a>, by email or
-using a web service such as <a href="/glossary/#open311"
-class="glossary">Open311</a>.
-
-FixMyStreet doesn't just send problem reports -- it makes the reports visible
-to everyone. Anyone can see what's already been reported, leave <a
-href="/glossary/#update" class="glossary">updates</a>, or subscribe to <a
-href="/glossary/#alert" class="glossary">alerts</a>. We help prevent duplicate
-reports and offer additional features for <a href="/glossary/#staff-user"
-class="glossary">staff users</a> working for the authorities who are actually
-fixing problems.
-
-Could your location use a FixMyStreet site?
--------------------------------------------
-
-We've written a clear guide for anyone who's thinking about [setting up and
-running FixMyStreet](The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). Anyone
-thinking of running such a project **must** read it first -- it explains why
-these sites work, and what you need to think about before you start.
-
-If you're thinking of getting involved, we welcome questions about how it
-works [on our mailing
-list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
-Or, if you're outside the UK, email
-<a href="mailto:international@mysociety.org">international@mysociety.org.</a>
-
-There's also the [FixMyStreet blog](blog/) where we post version release
-information and other progress reports. And we often post FixMyStreet news on
-the <a href="http://www.mysociety.org/blog">mySociety blog</a> too.
-
-
-### Example sites
-
-* <http://www.fixmystreet.com/> -- FixMyStreet in the UK
-* <http://www.fiksgatami.no/> -- FixMyStreet in Norway
-* [https://www.zueriwieneu.ch/](https://www.zueriwieneu.ch/) -- FixMyStreet in the city of Zurich
+<footer class="site-footer">
+  <div class="container">
+      <div class="column">
+    <h3>mySociety</h3>      
+    <ul>
+      <li><a href="#">Get involed</a></li>
+      <li><a href="#">About us</a></li>
+      <li><a href="#">Our team</a></li>
+      <li><a href="#">Contact us</a></li>
+      <li><a href="#">Donate</a></li>
+    </ul>
+  </div>
+  <div class="column">
+    <h3>Our Apps</h3>   
+    <ul>
+      <li><a href="#">FixMyStreet</a></li>
+      <li><a href="#">WriteToThem</a></li>
+      <li><a href="#">WhatDoTheyKnow</a></li>
+      <li><a href="#">TheWorkForYou</a></li>
+    </ul>
+  </div>
+  <div class="column">
+    <ul>
+      <li><a href="#">FixMyTransport</a></li>
+      <li><a href="#">HereFromYourMP</a></li>
+      <li><a href="#">Alavtelli</a></li>
+      <li><a href="#">Pombola</a></li>
+    </ul>
+  </div>
+  <div class="column">
+    <ul>
+      <li><a href="#">PopIt</a></li>
+      <li><a href="#">SayIt</a></li>
+      <li><a href="#">MapIt</a></li>
+      <li><a href="#">PledgeBank</a></li>
+    </ul>
+  </div>
+  <div class="column">
+    <h3>Connect</h3>
+    <ul>
+      <li><a href="#">Github</a></li>
+      <li><a href="#">Instagram</a></li>
+      <li><a href="#">Twitter</a></li>
+      <li><a href="#">Facebook</a></li>
+    </ul>
+  </div>  
+  </div>
+</footer>
 
 

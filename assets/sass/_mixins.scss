@@ -31,6 +31,14 @@
     }
 }
 
+.text--center {
+    text-align: center;
+}
+
+.bg-default {
+    background: lightblue;
+}
+
 @mixin clearfix {
     &:before,
     &:after {
@@ -96,6 +104,12 @@
     @include grid-column;
     width: 25%;
 }
+
+@mixin grid-column--one-of-five {
+    @include grid-column;
+    width: 20%;
+}
+
 
 @mixin grid-column--one-of-two {
     @include grid-column-equal;

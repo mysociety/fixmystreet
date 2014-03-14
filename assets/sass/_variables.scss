@@ -13,10 +13,31 @@ $giant-screen: 77.777777778em;
 $large-screen: 56.888888889em;
 $medium-screen: 30em;
 
+$base-spacing-unit: 24px;
+
 //These should always be overridden in _config.scss
+
 $logo_path: "../img/fixmystreet-logo.svg" !default;
 $logo_height: 60px !default;
 $logo_width: 320px !default;
-$background_image_path: "../img/default-bg.jpg" !default;
-$background_repeat: no-repeat !default;
-$background_size: cover !default;
+
+
+// Circle icons
+$icon_opensource_path: "../img/icon-opensource.svg" !default;
+$icon_paint_path: "../img/icon-paint.svg" !default;
+$icon_help_path: "../img/icon-help.svg" !default;
+$icon_world_path: "../img/icon-world.svg" !default;
+
+$circle_icon_height: 114px !default;
+$circle_icon_width: 114px !default;
+
+// Action button icons
+
+$icon_download_path: "../img/icon-download.svg" !default;
+$icon_docs_path: "../img/icon-document.svg" !default;
+$icon_github_path: "../img/icon-github.svg" !default;
+$icon_email_path: "../img/icon-email.svg" !default;
+$icon_twitter_path: "../img/icon-twitter.svg" !default;
+$icon_irc_path: "../img/icon-hash.svg" !default;
+$icon_post_path: "../img/icon-mail.svg" !default;
+

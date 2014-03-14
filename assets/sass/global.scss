@@ -148,7 +148,7 @@ ul {
     }
 
     @media (min-width: $medium-screen) {
-        border-radius: 0 0 1.25em 1.25em;
+        border-radius: 0 0 1em 1em;
         background-position: 16px 10px ;
         background-size: 93px 19px;
         background-repeat: no-repeat;
@@ -170,16 +170,18 @@ ul {
     background-size: $logo_width $logo_height;
     background-repeat: no-repeat;
     background-image: url($logo_path);
+    margin: 0.5em auto;
 }
 
 .site-header {
+    border-top: 0.375em solid #424242;
     padding-top: 3.75em;
     padding-bottom: 3.75em;
     background-position: center;
-    background-size: $background-size;
-    background-repeat: $background-repeat;
-    background-image: url($background_image_path);
-    background-color: #444;
+    background-color: yellow;
+    display: block;
+    width: 100%;
+    float: left;
 }
 
 .site-title {
@@ -443,5 +445,104 @@ ul {
         @media (min-width: $medium-screen) {
             @include grid-column--one-of-two;
         }
+    }
+}
+
+
+
+.summary-of-features {
+    @extend .unstyled;
+    @include clearfix;
+    li {
+        @media (min-width: $medium-screen) {
+        @include grid-column--one-of-four;
+        text-align: center;
+        }
+    }
+    .circle-icon {
+        width: $circle_icon_width;
+        height: $circle_icon_height;
+        display: block;
+        margin: 0 auto;
+        background-position: top left;
+        background-size: $circle_icon_width $circle_icon_width;
+        background-repeat: no-repeat;
+        float: left;
+    }
+
+    .icon-opensource {background-image: url($icon_opensource_path);}
+    .icon-paint {background-image: url($icon_paint_path);}
+    .icon-help {background-image: url($icon_help_path);}
+    .icon-world {background-image: url($icon_world_path);}
+}
+
+.this-or-this {
+    display: table;
+    width: 100%;
+    text-align: center;
+    .this,
+    .or {
+        display: table-cell;
+        vertical-align: middle;
+    }
+}
+
+.action-buttons {
+    @extend .unstyled;
+    li {
+        width: 50%;
+        float: left;
+        a {
+            background: blue;
+            color: #fff;
+            padding: 5px 10px;
+            display: block;
+            margin: 10px 20px;
+        }
+        .icon {
+            width: 30px;
+            height: 30px;
+            background-color: green;
+            display: block;
+            float: left;
+        }
+    }
+}
+
+
+.site-footer {
+    background: lightgreen;
+    @include clearfix;
+    .column {
+        @media (min-width: $medium-screen) {
+        @include grid-column--one-of-five;
+        }
+    }
+    ul {
+        @extend .unstyled;
+    }
+}
+
+.primary-nav {
+    @extend .unstyled;
+    text-align: center;
+    li {
+        display: block;
+        padding: $base-spacing-unit * 2;
+        @media (min-width: $medium-screen) {
+            display: inline;
+        }
+    }
+}
+
+.slider-nav {
+    float: right;
+    @extend .unstyled;
+    li {display: inline}
+    a {
+        display: block;
+        background: red;
+        float: left;
+        padding: $base-spacing-unit /4;
     }
 }

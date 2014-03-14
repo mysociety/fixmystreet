@@ -122,7 +122,6 @@ dfn {
  */
 hr {
   -moz-box-sizing: content-box;
-  -webkit-box-sizing: content-box;
   box-sizing: content-box;
   height: 0; }
 
@@ -285,8 +284,6 @@ html input[disabled] {
  */
 input[type="checkbox"],
 input[type="radio"] {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
   box-sizing: border-box;
   /* 1 */
   padding: 0;
@@ -352,7 +349,7 @@ table {
   margin: 0 auto;
   position: relative; }
 
-.unstyled-list, .unstyled, .sidebar ul, .list-of-blog-posts, .definitions {
+.unstyled-list, .unstyled, .summary-of-features, .action-buttons, .site-footer ul, .primary-nav, .slider-nav, .sidebar ul, .list-of-blog-posts, .definitions {
   margin-left: 0;
   padding-left: 0;
   list-style: none outside none; }
@@ -363,6 +360,12 @@ table {
   .inline-list li, .definitions li {
     display: inline-block;
     margin-left: 0.5em; }
+
+.text--center {
+  text-align: center; }
+
+.bg-default {
+  background: lightblue; }
 
 .highlight {
   background: #ffffff; }
@@ -755,7 +758,6 @@ ul {
   height: 38px;
   width: 44px;
   border-radius: 0 0 0.75em 0.75em;
-  -webkit-background-size: 22px;
   background-size: 22px;
   background-position: 11px 7px;
   background-image: url("../img/mysociety-bloom.png"); }
@@ -764,37 +766,36 @@ ul {
       background-image: url("../img/mysociety-bloom@2.png"); } }
   @media (min-width: 30em) {
     .ms-header__logo {
-      border-radius: 0 0 1.25em 1.25em;
+      border-radius: 0 0 1em 1em;
       background-position: 16px 10px;
-      -webkit-background-size: 93px 19px;
       background-size: 93px 19px;
       background-repeat: no-repeat;
       background-image: url("../img/mysociety-logo.png");
       width: 125px;
       height: 39px; } }
-    @media (min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi) {
-      .ms-header__logo {
-        background-image: url("../img/mysociety-logo@2.png"); } }
+  @media (min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi) {
+    .ms-header__logo {
+      background-image: url("../img/mysociety-logo@2.png"); } }
 
 .site-title {
   height: 60px;
   width: 320px;
   display: block;
   background-position: top left;
-  -webkit-background-size: 320px 60px;
   background-size: 320px 60px;
   background-repeat: no-repeat;
-  background-image: url("../img/fixmystreet-logo.svg"); }
+  background-image: url("../img/fixmystreet-logo.svg");
+  margin: 0.5em auto; }
 
 .site-header {
+  border-top: 0.375em solid #424242;
   padding-top: 3.75em;
   padding-bottom: 3.75em;
   background-position: center;
-  -webkit-background-size: cover;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-image: url("../img/default-bg.jpg");
-  background-color: #444; }
+  background-color: yellow;
+  display: block;
+  width: 100%;
+  float: left; }
 
 .site-title {
   color: #fff; }
@@ -927,16 +928,12 @@ ul {
       width: 1.5em;
       text-align: center;
       color: #787774;
-      -webkit-transition: -webkit-transform 0.2s ease-out;
       transition: transform 0.2s ease-out; }
     .reveal-on-click dt:hover:after {
       background: #f79421;
       color: #fff; }
     .reveal-on-click dt.revealed:after {
-      -webkit-transform: rotate(45deg);
-      -ms-transform: rotate(45deg);
       transform: rotate(45deg);
-      -webkit-transition: -webkit-transform 0.2s ease-out;
       transition: transform 0.2s ease-out; }
   .reveal-on-click dd {
     margin-left: 0;
@@ -1031,3 +1028,111 @@ ul {
       .homepage-feature .column:nth-child(even), .homepage-feature .column:last-child {
         padding-right: 0; } }
 
+.summary-of-features {
+  /**
+   * For IE 6/7 only
+   * Include this rule to trigger hasLayout and contain floats.
+   */ }
+  .summary-of-features:before, .summary-of-features:after {
+    content: " ";
+    /* 1 */
+    display: table;
+    /* 2 */ }
+  .summary-of-features:after {
+    clear: both; }
+  .summary-of-features {
+    *zoom: 1; }
+  @media (min-width: 30em) {
+    .summary-of-features li {
+      /* Use for grids where the columns are different widths */
+      float: left;
+      padding-left: 3%;
+      width: 25%;
+      text-align: center; }
+      .summary-of-features li:first-child {
+        padding-left: 0; } }
+  .summary-of-features .circle-icon {
+    width: 114px;
+    height: 114px;
+    display: block;
+    margin: 0 auto;
+    background-position: top left;
+    background-size: 114px 114px;
+    background-repeat: no-repeat;
+    float: left; }
+  .summary-of-features .icon-opensource {
+    background-image: url("../img/icon-opensource.svg"); }
+  .summary-of-features .icon-paint {
+    background-image: url("../img/icon-paint.svg"); }
+  .summary-of-features .icon-help {
+    background-image: url("../img/icon-help.svg"); }
+  .summary-of-features .icon-world {
+    background-image: url("../img/icon-world.svg"); }
+
+.this-or-this {
+  display: table;
+  width: 100%;
+  text-align: center; }
+  .this-or-this .this,
+  .this-or-this .or {
+    display: table-cell;
+    vertical-align: middle; }
+
+.action-buttons li {
+  width: 50%;
+  float: left; }
+  .action-buttons li a {
+    background: blue;
+    color: #fff;
+    padding: 5px 10px;
+    display: block;
+    margin: 10px 20px; }
+  .action-buttons li .icon {
+    width: 30px;
+    height: 30px;
+    background-color: green;
+    display: block;
+    float: left; }
+
+.site-footer {
+  background: lightgreen;
+  /**
+   * For IE 6/7 only
+   * Include this rule to trigger hasLayout and contain floats.
+   */ }
+  .site-footer:before, .site-footer:after {
+    content: " ";
+    /* 1 */
+    display: table;
+    /* 2 */ }
+  .site-footer:after {
+    clear: both; }
+  .site-footer {
+    *zoom: 1; }
+  @media (min-width: 30em) {
+    .site-footer .column {
+      /* Use for grids where the columns are different widths */
+      float: left;
+      padding-left: 3%;
+      width: 20%; }
+      .site-footer .column:first-child {
+        padding-left: 0; } }
+
+.primary-nav {
+  text-align: center; }
+  .primary-nav li {
+    display: block;
+    padding: 48px; }
+    @media (min-width: 30em) {
+      .primary-nav li {
+        display: inline; } }
+
+.slider-nav {
+  float: right; }
+  .slider-nav li {
+    display: inline; }
+  .slider-nav a {
+    display: block;
+    background: red;
+    float: left;
+    padding: 6px; }
