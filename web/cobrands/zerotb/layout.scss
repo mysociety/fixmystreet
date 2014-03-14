@@ -3,6 +3,16 @@
 
 body {
     &.frontpage {
+        .nav-wrapper-2 {
+            background-color: $primary;
+            color: $primary_text;
+            height: auto;
+        }
+
+        #site-header {
+            background-color: $base_bg;
+        }
+
         #site-logo {
             background: none;
             color: black;
@@ -20,6 +30,35 @@ body {
             }
         }
     }
+}
+
+.nav-wrapper {
+    .nav-wrapper-2 {
+        border: none;
+        min-height: 0;
+    }
+}
+
+#main-nav {
+    ul#mysoc-menu {
+        li {
+            a {
+                color: $primary_text;
+            }
+        }
+    }
+    ul#main-menu {
+        li {
+            span {
+                color: $primary_text;
+            }
+        }
+    }
+}
+
+#site-header {
+    background: $primary;
+    height: auto;
 }
 
 .container {
