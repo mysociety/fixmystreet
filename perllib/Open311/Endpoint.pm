@@ -34,21 +34,9 @@ sub dispatch_request {
         $self->call_api( GET_Service_Definition => $service_id, $args );
     },
 
-    sub (POST + /requests) {
-        # jurisdiction_id
-        # service_code
-        # lat/lon OR address_string OR address_id
-        # attribute: array of key/value responses, as per service definition
-        # NB: various optional arguments
-        
-        return bless {
-            service_requests => {
-                request => {
-                    service_request_id => undef,
-                    service_notice => undef,
-                },
-            },
-        }, 'Open311::Endpoint::Result';
+    sub (POST + /requests + %*) {
+        my ($self, $args) = @_;
+        $self->call_api( POST_Service_Request => $args );
     },
 
     sub (GET + /tokens/*) {
@@ -185,6 +173,96 @@ sub GET_Service_Definition {
     return $service_definition;
 }
 
+sub POST_Service_Request_input_schema {
+    my ($self, $args) = @_;
+
+    my $service_code = $args->{service_code}
+        # if no service_code then return a simple validator
+        # to give a nice error message
+        or return {
+            type => '//rec',
+            required => { service_code => '//str' },
+            rest => '//any',
+        };
+
+    my $service = $self->service($service_code)
+        or return; # we can't fetch service, so signal error TODO
+
+    my $schema = $self->POST_Service_Request_input_schema_base;
+
+    my @attributes = $service->get_attributes
+        or return $schema;
+
+    for my $attribute (@attributes) {
+        my $section = $attribute->required ? 'required' : 'optional';
+        my $key = sprintf 'attribute[%s]', $attribute->code;
+        my $def = $attribute->schema_definition;
+
+        for (@{ $schema->{of} }) {
+            $_->{ $section }{ $key } = $def;
+        }
+    }
+
+    return $schema;
+}
+
+sub POST_Service_Request_input_schema_base {
+
+    # we have to supply at least one of these, but can supply more
+    my @address_options = (
+        { lat => '//num', lon => '//num' },
+        { address_string => '//str' },
+        { address_id => '//str' },
+    );
+
+    my @address_schemas;
+    while (my $required = shift @address_options) {
+        push @address_schemas,
+        {
+            type => '//rec',
+            required => {
+                service_code => '//str',
+                %$required,
+            },
+            optional => {
+                jurisdiction_id => '//str',
+                email => '//str',
+                device_id => '//str',
+                account_id => '//str',
+                first_name => '//str',
+                last_name => '//str',
+                phone => '//str',
+                description => '//str',
+                media_url => '//str',
+                map %$_, @address_options,
+            },
+        };
+    }
+
+    return { 
+        type => '//any',
+        of => \@address_schemas,
+    };
+}
+
+sub POST_Service_Request {
+    my ($self, $args) = @_;
+        # jurisdiction_id
+        # service_code
+        # lat/lon OR address_string OR address_id
+        # attribute: array of key/value responses, as per service definition
+        # NB: various optional arguments
+        
+        return bless {
+            service_requests => {
+                request => {
+                    service_request_id => undef,
+                    service_notice => undef,
+                },
+            },
+        }
+}
+
 sub services {
     # this should be overridden in your subclass!
     [];
@@ -209,7 +287,7 @@ sub call_api {
 
     if (my $input_schema_method = $self->can("${api_name}_input_schema")) {
         push @dispatchers, sub () {
-            my $schema = $self->rx->make_schema( $self->$input_schema_method );
+            my $schema = $self->rx->make_schema( $self->$input_schema_method(@args) );
             my $input = (scalar @args == 1) ? $args[0] : [@args];
             eval {
                 $schema->assert_valid( $input );
@@ -232,7 +310,7 @@ sub call_api {
         push @dispatchers, sub () {
             response_filter {
                 my $result = shift;
-                my $schema = $self->rx->make_schema( $self->$output_schema_method );
+                my $schema = $self->rx->make_schema( $self->$output_schema_method(@args) );
                 eval {
                     $schema->assert_valid( $result->data );
                 };

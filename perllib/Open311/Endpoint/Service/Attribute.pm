@@ -57,9 +57,26 @@ has values => (
     handles_via => 'Hash',
     handles => {
         get_value => 'get',
+        get_values => 'keys',
         has_values => 'count',
         values_kv => 'kv',
     }
 );
+
+sub schema_definition {
+    my $self = shift;
+
+    my @values = map +{ type => '//str', value => $_ }, $self->get_values;
+    my %schema_types = (
+        string => '//str',
+        number => '//num',
+        datetime => '//str', # TODO
+        text => '//str',
+        singlevaluelist => { type => '//any', of => [@values] },
+        multivaluelist  => { type => '//arr', of => [@values] },
+    );
+
+    return $schema_types{ $self->datatype };
+}
 
 1;

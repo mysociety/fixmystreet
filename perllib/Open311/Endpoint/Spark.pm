@@ -100,10 +100,18 @@ sub _process_for_xml {
         }
     }
 }
+
+my %singular_map = (
+    service_requests => 'request',
+);
 sub _singularize {
     my $name = shift;
-    $name =~s/s$//;
-    return $name;
+    return $singular_map{ $name }
+        || do {
+            # strip final 's' if present
+            $name =~ s/s$//;
+            return $name;
+        };
 }
 
 1;

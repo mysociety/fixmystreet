@@ -13,7 +13,7 @@ subtest "Spark test" => sub {
     my $spark = $endpoint->spark;
     my $struct = {
         foo => {
-            bars => [ 1,2,3 ],
+            service_requests => [ 1,2,3 ],
             quxes => [
                 {
                     values => [1,2],
@@ -26,7 +26,7 @@ subtest "Spark test" => sub {
     };
     is_deeply $spark->process_for_json($struct),
         {
-            bars => [ 1,2,3 ],
+            service_requests => [ 1,2,3 ],
             quxes => [
                 {
                     values => [1,2],
@@ -41,7 +41,7 @@ subtest "Spark test" => sub {
     is_deeply $xml_struct,
         {
             foo => {
-                bars => { bar => [ 1,2,3 ] },
+                service_requests => { request => [ 1,2,3 ] },
                 quxes => {
                     quxe => [
                         {
