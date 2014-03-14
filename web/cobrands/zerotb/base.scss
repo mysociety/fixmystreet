@@ -14,3 +14,31 @@ $heading-font: 'Lato', sans-serif !default;
 body {
     font-weight: 300;
 }
+
+#site-logo {
+    background: none;
+    text-indent: 0px;
+    text-transform: uppercase;
+    width: auto;
+    margin-right: 80px;
+    @media( min-width: 350px ) {
+        margin-top: 0.5em;
+    }
+    a {
+        color: white;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    p {
+        font-weight: 300;
+        margin-bottom: 0em;
+    }
+    .orange {
+        color: $button-color;
+        font-weight: bold;
+    }
+    #brought-to-you {
+        display: none;
+    }
+}

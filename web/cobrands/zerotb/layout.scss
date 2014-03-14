@@ -1,2 +1,28 @@
 @import "_colours";
 @import "../sass/layout";
+
+body {
+    &.frontpage {
+        #site-logo {
+            background: none;
+            color: black;
+            width: auto;
+            a {
+                color: black;
+            }
+            p {
+                font-size: 2em;
+                font-weight: 300;
+            }
+            #brought-to-you {
+                display: block;
+                font-size: 0.75em;
+            }
+        }
+    }
+}
+
+.container {
+    padding: 0em 1em;
+}
+
