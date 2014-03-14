@@ -7,13 +7,13 @@
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
                     <ul id="mysoc-menu">
-                        <li><a href="http://mysociety.org/donate/">Donate</a></li>[%
-                        %]<li><a href="http://www.mysociety.org/projects/">Our Sites</a></li>
+                        <li><a href="http://en.[% c.cobrand.base_host %][% c.req.uri.path_query %]">English</a></li>[%
+                        %]<li><a href="http://hi.[% c.cobrand.base_host %][% c.req.uri.path_query %]">हिन्दी</a></li>
                     </ul>
 
                     <ul id="main-menu">
                         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
-                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                            >[% loc("Report a Stockout") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
                     </ul>
