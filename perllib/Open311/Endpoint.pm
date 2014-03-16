@@ -78,6 +78,24 @@ has schema => (
     },
 );
 
+has json => (
+    is => 'lazy',
+    default => sub {
+        JSON->new->pretty->allow_blessed->convert_blessed;
+    },
+);
+
+has xml => (
+    is => 'lazy',
+    default => sub {
+        XML::Simple->new( 
+            NoAttr=> 1, 
+            KeepRoot => 1, 
+            SuppressEmpty => 0,
+        );
+    },
+);
+
 sub GET_Service_List_input_schema {
     return {
         type => '//rec',
@@ -399,7 +417,6 @@ sub call_api {
     (@dispatchers);
 }
 
-my $json = JSON->new->pretty->allow_blessed->convert_blessed;
 sub format_response {
     my ($self, $ext) = @_;
     response_filter {
@@ -411,23 +428,19 @@ sub format_response {
             return [
                 $status, 
                 [ 'Content-Type' => 'application/json' ],
-                [ $json->encode( $self->spark->process_for_json( $data ) )]
+                [ $self->json->encode( 
+                    $self->spark->process_for_json( $data ) 
+                )]
             ];
         }
         elsif ($ext eq 'xml') {
-            my $xs = XML::Simple->new( 
-                NoAttr=> 1, 
-                KeepRoot => 1, 
-                SuppressEmpty => 0,
-                );
-
             return [
                 $status,
                 [ 'Content-Type' => 'text/xml' ],
-                [ 
-                    qq(<?xml version="1.0" encoding="utf-8"?>\n),
-                    $xs->XMLout( $self->spark->process_for_xml( $data )),
-                ],
+                [ qq(<?xml version="1.0" encoding="utf-8"?>\n),
+                  $self->xml->XMLout( 
+                    $self->spark->process_for_xml( $data )
+                )],
             ];
         }
         else {
