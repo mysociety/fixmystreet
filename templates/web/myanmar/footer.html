@@ -10,6 +10,13 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
+                  [% IF admin %]
+                  <ul id="mysoc-menu">
+                    <li>
+                      <a href="http://[% c.cobrand.base_host %]">[% c.cobrand.base_host %]</a></li>                      
+                    </li>
+                  </ul>                  
+                  [% ELSE %]
                     <ul id="mysoc-menu">
                       <li>
                         <a href="http://en.[% c.cobrand.base_host %][% c.req.uri.path_query %]">English</a></li>[%
@@ -28,6 +35,7 @@
                         %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
                     </ul>
+                    [% END %]
                 </div>
             </div>
         </div>
