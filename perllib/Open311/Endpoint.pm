@@ -42,15 +42,15 @@ sub dispatch_request {
     },
 
     sub (GET + /tokens/*) {
-        return bless [], 'Open311::Endpoint::Result';
+        return Open311::Endpoint::Result->error( 400, 'not implemented' );
     },
 
     sub (GET + /requests) {
-        return bless [], 'Open311::Endpoint::Result';
+        return Open311::Endpoint::Result->error( 400, 'not implemented' );
     },
 
     sub (GET + /requests/*) {
-        return bless [], 'Open311::Endpoint::Result';
+        return Open311::Endpoint::Result->error( 400, 'not implemented' );
     },
 }
 
@@ -349,10 +349,8 @@ sub call_api {
     if (my $input_schema_method = $self->can("${api_name}_input_schema")) {
         push @dispatchers, sub () {
             my $input_schema = $self->$input_schema_method(@args)
-                or return Open311::Endpoint::Result->new({
-                    status => 400,
-                    data => { error => 'Bad request' }, # TODO: better error reporting
-                });
+                or return Open311::Endpoint::Result->error( 400,
+                    'Bad request' );
 
             my $schema = $self->rx->make_schema( $input_schema );
             my $input = (scalar @args == 1) ? $args[0] : [@args];
@@ -360,14 +358,9 @@ sub call_api {
                 $schema->assert_valid( $input );
             };
             if ($@) {
-                my $data = {
-                    error => 'Bad request',
-                    details => [ map $_->struct, @{ $@->failures } ],
-                };
-                return Open311::Endpoint::Result->new({
-                    status => 400,
-                    data => $data,
-                });
+                return Open311::Endpoint::Result->error( 400,
+                    map $_->struct, @{ $@->failures }, # bit cheeky, spec suggests it wants strings only
+                );
             }
             return; # pass onwards
         };
@@ -386,10 +379,9 @@ sub call_api {
                         error => 'Server error: bad response',
                         details => [ map $_->struct, @{ $@->failures } ],
                     };
-                    return Open311::Endpoint::Result->new({
-                        status => 500,
-                        data => $data,
-                    });
+                    return Open311::Endpoint::Result->error( 500,
+                        $data,
+                    );
                 }
                 return $result;
             }
@@ -399,18 +391,11 @@ sub call_api {
     push @dispatchers, sub () {
         my $data = $self->$api_method(@args);
         if ($data) {
-            return Open311::Endpoint::Result->new({
-                status => 200,
-                data => $data,
-            });
+            return Open311::Endpoint::Result->success( $data );
         }
         else {
-            return Open311::Endpoint::Result->new({
-                status => 404,
-                data => {
-                    error => 'Resource not found',
-                }
-            });
+            return Open311::Endpoint::Result->error( 404 =>
+                    'Resource not found' );
         }
     };
 
