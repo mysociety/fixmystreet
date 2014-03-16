@@ -50,7 +50,7 @@
         <div class="table-cell">
             <header id="site-header" role="banner">
                 <div class="container">
-                    <a href="/" id="site-logo">[% c.cobrand.site_title | html %]</a>
+                    <a href="[% IF admin %]http://[% c.cobrand.base_host %][% ELSE %]/[% END %]" id="site-logo">[% c.cobrand.site_title | html %]</a>
                     <a href="#main-nav" id="nav-link">Main Navigation</a>
                 </div>
             </header>
