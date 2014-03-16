@@ -11,6 +11,8 @@ use Open311::Endpoint::Service::Request;
 use Open311::Endpoint::Spark;
 use Open311::Endpoint::Schema;
 
+use MooX::HandlesVia;
+
 use Data::Dumper;
 use Scalar::Util 'blessed';
 use List::Util 'first';
@@ -54,18 +56,45 @@ sub dispatch_request {
     },
 }
 
+=head1 Configurable arguments
+
+    * default_service_notice - default for <service_notice> if not
+        set by the service or an individual request
+    * jurisdictions - an array of jurisdiction_ids
+        you may want to subclass the methods:
+            - requires_jurisdiction_ids
+            - check_jurisdiction_id 
+
+=cut
+
 has default_service_notice => (
     is => 'ro',
     isa => Maybe[Str],
     predicate => 1,
 );
 
-has spark => (
-    is => 'lazy',
-    default => sub {
-        Open311::Endpoint::Spark->new();
-    },
+has jurisdiction_ids => (
+    is => 'ro',
+    isa => Maybe[ArrayRef],
+    default => sub { [] },
+    handles_via => 'Array',
+    handles => {
+        has_jurisdiction_ids => 'count',
+        get_jurisdiction_ids => 'elements',
+    }
 );
+
+=head1 Other accessors
+
+You might additionally wish to replace the following objects.
+
+    * schema - Data::Rx schema for validating Open311 protocol inputs and
+               outputs
+    * spark  - methods for munging base data-structure for output
+    * json   - JSON output object
+    * xml    - XML::Simple output object
+
+=cut
 
 has schema => (
     is => 'lazy',
@@ -75,6 +104,13 @@ has schema => (
     handles => {
         rx => 'schema',
         format_boolean => 'format_boolean',
+    },
+);
+
+has spark => (
+    is => 'lazy',
+    default => sub {
+        Open311::Endpoint::Spark->new();
     },
 );
 
@@ -97,16 +133,7 @@ has xml => (
 );
 
 sub GET_Service_List_input_schema {
-    return {
-        type => '//rec',
-        # jurisdiction_id is documented as "Required", but with the note
-        # 'This is only required if the endpoint serves multiple jurisdictions'
-        # i.e. it is optional as regards the schema, but the server may choose 
-        # to error if it is not provided.
-        optional => {
-            jurisdiction_id => '//str',
-        },
-    };
+    return shift->get_jurisdiction_id_validation;
 }
 
 sub GET_Service_List_output_schema {
@@ -139,16 +166,12 @@ sub GET_Service_List {
 }
 
 sub GET_Service_Definition_input_schema {
+    my $self = shift;
     return {
         type => '//seq',
         contents => [
             '//str', # service_code
-            {
-                type => '//rec',
-                optional => {
-                    jurisdiction_id => '//str',
-                }
-            },
+            $self->get_jurisdiction_id_validation,
         ],
     };
 }
@@ -242,9 +265,9 @@ sub POST_Service_Request_input_schema {
                 api_key => '//str',
                 %{ $attributes{required} },
                 %{ $address_required },
+                $self->get_jurisdiction_id_required_clause,
             },
             optional => {
-                jurisdiction_id => '//str',
                 email => '//str',
                 device_id => '//str',
                 account_id => '//str',
@@ -254,7 +277,8 @@ sub POST_Service_Request_input_schema {
                 description => '//str',
                 media_url => '//str',
                 %{ $attributes{optional} },
-                map %$_, @address_options,
+                (map %$_, @address_options),
+                $self->get_jurisdiction_id_optional_clause,
             },
         };
     }
@@ -326,7 +350,7 @@ sub POST_Service_Request {
 
 sub services {
     # this should be overridden in your subclass!
-    [];
+    ();
 }
 sub service {
     # this stub implementation is a simple lookup on $self->services, and
@@ -336,6 +360,57 @@ sub service {
     my ($self, $service_code, $args) = @_;
 
     return first { $_->service_code eq $service_code } $self->services;
+}
+
+sub has_multiple_jurisdiction_ids {
+    return shift->has_jurisdiction_ids > 1;
+}
+
+sub requires_jurisdiction_ids {
+    # you may wish to subclass this
+    return shift->has_multiple_jurisdiction_ids;
+}
+
+sub check_jurisdiction_id {
+    my ($self, $jurisdiction_id) = @_;
+
+    # you may wish to override this stub implementation which:
+    #   - always succeeds if no jurisdiction_id is set
+    #   - accepts no jurisdiction_id if there is only one set
+    #   - otherwise checks that the id passed is one of those set
+    #
+    return 1 unless $self->has_jurisdiction_ids;
+
+    if (! defined $jurisdiction_id) {
+        return $self->requires_jurisdiction_ids ? 1 : undef;
+    }
+
+    return first { $jurisdiction_id eq $_ } $self->get_jurisdiction_ids;
+}
+
+sub get_jurisdiction_id_validation {
+    my $self = shift;
+
+    # jurisdiction_id is documented as "Required", but with the note
+    # 'This is only required if the endpoint serves multiple jurisdictions'
+    # i.e. it is optional as regards the schema, but the server may choose 
+    # to error if it is not provided.
+    return {
+        type => '//rec',
+        ($self->requires_jurisdiction_ids ? 'required' : 'optional') => { 
+            jurisdiction_id => '//str',
+        },
+    };
+}
+
+sub get_jurisdiction_id_required_clause {
+    my $self = shift;
+    $self->requires_jurisdiction_ids ? (jurisdiction_id => '//str') : ();
+}
+
+sub get_jurisdiction_id_optional_clause {
+    my $self = shift;
+    $self->requires_jurisdiction_ids ? () : (jurisdiction_id => '//str');
 }
 
 sub call_api {
