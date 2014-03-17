@@ -617,8 +617,8 @@ sub setup_categories_and_bodies : Private {
         $c->stash->{unresponsive}{ALL} = $first_body->id;
     }
 
-    # FIXME - implement in cobrand
-    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+    # EmptyHomes and Smidsy
+    if ( $c->cobrand->can('uses_global_categories') && $c->cobrand('uses_global_categories') ) {
 
         # add all bodies found to the list
         foreach (@contacts) {
@@ -626,15 +626,7 @@ sub setup_categories_and_bodies : Private {
         }
 
         # set our own categories
-        @category_options = (
-            _('-- Pick a property type --'),
-            _('Empty house or bungalow'),
-            _('Empty flat or maisonette'),
-            _('Whole block of empty flats'),
-            _('Empty office or other commercial'),
-            _('Empty pub or bar'),
-            _('Empty public building - school, hospital, etc.')
-        );
+        @category_options = $c->cobrand->category_options();
 
     } else {
 
@@ -847,7 +839,8 @@ sub process_report : Private {
     my $first_area = ( values %$areas )[0];
     my $first_body = ( values %$bodies )[0];
 
-    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+    # cobrands like emptyhomes and smidsy: TODO refactor to ->can('global_extras') or similar?
+    if ( $c->cobrand->moniker eq 'emptyhomes' or $c->cobrand->moniker eq 'smidsy') {
 
         $bodies = join( ',', @{ $c->stash->{bodies_to_list} } ) || -1;
         $report->bodies_str( $bodies );

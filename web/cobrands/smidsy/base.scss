@@ -1,0 +1,56 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+#site-logo {
+    background: url('/cobrands/smidsy/images/icon_536_5072_text_small.png') 0px 0px no-repeat;
+    width: 200px;
+}
+
+#severity-slider {
+    &.severity-low {
+        .ui-slider-range { background: green; }
+        .ui-slider-handle { 
+            background: lighten(green, 20%); 
+            border-color: darken(green, 20%); 
+        }
+    }
+    &.severity-medium {
+        .ui-slider-range { background: yellow; }
+        .ui-slider-handle { 
+            background: lighten(yellow, 20%); 
+            border-color: darken(yellow, 20%); 
+        }
+    }
+    &.severity-high {
+        .ui-slider-range { background: red; }
+        .ui-slider-handle {
+            background: lighten(red, 20%); 
+            border-color: darken(red, 20%); 
+        }
+    }
+}
+
+#ui-datepicker-div {
+    font-size: 0.7em; // correct an interaction with FMS font-size?
+}
+
+div.form_datetime {
+    div {
+        width: 49%;
+        display: inline-block;
+    }
+}
+
+ol.big-numbers > li:before {
+  color: $primary;
+}
+
+a,
+a:visited {
+    color: $links;
+}
+
