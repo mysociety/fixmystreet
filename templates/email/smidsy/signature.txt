@@ -1,0 +1,2 @@
+Yours,  
+The [% INCLUDE 'site-name.txt' | trim %] team

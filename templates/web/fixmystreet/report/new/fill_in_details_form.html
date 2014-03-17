@@ -62,6 +62,10 @@
               [% END %]
           [% END %]
 
+          [%- IF c.cobrand.extra_global_fields %]
+              [% PROCESS "report/new/global_extras.html" %]
+          [%- END %]
+
           [%- IF category_extras %]
             [% PROCESS "report/new/category_extras.html" %]
           [%- END %]

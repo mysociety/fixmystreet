@@ -19,6 +19,8 @@ Return the base url for this cobranded site
 
 =cut
 
+use constant uses_global_categories => 1;
+
 sub base_url {
     my $base_url = FixMyStreet->config('BASE_URL');
     if ( $base_url !~ /emptyhomes/ ) {
@@ -124,6 +126,18 @@ sub council_rss_alert_options {
     };
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
+}
+
+sub category_options {
+    (
+        _('-- Pick a property type --'),
+        _('Empty house or bungalow'),
+        _('Empty flat or maisonette'),
+        _('Whole block of empty flats'),
+        _('Empty office or other commercial'),
+        _('Empty pub or bar'),
+        _('Empty public building - school, hospital, etc.')
+    );
 }
 
 sub process_extras {
