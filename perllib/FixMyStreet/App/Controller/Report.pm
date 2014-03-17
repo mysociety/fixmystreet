@@ -191,6 +191,8 @@ sub generate_map_tags : Private {
     my $problem = $c->stash->{problem};
 
     $c->stash->{page} = 'report';
+    my $use_pin_colour = 
+        $c->cobrand->can('use_pin_colour_for_big_icons') && $c->cobrand->use_pin_colour_for_big_icons;
     FixMyStreet::Map::display_map(
         $c,
         latitude  => $problem->latitude,
@@ -199,7 +201,7 @@ sub generate_map_tags : Private {
         ? [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            colour    => $c->cobrand->moniker eq 'zurich'? $c->cobrand->pin_colour($problem) : 'yellow',
+            colour    => $use_pin_colour ? $c->cobrand->pin_colour($problem) : 'yellow',
             type      => 'big',
           } ]
         : [],

@@ -122,24 +122,24 @@ function fixmystreet_onload() {
     });
     pin_layer_style_map.addUniqueValueRules('default', 'size', {
         'normal': {
-            externalGraphic: "/i/pin-${colour}.png",
+            externalGraphic: fixmystreet.pin_prefix + "pin-${colour}.png",
             graphicWidth: 48,
             graphicHeight: 64,
             graphicXOffset: -24,
             graphicYOffset: -64,
-            backgroundGraphic: "/i/pin-shadow.png",
+            backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow.png",
             backgroundWidth: 60,
             backgroundHeight: 30,
             backgroundXOffset: -7,
             backgroundYOffset: -30
         },
         'big': {
-            externalGraphic: "/i/pin-${colour}-big.png",
+            externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-big.png",
             graphicWidth: 78,
             graphicHeight: 105,
             graphicXOffset: -39,
             graphicYOffset: -105,
-            backgroundGraphic: "/i/pin-shadow-big.png",
+            backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow-big.png",
             backgroundWidth: 88,
             backgroundHeight: 40,
             backgroundXOffset: -10,

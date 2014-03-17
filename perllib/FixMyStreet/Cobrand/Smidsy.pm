@@ -17,6 +17,8 @@ sub pin_colour {
     return 'bike536'; # e.g. look for pin-bike536.png
 }
 
+sub use_pin_colour_for_big_icons { 1 }
+
 # this is required to use new style templates
 sub path_to_web_templates {
     my $self = shift;

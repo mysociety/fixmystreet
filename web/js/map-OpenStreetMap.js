@@ -11,6 +11,8 @@ function set_map_config(perm) {
         new OpenLayers.Control.PermalinkFMSz('osm_link', 'http://www.openstreetmap.org/'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
+
+    fixmystreet.pin_prefix = '/i/'
 }
 
 // http://www.openstreetmap.org/openlayers/OpenStreetMap.js (added maxResolution)
