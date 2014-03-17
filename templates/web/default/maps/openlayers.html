@@ -18,6 +18,7 @@ var fixmystreet = {
 [% IF map.zoom -%]
     'zoom': [% map.zoom %],
 [%- END %]
+    'pin_prefix': '[% c.cobrand.path_to_pin_icons %]',
     'numZoomLevels': [% map.numZoomLevels %],
     'zoomOffset': [% map.zoomOffset %],
     'map_type': [% map.map_type %],
@@ -81,7 +82,7 @@ var fixmystreet = {
 [% IF pin.id %]
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
-<img border="0" class="pin" src="[% c.uri_for('/i/pin-' _ pin.colour _ '.png') %]"
+<img border="0" class="pin" src="[% c.uri_for( c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png') %]"
     alt="[% loc('Problem') %]" style="top:[% pin.py - 64 %]px; left:[% pin.px - 24 %]px; position: absolute;">
 [%- IF pin.id -%]
 </a>

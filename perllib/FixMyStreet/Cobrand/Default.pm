@@ -731,9 +731,21 @@ Returns the colour of pin to be used for a particular report
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     #return 'green' if time() - $p->confirmed->epoch < 7 * 24 * 60 * 60;
-    return 'yellow' if $context eq 'around' || $context eq 'reports';
+    return 'yellow' if $context eq 'around' || $context eq 'reports' || $context eq 'report';
     return $p->is_fixed ? 'green' : 'red';
 }
+
+=head2 path_to_pin_icons
+
+Used to override the path for the pin icons if you want to add custom pin icons
+for your cobrand.
+
+=cut
+
+sub path_to_pin_icons {
+    return '/i/';
+}
+
 
 =head2 tweak_all_reports_map
 

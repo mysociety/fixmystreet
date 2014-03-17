@@ -17,7 +17,11 @@ $(function(){
     $html.removeClass('no-js').addClass('js');
 
     // Preload the new report pin
-    document.createElement('img').src = '/i/pin-green.png';
+    if ( typeof fixmystreet !== 'undefined' && typeof fixmystreet.pin_prefix !== 'undefined' ) {
+        document.createElement('img').src = fixmystreet.pin_prefix + 'pin-green.png';
+    } else {
+        document.createElement('img').src = '/i/pin-green.png';
+    }
 
     // Focus on postcode box on front page
     $('#pc').focus();
