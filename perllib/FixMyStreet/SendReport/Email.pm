@@ -97,7 +97,6 @@ sub send {
         {
             _template_ => $self->get_template( $row ),
             _parameters_ => $h,
-            _line_indent => $row->cobrand eq 'zurich' ? '' : undef, # XXX Access to Cobrand module here?
             To => $self->to,
             From => $self->send_from( $row ),
         },

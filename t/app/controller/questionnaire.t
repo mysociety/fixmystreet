@@ -401,7 +401,8 @@ FixMyStreet::override_config {
     ok $email, "got an email";
     $mech->clear_emails_ok;
 
-    like $email->body, qr/fill in this short questionnaire/i, "got questionnaire email";
+    (my $body = $email->body) =~ s/\s+/ /g;
+    like $body, qr/fill in this short questionnaire/i, "got questionnaire email";
     ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
     ok $token, "extracted questionnaire token '$token'";
 

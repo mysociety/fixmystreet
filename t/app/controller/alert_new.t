@@ -451,7 +451,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     my $count;
     for (@emails) {
         $count++ if $_->body =~ /The following updates have been left on this problem:/;
-        $count++ if $_->body =~ /The following new problems have been reported to City of\s*Edinburgh Council:/;
+        $count++ if $_->body =~ /The following new problems have been reported to City of\s+Edinburgh\s+Council:/;
         $count++ if $_->body =~ /The following nearby problems have been added:/;
         $count++ if $_->body =~ /\s+-\s+Testing/;
     }

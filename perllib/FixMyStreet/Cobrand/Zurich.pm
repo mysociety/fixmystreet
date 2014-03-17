@@ -278,8 +278,6 @@ sub set_problem_state {
     $c->forward( 'log_edit', [ $problem->id, 'problem', "state change to $new_state" ] );
 }
 
-sub email_indent { ''; }
-
 # Specific administrative displays
 
 sub admin_pages {

@@ -57,6 +57,7 @@ my $mail = mySociety::Email::construct_email({
     To => $data{return_path},
     _template_ => $template,
     _parameters_ => { },
+    _line_indent => '',
 });
 
 if (mySociety::EmailUtil::EMAIL_SUCCESS
