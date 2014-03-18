@@ -19,26 +19,26 @@ title: Welcome
   <div class="homepage-feature spacer-top">
     <div class="column">
       <div class="monitor">
-        <div id="owl-slide">
+<!--         <div id="owl-slide">
           <div class="item"><img src="http://placehold.it/412x232/ff5500"></div>
           <div class="item"><img src="http://placehold.it/412x232/ff0000"></div>
           <div class="item"><img src="http://placehold.it/412x232/00ff00"></div>
         </div>
-      </div>
+ -->      </div>
 
       <div id="owl-slide" class="slider-caption">
         <div class="item">
           <h3>FixMyStreet in Malasia</h3>
           <p>Run by Sinar Project</p>
         </div>
-        <div class="item">
+<!--         <div class="item">
           <h3>Something else</h3>
           <p>Oh yeah, arrh haa</p>
         </div>
         <div class="item">
           <h3>Bump bump bang</h3>
           <p>Tingle tingle tingle</p>
-        </div>
+        </div> -->
       </div>
 
 
