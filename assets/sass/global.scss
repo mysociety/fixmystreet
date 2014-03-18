@@ -257,24 +257,20 @@ ul {
             @include columns(1);
         }
     }
-    a {
+    h2 {
         color: $colour_black;
         text-transform: uppercase;
         font-weight: 700;
         font-size: 0.875em;
-        &:hover,
-        &:active,
-        &:focus {
-            color: $colour_links;
-        }
+        margin: 0;
     }
     li {
         li {
             line-height: 1.4em;
+            margin-left: 1em;
             a {
                 color: $colour_dark_grey;
-                font-weight: normal;
-                text-transform: none;
+                font-size: 0.875em;
                 &:hover,
                 &:active,
                 &:focus {
@@ -693,9 +689,6 @@ ul {
             content: '/';
             margin: 0 0.25em;
             color: $colour_dark_grey
-        }
-        &:last-child:after {
-            content: '';
         }
         a {color: $colour_dark_grey}
     }

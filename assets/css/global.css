@@ -946,19 +946,18 @@ ul {
     -moz-column-count: 1;
     -o-column-count: 1;
     column-count: 1; }
-.sidebar a {
+.sidebar h2 {
   color: #333333;
   text-transform: uppercase;
   font-weight: 700;
-  font-size: 0.875em; }
-  .sidebar a:hover, .sidebar a:active, .sidebar a:focus {
-    color: #2b8cdb; }
+  font-size: 0.875em;
+  margin: 0; }
 .sidebar li li {
-  line-height: 1.4em; }
+  line-height: 1.4em;
+  margin-left: 1em; }
   .sidebar li li a {
     color: #787774;
-    font-weight: normal;
-    text-transform: none; }
+    font-size: 0.875em; }
     .sidebar li li a:hover, .sidebar li li a:active, .sidebar li li a:focus {
       color: #2b8cdb; }
 
@@ -1346,8 +1345,6 @@ ul {
       content: '/';
       margin: 0 0.25em;
       color: #787774; }
-    .breadcrumb li:last-child:after {
-      content: ''; }
     .breadcrumb li a {
       color: #787774; }
 
