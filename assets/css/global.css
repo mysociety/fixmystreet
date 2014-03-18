@@ -338,7 +338,8 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-.image-replacement, .ms-header__logo, .site-title, .slider-nav a {
+.image-replacement, .ms-header__logo, .site-title, .owl-buttons .owl-next,
+.owl-buttons .owl-prev {
   text-indent: -1000%;
   white-space: nowrap;
   overflow: hidden; }
@@ -349,7 +350,7 @@ table {
   margin: 0 auto;
   position: relative; }
 
-.unstyled-list, .unstyled, .summary-of-features, .action-buttons, .site-footer ul, .primary-nav, .slider-nav, .sidebar ul, .list-of-blog-posts, .definitions, .breadcrumb {
+.unstyled-list, .unstyled, .summary-of-features, .action-buttons, .site-footer ul, .primary-nav, .owl-buttons, .sidebar ul, .list-of-blog-posts, .definitions, .breadcrumb {
   margin-left: 0;
   padding-left: 0;
   list-style: none outside none; }
@@ -1191,29 +1192,6 @@ ul {
     padding: 10.66667px 0;
     color: #333333; }
 
-.slider-nav {
-  float: right; }
-  .slider-nav li {
-    display: inline; }
-  .slider-nav a {
-    display: block;
-    background-color: #e4e3dd;
-    float: left;
-    background-position: center center;
-    background-size: 16px;
-    background-repeat: no-repeat;
-    height: 48px;
-    width: 48px;
-    margin-right: 2px; }
-    .slider-nav a.btn-prev {
-      background-image: url("../img/icon-arrow-left.svg");
-      border-radius: 3px 0 0 3px; }
-    .slider-nav a.btn-next {
-      background-image: url("../img/icon-arrow-right.svg");
-      border-radius: 0 3px 3px 0; }
-    .slider-nav a:hover {
-      background-color: #cfcec8; }
-
 .btn, .btn--green, .btn--blue {
   display: inline-block;
   vertical-align: middle;
@@ -1263,11 +1241,15 @@ ul {
   width: 469px;
   height: 361px;
   background: url("../img/monitor.png");
-  float: left; }
+  float: left;
+  position: relative; }
   .monitor #owl-slide {
     width: 412px;
     height: 232px;
-    background: blue; }
+    background: blue;
+    position: absolute;
+    top: 30px;
+    left: 32px; }
 
 .section-header {
   background: #333333;
@@ -1296,3 +1278,96 @@ ul {
       content: ''; }
     .breadcrumb li a {
       color: #787774; }
+
+/**
+ *  Core Owl Carousel CSS File
+ *  v1.3.2
+ */
+/* clearfix */
+.owl-carousel .owl-wrapper:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0; }
+
+/* display none until init */
+.owl-carousel {
+  display: none;
+  position: relative;
+  width: 100%;
+  -ms-touch-action: pan-y; }
+
+.owl-carousel .owl-wrapper {
+  display: none;
+  position: relative;
+  -webkit-transform: translate3d(0px, 0px, 0px); }
+
+.owl-carousel .owl-wrapper-outer {
+  overflow: hidden;
+  position: relative;
+  width: 100%; }
+
+.owl-carousel .owl-wrapper-outer.autoHeight {
+  -webkit-transition: height 500ms ease-in-out;
+  -moz-transition: height 500ms ease-in-out;
+  -ms-transition: height 500ms ease-in-out;
+  -o-transition: height 500ms ease-in-out;
+  transition: height 500ms ease-in-out; }
+
+.owl-carousel .owl-item {
+  float: left; }
+
+.owl-controls .owl-page,
+.owl-controls .owl-buttons div {
+  cursor: pointer; }
+
+.owl-controls {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent; }
+
+/* mouse grab icon */
+.grabbing {
+  cursor: url(grabbing.png) 8 8, move; }
+
+/* fix */
+.owl-carousel .owl-wrapper,
+.owl-carousel .owl-item {
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  -ms-backface-visibility: hidden;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0); }
+
+/**
+ * Owl Additions
+ */
+.owl-buttons {
+  margin-top: 100px;
+  float: right; }
+  .owl-buttons .owl-next,
+  .owl-buttons .owl-prev {
+    display: block;
+    background-color: #e4e3dd;
+    float: left;
+    background-position: center center;
+    background-size: 16px;
+    background-repeat: no-repeat;
+    height: 48px;
+    width: 48px;
+    margin-right: 2px; }
+    .owl-buttons .owl-next:hover,
+    .owl-buttons .owl-prev:hover {
+      background-color: #cfcec8; }
+  .owl-buttons .owl-prev {
+    background-image: url("../img/icon-arrow-left.svg");
+    border-radius: 3px 0 0 3px; }
+  .owl-buttons .owl-next {
+    background-image: url("../img/icon-arrow-right.svg");
+    border-radius: 0 3px 3px 0; }

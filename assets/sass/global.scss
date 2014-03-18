@@ -595,35 +595,6 @@ ul {
     }
 }
 
-.slider-nav {
-    float: right;
-    @extend .unstyled;
-    li {display: inline}
-    a {
-        @extend .image-replacement;
-        display: block;
-        background-color: $colour_light_grey;
-        float: left;
-        background-position: center center;
-        background-size: $base-spacing-unit * 0.5;
-        background-repeat: no-repeat;
-        height: $base-spacing-unit * 1.5;
-        width: $base-spacing-unit * 1.5;
-        margin-right: 2px;
-        &.btn-prev {
-            background-image: url($prev_arrow_path);
-            border-radius: 3px 0 0 3px;
-        }
-        &.btn-next {
-            background-image: url($next_arrow_path);
-            border-radius: 0 3px 3px 0;
-        }
-        &:hover {
-            background-color: $colour_light_grey / 1.1;
-        }
-    }
-}
-
 .btn{
     display:inline-block;
     vertical-align:middle;
@@ -677,10 +648,14 @@ ul {
     height: $monitor_height;
     background: url($monitor_path);
     float: left;
+    position: relative;
     #owl-slide {
         width: 412px;
         height: 232px;
         background: blue;
+        position: absolute;
+        top: 30px;
+        left: 32px;
     }
 
 }
@@ -688,8 +663,8 @@ ul {
 .section-header {
     background: $colour_black;
     padding: $base-spacing-unit /2 0;
-    float: left; 
-    width: 100%; 
+    float: left;
+    width: 100%;
     p {
         color: $colour_light_grey;
         font-weight: normal;
@@ -717,5 +692,114 @@ ul {
         }
         a {color: $colour_dark_grey}
     }
-        
+
+}
+
+
+
+
+/**
+ *  Core Owl Carousel CSS File
+ *  v1.3.2
+ */
+
+/* clearfix */
+.owl-carousel .owl-wrapper:after {
+    content: ".";
+    display: block;
+    clear: both;
+    visibility: hidden;
+    line-height: 0;
+    height: 0;
+}
+/* display none until init */
+.owl-carousel{
+    display: none;
+    position: relative;
+    width: 100%;
+    -ms-touch-action: pan-y;
+}
+.owl-carousel .owl-wrapper{
+    display: none;
+    position: relative;
+    -webkit-transform: translate3d(0px, 0px, 0px);
+}
+.owl-carousel .owl-wrapper-outer{
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+}
+.owl-carousel .owl-wrapper-outer.autoHeight{
+    -webkit-transition: height 500ms ease-in-out;
+    -moz-transition: height 500ms ease-in-out;
+    -ms-transition: height 500ms ease-in-out;
+    -o-transition: height 500ms ease-in-out;
+    transition: height 500ms ease-in-out;
+}
+
+.owl-carousel .owl-item{
+    float: left;
+}
+.owl-controls .owl-page,
+.owl-controls .owl-buttons div{
+    cursor: pointer;
+}
+.owl-controls {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+/* mouse grab icon */
+.grabbing {
+    cursor:url(grabbing.png) 8 8, move;
+}
+
+/* fix */
+.owl-carousel  .owl-wrapper,
+.owl-carousel  .owl-item{
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility:    hidden;
+    -ms-backface-visibility:     hidden;
+  -webkit-transform: translate3d(0,0,0);
+  -moz-transform: translate3d(0,0,0);
+  -ms-transform: translate3d(0,0,0);
+}
+
+
+
+/**
+ * Owl Additions
+ */
+.owl-buttons {
+    margin-top: 100px;
+    float: right;
+    @extend .unstyled;
+    .owl-next,
+    .owl-prev {
+        @extend .image-replacement;
+        display: block;
+        background-color: $colour_light_grey;
+        float: left;
+        background-position: center center;
+        background-size: $base-spacing-unit * 0.5;
+        background-repeat: no-repeat;
+        height: $base-spacing-unit * 1.5;
+        width: $base-spacing-unit * 1.5;
+        margin-right: 2px;
+        &:hover {
+            background-color: $colour_light_grey / 1.1;
+        }
+    }
+    .owl-prev {
+        background-image: url($prev_arrow_path);
+        border-radius: 3px 0 0 3px;
+    }
+    .owl-next {
+        background-image: url($next_arrow_path);
+        border-radius: 0 3px 3px 0;
+    }
 }
