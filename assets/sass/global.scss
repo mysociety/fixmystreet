@@ -42,7 +42,7 @@ h1,
 .primary-heading {
     font-size: 2.666666667em;
     line-height: 1.1em;
-    font-weight: 600;
+    font-weight: normal;
 }
 
 h2,
@@ -84,6 +84,8 @@ pre, code, kbd, samp {
 
 code {
     border: 1px solid $colour_borders;
+    background: $colour_light_grey;
+    color: $colour_red;
     border-radius: 3px;
     padding: 0 0.2em;
 }
@@ -91,9 +93,9 @@ code {
 pre {
     display: block;
     white-space: pre-wrap;
-    background-color: $colour_background;
-    border: 1px solid $colour_borders;
-    border-radius: 3px;
+    background-color: $colour_black;
+    border-top: 3px solid $colour_light_grey;
+    border-bottom: 3px solid $colour_light_grey;
     padding: 1em;
     max-width: 100%;
     overflow-x: scroll;
@@ -102,6 +104,8 @@ pre {
     code {
         border: none;
         padding: 0;
+        color: $colour_light_grey;
+        background: none;
     }
 }
 
@@ -122,7 +126,7 @@ ul {
 
 /* To avoid floaty footer, make background footer colour */
 .page-wrapper {
-    background: #fff;
+    background: $colour_light_grey;
 }
 
 /* mySociety header */
@@ -200,6 +204,7 @@ ul {
 }
 
 .main-content-column {
+    padding-left: 0 !Important;
     @media (min-width: $large-screen) {
         @include grid-column--three-of-four;
     }
@@ -212,9 +217,8 @@ ul {
 .main-content {
     background: #fff;
     padding: 1.6em 5%;
-    border: 1px solid $colour_borders;
-    top: -2.75em;
     position: relative;
+    margin-bottom: $base-spacing-unit;
     h2 {
         border-top: 1px solid $colour_borders;
         padding-top: 1.2em;
@@ -549,6 +553,8 @@ ul {
 
 
 .site-footer {
+    width: 100%;
+    clear: left;
     margin-top: $base-spacing-unit *2;
     background: $colour_black;
     padding: $base-spacing-unit 0;
@@ -671,6 +677,45 @@ ul {
     height: $monitor_height;
     background: url($monitor_path);
     float: left;
+    #owl-slide {
+        width: 412px;
+        height: 232px;
+        background: blue;
+    }
+
 }
 
+.section-header {
+    background: $colour_black;
+    padding: $base-spacing-unit /2 0;
+    float: left; 
+    width: 100%; 
+    p {
+        color: $colour_light_grey;
+        font-weight: normal;
+        margin: 0;
+        display: block;
+    }
+}
 
+.breadcrumb {
+    @extend .unstyled-list;
+    width: 100%;
+    padding: $base-spacing-unit /4 0;
+    width: 100%;
+    float: left;
+    li {
+        display: inline;
+        font-size: 0.75em;
+        &:after {
+            content: '/';
+            margin: 0 0.25em;
+            color: $colour_dark_grey
+        }
+        &:last-child:after {
+            content: '';
+        }
+        a {color: $colour_dark_grey}
+    }
+        
+}

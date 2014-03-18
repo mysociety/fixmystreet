@@ -349,7 +349,7 @@ table {
   margin: 0 auto;
   position: relative; }
 
-.unstyled-list, .unstyled, .summary-of-features, .action-buttons, .site-footer ul, .primary-nav, .slider-nav, .sidebar ul, .list-of-blog-posts, .definitions {
+.unstyled-list, .unstyled, .summary-of-features, .action-buttons, .site-footer ul, .primary-nav, .slider-nav, .sidebar ul, .list-of-blog-posts, .definitions, .breadcrumb {
   margin-left: 0;
   padding-left: 0;
   list-style: none outside none; }
@@ -666,7 +666,7 @@ body {
   min-height: 100%; }
 
 a {
-  color: #f79421;
+  color: #2b8cdb;
   text-decoration: none; }
   a:hover, a:active, a:focus {
     text-decoration: underline; }
@@ -680,7 +680,7 @@ h1,
 .primary-heading {
   font-size: 2.666666667em;
   line-height: 1.1em;
-  font-weight: 600; }
+  font-weight: normal; }
 
 h2,
 .secondary-heading,
@@ -717,15 +717,17 @@ pre, code, kbd, samp {
 
 code {
   border: 1px solid #e4e3dd;
+  background: #e4e3dd;
+  color: #dd4e4d;
   border-radius: 3px;
   padding: 0 0.2em; }
 
 pre {
   display: block;
   white-space: pre-wrap;
-  background-color: #f3f1eb;
-  border: 1px solid #e4e3dd;
-  border-radius: 3px;
+  background-color: #333333;
+  border-top: 3px solid #e4e3dd;
+  border-bottom: 3px solid #e4e3dd;
   padding: 1em;
   max-width: 100%;
   overflow-x: scroll;
@@ -733,7 +735,9 @@ pre {
   line-height: 1.4375em; }
   pre code {
     border: none;
-    padding: 0; }
+    padding: 0;
+    color: #e4e3dd;
+    background: none; }
 
 hr {
   border: none;
@@ -749,7 +753,7 @@ ul {
 
 /* To avoid floaty footer, make background footer colour */
 .page-wrapper {
-  background: #fff; }
+  background: #e4e3dd; }
 
 /* mySociety header */
 .ms-header {
@@ -808,14 +812,16 @@ ul {
 .site-title {
   color: #fff; }
 
-@media (min-width: 56.88889em) {
-  .main-content-column {
-    /* Use for grids where the columns are different widths */
-    float: left;
-    padding-left: 3%;
-    width: 75%; }
-    .main-content-column:first-child {
-      padding-left: 0; } }
+.main-content-column {
+  padding-left: 0 !Important; }
+  @media (min-width: 56.88889em) {
+    .main-content-column {
+      /* Use for grids where the columns are different widths */
+      float: left;
+      padding-left: 3%;
+      width: 75%; }
+      .main-content-column:first-child {
+        padding-left: 0; } }
 
 .main-content-column-full-width {
   /* Use for multi-column grids where all columns are equal width, it gives them equal spacing */
@@ -831,9 +837,8 @@ ul {
 .main-content {
   background: #fff;
   padding: 1.6em 5%;
-  border: 1px solid #e4e3dd;
-  top: -2.75em;
-  position: relative; }
+  position: relative;
+  margin-bottom: 32px; }
   .main-content h2 {
     border-top: 1px solid #e4e3dd;
     padding-top: 1.2em; }
@@ -874,7 +879,7 @@ ul {
   font-weight: 700;
   font-size: 0.875em; }
   .sidebar a:hover, .sidebar a:active, .sidebar a:focus {
-    color: #f79421; }
+    color: #2b8cdb; }
 .sidebar li li {
   line-height: 1.4em; }
   .sidebar li li a {
@@ -882,7 +887,7 @@ ul {
     font-weight: normal;
     text-transform: none; }
     .sidebar li li a:hover, .sidebar li li a:active, .sidebar li li a:focus {
-      color: #f79421; }
+      color: #2b8cdb; }
 
 .listed-blog-post {
   border-bottom: 1px solid #e4e3dd;
@@ -938,7 +943,7 @@ ul {
       color: #787774;
       transition: transform 0.2s ease-out; }
     .reveal-on-click dt:hover:after {
-      background: #f79421;
+      background: #2b8cdb;
       color: #fff; }
     .reveal-on-click dt.revealed:after {
       transform: rotate(45deg);
@@ -1135,6 +1140,8 @@ ul {
     background-image: url("../img/icon-mail.svg"); }
 
 .site-footer {
+  width: 100%;
+  clear: left;
   margin-top: 64px;
   background: #333333;
   padding: 32px 0;
@@ -1257,3 +1264,35 @@ ul {
   height: 361px;
   background: url("../img/monitor.png");
   float: left; }
+  .monitor #owl-slide {
+    width: 412px;
+    height: 232px;
+    background: blue; }
+
+.section-header {
+  background: #333333;
+  padding: 16px 0;
+  float: left;
+  width: 100%; }
+  .section-header p {
+    color: #e4e3dd;
+    font-weight: normal;
+    margin: 0;
+    display: block; }
+
+.breadcrumb {
+  width: 100%;
+  padding: 8px 0;
+  width: 100%;
+  float: left; }
+  .breadcrumb li {
+    display: inline;
+    font-size: 0.75em; }
+    .breadcrumb li:after {
+      content: '/';
+      margin: 0 0.25em;
+      color: #787774; }
+    .breadcrumb li:last-child:after {
+      content: ''; }
+    .breadcrumb li a {
+      color: #787774; }
