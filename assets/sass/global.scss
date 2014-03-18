@@ -127,6 +127,12 @@ ul {
 /* To avoid floaty footer, make background footer colour */
 .page-wrapper {
     background: $colour_light_grey;
+    float: left;
+    width: 100%;
+}
+.page-wrapper--white {
+    width: 100%;
+    background: #fff;
 }
 
 /* mySociety header */
@@ -499,6 +505,7 @@ ul {
     display: table;
     width: 100%;
     text-align: center;
+    margin-bottom: $base-spacing-unit *2;
     .this,
     .or {
         display: table-cell;
@@ -555,7 +562,6 @@ ul {
 .site-footer {
     width: 100%;
     clear: left;
-    margin-top: $base-spacing-unit *2;
     background: $colour_black;
     padding: $base-spacing-unit 0;
     @include clearfix;

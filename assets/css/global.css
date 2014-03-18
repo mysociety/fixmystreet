@@ -754,7 +754,13 @@ ul {
 
 /* To avoid floaty footer, make background footer colour */
 .page-wrapper {
-  background: #e4e3dd; }
+  background: #e4e3dd;
+  float: left;
+  width: 100%; }
+
+.page-wrapper--white {
+  width: 100%;
+  background: #fff; }
 
 /* mySociety header */
 .ms-header {
@@ -1091,7 +1097,8 @@ ul {
 .this-or-this {
   display: table;
   width: 100%;
-  text-align: center; }
+  text-align: center;
+  margin-bottom: 64px; }
   .this-or-this .this,
   .this-or-this .or {
     display: table-cell; }
@@ -1143,7 +1150,6 @@ ul {
 .site-footer {
   width: 100%;
   clear: left;
-  margin-top: 64px;
   background: #333333;
   padding: 32px 0;
   /**

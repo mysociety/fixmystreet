@@ -8,37 +8,38 @@ layout: default
   </div>
 </header>
 
-<div class="page">
+<div class="page-wrapper">
+  <div class="page">
 
-    <ul class="breadcrumb">
-      <li><a href="#">Home</a></li>
-      <li><a href="#">Documentation</a></li>
-      <li><a href="#">Customising FixMyStreet</a></li>
-    </ul>
+      <ul class="breadcrumb">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Documentation</a></li>
+        <li><a href="#">Customising FixMyStreet</a></li>
+      </ul>
 
-    <div class="main-content-column">
-      <main role="main" class="main-content">
-        {{ content }}
-      </main>
+      <div class="main-content-column">
+        <main role="main" class="main-content">
+          {{ content }}
+        </main>
+      </div>
+
+      <div class="secondary-content-column">
+        <nav class="sidebar">
+          <ul>
+            <li><a href="{{ site.baseurl }}">Overview</a></li>
+            <li><a href="{{ site.baseurl }}install/">Installing</a>
+              <ul>
+                <li><a href="{{ site.baseurl }}install/install-script">Install script</a></li>
+                <li><a href="{{ site.baseurl }}install/ami">FixMyStreet AMI for EC2</a></li>
+                <li><a href="{{ site.baseurl }}install/database">Database troubleshooting</a></li>
+              </ul>
+            </li>
+            <li><a href="{{ site.baseurl }}customising/">Customising</a></li>
+            <li><a href="{{ site.baseurl }}running/">Running</a></li>
+            <li><a href="{{ site.baseurl }}community/">Community</a></li>
+            <li><a href="{{ site.baseurl }}blog/">Blog</a></li>
+          </ul>
+        </nav>
+      </div>
     </div>
-
-    <div class="secondary-content-column">
-      <nav class="sidebar">
-        <ul>
-          <li><a href="{{ site.baseurl }}">Overview</a></li>
-          <li><a href="{{ site.baseurl }}install/">Installing</a>
-            <ul>
-              <li><a href="{{ site.baseurl }}install/install-script">Install script</a></li>
-              <li><a href="{{ site.baseurl }}install/ami">FixMyStreet AMI for EC2</a></li>
-              <li><a href="{{ site.baseurl }}install/database">Database troubleshooting</a></li>
-            </ul>
-          </li>
-          <li><a href="{{ site.baseurl }}customising/">Customising</a></li>
-          <li><a href="{{ site.baseurl }}running/">Running</a></li>
-          <li><a href="{{ site.baseurl }}community/">Community</a></li>
-          <li><a href="{{ site.baseurl }}blog/">Blog</a></li>
-        </ul>
-      </nav>
-    </div>
-
-  </div>
+</div>
