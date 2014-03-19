@@ -1,0 +1,19 @@
+{
+  "name": "FixMyStreet",
+  "version": "0.0.1",
+  "description": "FixMyStreet Platform",
+  "main": "assets/scripts/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "authors": [
+    "Josh Angell <josh@supercooldesign.co.uk>"
+  ],
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.5",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-watch": "~0.5.3"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "FixMyStreet",
+  "version": "0.1",
+  "authors": [
+    "Josh Angell <josh@supercooldesign.co.uk>"
+  ],
+  "description": "FixMyStreet Platform",
+  "license": "MIT",
+  "homepage": "http://www.fixmystreet.com/",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~1.10.2",
+    "jquery-migrate": "~1.2.1",
+    "owlcarousel": "~1.3.2"
+  }
+}

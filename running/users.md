@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: Managing users in FixMyStreet
 author: dave
 ---
@@ -18,7 +18,7 @@ password to make future visits to the site easier. But this is not mandatory.
 
 Administrators typically access the admin using htauth credentials, which are entirely separate from FixMyStreet users. Some FixMyStreet installations *do* use the users, but the default version does not.
 
-This means you'd don't normally need to create a user just to use the admin. 
+This means you'd don't normally need to create a user just to use the admin.
 
 ## How users are normally created
 
@@ -48,7 +48,7 @@ email address if you create a new account in this way.
 ## Users' passwords
 
 If a user sets a password, they can use it to login on future visits (instead
-of using a confirmation link in an email). We don't make this mandatory. 
+of using a confirmation link in an email). We don't make this mandatory.
 
 ### Setting or changing a password
 
@@ -126,7 +126,7 @@ You can mark any FixMyStreet user as belonging to a body. This marks them as a
 
 * Staff users can access the dashboard (at `/dashboard`) which shows summary
   statistics for the body to which they belong.
-  
+
 * Staff users can hide abusive reports from public view.
 
 To set (or revoke) staff user status, choose **Users** in the admin, and enter

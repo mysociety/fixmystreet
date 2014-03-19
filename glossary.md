@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: fullwidth
 title: Glossary
 ---
 
@@ -14,45 +14,42 @@ project to help people run websites for reporting common street problems such
 as potholes and broken street lights to an appropriate authority. For
 technical information, see
 [code.fixmystreet.com](http://code.fixmystreet.com).
+## Definitions
 
-Definitions
------------
 
-[abuse list](#abuse-list) |
-[admin&nbsp;boundary](#area) |
-[administrator](#administrator) |
-[alert](#alert) |
-[area](#area) |
-[area&nbsp;type](#area-type) |
-[banning](#abuse-list) |
-[body](#body) |
-[category](#category) |
-[cobrand](#cobrand) |
-[config&nbsp;variable](#config-variable) |
-[contact](#contact) |
-[council](#council) |
-[dashboard](#dashboard) |
-[flagged](#flagged) |
-[geocoder](#geocoder) |
-[git](#git) |
-[integration](#integration) |
-[lat-long](#latlong) |
-[locale](#locale) |
-[map](#map) |
-[MapIt](#mapit) |
-[Open311](#open311) |
-[OpenStreetMap](#osm) |
-[problem&nbsp;report](#report) |
-[questionnaire](#survey) |
-[send&nbsp;method](#send-method) |
-[staff&nbsp;users](#staff-user) |
-[state](#state) |
-[survey](#survey) |
-[template](#template) |
-[update](#update) |
-[user&nbsp;account](#user-account)
-
----
+<ul class="definitions">
+  <li><a href="#abuse-list">abuse list</a></li>
+  <li><a href="#area">admin boundary</a></li>
+  <li><a href="#administrator">administrator</a></li>
+  <li><a href="#alert">alert</a></li>
+  <li><a href="#area-type">area type</a></li>
+  <li><a href="#abuse-list">banning</a></li>
+  <li><a href="#body">body</a></li>
+  <li><a href="#category">category</a></li>
+  <li><a href="#cobrand">cobrand</a></li>
+  <li><a href="#config-variable">config variable</a></li>
+  <li><a href="#contact">contact</a></li>
+  <li><a href="#council">council</a></li>
+  <li><a href="#dashboard">dashboard</a></li>
+  <li><a href="#flagged">flagged</a></li>
+  <li><a href="#geocoder">geocoder</a></li>
+  <li><a href="#git">git</a></li>
+  <li><a href="#integration">integration</a></li>
+  <li><a href="#latlong">lat-long</a></li>
+  <li><a href="#locale">locale</a></li>
+  <li><a href="#map">map</a></li>
+  <li><a href="#mapit">MapIt</a></li>
+  <li><a href="#open311">Open311</a></li>
+  <li><a href="#report">problem report</a></li>
+  <li><a href="#survey">questionnaire</a></li>
+  <li><a href="#send-method">send method</a></li>
+  <li><a href="#staff-user">staff users</a></li>
+  <li><a href="#state">state</a></li>
+  <li><a href="#survey">survey</a></li>
+  <li><a href="#template">template</a></li>
+  <li><a href="#update">update</a></li>
+  <li><a href="#user-account">user account</a></li>
+</ul>
 
 <dl class="glossary">
 
@@ -107,7 +104,7 @@ Definitions
       </ul>
     </div>
   </dd>
- 
+
   <dt>
     <a name="alert">alert</a>
   </dt>
@@ -208,7 +205,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="body">body</a>
   </dt>
@@ -317,7 +314,7 @@ Definitions
           key config settings to get your site running.
         </li>
         <li>
-          See more about <a href="/customising/">customising</a> for 
+          See more about <a href="/customising/">customising</a> for
           more config options.
         </li>
         <li>
@@ -328,7 +325,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="contact">contact</a>
   </dt>
@@ -467,7 +464,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="integration">integration</a> with bodies' back-end systems
   </dt>
@@ -515,7 +512,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="latlong">lat-long</a>
   </dt>
@@ -525,10 +522,10 @@ Definitions
     href="#mapit" class="glossary">MapIt</a> when the user clicks on the <a
     href="#map" class="glossary">map</a>.
     <p>
-      Example lat-long for London, UK: <code>51.5072759,-0.1276597</code> 
+      Example lat-long for London, UK: <code>51.5072759,-0.1276597</code>
     </p>
   </dd>
-  
+
   <dt>
     <a name="locale">locale</a>
   </dt>
@@ -622,7 +619,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="open311">Open311</a>
   </dt>
@@ -682,7 +679,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="report">problem report</a>
   </dt>
@@ -709,8 +706,8 @@ Definitions
         </li>
       </ul>
     </div>
-  </dd>  
-  
+  </dd>
+
   <dt>
     <a name="send-method">send method</a>
   </dt>
@@ -904,7 +901,7 @@ Definitions
       </ul>
     </div>
   </dd>
-  
+
   <dt>
     <a name="user-account">user account</a>
   </dt>

@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: How to customise the geocoder
 author: matthew
 ---
@@ -27,4 +27,4 @@ the API that they are used by.
 
 ## Detailed flow: location &rarr; map pin &rarr; drop-down menu
 
-![FMS bodies and contacts](/images/fms_bodies_and_contacts.png)
+![FMS bodies and contacts](/assets/img/fms_bodies_and_contacts.png)

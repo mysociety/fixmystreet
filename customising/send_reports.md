@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: How FixMyStreet sends reports
 author: dave
 ---
@@ -7,7 +7,7 @@ author: dave
 # How FixMyStreet sends reports
 
 <p class="lead">
-After a user submits a problem, FixMyStreet sends a <strong>problem report</strong> to the body responsible for fixing it. Typically, reports 
+After a user submits a problem, FixMyStreet sends a <strong>problem report</strong> to the body responsible for fixing it. Typically, reports
 are sent by email. It's possible to override the content of the report (the email template), or even the way in which it is sent.
 </p>
 

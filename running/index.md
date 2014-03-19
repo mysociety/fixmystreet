@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: Running FixMyStreet
 author: dave
 ---

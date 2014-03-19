@@ -1,0 +1,89 @@
+---
+layout: default
+---
+
+<div class="page-wrapper">
+  <div class="page">
+
+      {% capture url_parts %} {{ page.url | remove: "/index.html" | replace:'/'," " }}{% endcapture %}
+      {% capture num_parts %}{{ url_parts | number_of_words | minus: 1 }}{% endcapture %}
+      {% assign previous="" %}
+      <ul class="breadcrumb">
+      {% if num_parts == "0" or num_parts == "-1" %}
+        <li><a href="/">Home</a></li>
+        <li><a href="/overview/">Documentation</a></li>
+      {% else %}
+        <li><a href="/">Home</a></li>
+        <li><a href="/overview/">Documentation</a></li>
+        {% for unused in page.content limit:num_parts %}
+          {% capture first_word %}{{ url_parts | truncatewords:1 | remove:"..."}}{% endcapture %}
+          {% capture previous %}{{ previous }}/{{ first_word }}{% endcapture %}
+          <li><a href="{{ previous }}/">{{ first_word | capitalize }}</a></li>
+          {% capture url_parts %}{{ url_parts | remove_first:first_word }}{% endcapture %}
+        {% endfor %}
+      {% endif %}
+      </ul>
+
+      <div class="main-content-column">
+        <main role="main" class="main-content">
+          {{ content }}
+        </main>
+      </div>
+
+    <div class="secondary-content-column">
+      <nav class="sidebar">
+        <ul>
+          <li><a href="{{ site.baseurl }}">Home</a></li>
+          <li><a href="{{ site.baseurl }}how-it-works/">How it works</a></li>
+          <li><a href="{{ site.baseurl }}overview/">Documentation</a></li>
+          <li><h2>Installing</h2>
+            <ul>
+              <li><a href="{{ site.baseurl }}install/">Manually</a>
+              <li><a href="{{ site.baseurl }}install/install-script">Install script</a></li>
+              <li><a href="{{ site.baseurl }}install/ami">AMI for EC2</a></li>
+            </ul>
+          </li>
+          <li><h2>Customising</h2>
+            <ul>
+              <li><a href="{{ site.baseurl }}customising/">Overview</a>
+              <li><a href='{{ site.baseurl }}customising/language/'>Language</a></li>
+              <li><a href='{{ site.baseurl }}customising/fms_and_mapit/'>Assigning reports</a></li>
+              <li><a href='{{ site.baseurl }}customising/geocoder/'>Geocoder</a></li>
+              <li><a href='{{ site.baseurl }}customising/css/'>Design (CSS)</a></li>
+              <li><a href='{{ site.baseurl }}customising/templates/'>Templates</a></li>
+              <li><a href='{{ site.baseurl }}customising/send_reports/'>Sending reports</a></li>
+              <li><a href='{{ site.baseurl }}feeding-back/'>Feeding back changes</a></li>
+            </ul>
+          </li>
+          <li><h2>Running FixMyStreet</h2>
+            <ul>
+              <li><a href="{{ site.baseurl }}running/">Overview</a>
+              <li><a href='{{ site.baseurl }}running/admin_manual/'>Admin manual</a></li>
+              <li><a href='{{ site.baseurl }}running/bodies_and_contacts/'>Bodies and contacts</a></li>
+              <li><a href='{{ site.baseurl }}running/admin_manual/'>Users</a></li>
+            </ul>
+          </li>
+          <li><h2>Updating your code</h2>
+            <ul>
+              <li><a href="{{ site.baseurl }}updating/">Overview</a></li>
+              <li><a href="{{ site.baseurl }}updating/ami/">AMI</a></li>
+            </ul>
+          </li>
+          <li><h2>Community</h2>
+            <ul>
+              <li><a href="https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet">Mailing list</a></li>
+              <li><a href="https://github.com/fixmystreet">GitHub</a></li>
+              <li><a href="irc://irc.mysociety.org/fixmstreet">IRC</a> (<a href="http://www.irc.mysociety.org/">web</a>)</li>
+              <li><a href="https://twitter.com/fixmystreet">Twitter</a></li>
+            </ul>
+          </li>
+          <li><h2>Blog</h2>
+            <ul>
+              <li><a href="{{ site.baseurl }}blog/">Latest posts</a>
+              <li><a href="{{ site.baseurl }}atom.xml">Feed</a>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+</div>

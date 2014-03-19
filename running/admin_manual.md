@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: FixMyStreet Administrator's Manual
 author: dave
 ---
@@ -31,7 +31,7 @@ questions as you need to.
 
 ## Other helpful documents
 
-* **Before** you decide to run FixMyStreet, you should read the 
+* **Before** you decide to run FixMyStreet, you should read the
   ["Can we fix it?" DIY Guide](/The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf).
 
 * If you are hosting FixMyStreet yourself, you **must** read the [installation
@@ -51,7 +51,7 @@ your users will need help, and there will be regular administrative tasks to
 perform. So, sooner rather than later, you will need to think about who will
 be responsible.
 
-<div class="attention-box info"> 
+<div class="attention-box info">
   If you're just starting on your FixMyStreet project, it's possible that you
   have not found an administrator yet, or that you didn't realise you needed
   one. Don't worry! Look through this document to see why you need one, and
@@ -121,7 +121,7 @@ them by clicking on the link at the top of any admin page:
 * **Summary page** <br/> The summary page shows the number of live <a
   href="/glossary/#report" class="glossary">reports</a>, <a
   href="/glossary/#update" class="glossary">updates</a>, <a
-  href="/glossary/#alert" class="glossary">alerts</a>, sent 
+  href="/glossary/#alert" class="glossary">alerts</a>, sent
   <a href="/glossary/#survey" class="glossary">questionnaires</a> and
   bodies' <a href="/glossary/#contact" class="glossary">contacts</a>.
 
@@ -264,7 +264,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
     Open
   </dt>
   <dd>
-    <p>      
+    <p>
       An <em>open</em> report is one that has not been fixed or closed. This
       generally means that the body has not yet attended to the problem. Also,
       this implies that the report is not <em>unconfirmed</em> (see above). <a
@@ -350,7 +350,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
   </dd>
 </dl>
 
-## Types of Tasks 
+## Types of Tasks
 
 There are two main types of tasks for FixMyStreet <a
 href="/glossary/#administrator" class="glossary">administrators</a>.
@@ -455,7 +455,7 @@ experience with the UK site.
     </p>
    </dd>
   <dt>
-    Removing inappropriate reports 
+    Removing inappropriate reports
   </dt>
   <dd>
     <p>
@@ -485,7 +485,7 @@ experience with the UK site.
     </p>
   </dd>
   <dt>
-    Users who send a report to the support email address 
+    Users who send a report to the support email address
   </dt>
   <dd>
     <p>
@@ -588,7 +588,7 @@ FixMyStreet site.
       problem).
     </p>
   </dd>
-  <dt>  
+  <dt>
     Press enquiries or data/statistic enquiries
   </dt>
   <dd>
@@ -631,7 +631,7 @@ FixMyStreet site.
     </p>
   </dd>
   <dt>
-    User does not receive report confirmation email 
+    User does not receive report confirmation email
   </dt>
   <dd>
     <p>
@@ -664,7 +664,7 @@ FixMyStreet site.
       Any user can set a new password at any time.
     </p>
     <p>
-      We send this response to requests to change the password: 
+      We send this response to requests to change the password:
     </p>
     <div class="correspondence">
       When you next create a problem report or update, simply choose the
@@ -729,7 +729,7 @@ FixMyStreet site.
     </p>
   </dd>
   <dt>
-    User can't find a relevant category for their problem 
+    User can't find a relevant category for their problem
   </dt>
   <dd>
     <p>
@@ -782,7 +782,7 @@ FixMyStreet site.
     </p>
   </dd>
   <dt>
-    User wants to unsubscribe from local alerts 
+    User wants to unsubscribe from local alerts
   </dt>
   <dd>
     <p>
@@ -792,7 +792,7 @@ FixMyStreet site.
     </p>
   </dd>
   <dt>
-    User just wants to send praise or thanks 
+    User just wants to send praise or thanks
   </dt>
   <dd>
     <p>

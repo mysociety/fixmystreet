@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 title: Customising with a Cobrand module
 ---
 

@@ -1,0 +1,65 @@
+$source: "Source Sans Pro", "Helvetica Neue", Arial, Helvetica, serif;
+
+$colour_orange: #f79421;
+$colour_light_grey: #e4e3dd;
+$colour_dark_grey: #787774;
+$colour_black: #333333;
+$colour_red: #dd4e4d;
+
+$colour_green: #61b252;
+$colour_green_dark: #53a044;
+$colour_green_dark_2: #388924;
+
+$colour_blue: #54b1e4;
+$colour_blue_dark: #2b8cdb;
+$colour_blue_dark_2: #207cba;
+
+$colour_brand: #fff066; // yellow
+
+$colour_background: #f3f1eb;
+$colour_links: #2b8cdb;
+$colour_borders: $colour_light_grey;
+
+$giant-screen: 77.777777778em;
+$large-screen: 56.888888889em;
+$mediumish-screen: 40em;
+$medium-screen: 30em;
+
+$base-spacing-unit: 32px;
+
+//These should always be overridden in _config.scss
+
+$logo_path: "../img/fixmystreet-logo.svg" !default;
+$logo_height: 60px !default;
+$logo_width: 320px !default;
+
+
+
+
+// Action button icons
+
+$icon_download_path: "../img/icon-download.svg" !default;
+$icon_docs_path: "../img/icon-document.svg" !default;
+$icon_github_path: "../img/icon-github.svg" !default;
+$icon_email_path: "../img/icon-email.svg" !default;
+$icon_twitter_path: "../img/icon-twitter.svg" !default;
+$icon_irc_path: "../img/icon-hash.svg" !default;
+$icon_post_path: "../img/icon-mail.svg" !default;
+
+// Monitor image
+$monitor_path: "../img/monitor.png" !default;
+$monitor_width: 469px;
+$monitor_height: 361px;
+$monitor_breakpoint: 520px;
+
+$prev-arrow_path: "../img/icon-arrow-left.svg";
+$next-arrow_path: "../img/icon-arrow-right.svg";
+
+// Circle icons
+$icon_opensource_path: "../img/icon-opensource.svg" !default;
+$icon_paint_path: "../img/icon-paint.svg" !default;
+$icon_help_path: "../img/icon-help.svg" !default;
+$icon_world_path: "../img/icon-world.svg" !default;
+
+$circle_icon_height: 114px !default;
+$circle_icon_width: 114px !default;

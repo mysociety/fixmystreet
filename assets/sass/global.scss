@@ -1,0 +1,859 @@
+@import 'normalize';
+@import 'variables';
+@import 'mixins';
+@import 'pygment_trac';
+@import 'owl_carousel';
+@import 'config';
+
+*, *:before, *:after {
+  -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+ }
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: $source;
+    background-color: #fff;
+    color: $colour_black;
+    font-size: 1.125em;
+    line-height: 1.555555556em;
+    height: 100%;
+    min-height: 100%;
+}
+
+a {
+    color: $colour_links;
+    text-decoration: none;
+    &:hover,
+    &:active,
+    &:focus {
+        text-decoration: underline;
+    }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    text-rendering: optimizeLegibility;
+}
+
+h1,
+.primary-heading {
+    font-size: 2.666666667em;
+    line-height: 1.1em;
+    font-weight: normal;
+}
+
+h2,
+.secondary-heading {
+    font-size: 1.666666667em;
+    font-weight: 600;
+}
+
+h3,
+.tertiary-heading {
+    font-size: 1.166666667em;
+    font-weight: 600;
+}
+
+h4,
+.quarternary-heading {
+    font-size: 1em;
+    text-transform: uppercase;
+}
+
+p {
+    line-height: 1.4375em;
+}
+
+.lead {
+    font-size: 1.1875em;
+    color: $colour_dark_grey;
+    border-bottom: 1px solid $colour_borders;
+    padding-bottom: 1em;
+    margin-bottom: 1.2em;
+    margin-top: 0;
+}
+
+.title {font-weight: normal;}
+
+pre, code, kbd, samp {
+    font-family: Consolas, 'Liberation Mono', Courier, monospace;
+}
+
+code {
+    border: 1px solid $colour_borders;
+    background: $colour_light_grey;
+    color: $colour_red;
+    border-radius: 3px;
+    padding: 0 0.2em;
+}
+
+pre {
+    display: block;
+    white-space: pre-wrap;
+    background-color: $colour_black;
+    border-top: 3px solid $colour_light_grey;
+    border-bottom: 3px solid $colour_light_grey;
+    padding: 1em;
+    max-width: 100%;
+    overflow-x: scroll;
+    font-size: .9375em;
+    line-height: 1.4375em;
+    code {
+        border: none;
+        padding: 0;
+        color: $colour_light_grey;
+        background: none;
+    }
+}
+
+hr {
+    border: none;
+    border-top: 1px solid $colour_borders;
+    margin: 0;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+ul {
+    padding-left: 1.3em;
+}
+
+/* To avoid floaty footer, make background footer colour */
+.page-wrapper {
+    background: $colour_light_grey;
+    float: left;
+    width: 100%;
+}
+.page-wrapper--white {
+    width: 100%;
+    background: #fff;
+}
+
+/* mySociety header */
+.ms-header {
+    background: transparent;
+    border-top: 4px solid #424242;
+}
+
+.ms-header__row {
+    @extend .container;
+}
+
+.ms-header__logo {
+    @extend .image-replacement;
+    display: block;
+    position: absolute;
+    right: 0.75em;
+    top: 0;
+    background-color: #424242;
+    background-repeat: no-repeat;
+    height: 38px;
+    width: 44px;
+    border-radius: 0 0 0.75em 0.75em;
+    background-size: 22px;
+    background-position: 11px 7px ;
+    background-image: url('../img/mysociety-bloom.png');
+
+    @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+        background-image: url('../img/mysociety-bloom@2.png');
+    }
+
+    @media (min-width: $medium-screen) {
+        border-radius: 0 0 1em 1em;
+        background-position: 16px 10px ;
+        background-size: 93px 19px;
+        background-repeat: no-repeat;
+        background-image: url('../img/mysociety-logo.png');
+        width: 125px;
+        height: 39px;
+        @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+            background-image: url('../img/mysociety-logo@2.png');
+        }
+    }
+}
+
+.site-title {
+    @extend .image-replacement;
+    height: $logo_height * 0.75;
+    width: $logo_width * 0.75;
+    max-width: 100%;
+    display: block;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-image: url($logo_path);
+}
+
+.site-header {
+    border-top: 0.375em solid #424242;
+    padding: 1em 0;
+    background-position: center;
+    background-color: $colour_brand;
+}
+
+// Have a larger heading on the front page on larger screens
+@media (min-width: $large-screen) {
+    body.home .site-title {
+        margin: 0.5em auto;
+        height: $logo_height;
+        width: $logo_width;
+        background-size: $logo_width $logo_height;
+    }
+    body.home .site-header {
+        padding: 3.75em 0;
+    }
+}
+
+.page {
+    @extend .container;
+}
+
+.main-content-column {
+    padding-left: 0 !Important;
+    @media (min-width: $large-screen) {
+        @include grid-column--three-of-four;
+    }
+}
+
+.main-content-column-full-width {
+    @include grid-column--one-of-one;
+}
+
+.main-content {
+    background: #fff;
+    padding: 1.6em 5%;
+    position: relative;
+    margin-bottom: $base-spacing-unit;
+    h2 {
+        border-top: 1px solid $colour_borders;
+        padding-top: 1.2em;
+    }
+    .lead + h2 {
+        border-top: none;
+        padding-top: 0;
+    }
+    .reveal-on-click + h2 {
+        border-top: none;
+    }
+
+}
+
+.secondary-content-column {
+    @media (min-width: $large-screen) {
+        @include grid-column--one-of-four;
+    }
+}
+
+.sidebar {
+    ul {
+        @extend .unstyled-list;
+        @include columns;
+        @media (min-width: $large-screen) {
+            @include columns(1);
+        }
+        ul {
+            @include columns(1);
+        }
+    }
+    h2 {
+        color: $colour_black;
+        text-transform: uppercase;
+        font-weight: 700;
+        font-size: 0.875em;
+        margin: 0;
+    }
+    a {
+        color: $colour_dark_grey;
+        font-size: 0.875em;
+        &:hover,
+        &:active,
+        &:focus {
+            color: $colour_links;
+        }
+    }
+    li {
+        li {
+            line-height: 1.4em;
+            margin-left: 1em;
+        }
+    }
+}
+
+.list-of-blog-posts {
+    @extend .unstyled-list;
+}
+
+.listed-blog-post {
+    margin-bottom: 2em;
+    padding-bottom: 1em;
+    .blog-title {
+        font-weight: 700;
+        .meta {
+            font-weight: normal;
+        }
+    }
+}
+.blog-post-header {
+    .blog-title {
+        margin-bottom: 0;
+    }
+    .meta {
+        margin-top: 0;
+    }
+}
+
+.meta {
+    color: $colour_dark_grey;
+}
+
+.r,.l {
+    margin-bottom: 1em;
+    max-width: 50%;
+}
+
+.r {
+    float: right;
+    margin-left: 1em;
+}
+
+.l {
+    float: left;
+    margin-right: 1em;
+}
+
+
+.reveal-on-click {
+    border: 1px solid $colour_borders;
+    dt {
+        border-top: 1px solid $colour_borders;
+        padding: 1em;
+        cursor: pointer;
+        position: relative;
+        &:hover {
+            text-decoration: underline;
+        }
+        &:first-child {
+            border-top: none;
+        }
+        &:after {
+            content: "+";
+            position: absolute;
+            top: 0.8em;
+            right: 1em;
+            display: inline-block;
+            background: $colour_background;
+            border-radius: 50%;
+            height: 1.5em;
+            width: 1.5em;
+            text-align: center;
+            color: $colour_dark_grey;
+            transition: transform 0.2s ease-out;
+        }
+        &:hover {
+            &:after {
+                 background: $colour_links;
+                 color: #fff;
+            }
+        }
+         &.revealed {
+            &:after {
+                transform: rotate(45deg);
+                transition: transform 0.2s ease-out;
+            }
+        }
+    }
+    dd {
+        margin-left: 0;
+        padding: 0 1em 0;
+        position: relative;
+        top: -1em;
+    }
+}
+
+dl.dir-structure, dl.dir-structure dl {
+    background: url(../img/tree-last.png) no-repeat;
+    background-position: 0 -29px;
+    padding: 0 0 0 21px;
+    margin: 0.5em 0 0 0;
+}
+dl.dir-structure {
+    margin-bottom: 1.5em;
+}
+dl.dir-structure dt {
+    background: url(../img/tree-branch.png) no-repeat;
+    background-position: 0 0;
+    padding: 20px 0 0 28px;
+    margin: 0;
+}
+dl.dir-structure dd {
+    background: url(../img/tree-upright.png) repeat-y;
+    padding: 0 0 0em 40px;
+    margin: 0;
+}
+dl.dir-structure dd p {
+    margin:0;
+    padding: 0 0 0.5em 0;
+}
+dl.dir-structure dt.last {
+    background: url(../img/tree-last.png) no-repeat;
+}
+dl.dir-structure dd.last {
+    background-image: none;
+    padding-bottom: 0; /* gap at bottom of nested trees is big enough as it is */
+}
+
+table.table {
+    border: 1px solid #ccc;
+    margin: 0.5em 0 1em;
+    border-collapse:collapse;
+}
+table.table th {
+    background-color: #f5f5f5;
+}
+table.table th,
+table.table td {
+    border: 1px solid #ccc;
+    padding: 0.666em;
+}
+
+.attention-box {
+    // #todo: style these various boxes
+    padding: 1em;
+    border: 1px solid $colour_borders;
+    margin-bottom: 1.2em;
+}
+
+.definitions {
+    @extend .inline-list;
+    @extend .unstyled-list;
+    li {
+        margin-left: 0.25em;
+    }
+    a {
+        display: inline-block;
+        background-color: $colour_background;
+        border-radius: 2em;
+        padding: 0.33em 0.66em;
+        color: $colour_black;
+        font-size: 0.875em;
+        margin-bottom: 1em;
+        &:hover,
+        &:active,
+        &:focus {
+            color: #fff;
+            background-color: $colour_black;
+            text-decoration: none;
+        }
+    }
+}
+
+.glossary {
+    margin: 2em 0 8em 0; /* big margin helps scroll-to #name at bottom of page */
+}
+
+.glossary dt {
+    background-color: $colour_background;;
+    padding: 0.66em 1em;
+    margin-top: 3em;
+    border: 1px solid $colour_borders;
+    border-bottom: none;
+    color: $colour_dark_grey;
+    a {
+        color: $colour_black;
+        font-size: 1.5em;
+        font-weight: 300;
+    }
+}
+
+.glossary dt a:hover {
+    text-decoration: none;
+}
+
+.glossary dd {
+    border:1px solid $colour_borders;
+    border-top:none;
+    padding: 1em 2em;
+    margin: 0;
+}
+
+.glossary dd p {
+    margin-top: 0.666em;
+}
+
+.glossary .more-info {
+    margin: 1em 0 0 0;
+}
+
+.glossary .more-info > p {
+    float: left;
+    color: $colour_dark_grey;
+    width: 8em;
+    margin: 0;
+}
+
+.glossary .more-info ul {
+    margin-top: 0.5em;
+    margin-left: 10em;
+}
+
+.homepage-feature {
+    @include clearfix;
+    .column {
+        // This is the point at which the monitor (fixed width) won't overlap
+        // the text column
+        @media (min-width: 60em) {
+            @include grid-column--one-of-two;
+        }
+    }
+}
+
+.monitor {
+    @media (min-width: $monitor_breakpoint) {
+        width: $monitor_width;
+        height: $monitor_height;
+        background: url($monitor_path);
+    }
+    // Add margin due to image caption positioning
+    margin: 0 auto $base-spacing-unit*3;
+    // This is the point at which the monitor can fit alongside text
+    @media (min-width: 50em) {
+        float: left;
+    }
+    position: relative;
+    #owl-slide {
+        margin: 0 auto;
+        width: 412px;
+        height: 232px;
+        background: blue;
+        @media (min-width: $monitor_breakpoint) {
+            position: absolute;
+            top: 30px;
+            left: 32px;
+        }
+    }
+}
+
+.summary-of-features {
+    @extend .unstyled;
+    @include clearfix;
+    li {
+        @media (min-width: $medium-screen) {
+        @include grid-column--one-of-four;
+        text-align: center;
+        }
+    }
+    .circle-icon {
+        width: $circle_icon_width;
+        height: $circle_icon_height;
+        display: block;
+        margin: $base-spacing-unit auto $base-spacing-unit / 2;
+        background-position: center top;
+        background-size: $circle_icon_width $circle_icon_width;
+        background-repeat: no-repeat;
+    }
+    .icon-opensource {background-image: url($icon_opensource_path);}
+    .icon-paint {background-image: url($icon_paint_path);}
+    .icon-help {background-image: url($icon_help_path);}
+    .icon-world {background-image: url($icon_world_path);}
+    h3 {
+        font-size: 1em;
+        margin-bottom: $base-spacing-unit / 2;
+    }
+    p {
+        font-size: 1em;
+        margin: $base-spacing-unit / 4 $base-spacing-unit $base-spacing-unit;
+    }
+}
+
+
+
+.this-or-this {
+    display: table;
+    width: 100%;
+    text-align: center;
+    padding-bottom: $base-spacing-unit *2;
+    .this,
+    .or {
+        display: table-cell;
+    }
+    .this {
+        width: 45%;
+        vertical-align: top;
+    }
+    .or {
+        width: 10%;
+        vertical-align: top;
+        padding-top: $base-spacing-unit * 2;
+        @extend .secondary-heading;
+        font-weight: normal;
+        color: #999;
+        font-style: italic;
+    }
+}
+
+.action-buttons {
+    @extend .unstyled;
+    li {
+        // The point at which the links can be doubled up
+        @media (min-width: 50em) {
+            width: 50%;
+            float: left;
+        }
+        a {
+            width: 80%;
+            margin: 0 auto 1em;
+            color: #fff;
+        }
+        .icon {
+            width: 30px;
+            height: 50px;
+            display: block;
+            float: left;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 20px;
+            opacity: 0.6;
+            margin-left: -10px;
+        }
+        .icon-document {background-image: url($icon_docs_path);}
+        .icon-download {background-image: url($icon_download_path);}
+        .icon-github {background-image: url($icon_github_path);}
+        .icon-email {background-image: url($icon_email_path);}
+        .icon-twitter {background-image: url($icon_twitter_path);}
+        .icon-irc {background-image: url($icon_irc_path);}
+        .icon-post {background-image: url($icon_post_path);}
+    }
+}
+
+
+.site-footer {
+    width: 100%;
+    clear: left;
+    background: $colour_black;
+    padding: $base-spacing-unit 0;
+    @include clearfix;
+    .column {
+        @include grid-column--one-of-two;
+        @media (min-width: $medium-screen) {
+            @include grid-column--one-of-four;
+        }
+        @media (min-width: $large-screen) {
+            @include grid-column--one-of-five;
+        }
+    }
+    // This, plus the default float right on .central, means that the last
+    // column fits in the nice gap left by the long .central column
+    .column:last-child {
+        h3 {
+            margin-top: 1em;
+        }
+        @media (min-width: $medium-screen) {
+            h3 {
+                margin-top: 0;
+            }
+        }
+    }
+    .central {
+        float: right;
+        @media (min-width: $medium-screen) {
+            ul {
+                @include columns(1);
+            }
+            @include grid-column--two-of-four;
+        }
+        @media (min-width: $mediumish-screen) {
+            ul {
+                @include columns(2);
+            }
+            @include grid-column--two-of-four;
+        }
+        @media (min-width: $large-screen) {
+            ul {
+                @include columns(3);
+            }
+            @include grid-column--three-of-five;
+        }
+    }
+    h3 {
+        font-size: 1em;
+        font-weight: normal;
+        margin-bottom: 0;
+        color: #888;
+    }
+    ul {
+        margin: 0;
+        @extend .unstyled;
+    }
+    a {color: #eeeeee;}
+}
+
+.primary-nav {
+    @extend .unstyled;
+    margin: 0;
+    text-align: center;
+    li {
+        display: inline-block;
+        padding: 0 $base-spacing-unit * 2;
+        @media (min-width: $medium-screen) {
+            display: inline;
+        }
+    }
+    a {
+        display: inline-block;
+        padding: ($base-spacing-unit / 3) 0;
+        color: $colour_black;
+    }
+}
+
+.btn{
+    display:inline-block;
+    vertical-align:middle;
+    white-space:nowrap;
+    font-family:inherit;
+    font-size:100%;
+    cursor:pointer;
+    border:none;
+    margin:0;
+    padding-top:0;
+    padding-bottom:0;
+    line-height:3;
+    padding-right:1em;
+    padding-left: 1em;
+    border-radius: 3px;
+    transition-duration: 0.2s;
+    &:hover,
+    &:active {
+        text-decoration: none;
+        transition-duration: 0.2s;
+    }
+}
+
+.btn--green {
+    @extend .btn;
+    background: $colour_green;
+    &:hover {background: $colour_green_dark;}
+    &:active {
+        background: $colour_green_dark_2;
+        box-shadow: inset 0px 0px 6px $colour_green_dark_2 /1.5;
+    }
+}
+
+.btn--blue {
+    @extend .btn;
+    background: $colour_blue;
+    &:hover {background: $colour_blue_dark;}
+    &:active {
+        background: $colour_blue_dark_2;
+        box-shadow: inset 0px 0px 6px $colour_blue_dark_2 /1.5;
+    }
+}
+
+.bg-default { background: $colour_light_grey;}
+
+.spacer-top {
+    margin-top: $base-spacing-unit * 1.5;
+}
+.spacer-bottom {
+    margin-bottom: $base-spacing-unit * 1.5;
+}
+
+.section-header {
+    background: $colour_black;
+    padding: $base-spacing-unit /2 0;
+    float: left;
+    width: 100%;
+    p {
+        color: $colour_light_grey;
+        font-weight: normal;
+        margin: 0;
+        display: block;
+    }
+}
+
+.breadcrumb {
+    @extend .unstyled-list;
+    padding: $base-spacing-unit /4 0;
+    li {
+        display: inline;
+        font-size: 0.75em;
+        &:after {
+            content: '/';
+            margin: 0 0.25em;
+            color: $colour_dark_grey
+        }
+        a {
+            color: $colour_dark_grey
+        }
+    }
+
+}
+
+
+
+
+
+
+
+/**
+ * Owl Additions
+ */
+
+.owl-carousel {
+    // Push the caption down under the monitor
+    .owl__gap {
+        float: left;
+        // Links in with whether monitor is shown or not, above under .monitor
+        @media (min-width: $monitor_breakpoint) {
+            padding-top: 100px;
+        }
+    }
+    h3 {
+        margin-bottom: 0;
+    }
+    p {
+        margin-top: 0;
+    }
+}
+
+.owl-buttons {
+    // margin-top: 100px;
+    float: right;
+    // Move the buttons up, compensating for the caption pushing and then some
+    position: relative;
+    top: -60px;
+    @media (min-width: $monitor_breakpoint) {
+        right: -20px;
+        top: -130px;
+    }
+    @extend .unstyled;
+    .owl-next,
+    .owl-prev {
+        @extend .image-replacement;
+        display: block;
+        background-color: $colour_light_grey;
+        float: left;
+        background-position: center center;
+        background-size: $base-spacing-unit * 0.5;
+        background-repeat: no-repeat;
+        height: $base-spacing-unit * 1.5;
+        width: $base-spacing-unit * 1.5;
+        margin-right: 2px;
+        &:hover {
+            background-color: $colour_light_grey / 1.1;
+        }
+    }
+    .owl-prev {
+        background-image: url($prev_arrow_path);
+        border-radius: 3px 0 0 3px;
+    }
+    .owl-next {
+        background-image: url($next_arrow_path);
+        border-radius: 0 3px 3px 0;
+    }
+}
