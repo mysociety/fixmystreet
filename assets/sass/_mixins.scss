@@ -100,6 +100,11 @@
     width: 75%;
 }
 
+@mixin grid-column--two-of-four {
+    @include grid-column;
+    width: 50%;
+}
+
 @mixin grid-column--one-of-four {
     @include grid-column;
     width: 25%;
@@ -108,6 +113,11 @@
 @mixin grid-column--one-of-five {
     @include grid-column;
     width: 20%;
+}
+
+@mixin grid-column--three-of-five {
+    @include grid-column;
+    width: 60%;
 }
 
 
