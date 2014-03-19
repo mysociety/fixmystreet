@@ -33,14 +33,9 @@ sub pin_colour {
 sub use_pin_colour_for_big_icons { 1 }
 
 sub process_extras {
-    my $self    = shift;
-    my $ctx     = shift;
-    my $body_id = shift;
-    my $extra   = shift;
-    my $fields  = shift || [];
+    my ($self, $ctx, undef, $extra) = @_;
 
     my @fields = (
-        @$fields,
         {
             name => 'severity',
             validator => sub {
@@ -131,7 +126,7 @@ sub process_extras {
     for my $field ( @fields ) {
         my $field_name = ref $field ? $field->{name} : $field;
         my $description;
-        my $value = $ctx->request->param( $field );
+        my $value = $ctx->request->param( $field_name );
 
         if (ref $field) {
             $description = $field->{value} || uc $field_name;
@@ -140,22 +135,18 @@ sub process_extras {
                 $value = $field->{validator}->($value);
             };
             if ($@) {
-                $ctx->stash->{field_errors}->{ $field_name } = _('This information is required');
+                $ctx->stash->{field_errors}->{ $field_name } = $@;
             }
 
         }
         else {
             if ( !$value ) {
-                $ctx->stash->{field_errors}->{ $field_name } = $@;
+                $ctx->stash->{field_errors}->{ $field_name } = _('This information is required');
             }
             $description = uc $field_name;
         }
 
-        push @$extra, {
-            name => $field_name,
-            description => $description,
-            value => $value || '',
-        };
+        $extra->{$field_name} = $value || '';
     }
 }
 
@@ -166,6 +157,17 @@ sub path_to_web_templates {
         FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
         FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
     ];
+}
+
+sub base_url {
+    my $self = shift;
+    my $base_url = mySociety::Config::get('BASE_URL');
+    my $u = $self->moniker;
+    if ( $base_url !~ /$u/ ) {
+        $base_url =~ s{http://(?!www\.)}{http://$u.}g;
+        $base_url =~ s{http://www\.}{http://$u.}g;
+    }
+    return $base_url;
 }
 
 1;
