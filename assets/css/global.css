@@ -953,14 +953,14 @@ ul {
   font-weight: 700;
   font-size: 0.875em;
   margin: 0; }
+.sidebar a {
+  color: #787774;
+  font-size: 0.875em; }
+  .sidebar a:hover, .sidebar a:active, .sidebar a:focus {
+    color: #2b8cdb; }
 .sidebar li li {
   line-height: 1.4em;
   margin-left: 1em; }
-  .sidebar li li a {
-    color: #787774;
-    font-size: 0.875em; }
-    .sidebar li li a:hover, .sidebar li li a:active, .sidebar li li a:focus {
-      color: #2b8cdb; }
 
 .listed-blog-post {
   margin-bottom: 2em;

@@ -6,10 +6,10 @@ title: Welcome
 <nav class="bg-default">
   <div class="container">
     <ul class="primary-nav">
-      <li><a href="#">Documentation</a></li>
-      <li><a href="#">How it works</a></li>
-      <li><a href="#">Github</a></li>
-      <li><a href="#">Contact us</a></li>
+      <li><a href="{{ site.baseurl }}overview/">Documentation</a></li>
+      <li><a href="{{ site.baseurl }}how-it-works/">How it works</a></li>
+      <li><a href="https://github.com/mysociety/fixmystreet">GitHub</a></li>
+      <li><a href="{{ site.baseurl }}community/">Contact us</a></li>
     </ul>
   </div>
 </nav>
@@ -87,10 +87,10 @@ title: Welcome
       <h3 class="secondary-heading spacer-top title">Learn more</h3>
       <p class="tertiary-heading">Get your FixMyStreet <br>site up and running</p>
       <ul class="action-buttons spacer-top">
-        <li><a href="#" class="btn--green"><i class="icon icon-download">&nbsp;</i> Install</a></li>
-        <li><a href="#" class="btn--green"><i class="icon icon-document">&nbsp;</i> Docs</a></li>
-        <li><a href="#" class="btn--green"><i class="icon icon-github">&nbsp;</i> Github</a></li>
-        <li><a href="#" class="btn--green"><i class="icon icon-document">&nbsp;</i> Licence Info</a></li>
+        <li><a href="{{ site.baseurl }}install/" class="btn--green"><i class="icon icon-download">&nbsp;</i> Install</a></li>
+        <li><a href="{{ site.baseurl }}overview/" class="btn--green"><i class="icon icon-document">&nbsp;</i> Docs</a></li>
+        <li><a href="https://github.com/mysociety/fixmystreet" class="btn--green"><i class="icon icon-github">&nbsp;</i> GitHub</a></li>
+        <li><a href="https://github.com/mysociety/fixmystreet/blob/master/LICENSE.txt" class="btn--green"><i class="icon icon-document">&nbsp;</i> Licence Info</a></li>
       </ul>
     </div>
     <span class="or">or</span>
@@ -98,10 +98,10 @@ title: Welcome
       <h3 class="secondary-heading spacer-top title">Get in touch</h3>
       <p class="tertiary-heading">Say hello, we'll help you make <br>your new site awesome</p>
       <ul class="action-buttons spacer-top">
-        <li><a href="#" class="btn--blue"><i class="icon icon-email">&nbsp;</i> Email us</a></li>
-        <li><a href="#" class="btn--blue"><i class="icon icon-twitter">&nbsp;</i> Follow us</a></li>
-        <li><a href="#" class="btn--blue"><i class="icon icon-irc">&nbsp;</i> Chat on IRC</a></li>
-        <li><a href="#" class="btn--blue"><i class="icon icon-post">&nbsp;</i> Mailing list</a></li>
+        <li><a href="mailto:international&#64;mysociety.org" class="btn--blue"><i class="icon icon-email">&nbsp;</i> Email us</a></li>
+        <li><a href="https://twitter.com/fixmystreet" class="btn--blue"><i class="icon icon-twitter">&nbsp;</i> Follow us</a></li>
+        <li><a href="http://www.irc.mysociety.org/" class="btn--blue"><i class="icon icon-irc">&nbsp;</i> Chat on IRC</a></li>
+        <li><a href="https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet" class="btn--blue"><i class="icon icon-post">&nbsp;</i> Mailing list</a></li>
       </ul>
     </div>
   </div>

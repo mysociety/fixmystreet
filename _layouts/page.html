@@ -11,8 +11,10 @@ layout: default
       <ul class="breadcrumb">
       {% if num_parts == "0" or num_parts == "-1" %}
         <li><a href="/">Home</a></li>
+        <li><a href="/overview/">Documentation</a></li>
       {% else %}
         <li><a href="/">Home</a></li>
+        <li><a href="/overview/">Documentation</a></li>
         {% for unused in page.content limit:num_parts %}
           {% capture first_word %}{{ url_parts | truncatewords:1 | remove:"..."}}{% endcapture %}
           {% capture previous %}{{ previous }}/{{ first_word }}{% endcapture %}
@@ -31,12 +33,9 @@ layout: default
     <div class="secondary-content-column">
       <nav class="sidebar">
         <ul>
-          <li><h2>Overview</h2>
-            <ul>
-              <li><a href="{{ site.baseurl }}">Home</a></li>
-              <li><a href="{{ site.baseurl }}how-it-works/">How it works</a></li>
-            </ul>
-          </li>
+          <li><a href="{{ site.baseurl }}">Home</a></li>
+          <li><a href="{{ site.baseurl }}how-it-works/">How it works</a></li>
+          <li><a href="{{ site.baseurl }}overview/">Documentation</a></li>
           <li><h2>Installing</h2>
             <ul>
               <li><a href="{{ site.baseurl }}install/">Manually</a>

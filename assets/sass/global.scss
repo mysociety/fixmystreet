@@ -268,19 +268,19 @@ ul {
         font-size: 0.875em;
         margin: 0;
     }
+    a {
+        color: $colour_dark_grey;
+        font-size: 0.875em;
+        &:hover,
+        &:active,
+        &:focus {
+            color: $colour_links;
+        }
+    }
     li {
         li {
             line-height: 1.4em;
             margin-left: 1em;
-            a {
-                color: $colour_dark_grey;
-                font-size: 0.875em;
-                &:hover,
-                &:active,
-                &:focus {
-                    color: $colour_links;
-                }
-            }
         }
     }
 }
