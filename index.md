@@ -21,19 +21,25 @@ title: Welcome
       <div class="monitor">
         <div id="owl-slide" class="owl-carousel">
           <div>
-            <img src="http://placehold.it/412x232/ff5500">
-            <h3>FixMyStreet in Malasia</h3>
-            <p>Run by Sinar Project</p>
+            <img src="/assets/img/tn1.png">
+            <div class='owl__gap'>
+              <h3>Züri wie neu</h3>
+              <p>Run by Stadt Z&uuml;rich, Switzerland</p>
+            </div>
           </div>
           <div>
-            <img src="http://placehold.it/412x232/ff0000">
-            <h3>Something else</h3>
-            <p>Oh yeah, arrh haa</p>
+            <img src="/assets/img/tn2.png">
+            <div class='owl__gap'>
+              <h3>Fixa min gata</h3>
+              <p>Run by KIVOS, Sweden</p>
+            </div>
           </div>
           <div>
-            <img src="http://placehold.it/412x232/00ff00">
-            <h3>Bump bump bang</h3>
-            <p>Tingle tingle tingle</p>
+            <img src="/assets/img/tn3.png">
+            <div class='owl__gap'>
+              <h3>AduanKu.my</h3>
+              <p>Run by Sinar Project, Malaysia</p>
+            </div>
           </div>
         </div>
       </div>

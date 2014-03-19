@@ -1408,7 +1408,8 @@ dl.dir-structure dd.last {
   height: 361px;
   background: url("../img/monitor.png");
   float: left;
-  position: relative; }
+  position: relative;
+  margin-bottom: 32px; }
   .monitor #owl-slide {
     width: 412px;
     height: 232px;
@@ -1443,8 +1444,19 @@ dl.dir-structure dd.last {
 /**
  * Owl Additions
  */
+.owl-carousel .owl__gap {
+  float: left;
+  padding-top: 100px; }
+.owl-carousel h3 {
+  margin-bottom: 0; }
+.owl-carousel p {
+  margin-top: 0; }
+
 .owl-buttons {
-  float: right; }
+  float: right;
+  position: relative;
+  right: -20px;
+  top: -130px; }
   .owl-buttons .owl-next,
   .owl-buttons .owl-prev {
     display: block;

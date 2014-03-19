@@ -724,6 +724,8 @@ dl.dir-structure dd.last {
     background: url($monitor_path);
     float: left;
     position: relative;
+    // Add margin due to image caption positioning
+    margin-bottom: $base-spacing-unit;
     #owl-slide {
         width: 412px;
         height: 232px;
@@ -775,9 +777,28 @@ dl.dir-structure dd.last {
 /**
  * Owl Additions
  */
+
+.owl-carousel {
+    // Push the caption down under the monitor
+    .owl__gap {
+        float: left;
+        padding-top: 100px;
+    }
+    h3 {
+        margin-bottom: 0;
+    }
+    p {
+        margin-top: 0;
+    }
+}
+
 .owl-buttons {
     // margin-top: 100px;
     float: right;
+    // Move the buttons up, compensating for the caption pushing and then some
+    position: relative;
+    right: -20px;
+    top: -130px;
     @extend .unstyled;
     .owl-next,
     .owl-prev {
