@@ -86,7 +86,7 @@ title: Welcome
 </div>
 
 <div class="container">
-  <h2 class="text--center spacer-top primary-heading title">Let's get started</h2>
+  <h2 class="text--center spacer-top primary-heading title">Let&rsquo;s get started</h2>
 
   <div class="this-or-this">
     <div class="this">
@@ -102,7 +102,7 @@ title: Welcome
     <span class="or">or</span>
     <div class="this">
       <h3 class="secondary-heading spacer-top title">Get in touch</h3>
-      <p class="tertiary-heading">Say hello, we'll help you make <br>your new site awesome</p>
+      <p class="tertiary-heading">Say hello, we&rsquo;ll help you make <br>your new site awesome</p>
       <ul class="action-buttons spacer-top">
         <li><a href="mailto:international&#64;mysociety.org" class="btn--blue"><i class="icon icon-email">&nbsp;</i> Email us</a></li>
         <li><a href="https://twitter.com/fixmystreet" class="btn--blue"><i class="icon icon-twitter">&nbsp;</i> Follow us</a></li>

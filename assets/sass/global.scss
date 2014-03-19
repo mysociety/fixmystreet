@@ -491,13 +491,39 @@ dl.dir-structure dd.last {
 .homepage-feature {
     @include clearfix;
     .column {
-        @media (min-width: $medium-screen) {
+        // This is the point at which the monitor (fixed width) won't overlap
+        // the text column
+        @media (min-width: 60em) {
             @include grid-column--one-of-two;
         }
     }
 }
 
-
+.monitor {
+    @media (min-width: $monitor_breakpoint) {
+        width: $monitor_width;
+        height: $monitor_height;
+        background: url($monitor_path);
+    }
+    // Add margin due to image caption positioning
+    margin: 0 auto $base-spacing-unit*3;
+    // This is the point at which the monitor can fit alongside text
+    @media (min-width: 50em) {
+        float: left;
+    }
+    position: relative;
+    #owl-slide {
+        margin: 0 auto;
+        width: 412px;
+        height: 232px;
+        background: blue;
+        @media (min-width: $monitor_breakpoint) {
+            position: absolute;
+            top: 30px;
+            left: 32px;
+        }
+    }
+}
 
 .summary-of-features {
     @extend .unstyled;
@@ -543,11 +569,11 @@ dl.dir-structure dd.last {
         display: table-cell;
     }
     .this {
-        width: 40%;
-        vertical-align: middle;
+        width: 45%;
+        vertical-align: top;
     }
     .or {
-        width: 20%;
+        width: 10%;
         vertical-align: top;
         padding-top: $base-spacing-unit * 2;
         @extend .secondary-heading;
@@ -560,14 +586,15 @@ dl.dir-structure dd.last {
 .action-buttons {
     @extend .unstyled;
     li {
-        width: 50%;
-        float: left;
+        // The point at which the links can be doubled up
+        @media (min-width: 50em) {
+            width: 50%;
+            float: left;
+        }
         a {
-            width: $base-spacing-unit *5;
-            margin-bottom: $base-spacing-unit;
+            width: 80%;
+            margin: 0 auto 1em;
             color: #fff;
-            display: block !important;
-            margin: 10px $base-spacing-unit !important;
         }
         .icon {
             width: 30px;
@@ -715,26 +742,11 @@ dl.dir-structure dd.last {
 
 .bg-default { background: $colour_light_grey;}
 
-.spacer-top {margin-top: $base-spacing-unit *2}
-.spacer-bottom {margin-bottom: $base-spacing-unit *2}
-
-.monitor {
-    width: $monitor_width;
-    height: $monitor_height;
-    background: url($monitor_path);
-    float: left;
-    position: relative;
-    // Add margin due to image caption positioning
-    margin-bottom: $base-spacing-unit;
-    #owl-slide {
-        width: 412px;
-        height: 232px;
-        background: blue;
-        position: absolute;
-        top: 30px;
-        left: 32px;
-    }
-
+.spacer-top {
+    margin-top: $base-spacing-unit * 1.5;
+}
+.spacer-bottom {
+    margin-bottom: $base-spacing-unit * 1.5;
 }
 
 .section-header {
@@ -782,7 +794,10 @@ dl.dir-structure dd.last {
     // Push the caption down under the monitor
     .owl__gap {
         float: left;
-        padding-top: 100px;
+        // Links in with whether monitor is shown or not, above under .monitor
+        @media (min-width: $monitor_breakpoint) {
+            padding-top: 100px;
+        }
     }
     h3 {
         margin-bottom: 0;
@@ -797,8 +812,11 @@ dl.dir-structure dd.last {
     float: right;
     // Move the buttons up, compensating for the caption pushing and then some
     position: relative;
-    right: -20px;
-    top: -130px;
+    top: -60px;
+    @media (min-width: $monitor_breakpoint) {
+        right: -20px;
+        top: -130px;
+    }
     @extend .unstyled;
     .owl-next,
     .owl-prev {

@@ -1133,7 +1133,7 @@ dl.dir-structure dd.last {
     clear: both; }
   .homepage-feature {
     *zoom: 1; }
-  @media (min-width: 30em) {
+  @media (min-width: 60em) {
     .homepage-feature .column {
       /* Use for multi-column grids where all columns are equal width, it gives them equal spacing */
       float: left;
@@ -1144,6 +1144,28 @@ dl.dir-structure dd.last {
         padding-left: 0; }
       .homepage-feature .column:nth-child(even), .homepage-feature .column:last-child {
         padding-right: 0; } }
+
+.monitor {
+  margin: 0 auto 96px;
+  position: relative; }
+  @media (min-width: 520px) {
+    .monitor {
+      width: 469px;
+      height: 361px;
+      background: url("../img/monitor.png"); } }
+  @media (min-width: 50em) {
+    .monitor {
+      float: left; } }
+  .monitor #owl-slide {
+    margin: 0 auto;
+    width: 412px;
+    height: 232px;
+    background: blue; }
+    @media (min-width: 520px) {
+      .monitor #owl-slide {
+        position: absolute;
+        top: 30px;
+        left: 32px; } }
 
 .summary-of-features {
   /**
@@ -1200,49 +1222,48 @@ dl.dir-structure dd.last {
   .this-or-this .or {
     display: table-cell; }
   .this-or-this .this {
-    width: 40%;
-    vertical-align: middle; }
+    width: 45%;
+    vertical-align: top; }
   .this-or-this .or {
-    width: 20%;
+    width: 10%;
     vertical-align: top;
     padding-top: 64px;
     font-weight: normal;
     color: #999;
     font-style: italic; }
 
-.action-buttons li {
-  width: 50%;
-  float: left; }
-  .action-buttons li a {
-    width: 160px;
-    margin-bottom: 32px;
-    color: #fff;
-    display: block !important;
-    margin: 10px 32px !important; }
-  .action-buttons li .icon {
-    width: 30px;
-    height: 50px;
-    display: block;
-    float: left;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 20px;
-    opacity: 0.6;
-    margin-left: -10px; }
-  .action-buttons li .icon-document {
-    background-image: url("../img/icon-document.svg"); }
-  .action-buttons li .icon-download {
-    background-image: url("../img/icon-download.svg"); }
-  .action-buttons li .icon-github {
-    background-image: url("../img/icon-github.svg"); }
-  .action-buttons li .icon-email {
-    background-image: url("../img/icon-email.svg"); }
-  .action-buttons li .icon-twitter {
-    background-image: url("../img/icon-twitter.svg"); }
-  .action-buttons li .icon-irc {
-    background-image: url("../img/icon-hash.svg"); }
-  .action-buttons li .icon-post {
-    background-image: url("../img/icon-mail.svg"); }
+@media (min-width: 50em) {
+  .action-buttons li {
+    width: 50%;
+    float: left; } }
+.action-buttons li a {
+  width: 80%;
+  margin: 0 auto 1em;
+  color: #fff; }
+.action-buttons li .icon {
+  width: 30px;
+  height: 50px;
+  display: block;
+  float: left;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 20px;
+  opacity: 0.6;
+  margin-left: -10px; }
+.action-buttons li .icon-document {
+  background-image: url("../img/icon-document.svg"); }
+.action-buttons li .icon-download {
+  background-image: url("../img/icon-download.svg"); }
+.action-buttons li .icon-github {
+  background-image: url("../img/icon-github.svg"); }
+.action-buttons li .icon-email {
+  background-image: url("../img/icon-email.svg"); }
+.action-buttons li .icon-twitter {
+  background-image: url("../img/icon-twitter.svg"); }
+.action-buttons li .icon-irc {
+  background-image: url("../img/icon-hash.svg"); }
+.action-buttons li .icon-post {
+  background-image: url("../img/icon-mail.svg"); }
 
 .site-footer {
   width: 100%;
@@ -1398,25 +1419,10 @@ dl.dir-structure dd.last {
   background: #e4e3dd; }
 
 .spacer-top {
-  margin-top: 64px; }
+  margin-top: 48px; }
 
 .spacer-bottom {
-  margin-bottom: 64px; }
-
-.monitor {
-  width: 469px;
-  height: 361px;
-  background: url("../img/monitor.png");
-  float: left;
-  position: relative;
-  margin-bottom: 32px; }
-  .monitor #owl-slide {
-    width: 412px;
-    height: 232px;
-    background: blue;
-    position: absolute;
-    top: 30px;
-    left: 32px; }
+  margin-bottom: 48px; }
 
 .section-header {
   background: #333333;
@@ -1445,8 +1451,10 @@ dl.dir-structure dd.last {
  * Owl Additions
  */
 .owl-carousel .owl__gap {
-  float: left;
-  padding-top: 100px; }
+  float: left; }
+  @media (min-width: 520px) {
+    .owl-carousel .owl__gap {
+      padding-top: 100px; } }
 .owl-carousel h3 {
   margin-bottom: 0; }
 .owl-carousel p {
@@ -1455,8 +1463,11 @@ dl.dir-structure dd.last {
 .owl-buttons {
   float: right;
   position: relative;
-  right: -20px;
-  top: -130px; }
+  top: -60px; }
+  @media (min-width: 520px) {
+    .owl-buttons {
+      right: -20px;
+      top: -130px; } }
   .owl-buttons .owl-next,
   .owl-buttons .owl-prev {
     display: block;
