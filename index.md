@@ -46,12 +46,21 @@ title: Welcome
     </div>
 
     <div class="column">
-      <h1 class="secondary-heading title">Run a website like FixMyStreet in your country or city, for free</h1>
+      <h1 class="secondary-heading title">
+        Run a website like FixMyStreet in your country or city, for free
+      </h1>
       <p>
-      With FixMyStreet Platform you can easily launch a website that helps people to report street problems like potholes and broken street lights. Problem reports are then sent to authorities for fixing.
+        With FixMyStreet Platform you can easily launch a website that helps
+        people to report street problems like potholes and broken street
+        lights. Problem reports are then sent to authorities for fixing.
       </p>
       <p>
-        In the wrong place? To report problems in the UK, go here. To learn about FixMyStreet for Local Governments, go here. FixMyStreet Platform is for citizens who want to run their own sites. Welcome!
+        In the wrong place? You might want to
+        <a href="http://www.fixmystreet.com/">report problems in the UK</a>;
+        or to learn about
+        <a href="http://www.mysociety.org/for-councils/fixmystreet/">FixMyStreet
+        for local governments</a>. FixMyStreet Platform is for citizens who
+        want to run their own sites. Welcome!
       </p>
     </div>
   </div>
