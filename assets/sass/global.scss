@@ -685,10 +685,7 @@ ul {
 
 .breadcrumb {
     @extend .unstyled-list;
-    width: 100%;
     padding: $base-spacing-unit /4 0;
-    width: 100%;
-    float: left;
     li {
         display: inline;
         font-size: 0.75em;
@@ -697,7 +694,9 @@ ul {
             margin: 0 0.25em;
             color: $colour_dark_grey
         }
-        a {color: $colour_dark_grey}
+        a {
+            color: $colour_dark_grey
+        }
     }
 
 }

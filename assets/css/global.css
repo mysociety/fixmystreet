@@ -1338,10 +1338,7 @@ ul {
     display: block; }
 
 .breadcrumb {
-  width: 100%;
-  padding: 8px 0;
-  width: 100%;
-  float: left; }
+  padding: 8px 0; }
   .breadcrumb li {
     display: inline;
     font-size: 0.75em; }
