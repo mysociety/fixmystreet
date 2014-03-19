@@ -1,4 +1,12 @@
 $(function() {
+
+$( "#form_incident_date" ).datepicker({ 
+    minDate: -7, 
+    maxDate: +0,
+    defaultDate: +0,
+    dateFormat: 'dd/mm/yy'
+});
+
 var select = $( "#form_severity" );
 
 var slider = $( "<div id='severity-slider'></div>" );
@@ -23,19 +31,21 @@ function colour_severity () {
 }
 
 slider.insertAfter( select ).slider({
-  min: 1,
-  max: 6,
-  range: "min",
-  value: select[ 0 ].selectedIndex + 1,
-  slide: function( event, ui ) {
-    select[ 0 ].selectedIndex = ui.value - 1;
-    colour_severity();
-  }
+    min: 1,
+    max: 6,
+    range: "min",
+    value: select[ 0 ].selectedIndex + 1,
+    slide: function( event, ui ) {
+        select[ 0 ].selectedIndex = ui.value - 1;
+        colour_severity();
+    }
 });
+
 $( "#severity" ).change(function() {
-  slider.slider( "value", this.selectedIndex + 1 );
-  colour_severity();
+    slider.slider( "value", this.selectedIndex + 1 );
+    colour_severity();
 });
 
 colour_severity();
+
 });
