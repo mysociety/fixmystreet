@@ -41,7 +41,7 @@ slider.insertAfter( select ).slider({
     }
 });
 
-$( "#severity" ).change(function() {
+select.change(function() {
     slider.slider( "value", this.selectedIndex + 1 );
     colour_severity();
 });
