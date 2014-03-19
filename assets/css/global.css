@@ -1160,7 +1160,7 @@ ul {
   display: table;
   width: 100%;
   text-align: center;
-  margin-bottom: 64px; }
+  padding-bottom: 64px; }
   .this-or-this .this,
   .this-or-this .or {
     display: table-cell; }
