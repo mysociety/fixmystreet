@@ -5,3 +5,27 @@
 
 @import "../sass/base";
 
+#severity-slider {
+    &.severity-low {
+        .ui-slider-range { background: green; }
+        .ui-slider-handle { 
+            background: lighten(green, 20%); 
+            border-color: darken(green, 20%); 
+        }
+    }
+    &.severity-medium {
+        .ui-slider-range { background: yellow; }
+        .ui-slider-handle { 
+            background: lighten(yellow, 20%); 
+            border-color: darken(yellow, 20%); 
+        }
+    }
+    &.severity-high {
+        .ui-slider-range { background: red; }
+        .ui-slider-handle {
+            background: lighten(red, 20%); 
+            border-color: darken(red, 20%); 
+        }
+    }
+}
+
