@@ -73,3 +73,21 @@ input {
         display: none;
     }
 }
+
+button.green-btn,
+input.green-btn,
+.green-btn {
+    background: none;
+    background-color: $button-color;
+    border: 1px solid $alt-background;
+    border-radius: 5px;
+    color: white;
+}
+
+button.green-btn:hover,
+input.green-btn:hover,
+.green-btn:hover {
+    background: none;
+    background-color: darken( $button-color, 10% );
+    border: 1px solid $alt-background;
+}
