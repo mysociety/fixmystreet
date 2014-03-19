@@ -1,6 +1,7 @@
 *.ttc
 *~
 ._*
+*.swp
 
 .DS_Store
 .carton
