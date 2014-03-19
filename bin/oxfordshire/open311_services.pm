@@ -2,7 +2,7 @@
 #
 # common stuff used by Oxfordshire Open311 glue scripts
 #
-# mySociety: http://code.fixmystreet.com/
+# mySociety: http://fixmystreet.org/
 #-----------------------------------------------------------------
 
 use strict;

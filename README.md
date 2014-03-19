@@ -19,7 +19,7 @@ Platform is now at version 1.3.
 ## Installation
 
 We've been working hard to make the FixMyStreet Platform easy to install and
-re-use in other countries - please see our site at <http://code.fixmystreet.com/>
+re-use in other countries - please see our site at <http://fixmystreet.org/>
 for help and documentation in installing the FixMyStreet Platform.
 
 ## Contribution Guidelines

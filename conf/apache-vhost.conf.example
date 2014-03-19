@@ -1,6 +1,6 @@
 # An example Apache virtualhost configuration file.
 #
-# See our installation help at http://code.fixmystreet.com/
+# See our installation help at http://fixmystreet.org/
 
 <VirtualHost *:80>
     ServerName fixmystreet.yourservername

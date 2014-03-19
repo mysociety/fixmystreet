@@ -4,7 +4,7 @@
 # Bentley and offering them up as XML service request updates.
 # https://github.com/mysociety/fixmystreet/wiki/Open311-FMS---Proposed-differences-to-Open311
 #
-# mySociety: http://code.fixmystreet.com/
+# mySociety: http://fixmystreet.org/
 #-----------------------------------------------------------------
 
 require 'open311_services.pm';

@@ -4,7 +4,7 @@
 # passing them into Bentley EXOR backend via create_enquiry stored
 # procedure.
 #
-# mySociety: http://code.fixmystreet.com/
+# mySociety: http://fixmystreet.org/
 #-----------------------------------------------------------------
 
 require 'open311_services.pm';
