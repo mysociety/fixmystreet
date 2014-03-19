@@ -1026,6 +1026,38 @@ ul {
     position: relative;
     top: -1em; }
 
+dl.dir-structure, dl.dir-structure dl {
+  background: url(../img/tree-last.png) no-repeat;
+  background-position: 0 -29px;
+  padding: 0 0 0 21px;
+  margin: 0.5em 0 0 0; }
+
+dl.dir-structure {
+  margin-bottom: 1.5em; }
+
+dl.dir-structure dt {
+  background: url(../img/tree-branch.png) no-repeat;
+  background-position: 0 0;
+  padding: 20px 0 0 28px;
+  margin: 0; }
+
+dl.dir-structure dd {
+  background: url(../img/tree-upright.png) repeat-y;
+  padding: 0 0 0em 40px;
+  margin: 0; }
+
+dl.dir-structure dd p {
+  margin: 0;
+  padding: 0 0 0.5em 0; }
+
+dl.dir-structure dt.last {
+  background: url(../img/tree-last.png) no-repeat; }
+
+dl.dir-structure dd.last {
+  background-image: none;
+  padding-bottom: 0;
+  /* gap at bottom of nested trees is big enough as it is */ }
+
 .attention-box {
   padding: 1em;
   border: 1px solid #e4e3dd;
