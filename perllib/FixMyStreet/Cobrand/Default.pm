@@ -829,6 +829,14 @@ sub show_unconfirmed_reports {
     0;
 }
 
+=head2 never_confirm_updates
+
+If true then we never send an email to confirm an update
+
+=cut
+
+sub never_confirm_updates { 0; }
+
 =head2 prettify_dt
 
     my $date = $c->prettify_dt( $datetime );

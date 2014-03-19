@@ -407,6 +407,85 @@ for my $test (
 $report->state('confirmed');
 $report->update;
 
+for my $test (
+    {
+        desc => 'overriding email confirmation allows report confirmation with no email sent',
+        initial_values => {
+            name          => '',
+            rznvy         => '',
+            may_show_name => 1,
+            add_alert     => 1,
+            photo         => '',
+            update        => '',
+            fixed         => undef,
+            remember_me => undef,
+            password_register => '',
+            password_sign_in => '',
+        },
+        form_values => {
+            submit_update => 1,
+            rznvy         => 'unregistered@example.com',
+            update        => "update no email confirm",
+            add_alert     => 1,
+            name          => 'Unreg User',
+            may_show_name => undef,
+        },
+        changes => {
+            update => "Update no email confirm",
+        },
+    }
+) {
+    subtest $test->{desc} => sub {
+        my $send_confirmation_mail_override = Sub::Override->new(
+            "FixMyStreet::Cobrand::Default::never_confirm_updates",
+            sub { return 1; }
+        );
+        $mech->log_out_ok();
+        $mech->clear_emails_ok();
+
+        $mech->get_ok("/report/$report_id");
+
+        my $values = $mech->visible_form_values('updateForm');
+
+        is_deeply $values, $test->{initial_values}, 'initial form values';
+
+        $mech->submit_form_ok(
+            {
+                with_fields => $test->{form_values}
+            },
+            'submit update'
+        );
+
+        $mech->content_contains('Test 2');
+        $mech->content_contains('Update no email confirm');
+
+        my $email = $mech->email_count_is(0);
+
+        my $update =
+          FixMyStreet::App->model('DB::Comment')->find( { problem_id => $report_id, text => 'Update no email confirm' } );
+        my $update_id = $update->id;
+
+        $mech->content_contains('name="update_' . $update_id . '"');
+
+        my $details = {
+            %{ $test->{form_values} },
+            %{ $test->{changes} }
+        };
+
+        ok $update, 'found update in database';
+        is $update->state, 'confirmed', 'update confirmed';
+        is $update->user->email, $details->{rznvy}, 'update email';
+        is $update->text, $details->{update}, 'update text';
+
+        my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => $details->{rznvy} } );
+
+        ok $unreg_user, 'found user';
+
+        $mech->delete_user( $unreg_user );
+        $send_confirmation_mail_override->restore();
+    };
+}
+
 subtest 'check non authority user cannot change set state' => sub {
     $mech->log_in_ok( $user->email );
     $user->from_body( undef );
