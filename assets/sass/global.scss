@@ -183,9 +183,9 @@ ul {
     @extend .image-replacement;
     height: $logo_height * 0.75;
     width: $logo_width * 0.75;
+    max-width: 100%;
     display: block;
     background-position: top left;
-    background-size: $logo_width*0.75 $logo_height*0.75;
     background-repeat: no-repeat;
     background-image: url($logo_path);
 }

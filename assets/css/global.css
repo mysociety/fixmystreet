@@ -864,12 +864,12 @@ ul {
 
 .site-title {
   height: 45px;
-  width: 240px;
+  width: 405px;
+  max-width: 100%;
   display: block;
   background-position: top left;
-  background-size: 240px 45px;
   background-repeat: no-repeat;
-  background-image: url("../img/fixmystreet-logo.svg"); }
+  background-image: url("../img/fms-platform-logo.svg"); }
 
 .site-header {
   border-top: 0.375em solid #424242;
@@ -881,8 +881,8 @@ ul {
   body.home .site-title {
     margin: 0.5em auto;
     height: 60px;
-    width: 320px;
-    background-size: 320px 60px; }
+    width: 540px;
+    background-size: 540px 60px; }
 
   body.home .site-header {
     padding: 3.75em 0; } }
