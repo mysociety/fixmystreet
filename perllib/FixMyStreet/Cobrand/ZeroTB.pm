@@ -28,6 +28,7 @@ sub allow_photo_display { return 0; }
 sub allow_photo_upload{ return 0; }
 sub send_questionnaires { return 0; }
 sub on_map_default_max_pin_age { return 0; }
+sub never_confirm_updates { 1; }
 
 1;
 

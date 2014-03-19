@@ -15,6 +15,12 @@
 
 [% INCLUDE 'report/banner.html' %]
 
+[% IF c.flash.comment_created %]
+<p>
+[% loc('Your report has been sent') %]
+</p>
+[% END %]
+
 [% INCLUDE 'report/_main.html' %]
 
 <div class="shadow-wrap">
