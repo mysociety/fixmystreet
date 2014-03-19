@@ -23,7 +23,7 @@
 
     <script type="text/javascript" src="/assets/scripts/lib.min.js"></script>
   </head>
-  <body>
+  <body{% if page.bodyclass %} class="{{ page.bodyclass }}"{% endif %}>
     <div class="ms-header">
       <nav class="ms-header__row">
          <a class="ms-header__logo" href="http://www.mysociety.org">mySociety</a>

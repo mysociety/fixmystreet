@@ -863,25 +863,32 @@ ul {
       background-image: url("../img/mysociety-logo@2.png"); } }
 
 .site-title {
-  height: 60px;
-  width: 320px;
+  height: 45px;
+  width: 240px;
   display: block;
   background-position: top left;
-  background-size: 320px 60px;
+  background-size: 240px 45px;
   background-repeat: no-repeat;
-  background-image: url("../img/fixmystreet-logo.svg");
-  margin: 0.5em auto; }
+  background-image: url("../img/fixmystreet-logo.svg"); }
 
 .site-header {
   border-top: 0.375em solid #424242;
-  padding-top: 3.75em;
-  padding-bottom: 3.75em;
+  padding: 1em 0;
   background-position: center;
   background-color: #fff066;
   display: block;
   width: 100%;
   float: left; }
 
+@media (min-width: 56.88889em) {
+  body.home .site-title {
+    margin: 0.5em auto;
+    height: 60px;
+    width: 320px;
+    background-size: 320px 60px; }
+
+  body.home .site-header {
+    padding: 3.75em 0; } }
 .main-content-column {
   padding-left: 0 !Important; }
   @media (min-width: 56.88889em) {
