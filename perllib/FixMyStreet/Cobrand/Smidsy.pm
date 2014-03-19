@@ -9,6 +9,8 @@ use FixMyStreet;
 # http://mapit.mysociety.org/area/2247.html
 use constant area_id => 2247;
 
+use constant extra_global_fields => 1;
+
 sub area_types          { 
     my $self = shift;
     my $area_types = $self->next::method;
