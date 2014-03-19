@@ -29,3 +29,14 @@
     }
 }
 
+#ui-datepicker-div {
+    font-size: 0.7em; // correct an interaction with FMS font-size?
+}
+
+div.form_datetime {
+    div {
+        width: 50%;
+        display: inline-block;
+    }
+}
+
