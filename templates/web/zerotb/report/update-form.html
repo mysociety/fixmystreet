@@ -1,11 +1,9 @@
 <div id="update_form">
-    <h2>[% loc( 'Provide an update') %]</h2>
+    <h2>[% loc( 'Report a stockout') %]</h2>
 
-    [% IF c.cobrand.moniker != 'emptyhomes' AND c.cobrand.moniker != 'stevenage' %]
     <div class="general-sidebar-notes">
         [% INCLUDE 'report/updates-sidebar-notes.html' %]
     </div>
-    [% END %]
 
     [% INCLUDE 'errors.html' %]
 
@@ -14,7 +12,7 @@
             <input type="hidden" name="submit_update" value="1">
             <input type="hidden" name="id" value="[% problem.id | html %]">
 
-            <label for="form_update">[% loc( 'Update' ) %]</label>
+            <label for="form_update">[% loc( 'Details' ) %]</label>
             [% IF field_errors.update %]
                 <div class='form-error'>[% field_errors.update %]</div>
             [% END %]
@@ -30,6 +28,11 @@
         [% ELSE %]
 
             <label for="form_rznvy">[% loc('Email' ) %]</label>
+
+            <div class="general-sidebar-notes">
+                <p class="dark">[% loc('We never show your email or name') %]</p>
+            </div>
+
             [% IF field_errors.email %]
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
@@ -39,11 +42,6 @@
                 <div id="form_sign_in_no">
                     [% INCLUDE name %]
                     
-                    <div class="general-sidebar-notes">
-                        <p class="dark">[% loc('We never show your email') %]</p>
-                        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
-                    </div>
-
                     <div class="form-txt-submit-box">
                         <input class="green-btn" type="submit" name="submit_register" id="submit_register" value="[% loc('Post') %]">
                     </div>
