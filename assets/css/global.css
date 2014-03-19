@@ -875,10 +875,7 @@ ul {
   border-top: 0.375em solid #424242;
   padding: 1em 0;
   background-position: center;
-  background-color: #fff066;
-  display: block;
-  width: 100%;
-  float: left; }
+  background-color: #fff066; }
 
 @media (min-width: 56.88889em) {
   body.home .site-title {
@@ -1255,6 +1252,7 @@ ul {
     color: #eeeeee; }
 
 .primary-nav {
+  margin: 0;
   text-align: center; }
   .primary-nav li {
     display: inline-block;

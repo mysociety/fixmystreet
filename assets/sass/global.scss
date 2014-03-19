@@ -195,9 +195,6 @@ ul {
     padding: 1em 0;
     background-position: center;
     background-color: $colour_brand;
-    display: block;
-    width: 100%;
-    float: left;
 }
 
 // Have a larger heading on the front page on larger screens
@@ -590,6 +587,7 @@ ul {
 
 .primary-nav {
     @extend .unstyled;
+    margin: 0;
     text-align: center;
     li {
         display: inline-block;
