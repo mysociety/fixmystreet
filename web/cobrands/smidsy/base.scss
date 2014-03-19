@@ -5,6 +5,11 @@
 
 @import "../sass/base";
 
+#site-logo {
+    background: url('/cobrands/smidsy/images/icon_536_5072_text_small.png') 0px 0px no-repeat;
+    width: 200px;
+}
+
 #severity-slider {
     &.severity-low {
         .ui-slider-range { background: green; }
