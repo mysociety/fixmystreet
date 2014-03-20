@@ -13,6 +13,8 @@ use constant area_id => 2247;
 
 use constant extra_global_fields => 1;
 
+use constant uses_global_categories => 1;
+
 use constant language_domain => 'FixMyStreet-Smidsy';
 
 sub area_types          { 
@@ -37,6 +39,10 @@ sub pin_colour {
 }
 
 sub use_pin_colour_for_big_icons { 1 }
+
+sub category_options {
+    return ();
+}
 
 sub process_extras {
     my ($self, $ctx, undef, $extra) = @_;
