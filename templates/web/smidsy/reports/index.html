@@ -21,16 +21,18 @@
 
 <tbody>
 [% FOREACH body IN bodies %]
-<tr align="center"
-[%- IF NOT body.areas.size %] class="gone"
-[%- ELSIF ! (loop.count % 2) %] class="a"
-[%- END %]>
-<td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
-<td class="data">[% open.${body.id}.new or 0 %]</td>
-<td class="data">[% open.${body.id}.older or 0 %]</td>
-<td class="data">[% open.${body.id}.unknown or 0 %]</td>
-</tr>
-[% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
+  [% IF open.${body.id}.new || open.${body.id}.older || open.${body.id}.unknown %]
+    <tr align="center"
+    [%- IF NOT body.areas.size %] class="gone"
+    [%- ELSIF ! (loop.count % 2) %] class="a"
+    [%- END %]>
+    <td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
+    <td class="data">[% open.${body.id}.new or 0 %]</td>
+    <td class="data">[% open.${body.id}.older or 0 %]</td>
+    <td class="data">[% open.${body.id}.unknown or 0 %]</td>
+    </tr>
+    [% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
+  [% END %]
 [% END %]
 </tbody>
 </table>
