@@ -75,10 +75,25 @@ body {
     #postcodeForm {
         div {
             width: 30em;
+            .select2-container,
+            select#clinic,
             input#pc {
                 max-width: none;
                 width: 27em;
             }
+            input#show_report {
+                display: block;
+                float: right;
+                width: 3em;
+            }
+        }
+    }
+
+    .select2-container {
+        a {
+            color: #444;
+            text-align: left;
+            text-decoration: none;
         }
     }
 }

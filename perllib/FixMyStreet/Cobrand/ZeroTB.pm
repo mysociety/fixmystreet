@@ -30,5 +30,11 @@ sub send_questionnaires { return 0; }
 sub on_map_default_max_pin_age { return 0; }
 sub never_confirm_updates { 1; }
 
+sub get_clinic_list {
+    my $self = shift;
+
+    return $self->problems->search({ state => 'confirmed' }, { order_by => 'title' });
+}
+
 1;
 
