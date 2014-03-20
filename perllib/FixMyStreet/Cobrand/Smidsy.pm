@@ -27,9 +27,13 @@ sub area_types          {
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     # TODO, switch on $p->category
-    #
 
-    return 'bike536'; # e.g. look for pin-bike536.png
+    my $severity = $p->extra ? $p->extra->{severity} || 0 : 0;
+
+    # e.g. look for pin-bike536.png
+    return 'bike536' if $severity < 25; 
+    return 'bike-orange' if $severity < 66; 
+    return 'bike-red'; 
 }
 
 sub use_pin_colour_for_big_icons { 1 }
