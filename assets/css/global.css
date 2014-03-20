@@ -1013,12 +1013,22 @@ ul {
       width: 1.5em;
       text-align: center;
       color: #787774;
+      -webkit-transition: -webkit-transform 0.2s ease-out;
+      -moz-transition: -moz-transform 0.2s ease-out;
+      -o-transition: -o-transform 0.2s ease-out;
       transition: transform 0.2s ease-out; }
     .reveal-on-click dt:hover:after {
       background: #2b8cdb;
       color: #fff; }
     .reveal-on-click dt.revealed:after {
+      -webkit-transform: rotate(45deg);
+      -moz-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      -o-transform: rotate(45deg);
       transform: rotate(45deg);
+      -webkit-transition: -webkit-transform 0.2s ease-out;
+      -moz-transition: -moz-transform 0.2s ease-out;
+      -o-transition: -o-transform 0.2s ease-out;
       transition: transform 0.2s ease-out; }
   .reveal-on-click dd {
     margin-left: 0;
