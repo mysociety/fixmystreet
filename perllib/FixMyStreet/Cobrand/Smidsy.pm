@@ -193,7 +193,14 @@ sub get_embed_code {
 
     if ($uri->host =~ /youtube.com$/) {
         my $v = $uri->query_param('v') or return;
-        return qq{<iframe width="320" height="195" src="//www.youtube.com/embed/$v" frameborder="0" allowfullscreen></iframe>};
+        return qq{<iframe width="320" height="195" src="//www.youtube.com/embed/$v" 
+            frameborder="0" allowfullscreen></iframe>};
+    }
+
+    if ($uri->host =~ /vimeo.com$/) {
+        my ($v) = $uri->path =~ m{^/(\w+)};
+        return qq{<iframe src="//player.vimeo.com/video/$v" width="320" height="195" 
+            frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>};
     }
 
     return;
