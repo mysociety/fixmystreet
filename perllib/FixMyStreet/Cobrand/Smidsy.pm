@@ -8,6 +8,8 @@ use FixMyStreet;
 use DateTime;
 use DateTime::Format::Strptime;
 use Utils;
+use URI;
+use URI::QueryParam;
 
 # http://mapit.mysociety.org/area/2247.html
 use constant area_id => 2247;
@@ -179,6 +181,22 @@ sub base_url {
         $base_url =~ s{http://www\.}{http://$u.}g;
     }
     return $base_url;
+}
+
+sub get_embed_code {
+    my ($self, $problem) = @_;
+
+    my $media_url = $problem->extra->{media_url}
+        or return;
+
+    my $uri = URI->new( $media_url );
+
+    if ($uri->host =~ /youtube.com$/) {
+        my $v = $uri->query_param('v') or return;
+        return qq{<iframe width="320" height="195" src="//www.youtube.com/embed/$v" frameborder="0" allowfullscreen></iframe>};
+    }
+
+    return;
 }
 
 sub prettify_incident_dt {
