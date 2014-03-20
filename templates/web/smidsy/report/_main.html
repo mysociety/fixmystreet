@@ -1,10 +1,13 @@
 <div class="problem-header cf">
     <h1>[% problem.title | html %]</h1>
 
-    <p><em>
+    <em><p>
     [% problem.meta_line(c) | html %]
-    [%- IF !problem.used_map AND c.cobrand.moniker != 'emptyhomes' %]; <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>[% END %]
-    </em></p>
+    [%- IF !problem.used_map AND c.cobrand.moniker != 'emptyhomes' %]; 
+        <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>
+    [% END %]
+    (incident occurred: [% c.cobrand.prettify_incident_dt(problem) %])
+    </p></em>
     [% INCLUDE 'report/_support.html' %]
 
     [% INCLUDE 'report/photo.html' object=problem %]
@@ -13,12 +16,6 @@
     <dl>
         <dt> Severity </dt>
         <dd> [% problem.extra.severity %] </dd>
-
-        <dt> Date and Time </dt>
-        <dd> 
-            [% problem.extra.incident_date %] 
-            [% problem.extra.incident_time %] 
-        </dd>
 
         <dt> Who was involved?</dt>
         <dd> 
@@ -30,6 +27,7 @@
             [% problem.extra.road_type %] 
         </dd>
 
+        [% IF problem.extra.media_url %]
         <dt> Media URL </dt>
         <dd> 
             (Will open in a new window.  SMIDSY is not responsible for the
@@ -38,5 +36,6 @@
                 [% problem.extra.media_url %]
             </a>
         </dd>
+        [% END %]
 
 </div>
