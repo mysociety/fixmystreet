@@ -13,6 +13,8 @@ use constant area_id => 2247;
 
 use constant extra_global_fields => 1;
 
+use constant language_domain => 'FixMyStreet-Smidsy';
+
 sub area_types          { 
     my $self = shift;
     my $area_types = $self->next::method;

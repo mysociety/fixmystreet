@@ -9,6 +9,8 @@ sub translate($$) {
 
     if ( $file eq 'FixMyStreet-EmptyHomes' ) {
         return fixmystreet_to_reportemptyhomes( $s );
+    } elsif ( $file eq 'FixMyStreet-Smidsy' ) {
+        return fixmystreet_to_smidsy( $s );
     } elsif ( $file eq 'FixMyBarangay' ) {
         return fixmystreet_to_fixmybarangay( $s );
     }
@@ -55,6 +57,29 @@ sub fixmystreet_to_fixmybarangay($) {
     $s =~ s/\bCouncil\b/Barangay/g;
     $s =~ s/\bcouncils\b/barangays/g;
     $s =~ s/\bCouncils\b/Barangays/g;
+
+    return $s;
+}
+
+sub fixmystreet_to_smidsy($) {
+    my $s = shift;
+
+    $s =~ s/FixMyStreet/SMIDSY/g;
+
+    $s =~ s/\ba problem\b/an incident/g;
+    $s =~ s/\bproblem\b/incident/g;
+    $s =~ s/\bA Problem\b/An Incident/g;
+    $s =~ s/\bProblem\b/Incident/g;
+    $s =~ s/(?<!were )\bproblems\b/incidents/g; # don't want "There were incidents with your report"
+    $s =~ s/\bProblems\b/Incidents/g;
+
+    $s =~ s/\(like graffiti.*\)/ /;
+    $s =~ s/(Please enter your full name).*? -/$1 -/;
+
+    $s =~ s/We send it to the council on your behalf/The details will be aggregated and sent to the relevant people in local and national government and police./;
+    $s =~ s/To find out what local alerts we have for you/To find out what local alerts we have in your area, council or ward/;
+    $s =~ s/Local alerts/Get local reports/;
+    $s =~ s/Help/FAQs/;
 
     return $s;
 }
