@@ -605,8 +605,8 @@ sub setup_categories_and_bodies : Private {
     my %non_public_categories =
       ();    # categories for which the reports are not public
 
-    # FIXME - implement in cobrand
-    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+    # EmptyHomes and Smidsy
+    if ( $c->cobrand->can('uses_global_categories') && $c->cobrand('uses_global_categories') ) {
 
         # add all bodies found to the list
         foreach (@contacts) {
@@ -614,15 +614,7 @@ sub setup_categories_and_bodies : Private {
         }
 
         # set our own categories
-        @category_options = (
-            _('-- Pick a property type --'),
-            _('Empty house or bungalow'),
-            _('Empty flat or maisonette'),
-            _('Whole block of empty flats'),
-            _('Empty office or other commercial'),
-            _('Empty pub or bar'),
-            _('Empty public building - school, hospital, etc.')
-        );
+        @category_options = $c->cobrand->category_options();
 
     } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY 
           && $first_area->{id} != COUNCIL_ID_BARNET 

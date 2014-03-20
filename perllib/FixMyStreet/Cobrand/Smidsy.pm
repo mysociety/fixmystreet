@@ -13,6 +13,8 @@ use constant area_id => 2247;
 
 use constant extra_global_fields => 1;
 
+use constant uses_global_categories => 1;
+
 use constant language_domain => 'FixMyStreet-Smidsy';
 
 sub area_types          { 
@@ -34,6 +36,10 @@ sub pin_colour {
     return 'bike536' if $severity < 25; 
     return 'bike-orange' if $severity < 66; 
     return 'bike-red'; 
+}
+
+sub category_options {
+    return ();
 }
 
 sub process_extras {
