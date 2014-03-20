@@ -29,6 +29,10 @@ sub area_types          {
     ];
 } 
 
+sub on_map_default_max_pin_age {
+    return '7 days';
+}
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     # TODO, switch on $p->category
