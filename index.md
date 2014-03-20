@@ -88,7 +88,7 @@ title: Welcome
       <li>
         <div class="circle-icon icon-world">&nbsp;</div>
         <h3>Many languages</h3>
-        <p>Use existing languags or add your own</p>
+        <p>Use existing languages, or add your own</p>
       </li>
     </ul>
   </div>
