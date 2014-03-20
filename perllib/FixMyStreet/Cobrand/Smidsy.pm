@@ -7,6 +7,7 @@ use warnings;
 use FixMyStreet;
 use DateTime;
 use DateTime::Format::Strptime;
+use Utils;
 
 # http://mapit.mysociety.org/area/2247.html
 use constant area_id => 2247;
@@ -73,7 +74,7 @@ sub process_extras {
                 if (! $date) {
                     die "Please input a valid date in format dd/mm/yyyy\n";
                 }
-                return $date->iso8601;
+                return $date->date; # yyyy-mm-dd
             },
         },
         {
@@ -178,6 +179,30 @@ sub base_url {
         $base_url =~ s{http://www\.}{http://$u.}g;
     }
     return $base_url;
+}
+
+sub prettify_incident_dt {
+    my ($self, $problem) = @_;
+
+    my ($date, $time) = eval {
+        my $extra = $problem->extra;
+
+        ($extra->{incident_date}, $extra->{incident_time});
+    } or return 'unknown';
+
+    my $dt = eval {
+        my $dt = DateTime::Format::Strptime->new(
+            pattern => '%F', # yyyy-mm-dd
+        )->parse_datetime($date);
+    } or return 'unknown';
+
+    if ($time && $time =~ /^(\d+):(\d+)$/) {
+        $dt->add( hours => $1, minutes => $2 );
+        return Utils::prettify_dt( $dt );
+    }
+    else {
+        return Utils::prettify_dt( $dt, 'date' );
+    };
 }
 
 1;
