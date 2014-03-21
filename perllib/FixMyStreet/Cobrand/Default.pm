@@ -837,6 +837,8 @@ If true then we never send an email to confirm an update
 
 sub never_confirm_updates { 0; }
 
+sub include_time_in_update_alerts { 0; }
+
 =head2 prettify_dt
 
     my $date = $c->prettify_dt( $datetime );
