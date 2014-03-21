@@ -1,19 +1,7 @@
 <div id="report-a-problem-main">
     <h1>[% loc('Reporting a problem') %]</h1>
 
-    [% IF js %]
-        <p id="councils_text">
-        [%
-            tprintf(
-                loc('All the information you provide here will be sent to <strong>%s</strong>.'),
-                loc('the local council')
-            );
-        %]
-        [% loc('The subject and details of the problem will be public, plus your name if you give us permission.') %]
-        </p>
-    [% ELSE %]
-        [% PROCESS 'report/new/councils_text.html' %]
-    [% END %]
+    [% PROCESS 'report/new/councils_text.html' %]
 
     [% IF c.cobrand.moniker != 'fixmybarangay' || ( c.user && c.user.from_body ) %]
     <div id="report-a-problem-sidebar">
@@ -98,7 +86,7 @@
 
             <div class="form_datetime">
                 <div>
-                    <label for="form_incident_date"> Incident Date</label>
+                    <label for="form_incident_date"> Date of Incident </label>
                     [% IF field_errors.incident_date %]
                         <p class='form-error'>[% field_errors.incident_date %]</p>
                     [% END %]
@@ -106,7 +94,7 @@
                 </div>
 
                 <div>
-                    <label for="form_incident_time"> Incident Time</label>
+                    <label for="form_incident_time"> Time of Incident </label>
                     [% IF field_errors.incident_time %]
                         <p class='form-error'>[% field_errors.incident_time %]</p>
                     [% END %]
