@@ -1,5 +1,5 @@
 ---
-layout: fullwidth
+layout: page
 title: Glossary
 ---
 
@@ -13,9 +13,9 @@ The [FixMyStreet](http://www.fixmystreet.com/) Platform is an open source
 project to help people run websites for reporting common street problems such
 as potholes and broken street lights to an appropriate authority. For
 technical information, see
-[code.fixmystreet.com](http://code.fixmystreet.com).
-## Definitions
+[fixmystreet.org](http://fixmystreet.org/).
 
+## Definitions
 
 <ul class="definitions">
   <li><a href="#abuse-list">abuse list</a></li>

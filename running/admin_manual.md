@@ -937,7 +937,7 @@ make sure all your administrators know what it is.
 
 The FixMyStreet platform is under constant development. This means that new
 features and improvements are made from time to time: we announce new releases
-(which have version numbers) on the [code.fixmystreet.com blog](/blog), and on
+(which have version numbers) on the [fixmystreet.org blog](/blog), and on
 the mailing list (see [more about staying in touch](/community)).
 
 Updating is a technical activity, and you'll need to log into the server's
