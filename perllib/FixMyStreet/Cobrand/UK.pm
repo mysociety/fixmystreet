@@ -105,12 +105,6 @@ sub remove_redundant_areas {
   my $self = shift;
   my $all_areas = shift;
 
-  # Ipswich & St Edmundsbury are responsible for everything in their
-  # areas, not Suffolk
-  delete $all_areas->{2241}
-    if $all_areas->{2446}    #
-        || $all_areas->{2443};
-
   # Norwich is responsible for everything in its areas, not Norfolk
   delete $all_areas->{2233}    #
     if $all_areas->{2391};
