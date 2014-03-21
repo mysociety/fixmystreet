@@ -45,3 +45,12 @@ div.form_datetime {
     }
 }
 
+ol.big-numbers > li:before {
+  color: $primary;
+}
+
+a,
+a:visited {
+    color: $links;
+}
+
