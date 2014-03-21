@@ -15,7 +15,9 @@
 
     <dl>
         <dt> Severity </dt>
-        <dd> [% problem.extra.severity %] </dd>
+        <dd> 
+        [% s = c.cobrand.get_severity(problem.extra.severity) %]
+        [% s.name %] ( [%- s.description -%] ) </dd>
 
         <dt> Who was involved?</dt>
         <dd> 

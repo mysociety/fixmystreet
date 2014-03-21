@@ -11,6 +11,7 @@ use Utils;
 use URI;
 use URI::QueryParam;
 use JSON;
+use List::Util 'first';
 
 # http://mapit.mysociety.org/area/2247.html
 use constant area_id => 2247;
@@ -27,7 +28,7 @@ use constant severity_major_threshold => 70;
 sub severity_categories {
     return [
         {
-            value => 20,
+            value => 10,
             name => 'Potential Minor',
             description => 'could have involved scrapes and bruises',
         },
@@ -62,7 +63,7 @@ sub severity_categories_json {
 sub get_severity {
     my ($self, $severity) = @_;
     return first { $severity >= $_->{value} } 
-        @{ $self->severity_categories };
+        reverse @{ $self->severity_categories };
 }
 
 sub area_types          { 
