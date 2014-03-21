@@ -10,6 +10,7 @@ use DateTime::Format::Strptime;
 use Utils;
 use URI;
 use URI::QueryParam;
+use JSON;
 
 # http://mapit.mysociety.org/area/2247.html
 use constant area_id => 2247;
@@ -19,6 +20,50 @@ use constant extra_global_fields => 1;
 use constant uses_global_categories => 1;
 
 use constant language_domain => 'FixMyStreet-Smidsy';
+
+use constant severity_minor_threshold => 40;
+use constant severity_major_threshold => 70;
+
+sub severity_categories {
+    return [
+        {
+            value => 20,
+            name => 'Potential Minor',
+            description => 'could have involved scrapes and bruises',
+        },
+        {
+            value => 30,
+            name => 'Minor',
+            description => 'incident involved scrapes and bruises',
+        },
+        {
+            value => 50,
+            name => 'Potential Serious',
+            description => 'could have involved serious injury, hospitalisation, or fatality',
+        },
+        {
+            value => 75,
+            name => 'Serious',
+            description => 'incident involved serious injury or hospitalisation',
+        },
+        {
+            value => 90,
+            name => 'Fatal',
+            description => 'incident involved the death of one or more road users',
+        },
+    ];
+}
+
+sub severity_categories_json {
+    my $self = shift;
+    return JSON->new->encode( $self->severity_categories );
+}
+
+sub get_severity {
+    my ($self, $severity) = @_;
+    return first { $severity >= $_->{value} } 
+        @{ $self->severity_categories };
+}
 
 sub area_types          { 
     my $self = shift;
