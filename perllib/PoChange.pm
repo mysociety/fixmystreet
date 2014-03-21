@@ -76,7 +76,8 @@ sub fixmystreet_to_smidsy($) {
     $s =~ s/\(like graffiti.*\)/ /;
     $s =~ s/(Please enter your full name).*? -/$1 -/;
 
-    $s =~ s/We send it to the council on your behalf/The details will be aggregated and sent to the relevant people in local and national government and police./;
+    $s =~ s{We send it to the council on your behalf}
+           {The details will be sent to the local highways department and/or police constabulary};
     $s =~ s/To find out what local alerts we have for you/To find out what local alerts we have in your area, council or ward/;
     $s =~ s/Local alerts/Get local reports/;
     $s =~ s/Help/FAQs/;
