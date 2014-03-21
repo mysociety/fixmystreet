@@ -84,10 +84,9 @@ sub pin_colour {
 
     my $severity = $p->extra ? $p->extra->{severity} || 0 : 0;
 
-    # e.g. look for pin-bike536.png
-    return 'bike536' if $severity < 25; 
-    return 'bike-orange' if $severity < 66; 
-    return 'bike-red'; 
+    return 'sprocket'        if $severity < $self->severity_minor_threshold; 
+    return 'sprocket-orange' if $severity < $self->severity_major_threshold;
+    return 'sprocket-red'; 
 }
 
 sub use_pin_colour_for_big_icons { 1 }
