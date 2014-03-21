@@ -29,11 +29,24 @@ sub allow_photo_upload{ return 0; }
 sub send_questionnaires { return 0; }
 sub on_map_default_max_pin_age { return 0; }
 sub never_confirm_updates { 1; }
+sub include_time_in_update_alerts { 1; }
 
 sub get_clinic_list {
     my $self = shift;
 
     return $self->problems->search({ state => 'confirmed' }, { order_by => 'title' });
+}
+
+sub prettify_dt {
+    my ( $self, $dt, $type ) = @_;
+    $type ||= '';
+
+    if ( $type eq 'alert' ) {
+        return $dt->strftime('%H:%M %Y-%m-%d');
+    } else {
+        return Utils::prettify_dt( $dt, $type );
+    }
+
 }
 
 1;
