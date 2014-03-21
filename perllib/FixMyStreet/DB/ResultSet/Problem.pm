@@ -352,8 +352,7 @@ sub send_reports {
                 my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
                 if ( ! exists $senders->{ $sender } ) {
-                    warn "No such sender [ $sender ] for body $body->name ( $body->id )";
-                    next;
+                    warn sprintf "No such sender [ $sender ] for body %s ( %d )", $body->name, $body->id;
                 }
                 $reporters{ $sender } ||= $sender->new();
 
@@ -409,7 +408,10 @@ sub send_reports {
 
         if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING')) {
             # on a staging server send emails to ourselves rather than the bodies
-            %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes)/ } keys %reporters;
+            %reporters = map { $_ => $reporters{$_} } 
+                # TODO refactor to class constant instead of textual grep
+                grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes|Blackhole)/ } 
+                keys %reporters;
             unless (%reporters) {
                 %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
             }
