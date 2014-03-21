@@ -40,7 +40,7 @@ sub severity_categories {
         {
             value => 50,
             name => 'Potential Serious',
-            description => 'could have involved serious injury, hospitalisation, or fatality',
+            description => 'could have involved serious injury or hospitalisation',
         },
         {
             value => 75,
