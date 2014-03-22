@@ -8,7 +8,7 @@ use Open311::Endpoint::Schema;
 
 my $schema = Open311::Endpoint::Schema->new->schema;
 
-subtest 'enum schema' => sub {
+subtest 'comma tests' => sub {
 
     dies_ok {
         my $comma = $schema->make_schema({
@@ -39,6 +39,29 @@ subtest 'enum schema' => sub {
     ok $comma->check( 'open' ),         'single value';
     ok $comma->check( 'open,closed' ), 'multiple values ok';
     ok $comma->check( 'open, closed ' ), 'spaces trimmed ok';
+};
+
+subtest 'datetime tests' => sub {
+
+    dies_ok {
+        my $comma = $schema->make_schema({
+            type => '/open311/datetime',
+            zirble => 'fleem',
+        });
+    } 'Construction dies on extra keys';
+
+    my $dt = $schema->make_schema({
+        type => '/open311/datetime',
+    });
+
+    ok ! $dt->check( undef ), 'Undef is not a valid string';
+    ok ! $dt->check( [] ),    'Reference is not a valid string';
+
+    ok ! $dt->check( '9th Feb 2012' ), 'invalid datetime format';
+
+    ok $dt->check( '1994-11-05T08:15:30-05:00' ), 'datetime format with offset';
+    ok $dt->check( '1994-11-05T08:15:30+05:00' ), 'datetime format with positive';
+    ok $dt->check( '1994-11-05T13:15:30Z' ),      'datetime format zulu';
 };
 
 done_testing;

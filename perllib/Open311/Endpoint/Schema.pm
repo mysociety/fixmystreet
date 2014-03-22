@@ -3,6 +3,7 @@ use Moo;
 use Data::Rx;
 
 use Open311::Endpoint::Schema::Comma;
+use Open311::Endpoint::Schema::DateTime;
 
 sub enum {
     my ($self, $type, @values) = @_;
@@ -32,7 +33,10 @@ has schema => (
             prefix => {
                 open311 => 'tag:wiki.open311.org,GeoReport_v2:rx/',
             },
-            type_plugins => [ 'Open311::Endpoint::Schema::Comma' ],
+            type_plugins => [qw(
+                Open311::Endpoint::Schema::Comma
+                Open311::Endpoint::Schema::DateTime
+            )],
         });
 
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/bool',
@@ -43,10 +47,6 @@ has schema => (
 
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/post_type',
             $self->enum( '//str', qw[ realtime batch blackbox ] ));
-
-        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/datetime',
-            '//str', # TODO, should be w3 format, eg 2010-01-01T00:00:00Z
-        );
 
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/service',
             {
