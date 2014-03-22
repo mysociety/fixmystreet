@@ -2,6 +2,8 @@ package Open311::Endpoint::Schema;
 use Moo;
 use Data::Rx;
 
+use Open311::Endpoint::Schema::Comma;
+
 sub enum {
     my ($self, $type, @values) = @_;
     return {
@@ -29,18 +31,29 @@ has schema => (
             sort_keys => 1,
             prefix => {
                 open311 => 'tag:wiki.open311.org,GeoReport_v2:rx/',
-            }
+            },
+            type_plugins => [ 'Open311::Endpoint::Schema::Comma' ],
         });
 
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/bool',
             $self->enum( '//str', qw[ true false ] ));
+
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/status',
+            $self->enum( '//str', qw[ open closed ] ));
+
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/post_type',
+            $self->enum( '//str', qw[ realtime batch blackbox ] ));
+
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/datetime',
+            '//str', # TODO, should be w3 format, eg 2010-01-01T00:00:00Z
+        );
 
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/service',
             {
                 type => '//rec',
                 required => {
                     service_name => '//str',
-                    type => $self->enum( '//str', qw[ realtime batch blackbox ] ),
+                    type => '/open311/post_type',
                     metadata => '/open311/bool',
                     description => '//str',
                     service_code => '//str',
@@ -94,6 +107,7 @@ has schema => (
                 },
             }
         );
+
         return $schema;
     },
 );
