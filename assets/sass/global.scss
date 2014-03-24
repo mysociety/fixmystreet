@@ -538,9 +538,10 @@ table.table td {
     position: relative;
     #owl-slide {
         margin: 0 auto;
-        width: 412px;
+        width: 100%;
+        max-width: 412px;
         height: 232px;
-        background: blue;
+        background: #fff;
         @media (min-width: $monitor_breakpoint) {
             position: absolute;
             top: 30px;
@@ -818,6 +819,7 @@ table.table td {
     // Push the caption down under the monitor
     .owl__gap {
         float: left;
+        padding-right: 100px;
         // Links in with whether monitor is shown or not, above under .monitor
         @media (min-width: $monitor_breakpoint) {
             padding-top: 100px;
@@ -836,7 +838,7 @@ table.table td {
     float: right;
     // Move the buttons up, compensating for the caption pushing and then some
     position: relative;
-    top: -60px;
+    top: -70px;
     @media (min-width: $monitor_breakpoint) {
         right: -20px;
         top: -130px;

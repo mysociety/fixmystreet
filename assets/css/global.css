@@ -1181,9 +1181,10 @@ table.table td {
       float: left; } }
   .monitor #owl-slide {
     margin: 0 auto;
-    width: 412px;
+    width: 100%;
+    max-width: 412px;
     height: 232px;
-    background: blue; }
+    background: #fff; }
     @media (min-width: 520px) {
       .monitor #owl-slide {
         position: absolute;
@@ -1474,7 +1475,8 @@ table.table td {
  * Owl Additions
  */
 .owl-carousel .owl__gap {
-  float: left; }
+  float: left;
+  padding-right: 100px; }
   @media (min-width: 520px) {
     .owl-carousel .owl__gap {
       padding-top: 100px; } }
@@ -1486,7 +1488,7 @@ table.table td {
 .owl-buttons {
   float: right;
   position: relative;
-  top: -60px; }
+  top: -70px; }
   @media (min-width: 520px) {
     .owl-buttons {
       right: -20px;
