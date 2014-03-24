@@ -750,8 +750,7 @@ h1,
   font-weight: normal; }
 
 h2,
-.secondary-heading,
-.this-or-this .or {
+.secondary-heading {
   font-size: 1.666666667em;
   font-weight: 600; }
 
@@ -1237,31 +1236,26 @@ table.table td {
     font-size: 1em;
     margin: 8px 32px 32px; }
 
-.this-or-this {
-  display: table;
-  width: 100%;
+.this-or-this .column {
   text-align: center;
-  padding-bottom: 64px; }
-  .this-or-this .this,
-  .this-or-this .or {
-    display: table-cell; }
-  .this-or-this .this {
-    width: 45%;
-    vertical-align: top; }
-  .this-or-this .or {
-    width: 10%;
-    vertical-align: top;
-    padding-top: 64px;
-    font-weight: normal;
-    color: #999;
-    font-style: italic; }
+  padding-bottom: 64px;
+  /* Use for multi-column grids where all columns are equal width, it gives them equal spacing */
+  float: left;
+  padding-left: 1.5%;
+  padding-right: 1.5%;
+  width: 50%; }
+  .this-or-this .column:nth-child(odd), .this-or-this .column:first-child {
+    padding-left: 0; }
+  .this-or-this .column:nth-child(even), .this-or-this .column:last-child {
+    padding-right: 0; }
 
 @media (min-width: 50em) {
   .action-buttons li {
     width: 50%;
     float: left; } }
 .action-buttons li a {
-  width: 80%;
+  width: 100%;
+  max-width: 9em;
   margin: 0 auto 1em;
   color: #fff; }
 .action-buttons li .icon {

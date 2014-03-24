@@ -98,7 +98,7 @@ title: Welcome
   <h2 class="text--center spacer-top primary-heading title">Let&rsquo;s get started</h2>
 
   <div class="this-or-this">
-    <div class="this">
+    <div class="column">
       <h3 class="secondary-heading spacer-top title">Learn more</h3>
       <p class="tertiary-heading">Get your FixMyStreet <br>site up and running</p>
       <ul class="action-buttons spacer-top">
@@ -108,8 +108,7 @@ title: Welcome
         <li><a href="https://github.com/mysociety/fixmystreet/blob/master/LICENSE.txt" class="btn--green"><i class="icon icon-document">&nbsp;</i> Licence Info</a></li>
       </ul>
     </div>
-    <span class="or">or</span>
-    <div class="this">
+    <div class="column">
       <h3 class="secondary-heading spacer-top title">Get in touch</h3>
       <p class="tertiary-heading">Say hello, we&rsquo;ll help you make <br>your new site awesome</p>
       <ul class="action-buttons spacer-top">

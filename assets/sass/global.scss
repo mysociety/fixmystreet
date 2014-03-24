@@ -585,26 +585,10 @@ table.table td {
 
 
 .this-or-this {
-    display: table;
-    width: 100%;
-    text-align: center;
-    padding-bottom: $base-spacing-unit *2;
-    .this,
-    .or {
-        display: table-cell;
-    }
-    .this {
-        width: 45%;
-        vertical-align: top;
-    }
-    .or {
-        width: 10%;
-        vertical-align: top;
-        padding-top: $base-spacing-unit * 2;
-        @extend .secondary-heading;
-        font-weight: normal;
-        color: #999;
-        font-style: italic;
+    .column {
+        text-align: center;
+        padding-bottom: $base-spacing-unit *2;
+        @include grid-column--one-of-two;
     }
 }
 
@@ -617,7 +601,8 @@ table.table td {
             float: left;
         }
         a {
-            width: 80%;
+            width: 100%;
+            max-width: 9em;
             margin: 0 auto 1em;
             color: #fff;
         }
