@@ -436,7 +436,7 @@ sub bodies_str_ids {
 
 =head2 bodies
 
-Returns an arrayref of bodies to which a report was sent.
+Returns a hashref of bodies to which a report was sent.
 
 =cut
 
@@ -678,13 +678,16 @@ sub local_coords {
 
 =head2 update_from_open311_service_request
 
-    $p->update_from_open311_service_request( $request, $council_details, $system_user );
+    $p->update_from_open311_service_request( $request, $body, $system_user );
 
-Updates the problem based on information in the passed in open311 request. If the request
-has an older update time than the problem's lastupdate time then nothing happens.
+Updates the problem based on information in the passed in open311 request
+(standard, not the extension that uses GetServiceRequestUpdates) . If the
+request has an older update time than the problem's lastupdate time then
+nothing happens.
 
-Otherwise a comment will be created if there is status update text in the open311 request.
-If the open311 request has a state of closed then the problem will be marked as fixed.
+Otherwise a comment will be created if there is status update text in the
+open311 request. If the open311 request has a state of closed then the problem
+will be marked as fixed.
 
 NB: a comment will always be created if the problem is being marked as fixed.
 
@@ -693,7 +696,7 @@ Fixed problems will not be re-opened by this method.
 =cut
 
 sub update_from_open311_service_request {
-    my ( $self, $request, $council_details, $system_user ) = @_;
+    my ( $self, $request, $body, $system_user ) = @_;
 
     my ( $updated, $status_notes );
 
@@ -716,10 +719,9 @@ sub update_from_open311_service_request {
             mark_fixed => 0,
             user => $system_user,
             anonymous => 0,
-            name => $council_details->{name},
+            name => $body->name,
         }
     );
-
 
     my $w3c = DateTime::Format::W3CDTF->new;
     my $req_time = $w3c->parse_datetime( $request->{updated_datetime} );
