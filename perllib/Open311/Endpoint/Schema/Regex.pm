@@ -1,17 +1,19 @@
 use strict; use warnings;
-package Open311::Endpoint::Schema::DateTime;
+package Open311::Endpoint::Schema::Regex;
 use parent 'Data::Rx::CommonType::EasyNew';
 
 use Carp ();
 
 sub type_uri {
-    'tag:wiki.open311.org,GeoReport_v2:rx/datetime',
+    'tag:wiki.open311.org,GeoReport_v2:rx/regex',
 }
 
 sub guts_from_arg {
     my ($class, $arg, $rx) = @_;
     $arg ||= {};
 
+    my $pattern = delete $arg->{pattern};
+    my $message = delete $arg->{message};
     if (my @unexpected = keys %$arg) {
         Carp::croak sprintf "Unknown arguments %s in constructing %s",
             (join ',' => @unexpected), $class->type_uri;
@@ -19,6 +21,8 @@ sub guts_from_arg {
 
     return {
         str_schema => $rx->make_schema('//str'),
+        pattern => qr/$pattern/,
+        message => $message,
     };
 }
 
@@ -27,27 +31,11 @@ sub assert_valid {
 
     $self->{str_schema}->assert_valid( $value );
 
-    return 1 if $value =~ m{
-        ^
-        \d {4} # yyyy
-      - \d {2} # mm
-      - \d {2} # dd
-        T
-        \d {2} # hh
-      : \d {2} # mm
-      : \d {2} # ss
-       (?:
-            Z        # "Zulu" time, e.g. UTC
-        |   [+-]     # +/- offset
-            \d {2} # hh
-          : \d {2} # mm
-       )
-       $
-    }ax; # use ascii semantics so /d means [0-9], and allow formatting
+    return 1 if $value =~ $self->{pattern};
 
     $self->fail({
         error => [ qw(type) ],
-        message => 'found value is not a datetime',
+        message => $self->{message} || "found value doesn't match regex",
         value => $value,
     })
 }

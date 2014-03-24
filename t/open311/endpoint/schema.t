@@ -64,6 +64,18 @@ subtest 'datetime tests' => sub {
     ok $dt->check( '1994-11-05T13:15:30Z' ),      'datetime format zulu';
 };
 
+subtest 'identifier tests' => sub {
+    my $id = $schema->make_schema( '/open311/example/identifier' );
+
+    ok ! $id->check( undef ), 'Undef is not a valid string';
+    ok ! $id->check( '' ), 'Empty string is not a valid identifier';
+    ok ! $id->check( 'foo bar' ), 'String with spaces is not a valid identifier';
+
+    ok $id->check( 'foo' ),     'Ascii word string is a valid identifier';
+    ok $id->check( 'foo_bar' ), 'Ascii word string is a valid identifier';
+    ok $id->check( 'foo_123' ), 'Ascii word/num string is a valid identifier';
+};
+
 done_testing;
 
 1;

@@ -3,7 +3,7 @@ use Moo;
 use Data::Rx;
 
 use Open311::Endpoint::Schema::Comma;
-use Open311::Endpoint::Schema::DateTime;
+use Open311::Endpoint::Schema::Regex;
 
 sub enum {
     my ($self, $type, @values) = @_;
@@ -35,12 +35,36 @@ has schema => (
             },
             type_plugins => [qw(
                 Open311::Endpoint::Schema::Comma
-                Open311::Endpoint::Schema::DateTime
+                Open311::Endpoint::Schema::Regex
             )],
         });
 
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/bool',
             $self->enum( '//str', qw[ true false ] ));
+
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/datetime',
+            {
+                type => '/open311/regex',
+                pattern => qr{
+                    ^
+                    \d{4} - \d{2} - \d{2} # yyyy-mm-dd
+                    T
+                    \d{2} : \d{2} : \d{2} # hh:mm:ss
+                   (?:
+                        Z                  # "Zulu" time, e.g. UTC
+                    |   [+-] \d{2} : \d{2} # +/- hh:mm offset
+                   )
+                   $
+                }ax, # use ascii semantics so /d means [0-9], and allow formatting
+                message => "found value isn't a datetime",
+            });
+
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/example/identifier',
+            {
+                type => '/open311/regex',
+                pattern => qr{^ \w+ $}ax,
+                message => "found value isn't a valid identifier",
+            });
 
         $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/status',
             $self->enum( '//str', qw[ open closed ] ));
