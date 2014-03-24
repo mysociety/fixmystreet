@@ -1,4 +1,9 @@
 #!/usr/bin/env perl
+#
+# This script utilises the Open311 extension explained at
+# https://github.com/mysociety/FixMyStreet/wiki/Open311-FMS---Proposed-differences-to-Open311
+# to fetch updates on service requests from the past 24 hours, to check none
+# were missed.
 
 use strict;
 use warnings;

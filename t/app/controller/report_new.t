@@ -1453,6 +1453,10 @@ subtest "test SeeSomething" => sub {
                 is $mech->uri->path, '/report/new', 'stays on report/new page';
                 $mech->content_contains( 'Your report has been sent', 'use report created template' );
             }
+
+            $user->alerts->delete;
+            $user->problems->delete;
+            $user->delete;
         };
     }
 

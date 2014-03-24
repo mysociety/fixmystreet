@@ -168,15 +168,16 @@ $problem->insert;
 
 my $tz_local = DateTime::TimeZone->new( name => 'local' );
 
+my $body = FixMyStreet::App->model('DB::Body')->new({
+    name => 'Edinburgh City Council'
+});
+
 for my $test (
     {
         desc => 'request older than problem ignored',
         lastupdate => '',
         request => {
             updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local )->subtract( days => 2 ) ),
-        },
-        council => {
-            name => 'Edinburgh City Council',
         },
         created => 0,
     },
@@ -187,9 +188,6 @@ for my $test (
             updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
             status => 'open',
             status_notes => 'this is an update from the council',
-        },
-        council => {
-            name => 'Edinburgh City Council',
         },
         created => 1,
         state => 'confirmed',
@@ -204,9 +202,6 @@ for my $test (
             status => 'closed',
             status_notes => 'the council have fixed this',
         },
-        council => {
-            name => 'Edinburgh City Council',
-        },
         created => 1,
         state => 'fixed',
         mark_fixed => 1,
@@ -219,9 +214,6 @@ for my $test (
             updated_datetime => DateTime::Format::W3CDTF->new()->format_datetime( DateTime->now()->set_time_zone( $tz_local ) ),
             status => 'open',
             status_notes => 'the council do not think this is fixed',
-        },
-        council => {
-            name => 'Edinburgh City Council',
         },
         created => 1,
         start_state => 'fixed',
@@ -239,7 +231,7 @@ for my $test (
         $problem->update;
         my $w3c = DateTime::Format::W3CDTF->new();
 
-        my $ret = $problem->update_from_open311_service_request( $test->{request}, $test->{council}, $user );
+        my $ret = $problem->update_from_open311_service_request( $test->{request}, $body, $user );
         is $ret, $test->{created}, 'return value';
 
         return unless $test->{created};
@@ -399,9 +391,6 @@ for my $body (
 }
 
 # Let's make some contacts to send things to!
-FixMyStreet::App->model('DB::Contact')->search( {
-    email => { 'like', '%example.com' },
-} )->delete;
 my @contacts;
 for my $contact ( {
     body_id => 2651, # Edinburgh
@@ -760,13 +749,14 @@ subtest 'check reports from abuser not sent' => sub {
     ok $abuse->delete(), 'user removed from abuse table';
 };
 
+END {
+    $problem->comments->delete if $problem;
+    $problem->delete if $problem;
+    $mech->delete_user( $user ) if $user;
 
-$problem->comments->delete;
-$problem->delete;
-$mech->delete_user( $user );
+    foreach (@contacts) {
+        $_->delete;
+    }
 
-foreach (@contacts) {
-    $_->delete;
+    done_testing();
 }
-
-done_testing();

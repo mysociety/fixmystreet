@@ -14,7 +14,7 @@ use_ok( 'Open311::PopulateServiceList' );
 use_ok( 'Open311' );
 
 
-my $processor = Open311::PopulateServiceList->new( council_list => [] );
+my $processor = Open311::PopulateServiceList->new();
 ok $processor, 'created object';
 
 my $body = FixMyStreet::App->model('DB::Body')->find_or_create( {
@@ -38,7 +38,7 @@ subtest 'check basic functionality' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
     $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
@@ -64,7 +64,7 @@ subtest 'check non open311 contacts marked as deleted' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
     $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
@@ -95,7 +95,7 @@ subtest 'check email changed if matching category' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
     $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
@@ -128,7 +128,7 @@ subtest 'check category name changed if updated' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
     $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
@@ -177,7 +177,7 @@ subtest 'check conflicting contacts not changed' => sub {
 
     my $service_list = get_xml_simple_object( get_standard_xml() );
 
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
     $processor->_current_body( $body );
     $processor->process_services( $service_list );
 
@@ -198,7 +198,7 @@ subtest 'check conflicting contacts not changed' => sub {
 };
 
 subtest 'check meta data population' => sub {
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
 
     my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
 <service_definition>
@@ -377,7 +377,7 @@ for my $test (
     },
 ) {
     subtest $test->{desc} => sub {
-        my $processor = Open311::PopulateServiceList->new( council_list => [] );
+        my $processor = Open311::PopulateServiceList->new();
 
         my $services_xml = '<?xml version="1.0" encoding="utf-8"?>
     <services>
@@ -434,7 +434,7 @@ for my $test (
 }
 
 subtest 'check attribute ordering' => sub {
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
 
     my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
 <service_definition>
@@ -536,7 +536,7 @@ subtest 'check attribute ordering' => sub {
 };
 
 subtest 'check bromely skip code' => sub {
-    my $processor = Open311::PopulateServiceList->new( council_list => [] );
+    my $processor = Open311::PopulateServiceList->new();
 
     my $meta_xml = '<?xml version="1.0" encoding="utf-8"?>
 <service_definition>

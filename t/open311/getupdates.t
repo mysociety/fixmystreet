@@ -15,6 +15,9 @@ my $user = FixMyStreet::App->model('DB::User')->find_or_create(
     }
 );
 
+my $body = FixMyStreet::App->model('DB::Body')->new( {
+    name => 'Test Body',
+} );
 
 my $updates = Open311::GetUpdates->new( system_user => $user );
 ok $updates, 'created object';
@@ -99,7 +102,7 @@ for my $test (
 
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
 
-        ok $updates->update_reports( [ 638344 ], $o, { name => 'Test Council' } );
+        ok $updates->update_reports( [ 638344 ], $o, $body );
         is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638344', 'get url';
 
         is $problem->comments->count, $test->{comment_count}, 'added a comment';
@@ -174,7 +177,7 @@ subtest 'update with two requests' => sub {
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
 
-    ok $updates->update_reports( [ 638344,638345 ], $o, { name => 'Test Council' } );
+    ok $updates->update_reports( [ 638344,638345 ], $o, $body );
     is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638344%2C638345', 'get url';
 
     is $problem->comments->count, 1, 'added a comment to first problem';
@@ -228,7 +231,7 @@ subtest 'test translation of auto-added comment from old-style Open311 update' =
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],
     }, sub {
-        ok $updates->update_reports( [ 638346 ], $o, { name => 'Test Council' } );
+        ok $updates->update_reports( [ 638346 ], $o, $body );
     };
     is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638346', 'get url';
 
