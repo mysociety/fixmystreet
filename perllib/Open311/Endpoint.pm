@@ -361,11 +361,11 @@ sub POST_Service_Request_output_schema {
 sub POST_Service_Request {
     my ($self, $args) = @_;
 
-    # TODO: pass this through from earlier stages
+    # TODO pass this through instead of calculating again?
     my $service_code = $args->{service_code};
     my $service = $self->service($service_code);
 
-    my @service_requests = $service->submit_request( $args );
+    my @service_requests = $self->post_service_request( $service, $args );
         
     return {
         service_requests => [
@@ -383,6 +383,17 @@ sub POST_Service_Request {
             } @service_requests,
         ],
     };
+}
+
+sub post_service_request {
+    # we assume that the posting of the request is handled by the Service
+    # object.  You may wish instead to override this method if this assumption
+    # doesn't hold.
+
+    my ($self, $service, $args) = @_;
+
+    my @service_requests = $service->submit_request( $args );
+    return @service_requests;
 }
 
 sub GET_Service_Requests_input_schema {
@@ -411,6 +422,7 @@ sub GET_Service_Requests_input_schema {
         },
     };
 }
+
 sub GET_Service_Requests_output_schema {
     my $self = shift;
     return {
