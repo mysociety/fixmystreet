@@ -458,6 +458,79 @@ sub GET_Service_Requests_output_schema {
 
 sub GET_Service_Requests {
     my ($self, $args) = @_;
+    
+    my @service_requests = $self->get_service_requests({
+
+        jurisdiction_id => $args->{jurisdiction_id},
+        start_date => $args->{start_date},
+        end_date => $args->{end_date},
+
+        map {
+            $args->{$_} ?
+                ( $_ => [ split ',' => $args->{$_} ] )
+              : ()
+        } qw/ service_request_id service_code status /,
+    });
+
+    return {
+        service_requests => [
+            map {
+                my $request = $_;
+                +{
+                    (
+                        map {
+                            $_ => $request->$_,
+                        }
+                        qw/
+                            service_request_id
+                            status
+                            service_name
+                            service_code
+                            requested_datetime
+                            updated_datetime
+                            address
+                            address_id
+                            zipcode
+                            lat
+                            lon
+                            media_url
+                            / 
+                    ),
+                    (
+                        map {
+                            my $value = $request->$_;
+                            $value ? ( $_ => $value ) : (),
+                        }
+                        qw/
+                            request
+                            description
+                            agency_responsible
+                            service_notice
+                            /
+                    ),
+                }
+            } @service_requests,
+        ],
+    };
+}
+
+sub get_service_requests {
+    # we assume that each service handles getting requests, and we collate them
+    # here.
+    # if the endpoint handles all services globally, then you may wish to
+    # override this.
+
+    my ($self, $args) = @_;
+
+    my @service_code = $args->{service_code} ?
+        @{$args->{service_code}}
+      : $self->services;
+
+    my @services = map { $self->service($_) } @service_code;
+
+    return map {
+        $_->get_service_requests( $args );
+    } @service_code;
 }
 
 sub services {
