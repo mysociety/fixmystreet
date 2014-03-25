@@ -69,11 +69,15 @@ sub dispatch_request {
         Open311 doesn't mandate what these types look like, but a backend
         server may! The module provides an example identifier type which allows
         ascii "word" characters .e.g [a-zA-Z0-9_] as an example default.
-        You can also override these individually:
-            * api_key_type
-            * jurisdiction_id_type
-            * service_code_type
-            * service_request_id_type
+        You can also override these individually using:
+
+        identifier_types => {
+            api_key => '//str', # 
+            jurisdiction_id => ...
+            service_code => ...
+            service_request_id  => ...
+            # etc.
+        }
 
 =cut
 
@@ -83,19 +87,20 @@ has default_identifier_type => (
     default => '/open311/example/identifier',
 );
 
-for (qw(api_key_type
-    jurisdiction_id_type
-    service_code_type
-    service_request_id_type)) {
+has identifier_types => (
+    is => 'ro',
+    isa => HashRef[Str],
+    default => sub { {} },
+    handles_via => 'Hash',
+    handles => {
+        get_identifier_type => 'get',
+    },
+);
 
-    has $_ => ( 
-        is => 'lazy', 
-        isa => Str, 
-        default => sub { 
-            shift->default_identifier_type 
-        } 
-    );
-}
+around get_identifier_type => sub {
+    my ($orig, $self, $type) = @_;
+    return $self->$orig($type) // $self->default_identifier_type;
+};
 
 has default_service_notice => (
     is => 'ro',
@@ -200,7 +205,7 @@ sub GET_Service_Definition_input_schema {
     return {
         type => '//seq',
         contents => [
-            $self->service_code_type,
+            $self->get_identifier_type('service_code'),
             $self->get_jurisdiction_id_validation,
         ],
     };
@@ -261,7 +266,9 @@ sub POST_Service_Request_input_schema {
         # to give a nice error message
         return {
             type => '//rec',
-            required => { service_code => $self->service_code_type, api_key => $self->api_key_type },
+            required => { 
+                service_code => $self->get_identifier_type('service_code'), 
+                api_key => $self->get_identifier_type('api_key') },
             rest => '//any',
         };
     }
@@ -291,8 +298,8 @@ sub POST_Service_Request_input_schema {
         {
             type => '//rec',
             required => {
-                service_code => $self->service_code_type,
-                api_key => $self->api_key_type,
+                service_code => $self->get_identifier_type('service_code'),
+                api_key => $self->get_identifier_type('api_key'),
                 %{ $attributes{required} },
                 %{ $address_required },
                 $self->get_jurisdiction_id_required_clause,
@@ -326,7 +333,7 @@ sub POST_Service_Request_output_schema {
     my $service = $self->service($service_code);
 
     my %return_schema = (
-        ($service->type eq 'realtime') ? ( service_request_id => $self->service_request_id_type ) : (),
+        ($service->type eq 'realtime') ? ( service_request_id => $self->get_identifier_type('service_request_id') ) : (),
         ($service->type eq 'batch')    ? ( token => '//str' ) : (),
     );
 
@@ -389,11 +396,11 @@ sub GET_Service_Requests_input_schema {
             $self->get_jurisdiction_id_optional_clause,,
             service_request_id => {
                 type => '/open311/comma',
-                contents => $self->service_request_id_type,
+                contents => $self->get_identifier_type('service_request_id'),
             },
             service_code => {
                 type => '/open311/comma',
-                contents => $self->service_code_type,
+                contents => $self->get_identifier_type('service_code'),
             },
             start_date => '/open311/datetime',
             end_date   => '/open311/datetime',
@@ -413,10 +420,10 @@ sub GET_Service_Requests_output_schema {
             of => {
                 type => '//rec',
                 required => {
-                    service_request_id => $self->service_request_id_type,
+                    service_request_id => $self->get_identifier_type('service_request_id'),
                     status => '/open311/status',
                     service_name => '//str',
-                    service_code => $self->service_code_type,
+                    service_code => $self->get_identifier_type('service_code'),
                     requested_datetime => '/open311/datetime',
                     updated_datetime => '/open311/datetime',
                     address => '//str',
@@ -491,19 +498,19 @@ sub get_jurisdiction_id_validation {
     return {
         type => '//rec',
         ($self->requires_jurisdiction_ids ? 'required' : 'optional') => { 
-            jurisdiction_id => $self->jurisdiction_id_type,
+            jurisdiction_id => $self->get_identifier_type('jurisdiction_id'),
         },
     };
 }
 
 sub get_jurisdiction_id_required_clause {
     my $self = shift;
-    $self->requires_jurisdiction_ids ? (jurisdiction_id => $self->jurisdiction_id_type) : ();
+    $self->requires_jurisdiction_ids ? (jurisdiction_id => $self->get_identifier_type('jurisdiction_id')) : ();
 }
 
 sub get_jurisdiction_id_optional_clause {
     my $self = shift;
-    $self->requires_jurisdiction_ids ? () : (jurisdiction_id => $self->jurisdiction_id_type);
+    $self->requires_jurisdiction_ids ? () : (jurisdiction_id => $self->get_identifier_type('jurisdiction_id'));
 }
 
 sub call_api {
