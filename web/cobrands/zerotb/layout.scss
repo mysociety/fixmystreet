@@ -30,6 +30,23 @@ body {
             }
         }
     }
+    &.mappage {
+        #main-nav {
+            ul#main-menu {
+                li {
+                    a,
+                    a.report-a-problem-btn,
+                    span {
+                        padding: 0.25em;
+                        margin: 0.5em;
+                    }
+                }
+            }
+        }
+        .nav-wrapper-2 {
+            min-height: 4em;
+        }
+    }
 }
 
 .nav-wrapper {
