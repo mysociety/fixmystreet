@@ -36,6 +36,7 @@ sub submit_request {
         # NB: possible race condition between next_request_id and _add_request
         # (this is fine for synchronous test-cases)
         
+        service => $self,
         service_request_id => $self->next_request_id, 
         status => 'open',
         description => $args->{description},

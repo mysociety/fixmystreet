@@ -3,6 +3,14 @@ use Moo;
 use Types::Standard ':all';
 use namespace::clean;
 
+has service => (
+    is => 'ro',
+    isa => InstanceOf['Open311::Endpoint::Service'],
+    handles => [
+        qw/ service_code service_name /
+    ],
+);
+
 has service_request_id => (
     is => 'ro',
     isa => Maybe[Str],
