@@ -31,6 +31,14 @@ sub on_map_default_max_pin_age { return 0; }
 sub never_confirm_updates { 1; }
 sub include_time_in_update_alerts { 1; }
 
+sub pin_colour {
+    return 'clinic';
+}
+
+sub path_to_pin_icons {
+    return '/cobrands/zerotb/images/';
+}
+
 sub get_clinic_list {
     my $self = shift;
 
