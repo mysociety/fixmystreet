@@ -68,27 +68,40 @@ has expected_datetime => (
 
 has address => (
     is => 'ro',
-    isa => Maybe[Str],
+    isa => Str,
+    default => sub { '' },
 );
 
 has address_id => (
     is => 'ro',
-    isa => Maybe[Str],
+    isa => Str,
+    default => sub { '' },
 );
 
 has zipcode => (
     is => 'ro',
-    isa => Maybe[Str],
+    isa => Str,
+    default => sub { '' },
 );
 
 has latlong => (
     is => 'ro',
-    isa => Maybe[Tuple[ Num, Num ]],
+    isa => Tuple[ Num, Num ],
+    default => sub { [0,0] },
+    handles_via => 'Array',
+    handles => {
+        #lat => [ get => 0 ],
+        #lon => [ get => 1 ],
+    }
 );
+
+sub lat { shift->latlong->[0] }
+sub lon { shift->latlong->[1] }
 
 has media_url => (
     is => 'ro',
-    isa => Maybe[Str],
+    isa => Str,
+    default => sub { '' },
 );
 
 1;

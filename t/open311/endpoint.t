@@ -2,6 +2,7 @@ use strict; use warnings;
 
 use Test::More;
 use Test::LongString;
+use Test::MockTime ':all';
 
 use Open311::Endpoint;
 use Data::Dumper;
@@ -193,6 +194,8 @@ subtest "POST Service Request validation" => sub {
 };
 
 subtest "POST Service Request valid test" => sub {
+
+    set_fixed_time('2014-01-01T12:00:00Z');
     my $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
         api_key => 'test',
@@ -212,6 +215,7 @@ subtest "POST Service Request valid test" => sub {
             "service_request_id" => 0
         } ], 'correct json returned';
 
+    set_fixed_time('2014-02-01T12:00:00Z');
     $res = $endpoint->run_test_request( 
         POST => '/requests.xml', 
         api_key => 'test',
@@ -237,4 +241,59 @@ subtest "POST Service Request valid test" => sub {
 CONTENT
 };
 
+subtest "GET Service Requests" => sub {
+
+    my $res = $endpoint->run_test_request( GET => '/requests.xml', );
+    ok $res->is_success, 'valid request';
+    my $xml = <<CONTENT;
+<?xml version="1.0" encoding="utf-8"?>
+<service_requests>
+  <request>
+    <address>22 Acacia Avenue</address>
+    <address_id></address_id>
+    <lat>0</lat>
+    <lon>0</lon>
+    <media_url></media_url>
+    <requested_datetime>2014-01-01T12:00:00Z</requested_datetime>
+    <service_code>POT</service_code>
+    <service_name>Pothole Repairs</service_name>
+    <service_request_id>0</service_request_id>
+    <status>open</status>
+    <updated_datetime>2014-01-01T12:00:00Z</updated_datetime>
+    <zipcode></zipcode>
+  </request>
+  <request>
+    <address>22 Acacia Avenue</address>
+    <address_id></address_id>
+    <lat>0</lat>
+    <lon>0</lon>
+    <media_url></media_url>
+    <requested_datetime>2014-02-01T12:00:00Z</requested_datetime>
+    <service_code>POT</service_code>
+    <service_name>Pothole Repairs</service_name>
+    <service_request_id>1</service_request_id>
+    <status>open</status>
+    <updated_datetime>2014-02-01T12:00:00Z</updated_datetime>
+    <zipcode></zipcode>
+  </request>
+</service_requests>
+CONTENT
+
+    is_string $res->content, $xml, 'xml string ok';
+
+    $res = $endpoint->run_test_request( GET => '/requests.xml?service_code=POT', );
+    ok $res->is_success, 'valid request';
+
+    is_string $res->content, $xml, 'xml string ok POT';
+
+    $res = $endpoint->run_test_request( GET => '/requests.xml?service_code=BIN', );
+    ok $res->is_success, 'valid request';
+    is_string $res->content, <<CONTENT, 'xml string ok BIN (no requests)';
+<?xml version="1.0" encoding="utf-8"?>
+<service_requests>
+</service_requests>
+CONTENT
+};
+
+restore_time();
 done_testing;

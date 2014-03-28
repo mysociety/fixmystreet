@@ -18,6 +18,8 @@ use Scalar::Util 'blessed';
 use List::Util 'first';
 use Types::Standard ':all';
 
+use DateTime::Format::W3CDTF;
+
 # http://wiki.open311.org/GeoReport_v2
 
 sub dispatch_request {
@@ -165,6 +167,11 @@ has xml => (
             SuppressEmpty => 0,
         );
     },
+);
+
+has w3_dt => (
+    is => 'lazy',
+    default => sub { DateTime::Format::W3CDTF->new },
 );
 
 sub GET_Service_List_input_schema {
@@ -427,38 +434,40 @@ sub GET_Service_Requests_output_schema {
     my $self = shift;
     return {
         type => '//rec',
-        service_requests => {
-            type => '//arr',
-            of => {
-                type => '//rec',
-                required => {
-                    service_request_id => $self->get_identifier_type('service_request_id'),
-                    status => '/open311/status',
-                    service_name => '//str',
-                    service_code => $self->get_identifier_type('service_code'),
-                    requested_datetime => '/open311/datetime',
-                    updated_datetime => '/open311/datetime',
-                    address => '//str',
-                    address_id => '//str',
-                    zipcode => '//str',
-                    lat => '//num',
-                    lon => '//num',
-                    media_url => '//str',
-                },
-                optional => {
-                    request => '//str',
-                    description => '//str',
-                    agency_responsible => '//str',
-                    service_notice => '//str',
-                },
-            }
+        required => {
+            service_requests => {
+                type => '//arr',
+                contents => {
+                    type => '//rec',
+                    required => {
+                        service_request_id => $self->get_identifier_type('service_request_id'),
+                        status => '/open311/status',
+                        service_name => '//str',
+                        service_code => $self->get_identifier_type('service_code'),
+                        requested_datetime => '/open311/datetime',
+                        updated_datetime => '/open311/datetime',
+                        address => '//str',
+                        address_id => '//str',
+                        zipcode => '//str',
+                        lat => '//num',
+                        lon => '//num',
+                        media_url => '//str',
+                    },
+                    optional => {
+                        request => '//str',
+                        description => '//str',
+                        agency_responsible => '//str',
+                        service_notice => '//str',
+                    },
+                }
+            },
         },
     };
 }
 
 sub GET_Service_Requests {
     my ($self, $args) = @_;
-    
+
     my @service_requests = $self->get_service_requests({
 
         jurisdiction_id => $args->{jurisdiction_id},
@@ -472,7 +481,7 @@ sub GET_Service_Requests {
         } qw/ service_request_id service_code status /,
     });
 
-    return {
+    my $result = {
         service_requests => [
             map {
                 my $request = $_;
@@ -486,8 +495,6 @@ sub GET_Service_Requests {
                             status
                             service_name
                             service_code
-                            requested_datetime
-                            updated_datetime
                             address
                             address_id
                             zipcode
@@ -498,11 +505,19 @@ sub GET_Service_Requests {
                     ),
                     (
                         map {
+                            $_ => $self->w3_dt->format_datetime( $request->$_ ),
+                        }
+                        qw/
+                            requested_datetime
+                            updated_datetime
+                        /
+                    ),
+                    (
+                        map {
                             my $value = $request->$_;
                             $value ? ( $_ => $value ) : (),
                         }
                         qw/
-                            request
                             description
                             agency_responsible
                             service_notice
@@ -512,6 +527,8 @@ sub GET_Service_Requests {
             } @service_requests,
         ],
     };
+
+    return $result;
 }
 
 sub get_service_requests {
@@ -522,15 +539,13 @@ sub get_service_requests {
 
     my ($self, $args) = @_;
 
-    my @service_code = $args->{service_code} ?
-        @{$args->{service_code}}
+    my @services = $args->{service_code} ?
+        (map { $self->service($_) } @{$args->{service_code}})
       : $self->services;
 
-    my @services = map { $self->service($_) } @service_code;
-
     return map {
-        $_->get_service_requests( $args );
-    } @service_code;
+        $_->service_requests( $args );
+    } @services;
 }
 
 sub services {

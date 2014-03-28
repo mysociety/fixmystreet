@@ -24,10 +24,18 @@ has '+default_service_notice' => (
             next_request_id => 'count',
             _add_request => 'push',
             get_request => 'get',
+            _all_requests => 'elements',
         }
     );
 }
 
+sub get_requests {
+    my ($self, $args) = @_;
+    return grep {
+        $_->service_code eq $self->service_code
+        } $self->_all_requests;
+}
+        
 sub submit_request {
     my ($self, $args) = @_;
 
@@ -42,9 +50,11 @@ sub submit_request {
         description => $args->{description},
         agency_responsible => '',
         requested_datetime => DateTime->now(),
-        update_datetime => DateTime->now(),
-        address => $args->{address_string},
-        address_id => $args->{address_id},
+        updated_datetime => DateTime->now(),
+        address => $args->{address_string} // '',
+        address_id => $args->{address_id} // '',
+        media_url => $args->{media_url} // '',
+        zipcode => $args->{zipcode} // '',
         # NB: other info is passed in that would be stored by an Open311
         # endpoint, see Open311::Endpoint::Service::Request for full list,
         # but we don't need to handle all of those in this test
@@ -52,6 +62,11 @@ sub submit_request {
     $self->_add_request( $request );
 
     return ( $request );
+}
+
+sub service_requests {
+    my ($self, $args) = @_;
+    return $self->get_requests;
 }
 
 1;
