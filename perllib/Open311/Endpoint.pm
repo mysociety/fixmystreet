@@ -619,62 +619,44 @@ sub call_api {
     my $api_method = $self->can($api_name)
         or die "No such API $api_name!";
 
-    my @dispatchers;
-
     if (my $input_schema_method = $self->can("${api_name}_input_schema")) {
-        push @dispatchers, sub () {
-            my $input_schema = $self->$input_schema_method(@args)
-                or return Open311::Endpoint::Result->error( 400,
-                    'Bad request' );
+        my $input_schema = $self->$input_schema_method(@args)
+            or return Open311::Endpoint::Result->error( 400,
+                'Bad request' );
 
-            my $schema = $self->rx->make_schema( $input_schema );
-            my $input = (scalar @args == 1) ? $args[0] : [@args];
-            eval {
-                $schema->assert_valid( $input );
-            };
-            if ($@) {
-                return Open311::Endpoint::Result->error( 400,
-                    map $_->struct, @{ $@->failures }, # bit cheeky, spec suggests it wants strings only
-                );
-            }
-            return; # pass onwards
+        my $schema = $self->rx->make_schema( $input_schema );
+        my $input = (scalar @args == 1) ? $args[0] : [@args];
+        eval {
+            $schema->assert_valid( $input );
         };
+        if ($@) {
+            return Open311::Endpoint::Result->error( 400,
+                split /\n/, $@,
+                # map $_->struct, @{ $@->failures }, # bit cheeky, spec suggests it wants strings only
+            );
+        }
     }
+
+    my $data = eval { $self->$api_method(@args) }
+        or return Open311::Endpoint::Result->error( 
+            $@ ? (500 => $@) : (404 => 'Resource not found')
+        );
 
     if (my $output_schema_method = $self->can("${api_name}_output_schema")) {
-        push @dispatchers, sub () {
-            response_filter {
-                my $result = shift;
-                my $schema = $self->rx->make_schema( $self->$output_schema_method(@args) );
-                eval {
-                    $schema->assert_valid( $result->data );
-                };
-                if ($@) {
-                    my $data = {
-                        error => 'Server error: bad response',
-                        details => [ map $_->struct, @{ $@->failures } ],
-                    };
-                    return Open311::Endpoint::Result->error( 500,
-                        $data,
-                    );
-                }
-                return $result;
-            }
+        my $definition = $self->$output_schema_method(@args);
+        my $schema = $self->rx->make_schema( $definition );
+        eval {
+            $schema->assert_valid( $data );
         };
+        if ($@) {
+            return Open311::Endpoint::Result->error( 500,
+                split /\n/, $@,
+                # map $_->struct, @{ $@->failures },
+            );
+        }
     }
 
-    push @dispatchers, sub () {
-        my $data = $self->$api_method(@args);
-        if ($data) {
-            return Open311::Endpoint::Result->success( $data );
-        }
-        else {
-            return Open311::Endpoint::Result->error( 404 =>
-                    'Resource not found' );
-        }
-    };
-
-    (@dispatchers);
+    return Open311::Endpoint::Result->success( $data );
 }
 
 sub format_response {
