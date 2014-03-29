@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+
+import hashlib
+import json
+import os
+import sys
+import tarfile
+import urllib
+
+sharename = '48rLGpU1'
+
+root = os.path.join(os.path.dirname(__file__), '..')
+with open(os.path.join(root, 'cpanfile.snapshot')) as cpanfile:
+    hash = hashlib.md5(cpanfile.read()).hexdigest()
+wanted_filename = 'fixmystreet-local-%s.tgz' % hash
+
+share = json.loads( urllib.urlopen( 'https://open.ge.tt/1/shares/%s' % sharename ).read() )
+for file in share['files']:
+    if file['filename'] == wanted_filename and file['readystate'] == 'uploaded':
+        print "Found cached copy of local, using..."
+        urllib.urlretrieve('https://open.ge.tt/1/files/%s/%s/blob' % (sharename, file['fileid']), wanted_filename)
+        if tarfile.is_tarfile(wanted_filename):
+            tfile = tarfile.open(wanted_filename)
+            tfile.extractall()
+            sys.exit(0)
+
+print "No cached copy found, running carton install..."
+os.system('cpanm -q Carton')
+os.system('carton install --deployment')

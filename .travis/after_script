@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import tarfile
+
+sharename = '48rLGpU1'
+
+root = os.path.join(os.path.dirname(__file__), '..')
+with open(os.path.join(root, 'cpanfile.snapshot')) as cpanfile:
+    hash = hashlib.md5(cpanfile.read()).hexdigest()
+wanted_filename = 'fixmystreet-local-%s.tgz' % hash
+
+if os.path.exists(wanted_filename):
+    print "File was downloaded, no need to upload"
+    sys.exit()
+
+print "Creating archive..."
+tfile = tarfile.open(wanted_filename, 'w:gz')
+tfile.add('local')
+tfile.close()
+
+print "Logging in..."
+refreshtoken = os.getenv('TOKEN')
+if not refreshtoken:
+    print "  No token available, bailing"
+    sys.exit()
+output = subprocess.check_output([
+    'curl', '-s', '-X', 'POST', '--data', '{"refreshtoken":"%s"}' % refreshtoken,
+    'https://open.ge.tt/1/users/login'
+])
+output = json.loads(output)
+accesstoken = output['accesstoken']
+
+print "Creating file..."
+output = subprocess.check_output([
+    'curl', '-s', '-X', 'POST', '--data', '{"filename":"%s"}' % wanted_filename,
+    'https://open.ge.tt/1/files/%s/create?accesstoken=%s' % (sharename, accesstoken)
+])
+output = json.loads(output)
+puturl = output['upload']['puturl']
+
+print "Uploading archive to ge.tt..."
+with open('output', 'w') as out:
+    subprocess.call([ 'curl', '-#', '--upload-file', wanted_filename, puturl ], stdout=out)
+print "Completed"

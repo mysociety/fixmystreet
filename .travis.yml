@@ -10,14 +10,17 @@ language: perl
 perl:
   - "5.14"
 
+env:
+  - secure: "lm7DasPP+iHVI3ZIjTX7tQMfiEsGBJGM2HrPO8AByZWJohL2gd024ngevXXkBT0Qln5z+RhGJOd+QWjvKmuhfCBPveL8IX4v0KHUTfxrjBoBSB09cb4UNdExWu7HPO63RsbhpQdaIoIYIpr1eBb9txBCbGD9aYepuqIKIj/QHwM="
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq jhead libgmp-dev
 # A couple of other modules that normally come from packages, but no system stuff here
-  - cpanm -q Carton Locale::gettext Math::BigInt::GMP
+  - cpanm -q Locale::gettext Math::BigInt::GMP
   - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8 sv_SE.UTF-8
 install:
-  - carton install --deployment
+  - .travis/install
 before_script:
   - psql -c 'create database fms;' -U postgres
   - psql fms postgres < db/schema.sql
@@ -30,4 +33,5 @@ before_script:
   - ./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po
   - commonlib/bin/gettext-makemo FixMyStreet
 script: "bin/cron-wrapper perl /usr/bin/prove -rl t"
-
+after_script:
+  - .travis/after_script
