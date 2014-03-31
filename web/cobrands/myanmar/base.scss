@@ -3,5 +3,18 @@
 @import "../sass/mixins";
 @import "compass";
 
-@import "../sass/base";
+@font-face {
+    font-family: "Masterpiece Uni Sans";
+    src: url(fonts/MasterpieceUniSans.ttf) format("truetype");
+}
 
+@font-face {
+    font-family: "Tharlon";
+    src: url(fonts/Tharlon-Regular.ttf) format("truetype");
+}
+
+$body-font: 'Masterpiece Uni Sans', Tharlon, 'Times New Roman', serif;
+$meta-font:  'Masterpiece Uni Sans', Tharlon, 'Times New Roman', serif;
+$heading-font:  'Masterpiece Uni Sans', Tharlon, 'Times New Roman', serif;
+
+@import "../sass/base";
