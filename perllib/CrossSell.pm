@@ -151,6 +151,16 @@ We're running a survey to help us understand who uses our sites. If you have 10-
 EOF
 }
 
+sub display_wtt_link {
+    return <<EOF;
+<h1 style="padding-top:0.5em">WriteToThem</h1>
+<p>
+Need to write to a politician? Try <a href="https://writetothem.com">WriteToThem</a> - great 
+for campaigns too.
+</p>
+EOF
+}
+
 # Not currently used, needs more explanation and testing; perhaps in future.
 sub display_gny_groups {
     my ($lon, $lat) = @_;
@@ -210,9 +220,9 @@ sub display_advert ($$;$%) {
 #EOF
 
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
-    $c->stash->{scratch} = 'advert=survey';
+    $c->stash->{scratch} = 'advert=wtt';
     return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
-        . display_survey_link()
+        . display_wtt_link()
         . '</div>';
 
     $c->stash->{scratch} = 'advert=news';

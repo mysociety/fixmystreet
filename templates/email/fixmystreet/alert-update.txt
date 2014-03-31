@@ -13,15 +13,6 @@ You cannot contact anyone by replying to this email.
 
 -------
 
-We're running a survey to help us understand who uses our sites.
-If you have 10-15 minutes to spare then we'd be grateful if you
-could take part:
-    http://questions.mysociety.org/S/fms/e/
-
-Thank you!
-
--------
-
 <?=$values['signature']?>
 
 To stop receiving emails when there are new updates on this problem,
