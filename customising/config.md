@@ -390,8 +390,8 @@ LANGUAGES:
       area from it you want to use. If you leave this blank, a default area
       will be used everywhere (a URL needs to be given for non-web things, like sending of reports, to function). <!-- TODO explain this: function? -->
     </p>
-    <p>class="more-info"
-      See also <a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a> to 
+    <p>
+      See also <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code> to 
       efficiently limit the areas you need (especially if you're using
       global MapIt).
     </p>
