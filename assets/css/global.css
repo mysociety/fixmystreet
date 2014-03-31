@@ -699,7 +699,7 @@ table {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  -webkit-tap-highlight-color: transparent; }
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
 
 /* mouse grab icon */
 .grabbing {
@@ -857,9 +857,9 @@ ul {
       background-image: url("../img/mysociety-logo.png");
       width: 125px;
       height: 39px; } }
-  @media (min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi) {
-    .ms-header__logo {
-      background-image: url("../img/mysociety-logo@2.png"); } }
+    @media (min-width: 30em) and (-webkit-min-device-pixel-ratio: 1.5), (min-width: 30em) and (min-resolution: 144dpi) {
+      .ms-header__logo {
+        background-image: url("../img/mysociety-logo@2.png"); } }
 
 .site-title {
   height: 45px;
@@ -1140,6 +1140,16 @@ table.table td {
 .glossary .more-info ul {
   margin-top: 0.5em;
   margin-left: 10em; }
+
+/* examples benefit from full-width (because they're often code snippets) */
+.glossary .more-info ul.examples {
+  clear: both;
+  padding-top: 0.666em;
+  margin-left: 0em; }
+
+/* <pre> currently used in .glossary <dl>s, needs text color fix... might be general problem? */
+.glossary pre {
+  color: #e4e3dd; }
 
 .homepage-feature {
   /**

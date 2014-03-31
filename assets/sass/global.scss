@@ -512,6 +512,17 @@ table.table td {
     margin-left: 10em;
 }
 
+/* examples benefit from full-width (because they're often code snippets) */
+.glossary .more-info ul.examples {
+   clear: both; 
+   padding-top: 0.666em;
+   margin-left: 0em;
+}
+/* <pre> currently used in .glossary <dl>s, needs text color fix... might be general problem? */
+.glossary pre {
+  color: $colour_light_grey;
+}
+
 .homepage-feature {
     @include clearfix;
     .column {
