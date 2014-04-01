@@ -19,10 +19,24 @@ module.exports = function(grunt) {
           'assets/scripts/app.min.js': 'assets/scripts/app.js'
         }
       },
+    },
 
+    sass: {
+      global: {
+        options: { style: 'compressed' },
+        files: {
+          'assets/css/global.min.css': 'assets/sass/global.scss'
+        }
+      }
     },
 
     watch: {
+      css: {
+        files: [
+          'assets/**/*.scss',
+        ],
+        tasks: [ 'sass' ],
+      },
       js: {
         files: [
           'assets/scripts/app.js'
@@ -33,10 +47,11 @@ module.exports = function(grunt) {
   });
 
   // Load plugins
+  grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Default task(s).
-  grunt.registerTask('default', [ 'uglify' ]);
+  grunt.registerTask('default', [ 'uglify', 'sass' ]);
 
 };
