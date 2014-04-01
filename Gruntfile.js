@@ -4,6 +4,18 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    jekyll: { site: {} },
+
+    connect: {
+      server: {
+        options: {
+          base: "_site",
+          port: 4000,
+          livereload: true
+        }
+      }
+    },
+
     uglify: {
       library: {
         files: {
@@ -31,6 +43,7 @@ module.exports = function(grunt) {
     },
 
     watch: {
+      options: { atBegin: true, },
       css: {
         files: [
           'assets/**/*.scss',
@@ -43,15 +56,28 @@ module.exports = function(grunt) {
         ],
         tasks: [ 'uglify' ],
       },
+      jekyll: {
+        files: [ 'assets/**', '**/*.html', '**/*.md', '!node_modules/**', '!bower_components/**', '!_site/**' ],
+        tasks: [ 'jekyll' ],
+      },
+      livereload: {
+        options: { atBegin: false, livereload: true, },
+        // Look for Jekyll file changes, and changes to static assets
+        // Ignore SCSS so that live CSS update can work properly
+        files: [ 'assets/**', '**/*.html', '**/*.md', '!node_modules/**', '!bower_components/**', '!_site/**', '!assets/**/*.scss' ],
+      },
     },
+
   });
 
   // Load plugins
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-jekyll');
+  grunt.loadNpmTasks('grunt-contrib-connect');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Default task(s).
-  grunt.registerTask('default', [ 'uglify', 'sass' ]);
+  grunt.registerTask('default', [ 'connect', 'watch' ]);
 
 };
