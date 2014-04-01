@@ -71,7 +71,7 @@ Could your location use a FixMyStreet site?
 -------------------------------------------
 
 We've written a clear guide for anyone who's thinking about [setting up and
-running FixMyStreet](The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). Anyone
+running FixMyStreet]({{ site.baseurl }}The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). Anyone
 thinking of running such a project **must** read it first -- it explains why
 these sites work, and what you need to think about before you start.
 
