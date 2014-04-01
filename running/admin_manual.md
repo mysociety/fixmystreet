@@ -32,7 +32,7 @@ questions as you need to.
 ## Other helpful documents
 
 * **Before** you decide to run FixMyStreet, you should read the
-  ["Can we fix it?" DIY Guide](/The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf).
+  ["Can we fix it?" DIY Guide]({{ site.baseurl }}The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf).
 
 * If you are hosting FixMyStreet yourself, you **must** read the [installation
   instructions](/install) first. Once you've done that, you'll probably need
