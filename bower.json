@@ -1,12 +1,9 @@
 {
-  "name": "FixMyStreet",
-  "version": "0.1",
-  "authors": [
-    "Josh Angell <josh@supercooldesign.co.uk>"
-  ],
-  "description": "FixMyStreet Platform",
-  "license": "MIT",
-  "homepage": "http://www.fixmystreet.com/",
+  "name": "fixmystreet-documentation",
+  "description": "Documentation for the FixMyStreet Platform",
+  "license": "AGPL-3.0",
+  "version": "1.0.0",
+  "homepage": "http://fixmystreet.org/",
   "private": true,
   "ignore": [
     "**/.*",
