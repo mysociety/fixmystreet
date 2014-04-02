@@ -25,6 +25,8 @@ already done so, [get in touch]({{ site.baseurl }}community) and ask for help.
 
 Please also see the instructions for [updating your code](/updating/) once it's installed.
 
+<a name="hosting"> </a>
+
 ## Or maybe we can host it for you?
 
 Depending on your project, mySociety may be able to host the site for you. That
