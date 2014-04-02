@@ -217,20 +217,34 @@ The following are all the configuration settings that you can change in `config/
   </dt>
   <dd>
     There is a safety mechanism on staging sites (where
-    <code><a href="#staging_site">STAGING_SITE</a>&nbsp;=&nbsp;1</code>):
-    your staging site will <a href="{{ site.baseurl }}customising/send_reports">send reports</a> to your
-    <code><a href="#contact_email">CONTACT_EMAIL</a></code> instead of
-    the relevant body's contact address.
-    This guards against sending test reports to live places.
+    <code><a href="#staging_site">STAGING_SITE</a></code> is <code>1</code>):
+    your staging site will <a href="{{ site.baseurl }}customising/send_reports">send reports</a> to a convenient email
+    address <em>instead of</em> the relevant body's contact address.
+    This is very useful for testing!
     <p>
-      Use this <code>SEND_REPORTS_ON_STAGING</code> setting to override this
-      behaviour. Set it to 1 if you do want your staging site to route reports
-      to the bodies' contact addresses.
+     The actual address used will vary on the version of FixMyStreet you're
+     running, because we've recently changed this behaviour:
     </p>
+    <ul>
+      <li>
+        If you're running 
+        <a href="{{ site.baseurl }}2013/11/25/v1.3/">version 1.3</a> (which
+        you will be if you've installed the 
+        <a href="{{ site.baseurl }}install/ami">AMI</a>, for example), then
+        the report will be sent to your site's 
+        <code><a href="#contact_email">CONTACT_EMAIL</a></code>.
+      </li>
+      <li>
+        However, if you're running the latest version (off the master branch),
+        the report will be sent to the reporter, that is, the email address
+        you used to confirm the report. We have found this behaviour is much 
+        more useful because it's more flexible.
+      </li>
+    </ul>
     <p>
       Note that this setting is only relevant on a staging server.
       On your production server (where 
-      <code><a href="#staging_site">STAGING_SITE</a>&nbsp;=&nbsp;0</code>)
+      <code><a href="#staging_site">STAGING_SITE</a></code> is <code>0</code>)
       it will be ignored.
     </p>
     <div class="more-info">
@@ -239,8 +253,8 @@ The following are all the configuration settings that you can change in `config/
         <li>
           <code>SEND_REPORTS_ON_STAGING: 0</code>
           <p>
-            Any reports created will now be sent to
-            the site's <code><a href="#contact_email">CONTACT_EMAIL</a></code>
+            Any reports created will now be sent to the email of the
+            reporter (or, for version 1.3 sites,  the <code><a href="#contact_email">CONTACT_EMAIL</a></code>)
             and <em>not</em> the body's. Great for testing!
           </p>
         </li>
