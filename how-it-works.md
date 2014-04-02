@@ -13,19 +13,19 @@ title: How to FixMyStreet
 
 FixMyStreet makes it easy for anyone to report a problem without worrying about
 the correct authority to send it to. FixMyStreet takes care of that using the
-problem's location and <a href="{{ site.baseurl }}/glossary/#category"
+problem's location and <a href="{{ site.baseurl }}glossary/#category"
 class="glossary">category</a>, and sends a
-<a href="{{ site.baseurl }}/glossary/#report" class="glossary">report</a>, 
-by email or using a web service such as <a href="{{ site.baseurl }}/glossary/#open311"
+<a href="{{ site.baseurl }}glossary/#report" class="glossary">report</a>, 
+by email or using a web service such as <a href="{{ site.baseurl }}glossary/#open311"
 class="glossary">Open311</a>, to the department or body responsible for fixing
 it.
 
 But FixMyStreet doesn't just send problem reports &mdash; it makes the reports
 visible to everyone. Anyone can see what's already been reported, leave <a
-href="{{ site.baseurl }}/glossary/#update" class="glossary">updates</a>, or
-subscribe to <a href="{{ site.baseurl }}/glossary/#alert"
+href="{{ site.baseurl }}glossary/#update" class="glossary">updates</a>, or
+subscribe to <a href="{{ site.baseurl }}glossary/#alert"
 class="glossary">alerts</a>. We help prevent duplicate reports and offer
-additional features for <a href="{{ site.baseurl }}/glossary/#staff-user"
+additional features for <a href="{{ site.baseurl }}glossary/#staff-user"
 class="glossary">staff users</a> working for the authorities who are actually
 fixing problems.
 
