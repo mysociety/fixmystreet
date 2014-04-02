@@ -15,7 +15,7 @@ title: Installing
 
 * [Use an install script for Debian squeeze or Ubuntu precise servers]({{ site.baseurl }}install/install-script/)
 * [Use a FixMyStreet AMI for Amazon EC2]({{ site.baseurl }}install/ami/)
-* [Install the software manually]({{ site.baseurl }}install/manual_install/)
+* [Install the software manually]({{ site.baseurl }}install/manual-install/)
 
 FixMyStreet is a web application written in Perl, using the Catalyst framework.
 Installation deploys the core code and also manages its dependencies.
