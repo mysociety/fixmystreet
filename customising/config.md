@@ -523,8 +523,7 @@ LANGUAGES:
       It's also possible to add a new geocoder (for example, if your
       jurisdiction provides a custom one). This requires some coding work, but
       you can see exampes of <a
-      href="https://github.com/mysociety/fixmystreet/tree/master/perllib/FixMySt
-      reet/Geocode">suported geocoders</a> in the FixMyStreet repo.
+      href="https://github.com/mysociety/fixmystreet/tree/master/perllib/FixMyStreet/Geocode">supported geocoders</a> in the FixMyStreet repo.
     </p>
     <p>
       Whichever geocoder you use, check the terms of use for it
