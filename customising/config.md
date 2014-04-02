@@ -541,8 +541,8 @@ LANGUAGES:
     </p>
     <p>
       Whichever geocoder you use, check the terms of use for it
-      &mdash; there may be restrictions on how you can use it. You may
-      also need to provide an API key to use them: see 
+      &mdash; there may be restrictions. You may also need to provide an API
+      key to use it: see 
       <code><a href="#google_maps_api_key">GOOGLE_MAPS_API_KEY</a></code>
       and 
       <code><a href="#bing_maps_api_key">BING_MAPS_API_KEY</a></code>.
@@ -632,11 +632,12 @@ GEOCODING_DISAMBIGUATION:
     <div class="more-info">
       <p>Example:</p>
       <ul class="examples">
+        <!-- TODO  examples of the more complex data 
+                   e.g. Google's span,  language? -->
         <li>
           This limits geocoding requests to only return results in Mumbai, India:
 <pre>          
-GEOCODER:
-  type: 'OSM'
+GEOCODER: 'OSM'
 GEOCODING_DISAMBIGUATION:
   country: 'in'
   town: 'Mumbai'
@@ -658,7 +659,7 @@ GEOCODING_DISAMBIGUATION:
     for UK <a href="http://www.fixmystreet.com">FixMyStreet</a>.
     <p>
       Check the useage terms for the type of map you use &mdash; there may be
-      restrictions on how you can use them.
+      restrictions.
     </p>
     <div class="more-info">
       <p>Example:</p>
