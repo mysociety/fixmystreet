@@ -5,14 +5,22 @@ title: Install script
 
 # FixMyStreet Install Script
 
-If you have a new installation of Debian squeeze or Ubuntu precise,
-you can use an install script to set up a basic installation of
-FixMyStreet on your server.
+<p class="lead">
+  If you have a new installation of Debian squeeze or Ubuntu precise,
+  you can use an install script to set up a basic installation of
+  FixMyStreet on your server.
+</p>
+
+Note that this is just one of [three ways to install FixMyStreet]({{ site.baseurl }}install/).
+
+## Warning: installation changes your setup!
 
 *Warning: only use this script on a newly installed server -- it will
 make significant changes to your server's setup, including modifying
 your nginx setup, creating a user account, creating a database,
-installing new packages etc.*
+installing new packages, and so on.*
+
+## Running the script
 
 The script to run is called [`install-site.sh`, in our `commonlib` repository](https://raw.github.com/mysociety/commonlib/master/bin/install-site.sh).
 That script's usage is as follows:

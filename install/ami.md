@@ -5,6 +5,13 @@ title: AMI for EC2
 
 # FixMyStreet AMI for EC2
 
+<p class="lead">
+  To help people to get started with the FixMyStreet platform, we have
+  created an AMI (Amazon Machine Image) with a basic installation of
+  FixMyStreet, which you can use to create a running server on an Amazon
+  EC2 instance.
+</p>
+
 <div style="border: solid 2px #900; padding: 0.5em; margin: 0.5em; color: #900; background-color: #fff">
 Please note: FixMyStreet may currently sometimes, when running cron jobs, use
 too much memory to run successfully on an Amazon Micro instance. For more
@@ -15,22 +22,22 @@ translations or templates, for example, you can disable any cron jobs
 from running and run them manually when necessary.
 </div>
 
-To help people to get started with the FixMyStreet platform, we have
-created an AMI (Amazon Machine Image) with a basic installation of
-FixMyStreet, which you can use to create a running server on an Amazon
-EC2 instance.
+Note that this is just one of [three ways to install FixMyStreet]({{ site.baseurl }}install/).
 
-If you haven't used Amazon Web Services before, then you can get a
-Micro instance which will be [free for a
-year](http://aws.amazon.com/free/).
+## Installing on Amazon's Web Services
 
-The AMI can be found in the **EU West (Ireland)** region, with the ID
-`ami-9db35eea` and name "Basic FixMyStreet installation 2013-11-12".
-You can launch an instance based on that AMI with
+If you don't have your own server, or simply prefer to use an external one, you
+can use Amazon Web Services (AWS) instead. They provide difference scale
+servers, called instances. The smallest instance, the Micro, will be [free
+for a year](http://aws.amazon.com/free/).
+
+The AMI we've prepared for you can be found in the **EU West (Ireland)**
+region, with the ID `ami-9db35eea` and name "Basic FixMyStreet installation
+2013-11-12". You can launch an instance based on that AMI with 
 [this link](https://console.aws.amazon.com/ec2/home?region=eu-west-1#launchAmi=ami-9db35eea).
 
 When you create an EC2 instance based on that AMI, make sure that you
-choose Security Groups that allows at least inbound HTTP, HTTPS and
+choose Security Groups that allow at least inbound HTTP, HTTPS and
 SSH.
 
 When your EC2 instance is launched, you will be able to log in as the
@@ -44,7 +51,10 @@ file to set a couple of parameters.  That configuration file is
     fms@ip-10-58-191-98:~$ cd fixmystreet
     fms@ip-10-58-191-98:~/fixmystreet$ nano conf/general.yml
 
-You should set `CONTACT_EMAIL` and `DO_NOT_REPLY_EMAIL` to your email address
+You should set 
+<code><a href="{{ site.baseurl }}customising/config/#contact_email">CONTACT_EMAIL</a></code>
+and
+<code><a href="{{ site.baseurl }}customising/config/#do_not_reply_email">DO_NOT_REPLY_EMAIL</a></code>
 or whatever you wish to use. postfix is installed so that outgoing email will
 work, but this may need further configuration.
 
@@ -71,7 +81,11 @@ command from the `apache2-utils` packages, as follows:
     Adding password for user fmsadmin
 
 This basic installation uses the default cobrand, with a
-(deliberately) rather garish colour scheme.  You should then proceed
+(deliberately) rather garish colour scheme.  
+
+## Installation complete... now customise
+
+You should then proceed
 to [customise your installation](/customising/).
 
 Please also see the instructions for [updating your installation](/updating/ami/).
