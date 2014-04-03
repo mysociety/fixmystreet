@@ -175,8 +175,9 @@ Use this type of boundary if you:
       a polygon over a map. Alternatively, we run a MapIt server for custom areas
       like this, so &mdash; especially if you are just doing this as a probationary
       trial, &mdash; we may be able to host this for you (note though that we do
-      rate-limit calls to MapIt). Either send us KML shape files, or an screenshot of
-      your map with the boundary drawn on it for us to copy.
+      rate-limit calls to MapIt). Either send us KML shape files, or if you can't
+      do that, maybe clear image of the map with the boundary drawn on it for us
+      to copy.
     </p>
     <p>
       In your <code>conf/general.yml</code>, you must set 
