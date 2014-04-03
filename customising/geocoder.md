@@ -6,24 +6,29 @@ author: matthew
 
 # How to customise the FixMyStreet geocoder
 
-<p class="lead">The first step of using FixMyStreet is entering a string
-that the needs to be <em>geocoded</em> to take you to a relevant map page.</p>
+<p class="lead">
+  The first step of using FixMyStreet is entering a string
+  that the needs to be <em>geocoded</em> to take you to a relevant map page.
+</p>
 
-See the diagram below for the full flow of using FixMyStreet - the
-geocoder is near the start of the process, before maps, MapIt or bodies
-enter the picture.
+See the diagram below for the full flow of using FixMyStreet. The geocoder is
+near the start of the process, before maps, MapIt boundaries or bodies enter
+the picture.
 
-The geocoder defaults to OpenStreetMap's Nominatim; FixMyStreet also contains
-Bing and Google based geocoders.
+The geocoder takes a string -- for example, the name of a place or a street --
+and converts it into a [lat-long]({{ site.baseurl }}glossary/#latlong) location.
+
+The geocoder defaults to OpenStreetMap's [Nominatim](http://nominatim.openstreetmap.org).
+FixMyStreet also contains Bing and Google based geocoders, and can use
+custom geocoders too.
 
 You can customise the geocoding by providing limiting parameters in
-`GEOCODING_DISAMBIGUATION`. The options vary depending which geocoder you use,
-or you can specify all for if you change geocoder. For the default
-OpenStreetMap geocoder, you can use the bounds, country, and town parameters.
-Bing adds centre, bing_culture, and bing_country, and with Google you have
-centre, span, google_country, and lang. See the `general.yml-example` file for
-more details. Note that these arguments are only as good at limiting results as
-the API that they are used by.
+<code><a href="{{ site.baseurl }}customising/config/#geocoding_disambiguation">GEOCODING_DISAMBIGUATION</a></code>.
+You typically need to do this so the geocoder only considers places in the area
+your FixMyStreet site is serving. For example, you may want to limit results to
+a specific country or city.
+
+The options vary [depending on which geocoder you use]({{ site.baseurl }}customising/config/#geocoding_disambiguation).
 
 ## Detailed flow: location &rarr; map pin &rarr; drop-down menu
 
