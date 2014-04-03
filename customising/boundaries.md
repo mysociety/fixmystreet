@@ -106,7 +106,7 @@ If you're not sure which is for you, read through the sections below.
 
 <a name="everywhere"> </a>
 
-### "Everywhere"
+## "Everywhere"
 
 This is the simplest boundary: it's infinte, so anywhere the user clicks is
 inside the area called "everywhere".
@@ -123,29 +123,38 @@ the map. This may be acceptable if you are limiting your
 <a href="{{site.baseurl }}/glossary/#geocoder" class="glosssary">geocoder</a>
 to a very specific area.
 
-#### How to set this up
-
-This is the default setup of a new FixMyStreet installation (if you used the 
-[installation script]({{ site.baseurl}}install/install-script) or the 
-[AMI install]({{ site.baseurl}}install/ami)). 
-
-Set 
-<code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
-to be blank, and set 
-<code><a href="{{ site.baseurl }}customising/config/#mapit_area_types">MAPIT_AREA_TYPES</a></code>
-to the special value `ZZZ`. FixMyStreet will use a fake MapIt that always
-returns "Everywhere" as the only area that contains the point &mdash; for any
-location.
-
-Your `conf/general.yml` file should contain this:
-
-    MAPIT_URL: ''
-    MAPIT_AREA_TYPES: ['ZZZ']
-    MAPIT_ID_WHITELIST: [ ]
+<dl class="reveal-on-click" data-reveal-noun="details">
+  <dt>
+    <h3>How to set this up</h3>
+  </dt>
+  <dd>
+    <p>
+      This is the default setup of a new FixMyStreet installation (if you used the 
+      <a href="{{ site.baseurl}}install/install-script">installation script</a> or the 
+      <a href="{{ site.baseurl}}install/ami">AMI install</a>).
+    </p>
+    <p>
+      Set
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
+      to be blank, and set 
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>
+      to the special value <code>ZZZ</code>. FixMyStreet will use a fake MapIt that always
+      returns "Everywhere" as the only area that contains the point &mdash; for any
+      location.
+    </p>
+    <p>
+      Your <code>conf/general.yml</code> file should contain this:
+    </p>
+<pre><code>MAPIT_URL: ''
+MAPIT_TYPES: ['ZZZ']
+MAPIT_ID_WHITELIST: [ ]
+</code></pre>
+  </dd>
+</dl>
  
 <a name="approx-area"> </a>
  
-### Simple approximate area
+## Simple approximate area
 
 Sometimes you just need a boundary to broadly determine if a pin in the map is
 too far away from the single area you're receiving reports for.
@@ -155,33 +164,40 @@ Use this type of boundary if you:
    * don't need an accurate boundary (for example, _"anything roughly near the town centre is OK"_)
    * do want to prevent problem reports for locations that are not within this area
 
-#### How to set this up
-
-You need to install your own MapIt instance, and add the area to that. The
-MapIt admin interface (which uses the Django framework) lets you click-and-draw
-a polygon over a map. Alternatively, we run a MapIt server for custom areas
-like this, so &mdash; especially if you are just doing this as a probationary
-trial, &mdash; we may be able to host this for you (note though that we do
-rate-limit calls to MapIt). Either send us KML shape files, or an screenshot of
-your map with the boundary drawn on it for us to copy.
-
-In your `conf/general.yml`, you must set 
-<code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
-to either your MapIt or
-our custom one, and set
-<code><a href="{{ site.baseurl }}customising/config/#mapit_area_types">MAPIT_AREA_TYPES</a></code>
-to the areas you want (the actual values will depend on what that particular
-Mapit is returning). You should also set 
-<code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
-to the ID of the single area you want.
-
-    MAPIT_URL: 'http://mapit.example.com'
-    MAPIT_AREA_TYPES: ['CITY']
-    MAPIT_ID_WHITELIST: [ 133 ]
+<dl class="reveal-on-click" data-reveal-noun="details">
+  <dt>
+    <h3>How to set this up</h3>
+  </dt>
+  <dd>
+    <p>
+      You need to install your own MapIt instance, and add the area to that. The
+      MapIt admin interface (which uses the Django framework) lets you click-and-draw
+      a polygon over a map. Alternatively, we run a MapIt server for custom areas
+      like this, so &mdash; especially if you are just doing this as a probationary
+      trial, &mdash; we may be able to host this for you (note though that we do
+      rate-limit calls to MapIt). Either send us KML shape files, or an screenshot of
+      your map with the boundary drawn on it for us to copy.
+    </p>
+    <p>
+      In your <code>conf/general.yml</code>, you must set 
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
+      to either your MapIt or our custom one, and set
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>
+      to the areas you want (the actual values will depend on what that particular
+      Mapit is returning). You should also set 
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
+      to the ID of the single area you want.
+    </p>
+    <pre><code>MAPIT_URL: 'http://mapit.example.com'
+MAPIT_TYPES: ['CITY']
+MAPIT_ID_WHITELIST: [ 133 ]
+</code></pre>
+  </dd>
+</dl>
 
 <a name="approx-areas"> </a>
 
-### Simple approximate areas
+## Simple approximate areas
 
 This is the same as the previous example, but shows that you can have multiple
 areas. This works best if they don't need to be very accurate &mdash; that is,
@@ -193,28 +209,34 @@ Use this type of boundary if you:
    * the boundaries don't adjoin, or are very simple (no crinkly edges)
    * do want to prevent problem reports for locations that are not within these areas
 
-#### How to set this up
-
-Same as previous example: either set up your own instance of MapIt, or ask to
-have your boundaries added to our custom one. If you want us to host it, we'll
-need KML shape files or a graphic showing the boundary clearly shown so we can
-copy it. 
-
-Note that now there may be more than one type of area, and you'll need to explicitly
-nominate every area you're interested in with
-<code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code> 
-(unless you want *all* the areas this MapIt returns for the given type, in
-which case you can set it to be empty).
-
-
-    MAPIT_URL: 'http://mapit.example.com'
-    MAPIT_AREA_TYPES: ['CITY', 'COUNTY']
-    MAPIT_ID_WHITELIST: [ 133, 145, 12, 80 ]
-
-
+<dl class="reveal-on-click" data-reveal-noun="details">
+  <dt>
+    <h3>How to set this up</h3>
+  </dt>
+  <dd>
+    <p>
+      Same as previous example: either set up your own instance of MapIt, or ask to
+      have your boundaries added to our custom one. If you want us to host it, we'll
+      need KML shape files or a graphic showing the boundary clearly shown so we can
+      copy it. 
+    </p>
+    <p>
+      Note that now there may be more than one type of area, and you'll need to explicitly
+      nominate every area you're interested in with
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code> 
+      (unless you want *all* the areas this MapIt returns for the given type, in
+      which case you can set it to be empty).
+    </p>
+    <pre><code>MAPIT_URL: 'http://mapit.example.com'
+MAPIT_TYPES: ['CITY', 'COUNTY']
+MAPIT_ID_WHITELIST: [ 133, 145, 12, 80 ]
+</code></pre>
+  </dd>
+</dl>
+  
 <a name="mysociety-mapit"> </a>
 
-### Accurate OpenStreetMap data
+## Accurate OpenStreetMap data
 
 It's possible that the admin boundaries of local government in your area are
 already available in the OpenStreetMap project. If this is the case,
@@ -226,110 +248,154 @@ that makes this data available.
 
 Use this type of boundary if:
 
-   * the boundary data for the areas you need are already on OpenStreetMap
+   * the boundary data for the areas you need is already on OpenStreetMap
 
-#### How determine if the boundary data is available
+<dl class="reveal-on-click" data-reveal-noun="details">
+  <dt>
+    <h3>How determine if the boundary data is available</h3>
+  </dt>
+  <dd>
+    <p>
+      Start by finding the <a href="{{ site.baseurl }}glossary/#latlong"
+      class="glossary">lat-long</a> of some of the places you want to cover,
+      and look them up on <a href="http://global.mapit.mysociety.org">global
+      MapIt</a> (or maybe the <a href="http://mapit.mysociety.org">UK one</a>).
+      If you see the "Areas covering this point" include the admin
+      boundaries you need, you're good to go! For example, here's
+      the <a
+      href="http://global.mapit.mysociety.org/point/4326/10.75,59.95.html">page
+      for Oslo, in Norway</a>.
+    </p>
+    <p>
+      Note that our MapIt servers' data may lag a little behind OSM, so
+      if it's not there, look on the
+      <a href="http://www.openstreetmap.org">OpenStreetMap website</a> just in
+      case it's been added since MapIt's last update. If so, let us
+      know, and we'll pull it in for you.
+    </p>
+    <p>
+      Here's an example of the steps to follow to find the data you need
+      to use global MapIt. This example uses Zurich as an example city.
+    </p>
+    <ol>
+      <li>
+        <p>
+          Go to <a href="http://nominamtim.openstreetmap.org">OpenStreetMap's
+          geocoder</a> and enter the name of the city, e.g., "Zurich,
+          Switzerland".
+        </p>
+      </li>
+      <li>
+        <p>
+          Check that's found the right place (and, if you want, check the map
+          is how you expected). Click on the <strong>details</strong> link just
+          below the name of the top hit. The details page lists lots of data,
+          including the centre point (lat/long values that will look something
+          like <code>-34.9059039,-56.1913569</code>).</p></li> <li><p>Go to <a
+          href="http://global.mapit.mysociety.org">global MapIt</a> and paste
+          those lat/long values into the text input.
+        </p>
+      </li>
+      <li>
+        <p>
+          MapIt will show you all the <a
+          href="http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html">admin boundaries</a>
+          that contain that point. You're interested in
+          the ones that relate to bodies that serve those areas. For example,
+          if a district council fixes the potholes in that district.
+          Specifically, you need the <strong>Administrative Boundary
+          Levels</strong> (which will look like <code>O04</code> or
+          <code>O05</code>), which are the values for your 
+          <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>.
+          Remember this data is boundary data from OpenStreetMap &mdash;
+          if the boundaries you need are not shown, you may have to set up your
+          own (described below). You can also click on any of the boundaries
+          listed on MapIt to see the areas they actually cover on the map.
+        </p>
+      </li>
+      <li>
+        <p>
+          The individual <em>area_id</em>s are also useful, because you put
+          them into the <code><a href="{{ site.baseur l}}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
+        </p>
+      </li>
+    </ol>
+  </dd>
+  <dt>
+    <h3>Using our MapIt servers: some restrictions</h3>
+  </dt>
+  <dd>
+    <p>
+      We run two public MapIt services: <a
+      href="http://mapit.mysociety.org">mapit.mysociety.org</a> covers the UK
+      (because that's where we're based, and it serves our own 
+      <a href="www.fixmystreet.com">UK FixMySteet</a> site), and 
+      <a href="http://global.mapit.mysociety.org">global.mapit.mysociety.org</a>,
+      which covers the whole world. The data we use for global MapIt is from
+      <a href="http://www.openstreetmap.org">OpenStreetMap</a>, so if someone has
+      put administrative boundary data for your country into OSM, before too
+      long global MapIt will have it too.
+    </p>
+    <p>
+      Please get in touch with us if you are expecting to generate a lot of
+      requests or <strong>if you are using it commercially</strong>. We
+      rate-limit calls to MapIt, so if your site gets really busy, you should
+      set up your own instance (we can help you, and the <a
+      href="http://github.com/mysociety/mapit">code is on github</a>). But when
+      you're setting your site up to begin with, you can usually get it running
+      using one of our MapIt servers.
+    </p>
+  </dd>
+  <dt>
+    <h3>How to set this up</h3>
+  </dt>
+  <dd>
+    <p>
+      In your <code>conf/general.yml</code> file, point 
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
+      at the global MapIt server.
+    </p>
+    <p>
+      Find the areas you need by looking on the
+      <a href="http://global.mapit.mysociety.org">global Mapit website</a> or the
+      <a href="http://mapit.mysociety.org">UK one</a>. You must also nominate
+      the types of area these are (effectively the <em>level</em> of admin
+      boundary it is. On global, the area types look something like <code>[
+      'O05', 'O06' ]</code>. (Note those contain capital letter O followed by
+      digits). To determine what types you need, look for the codes marked
+      &#8220;Administrative Boundary Levels&#8221; that MapIt returns &mdash;
+      for example, here's 
+      <a href="http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html">global
+      MapIt's data for Zurich</a>.
+    </p>
+    <p>
+      The UK Mapit types are different. For example, for UK FixMyStreet, we use:
+    </p>
+<pre><code>MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
+</code></pre>
+    <p>
+      which covers all the UK council types (for example, <code>DIS</code> is district council,
+      <code>CTY</code> is county council).
+    </p>
+    <p>
+      Finally, limit your installation to the specific areas you're interested
+      in (otherwise you'll be getting areas from the whole world). Identify the
+      specific areas you want to use, and list them explicitly in
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>:
+    </p>
+<pre><code>MAPIT_URL: 'http://global.mapit.mysociety.org'
+MAPIT_TYPES: ['O06','O07']
+MAPIT_ID_WHITELIST: ['12345','345432','978638']
+</code></pre>
 
-Start by finding the <a
-href="{{ site.baseurl }}glossary/#latlong" class="glossary">lat-long</a> of
-some of the places you want to cover, and look them up on [global
-MapIt](http://global.mapit.mysociety.org) (or maybe the
-[UK one](http://mapit.mysociety.org)). If you see the "Areas covering this
-point" include the admin boundaries you need, you're good to go! For example,
-here's the [page for Oslo, in Norway](http://global.mapit.mysociety.org/point/4326/10.75,59.95.html).
 
-Note that our MapIt servers' data may lag a little behind OSM, so if it's not
-there, look on the [OpenStreetMap website](http://www.openstreetmap.org) just
-in case it's been added since MapIt's last update. If so, let us know, and
-we'll pull it in for you.
+  </dd>
 
-Here's an example of the steps to follow to find the data you need to use
-global MapIt. This example uses Zurich as an example city.
-
-1. Go to [OpenStreetMap's geocoder](http://nominamtim.openstreetmap.org) and
-   enter the name of the city, e.g., "Zurich, Switzerland".
-
-2. Check that's found the right place (and, if you want, check the map is how
-   you expected). Click on the **details** link just below the name of the top
-   hit. The details page lists lots of data, including the centre point
-   (lat/long values that will look something like `-34.9059039,-56.1913569`).
-
-3. Go to [global MapIt](http://global.mapit.mysociety.org) and paste those
-   lat/long values into the text input.
-
-4. MapIt will show you all the
-   [admin boundaries](http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html)
-   that contain that point. You're interested in the ones that relate to
-   bodies that serve those areas. For example, if a district council fixes the
-   potholes in that district. Specifically, you need the **Administrative
-   Boundary Levels** (which will look like `O04` or `O05`), which are the
-   values for your 
-   <code><a href="{{ site.baseurl }}customising/config/#mapit_area_types">MAPIT_AREA_TYPES</a></code>.
-   Remember this data is boundary data from OpenStreetMap -- if the boundaries you
-   need are not shown, you may have to set up your own (described below). You can
-   also click on any of the boundaries listed on MapIt to see the areas they
-   actually cover on the map.
-
-5. The individual *area_id*s are also useful, because you put them into the
-   <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
-
-#### Using our MapIt servers: some restrictions
-
-We run two public MapIt services:
-[mapit.mysociety.org](http://mapit.mysociety.org) covers the UK (because
-that's where we're based, and it serves our own [UK
-FixMySteet](www.fixmystreet.com) site), and
-[global.mapit.mysociety.org](http://global.mapit.mysociety.org), which covers
-the whole world. The data we use for global MapIt is from
-[OpenStreetMap](http://www.openstreetmap.org), so if someone has put
-administrative boundary data for your country into OSM, before too long global
-MapIt will have it too.
-
-Please get in touch with us if you are expecting to generate a lot of requests
-or **if you are using it commercially**. We rate-limit calls to MapIt, so if
-your site gets really busy, you should set up your own instance (we can help
-you, and the [code is on github](http://github.com/mysociety/mapit)). But when
-you're setting your site up to begin with, you can usually get it running using
-one of our MapIt servers.
-
-
-#### How to set this up
-
-In your `conf/general.yml` file, point 
-<code><a href="{{ site.baseurl }}customising/config/#mapit_url">MAPIT_URL</a></code>
-at the global MapIt server.
-
-Find the areas you need by looking on the [global Mapit
-website](http://global.mapit.mysociety.org) or the
-[UK one](http://mapit.mysociety.org). You must also nominate the types
-of area these are (effectively the *level* of admin boundary it is. On global,
-the area types look something like `[ 'O05', 'O06' ]`. (Note those contain
-capital letter O followed by digits). To determine what types you need, look
-for the codes marked "Administrative Boundary Levels" that MapIt returns -- for
-example, here's [global MapIt's data for
-Zurich](http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html).
-
-
-The UK Mapit types are different. For example, for UK FixMyStreet, we use:
-
-    [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
-
-which covers all the UK council types (for example, `DIS` is district council,
-`CTY` is county council). 
-
-Finally, limit your installation to the specific areas you're interested in
-(otherwise you'll be getting areas from the whole world). Identify the specific
-areas you want to use, and list them explicitly in
-<code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a>:
-
-    MAPIT_URL: 'http://global.mapit.mysociety.org'
-    MAPIT_AREA_TYPES: ['O06','O07']
-    MAPIT_ID_WHITELIST: ['12345','345432','978638']
-
-
+</dl>
+   
 <a name="accurate"> </a>
 
-### Accurate data that isn't on OSM
+## Accurate data that isn't on OSM
 
 Use this type of boundary if:
 
@@ -343,24 +409,28 @@ This means you have to source the data yourself -- either by getting your local
 government to release it, or else drawing it yourself. Then you need to import
 this data into a MapIt server and use that.
 
-#### How to set this up
+<dl class="reveal-on-click" data-reveal-noun="details">
+  <dt>
+    <h3>How to set this up</h3>
+  </dt>
+  <dd>
+    <p>Ideally, if you can source the data from your local government (which means
+    it&#8217;s definitive), then it&#8217;s great if you can add it (as admin boundary data) to
+    the OpenStreetMap project. Our global MapIt will subsequently import it and
+    your FixMyStreet can then use it as described in the previous example. If
+    you&#8217;re going to do that, <strong>the data must be open data</strong> and you should probably
+    ask about it on the
+    <a href="http://lists.openstreetmap.org/listinfo/imports">OSM import list</a> first. Of
+    course, if you do this, it means anyone else in the world can use it too, if
+    they want.</p>
 
-Ideally, if you can source the data from your local government (which means
-it's definitive), then it's great if you can add it (as admin boundary data) to
-the OpenStreetMap project. Our global MapIt will subsequently import it and
-your FixMyStreet can then use it as described in the previous example. If
-you're going to do that, **the data must be open data** and you should probably
-ask about it on the
-[OSM import list](http://lists.openstreetmap.org/listinfo/imports) first. Of
-course, if you do this, it means anyone else in the world can use it too, if
-they want.
-
-But if you can't do that, or the boundary data you have is not definitive, you
-can create your own. Use any good GIS software to plot the boundaries
-accurately, and then export it as KML shape files. MapIt can import these, so
-you can then either run your own MapIt instance, or ask us to add it to our
-custom one.
-
+    <p>But if you can&#8217;t do that, or the boundary data you have is not definitive, you
+    can create your own. Use any good GIS software to plot the boundaries
+    accurately, and then export it as KML shape files. MapIt can import these, so
+    you can then either run your own MapIt instance, or ask us to add it to our
+    custom one.</p>
+  </dd>
+</dl>
 
 ## Can you see the boundaries?
 
