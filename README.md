@@ -15,7 +15,7 @@ installed (you probably do).
 gem install --no-document --user-install github-pages
 # Add ~/.gem/ruby/2.0.0/bin/ or similar to your $PATH
 # Check you can run "jekyll"
-git clone -b gh-pages https://github.com/mysociety/fixmystreet fixmystreet-pages
+git clone --recursive -b gh-pages https://github.com/mysociety/fixmystreet fixmystreet-pages
 cd fixmystreet-pages
 ```
 
