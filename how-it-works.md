@@ -144,11 +144,18 @@ If you want to get FixMyStreet up and running, this is what you need to do:
   </dd>
 </dl>
 
-Still interested? Read 
-[Can We Fix It?]({{ site.baseurl }}The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf),
-a document we've written to describe in more detail how and why FixMyStreet
-works as well as it does.
+<!-- NB duplicated from /overview -->
+We've written a clear guide for anyone who's thinking about [setting up and
+running FixMyStreet]({{ site.baseurl }}The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). Anyone
+thinking of running such a project **must** read it first -- it explains why
+these sites work, and what you need to think about before you start.
 
-And remember... we can help! If you're trying to set this up somewhere outside the UK,
-email [international@mysociety.org](mailto://international@mysociety.org) and tell us
-all about it.
+If you're thinking of getting involved, we welcome questions about how it
+works [on our mailing
+list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
+Or, if you're outside the UK, email
+<a href="mailto:international@mysociety.org">international@mysociety.org.</a>
+
+There's also the [FixMyStreet blog](blog/) where we post version release
+information and other progress reports. And we often post FixMyStreet news on
+the <a href="http://www.mysociety.org/blog">mySociety blog</a> too.

@@ -70,6 +70,7 @@ deploy, customise, and run in locations all over the world.
 Could your location use a FixMyStreet site?
 -------------------------------------------
 
+<!-- NB duplicated this in how-it-works.md too -->
 We've written a clear guide for anyone who's thinking about [setting up and
 running FixMyStreet]({{ site.baseurl }}The-FixMyStreet-Platform-DIY-Guide-v1.1.pdf). Anyone
 thinking of running such a project **must** read it first -- it explains why
