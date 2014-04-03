@@ -11,17 +11,20 @@ run a site in multiple languages. <strong>Work in progress.</strong></p>
 
 ## Setup
 
-The translations for most FixMyStreet strings are stored as standard gettext
+The translations for most FixMyStreet strings are stored as standard 
+<a href="{{ site.baseurl }}glossary/#gettext" class="glossary">gettext</a>
 files, in `FixMyStreet.po` files under `locale/<lang>/LC_MESSAGES/`. A
 few full pages, such as the FAQ, and emails, are stored separately in the
 templates directory and should be translated by creating new templates in your
 cobrand.
 
 
-Firstly, set the `LANGUAGES` configuration option to the languages your site
-uses. This is an array of strings specifying what language or languages your
-installation uses. For example, if your site is available in English, French,
-and German, you would have:
+Firstly, set the
+<code><a href="{{ site.baseurl }}customising/config/#languages">LANGUAGES</a></code>
+configuration option to the languages your site uses. This is an array of
+strings specifying what language or languages your installation uses. For
+example, if your site is available in English, French, and German, you would
+have:
 
     LANGUAGES:
         - 'en-gb,English,en_GB'
@@ -54,6 +57,6 @@ or translate the `.po` files directly using a local program such as
 [PoEdit](http://www.poedit.net/).
 
 The templates use the `loc` function to pass strings to gettext for
-translation. If you create or update a .po file, you will need to run the
+translation. If you create or update a `.po` file, you will need to run the
 `commonlib/bin/gettext-makemo` script to compile these files into the machine
 readable format used by the site.

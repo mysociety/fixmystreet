@@ -33,6 +33,7 @@ technical information, see
   <li><a href="#dashboard">dashboard</a></li>
   <li><a href="#flagged">flagged</a></li>
   <li><a href="#geocoder">geocoder</a></li>
+  <li><a href="#gettext">gettext</a></li>
   <li><a href="#git">git</a></li>
   <li><a href="#integration">integration</a></li>
   <li><a href="#latlong">lat-long</a></li>
@@ -422,6 +423,32 @@ technical information, see
         <li>
           See <a href="/customising/fms_and_mapit">How FixMyStreet uses
           MapIt</a> for more about how the geocoder is used.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="gettext">gettext</a>
+  </dt>
+  <dd>
+    <strong>gettext</strong> is a set of utitlies provided by the GNU project
+    to help get translations into software. We use it throughout FixMyStreet
+    so that anywhere English text appears (the default), it can be replaced
+    with an appropriate translation in a different language. This presupposes
+    the text has been translated &mdash; the alternative translations are 
+    storied in <code>.po</code> files.
+    </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          More about <a href="{{ site.baseurl }}customising/language/">translating
+          FixMyStreet</a>.
+        </li>
+        <li>
+          See the <a href="http://www.gnu.org/software/gettext/">GNU gettext page</a>
+          for more about the project.
         </li>
       </ul>
     </div>
