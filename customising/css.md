@@ -17,20 +17,20 @@ The CSS is stored in `web/cobrands/` under which there are directories for
 Cobrands. Note that FixMyStreet uses SCSS and Compass to generate its CSS so
 there are no CSS files until `bin/make_css` has been run.
 
-The CSS provided with FixMyStreet uses CSS3 media queries in a mobile first
+The CSS provided with FixMyStreet uses CSS3 media queries in a mobile-first
 format order to adapt the layout to work on different devices. It is structured
 into these main files:
 
-* base.css -
-This contains all the styling for the content of the pages in a mobile sized browser.
-* layout.css -
-This contains all the styling for the content of the pages in a desktop sized browser.
-* \_colours.css -
-This contains basic colour information, so you can easily make a site that
-looks different simply by copying these files to your own cobrand CSS
-directory, and changing the colours, as we will describe below.
-* config.rb -
-This is the config script used by compass
+* `base.css` --
+  all the styling for the content of the pages in a mobile sized browser.
+* `layout.css` --
+  all the styling for the content of the pages in a desktop sized browser.
+* `\_colours.css` --
+  basic colour information, so you can easily make a site that
+  looks different simply by copying these files to your own cobrand CSS
+  directory, and changing the colours, as we will describe below.
+* `config.rb` --
+  the config script used by compass
 
 Our `.gitignore` file assumes that any CSS files directly in a `cobrands/*`
 directory are generated from SCSS - if you have CSS files that you want to use
@@ -104,22 +104,18 @@ it's FixMyStreet's internal name for it.
 
 You need to tell FixMyStreet to use your cobrand instead of the default one.
 
-FixMyStreet uses the `ALLOWED_COBRANDS` <a href="glossary/#config-variable"
-class="glossary">config variable</a> to decide which cobrand to use.
-
-In `conf/general.yml`, change `ALLOWED_COBRANDS` to include just one entry,
-with your new cobrand like this:
+FixMyStreet uses the 
+<code><a href="{{ site.baseurl }}customising/config/#allowed_cobrands">ALLOWED_COBRANDS</a></code>
+config variable to decide which cobrand to use. In `conf/general.yml`, set it to your new cobrand like this:
 
     ALLOWED_COBRANDS:
       - fixmypark
 
-In fact, `ALLOWED_COBRANDS` is a little more complex that it looks. If you give
-it a list of cobrands, it will decide which one to use depending on string
-matches on the incoming URL *for every request* (see the explanation about
-[ALLOWED_COBRANDS in the config
-file](https://github.com/mysociety/fixmystreet/blob/master/conf/general.yml-exam
-ple#L123) for details). But for most cases you don't want it to switch. So if
-you just specify just one cobrand like this, FixMyStreet will simply use it.
+In fact, `ALLOWED_COBRANDS` is 
+[a little more complex that it looks]({{ site.baseurl }}customising/config/#allowed_cobrands).
+If you give it a list of cobrands, it will decide which one to use depending on string
+matches on the incoming URL *for every request*  But for most cases you don't want it to switch.
+So if you just specify just one cobrand like this, FixMyStreet will simply use it.
 
 ### Create a directory for your cobrand in web/cobrands
 
@@ -159,8 +155,8 @@ Be careful: if you're not familiar with SCSS, the syntax of that file is a
 little strict. Typically, those colours *must* always be either exactly three
 or six hex characters long. And there must be a `#` before and a semicolon after each one.
 
-These are the colours which you can easily change within the existing (default)
-stylesheet.
+These are the colours which you can easily change within your copy of the
+stylesheet:
 
 <table class="table">
     <tr>
