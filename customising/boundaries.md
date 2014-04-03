@@ -174,9 +174,9 @@ Use this type of boundary if you:
       MapIt admin interface (which uses the Django framework) lets you click-and-draw
       a polygon over a map. Alternatively, we run a MapIt server for custom areas
       like this, so &mdash; especially if you are just doing this as a probationary
-      trial, &mdash; we may be able to host this for you (note though that we do
+      trial &mdash; we may be able to host this for you (note though that we do
       rate-limit calls to MapIt). Either send us KML shape files, or if you can't
-      do that, maybe clear image of the map with the boundary drawn on it for us
+      do that, maybe a clear image of the map with the boundary drawn on it for us
       to copy.
     </p>
     <p>
