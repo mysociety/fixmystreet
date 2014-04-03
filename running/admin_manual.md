@@ -10,7 +10,7 @@ author: dave
 <p class="lead">What is it like running a FixMyStreet site? This guide
 explains what you can expect, and the types of problem that you might
 encounter. It includes examples of how mySociety manages their own site, <a
-href="http://www.fixmystreet.com">fixmystreet.com</a>.</p>
+href="http://www.fixmystreet.com/">fixmystreet.com</a>.</p>
 
 ## About this document
 
@@ -39,13 +39,13 @@ questions as you need to.
   the information about [customising your site](/customising) too.
 
 * This guide is just one of several useful pages for <a
-  href="/glossary/#administrator" class="glossary">administrators</a> in the
+  href="{{ site.baseurl }}glossary/#administrator" class="glossary">administrators</a> in the
   section about [running FixMyStreet](/running). This document is the most
   general, so is a good place to start.
 
 ## Find your administrator
 
-Every FixMyStreet site needs an <a href="/glossary/#administrator"
+Every FixMyStreet site needs an <a href="{{ site.baseurl }}glossary/#administrator"
 class="glossary">administrator</a>. Even when the site is running smoothly,
 your users will need help, and there will be regular administrative tasks to
 perform. So, sooner rather than later, you will need to think about who will
@@ -68,7 +68,7 @@ developer** and **one administrator** who can work on the site.
 
 At the beginning you'll be quite busy. You'll be doing a lot of things, like
 customising your site, collecting the email addresses your users' <a
-href="/glossary/#report" class="glossary">problem reports</a> will be sent to,
+href="{{ site.baseurl }}glossary/#report" class="glossary">problem reports</a> will be sent to,
 and perhaps promoting your project.
 
 **Once your site is up and running**, you can manage with just **one
@@ -119,11 +119,11 @@ The Admin interface is divided into the following sections. You can access
 them by clicking on the link at the top of any admin page:
 
 * **Summary page** <br/> The summary page shows the number of live <a
-  href="/glossary/#report" class="glossary">reports</a>, <a
-  href="/glossary/#update" class="glossary">updates</a>, <a
-  href="/glossary/#alert" class="glossary">alerts</a>, sent
-  <a href="/glossary/#survey" class="glossary">questionnaires</a> and
-  bodies' <a href="/glossary/#contact" class="glossary">contacts</a>.
+  href="{{ site.baseurl }}glossary/#report" class="glossary">reports</a>, <a
+  href="{{ site.baseurl }}glossary/#update" class="glossary">updates</a>, <a
+  href="{{ site.baseurl }}glossary/#alert" class="glossary">alerts</a>, sent
+  <a href="{{ site.baseurl }}glossary/#survey" class="glossary">questionnaires</a> and
+  bodies' <a href="{{ site.baseurl }}glossary/#contact" class="glossary">contacts</a>.
 
   <p>
     This page is useful when the media ask how many reports your site has
@@ -131,7 +131,7 @@ them by clicking on the link at the top of any admin page:
     to official bodies.
   </p>
 
-* **Bodies** <br/> <a href="/glossary/#body" class="glossary">Bodies</a> are the
+* **Bodies** <br/> <a href="{{ site.baseurl }}glossary/#body" class="glossary">Bodies</a> are the
   authorities that your site sends reports to. Each body has its own page in
   the admin, listing the categories of problem that they accept (eg, potholes,
   street lights, etc) and the email address associated with the category.
@@ -139,15 +139,15 @@ them by clicking on the link at the top of any admin page:
   <p>
     Bodies sometimes change their email addresses, and dealing with this is a
     regular task for an administrator. You can add or edit bodies from these
-    pages. You can also add or edit their <a href="/glossary/#category"
-    class="glossary">categories</a> and <a href="/glossary/#contact"
+    pages. You can also add or edit their <a href="{{ site.baseurl }}glossary/#category"
+    class="glossary">categories</a> and <a href="{{ site.baseurl }}glossary/#contact"
     class="glossary">contact</a> email addresses. Bodies are associated with
-    one or more <a href="/glossary/#area" class="glossary">areas</a>. <a
-    href="/running/bodies_and_contacts">More information on bodies</a>.
+    one or more <a href="{{ site.baseurl }}glossary/#area" class="glossary">areas</a>. <a
+    href="{{ site.baseurl }}running/bodies_and_contacts/">More information on bodies</a>.
   </p>
 
 * **Reports** <br/> The reports page lets you search for, and edit <a
-  href="/glossary/#report" class="glossary">problem reports</a> and updates.
+  href="{{ site.baseurl }}glossary/#report" class="glossary">problem reports</a> and updates.
 
   <p>
     You will need to do this often - for example, when a user has emailed to
@@ -172,7 +172,7 @@ them by clicking on the link at the top of any admin page:
   updates, status changes, and so on.
 
 * **Survey** <br/> By default, FixMyStreet sends out <a
-  href="/glossary/#survey" class="glossary">surveys</a> (also called
+  href="{{ site.baseurl }}glossary/#survey" class="glossary">surveys</a> (also called
   questionnaires) to users four weeks after they reported a problem.
 
   <p>
@@ -184,13 +184,13 @@ them by clicking on the link at the top of any admin page:
   <p>
     If you don't want your FixMyStreet site to send out surveys, you can
     switch off this behaviour in a <a
-    href="/customising/cobrand-module/">cobrand module</a>.
+    href="{{ site.baseurl }}customising/cobrand-module/">cobrand module</a>.
   </p>
 
 * **Users** <br/> You can [manage users](/running/users) from this section.
-  For example you can edit a <a href="/glossary/#user-account">user's</a>
-  email address, or <a href="/glossary/#flagged" class="glossary">flag</a> or
-  <a href="/glossary/#abuse-list" class="glossary">ban</a> or abusive one.
+  For example you can edit a <a href="{{ site.baseurl }}glossary/#user-account">user's</a>
+  email address, or <a href="{{ site.baseurl }}glossary/#flagged" class="glossary">flag</a> or
+  <a href="{{ site.baseurl }}glossary/#abuse-list" class="glossary">ban</a> or abusive one.
 
   <p>
     Each user has an individual page in the admin, and it is sometimes quicker
@@ -203,23 +203,23 @@ them by clicking on the link at the top of any admin page:
     this page.
   </p>
 
-* **Flagged** <br/> You can <a href="/glossary/#flag"
+* **Flagged** <br/> You can <a href="{{ site.baseurl }}glossary/#flag"
   class="glossary">flag</a> any report or user. This does not <a
-  href="/glossary/#abuse-list" class="glossary">ban</a> the user or delete the
+  href="{{ site.baseurl }}glossary/#abuse-list" class="glossary">ban</a> the user or delete the
   report - it is just a way of marking a person or a situation as potentially
   troublesome. Note that you can only flag a report or user from the report
   or page.
 
   <p>
     This can be useful if your team has more than one <a
-    href="/glossary/#administrator" class="glossary">administrator</a>. <a
-    href="/running/users">More information about managing users</a>.
+    href="{{ site.baseurl }}glossary/#administrator" class="glossary">administrator</a>. <a
+    href="{{ site.baseurl }}running/users/">More information about managing users</a>.
   </p>
 
 * **Stats** <br/> The stats page lets you analyse the number and types of <a
-  href="/glossary/#report" class="glossary">report</a> over a particular date
+  href="{{ site.baseurl }}glossary/#report" class="glossary">report</a> over a particular date
   range. Optionally, you can restrict it to report on a single <a
-  href="/glossary/#body" class="glossary">body</a>.
+  href="{{ site.baseurl }}glossary/#body" class="glossary">body</a>.
 
   <p>
     You might use this if you want to know how many reports have been sent
@@ -231,8 +231,8 @@ them by clicking on the link at the top of any admin page:
 
 ## Report states
 
-A <a href="/glossary/#report" class="glossary">problem report</a> can be in
-one of these <a href="/glossary/#state" class="glossary">states</a>:
+A <a href="{{ site.baseurl }}glossary/#report" class="glossary">problem report</a> can be in
+one of these <a href="{{ site.baseurl }}glossary/#state" class="glossary">states</a>:
 
 <dl class="reveal-on-click" data-reveal-noun="report states">
   <dt>
@@ -253,7 +253,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
         its creator was already logged in when the report was created, or
       </li>
       <li>
-        an <a href="/glossary/#administrator"
+        an <a href="{{ site.baseurl }}glossary/#administrator"
         class="glossary">administrator</a> confirms it (by searching in
         <strong>Reports</strong> and changing the state by clicking
         <strong>edit</strong>).
@@ -268,7 +268,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
       An <em>open</em> report is one that has not been fixed or closed. This
       generally means that the body has not yet attended to the problem. Also,
       this implies that the report is not <em>unconfirmed</em> (see above). <a
-      href="/glossary/#staff-user" class="glossary">Staff users</a> can set
+      href="{{ site.baseurl }}glossary/#staff-user" class="glossary">Staff users</a> can set
       problems to have alternative "open" states:
     </p>
     <ul>
@@ -294,15 +294,15 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
       <li>
         <em>fixed - user</em>
         <br>
-        If a user marks them as fixed in an <a href="/glossary/#update"
+        If a user marks them as fixed in an <a href="{{ site.baseurl }}glossary/#update"
         class="glossary">update</a>, or (for the report creator only) as part
-        of the process of answering the 4-week <a href="/glossary/#survey"
+        of the process of answering the 4-week <a href="{{ site.baseurl }}glossary/#survey"
         class="glossary">survey</a>.
       </li>
       <li>
         <em>fixed - council</em>
         <br>
-        If updated by a <a href="/glossary/#staff-user" class="glossary">staff
+        If updated by a <a href="{{ site.baseurl }}glossary/#staff-user" class="glossary">staff
         user</a> from the body responsible for that report.
       </li>
     </ul>
@@ -312,9 +312,9 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
   </dt>
   <dd>
     <p>
-      A <a href="/glossary/#staff-user" class="glossary">staff user</a>
+      A <a href="{{ site.baseurl }}glossary/#staff-user" class="glossary">staff user</a>
       associated with the report's body (or an <a
-      href="/glossary/#administrator" class="glossary">administrator</a>) can
+      href="{{ site.baseurl }}glossary/#administrator" class="glossary">administrator</a>) can
       mark a report as <em>closed</em> without declaring it to be
       <em>fixed</em>. Possible states are:
     </p>
@@ -330,10 +330,10 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
   </dt>
   <dd>
     <p>
-      Reports can be hidden by an <a href="/glossary/#administrator"
+      Reports can be hidden by an <a href="{{ site.baseurl }}glossary/#administrator"
       class="glossary">administrator</a>, or (if the <a
-      href="/glossary/cobrand" class="glossary">cobrand</a> allows it) by a <a
-      href="/glossary/#staff-user" class="glossary">staff user</a> associated
+      href="{{ site.baseurl }}glossary/cobrand" class="glossary">cobrand</a> allows it) by a <a
+      href="{{ site.baseurl }}glossary/#staff-user" class="glossary">staff user</a> associated
       with the body to which it was sent.
     </p>
     <p>
@@ -344,7 +344,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
     </p>
     <p>
       Remember that a hidden report will probably have been sent to the <a
-      href="/glossary/#body" class="glossary">body</a> responsible (so it can
+      href="{{ site.baseurl }}glossary/#body" class="glossary">body</a> responsible (so it can
       still be fixed) &mdash; hiding a report simply prevents it being displayed.
     </p>
   </dd>
@@ -353,7 +353,7 @@ one of these <a href="/glossary/#state" class="glossary">states</a>:
 ## Types of Tasks
 
 There are two main types of tasks for FixMyStreet <a
-href="/glossary/#administrator" class="glossary">administrators</a>.
+href="{{ site.baseurl }}glossary/#administrator" class="glossary">administrators</a>.
 
 * **Maintenance** tasks can be fixed through the FixMyStreet admin interface.
 
@@ -368,12 +368,12 @@ experience with the UK site.
   </dt>
   <dd>
     <p>
-      When FixMyStreet sends a <a href="/glossary/#report"
-      class="glossary">problem report</a> to the <a href="/glossary/#body"
+      When FixMyStreet sends a <a href="{{ site.baseurl }}glossary/#report"
+      class="glossary">problem report</a> to the <a href="{{ site.baseurl }}glossary/#body"
       class="glossary">body</a> responsible, sometimes that email bounces
-      back. This usually means the <a href="/glossary/#contact"
+      back. This usually means the <a href="{{ site.baseurl }}glossary/#contact"
       class="glossary">contact</a> email address you've got for that body (and
-      that <a href="/glossary/#category" class="glossary">category</a>) is
+      that <a href="{{ site.baseurl }}glossary/#category" class="glossary">category</a>) is
       wrong, or has changed.
     </p>
     <p>
@@ -552,9 +552,9 @@ FixMyStreet site.
   <dd>
     <p>
       In the UK, it's common for each body to have multiple <a
-      href="/glossary/#contact" class="glossary">contacts</a> (usually email
+      href="{{ site.baseurl }}glossary/#contact" class="glossary">contacts</a> (usually email
       addresses) &mdash; for more information, see <a
-      href="/running/bodies_and_contacts">About bodies and contacts</a>. Your
+      href="{{ site.baseurl }}running/bodies_and_contacts/">About bodies and contacts</a>. Your
       site may be the same.
     </p>
     <p>
@@ -598,11 +598,11 @@ FixMyStreet site.
      queries directly on the database.
     </p>
     <p>
-      <a href="/glossary#staff-user" class="glossary">Staff users</a> can see
-      the <a href="/glossary#dashboard" class="glossary">dashboard</a> for
+      <a href="{{ site.baseurl }}glossary#staff-user" class="glossary">Staff users</a> can see
+      the <a href="{{ site.baseurl }}glossary#dashboard" class="glossary">dashboard</a> for
       their own body by going to <code>/dashboard</code> when they are logged
       into the public site. If they don't have a staff user set up, offer to
-      do this for them: see <a href="/running/users/">managing users</a>.
+      do this for them: see <a href="{{ site.baseurl }}running/users/">managing users</a>.
     </p>
   </dd>
   <dt>
@@ -733,11 +733,11 @@ FixMyStreet site.
   </dt>
   <dd>
     <p>
-      FixMyStreet constructs the list of <a href="/glossary/#category"
+      FixMyStreet constructs the list of <a href="{{ site.baseurl }}glossary/#category"
       class="glossary">categories</a> of report (for example, "Pothole" or
       "Graffiti") based on what services the body (or bodies) <em>in that <a
-      href="/glossary/#area" class="glossary">area</a></em> provide. See <a
-      href="/running/bodies_and_contacts/">Managing bodies and contacts</a> to
+      href="{{ site.baseurl }}glossary/#area" class="glossary">area</a></em> provide. See <a
+      href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and contacts</a> to
       see how this works.
     </p>
     <p>
@@ -758,7 +758,7 @@ FixMyStreet site.
     </p>
     <p>
       To understand more about about this, see <a
-      href="/running/bodies_and_contacts/">Managing bodies and contacts</a>.
+      href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and contacts</a>.
     </p>
   </dd>
   <dt>
@@ -778,7 +778,7 @@ FixMyStreet site.
     <p>
       This problem may indicate that the boundary data you are using is either
       incorrect, or not accurate enough &mdash; for more information, see <a
-      href="/customising/fms_and_mapit/">How FixMyStreet uses MapIt</a>.
+      href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses MapIt</a>.
     </p>
   </dd>
   <dt>
@@ -807,7 +807,7 @@ FixMyStreet site.
   <dd>
     <p>
       Your FixMyStreet installation will normally be using maps from an
-      external source &mdash; by default this is <a href="/glossary/#openstreetmap"
+      external source &mdash; by default this is <a href="{{ site.baseurl }}glossary/#openstreetmap"
       class="glossary">OpenStreetMap</a>.
     </p>
     <p>
@@ -959,6 +959,6 @@ We wish you all the best with your FixMyStreet problem reporting site.
 
 If you're running an installation outside the UK please let us know by
 emailing international@mysociety.org. If you have any questions, don't
-hesitate to <a href="/community">contact us</a> and we'll get back to you as
+hesitate to <a href="{{ site.baseurl }}community/">contact us</a> and we'll get back to you as
 soon as possible with an answer.
 

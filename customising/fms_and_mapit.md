@@ -6,11 +6,11 @@ author: dave
 
 # How FixMyStreet assigns reports to bodies
 
-<p class="lead">When you add a <a href="/glossary/#body" class="glossary">body</a> toFixMyStreet,
-you specify which <a href="/glossary/#area" class="glossary">areas</a> it
+<p class="lead">When you add a <a href="{{ site.baseurl }}glossary/#body" class="glossary">body</a> toFixMyStreet,
+you specify which <a href="{{ site.baseurl }}glossary/#area" class="glossary">areas</a> it
 covers. The areas are typically defined by administrative boundaries: these
 are <em>not</em> part of FixMyStreet, but are made available through our
-service called <a href="/glossary/#mapit" class="glossary">MapIt</a>. </p>
+service called <a href="{{ site.baseurl }}glossary/#mapit" class="glossary">MapIt</a>. </p>
 
 Note that MapIt tells FixMyStreet what administrative boundaries a point lies
 within: it does not actually draw the maps (by default, FixMyStreet uses
@@ -18,12 +18,12 @@ OpenStreetMap for that).
 
 ## How this works
 
-When someone places a pin on the FixMyStreet <a href="/glossary/#map" class="glossary">map</a> to report a problem,
-FixMyStreet sends the <a href="/glossary/#latlong" class="glossary">lat-long</a> coordinates of that position to MapIt. MapIt
+When someone places a pin on the FixMyStreet <a href="{{ site.baseurl }}glossary/#map" class="glossary">map</a> to report a problem,
+FixMyStreet sends the <a href="{{ site.baseurl }}glossary/#latlong" class="glossary">lat-long</a> coordinates of that position to MapIt. MapIt
 responds with a list of the areas that the pin lies within. FixMyStreet then
 looks in its own database to find all the bodies that cover that area, and the
-<a href="/glossary/#contact" class="glossary">contacts</a> (which are usually email addresses) that you have added for each of
-those bodies. Because each contact is associated with a <a href="/glossary/#category" class="glossary">category</a> of problem
+<a href="{{ site.baseurl }}glossary/#contact" class="glossary">contacts</a> (which are usually email addresses) that you have added for each of
+those bodies. Because each contact is associated with a <a href="{{ site.baseurl }}glossary/#category" class="glossary">category</a> of problem
 (for example, "Potholes" or "Graffiti"), FixMyStreet can build a list of all
 the problem categories that *can* be reported at this location. In fact, this
 list appears as the drop-down menu ("Pick a category") on the report-a-problem
@@ -35,7 +35,7 @@ world.
 
 ## Detailed flow: location &rarr; map pin &rarr; drop-down menu
 
-![FMS bodies and contacts](/assets/img/fms_bodies_and_contacts.png)
+![FMS bodies and contacts]({{ site.baseurl }}/assets/img/fms_bodies_and_contacts.png)
 
 
 ## How FixMyStreet can use MapIt

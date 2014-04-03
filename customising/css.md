@@ -51,7 +51,7 @@ site** but most of this page shows how to set your own colours *without adding
 any new HTML or CSS*. We know that you'll want to change more than just the
 default colours: but this is the best way to start.
 
-Once you've done this, you'll have your own <a href="/glossary/#cobrand"
+Once you've done this, you'll have your own <a href="{{ site.baseurl }}glossary/#cobrand"
 class="glossary">cobrand</a>, and can start changing other stylesheets and
 templates in the same way.
 
@@ -260,16 +260,17 @@ FixMyStreet include the changes.
 Remember that *all* you've done here is change the colours, **using the
 existing default CSS and HTML**. Of course any and all of this can be
 overridden (by overriding CSS files and overriding the bits of HTML that you
-want to change in the <a href="/glossary/#template"
+want to change in the <a href="{{ site.baseurl }}glossary/#template"
 class="glossary">templates</a>) but this is just so you can get going.
 
 ## Next steps...
 
-Now you have your own cobrand, ading your own HTML <a
-href="/glossary/#template" class="glossary">templates</a> is straightforward.
+Now you have your own cobrand, adding your own HTML <a
+href="{{ site.baseurl }}glossary/#template" class="glossary">templates</a> is straightforward.
 
-Please see our separate [page on customising templates](../templates/).
+Please see our separate page on [customising templates]({{ site.baseurl }}customising/templates/).
 
 ### Feeding back changes
 
-Finally, when you've finished creating your cobrand you should consider [feeding it back to us]({{site.baseurl}}feeding-back) so it becomes part of the FixMyStreet repository.
+Finally, when you've finished creating your cobrand you should consider
+[feeding it back to us]({{site.baseurl}}feeding-back) so it becomes part of the FixMyStreet repository.

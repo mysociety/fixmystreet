@@ -67,7 +67,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/running/users">About users</a> for more about managing
+          See <a href="{{ site.baseurl }}running/user/">About users</a> for more about managing
           abusive users.
         </li>
       </ul>
@@ -81,7 +81,7 @@ technical information, see
     An <strong>administrator</strong> is a user who has access to the back-end
     admin (so can do things like add or edit <a href="#body"
     class="glossary">bodies</a>, modify <a href="#report"
-    class="glossary">problem reports</a>, and <a href="/running/users">manage
+    class="glossary">problem reports</a>, and <a href="{{ site.baseurl }}running/users/">manage
     users</a>). An administrator should also have access to the email account
     to which user support emails are sent.
     <p>
@@ -99,7 +99,7 @@ technical information, see
           href="#body" class="glossary">body</a>.
         </li>
         <li>
-          See the <a href="/running/admin_manual/">Administrator's Manual</a> for
+          See the <a href="{{ site.baseurl }}running/admin_manual/">Administrator's Manual</a> for
           details of what an administrator does.
         </li>
       </ul>
@@ -147,12 +147,12 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/customising/fms_and_mapit">How FixMyStreet uses
+          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary">areas</a>.
         </li>
         <li>
-          See the <a href="http://global.mapit.mysociety.org">global MapIt
+          See the <a href="http://global.mapit.mysociety.org/">global MapIt
           website</a> for more about the service.
         </li>
         <li>
@@ -195,12 +195,12 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/customising/fms_and_mapit">How FixMyStreet uses
+          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary">areas</a>.
         </li>
         <li>
-          See the <a href="http://global.mapit.mysociety.org">global MapIt
+          See the <a href="http://global.mapit.mysociety.org/">global MapIt
           website</a> for more about the service.
         </li>
       </ul>
@@ -219,11 +219,11 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/running/bodies_and_contacts">Managing bodies and
+          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and
           contacts</a> for how to set these up.
         </li>
         <li>
-          See <a href="/customising/fms_and_mapit">How FixMyStreet uses
+          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary">areas</a>.
         </li>
@@ -245,7 +245,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/running/bodies_and_contacts">Managing bodies and
+          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and
           contacts</a> for how to set these up.
         </li>
       </ul>
@@ -267,7 +267,7 @@ technical information, see
       <code>fixmystreet</code> cobrand, which has a yellow-and-asphalt
       appearance, and has an example street from the city of Manchester in the
       "enter a street name" box. But the <a
-      href="http://fixmystreet.oxfordshire.gov.uk">Oxfordshire site</a> is
+      href="http://fixmystreet.oxfordshire.gov.uk/">Oxfordshire site</a> is
       running the <code>oxfordshire</code> cobrand, which makes the site green
       and suggests a street name from Oxfordshire.
     </p>
@@ -281,10 +281,10 @@ technical information, see
           request.
         </li>
         <li>
-          <a href="/customising">more about customising</a>
+          <a href="{{ site.baseurl }}customising/">more about customising</a>
         </li>
         <li>
-          See <a href="/customising/cobrand-module">Cobrand module</a> for
+          See <a href="{{ site.baseurl }}customising/cobrand-module/">Cobrand module</a> for
           information about the Perl class you can override.
         </li>
       </ul>
@@ -311,15 +311,15 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See more about <a href="/install/">installation</a> for
+          See more about <a href="{{ site.baseurl }}install/">installation</a> for
           key config settings to get your site running.
         </li>
         <li>
-          See more about <a href="/customising/">customising</a> for
+          See more about <a href="{{ site.baseurl }}customising/">customising</a> for
           more config options.
         </li>
         <li>
-          See <a href="http://www.yaml.org">the YAML website</a> for
+          See <a href="http://www.yaml.org/">the YAML website</a> for
           everything about YAML, which is the format of the
           <code>general.yml</code> file
         </li>
@@ -342,7 +342,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/running/bodies_and_contacts">Managing bodies and
+          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing bodies and
           contacts</a> for how to set these up.
         </li>
       </ul>
@@ -397,7 +397,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/running/users">About users</a> for more about managing
+          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
           abusive users.
         </li>
       </ul>
@@ -421,7 +421,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/customising/fms_and_mapit">How FixMyStreet uses
+          See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how the geocoder is used.
         </li>
       </ul>
@@ -462,7 +462,7 @@ technical information, see
     helps us track changes to the code, and also makes it easy for other people
     to duplicate and even contribute to our software.
     <p>
-      The website <a href="github.com/mysociety">github.com</a> is a central, public
+      The website <a href="http://github.com/mysociety/">github.com</a> is a central, public
       place where we make our software available. Because it's Open Source, you can
       inspect the code there (FixMyStreet is mostly written in the programming language
       Perl), report bugs, suggest features and many other useful things.
@@ -477,15 +477,15 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See the <a href="/install/">installation instructions</a> which will
+          See the <a href="{{ site.baseurl }}install/">installation instructions</a> which will
           clone the FixMyStreet repo.
         </li>
         <li>
           Everything about git from the <a
-          href="//http://git-scm.com">official website</a>.
+          href="http://git-scm.com/">official website</a>.
         </li>
         <li>
-          See <a href="http://github.com/mysociety">the mySociety projects on
+          See <a href="http://github.com/mysociety/">the mySociety projects on
           github</a>.
         </li>
       </ul>
@@ -570,7 +570,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See more about <a href="/customising/">customising</a> your
+          See more about <a href="{{ site.baseurl }}customising/">customising</a> your
           installation, which includes language and translation considerations
         </li>
         <li>
@@ -596,11 +596,11 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="http://openlayers.org">OpenLayers</a>, the JavaScript map
+          <a href="http://openlayers.org/">OpenLayers</a>, the JavaScript map
           library FixMyStreet uses by default
         </li>
         <li>
-          <a href="http://leafletjs.com">Leaflet</a>, another JS map library
+          <a href="http://leafletjs.com/">Leaflet</a>, another JS map library
         </li>
       </ul>
     </div>
@@ -620,26 +620,26 @@ technical information, see
     </p>
     <p>
       Like FixMyStreet, MapIt is a product by <a
-      href="http://www.mysociety.org">mySociety</a>.
+      href="http://www.mysociety.org/">mySociety</a>.
     </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
         <li>
-          <a href="/customising/fms_and_mapit">How FixMyStreet uses MapIt</a>
+          <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses MapIt</a>
         </li>
         <li>
           <a
-          href="http://global.mapit.mysociety.org">global.mapit.mysociety.org</a>
+          href="http://global.mapit.mysociety.org/">global.mapit.mysociety.org</a>
           is the global MapIt service
         </li>
         <li>
-          <a href="http://mapit.mysociety.org">mapit.mysociety.org</a> is the
+          <a href="http://mapit.mysociety.org/">mapit.mysociety.org</a> is the
           UK MapIt service
         </li>
         <li>
           See <a
-          href="http://code.mapit.mysociety.org">code.mapit.mysociety.org</a>
+          href="http://code.mapit.mysociety.org/">code.mapit.mysociety.org</a>
           for technical information, including how to set up your own
           installation
         </li>
@@ -674,7 +674,7 @@ technical information, see
           basic Open311 functionality</a>.
         </li>
         <li>
-         <a href="http://www.open311.org">open311.org</a>, the Open311
+         <a href="http://www.open311.org/">open311.org</a>, the Open311
          project's own website
         </li>
       </ul>
@@ -692,7 +692,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="http://www.openstreetmap.org">www.openstreetmap.org</a>
+          <a href="http://www.openstreetmap.org/">www.openstreetmap.org</a>
         </li>
         <li>
           <a href="http://wiki.openstreetmap.org/wiki/Main_Page">OpenStreetMap
@@ -700,7 +700,7 @@ technical information, see
         </li>
         <li>
           web interface to <a
-          href="http://nominatim.openstreetmap.org">OpenStreetMap's
+          href="http://nominatim.openstreetmap.org/">OpenStreetMap's
           geocoder</a>
         </li>
       </ul>
@@ -729,7 +729,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="/customising/send_reports">How FixMyStreet sends reports</a>.
+          <a href="{{ site.baseurl }}customising/send_reports/">How FixMyStreet sends reports</a>.
         </li>
       </ul>
     </div>
@@ -753,7 +753,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          <a href="/customising/send_reports">How FixMyStreet sends
+          <a href="{{ site.baseurl }}customising/send_reports/">How FixMyStreet sends
           reports</a>.
         </li>
       </ul>
@@ -774,7 +774,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See the <a href="/running/admin_manual/">Administrator's manual</a>
+          See the <a href="{{ site.baseurl }}running/admin_manual/">Administrator's manual</a>
           for a more detailed list of problem states.
         </li>
       </ul>
@@ -828,7 +828,7 @@ technical information, see
           class="glossary">administrator</a></strong>
         </li>
         <li>
-          See <a href="/running/users">About users</a> for more about managing
+          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
           users, including how to create a staff account.
         </li>
       </ul>
@@ -858,7 +858,7 @@ technical information, see
         <li>
           If you don't want your FixMyStreet site to send out surveys, you can
           switch off this behaviour in a <a
-          href="/customising/cobrand-module/">cobrand module</a>.
+          href="{{ site.baseurl }}customising/cobrand-module/">cobrand module</a>.
         </li>
       </ul>
     </div>
@@ -889,10 +889,10 @@ technical information, see
       <ul>
         <li>
           See more about using templates to <a
-          href="/customising/">customise</a> your installation.
+          href="{{ site.baseurl }}customising/">customise</a> your installation.
         </li>
         <li>
-          See the <a href="http://www.template-toolkit.org">Template Toolkit
+          See the <a href="http://www.template-toolkit.org/">Template Toolkit
           website</a>, which is the system the FixMyStreet web templates use.
         </li>
       </ul>
@@ -942,7 +942,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="/running/users">About users</a> for more about managing
+          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
           users.
         </li>
         <li>

@@ -14,7 +14,7 @@ installing FixMyStreet -- this is really more useful if you're a developer
 planning on making more substantive changes to the code (and if you do,
 remember to read the page about [feeding your changes back](/feeding-back)).
 
-FixMyStreet uses [Catalyst](http://www.catalystframework.org), which is a
+FixMyStreet uses [Catalyst](http://www.catalystframework.org/), which is a
 common Perl "Model-View-Controller" web framework. Again, you don't need to be
 familiar with Catalyst to install or even work on the code, especially if all
 you're doing is [customising your installation](/customising).
@@ -39,7 +39,7 @@ you're doing is [customising your installation](/customising).
   <dd>
     <p><em>mySociety's library of common functions</em></p>
     <p>
-      We maintain a <a href="https://github.com/mysociety/commonlib">common library</a> that
+      We maintain a <a href="https://github.com/mysociety/commonlib/">common library</a> that
       we use across many of our projects (not just FixMyStreet). This is implemented as a
       <a href="http://git-scm.com/book/en/Git-Tools-Submodules">git submodule</a>,
       so FixMyStreet contains it even though the code is separate. Normally, you
@@ -73,7 +73,7 @@ you're doing is [customising your installation](/customising).
       The <code>db</code> directory contains SQL for creating the tables and seeding some of the data &mdash;
       for example, <code>schema.sql</code> contains the full database structure, and you use this when
       you first create the database (see <em>2. Create a new PostgreSQL database</em> in the
-      <a href="/install">installation instructions</a> if you're installing manually).
+      <a href="{{ site.baseurl }}install/">installation instructions</a> if you're installing manually).
     </p>
     <p>
       By convention, we also put "migration" SQL in here, so if the schema has changed since you installed and
@@ -158,7 +158,7 @@ you're doing is [customising your installation](/customising).
             Cobrand
           </dt>
           <dd>
-            Contains the <a href="/customising/cobrand-module">Cobrand modules</a>, which you
+            Contains the <a href="{{ site.baseurl }}customising/cobrand-module/">Cobrand modules</a>, which you
             can use if you need to add custom behaviour beyond that provided by config
             and template changes.
           </dd>
@@ -205,7 +205,7 @@ you're doing is [customising your installation](/customising).
       </dt>
       <dd class="last">
         <p>
-          <em>code for implementing FixMyStreet's <a href="/glossary/#open311" class="glossary">Open311</a> functionality</em>
+          <em>code for implementing FixMyStreet's <a href="{{ site.baseurl }}glossary/#open311" class="glossary">Open311</a> functionality</em>
         </p>
       </dd>
     </dl>
