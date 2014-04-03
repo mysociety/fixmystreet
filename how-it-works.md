@@ -80,7 +80,7 @@ If you want to get FixMyStreet up and running, this is what you need to do:
   <dd>
     <p>
       We know from experience it's a good idea to start small and expand later (for
-      example, maybe start with one city and go national later):
+      example, maybe start with one city and go national when that's running well):
     </p>
     <ul>
       <li>
