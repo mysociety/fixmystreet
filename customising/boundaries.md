@@ -317,7 +317,7 @@ Use this type of boundary if:
       <li>
         <p>
           The individual <em>area_id</em>s are also useful, because you put
-          them into the <code><a href="{{ site.baseur l}}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
+          them into the <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
         </p>
       </li>
     </ol>
