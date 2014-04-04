@@ -488,6 +488,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     }, 
 
     trigger: function(e) {
+        var cobrand = $('meta[name="cobrand"]').attr('content');
         if (typeof fixmystreet.nav_control != 'undefined') {
             fixmystreet.nav_control.disableZoomWheel();
         }
@@ -586,6 +587,9 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
         fixmystreet.page = 'new';
         location.hash = 'report';
+        if ( typeof ga !== 'undefined' && cobrand == 'fixmystreet' ) {
+            ga('send', 'pageview', { 'page': '/map_click' } );
+        }
     }
 });
 
