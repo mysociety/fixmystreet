@@ -120,7 +120,7 @@ Use this type of boundary if:
 The advantage of using the boundary "Everywhere" is that it's very easy to set
 up. The disadvantage is that your FixMyStreet will accept clicks *anywhere* on
 the map. This may be acceptable if you are limiting your 
-<a href="{{site.baseurl }}/glossary/#geocoder" class="glosssary">geocoder</a>
+<a href="{{site.baseurl }}glossary/#geocoder" class="glosssary">geocoder</a>
 to a very specific area.
 
 <dl class="reveal-on-click" data-reveal-noun="details">
