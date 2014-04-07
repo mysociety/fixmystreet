@@ -128,15 +128,16 @@ sub index : Path : Args(0) {
     my $dtf = $c->model('DB')->storage->datetime_parser;
 
     my %counts;
-    my $t = DateTime->today;
+    my $now = DateTime->now( time_zone => 'local' );
+    my $t = $now->clone->truncate( to => 'day' );
     $counts{wtd} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( $t->subtract( days => $t->dow - 1 ) ) ] );
+        [ $dtf->format_datetime( $t->clone->subtract( days => $t->dow - 1 ) ) ] );
     $counts{week} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( DateTime->now->subtract( weeks => 1 ) ) ] );
+        [ $dtf->format_datetime( $now->clone->subtract( weeks => 1 ) ) ] );
     $counts{weeks} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( DateTime->now->subtract( weeks => 4 ) ) ] );
+        [ $dtf->format_datetime( $now->clone->subtract( weeks => 4 ) ) ] );
     $counts{ytd} = $c->forward( 'updates_search',
-        [ $dtf->format_datetime( DateTime->today->set( day => 1, month => 1 ) ) ] );
+        [ $dtf->format_datetime( $t->clone->set( day => 1, month => 1 ) ) ] );
 
     $c->stash->{problems} = \%counts;
 
@@ -152,16 +153,16 @@ sub index : Path : Args(0) {
     }
     my $params = {
         %$prob_where,
-        'me.confirmed' => { '>=', $dtf->format_datetime( DateTime->now->subtract( days => 30 ) ) },
+        'me.confirmed' => { '>=', $dtf->format_datetime( $now->clone->subtract( days => 30 ) ) },
     };
     my $problems_rs = $c->cobrand->problems->search( $params );
     my @problems = $problems_rs->all;
 
     my %problems;
     foreach (@problems) {
-        if ($_->confirmed >= DateTime->now->subtract(days => 7)) {
+        if ($_->confirmed >= $now->clone->subtract(days => 7)) {
             push @{$problems{1}}, $_;
-        } elsif ($_->confirmed >= DateTime->now->subtract(days => 14)) {
+        } elsif ($_->confirmed >= $now->clone->subtract(days => 14)) {
             push @{$problems{2}}, $_;
         } else {
             push @{$problems{3}}, $_;

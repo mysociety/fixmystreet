@@ -111,34 +111,35 @@ FixMyStreet::override_config {
         is_deeply $reports, {}, 'No reports';
     }
 
+    my $now = DateTime->now(time_zone => 'local');
     foreach my $test (
         {
             desc => 'confirmed today with no state',
-            dt   => DateTime->now,
+            dt   => $now,
             counts => [1,1,1,1],
             report_counts => [1, 0, 0],
         },
         {
             desc => 'confirmed last 7 days with no state',
-            dt   => DateTime->now->subtract( days => 6, hours => 23 ),
+            dt   => $now->clone->subtract( days => 6, hours => 23 ),
             counts => [1,2,2,2],
             report_counts => [2, 0, 0],
         },
         {
             desc => 'confirmed last 8 days with no state',
-            dt   => DateTime->now->subtract( days => 8 ),
+            dt   => $now->clone->subtract( days => 8 ),
             counts => [1,2,3,3],
             report_counts => [2, 1, 0],
         },
         {
-            desc => 'confirmed last 4 weeks with no state',
-            dt   => DateTime->now->subtract( weeks => 2 ),
+            desc => 'confirmed last 2 weeks with no state',
+            dt   => $now->clone->subtract( weeks => 2 ),
             counts => [1,2,4,4],
             report_counts => [2, 1, 1],
         },
         {
             desc => 'confirmed this year with no state',
-            dt   => DateTime->now->subtract( weeks => 7 ),
+            dt   => $now->clone->subtract( weeks => 7 ),
             counts => [1,2,4,5],
             report_counts => [2, 1, 1],
         },
