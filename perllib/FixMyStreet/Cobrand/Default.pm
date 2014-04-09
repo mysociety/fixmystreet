@@ -844,6 +844,14 @@ sub prettify_dt {
     return Utils::prettify_dt( $dt, 1 );
 }
 
+=head2 extra_contact_validation
+
+Perform any extra validation on the contact form.
+
+=cut
+
+sub extra_contact_validation { (); }
+
 sub problem_as_hashref {
     my $self = shift;
     my $problem = shift;
