@@ -1155,6 +1155,7 @@ sub redirect_or_confirm_creation : Private {
             $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
         }
         $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
+        $c->flash->{created_report} = 'loggedin';
         $c->res->redirect($report_uri);
         $c->detach;
     }
