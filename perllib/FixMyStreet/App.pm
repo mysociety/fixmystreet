@@ -348,7 +348,7 @@ sub send_email {
 }
 
 sub send_email_cron {
-    my ( $c, $params, $env_from, $env_to, $nomail ) = @_;
+    my ( $c, $params, $env_from, $env_to, $nomail, $cobrand, $lang_code ) = @_;
 
     return 1 if $c->is_abuser( $env_to );
 
@@ -356,15 +356,31 @@ sub send_email_cron {
         unpack('h*', random_bytes(5, 1)), FixMyStreet->config('EMAIL_DOMAIN')
     );
 
-    $params->{_parameters_}->{signature} = '';
-    #$params->{_parameters_}->{signature} = $c->view('Email')->render(
-    #    $c, 'signature.txt', {
-    #        additional_template_paths => [
-    #            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker, $c->stash->{lang_code} )->stringify,
-    #            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker )->stringify,
-    #        ]
-    #    }
-    #);
+    # This is all to set the path for the templates processor so we can override
+    # signature and site names in emails using templates in the old style emails.
+    # It's a bit involved as not everywhere we use it knows about the cobrand so
+    # we can't assume there will be one.
+    my $include_path = FixMyStreet->path_to( 'templates', 'email', 'default' )->stringify;
+    if ( $cobrand ) {
+        $include_path =
+            FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker )->stringify . ':'
+            . $include_path;
+        if ( $lang_code ) {
+            $include_path =
+                FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker, $lang_code )->stringify . ':'
+                . $include_path;
+        }
+    }
+    my $tt = Template->new({
+        INCLUDE_PATH => $include_path
+    });
+    my ($sig, $site_name);
+    $tt->process( 'signature.txt', $params, \$sig );
+    $params->{_parameters_}->{signature} = $sig;
+
+    $tt->process( 'site_name.txt', $params, \$site_name );
+    my $site_title = $cobrand ? $cobrand->site_title : '';
+    $params->{_parameters_}->{site_name} = $site_name || $site_title;
 
     $params->{_line_indent} = '';
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };

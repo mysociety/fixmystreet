@@ -107,7 +107,8 @@ sub send_questionnaires_period {
             },
             $sender,
             [ $row->user->email ],
-            $params->{nomail}
+            $params->{nomail},
+            $cobrand
         );
         if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
             print "  ...success\n" if $params->{verbose};
