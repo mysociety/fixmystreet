@@ -1,23 +1,24 @@
-Subject: FixMyStreet questionnaire about '<?=$values['title']?>'
+Subject: Questionnaire about your <?=$values['site_name']?> report: '<?=$values['title']?>'
 
-Hi <?=$values['name']?>,
+Hello <?=$values['name']?>,
 
-<?=$values['created']?> ago, you left a problem on FixMyStreet
-with the details provided at the end of this email. To keep our
-site up to date and relevant, we'd appreciate it if you could
-follow the link below and fill in our short questionnaire
+<?=$values['created']?> ago, you reported a problem using <?=$values['site_name']?>.
+
+The details of that report are at the end of this email. 
+
+To keep <?=$values['site_name']?> up to date and relevant, we'd appreciate it
+if you could follow the link below and fill in our short questionnaire
 updating the status of your problem:
 
     <?=$values['url']?>
 
-Please do not reply to this email; there is a public comment
-box on the questionnaire.
-
 <?=$values['signature']?>
 
-Your problem was as follows:
+Your report was as follows:
 
 <?=$values['title']?>
 
 <?=$values['detail']?>
 
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

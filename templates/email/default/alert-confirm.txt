@@ -1,13 +1,18 @@
-Subject: Confirm your alert on [% INCLUDE 'site-name.txt' | trim %]
+Subject: Confirm your [% INCLUDE 'site-name.txt' | trim %] alert 
 
-Hi,
+Please click on the link below to confirm your [% INCLUDE 'site-name.txt' | trim %] alert. 
+   
+   [% token_url %]
 
-Please click on the link below to confirm the alert you just
-asked to subscribe to on [% INCLUDE 'site-name.txt' | trim %]:
+If you can't click the link, copy and paste it to the address bar of your web
+browser.
 
-    [% token_url %]
+This confirms that you'd like to receive an email when someone makes a
+[% INCLUDE 'site-name.txt' | trim %] report within your chosen area.
 
-If you can't click the link, please copy and paste it to the
-address bar of your web browser.
+Email alerts are a free service from [% INCLUDE 'site-name.txt' | trim %].
 
 [% INCLUDE 'signature.txt' %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

@@ -355,7 +355,7 @@ for my $test (
 
         my $email = $mech->get_email;
         ok $email, "got an email";
-        like $email->body, qr/confirm the update you/i, "Correct email text";
+        like $email->body, qr/confirm your update on/i, "Correct email text";
 
         my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
         ok $url, "extracted confirm url '$url'";
@@ -1010,7 +1010,7 @@ subtest 'submit an update for a registered user, creating update by email' => su
 
     my $email = $mech->get_email;
     ok $email, "got an email";
-    like $email->body, qr/confirm the update you/i, "Correct email text";
+    like $email->body, qr/confirm your update on/i, "Correct email text";
 
     my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
     ok $url, "extracted confirm url '$url'";
@@ -1513,7 +1513,7 @@ for my $test (
 
         my $email = $mech->get_email;
         ok $email, "got an email";
-        like $email->body, qr/confirm the update you/i, "Correct email text";
+        like $email->body, qr/confirm your update on/i, "Correct email text";
 
         my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
         ok $url, "extracted confirm url '$url'";

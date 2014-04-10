@@ -666,8 +666,8 @@ subtest 'check can turn on report sent email alerts' => sub {
     ok defined( $problem->whensent ), 'whensent set';
 
     $email = $emails[1];
-    like $email->header('Subject'), qr/Problem Report Sent/, 'report sent email title correct';
-    like $email->body, qr/Your report about/, 'report sent body correct';
+    like $email->header('Subject'), qr/FixMyStreet Report Sent/, 'report sent email title correct';
+    like $email->body, qr/to submit your report/, 'report sent body correct';
 
     $send_confirmation_mail_override->restore();
 };
