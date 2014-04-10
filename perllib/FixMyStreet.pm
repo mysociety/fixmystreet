@@ -12,8 +12,10 @@ use Sub::Override;
 use mySociety::Config;
 use mySociety::DBHandle;
 
+my $CONF_FILE = $ENV{FMS_OVERRIDE_CONFIG} || 'general';
+
 # load the config file and store the contents in a readonly hash
-mySociety::Config::set_file( __PACKAGE__->path_to("conf/general") );
+mySociety::Config::set_file( __PACKAGE__->path_to("conf/${CONF_FILE}") );
 Readonly::Hash my %CONFIG, %{ mySociety::Config::get_list() };
 
 =head1 NAME
