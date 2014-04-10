@@ -1,0 +1,20 @@
+[% INCLUDE 'header.html', title => loc('Reporting a problem'), bodyclass = 'mappage' %]
+
+<div id="side-form" class="row">
+    [% INCLUDE 'around/postcode_form.html' %]
+    [% IF location_error %]
+        <p class="error">[% location_error %]</p>
+    [% END %]
+</div>
+<div class="row">
+    [% IF possible_location_matches %]
+        <p>[% loc('We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here.') %]</p>
+        <ul class="pc_alternatives">
+            [% FOREACH match IN possible_location_matches %]
+            <li><a href="/around?latitude=[% match.latitude | uri %];longitude=[% match.longitude | uri %]">[% match.address | html %]</a></li>
+            [% END %]
+        </ul>
+    [% END %]
+</div>
+
+[% INCLUDE 'footer.html' %]
