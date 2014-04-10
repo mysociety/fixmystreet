@@ -142,6 +142,11 @@
                         %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
                     %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                         %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                        [% IF c.user_exists %]
+                                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]</li>
+                                <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
+                        [% END %]
+                        
                 </ul>
 
             </div>
@@ -152,12 +157,4 @@
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
         
         
-        [% IF c.user_exists %]
-            <ul id="meta">
-                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]</li>
-                <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
-            </ul>
-        [% END %]
-        
-
     [% INCLUDE 'debug_header.html' %]
