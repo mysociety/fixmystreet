@@ -44,4 +44,21 @@
       }
     }
     
+    #powered_by {
+        line-height: 20px;
+        margin-top: 1em;
+
+        a {
+            font-weight: normal;
+            &:hover {
+                text-decoration: none;
+            }
+        }
+
+        img {
+            width: auto;
+            margin: 0;
+            padding: 0;
+        }
+    }
 }
