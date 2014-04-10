@@ -151,10 +151,4 @@
 
             </div>
         </div>
-        
-        [% IF NOT title AND NOT c.req.path %]<h1 id="header" role="banner">[% ELSE %]<div id="header" role="banner"><a href="/">[% END
-            %][% loc('FixMyStreet') %]
-        [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
-        
-        
     [% INCLUDE 'debug_header.html' %]
