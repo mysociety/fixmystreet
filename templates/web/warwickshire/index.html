@@ -31,7 +31,7 @@
         probs         = c.cobrand.recent();
     %]
 
-    [%# IF probs.size || recent_photos.size %]
+    [% IF probs.size || recent_photos.size %]
     <div class="span6">
         <h2>[% loc('Recently reported problems') %]</h2>
         [% IF recent_photos.size %]
@@ -56,7 +56,7 @@
             </ul>
         [% END %]
     </div>
-    [%# END %]
+    [% END %]
 </div>
 
 [% INCLUDE 'footer.html' %]
