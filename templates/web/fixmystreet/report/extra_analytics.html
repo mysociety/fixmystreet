@@ -1,0 +1,8 @@
+[% IF c.flash.created_report %]
+<script type="text/javascript">
+    var cobrand = $('meta[name="cobrand"]').attr('content');
+    if ( typeof ga !== 'undefined' && cobrand == 'fixmystreet' ) {
+        ga('send', 'event', 'report', 'completed', '[% c.flash.created_report %]' );
+    }
+</script>
+[% END %]
