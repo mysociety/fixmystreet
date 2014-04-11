@@ -103,6 +103,7 @@ sub determine_location_from_pc : Private {
     }
 
     # pass errors back to the template
+    $c->stash->{location_error_pc_lookup} = 1;
     $c->stash->{location_error} = $error;
     return;
 }

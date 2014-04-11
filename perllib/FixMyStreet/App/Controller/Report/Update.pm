@@ -312,7 +312,14 @@ sub save_update : Private {
 
     my $update = $c->stash->{update};
 
-    if ( !$update->user->in_storage ) {
+    if ( $c->cobrand->never_confirm_updates ) {
+        if ( $update->user->in_storage() ) {
+            $update->user->update();
+        } else {
+            $update->user->insert();
+        }
+        $update->confirm();
+    } elsif ( !$update->user->in_storage ) {
         # User does not exist.
         # Store changes in token for when token is validated.
         $c->stash->{token_data} = {
@@ -370,6 +377,7 @@ sub redirect_or_confirm_creation : Private {
         $c->forward( 'signup_for_alerts' );
 
         my $report_uri = $c->cobrand->base_url_for_report( $update->problem ) . $update->problem->url;
+        $c->flash->{comment_created} = 1;
         $c->res->redirect($report_uri);
         $c->detach;
     }

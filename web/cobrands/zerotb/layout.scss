@@ -1,0 +1,121 @@
+@import "_colours";
+@import "../sass/layout";
+
+body {
+    &.frontpage {
+        .nav-wrapper-2 {
+            background-color: $primary;
+            color: $primary_text;
+            height: auto;
+        }
+
+        #site-header {
+            background-color: $base_bg;
+        }
+
+        #site-logo {
+            background: none;
+            color: black;
+            width: auto;
+            a {
+                color: black;
+            }
+            p {
+                font-size: 2em;
+                font-weight: 300;
+            }
+            #brought-to-you {
+                display: block;
+                font-size: 0.75em;
+            }
+        }
+    }
+    &.mappage {
+        #main-nav {
+            ul#main-menu {
+                li {
+                    a,
+                    a.report-a-problem-btn,
+                    span {
+                        padding: 0.25em;
+                        margin: 0.5em;
+                    }
+                }
+            }
+        }
+        .nav-wrapper-2 {
+            min-height: 4em;
+        }
+    }
+}
+
+.nav-wrapper {
+    .nav-wrapper-2 {
+        border: none;
+        min-height: 0;
+    }
+}
+
+#main-nav {
+    ul#mysoc-menu {
+        li {
+            a {
+                color: $primary_text;
+            }
+        }
+    }
+    ul#main-menu {
+        li {
+            span {
+                color: $primary_text;
+            }
+        }
+    }
+}
+
+#site-header {
+    background: $primary;
+    height: auto;
+}
+
+.container {
+    padding: 0em 1em;
+}
+
+#front-main {
+    #front-main-container {
+        max-width: 40em;
+        h2 {
+            text-align: left;
+        }
+    }
+    #postcodeForm {
+        div {
+            width: 30em;
+            .select2-container,
+            select#clinic,
+            input#pc {
+                max-width: none;
+                width: 27em;
+            }
+            input#show_report {
+                display: block;
+                float: right;
+                width: 3em;
+            }
+        }
+    }
+
+    .select2-container {
+        a {
+            color: #444;
+            text-align: left;
+            text-decoration: none;
+        }
+    }
+}
+
+.content {
+    background-color: $alt-background;
+    box-shadow: none;
+}

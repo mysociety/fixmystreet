@@ -683,4 +683,95 @@ subtest 'check new updates alerts for non public reports only go to report owner
     $mech->delete_user( $user3 );
 };
 
+subtest 'check setting inlude dates in new updates cobrand option' => sub {
+    my $include_date_in_alert_override= Sub::Override->new(
+        "FixMyStreet::Cobrand::Default::include_time_in_update_alerts",
+        sub { return 1; }
+    );
+    $mech->delete_user( 'reporter@example.com' );
+    $mech->delete_user( 'alerts@example.com' );
+
+    my $user1 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
+    ok $user1, "created test user";
+
+    my $user2 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
+    ok $user2, "created test user";
+
+    my $user3 = FixMyStreet::App->model('DB::User')
+      ->find_or_create( { email => 'updates@example.com', name => 'Update User' } );
+    ok $user3, "created test user";
+
+    my $dt = DateTime->now->add( minutes => -30 );
+    my $r_dt = $dt->clone->add( minutes => 20 );
+
+    my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
+
+    my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+        postcode           => 'EH1 1BB',
+        bodies_str         => '2651',
+        areas              => ',11808,135007,14419,134935,2651,20728,',
+        category           => 'Street lighting',
+        title              => 'Alert test for non public reports',
+        detail             => 'Testing Detail',
+        used_map           => 1,
+        name               => $user2->name,
+        anonymous          => 0,
+        state              => 'confirmed',
+        confirmed          => $dt_parser->format_datetime($r_dt),
+        lastupdate         => $dt_parser->format_datetime($r_dt),
+        whensent           => $dt_parser->format_datetime($r_dt->clone->add( minutes => 5 )),
+        lang               => 'en-gb',
+        service            => '',
+        cobrand            => 'default',
+        cobrand_data       => '',
+        send_questionnaire => 1,
+        latitude           => '55.951963',
+        longitude          => '-3.189944',
+        user_id            => $user2->id,
+    } );
+
+    my $update = FixMyStreet::App->model('DB::Comment')->create( {
+        problem_id => $report->id,
+        user_id    => $user3->id,
+        name       => 'Anonymous User',
+        mark_fixed => 'false',
+        text       => 'This is some more update text',
+        state      => 'confirmed',
+        confirmed  => $r_dt->clone->add( minutes => 8 ),
+        anonymous  => 't',
+    } );
+
+    my $alert_user1 = FixMyStreet::App->model('DB::Alert')->create( {
+            user       => $user1,
+            alert_type => 'new_updates',
+            parameter  => $report->id,
+            confirmed  => 1,
+            whensubscribed => $dt,
+    } );
+    ok $alert_user1, "alert created";
+
+
+    $mech->clear_emails_ok;
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    $mech->email_count_is(1);
+
+    # if we don't do this then we're applying the date inflation code and
+    # it's timezone munging to the DateTime object above and not the DateTime
+    # object that's inflated from the database value and these turn out to be
+    # different as the one above has a UTC timezone and not the floating one
+    # that those from the DB do.
+    $update->discard_changes();
+
+    my $date_in_alert = Utils::prettify_dt( $update->confirmed );
+    my $email = $mech->get_email;
+    like $email->body, qr/$date_in_alert/, 'alert contains date';
+
+    $mech->delete_user( $user1 );
+    $mech->delete_user( $user2 );
+    $mech->delete_user( $user3 );
+    $include_date_in_alert_override->restore();
+};
+
 done_testing();
