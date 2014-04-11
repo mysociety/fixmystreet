@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+use strict;
+
+=for instructions
+
+This script is used to merge cobrand po files with the main
+FixMyStreet po file. It should be run after generate_cobrand_po
+and once the cobrand po files with translations are placed in the
+language directories.
+
+It will then create an autoCobrand.po file for each language that
+has a Cobrand.po
+
+=cut
+
+my $cobrand = shift;
+
+die "Please provide a cobrand name\n" unless $cobrand;
+
+# for each language create a .po file with an existing translations
+for (glob( 'locale/*/LC_MESSAGES' ) ) {
+    my $fms = "$_/FixMyStreet.po";
+    my $cobrand_po = "$_/$cobrand.po";
+    my $out = "$_/auto$cobrand.po";
+    if ( -e $cobrand_po and -e $fms ) {
+        print "$_\n";
+        system("msgcat --no-wrap -o $out $fms $cobrand_po");
+    }
+}

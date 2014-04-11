@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+use strict;
+
+=for instructions
+
+This script generates a po file that contains only the strings related to a cobrand.
+Its purpose is to avoid having lots of cobrand specific strings in the
+main FixMyStreet po file confusing translators. Once this is run the
+generated po file can be used to translate the strings. The po files
+with the translation should then be placed in the relevant language
+directories and merge_cobrand_po run which will merge these with
+the main FixMyStreet po files
+
+=cut
+
+my $cobrand = shift;
+
+die "Please provide a cobrand name\n" unless $cobrand;
+
+my $cobrand_lc = lc( $cobrand );
+
+my $PO = "locale/$cobrand.po";
+
+my $cobrand_module = "perllib/FixMyStreet/Cobrand/$cobrand.pm";
+my $web_templates = "templates/web/$cobrand_lc/";
+
+my $opts = '';
+if ( -e $cobrand_module ) {
+    $opts .= " $cobrand_module";
+}
+
+if ( -e -d $web_templates ) {
+    $opts .= " --directory $web_templates";
+}
+
+# first we get the strings from the cobrand
+system("xgettext.pl --gnu-gettext --verbose --output $PO --plugin perl=* --plugin tt2 $opts");
+
+# now replace the template header elements
+system("bin/update_po_header.bash $PO");

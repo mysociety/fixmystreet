@@ -33,9 +33,7 @@
     <meta name="robots" content="noindex,nofollow">
 [% END %]
 
-[% IF rss %]
-    <link rel="alternate" type="application/rss+xml" title="[% rss.0 %]" href="[% rss.1 %]">
-[% END %]
+[% INCLUDE 'header_rss.html' %]
 
 <title>
     [% "$title :: " | html IF title %]
