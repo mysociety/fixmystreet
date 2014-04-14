@@ -13,13 +13,19 @@ title: AMI for EC2
 </p>
 
 <div style="border: solid 2px #900; padding: 0.5em; margin: 0.5em; color: #900; background-color: #fff">
-Please note: FixMyStreet may currently sometimes, when running cron jobs, use
-too much memory to run successfully on an Amazon Micro instance. For more
-information and what to do if this happens, see <a
-href="https://github.com/mysociety/fixmystreet/issues/640">this GitHub
-ticket</a>. If you only have a Micro instance and are just wanting to work with
-translations or templates, for example, you can disable any cron jobs
-from running and run them manually when necessary.
+  Note: if you're running on an Amazon <strong>micro</strong> instance 
+  (that is, the smallest one), FixMyStreet may run out of memory when attempting to 
+  run cron jobs. When this happens, the fastcgi process dies and all subsquent
+  requests get a <code>502 bad gateway</code> error until you restart it. For more
+  information and what to do if this happens, see
+  <a href="https://github.com/mysociety/fixmystreet/issues/640">this GitHub ticket</a>. 
+  <p style="margin-bottom:0">
+    If you only have a <strong>micro</strong> instance and just want to work with
+    <a href="{{ site.baseurl }}customising/language/">translations</a> or 
+    <a href="{{ site.baseurl }}customising/templates/">templates</a>,
+    for example, you can disable any cron jobs and run the tasks manually when necessary.
+    Bigger Amazon instances (more memory) do not exhibit this problem.
+  </p>
 </div>
 
 Note that this is just one of [three ways to install FixMyStreet]({{ site.baseurl }}install/).
