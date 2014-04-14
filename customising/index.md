@@ -5,25 +5,71 @@ title: Customising
 
 # Customising FixMyStreet
 
-<p class="lead">This document explains how to tailor the default installation
-of FixMyStreet to your requirements, including limiting the geographic area it
-accepts queries for, translating the text, and changing the look and feel.</p>
+<p class="lead">
+  When you set up your FixMyStreet site, you'll want to tailor the
+  default installation to your own requirements. This includes limiting
+  the geographic area it will accept problem reports for, the language
+  it's presented in, and how it looks.
+</p>
 
-## Overview
 
-FixMyStreet implements a "Cobrand" system in order to allow customisation of
-the default behavior. As well as configuration options you specify in the
-`conf/general.yml` file, a Cobrand is made up of a set of templates, CSS, and an
-**optional** Cobrand module that contains Perl code that customises the way the
-Cobrand behaves. There are defaults for all of these so the Cobrand only needs
-to override things that are specific to it.
+## Your own cobrand
 
-Customisations should be implemented like this as this means that any
-upgrade to FixMyStreet will not overwrite your unique changes.
+Whatever you change, you'll almost certainly need to create a
+<a href="{{ site.baseurl }}glossary/#cobrand" class="glossary">cobrand</a>,
+which is the mechanism FixMyStreet uses to let you deviate from its default
+appearance and behaviour.
 
-It is customary for a cobrand to have the same name as your site,
-e.g if your site is www.FixMyPark.com then your Cobrand could be
-called FixMyPark. The default Cobrand is called Default.
+As well as the
+[configuration settings]({{ site.baseurl }}customising/config/) you specify in
+the `conf/general.yml` file, a cobrand is made up of a set of templates, CSS,
+and an *optional* Cobrand module that contains custom Perl code. There are
+defaults for all of these, so the cobrand only needs to override things that are
+specific to it.
+
+We *strongly recommend* you follow this system -- rather than just editing
+existing files -- because it means that you'll be able to upgrade FixMyStreet
+without the updates overwriting your unique changes.
+
+It's a good idea for a cobrand to have the same name as your site. For example,
+if your site is `www.FixMyPark.com` then your cobrand could be called FixMyPark
+(with the "moniker" all lowercase, like this: `fixmypark`, which is used for
+things like directory names). The default cobrand is called Default (`default`).
+
+
+## What you can change
+
+There's a lot you can customise on your own FixMyStreet site.
+
+We've prepared a [customisation checklist]({{ site.baseurl }}customising/checklist/)
+which covers all the key things you should work through when installing your own 
+site.
+
+But if you just want to see what's possible, here are some of the
+aspects of FixMyStreet that you can customise:
+
+* [how to translate or change FixMyStreet's language]({{ site.baseurl }}customising/language/)
+* [how FixMyStreet assigns reports to bodies]({{ site.baseurl }}customising/fms_and_mapit/)
+* [how to customise the geocoder]({{ site.baseurl }}customising/geocoder/)
+* [how to change the design]({{ site.baseurl }}customising/css/)
+* [how to customise templates]({{ site.baseurl }}customising/templates/)
+* [how reports are sent by FixMyStreet]({{ site.baseurl }}customising/send_reports/)
+* [all the config settings]({{ site.baseurl }}customising/config/)
+
+Note that none of the above require you to know or write any Perl (the language 
+FixMyStreet is mostly written in). 
+
+### The Cobrand module
+
+If you need more customistation than the config settings and templates give you,
+you'll probably need to make a Cobrand module. This is a Perl module that is automatically
+loaded according to the current cobrand -- you can see existing examples in
+[`perllib/FixMyStreet/Cobrand/`](https://github.com/mysociety/fixmystreet/tree/master/perllib/FixMyStreet/Cobrand).
+There is a default Cobrand 
+([`Default.pm`](https://github.com/mysociety/fixmystreet/blob/master/perllib/FixMyStreet/Cobrand/Default.pm))
+that all Cobrands should inherit from. A Cobrand module can then override any
+of the methods from the default Cobrand.
+See [more about Cobrand modules](/customising/cobrand-module/).
 
 ## Feeding back changes
 
@@ -33,32 +79,4 @@ and CSS you may not feel you have to, but it's likely you'll have needed to
 make actual code changes for your particular environment, and feeding these
 back means it is easier to update the code from upstream in future to gain new
 features and bugfixes.
-[More information on feeding back changes](/feeding-back/).
-
-# Areas of customisation
-
-Here is a list of the various aspects of FixMyStreet that you can customise,
-please follow the links for more information:
-
-<div class="row-fluid">
-  <div class="span6">
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="language/">How to change or translate FixMyStreet&rsquo;s language</a></li>
-      <li><a href="fms_and_mapit/">How FixMyStreet assigns reports to bodies</a></li>
-      <li><a href="geocoder/">How to customise the geocoder</a></li>
-      <li><a href="css/">How to change the design</a></li>
-      <li><a href="templates/">How to customise templates</a></li>
-      <li><a href="send_reports/">How reports are sent by FixMyStreet</a></li>
-    </ul>
-  </div>
-</div>
-
-### Cobrand module
-
-If you need customistation beyond the above pages, you might need to make a
-Cobrand module. These are automatically loaded according to the current Cobrand
-and can be found in `perllib/FixMyStreet/Cobrand/`. There is a default Cobrand
-( `Default.pm` ) which all Cobrands should inherit from. A Cobrand module can
-then override any of the methods from the default Cobrand. [More information on
-Cobrand modules](/customising/cobrand-module/).
-
+See [more about feeding back changes]({{ site.baseurl }}feeding-back/).
