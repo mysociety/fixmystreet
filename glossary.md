@@ -130,7 +130,7 @@ technical information, see
     FixMyStreet uses <strong>areas</strong> to determine which <a href="#body"
     class="glossary">bodies</a> are responsible for handling problems at a
     specific location. When a user clicks on the <a href="#map"
-    class="glossary">map</a>, FixMyStreet finds all the bodies are responsible
+    class="glossary">map</a>, FixMyStreet finds all the bodies that are responsible
     for that area. Technically, an area comprises one or more polygons on a
     map &mdash; either those areas already exist (from <a href="#osm"
     class="glossary">OpenStreetMap</a>, for example) or you can provide your
