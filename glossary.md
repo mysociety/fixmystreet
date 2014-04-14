@@ -137,8 +137,9 @@ technical information, see
     class="glossary">MapIt</a> by drawing them on a map, or importing
     shapefiles from other mapping applications.
     <p>
-      The <a href="#config-variable" class="glossary">config variable</a>
-      <code>MAPIT_ID_WHITELIST</code> can explicitly list the <em>only</em>
+      The
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
+      config setting can explicitly list the <em>only</em>
       areas your installation will recognise &mdash; alternatively, you can
       limit them by <a href="#area-type" class="glossary">area type</a>
       instead.
@@ -176,9 +177,9 @@ technical information, see
     represents &mdash; for example, a national border, or the boundary of a
     province, or a ward, and so on.
     <p>
-      The <a href="#config-variable" class="glossary">config variable</a>
-      <code>MAPIT_AREA_TYPES</code> specifies the area types your
-      installation uses.
+      The
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>
+      config setting specifies the area types your installation uses.
     </p>
     <p>
       These types' actual values vary depending on the source of the data. For
@@ -275,10 +276,9 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          The cobrands that FixMyStreet will use are defined in the <a
-          href="#config-variable" class="glossary">config variable</a>
-          <code>ALLOWED_COBRANDS</code>, based on the URL of the incoming
-          request.
+          The cobrands that FixMyStreet will use are defined in the
+          <code><a href="{{ site.baseurl }}customising/config/#allowed_cobrands">ALLOWED_COBRANDS</a></code>
+          config setting, based on the URL of the incoming request.
         </li>
         <li>
           <a href="{{ site.baseurl }}customising/">more about customising</a>
@@ -305,18 +305,17 @@ technical information, see
       it would contain your own private config settings, such as your database
       password). Instead, there is an example file,
       <code>cong/general.yml-example</code> you can
-      copy and edit.
+      copy and edit. If you install using the 
+       <a href="{{ site.baseurl }}install/install-script/">installation script</a>
+       or the <a href="{{ site.baseurl }}install/ami/">AMI</a>, this file will 
+       automatically be created for you.
     </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
         <li>
-          See more about <a href="{{ site.baseurl }}install/">installation</a> for
-          key config settings to get your site running.
-        </li>
-        <li>
-          See more about <a href="{{ site.baseurl }}customising/">customising</a> for
-          more config options.
+          See <a href="{{ site.baseurl }}customising/config">all the config settings</a>
+          you need to get your site running.
         </li>
         <li>
           See <a href="http://www.yaml.org/">the YAML website</a> for
