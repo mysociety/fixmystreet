@@ -2,8 +2,8 @@ Subject: Frågeformulär om '<?=$values['title']?>'
 
 Hej <?=$values['name']?>,
 
-<?=$values['created']?> sedan lämnade du en rapport på Fixa Min Gata.
-För att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde
+<?=$values['created']?> sedan lämnade du en rapport på FixaMinGata. För
+att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde
 klicka på länken nedan och svara på ett par korta frågor om det problem
 du rapporterade:
 

@@ -1,4 +1,4 @@
-Subject: Nya rapporter i <?=$values['area_name']?> på Fixa Min Gata
+Subject: Nya rapporter i <?=$values['area_name']?> på FixaMinGata
 
 Följande nya rapporter har lagts till inom <?=$values['area_name']?>:
 

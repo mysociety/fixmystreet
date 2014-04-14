@@ -14,7 +14,7 @@ DateTime->DefaultLocale('sv_SE');
 
 sub site_title {
     my ($self) = @_;
-    return 'Fixa Min Gata';
+    return 'FixaMinGata';
 }
 
 sub path_to_web_templates {

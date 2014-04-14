@@ -1,6 +1,6 @@
 Subject: [% loc('Your FixMyStreet.com account details') %]
 
-Välkommen till Fixa Min Gata!
+Välkommen till FixaMinGata!
 
 För att bekräfta din epostadress måste du nu klicka på länken nedan.
 Du kommer sedan att kunna se dina rapporter och hantera dem via
