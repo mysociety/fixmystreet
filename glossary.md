@@ -68,7 +68,7 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See <a href="{{ site.baseurl }}running/user/">About users</a> for more about managing
+          See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
           abusive users.
         </li>
       </ul>
