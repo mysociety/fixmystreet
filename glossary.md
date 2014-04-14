@@ -148,6 +148,10 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
+          See <a href="{{ site.baseurl }}customising/boundaries/">more about boundaries</a>
+          and the different ways to set them up.
+        </li>
+        <li>
           See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary">areas</a>.
@@ -195,6 +199,10 @@ technical information, see
     <div class="more-info">
       <p>More information:</p>
       <ul>
+        <li>
+          See <a href="{{ site.baseurl }}customising/boundaries/">more about boundaries</a>
+          and the different ways to set them up.
+        </li>
         <li>
           See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
@@ -641,6 +649,10 @@ technical information, see
           href="http://code.mapit.mysociety.org/">code.mapit.mysociety.org</a>
           for technical information, including how to set up your own
           installation
+        </li>
+        <li>
+          See <a href="{{ site.baseurl }}customising/boundaries/">more about boundaries</a>,
+          which define the areas, and the different ways to set them up.
         </li>
       </ul>
     </div>
