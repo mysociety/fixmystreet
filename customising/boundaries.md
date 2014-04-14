@@ -175,9 +175,10 @@ Use this type of boundary if you:
       a polygon over a map. Alternatively, we run a MapIt server for custom areas
       like this, so &mdash; especially if you are just doing this as a probationary
       trial &mdash; we may be able to host this for you (note though that we do
-      rate-limit calls to MapIt). Either send us KML shape files, or if you can't
-      do that, maybe a clear image of the map with the boundary drawn on it for us
-      to copy.
+      rate-limit calls to MapIt). Either send us 
+      <a href="{{ site.baseurl }}glossary/#kml" class="glossary">KML shape files</a>,
+      or if you can't do that, maybe a clear image of the map with the boundary
+      drawn on it for us to copy.
     </p>
     <p>
       In your <code>conf/general.yml</code>, you must set 
@@ -218,8 +219,8 @@ Use this type of boundary if you:
     <p>
       Same as previous example: either set up your own instance of MapIt, or ask to
       have your boundaries added to our custom one. If you want us to host it, we'll
-      need KML shape files or a graphic showing the boundary clearly shown so we can
-      copy it. 
+      need <a href="{{ site.baseurl }}glossary/#kml" class="glossary">KML shape files</a>
+      or a graphic showing the boundary clearly shown so we can copy it. 
     </p>
     <p>
       Note that now there may be more than one type of area, and you'll need to explicitly
@@ -415,21 +416,25 @@ this data into a MapIt server and use that.
     <h3>How to set this up</h3>
   </dt>
   <dd>
-    <p>Ideally, if you can source the data from your local government (which means
-    it&#8217;s definitive), then it&#8217;s great if you can add it (as admin boundary data) to
-    the OpenStreetMap project. Our global MapIt will subsequently import it and
-    your FixMyStreet can then use it as described in the previous example. If
-    you&#8217;re going to do that, <strong>the data must be open data</strong> and you should probably
-    ask about it on the
-    <a href="http://lists.openstreetmap.org/listinfo/imports">OSM import list</a> first. Of
-    course, if you do this, it means anyone else in the world can use it too, if
-    they want.</p>
-
-    <p>But if you can&#8217;t do that, or the boundary data you have is not definitive, you
-    can create your own. Use any good GIS software to plot the boundaries
-    accurately, and then export it as KML shape files. MapIt can import these, so
-    you can then either run your own MapIt instance, or ask us to add it to our
-    custom one.</p>
+    <p>
+      Ideally, if you can source the data from your local government (which
+      means it's definitive), then it's great if you can add it (as
+      admin boundary data) to the OpenStreetMap project. Our global MapIt will
+      subsequently import it and your FixMyStreet can then use it as described
+      in the previous example. If you're going to do that, <strong>the
+      data must be open data</strong> and you should probably ask about it on
+      the <a href="http://lists.openstreetmap.org/listinfo/imports">OSM import
+      list</a> first. Of course, if you do this, it means anyone else in the
+      world can use it too, if they want.
+    </p>
+    <p>
+      But if you can't do that, or the boundary data you have is not
+      definitive, you can create your own. Use any good GIS software to plot
+      the boundaries accurately, and then export it as
+      <a href="{{ site.baseurl }}glossary/#kml" class="glossary">KML shape files</a>.
+      MapIt can import these, so you can then either run your own MapIt
+      instance, or ask us to add it to our custom one.
+    </p>
   </dd>
 </dl>
 

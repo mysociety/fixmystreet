@@ -35,6 +35,7 @@ technical information, see
   <li><a href="#geocoder">geocoder</a></li>
   <li><a href="#gettext">gettext</a></li>
   <li><a href="#git">git</a></li>
+  <li><a href="#kml">KML</a></li>
   <li><a href="#integration">integration</a></li>
   <li><a href="#latlong">lat-long</a></li>
   <li><a href="#locale">locale</a></li>
@@ -543,6 +544,35 @@ technical information, see
         <li>
           <a href="#open311" class="glossary">Open311</a> is the easiest form
           of integration.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="kml">KML</a> (Keyhole Markup Language)
+  </dt>
+  <dd>
+    <strong>KML</strong> is an open standard XML format for geographic data.
+    <a href="#mapit" class="glossary">MapIt</a> can read KML files. If you need
+    to provide your own <a href="#area" class="glossary">admin boundary</a>
+    data, you can use common GIS software (such as Google Earth) to create a
+    KML "shape file" containing the boundaries, and then import them to Mapit.
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          Article about <a
+          href="http://en.wikipedia.org/wiki/Keyhole_Markup_Language">Keyhole
+          Markup Language</a> on wikipedia.
+        </li>
+        <li>
+          <a href="https://developers.google.com/kml/documentation/">KML documentation</a>
+          at Google Developers.
+        </li>
+        <li>
+          More about <a href="{{ site.baseurl }}customising/boundaries/">admin boundaries</a>
+          and why you might need to create them yourself.
         </li>
       </ul>
     </div>
