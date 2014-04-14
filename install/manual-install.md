@@ -234,33 +234,14 @@ should not be run on a live site.
 The `master` branch of the repository should always be passing all tests for
 our developers and on mySociety's servers.
 
-### Common Problems
+## Problems?
 
-#### locale
+See some [troubleshooting hints]({{ site.baseurl }}install/troubleshooting/) if
+something's not working for you.
 
-By default FixMyStreet uses the en_GB.UTF-8 locale. If it is not installed then
-it may not start
+## When you've finished
 
-#### Template caching
-
-FixMyStreet caches compiled templates alongside the source files so the templates
-directory needs to be writable by the process that is running FixMyStreet.
-
-#### Image::Magick perl module
-
-If your OS has a way to install a binary version of Image::Magick then it's recommended
-that you do that rather than install via CPAN.
-
-#### Missing Perl modules
-
-We think we've included all the modules you should need to run and develop FixMyStreet on your
-machine but if we've missed one, please let us know. If you need a new module for something
-you're developing, please get in touch as adding things to carton is currently not as simple
-as we would like.
-
-### When you've finished
-
-Please also see the instructions for [updating your code](/updating/) once it's installed.
+Please see the instructions for [updating your code](/updating/) once it's installed.
 
 If you want to know which bits of FixMyStreet are in which directory, see this
 [summary of the directory structure](/directory_structure).
