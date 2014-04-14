@@ -289,7 +289,8 @@ technical information, see
           config setting, based on the URL of the incoming request.
         </li>
         <li>
-          <a href="{{ site.baseurl }}customising/">more about customising</a>
+          <a href="{{ site.baseurl }}customising/">more about customising</a>, including a
+          <a href="{{ site.baseurl }}customising/checklist/">checklist</a> of the key things to consider.
         </li>
         <li>
           See <a href="{{ site.baseurl }}customising/cobrand-module/">Cobrand module</a> for
