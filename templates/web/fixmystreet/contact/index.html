@@ -16,7 +16,11 @@
     </aside>
 </div>
 
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+<h1>FixMyStreet technical support</h1>
+[% ELSE %]
 <h1>[% loc('Contact the team') %]</h1>
+[% END %]
  
 <form method="post" action="/contact/submit" class="validate">
     <fieldset>
@@ -94,6 +98,7 @@
         [% END %]
         <input type="text" class="required" name="subject" id="form_subject" value="[% subject | html %]" size="30">
 
+        [% INCLUDE 'contact/who.html' %]
 
         <label for="form_message">[% loc('Message') %]</label>
         [% IF field_errors.message %]
@@ -106,6 +111,12 @@
 
     </fieldset>
 </form>
+
+<h4>[% loc("Don't like forms?") %]</h4>
+
+<p>
+[% tprintf( loc("You can contact technical support on <a href='mailto:%s'>%s</a>"), contact_email, contact_email) %]
+</p>
 
 [% TRY %][% INCLUDE 'contact/address.html' %][% CATCH file %][% END %]
 

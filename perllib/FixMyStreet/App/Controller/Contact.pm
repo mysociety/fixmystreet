@@ -108,6 +108,11 @@ sub validate : Private {
           if !mySociety::EmailUtil::is_valid_email( $c->req->param('em') );
     }
 
+    %field_errors = (
+        %field_errors,
+        $c->cobrand->extra_contact_validation($c)
+    );
+
     push @errors, _('Illegal ID')
       if $c->req->param('id') && $c->req->param('id') !~ /^[1-9]\d*$/
           or $c->req->param('update_id')

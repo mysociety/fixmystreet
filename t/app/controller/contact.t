@@ -8,7 +8,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 $mech->get_ok('/contact');
 $mech->title_like(qr/Contact Us/);
-$mech->content_contains("We'd love to hear what you think about this site");
+$mech->content_contains("It's often quickest to ");
 
 my $problem_main;
 
@@ -279,6 +279,115 @@ for my $test (
             ok !$problem_main->flagged, 'problem not flagged';
         }
 
+    };
+}
+
+for my $test (
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            dest    => undef,
+        },
+        page_errors =>
+          [ 'There were problems with your report. Please see below.',
+            'Please enter who your message is for',
+        ]
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            dest    => 'council',
+        },
+        page_errors =>
+          [ 'There were problems with your report. Please see below.',
+            'You can only contact the team behind FixMyStreet using our contact form',
+        ]
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            dest    => 'update',
+        },
+        page_errors =>
+          [ 'There were problems with your report. Please see below.',
+            'You can only contact the team behind FixMyStreet using our contact form',
+        ]
+    },
+  )
+{
+    subtest 'check submit page incorrect destination handling' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        }, sub {
+            $mech->host('www.fixmystreet.com');
+            $mech->get_ok( $test->{url} ? $test->{url} : '/contact' );
+            $mech->submit_form_ok( { with_fields => $test->{fields} } );
+            is_deeply $mech->page_errors, $test->{page_errors}, 'page errors';
+
+            # we santise this when we submit so need to remove it
+            delete $test->{fields}->{id}
+              if $test->{fields}->{id} and $test->{fields}->{id} eq 'invalid';
+            is_deeply $mech->visible_form_values, $test->{fields}, 'form values';
+
+            if ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'update' ) {
+                $mech->content_contains( 'www.writetothem.com', 'includes link to WTT if trying to update report' );
+            } elsif ( $test->{fields}->{dest} and $test->{fields}->{dest} eq 'council' ) {
+                $mech->content_lacks( 'www.writetothem.com', 'does not include link to WTT if trying to contact council' );
+                $mech->content_contains( 'should find contact details', 'mentions checking council website for contact details' );
+            }
+        }
+    };
+}
+
+for my $test (
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            dest    => 'help',
+        },
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            dest    => 'feedback',
+        },
+    },
+    {
+        fields => {
+            em      => 'test@example.com',
+            name    => 'A name',
+            subject => 'A subject',
+            message => 'A message',
+            dest    => 'from_council',
+        },
+    },
+  )
+{
+    subtest 'check email sent correctly with dest field set to us' => sub {
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ 'fixmystreet' ],
+        }, sub {
+            $mech->clear_emails_ok;
+            $mech->get_ok('/contact');
+            $mech->submit_form_ok( { with_fields => $test->{fields} } );
+            $mech->content_contains('Thanks for your feedback');
+            $mech->email_count_is(1);
+        }
     };
 }
 
