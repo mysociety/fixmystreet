@@ -46,6 +46,7 @@ for my $body (
     { id => 2482, name => 'Bromley Council' },
     { id => 2240, name => 'Staffordshire County Council' },
     { id => 2434, name => 'Lichfield District Council' },
+    { id => 2504, name => 'Westminster City Council' },
 ) {
     $mech->create_body_ok($body->{id}, $body->{name});
 }
