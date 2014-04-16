@@ -136,20 +136,22 @@ you should copy to `conf/general.yml`:
 
 The bare minimum of settings you will need to fill in or update are:
 
-* FMS_DB_PASS -- this is the password for the database. (Also obviously change any other database settings you did differently here.)
-* BASE_URL -- for using the development server, set to `'http://localhost:3000/'`. This is the URL of the homepage of your FixMyStreet installation.
-* MAPIT_URL -- for the development server, set to `'http://localhost:3000/fakemapit/'`. This would be the URL of a MapIt installation, as and when you use one.
+* [FMS_DB_PASS]({{ site.baseurl }}customising/config/#fms_db_pass) -- this is the password for the database. (Also obviously change any other database settings you did differently here.)
+* [BASE_URL]({{ site.baseurl }}customising/config/#base_url) -- for using the development server, set to `'http://localhost:3000/'`. This is the URL of the homepage of your FixMyStreet installation.
+* [MAPIT_URL]({{ site.baseurl }}customising/config/#mapit_url) -- for the development server, set to `'http://localhost:3000/fakemapit/'`. This would be the URL of a MapIt installation, as and when you use one.
 
 Some others you might want to look at, though the defaults are enough for it to run:
 
-* EMAIL_DOMAIN -- the email domain that emails will be sent from
-* CONTACT_EMAIL -- the email address to be used on the site for the contact us form.
-* DO_NOT_REPLY_EMAIL -- the email address to be used on the site for e.g. confirmation emails.
-* STAGING_SITE -- if this is 1 then all email (alerts and reports) will be sent to the contact email address. Use this for development sites.
-* UPLOAD_DIR -- this is the location where images will be stored when they are uploaded. It should be accessible by and writeable by the FixMyStreet process.
-* GEO_CACHE -- this is the location where Geolocation data will be cached. It should be accessible by and writeable by the FixMyStreet process.
+* [EMAIL_DOMAIN]({{ site.baseurl }}customising/config/#email_domain) -- the email domain that emails will be sent from
+* [CONTACT_EMAIL]({{ site.baseurl }}customising/config/#contact_email) -- the email address to be used on the site for the contact us form.
+* [DO_NOT_REPLY_EMAIL]({{ site.baseurl }}customising/config/#do_not_reply_email) -- the email address to be used on the site for e.g. confirmation emails.
+* [STAGING_SITE]({{ site.baseurl }}customising/config/#staging_site) -- if this is 1 then all email (alerts and reports) will be sent to the contact email address. Use this for development sites.
+* [UPLOAD_DIR]({{ site.baseurl }}customising/config/#upload_dir) -- this is the location where images will be stored when they are uploaded. It should be accessible by and writeable by the FixMyStreet process.
+* [GEO_CACHE]({{ site.baseurl }}customising/config/#geo_cache) -- this is the location where Geolocation data will be cached. It should be accessible by and writeable by the FixMyStreet process.
 
-If you are using Bing or Google maps you should also set one of BING_MAPS_API_KEY or GOOGLE_MAPS_API_KEY.
+If you are using Bing or Google maps you should also set one of
+[BING_MAPS_API_KEY]({{ site.baseurl }}customising/config/#bing_maps_api_key) or 
+[GOOGLE_MAPS_API_KEY]({{ site.baseurl }}customising/config/#google_maps_api_key).
 
 ### 6. Generate CSS
 
@@ -227,7 +229,8 @@ You can run the unit tests by running the following command in the
     bin/cron-wrapper prove -r t
 
 These currently require that the fixmystreet cobrand is enabled in the
-`ALLOWED_COBRANDS` setting, and also might assume other config is set up
+[ALLOWED_COBRANDS]({{ site.baseurl }}customising/config/#allowed_cobrands)
+setting, and also might assume other config is set up
 correctly. Note that this may leave entries in your database at the moment and
 should not be run on a live site.
 
