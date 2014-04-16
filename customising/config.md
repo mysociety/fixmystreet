@@ -524,7 +524,7 @@ LANGUAGES:
     <p>
     Possible choices are 
     <code>Google</code>, <code>Bing</code>, or <code>OSM</code>.
-    By default, FixMyStreet will use OSM, the 
+    By default, FixMyStreet will use <code>OSM</code>, the 
     <a href="{{ site.baseurl }}glossary/#osm" class="glossary">OpenStreetMap</a> 
     geocoder.
     </p>

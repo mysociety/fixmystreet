@@ -423,8 +423,10 @@ technical information, see
     class="glossary">map</a>.
     <p>
       FixMyStreet can use the <a href="#osm"
-      class="glossary">OpenStreetMap</a>, Google, or Bing geocoders, or can
-      use a custom one.
+      class="glossary">OpenStreetMap</a>, Google, or Bing geocoders, or a custom one.
+      The 
+      <code><a href="{{ site.baseurl }}customising/config/#geocoder">GEOCODER</a></code>
+      setting controls which one your site uses.
     </p>
     <div class="more-info">
       <p>More information:</p>
