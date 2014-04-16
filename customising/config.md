@@ -658,7 +658,7 @@ GEOCODING_DISAMBIGUATION:
     and other UK-specific values, including <code>FMS</code>
     for UK <a href="http://www.fixmystreet.com">FixMyStreet</a>.
     <p>
-      Check the useage terms for the type of map you use &mdash; there may be
+      Check the usage terms for the type of map you use &mdash; there may be
       restrictions.
     </p>
     <div class="more-info">
