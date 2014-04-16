@@ -7,6 +7,18 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 
 ga('create', 'UA-660910-4', {'cookieDomain': '.fixmystreet.com'});
 ga('set', 'anonymizeIp', true);
+[% IF created_report %]
+ga(function(tracker) {
+    var page = tracker.get('location');
+    var extra = '';
+    if ( page.indexOf('?') != -1 ) {
+        extra = '&created_report=1';
+    } else {
+        extra = '?created_report=1';
+    }
+    tracker.set('location', page + extra);
+});
+[% END %]
 ga('send', 'pageview');
 
 </script>

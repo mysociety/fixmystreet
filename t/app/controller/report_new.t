@@ -826,7 +826,7 @@ foreach my $test (
             $mech->submit_form_ok(
                 {
                     with_fields => {
-                        title         => "Test Report at café", 
+                        title         => "Test Report at café",
                         detail        => 'Test report details.',
                         photo         => '',
                         name          => 'Joe Bloggs',
@@ -1479,6 +1479,120 @@ subtest "categories from deleted bodies shouldn't be visible for new reports" =>
         ok $mech->content_lacks( $contact3->category );
 
         $contact3->body->update( { deleted => 0 } );
+    };
+};
+
+subtest "extra google analytics code displayed on logged in problem creation" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        BASE_URL => 'http://www.fixmystreet.com',
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        # check that the user does not exist
+        my $test_email = 'test-2@example.com';
+
+        $mech->clear_emails_ok;
+        my $user = $mech->log_in_ok($test_email);
+
+        # setup the user.
+        ok $user->update(
+            {
+                name  => 'Test User',
+                phone => '01234 567 890',
+            }
+          ),
+          "set users details";
+
+        # submit initial pc form
+        $mech->get_ok('/around');
+        $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR', } },
+            "submit location" );
+
+        # click through to the report page
+        $mech->follow_link_ok( { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link" );
+
+        $mech->submit_form_ok(
+            {
+                with_fields => {
+                    title         => "Test Report at café", 
+                    detail        => 'Test report details.',
+                    photo         => '',
+                    name          => 'Joe Bloggs',
+                    may_show_name => '1',
+                    phone         => '07903 123 456',
+                    category      => 'Trees',
+                }
+            },
+            "submit good details"
+        );
+
+        # find the report
+        my $report = $user->problems->first;
+        ok $report, "Found the report";
+
+        # check that we got redirected to /report/
+        is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
+
+        $mech->content_contains( "extra = '?created_report", 'extra google code present' );
+
+        # cleanup
+        $mech->delete_user($user);
+    };
+};
+
+subtest "extra google analytics code displayed on email confirmation problem creation" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
+        BASE_URL => 'http://www.fixmystreet.com',
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->log_out_ok;
+        $mech->clear_emails_ok;
+
+        $mech->get_ok('/');
+        $mech->submit_form_ok( { with_fields => { pc => 'GL50 2PR' } },
+            "submit location" );
+        $mech->follow_link_ok(
+            { text_regex => qr/skip this step/i, },
+            "follow 'skip this step' link"
+        );
+
+        my $fields = $mech->visible_form_values('mapSkippedForm');
+        my $submission_fields = {
+            title             => "Test Report",
+            detail            => 'Test report details.',
+            photo             => '',
+            email             => 'firstlast@example.com',
+            name              => 'Test User',
+            may_show_name     => '1',
+            phone             => '07903 123 456',
+            category          => 'Trees',
+            password_register => '',
+        };
+
+        $mech->submit_form_ok( { with_fields => $submission_fields },
+            "submit good details" );
+
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/confirm the problem/i, "confirm the problem";
+
+        my ($url) = $email->body =~ m{(https?://\S+)};
+        ok $url, "extracted confirm url '$url'";
+
+        # confirm token in order to update the user details
+        $mech->get_ok($url);
+
+        $mech->content_contains( "extra = '?created_report", 'extra google code present' );
+
+        my $user =
+          FixMyStreet::App->model('DB::User')
+          ->find( { email => 'firstlast@example.com' } );
+
+        $user->problems->delete;
+        $user->alerts->delete;
+        $user->delete;
     };
 };
 

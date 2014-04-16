@@ -167,6 +167,9 @@ sub format_problem_for_display : Private {
     }
 
     $c->stash->{extra_name_info} = $problem->bodies_str && $problem->bodies_str eq '2482' ? 1 : 0;
+    if ( $c->sessionid && $c->flash->{created_report} ) {
+        $c->stash->{created_report} = $c->flash->{created_report};
+    }
 
     $c->forward('generate_map_tags');
 
