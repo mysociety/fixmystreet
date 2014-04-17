@@ -774,7 +774,8 @@ sub report_edit : Path('report_edit') : Args(1) {
         if ( $c->req->param('remove_photo') ) {
             $problem->photo(undef);
         }
-        if ( $new_state eq 'hidden' ) {
+
+        if ( $c->req->param('remove_photo') || $new_state eq 'hidden' ) {
             unlink glob FixMyStreet->path_to( 'web', 'photo', $problem->id . '.*' );
         }
 
@@ -916,6 +917,10 @@ sub update_edit : Path('update_edit') : Args(1) {
             $update->photo(undef);
         }
 
+        if ( $c->req->param('remove_photo') || $new_state eq 'hidden' ) {
+            unlink glob FixMyStreet->path_to( 'web', 'photo', 'c', $update->id . '.*' );
+        }
+
         $update->name( $c->req->param('name') || '' );
         $update->text( $c->req->param('text') );
         $update->anonymous( $c->req->param('anonymous') );
@@ -937,10 +942,6 @@ sub update_edit : Path('update_edit') : Args(1) {
                 $update->problem->lastupdate( \'ms_current_timestamp()' );
                 $update->problem->update;
             }
-        }
-
-        if ( $new_state eq 'hidden' ) {
-            unlink glob FixMyStreet->path_to( 'web', 'photo', 'c', $update->id . '.*' );
         }
 
         $update->update;
