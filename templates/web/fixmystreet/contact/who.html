@@ -1,0 +1,77 @@
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+    <h4>Topic:</h4>
+
+    [% IF field_errors.dest %]
+    <div class="form-error">[% field_errors.dest %]</div>
+    [% ELSIF field_errors.not_for_us %]
+        <div class="form-error">You can only contact the team behind FixMyStreet using our contact form</div>
+
+        [% IF dest == 'council' %]
+        <p>
+        We’re not the council: we just run this website which helps you report issues
+        to them.
+        </p>
+
+        <p>
+        <strong>If you want to report a street problem</strong>, return to the
+        FixMyStreet homepage and enter your postcode. You can then make a report.
+        We'll send it to your council, and publish it on FixMyStreet.
+        </p>
+
+        <p>
+        <strong>If your problem is not a street issue</strong>, or is <strong>not
+        suitable for publication on the site</strong>, then FixMyStreet isn't the
+        right place for it. You should find contact details on your council's own
+        website.
+        </p>
+        [% ELSIF dest == 'update' %]
+        <p>
+        FixMyStreet is great for reporting problems, but we don't fix them - your
+        council oversees that.
+        </p>
+
+        <p>
+        <strong>If you'd like to chase your report</strong>, please reply directly
+        to any response - or auto-reply - that your council sent you. Check that
+        it has your council's email address on it so that it goes to the right place.
+        </p>
+
+        <p>
+        It's a good idea to include the URL [web address] of your original FixMyStreet
+        report.
+        </p>
+
+        <p>
+        <strong>If you're not having any luck getting your community problems fixed</strong>,
+        you could try contacting your local councillor, using another useful mySociety site:
+        <a href="https://www.writetothem.com/">https://www.writetothem.com/</a>.
+        </p>
+
+        [% END %]
+    [% END %]
+
+    <div class="checkbox-group">
+        <input name="dest" id="dest_help" type="radio" value="help" class="required"[% IF dest AND dest == 'help' %] checked[% END %]>
+        <label class="inline" for="dest_help">I need help using the site</label>
+    </div>
+
+    <div class="checkbox-group">
+        <input name="dest" id="dest_feeback" type="radio" value="feeback" class="required"[% IF dest AND dest == 'feeback' %] checked[% END %]>
+        <label class="inline" for="dest_feeback">I have feedback about the site</label>
+    </div>
+
+    <div class="checkbox-group">
+        <input name="dest" id="dest_from_council" type="radio" value="from_council" class="required"[% IF dest AND dest == 'from_council' %] checked[% END %]>
+        <label class="inline" for="dest_from_council">I am from a council and I have a question for the FixMyStreet team</label>
+    </div>
+
+    <div class="checkbox-group">
+        <input name="dest" id="dest_council" type="radio" value="council" class="required"[% IF dest AND dest == 'council' %] checked[% END %]>
+        <label class="inline" for="dest_council">I want to report a street problem</label>
+    </div>
+
+    <div class="checkbox-group">
+        <input name="dest" id="dest_update" type="radio" value="update"[% IF dest AND dest == 'update' %] checked[% END %]>
+        <label class="inline" for="dest_update">My street problem hasn't been fixed</label>
+    </div>
+[% END %]
