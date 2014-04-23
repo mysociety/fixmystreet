@@ -155,6 +155,6 @@ If you still want to be involved, we welcome questions about how it works
 Or, if you're outside the UK, email
 <a href="mailto:international@mysociety.org">international@mysociety.org.</a>
 
-There's also the [FixMyStreet blog]({{ site.baseurl }blog/) where we post version release
+There's also the [FixMyStreet blog]({{ site.baseurl }}blog/) where we post version release
 information and other progress reports. And we often post FixMyStreet news on
 the <a href="http://www.mysociety.org/blog">mySociety blog</a> too.
