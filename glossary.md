@@ -42,6 +42,7 @@ technical information, see
   <li><a href="#map">map</a></li>
   <li><a href="#mapit">MapIt</a></li>
   <li><a href="#open311">Open311</a></li>
+  <li><a href="#partial">partial report</a></li>
   <li><a href="#report">problem report</a></li>
   <li><a href="#survey">questionnaire</a></li>
   <li><a href="#send-method">send method</a></li>
@@ -750,6 +751,31 @@ technical information, see
       </ul>
     </div>
   </dd>
+
+  <dt>
+    <a name="partial">partial report</a>
+  </dt>
+  <dd>
+    Some external applications might create a report by first uploading a photograph
+    and capturing a description, without identifying the location. This is a 
+    <strong>partial report</strong> and is not shown until it has been completed.
+    <p>
+      <em>FixMyStreet itself does not create partial reports</em>, because all problem
+      reports created within the application always include a location.
+    </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          Remember that FixMyStreet uses the location to
+          <a href="{{ site.baseurl }}fms_and_mapit/">determine where to send reports</a>,
+          so a partial report (having no location) effectively has no 
+          <a href="#body" class="glossary">body</a> responsible for it.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
 
   <dt>
     <a name="report">problem report</a>
