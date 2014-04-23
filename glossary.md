@@ -28,6 +28,7 @@ technical information, see
   <li><a href="#category">category</a></li>
   <li><a href="#cobrand">cobrand</a></li>
   <li><a href="#config-variable">config variable</a></li>
+  <li><a href="#token">confirmation</a></li>
   <li><a href="#contact">contact</a></li>
   <li><a href="#council">council</a></li>
   <li><a href="#dashboard">dashboard</a></li>
@@ -50,6 +51,7 @@ technical information, see
   <li><a href="#state">state</a></li>
   <li><a href="#survey">survey</a></li>
   <li><a href="#template">template</a></li>
+  <li><a href="#token">token</a></li>
   <li><a href="#update">update</a></li>
   <li><a href="#user-account">user account</a></li>
 </ul>
@@ -911,8 +913,10 @@ technical information, see
   <dd>
       By default, FixMyStreet sends out <strong>surveys</strong> (also called
       <strong>questionnaires</strong>) to users four weeks after they reported a
-      problem. These surveys help you collect data on the performance of the <a
-      href="#bodies" class="glossary">bodies</a>.
+      problem. The surveys encourage the users who reported each problem to
+      indicate whether or not the problem has been fixed (if it hasn't already
+      been marked as such). These surveys help you collect data on the performance
+      of the <a href="#bodies" class="glossary">bodies</a>. 
     <div class="more-info">
       <p>More information:</p>
       <ul>
@@ -964,6 +968,38 @@ technical information, see
         <li>
           See the <a href="http://www.template-toolkit.org/">Template Toolkit
           website</a>, which is the system the FixMyStreet web templates use.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="token">token</a> (also confirmation link)
+  </dt>
+  <dd>
+    By default, FixMyStreet uses confirmation emails containing links as
+    authorisation where the user is not already logged in. The links
+    contain unique <strong>tokens</strong> (these look like runs of random
+    letters and numbers).
+    <p>
+      Tokens are typically used to confirm the final part (authorisation) of an
+      action, and are therefore often related to a specific <a href="#report"
+      class="glossary">report</a>. FixMyStreet generally doesn't delete tokens
+      after they've been used because (as they often live on in email inboxes)
+      people sometimes click on old confirmation links to access reports
+      &mdash; so the mapping between token and report is still useful.
+    </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          Tokens are implemented using <code>AuthToken</code> from mySociety's
+          <a href="https://github.com/mysociety/commonlib">commonlib</a>
+          common library.
+        </li>
+        <li>
+          For details about authorisation and how sessions work, see 
+          <a href="{{ site.baseurl }}running/users/#sessions">more about users</a>.
         </li>
       </ul>
     </div>

@@ -134,6 +134,8 @@ the email or name. (It's also possible to access a user via the reports they
 have made). Choose the appropriate body from the **Body** dropdown. Normal
 (not staff) users have no body associated.
 
+<a name="sessions"> </a>
+
 ## How FixMyStreet user sessions work
 
 *The following information about sessions is here in case you need to
