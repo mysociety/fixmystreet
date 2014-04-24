@@ -25,6 +25,7 @@ technical information, see
   <li><a href="#area-type">area type</a></li>
   <li><a href="#abuse-list">banning</a></li>
   <li><a href="#body">body</a></li>
+  <li><a href="#catalyst">Catalyst</a></li>
   <li><a href="#category">category</a></li>
   <li><a href="#cobrand">cobrand</a></li>
   <li><a href="#config-variable">config variable</a></li>
@@ -239,6 +240,35 @@ technical information, see
           See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
           class="glossary">areas</a>.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="catalyst">Catalyst</a> (Perl framework)
+  </dt>
+  <dd>
+    FixMyStreet is written in Perl, and uses the <strong>Catalyst</strong>
+    framework. For basic customisation you don't need to write any Perl &mdash;
+    you can get a site up and running with your own colours, logo, and location
+    without needing to do any programming. But if you do need to look into the
+    source code, you'll find the Catalyst framework helps, because it's a
+    "Model-View-Controller" framework (which is common in web applications).
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See the <a href="{{ site.baseurl }}directory_structure/">FixMyStreet
+          directory structure</a> explained.
+        </li>
+        <li>
+          If you need to understand more about the framework, see the 
+          <a href="http://www.catalystframework.org">Catayst project website</a>.
+        </li>
+        <li>
+          More about  
+          <a href="{{ site.baseurl }}customising/">customising FixMyStreet</a>.
         </li>
       </ul>
     </div>
