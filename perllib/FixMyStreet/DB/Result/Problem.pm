@@ -623,11 +623,10 @@ sub body {
 #     Note:   this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
     my $self = shift;
-    if ($self->external_id && $self->send_method_used && 
-        ($self->send_method_used eq 'barnet' || $self->bodies_str =~ /2237/)) {
+    if ($self->external_id && $self->bodies_str =~ /2237/) {
         return 1;
     }
-    return 0;    
+    return 0;
 }
 
 # TODO Some/much of this could be moved to the template
