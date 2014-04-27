@@ -10,7 +10,7 @@ title: Admin boundaries
     for each of the 
     <a href="{{ site.baseurl }}glossary/#body" class="glossary">bodies</a>
     you'll be sending reports to. If you're lucky, the boundaries might already
-    be available. If not, you'll have do make them. This page explains your
+    be available. If not, you'll have to make them. This page explains your
     options.
 </p>
 
@@ -20,9 +20,8 @@ When someone sticks a pin in the map to report a problem, FixMyStreet uses
 boundaries to answer the question: _who is responsible for fixing problems
 **here**_?
 
-This also means boundaries let FixMyStreet know if the pin has been put
-somewhere that is *not* covered by any of the bodies it normally reports
-problems to.
+This also means that boundaries can be used to determine if the pin has
+been put somewhere that is *not* covered by any bodies.
 
 <div class="attention-box">
   We've written a separate page about 
@@ -35,9 +34,10 @@ problems to.
 </div>
 
 FixMyStreet finds all the bodies that are associated with the area (or areas)
-that pin is inside -- those are the bodies to whom the report might be sent.
-Which body is actually chosen will depend on which category the user selects
-when they complete their problem report.
+that the pin is inside -- those are the bodies to whom the report might be sent.
+Which of these bodies is actually chosen depends on the 
+<a href="{{ site.baseurl }}glossary/#category" class="glossary">category</a>
+the user selects when they complete their problem report.
 
 ## Boundaries are independent of your maps!
 
