@@ -65,7 +65,7 @@ at the same time as others -- but if you're not sure then just work through the 
   </dt>
   <dd>
     There are several different ways of doing this &mdash; see 
-    <a href="{{ site.baseurl }}installing/">installation instructions</a>.
+    <a href="{{ site.baseurl }}install/">installation instructions</a>.
     <p>
       Even if you're not hosting the site yourself, you might want to install
       the software in order to see how your customisation looks before putting
