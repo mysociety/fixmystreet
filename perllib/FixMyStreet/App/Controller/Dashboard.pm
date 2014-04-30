@@ -195,7 +195,7 @@ sub export_as_csv {
                 (defined $value and length $value) ? ($_, $value) : ()
             } sort keys %where };
 
-    my $csv = Text::CSV->new();
+    my $csv = Text::CSV->new({ binary => 1, eol => "\n" });
     $csv->combine(
             'Report ID',
             'Title',
@@ -264,7 +264,7 @@ sub export_as_csv {
     }
     $c->res->content_type('text/csv; charset=utf-8');
     $c->res->header('content-disposition' => "attachment; filename=${filename}.csv");
-    $c->res->body( join "\n", @body );
+    $c->res->body( join "", @body );
 }
 
 sub updates_search : Private {
