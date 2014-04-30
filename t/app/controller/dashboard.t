@@ -609,9 +609,19 @@ FixMyStreet::override_config {
     }
 
     subtest 'export as csv' => sub {
+        make_problem( {
+            detail => "this report\nis split across\nseveral lines",
+            state => "confirmed",
+            conf_dt => DateTime->now(),
+        } );
         $mech->get_ok('/dashboard?export=1');
-        my @lines = split /\n/, $mech->content;
-        is scalar @lines, 6, '1 (header) + 5 (reports) = 6 lines';
+        open my $data_handle, '<', \$mech->content;
+        my $csv = Text::CSV->new( { binary => 1 } );
+        my @rows;
+        while ( my $row = $csv->getline( $data_handle ) ) {
+            push @rows, $row;
+        }
+        is scalar @rows, 7, '1 (header) + 6 (reports) = 7 lines';
     };
 };
 restore_time;
@@ -623,7 +633,7 @@ sub make_problem {
         title => 'a problem',
         name => 'a user',
         anonymous => 1,
-        detail => 'some detail',
+        detail => $args->{detail} || 'some detail',
         state => $args->{state},
         confirmed => $args->{conf_dt},
         whensent => $args->{conf_dt},
