@@ -12,13 +12,13 @@ use DBD::Oracle qw(:ora_types);
 ### for local testing (no Oracle):
 ### use constant { ORA_VARCHAR2=>1, ORA_DATE=>1, ORA_NUMBER=>1};
 
-my %PEM_BOUND_VAR_TYPES = get_pem_field_types();
+our %PEM_BOUND_VAR_TYPES = get_pem_field_types();
 
-my $ERR_MSG            = 'error'; # unique key in data hash
+our $ERR_MSG            = 'error'; # unique key in data hash
 
 # incoming (Open311, from FMS) field names
 # note: attribute[*] are being sent by FMS explicitly as attributes for Oxfordshire
-my %F = (
+our %F = (
     'ACCOUNT_ID'         => 'account_id',
     'ADDRESS_ID'         => 'address_id',
     'ADDRESS_STRING'     => 'address_string',

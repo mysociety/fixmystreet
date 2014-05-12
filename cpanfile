@@ -112,4 +112,8 @@ requires 'Test::More', '0.88';
 requires 'Test::Warn';
 requires 'Test::WWW::Mechanize::Catalyst';
 requires 'Web::Scraper';
+requires 'Plack', '1.0030';
+requires 'CGI::Compile';
+requires 'CGI::Emulate::PSGI';
+requires 'Test::MockObject';
 
