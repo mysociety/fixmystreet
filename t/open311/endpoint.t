@@ -284,7 +284,8 @@ CONTENT
     $res = $endpoint->run_test_request( GET => '/requests.xml?service_code=POT', );
     ok $res->is_success, 'valid request';
 
-    is_string $res->content, $xml, 'xml string ok POT';
+    is_string $res->content, $xml, 'xml string ok POT'
+        or diag $res->content;
 
     $res = $endpoint->run_test_request( GET => '/requests.xml?service_code=BIN', );
     ok $res->is_success, 'valid request';

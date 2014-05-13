@@ -50,11 +50,4 @@ has attributes => (
     }
 );
 
-sub submit_request {
-    my ($self, $args) = @_;
-
-    # blackhole the request by default.  You must override this in subclass!
-    return ()
-}
-
 1;

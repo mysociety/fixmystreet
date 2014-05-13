@@ -394,14 +394,9 @@ sub POST_Service_Request {
 }
 
 sub post_service_request {
-    # we assume that the posting of the request is handled by the Service
-    # object.  You may wish instead to override this method if this assumption
-    # doesn't hold.
-
     my ($self, $service, $args) = @_;
 
-    my @service_requests = $service->submit_request( $args );
-    return @service_requests;
+    die "abstract method post_service_request not overridden";
 }
 
 sub GET_Service_Requests_input_schema {
@@ -460,7 +455,12 @@ sub GET_Service_Requests {
         } qw/ service_request_id service_code status /,
     });
 
-    my $result = {
+    $self->format_service_requests(@service_requests);
+}
+
+sub format_service_requests {
+    my ($self, @service_requests) = @_;
+    return {
         service_requests => [
             map {
                 my $request = $_;
@@ -506,25 +506,11 @@ sub GET_Service_Requests {
             } @service_requests,
         ],
     };
-
-    return $result;
 }
 
 sub get_service_requests {
-    # we assume that each service handles getting requests, and we collate them
-    # here.
-    # if the endpoint handles all services globally, then you may wish to
-    # override this.
-
     my ($self, $args) = @_;
-
-    my @services = $args->{service_code} ?
-        (map { $self->service($_) } @{$args->{service_code}})
-      : $self->services;
-
-    return map {
-        $_->service_requests( $args );
-    } @services;
+    die "abstract method get_service_requests not overridden";
 }
 
 sub services {
