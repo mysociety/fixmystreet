@@ -106,5 +106,9 @@ sub get_service_requests {
     return $self->filter_requests( sub { shift->service->service_code ~~ $service_code });
 }
 
+sub get_service_request {
+    my ($self, $service_request_id, $args) = @_;
+    return $self->get_request( $service_request_id );
+}
 
 1;

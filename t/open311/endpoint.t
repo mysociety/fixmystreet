@@ -296,5 +296,56 @@ CONTENT
 CONTENT
 };
 
+subtest "GET Service Request" => sub {
+    my @req=(<<REQ0,<<REQ1);
+<?xml version="1.0" encoding="utf-8"?>
+<service_requests>
+  <request>
+    <address>22 Acacia Avenue</address>
+    <address_id></address_id>
+    <lat>0</lat>
+    <lon>0</lon>
+    <media_url></media_url>
+    <requested_datetime>2014-01-01T12:00:00Z</requested_datetime>
+    <service_code>POT</service_code>
+    <service_name>Pothole Repairs</service_name>
+    <service_request_id>0</service_request_id>
+    <status>open</status>
+    <updated_datetime>2014-01-01T12:00:00Z</updated_datetime>
+    <zipcode></zipcode>
+  </request>
+</service_requests>
+REQ0
+<?xml version="1.0" encoding="utf-8"?>
+<service_requests>
+  <request>
+    <address>22 Acacia Avenue</address>
+    <address_id></address_id>
+    <lat>0</lat>
+    <lon>0</lon>
+    <media_url></media_url>
+    <requested_datetime>2014-02-01T12:00:00Z</requested_datetime>
+    <service_code>POT</service_code>
+    <service_name>Pothole Repairs</service_name>
+    <service_request_id>1</service_request_id>
+    <status>open</status>
+    <updated_datetime>2014-02-01T12:00:00Z</updated_datetime>
+    <zipcode></zipcode>
+  </request>
+</service_requests>
+REQ1
+
+    my $res = $endpoint->run_test_request( GET => '/requests/0.xml', );
+    ok $res->is_success, 'valid request';
+
+    is_string $res->content, $req[0], 'Request 0 ok'
+        or diag $res->content;;
+
+    $res = $endpoint->run_test_request( GET => '/requests/1.xml', );
+    ok $res->is_success, 'valid request';
+
+    is_string $res->content, $req[1], 'Request 1 ok';
+};
+
 restore_time();
 done_testing;

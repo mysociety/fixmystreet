@@ -54,8 +54,9 @@ sub dispatch_request {
         $self->call_api( GET_Service_Requests => $args );
     },
 
-    sub (GET + /requests/*) {
-        return Open311::Endpoint::Result->error( 400, 'not implemented' );
+    sub (GET + /requests/* + ?*) {
+        my ($self, $service_request_id, $args) = @_;
+        $self->call_api( GET_Service_Request => $service_request_id, $args );
     },
 }
 
@@ -458,6 +459,59 @@ sub GET_Service_Requests {
     $self->format_service_requests(@service_requests);
 }
 
+sub get_service_requests {
+    my ($self, $args) = @_;
+    die "abstract method get_service_requests not overridden";
+}
+
+sub GET_Service_Request_input_schema {
+    my $self = shift;
+    return {
+        type => '//seq',
+        contents => [
+            $self->get_identifier_type('service_request_id'),
+            {
+                type => '//rec',
+                required => {
+                    $self->get_jurisdiction_id_required_clause,
+                },
+                optional => {
+                    $self->get_jurisdiction_id_optional_clause,
+                }
+            }
+        ],
+    };
+}
+
+sub GET_Service_Request_output_schema {
+    my $self = shift;
+    return {
+        type => '//rec',
+        required => {
+            service_requests => {
+                type => '//seq', # e.g. a single service_request
+                contents => [
+                    '/open311/service_request',
+                ]
+            },
+        },
+    };
+}
+
+sub GET_Service_Request {
+    my ($self, $service_request_id, $args) = @_;
+
+    my $service_request = $self->get_service_request($service_request_id, $args);
+
+    $self->format_service_requests($service_request);
+}
+
+sub get_service_request {
+    my ($self, $service_request_id, $args) = @_;
+
+    die "abstract method get_service_request not overridden";
+}
+
 sub format_service_requests {
     my ($self, @service_requests) = @_;
     return {
@@ -506,11 +560,6 @@ sub format_service_requests {
             } @service_requests,
         ],
     };
-}
-
-sub get_service_requests {
-    my ($self, $args) = @_;
-    die "abstract method get_service_requests not overridden";
 }
 
 sub services {
@@ -596,6 +645,7 @@ sub call_api {
         };
         if ($@) {
             return Open311::Endpoint::Result->error( 400,
+                "Error in input for $api_name",
                 split /\n/, $@,
                 # map $_->struct, @{ $@->failures }, # bit cheeky, spec suggests it wants strings only
             );
@@ -615,6 +665,7 @@ sub call_api {
         };
         if ($@) {
             return Open311::Endpoint::Result->error( 500,
+                "Error in output for $api_name",
                 split /\n/, $@,
                 # map $_->struct, @{ $@->failures },
             );
