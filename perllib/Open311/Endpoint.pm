@@ -136,7 +136,8 @@ You might additionally wish to replace the following objects.
 has schema => (
     is => 'lazy',
     default => sub {
-        Open311::Endpoint::Schema->new,
+        my $self = shift;
+        Open311::Endpoint::Schema->new( endpoint => $self ),
     },
     handles => {
         rx => 'schema',
@@ -437,29 +438,7 @@ sub GET_Service_Requests_output_schema {
         required => {
             service_requests => {
                 type => '//arr',
-                contents => {
-                    type => '//rec',
-                    required => {
-                        service_request_id => $self->get_identifier_type('service_request_id'),
-                        status => '/open311/status',
-                        service_name => '//str',
-                        service_code => $self->get_identifier_type('service_code'),
-                        requested_datetime => '/open311/datetime',
-                        updated_datetime => '/open311/datetime',
-                        address => '//str',
-                        address_id => '//str',
-                        zipcode => '//str',
-                        lat => '//num',
-                        lon => '//num',
-                        media_url => '//str',
-                    },
-                    optional => {
-                        request => '//str',
-                        description => '//str',
-                        agency_responsible => '//str',
-                        service_notice => '//str',
-                    },
-                }
+                contents => '/open311/service_request',
             },
         },
     };

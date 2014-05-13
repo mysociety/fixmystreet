@@ -5,6 +5,16 @@ use Data::Rx;
 use Open311::Endpoint::Schema::Comma;
 use Open311::Endpoint::Schema::Regex;
 
+use Carp 'confess';
+has endpoint => (
+    is => 'ro',
+    handles => [qw/
+        get_jurisdiction_id_required_clause
+        get_jurisdiction_id_optional_clause
+        get_identifier_type
+    /],
+);
+
 sub enum {
     my ($self, $type, @values) = @_;
     return {
@@ -128,6 +138,31 @@ has schema => (
                         type => '//arr',
                         contents => '/open311/attribute',
                     }
+                },
+            }
+        );
+        $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/service_request',
+            {
+                type => '//rec',
+                required => {
+                    service_request_id => $self->get_identifier_type('service_request_id'),
+                    status => '/open311/status',
+                    service_name => '//str',
+                    service_code => $self->get_identifier_type('service_code'),
+                    requested_datetime => '/open311/datetime',
+                    updated_datetime => '/open311/datetime',
+                    address => '//str',
+                    address_id => '//str',
+                    zipcode => '//str',
+                    lat => '//num',
+                    lon => '//num',
+                    media_url => '//str',
+                },
+                optional => {
+                    request => '//str',
+                    description => '//str',
+                    agency_responsible => '//str',
+                    service_notice => '//str',
                 },
             }
         );

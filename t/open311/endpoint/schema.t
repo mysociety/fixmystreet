@@ -4,9 +4,10 @@ use Test::More;
 use Test::Exception;
 
 use Data::Rx;
-use Open311::Endpoint::Schema;
+use Open311::Endpoint;
 
-my $schema = Open311::Endpoint::Schema->new->schema;
+my $endpoint = Open311::Endpoint->new;
+my $schema = $endpoint->rx;
 
 subtest 'comma tests' => sub {
 
