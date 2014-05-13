@@ -1,5 +1,11 @@
 package Open311::Endpoint;
 
+=head1 NAME
+
+Open311::Endpoint - a generic Open311 endpoint implementation
+
+=cut
+
 use Web::Simple;
 
 use JSON;
@@ -20,47 +26,97 @@ use Types::Standard ':all';
 
 use DateTime::Format::W3CDTF;
 
-# http://wiki.open311.org/GeoReport_v2
+=head1 DESCRIPTION
 
-sub dispatch_request {
-    my $self = shift;
+An implementation of L<http://wiki.open311.org/GeoReport_v2> with a
+dispatcher written as a L<Plack> application, designed to be easily
+deployed.
 
-    sub (.*) {
-        my ($self, $ext) = @_;
-        $self->format_response($ext);
-    },
+This is a generic wrapper, designed to be a conformant Open311 server.
+However, it knows nothing about your business logic!  You should subclass it
+and provide the necessary methods.
 
-    sub (GET + /services + ?*) {
-        my ($self, $args) = @_;
-        $self->call_api( GET_Service_List => $args );
-    },
+=head1 SUBCLASSING
 
-    sub (GET + /services/* + ?*) {
-        my ($self, $service_id, $args) = @_;
-        $self->call_api( GET_Service_Definition => $service_id, $args );
-    },
+See also t/open311/endpoint/Endpoint1.pm as an example.
 
-    sub (POST + /requests + %*) {
-        my ($self, $args) = @_;
-        $self->call_api( POST_Service_Request => $args );
-    },
+=head2 methods to override
 
-    sub (GET + /tokens/*) {
-        return Open311::Endpoint::Result->error( 400, 'not implemented' );
-    },
+These are the important methods to override.  They are passed a list of
+simple arguments, and should generally return objects like
+L<Open311::Endpoint::Request>.
 
-    sub (GET + /requests + ?*) {
-        my ($self, $args) = @_;
-        $self->call_api( GET_Service_Requests => $args );
-    },
+    services
+    service
+    post_service_request
+    get_service_requests
+    get_service_request
+    requires_jurisdiction_ids
+    check_jurisdiction_id
 
-    sub (GET + /requests/* + ?*) {
-        my ($self, $service_request_id, $args) = @_;
-        $self->call_api( GET_Service_Request => $service_request_id, $args );
-    },
+The dispatch framework will take care of actually formatting the output
+into conformant XML or JSON.
+
+TODO document better
+
+=cut
+
+sub services {
+    # this should be overridden in your subclass!
+    ();
+}
+sub service {
+    # this stub implementation is a simple lookup on $self->services, and
+    # should *probably* be overridden in your subclass!
+    # (for example, to look up in App DB, with $args->{jurisdiction_id})
+
+    my ($self, $service_code, $args) = @_;
+
+    return first { $_->service_code eq $service_code } $self->services;
 }
 
-=head1 Configurable arguments
+sub post_service_request {
+    my ($self, $service, $args) = @_;
+
+    die "abstract method post_service_request not overridden";
+}
+
+sub get_service_requests {
+    my ($self, $args) = @_;
+    die "abstract method get_service_requests not overridden";
+}
+
+sub get_service_request {
+    my ($self, $service_request_id, $args) = @_;
+
+    die "abstract method get_service_request not overridden";
+}
+
+sub requires_jurisdiction_ids {
+    # you may wish to subclass this
+    return shift->has_multiple_jurisdiction_ids;
+}
+
+sub check_jurisdiction_id {
+    my ($self, $jurisdiction_id) = @_;
+
+    # you may wish to override this stub implementation which:
+    #   - always succeeds if no jurisdiction_id is set
+    #   - accepts no jurisdiction_id if there is only one set
+    #   - otherwise checks that the id passed is one of those set
+    #
+    return 1 unless $self->has_jurisdiction_ids;
+
+    if (! defined $jurisdiction_id) {
+        return $self->requires_jurisdiction_ids ? 1 : undef;
+    }
+
+    return first { $jurisdiction_id eq $_ } $self->get_jurisdiction_ids;
+}
+
+
+
+=head2 Configurable arguments
 
     * default_service_notice - default for <service_notice> if not
         set by the service or an individual request
@@ -122,9 +178,9 @@ has jurisdiction_ids => (
     }
 );
 
-=head1 Other accessors
+=head2 Other accessors
 
-You might additionally wish to replace the following objects.
+You may additionally wish to replace the following objects.
 
     * schema - Data::Rx schema for validating Open311 protocol inputs and
                outputs
@@ -175,6 +231,53 @@ has w3_dt => (
     is => 'lazy',
     default => sub { DateTime::Format::W3CDTF->new },
 );
+
+=head2 Dispatching
+
+The method dispatch_request returns a list of all the dispatcher routines
+that will be checked in turn by L<Web::Simple>.
+
+You may extend this in a subclass, or with a role.
+
+=cut
+
+sub dispatch_request {
+    my $self = shift;
+
+    sub (.*) {
+        my ($self, $ext) = @_;
+        $self->format_response($ext);
+    },
+
+    sub (GET + /services + ?*) {
+        my ($self, $args) = @_;
+        $self->call_api( GET_Service_List => $args );
+    },
+
+    sub (GET + /services/* + ?*) {
+        my ($self, $service_id, $args) = @_;
+        $self->call_api( GET_Service_Definition => $service_id, $args );
+    },
+
+    sub (POST + /requests + %*) {
+        my ($self, $args) = @_;
+        $self->call_api( POST_Service_Request => $args );
+    },
+
+    sub (GET + /tokens/*) {
+        return Open311::Endpoint::Result->error( 400, 'not implemented' );
+    },
+
+    sub (GET + /requests + ?*) {
+        my ($self, $args) = @_;
+        $self->call_api( GET_Service_Requests => $args );
+    },
+
+    sub (GET + /requests/* + ?*) {
+        my ($self, $service_request_id, $args) = @_;
+        $self->call_api( GET_Service_Request => $service_request_id, $args );
+    },
+}
 
 sub GET_Service_List_input_schema {
     return shift->get_jurisdiction_id_validation;
@@ -394,12 +497,6 @@ sub POST_Service_Request {
     };
 }
 
-sub post_service_request {
-    my ($self, $service, $args) = @_;
-
-    die "abstract method post_service_request not overridden";
-}
-
 sub GET_Service_Requests_input_schema {
     my $self = shift;
     return {
@@ -459,11 +556,6 @@ sub GET_Service_Requests {
     $self->format_service_requests(@service_requests);
 }
 
-sub get_service_requests {
-    my ($self, $args) = @_;
-    die "abstract method get_service_requests not overridden";
-}
-
 sub GET_Service_Request_input_schema {
     my $self = shift;
     return {
@@ -504,12 +596,6 @@ sub GET_Service_Request {
     my $service_request = $self->get_service_request($service_request_id, $args);
 
     $self->format_service_requests($service_request);
-}
-
-sub get_service_request {
-    my ($self, $service_request_id, $args) = @_;
-
-    die "abstract method get_service_request not overridden";
 }
 
 sub format_service_requests {
@@ -562,44 +648,8 @@ sub format_service_requests {
     };
 }
 
-sub services {
-    # this should be overridden in your subclass!
-    ();
-}
-sub service {
-    # this stub implementation is a simple lookup on $self->services, and
-    # should *probably* be overridden in your subclass!
-    # (for example, to look up in App DB, with $args->{jurisdiction_id})
-
-    my ($self, $service_code, $args) = @_;
-
-    return first { $_->service_code eq $service_code } $self->services;
-}
-
 sub has_multiple_jurisdiction_ids {
     return shift->has_jurisdiction_ids > 1;
-}
-
-sub requires_jurisdiction_ids {
-    # you may wish to subclass this
-    return shift->has_multiple_jurisdiction_ids;
-}
-
-sub check_jurisdiction_id {
-    my ($self, $jurisdiction_id) = @_;
-
-    # you may wish to override this stub implementation which:
-    #   - always succeeds if no jurisdiction_id is set
-    #   - accepts no jurisdiction_id if there is only one set
-    #   - otherwise checks that the id passed is one of those set
-    #
-    return 1 unless $self->has_jurisdiction_ids;
-
-    if (! defined $jurisdiction_id) {
-        return $self->requires_jurisdiction_ids ? 1 : undef;
-    }
-
-    return first { $jurisdiction_id eq $_ } $self->get_jurisdiction_ids;
 }
 
 sub get_jurisdiction_id_validation {
@@ -710,5 +760,14 @@ sub format_response {
         }
     }
 }
+
+=head1 AUTHOR and LICENSE
+
+    hakim@mysociety.org 2014
+
+This is released under the same license as FixMyStreet.
+see https://github.com/mysociety/fixmystreet/blob/master/LICENSE.txt
+
+=cut
 
 __PACKAGE__->run_if_script;
