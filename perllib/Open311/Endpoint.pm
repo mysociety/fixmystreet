@@ -38,7 +38,11 @@ and provide the necessary methods.
 
 =head1 SUBCLASSING
 
-See also t/open311/endpoint/Endpoint1.pm as an example.
+    package My::Open311::Endpoint;
+    use Web::Simple;
+    extends 'Open311::Endpoint';
+
+See also t/open311/endpoint/Endpoint1.pm and Endpoint2.pm as examples.
 
 =head2 methods to override
 
@@ -231,6 +235,12 @@ has w3_dt => (
     is => 'lazy',
     default => sub { DateTime::Format::W3CDTF->new },
 );
+
+sub maybe_inflate_datetime {
+    my ($self, $dt) = @_;
+    return unless $dt;
+    return $self->w3_dt->parse_datetime($dt);
+}
 
 =head2 Dispatching
 
