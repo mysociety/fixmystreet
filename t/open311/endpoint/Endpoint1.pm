@@ -7,6 +7,9 @@ use MooX::HandlesVia;
 use Open311::Endpoint::Service;
 use t::open311::endpoint::ServiceType1;
 use Open311::Endpoint::Service::Attribute;
+use Open311::Endpoint::Service::Request;
+
+use constant request_class => 'Open311::Endpoint::Service::Request';
 
 sub services {
     return (
@@ -73,7 +76,7 @@ sub services {
 sub post_service_request {
     my ($self, $service, $args) = @_;
 
-    my $request = Open311::Endpoint::Service::Request->new(
+    my $request = $self->request_class->new(
 
         # NB: possible race condition between next_request_id and _add_request
         # (this is fine for synchronous test-cases)

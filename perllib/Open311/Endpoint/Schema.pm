@@ -12,6 +12,7 @@ has endpoint => (
         get_jurisdiction_id_required_clause
         get_jurisdiction_id_optional_clause
         get_identifier_type
+        learn_additional_types
     /],
 );
 
@@ -166,6 +167,8 @@ has schema => (
                 },
             }
         );
+
+        $self->learn_additional_types($schema);
 
         return $schema;
     },

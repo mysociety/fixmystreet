@@ -1,6 +1,5 @@
 package Open311::Endpoint::Spark;
 use Moo;
-use Data::Visitor::Callback;
 
 =head1 NAME
 
@@ -102,7 +101,9 @@ sub _process_for_xml {
 
 my %singular_map = (
     service_requests => 'request',
+    service_request_updates => 'request_update',
 );
+
 sub _singularize {
     my $name = shift;
     return $singular_map{ $name }

@@ -1,5 +1,6 @@
 package Open311::Endpoint::Service::Request;
 use Moo;
+use MooX::HandlesVia;
 use Types::Standard ':all';
 use namespace::clean;
 
@@ -57,7 +58,7 @@ has requested_datetime => (
 );
 
 has updated_datetime => (
-    is => 'ro',
+    is => 'rw',
     isa => Maybe[ InstanceOf['DateTime'] ],
 );
 
