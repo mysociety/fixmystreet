@@ -376,6 +376,8 @@ sub send_reports {
 
             if ( $row->subcategory ) {
                 $h{subcategory_line} = sprintf(_("Subcategory: %s"), $row->subcategory) . "\n\n";
+            } else {
+                $h{subcategory_line} = "\n\n";
             }
 
             $h{bodies_name} = join(_(' and '), @dear);

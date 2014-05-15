@@ -161,6 +161,30 @@ for campaigns too.
 EOF
 }
 
+sub display_app_links {
+    return <<EOF;
+<h1 style="padding-top:0.5em">New! FixMyStreet Apps for Apple and Android</h1>
+<p>
+We've built all-new FixMyStreet phone apps, for your use. Key
+improvements include offline reporting (for where there is bad signal)
+and a better interface for adding problem reports more quickly and
+easily. Please give the apps a go and tell us what you think.
+</p>
+
+<p>
+<a href="https://play.google.com/store/apps/details?id=org.mysociety.FixMyStreet">
+  <img alt="FixMyStreet Android app on Google Play"
+       src="/cobrands/fixmystreet/images/google_play_logo.png" />
+</a>
+
+<a href="https://itunes.apple.com/gb/app/fixmystreet/id297456545">
+  <img alt="FixMyStreet app on the App Store"
+       src="/cobrands/fixmystreet/images/itunes_store_logo.png" />
+</a><br>
+</p>
+EOF
+}
+
 # Not currently used, needs more explanation and testing; perhaps in future.
 sub display_gny_groups {
     my ($lon, $lat) = @_;
@@ -222,7 +246,7 @@ sub display_advert ($$;$%) {
     #unless (defined $data{done_tms} && $data{done_tms}==1) {
     $c->stash->{scratch} = 'advert=wtt';
     return '<div style="margin: 0 5em; border-top: dotted 1px #666666;">'
-        . display_wtt_link()
+        . display_app_links()
         . '</div>';
 
     $c->stash->{scratch} = 'advert=news';

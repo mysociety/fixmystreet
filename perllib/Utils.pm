@@ -123,7 +123,9 @@ sub london_categories {
 }
 
 sub barnet_categories {
-    # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting 
+    # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting.
+    # They are no longer used since Barnet switched to email for delivery of problem reports.
+    # and can be removed when SendReport/Barnet.pm is removed.
     if (mySociety::Config::get('STAGING_SITE')) { # note staging site must use different KBIDs
         return {
              'Street scene misc'        => 14 # for test

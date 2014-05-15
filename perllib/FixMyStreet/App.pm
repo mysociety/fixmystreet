@@ -95,6 +95,7 @@ __PACKAGE__->setup();
 after 'prepare_headers' => sub {
     my $self = shift;
     $self->req->secure( 1 ) if $self->config->{BASE_URL} eq 'https://www.zueriwieneu.ch';
+    $self->req->secure( 1 ) if $self->config->{BASE_URL} eq 'http://www.fixmystreet.com' && $self->req->headers->header('Host') eq 'fix.bromley.gov.uk';
 };
 
 # set up DB handle for old code

@@ -83,6 +83,8 @@
 <label for="form_subject">[% loc('Subject:') %]</label>
 <input type="text" class="required" name="subject" id="form_subject" value="[% subject | html %]" size="30"></div>
 
+[% INCLUDE 'contact/who.html' %]
+
 [% IF field_errors.message %]
    <div class="form-error">[% field_errors.message %]</div>
 [% END %]

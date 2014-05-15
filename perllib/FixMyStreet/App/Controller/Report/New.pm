@@ -624,15 +624,13 @@ sub setup_categories_and_bodies : Private {
             _('Empty public building - school, hospital, etc.')
         );
 
-    } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
+    } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY 
+          && $first_area->{id} != COUNCIL_ID_BARNET 
+          && $first_area->{type} eq 'LBO') {
 
         $bodies_to_list{ $first_body->id } = 1;
         my @local_categories;
-        if ($first_area->{id} == COUNCIL_ID_BARNET) {
-            @local_categories =  sort keys %{ Utils::barnet_categories() }
-        } else {
-            @local_categories =  sort keys %{ Utils::london_categories() }            
-        }
+        @local_categories =  sort keys %{ Utils::london_categories() };
         @category_options = (
             _('-- Pick a category --'),
             @local_categories 
@@ -853,15 +851,10 @@ sub process_report : Private {
             $report->extra( \%extra );
         }
 
-    } elsif ( $first_area->{id} == COUNCIL_ID_BARNET ) {
+    } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY 
+          && $first_area->{id} != COUNCIL_ID_BARNET 
+          && $first_area->{type} eq 'LBO') {
 
-        unless ( exists Utils::barnet_categories()->{ $report->category } ) {
-            $c->stash->{field_errors}->{category} = _('Please choose a category');
-        }
-        $report->bodies_str( $first_body->id );
-        
-    } elsif ( $first_area->{id} != COUNCIL_ID_BROMLEY && $first_area->{type} eq 'LBO') {
-        
         unless ( Utils::london_categories()->{ $report->category } ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
         }
@@ -1155,7 +1148,9 @@ sub redirect_or_confirm_creation : Private {
             $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
         }
         $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
-        $c->flash->{created_report} = 'loggedin';
+        if ( $c->sessionid ) {
+            $c->flash->{created_report} = 'loggedin';
+        }
         $c->res->redirect($report_uri);
         $c->detach;
     }

@@ -102,7 +102,7 @@ sub confirm_problem : Path('/P') {
         $c->res->redirect($report_uri);
     }
 
-    $c->flash->{created_report} = 'fromemail';
+    $c->stash->{created_report} = 'fromemail';
     return 1;
 }
 

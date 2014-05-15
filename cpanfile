@@ -85,6 +85,7 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
 #    # East Hampshire
 #    requires 'SOAP::Lite';
     # Barnet
+    # TODO: This can perhaps be removed since Barnet switched to email for problem reports
     requires 'SOAP::WSDL';
 };
 
