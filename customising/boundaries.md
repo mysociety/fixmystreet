@@ -362,11 +362,11 @@ Use this type of boundary if:
       <a href="http://global.mapit.mysociety.org">global Mapit website</a> or the
       <a href="http://mapit.mysociety.org">UK one</a>. You must also nominate
       the types of area these are (effectively the <em>level</em> of admin
-      boundary it is. On global, the area types look something like <code>[
-      'O05', 'O06' ]</code>. (Note those contain capital letter O followed by
-      digits). To determine what types you need, look for the codes marked
-      &#8220;Administrative Boundary Levels&#8221; that MapIt returns &mdash;
-      for example, here's 
+      boundary it is), and the generation. On global, the area types look
+      something like <code>[ 'O05', 'O06' ]</code>. (Note those contain capital
+      letter O followed by digits). To determine what types you need, look for
+      the codes marked &#8220;Administrative Boundary Levels&#8221; that MapIt
+      returns &mdash; for example, here's
       <a href="http://global.mapit.mysociety.org/point/4326/8.55,47.366667.html">global
       MapIt's data for Zurich</a>.
     </p>
@@ -383,18 +383,20 @@ Use this type of boundary if:
       Finally, limit your installation to the specific areas you're interested
       in (otherwise you'll be getting areas from the whole world). Identify the
       specific areas you want to use, and list them explicitly in
-      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>:
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
+      You should also specify the generation the areas you use are in, so that
+      e.g. when global MapIt updates, your areas can still be found.
     </p>
 <pre><code>MAPIT_URL: 'http://global.mapit.mysociety.org'
 MAPIT_TYPES: ['O06','O07']
 MAPIT_ID_WHITELIST: ['12345','345432','978638']
+MAPIT_GENERATION: 3
 </code></pre>
-
 
   </dd>
 
 </dl>
-   
+
 <a name="accurate"> </a>
 
 ## Accurate data that isn't on OSM

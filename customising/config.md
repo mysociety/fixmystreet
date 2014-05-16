@@ -70,6 +70,7 @@ The following are all the configuration settings that you can change in `config/
 <code><a href="#mapit_url">MAPIT_URL</a></code><br>
 <code><a href="#mapit_types">MAPIT_TYPES</a></code><br>
 <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code><br>
+<code><a href="#mapit_generation">MAPIT_GENERATION</a></code><br>
 <code><a href="#mapit_types_children">MAPIT_TYPES_CHILDREN</a></code>
 
 ### Localisation and maps
@@ -463,7 +464,8 @@ LANGUAGES:
     IDs that your FixMyStreet should recognise. 
     <p>
       Note that you must still set <code><a href="#mapit_types">MAPIT_TYPES</a></code> to match
-      the type or types of each of these areas.
+      the type or types of each of these areas. And we recommend you set
+      <code><a href="#mapit_generation">MAPIT_GENERATION</a></code>.
     </p>
     <p>
       We recommend you use this setting, because doing so can improves the efficiency of your site's calls to MapIt considerably.
@@ -486,6 +488,17 @@ LANGUAGES:
         </li>
       </ul>
     </div>
+  </dd>
+
+  <dt>
+    <a name="mapit_generation"><code>MAPIT_GENERATION</code></a>
+  </dt>
+  <dd>
+    If you are using global MapIt and
+    <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>, then you
+    should specify the generation of global MapIt you are using (given on every
+    area page on MapIt), so that your installation can always find the area
+    even if global MapIt updates.
   </dd>
 
   <dt>
