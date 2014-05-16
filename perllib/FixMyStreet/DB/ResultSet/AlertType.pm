@@ -271,6 +271,8 @@ sub _send_aggregated_alert_email(%) {
         $sender,
         [ $data{alert_email} ],
         0,
+        $cobrand,
+        $data{lang}
     );
 
     if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {

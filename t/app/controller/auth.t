@@ -66,7 +66,7 @@ $mech->not_logged_in_ok;
     $mech->email_count_is(1);
     my $email = $mech->get_email;
     $mech->clear_emails_ok;
-    is $email->header('Subject'), "Your FixMyStreet.com account details",
+    is $email->header('Subject'), "Your FixMyStreet account details",
       "subject is correct";
     is $email->header('To'), $test_email, "to is correct";
 
