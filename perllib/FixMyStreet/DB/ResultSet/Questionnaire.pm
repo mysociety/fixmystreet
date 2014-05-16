@@ -98,6 +98,8 @@ sub send_questionnaires_period {
             . $row->user->email . "\n"
             if $params->{verbose};
 
+        $h{site_name} = $cobrand->site_title();
+
         my $result = FixMyStreet::App->send_email_cron(
             {
                 _template_ => $template,
@@ -107,7 +109,8 @@ sub send_questionnaires_period {
             },
             $sender,
             [ $row->user->email ],
-            $params->{nomail}
+            $params->{nomail},
+            $cobrand
         );
         if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
             print "  ...success\n" if $params->{verbose};
