@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-11-12 13:15+0000\n"
-"PO-Revision-Date: 2013-09-05 16:55+0000\n"
+"PO-Revision-Date: 2013-11-20 13:29+0000\n"
 "Last-Translator: mysociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
@@ -618,9 +618,8 @@ msgid "Click map to report a problem"
 msgstr "Mangel lokalisieren"
 
 #: templates/web/oxfordshire/js/translation_strings.html:39
-#, fuzzy
 msgid "Click on the map to report a problem"
-msgstr "Mangel lokalisieren"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:118
 #: templates/web/default/admin/report_edit.html:35
@@ -960,9 +959,8 @@ msgid "Email added to abuse list"
 msgstr ""
 
 #: templates/web/default/admin/body.html:126
-#, fuzzy
 msgid "Email address:"
-msgstr "Ihre E-Mail Adresse:"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1283
 msgid "Email already in abuse list"
@@ -1913,14 +1911,12 @@ msgid "No edits have yet been made."
 msgstr "Noch keine Antwort"
 
 #: templates/web/default/admin/flagged.html:25
-#, fuzzy
 msgid "No flagged problems found."
-msgstr "Keine Meldungen gefunden."
+msgstr ""
 
 #: templates/web/default/admin/flagged.html:58
-#, fuzzy
 msgid "No flagged users found."
-msgstr "Keine Meldungen gefunden."
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:68
 msgid "No further updates"
@@ -3054,9 +3050,8 @@ msgid "Search:"
 msgstr "Suchen:"
 
 #: templates/web/default/admin/reports.html:26
-#, fuzzy
 msgid "Searching found no reports."
-msgstr "Meldungen suchen"
+msgstr ""
 
 #: templates/web/default/admin/users.html:39
 msgid "Searching found no users."
@@ -3212,9 +3207,8 @@ msgid "Source code"
 msgstr ""
 
 #: templates/web/default/admin/stats.html:64
-#, fuzzy
 msgid "Start Date:"
-msgstr "Status:"
+msgstr ""
 
 #: templates/web/bromley/report/display.html:78
 #: templates/web/default/admin/flagged.html:18
@@ -4415,9 +4409,8 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr "z.B. ‘%s’ oder ‘%s’"
 
 #: templates/web/default/admin/flagged.html:51
-#, fuzzy
 msgid "edit user"
-msgstr "User hinzuf&uuml;gen"
+msgstr ""
 
 #: templates/web/default/admin/index.html:23
 #: templates/web/zurich/admin/index.html:5
@@ -4645,7 +4638,3 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d Tag"
 msgstr[1] "%d Tage"
-
-#, fuzzy
-#~ msgid "The email field is required"
-#~ msgstr "Diese Information wird ben&ouml;tigt"

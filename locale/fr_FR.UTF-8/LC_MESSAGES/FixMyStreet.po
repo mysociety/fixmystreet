@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-11-12 13:15+0000\n"
-"PO-Revision-Date: 2013-09-05 16:55+0000\n"
+"PO-Revision-Date: 2013-11-20 13:29+0000\n"
 "Last-Translator: mysociety <transifex@mysociety.org>\n"
 "Language-Team: French (France) (http://www.transifex.com/projects/p/fixmystreet/language/fr_FR/)\n"
 "Language: fr_FR\n"
@@ -622,9 +622,8 @@ msgid "Click map to report a problem"
 msgstr "Cliquez sur le plan pour signaler un problème"
 
 #: templates/web/oxfordshire/js/translation_strings.html:39
-#, fuzzy
 msgid "Click on the map to report a problem"
-msgstr "Cliquez sur le plan pour signaler un problème"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:118
 #: templates/web/default/admin/report_edit.html:35
@@ -681,9 +680,8 @@ msgid "Cobrand:"
 msgstr "Collaboration :"
 
 #: templates/web/default/admin/config_page.html:1
-#, fuzzy
 msgid "Configuration"
-msgstr "Confirmation"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:421
 msgid "Configuration updated - contacts will be generated automatically later"
@@ -824,9 +822,8 @@ msgstr "État actuel"
 
 #: templates/web/default/admin/bodies.html:7
 #: templates/web/default/admin/index.html:5
-#, fuzzy
 msgid "Currently no bodies have been created."
-msgstr "Aucun problème n'a encore été signalé."
+msgstr ""
 
 #: templates/web/default/dashboard/index.html:5
 #: templates/web/default/dashboard/index.html:7
@@ -966,9 +963,8 @@ msgid "Email added to abuse list"
 msgstr "Email rajouté à la liste des abus"
 
 #: templates/web/default/admin/body.html:126
-#, fuzzy
 msgid "Email address:"
-msgstr "Votre adresse mail:"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1283
 msgid "Email already in abuse list"
@@ -1040,9 +1036,8 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/admin/stats.html:70
-#, fuzzy
 msgid "End Date:"
-msgstr "Fin jour :"
+msgstr ""
 
 #: templates/web/default/admin/body-form.html:126
 msgid "Endpoint"
@@ -1528,9 +1523,8 @@ msgid "In Progress"
 msgstr "En cours"
 
 #: templates/web/default/admin/flagged.html:39
-#, fuzzy
 msgid "In abuse table?"
-msgstr "(email dans la liste des abus)"
+msgstr ""
 
 #: templates/web/default/open311/index.html:90
 msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
@@ -1934,14 +1928,12 @@ msgid "No edits have yet been made."
 msgstr "Pas encore de modifications."
 
 #: templates/web/default/admin/flagged.html:25
-#, fuzzy
 msgid "No flagged problems found."
-msgstr "Aucun problème signalé n'a été trouvé"
+msgstr ""
 
 #: templates/web/default/admin/flagged.html:58
-#, fuzzy
 msgid "No flagged users found."
-msgstr "Aucun utilisateur signalé n'a été trouvé"
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:68
 msgid "No further updates"
@@ -2195,9 +2187,8 @@ msgid "Permalink"
 msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:106
-#, fuzzy
 msgid "Phone number"
-msgstr "Votre numéro de téléphone"
+msgstr ""
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:136
 #: templates/web/bromley/report/new/fill_in_details_form.html:183
@@ -2425,9 +2416,8 @@ msgid "Please enter your name"
 msgstr "Merci d'entrer votre nom"
 
 #: templates/web/default/js/translation_strings.html:22
-#, fuzzy
 msgid "Please enter your phone number"
-msgstr "Merci d'entrer votre nom"
+msgstr ""
 
 #: templates/web/default/js/translation_strings.html:26
 #: templates/web/oxfordshire/js/translation_strings.html:20
@@ -3085,9 +3075,8 @@ msgid "Search:"
 msgstr "Rechercher :"
 
 #: templates/web/default/admin/reports.html:26
-#, fuzzy
 msgid "Searching found no reports."
-msgstr "Rechercher rapports"
+msgstr ""
 
 #: templates/web/default/admin/users.html:39
 msgid "Searching found no users."
@@ -3243,9 +3232,8 @@ msgid "Source code"
 msgstr "Code source"
 
 #: templates/web/default/admin/stats.html:64
-#, fuzzy
 msgid "Start Date:"
-msgstr "Jour de début :"
+msgstr ""
 
 #: templates/web/bromley/report/display.html:78
 #: templates/web/default/admin/flagged.html:18
@@ -3964,9 +3952,8 @@ msgstr ""
 
 #: templates/web/zurich/admin/list_updates.html:30
 #: templates/web/zurich/admin/list_updates.html:9
-#, fuzzy
 msgid "User"
-msgstr "Utilisateurs"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1342
 msgid "User flag removed"
@@ -4447,9 +4434,8 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr "Par exemple '%s' ou '%s'"
 
 #: templates/web/default/admin/flagged.html:51
-#, fuzzy
 msgid "edit user"
-msgstr "Édition de l'utilisateur %d'"
+msgstr ""
 
 #: templates/web/default/admin/index.html:23
 #: templates/web/zurich/admin/index.html:5
@@ -4677,19 +4663,3 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
-
-#, fuzzy
-#~ msgid "The email field is required"
-#~ msgstr "Ces renseignements sont nécessaires"
-
-#~ msgid "End Year:"
-#~ msgstr "Fin année :"
-
-#~ msgid "End month:"
-#~ msgstr "Fin mois :"
-
-#~ msgid "Start Year:"
-#~ msgstr "Année de début :"
-
-#~ msgid "Start month:"
-#~ msgstr "Mois de début :"

@@ -4,13 +4,14 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
+# MatHut <mathias.huter@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-11-12 13:15+0000\n"
-"PO-Revision-Date: 2013-09-05 16:55+0000\n"
-"Last-Translator: mysociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2014-01-08 16:52+0000\n"
+"Last-Translator: MatHut <mathias.huter@gmail.com>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/projects/p/fixmystreet/language/de_DE/)\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -26,7 +27,7 @@ msgstr "und"
 #: templates/web/default/tokens/confirm_problem.html:14
 #: templates/web/default/tokens/confirm_problem.html:17
 msgid " and <strong>we will now send it to the council</strong>"
-msgstr ""
+msgstr "und <strong> wir werden es nun an die Gemeinde senden</strong>"
 
 #: templates/web/default/report/new/councils_text_all.html:11
 #: templates/web/default/report/new/councils_text_all.html:18
@@ -55,15 +56,15 @@ msgstr ""
 
 #: templates/web/default/admin/edit-league.html:12
 msgid "%d edits by %s"
-msgstr ""
+msgstr "%d bearbeitet von %s"
 
 #: templates/web/default/admin/index.html:24
 msgid "%d live updates"
-msgstr ""
+msgstr "%d Aktualisierungen in Echtzeit"
 
 #: templates/web/default/admin/index.html:26
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
-msgstr ""
+msgstr "%d Fragebögen versandt &ndash; %d beantwortet (%s%%)"
 
 #: templates/web/default/pagination.html:10
 msgid "%d to %d of %d"
@@ -72,7 +73,7 @@ msgstr ""
 #: templates/web/default/reports/body.html:0
 #: templates/web/default/reports/body.html:22
 msgid "%s - Summary reports"
-msgstr ""
+msgstr "%s - Zusammenfassungen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:651
 msgid "%s ref:&nbsp;%s"
@@ -80,7 +81,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:276 perllib/FixMyStreet/Cobrand/UK.pm:288
 msgid "%s ward, %s"
-msgstr ""
+msgstr "%s Stadtteil, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:538
 msgid "%s, reported at %s"
@@ -618,9 +619,8 @@ msgid "Click map to report a problem"
 msgstr "Klicken Sie in die Karte um eine Meldung zu erfassen"
 
 #: templates/web/oxfordshire/js/translation_strings.html:39
-#, fuzzy
 msgid "Click on the map to report a problem"
-msgstr "Klicken Sie in die Karte um eine Meldung zu erfassen"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:118
 #: templates/web/default/admin/report_edit.html:35
@@ -677,9 +677,8 @@ msgid "Cobrand:"
 msgstr ""
 
 #: templates/web/default/admin/config_page.html:1
-#, fuzzy
 msgid "Configuration"
-msgstr "Best&auml;tigung"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:421
 msgid "Configuration updated - contacts will be generated automatically later"
@@ -820,9 +819,8 @@ msgstr ""
 
 #: templates/web/default/admin/bodies.html:7
 #: templates/web/default/admin/index.html:5
-#, fuzzy
 msgid "Currently no bodies have been created."
-msgstr "Bisher wurden noch keine Meldungen erfasst."
+msgstr ""
 
 #: templates/web/default/dashboard/index.html:5
 #: templates/web/default/dashboard/index.html:7
@@ -962,9 +960,8 @@ msgid "Email added to abuse list"
 msgstr ""
 
 #: templates/web/default/admin/body.html:126
-#, fuzzy
 msgid "Email address:"
-msgstr "Ihre eMail-Adresse:"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1283
 msgid "Email already in abuse list"
@@ -1915,14 +1912,12 @@ msgid "No edits have yet been made."
 msgstr "Noch keine Antwort"
 
 #: templates/web/default/admin/flagged.html:25
-#, fuzzy
 msgid "No flagged problems found."
-msgstr "Keine Meldungen gefunden."
+msgstr ""
 
 #: templates/web/default/admin/flagged.html:58
-#, fuzzy
 msgid "No flagged users found."
-msgstr "Keine Meldungen gefunden."
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:68
 msgid "No further updates"
@@ -2176,9 +2171,8 @@ msgid "Permalink"
 msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:106
-#, fuzzy
 msgid "Phone number"
-msgstr "Ihre Telefonnummer"
+msgstr ""
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:136
 #: templates/web/bromley/report/new/fill_in_details_form.html:183
@@ -2403,9 +2397,8 @@ msgid "Please enter your name"
 msgstr "Bitte geben Sie Ihren Namen an"
 
 #: templates/web/default/js/translation_strings.html:22
-#, fuzzy
 msgid "Please enter your phone number"
-msgstr "Bitte geben Sie Ihren Namen an"
+msgstr ""
 
 #: templates/web/default/js/translation_strings.html:26
 #: templates/web/oxfordshire/js/translation_strings.html:20
@@ -3215,9 +3208,8 @@ msgid "Source code"
 msgstr ""
 
 #: templates/web/default/admin/stats.html:64
-#, fuzzy
 msgid "Start Date:"
-msgstr "Letzte Bearbeitung"
+msgstr ""
 
 #: templates/web/bromley/report/display.html:78
 #: templates/web/default/admin/flagged.html:18
@@ -4418,9 +4410,8 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr ""
 
 #: templates/web/default/admin/flagged.html:51
-#, fuzzy
 msgid "edit user"
-msgstr "hat Karte nicht verwendet"
+msgstr ""
 
 #: templates/web/default/admin/index.html:23
 #: templates/web/zurich/admin/index.html:5
@@ -4648,7 +4639,3 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
-
-#, fuzzy
-#~ msgid "The email field is required"
-#~ msgstr "Diese Information wird ben&ouml;tigt"

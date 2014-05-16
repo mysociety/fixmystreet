@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-11-12 13:15+0000\n"
-"PO-Revision-Date: 2013-09-05 16:55+0000\n"
+"PO-Revision-Date: 2013-11-20 13:29+0000\n"
 "Last-Translator: mysociety <transifex@mysociety.org>\n"
 "Language-Team: Norwegian Nynorsk (Norway) (http://www.transifex.com/projects/p/fixmystreet/language/nn_NO/)\n"
 "Language: nn_NO\n"
@@ -624,9 +624,8 @@ msgid "Click map to report a problem"
 msgstr ""
 
 #: templates/web/oxfordshire/js/translation_strings.html:39
-#, fuzzy
 msgid "Click on the map to report a problem"
-msgstr "Korleis rapportera eit problem"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:118
 #: templates/web/default/admin/report_edit.html:35
@@ -683,9 +682,8 @@ msgid "Cobrand:"
 msgstr "Merkevaresamarbeid:"
 
 #: templates/web/default/admin/config_page.html:1
-#, fuzzy
 msgid "Configuration"
-msgstr "Stadfesting"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:421
 msgid "Configuration updated - contacts will be generated automatically later"
@@ -826,9 +824,8 @@ msgstr "Gjeldande tilstand"
 
 #: templates/web/default/admin/bodies.html:7
 #: templates/web/default/admin/index.html:5
-#, fuzzy
 msgid "Currently no bodies have been created."
-msgstr "Ingen problem er rapporterte"
+msgstr ""
 
 #: templates/web/default/dashboard/index.html:5
 #: templates/web/default/dashboard/index.html:7
@@ -968,9 +965,8 @@ msgid "Email added to abuse list"
 msgstr "E-post lagd til misbrukliste"
 
 #: templates/web/default/admin/body.html:126
-#, fuzzy
 msgid "Email address:"
-msgstr "e-postadressa di:"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1283
 msgid "Email already in abuse list"
@@ -1042,9 +1038,8 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/admin/stats.html:70
-#, fuzzy
 msgid "End Date:"
-msgstr "Sluttdag:"
+msgstr ""
 
 #: templates/web/default/admin/body-form.html:126
 msgid "Endpoint"
@@ -1524,9 +1519,8 @@ msgid "In Progress"
 msgstr "Under arbeid"
 
 #: templates/web/default/admin/flagged.html:39
-#, fuzzy
 msgid "In abuse table?"
-msgstr "(Epost i misbruktabellen)"
+msgstr ""
 
 #: templates/web/default/open311/index.html:90
 msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
@@ -1928,14 +1922,12 @@ msgid "No edits have yet been made."
 msgstr "Ingen endringar er gjort."
 
 #: templates/web/default/admin/flagged.html:25
-#, fuzzy
 msgid "No flagged problems found."
-msgstr "Fann ingen flagga problem"
+msgstr ""
 
 #: templates/web/default/admin/flagged.html:58
-#, fuzzy
 msgid "No flagged users found."
-msgstr "Fann ingen flagga brukarar"
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:68
 msgid "No further updates"
@@ -2415,9 +2407,8 @@ msgid "Please enter your name"
 msgstr "Ver venleg og legg inn namnet ditt"
 
 #: templates/web/default/js/translation_strings.html:22
-#, fuzzy
 msgid "Please enter your phone number"
-msgstr "Ver venleg og legg inn namnet ditt"
+msgstr ""
 
 #: templates/web/default/js/translation_strings.html:26
 #: templates/web/oxfordshire/js/translation_strings.html:20
@@ -3080,9 +3071,8 @@ msgid "Search:"
 msgstr "Søk:"
 
 #: templates/web/default/admin/reports.html:26
-#, fuzzy
 msgid "Searching found no reports."
-msgstr "Søk i rapportar"
+msgstr ""
 
 #: templates/web/default/admin/users.html:39
 msgid "Searching found no users."
@@ -3238,9 +3228,8 @@ msgid "Source code"
 msgstr "Kjeldekode"
 
 #: templates/web/default/admin/stats.html:64
-#, fuzzy
 msgid "Start Date:"
-msgstr "Startdag:"
+msgstr ""
 
 #: templates/web/bromley/report/display.html:78
 #: templates/web/default/admin/flagged.html:18
@@ -3966,9 +3955,8 @@ msgstr ""
 
 #: templates/web/zurich/admin/list_updates.html:30
 #: templates/web/zurich/admin/list_updates.html:9
-#, fuzzy
 msgid "User"
-msgstr "Brukarar"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1342
 msgid "User flag removed"
@@ -4449,9 +4437,8 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr ""
 
 #: templates/web/default/admin/flagged.html:51
-#, fuzzy
 msgid "edit user"
-msgstr "Redigerer brukar %d"
+msgstr ""
 
 #: templates/web/default/admin/index.html:23
 #: templates/web/zurich/admin/index.html:5
@@ -4679,19 +4666,3 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
-
-#, fuzzy
-#~ msgid "The email field is required"
-#~ msgstr "Denne informasjonen er påkravd"
-
-#~ msgid "End Year:"
-#~ msgstr "Sluttår:"
-
-#~ msgid "End month:"
-#~ msgstr "Sluttmånad:"
-
-#~ msgid "Start Year:"
-#~ msgstr "Startår:"
-
-#~ msgid "Start month:"
-#~ msgstr "Startmånad:"

@@ -4,13 +4,14 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
+# Luis Felipe Álvarez Burgos <luisfelipealvarez@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-11-12 13:15+0000\n"
-"PO-Revision-Date: 2013-09-05 16:55+0000\n"
-"Last-Translator: mysociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2014-03-13 14:53+0000\n"
+"Last-Translator: Luis Felipe Álvarez Burgos <luisfelipealvarez@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/fixmystreet/language/es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -67,7 +68,7 @@ msgstr "%d cuestionarios enviados &ndash; %d respondidos (%s%%)"
 
 #: templates/web/default/pagination.html:10
 msgid "%d to %d of %d"
-msgstr ""
+msgstr "%d a %d de %d"
 
 #: templates/web/default/reports/body.html:0
 #: templates/web/default/reports/body.html:22
@@ -84,7 +85,7 @@ msgstr "%s barrio, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:538
 msgid "%s, reported at %s"
-msgstr ""
+msgstr "%s, reportado el %s"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:303 perllib/FixMyStreet/Cobrand/UK.pm:315
 msgid "%s, within %s ward"
@@ -92,15 +93,15 @@ msgstr "%s , en %s barrio"
 
 #: templates/web/default/email_sent.html:29
 msgid "(Don't worry &mdash; we'll hang on to your alert while you're checking your email.)"
-msgstr ""
+msgstr "(No se preocupe &mdash; nosotors mantendremos su alerta mientras usted revisa su email.)"
 
 #: templates/web/default/email_sent.html:25
 msgid "(Don't worry &mdash; we'll hang on to your problem report while you're checking your email.)"
-msgstr ""
+msgstr "(No se preocupe &mdash; nosotros mantendremos su reporte mientras usted revisa su email.)"
 
 #: templates/web/default/email_sent.html:27
 msgid "(Don't worry &mdash; we'll hang on to your update while you're checking your email.)"
-msgstr ""
+msgstr "(No se preocupe &mdash; nosotros mantendremos su actualización mientras usted revisa su email.)"
 
 #: templates/web/default/admin/report_blocks.html:11
 #: templates/web/default/admin/users.html:29
@@ -177,7 +178,7 @@ msgstr "-- Escoja un tipo de propiedad --"
 
 #: templates/web/emptyhomes/front/stats.html:5
 msgid "<big>%s</big> reports"
-msgstr ""
+msgstr "<big>%s</big> reportes"
 
 #: templates/web/default/admin/body-form.html:42
 #: templates/web/default/admin/body-form.html:43
@@ -350,7 +351,7 @@ msgstr "¿Quiénes somos?"
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:29
 msgid "Action Scheduled"
-msgstr ""
+msgstr "Acción programada"
 
 #: templates/web/default/admin/body-form.html:3
 #: templates/web/default/admin/body-form.html:4
@@ -359,17 +360,20 @@ msgid ""
 "          to which problem reports can be sent. You can add one or more contacts (for different\n"
 "          categories of problem) to each body."
 msgstr ""
+"Agregue un <strong>órgano</strong> para cada órgano administrativo, por ejemplo una municipalidad o departamento\n"
+"al cual se le puedan enviar los reportes. Se pueden agregar uno o más contactos (para diferentes\n"
+"categorias de problemas) a cada órgano."
 
 #: templates/web/default/admin/body.html:45
 msgid "Add a contact using the form below."
-msgstr ""
+msgstr "Añada un contacto usando el siguiente formulario"
 
 #: templates/web/default/admin/bodies.html:65
 #: templates/web/default/admin/bodies.html:70
 #: templates/web/default/admin/body-form.html:233
 #: templates/web/zurich/admin/body-form.html:51
 msgid "Add body"
-msgstr ""
+msgstr "Agregue un órgano"
 
 #: templates/web/default/admin/body.html:88
 #: templates/web/zurich/admin/body.html:30
@@ -378,7 +382,7 @@ msgstr "Agregar nueva categoría"
 
 #: templates/web/default/admin/users.html:45
 msgid "Add user"
-msgstr ""
+msgstr "Añade un usuario"
 
 #: templates/web/default/my/my.html:56 templates/web/fixmystreet/my/my.html:60
 msgid "Added %s"
@@ -430,7 +434,7 @@ msgstr "Todas las notificaciones"
 #: templates/web/default/admin/stats.html:5
 #: templates/web/zurich/admin/stats.html:8
 msgid "All reports between %s and %s"
-msgstr ""
+msgstr "Todos los reportes entre %s y %s"
 
 #: templates/web/default/report/new/councils_text_some.html:2
 msgid "All the information you provide here will be sent to"
@@ -502,7 +506,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit.html:153
 msgid "Assign to external body:"
-msgstr ""
+msgstr "Asignar a un órgano externo:"
 
 #: templates/web/zurich/admin/report_edit.html:133
 #: templates/web/zurich/admin/report_edit.html:190
@@ -551,11 +555,11 @@ msgstr ""
 #: templates/web/default/admin/reports.html:14
 #: templates/web/default/admin/users.html:17
 msgid "Body"
-msgstr ""
+msgstr "Órgano"
 
 #: templates/web/default/admin/user-form.html:32
 msgid "Body:"
-msgstr ""
+msgstr "Órgano:"
 
 #: templates/web/fiksgatami/footer.html:16
 #: templates/web/fiksgatami/nn/footer.html:16
@@ -635,6 +639,13 @@ msgid ""
 "                interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin\n"
 "                at a specific address."
 msgstr ""
+"Check <strong>privado</strong> si los reportes en esta categoría <strong>no deben ser desplegados en el sitio</strong>.\n"
+"\n"
+"Normalmente, las categorías no son privadas.\n"
+"\n"
+"Esto resulta útil para los problemas que se pueden ser reportados por un usuario a un órgano, pero para los cuales\n"
+"no hay mayor interés en ser desplegados. En el Reino Unido, hemos utilizado esto para servicios como requerir un\n"
+"basurero extra en una dirección específica"
 
 #: templates/web/default/admin/body.html:101
 msgid ""
@@ -653,9 +664,8 @@ msgid "Click map to report a problem"
 msgstr "Haga clic en el mapa para notificar un problema"
 
 #: templates/web/oxfordshire/js/translation_strings.html:39
-#, fuzzy
 msgid "Click on the map to report a problem"
-msgstr "Haga clic en el mapa para notificar un problema"
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:118
 #: templates/web/default/admin/report_edit.html:35
@@ -712,9 +722,8 @@ msgid "Cobrand:"
 msgstr "Cobrand:"
 
 #: templates/web/default/admin/config_page.html:1
-#, fuzzy
 msgid "Configuration"
-msgstr "Confirmación"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:421
 msgid "Configuration updated - contacts will be generated automatically later"
@@ -855,9 +864,8 @@ msgstr "Estado actual"
 
 #: templates/web/default/admin/bodies.html:7
 #: templates/web/default/admin/index.html:5
-#, fuzzy
 msgid "Currently no bodies have been created."
-msgstr "No se han notificado problemas todavía."
+msgstr ""
 
 #: templates/web/default/dashboard/index.html:5
 #: templates/web/default/dashboard/index.html:7
@@ -942,6 +950,9 @@ msgid ""
 "            This means you can add many categories even if you only have one contact for the body.\n"
 "    "
 msgstr ""
+"Cada contacto para el órgano tiene una categoría, el cual es desplegado al público.\n"
+"Diferentes categorías <strong>pueden tener el mismo contacto</strong> (email).\n"
+"Esto significa que puede agregar muchas categorías incluso si tiene un solo contacto para el órgano."
 
 #: templates/web/default/admin/list_updates.html:42
 #: templates/web/default/admin/problem_row.html:41
@@ -953,7 +964,7 @@ msgstr "Editar"
 #: templates/web/default/admin/body.html:189
 #: templates/web/zurich/admin/body.html:64
 msgid "Edit body details"
-msgstr ""
+msgstr "Editar los detalles del órgano"
 
 #: templates/web/default/admin/report_edit.html:1
 #: templates/web/zurich/admin/report_edit-sdm.html:1
@@ -997,9 +1008,8 @@ msgid "Email added to abuse list"
 msgstr "Email añadido a lista de abusos"
 
 #: templates/web/default/admin/body.html:126
-#, fuzzy
 msgid "Email address:"
-msgstr "Su dirección de email:"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1283
 msgid "Email already in abuse list"
@@ -1071,9 +1081,8 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/admin/stats.html:70
-#, fuzzy
 msgid "End Date:"
-msgstr "Día de fin:"
+msgstr ""
 
 #: templates/web/default/admin/body-form.html:126
 msgid "Endpoint"
@@ -1560,9 +1569,8 @@ msgid "In Progress"
 msgstr "En Progreso"
 
 #: templates/web/default/admin/flagged.html:39
-#, fuzzy
 msgid "In abuse table?"
-msgstr "(Correo electrónico en el cuadro abuso)"
+msgstr ""
 
 #: templates/web/default/open311/index.html:90
 msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
@@ -1951,7 +1959,7 @@ msgstr "No"
 
 #: templates/web/default/admin/user-form.html:33
 msgid "No body"
-msgstr ""
+msgstr "Sin órgano"
 
 #: templates/web/default/admin/stats.html:85
 msgid "No council"
@@ -1966,14 +1974,12 @@ msgid "No edits have yet been made."
 msgstr "No se han hecho ediciones aún-"
 
 #: templates/web/default/admin/flagged.html:25
-#, fuzzy
 msgid "No flagged problems found."
-msgstr "No se encontraron problemas marcados"
+msgstr ""
 
 #: templates/web/default/admin/flagged.html:58
-#, fuzzy
 msgid "No flagged users found."
-msgstr "No se encontraron usuarios marcados"
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:68
 msgid "No further updates"
@@ -2227,9 +2233,8 @@ msgid "Permalink"
 msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:106
-#, fuzzy
 msgid "Phone number"
-msgstr "Su número de teléfono"
+msgstr ""
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:136
 #: templates/web/bromley/report/new/fill_in_details_form.html:183
@@ -2457,9 +2462,8 @@ msgid "Please enter your name"
 msgstr "Por favor, introduzca su nombre"
 
 #: templates/web/default/js/translation_strings.html:22
-#, fuzzy
 msgid "Please enter your phone number"
-msgstr "Introduzca su segundo nombre"
+msgstr ""
 
 #: templates/web/default/js/translation_strings.html:26
 #: templates/web/oxfordshire/js/translation_strings.html:20
@@ -3122,9 +3126,8 @@ msgid "Search:"
 msgstr "Buscar:"
 
 #: templates/web/default/admin/reports.html:26
-#, fuzzy
 msgid "Searching found no reports."
-msgstr "Buscar Notificaciones"
+msgstr ""
 
 #: templates/web/default/admin/users.html:39
 msgid "Searching found no users."
@@ -3133,7 +3136,7 @@ msgstr ""
 #: templates/web/default/admin/body-form.html:33
 #: templates/web/zurich/admin/body-form.html:16
 msgid "Select a body"
-msgstr ""
+msgstr "Selecciona un órgano"
 
 #: templates/web/default/admin/body-form.html:71
 #: templates/web/zurich/admin/body-form.html:26
@@ -3280,9 +3283,8 @@ msgid "Source code"
 msgstr "Código fuente"
 
 #: templates/web/default/admin/stats.html:64
-#, fuzzy
 msgid "Start Date:"
-msgstr "Día de inicio:"
+msgstr ""
 
 #: templates/web/bromley/report/display.html:78
 #: templates/web/default/admin/flagged.html:18
@@ -3324,7 +3326,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/index-dm.html:27
 msgid "Subdivision/Body"
-msgstr ""
+msgstr "Subdivisión/Órgano"
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:48
 #: templates/web/fixmystreet/contact/index.html:91
@@ -3522,6 +3524,8 @@ msgid ""
 "The <strong>email address</strong> is the destination to which reports about this category will be sent. \n"
 "        Other categories for this body may have the same email address."
 msgstr ""
+"El <strong>email</strong> es el destino al cual serán enviados los reportes en esta categoría.\n"
+"Otras categorías en este mismo órgano pueden tener el mismo email."
 
 #: templates/web/default/admin/body-form.html:119
 #: templates/web/default/admin/body-form.html:120
@@ -3928,7 +3932,7 @@ msgstr "La actualización de abajo fue añadida por %s en %s"
 #: templates/web/default/admin/body-form.html:233
 #: templates/web/zurich/admin/body-form.html:51
 msgid "Update body"
-msgstr ""
+msgstr "Actualizar órgano"
 
 #: templates/web/default/admin/index.html:38
 msgid "Update breakdown by state"
@@ -4001,13 +4005,12 @@ msgstr "Actualizaciones para este problema, FixMyStreet"
 
 #: templates/web/default/admin/body.html:153
 msgid "Use the <strong>note</strong> to record details that are only displayed in the admin. Notes are not shown publicly, and are not sent to the body."
-msgstr ""
+msgstr "Usa la <strong>nota</strong> para guardar detalles que sólo serán desplegados en la sección de administración. Las notas no son mostradas publicamente, y no son enviadas al órgano."
 
 #: templates/web/zurich/admin/list_updates.html:30
 #: templates/web/zurich/admin/list_updates.html:9
-#, fuzzy
 msgid "User"
-msgstr "Usuarios"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1342
 msgid "User flag removed"
@@ -4488,9 +4491,8 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr "por ejemplo, '%s' o '%s'"
 
 #: templates/web/default/admin/flagged.html:51
-#, fuzzy
 msgid "edit user"
-msgstr "Editando usuario %d"
+msgstr ""
 
 #: templates/web/default/admin/index.html:23
 #: templates/web/zurich/admin/index.html:5
@@ -4718,19 +4720,3 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
-
-#, fuzzy
-#~ msgid "The email field is required"
-#~ msgstr "Esta información es necesaria"
-
-#~ msgid "End Year:"
-#~ msgstr "Año de Fin:"
-
-#~ msgid "End month:"
-#~ msgstr "Mes de fin:"
-
-#~ msgid "Start Year:"
-#~ msgstr "Año de Inicio:"
-
-#~ msgid "Start month:"
-#~ msgstr "Mes de inicio:"

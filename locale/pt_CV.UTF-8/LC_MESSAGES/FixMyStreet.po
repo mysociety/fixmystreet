@@ -5,17 +5,16 @@
 #
 # Translators:
 # fixmindelo <francisco.martins@recortes.cv>, 2013
-# fixmindelo <francisco.martins@recortes.cv>, 2013
 # mysociety <transifex@mysociety.org>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2013-11-12 13:15+0000\n"
-"PO-Revision-Date: 2013-09-23 14:48+0000\n"
+"PO-Revision-Date: 2013-11-20 13:29+0000\n"
 "Last-Translator: mysociety <transifex@mysociety.org>\n"
 "Language-Team: Portuguese (http://www.transifex.com/projects/p/fixmystreet/language/pt/)\n"
-"Language: pt_CV\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -670,9 +669,8 @@ msgid "Click map to report a problem"
 msgstr "Click no mapa para reportar um porblema "
 
 #: templates/web/oxfordshire/js/translation_strings.html:39
-#, fuzzy
 msgid "Click on the map to report a problem"
-msgstr "Click no mapa para reportar um porblema "
+msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:118
 #: templates/web/default/admin/report_edit.html:35
@@ -729,9 +727,8 @@ msgid "Cobrand:"
 msgstr "Cobrand:"
 
 #: templates/web/default/admin/config_page.html:1
-#, fuzzy
 msgid "Configuration"
-msgstr "Confirmação"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:421
 msgid "Configuration updated - contacts will be generated automatically later"
@@ -872,9 +869,8 @@ msgstr "Estado actual"
 
 #: templates/web/default/admin/bodies.html:7
 #: templates/web/default/admin/index.html:5
-#, fuzzy
 msgid "Currently no bodies have been created."
-msgstr "Nenhuns  problemas foram ianda reportados"
+msgstr ""
 
 #: templates/web/default/dashboard/index.html:5
 #: templates/web/default/dashboard/index.html:7
@@ -1014,9 +1010,8 @@ msgid "Email added to abuse list"
 msgstr "Email adicionado a lista de abusos"
 
 #: templates/web/default/admin/body.html:126
-#, fuzzy
 msgid "Email address:"
-msgstr "O seu endereço de email:"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1283
 msgid "Email already in abuse list"
@@ -1088,9 +1083,8 @@ msgid ""
 msgstr ""
 
 #: templates/web/default/admin/stats.html:70
-#, fuzzy
 msgid "End Date:"
-msgstr "Fim do dia:"
+msgstr ""
 
 #: templates/web/default/admin/body-form.html:126
 msgid "Endpoint"
@@ -1586,9 +1580,8 @@ msgid "In Progress"
 msgstr "Em andamento"
 
 #: templates/web/default/admin/flagged.html:39
-#, fuzzy
 msgid "In abuse table?"
-msgstr "(E-mail na tabela de abuso)"
+msgstr ""
 
 #: templates/web/default/open311/index.html:90
 msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
@@ -1622,9 +1615,8 @@ msgid "Incorrect has_photo value \"%s\""
 msgstr "Foto_has valor incorreto \"%s\""
 
 #: templates/web/zurich/admin/list_updates.html:3
-#, fuzzy
 msgid "Internal notes"
-msgstr "Notas internas"
+msgstr ""
 
 #: templates/web/default/admin/report_edit.html:35
 #: templates/web/default/admin/report_edit.html:48
@@ -1879,9 +1871,8 @@ msgstr "Novo contato de categoria adicionado"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:58
 #: templates/web/zurich/admin/report_edit.html:84
-#, fuzzy
 msgid "New internal note:"
-msgstr "Notas internas"
+msgstr ""
 
 #: db/alert_types.pl:18 db/alert_types.pl:22
 msgid "New local problems on FixMyStreet"
@@ -1995,14 +1986,12 @@ msgid "No edits have yet been made."
 msgstr "Nenhum ediçao efectuada"
 
 #: templates/web/default/admin/flagged.html:25
-#, fuzzy
 msgid "No flagged problems found."
-msgstr "Nenhum problema sinalizado"
+msgstr ""
 
 #: templates/web/default/admin/flagged.html:58
-#, fuzzy
 msgid "No flagged users found."
-msgstr "Nenhum usuário sinalizado encontrado"
+msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:68
 msgid "No further updates"
@@ -2256,9 +2245,8 @@ msgid "Permalink"
 msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:106
-#, fuzzy
 msgid "Phone number"
-msgstr "Telefone "
+msgstr ""
 
 #: templates/web/bromley/report/new/fill_in_details_form.html:136
 #: templates/web/bromley/report/new/fill_in_details_form.html:183
@@ -2489,9 +2477,8 @@ msgid "Please enter your name"
 msgstr "Digite seu nome"
 
 #: templates/web/default/js/translation_strings.html:22
-#, fuzzy
 msgid "Please enter your phone number"
-msgstr "Digite seu segundo nome, apelido"
+msgstr ""
 
 #: templates/web/default/js/translation_strings.html:26
 #: templates/web/oxfordshire/js/translation_strings.html:20
@@ -3087,9 +3074,8 @@ msgstr "Relatórios"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:393
 #: perllib/FixMyStreet/DB/Result/Problem.pm:397
-#, fuzzy
 msgid "Reports are limited to %s characters in length. Please shorten your report"
-msgstr "Os relatórios são limitadas a 2000 caracteres. Por favor, encurtar o seu relatório"
+msgstr ""
 
 #: templates/web/zurich/admin/index-sdm.html:7
 msgid "Reports awaiting approval"
@@ -3157,9 +3143,8 @@ msgid "Search:"
 msgstr "Pesquisar:"
 
 #: templates/web/default/admin/reports.html:26
-#, fuzzy
 msgid "Searching found no reports."
-msgstr "elatórios de pesquisa"
+msgstr ""
 
 #: templates/web/default/admin/users.html:39
 msgid "Searching found no users."
@@ -3315,9 +3300,8 @@ msgid "Source code"
 msgstr "O código-fonte"
 
 #: templates/web/default/admin/stats.html:64
-#, fuzzy
 msgid "Start Date:"
-msgstr "Dia:"
+msgstr ""
 
 #: templates/web/bromley/report/display.html:78
 #: templates/web/default/admin/flagged.html:18
@@ -4040,9 +4024,8 @@ msgstr ""
 
 #: templates/web/zurich/admin/list_updates.html:30
 #: templates/web/zurich/admin/list_updates.html:9
-#, fuzzy
 msgid "User"
-msgstr "Usuários"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1342
 msgid "User flag removed"
@@ -4523,9 +4506,8 @@ msgid "e.g. ‘%s’ or ‘%s’"
 msgstr "por exemplo '%s' ou '%s'"
 
 #: templates/web/default/admin/flagged.html:51
-#, fuzzy
 msgid "edit user"
-msgstr "Adicionar user"
+msgstr ""
 
 #: templates/web/default/admin/index.html:23
 #: templates/web/zurich/admin/index.html:5
@@ -4753,19 +4735,3 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d dia"
 msgstr[1] "%d dias"
-
-#, fuzzy
-#~ msgid "The email field is required"
-#~ msgstr "Esta informação é necessária"
-
-#~ msgid "End Year:"
-#~ msgstr "Fim do ano:"
-
-#~ msgid "End month:"
-#~ msgstr "Fim do mês:"
-
-#~ msgid "Start Year:"
-#~ msgstr "Ano:"
-
-#~ msgid "Start month:"
-#~ msgstr "Mes:"
