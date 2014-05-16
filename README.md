@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.3.
+Platform is now at version 1.4.
 
 ## Installation
 
@@ -38,6 +38,37 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.4 (16th May 2014)
+    - User improvements:
+        - Adds some guidance on an empty /my page. #671
+        - Auto-selects the category when reporting if there is only one. #690
+        - Stops indenting emails a few spaces. #715
+        - Email template updates. #700
+    - Installation/developer improvements:
+        - Makes it easier to change the pin icons. #721
+        - Sends reports on staging sites to the reporter. #653
+        - Adds a no-op send method to suspend report sending. #507
+        - Improves the example Apache config. #733
+        - Includes a nicer crontab example. #621
+        - New developer scripts:
+            - make_css_watch. #680
+            - geocode. #758
+        - Adds external_url field to Bodies. #710
+        - Reinstates Open311 original update fetching code. #710 #755
+        - Pins sass/compass versions. #585
+        - Adds new MAPIT_GENERATION variable. #784
+    - Bugfixes:
+        - Fixes MapQuest and OSM attribution. #710 #687
+        - Remove cached photos when deleted from admin.
+        - Tiny bugfixes processing Open311 updates. #677
+        - Correctly sets language in email alert loop. #542
+        - Cron emails use EMAIL_DOMAIN in Message-ID. #678
+        - Minor fixes for Debian wheezy.
+        - Graph display of fixed states.
+        - Slight CSS simplification. #609
+    - Internal things:
+        - Improves the robustness of Carton installation. #675
+        - Doubles the speed of running tests on Travis.
 * v1.3 (12th November 2013)
     - Changes cobrand behaviour so if only one is specified, always use it. #598
     - Allows multiple email addresses to be given for a contact.
