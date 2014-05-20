@@ -1320,6 +1320,13 @@ subtest "test Hart" => sub {
                 ok $email, "got an email";
                 like $email->body, qr/to confirm that you want to send your/i, "confirm the problem";
 
+                # does it reference the fact that this report hasn't been sent to Hart?
+                if ( $test->{national} ) {
+                    like $email->body, qr/Hart Council is not responsible for this type/i, "mentions report hasn't gone to Hart";
+                } else {
+                    unlike $email->body, qr/Hart Council is not responsible for this type/i, "doesn't mention report hasn't gone to Hart";
+                }
+
                 my ($url) = $email->body =~ m{(http://\S+)};
                 ok $url, "extracted confirm url '$url'";
 
