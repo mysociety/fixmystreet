@@ -10,7 +10,9 @@ website:
 
 If your email program does not let you click on this link, copy and paste it
 into your web browser and press return.
-
+[% IF c.cobrand.is_council && !c.cobrand.owns_problem( report ) %]
+Note that [% c.cobrand.council_name %] is not responsible for this type of problem.
+[% END %]
 Your problem had the title:
 
 [% report.title %]
