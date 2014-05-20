@@ -10,7 +10,8 @@ sub council_name { return 'Royal Borough of Greenwich'; }
 sub council_url { return 'greenwich'; }
 
 sub base_url {
-    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
     return 'https://fix.royalgreenwich.gov.uk';
 }
 
