@@ -13,6 +13,8 @@
 
 <h1>[% loc('Your Reports') %]</h1>
 
+<p><a href="/auth/change_password">[% loc('Change password') %]</a></p>
+
 [% IF ! has_content %]
 [% tprintf( loc('You haven&rsquo;t created any reports yet.  <a href="%s">Report a problem now.</a>'),
     c.uri_for('/') ) %]
