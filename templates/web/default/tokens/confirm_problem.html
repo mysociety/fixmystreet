@@ -4,25 +4,30 @@
 
 <p class="confirmed">
 [% IF c.cobrand.is_council %]
-Thank you. You have successfully confirmed your report
-and this will now be investigated by the council.
-You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">view the problem on this site</a>.
-</p>
+    Thank you. You have successfully confirmed your report
+    [% IF c.cobrand.owns_problem( problem ) %]
+        and this will now be investigated by the council.
+        You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">view the problem on this site</a>.
+    [% ELSE %]
+        and this has now been passed on to <b>[% problem.body %]</b> to investigate.
+        Note that [% c.cobrand.council_name %] is not responsible for this type of problem.  However you can continue to view your problem on the <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]"><i>fixmystreet.com</i> website</a>.
+    [% END %]
+    </p>
 
-<p>Your reference for this problem is [% problem.id %], please quote it in any enquiries.
+    <p>Your reference for this problem is [% problem.id %], please quote it in any enquiries.
 [% ELSE %]
-[%    
-    loc('You have successfully confirmed your problem');
-    IF problem.bodies_str;
-        loc(' and <strong>we will now send it to the council</strong>');
-    END; %].
-[%
-    tprintf(
-        loc( 'You can <a href="%s%s">view the problem on this site</a>.' ),
-        c.cobrand.base_url_for_report( problem ),
-        problem.url
-    );
-%]
+    [%
+        loc('You have successfully confirmed your problem');
+        IF problem.bodies_str;
+            loc(' and <strong>we will now send it to the council</strong>');
+        END; %].
+    [%
+        tprintf(
+            loc( 'You can <a href="%s%s">view the problem on this site</a>.' ),
+            c.cobrand.base_url_for_report( problem ),
+            problem.url
+        );
+    %]
 [% END %]
 </p>
 
