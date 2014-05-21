@@ -540,51 +540,32 @@ sub meta_line {
         $meta = sprintf(_('%s, reported at %s'), $category, $date_time);
 
     } else {
+        my @fragments;
+        my @vars;
+
+        push( @fragments, "Reported" );
+
+        if ( $problem->service ) {
+            push( @fragments, "via %s" );
+            push( @vars, $problem->service );
+        }
+
+        if ( $problem->category && $problem->category ne _('Other') ) {
+            push( @fragments, "in the %s category" );
+            push( @vars, $problem->category );
+        }
 
         if ( $problem->anonymous ) {
-            if (    $problem->service
-                and $problem->category && $problem->category ne _('Other') )
-            {
-                $meta =
-                sprintf( _('Reported via %s in the %s category anonymously at %s'),
-                    $problem->service, $problem->category, $date_time );
-            }
-            elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported via %s anonymously at %s'),
-                    $problem->service, $date_time );
-            }
-            elsif ( $problem->category and $problem->category ne _('Other') ) {
-                $meta = sprintf( _('Reported in the %s category anonymously at %s'),
-                    $problem->category, $date_time );
-            }
-            else {
-                $meta = sprintf( _('Reported anonymously at %s'), $date_time );
-            }
-        }
-        else {
-            if (    $problem->service
-                and $problem->category && $problem->category ne _('Other') )
-            {
-                $meta = sprintf(
-                    _('Reported via %s in the %s category by %s at %s'),
-                    $problem->service, $problem->category,
-                    $problem->name,    $date_time
-                );
-            }
-            elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported via %s by %s at %s'),
-                    $problem->service, $problem->name, $date_time );
-            }
-            elsif ( $problem->category and $problem->category ne _('Other') ) {
-                $meta = sprintf( _('Reported in the %s category by %s at %s'),
-                    $problem->category, $problem->name, $date_time );
-            }
-            else {
-                $meta =
-                sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
-            }
+            push( @fragments, "anonymously" );
+        } else {
+            push( @fragments, "by %s" );
+            push( @vars, $problem->name );
         }
 
+        push( @fragments, "at %s" );
+        push( @vars, $date_time );
+
+        $meta = sprintf(_(join(" ", @fragments)), @vars);
     }
 
     return $meta;
