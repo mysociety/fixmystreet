@@ -93,13 +93,17 @@ sub support : Path('support') : Args(0) {
 }
 
 sub load_problem_or_display_error : Private {
-    my ( $self, $c, $id ) = @_;
+    my ( $self, $c, $id, $problems ) = @_;
+
+    # Allow the set of valid problems to be passed in,
+    # but default to problems owned by the current cobrand
+    $problems = $problems || $c->cobrand->problems;
 
     # try to load a report if the id is a number
     my $problem
       = ( !$id || $id =~ m{\D} ) # is id non-numeric?
       ? undef                    # ...don't even search
-      : $c->cobrand->problems->find( { id => $id } );
+      : $problems->find( { id => $id } );
 
     # check that the problem is suitable to show.
     if ( !$problem || ($problem->state eq 'unconfirmed' && !$c->cobrand->show_unconfirmed_reports) || $problem->state eq 'partial' ) {
