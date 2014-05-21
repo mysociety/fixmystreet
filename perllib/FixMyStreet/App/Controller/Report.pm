@@ -67,6 +67,19 @@ sub ajax : Path('ajax') : Args(1) {
     $c->forward( '_display', [ $id ] );
 }
 
+sub confirm : Path('confirm') : Args(1) {
+    my ( $self, $c, $id ) = @_;
+
+    # Confirm page should only show reports from current cobrand
+    my $problems = $c->model('DB::Problem')->search( $c->cobrand->restriction );
+
+    $c->forward( 'load_problem_or_display_error', [ $id, $problems ] );
+    $c->stash->{template} = 'tokens/confirm_problem.html';
+    return 1;
+}
+
+
+
 sub _display : Private {
     my ( $self, $c, $id ) = @_;
 
