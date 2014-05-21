@@ -620,6 +620,12 @@ DISTRIBUTIONS
       Test::Exception 0.31
       Test::More 0.94
       perl 5.006
+  Class-Accessor-Lite-0.06
+    pathname: K/KA/KAZUHO/Class-Accessor-Lite-0.06.tar.gz
+    provides:
+      Class::Accessor::Lite 0.06
+    requirements:
+      ExtUtils::MakeMaker 6.42
   Class-C3-0.24
     pathname: F/FL/FLORA/Class-C3-0.24.tar.gz
     provides:
@@ -5798,6 +5804,18 @@ DISTRIBUTIONS
       Test::More 0
       Test::Tester 0.107
       perl 5.006
+  Test-PostgreSQL-1.05
+    pathname: T/TJ/TJC/Test-PostgreSQL-1.05.tar.gz
+    provides:
+      Test::PostgreSQL 1.05
+    requirements:
+      Class::Accessor::Lite 0
+      DBD::Pg 0
+      DBI 0
+      ExtUtils::MakeMaker 6.59
+      Test::SharedFork 0.06
+      Time::HiRes 0
+      perl 5.008
   Test-Requires-0.06
     pathname: T/TO/TOKUHIROM/Test-Requires-0.06.tar.gz
     provides:
