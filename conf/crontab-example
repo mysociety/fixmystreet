@@ -16,12 +16,14 @@ PATH=/usr/local/bin:/usr/bin:/bin
 0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
 
 2 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-alerts.lock" "$FMS/bin/cron-wrapper send-alerts" || echo "stalled?"
-0,30 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-questionnaires.lock" "$FMS/bin/cron-wrapper send-questionnaires" || echo "stalled?"
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-comments.lock" "$FMS/bin/cron-wrapper send-comments" || echo "stalled?"
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/fetch-comments.lock" "$FMS/bin/cron-wrapper fetch-comments" || echo "stalled?"
+22,52 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-questionnaires.lock" "$FMS/bin/cron-wrapper send-questionnaires" || echo "stalled?"
 
-0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
-0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list --warn" || echo "stalled?"
+# If you utilise Open311 and the updates extension, you will need to run these scripts
+#*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-comments.lock" "$FMS/bin/cron-wrapper send-comments" || echo "stalled?"
+#*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/fetch-comments.lock" "$FMS/bin/cron-wrapper fetch-comments" || echo "stalled?"
+
+47 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
+47 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list --warn" || echo "stalled?"
 
 # Once an hour, update the all reports stats
 13 * * * * "$FMS/bin/cron-wrapper" update-all-reports
