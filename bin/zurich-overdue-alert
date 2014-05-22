@@ -6,31 +6,59 @@
 # Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
 
-use strict;
-use warnings;
 require 5.8.0;
+
+package FixMyStreet::Command::Zurich;
+use Moo;
 
 use DateTime;
 use CronFns;
 use FixMyStreet::App;
 
-my ($verbose, $nomail) = CronFns::options();
+__PACKAGE__->new->run() unless caller;
 
-# Only run on working days
-my $now = DateTime->now();
-exit if FixMyStreet::Cobrand::Zurich::is_public_holiday($now) or FixMyStreet::Cobrand::Zurich::is_weekend($now);
+has 'bodies' => (
+    is => 'lazy',
+    default => sub {
+        my %bodies = map { $_->id => $_ } FixMyStreet::App->model("DB::Body")->all;
+        return \%bodies;
+    }
+);
+has now => (
+    is => 'lazy',
+    default => sub { DateTime->now() },
+);
 
-my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('zurich')->new();
-my %bodies = map { $_->id => $_ } FixMyStreet::App->model("DB::Body")->all;
+has cobrand => (
+    is => 'lazy',
+    default => sub { FixMyStreet::Cobrand->get_class_for_moniker('zurich')->new() },
+);
 
-loop_through( 'alert-moderation-overdue.txt', 0, 1, [ 'unconfirmed' ] );
-loop_through( 'alert-overdue.txt', 1, 6, 'in progress' );
-loop_through( 'alert-overdue.txt', 0, 6, ['confirmed', 'planned'] );
+has nomail => (
+    is => 'lazy',
+    default => sub {
+        my ($verbose, $nomail) = CronFns::options();
+        $nomail;
+    }
+);
+
+sub run {
+    my $self = shift;
+
+    # Only run on working days
+    my $now = $self->now;
+    exit if FixMyStreet::Cobrand::Zurich::is_public_holiday($now) 
+        or FixMyStreet::Cobrand::Zurich::is_weekend($now);
+
+    $self->loop_through( 'alert-moderation-overdue.txt', 0, 1, [ 'unconfirmed' ] );
+    $self->loop_through( 'alert-overdue.txt', 1, 6, 'in progress' );
+    $self->loop_through( 'alert-overdue.txt', 0, 6, ['confirmed', 'planned'] );
+}
 
 sub loop_through {
-    my ( $template, $include_parent, $days, $states ) = @_;
+    my ( $self, $template, $include_parent, $days, $states ) = @_;
     my $dtf = FixMyStreet::App->model("DB")->storage->datetime_parser;
-    my $date_threshold = $dtf->format_datetime(FixMyStreet::Cobrand::Zurich::sub_days( $now, $days ));
+    my $date_threshold = $dtf->format_datetime(FixMyStreet::Cobrand::Zurich::sub_days( $self->now, $days ));
 
     my $reports = FixMyStreet::App->model("DB::Problem")->search( {
         state => $states,
@@ -47,19 +75,19 @@ sub loop_through {
     $template = Utils::read_file( $template_path );
 
     foreach my $body_id (keys %to_send) {
-        send_alert( $template, $body_id, $to_send{$body_id}, $include_parent );
+        $self->send_alert( $template, $body_id, $to_send{$body_id}, $include_parent );
     }
 }
 
 sub send_alert {
-    my ( $template, $body_id, $data, $include_parent ) = @_;
+    my ($self, $template, $body_id, $data, $include_parent) = @_;
 
-    my $body = $bodies{$body_id};
+    my $body = $self->bodies->{$body_id};
     my $body_email = $body->endpoint;
 
     my $h = {
         data => $data,
-        admin_url => $cobrand->admin_base_url,
+        admin_url => $self->cobrand->admin_base_url,
     };
 
     my $env_to = [ $body_email ];
@@ -80,7 +108,8 @@ sub send_alert {
         },
         FixMyStreet->config('CONTACT_EMAIL'),
         $env_to,
-        $nomail
+        $self->nomail
     );
 }
 
+1;
