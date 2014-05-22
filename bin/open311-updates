@@ -1,0 +1,28 @@
+#!/usr/bin/env perl
+#
+# This script utilises the Open311 extension explained at
+# https://github.com/mysociety/FixMyStreet/wiki/Open311-FMS---Proposed-differences-to-Open311
+# to fetch and send updates on service requests.
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use FixMyStreet::App;
+use CronFns;
+my ($verbose, $nomail) = CronFns::options();
+
+use Open311;
+use Open311::GetServiceRequestUpdates;
+use Open311::PostServiceRequestUpdates;
+
+my $pid = fork();
+if ( $pid == 0 ) {
+    my $updates = Open311::GetServiceRequestUpdates->new( verbose => $verbose );
+    $updates->fetch;
+    exit;
+} else {
+    my $updates = Open311::PostServiceRequestUpdates->new( verbose => $verbose );
+    $updates->send;
+}
+while (wait() != -1) { }
