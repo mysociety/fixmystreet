@@ -19,6 +19,17 @@ You can use the extensions as follows:
     extends 'Open311::Endpoint';
     with 'Open311::Endpoint::Role::mySociety';
 
+You will have to provide implementations of
+
+    get_service_request_updates
+    post_service_request_update
+
+You will need to return L<Open311::Endpoint::Service::Request::Update>
+objects.  However, the root L<Open311::Endpoint::Service::Request> is not
+aware of updates, so you may may find it easier to ensure that the ::Service
+objects you create (with get_service_request etc.) return
+L<Open311::Endpoint::Service::Request::mySociety> objects.
+
 =cut
 
 use Moo::Role;
@@ -35,13 +46,16 @@ around dispatch_request => sub {
             $self->call_api( GET_Service_Request_Updates => $args );
         },
 
+        sub (POST + /servicerequestupdates + ?*) {
+            my ($self, $args) = @_;
+            $self->call_api( POST_Service_Request_Update => $args );
+        },
+
     );
 };
 
 sub GET_Service_Request_Updates_input_schema {
     my $self = shift;
-    # NB: we can't just return $self->GET_Service_Requests_input_schema(@_);
-    # as the propsed extension doesn't accept service_code, service_request_id, or status
     return {
         type => '//rec',
         required => {
@@ -57,24 +71,82 @@ sub GET_Service_Request_Updates_input_schema {
 
 sub GET_Service_Request_Updates_output_schema {
     my $self = shift;
-    return $self->GET_Service_Requests_output_schema(@_);
+    return {
+        type => '//rec',
+        required => {
+            service_request_updates => {
+                type => '//arr',
+                contents => '/open311/service_request_update',
+            },
+        },
+    };
 }
 
 sub GET_Service_Request_Updates {
     my ($self, $args) = @_;
 
-    my @service_requests = $self->get_service_request_updates({
+    my @updates = $self->get_service_request_updates({
         jurisdiction_id => $args->{jurisdiction_id},
         start_date => $args->{start_date},
         end_date => $args->{end_date},
     });
 
-    $self->format_service_requests(@service_requests);
+    $self->format_updates(@updates);
+}
+
+sub format_updates {
+    my ($self, @updates) = @_;
+    return {
+        service_request_updates => [
+            map {
+                my $update = $_;
+                +{
+                    (
+                        map {
+                            $_ => $update->$_,
+                        }
+                        qw/
+                            update_id
+                            service_request_id
+                            status
+                            description
+                            media_url
+                            / 
+                    ),
+                    (
+                        map {
+                            $_ => $self->w3_dt->format_datetime( $update->$_ ),
+                        }
+                        qw/
+                            updated_datetime
+                        /
+                    ),
+                }
+            } @updates
+        ]
+    };
 }
 
 sub get_service_request_updates {
     my ($self, $args) = @_;
     die "abstract method get_service_request_updates not overridden";
+}
+
+sub learn_additional_types {
+    my ($self, $schema) = @_;
+    $schema->learn_type( 'tag:wiki.open311.org,GeoReport_v2:rx/service_request_update',
+        {
+            type => '//rec',
+            required => {
+                service_request_id => $self->get_identifier_type('service_request_id'),
+                update_id => $self->get_identifier_type('update_id'),
+                status => '/open311/status',
+                updated_datetime => '/open311/datetime',
+                description => '//str',
+                media_url => '//str',
+            },
+        }
+    );
 }
 
 1;

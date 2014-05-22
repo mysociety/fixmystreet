@@ -206,6 +206,11 @@ has schema => (
     },
 );
 
+sub learn_additional_types {
+    # my ($self, $rx) = @_;
+    ## no-op, but override in ::Role or implementation!
+}
+
 has spark => (
     is => 'lazy',
     default => sub {

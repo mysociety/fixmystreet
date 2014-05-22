@@ -1,5 +1,6 @@
 package Open311::Endpoint::Service::Request;
 use Moo;
+use MooX::HandlesVia;
 use Types::Standard ':all';
 use namespace::clean;
 
