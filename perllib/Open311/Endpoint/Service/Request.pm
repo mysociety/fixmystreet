@@ -57,7 +57,7 @@ has requested_datetime => (
 );
 
 has updated_datetime => (
-    is => 'ro',
+    is => 'rw',
     isa => Maybe[ InstanceOf['DateTime'] ],
 );
 

@@ -14,7 +14,6 @@ sub get_service_request_updates {
         my $updated_datetime = $request->updated_datetime or return;
         if ($start_date) { return unless $updated_datetime >= $start_date }
         if ($end_date)   { return unless $updated_datetime <= $end_date }
-        warn $updated_datetime;
         return 1;
     });
 }
