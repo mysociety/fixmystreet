@@ -1,0 +1,49 @@
+#!/usr/bin/env perl
+#
+# This script:
+# 1. sends new problem reports to bodies
+# 2a. Fetches Open311 service request updates
+# 2b. Sends Open311 service request updates
+#
+# For 2, it utilises the Open311 extension explained at
+# https://github.com/mysociety/FixMyStreet/wiki/Open311-FMS---Proposed-differences-to-Open311
+
+use strict;
+use warnings;
+require 5.8.0;
+
+use CGI; # XXX
+use CronFns;
+
+use mySociety::Config;
+use FixMyStreet::App;
+
+use Open311;
+use Open311::GetServiceRequestUpdates;
+use Open311::PostServiceRequestUpdates;
+
+my ($verbose, $nomail) = CronFns::options();
+my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
+CronFns::language($site);
+
+my $pid = fork();
+if ( $pid == 0 ) {
+    my $updates = Open311::GetServiceRequestUpdates->new( verbose => $verbose );
+    $updates->fetch;
+    exit;
+}
+
+$pid = fork();
+if ( $pid == 0 ) {
+    my $updates = Open311::PostServiceRequestUpdates->new( verbose => $verbose );
+    $updates->send;
+    exit;
+}
+
+$pid = fork();
+if ( $pid == 0 ) {
+    FixMyStreet::App->model('DB::Problem')->send_reports();
+    exit;
+}
+
+while (wait() != -1) { }

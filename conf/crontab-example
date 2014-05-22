@@ -10,16 +10,13 @@
 
 PATH=/usr/local/bin:/usr/bin:/bin
 
-# send-reports has three rows so that its 8am entry can be run with --verbose to send a morning summary of anything that's gone wrong
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$FMS/send-reports.lock" "$FMS/bin/cron-wrapper send-reports" || echo "stalled?"
-0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports" || echo "stalled?"
-0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
+# send-reports-updates has three rows so that its 8am entry can be run with --verbose to send a morning summary of anything that's gone wrong
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$FMS/send-reports.lock" "$FMS/bin/cron-wrapper send-reports-updates" || echo "stalled?"
+0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports-updates" || echo "stalled?"
+0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports-updates --verbose" || echo "stalled?"
 
 2 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-alerts.lock" "$FMS/bin/cron-wrapper send-alerts" || echo "stalled?"
 22,52 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-questionnaires.lock" "$FMS/bin/cron-wrapper send-questionnaires" || echo "stalled?"
-
-# If you utilise Open311 and the updates extension, you will need to run this script
-#*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-updates.lock" "$FMS/bin/cron-wrapper open311-updates" || echo "stalled?"
 
 47 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
 47 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list --warn" || echo "stalled?"
