@@ -144,7 +144,7 @@ accepts incoming Open311 requests, and converts them into custom calls (using
 the local back-end's API, which are effectively Postgres stored procedures). The
 script captures the result and sends it back as the appropriate Open311
 response. These scripts are straightforward (see them in
-[/bin/oxfordshire/](http://github.com/mysociety/fixmystreet/FIXME)) because
+[/bin/oxfordshire/](https://github.com/mysociety/fixmystreet/tree/master/bin/oxfordshire)) because
 they don't need to implement the whole Open311 protocol -- only the calls that
 FixMyStreet uses.
 
@@ -169,7 +169,7 @@ pin green, if configured to do so) and optionally adding a description from the
 council.
 
 This behaviour isn't quite covered by the Open311 standard (although we think
-it should be: see [this explanation](http://www.mysociety.org/blog/open-311-extended-FIXME))
+it should be: see [this explanation](https://www.mysociety.org/2013/02/20/open311-extended/))
 and it requires the back-end to expose update data.
 
 Our experience is that most back-ends do not already provide this data, but that
