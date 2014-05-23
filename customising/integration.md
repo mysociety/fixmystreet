@@ -62,7 +62,7 @@ one it is not necessary to do the other.
 
 Although you can approach each of these levels of integration as custom
 programming tasks, we *strongly recommend* you use the
-<a href="{{site.baseurl }}glossary/open311" class="glossary">Open311</a>
+<a href="{{site.baseurl }}glossary/#open311" class="glossary">Open311</a>
 open standard when you can.
 
 Strictly speaking it's possible to implement any of these levels independently
@@ -73,7 +73,7 @@ previous one.
 
 You can integrate with just one body (while the others continue to use email).
 You can even just integrate certain
-<a href="{{ site.baseurl }}glossary/category" class="glossary">categories</a>
+<a href="{{ site.baseurl }}glossary/#category" class="glossary">categories</a>
 for a body &mdash; for example, "Potholes" and "Fallen trees" could be
 submitted by Open311, while "Streetlighting" problems are sent by email.
 
