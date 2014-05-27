@@ -85,6 +85,22 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:D/+UWcF7JO/EkCiJaAHUOw
 
+__PACKAGE__->has_many(
+  "moderation_log_entries",
+  "FixMyStreet::DB::Result::ModerationLog",
+  { "foreign.comment_id" => "self.id",
+    "foreign.problem_id" => "self.problem_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->might_have(
+  "moderation_original_data",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.comment_id" => "self.id",
+    "foreign.problem_id" => "self.problem_id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
@@ -174,6 +190,18 @@ sub meta_problem_state {
 
     return $state;
 }
+
+=head2 latest_moderation_log_entry
+
+Return most recent ModerationLog object
+
+=cut
+
+sub latest_moderation_log_entry {
+    my $self = shift;
+    return $self->moderation_log_entries->search({}, { order_by => 'id desc' })->first;
+}
+
 
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );

@@ -19,6 +19,11 @@
   <script type="text/javascript" src="[% start %][% version('/js/fixmystreet-admin.js') %]"></script>
 [% END %]
 
+[% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
+[% IF moderating %]
+  <script type="text/javascript" src="[% start %][% version('/js/moderate.js') %]"></script>
+[% END %]
+
 [% map_js %]
 
 [% IF category_extras_json && category_extras_json != '{}' %]

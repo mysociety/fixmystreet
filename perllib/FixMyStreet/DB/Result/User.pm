@@ -65,15 +65,27 @@ __PACKAGE__->belongs_to(
   },
 );
 __PACKAGE__->has_many(
+  "moderation_logs",
+  "FixMyStreet::DB::Result::ModerationLog",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "problems",
   "FixMyStreet::DB::Result::Problem",
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "user_body_permissions",
+  "FixMyStreet::DB::Result::UserBodyPermission",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jRAtXRLRNozCmthAg9p0dA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-06-05 15:46:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9FlM/jbymDTtn6tGmqBufQ
 
 __PACKAGE__->add_columns(
     "password" => {
@@ -196,6 +208,23 @@ sub split_name {
     my ($first, $last) = $self->name =~ /^(\S*)(?: (.*))?$/;
 
     return { first => $first || '', last => $last || '' };
+}
+
+sub has_permission_to {
+    my ($self, $permission_type, $body_id) = @_;
+
+    return unless $self->belongs_to_body($body_id);
+
+    my $permission = $self->user_body_permissions->find({ 
+            permission_type => $permission_type,
+            body_id => $self->from_body->id,
+        });
+    return $permission ? 1 : undef;
+}
+
+sub print {
+    my $self = shift;
+    return '[' . (join '-', @_) . ']';
 }
 
 1;
