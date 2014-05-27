@@ -66,7 +66,25 @@ sub determine_contact_type : Private {
 
     if ($id) {
 
-        $c->forward( '/report/load_problem_or_display_error', [ $id ] );
+        # if we're moderating, then we don't show errors in every case, e.g.
+        # for hidden reports
+        if ($c->req->param('m')) {
+            my $problem
+            = ( !$id || $id =~ m{\D} ) # is id non-numeric?
+            ? undef                    # ...don't even search
+            : $c->cobrand->problems->find( { id => $id } );
+
+            if ($problem) {
+                $c->stash->{problem} = $problem;
+                $c->stash->{moderation_complaint} = 1;
+            }
+            else {
+                $c->forward( '/report/load_problem_or_display_error', [ $id ] );
+            }
+        }
+        else {
+            $c->forward( '/report/load_problem_or_display_error', [ $id ] );
+        }
 
         if ($update_id) {
             my $update = $c->model('DB::Comment')->find(

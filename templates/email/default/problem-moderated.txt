@@ -1,0 +1,38 @@
+Subject: Your report on [% INCLUDE 'site-name.txt' | trim %] has been moderated
+
+Hello [% user.name %],
+
+Your report on [% INCLUDE 'site-name.txt' | trim %] has been moderated.
+
+[% IF types == 'hide' -%]
+The report has been hidden from the site.
+[% ELSE %]
+The following data has been changed:
+
+	[% types %]
+
+[% END -%]
+
+Your report had the title:
+
+[% problem.moderation_original_data.title %]
+
+And details:
+
+[% problem.moderation_original_data.detail %]
+
+[% UNLESS types == 'hide' %]
+You can see the report at [% report_uri %]
+[% END %]
+
+If you do not think that this report should have been moderated, you may contact
+the team at [% report_complain_uri %]
+
+Thank you for submitting a report through [% INCLUDE 'site-name.txt' | trim %].
+
+
+
+[% INCLUDE 'signature.txt' %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

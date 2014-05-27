@@ -111,6 +111,12 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
+  "moderation_original_datas",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.problem_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "questionnaires",
   "FixMyStreet::DB::Result::Questionnaire",
   { "foreign.problem_id" => "self.id" },
@@ -124,8 +130,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U/4BT8EGfcCLKA/7LX+qyQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-31 15:57:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EvD4sS1mdJJyI1muZ4TrCw
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -133,6 +139,14 @@ __PACKAGE__->has_one(
   "FixMyStreet::DB::Result::Nearby",
   { "foreign.problem_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->might_have(
+  "moderation_original_data",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.problem_id" => "self.id" },
+  { where => { 'comment_id' => undef },
+    cascade_copy => 0, cascade_delete => 1 },
 );
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
@@ -793,6 +807,27 @@ sub as_hashref {
         created_pp => $c->cobrand->prettify_dt( $self->created ),
     };
 }
+
+=head2 latest_moderation_log_entry
+
+Return most recent ModerationLog object
+
+=cut
+
+sub latest_moderation_log_entry {
+    my $self = shift;
+    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
+}
+
+__PACKAGE__->has_many(
+  "admin_log_entries",
+  "FixMyStreet::DB::Result::AdminLog",
+  { "foreign.object_id" => "self.id" },
+  { 
+      cascade_copy => 0, cascade_delete => 0,
+      where => { 'object_type' => 'problem' },
+  }
+);
 
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
