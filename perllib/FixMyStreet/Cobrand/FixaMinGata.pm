@@ -137,23 +137,6 @@ sub filter_all_council_ids_list {
     return  @all_councils_ids; # Är detta rätt? //Rikard
 }
 
-sub short_name {
-    my $self = shift;
-    my ($area, $info) = @_;
-
-    # Rikard kommenterar ut följande tills vidare...
-    #if ($area->{name} =~ /^(Os|Nes|V\xe5ler|Sande|B\xf8|Her\xf8y)$/) {
-    #    my $parent = $info->{$area->{parent_area}}->{name};
-    #    return URI::Escape::uri_escape_utf8("$area->{name}, $parent");
-    #}
-
-    my $name = $area->{name};
-    $name =~ s/ & / and /;
-    $name = URI::Escape::uri_escape_utf8($name);
-    $name =~ s/%20/+/g;
-    return $name;
-}
-
 # Vad ska vi göra för svenska förhållanden här??? //Rikard
 sub council_rss_alert_options {
     my $self         = shift;
