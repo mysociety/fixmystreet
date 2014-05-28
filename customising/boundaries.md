@@ -384,8 +384,9 @@ Use this type of boundary if:
       in (otherwise you'll be getting areas from the whole world). Identify the
       specific areas you want to use, and list them explicitly in
       <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>.
-      You should also specify the generation the areas you use are in, so that
-      e.g. when global MapIt updates, your areas can still be found.
+      You should also set
+      <code><a href="{{ site.baseurl }}customising/config/#mapit_generation">MAPIT_GENERATION</a></code>, 
+      so that your areas can still be found when we update the global MapIt data.
     </p>
 <pre><code>MAPIT_URL: 'http://global.mapit.mysociety.org'
 MAPIT_TYPES: ['O06','O07']

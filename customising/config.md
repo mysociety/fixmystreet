@@ -465,7 +465,7 @@ LANGUAGES:
     <p>
       Note that you must still set <code><a href="#mapit_types">MAPIT_TYPES</a></code> to match
       the type or types of each of these areas. And we recommend you set
-      <code><a href="#mapit_generation">MAPIT_GENERATION</a></code>.
+      <code><a href="#mapit_generation">MAPIT_GENERATION</a></code> too.
     </p>
     <p>
       We recommend you use this setting, because doing so can improves the efficiency of your site's calls to MapIt considerably.
@@ -494,11 +494,56 @@ LANGUAGES:
     <a name="mapit_generation"><code>MAPIT_GENERATION</code></a>
   </dt>
   <dd>
-    If you are using global MapIt and
+    If you have set
     <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>, then you
-    should specify the generation of global MapIt you are using (given on every
-    area page on MapIt), so that your installation can always find the area
-    even if global MapIt updates.
+    should also specify the generation of MapIt data you are using, especially
+    if you are using our global MapIt service.
+    <p>
+      Global MapIt uses <a href="{{ site.baseurl }}glossary/#osm"
+      class="glossary">OpenStreetMap</a> data. From time to time we import the latest
+      data in order to pull in newly-added boundaries, or reflect changes to existing
+      ones. When this happens, the area IDs may change, which means the values in your
+      <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code> might no longer
+      be correct (because, by default, MapIt returns values from the <em>latest</em>
+      generation of data). Use the <code>MAPIT_GENERATION</code> setting to lock
+      the area IDs in your whitelist &mdash; and the geometry described by their boundary
+      data &mdash; to the specific generation they belong to. MapIt's generations
+      are numbered with an integer that we increment with each update.
+    </p>
+    <p>
+      To determine the generation of the data you're using, when you initially
+      identify the area IDs look at the <code>generation-high</code> and
+      <code>generation-low</code> values MapIt is returning. For example,
+      here's the global MapIt data for
+      <a href="http://global.mapit.mysociety.org/point/4326/100.466667,13.75.html">a
+      point within Thailand</a> &mdash; the national border for Thailand is the
+      top level returned ("OSM Administrative Boundary Level 2"). Look on
+      that page for "Exists in generations" (or "<code>generation-</code>" in the 
+      JSON data, available by changing MapIt's <code>.html</code> URL to <code>.json</code>)
+      to see the range of generations in which this area appears. You should
+      probably use the highest number (that is, the most recent update).
+    </p>
+    <div class="more-info">
+      <p>Examples:</p>
+      <ul class="examples">
+        <li>
+          In this example, the whitelist contains a single area ID from global
+          MapIt's generation <code>4</code> for 
+          <a href="http://global.mapit.mysociety.org/area/507455.html?generation=4">Thailand's national border</a>
+          (hence <code>507455</code> and
+          <a href="{{ site.baseurl }}glossary/#area-type" class="glossary">area type</a> <code>O02</code>):
+<pre>MAPIT_URL: http://global.mapit.mysociety.org/
+MAPIT_TYPES: ['O02']
+MAPIT_ID_WHITELIST: [507455]
+MAPIT_ID_GENERATION: 4
+</pre>
+        </li>
+        <li>
+          If you're not using a <code>MAPIT_ID_WHITELIST</code>
+          you usually don't need to specify a <code>MAPIT_ID_GENERATION</code>.
+        </li>
+      </ul>
+    </div>
   </dd>
 
   <dt>
