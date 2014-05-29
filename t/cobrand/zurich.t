@@ -1,11 +1,9 @@
-# TODO
-# Overdue alerts
-
 use strict;
 use warnings;
 use DateTime;
 use Test::More;
 use JSON;
+use Test::Warnings;
 
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
@@ -111,6 +109,8 @@ my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
     cobrand            => 'zurich',
 });
 my $report = $reports[0];
+$report->discard_changes;
+my $created =  $report->created;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
@@ -238,7 +238,6 @@ subtest "report_edit" => sub {
 
 
     # Set state back to 10 days ago so that report is overdue
-    my $created = $report->created;
     reset_report_state($report, $created->clone->subtract(days => 10));
 
     is get_moderated_count(), 0;
@@ -657,7 +656,6 @@ subtest "test stats" => sub {
         $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 2'); # now including hidden
         $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 3');
         # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
-        # diag Dumper(\@data); use Data::Dumper;
         
         my $export_count = get_export_rows_count($mech);
         if (defined $export_count) {
@@ -678,6 +676,33 @@ subtest "test admin_log" => sub {
     });
     is scalar @entries, 4, 'State changes logged'; 
     is $entries[-1]->action, 'state change to hidden', 'State change logged as expected';
+};
+
+subtest "overdue alerts" => sub {
+    $mech->email_count_is(0);
+
+    # Set state back to 10 days ago so that report is overdue
+    reset_report_state($report, $created->clone->subtract(days => 10));
+
+    # Log in and set report moderated, so that it will be triggered by zurich-overdue-alert
+    # The following would be much simplified if Zurich::admin_report_edit were refactored to
+    # call a pure function (e.g. without $c->req) that we could call from test. TODO
+    #
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        my $user = $mech->log_in_ok( 'super@example.org' );
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+        $mech->get_ok( '/report/' . $report->id );
+    };
+    $report->discard_changes;
+    is ( $report->extra->{moderated_overdue}, 1, 'moderated_overdue set correctly when overdue' );
+
+    require 'bin/zurich-overdue-alert';
+    FixMyStreet::Command::Zurich->new->run;
+
+    $mech->email_count_is(1);
 };
 
 cleanup();

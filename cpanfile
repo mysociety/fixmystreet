@@ -111,5 +111,6 @@ requires 'Test::MockTime';
 requires 'Test::More', '0.88';
 requires 'Test::Warn';
 requires 'Test::WWW::Mechanize::Catalyst';
+requires 'Test::Warnings';
 requires 'Web::Scraper';
 
