@@ -658,7 +658,12 @@ sub can_display_external_id {
 
 sub duration_string {
     my ( $problem, $c ) = @_;
-    my $body = $problem->body( $c );
+    my $body;
+    if ( $c->cobrand->can('link_to_council_cobrand') ) {
+        $body = $c->cobrand->link_to_council_cobrand($problem);
+    } else {
+        $body = $problem->body( $c );
+    }
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
