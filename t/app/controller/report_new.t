@@ -1295,6 +1295,8 @@ subtest "test Lichfield" => sub {
                     is $mech->uri->path, "/report/confirm/" . $report->id, "redirected to confirm page";
                     my $base = "lichfielddc.fixmystreet.com";
                     is $mech->uri->host, $base, 'remained on correct site';
+                    my $national_base = "www.fixmystreet.com";
+                    $mech->content_contains( "http://" . $national_base . "/report/" . $report->id, 'contains link to view report on fixmystreet.com' );
                 } else {
                     is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
                     my $base = 'www.fixmystreet.com';
