@@ -38,7 +38,7 @@ sub get_quadkey {
 }
 
 sub map_tile_base {
-    '.', "http://%stilma.mysociety.org/sv/%d/%d/%d.png";
+    '-', "//%stilma.mysociety.org/sv/%d/%d/%d.png";
 }
 
 sub map_tiles {
