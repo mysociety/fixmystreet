@@ -662,7 +662,19 @@ sub processed_summary_string {
 
 sub duration_string {
     my ( $problem, $c ) = @_;
-    my $body = $problem->body( $c );
+    my $body;
+    my $handler = $problem->get_cobrand_body_handler();
+    # If the report was sent to a cobrand that we're not currently on,
+    # include a link to view it on the responsible cobrand.
+    # This only occurs if the report was sent to a single body and we're not already
+    # using the body name as a link to all problem reports.
+    if ( !mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS') && # scalar($problem->bodies_str_ids) == 1 &&
+         $handler->is_council && $handler->moniker ne $c->cobrand->moniker ){
+        my $url = sprintf("%s%s", $handler->base_url, $problem->url);
+        $body = sprintf("<a href='%s'>%s</a>", $url, $problem->body( $c ));
+    } else {
+        $body = $problem->body( $c );
+    }
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
