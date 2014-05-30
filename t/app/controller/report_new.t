@@ -1228,11 +1228,12 @@ subtest "test Lichfield" => sub {
             redirect  => 1,
           },
           {
-            desc      => 'confirm redirect for non cobrand council in two tier cobrand redirect to national site',
+            desc      => 'confirm redirect for non cobrand council in two tier cobrand redirect to national site via confirm page',
             category  => 'Street Lighting',
             council   => 2240,
             national  => 1,
             redirect  => 1,
+            confirm   => 1,
           },
     ) {
         subtest $test->{ desc } => sub {
@@ -1290,10 +1291,14 @@ subtest "test Lichfield" => sub {
             is $report->bodies_str, $test->{council};
 
             if ( $test->{redirect} ) {
-                is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
-                my $base = 'www.fixmystreet.com';
-                $base = "lichfielddc.fixmystreet.com" unless $test->{national};
-                is $mech->uri->host, $base, 'redirected to correct site';
+                if ( $test->{confirm} ) {
+                    is $mech->uri->path, "/report/confirm/" . $report->id, "redirected to confirm page";
+                } else {
+                    is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
+                    my $base = 'www.fixmystreet.com';
+                    $base = "lichfielddc.fixmystreet.com" unless $test->{national};
+                    is $mech->uri->host, $base, 'redirected to correct site';
+                }
             } else {
                 # receive token
                 my $email = $mech->get_email;
