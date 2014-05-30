@@ -147,8 +147,8 @@ subtest "Submit a correct entry" => sub {
 
     # Check photo present, and still there after map submission (testing bug #18)
     $mech->content_contains( '<img align="right" src="/photo/' );
-    $mech->content_contains('latitude" value="51.50101"', 'Check latitude');
-    $mech->content_contains('longitude" value="-0.141587"', 'Check longitude');
+    $mech->content_contains('latitude" value="51.501009"', 'Check latitude');
+    $mech->content_contains('longitude" value="-0.141588"', 'Check longitude');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
         MAPIT_URL => 'http://mapit.mysociety.org/',

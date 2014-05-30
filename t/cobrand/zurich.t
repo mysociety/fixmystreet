@@ -680,8 +680,8 @@ subtest "test admin_log" => sub {
     is $entries[-1]->action, 'state change to hidden', 'State change logged as expected';
 };
 
-cleanup();
-
-ok $mech->host("www.fixmystreet.com"), "change host back";
-
-done_testing();
+END {
+    cleanup();
+    ok $mech->host("www.fixmystreet.com"), "change host back";
+    done_testing();
+}
