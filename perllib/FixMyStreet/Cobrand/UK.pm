@@ -317,5 +317,32 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
+sub get_body_handler_for_problem {
+    my ($self, $row) = @_;
+
+    my $subclass;
+    if ( $row->bodies_str eq '2482' ) {
+        $subclass = 'FixMyStreet::Cobrand::Bromley'
+    }
+    if ( $row->bodies_str =~/2237/ ) {
+        $subclass = 'FixMyStreet::Cobrand::Oxfordshire'
+    }
+    if ( $row->bodies_str =~ /2619/ ) {
+        # only used for Open311 dispatching
+        $subclass = 'FixMyStreet::Cobrand::WestBerkshire'
+    }
+    if ( $row->bodies_str =~ /2218/ ) {
+        # only used for Open311 dispatching
+        $subclass = 'FixMyStreet::Cobrand::Cambridgeshire'
+    }
+
+    if ($subclass) {
+        return $subclass->new( ref $self ? { %$self } : {} );
+    }
+    else {
+        return $self->next::method;
+    }
+}
+
 1;
 

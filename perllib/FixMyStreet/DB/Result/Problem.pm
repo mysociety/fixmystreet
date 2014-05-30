@@ -809,6 +809,23 @@ sub get_cobrand_logged {
     return $cobrand_class->new;
 }
 
+=head2 get_cobrand_body_handler
+
+Get a cobrand object for the body the problem has been logged against.
+
+e.g.
+    * if the problem was logged at fix.bromley.gov it will return ::Bromley
+    * if a problem was logged at www.fixmystreet.com for the Bromley area, it
+      will *also* return ::Bromley
+
+=cut
+
+sub get_cobrand_body_handler {
+    my $self = shift;
+    my $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $self->cobrand );
+    return $cobrand_class->get_body_handler_for_problem($self);
+}
+
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
