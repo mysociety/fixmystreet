@@ -794,6 +794,21 @@ sub as_hashref {
     };
 }
 
+=head2 get_cobrand_logged
+
+Get a cobrand object for the cobrand the problem was logged for.
+
+e.g. if a problem was logged at www.fixmystreet.com, this will be a
+FixMyStreet::Cobrand::FixMyStreet object.
+
+=cut
+
+sub get_cobrand_logged {
+    my $self = shift;
+    my $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $self->cobrand );
+    return $cobrand_class->new;
+}
+
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
