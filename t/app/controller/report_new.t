@@ -1293,6 +1293,8 @@ subtest "test Lichfield" => sub {
             if ( $test->{redirect} ) {
                 if ( $test->{confirm} ) {
                     is $mech->uri->path, "/report/confirm/" . $report->id, "redirected to confirm page";
+                    my $base = "lichfielddc.fixmystreet.com";
+                    is $mech->uri->host, $base, 'remained on correct site';
                 } else {
                     is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
                     my $base = 'www.fixmystreet.com';
