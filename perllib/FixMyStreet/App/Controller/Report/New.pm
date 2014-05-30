@@ -1133,7 +1133,7 @@ sub redirect_or_confirm_creation : Private {
             $c->log->info( 'cobrand was set to always confirm reports and report was non public, success page showed');
             $c->stash->{template} = 'report_created.html';
             return 1;
-        } elsif ( $c->cobrand->is_council && !$c->cobrand->owns_problem( $report ) ) {
+        } elsif ( $c->cobrand->is_council && !$c->cobrand->owns_problem( $report ) && $c->cobrand->moniker ne 'seesomething' ) {
             $c->log->info("Report via a council cobrand has been sent to a different authority than this cobrand's owner, so redirecting to confirmation page");
             $report_uri = $c->uri_for( '/report/confirm', $report->id );
         } else {
