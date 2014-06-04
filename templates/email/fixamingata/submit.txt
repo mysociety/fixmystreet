@@ -3,7 +3,7 @@ Subject: Ny rapport: <?=$values['title']?>
 Till <?=$values['bodies_name']?>,
 
 Det här meddelandet rör en rapport om ett problem i gatumiljön som en
-medborgare lämnat via tjänsten Fixa Min Gata.
+medborgare lämnat via tjänsten FixaMinGata.
 
 <?=$values['missing']?><?=$values['multiple']?>Följande rapport
 tror medborgaren behöver er uppmärksamhet.
@@ -48,7 +48,7 @@ FixaMinGata-relaterade tjänster och support. Bland annat kan varje
 kategori ha sin egen e-postadress, och FixaMinGata kan även kopplas
 mot system som Open311.
 
-Om ni vill läsa mer om Fixa Min Gata och vad det innebär för er som kommun
+Om ni vill läsa mer om FixaMinGata och vad det innebär för er som kommun
 kan ni hitta ytterligare information på vår informationssida för kommuner:
 
   <http://fixamingata.se/kommun>

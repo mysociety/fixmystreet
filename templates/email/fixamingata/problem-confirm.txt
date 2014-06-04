@@ -2,7 +2,7 @@ Subject: Bekräfta din rapport på [% INCLUDE 'site-name.txt' | trim %]
 
 Hej [% report.name %],
 
-För att bekräfta den rapport som du nyligen lade in på Fixa Min Gata
+För att bekräfta den rapport som du nyligen lade in på FixaMinGata
 måste du klicka på nedanstående länk:
 
 [% token_url %]

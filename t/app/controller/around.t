@@ -67,8 +67,8 @@ foreach my $test (
 foreach my $test (
     {
         pc        => 'SW1A 1AA',
-        latitude  => '51.50101',
-        longitude => '-0.141587',
+        latitude  => '51.501009',
+        longitude => '-0.141588',
     },
     {
         pc        => 'TQ 388 773',

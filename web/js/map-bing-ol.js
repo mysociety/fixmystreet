@@ -1,4 +1,4 @@
-var tile_base = [ [ '', 'a.', 'b.', 'c.' ], 'http://{S}tilma.mysociety.org/sv' ];
+var tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.org/sv' ];
 
 function set_map_config(perm) {
     var permalink_id;
