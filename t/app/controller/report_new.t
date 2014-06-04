@@ -1500,6 +1500,9 @@ subtest "extra google analytics code displayed on logged in problem creation" =>
         # check that the user does not exist
         my $test_email = 'test-2@example.com';
 
+        # ensure we're using the correct hostname
+        $mech->host('www.fixmystreet.com');
+
         $mech->clear_emails_ok;
         my $user = $mech->log_in_ok($test_email);
 
