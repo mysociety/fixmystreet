@@ -94,3 +94,59 @@ body.mappage {
         }
     }
 }
+body.twothirdswidthpage,
+body.fullwidthpage {
+    #front-main {
+        padding-bottom: 4em;
+    }
+
+    .container {
+        .content {
+            box-shadow: none;
+            padding: 1em 1em 0em;
+            margin-bottom: 0em;
+            footer {
+                margin-top: 0em;
+                .tablewrapper {
+                    padding-top: 2em;
+                    padding-bottom: 3em;
+                    background: #1a1a1a url(images/tile.jpg) 0 0 repeat;
+                    color: $base_fg;
+                }
+            }
+        }
+    }
+}
+
+body.frontpage {
+    .container {
+        background-color: transparent;
+
+        .content {
+            background-color: transparent;
+            padding: 0em 0em 1em;
+
+            > .tablewrapper {
+                margin: -4em -1em 0em;
+                padding: 1em 1em;
+                background-color: white;
+            }
+        }
+    }
+}
+
+body.twothirdswidthpage {
+    .container {
+        .content {
+            footer {
+                width: 48em;
+                @media only screen and (min-width: 61em) {
+                    width: 60em;
+                }
+                .tablewrapper {
+                    border: 0px;
+                }
+            }
+        }
+    }
+}
