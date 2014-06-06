@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-06-06 21:41+0800\n"
+"PO-Revision-Date: 2014-06-06 22:31+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -20,7 +20,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:604
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:383
 msgid " and "
-msgstr ""
+msgstr "和"
 
 #: templates/web/default/tokens/confirm_problem.html:15
 #: templates/web/default/tokens/confirm_problem.html:17
@@ -391,7 +391,7 @@ msgstr ""
 #: templates/web/default/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:148
 msgid "Alert me to future updates"
-msgstr ""
+msgstr "之後有更新通知我"
 
 #: templates/web/default/footer.html:11
 #: templates/web/emptyhomes/header.html:32
@@ -404,7 +404,7 @@ msgstr ""
 #: templates/web/zurich/footer.html:19
 #: templates/web/zurich/nav_over_content.html:6
 msgid "All reports"
-msgstr ""
+msgstr "全部回報"
 
 #: templates/web/default/admin/stats.html:5
 #: templates/web/zurich/admin/stats.html:8
@@ -414,7 +414,7 @@ msgstr ""
 
 #: templates/web/default/report/new/councils_text_some.html:2
 msgid "All the information you provide here will be sent to"
-msgstr ""
+msgstr "你提供的訊息將會被寄到"
 
 #: templates/web/default/report/new/councils_text_all.html:12
 #: templates/web/default/report/new/councils_text_all.html:13
@@ -423,6 +423,7 @@ msgid ""
 "All the information you provide here will be sent to <strong>%s</strong> or "
 "<strong>Roads Service</strong>."
 msgstr ""
+"你提供的訊息將會被寄到 strong>%s</strong> 或是<strong>道路服務</strong>."
 
 #: templates/web/default/report/new/councils_text_all.html:5
 #: templates/web/default/report/new/councils_text_all.html:6
@@ -456,7 +457,7 @@ msgstr ""
 #: templates/web/default/admin/list_updates.html:32
 #: templates/web/default/admin/problem_row.html:20
 msgid "Anonymous"
-msgstr ""
+msgstr "匿名"
 
 #: templates/web/default/footer.html:26
 msgid ""
@@ -487,7 +488,7 @@ msgstr ""
 #: templates/web/zurich/report/updates.html:11
 #, c-format
 msgid "Assigned to %s"
-msgstr ""
+msgstr "指定%s"
 
 #: templates/web/default/open311/index.html:86
 #, c-format
@@ -1333,7 +1334,7 @@ msgstr ""
 #: templates/web/zurich/footer.html:21
 #: templates/web/zurich/nav_over_content.html:8
 msgid "Help"
-msgstr ""
+msgstr "說明"
 
 #: templates/web/default/alert/_list.html:6
 #: templates/web/fixmystreet/alert/_list.html:8
@@ -1371,7 +1372,7 @@ msgstr ""
 
 #: templates/web/default/admin/body_edit.html:79
 msgid "History"
-msgstr ""
+msgstr "歷史紀錄"
 
 #: templates/web/default/js/translation_strings.html:31
 msgid "Home"
@@ -1383,11 +1384,11 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:733
 msgid "I am afraid you cannot confirm unconfirmed reports."
-msgstr ""
+msgstr "不好意思，你無法確定未經確認的回報"
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:89
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
-msgstr ""
+msgstr "不好意思，我們在資料庫找不到您的問題。\n"
 
 #: perllib/FixMyStreet/App/Controller/Tokens.pm:44
 msgid ""
@@ -1520,7 +1521,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:30
 msgid "In Progress"
-msgstr ""
+msgstr "處理中"
 
 #: templates/web/default/admin/flagged.html:39
 msgid "In abuse table?"
@@ -1543,7 +1544,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:102
 #: templates/web/zurich/report/banner.html:15
 msgid "In progress"
-msgstr ""
+msgstr "處理中"
 
 #: templates/web/zurich/admin/report_edit.html:163
 msgid "Include reporter personal details"
@@ -1574,16 +1575,16 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1105
 msgid "Invalid end date"
-msgstr ""
+msgstr "無效的結束日期"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:432
 #, c-format
 msgid "Invalid format %s specified."
-msgstr ""
+msgstr "無效的格式 %s"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1101
 msgid "Invalid start date"
-msgstr ""
+msgstr "無效的開始日期"
 
 #: templates/web/default/admin/report_edit.html:35
 #: templates/web/default/admin/report_edit.html:37
@@ -1594,7 +1595,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:29
 msgid "Investigating"
-msgstr ""
+msgstr "調查中"
 
 #: templates/web/emptyhomes/tokens/confirm_problem.html:13
 #: templates/web/emptyhomes/tokens/confirm_problem.html:14
@@ -1618,7 +1619,7 @@ msgstr ""
 
 #: templates/web/default/admin/problem_row.html:39
 msgid "Last&nbsp;update:"
-msgstr ""
+msgstr "最後更新："
 
 #: templates/web/default/admin/body-form.html:222
 #, c-format
@@ -1657,11 +1658,11 @@ msgstr ""
 #: templates/web/fixmybarangay/footer.html:22
 #: templates/web/fixmystreet/footer.html:53
 msgid "Local alerts"
-msgstr ""
+msgstr "區域警示"
 
 #: templates/web/default/js/translation_strings.html:43
 msgid "MAP"
-msgstr ""
+msgstr "地圖"
 
 #: perllib/FixMyStreet/Map/OSM.pm:44
 msgid ""
@@ -1678,11 +1679,11 @@ msgstr ""
 
 #: templates/web/fixmystreet/contact/index.html:103
 msgid "Message"
-msgstr ""
+msgstr "訊息"
 
 #: templates/web/default/contact/index.html:92
 msgid "Message:"
-msgstr ""
+msgstr "訊息："
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:440
 msgid "Missing jurisdiction_id"
@@ -1694,7 +1695,7 @@ msgstr ""
 
 #: templates/web/default/admin/stats.html:11
 msgid "Month"
-msgstr ""
+msgstr "月"
 
 #: templates/web/default/report/display.html:30
 msgid "More problems nearby"
@@ -1720,7 +1721,7 @@ msgstr "更多附近的問題"
 #: templates/web/zurich/auth/general.html:60
 #: templates/web/zurich/report/new/fill_in_details_form.html:100
 msgid "Name"
-msgstr ""
+msgstr "名字"
 
 #: templates/web/default/admin/report_edit.html:66
 #: templates/web/default/admin/update_edit.html:32
@@ -1729,12 +1730,12 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:59
 #: templates/web/zurich/admin/stats.html:41
 msgid "Name:"
-msgstr ""
+msgstr "名字："
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:322
 #, c-format
 msgid "Name: %s"
-msgstr ""
+msgstr "名字: %s"
 
 #: templates/web/fiksgatami/footer.html:3
 #: templates/web/fiksgatami/nn/footer.html:3
@@ -1806,7 +1807,7 @@ msgstr ""
 #: templates/web/fiksgatami/nn/reports/index.html:10
 #: templates/web/fiksgatami/reports/index.html:10
 msgid "New problems"
-msgstr ""
+msgstr "新問題"
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
@@ -1892,7 +1893,7 @@ msgstr ""
 
 #: templates/web/default/admin/user-form.html:33
 msgid "No body"
-msgstr ""
+msgstr "沒有人"
 
 #: templates/web/default/admin/stats.html:85
 msgid "No council"
@@ -2891,7 +2892,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:2
 #: templates/web/zurich/report/new/fill_in_details_form.html:2
 msgid "Reporting a problem"
-msgstr ""
+msgstr "回報一個問題"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1186
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:290
@@ -3158,7 +3159,7 @@ msgstr ""
 #: templates/web/zurich/admin/index-sdm.html:21
 #: templates/web/zurich/admin/reports.html:13
 msgid "Status"
-msgstr ""
+msgstr "狀態"
 
 #: templates/web/default/report/updates.html:10
 #, c-format
@@ -3177,7 +3178,7 @@ msgstr ""
 #: templates/web/fixmystreet/contact/index.html:95
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:60
 msgid "Subject"
-msgstr ""
+msgstr "標題"
 
 #: templates/web/default/admin/report_edit.html:19
 #: templates/web/default/contact/index.html:83
@@ -3185,7 +3186,7 @@ msgstr ""
 #: templates/web/emptyhomes/report/new/fill_in_details_form.html:70
 #: templates/web/zurich/admin/report_edit.html:37
 msgid "Subject:"
-msgstr ""
+msgstr "標題："
 
 #: templates/web/default/questionnaire/creator_fixed.html:19
 #: templates/web/default/report/new/fill_in_details_form.html:114
@@ -3197,7 +3198,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:212
 #: templates/web/zurich/report/new/fill_in_details_form.html:114
 msgid "Submit"
-msgstr ""
+msgstr "送出"
 
 #: templates/web/default/admin/report_edit.html:97
 #: templates/web/default/admin/update_edit.html:65
@@ -3206,7 +3207,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:224
 #: templates/web/zurich/admin/update_edit.html:38
 msgid "Submit changes"
-msgstr ""
+msgstr "送出改變"
 
 #: templates/web/default/questionnaire/index.html:116
 #: templates/web/fixmystreet/questionnaire/index.html:105
@@ -3231,7 +3232,7 @@ msgstr ""
 #: templates/web/fixmystreet/alert/updates.html:23
 #: templates/web/fixmystreet/report/display.html:68
 msgid "Subscribe"
-msgstr ""
+msgstr "訂閱"
 
 #: templates/web/default/alert/_list.html:97
 #: templates/web/fixmybarangay/alert/_list.html:42
@@ -4419,13 +4420,13 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit-sdm.html:43
 #: templates/web/zurich/admin/report_edit.html:57
 msgid "didn't use map"
-msgstr ""
+msgstr "沒有使用地圖"
 
 #: templates/web/default/admin/index.html:23
 #: templates/web/zurich/admin/index.html:5
 #, c-format
 msgid "from %d different users"
-msgstr ""
+msgstr "來自%d個不同的使用者"
 
 #: templates/web/fixmystreet/report/_item.html:17
 #: templates/web/zurich/report/_item.html:16
@@ -4435,11 +4436,11 @@ msgstr ""
 
 #: perllib/Utils.pm:265
 msgid "less than a minute"
-msgstr ""
+msgstr "少於一分鐘"
 
 #: templates/web/default/report/updates.html:57
 msgid "marked as a duplicate report"
-msgstr ""
+msgstr "被標記成重複回報"
 
 #: templates/web/default/report/updates.html:47
 msgid "marked as action scheduled"

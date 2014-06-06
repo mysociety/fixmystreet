@@ -14,18 +14,18 @@ FMS_DB_USER: 'fms'
 FMS_DB_PASS: ''
 
 # The base URL of the install.
-BASE_URL: 'http://ec2-54-76-122-176.eu-west-1.compute.amazonaws.com'
+BASE_URL: 'http://ec2-54-72-168-243.eu-west-1.compute.amazonaws.com'
 # Use the below if you're using the Catalyst development server
 #   BASE_URL: 'http://localhost:3000'
 
 # Email domain used for emails, and contact name/email for admin use.
-EMAIL_DOMAIN: 'ec2-54-76-122-176.eu-west-1.compute.amazonaws.com'
+EMAIL_DOMAIN: 'ec2-54-72-168-243.eu-west-1.compute.amazonaws.com'
 CONTACT_EMAIL: 'misgod.tw@gmail.com'
 CONTACT_NAME: 'FixMyStreet'
 # Address used for emails you don't expect a reply to (e.g. confirmation
 # emails); can be same as CONTACT_EMAIL above, of course, if you don't have a
 # special address.
-DO_NOT_REPLY_EMAIL: 'help@ec2-54-195-140-242.eu-west-1.compute.amazonaws.com'
+DO_NOT_REPLY_EMAIL: 'help@nobody'
 
 # Whether this is a development site or not. It will mean e.g. templates/
 # CSS modified times aren't cached
@@ -38,7 +38,7 @@ SEND_REPORTS_ON_STAGING: 0
 
 # What to use as front page/alert example places placeholder
 # Defaults to High Street, Main Street
-EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
+EXAMPLE_PLACES: [ '西門路一段', '東區' ]
 
 # An array of languages for the site, in the following format:
 # <language code>,<pretty name>,<locale>
