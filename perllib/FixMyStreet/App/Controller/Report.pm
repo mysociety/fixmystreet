@@ -211,6 +211,19 @@ sub generate_map_tags : Private {
     return 1;
 }
 
+=head2 delete
+
+Endpoint for the council report hiding feature enabled for
+C<users_can_hide> bodies, and Bromley. The latter is migrating
+to moderation, however we'd need to inform all the other
+users too about this change, at which point we can delete:
+
+ - this method
+ - the call to it in templates/web/fixmystreet/report/display.html
+ - the users_can_hide cobrand method, in favour of user->has_permission_to
+
+=cut
+
 sub delete :Local :Args(1) {
     my ( $self, $c, $id ) = @_;
 
