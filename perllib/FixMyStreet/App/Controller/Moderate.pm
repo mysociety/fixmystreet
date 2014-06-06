@@ -68,10 +68,32 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
 sub moderate_report : Chained('report') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
 
+    $c->forward('report_moderate_hide');
+
     $c->forward('report_moderate_title');
     $c->forward('report_moderate_detail');
     $c->forward('report_moderate_anon');
     $c->forward('report_moderate_photo');
+}
+
+sub report_moderate_hide : Private {
+    my ( $self, $c ) = @_;
+
+    my $problem = $c->stash->{problem} or die;
+
+    if ($c->req->param('problem_hide')) {
+
+        $c->model('DB::ModerationLog')->create({
+            user => $c->user->obj,
+            problem => $problem,
+            moderation_object => 'problem',
+            moderation_type => 'hide',
+            reason => $c->stash->{'moderation_reason'},
+        });
+
+        $problem->update({ state => 'hidden' });
+        $c->detach; # break chain here.
+    }
 }
 
 sub report_moderate_title : Private {
@@ -192,9 +214,33 @@ sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
 sub moderate_update : Chained('update') : PathPart('') : Args(0) {
     my ($self, $c) = @_;
 
+    $c->forward('update_moderate_hide');
+
     $c->forward('update_moderate_detail');
     $c->forward('update_moderate_anon');
     $c->forward('update_moderate_photo');
+}
+
+sub update_moderate_hide : Private {
+    my ( $self, $c ) = @_;
+
+    my $problem = $c->stash->{problem} or die;
+    my $comment = $c->stash->{comment} or die;
+
+    if ($c->req->param('update_hide')) {
+
+        $c->model('DB::ModerationLog')->create({
+            user => $c->user->obj,
+            problem => $problem,
+            comment => $comment,
+            moderation_object => 'comment',
+            moderation_type => 'hide',
+            reason => $c->stash->{'moderation_reason'},
+        });
+
+        $comment->update({ state => 'hidden' });
+        $c->detach; # break chain here.
+    }
 }
 
 sub update_moderate_detail : Private {

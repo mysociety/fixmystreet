@@ -10,6 +10,8 @@
             <form method="post" action="/moderate/report/[% problem.id %]/update/[% update.id %]">
                 <input type="button" class="moderate moderate-display" value="moderate">
                 <div class="moderate-edit">
+                    <label for="update_hide">Hide update completely?</label>
+                    <input type="checkbox" class="hide-document" name="update_hide">
                     <label for="update_show_name">Show name publicly?</label>
                     <input type="checkbox" name="update_show_name" [% update.anonymous ? '' : 'checked' %]>
                     [% IF update.photo or original_update.photo %]

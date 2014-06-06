@@ -3,7 +3,12 @@
 [% IF moderating %]
 [%# TODO: extract stylesheet! %]
 <style>
-    .moderate-edit label,
+    .moderate-edit label {
+        display: inline-block;
+        height: 1em;
+        margin-top: 0;
+    }
+
     .moderate-edit input {
         display: inline-block;
     }
@@ -11,6 +16,9 @@
     .moderate-edit { display: none }
     .moderate-edit :disabled {
         background: #ddd;
+    }
+    br {
+        line-height: 0.5em;
     }
 </style>
 [% END %]
@@ -21,9 +29,13 @@
     <form method="post" action="/moderate/report/[% problem.id %]">
         <input type="button" class="moderate moderate-display" value="moderate">
         <div class="moderate-edit">
+            <label for="problem_hide">Hide report completely?</label>
+            <input type="checkbox" class="hide-document" name="problem_hide">
+            <br />
             <label for="problem_show_name">Show name publicly?</label>
             <input type="checkbox" name="problem_show_name" [% problem.anonymous ? '' : 'checked' %]>
             [% IF problem.photo or original.photo %]
+                <br />
                 <label for="problem_show_photo">Show Photo?</label>
                 <input type="checkbox" name="problem_show_photo" [% problem.photo ? 'checked' : '' %]>
             [% END %]
