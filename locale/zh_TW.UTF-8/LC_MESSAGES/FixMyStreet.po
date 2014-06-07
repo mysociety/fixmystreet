@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-06-07 22:59+0800\n"
+"PO-Revision-Date: 2014-06-07 23:39+0800\n"
 "Last-Translator: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Language-Team: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -777,7 +777,7 @@ msgstr ""
 #: templates/web/default/contact/submit.html:3
 #: templates/web/fixmystreet/contact/index.html:22
 msgid "Contact the team"
-msgstr ""
+msgstr "聯絡我們"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1319
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1347
@@ -907,7 +907,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/contact/index.html:115
 msgid "Don't like forms?"
-msgstr ""
+msgstr "不喜歡填表？"
 
 #: templates/web/default/admin/report_edit.html:35
 #: templates/web/default/admin/report_edit.html:47
@@ -1265,7 +1265,7 @@ msgstr "忘記密碼？"
 #: templates/web/fixmystreet/faq/faq-en-gb.html:1
 #: templates/web/fixmystreet/static/privacy.html:1
 msgid "Frequently Asked Questions"
-msgstr ""
+msgstr "最常問的問題"
 
 #: templates/web/default/open311/index.html:138
 msgid "GeoRSS on Google Maps"
@@ -1781,7 +1781,7 @@ msgstr ""
 #: templates/web/default/reports/index.html:16
 #: templates/web/fixmybarangay/reports/index.html:16
 msgid "New <br>problems"
-msgstr ""
+msgstr "新問題"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:264
 msgid "New body added"
@@ -2057,12 +2057,12 @@ msgstr ""
 #: templates/web/default/reports/index.html:20
 #: templates/web/fixmybarangay/reports/index.html:20
 msgid "Older <br>fixed"
-msgstr ""
+msgstr "之前的修復"
 
 #: templates/web/default/reports/index.html:17
 #: templates/web/fixmybarangay/reports/index.html:17
 msgid "Older <br>problems"
-msgstr ""
+msgstr "舊問題"
 
 #: templates/web/fiksgatami/nn/reports/index.html:14
 #: templates/web/fiksgatami/reports/index.html:14
@@ -2290,7 +2290,7 @@ msgstr "請不要濫用&nbsp;&mdash; 濫用這個服務會影響到其他的人�
 #: perllib/FixMyStreet/DB/Result/Problem.pm:359
 #: templates/web/default/js/translation_strings.html:4
 msgid "Please enter some details"
-msgstr ""
+msgstr "請輸入問題描述"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:151
 #: templates/web/zurich/report/new/fill_in_details_form.html:92
@@ -2310,7 +2310,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/User.pm:108
 #: templates/web/default/js/translation_strings.html:6
 msgid "Please enter your name"
-msgstr ""
+msgstr "請輸入你的名字"
 
 #: templates/web/default/js/translation_strings.html:26
 msgid "Please enter your second name"
@@ -2318,7 +2318,7 @@ msgstr ""
 
 #: templates/web/default/js/translation_strings.html:24
 msgid "Please enter your title"
-msgstr ""
+msgstr "請輸入你的標題"
 
 #: templates/web/default/auth/sign_out.html:5
 #: templates/web/zurich/auth/sign_out.html:5
@@ -2390,7 +2390,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/updates-sidebar-notes.html:4
 msgid "Please note that updates are not sent to the council."
-msgstr ""
+msgstr "請注意更新並不會通知受理單位。"
 
 #: templates/web/default/report/update-form.html:7
 msgid ""
@@ -2398,6 +2398,8 @@ msgid ""
 "it will be public. Your information will only be used in accordance with our "
 "<a href=\"/faq#privacy\">privacy policy</a>"
 msgstr ""
+"請注意更新並不會通知受理單位。你的資訊使用都會依據我們的 <a href=\"/"
+"faq#privacy\">隱私政策</a>。"
 
 #: templates/web/default/report/new/fill_in_details_form.html:5
 #: templates/web/emptyhomes/report/new/fill_in_details_form.html:5
@@ -2458,7 +2460,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/update-form.html:23
 msgid "Please write your update here"
-msgstr ""
+msgstr "請在這裡填寫更新訊息"
 
 #: templates/web/default/contact/index.html:95
 #: templates/web/default/report/update-form.html:109
@@ -2469,7 +2471,7 @@ msgstr ""
 #: templates/web/fixmystreet/report/update-form.html:71
 #: templates/web/fixmystreet/report/update-form.html:95
 msgid "Post"
-msgstr ""
+msgstr "張貼"
 
 #: templates/web/default/report/updates.html:15
 #, c-format
@@ -2517,7 +2519,7 @@ msgstr ""
 #: templates/web/default/admin/timeline.html:26
 #, c-format
 msgid "Problem %s sent to council %s"
-msgstr ""
+msgstr "%s 問題已通知 %s 受理"
 
 #: templates/web/default/admin/index.html:36
 #: templates/web/zurich/admin/index.html:9
@@ -2607,7 +2609,7 @@ msgstr "提供一個標題"
 #: templates/web/default/report/update-form.html:3
 #: templates/web/fixmystreet/report/update-form.html:4
 msgid "Provide an update"
-msgstr ""
+msgstr "提供更新"
 
 #: templates/web/fixmystreet/auth/general.html:53
 msgid ""
@@ -2625,6 +2627,8 @@ msgid ""
 "Providing a password is optional, but doing so will allow you to more easily "
 "report problems, leave updates and manage your reports."
 msgstr ""
+"密碼不是必要的，但是如果你提供密碼的話，會更容易回報問題、更新問題及管理你回"
+"報的問題。"
 
 #: templates/web/default/admin/body.html:60
 #: templates/web/default/admin/body.html:73
@@ -2763,7 +2767,7 @@ msgstr ""
 #: templates/web/default/reports/index.html:19
 #: templates/web/fixmybarangay/reports/index.html:19
 msgid "Recently <br>fixed"
-msgstr ""
+msgstr "最近的修復"
 
 #: templates/web/fiksgatami/nn/reports/index.html:13
 #: templates/web/fiksgatami/reports/index.html:13
@@ -2808,7 +2812,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/display.html:35
 msgid "Report abuse"
-msgstr ""
+msgstr "回報濫用"
 
 #: templates/web/default/report_created.html:1
 #: templates/web/default/report_created.html:3
@@ -2848,7 +2852,7 @@ msgstr ""
 #: templates/web/fixmystreet/contact/index.html:64
 #, c-format
 msgid "Reported by %s at %s"
-msgstr ""
+msgstr "回報人：%s  ,時間: %s"
 
 #: templates/web/zurich/report/_main.html:2
 #, c-format
@@ -3012,7 +3016,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:666
 #, c-format
 msgid "Sent to %s %s later"
-msgstr ""
+msgstr "已通知%s 在回報的%s後 "
 
 #: templates/web/default/admin/report_edit.html:71
 msgid "Sent:"
@@ -3053,17 +3057,17 @@ msgstr "顯示圖釘"
 #: templates/web/zurich/auth/general.html:18
 #: templates/web/zurich/auth/general.html:35
 msgid "Sign in"
-msgstr ""
+msgstr "登入"
 
 #: templates/web/default/auth/general.html:74
 msgid "Sign in by email"
-msgstr ""
+msgstr "用email登入"
 
 #: templates/web/default/auth/general.html:1
 #: templates/web/fixmystreet/auth/general.html:1
 #: templates/web/zurich/auth/general.html:1
 msgid "Sign in or create an account"
-msgstr ""
+msgstr "登入或新增帳號"
 
 #: templates/web/default/auth/sign_out.html:1
 #: templates/web/default/header.html:30
@@ -3072,7 +3076,7 @@ msgstr ""
 #: templates/web/fiksgatami/nn/header.html:22
 #: templates/web/zurich/auth/sign_out.html:1
 msgid "Sign out"
-msgstr ""
+msgstr "登出"
 
 #: templates/web/default/header.html:29
 #: templates/web/emptyhomes/header.html:45
@@ -3080,7 +3084,7 @@ msgstr ""
 #: templates/web/fiksgatami/nn/header.html:21
 #, c-format
 msgid "Signed in as %s"
-msgstr ""
+msgstr "用 %s 登入"
 
 #: templates/web/default/report/new/fill_in_details_text.html:2
 #: templates/web/fixmybarangay/report/new/fill_in_details_text.html:2
@@ -3259,7 +3263,7 @@ msgstr ""
 #: templates/web/zurich/admin/index.html:1 templates/web/zurich/footer.html:12
 #: templates/web/zurich/header.html:57
 msgid "Summary"
-msgstr ""
+msgstr "概要"
 
 #: templates/web/default/reports/index.html:1
 #: templates/web/emptyhomes/reports/index.html:1
@@ -3269,30 +3273,30 @@ msgstr ""
 #: templates/web/zurich/reports/index.html:0
 #: templates/web/zurich/reports/index.html:4
 msgid "Summary reports"
-msgstr ""
+msgstr "概要報表"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1188
 msgid "Survey"
-msgstr ""
+msgstr "調查"
 
 #: templates/web/default/admin/questionnaire.html:1
 msgid "Survey Results"
-msgstr ""
+msgstr "調查結果"
 
 #: templates/web/default/admin/list_updates.html:12
 #: templates/web/zurich/admin/list_updates.html:10
 #: templates/web/zurich/admin/list_updates.html:31
 msgid "Text"
-msgstr ""
+msgstr "文字"
 
 #: templates/web/default/admin/body.html:18
 msgid "Text only version"
-msgstr ""
+msgstr "純文字版"
 
 #: templates/web/default/admin/update_edit.html:20
 #: templates/web/zurich/admin/update_edit.html:12
 msgid "Text:"
-msgstr ""
+msgstr "文字："
 
 #: templates/web/default/tokens/confirm_update.html:8
 #, c-format
@@ -3684,7 +3688,7 @@ msgstr ""
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:131
 #: perllib/FixMyStreet/Cobrand/UK.pm:58
 msgid "This information is required"
-msgstr ""
+msgstr "這是必要的資訊"
 
 #: templates/web/default/debug_header.html:3
 msgid ""
@@ -3710,7 +3714,7 @@ msgstr ""
 msgid ""
 "This is a summary of all reports on this site; select a particular council "
 "to see the reports sent there."
-msgstr ""
+msgstr "這是所有回報的一個概要，選擇受理單位去看回報的問題。"
 
 #: templates/web/default/auth/token.html:9
 msgid ""
@@ -3720,23 +3724,23 @@ msgstr ""
 
 #: templates/web/default/report/banner.html:15
 msgid "This problem has been closed"
-msgstr ""
+msgstr "這問題已經被結束"
 
 #: templates/web/default/report/banner.html:12
 #: templates/web/default/report/update-form.html:48
 #: templates/web/emptyhomes/report/banner.html:3
 #: templates/web/fixmystreet/report/update-form.html:46
 msgid "This problem has been fixed"
-msgstr ""
+msgstr "這問題已被修復"
 
 #: templates/web/default/report/update-form.html:43
 #: templates/web/fixmystreet/report/update-form.html:40
 msgid "This problem has not been fixed"
-msgstr ""
+msgstr "這問題還沒被修復"
 
 #: templates/web/default/report/banner.html:19
 msgid "This problem is in progress"
-msgstr ""
+msgstr "這問題處理中"
 
 #: templates/web/default/report/banner.html:9
 msgid "This problem is old and of unknown status."
@@ -3843,7 +3847,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/report/update-form.html:19
 msgid "Update"
-msgstr ""
+msgstr "更新"
 
 #: templates/web/default/admin/timeline.html:33
 #, c-format
@@ -4160,7 +4164,7 @@ msgstr ""
 msgid ""
 "You are reporting the following problem report for being abusive, containing "
 "personal information, or similar:"
-msgstr ""
+msgstr "你要舉發下面這個回報為可能濫用或包含私人資訊相關的問題。"
 
 #: templates/web/default/contact/index.html:15
 #: templates/web/fixmystreet/contact/index.html:32
@@ -4186,7 +4190,7 @@ msgstr ""
 #: templates/web/fixmystreet/contact/index.html:118
 #, c-format
 msgid "You can contact technical support on <a href='mailto:%s'>%s</a>"
-msgstr ""
+msgstr "你可以聯絡技術支援 <a href='mailto:%s'>%s</a>"
 
 #: templates/web/default/admin/flagged.html:5
 msgid ""
@@ -4589,8 +4593,8 @@ msgstr[1] ""
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d分鐘"
+msgstr[1] "%d分鐘"
 
 #: templates/web/default/front/stats.html:29
 #, perl-format
