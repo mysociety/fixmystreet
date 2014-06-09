@@ -181,7 +181,8 @@ h1 {
           &#mysoc-logo {
             width:84px;
             height:16px;
-            background-position: -20px -5px;
+            background-size: 100px auto;
+            background-position: 0px 10px;
             opacity: 0.8;
             &:hover {
               opacity: 1;
