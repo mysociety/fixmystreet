@@ -14,12 +14,12 @@ FMS_DB_USER: 'fms'
 FMS_DB_PASS: ''
 
 # The base URL of the install.
-BASE_URL: 'http://ec2-54-72-168-243.eu-west-1.compute.amazonaws.com'
+BASE_URL: 'http://fixmystreet.tw'
 # Use the below if you're using the Catalyst development server
 #   BASE_URL: 'http://localhost:3000'
 
 # Email domain used for emails, and contact name/email for admin use.
-EMAIL_DOMAIN: 'ec2-54-72-168-243.eu-west-1.compute.amazonaws.com'
+EMAIL_DOMAIN: 'fixmystreet.tw'
 CONTACT_EMAIL: 'misgod.tw@gmail.com'
 CONTACT_NAME: 'FixMyStreet'
 # Address used for emails you don't expect a reply to (e.g. confirmation
@@ -147,7 +147,7 @@ MAP_TYPE: 'OSM'
 # This also allows development servers to map to different cobrands if needed,
 # using DNS subdomains for example.
 ALLOWED_COBRANDS:
-  - cobrand1
+  - tainan: 'tainan'
   - cobrand2: 'hostname_substring2'
   - cobrand3
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-06-07 23:39+0800\n"
+"PO-Revision-Date: 2014-06-09 12:04+0800\n"
 "Last-Translator: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Language-Team: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -2303,6 +2303,7 @@ msgid ""
 "Please enter your full name, councils need this information – if you do not "
 "wish your name to be shown on the site, untick the box below"
 msgstr ""
+"受理回報需要輸入你的名字 - 假如你不想公開顯示你的名字，請在下面取消勾選"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:95
 #: perllib/FixMyStreet/DB/Result/Comment.pm:123
