@@ -240,33 +240,44 @@ body.twothirdswidthpage {
     border-image: url(images/tile-y.jpg) 30 0 repeat;
 
     .tablewrapper {
-        width: 60em;
-        margin: 0 auto;
-        background: $base_bg;
-        ul {
-            list-style: none;
-            padding: 0px;
-            margin: 0px;
-            float:left;
-            li {
-              list-style: none;
-              display: inline;
-              margin: 0px;
-              padding: 0px;
-              float:left;
-              a,
-              span {
-                  display: block;
-                  color: $nav_fg;
-                  background: none;
-                  border-bottom: none;
-                  padding: 0.75em;
-                  font-size: 0.9em;
-              }
-            }
+      width: 60em;
+      margin: 0 auto;
+      background: $base_bg;
+      ul {
+        list-style: none;
+        padding: 0px;
+        margin: 0px;
+        float:left;
+        li {
+          list-style: none;
+          display: inline;
+          margin: 0px;
+          padding: 0px;
+          float:left;
+          a,
+          span {
+            display: block;
+            color: $nav_fg;
+            background: none;
+            border-bottom: none;
+            padding: 0.75em;
+            font-size: 0.9em;
+          }
         }
-        #footer-help-nav {
-            float: right;
-        }
+      }
+      #footer-main-nav {
+        display: block;
+      }
+      #footer-help-nav {
+        float: right;
+      }
     }
+}
+
+/* hide the footer on the alert page as the interaction with the
+ * photo sidebar is awkward to fix */
+body.alertindex {
+  #footer-nav {
+    display: none;
+  }
 }

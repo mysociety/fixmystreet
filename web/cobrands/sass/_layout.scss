@@ -141,6 +141,9 @@ h1 {
         background: none;  
         border-bottom: none;      
       }
+      &#top-nav-privacy {
+        display: none;
+      }
     }
     &#main-menu{
       li{
@@ -431,7 +434,6 @@ body.twothirdswidthpage {
     }
   }
 }
-
 
 // map box (fallback for non js really as most users
 // will have fullscreen map)
