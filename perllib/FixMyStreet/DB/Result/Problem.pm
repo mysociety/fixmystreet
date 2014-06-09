@@ -367,7 +367,7 @@ sub check_for_errors {
         $errors{name} = _('Please enter your name');
     }
     elsif (length( $self->name ) < 2
-        || (length( $self->name ) > 5
+        || length( $self->name ) > 5
         || $self->name !~ m/\s/
         || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )
     {
