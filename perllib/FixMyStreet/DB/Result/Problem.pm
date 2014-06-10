@@ -363,9 +363,9 @@ sub check_for_errors {
       unless $self->bodies_str
           && $self->bodies_str =~ m/^(?:-1|[\d,]+(?:\|[\d,]+)?)$/;
 
-    if ( !$self->name || $self->name !~ m/\S/ ) {
-        $errors{name} = _('Please enter your name');
-    }
+    #if ( !$self->name || $self->name !~ m/\S/ ) {
+    #    $errors{name} = _('Please enter your name');
+    #}
     #elsif (length( $self->name ) > 1
     #    || $self->name !~ m/\s/
     #    || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )

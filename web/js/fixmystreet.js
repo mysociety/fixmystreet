@@ -110,7 +110,7 @@ $(function(){
         $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#form_name').addClass('required');
         if ( $('#mapForm').length ) {
-            $('#form_name').addClass('validName');
+  //          $('#form_name').addClass('validName');
         }
         $('#form_first_name').addClass('required');
         $('#form_last_name').addClass('required');
@@ -121,7 +121,7 @@ $(function(){
         $('#form_category').addClass('required validCategory').removeClass('valid');
         $('#form_name').addClass('required');
         if ( $('#mapForm').length ) {
-            $('#form_name').addClass('validName');
+        //    $('#form_name').addClass('validName');
         }
         $('#form_first_name').addClass('required');
         $('#form_last_name').addClass('required');
