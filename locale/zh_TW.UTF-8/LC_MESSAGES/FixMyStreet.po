@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-06-07 23:39+0800\n"
+"PO-Revision-Date: 2014-06-10 21:45+0800\n"
 "Last-Translator: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Language-Team: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -2882,12 +2882,12 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:549
 #, c-format
 msgid "Reported via %s in the %s category anonymously at %s"
-msgstr ""
+msgstr "透過%s匿名回報%s的問題在%s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:569
 #, c-format
 msgid "Reported via %s in the %s category by %s at %s"
-msgstr ""
+msgstr "透過%s匿名回報%s的問題，由%s回報在%s"
 
 #: templates/web/default/around/around_index.html:1
 #: templates/web/default/js/translation_strings.html:41
