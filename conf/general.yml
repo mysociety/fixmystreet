@@ -147,9 +147,9 @@ MAP_TYPE: 'OSM'
 # This also allows development servers to map to different cobrands if needed,
 # using DNS subdomains for example.
 ALLOWED_COBRANDS:
-  - tainan: 'tainan'
-  - cobrand2: 'hostname_substring2'
-  - cobrand3
+  - tainan
+  #- cobrand2: 'hostname_substring2'
+  #- cobrand3
 
 # This is only used in "offensive report" emails to provide a link directly to
 # the admin interface. If wanted, set to the full URL of your admin interface.

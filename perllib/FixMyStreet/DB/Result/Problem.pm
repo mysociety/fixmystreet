@@ -366,15 +366,14 @@ sub check_for_errors {
     if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
     }
-    elsif (length( $self->name ) < 2
-        || length( $self->name ) > 5
-        || $self->name !~ m/\s/
-        || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )
-    {
-        $errors{name} = _(
-'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
-        ) unless $self->cobrand eq 'emptyhomes';
-    }
+    #elsif (length( $self->name ) > 1
+    #    || $self->name !~ m/\s/
+    #    || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )
+    #{
+    #    $errors{name} = _(
+#'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
+ #       ) unless $self->cobrand eq 'tainan';
+  #  }
 
     if (   $self->category
         && $self->category eq _('-- Pick a category --') )
