@@ -668,7 +668,8 @@ sub duration_string {
     # include a link to view it on the responsible cobrand.
     # This only occurs if the report was sent to a single body and we're not already
     # using the body name as a link to all problem reports.
-    if ( !mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS') && # scalar($problem->bodies_str_ids) == 1 &&
+    my $bodies_str_ids = $problem->bodies_str_ids;
+    if ( !mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS') && scalar(@$bodies_str_ids) == 1 &&
          $handler->is_council && $handler->moniker ne $c->cobrand->moniker ){
         my $url = sprintf("%s%s", $handler->base_url, $problem->url);
         $body = sprintf("<a href='%s'>%s</a>", $url, $problem->body( $c ));
