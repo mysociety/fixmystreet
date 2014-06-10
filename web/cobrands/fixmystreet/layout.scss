@@ -200,6 +200,19 @@ body.fullwidthpage {
     }
 }
 
+.ie6, .ie7, .ie8  {
+  body.frontpage,
+  body.twothirdswidthpage {
+    .content {
+      border: 0px;
+    }
+  }
+}
+.ie8 body.frontpage .container .content footer a.platform-logo {
+    background: none;
+    text-indent: 0px;
+}
+
 body.frontpage {
     .container {
         background-color: transparent;
@@ -209,9 +222,15 @@ body.frontpage {
             padding: 0em 0em 1em;
 
             > .tablewrapper {
-                margin: -4em -1em 0em;
+                margin: -4em 0em 0em;
                 padding: 1em 1em;
                 background-color: white;
+                width: auto;
+            }
+        }
+        footer {
+            .bordered {
+                margin: 0em;
             }
         }
     }
@@ -221,9 +240,9 @@ body.twothirdswidthpage {
     .container {
         .content {
             footer {
-                width: 48em;
+                max-width: 48em;
                 @media only screen and (min-width: 61em) {
-                    width: 60em;
+                    max-width: 60em;
                 }
                 .tablewrapper {
                     border: 0px;
@@ -240,7 +259,7 @@ body.twothirdswidthpage {
     border-image: url(images/tile-y.jpg) 30 0 repeat;
 
     .tablewrapper {
-      width: 60em;
+      max-width: 60em;
       margin: 0 auto;
       background: $base_bg;
       ul {

@@ -199,6 +199,9 @@ h1 {
     }
   }
 }
+.ie8 #main-nav ul#mysoc-menu li a#mysoc-logo {
+  width: 100px;
+}
 .ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
     background-position: -260px -43px;
 }
