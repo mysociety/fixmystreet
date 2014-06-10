@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-06-09 12:04+0800\n"
+"PO-Revision-Date: 2014-06-10 16:52+0800\n"
 "Last-Translator: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Language-Team: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -25,7 +25,7 @@ msgstr "和"
 #: templates/web/default/tokens/confirm_problem.html:15
 #: templates/web/default/tokens/confirm_problem.html:17
 msgid " and <strong>we will now send it to the council</strong>"
-msgstr ""
+msgstr "然後 <strong>我們現在會直接寄給受理單位</strong>"
 
 #: templates/web/default/report/new/councils_text_all.html:12
 #: templates/web/default/report/new/councils_text_all.html:19
@@ -699,7 +699,7 @@ msgstr ""
 
 #: templates/web/default/admin/config_page.html:1
 msgid "Configuration"
-msgstr ""
+msgstr "恭喜"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:421
 msgid "Configuration updated - contacts will be generated automatically later"
@@ -735,7 +735,7 @@ msgstr ""
 #: templates/web/zurich/tokens/confirm_problem.html:1
 #: templates/web/zurich/tokens/confirm_problem.html:3
 msgid "Confirmation"
-msgstr ""
+msgstr "確認"
 
 #: templates/web/default/admin/body.html:137
 #: templates/web/default/admin/body.html:55
@@ -2858,7 +2858,7 @@ msgstr "回報人：%s  ,時間: %s"
 #: templates/web/zurich/report/_main.html:2
 #, c-format
 msgid "Reported in the %s category"
-msgstr ""
+msgstr " 屬於%s的回報"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:557
 #, c-format
@@ -2868,7 +2868,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:579
 #, c-format
 msgid "Reported in the %s category by %s at %s"
-msgstr ""
+msgstr "%s相關的回報，回報人 %s 在 %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:553
 #, c-format
@@ -3933,7 +3933,7 @@ msgstr ""
 
 #: db/alert_types.pl:5 db/alert_types.pl:6
 msgid "Updates on {{title}}"
-msgstr ""
+msgstr "{{title}}的更新"
 
 #: templates/web/default/report/display.html:0
 #: templates/web/default/report/display.html:5
@@ -4180,7 +4180,7 @@ msgstr ""
 #: templates/web/zurich/tokens/confirm_problem.html:8
 #, c-format
 msgid "You can <a href=\"%s%s\">view the problem on this site</a>."
-msgstr ""
+msgstr "你可以<a href=\"%s%s\">查看這個問題</a>。"
 
 #: templates/web/default/admin/user-form.html:47
 msgid ""
@@ -4358,7 +4358,7 @@ msgstr "你的email："
 msgid ""
 "Your information will only be used in accordance with our <a href=\"/privacy"
 "\">privacy policy</a>"
-msgstr ""
+msgstr "你的資訊使用都會依據我們的<a href=\"/privacy\">隱私政策</a>。"
 
 #: templates/web/fixmystreet/auth/general.html:57
 #: templates/web/fixmystreet/contact/index.html:81
