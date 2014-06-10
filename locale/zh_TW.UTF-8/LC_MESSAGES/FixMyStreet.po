@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-06-10 21:51+0800\n"
+"PO-Revision-Date: 2014-06-10 22:14+0800\n"
 "Last-Translator: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Language-Team: SzuHsien Lee <misgod.tw@gmail.com>\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
@@ -105,19 +105,19 @@ msgstr ""
 msgid ""
 "(Don't worry &mdash; we'll hang on to your alert while you're checking your "
 "email.)"
-msgstr ""
+msgstr "(別擔心 &mdash; 我們會保留你的通知在你檢查email的這段時間。 )"
 
 #: templates/web/default/email_sent.html:25
 msgid ""
 "(Don't worry &mdash; we'll hang on to your problem report while you're "
 "checking your email.)"
-msgstr ""
+msgstr "(別擔心 &mdash; 我們會保留你的問題回報在你檢查email的這段時間。 )"
 
 #: templates/web/default/email_sent.html:27
 msgid ""
 "(Don't worry &mdash; we'll hang on to your update while you're checking your "
 "email.)"
-msgstr ""
+msgstr "(別擔心 &mdash; 我們會保留你的更新在你檢查email的這段時間。 )"
 
 #: templates/web/default/admin/report_blocks.html:11
 #: templates/web/default/admin/users.html:29
@@ -1462,6 +1462,8 @@ msgid ""
 "check your bulk/spam mail folders: sometimes, our messages are marked that "
 "way."
 msgstr ""
+"有時候我們的信件會被你的信箱誤判成垃圾郵件。如果一段時間尚未收到，你可能需要"
+"去檢查一下你的垃圾郵件的資料夾。"
 
 #: templates/web/default/questionnaire/index.html:86
 #: templates/web/fixmystreet/questionnaire/index.html:77
@@ -1776,7 +1778,7 @@ msgstr ""
 
 #: templates/web/default/email_sent.html:3
 msgid "Nearly Done! Now check your email..."
-msgstr ""
+msgstr "只差一步!現在就檢查你的email..."
 
 #: templates/web/default/reports/index.html:16
 #: templates/web/fixmybarangay/reports/index.html:16
@@ -3445,6 +3447,7 @@ msgid ""
 "The confirmation email <strong>may</strong> take a few minutes to arrive "
 "&mdash; <em>please</em> be patient."
 msgstr ""
+"確認信<strong>可能</strong>需要幾分鐘後才會送達 &mdash; <em>請耐心</em>等候."
 
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:2
 #: templates/web/fixmystreet/report/new/fill_in_details_text.html:3
@@ -4301,7 +4304,7 @@ msgstr ""
 
 #: templates/web/default/email_sent.html:13
 msgid "You must now click the link in the email we've just sent you."
-msgstr ""
+msgstr "你必須點擊確認信上的連結，不然你回報的問題就不會被送出。"
 
 #: templates/web/default/admin/index.html:7
 #, c-format

@@ -1,0 +1,335 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js ie6 oldie" lang="zh-tw"><![endif]-->
+<!--[if IE 7]>   <html class="no-js ie7 oldie" lang="zh-tw"><![endif]-->
+<!--[if IE 8]>   <html class="no-js ie8 oldie" lang="zh-tw"><![endif]-->
+<!--[if IE 9]>   <html class="no-js ie9 oldie" lang="zh-tw"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="zh-tw"><!--<![endif]-->
+    <head>
+        <meta name="viewport" content="initial-scale=1.0">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="HandHeldFriendly" content="true">
+        <meta name="mobileoptimized" content="0">
+
+                <meta property="og:url" content="http://fixmystreet.tw/open311/v2/requests.xml">
+        <meta property="og:title" content="Open311">
+        <meta property="og:site_name" content="FixMyStreet">
+        
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="http://fixmystreet.tw/cobrands/fixmystreet/fms-og_image.png">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:width" content="500">
+        <meta property="og:image:height" content="500">
+
+
+
+
+        <link rel="stylesheet" href="/cobrands/tainan/base.css?1402295443">
+        <link rel="stylesheet" href="/cobrands/tainan/layout.css?1402295443" media="(min-width:48em)">
+        
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="/cobrands/tainan/layout.css?1402295443">
+        <![endif]-->
+
+        <script src="/js/modernizr.custom.js?1400841685" charset="utf-8"></script>
+        <script src="/cobrands/fixmystreet/position_map.js?1400841685" charset="utf-8"></script>
+        
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+<meta name="cobrand" content="tainan">
+
+<script type="text/javascript" src="/js/validation_rules.js?389553"></script>
+<script type="text/javascript" src="/js/translation_strings.zh-tw.js?389553"></script>
+
+<script type="text/javascript" src="/jslib/jquery-1.7.2.min.js"></script>
+<script src="/js/jquery.validate.min.js?1400841685" type="text/javascript" charset="utf-8"></script>
+
+<script type="text/javascript" src="/js/geo.min.js?1400841685"></script>
+<script type="text/javascript" src="/js/fixmystreet.js?1402389201"></script>
+<script type="text/javascript" src="/cobrands/fixmystreet/fixmystreet.js?1400841685"></script>
+
+
+
+
+
+
+
+
+    <meta name="robots" content="noindex,nofollow">
+
+
+
+
+
+<title>
+    Open311 :: 
+    FixMyStreet
+</title>
+
+        
+                
+        
+
+        
+        
+<!-- Tracking code not inserted as "http://fixmystreet.tw" not "http://www.fixmystreet.com" -->
+
+
+
+    </head>
+    
+    <body class="twothirdswidthpage">
+
+    <div class="wrapper">
+        <div class="table-cell">
+            <header id="site-header" role="banner">
+                <div class="container">
+                                        <a href="/" id="site-logo">FixMyStreet</a>
+
+                    <a href="#main-nav" id="nav-link">Main Navigation</a>
+                </div>
+            </header>
+
+            <div id="user-meta">
+                
+                    <!-- <a href="/auth">登入</a> -->
+                
+            </div>
+
+            
+
+            <div class="container">
+                <div class="content" role="main">
+
+        <!-- 
+ -->
+
+
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li><a href="/faq">Frequently Asked Questions</a></li>
+            <li><a href="/faq#practical">Practical Questions</a></li>
+            <li><a href="/faq#organisation">Organisation Questions</a></li>
+            <li><a href="/privacy">Privacy and cookies</a></li>
+            <li><a href="/contact">Contact FixMyStreet</a></li>
+        </ul>
+    </aside>
+</div>
+
+<h1>FixMyStreet support for Open311</h1>
+
+<p>FixMyStreet supports Open311 both as a <a href="#client">client</a> (sending
+reports made on the site to an external service via the Open311 protocol), and
+partly as a <a href="#server">server</a> (returning reports made on the site when
+queried via the Open311 protocol).</p>
+
+<dl id="client">
+
+<dt>What is Open311?</dt>
+
+<dd>
+<p>In a nutshell, it's an international open standard that allows services to
+'talk to' council systems.</p>
+<p>As channels of communication diversify, it has become more and more
+important that council systems can recognise and accept reports from a variety
+of sources. For example, reports may come in via Twitter, SMS, email, services
+like FixMyStreet, and the council's own website.</p>
+</dd>
+
+<dt>Where can I find out more?</dt>
+
+<dd>
+<p>Open311 isn't as widely known as it deserves to be, so we wrote a
+<a href="http://www.mysociety.org/2013/01/10/open311-introduced/">short
+series of blog posts</a> to explain the basics. And you can find out lots more at
+<a href="http://open311.org/">open311.org</a>.</p>
+</dd>
+
+<dt>Why does it matter?</dt>
+
+<dd>
+<p>If you oversee problem reports at a council, you will of course be concerned
+about future-proofing your communication channels in an easy and economical way
+&ndash; Open311 gives you that assurance.</p>
+
+
+
+<dt>Any questions?</dt>
+
+<dd>
+<p>We're always happy to talk. Just <a href="/contact">drop us a line</a>.</p>
+</dd>
+
+</dl>
+
+<hr>
+
+<h2 id="server">Open311 API for the mySociety FixMyStreet server</h2>
+
+
+<p>Note: <strong>ERROR: Missing jurisdiction_id</strong></p>
+
+
+<p>At the moment only searching for and looking at reports work.</p>
+<p>This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future.</p>
+
+<ul>
+<li><a rel="nofollow" href="http://www.open311.org/">Open311 initiative web page</a></li>
+<li><a rel="nofollow" href="http://wiki.open311.org/GeoReport_v2">Open311 specification</a></li>
+</ul>
+
+<p>At most 20 requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date.</p>
+
+<p>The following Open311 v2 attributes are returned for each request: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name.</p>
+
+<p>In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site).</p>
+
+<p>The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification.</p>
+
+<p>With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href="http://global.mapit.mysociety.org/">MaPit</a>.</p>
+
+<p>Examples:</p>
+
+<ul>
+
+
+
+
+    <li><a href="http://fixmystreet.tw/open311/v2/discovery.xml?jurisdiction_id=fiksgatami.no">discovery information</a>
+    
+    <br>http://fixmystreet.tw/open311/v2/discovery.xml?jurisdiction_id=fiksgatami.no</li>
+
+    <li><a href="http://fixmystreet.tw/open311/v2/services.xml?jurisdiction_id=fiksgatami.no">list of services provided</a>
+    
+    <br>http://fixmystreet.tw/open311/v2/services.xml?jurisdiction_id=fiksgatami.no</li>
+
+    <li><a href="http://fixmystreet.tw/open311/v2/services.xml?jurisdiction_id=fiksgatami.no&lat=60&long=11">list of services provided for WGS84 coordinate latitude 60 longitude 11</a>
+    
+    <br>http://fixmystreet.tw/open311/v2/services.xml?jurisdiction_id=fiksgatami.no&amp;lat=60&amp;long=11</li>
+
+    <li><a href="http://fixmystreet.tw/open311/v2/requests/1.xml?jurisdiction_id=fiksgatami.no">Request number 1</a>
+    
+    <br>http://fixmystreet.tw/open311/v2/requests/1.xml?jurisdiction_id=fiksgatami.no</li>
+
+    <li><a href="http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&status=open&agency_responsible=1601&end_date=2011-03-10">All open requests reported before 2011-03-10 to Trondheim (id 1601)</a>
+    
+        [ <a href="http://maps.google.com/?q=http%3A%2F%2Ffixmystreet.tw%2Fopen311%2Fv2%2Frequests.rss%3Fjurisdiction_id%3Dfiksgatami.no%26status%3Dopen%26agency_responsible%3D1601%26end_date%3D2011-03-10">GeoRSS on Google Maps</a> ]
+    
+    <br>http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&amp;status=open&amp;agency_responsible=1601&amp;end_date=2011-03-10</li>
+
+    <li><a href="http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&status=open&agency_responsible=219|220">All open requests in Asker (id 220) and Bærum (id 219)</a>
+    
+        [ <a href="http://maps.google.com/?q=http%3A%2F%2Ffixmystreet.tw%2Fopen311%2Fv2%2Frequests.rss%3Fjurisdiction_id%3Dfiksgatami.no%26status%3Dopen%26agency_responsible%3D219%7C220">GeoRSS on Google Maps</a> ]
+    
+    <br>http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&amp;status=open&amp;agency_responsible=219|220</li>
+
+    <li><a href="http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&service_code=Vannforsyning">All requests with the category 'Vannforsyning'</a>
+    
+        [ <a href="http://maps.google.com/?q=http%3A%2F%2Ffixmystreet.tw%2Fopen311%2Fv2%2Frequests.rss%3Fjurisdiction_id%3Dfiksgatami.no%26service_code%3DVannforsyning">GeoRSS on Google Maps</a> ]
+    
+    <br>http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&amp;service_code=Vannforsyning</li>
+
+    <li><a href="http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&status=closed">All closed requests</a>
+    
+        [ <a href="http://maps.google.com/?q=http%3A%2F%2Ffixmystreet.tw%2Fopen311%2Fv2%2Frequests.rss%3Fjurisdiction_id%3Dfiksgatami.no%26status%3Dclosed">GeoRSS on Google Maps</a> ]
+    
+    <br>http://fixmystreet.tw/open311/v2/requests.xml?jurisdiction_id=fiksgatami.no&amp;status=closed</li>
+
+
+</ul>
+
+<h2>Searching</h2>
+
+<p>The following search parameters can be used:</p>
+
+<dl>
+
+<dt>service_request_id</dt>
+<dd>Search for numeric ID of specific request.
+   Using this is identical to asking for a individual request using
+   the /requests/number.format URL.</dd>
+<dt>service_code</dt>
+<dd>Search for the given category / service type string.</dd>
+
+<dt>status</dt>
+<dd>Search for open or closed (fixed) requests.</dd>
+
+<dt>start_date<dt>
+<dd>Only return requests with requested_datetime set after or at the
+  date and time specified.  The format is YYYY-MM-DDTHH:MM:SS+TZ:TZ.</dd>
+
+<dt>end_date<dt>
+<dd>Only return requests with requested_datetime set before the date
+  and time specified.  Same format as start_date.</dd>
+
+<dt>agency_responsible</dt>
+<dd>ID of government body receiving the request.  Several IDs can be
+  specified with | as a separator.</dd>
+
+<dt>interface_used<dt>
+<dd>Name / identifier of interface used.</dd>
+
+<dt>has_photo<dt>
+<dd>Search for entries with or without photos.  Use value 'true' to
+only get requests created with images, and 'false' to get those
+created without images.</dd>
+
+<dt>max_requests</dt>
+<dd>Max number of requests to return from the search.  If it is larger
+than the site specific max_requests value specified in the discovery
+call, the value provided is ignored.</dd>
+
+<dl>
+
+<p>The search result might look like this:</p>
+
+<pre>
+  &lt;requests&gt;
+    &lt;request&gt;
+      &lt;agency_responsible&gt;
+        &lt;recipient&gt;Statens vegvesen region øst&lt;/recipient&gt;
+        &lt;recipient&gt;Oslo&lt;/recipient&gt;
+      &lt;/agency_responsible&gt;
+      &lt;agency_sent_datetime&gt;2011-04-23T10:28:55+02:00&lt;/agency_sent_datetime&gt;
+      &lt;description&gt;Mangler brustein: Det støver veldig på tørre dager.  Her burde det vært brustein.&lt;/description&gt;
+      &lt;detail&gt;Det støver veldig på tørre dager.  Her burde det vært brustein.&lt;/detail&gt;
+      &lt;interface_used&gt;Web interface&lt;/interface_used&gt;
+      &lt;lat&gt;59.916848&lt;/lat&gt;
+      &lt;long&gt;10.728148&lt;/long&gt;
+      &lt;requested_datetime&gt;2011-04-23T09:32:36+02:00&lt;/requested_datetime&gt;
+      &lt;requestor_name&gt;Petter Reinholdtsen&lt;/requestor_name&gt;
+      &lt;service_code&gt;Annet&lt;/service_code&gt;
+      &lt;service_name&gt;Annet&lt;/service_name&gt;
+      &lt;service_request_id&gt;1&lt;/service_request_id&gt;
+      &lt;status&gt;open&lt;/status&gt;
+      &lt;title&gt;Mangler brustein&lt;/title&gt;
+      &lt;updated_datetime&gt;2011-04-23T10:28:55+02:00&lt;/updated_datetime&gt;
+    &lt;/request&gt;
+  &lt;/requests&gt;
+</pre>
+
+                    
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <ul id="main-menu">
+                        <li><a href="/" class="report-a-problem-btn"
+                            >回報問題</a></li><li><a href="/my">你的回報</a></li><li><a href="/reports">全部回報</a></li><li><a href="/alert">區域通知</a></li><li><a href="/faq">說明</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!-- 
+
+ -->
+    </div> <!-- .wrapper -->
+</body>
+</html>
+
+

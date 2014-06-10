@@ -1,0 +1,34 @@
+Subject: 問題回報: <?=$values['title']?>
+
+親愛的 <?=$values['bodies_name']?>,
+
+<?=$values['missing']?><?=$values['multiple']?>有一位使用者透過台南311送出了下面問題回報
+，他覺得這個問題可能需要貴單位的注意。
+
+<?=$values['fuzzy']?>, 或是提供問題的更新,請點選下面的連結。
+
+    <?=$values['url']?>
+
+<?=$values['has_photo']?>----------
+
+姓名: <?=$values['name']?>
+
+Email: <?=$values['email']?>
+
+<?=$values['phone_line']?><?=$values['category_line']?>標題: <?=$values['title']?>
+
+問題描述: <?=$values['detail']?>
+
+<?=$values['easting_northing']?>
+
+經緯度： <?=$values['latitude']?>, <?=$values['longitude']?>
+
+<?=$values['closest_address']?>
+----------
+
+你可以直接回覆這封信去聯絡問題回報人。
+
+<?=$values['signature']?>
+有任何問題可以聯絡我們<http://www.fixmystreet.com/contact>。
+
+

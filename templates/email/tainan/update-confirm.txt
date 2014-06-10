@@ -1,0 +1,21 @@
+Subject: Confirm your update on [% INCLUDE 'site-name.txt' | trim %]
+
+Hello [% update.name %],
+
+Please click on the link below to confirm your update on [% INCLUDE 'site-name.txt' | trim %]:
+
+[% token_url %]
+
+If your email program does not let you click on this link, copy and paste it
+into your web browser and press return.
+
+Your update reads:
+
+[% update.text %]
+
+[% INCLUDE 'update-confirm-donotsend.txt' %]
+
+[% INCLUDE 'signature.txt' %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
