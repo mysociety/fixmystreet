@@ -1,0 +1,10 @@
+@import "_colours";;
+@import "../sass/layout";
+
+#front-main {
+    padding: 0
+}
+#front-main-container {
+    background-color: $eastsussex_primary;
+    padding: 1em;
+}

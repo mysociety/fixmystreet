@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<!--[if lt IE 7 ]> <html class="no-js ie6 ie67" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="no-js ie7 ie67" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="https://www.facebook.com/2008/fbml" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml schema: http://schema.org/"> <!--<![endif]-->
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/cmsconsolesmall-homesmall-jqueryui-template1small-templateprint-v50.cssx" />
+
+<link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homemedium-template2medium-v50.cssx" media="only screen and (min-width: 474px)" class="mqMedium" />
+<!--[if (lte IE 8) & !(IEMobile 7) ]><link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homemedium-template2medium-v50.cssx" class="mqIE mqMedium" /><![endif]-->
+
+<link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homelarge-template3large-templateie6large-v50.cssx" media="only screen and (min-width: 802px)" class="mqLarge" />
+<!--[if (lte IE 8) & !(IEMobile 7) ]><link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homelarge-template3large-templateie6large-v50.cssx" class="mqIE mqLarge" /><![endif]-->
+
+<link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
+<link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+<link rel="stylesheet" href="[% version('/cobrands/hart/hart.css') %]">
+[% extra_css %]
+<!--[if (lt IE 9) & (!IEMobile)]>
+    <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
+<![endif]-->
+
+<script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
+<script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
+[% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = c.cobrand.site_title %]
+[% extra_js %]
+
+[% IF c.req.uri.host == 'osm.fixmystreet.com' %]
+    <link rel="canonical" href="http://www.fixmystreet.com[% c.req.uri.path_query %]">
+[% END %]
+
+[% INCLUDE 'tracking_code.html' %]
+
+<script src="http://www.eastsussex.gov.uk/js/modernizr-v19.jsx"></script>
+
+<link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+<link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
+<meta name="DC.title" content="East Sussex County Council" lang="en-GB" xml:lang="en-GB" />
+<meta property="og:title" content="East Sussex County Council" lang="en-GB" xml:lang="en-GB" />
+<meta name="twitter:title" content="East Sussex County Council" lang="en-GB" xml:lang="en-GB" />
+<meta name="DC.creator" content="Web and Intranet Editor, Digital Services, 01273 335847" lang="en-GB" xml:lang="en-GB" />
+<meta name="DCTERMS.created" class="DCTERMS.W3CDTF" content="2006-10-23" />
+<meta name="DCTERMS.issued" class="DCTERMS.W3CDTF" content="2006-11-02" />
+<meta name="DCTERMS.modified" class="DCTERMS.W3CDTF" content="2014-05-22" />
+<meta name="DC.subject" class="eGMS.IPSV" content="Government, politics and public administration" lang="en-GB" xml:lang="en-GB" />
+<meta name="eGMS.accessibility" class="eGMS.WCAG10" content="Double-A" />
+<meta name="eGMS.systemID" content="{15D28A23-DC25-4E88-B903-A170F0206C35}" />
+<meta property="og:url" content="http://www.eastsussex.gov.uk/default.htm" />
+<meta name="DC.publisher" content="East Sussex County Council" lang="en-GB" xml:lang="en-GB" />
+<meta name="DCTERMS.spatial" content="East Sussex, UK" lang="en-GB" xml:lang="en-GB" />
+<meta name="DC.language" class="DCTERMS.ISO639-2" content="eng" />
+<meta name="DC.description" content="East Sussex County Council&#39;s website has a wealth of advice on council services and related subjects, for residents, businesses and visitors to the county." lang="en-GB" xml:lang="en-GB" />
+<meta name="description" content="East Sussex County Council&#39;s website has a wealth of advice on council services and related subjects, for residents, businesses and visitors to the county." lang="en-GB" xml:lang="en-GB" />
+<meta property="og:description" content="East Sussex County Council&#39;s website has a wealth of advice on council services and related subjects, for residents, businesses and visitors to the county." lang="en-GB" xml:lang="en-GB" />
+<meta name="twitter:description" content="East Sussex County Council&#39;s website has a wealth of advice on council services and related subjects, for residents, businesses and visitors to the county." lang="en-GB" xml:lang="en-GB" />
+<meta name="keywords" content="Government, politics and public administration" lang="en-GB" xml:lang="en-GB" />
+<meta name="DC.subject" class="eGMS.LGIL" content="Providing information" lang="en-GB" xml:lang="en-GB" />
+<meta name="DC.type" class="eGMS.LGTL" content="Home page" lang="en-GB" xml:lang="en-GB" />
+<meta property="og:type" content="government" lang="en-GB" xml:lang="en-GB" />
+<meta name="DC.format" class="DCTERMS.IMT" content="text/html" />
+<meta name="eGMS.disposalReview" class="DCTERMS.W3CDTF" content="2014-07-02" />
+<meta name="eGMS.copyright" class="DCTERMS.URI" content="http://www.eastsussex.gov.uk/about/copyright/" />
+<link rel="copyright" href="http://www.eastsussex.gov.uk/about/copyright/" title="Copyright information for this page" />
+<link rel="apple-touch-icon-precomposed" href="http://www.eastsussex.gov.uk/apple-touch-icon-precomposed.png" />
+<meta name="msapplication-TileImage" content="http://www.eastsussex.gov.uk/windows-tile.png" />
+<meta name="msapplication-TileColor" content="#ffffff" />
+<meta property="og:image" content="https://www.eastsussex.gov.uk/img/logo-for-facebook.png" />
+<meta property="og:site_name" content="East Sussex County Council" lang="en-GB" xml:lang="en-GB" />
+<meta property="fb:app_id" content="169406409819518" />
+<meta property="twitter:card" content="summary" />
+<meta property="twitter:site" content="@eastsussexcc" />
+<link rel="alternate" type="application/rss+xml" href="http://www.eastsussex.gov.uk/rss/features.xml" title="News - East Sussex County Council" />
+<link rel="alternate" type="application/rss+xml" href="http://www.eastsussex.gov.uk/rss/whatson.xml" title="What's on - East Sussex County Council" />
+<link rel="alternate" type="application/rss+xml" href="http://www.eastsussex.gov.uk/rss/get-involved.xml" title="Get involved - East Sussex County Council" />
+<link rel="search" type="application/opensearchdescription+xml" title="East Sussex County Council" href="http://www.eastsussex.gov.uk/search/opensearch.xml" />
+
+    <link rel="alternate" type="application/rdf+xml" href="/eastsussexcountycouncil.rdf" title="RDF/XML version of this document"/>    
+    
+    
+<title>
+    East Sussex County Council
+</title></head>
+
+<body id="eastsussex-gov-uk" class=" size2">
+    
+<p><a class="aural keyboard" href="#main" accesskey="s">Skip to main content</a></p>
+<p><a href="/webhome/masterpages/choose.ashx?template=mobile" id="ctl12_switchView" class="aural keyboard switch">Use our mobile site &#8211; it's better for keyboard users</a></p>
+<span id="fb-root"></span>
+
+<header>
+<div class="header" role="banner">
+    <div class="context container">  
+        <div class="mask" typeof="schema:Organization">  
+            <div class="logo-small"><img alt="" src="//static2.eastsussexcc.gov.uk/img/header/logo-small.gif" width="43" height="31" /> <span property="schema:name">East Sussex County Council</span></div>
+            <img property="schema:logo" alt="" src="//static2.eastsussexcc.gov.uk/img/header/logo-large.gif" width="118" height="85" class="logo-large large" />
+            <span id="header_ctl01_textSize" class="size"><a href="/help/accessibility/textsize.aspx?textsize=1" class="zoom-out screen" rel="nofollow">Make text smaller</a><a href="/help/accessibility/textsize.aspx?textsize=3" class="zoom-in screen" rel="nofollow">Make text bigger</a></span>
+            <a href="/contactus/default.htm" id="header_ctl01_contact" class="contact screen" accesskey="7">Contact us</a>
+
+            <nav role="navigation">
+                <div id="header_ctl01_az" class="screen alphabet">
+    <h2>Our services:</h2><a href="/atoz/default.aspx?index=a" title="Services beginning with A">A</a><a href="/atoz/default.aspx?index=b" title="Services beginning with B">B</a><a href="/atoz/default.aspx?index=c" title="Services beginning with C">C</a><a href="/atoz/default.aspx?index=d" title="Services beginning with D">D</a><a href="/atoz/default.aspx?index=e" title="Services beginning with E">E</a><a href="/atoz/default.aspx?index=f" title="Services beginning with F">F</a><a href="/atoz/default.aspx?index=g" title="Services beginning with G">G</a><a href="/atoz/default.aspx?index=h" title="Services beginning with H">H</a><a href="/atoz/default.aspx?index=i" class="i" title="Services beginning with I">I</a><a href="/atoz/default.aspx?index=j" title="Services beginning with J">J</a><a href="/atoz/default.aspx?index=k" title="Services beginning with K">K</a><a href="/atoz/default.aspx?index=l" title="Services beginning with L">L</a><a href="/atoz/default.aspx?index=m" title="Services beginning with M">M</a><a href="/atoz/default.aspx?index=n" title="Services beginning with N">N</a><a href="/atoz/default.aspx?index=o" title="Services beginning with O">O</a><a href="/atoz/default.aspx?index=p" title="Services beginning with P">P</a><a href="/atoz/default.aspx?index=r" title="Services beginning with R">R</a><a href="/atoz/default.aspx?index=s" title="Services beginning with S">S</a><a href="/atoz/default.aspx?index=t" title="Services beginning with T">T</a><a href="/atoz/default.aspx?index=u" title="Services beginning with U">U</a><a href="/atoz/default.aspx?index=v" title="Services beginning with V">V</a><a href="/atoz/default.aspx?index=w" title="Services beginning with W">W</a><a href="/atoz/default.aspx?index=y" title="Services beginning with Y">Y</a><a href="/atoz/default.aspx?index=z" class="z" title="Services beginning with Z">Z</a>
+</div>
+            </nav>
+
+            <form action="/search/search.aspx" method="get" id="search" role="search" class="screen">
+                <div class="search-inner">
+                    <div class="term-outer">
+                        <div class="term-inner">
+                            <label for="q" class="aural">Search</label>
+                            <input type="search" class="search" placeholder="Enter your search term" id="q" name="q" accesskey="4" value="" />
+                        </div>
+                    </div>
+                    <div class="submit"><input type="submit" value="Go" /></div>
+                </div>
+            </form>
+                        
+            <div id="menu" role="navigation" class="screen">
+            <nav>
+                <ul>
+                    <li class="mobile"><a href="/default.htm" id="header_ctl01_mobileHome" accesskey="1">Home</a></li>
+                    <li class="mobile"><a href="/menu.htm" id="header_ctl01_mobileMenu" accesskey="3">Menu</a></li>
+                    <li class="jobs"><a href="/jobs/default.htm" id="header_ctl01_jobs">Jobs</a></li>
+                    <li class="libraries"><a href="/libraries/default.htm" id="header_ctl01_libraries">Libraries</a></li>
+                    <li class="leisure"><a href="/leisureandtourism/default.htm" id="header_ctl01_leisure">Leisure</a></li>
+                    <li class="education"><a href="/educationandlearning/default.htm" id="header_ctl01_education">Education</a></li>
+                    <li class="transport long"><a href="/roadsandtransport/default.htm" id="header_ctl01_transport">Roads &amp; transport</a></li>
+                    <li class="environment long"><a href="/environment/default.htm" id="header_ctl01_environment">Environment &amp;&nbsp;planning</a></li>
+                    <li class="council long"><a href="/yourcouncil/default.htm" id="header_ctl01_council">Your<br />Council</a></li>
+                    <li class="community"><a href="/community/default.htm" id="header_ctl01_community">Community</a></li>
+                    <li class="families"><a href="/childrenandfamilies/default.htm" id="header_ctl01_families">Families</a></li>
+                    <li class="socialcare long"><a href="/socialcare/default.htm" id="header_ctl01_socialcare">Adult social care&nbsp;&amp;&nbsp;health</a></li>
+                    <li class="business"><a href="/business/default.htm" id="header_ctl01_business">Business</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+</div>
+</header>
+
+    <div id="main" role="main" class="body">
+        <div class="container">
+            [% pre_container_extra %]
+            <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+
