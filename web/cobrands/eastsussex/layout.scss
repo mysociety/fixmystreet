@@ -1,0 +1,135 @@
+@import "_colours";;
+@import "../sass/layout";
+
+/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before,
+.clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+/* For IE 6/7 only */
+.clearfix { *zoom: 1; }
+
+#front-main {
+    padding: 0
+}
+#front-main-container {
+    background-color: $eastsussex_primary;
+    padding: 1em;
+}
+
+@media only screen and (min-width:48em) {
+    body.mappage .main-menu-wrapper {
+        position: fixed
+    }
+    body.mappage #site-header .header {
+        /* display: none; */
+    }
+
+    body.mappage footer {
+        display: none;
+    }
+
+    body.mappage, body.twothirdswidthpage {
+        .content {
+            margin-top: 15em;
+            .sticky-sidebar aside {
+                z-order: 3;
+                top: 16em;
+            }
+        }
+
+    }
+
+    body.mappage #fms_pan_zoom {
+        top: 14em!important;
+    }
+}
+
+@media only screen and (min-width:48em) {
+    body.frontpage #site-header {
+        height: 13em;
+
+        .mobile-header-nav {
+            display: none;
+        }
+    }
+
+    #skipped-map {
+        clear: both;
+        margin-top: 3em; /* required to push "Your Reports" visible on Safari/IE */
+    }
+
+	#main-nav {
+	  margin-top: 106px;
+	  
+	  ul {
+        margin-left: 157px;
+	    float: none;
+	  }
+	}
+
+	#main-nav ul li {
+	  text-align: center;
+	  text-transform: uppercase;
+	  padding: 0 15px;
+	  font-size: 16px;
+	  border-right: solid 1px white;
+	  line-height: 1.5em;
+	}
+
+	#main-nav ul li a {
+	    padding: 0;
+	    font-size: inherit;
+	}
+
+	#main-nav ul li:last-child {
+	    border-right: none;
+	}
+
+	#main-nav ul li a:link, #main-nav ul li a:visited {
+	  color: #fff;
+	}
+
+	#main-nav ul li:hover, #main-nav ul li:hover a, {
+	  background-color: white;
+	  color: black;
+	  text-decoration: none;
+	}
+}
+
+@media only screen and (max-width: 61em) and (min-width: 48em) {
+    #main-nav {
+        padding-left: 0px;
+        float:none;
+    }
+}
+
+
+.main-menu-wrapper {
+    /* z-index:2; */
+    background-color: #FFF;
+    width:100%;
+}
+
+@media only screen and (min-width:48em) {
+    .main-menu-wrapper {
+        position: absolute;
+        height: 2.4em;
+
+        ul {
+            margin: 0;
+        }
+
+        li {
+            list-style-type: none;
+            padding: 0.5em;
+            float: left;
+        }
+        top: 160px;
+        z-index: 3;
+
+        .main-menu {
+            max-width: 966px;
+            margin: 0 auto;
+        }
+    }
+}

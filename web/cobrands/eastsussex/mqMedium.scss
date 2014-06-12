@@ -1,0 +1,237 @@
+.escc-grid {
+background:#eff url(/cobrands/eastsussex/img-9.gif) repeat-y center top;
+}
+
+.section-nav img {
+display:block;
+float:left;
+border:1px solid #999;
+margin:0 1.076953em 0 0;
+}
+
+.latestBox .latest {
+position:absolute;
+top:6px;
+left:18px;
+margin:0;
+}
+
+.latestBox h2,.latestBox p,.latestBox ul,.latestBox .item {
+padding:.6em 18px .6em 6em;
+}
+
+.latestBox ul,.latestBox h2+ul,.latestBox p+ul {
+padding-left:7.2em;
+margin-left:0;
+}
+
+.text .latestBox .latest {
+left:0;
+}
+
+.ie67 .text .latestBox .latest {
+float:left;
+z-index:100;
+top:14px;
+}
+
+.cms-edit .latestBox .latest {
+position:relative;
+}
+
+.cms-edit .latestBox .mceEditor {
+clear:both;
+display:block;
+padding:18px 18px 0;
+}
+
+.text h1,h1.text {
+padding:.208333em 2.244389% .166666em;
+}
+
+.text h1 {
+margin:0 -2.244389%;
+}
+
+.related {
+padding:1.384615em 2.244389%;
+}
+
+.related h2 {
+margin:0 -1em .642857em;
+}
+
+.related ul {
+margin:.538462em 0 -.538462em;
+}
+
+.text .tCols {
+overflow:hidden;
+width:100%;
+}
+
+.text .tCol1 {
+width:49%;
+float:left;
+margin-right:-50%;
+padding-right:50%;
+}
+
+.text .tCol2 {
+width:49%;
+float:right;
+}
+
+dl.itemDetail dt {
+clear:left;
+float:left;
+width:22%;
+margin:0 0 0 2.244389%;
+}
+
+dl.itemDetail dd {
+margin:0 2.244389% .538462em 25%;
+}
+
+.ie6 dl.itemDetail dd {
+height:1%;
+}
+
+.share .button-nav {
+float:left;
+margin:0 .5em .692308em 0;
+}
+
+.top-tasks .text {
+padding:0 2.244389%;
+}
+
+.top-tasks h2 {
+margin:0 -2.5%;
+padding:0 2.5%;
+}
+
+.top-tasks ul.first,.report-apply-pay ul.first {
+float:left;
+width:48.101269%;
+margin:.692308em 0;
+}
+
+.top-tasks ul.second,.report-apply-pay ul.second {
+float:right;
+width:45.147682%;
+margin:.692308em 2.953586% .692308em 0;
+}
+
+.news {
+clear:none;
+}
+
+.news .feed {
+left:2.244389%;
+}
+
+.news ol {
+overflow:hidden;
+margin:0 0 1.384615em;
+}
+
+.news .only-feature,.news .feature1 {
+margin-left:2.244389%;
+}
+
+.news .feature1 {
+width:49.799999%;
+float:left;
+}
+
+.news .feature2 {
+width:49.799999%;
+float:left;
+margin:0 0 0 4px;
+}
+
+.find-and-library,.involved {
+float:left;
+width:48.877811%;
+}
+
+.find-and-library {
+margin-right:2.244389%;
+}
+
+.find-and-library .text,.involved .text {
+overflow:hidden;
+padding:0 4.591837%;
+}
+
+.library h2,.involved h2 {
+margin:0 -4.591837%;
+padding:0 4.591837%;
+}
+
+.library .context {
+min-height:16.615385em;
+}
+
+.involved .context {
+min-height:19.384615em;
+}
+
+.library .has-buttons,.involved .has-buttons {
+min-height:15.230769em;
+}
+
+.whats-on h2 {
+margin:0 -2.244389%;
+padding:0 2.244389%;
+}
+
+body .library .has-buttons,body .involved .has-buttons,body .whats-on .has-buttons {
+padding-bottom:4.153846em;
+}
+
+.cms-edit .involved .has-buttons,.cms-edit .whats-on .has-buttons {
+padding-bottom:7em;
+}
+
+.buttons {
+position:absolute;
+bottom:0;
+}
+
+.news .buttons,.cms-edit .buttons {
+position:static;
+}
+
+.small,.large,.report-apply-pay-links {
+display:none;
+}
+
+.medium,.report-apply-pay {
+display:block;
+}
+
+.section-nav,.top-tasks,.report-apply-pay {
+overflow:hidden;
+}
+
+.section-nav ul,.related .section {
+float:left;
+width:46.633415%;
+margin:0 2.244389% 0 0;
+}
+
+.rtl .section-nav ul,.rtl .related .section {
+float:right;
+}
+
+@media screen {
+.text {
+padding:.1px 2.244389% 0;
+}
+
+.ie67 .text {
+padding:0 2.244389%;
+}
+}
