@@ -1,0 +1,713 @@
+html {
+overflow-y:scroll;
+}
+
+.container, .eastsussex-container {
+max-width:966px;
+}
+
+.ie6.no-js .eastsussex-container {
+width:966px;
+}
+
+.escc-grid {
+position:absolute;
+top:0;
+right:0;
+bottom:0;
+left:0;
+height:2000px;
+width:966px;
+background:url(/cobrands/eastsussex/img-12.gif) repeat-y center top!important;
+margin:27px auto 0;
+}
+
+.large {
+display:block;
+}
+
+.header {
+background:#01a1df url(/cobrands/eastsussex/img/desktop.png) repeat-x center top;
+border:0;
+margin:0 0 -4px;
+padding:0 6px;
+}
+
+.ie6 .header {
+height:auto;
+margin:0;
+}
+
+.header .eastsussex-container {
+background:url(/cobrands/eastsussex/img/xmas-lights.jpg) no-repeat center top;
+overflow:hidden;
+}
+
+.header .mask {
+background:url(/cobrands/eastsussex/img/desktop.png) no-repeat center -162px;
+overflow:hidden;
+}
+
+.ie6 .header .mask {
+background:url(/cobrands/eastsussex/img/mask.gif) no-repeat center top;
+height:162px;
+}
+
+.header .logo-large {
+float:left;
+margin:11px 0;
+}
+
+.header .size {
+display:block;
+position:absolute;
+right:6em;
+}
+
+.header .size a {
+float:left;
+color:#777;
+padding:7px 10px 7px 20px;
+}
+
+.header .size .zoom-in {
+background:url(/cobrands/eastsussex/img/item-type.gif) no-repeat 0 -1491px;
+}
+
+.header .size .zoom-out {
+background:url(/cobrands/eastsussex/img/item-type.gif) no-repeat 0 -1538px;
+}
+
+.header .alphabet {
+display:block;
+width:70%;
+float:right;
+white-space:nowrap;
+font-weight:700;
+font-size:1.230769em;
+line-height:1.125em;
+text-align:right;
+margin:36px 0 0;
+}
+
+.header .alphabet h2 {
+display:inline;
+color:#777;
+}
+
+.header .alphabet a:link,.header .alphabet a:visited,.header .alphabet em {
+text-decoration:none;
+padding:0 .32%;
+}
+
+.header div.alphabet .i {
+padding:0 .7%;
+}
+
+.header div.alphabet .z {
+padding-right:0;
+}
+
+.header .alphabet em {
+color:#fff;
+background:#003c69;
+font-style:normal;
+border-radius:3px;
+}
+
+.ie6 .header .alphabet {
+position:relative;
+right:-45px;
+}
+
+.size2 .header .alphabet,.size3 .header .alphabet {
+margin-top:33px;
+}
+
+#search {
+clear:right;
+width:49.068298%;
+margin:0;
+}
+
+#search .search-inner {
+padding:0;
+}
+
+#search .search {
+height:30px;
+border:2px solid #00a1de;
+border-radius:3px;
+}
+
+#search .submit {
+width:48px;
+float:right;
+}
+
+#search .submit input {
+width:100%;
+margin:6px 0 0;
+padding:8px 0 9px;
+}
+
+.ie6 #search {
+float:right;
+clear:right;
+width:expression(document.body.clientWidth>446?"446px":"auto");
+margin:0;
+}
+
+.ie6 #search .term-outer {
+float:left;
+margin-right:-56px;
+width:100%;
+}
+
+.ie6 #search .term-inner {
+padding-right:56px;
+}
+
+.ie6 #search .search {
+float:none;
+width:100%;
+margin:6px 0;
+}
+
+.header #menu {
+width:100%;
+max-width:none;
+clear:both;
+}
+
+#menu a:link,#menu a:visited {
+height:59px;
+display:block;
+position:relative;
+line-height:55px;
+padding:0 6px 0 4px;
+}
+
+#menu a:hover,#menu a:focus,#menu a:active,#menu a.selected:link,#menu a.selected:visited {
+background-position:right -61px;
+}
+
+#menu .long a:link,#menu .long a:visited {
+line-height:18px;
+padding-top:10px;
+height:49px;
+}
+
+#menu .socialcare {
+width:13%;
+display:block;
+}
+
+#menu .community {
+width:11%;
+display:block;
+}
+
+#menu .education {
+width:10%;
+display:block;
+}
+
+#menu .environment {
+width:12%;
+display:block;
+}
+
+#menu .jobs {
+width:5%;
+display:block;
+}
+
+#menu .leisure {
+width:7%;
+display:block;
+}
+
+#menu .business a {
+background-image:none;
+}
+
+#menu .business a:hover,#menu .business a:focus,#menu .business a:active,#menu .business a.selected:link,#menu .business a.selected:visited {
+background:url(/cobrands/eastsussex/img/menu-item.gif) no-repeat left -61px;
+}
+
+.ie6 #menu {
+width:100%;
+background:0;
+position:relative;
+letter-spacing:-.05em;
+}
+
+.ie6 #menu a:link,.ie6 #menu a:visited {
+padding-left:2px;
+padding-right:4px;
+height:55px;
+}
+
+.ie6 #menu .socialcare {
+width:12%;
+}
+
+.ie6 #menu a:hover,.ie6 #menu a:focus,.ie6 #menu a:active,.ie6 #menu a.selected:link,.ie6 #menu a.selected:visited {
+background-position-y:-63px;
+}
+
+.ie6 #menu .long a:link,.ie6 #menu .long a:visited {
+height:45px;
+}
+
+.footer .online {
+float:left;
+width:21.635611%;
+border-right:1px dotted #779aa7;
+text-align:left;
+}
+
+.footer h2 {
+display:block;
+margin-right:.5em;
+font-size:1.153846em;
+line-height:1.2em;
+font-weight:700;
+color:#444;
+}
+
+.footer .social {
+float:none;
+padding-bottom:1.384615em;
+border-bottom:.076923em dotted #779aa7;
+margin:1.384615em 0 .615385em;
+}
+
+.footer .online ul {
+line-height:2.076923em;
+margin:.692308em 0;
+}
+
+.footer .online li {
+display:list-item;
+margin:0;
+}
+
+.footer .newsletter {
+display:block;
+float:left;
+width:40.579708%;
+padding:0 0 0 1.863354%;
+}
+
+.footer .newsletter label {
+display:block;
+margin:.923077em 0 .461538em;
+}
+
+.footer .newsletter .email {
+font-size:1.076923em;
+line-height:1em;
+width:19.5em;
+background:#fff;
+border:2px solid #9c9c9c;
+border-radius:5px;
+padding:6px;
+}
+
+.footer .petitions {
+display:block;
+float:left;
+width:23.498964%;
+border-left:1px dotted #779aa7;
+padding-left:1.759834%;
+}
+
+.footer .petitions h2 span {
+background:url(/cobrands/eastsussex/img/item-type.gif) no-repeat right -1850px;
+padding-right:35px;
+}
+
+.footer .petitions ul {
+margin:.692308em 0 .692308em 1.153846em;
+}
+
+.footer .online,.footer .petitions {
+min-height:18em;
+}
+
+.body {
+background:url(/cobrands/eastsussex/img/gradient.jpg) repeat-x left top #fff;
+}
+
+.breadcrumb {
+display:block;
+overflow:hidden;
+background:#6bc8ec;
+border:0 solid #6bc8ec;
+border-width:.076923em 3px;
+margin:0 0 .615385em;
+}
+
+.breadcrumb li {
+color:#fff;
+line-height:1.692308em;
+float:left;
+position:relative;
+white-space:nowrap;
+margin:.153846em 0 .153846em -10px;
+padding:0 18px 0 16px;
+}
+
+.breadcrumb a:link,.breadcrumb a:visited {
+color:#fff;
+text-decoration:none;
+float:left;
+}
+
+.breadcrumb .current {
+background:url(/cobrands/eastsussex/img/navigation.gif) no-repeat right -150px;
+}
+
+.breadcrumb .up {
+background:url(/cobrands/eastsussex/img/navigation.gif) no-repeat right -100px;
+}
+
+.breadcrumb .level1 {
+background:url(/cobrands/eastsussex/img/navigation.gif) no-repeat right top;
+color:#194c7e;
+z-index:9;
+margin:.153846em 0;
+padding:0 18px 0 6px;
+}
+
+.breadcrumb .level1 a:link,.breadcrumb .level1 a:visited {
+color:#194c7e;
+}
+
+.breadcrumb .level2 {
+background:url(/cobrands/eastsussex/img/navigation.gif) no-repeat right -50px;
+z-index:8;
+}
+
+.breadcrumb .level3 {
+z-index:7;
+}
+
+.breadcrumb .level4 {
+z-index:6;
+}
+
+.breadcrumb .level5 {
+z-index:5;
+}
+
+.breadcrumb .level6 {
+z-index:4;
+}
+
+.breadcrumb .level7 {
+z-index:3;
+}
+
+.breadcrumb .level8 {
+z-index:2;
+}
+
+.breadcrumb .level9 {
+z-index:1;
+}
+
+.ie67 .breadcrumb {
+border-bottom-width:3px;
+}
+
+.full-page {
+clear:both;
+background:#fff;
+min-height:15em;
+box-shadow:0 0 12px 0 #dae1e5;
+}
+
+.text h1,h1.text {
+padding:.208333em 1.863354% .166666em;
+}
+
+.text h1 {
+margin:0 -1.863354%;
+}
+
+.full-page .text h2,.full-page .text h3,.full-page .text h4,.full-page .text h5,.full-page .text p,.full-page .text ul,.full-page .text ol,.full-page .text dl {
+max-width:66.045547%;
+}
+
+.full-page .text table {
+width:auto;
+}
+
+.full-page .text h2 *,.full-page .text h3 *,.full-page .text h4 *,.full-page .text h5 *,.full-page .text p *,.full-page .text ul *,.full-page .text ol *,.full-page .text dl * {
+max-width:none;
+}
+
+.article {
+float:left;
+width:66.045547%;
+background:#fff;
+min-height:15em;
+box-shadow:0 0 12px 0 #dae1e5;
+}
+
+.article .text h1,.article h1.text {
+padding:.208333em 3% .166666em;
+}
+
+.article .text h1 {
+margin:0 -3%;
+}
+
+.rtl .article {
+float:right;
+}
+
+.supporting {
+clear:right;
+float:right;
+width:32.091099%;
+margin-bottom:1.384615em;
+}
+
+.supporting-text {
+clear:right;
+float:right;
+width:28.364389%;
+border-top:0;
+background:#fff;
+box-shadow:0 0 12px 0 #dae1e5;
+margin:0 0 1.384615em;
+padding:.692308em 1.863354%;
+}
+
+.supporting-text h2 {
+border-bottom:1px solid #dae1e5;
+margin:0 -6.7% 10px;
+padding:0 6.7% 7px;
+}
+
+.ie7 .supporting-text h2 {
+margin:0 -2% 10px;
+padding:0 2% 7px;
+}
+
+.ie6 .supporting-text h2 {
+margin:0 -.9% 10px;
+padding:0 0 7px;
+}
+
+.rtl .supporting,.rtl .supporting-text {
+clear:left;
+float:left;
+}
+
+dl.itemDetail dt {
+margin:0 0 0 2.821317%;
+}
+
+dl.itemDetail dd {
+margin:0 2.821317% .538462em 25%;
+}
+
+.related {
+padding:1.384615em 2.821317%;
+}
+
+.advert {
+display:block;
+background:#fff;
+padding:.692308em 0;
+}
+
+.advert img {
+display:block;
+margin:auto;
+}
+
+.top-tasks-group {
+float:left;
+width:49.068321%;
+margin:0 1.863354% 0 0;
+}
+
+.top-tasks {
+clear:left;
+min-height:15.230769em;
+box-shadow:0 0 12px 0 #dae1e5;
+margin:0 0 1.384615em;
+}
+
+.report-apply-pay {
+clear:left;
+min-height:15.230769em;
+box-shadow:0 0 12px 0 #dae1e5;
+margin:0 0 1.384615em;
+}
+
+.top-tasks .text {
+padding:0 3.797468%;
+}
+
+.top-tasks h2 {
+margin:0 -3.9%;
+padding:0 3.9%;
+}
+
+.news {
+float:left;
+width:49.068321%;
+min-height:32.153847em;
+}
+
+.news .buttons {
+background:#fff;
+}
+
+.news .feed {
+left:auto;
+right:0;
+}
+
+.news .only-feature,.news .feature1 {
+margin-left:0;
+}
+
+.news .feature2 {
+float:right;
+margin:0;
+}
+
+.schools {
+overflow:hidden;
+box-shadow:0 0 12px 0 #dae1e5;
+}
+
+.find-and-library,.involved,.whats-on {
+float:left;
+width:32.091099%;
+padding-top:0;
+margin:0 1.863354% 1.384615em 0;
+}
+
+.library h2,.involved h2,.whats-on h2 {
+margin:0 -5.806452%;
+padding:0 5.806452%;
+}
+
+.find-and-library .text,.involved .text,.whats-on .text {
+padding-left:5.806452%;
+padding-right:5.806452%;
+}
+
+.involved .eastsussex-context,.whats-on .eastsussex-context {
+min-height:19.384615em;
+}
+
+.library .has-buttons,.involved .has-buttons,.whats-on .has-buttons {
+min-height:15.230769em;
+}
+
+.library {
+clear:left;
+}
+
+.whats-on {
+clear:none;
+margin-right:0;
+}
+
+.ie6 .eastsussex-container {
+width:expression(document.body.clientWidth>966?"966px":"auto");
+}
+
+.medium,.header .logo-small,.header .logo-small:link,.header .logo-small:visited,.size2 .header .alphabet h2,.size3 .header .alphabet h2,#menu .mobile,.ie6 #menu li.mobile {
+display:none;
+}
+
+.header .contact,.ie67 #search .submit input {
+padding:7px 0;
+}
+
+.header .alphabet a:hover,.header .alphabet a:focus,.header .alphabet a:active,.breadcrumb a:hover,.breadcrumb a:focus,.breadcrumb a:active {
+text-decoration:underline;
+}
+
+#menu .business,#menu .families,#menu .council {
+display:block;
+width:8%;
+}
+
+#menu .libraries,#menu .transport {
+display:block;
+width:9%;
+}
+
+.ie6 .breadcrumb,.ie67 .full-page,.ie67 .article {
+display:inline-block;
+}
+
+.full-page:before,.full-page:after,.article:before,.article:after {
+content:".";
+display:block;
+height:0;
+overflow:hidden;
+}
+
+.full-page:after,.article:after,.final-group {
+clear:both;
+}
+
+.section-nav ul,.related .section {
+width:45.768024%;
+margin:0 2.821317% 0 0;
+}
+
+.news .features,.library,.involved,.whats-on {
+box-shadow:0 0 12px 0 #dae1e5;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio0) {
+    #search .submit input {
+    padding:6px 0;
+    }
+}
+
+@media only screen and (max-width:900px) {
+.header .eastsussex-container {
+background:0;
+}
+
+#menu {
+letter-spacing:-.05em;
+}
+
+.header .alphabet,#search {
+width:83.022774%;
+}
+}
+
+@media screen {
+.text {
+padding:.1px 1.863354% 0;
+}
+
+.ie67 .text {
+padding:0 1.863354%;
+}
+
+.article .text {
+padding:.1px 2.821317% 0;
+}
+
+.ie67 .article .text {
+padding:0 2.821317%;
+}
+}

@@ -9,20 +9,29 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/cmsconsolesmall-homesmall-jqueryui-template1small-templateprint-v50.cssx" />
-
-<link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homemedium-template2medium-v50.cssx" media="only screen and (min-width: 474px)" class="mqMedium" />
-<!--[if (lte IE 8) & !(IEMobile 7) ]><link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homemedium-template2medium-v50.cssx" class="mqIE mqMedium" /><![endif]-->
-
-<link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homelarge-template3large-templateie6large-v50.cssx" media="only screen and (min-width: 802px)" class="mqLarge" />
-<!--[if (lte IE 8) & !(IEMobile 7) ]><link rel="stylesheet" type="text/css" href="http://www.eastsussex.gov.uk/css/homelarge-template3large-templateie6large-v50.cssx" class="mqIE mqLarge" /><![endif]-->
 
 <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
 <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
-<link rel="stylesheet" href="[% version('/cobrands/hart/hart.css') %]">
+<link rel="stylesheet" href="[% version('/cobrands/eastsussex/cmsconsolesmall-v50.css') %]>
 [% extra_css %]
 <!--[if (lt IE 9) & (!IEMobile)]>
     <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
+<![endif]-->
+
+<link rel="stylesheet" type="text/css" href="[% start %][% version('/cobrands/eastsussex/mqMedium.css') %]" 
+    media="only screen and (min-width: 474px)" class="mqMedium" />
+
+<!--[if (lte IE 8) & !(IEMobile 7) ]
+<link rel="stylesheet" type="text/css" href="[% start %][% version('/cobrands/eastsussex/mqMedium.css') %]" 
+    class="mqIE mqMedium" />
+<![endif]-->
+
+<link rel="stylesheet" type="text/css" href="[% start %][% version('/cobrands/eastsussex/mqLarge.css') %]"
+    media="only screen and (min-width: 802px)" class="mqLarge" />
+
+<!--[if (lte IE 8) & !(IEMobile 7) ]>
+<link rel="stylesheet" type="text/css" href="[% start %][% version('/cobrands/eastsussex/mqLarge.css') %]"
+    class="myIE mqLarge" />
 <![endif]-->
 
 <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
@@ -35,8 +44,6 @@
 [% END %]
 
 [% INCLUDE 'tracking_code.html' %]
-
-<script src="http://www.eastsussex.gov.uk/js/modernizr-v19.jsx"></script>
 
 <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
 <link rel="schema.DCTERMS" href="http://purl.org/dc/terms/" />
@@ -86,19 +93,18 @@
     East Sussex County Council
 </title></head>
 
-<body id="eastsussex-gov-uk" class=" size2">
+<body id="eastsussex-gov-uk" class="size2 [% bodyclass | html IF bodyclass %]">
     
 <p><a class="aural keyboard" href="#main" accesskey="s">Skip to main content</a></p>
 <p><a href="/webhome/masterpages/choose.ashx?template=mobile" id="ctl12_switchView" class="aural keyboard switch">Use our mobile site &#8211; it's better for keyboard users</a></p>
 <span id="fb-root"></span>
 
-<header>
+<header id="site-header" class="eastsussex">
 <div class="header" role="banner">
-    <div class="context container">  
+    <div class="eastsussex-context eastsussex-container">  
         <div class="mask" typeof="schema:Organization">  
             <div class="logo-small"><img alt="" src="//static2.eastsussexcc.gov.uk/img/header/logo-small.gif" width="43" height="31" /> <span property="schema:name">East Sussex County Council</span></div>
             <img property="schema:logo" alt="" src="//static2.eastsussexcc.gov.uk/img/header/logo-large.gif" width="118" height="85" class="logo-large large" />
-            <span id="header_ctl01_textSize" class="size"><a href="/help/accessibility/textsize.aspx?textsize=1" class="zoom-out screen" rel="nofollow">Make text smaller</a><a href="/help/accessibility/textsize.aspx?textsize=3" class="zoom-in screen" rel="nofollow">Make text bigger</a></span>
             <a href="/contactus/default.htm" id="header_ctl01_contact" class="contact screen" accesskey="7">Contact us</a>
 
             <nav role="navigation">
@@ -123,7 +129,7 @@
             <nav>
                 <ul>
                     <li class="mobile"><a href="/default.htm" id="header_ctl01_mobileHome" accesskey="1">Home</a></li>
-                    <li class="mobile"><a href="/menu.htm" id="header_ctl01_mobileMenu" accesskey="3">Menu</a></li>
+                    <li class="mobile"><a href="#mobile-menu" id="header_ctl01_mobileMenu" accesskey="3">Menu</a></li>
                     <li class="jobs"><a href="/jobs/default.htm" id="header_ctl01_jobs">Jobs</a></li>
                     <li class="libraries"><a href="/libraries/default.htm" id="header_ctl01_libraries">Libraries</a></li>
                     <li class="leisure"><a href="/leisureandtourism/default.htm" id="header_ctl01_leisure">Leisure</a></li>
@@ -144,7 +150,9 @@
 </div>
 </header>
 
-    <div id="main" role="main" class="body">
+<div id="wrapper"><div id="wrapper2"><div id="wrapper3">
+
+    <div id="mysociety" role="main" class="body">
         <div class="container">
             [% pre_container_extra %]
             <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
