@@ -28,11 +28,11 @@
 [%- ELSIF ! (loop.count % 2) %] class="a"
 [%- END %]>
 <td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
-<td class="data">[% open.${body.id}.new or 0 %]</td>
-<td class="data">[% open.${body.id}.older or 0 %]</td>
-<td class="data">[% open.${body.id}.unknown or 0 %]</td>
-<td class="data">[% fixed.${body.id}.new or 0 %]</td>
-<td class="data">[% fixed.${body.id}.old or 0 %]</td>
+<td class="data">[% IF open.${body.id}.new %]<a href="[% body.url(c, { t => 'new' }) %]">[% open.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF open.${body.id}.older %]<a href="[% body.url(c, { t => 'older' }) %]">[% open.${body.id}.older %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF open.${body.id}.unknown %]<a href="[% body.url(c, { t => 'unknown' }) %]">[% open.${body.id}.unknown %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF fixed.${body.id}.new %]<a href="[% body.url(c, { t => 'fixed' }) %]">[% fixed.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF fixed.${body.id}.old %]<a href="[% body.url(c, { t => 'older_fixed' }) %]">[% fixed.${body.id}.old %]</a>[% ELSE %]0[% END %]</td>
 </tr>
 [% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
 [% END %]

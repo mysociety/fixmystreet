@@ -368,11 +368,32 @@ sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
     my $page = $c->req->params->{p} || 1;
+    my $type = $c->req->params->{t} || 'all';
 
     my $where = {
         non_public => 0,
         state      => [ FixMyStreet::DB::Result::Problem->visible_states() ]
     };
+
+    my $not_open = [ FixMyStreet::DB::Result::Problem::fixed_states(), FixMyStreet::DB::Result::Problem::closed_states() ];
+    if ( $type eq 'new' ) {
+        $where->{confirmed} = { '>', \"ms_current_timestamp() - INTERVAL '4 week'" };
+        $where->{state} = { 'IN', [ FixMyStreet::DB::Result::Problem::open_states() ] };
+    } elsif ( $type eq 'older' ) {
+        $where->{confirmed} = { '<', \"ms_current_timestamp() - INTERVAL '4 week'" };
+        $where->{lastupdate} = { '>', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{state} = { 'IN', [ FixMyStreet::DB::Result::Problem::open_states() ] };
+    } elsif ( $type eq 'unknown' ) {
+        $where->{lastupdate} = { '<', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{state} = { 'IN',  [ FixMyStreet::DB::Result::Problem::open_states() ] };
+    } elsif ( $type eq 'fixed' ) {
+        $where->{lastupdate} = { '>', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{state} = $not_open;
+    } elsif ( $type eq 'older_fixed' ) {
+        $where->{lastupdate} = { '<', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{state} = $not_open;
+    }
+
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
         $where->{bodies_str} = [
@@ -449,7 +470,7 @@ sub redirect_body : Private {
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{body} );
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
         if $c->stash->{ward};
-    $c->res->redirect( $c->uri_for($url) );
+    $c->res->redirect( $c->uri_for($url, $c->req->params ) );
 }
 
 sub add_row {
