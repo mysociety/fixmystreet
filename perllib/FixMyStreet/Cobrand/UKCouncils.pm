@@ -40,8 +40,9 @@ sub base_url {
     my $base_url = mySociety::Config::get('BASE_URL');
     my $u = $self->council_url;
     if ( $base_url !~ /$u/ ) {
-        $base_url =~ s{http://(?!www\.)}{http://$u.}g;
-        $base_url =~ s{http://www\.}{http://$u.}g;
+        # council cobrands are not https so transform to http as well
+        $base_url =~ s{(https?)://(?!www\.)}{http://$u.}g;
+        $base_url =~ s{(https?)://www\.}{http://$u.}g;
     }
     return $base_url;
 }
@@ -59,7 +60,7 @@ sub area_check {
     if ($council_match) {
         return 1;
     }
-    my $url = 'http://www.fixmystreet.com/';
+    my $url = 'https://www.fixmystreet.com/';
     if ($context eq 'alert') {
         $url .= 'alert';
     } else {
@@ -86,7 +87,7 @@ sub reports_body_check {
 
     # We want to make sure we're only on our page.
     unless ( $self->council_name =~ /^\Q$code\E/ ) {
-        $c->res->redirect( 'http://www.fixmystreet.com' . $c->req->uri->path_query, 301 );
+        $c->res->redirect( 'https://www.fixmystreet.com' . $c->req->uri->path_query, 301 );
         $c->detach();
     }
 
