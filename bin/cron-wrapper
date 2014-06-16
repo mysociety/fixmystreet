@@ -5,5 +5,5 @@ BEGIN {    # set all the paths to the perl code
     require "$FindBin::Bin/../setenv.pl";
 }
 
-exec { $ARGV[0] } @ARGV;
+exec { $ARGV[0] } @ARGV or die $!;
 
