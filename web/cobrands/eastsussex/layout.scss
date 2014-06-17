@@ -21,11 +21,25 @@
         position: fixed
     }
     body.mappage #site-header .header {
-        display: none;
+        /* display: none; */
     }
 
     body.mappage footer {
         display: none;
+    }
+
+    body.mappage, body.twothirdswidthpage {
+        .content {
+            margin-top: 8em;
+            .sticky-sidebar aside {
+                top: 15em;
+            }
+        }
+
+    }
+
+    body.mappage #fms_pan_zoom {
+        top: 14em!important;
     }
 }
 
@@ -100,17 +114,21 @@
         position: absolute;
         height: 2.4em;
 
+        ul {
+            margin: 0;
+        }
+
         li {
             list-style-type: none;
             padding: 0.5em;
             float: left;
         }
-    }
+        top: 160px;
+        z-index: 3;
 
-    .frontpage .main-menu-wrapper {
-        top: 173px;
-    }
-    .mappage .main-menu-wrapper {
-        top: 173px;
+        .main-menu {
+            max-width: 966px;
+            margin: 0 auto;
+        }
     }
 }
