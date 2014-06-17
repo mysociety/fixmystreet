@@ -44,8 +44,10 @@ font-size:small;
 font-family:Arial,sans-serif;
 }
 
-body.size2,.size2 select,.size2 input,.size2 textarea {
-font-size:15px;
+body.size2 {
+    select, input, textarea, li {
+        font-size:15px;
+    }
 }
 
 .ie6 body.size2,.ie6 .size2 select,.ie6 .size2 input,.ie6 .size2 textarea {
