@@ -27,17 +27,17 @@
   [% IF moderating %]
     [% original = problem.moderation_original_data %]
     <form method="post" action="/moderate/report/[% problem.id %]">
-        <input type="button" class="moderate moderate-display" value="moderate">
+        <input type="button" class="btn moderate moderate-display" value="moderate">
         <div class="moderate-edit">
-            <label for="problem_hide">Hide report completely?</label>
             <input type="checkbox" class="hide-document" name="problem_hide">
+            <label for="problem_hide">Hide report completely?</label>
             <br />
-            <label for="problem_show_name">Show name publicly?</label>
             <input type="checkbox" name="problem_show_name" [% problem.anonymous ? '' : 'checked' %]>
+            <label for="problem_show_name">Show name publicly?</label>
             [% IF problem.photo or original.photo %]
                 <br />
-                <label for="problem_show_photo">Show Photo?</label>
                 <input type="checkbox" name="problem_show_photo" [% problem.photo ? 'checked' : '' %]>
+                <label for="problem_show_photo">Show Photo?</label>
             [% END %]
         </div>
   [% END %]
@@ -45,8 +45,8 @@
     [% IF moderating %]
     <div class="moderate-edit">
         [% IF problem.title != original.title %]
-        <label for="problem_revert_title">Revert to original title</label>
         <input type="checkbox" name="problem_revert_title" class="revert-title">
+        <label for="problem_revert_title">Revert to original title</label>
         [% END %]
     <h1><input type="text" name="problem_title" value="[% problem.title | html %]"></h1>
     </div>
@@ -76,8 +76,8 @@
         [% IF moderating %]
             <div class="moderate-edit">
             [% IF problem.detail != original.detail %]
-            <label for="problem_revert_detail">Revert to original text</label>
             <input type="checkbox" name="problem_revert_detail" class="revert-textarea">
+            <label for="problem_revert_detail">Revert to original text</label>
             [% END %]
             <textarea name="problem_detail">[% add_links( problem.detail ) %]</textarea>
             </div>
@@ -91,8 +91,8 @@
         <div class="moderate-edit">
             <label for="moderation_reason">Moderation reason:</label>
             <input type="text" name="moderation_reason" placeholder="Describe why you are moderating this">
-            <input type="submit" value="submit">
-            <input type="button" class="cancel" value="cancel">
+            <input type="submit" class="red-btn" value="Moderate it">
+            <input type="button" class="btn cancel" value="cancel">
         </div>
     </form>
   [% END %]
