@@ -17,15 +17,33 @@
 }
 
 @media only screen and (min-width:48em) {
-    body.mappage .main-menu-wrapper {
-        position: fixed
-    }
-    body.mappage #site-header .header {
-        /* display: none; */
-    }
+    body.mappage {
+        .main-menu-wrapper {
+            position: fixed
+        }
+        #site-header .header {
+            /* display: none; */
+        }
 
-    body.mappage footer {
-        display: none;
+        footer {
+            display: none;
+        }
+
+        #fms_pan_zoom {
+            top: 14em!important;
+        }
+
+        #mysociety {
+            padding-top: 7em;
+        }
+
+        #report-a-problem-sidebar {
+            top: 10em;
+
+            .sidebar-notes .plain-list li {
+                font-size: 1em;
+            }
+        }
     }
 
     body.mappage, body.twothirdswidthpage {
@@ -37,18 +55,25 @@
         }
 
     }
-
-    body.mappage #fms_pan_zoom {
-        top: 14em!important;
-    }
 }
 
 @media only screen and (min-width:48em) {
-    body.frontpage #site-header {
-        height: 13em;
+    body.frontpage {
+        #site-header {
+            height: 13em;
 
-        .mobile-header-nav {
-            display: none;
+            .mobile-header-nav {
+                display: none;
+            }
+        }
+
+        #mysociety {
+            margin-top: 9px;
+            padding-top: 24px;
+        }
+
+        #front-main #postcodeForm div {
+            width: 24em;
         }
     }
 
@@ -113,6 +138,8 @@
     .main-menu-wrapper {
         position: absolute;
         height: 2.4em;
+        top: 162px;
+        z-index: 3;
 
         ul {
             margin: 0;
@@ -123,8 +150,6 @@
             padding: 0.5em;
             float: left;
         }
-        top: 160px;
-        z-index: 3;
 
         .main-menu {
             max-width: 966px;
