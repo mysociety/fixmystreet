@@ -33,7 +33,8 @@ h1.main {
 
 #site-header {
     background: $primary;
-    height: 57px;
+    height: 76px;
+    border-top-width: 4px;
 }
 
 // Colour tab to match colour scheme
@@ -79,5 +80,51 @@ h1.main {
                 height: 100%;
             }
         }
+    }
+}
+
+
+.header {
+    background: #004b7b url(img/mobile.jpg) repeat-x;
+}
+
+body > p {
+    margin: 0;
+}
+
+.main-menu ul {
+    padding: 0;
+    margin: 6px;
+    text-align: center;
+
+    li {
+        display: inline-block;
+        list-style: none;
+
+        a, span {
+            padding: 2px 6px;
+            margin: 3px;
+            border-radius: 3px;
+        }
+
+        a {
+            background-color: #00a1de;
+            color: white;
+        }
+
+        span {
+            background-color: #00a1de;
+            color: white;
+        }
+    }
+}
+
+.footer .languages ul {
+    padding: 0;
+    margin: 0;
+
+    li {
+        display: inline-block;
+        float: none !important;
     }
 }

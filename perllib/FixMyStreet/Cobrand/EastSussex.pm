@@ -31,7 +31,7 @@ sub disambiguate_location {
 }
 
 sub example_places {
-    return ( 'BN7 2LZ', 'North Street, Brighton' );
+    return ( 'BN7 2LZ', 'White Hill, Lewes' );
 }
 
 1;
