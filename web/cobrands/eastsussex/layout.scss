@@ -48,9 +48,10 @@
 
     body.mappage, body.twothirdswidthpage {
         .content {
-            margin-top: 8em;
+            margin-top: 15em;
             .sticky-sidebar aside {
-                top: 15em;
+                z-order: 3;
+                top: 16em;
             }
         }
 
