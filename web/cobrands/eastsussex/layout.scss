@@ -21,12 +21,13 @@
         width: initial;
     }
 
+    #site-header .header a.contact {
+        text-decoration: underline;
+    }
+
     body.mappage {
         .main-menu-wrapper {
             position: fixed
-        }
-        #site-header .header {
-            /* display: none; */
         }
 
         footer {
