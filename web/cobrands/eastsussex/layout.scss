@@ -25,6 +25,10 @@
         text-decoration: underline;
     }
 
+    footer {
+        margin-top: 0;
+    }
+
     body.mappage {
         .main-menu-wrapper {
             position: fixed
@@ -76,6 +80,7 @@
         #mysociety {
             margin-top: 9px;
             padding-top: 24px;
+            padding-bottom: 24px;
         }
     }
 
