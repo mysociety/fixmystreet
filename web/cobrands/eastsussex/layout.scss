@@ -17,6 +17,10 @@
 }
 
 @media only screen and (min-width:48em) {
+    .container {
+        width: initial;
+    }
+
     body.mappage {
         .main-menu-wrapper {
             position: fixed
