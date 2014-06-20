@@ -37,8 +37,10 @@ sub general : Path : Args(0) {
     return unless $req->method eq 'POST';
 
     # decide which action to take
-    $c->detach('email_sign_in') if $req->param('email_sign_in')
-        || $c->req->param('name') || $c->req->param('password_register');
+    my $has_password = $req->param('sign_in') || $req->param('password_sign_in');
+    my $has_email = $req->param('email_sign_in') || $req->param('name') || $req->param('password_register');
+
+    $c->detach('email_sign_in') if $has_email && !$has_password;
 
        $c->forward( 'sign_in' )
     && $c->detach( 'redirect_on_signin', [ $req->param('r') ] );
