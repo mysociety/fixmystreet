@@ -80,11 +80,16 @@
 
     body.mappage, body.twothirdswidthpage {
         .content {
-            margin-top: 15em;
+            margin-top: 9em;
+            width: 27em;
             .sticky-sidebar aside {
                 z-order: 3;
                 top: 16em;
             }
+        }
+
+        #site-header {
+            height: 0;
         }
 
     }
@@ -99,12 +104,20 @@
                 display: none;
             }
         }
+    }
 
-        #mysociety {
-            margin-top: 9px;
-            padding-top: 24px;
-            padding-bottom: 24px;
-        }
+    #site-header {
+        height: 10em;
+    }
+
+    #mysociety {
+        margin-top: 9px;
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+
+    .content {
+        width: auto;
     }
 
     #skipped-map {
