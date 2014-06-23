@@ -27,6 +27,29 @@
 
     footer {
         margin-top: 0;
+
+        a {
+            text-decoration: underline;
+        }
+
+        h2 {
+            margin: 0;
+        }
+
+        form.newsletter.form {
+            input#newsletter {
+                display: inline-block;
+            }
+
+            input[type=submit] {
+                background: #1e5b83;
+                text-transform: none;
+            }
+
+            label {
+                font-weight: normal;
+            }
+        }
     }
 
     body.mappage {
