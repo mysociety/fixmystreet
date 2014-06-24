@@ -1141,3 +1141,103 @@ table.table td {
   clear: both;
   padding-top: 0.666em;
   margin-left: 0em; }
+
+.site-footer {
+  width: 100%;
+  clear: left;
+  background: #333333;
+  padding: 32px 0;
+  /**
+   * For IE 6/7 only
+   * Include this rule to trigger hasLayout and contain floats.
+   */ }
+  .site-footer:before, .site-footer:after {
+    content: " ";
+    /* 1 */
+    display: table;
+    /* 2 */ }
+  .site-footer:after {
+    clear: both; }
+  .site-footer {
+    *zoom: 1; }
+  .site-footer .column {
+    /* Use for multi-column grids where all columns are equal width, it gives them equal spacing */
+    float: left;
+    padding-left: 1.5%;
+    padding-right: 1.5%;
+    width: 50%; }
+    .site-footer .column:nth-child(odd), .site-footer .column:first-child {
+      padding-left: 0; }
+    .site-footer .column:nth-child(even), .site-footer .column:last-child {
+      padding-right: 0; }
+    @media (min-width: 30em) {
+      .site-footer .column {
+        /* Use for grids where the columns are different widths */
+        float: left;
+        padding-left: 3%;
+        width: 25%; }
+        .site-footer .column:first-child {
+          padding-left: 0; } }
+    @media (min-width: 56.88889em) {
+      .site-footer .column {
+        /* Use for grids where the columns are different widths */
+        float: left;
+        padding-left: 3%;
+        width: 20%; }
+        .site-footer .column:first-child {
+          padding-left: 0; } }
+  .site-footer .column:last-child h3 {
+    margin-top: 1em; }
+  @media (min-width: 30em) {
+    .site-footer .column:last-child h3 {
+      margin-top: 0; } }
+  .site-footer .central {
+    float: right; }
+    @media (min-width: 30em) {
+      .site-footer .central {
+        /* Use for grids where the columns are different widths */
+        float: left;
+        padding-left: 3%;
+        width: 50%; }
+        .site-footer .central ul {
+          -webkit-column-count: 1;
+          -moz-column-count: 1;
+          -o-column-count: 1;
+          column-count: 1; }
+        .site-footer .central:first-child {
+          padding-left: 0; } }
+    @media (min-width: 40em) {
+      .site-footer .central {
+        /* Use for grids where the columns are different widths */
+        float: left;
+        padding-left: 3%;
+        width: 50%; }
+        .site-footer .central ul {
+          -webkit-column-count: 2;
+          -moz-column-count: 2;
+          -o-column-count: 2;
+          column-count: 2; }
+        .site-footer .central:first-child {
+          padding-left: 0; } }
+    @media (min-width: 56.88889em) {
+      .site-footer .central {
+        /* Use for grids where the columns are different widths */
+        float: left;
+        padding-left: 3%;
+        width: 60%; }
+        .site-footer .central ul {
+          -webkit-column-count: 3;
+          -moz-column-count: 3;
+          -o-column-count: 3;
+          column-count: 3; }
+        .site-footer .central:first-child {
+          padding-left: 0; } }
+  .site-footer h3 {
+    font-size: 1em;
+    font-weight: normal;
+    margin-bottom: 0;
+    color: #888; }
+  .site-footer ul {
+    margin: 0; }
+  .site-footer a {
+    color: #eeeeee; }
