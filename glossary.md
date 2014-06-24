@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Glossary
+title: glossary
 ---
 
 FixMyStreet glossary
@@ -66,7 +66,7 @@ technical information, see
     The <strong>abuse list</strong> is a list of email addresses that are
     banned from using the site for misuse. In our experience, this is rare;
     but, for example, a user who repeatedly posts offensive or vexatious <a
-    href="#report" class="glossary">problem reports</a> may be blocked in this
+    href="#report" class="glossary__link">problem reports</a> may be blocked in this
     way.
     <div class="more-info">
       <p>More information:</p>
@@ -86,12 +86,12 @@ technical information, see
     An <strong>administrator</strong> is a user who has access to the back-end
     admin (so can do things like add or edit <a href="#body"
     class="glossary">bodies</a>, modify <a href="#report"
-    class="glossary">problem reports</a>, and <a href="{{ site.baseurl }}running/users/">manage
+    class="glossary__link">problem reports</a>, and <a href="{{ site.baseurl }}running/users/">manage
     users</a>). An administrator should also have access to the email account
     to which user support emails are sent.
     <p>
       Depending on how the site has been configured, this may be a regular
-      FixMyStreet <a href="#user-account" class="glossary">user</a>. However,
+      FixMyStreet <a href="#user-account" class="glossary__link">user</a>. However,
       often it's an <code>htauth</code> user instead (which is a user managed
       by the webserver, rather than the FixMyStreet application itself).
     </p>
@@ -99,9 +99,9 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
-          See also <strong><a href="#staff-user" class="glossary">staff
+          See also <strong><a href="#staff-user" class="glossary__link">staff
           user</a></strong>, which is a FixMyStreet user who works for a <a
-          href="#body" class="glossary">body</a>.
+          href="#body" class="glossary__link">body</a>.
         </li>
         <li>
           See the <a href="{{ site.baseurl }}running/admin_manual/">Administrator's Manual</a> for
@@ -132,21 +132,21 @@ technical information, see
   </dt>
   <dd>
     FixMyStreet uses <strong>areas</strong> to determine which <a href="#body"
-    class="glossary">bodies</a> are responsible for handling problems at a
+    class="glossary__link">bodies</a> are responsible for handling problems at a
     specific location. When a user clicks on the <a href="#map"
-    class="glossary">map</a>, FixMyStreet finds all the bodies that are responsible
+    class="glossary__link">map</a>, FixMyStreet finds all the bodies that are responsible
     for that area. Technically, an area comprises one or more polygons on a
     map &mdash; either those areas already exist (from <a href="#osm"
-    class="glossary">OpenStreetMap</a>, for example) or you can provide your
+    class="glossary__link">OpenStreetMap</a>, for example) or you can provide your
     own. You can add your own areas to <a href="#mapit"
-    class="glossary">MapIt</a> by drawing them on a map, or importing
+    class="glossary__link">MapIt</a> by drawing them on a map, or importing
     shapefiles from other mapping applications.
     <p>
       The
       <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
       config setting can explicitly list the <em>only</em>
       areas your installation will recognise &mdash; alternatively, you can
-      limit them by <a href="#area-type" class="glossary">area type</a>
+      limit them by <a href="#area-type" class="glossary__link">area type</a>
       instead.
     </p>
     <div class="more-info">
@@ -159,14 +159,14 @@ technical information, see
         <li>
           See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
-          class="glossary">areas</a>.
+          class="glossary__link">areas</a>.
         </li>
         <li>
           See the <a href="http://global.mapit.mysociety.org/">global MapIt
           website</a> for more about the service.
         </li>
         <li>
-          Every area has an <strong><a href="#area-type" class="glossary">area
+          Every area has an <strong><a href="#area-type" class="glossary__link">area
           type</a></strong> which indicates what level of administration
           boundary it represents.
         </li>
@@ -178,8 +178,8 @@ technical information, see
     <a name="area-type">area type</a>
   </dt>
   <dd>
-    The <a href="#area" class="glossary">areas</a> that <a href="#mapit"
-    class="glossary">MapIt</a> returns are administrative boundaries. In
+    The <a href="#area" class="glossary__link">areas</a> that <a href="#mapit"
+    class="glossary__link">MapIt</a> returns are administrative boundaries. In
     addition to each boundary's geometry (that is, its actual shape on the
     map), MapIt also identifies what <strong>area type</strong> it is. The
     area type indicates what level of administrative boundary that area
@@ -194,7 +194,7 @@ technical information, see
       These types' actual values vary depending on the source of the data. For
       example, if you're using our global MapIt, these will look like
       <code>O02</code>, <code>O03</code>, <code>O04</code> and so on (because
-      those are the values <a href="#osm" class="glossary">OpenStreetMap</a>
+      those are the values <a href="#osm" class="glossary__link">OpenStreetMap</a>
       uses, from where global MapIt gets its data). OpenStreetMap's codes get
       higher as the boundaries get more local: <code>O02</code> indicates a
       <em>national boundary</em>, codes <code>O03</code> and above are for
@@ -211,7 +211,7 @@ technical information, see
         <li>
           See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
-          class="glossary">areas</a>.
+          class="glossary__link">areas</a>.
         </li>
         <li>
           See the <a href="http://global.mapit.mysociety.org/">global MapIt
@@ -239,7 +239,7 @@ technical information, see
         <li>
           See <a href="{{ site.baseurl }}customising/fms_and_mapit/">How FixMyStreet uses
           MapIt</a> for more about how bodies relate to <a href="#area"
-          class="glossary">areas</a>.
+          class="glossary__link">areas</a>.
         </li>
       </ul>
     </div>
@@ -263,11 +263,11 @@ technical information, see
           directory structure</a> explained.
         </li>
         <li>
-          If you need to understand more about the framework, see the 
+          If you need to understand more about the framework, see the
           <a href="http://www.catalystframework.org">Catayst project website</a>.
         </li>
         <li>
-          More about  
+          More about
           <a href="{{ site.baseurl }}customising/">customising FixMyStreet</a>.
         </li>
       </ul>
@@ -282,8 +282,8 @@ technical information, see
     user can report, for example, "Pothole", or "Graffiti". The names of these
     categories are displayed in the drop-down menu when the user reports a
     problem. FixMyStreet uses the category, together with the <a href="#area"
-    class="glossary">area</a>, to determine which <a href="#contact"
-    class="glossary">contact</a> will be sent the report.
+    class="glossary__link">area</a>, to determine which <a href="#contact"
+    class="glossary__link">contact</a> will be sent the report.
     <div class="more-info">
       <p>More information:</p>
       <ul>
@@ -344,13 +344,13 @@ technical information, see
     are correct when you install and customise your site.
     <p>
       Note that <code>conf/general.yml</code> is <em>not</em> in the <a
-      href="#git" class="glossary">git repository</a> (it cannot be, because
+      href="#git" class="glossary__link">git repository</a> (it cannot be, because
       it would contain your own private config settings, such as your database
       password). Instead, there is an example file,
       <code>cong/general.yml-example</code> you can
-      copy and edit. If you install using the 
+      copy and edit. If you install using the
        <a href="{{ site.baseurl }}install/install-script/">installation script</a>
-       or the <a href="{{ site.baseurl }}install/ami/">AMI</a>, this file will 
+       or the <a href="{{ site.baseurl }}install/ami/">AMI</a>, this file will
        automatically be created for you.
     </p>
     <div class="more-info">
@@ -373,13 +373,13 @@ technical information, see
     <a name="contact">contact</a>
   </dt>
   <dd>
-    Each <a href="#body" class="glossary">body</a> has one or more
+    Each <a href="#body" class="glossary__link">body</a> has one or more
     <strong>contacts</strong> to which reports are sent. Typically these are
     email addresses (but if you have <a href="#integration"
-    class="glossary">integrated</a> with the body's back-end, these may be
+    class="glossary__link">integrated</a> with the body's back-end, these may be
     codes or IDs used by that instead of email addresses). It's not uncommon
     for a body to have many contacts with the same email address, but with
-    different <a href="#category" class="glossary">categories</a>.
+    different <a href="#category" class="glossary__link">categories</a>.
     <div class="more-info">
       <p>More information:</p>
       <ul>
@@ -396,9 +396,9 @@ technical information, see
   </dt>
   <dd>
     A <strong>council</strong> is an example of a <a href="#body"
-    class="glossary">body</a>. We sometimes use the term because in the UK,
+    class="glossary__link">body</a>. We sometimes use the term because in the UK,
     where we first launched FixMyStreet, the bodies to which the site sends
-    its <a href="#report" class="glossary">problem reports</a> were all called
+    its <a href="#report" class="glossary__link">problem reports</a> were all called
     councils.
   </dd>
 
@@ -407,13 +407,13 @@ technical information, see
   </dt>
   <dd>
     The <strong>dashboard</strong> shows a summary of statistics (numbers of
-    <a href="#report" class="glossary">problem reports</a> by <a href="state"
-    class="glossary">state</a>, and so on) for a single <a href="#body"
-    class="glossary">body</a>.
+    <a href="#report" class="glossary__link">problem reports</a> by <a href="state"
+    class="glossary__link">state</a>, and so on) for a single <a href="#body"
+    class="glossary__link">body</a>.
     <p>
       The dashboard is shown on the FixMyStreet website at
       <code>/dashboard</code>, but can only be accessed by a <a
-      href="#staff-user" class="glossary">staff user</a>.
+      href="#staff-user" class="glossary__link">staff user</a>.
     </p>
   </dd>
 
@@ -422,7 +422,7 @@ technical information, see
   </dt>
   <dd>
     A report or a user can be <strong>flagged</strong> if an <a
-    href="#administrator" class="glossary">administrator</a> wants to mark it
+    href="#administrator" class="glossary__link">administrator</a> wants to mark it
     as for special attention, typically because it may be abusive or
     inappropriate. Flagged items are shown in the admin on their own page
     (<code>/admim/flagged</code>) so can be more easily managed. This is
@@ -433,7 +433,7 @@ technical information, see
       Flagging users is only advisory: it marks them for attention, but does
       not ban them. You can ban a user who persists in abusing your
       FixMyStreet site by adding them to the <a href="#abuse-list"
-      class="glossary">abuse list</a>.
+      class="glossary__link">abuse list</a>.
     </p>
     <div class="more-info">
       <p>More information:</p>
@@ -451,13 +451,13 @@ technical information, see
   </dt>
   <dd>
     The <strong>geocoder</strong> turns the name of a place into a <a
-    href="#long-lat" style="glossary">long-lat</a> position. FixMyStreet then
+    href="#long-lat" style="glossary__link">long-lat</a> position. FixMyStreet then
     uses this to display the appropriate region on the <a href="#map"
-    class="glossary">map</a>.
+    class="glossary__link">map</a>.
     <p>
       FixMyStreet can use the <a href="#osm"
-      class="glossary">OpenStreetMap</a>, Google, or Bing geocoders, or a custom one.
-      The 
+      class="glossary__link">OpenStreetMap</a>, Google, or Bing geocoders, or a custom one.
+      The
       <code><a href="{{ site.baseurl }}customising/config/#geocoder">GEOCODER</a></code>
       setting controls which one your site uses.
     </p>
@@ -480,7 +480,7 @@ technical information, see
     to help get translations into software. We use it throughout FixMyStreet
     so that anywhere English text appears (the default), it can be replaced
     with an appropriate translation in a different language. This presupposes
-    the text has been translated &mdash; the alternative translations are 
+    the text has been translated &mdash; the alternative translations are
     storied in <code>.po</code> files.
     </p>
     <div class="more-info">
@@ -540,9 +540,9 @@ technical information, see
     <a name="integration">integration</a> with bodies' back-end systems
   </dt>
   <dd>
-    By default, FixMyStreet sends <a href="#report" class="glossary">problem
+    By default, FixMyStreet sends <a href="#report" class="glossary__link">problem
     reports</a> by email. The disadvantage of using email is that many <a
-    href="#body" class="glossary">bodies</a> then need to transfer the
+    href="#body" class="glossary__link">bodies</a> then need to transfer the
     information in the email into their own back-end systems, such as their
     works database or customer management system. But FixMyStreet can be
     <strong>integrated</strong> with those back ends so the data is passed
@@ -565,7 +565,7 @@ technical information, see
     </ol>
     <p>
       Integration is often related to <a href="#cobrand"
-      class="glossary">cobranding</a>, which is how you can customise the look
+      class="glossary__link">cobranding</a>, which is how you can customise the look
       and behaviour of your FixMyStreet installation.
     </p>
     <div class="more-info">
@@ -577,7 +577,7 @@ technical information, see
           for Councils</a> for mySociety's commercial support for UK councils
         </li>
         <li>
-          <a href="#open311" class="glossary">Open311</a> is the easiest form
+          <a href="#open311" class="glossary__link">Open311</a> is the easiest form
           of integration.
         </li>
       </ul>
@@ -589,8 +589,8 @@ technical information, see
   </dt>
   <dd>
     <strong>KML</strong> is an open standard XML format for geographic data.
-    <a href="#mapit" class="glossary">MapIt</a> can read KML files. If you need
-    to provide your own <a href="#area" class="glossary">admin boundary</a>
+    <a href="#mapit" class="glossary__link">MapIt</a> can read KML files. If you need
+    to provide your own <a href="#area" class="glossary__link">admin boundary</a>
     data, you can use common GIS software (such as Google Earth) to create a
     KML "shape file" containing the boundaries, and then import them to Mapit.
     <div class="more-info">
@@ -619,8 +619,8 @@ technical information, see
   <dd>
     A <strong>lat-long</strong> is a pair of coordinates (latitude and
     longitude) that describe a location. FixMyStreet sends a lat-long to <a
-    href="#mapit" class="glossary">MapIt</a> when the user clicks on the <a
-    href="#map" class="glossary">map</a>.
+    href="#mapit" class="glossary__link">MapIt</a> when the user clicks on the <a
+    href="#map" class="glossary__link">map</a>.
     <p>
       Example lat-long for London, UK: <code>51.5072759,-0.1276597</code>
     </p>
@@ -662,7 +662,7 @@ technical information, see
   <dd>
     FixMyStreet displays a <strong>map</strong> so users can easily pinpoint
     the location of the problem they are reporting. By default, these are <a
-    href="#osm" class="glossary">OpenStreetMap</a> tiles displayed using
+    href="#osm" class="glossary__link">OpenStreetMap</a> tiles displayed using
     OpenLayers, but you can configure your installation to use other maps,
     including your own custom tiles.
     <div class="more-info">
@@ -684,12 +684,12 @@ technical information, see
   </dt>
   <dd>
     <strong>MapIt</strong> is a web service that manages <a href="#area"
-    class="glossary">administrative boundary areas</a>. More specifically,
+    class="glossary__link">administrative boundary areas</a>. More specifically,
     FixMyStreet uses this to determine which areas (and hence which <a
-    href="#body" class="glossary">bodies</a>) cover any given location.
+    href="#body" class="glossary__link">bodies</a>) cover any given location.
     <p>
       In a nutshell, MapIt accepts a <a href="#latlong"
-      class="glossary">lat-long</a> position, and returns a list of areas.
+      class="glossary__link">lat-long</a> position, and returns a list of areas.
     </p>
     <p>
       Like FixMyStreet, MapIt is a product by <a
@@ -731,11 +731,11 @@ technical information, see
     <strong>Open311</strong> is an open standard for making online requests
     for a civic service (such as fixing a pothole). FixMyStreet implements
     Open311 so it's easy to <a href="#integration"
-    class="glossary">integrate</a> with <a href="#body"
-    class="glossary">bodies</a> whose back-ends also support it.
+    class="glossary__link">integrate</a> with <a href="#body"
+    class="glossary__link">bodies</a> whose back-ends also support it.
     <p>
       Open311 is effectively a more efficient alternative to email as a <a
-      href="#send-method" class="glossary">send method</a>.
+      href="#send-method" class="glossary__link">send method</a>.
     </p>
     <div class="more-info">
       <p>More information:</p>
@@ -764,7 +764,7 @@ technical information, see
   <dd>
     <strong>OpenStreetMap</strong> is a project that creates and distributes
     free geographic data for the world, with an open license. By default,
-    FixMyStreet's <a href="#map" class="glossary">map</a> uses OSM maps.
+    FixMyStreet's <a href="#map" class="glossary__link">map</a> uses OSM maps.
     <div class="more-info">
       <p>More information:</p>
       <ul>
@@ -789,7 +789,7 @@ technical information, see
   </dt>
   <dd>
     Some external applications might create a report by first uploading a photograph
-    and capturing a description, without identifying the location. This is a 
+    and capturing a description, without identifying the location. This is a
     <strong>partial report</strong> and is not shown until it has been completed.
     <p>
       <em>FixMyStreet itself does not create partial reports</em>, because all problem
@@ -801,8 +801,8 @@ technical information, see
         <li>
           Remember that FixMyStreet uses the location to
           <a href="{{ site.baseurl }}fms_and_mapit/">determine where to send reports</a>,
-          so a partial report (having no location) effectively has no 
-          <a href="#body" class="glossary">body</a> responsible for it.
+          so a partial report (having no location) effectively has no
+          <a href="#body" class="glossary__link">body</a> responsible for it.
         </li>
       </ul>
     </div>
@@ -815,7 +815,7 @@ technical information, see
   <dd>
     When a FixMyStreet user reports a problem (for example, a pothole or a
     broken streetlight), that <strong>problem report</strong> is sent to the
-    <a href="#body" class="glossary">body</a> responsible. Problem reports
+    <a href="#body" class="glossary__link">body</a> responsible. Problem reports
     remain unpublished until the user confirms them; they may also be hidden
     by an administrator. In both cases, the report is still stored in
     FixMyStreet's back-end database.
@@ -842,14 +842,14 @@ technical information, see
   </dt>
   <dd>
     The <strong>send method</strong> is the way that a <a href="#report"
-    class="glossary">problem report</a> is sent to the <a href="#body"
-    class="glossary">body</a> responsible for fixing it. <em>By default, the
+    class="glossary__link">problem report</a> is sent to the <a href="#body"
+    class="glossary__link">body</a> responsible for fixing it. <em>By default, the
     send method is email.</em>
     <p>
       Alternatives to email are only available if some <a href="#integration"
-      class="glossary">integration</a> with the target body's back-end is
+      class="glossary__link">integration</a> with the target body's back-end is
       available (for example, if they are using <a href="#open311"
-      class="glossary">Open311</a>).
+      class="glossary__link">Open311</a>).
     </p>
     <div class="more-info">
       <p>More information:</p>
@@ -870,8 +870,8 @@ technical information, see
     <strong>states</strong> in its lifetime. Problems typically start as
     <em>unconfirmed</em>, then <em>open</em>, then <em>fixed</em>. There are
     other states, including those that can only be allocated by a <a
-    href="#staff-user" class="glossary">staff user</a> or an <a
-    href="#administrator" class="glossary">administrator</a>.
+    href="#staff-user" class="glossary__link">staff user</a> or an <a
+    href="#administrator" class="glossary__link">administrator</a>.
     <div class="more-info">
       <p>More information:</p>
       <ul>
@@ -888,20 +888,20 @@ technical information, see
   </dt>
   <dd>
     A <strong>staff user</strong> is someone on FixMyStreet who works for a <a
-    href="#body" class="glossary">body</a>. This means their <a href=
-    "#user-account" class="glossary">user account</a> is marked as belonging
+    href="#body" class="glossary__link">body</a>. This means their <a href=
+    "#user-account" class="glossary__link">user account</a> is marked as belonging
     to that body. This differentiates such accounts from normal users, who are
     members of the public.
     <p>
       A staff user is <strong>not</strong> the same thing as an <a
-      href="#administrator" class="glossary">administrator</a>. A staff user
+      href="#administrator" class="glossary__link">administrator</a>. A staff user
       logs into the public website, like a normal user, but has additional
       powers over some reports. An administrator logs into the private admin
       and has access to how the whole FixMyStreet site is run.
     </p>
     <p>
       A staff user has additional powers that <em>only apply to <a
-      href="#report" class="glossary">problem reports</a> for their own
+      href="#report" class="glossary__link">problem reports</a> for their own
       body</em>, such as:
     </p>
     <ul>
@@ -913,21 +913,21 @@ technical information, see
         <em>not fixed</em>
       </li>
       <li>
-        viewing a <a href="#dashboard" class="glossary">dashboard</a> showing
+        viewing a <a href="#dashboard" class="glossary__link">dashboard</a> showing
         the body's statistics
       </li>
     </ul>
     <p>
       Actually, the distinction between an administrator and a staff user, and
       the powers staff users have, can vary depending on your installation's <a
-      href="#cobrand" class="glossary">cobrand</a>.
+      href="#cobrand" class="glossary__link">cobrand</a>.
     </p>
     <div class="more-info">
       <p>More information:</p>
       <ul>
         <li>
           compare <strong>staff user</strong> to <strong><a href="#administrator"
-          class="glossary">administrator</a></strong>
+          class="glossary__link">administrator</a></strong>
         </li>
         <li>
           See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
@@ -946,16 +946,16 @@ technical information, see
       problem. The surveys encourage the users who reported each problem to
       indicate whether or not the problem has been fixed (if it hasn't already
       been marked as such). These surveys help you collect data on the performance
-      of the <a href="#bodies" class="glossary">bodies</a>. 
+      of the <a href="#bodies" class="glossary__link">bodies</a>.
     <div class="more-info">
       <p>More information:</p>
       <ul>
         <li>
           Survey data is available to <a href="#administrator"
-          class="glossary">administrators</a> on the Survey page of the admin
+          class="glossary__link">administrators</a> on the Survey page of the admin
         </li>
         <li>
-          Survey <a href="#template" class="glossary">templates</a> are in
+          Survey <a href="#template" class="glossary__link">templates</a> are in
           <code>/templates/email/default/questionnaire.txt</code> and
           <code>/templates/web/default/questionnaire</code>
         </li>
@@ -976,7 +976,7 @@ technical information, see
     <strong>templates</strong>. If you want to customise your installation
     beyond just changing the colours and logo (that is, using CSS), you can
     add new templates for your own <a href="#cobrand"
-    class="glossary">cobrand</a>. You only need to create templates that are
+    class="glossary__link">cobrand</a>. You only need to create templates that are
     different from the default ones.
     <p>
       Templates are in the <code>templates/web</code> and
@@ -1014,7 +1014,7 @@ technical information, see
     <p>
       Tokens are typically used to confirm the final part (authorisation) of an
       action, and are therefore often related to a specific <a href="#report"
-      class="glossary">report</a>. FixMyStreet generally doesn't delete tokens
+      class="glossary__link">report</a>. FixMyStreet generally doesn't delete tokens
       after they've been used because (as they often live on in email inboxes)
       people sometimes click on old confirmation links to access reports
       &mdash; so the mapping between token and report is still useful.
@@ -1028,7 +1028,7 @@ technical information, see
           common library.
         </li>
         <li>
-          For details about authorisation and how sessions work, see 
+          For details about authorisation and how sessions work, see
           <a href="{{ site.baseurl }}running/users/#sessions">more about users</a>.
         </li>
       </ul>
@@ -1040,16 +1040,16 @@ technical information, see
   </dt>
   <dd>
     Anyone can add an <strong>update</strong> to an existing <a href="#report"
-    class="glossary">problem report</a>. The update can contain a message, a
+    class="glossary__link">problem report</a>. The update can contain a message, a
     picture, and even change the report's <a href="#state"
-    class="glossary">state</a>.
+    class="glossary__link">state</a>.
     <p>
       For example, someone can leave an update on a pothole report to say, "I
       think the hole is getting bigger!", and add a photograph. Or they can
       mark the problem as fixed.
     </p>
     <p>
-      <a href="#staff-user" class="glossary">Staff users</a> can add more
+      <a href="#staff-user" class="glossary__link">Staff users</a> can add more
       specific states if they update a problem that belongs to the body they
       work for.
     </p>
@@ -1058,7 +1058,7 @@ technical information, see
       <ul>
         <li>
           FixMyStreet supports <strong><a href="#integration"
-          class="glossary">integration</a></strong>, which can enable
+          class="glossary__link">integration</a></strong>, which can enable
           automatic updates whenever a body fixes a problem.
         </li>
       </ul>
@@ -1071,7 +1071,7 @@ technical information, see
   <dd>
     FixMyStreet creates a <strong>user account</strong> for every user,
     identified by the user's email address. An <a href="#administrator"
-    class="glossary">administrator</a> can change the email address, and the
+    class="glossary__link">administrator</a> can change the email address, and the
     name, of a user account. Optionally, a user account can have a password
     associated with it too.
     <div class="more-info">
@@ -1082,9 +1082,9 @@ technical information, see
           users.
         </li>
         <li>
-          A <strong><a href="#staff-user" class="glossary">staff
+          A <strong><a href="#staff-user" class="glossary__link">staff
           user</a></strong> is one whose user account is marked as belonging
-          to a <a href="#body" class="glossary">body</a>.
+          to a <a href="#body" class="glossary__link">body</a>.
         </li>
       </ul>
     </div>
