@@ -276,29 +276,7 @@
     }
 }
 
-.breadcrumb {
-    @extend .unstyled-list;
-    padding: $base-spacing-unit /4 0;
-    li {
-        display: inline;
-        font-size: 0.75em;
-        &:after {
-            content: '/';
-            margin: 0 0.33em;
-            color: $colour_light_grey;
-        }
-        a {
-            color: $colour_dark_grey
-        }
-    }
-
-}
-
-
-
 @import 'owl_carousel';
-
-
 
 /**
  * Owl Additions

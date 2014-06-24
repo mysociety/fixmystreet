@@ -349,7 +349,7 @@ table {
   margin: 0 auto;
   position: relative; }
 
-.unstyled-list, .unstyled, .sidebar ul, .list-of-blog-posts, .definitions {
+.unstyled-list, .unstyled, .site-footer ul, .breadcrumb, .sidebar ul, .list-of-blog-posts, .definitions {
   margin-left: 0;
   padding-left: 0;
   list-style: none outside none; }
