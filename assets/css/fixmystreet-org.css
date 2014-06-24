@@ -25,6 +25,10 @@
 .text--center {
   text-align: center; }
 
+.site-title {
+  height: 45px;
+  width: 405px; }
+
 @media (min-width: 56.88889em) {
   body.home .site-title {
     margin: 0.5em auto;

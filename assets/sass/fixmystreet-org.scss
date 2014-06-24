@@ -1,6 +1,12 @@
 @import '../../theme/sass/variables';
 @import '../../theme/sass/mixins';
+
 @import 'config';
+
+.site-title {
+    height: $logo_height * 0.75;
+    width: $logo_width * 0.75;
+}
 
 // Have a larger heading on the front page on larger screens
 @media (min-width: $large-screen) {
