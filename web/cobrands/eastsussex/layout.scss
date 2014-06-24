@@ -198,12 +198,8 @@
         background: #004b7b url(img/mobile.jpg) repeat-x !important;
     }
 
-    body > p:first-child {
+    body > p {
         margin: 0;
-
-        + p {
-            margin: 0;
-        }
     }
     
     #site-header {
