@@ -645,72 +645,6 @@ table {
 .type-csharp .highlight .sc {
   color: #a31515; }
 
-/**
- *  Core Owl Carousel CSS File
- *  v1.3.2
- */
-/* clearfix */
-.owl-carousel .owl-wrapper:after {
-  content: ".";
-  display: block;
-  clear: both;
-  visibility: hidden;
-  line-height: 0;
-  height: 0; }
-
-/* display none until init */
-.owl-carousel {
-  display: none;
-  position: relative;
-  width: 100%;
-  -ms-touch-action: pan-y; }
-
-.owl-carousel .owl-wrapper {
-  display: none;
-  position: relative;
-  -webkit-transform: translate3d(0px, 0px, 0px); }
-
-.owl-carousel .owl-wrapper-outer {
-  overflow: hidden;
-  position: relative;
-  width: 100%; }
-
-.owl-carousel .owl-wrapper-outer.autoHeight {
-  -webkit-transition: height 500ms ease-in-out;
-  -moz-transition: height 500ms ease-in-out;
-  -ms-transition: height 500ms ease-in-out;
-  -o-transition: height 500ms ease-in-out;
-  transition: height 500ms ease-in-out; }
-
-.owl-carousel .owl-item {
-  float: left; }
-
-.owl-controls .owl-page,
-.owl-controls .owl-buttons div {
-  cursor: pointer; }
-
-.owl-controls {
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
-
-/* mouse grab icon */
-.grabbing {
-  cursor: url(grabbing.png) 8 8, move; }
-
-/* fix */
-.owl-carousel .owl-wrapper,
-.owl-carousel .owl-item {
-  -webkit-backface-visibility: hidden;
-  -moz-backface-visibility: hidden;
-  -ms-backface-visibility: hidden;
-  -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
-  -ms-transform: translate3d(0, 0, 0); }
-
 *, *:before, *:after {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -867,8 +801,7 @@ ul {
   display: block;
   background-position: top left;
   background-repeat: no-repeat;
-  background-image: url("../img/fms-platform-logo.svg");
-  background-size: 540px 60px; }
+  background-image: url("../img/fms-platform-logo.svg"); }
 
 .site-header {
   border-top: 0.375em solid #424242;
@@ -888,15 +821,9 @@ ul {
         padding-left: 0; } }
 
 .main-content-column-full-width {
-  /* Use for multi-column grids where all columns are equal width, it gives them equal spacing */
   float: left;
-  padding-left: 1.5%;
-  padding-right: 1.5%;
+  padding: 0;
   width: 100%; }
-  .main-content-column-full-width:nth-child(odd), .main-content-column-full-width:first-child {
-    padding-left: 0; }
-  .main-content-column-full-width:nth-child(even), .main-content-column-full-width:last-child {
-    padding-right: 0; }
 
 .main-content {
   background: #fff;
@@ -920,6 +847,18 @@ ul {
     width: 25%; }
     .secondary-content-column:first-child {
       padding-left: 0; } }
+
+.breadcrumb {
+  padding: 8px 0; }
+  .breadcrumb li {
+    display: inline;
+    font-size: 0.75em; }
+    .breadcrumb li:after {
+      content: '/';
+      margin: 0 0.33em;
+      color: #e4e3dd; }
+    .breadcrumb li a {
+      color: #787774; }
 
 .sidebar ul {
   -webkit-column-count: 2;
