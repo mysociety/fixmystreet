@@ -43,8 +43,8 @@ one it is not necessary to do the other.
      <strong>reports are injected directly into the back-end</strong>
      <br>
      so staff don't have to copy-and-paste from emails &mdash; furthermore,
-     if the body returns its own reference then FixMyStreet can publish
-     it
+     if the body returns its own reference for the report, then FixMyStreet
+     can publish it
   </li>
   <li>
      <strong>status changes on the back-end propogate to FixMyStreet</strong>
@@ -92,8 +92,9 @@ into back-end:
 <img src="/assets/img/fms_integration_1.png">
 
 
-If the body's server is already Open311 compliant, you can switch on the first
-stage of integration -- which puts the problem report directly into the body's
+If the body's server is already <a href="{{site.baseurl }}glossary/#open311"
+class="glossary__link">Open311</a> compliant, you can switch on the first stage
+of integration -- which puts the problem report directly into the body's
 back-end system instead of emailing it -- just by setting the send method (for
 the body, or for specific categories) to Open311.
 
@@ -108,7 +109,7 @@ address.
 If you want to have the problem reports for some categories to be integrated
 into their body's back-end, but continue to send others by email, set the 
 body's send method as above, but also enable **contacts can be devolved**.
-Now you can set speicific contact's *send methods* to `email`, which will
+Now you can set specific contacts' *send methods* to `email`, which will
 override the body's send method.
 
 ### Passing external IDs between the two systems
@@ -127,13 +128,13 @@ send-reports code to see how some cobrands add it.
 
 ### What if the back-end system is not Open311 compliant?
 
-If the body you want to integrate wih does not yet support the Open311 standard,
+If the body you want to integrate with does not yet support the Open311 standard,
 you can still integrate with it, but it takes a little more work. If the back-end
 offers an alternative way to post new problem reports into it, then you'll need to
 code it. Typically this will mean adding a custom Perl module to 
 `perlib/FixMyStreet/SendReport`.
 
-However, we **strongly recommend* you try to implement the Open311 standard
+However, we *strongly recommend* you try to implement the Open311 standard
 instead. Of course, you won't be able to change the back-end system (often
 these are large, proprietary and inflexible systems), but, with the cooperation
 of the body's IT team, you can implement a shiv that makes it behave like one.
@@ -196,11 +197,11 @@ Council") -- if necessary you can create a user just for this purpose at
 The mechanism we use for propogating fixes (and other status changes) from the
 back-end to the FixMyStreet site is deliberately light on the body. That is,
 once the body has implemented the update table (or its equivalent), FixMyStreet
-is reponsible for polling the back-end -- there's no requirement for the body's
-system to do anything other than respond to these request. Furthermore, when it
+is responsible for polling the back-end -- there's no requirement for the body's
+system to do anything other than respond to these requests. Furthermore, when it
 does so, it uses the back-end's own reference (stored in FixMyStreet's database
 as the `external_id`) to identify problem reports, so there is no requirement
-to use the FixMyStreet ID. Because FixMyStreet polls reqularly (typically
+to use the FixMyStreet ID. Because FixMyStreet polls regularly (typically
 every 15 minutes thoughout the day, with a single 24-hour mop-up once during
 the night), any problems connecting or tracking which updates have been picked
 up are handled at the FixMyStreet end.
