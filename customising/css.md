@@ -52,7 +52,7 @@ any new HTML or CSS*. We know that you'll want to change more than just the
 default colours: but this is the best way to start.
 
 Once you've done this, you'll have your own <a href="{{ site.baseurl }}glossary/#cobrand"
-class="glossary">cobrand</a>, and can start changing other stylesheets and
+class="glossary__link">cobrand</a>, and can start changing other stylesheets and
 templates in the same way.
 
 
@@ -257,12 +257,12 @@ Remember that *all* you've done here is change the colours, **using the
 existing default CSS and HTML**. Of course any and all of this can be
 overridden (by overriding CSS files and overriding the bits of HTML that you
 want to change in the <a href="{{ site.baseurl }}glossary/#template"
-class="glossary">templates</a>) but this is just so you can get going.
+class="glossary__link">templates</a>) but this is just so you can get going.
 
 ## Next steps...
 
 Now you have your own cobrand, adding your own HTML <a
-href="{{ site.baseurl }}glossary/#template" class="glossary">templates</a> is straightforward.
+href="{{ site.baseurl }}glossary/#template" class="glossary__link">templates</a> is straightforward.
 
 Please see our separate page on [customising templates]({{ site.baseurl }}customising/templates/).
 

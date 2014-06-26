@@ -8,7 +8,7 @@ title: Admin boundaries
 <p class="lead">
     When you set up FixMyStreet, you usually need to provide <strong>admin boundaries</strong>
     for each of the 
-    <a href="{{ site.baseurl }}glossary/#body" class="glossary">bodies</a>
+    <a href="{{ site.baseurl }}glossary/#body" class="glossary__link">bodies</a>
     you'll be sending reports to. If you're lucky, the boundaries might already
     be available. If not, you'll have to make them. This page explains your
     options.
@@ -36,7 +36,7 @@ been put somewhere that is *not* covered by any bodies.
 FixMyStreet finds all the bodies that are associated with the area (or areas)
 that the pin is inside -- those are the bodies to whom the report might be sent.
 Which of these bodies is actually chosen depends on the 
-<a href="{{ site.baseurl }}glossary/#category" class="glossary">category</a>
+<a href="{{ site.baseurl }}glossary/#category" class="glossary__link">category</a>
 the user selects when they complete their problem report.
 
 ## Boundaries are independent of your maps!
@@ -59,7 +59,7 @@ list when you create or edit the body.
 If the bodies you are going to be sending reports to are local government
 departments, it's possible that this data already exists. We use the admin
 boundary data from 
-<a href="{{ site.baseurl }}glossary/#osm" class="glossary">OpenStreetMap</a>,
+<a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a>,
 and many countries' data is already available. If that's the case for you, then
 this is going to be easy! You just have to identify the areas you need, and
 tell FixMyStreet to ignore all the others.
@@ -176,7 +176,7 @@ Use this type of boundary if you:
       like this, so &mdash; especially if you are just doing this as a probationary
       trial &mdash; we may be able to host this for you (note though that we do
       rate-limit calls to MapIt). Either send us 
-      <a href="{{ site.baseurl }}glossary/#kml" class="glossary">KML shape files</a>,
+      <a href="{{ site.baseurl }}glossary/#kml" class="glossary__link">KML shape files</a>,
       or if you can't do that, maybe a clear image of the map with the boundary
       drawn on it for us to copy.
     </p>
@@ -219,7 +219,7 @@ Use this type of boundary if you:
     <p>
       Same as previous example: either set up your own instance of MapIt, or ask to
       have your boundaries added to our custom one. If you want us to host it, we'll
-      need <a href="{{ site.baseurl }}glossary/#kml" class="glossary">KML shape files</a>
+      need <a href="{{ site.baseurl }}glossary/#kml" class="glossary__link">KML shape files</a>
       or a graphic showing the boundary clearly shown so we can copy it. 
     </p>
     <p>
@@ -259,7 +259,7 @@ Use this type of boundary if:
   <dd>
     <p>
       Start by finding the <a href="{{ site.baseurl }}glossary/#latlong"
-      class="glossary">lat-long</a> of some of the places you want to cover,
+      class="glossary__link">lat-long</a> of some of the places you want to cover,
       and look them up on <a href="http://global.mapit.mysociety.org">global
       MapIt</a> (or maybe the <a href="http://mapit.mysociety.org">UK one</a>).
       If you see the "Areas covering this point" include the admin
@@ -434,7 +434,7 @@ this data into a MapIt server and use that.
       But if you can't do that, or the boundary data you have is not
       definitive, you can create your own. Use any good GIS software to plot
       the boundaries accurately, and then export it as
-      <a href="{{ site.baseurl }}glossary/#kml" class="glossary">KML shape files</a>.
+      <a href="{{ site.baseurl }}glossary/#kml" class="glossary__link">KML shape files</a>.
       MapIt can import these, so you can then either run your own MapIt
       instance, or ask us to add it to our custom one.
     </p>

@@ -7,30 +7,30 @@ author: dave
 # How FixMyStreet assigns reports to bodies
 
 <p class="lead">
-  When you add a <a href="{{ site.baseurl }}glossary/#body" class="glossary">body</a>
-  to FixMyStreet, you specify which <a href="{{ site.baseurl }}glossary/#area" class="glossary">areas</a>
+  When you add a <a href="{{ site.baseurl }}glossary/#body" class="glossary__link">body</a>
+  to FixMyStreet, you specify which <a href="{{ site.baseurl }}glossary/#area" class="glossary__link">areas</a>
   it covers. The areas are typically defined by administrative boundaries: these
   are <em>not</em> part of FixMyStreet, but are made available through our
-  service called <a href="{{ site.baseurl }}glossary/#mapit" class="glossary">MapIt</a>.
+  service called <a href="{{ site.baseurl }}glossary/#mapit" class="glossary__link">MapIt</a>.
 </p>
 
 Note that MapIt tells FixMyStreet what administrative boundaries a point lies
 within: it does not actually draw the maps (by default, FixMyStreet uses
-<a href="{{ site.baseurl }}glossary/#osm" class="glossary">OpenStreetMap</a> for that).
+<a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a> for that).
 
 ## How this works
 
 When someone places a pin on the FixMyStreet
-<a href="{{ site.baseurl }}glossary/#map" class="glossary">map</a>
+<a href="{{ site.baseurl }}glossary/#map" class="glossary__link">map</a>
 to report a problem, FixMyStreet sends the 
-<a href="{{ site.baseurl }}glossary/#latlong" class="glossary">lat-long</a>
+<a href="{{ site.baseurl }}glossary/#latlong" class="glossary__link">lat-long</a>
 coordinates of that position to MapIt. MapIt responds with a list of the areas
 that the pin lies within. FixMyStreet then looks in its own database to find
 all the bodies that cover that area, and the
-<a href="{{ site.baseurl }}glossary/#contact" class="glossary">contacts</a>
+<a href="{{ site.baseurl }}glossary/#contact" class="glossary__link">contacts</a>
 (which are usually email addresses) that you have added for each of
 those bodies. Because each contact is associated with a
-<a href="{{ site.baseurl }}glossary/#category" class="glossary">category</a>
+<a href="{{ site.baseurl }}glossary/#category" class="glossary__link">category</a>
 of problem (for example, "Potholes" or "Graffiti"), FixMyStreet can build a
 list of all the problem categories that *can* be reported at this location. In
 fact, this list appears as the drop-down menu ("Pick a category") on the

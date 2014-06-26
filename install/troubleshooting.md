@@ -33,7 +33,7 @@ title: Installation troubleshooting
 ### locale: must be installed
 
 By default, FixMyStreet uses the `en_GB.UTF-8` 
-<a href="{{ site.baseurl }}glossary/#locale" class="glossary">locale</a>.
+<a href="{{ site.baseurl }}glossary/#locale" class="glossary__link">locale</a>.
 If it is not installed then it may not start. You need this locale on your
 system even if you're planning on running your site in a different language.
 
@@ -50,7 +50,7 @@ Check to see what locales your system currently supports with:
 ### Template caching
 
 FixMyStreet caches compiled 
-<a href="{{ site.baseurl }}glossary/#template" class="glossary">templates</a>
+<a href="{{ site.baseurl }}glossary/#template" class="glossary__link">templates</a>
 alongside the source files, so the `templates/web/` directory needs to be writable
 by the process that is running FixMyStreet.
 

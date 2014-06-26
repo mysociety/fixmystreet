@@ -205,7 +205,7 @@ you're doing is [customising your installation](/customising).
       </dt>
       <dd class="last">
         <p>
-          <em>code for implementing FixMyStreet's <a href="{{ site.baseurl }}glossary/#open311" class="glossary">Open311</a> functionality</em>
+          <em>code for implementing FixMyStreet's <a href="{{ site.baseurl }}glossary/#open311" class="glossary__link">Open311</a> functionality</em>
         </p>
       </dd>
     </dl>

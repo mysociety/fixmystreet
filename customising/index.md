@@ -16,7 +16,7 @@ title: Customising
 ## Your own cobrand
 
 Whatever you change, you'll almost certainly need to create a
-<a href="{{ site.baseurl }}glossary/#cobrand" class="glossary">cobrand</a>,
+<a href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>,
 which is the mechanism FixMyStreet uses to let you deviate from its default
 appearance and behaviour.
 

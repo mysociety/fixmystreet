@@ -12,7 +12,7 @@ run a site in multiple languages. <strong>Work in progress.</strong></p>
 ## Setup
 
 The translations for most FixMyStreet strings are stored as standard 
-<a href="{{ site.baseurl }}glossary/#gettext" class="glossary">gettext</a>
+<a href="{{ site.baseurl }}glossary/#gettext" class="glossary__link">gettext</a>
 files, in `FixMyStreet.po` files under `locale/<lang>/LC_MESSAGES/`. A
 few full pages, such as the FAQ, and emails, are stored separately in the
 templates directory and should be translated by creating new templates in your

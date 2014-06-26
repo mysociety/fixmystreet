@@ -318,7 +318,7 @@ The following are all the configuration settings that you can change in `config/
         Remember that if you want your site to run in languages other than
         English, you'll also need to check that the translations are 
         available, and your system supports the appropriate
-        <a href="{{ site.baseurl }}glossary/#locale" class="glossary">locales</a>.
+        <a href="{{ site.baseurl }}glossary/#locale" class="glossary__link">locales</a>.
       </li>
     </ul>
     <p>
@@ -500,7 +500,7 @@ LANGUAGES:
     if you are using our global MapIt service.
     <p>
       Global MapIt uses <a href="{{ site.baseurl }}glossary/#osm"
-      class="glossary">OpenStreetMap</a> data. From time to time we import the latest
+      class="glossary__link">OpenStreetMap</a> data. From time to time we import the latest
       data in order to pull in newly-added boundaries, or reflect changes to existing
       ones. When this happens, the area IDs may change, which means the values in your
       <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code> might no longer
@@ -531,7 +531,7 @@ LANGUAGES:
           MapIt's generation <code>4</code> for 
           <a href="http://global.mapit.mysociety.org/area/507455.html?generation=4">Thailand's national border</a>
           (hence <code>507455</code> and
-          <a href="{{ site.baseurl }}glossary/#area-type" class="glossary">area type</a> <code>O02</code>):
+          <a href="{{ site.baseurl }}glossary/#area-type" class="glossary__link">area type</a> <code>O02</code>):
 <pre>MAPIT_URL: http://global.mapit.mysociety.org/
 MAPIT_TYPES: ['O02']
 MAPIT_ID_WHITELIST: [507455]
@@ -577,13 +577,13 @@ MAPIT_ID_GENERATION: 4
     <a name="geocoder"><code>GEOCODER</code></a>
   </dt>
   <dd>
-    Which <a href="{{ site.baseurl }}glossary/#geocoder" class="glossary">geocoder service</a> to use to look up results, for
+    Which <a href="{{ site.baseurl }}glossary/#geocoder" class="glossary__link">geocoder service</a> to use to look up results, for
     example, from front page "Enter your location" searches.
     <p>
     Possible choices are 
     <code>Google</code>, <code>Bing</code>, or <code>OSM</code>.
     By default, FixMyStreet will use <code>OSM</code>, the 
-    <a href="{{ site.baseurl }}glossary/#osm" class="glossary">OpenStreetMap</a> 
+    <a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a> 
     geocoder.
     </p>
     <p>
@@ -650,7 +650,7 @@ MAPIT_ID_GENERATION: 4
   </dt>
   <dd>
     This setting provides parameters that are included in 
-    <a href="{{ site.baseurl}}glossary/#geocoder" class="glossary">geocoding</a> requests, to hopefully
+    <a href="{{ site.baseurl}}glossary/#geocoder" class="glossary__link">geocoding</a> requests, to hopefully
     return more useful results. The options that will be applied vary depending
     on which geocoder you are using (although unwanted options will be ignored,
     so you can specify all of them, which might be convenient if you change
@@ -711,7 +711,7 @@ GEOCODING_DISAMBIGUATION:
   <dd>
     The type of map you want to use. If left blank, the default is 
     <code>OSM</code> for 
-    <a href="{{ site.baseurl }}glossary/#osm" class="glossary">OpenStreetMap</a>.
+    <a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a>.
     Other options are <code>GoogleOL</code> for Google Open Layers,
     and other UK-specific values, including <code>FMS</code>
     for UK <a href="http://www.fixmystreet.com">FixMyStreet</a>.
@@ -734,7 +734,7 @@ GEOCODING_DISAMBIGUATION:
   </dt>
   <dd>
     FixMyStreet uses a templating 
-    <a href="{{ site.baseurl }}glossary/#cobrand" class="glossary">cobrand</a>
+    <a href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>
     system to provide different looks (and behaviour) for
     different installations. For example, if you create a cobrand
     called <code>moon</code>, then FixMyStreet will look for templates in the
@@ -938,7 +938,7 @@ ALLOWED_COBRANDS:
     not usually use this, so you can leave it blank.    
     <p>
       Providing a URL does not automatically enable the service &mdash; your <a
-      href="{{ site.baseurl }}glossary/#cobrand" class="glossary">cobrand</a>
+      href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>
       must be explicitly coded to use it. Contact us if you need to use Message
       Manager with your FixMyStreet site.
     </p>

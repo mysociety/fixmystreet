@@ -37,7 +37,7 @@ Welcome to FixMyStreet Platform
       Our <a href="/running">information for administrators</a> covers
       everything you need to do once your FixMyStreet site is up and running.
       Help is available on everything from defining <a href="/glossary/#area"
-      class="glossary">admin boundaries</a> to writing common user support
+      class="glossary__link">admin boundaries</a> to writing common user support
       emails.
     </p>
   </div>

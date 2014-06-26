@@ -6,10 +6,10 @@ author: dave
 
 # Managing bodies and contacts in FixMyStreet
 
-<p class="lead">A <strong><a href="/glossary/#body" class="glossary">body</a></strong> is the authority to which problem
-reports will be sent. Each body needs one or more <strong><a href="{{ site.baseurl }}glossary/#contact" class="glossary">contacts</a></strong>
+<p class="lead">A <strong><a href="/glossary/#body" class="glossary__link">body</a></strong> is the authority to which problem
+reports will be sent. Each body needs one or more <strong><a href="{{ site.baseurl }}glossary/#contact" class="glossary__link">contacts</a></strong>
 (typically these are email addresses) to which particular
-<strong><a href="{{ site.baseurl }}glossary/#category" class="glossary">categories</a></strong> of problem are sent. </p>
+<strong><a href="{{ site.baseurl }}glossary/#category" class="glossary__link">categories</a></strong> of problem are sent. </p>
 
 For [FixMyStreet in the UK](http://www.fixmystreet.com/), bodies are councils (county, district, and metropolitan).
 
@@ -22,7 +22,7 @@ Click on **Bodies** and fill in the form. Normally, you _must_ provide a name
 and pick at least one area it covers. See [How FixMyStreet uses
 Mapit](/customising/fms_and_mapit) for more information on how these areas are chosen.
 
-You can specify a <strong><a href="{{ site.baseurl }}glossary/#send-method" class="glossary">send method</a></strong>. This is *how* FixMyStreet will send the
+You can specify a <strong><a href="{{ site.baseurl }}glossary/#send-method" class="glossary__link">send method</a></strong>. This is *how* FixMyStreet will send the
 problem reports to this body.
 
 If you leave it blank, **send method will default to email**.

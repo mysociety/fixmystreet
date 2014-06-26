@@ -24,7 +24,7 @@ at the same time as others -- but if you're not sure then just work through the 
   </dt>
   <dd>
     You need a name for your
-    <a href="{{ site.baseurl }}glossary/#cobrand" class="glossary">cobrand</a>
+    <a href="{{ site.baseurl }}glossary/#cobrand" class="glossary__link">cobrand</a>
     right at the start because that's the name you'll use for the directories
     where your own resources and templates go.
     <p>
