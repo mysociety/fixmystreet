@@ -572,6 +572,10 @@ technical information, see
       <p>More information:</p>
       <ul>
         <li>
+          More about <a href="{{ site.baseurl }}customising/integration/">integrating FixMyStreet</a>
+          with back-end systems (includes diagrams)
+        </li>
+        <li>
           See <a
           href="http://www.mysociety.org/for-councils/fixmystreet/">FixMyStreet
           for Councils</a> for mySociety's commercial support for UK councils
@@ -740,6 +744,10 @@ technical information, see
     <div class="more-info">
       <p>More information:</p>
       <ul>
+        <li>
+          More about <a href="{{ site.baseurl }}customising/integration/">integrating FixMyStreet</a>
+          using Open311 (includes diagrams)
+        </li>
         <li>
           mySociety blog post <a
           href="http://www.mysociety.org/2013/01/10/open311-introduced/">introducing
