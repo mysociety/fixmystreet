@@ -138,67 +138,6 @@
 }
 
 
-.site-footer {
-    width: 100%;
-    clear: left;
-    background: $colour_black;
-    padding: $base-spacing-unit 0;
-    @include clearfix;
-    .column {
-        @include grid-column--one-of-two;
-        @media (min-width: $medium-screen) {
-            @include grid-column--one-of-four;
-        }
-        @media (min-width: $large-screen) {
-            @include grid-column--one-of-five;
-        }
-    }
-    // This, plus the default float right on .central, means that the last
-    // column fits in the nice gap left by the long .central column
-    .column:last-child {
-        h3 {
-            margin-top: 1em;
-        }
-        @media (min-width: $medium-screen) {
-            h3 {
-                margin-top: 0;
-            }
-        }
-    }
-    .central {
-        float: right;
-        @media (min-width: $medium-screen) {
-            ul {
-                @include columns(1);
-            }
-            @include grid-column--two-of-four;
-        }
-        @media (min-width: $mediumish-screen) {
-            ul {
-                @include columns(2);
-            }
-            @include grid-column--two-of-four;
-        }
-        @media (min-width: $large-screen) {
-            ul {
-                @include columns(3);
-            }
-            @include grid-column--three-of-five;
-        }
-    }
-    h3 {
-        font-size: 1em;
-        font-weight: normal;
-        margin-bottom: 0;
-        color: #888;
-    }
-    ul {
-        margin: 0;
-        @extend .unstyled;
-    }
-    a {color: #eeeeee;}
-}
-
 .primary-nav {
     @extend .unstyled;
     margin: 0;
@@ -281,29 +220,6 @@
         display: block;
     }
 }
-
-.breadcrumb {
-    @extend .unstyled-list;
-    padding: $base-spacing-unit /4 0;
-    li {
-        display: inline;
-        font-size: 0.75em;
-        &:after {
-            content: '/';
-            margin: 0 0.33em;
-            color: $colour_light_grey;
-        }
-        a {
-            color: $colour_dark_grey
-        }
-    }
-
-}
-
-
-
-
-
 
 
 /**
