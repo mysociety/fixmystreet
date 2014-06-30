@@ -37,7 +37,7 @@ module.exports = function(grunt) {
       global: {
         options: { style: 'compressed' },
         files: {
-          'assets/css/global.min.css': 'theme/sass/global.scss'
+          'assets/css/global.css': 'theme/sass/global.scss'
         }
       }
     },
