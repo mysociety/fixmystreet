@@ -79,13 +79,16 @@ body.mappage {
 
 body.mappage, body.twothirdswidthpage {
     .content {
-        margin-top: 9em;
         width: 27em;
         .sticky-sidebar aside {
             z-order: 3;
             top: 16em;
         }
     }
+
+    /* map page has no menu, so requires less top margin */
+    &.mappage            .content { margin-top: 9em; }
+    &.twothirdswidthpage .content { margin-top: 15em; }
 
     #site-header {
         height: 0;
