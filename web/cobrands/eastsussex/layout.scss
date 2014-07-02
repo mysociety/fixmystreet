@@ -107,6 +107,7 @@
 
     #site-header {
         height: 10em;
+        border-top-width: 0px;
     }
 
     #mysociety {
@@ -201,9 +202,9 @@
     body > p {
         margin: 0;
     }
-    
+
     #site-header {
-        border: none;
-        height: 74px;
+        height: 76px;
+        border-top-width: 4px;
     }
 }
