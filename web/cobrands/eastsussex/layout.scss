@@ -207,4 +207,23 @@
         height: 76px;
         border-top-width: 4px;
     }
+
+    .main-menu ul {
+        padding: 0;
+        margin: 6px;
+        text-align: center;
+
+        li {
+            display: inline-block;
+            list-style: none;
+
+            a {
+                padding: 2px 6px;
+                margin: 3px;
+                background-color: #00a1de;
+                color: white;
+                border-radius: 3px;
+            }
+        }
+    }
 }
