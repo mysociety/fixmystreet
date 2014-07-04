@@ -11,21 +11,78 @@ ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 $mech->create_body_ok(2514, 'Birmingham City Council');
 $mech->create_body_ok(2651, 'City of Edinburgh Council');
 $mech->create_body_ok(2504, 'Westminster City Council');
+$mech->create_body_ok(2649, 'Fife Council');
 
 $mech->delete_problems_for_body( 2504 );
 $mech->delete_problems_for_body( 2651 );
+$mech->delete_problems_for_body( 2649 );
 
 my @edinburgh_problems = $mech->create_problems_for_body(3, 2651, 'All reports');
 my @westminster_problems = $mech->create_problems_for_body(5, 2504, 'All reports');
+my @fife_problems = $mech->create_problems_for_body(15, 2649, 'All reports');
 
 is scalar @westminster_problems, 5, 'correct number of westminster problems created';
 is scalar @edinburgh_problems, 3, 'correct number of edinburgh problems created';
+is scalar @fife_problems, 15, 'correct number of fife problems created';
 
 $edinburgh_problems[1]->update( {
     state => 'in progress',
     confirmed => DateTime->now()->subtract( weeks => 6 ),
     lastupdate => DateTime->now()->subtract( weeks => 5 ),
 } );
+
+$fife_problems[1]->update( {
+    state => 'fixed - user',
+    confirmed => DateTime->now()->subtract( weeks => 6 ),
+    lastupdate => DateTime->now()->subtract( weeks => 5 ),
+});
+
+$fife_problems[2]->update( {
+    state => 'fixed - user',
+    confirmed => DateTime->now()->subtract( weeks => 2 ),
+    lastupdate => DateTime->now()->subtract( weeks => 1 ),
+});
+
+$fife_problems[3]->update( {
+    state => 'fixed - user',
+    confirmed => DateTime->now()->subtract( weeks => 10 ),
+    lastupdate => DateTime->now()->subtract( weeks => 9 ),
+});
+
+$fife_problems[4]->update( {
+    confirmed => DateTime->now()->subtract( weeks => 10 ),
+    lastupdate => DateTime->now()->subtract( weeks => 9 ),
+});
+
+$fife_problems[5]->update( {
+    confirmed => DateTime->now()->subtract( weeks => 7 ),
+    lastupdate => DateTime->now()->subtract( weeks => 5 ),
+});
+
+$fife_problems[6]->update( {
+    confirmed => DateTime->now()->subtract( weeks => 7 ),
+    lastupdate => DateTime->now()->subtract( weeks => 2 ),
+});
+
+$fife_problems[7]->update( {
+    confirmed => DateTime->now()->subtract( weeks => 10 ),
+    lastupdate => DateTime->now()->subtract( weeks => 6 ),
+});
+
+$fife_problems[8]->update( {
+    confirmed => DateTime->now()->subtract( weeks => 10 ),
+    lastupdate => DateTime->now()->subtract( weeks => 2 ),
+});
+
+$fife_problems[9]->update( {
+    state => 'fixed - user',
+    confirmed => DateTime->now()->subtract( weeks => 10 ),
+    lastupdate => DateTime->now()->subtract( weeks => 7 ),
+});
+
+$fife_problems[10]->update( {
+    state => 'hidden',
+});
 
 # Run the cron script that makes the data for /reports so we don't get an error.
 system( "bin/cron-wrapper update-all-reports" );
@@ -42,6 +99,12 @@ is $stats->{'City of Edinburgh Council'}->[2], 1, 'correct number of older repor
 
 is $stats->{'Westminster City Council'}->[1], 5, 'correct number of reports for Westminster';
 
+is $stats->{'Fife Council'}->[1], 5, 'correct number of new reports for Fife';
+is $stats->{'Fife Council'}->[2], 4, 'correct number of old reports for Fife';
+is $stats->{'Fife Council'}->[3], 1, 'correct number of unknown reports for Fife';
+is $stats->{'Fife Council'}->[4], 3, 'correct number of fixed reports for Fife';
+is $stats->{'Fife Council'}->[5], 1, 'correct number of older fixed reports for Fife';
+
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.mysociety.org/',
 }, sub {
@@ -55,6 +118,61 @@ $mech->content_contains('All reports Test 3 for 2504', 'problem to be marked non
 
 my $problems = $mech->extract_problem_list;
 is scalar @$problems, 5, 'correct number of problems displayed';
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+}, sub {
+    $mech->get_ok('/reports/City+of+Edinburgh?t=new');
+};
+$problems = $mech->extract_problem_list;
+is scalar @$problems, 2, 'correct number of new problems displayed';
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+}, sub {
+    $mech->get_ok('/reports/City+of+Edinburgh?t=older');
+};
+$problems = $mech->extract_problem_list;
+is scalar @$problems, 1, 'correct number of older problems displayed';
+
+for my $test (
+    {
+        desc => 'new fife problems on report page',
+        type => 'new',
+        expected => 5
+    },
+    {
+        desc => 'older fife problems on report page',
+        type => 'older',
+        expected => 4
+    },
+    {
+        desc => 'unknown fife problems on report page',
+        type => 'unknown',
+        expected => 1
+    },
+    {
+        desc => 'fixed fife problems on report page',
+        type => 'fixed',
+        expected => 3
+    },
+    {
+        desc => 'older_fixed fife problems on report page',
+        type => 'older_fixed',
+        expected => 1
+    },
+) {
+    subtest $test->{desc} => sub {
+        FixMyStreet::override_config {
+            MAPIT_URL => 'http://mapit.mysociety.org/',
+        }, sub {
+            $mech->get_ok('/reports/Fife+Council?t=' . $test->{type});
+        };
+
+        $problems = $mech->extract_problem_list;
+        is scalar @$problems, $test->{expected}, 'correct number of ' . $test->{type} . ' problems displayed';
+    };
+}
 
 my $private = $westminster_problems[2];
 ok $private->update( { non_public => 1 } ), 'problem marked non public';

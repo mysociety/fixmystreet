@@ -98,9 +98,9 @@ __PACKAGE__->has_many(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hTOxxiiHmC8nmQK/p8dXhQ
 
 sub url {
-    my ( $self, $c ) = @_;
+    my ( $self, $c, $args ) = @_;
     # XXX $areas_info was used here for Norway parent - needs body parents, I guess
-    return $c->uri_for( '/reports/' . $c->cobrand->short_name( $self ) );
+    return $c->uri_for( '/reports/' . $c->cobrand->short_name( $self ), $args || {} );
 }
 
 sub areas {
