@@ -78,9 +78,6 @@ h3, h4 {
             }
         }
     }
-    ul#mysoc-menu {
-        background: $primary url(images/tile-y.jpg);
-    }
 }
 .nav-wrapper {
     .nav-wrapper-2 {
@@ -93,4 +90,213 @@ body.mappage {
               @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
         }
     }
+}
+
+#main-nav {
+    ul#mysoc-menu {
+        background: #515151;
+        margin-top: -4px;
+        li a {
+            &#mysoc-logo {
+                background-position: 0px 15px;
+            }
+        }
+    }
+}
+
+body.twothirdswidthpage,
+body.fullwidthpage {
+    #front-main {
+        color: #333;
+        padding-bottom: 4em;
+
+        h1 {
+            font-size: 3em;
+            font-weight: bold;
+            font-family: MuseoSans,Helmet,Freesans,sans-serif;
+        }
+        h2 {
+            font-family: MuseoSans,Helmet,Freesans,sans-serif;
+        }
+        #postcodeForm {
+            div {
+                font-size: 1.3em;
+                width: 24em;
+                label {
+                    font-family: MuseoSans,Helmet,Freesans,sans-serif;
+                }
+                input#pc {
+                    color: #777;
+                    font-size: 0.9em;
+                    height: 2.6em;
+                    width: 20em;
+                    &:focus {
+                        outline: 0;
+                    }
+                }
+                input#sub {
+                    font-size: 1.1em;
+                    height: 2.4em;
+                    width: 3.5em;
+                    font-family: MuseoSans,Helmet,Freesans,sans-serif;
+                    font-weight: bold;
+                }
+            }
+        }
+        a#geolocate_link {
+            font-family: MuseoSans,Helmet,Freesans,sans-serif;
+            background: url(images/locate-me.png) no-repeat;
+            height: 34px;
+            padding-left: 24px;
+            margin-top: 0.25em;
+            @media only screen and (min-resolution: 320dpi),
+            only screen and (-webkit-min-device-pixel-ratio: 2) {
+                background: url(images/locate-me@2.png) no-repeat;
+            }
+        }
+    }
+
+    .container {
+        .content {
+            box-shadow: none;
+            padding: 1em 1em 0em;
+            margin-bottom: 0em;
+            footer {
+                margin-top: 0em;
+                .tablewrapper {
+                    padding-top: 2em;
+                    padding-bottom: 3em;
+                    background: #1a1a1a url(images/tile.jpg) 0 0 repeat;
+                    color: $base_fg;
+                    a:link,
+                    a:visited {
+                        color: $primary;
+                    }
+                    #footer-mobileapps {
+                        a {
+                            padding-left: 0.5em;
+                        }
+                    }
+                    h4 {
+                        font-weight: normal;
+                        padding-bottom: 0.5em;
+                    }
+                }
+
+                a.platform-logo {
+                    vertical-align: baseline;
+                    display: inline-block;
+                    background-position: top left;
+                    background-repeat: no-repeat;
+                    background-size: auto 1.5em;
+                    background-image: url("images/fms-platform-logo.svg");
+                    text-indent: -1000%;
+                    height: 1.7em;
+                    width: 16em;
+                    padding-right: 0.25em;
+                }
+            }
+        }
+    }
+}
+
+.ie6, .ie7, .ie8  {
+  body.frontpage,
+  body.twothirdswidthpage {
+    .content {
+      border: 0px;
+    }
+  }
+}
+.ie8 body.frontpage .container .content footer a.platform-logo {
+    background: none;
+    text-indent: 0px;
+}
+
+body.frontpage {
+    .container {
+        background-color: transparent;
+
+        .content {
+            background-color: transparent;
+            padding: 0em 0em 1em;
+
+            > .tablewrapper {
+                margin: -4em 0em 0em;
+                padding: 1em 1em;
+                background-color: white;
+                width: auto;
+            }
+        }
+        footer {
+            .bordered {
+                margin: 0em;
+            }
+        }
+    }
+}
+
+body.twothirdswidthpage {
+    .container {
+        .content {
+            footer {
+                max-width: 48em;
+                @media only screen and (min-width: 61em) {
+                    max-width: 60em;
+                }
+                .tablewrapper {
+                    border: 0px;
+                }
+            }
+        }
+    }
+}
+
+#footer-nav {
+    display: block;
+    border: 0px;
+    border-top: 0.25em solid #ffd000;
+    border-image: url(images/tile-y.jpg) 30 0 repeat;
+
+    .tablewrapper {
+      max-width: 60em;
+      margin: 0 auto;
+      background: $base_bg;
+      ul {
+        list-style: none;
+        padding: 0px;
+        margin: 0px;
+        float:left;
+        li {
+          list-style: none;
+          display: inline;
+          margin: 0px;
+          padding: 0px;
+          float:left;
+          a,
+          span {
+            display: block;
+            color: $nav_fg;
+            background: none;
+            border-bottom: none;
+            padding: 0.75em;
+            font-size: 0.9em;
+          }
+        }
+      }
+      #footer-main-nav {
+        display: block;
+      }
+      #footer-help-nav {
+        float: right;
+      }
+    }
+}
+
+/* hide the footer on the alert page as the interaction with the
+ * photo sidebar is awkward to fix */
+body.alertindex {
+  #footer-nav {
+    display: none;
+  }
 }

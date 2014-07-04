@@ -141,6 +141,9 @@ h1 {
         background: none;  
         border-bottom: none;      
       }
+      &#top-nav-privacy {
+        display: none;
+      }
     }
     &#main-menu{
       li{
@@ -181,7 +184,8 @@ h1 {
           &#mysoc-logo {
             width:84px;
             height:16px;
-            background-position: -20px -5px;
+            background-size: 100px auto;
+            background-position: 0px 10px;
             opacity: 0.8;
             &:hover {
               opacity: 1;
@@ -194,6 +198,9 @@ h1 {
       }
     }
   }
+}
+.ie8 #main-nav ul#mysoc-menu li a#mysoc-logo {
+  width: 100px;
 }
 .ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
     background-position: -260px -43px;
@@ -430,7 +437,6 @@ body.twothirdswidthpage {
     }
   }
 }
-
 
 // map box (fallback for non js really as most users
 // will have fullscreen map)
