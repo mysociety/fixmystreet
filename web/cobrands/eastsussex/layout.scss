@@ -16,8 +16,9 @@
     padding: 1em;
 }
 
-.container {
+.container, .eastsussex-container {
     width: initial;
+    max-width: 966px;
 }
 
 #site-header .header a.contact {
