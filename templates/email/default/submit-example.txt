@@ -8,7 +8,7 @@ local problem that they believe might require your attention.
 To view a map of the precise location of this issue, or to provide
 an update on the problem, please visit the following link:
 
-    http://www.fixmystreet.com/report/39092
+    https://www.fixmystreet.com/report/39092
 
 ----------
 
@@ -51,11 +51,11 @@ The FixMyStreet team
 This message was sent via FixMyStreet, a project of UKCOD,
 registered charity number 1076346. If there is a more appropriate
 email address for messages about 'Potholes', please let us know by
-visiting <http://www.fixmystreet.com/contact>. This will help
+visiting <https://www.fixmystreet.com/contact>. This will help
 improve the service for local people. We also welcome any other
 feedback you may have.
 
 FixMyStreet is now available for full integration into council
 websites, making life easier for both you and your residents.
-Read more here: http://www.mysociety.org/services/fixmystreet-for-councils/
+Read more here: https://www.mysociety.org/services/fixmystreet-for-councils/
 

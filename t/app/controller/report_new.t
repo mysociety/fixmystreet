@@ -1485,7 +1485,7 @@ subtest "categories from deleted bodies shouldn't be visible for new reports" =>
 subtest "extra google analytics code displayed on logged in problem creation" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        BASE_URL => 'http://www.fixmystreet.com',
+        BASE_URL => 'https://www.fixmystreet.com',
         MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
         # check that the user does not exist
@@ -1544,7 +1544,7 @@ subtest "extra google analytics code displayed on logged in problem creation" =>
 subtest "extra google analytics code displayed on email confirmation problem creation" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { fixmystreet => '.' } ],
-        BASE_URL => 'http://www.fixmystreet.com',
+        BASE_URL => 'https://www.fixmystreet.com',
         MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
         $mech->log_out_ok;

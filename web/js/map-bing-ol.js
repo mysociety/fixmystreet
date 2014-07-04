@@ -66,8 +66,8 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.XYZ, {
         if (z >= 16 && in_uk) {
             copyrights = 'Contains Ordnance Survey data &copy; Crown copyright and database right 2010';
         } else {
-            logo = '<a href="http://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
-            copyrights = '&copy; 2011 <a href="http://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
+            logo = '<a href="https://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
+            copyrights = '&copy; 2011 <a href="https://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
         }
         this.attribution = OpenLayers.String.format(this.attributionTemplate, {
             logo: logo,
