@@ -94,8 +94,11 @@ __PACKAGE__->setup();
 # tell the code we're secure if we are.
 after 'prepare_headers' => sub {
     my $self = shift;
-    $self->req->secure( 1 ) if $self->config->{BASE_URL} eq 'https://www.zueriwieneu.ch';
-    $self->req->secure( 1 ) if $self->config->{BASE_URL} eq 'http://www.fixmystreet.com' && $self->req->headers->header('Host') eq 'fix.bromley.gov.uk';
+    my $base_url = $self->config->{BASE_URL};
+    my $host = $self->req->headers->header('Host');
+    $self->req->secure( 1 ) if $base_url eq 'https://www.zueriwieneu.ch';
+    $self->req->secure( 1 ) if $base_url eq 'https://www.fixmystreet.com'
+        && ( $host eq 'fix.bromley.gov.uk' || $host eq 'www.fixmystreet.com' );
 };
 
 # set up DB handle for old code
