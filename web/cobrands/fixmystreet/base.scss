@@ -13,3 +13,10 @@
 #footer-nav {
     display: none;
 }
+
+#country_banner {
+    display: none;
+    color: $primary_text; background: $primary;
+    p#international_message { margin: auto; padding: 0.5em 2em; max-width: 40em; text-align: center; }
+    #message_close { float: right; }
+}

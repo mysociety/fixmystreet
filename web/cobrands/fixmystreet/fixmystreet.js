@@ -421,7 +421,25 @@ $.fn.drawer = function(id, ajax) {
         }).fadeOut(500);
     });
 
+    $('#message_close').live('click', function() {
+        $('#country_banner').hide();
+        $.cookie('has_seen_country_message', 1, {expires: 365, path: '/'});
+    });
 
+    if ( cobrand == 'fixmystreet' && $('body.frontpage').length ) {
+        if (!$.cookie('has_seen_country_message')) {
+            $.ajax({
+                url: '/country_message',
+                success: function(data) {
+                    if ( data ) {
+                        $('#site-header').css('position', 'relative');
+                        $('body').prepend(data);
+                        $('#country_banner').slideDown('slow');
+                    }
+                }
+            });
+        }
+    }
 
     /*
      * Fancybox fullscreen images
