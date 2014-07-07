@@ -4,6 +4,7 @@
  */
 
 function update_category_extra(msg) {
+    // TODO never gets called?
     var content = '<div style="margin: 1em 0em 1em 6.5em"><strong>' + msg + '</strong></div>';
     var el = $('#category_extra');
     if ( el.length ) {
@@ -47,7 +48,8 @@ $(function(){
         if ('Street lighting' == category) {
             $('#category_extra').hide('fast');
             var lighting_content =
-                '<div id="street_light_report" style="margin: 1em 0em 1em 6.5em"> TODO: extra guidance text here!</div>';
+                '<div id="street_light_report" style="margin: 1em 0em 1em 6.5em"> TODO: extra guidance text here!</div>' +
+                '<input type="hidden" name="street_light_id" value="DUMMY" />'; // will be set by JS
             if ( $('#form_category_row').count ) {
                 $('#form_category_row').after(lighting_content);
             } else {

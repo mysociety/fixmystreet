@@ -32,5 +32,29 @@ sub example_places {
     return [ 'CV34 3BU', 'Stratford Rd' ];
 }
 
+sub process_extras {
+    my $self    = shift;
+    my $ctx     = shift;
+    my $body_id = shift;
+    my $extra   = shift;
+    my $fields  = shift || [];
+
+    my @fields = ( @$fields, 'street_light_id' );
+    for my $field ( @fields ) {
+        my $value = $ctx->request->param( $field );
+
+        # if ( !$value ) {
+        # $ctx->stash->{field_errors}->{ $field } = _('This information is required');
+        # }
+        if (defined $value) {
+            push @$extra, {
+                name => $field,
+                description => uc( $field),
+                value => $value || '',
+            };
+        }
+    }
+}
+
 
 1;
