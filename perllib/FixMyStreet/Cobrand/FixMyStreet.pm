@@ -4,6 +4,15 @@ use mySociety::Gaze;
 
 use constant COUNCIL_ID_BROMLEY => 2482;
 
+# Special extra
+sub path_to_web_templates {
+    my $self = shift;
+    return [
+        FixMyStreet->path_to( 'templates/web/fixmystreet.com' )->stringify,
+        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
+    ];
+}
+
 # FixMyStreet should return all cobrands
 sub restriction {
     return {};

@@ -1,9 +1,8 @@
 [% IF c.cobrand.is_council %]
-<p style="font-size: 150%">
-Thank you very much for filling in our questionnaire.
-</p>
+    <p style="font-size: 150%">
+    Thank you very much for filling in our questionnaire.
+    </p>
 [% ELSE %]
-    [% IF c.cobrand.moniker == 'fixmystreet' %]
     <p style="font-size:150%">We&rsquo;re sorry to hear that your problem hasn't been fixed.</p>
 
     <p>
@@ -21,12 +20,4 @@ Thank you very much for filling in our questionnaire.
     You can do this on <a href="https://www.writetothem.com/">https://www.writetothem.com/</a>, another
     useful mySociety website.
     </p>
-    [% ELSE %]
-[% loc('<p style="font-size:150%">We&rsquo;re sorry to hear that. We have two
-suggestions: why not try <a href="https://www.writetothem.com/">writing direct
-to your councillor(s)</a> or, if it&rsquo;s a problem that could be fixed by
-local people working together, why not
-<a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
-</p>' ) %]
-    [% END %]
 [% END %]
