@@ -24,10 +24,10 @@ Returns the path to the templates for this cobrand - by default
 
 sub path_to_web_templates {
     my $self = shift;
-    my $paths = [];
-    push @$paths, FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify
-        unless $self->is_default;
-    push @$paths, FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify;
+    my $paths = [
+        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
+        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify,
+    ];
     return $paths;
 }
 

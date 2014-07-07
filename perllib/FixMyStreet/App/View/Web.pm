@@ -13,7 +13,7 @@ use Utils;
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.html',
     INCLUDE_PATH       => [          #
-        FixMyStreet->path_to( 'templates', 'web', 'default' ),
+        FixMyStreet->path_to( 'templates', 'web', 'base' ),
     ],
     ENCODING       => 'utf8',
     render_die     => 1,
