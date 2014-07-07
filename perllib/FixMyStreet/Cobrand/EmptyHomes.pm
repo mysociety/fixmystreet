@@ -8,6 +8,11 @@ use FixMyStreet;
 use mySociety::Locale;
 use Carp;
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
+}
+
 =item
 
 Return the base url for this cobranded site

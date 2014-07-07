@@ -16,14 +16,6 @@ sub problems_clause {
     return { bodies_str => { like => '%2333%' } };
 }
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
-    ];
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

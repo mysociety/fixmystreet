@@ -17,14 +17,6 @@ sub site_title {
     return 'FixaMinGata';
 }
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
-    ];
-}
-
 sub country {
     return 'SE';
 }

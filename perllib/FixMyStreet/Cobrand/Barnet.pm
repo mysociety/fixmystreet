@@ -9,14 +9,6 @@ sub council_area { return 'Barnet'; }
 sub council_name { return 'Barnet Council'; }
 sub council_url { return 'barnet'; }
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
-    ];
-}
-
 sub disambiguate_location {
     my $self = shift;
     return {

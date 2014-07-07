@@ -11,6 +11,11 @@ sub council_area { return 'Reading'; }
 sub council_name { return 'Reading City Council'; }
 sub council_url { return 'reading'; }
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
+}
+
 sub disambiguate_location {
     my $self = shift;
     return {

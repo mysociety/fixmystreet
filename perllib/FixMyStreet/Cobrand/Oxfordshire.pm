@@ -21,14 +21,6 @@ sub problems_clause {
     return { bodies_str => { like => '%2237%' } };
 }
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
-    ];
-}
-
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter an Oxfordshire postcode, or street name and area';

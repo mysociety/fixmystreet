@@ -22,14 +22,6 @@ sub problems_clause {
     return { bodies_str => { IN => $self->council_id  } };
 }
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
-    ];
-}
-
 sub area_check {
     my ( $self, $params, $context ) = @_;
 

@@ -14,14 +14,6 @@ sub base_url {
     return 'https://fix.bromley.gov.uk';
 }
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
-    ];
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

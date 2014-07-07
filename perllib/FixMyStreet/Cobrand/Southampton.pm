@@ -9,6 +9,11 @@ sub council_area { return 'Southampton'; }
 sub council_name { return 'Southampton City Council'; }
 sub council_url { return 'southampton'; }
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
+}
+
 sub disambiguate_location {
     my $self = shift;
     return {
