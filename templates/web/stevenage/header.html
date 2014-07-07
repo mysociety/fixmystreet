@@ -23,12 +23,6 @@
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = 'Stevenage: FixMyStreet' %]
         [% extra_js %]
                 
-        [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
-            <link rel="canonical" href="http://www.fixmystreet.com[% c.req.uri.path_query %]">
-        [% END %]
-
-        [% INCLUDE 'tracking_code.html' %]
-
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
 

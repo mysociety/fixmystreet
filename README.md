@@ -12,7 +12,7 @@ Reported problems are visible to everyone so they can see if something has
 already been reported and leave updates. Users can also subscribe to email or
 RSS alerts of problems in their area.
 
-It was created in 2007 by [mySociety](http://www.mysociety.org/) for reporting
+It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
 Platform is now at version 1.4.1.
 
@@ -143,7 +143,7 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Examples
 
-* <http://www.fixmystreet.com/>
+* <https://www.fixmystreet.com/>
 * <http://www.fiksgatami.no/>
 * <http://fixmystreet.ie/>
 * <https://www.zueriwieneu.ch/>
