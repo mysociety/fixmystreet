@@ -1534,7 +1534,7 @@ subtest "extra google analytics code displayed on logged in problem creation" =>
         # check that we got redirected to /report/
         is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
 
-        $mech->content_contains( "extra = '?created_report", 'extra google code present' );
+        $mech->content_contains( "'id': 'report/" . $report->id . "'", 'extra google code present' );
 
         # cleanup
         $mech->delete_user($user);
@@ -1584,11 +1584,15 @@ subtest "extra google analytics code displayed on email confirmation problem cre
         # confirm token in order to update the user details
         $mech->get_ok($url);
 
-        $mech->content_contains( "extra = '?created_report", 'extra google code present' );
-
+        # find the report
         my $user =
           FixMyStreet::App->model('DB::User')
           ->find( { email => 'firstlast@example.com' } );
+
+        my $report = $user->problems->first;
+        ok $report, "Found the report";
+
+        $mech->content_contains( "'id': 'report/" . $report->id . "'", 'extra google code present' );
 
         $user->problems->delete;
         $user->alerts->delete;
