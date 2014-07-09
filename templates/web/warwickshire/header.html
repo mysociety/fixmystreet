@@ -24,7 +24,10 @@
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
     <![endif]-->
 
-    [% INCLUDE 'common_header_tags.html' %]
+    <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
+    <script src="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/position_map.js') %]" charset="utf-8"></script>
+
+    [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = c.cobrand.site_title %]
 
     [% extra_js %]
 
@@ -34,6 +37,7 @@
     <!--[if lt IE 7]>
         <div class="alert alert-error"><strong>You are using an outdated browser</strong>. You may want to <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
     <![endif]-->
+        <div id="site-header">
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
@@ -202,11 +206,8 @@
                     </div>
                 </div>
             </div>
-            
-       <div class="container" style="margin-top:20px;">     
-        
-            <!-- Megamenu -->
-            
+        </div>
+        <div class="container">
             <div class="navbar" id="mega-menu-navbar">
                 <div class="navbar-inner">
                     <ul id="mega-menu" class="menu nav">
@@ -214,7 +215,7 @@
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
                             %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
+                        %]<li><[% IF c.req.uri.path == '/reports/Warwickshire' %]span[% ELSE %]a href="/reports/Warwickshire"[% END
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
                             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
@@ -225,5 +226,11 @@
 
                     </ul>
                </div>
-            </div><!-- 3P header ends -->
-        
+            </div>
+        </div>
+
+
+        <div id="wrapper"><div id="wrapper2"><div id="wrapper3">
+            <div id="mysociety" class="container" style="margin-top:20px;">
+                [% pre_container_extra %]
+                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
