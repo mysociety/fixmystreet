@@ -22,7 +22,7 @@ installing new packages, and so on.*
 
 ## Running the script
 
-The script to run is called [`install-site.sh`, in our `commonlib` repository](https://raw.github.com/mysociety/commonlib/master/bin/install-site.sh).
+The script to run is called [`install-site.sh`, in our `commonlib` repository](https://github.com/mysociety/commonlib/blob/master/bin/install-site.sh).
 That script's usage is as follows:
 
     Usage: ./install-site.sh [--default] <SITE-NAME> <UNIX-USER> [HOST]
@@ -45,7 +45,7 @@ development, allowing easy domain/wildcard domain usage without having to edit
 your hosts file), creating a virtualhost just for that hostname, you could
 download and run the script with:
 
-    curl -O https://raw.github.com/mysociety/commonlib/master/bin/install-site.sh
+    curl -L -O https://github.com/mysociety/commonlib/raw/master/bin/install-site.sh
     sudo sh install-site.sh fixmystreet fms fixmystreet.127.0.0.1.xip.io
 
 Or, if you want to set this up as the default site on an EC2 instance,
