@@ -36,7 +36,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # We need curl to fetch the install script
     apt-get update -qq
     apt-get install -qq -y curl >/dev/null
-    curl -s -O https://raw.github.com/mysociety/commonlib/master/bin/install-site.sh
+    curl -s -O https://raw.githubusercontent.com/mysociety/commonlib/master/bin/install-site.sh
     sh install-site.sh --dev fixmystreet vagrant 127.0.0.1.xip.io
     # All done
     echo "****************"
