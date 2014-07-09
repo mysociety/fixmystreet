@@ -8,7 +8,6 @@
 <head>
     <!-- Style -->
     <link rel="stylesheet" type="text/css" href="//www.warwickshire.gov.uk/wp-content/themes/gamma/style.css" />
-    <style>body {padding-top: 43px;padding-bottom: 40px;}</style>
     <link rel="stylesheet" type="text/css" href="//www.warwickshire.gov.uk/wp-content/themes/gamma/bootstrap-responsive.css">
     <link rel="stylesheet" type="text/css" href="//www.warwickshire.gov.uk/wp-content/themes/gamma/main.css">
     <!-- Scripts -->
@@ -38,7 +37,7 @@
         <div class="alert alert-error"><strong>You are using an outdated browser</strong>. You may want to <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
     <![endif]-->
         <div id="site-header">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar navbar-inverse">
             <div class="navbar-inner">
                 <div class="container">
                     <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -230,7 +229,7 @@
         </div>
 
 
-        <div id="wrapper"><div id="wrapper2"><div id="wrapper3">
-            <div id="mysociety" class="container" style="margin-top:20px;">
+        <div id="wrapper" class="container"><div id="wrapper2"><div id="wrapper3">
+            <div id="mysociety">
                 [% pre_container_extra %]
                 <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
