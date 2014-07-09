@@ -1,0 +1,128 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+#front-main {
+    background: $green;
+    padding: 1em;
+    margin: 0;
+
+    h2, #front-main-container, #postcodeForm {
+        color: white;
+    }
+}
+
+#front-howto #front_stats {
+    color: white;
+}
+
+#mega-menu-navbar {
+    margin-bottom: 0;
+    margin-top: 5px;
+}
+
+#site-search input[type=text] {
+    display: inline-block;
+}
+
+
+.navbar-fixed-top {
+    position: static;
+}
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+#site-header {
+    height: auto;
+    background: white;
+    border-top-width: 4px;
+
+    nav ul li, ul.nav li {
+        list-style: none;
+        margin-bottom: 0;
+    }
+
+    .container {
+        min-height: 0;
+    }
+}
+
+body.mappage > div.container {
+    padding-top: 0;
+}
+
+@media (max-width: 767px) {
+    body {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .navbar-fixed-top {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .style-1-gradient {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    body.frontpage #wrapper {
+        padding: 5px 0;
+    }
+
+    body.mappage #wrapper {
+        padding-top: 0;
+    }
+
+    #front-howto, #front-recently {
+        padding-left: 15px;
+
+        section.full-width {
+            margin: 0 0 0 -15px;
+        }
+    }
+
+    #top-header .container {
+        padding: 0 1em;
+    }
+
+    #mega-menu-navbar .navbar-inner {
+        padding: 0;
+
+        #mega-menu li a {
+            padding: 4px 8px;
+        }
+    }
+
+    .navbar .nav {
+        margin: 0;
+    }
+
+}
+
+#mega-menu-navbar .navbar-inner {
+    display: block;
+}
+
+@media (max-width: 978px) {
+    .navbar-container {
+        padding: 0;
+        margin: 0;
+    }
+}
+
+// Lifted from bootstrap-responsive.css, no idea why this
+// media query has a different pixel size to the one above...
+@media (max-width: 979px) {
+    .navbar-fixed-top .navbar-inner {
+        padding: 0 5px;
+    }
+}
