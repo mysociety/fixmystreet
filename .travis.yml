@@ -11,11 +11,14 @@ perl:
   - "5.14"
 
 env:
-  - secure: "lm7DasPP+iHVI3ZIjTX7tQMfiEsGBJGM2HrPO8AByZWJohL2gd024ngevXXkBT0Qln5z+RhGJOd+QWjvKmuhfCBPveL8IX4v0KHUTfxrjBoBSB09cb4UNdExWu7HPO63RsbhpQdaIoIYIpr1eBb9txBCbGD9aYepuqIKIj/QHwM="
+  global:
+    - "S3_BUCKET=fixmystreet-bundle-cache"
+    - secure: "llgWNfR/8pH0HjYpg+xhVxuqTaLC0GGUugfuINiUap7JxzjCZ2rlryxCXA4BCM8GUHa9wlYKhrKCSx+DM3EHRE0cLei7LNxAK1JSXLj3NihFQhqnq64tjDwGCSA4l7mlqErA7DK4Dpmh+hBp5f680akITAInM92CbwQZxLDYaCU="
+    - secure: "qW+WCgAF68itADxcbcq+nCnKx3vf3GX73HMfjfbkFFUsYmIR+ZaJ9yQMnGJwxIpCHTWLAeqyx4KO8N8T3GmNdKYzIMZemOzp4ED29YC31QOQeq1CwNp2hD5sq/o47d2BzXWwMYNvNXfxz1K6r2c6EMPUtu8X3B8ExZq1RzSFdXs="
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -qq jhead libgmp-dev
+  - sudo apt-get install -qq jhead libgmp-dev python-boto
 # A couple of other modules that normally come from packages, but no system stuff here
   - cpanm -q Locale::gettext Math::BigInt::GMP
   - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8 sv_SE.UTF-8
