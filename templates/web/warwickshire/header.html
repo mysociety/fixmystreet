@@ -32,7 +32,8 @@
 
 </head>
 
-<body class="style-1">
+[% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
+<body class="style-1 [% bodyclass | html IF bodyclass %]">
     <!--[if lt IE 7]>
         <div class="alert alert-error"><strong>You are using an outdated browser</strong>. You may want to <a href="//browsehappy.com/">upgrade your browser</a> to improve your experience.</div>
     <![endif]-->
