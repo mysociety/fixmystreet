@@ -104,6 +104,8 @@ $(function(){
         $('#form_first_name').removeClass();
         $('#form_last_name').removeClass();
         $('#form_fms_extra_title').removeClass();
+        $('#form_email_y').addClass('required');
+        $('#form_email_n').removeClass();
     } );
 
     $('#submit_register').click( function(e) {
@@ -115,6 +117,8 @@ $(function(){
         $('#form_first_name').addClass('required');
         $('#form_last_name').addClass('required');
         $('#form_fms_extra_title').addClass('required');
+        $('#form_email_y').removeClass();
+        $('#form_email_n').addClass('required');
     } );
 
     $('#problem_submit > input[type="submit"]').click( function(e) {

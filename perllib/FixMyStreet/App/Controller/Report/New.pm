@@ -719,7 +719,8 @@ sub process_user : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => scalar $c->req->param($_) }
-      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
+      ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title',
+        'email_y', 'email_n' );
 
     my $user_title = Utils::trim_text( $params{fms_extra_title} );
 
@@ -744,6 +745,9 @@ sub process_user : Private {
 
     # cleanup the email address
     my $email = $params{email} ? lc $params{email} : '';
+    my $email_y = $params{email_y} ? lc $params{email_y} : '';
+    my $email_n = $params{email_n} ? lc $params{email_n} : '';
+    $email = $email || $email_y || $email_n;
     $email =~ s{\s+}{}g;
 
     $report->user( $c->model('DB::User')->find_or_new( { email => $email } ) )

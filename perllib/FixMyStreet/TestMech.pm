@@ -238,7 +238,10 @@ sub page_errors {
         process 'div.form-error, p.form-error, p.error, ul.error li', 'errors[]', 'TEXT';
     }
     ->scrape( $mech->response );
-    return $result->{errors} || [];
+    my $err = $result->{errors} || [];
+    my %seen = ();
+    $err = [ grep { not $seen{$_}++ } @$err ];
+    return $err;
 }
 
 =head2 import_errors
@@ -478,6 +481,10 @@ sub visible_form_values {
     my @visible_field_names = map { $_->name } @visible_fields;
 
     my %params = map { $_ => $form->value($_) } @visible_field_names;
+
+    # Ignore content experiment fields
+    delete $params{email_y};
+    delete $params{email_n};
 
     return \%params;
 }
