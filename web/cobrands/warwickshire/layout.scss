@@ -5,6 +5,8 @@
     width: 1170px;
 }
 
-.content {
-    width: auto;
+body.frontpage {
+    #site-header {
+        height: auto;
+    }
 }
