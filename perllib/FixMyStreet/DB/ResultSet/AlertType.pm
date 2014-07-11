@@ -251,14 +251,7 @@ sub _send_aggregated_alert_email(%) {
     } );
     $data{unsubscribe_url} = $cobrand->base_url( $data{cobrand_data} ) . '/A/' . $token->token;
 
-    my $template = FixMyStreet->path_to(
-        "templates", "email", $cobrand->moniker, $data{lang}, "$data{template}.txt"
-    )->stringify;
-    $template = FixMyStreet->path_to( "templates", "email", $cobrand->moniker, "$data{template}.txt" )->stringify
-        unless -e $template;
-    $template = FixMyStreet->path_to( "templates", "email", "default", "$data{template}.txt" )->stringify
-        unless -e $template;
-    $template = Utils::read_file($template);
+    my $template = FixMyStreet->get_email_template($cobrand->moniker, $data{lang}, "$data{template}.txt");
 
     my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
     my $result = FixMyStreet::App->send_email_cron(
