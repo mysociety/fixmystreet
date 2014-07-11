@@ -231,6 +231,7 @@ sub prettify_dt {
     my $now = DateTime->now( time_zone => FixMyStreet->config('TIME_ZONE') || 'local' );
 
     my $tt = '';
+    return "[unknown time]" unless ref $dt;
     $tt = $dt->strftime('%H:%M') unless $type eq 'date';
 
     if ($dt->strftime('%Y%m%d') eq $now->strftime('%Y%m%d')) {

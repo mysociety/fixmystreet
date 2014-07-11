@@ -47,7 +47,10 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
     my ($self, $c, $id) = @_;
     my $problem = $c->model('DB::Problem')->find($id);
 
-    my $report_uri = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
+    my $cobrand_base = $c->cobrand->base_url_for_report( $problem );
+    my $report_uri = $cobrand_base . $problem->url;
+    $c->stash->{cobrand_base} = $cobrand_base;
+    $c->stash->{report_uri} = $report_uri;
     $c->res->redirect( $report_uri ); # this will be the final endpoint after all processing...
 
     # ... and immediately, if the user isn't authorized
@@ -70,10 +73,47 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
 
     $c->forward('report_moderate_hide');
 
-    $c->forward('report_moderate_title');
-    $c->forward('report_moderate_detail');
-    $c->forward('report_moderate_anon');
-    $c->forward('report_moderate_photo');
+    my @types = grep $_,
+        $c->forward('report_moderate_title'),
+        $c->forward('report_moderate_detail'),
+        $c->forward('report_moderate_anon'),
+        $c->forward('report_moderate_photo');
+
+    $c->detach( 'report_moderate_audit', \@types )
+}
+
+sub report_moderate_audit : Private {
+    my ($self, $c, @types) = @_;;
+
+    my $user = $c->user->obj;
+    my $reason = $c->stash->{'moderation_reason'};
+    my $problem = $c->stash->{problem} or die;
+
+    for my $type (@types) {
+        $c->model('DB::ModerationLog')->create({
+            user => $user,
+            problem => $problem,
+            moderation_object => 'problem',
+            moderation_type => $type,
+            reason => $reason,
+        });
+    }
+
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($problem->cobrand)->new();
+
+    my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+    my $sender_name = _($cobrand->contact_name);
+
+    $c->send_email( 'problem-moderated.txt', {
+
+        to      => [ [ $user->email, $user->name ] ],
+        from    => [ $sender, $sender_name ],
+        types => (join ', ' => @types),
+        user => $user,
+        problem => $problem,
+        report_uri => $c->stash->{report_uri},
+        report_complain_uri => $c->stash->{cobrand_base} . '/contact?m=1&id=' . $problem->id,
+    });
 }
 
 sub report_moderate_hide : Private {
@@ -83,16 +123,10 @@ sub report_moderate_hide : Private {
 
     if ($c->req->param('problem_hide')) {
 
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            moderation_object => 'problem',
-            moderation_type => 'hide',
-            reason => $c->stash->{'moderation_reason'},
-        });
 
         $problem->update({ state => 'hidden' });
-        $c->detach; # break chain here.
+
+        $c->detach( 'report_moderate_audit', ['hide'] ); # break chain here.
     }
 }
 
@@ -110,16 +144,12 @@ sub report_moderate_title : Private {
         : $self->diff($original_title, $c->req->param('problem_title'));
 
     if ($title ne $old_title) {
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            moderation_object => 'problem',
-            moderation_type => 'title',
-            reason => $c->stash->{'moderation_reason'},
-        });
         $original->insert unless $original->in_storage;
         $problem->update({ title => $title });
+        return 'title';
     }
+
+    return;
 }
 
 sub report_moderate_detail : Private {
@@ -135,18 +165,11 @@ sub report_moderate_detail : Private {
         : $self->diff($original_detail, $c->req->param('problem_detail'));
 
     if ($detail ne $old_detail) {
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            moderation_object => 'problem',
-            moderation_type => 'detail',
-            reason => $c->stash->{'moderation_reason'},
-        });
-
         $original->insert unless $original->in_storage;
-
         $problem->update({ detail => $detail });
+        return 'detail';
     }
+    return;
 }
 
 sub report_moderate_anon : Private {
@@ -160,17 +183,12 @@ sub report_moderate_anon : Private {
     my $old_anonymous = $problem->anonymous ? 1 : 0;
 
     if ($anonymous != $old_anonymous) {
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            moderation_object => 'problem',
-            moderation_type => 'anonymous',
-            reason => $c->stash->{'moderation_reason'},
-        });
 
         $original->insert unless $original->in_storage;
         $problem->update({ anonymous => $anonymous });
+        return 'anonymous';
     }
+    return;
 }
 
 sub report_moderate_photo : Private {
@@ -185,17 +203,11 @@ sub report_moderate_photo : Private {
     my $old_show_photo = $problem->photo ? 1 : 0;
 
     if ($show_photo != $old_show_photo) {
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            moderation_object => 'problem',
-            moderation_type => 'photo',
-            reason => $c->stash->{'moderation_reason'},
-        });
-
         $original->insert unless $original->in_storage;
         $problem->update({ photo => $show_photo ? $original->photo : undef });
+        return 'photo';
     }
+    return;
 }
 
 sub update : Chained('report') : PathPart('update') : CaptureArgs(1) {
@@ -216,9 +228,33 @@ sub moderate_update : Chained('update') : PathPart('') : Args(0) {
 
     $c->forward('update_moderate_hide');
 
-    $c->forward('update_moderate_detail');
-    $c->forward('update_moderate_anon');
-    $c->forward('update_moderate_photo');
+    my @types = grep $_,
+        $c->forward('update_moderate_detail'),
+        $c->forward('update_moderate_anon'),
+        $c->forward('update_moderate_photo');
+
+    $c->detach( 'update_moderate_audit', \@types )
+}
+
+sub update_moderate_audit : Private {
+    my ($self, $c, @types) = @_;
+
+    my $user = $c->user->obj;
+    my $reason = $c->stash->{'moderation_reason'};
+    my $problem = $c->stash->{problem} or die;
+    my $comment = $c->stash->{comment} or die;
+
+    for my $type (@types) {
+        $c->model('DB::ModerationLog')->create({
+            user => $user,
+            problem => $problem,
+            comment => $comment,
+            moderation_object => 'comment',
+            moderation_type => $type,
+            reason => $reason,
+        });
+    }
+
 }
 
 sub update_moderate_hide : Private {
@@ -228,19 +264,10 @@ sub update_moderate_hide : Private {
     my $comment = $c->stash->{comment} or die;
 
     if ($c->req->param('update_hide')) {
-
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            comment => $comment,
-            moderation_object => 'comment',
-            moderation_type => 'hide',
-            reason => $c->stash->{'moderation_reason'},
-        });
-
         $comment->update({ state => 'hidden' });
-        $c->detach; # break chain here.
+        $c->detach( 'update_moderate_audit', ['hide'] ); # break chain here.
     }
+    return;
 }
 
 sub update_moderate_detail : Private {
@@ -257,19 +284,11 @@ sub update_moderate_detail : Private {
         : $self->diff($original_detail, $c->req->param('update_detail'));
 
     if ($detail ne $old_detail) {
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            comment => $comment,
-            moderation_object => 'comment',
-            moderation_type => 'detail',
-            reason => $c->stash->{'moderation_reason'},
-        });
-
         $original->insert unless $original->in_storage;
-
         $comment->update({ text => $detail });
+        return 'detail';
     }
+    return;
 }
 
 sub update_moderate_anon : Private {
@@ -284,18 +303,11 @@ sub update_moderate_anon : Private {
     my $old_anonymous = $comment->anonymous ? 1 : 0;
 
     if ($anonymous != $old_anonymous) {
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            comment => $comment,
-            moderation_object => 'comment',
-            moderation_type => 'anonymous',
-            reason => $c->stash->{'moderation_reason'},
-        });
-
         $original->insert unless $original->in_storage;
         $comment->update({ anonymous => $anonymous });
+        return 'anonymous';
     }
+    return;
 }
 
 sub update_moderate_photo : Private {
@@ -311,17 +323,9 @@ sub update_moderate_photo : Private {
     my $old_show_photo = $comment->photo ? 1 : 0;
 
     if ($show_photo != $old_show_photo) {
-        $c->model('DB::ModerationLog')->create({
-            user => $c->user->obj,
-            problem => $problem,
-            comment => $comment,
-            moderation_object => 'comment',
-            moderation_type => 'photo',
-            reason => $c->stash->{'moderation_reason'},
-        });
-
         $original->insert unless $original->in_storage;
         $comment->update({ photo => $show_photo ? $original->photo : undef });
+        return 'photo';
     }
 }
 
