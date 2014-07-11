@@ -495,13 +495,7 @@ sub _send_report_sent_email {
     my $nomail = shift;
     my $cobrand = shift;
 
-    my $template = 'confirm_report_sent.txt';
-    my $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $row->lang, $template )->stringify;
-    $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $template )->stringify
-        unless -e $template_path;
-    $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
-        unless -e $template_path;
-    $template = Utils::read_file( $template_path );
+    my $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, 'confirm_report_sent.txt');
 
     my $result = FixMyStreet::App->send_email_cron(
         {
