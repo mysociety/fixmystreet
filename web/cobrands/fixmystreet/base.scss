@@ -20,3 +20,72 @@
     p#international_message { margin: auto; padding: 0.5em 2em; max-width: 40em; text-align: center; }
     #message_close { float: right; }
 }
+
+.confirmation-header {
+  padding: 2em 1em;
+
+  @media only screen and (min-width: 48em) {
+    padding: 3em 0;
+    text-align: center;
+  }
+
+  h1 {
+    margin-top: 0;
+  }
+
+  p {
+    font-size: 1.3em;
+    line-height: 1.4em;
+    margin-bottom: 0;
+  }
+
+  p + p {
+    margin-top: 0.5em;
+  }
+}
+
+.advert-mobile-apps {
+  margin: 0 -1em; // counteract padding on parent
+  background-color: #fff9cc;
+  padding: 2em;
+
+  @media only screen and (min-width: 48em) {
+    padding-left: 37%;
+    background: #fff9cc url(/cobrands/fixmystreet/images/advert-app-watercolour.jpg) 7% 50% no-repeat;
+  }
+
+  h1 {
+    margin-top: 0;
+  }
+
+  p {
+    font-size: 1.3em;
+    line-height: 1.4em;
+  }
+
+  .app-links {
+    @include clearfix;
+    margin-bottom: 1em;
+
+    a {
+      float: left;
+      margin-right: 1em;
+    }
+
+    a[href*="itunes.apple.com"] {
+      margin-top: 3px; // compensate for slightly smaller itunes button
+    }
+  }
+
+  .desktop-advice {
+    clear: left;
+    font-size: 1em;
+    line-height: 1.2em;
+    color: #745D17; // brown
+
+    @media only screen and (min-width: 48em) {
+      width: 28em; // break line at a nice point
+    }
+  }
+}
+

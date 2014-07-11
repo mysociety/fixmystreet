@@ -1,19 +1,23 @@
-[% INCLUDE 'header.html', title => loc('Confirmation') %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title => loc('Confirmation') %]
 
-<h1>[% loc('Confirmation') %]</h1>
+<div class="confirmation-header">
+  <h1>[% loc('Your update has been confirmed!') %]</h1>
 
 <p class="confirmed">
 [% IF creator_fixed %]
 [%
-    tprintf(loc('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'), c.uri_for( '/report', problem_id ) );
+    tprintf(loc('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'),
+        c.uri_for( '/report', problem_id ) );
 %]
 [% ELSE %]
 [%
-    tprintf( loc('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'), c.uri_for( '/report',
-    update.problem.id ) _ '#update_' _ update.id );
+    tprintf( loc('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'),
+        c.uri_for( '/report', update.problem.id ) _ '#update_' _ update.id );
 %]
 [% END %]
 </p>
+
+</div>
 
 [% display_crosssell_advert( update.user.email, update.name ) %]
 

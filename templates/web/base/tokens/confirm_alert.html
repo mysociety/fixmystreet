@@ -1,6 +1,7 @@
-[% INCLUDE 'header.html', title =>  loc('Local RSS feeds and email alerts') %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title =>  loc('Local RSS feeds and email alerts') %]
 
-<h1>[% loc('Local RSS feeds and email alerts') %]</h1>
+<div class="confirmation-header">
+    <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
 <p>
 [% IF confirm_type == 'subscribe' %]
@@ -11,6 +12,8 @@
   [% loc('You have successfully created your alert.') %]
 [% END %]
 </p>
+
+</div>
 
 [% display_crosssell_advert( alert.user.email, alert.user.name ) %]
 
