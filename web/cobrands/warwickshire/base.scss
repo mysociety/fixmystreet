@@ -45,4 +45,9 @@ nav ul li {
 #site-header {
     height: 16em;
     background: white;
+    border-top-width: 4px;
+}
+
+body.mappage > div.container {
+    padding-top: 0;
 }
