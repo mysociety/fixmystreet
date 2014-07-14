@@ -38,6 +38,18 @@ body.mappage {
     margin-bottom: 0;
 }
 
+body.twothirdswidthpage .content .sticky-sidebar {
+    z-index: 0;
+
+    aside {
+        top: 18em;
+    }
+}
+
+#footer-logos-bottom .container {
+    background: $base_bg;
+}
+
 
 // These bits are taken from Warwickshire's CSS to override default FMS styles
 // The 'body.mappage .container' selector has been added to each so it takes precedent over
