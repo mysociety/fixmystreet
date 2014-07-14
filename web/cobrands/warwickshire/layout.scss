@@ -39,21 +39,27 @@ body.mappage {
 
 
 // These bits are taken from Warwickshire's CSS to override default FMS styles
+// The 'body.mappage .container' selector has been added to each so it takes precedent over
+// default FMS style.
+
 // http://www.warwickshire.gov.uk/wp-content/themes/gamma/style.css
 .container,
 .navbar-static-top .container,
 .navbar-fixed-top .container,
-.navbar-fixed-bottom .container {
+.navbar-fixed-bottom .container,
+body.mappage .container {
   width: 940px;
 }
 
-.navbar .container {
+.navbar .container,
+body.mappage .container {
   width: auto;
 }
 
 .navbar-static-top .container,
 .navbar-fixed-top .container,
-.navbar-fixed-bottom .container {
+.navbar-fixed-bottom .container,
+body.mappage .container {
   width: 940px;
 }
 
@@ -62,7 +68,8 @@ body.mappage {
     .container,
       .navbar-static-top .container,
       .navbar-fixed-top .container,
-      .navbar-fixed-bottom .container {
+      .navbar-fixed-bottom .container,
+      body.mappage .container {
         width: 1170px;
     }
 }
@@ -71,19 +78,22 @@ body.mappage {
     .container,
       .navbar-static-top .container,
       .navbar-fixed-top .container,
-      .navbar-fixed-bottom .container {
+      .navbar-fixed-bottom .container,
+      body.mappage .container {
         width: 724px;
       }
   }
  
 @media (max-width: 767px) {
-    .container {
+    .container,
+    body.mappage .container {
         width: auto;
       }
 }
 
 @media (max-width: 979px) {
-    .navbar .container {
+    .navbar .container,
+    body.mappage .container {
         width: auto;
         padding: 0;
       }
