@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.4.1.
+Platform is now at version 1.4.2.
 
 ## Installation
 
@@ -38,6 +38,18 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.4.2 (14th July 2014)
+    - Maintenance release to deal with failing package installation. #832
+    - User additions/improvements:
+        - New links from /reports to open/fixed reports. #798
+        - Better detection of signing in on /auth form. #816
+    - Installation/developer improvements:
+        - Allow SMTP username/password to be specified. #406
+        - Correct GitHub link in Vagrantfile.
+        - Error correctly if cron-wrapper fails to run.
+        - Rename 'default' web templates directory to 'base'.
+        - Move UK-specific text to separate templates. #344
+        - Upgrade bundled cpanm. #807
 * v1.4.1 (23rd May 2014)
     - Don't run some cron scripts by default, and rejig timings, to alleviate
       memory problems on EC2 micro instances. #640
