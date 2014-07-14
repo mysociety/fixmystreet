@@ -1,1 +1,19 @@
-packages.debian-wheezy
+# Please note that this package list currently forms part of the
+# mySociety deployment infrastructure -- please discuss on the
+# mailing list if you want to change it.
+
+make
+jhead
+liberror-perl
+liblocale-gettext-perl
+libsoap-lite-perl
+memcached
+perl
+perlmagick
+libmath-bigint-gmp-perl
+gettext
+ruby-compass
+postgresql-server-dev-9.1 | postgresql-server-dev-8.4
+gnuplot
+ttf-bitstream-vera
+libexpat1-dev
