@@ -5,8 +5,14 @@
 
 @import "../sass/base";
 
-#front-main #front-main-container {
-    color: white;
+#front-main {
+    background: $green;
+    padding: 1em;
+    margin: 0;
+
+    h2, #front-main-container, #postcodeForm {
+        color: white;
+    }
 }
 
 #mega-menu-navbar {
@@ -27,8 +33,16 @@ body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 20px;
+    margin-left: -20px;
+    margin-right: -20px;
+
 }
 
 nav ul li {
     list-style: none;
+}
+
+#site-header {
+    height: 16em;
+    background: white;
 }
