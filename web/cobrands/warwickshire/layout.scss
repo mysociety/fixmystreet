@@ -23,18 +23,15 @@ body.frontpage {
 }
 
 body.mappage {
-    #wrapper {
-        &:before,&:after {
-            display: table;
-            line-height: 0;
-            content: "";
-        }
-        &:after {
-            clear: both;
-        }
-    }
-
     #footer-container, #footer-logos-bottom {
         display: none;
+    }
+
+    #wrapper.container:before,#wrapper.container:after {
+        display: none;
+    }
+
+    #wrapper {
+        padding: 0;
     }
 }
