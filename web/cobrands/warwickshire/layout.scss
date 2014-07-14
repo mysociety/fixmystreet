@@ -1,9 +1,6 @@
 @import "_colours";
 @import "../sass/layout";
 
-.container, .navbar .container {
-    width: 1170px;
-}
 
 #site-header {
     .navbar {
@@ -27,11 +24,67 @@ body.mappage {
         display: none;
     }
 
-    #wrapper.container:before,#wrapper.container:after {
+    #wrapper.container:before, #wrapper.container:after {
         display: none;
     }
 
     #wrapper {
         padding: 0;
     }
+}
+
+.content {
+    margin-bottom: 0;
+}
+
+
+// These bits are taken from Warwickshire's CSS to override default FMS styles
+// http://www.warwickshire.gov.uk/wp-content/themes/gamma/style.css
+.container,
+.navbar-static-top .container,
+.navbar-fixed-top .container,
+.navbar-fixed-bottom .container {
+  width: 940px;
+}
+
+.navbar .container {
+  width: auto;
+}
+
+.navbar-static-top .container,
+.navbar-fixed-top .container,
+.navbar-fixed-bottom .container {
+  width: 940px;
+}
+
+// http://www.warwickshire.gov.uk/wp-content/themes/gamma/bootstrap-responsive.css
+@media (min-width: 1200px) {
+    .container,
+      .navbar-static-top .container,
+      .navbar-fixed-top .container,
+      .navbar-fixed-bottom .container {
+        width: 1170px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+    .container,
+      .navbar-static-top .container,
+      .navbar-fixed-top .container,
+      .navbar-fixed-bottom .container {
+        width: 724px;
+      }
+  }
+ 
+@media (max-width: 767px) {
+    .container {
+        width: auto;
+      }
+}
+
+@media (max-width: 979px) {
+    .navbar .container {
+        width: auto;
+        padding: 0;
+      }
 }
