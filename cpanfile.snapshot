@@ -28,6 +28,27 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+  Authen-SASL-2.16
+    pathname: G/GB/GBARR/Authen-SASL-2.16.tar.gz
+    provides:
+      Authen::SASL 2.16
+      Authen::SASL::CRAM_MD5 2.14
+      Authen::SASL::EXTERNAL 2.14
+      Authen::SASL::Perl 2.14
+      Authen::SASL::Perl::ANONYMOUS 2.14
+      Authen::SASL::Perl::CRAM_MD5 2.14
+      Authen::SASL::Perl::DIGEST_MD5 2.14
+      Authen::SASL::Perl::EXTERNAL 2.14
+      Authen::SASL::Perl::GSSAPI 0.05
+      Authen::SASL::Perl::LOGIN 2.14
+      Authen::SASL::Perl::Layer 2.14
+      Authen::SASL::Perl::PLAIN 2.14
+    requirements:
+      Digest::HMAC_MD5 0
+      Digest::MD5 0
+      ExtUtils::MakeMaker 6.42
+      Test::More 0
+      perl 5.005
   B-Hooks-EndOfScope-0.12
     pathname: B/BO/BOBTFISH/B-Hooks-EndOfScope-0.12.tar.gz
     provides:
@@ -2398,15 +2419,14 @@ DISTRIBUTIONS
       Digest::SHA 1
       ExtUtils::MakeMaker 0
       perl 5.004
-  Dir-Self-0.10
-    pathname: M/MA/MAUKE/Dir-Self-0.10.tar.gz
+  Dir-Self-0.11
+    pathname: M/MA/MAUKE/Dir-Self-0.11.tar.gz
     provides:
-      Dir::Self undef
+      Dir::Self 0.11
     requirements:
       Carp 0
-      ExtUtils::MakeMaker 0
       File::Spec 0
-      Test::More 0
+      strict 0
   Dist-CheckConflicts-0.09
     pathname: D/DO/DOY/Dist-CheckConflicts-0.09.tar.gz
     provides:
@@ -4200,6 +4220,27 @@ DISTRIBUTIONS
       IO::Select 0
       IO::Socket::INET 0
       perl 5.006002
+  Net-SMTP-SSL-1.01
+    pathname: C/CW/CWEST/Net-SMTP-SSL-1.01.tar.gz
+    provides:
+      Net::SMTP::SSL 1.01
+    requirements:
+      ExtUtils::MakeMaker 0
+      IO::Socket::SSL 0
+      Net::SMTP 0
+      Test::More 0.47
+  Net-SMTP-TLS-0.12
+    pathname: A/AW/AWESTHOLM/Net-SMTP-TLS-0.12.tar.gz
+    provides:
+      Net::SMTP::TLS 0.12
+    requirements:
+      Digest::HMAC_MD5 0
+      ExtUtils::MakeMaker 0
+      IO::Socket::INET 0
+      IO::Socket::SSL 0
+      MIME::Base64 0
+      Net::SSLeay 0
+      Test::More 0
   Net-SSLeay-1.52
     pathname: M/MI/MIKEM/Net-SSLeay-1.52.tar.gz
     provides:

@@ -18,6 +18,7 @@ requires 'Catalyst::Plugin::Unicode::Encoding';
 requires 'Catalyst::View::TT';
 
 # Modules used by FixMyStreet
+requires 'Authen::SASL';
 requires 'Cache::Memcached';
 requires 'Carp';
 requires 'CGI';
@@ -61,6 +62,8 @@ requires 'Module::Pluggable';
 requires 'Moose';
 requires 'namespace::autoclean';
 requires 'Net::Domain::TLD';
+requires 'Net::SMTP::SSL';
+requires 'Net::SMTP::TLS';
 requires 'Path::Class';
 requires 'POSIX';
 requires 'Readonly';
