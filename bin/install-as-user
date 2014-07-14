@@ -88,8 +88,8 @@ export PATH="\$GEM_HOME/bin:\$PATH"
 EOBRC
 fi
 
-gem install --conservative --no-ri --no-rdoc sass -v 3.2.14
-gem install --conservative --no-ri --no-rdoc compass -v 0.12.2
+gem install --no-ri --no-rdoc sass -v 3.2.14
+gem install --no-ri --no-rdoc compass -v 0.12.2
 
 # Use compass to generate the CSS, if it doesn't seem to already
 # exist:
