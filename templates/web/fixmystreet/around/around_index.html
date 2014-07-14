@@ -8,6 +8,7 @@
     # '/report/new' and the partial hidden field is added to the form.
 %]
 
+<div class="tablewrapper">
 [% IF location_error %]
     [% INCLUDE 'around/location_error.html' %]
 [% END %]
@@ -27,5 +28,6 @@
         [% loc("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box above&nbsp;:") %]
     </p>
 [% END %]
+</div>
 
 [% INCLUDE 'footer.html' %]
