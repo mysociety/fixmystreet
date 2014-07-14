@@ -1,12 +1,40 @@
 @import "_colours";
 @import "../sass/layout";
 
-.container {
+.container, .navbar .container {
     width: 1170px;
 }
 
+#site-header {
+    .navbar {
+        margin-bottom: 0;
+    }
+
+    .container {
+        min-height: 0;
+    }
+}
+
+// Needs to be within body.frontpage to override an existing rule in _layout.scss
 body.frontpage {
     #site-header {
         height: auto;
+    }
+}
+
+body.mappage {
+    #wrapper {
+        &:before,&:after {
+            display: table;
+            line-height: 0;
+            content: "";
+        }
+        &:after {
+            clear: both;
+        }
+    }
+
+    #footer-container, #footer-logos-bottom {
+        display: none;
     }
 }
