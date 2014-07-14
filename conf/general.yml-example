@@ -156,9 +156,13 @@ RSS_LIMIT: '20'
 # How many reports to show per page on the All Reports pages
 ALL_REPORTS_PER_PAGE: 100
 
-# If you wish to send email through a SMTP server elsewhere, change this
-# variable.
+# If you wish to send email through a SMTP server elsewhere, change these
+# variables. SMTP_TYPE should be one of '', 'ssl' or 'tls'.
 SMTP_SMARTHOST: 'localhost'
+SMTP_TYPE: ''
+SMTP_PORT: ''
+SMTP_USERNAME: ''
+SMTP_PASSWORD: ''
 
 # Gaze is a world-wide service for population density lookups. You can leave
 # this as is.

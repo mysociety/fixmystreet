@@ -34,9 +34,28 @@ if ( FixMyStreet->test_mode ) {
 elsif ( my $smtp_host = FixMyStreet->config('SMTP_SMARTHOST') ) {
 
     # Email::Send::SMTP
+    my $type = FixMyStreet->config('SMTP_TYPE') || '';
+    my $port = FixMyStreet->config('SMTP_PORT') || '';
+    my $username = FixMyStreet->config('SMTP_USERNAME') || '';
+    my $password = FixMyStreet->config('SMTP_PASSWORD') || '';
+
+    unless ($port) {
+        $port = 25;
+        $port = 465 if $type eq 'ssl';
+        $port = 587 if $type eq 'tls';
+    }
+
+    my $mailer_args = [
+        Host => $smtp_host,
+        Port => $port,
+    ];
+    push @$mailer_args, ssl => 1 if $type eq 'ssl';
+    push @$mailer_args, tls => 1 if $type eq 'tls';
+    push @$mailer_args, username => $username, password => $password
+        if $username && $password;
     $args = {
         mailer      => 'FixMyStreet::EmailSend',
-        mailer_args => [ Host => $smtp_host ],
+        mailer_args => $mailer_args,
     };
 }
 else {
