@@ -39,14 +39,14 @@ body {
     line-height: 20px;
 }
 
-nav ul li {
-    list-style: none;
-}
-
 #site-header {
-    height: 16em;
+    height: auto;
     background: white;
     border-top-width: 4px;
+
+    nav ul li, ul.nav li {
+        list-style: none;
+    }
 }
 
 body.mappage > div.container {
@@ -83,5 +83,16 @@ body.mappage > div.container {
         section.full-width {
             margin: 0 0 0 -15px;
         }
+    }
+}
+
+@media (max-width: 978px) {
+    #mega-menu-navbar .navbar-inner {
+        display: block;
+    }
+
+    .navbar-container {
+        padding: 0;
+        margin: 0;
     }
 }
