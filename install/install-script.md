@@ -75,7 +75,8 @@ command from the `apache2-utils` packages, as follows:
     Adding password for user fmsadmin
 
 The script will install postfix to allow outgoing email; you can change the
-`SMTP_SMARTHOST` variable in `conf/general.yml` to use a different smarthost.
+`SMTP_SMARTHOST` and other `SMTP` variables in `conf/general.yml` to use a
+different SMTP server.
 
 Please also see the instructions for [updating your installation](/updating/ami/).
 

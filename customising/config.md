@@ -32,63 +32,67 @@ The following are all the configuration settings that you can change in `config/
 
 ### Database config
 
-<code><a href="#fms_db_host">FMS_DB_HOST</a></code><br>
-<code><a href="#fms_db_port">FMS_DB_PORT</a></code><br>
-<code><a href="#fms_db_name">FMS_DB_NAME</a></code><br>
-<code><a href="#fms_db_user">FMS_DB_USER</a></code><br>
+* <code><a href="#fms_db_host">FMS_DB_HOST</a></code>,
+<code><a href="#fms_db_port">FMS_DB_PORT</a></code>,
+<code><a href="#fms_db_name">FMS_DB_NAME</a></code>,
+<code><a href="#fms_db_user">FMS_DB_USER</a></code>, and
 <code><a href="#fms_db_pass">FMS_DB_PASS</a></code>
 
 ### Site settings and behaviour
 
-<code><a href="#allowed_cobrands">ALLOWED_COBRANDS</a></code><br>
-<code><a href="#rss_limit">RSS_LIMIT</a></code><br>
-<code><a href="#all_reports_per_page">ALL_REPORTS_PER_PAGE</a></code><br>
-<code><a href="#area_links_from_problems">AREA_LINKS_FROM_PROBLEMS</a></code>
+* <code><a href="#allowed_cobrands">ALLOWED_COBRANDS</a></code>
+* <code><a href="#rss_limit">RSS_LIMIT</a></code>
+* <code><a href="#all_reports_per_page">ALL_REPORTS_PER_PAGE</a></code>
+* <code><a href="#area_links_from_problems">AREA_LINKS_FROM_PROBLEMS</a></code>
 
 ### URLs and directories
 
-<code><a href="#base_url">BASE_URL</a></code><br>
-<code><a href="#upload_dir">UPLOAD_DIR</a></code><br>
-<code><a href="#geo_cache">GEO_CACHE</a></code><br>
-<code><a href="#admin_base_url">ADMIN_BASE_URL</a></code>
+* <code><a href="#base_url">BASE_URL</a></code>
+* <code><a href="#upload_dir">UPLOAD_DIR</a></code>
+* <code><a href="#geo_cache">GEO_CACHE</a></code>
+* <code><a href="#admin_base_url">ADMIN_BASE_URL</a></code>
 
 ### Emailing
 
-<code><a href="#email_domain">EMAIL_DOMAIN</a></code><br>
-<code><a href="#contact_email">CONTACT_EMAIL</a></code><br>
-<code><a href="#contact_name">CONTACT_NAME</a></code><br>
-<code><a href="#do_not_reply_email">DO_NOT_REPLY_EMAIL</a></code><br>
-<code><a href="#smtp_smarthost">SMTP_SMARTHOST</a></code>
+* <code><a href="#email_domain">EMAIL_DOMAIN</a></code>
+* <code><a href="#contact_email">CONTACT_EMAIL</a></code>
+* <code><a href="#contact_name">CONTACT_NAME</a></code>
+* <code><a href="#do_not_reply_email">DO_NOT_REPLY_EMAIL</a></code>
+* SMTP server settings: <code><a href="#smtp_smarthost">SMTP_SMARTHOST</a></code>,
+    <code><a href="#smtp_type">SMTP_TYPE</a></code>,
+    <code><a href="#smtp_port">SMTP_PORT</a></code>,
+    <code><a href="#smtp_username">SMTP_USERNAME</a></code>,
+    and <code><a href="#smtp_password">SMTP_PASSWORD</a></code>
 
 ### Staging site (not production) behaviour
 
-<code><a href="#staging_site">STAGING_SITE</a></code><br>
-<code><a href="#send_reports_on_staging">SEND_REPORTS_ON_STAGING</a></code>
+* <code><a href="#staging_site">STAGING_SITE</a></code>
+* <code><a href="#send_reports_on_staging">SEND_REPORTS_ON_STAGING</a></code>
 
 ### MapIt (admin boundary service)
 
-<code><a href="#mapit_url">MAPIT_URL</a></code><br>
-<code><a href="#mapit_types">MAPIT_TYPES</a></code><br>
-<code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code><br>
-<code><a href="#mapit_generation">MAPIT_GENERATION</a></code><br>
-<code><a href="#mapit_types_children">MAPIT_TYPES_CHILDREN</a></code>
+* <code><a href="#mapit_url">MAPIT_URL</a></code>
+* <code><a href="#mapit_types">MAPIT_TYPES</a></code>
+* <code><a href="#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
+* <code><a href="#mapit_generation">MAPIT_GENERATION</a></code>
+* <code><a href="#mapit_types_children">MAPIT_TYPES_CHILDREN</a></code>
 
 ### Localisation and maps
 
-<code><a href="#languages">LANGUAGES</a></code><br>
-<code><a href="#time_zone">TIME_ZONE</a></code><br>
-<code><a href="#geocoder">GEOCODER</a></code><br>
-<code><a href="#geocoding_disambiguation">GEOCODING_DISAMBIGUATION</a></code><br>
-<code><a href="#example_places">EXAMPLE_PLACES</a></code><br>
-<code><a href="#map_type">MAP_TYPE</a></code><br>
-<code><a href="#google_maps_api_key">GOOGLE_MAPS_API_KEY</a></code><br>
-<code><a href="#bing_maps_api_key">BING_MAPS_API_KEY</a></code>
+* <code><a href="#languages">LANGUAGES</a></code>
+* <code><a href="#time_zone">TIME_ZONE</a></code>
+* <code><a href="#geocoder">GEOCODER</a></code>
+* <code><a href="#geocoding_disambiguation">GEOCODING_DISAMBIGUATION</a></code>
+* <code><a href="#example_places">EXAMPLE_PLACES</a></code>
+* <code><a href="#map_type">MAP_TYPE</a></code>
+* <code><a href="#google_maps_api_key">GOOGLE_MAPS_API_KEY</a></code>
+* <code><a href="#bing_maps_api_key">BING_MAPS_API_KEY</a></code>
 
 
 ### Sundry external services
 
-<code><a href="#gaze_url">GAZE_URL</a></code><br>
-<code><a href="#message_manager_url">MESSAGE_MANAGER_URL</a></code>
+* <code><a href="#gaze_url">GAZE_URL</a></code>
+* <code><a href="#message_manager_url">MESSAGE_MANAGER_URL</a></code>
 
 ---
 
@@ -882,9 +886,9 @@ ALLOWED_COBRANDS:
     <a name="smtp_smarthost"><code>SMTP_SMARTHOST</code></a>
   </dt>
   <dd>
-    The recommended SMTP smarthost is <code>localhost</code>.
-    If you wish to send email through a SMTP server elsewhere, change this
-    setting.
+    The default SMTP smarthost is <code>localhost</code>, a mail server on the
+    same machine you are running FixMyStreet. If you wish to send email through
+    a SMTP server elsewhere, change this and the other SMTP settings.
     <div class="more-info">
       <p>Example:</p>
       <ul class="examples">
@@ -893,6 +897,32 @@ ALLOWED_COBRANDS:
         </li>
       </ul>
     </div>
+  </dd>
+  <dt>
+    <a name="smtp_type"><code>SMTP_TYPE</code></a>
+  </dt>
+  <dd>
+    If your SMTP server supports SSL or TLS, set this variable to 'ssl' or
+    'tls', otherwise leave it as '' for unencrypted SMTP.
+  </dd>
+  <dt>
+    <a name="smtp_port"><code>SMTP_PORT</code></a>
+  </dt>
+  <dd>
+    The default SMTP port is 25 for unencrypted, 465 for SSL and 587 for TLS.
+    Leave as '' to use the default, otherwise set to your SMTP server port.
+  </dd>
+  <dt>
+    <a name="smtp_username"><code>SMTP_USERNAME</code></a>
+  </dt>
+  <dd>
+    The username for authenticating with your SMTP server, if required.
+  </dd>
+  <dt>
+    <a name="smtp_password"><code>SMTP_PASSWORD</code></a>
+  </dt>
+  <dd>
+    The password for authenticating with your SMTP server, if required.
   </dd>
 
   <dt>
