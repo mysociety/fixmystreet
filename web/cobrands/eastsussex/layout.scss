@@ -17,16 +17,19 @@
 }
 
 .container, .eastsussex-container {
-    width: initial;
+    width: 100%;
     max-width: 966px;
 }
 
-#site-header .header a.contact {
-    text-decoration: underline;
+#menu {
+    height: 55px;
 }
 
 footer {
+    position: relative;
+    z-index: 1000;
     margin-top: 0;
+    background: #aee1f4;
 
     a {
         text-decoration: underline;
@@ -52,6 +55,10 @@ footer {
     }
 }
 
+div.form-error, p.form-error {
+    display: block !important;
+}
+
 body.mappage {
     .main-menu-wrapper {
         position: fixed
@@ -62,64 +69,127 @@ body.mappage {
     }
 
     #fms_pan_zoom {
-        top: 14em!important;
+        top: 16em!important;
     }
 
     #mysociety {
-        padding-top: 7em;
+        margin-top: 0;
+        padding-top: 0;
+        width: auto;
+        background: transparent;
+    }
+
+    .content {
+        width: 27em;
+    }
+
+    #wrapper {
+        display: block;
+        width: auto;
     }
 
     #report-a-problem-sidebar {
-        top: 10em;
-
-        .sidebar-notes .plain-list li {
-            font-size: 1em;
-        }
+        top: 1em;
     }
 }
 
-body.mappage, body.twothirdswidthpage {
-    .content {
-        width: 27em;
-        .sticky-sidebar aside {
-            z-order: 3;
-            top: 16em;
-        }
-    }
+.general-sidebar-notes p, #report-a-problem-sidebar p, #report-a-problem-sidebar .sidebar-notes .plain-list li {
+    font-size: 13px;
+    line-height: 14px;
+}
 
-    /* map page has no menu, so requires less top margin */
-    &.mappage            .content { margin-top: 9em; }
-    &.twothirdswidthpage .content { margin-top: 15em; }
+body.twothirdswidthpage.alertindex .content .sticky-sidebar aside {
+    top: -17em;
+}
 
-    #site-header {
-        height: 0;
-    }
-
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 0;
+    position: absolute;
 }
 
 body.frontpage {
     #site-header {
-        height: 13em;
+        height: auto;
 
         .mobile-header-nav {
             display: none;
         }
     }
+
+    .content {
+        margin-top: 3em;
+    }
 }
 
 #site-header {
-    height: 10em;
-    border-top-width: 0px;
+    border-top-width: 0;
+    margin-top: 0;
+    background: rgb(3, 160, 227);
+
+    .container {
+        position: relative;
+    }
+
+    #nav-container.container {
+        min-height: 0;
+    }
+
+    #breadcrumb_breadcrumbTrail {
+        position: relative;
+
+        a {
+            color: white;
+        }
+
+
+        .breadcrumb {
+            margin: 9px 0 6px 0;
+
+            span {
+                font-weight: bold;
+            }
+
+            li.level1 a {
+                color: #194c7e;
+            }
+        }
+
+        .sign-in {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+    }
+
+    .header {
+        a.contact {
+            text-decoration: underline;
+        }
+
+        .alphabet h2 {
+            font-size: 1em;
+            font-weight: bold;
+        }
+    }
 }
 
 #mysociety {
-    margin-top: 9px;
+    margin-top: 0;
     padding-top: 24px;
     padding-bottom: 24px;
 }
 
 .content {
+    margin-top: 0;
     width: auto;
+}
+
+.content, body.twothirdswidthpage .content aside {
+    box-shadow: 0 0 12px 0 #dae1e5;
+}
+
+.banner p#fixed {
+    background-position: -328px -333px;
 }
 
 #skipped-map {
@@ -164,43 +234,22 @@ body.frontpage {
 }
 
 .main-menu-wrapper {
-    position: absolute;
-    height: 2.4em;
-    top: 162px;
-    z-index: 3;
-    background-color: #FFF;
-    width:100%;
-
-
-    ul {
-        margin: 0;
-    }
-
-    li {
-        list-style-type: none;
-        padding: 0.5em;
-        float: left;
-    }
-
-    .main-menu {
-        max-width: 966px;
-        margin: 0 auto;
-
-        ul li {
-            a, span {
-                background-color: transparent;
-                color: #369;
-            }
-            span {
-                font-weight: bold;
-            }
-        }
-    }
+    display: none;
 }
+
+
 
 @media only screen and (max-width: 61em) {
     #main-nav {
         padding-left: 0px;
         float:none;
+    }
+
+    #site-header {
+        height: auto;
+    }
+
+    body.twothirdswidthpage .content .sticky-sidebar {
+        top: 1em;
     }
 }
