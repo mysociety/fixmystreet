@@ -66,11 +66,23 @@ body.mappage {
     }
 
     #mysociety {
-        padding-top: 7em;
+        margin-top: 12em;
+        padding-top: 0;
+        width: auto;
+        background: transparent;
+    }
+
+    .content {
+        margin-top: 0;
+    }
+
+    #wrapper {
+        display: block;
+        width: auto;
     }
 
     #report-a-problem-sidebar {
-        top: 10em;
+        top: 1em;
 
         .sidebar-notes .plain-list li {
             font-size: 1em;
@@ -88,7 +100,6 @@ body.mappage, body.twothirdswidthpage {
     }
 
     /* map page has no menu, so requires less top margin */
-    &.mappage            .content { margin-top: 9em; }
     &.twothirdswidthpage .content { margin-top: 15em; }
 
     #site-header {
