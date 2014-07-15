@@ -27,7 +27,7 @@ sub error {
                     ref $_ eq 'HASH' ? $_ :
                     {
                         code => $code,
-                        description => $_,
+                        description => "$_",
                     }
                 } @errors,
             ],

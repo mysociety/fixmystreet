@@ -3,10 +3,6 @@ use Web::Simple;
 extends 't::open311::endpoint::Endpoint1';
 with 'Open311::Endpoint::Role::mySociety';
 
-use Open311::Endpoint::Service::Request::mySociety;
-
-use constant request_class => 'Open311::Endpoint::Service::Request::mySociety';
-
 sub get_service_request_updates {
     my ($self, $args) = @_;
 
