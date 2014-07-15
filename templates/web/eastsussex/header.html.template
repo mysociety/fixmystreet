@@ -1,14 +1,14 @@
 {HtmlTag}
 
 <head>
+    {MetadataDesktop}
+
     <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
     <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
     [% extra_css %]
     <!--[if (lt IE 9) & (!IEMobile)]>
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
     <![endif]-->
-
-    {MetadataDesktop}
 
     <script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
     [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = c.cobrand.site_title %]
@@ -17,8 +17,6 @@
     [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
         <link rel="canonical" href="http://www.fixmystreet.com[% c.req.uri.path_query %]">
     [% END %]
-
-    <title>East Sussex County Council</title>
 </head>
 
 <body id="eastsussex-gov-uk" class="[% bodyclass | html IF bodyclass %]">
