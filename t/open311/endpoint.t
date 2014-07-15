@@ -244,7 +244,8 @@ CONTENT
 subtest "GET Service Requests" => sub {
 
     my $res = $endpoint->run_test_request( GET => '/requests.xml', );
-    ok $res->is_success, 'valid request';
+    ok $res->is_success, 'valid request'
+        or die $res->content;
     my $xml = <<CONTENT;
 <?xml version="1.0" encoding="utf-8"?>
 <service_requests>

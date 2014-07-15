@@ -55,11 +55,13 @@ has agency_responsible => (
 has requested_datetime => (
     is => 'ro',
     isa => Maybe[ InstanceOf['DateTime'] ],
+    default => sub { DateTime->now() },
 );
 
 has updated_datetime => (
     is => 'rw',
     isa => Maybe[ InstanceOf['DateTime'] ],
+    default => sub { DateTime->now() },
 );
 
 has expected_datetime => (

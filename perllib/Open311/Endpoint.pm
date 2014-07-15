@@ -118,8 +118,6 @@ sub check_jurisdiction_id {
     return first { $jurisdiction_id eq $_ } $self->get_jurisdiction_ids;
 }
 
-
-
 =head2 Configurable arguments
 
     * default_service_notice - default for <service_notice> if not
@@ -141,6 +139,7 @@ sub check_jurisdiction_id {
             service_request_id  => ...
             # etc.
         }
+    * request_class - class to instantiate for requests via new_request
 
 =cut
 
@@ -181,6 +180,17 @@ has jurisdiction_ids => (
         get_jurisdiction_ids => 'elements',
     }
 );
+
+has request_class => (
+    is => 'ro',
+    isa => Str,
+    default => 'Open311::Endpoint::Service::Request',
+);
+
+sub new_request {
+    my ($self, %args) = @_;
+    return $self->request_class->new( %args );
+}
 
 =head2 Other accessors
 
@@ -239,6 +249,11 @@ has xml => (
 has w3_dt => (
     is => 'lazy',
     default => sub { DateTime::Format::W3CDTF->new },
+);
+
+has time_zone => (
+    is => 'ro',
+    default => 'Europe/London',
 );
 
 sub maybe_inflate_datetime {
@@ -403,7 +418,7 @@ sub POST_Service_Request_input_schema {
     my $service = $self->service($service_code)
         or return; # we can't fetch service, so signal error TODO
 
-    my %attributes;
+    my %attributes = ( required => {}, optional => {} );
     for my $attribute ($service->get_attributes) {
         my $section = $attribute->required ? 'required' : 'optional';
         my $key = sprintf 'attribute[%s]', $attribute->code;
@@ -440,7 +455,7 @@ sub POST_Service_Request_input_schema {
                 phone => '//str',
                 description => '//str',
                 media_url => '//str',
-                %{ $attributes{optional} },
+                %{ $attributes{optional} || {}},
                 (map %$_, @address_options),
                 $self->get_jurisdiction_id_optional_clause,
             },
@@ -491,6 +506,13 @@ sub POST_Service_Request {
     # TODO pass this through instead of calculating again?
     my $service_code = $args->{service_code};
     my $service = $self->service($service_code);
+
+    for my $k (keys %$args) {
+        if ($k =~ /^attribute\[(\w+)\]$/) {
+            my $value = delete $args->{$k};
+            $args->{attributes}{$1} = $value;
+        }
+    }
 
     my @service_requests = $self->post_service_request( $service, $args );
         
@@ -639,7 +661,12 @@ sub format_service_requests {
                     ),
                     (
                         map {
-                            $_ => $self->w3_dt->format_datetime( $request->$_ ),
+                            if (my $dt = $request->$_) {
+                                $_ => $self->w3_dt->format_datetime( $dt )
+                            }
+                            else {
+                                ()
+                            }
                         }
                         qw/
                             requested_datetime
@@ -729,8 +756,10 @@ sub call_api {
             $schema->assert_valid( $data );
         };
         if ($@) {
+            use Data::Dumper;
             return Open311::Endpoint::Result->error( 500,
                 "Error in output for $api_name",
+                Dumper($data),
                 split /\n/, $@,
                 # map $_->struct, @{ $@->failures },
             );

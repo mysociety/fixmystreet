@@ -31,7 +31,6 @@ sub add_update {
     $self->_add_update($update);
 }
 
-
 sub last_update {
     my $self = shift;
     return $self->has_updates ? $self->get_update(-1) : undef;
