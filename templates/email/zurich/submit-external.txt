@@ -6,13 +6,13 @@ Die folgende Meldung wurde auf http://www.stadt-zuerich.ch/zueriwieneu erfasst:
 
 Öffentliche URL: <?=$values['url']?>
 
-"Züri wie neu" ist ein Pilotprojekt der Stadt Zürich zum Thema
+"Züri wie neu" ist eine Dienstleistung der Stadt Zürich zum Thema
 Bürgerbeteiligung. Auf dieser Plattform kann die Bevölkerung auf Schäden und
-Mängel an der städtischen Infrastruktur hinweisen.  Diese Meldung wurde Ihnen
-von der Stadt Zürich gesendet, da es Ihr Zuständigkeitsgebiet betreffen könnte.
+Mängel an der städtischen Infrastruktur hinweisen.
+Diese Meldung wurde Ihnen von der Stadt Zürich gesendet, da es Ihr
+Zuständigkeitsgebiet betreffen könnte.
 
-Bei Fragen zum Pilotprojekt "Züri wie neu" wenden Sie sich bitte an
-gis-zentrum@zuerich.ch.
+Bei Fragen zu "Züri wie neu" wenden Sie sich bitte an gis-zentrum@zuerich.ch.
 
 
 Freundliche Grüsse

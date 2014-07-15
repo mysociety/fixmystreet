@@ -3,7 +3,7 @@ Subject: Züri wie neu: Meldung #[% problem.id %]
 Grüezi [% problem.name %]
 
 Besten Dank für Ihre Meldung auf <<Züri wie neu>>. Wir haben Ihr Anliegen an [% problem.body(c).name %]
-weitergeleitet, da es nicht in den Zuständigkeitsbereich der am Pilot beteiligten Fachbereiche fällt.
+weitergeleitet, da es nicht in den Zuständigkeitsbereich der beteiligten Fachbereiche fällt.
 
 Unter:
     [% url %]

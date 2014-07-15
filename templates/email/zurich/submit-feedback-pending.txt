@@ -2,7 +2,7 @@ Subject: Züri wie neu: Meldung #<?=$values['id']?> bereit für Feedback
 
 Guten Tag <?=$values['bodies_name']?>,
 
-Diese Meldung wurde vom Fachbereich abschliessend beantwortet und kann nun auf Züri wie neu beantwortet und abgeschlossen werden.
+Diese Meldung wurde vom Fachbereich abschliessend beantwortet und kann nun auf <<Züri wie neu>> beantwortet und abgeschlossen werden.
 
 Öffentliche URL: <?=$values['url']?>
 
