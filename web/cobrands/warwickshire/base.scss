@@ -15,6 +15,10 @@
     }
 }
 
+#front-howto #front_stats {
+    color: white;
+}
+
 #mega-menu-navbar {
     margin-bottom: 0;
     margin-top: 5px;
@@ -33,9 +37,6 @@ body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 20px;
-    margin-left: -20px;
-    margin-right: -20px;
-
 }
 
 nav ul li {
@@ -50,4 +51,37 @@ nav ul li {
 
 body.mappage > div.container {
     padding-top: 0;
+}
+
+@media (max-width: 767px) {
+    body {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .navbar-fixed-top {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .style-1-gradient {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    #wrapper {
+        padding: 15px 0;
+    }
+
+    body.mappage #wrapper {
+        padding-top: 0;
+    }
+
+    #front-howto, #front-recently {
+        padding-left: 15px;
+
+        section.full-width {
+            margin: 0 0 0 -15px;
+        }
+    }
 }
