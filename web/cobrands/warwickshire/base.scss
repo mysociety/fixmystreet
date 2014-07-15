@@ -46,6 +46,11 @@ body {
 
     nav ul li, ul.nav li {
         list-style: none;
+        margin-bottom: 0;
+    }
+
+    .container {
+        min-height: 0;
     }
 }
 
@@ -70,7 +75,7 @@ body.mappage > div.container {
     }
 
     #wrapper {
-        padding: 15px 0;
+        padding: 5px 0;
     }
 
     body.mappage #wrapper {
@@ -84,6 +89,23 @@ body.mappage > div.container {
             margin: 0 0 0 -15px;
         }
     }
+
+    #top-header .container {
+        padding: 0 1em;
+    }
+
+    #mega-menu-navbar .navbar-inner {
+        padding: 0;
+
+        #mega-menu li a {
+            padding: 4px 8px;
+        }
+    }
+
+    .navbar .nav {
+        margin: 0;
+    }
+
 }
 
 @media (max-width: 978px) {
@@ -94,5 +116,13 @@ body.mappage > div.container {
     .navbar-container {
         padding: 0;
         margin: 0;
+    }
+}
+
+// Lifted from bootstrap-responsive.css, no idea why this
+// media query has a different pixel size to the one above...
+@media (max-width: 979px) {
+    .navbar-fixed-top .navbar-inner {
+        padding: 0 5px;
     }
 }
