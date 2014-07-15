@@ -22,7 +22,6 @@ title: Installation troubleshooting
 * [template caching](#template-caching)
 * [Image::Magick perl module](#image-magick)
 * [missing Perl modules](#missing-perl-modules)
-* [502 Bad Gateway error on EC2](#bad-gateway-error-on-ec2)
 * [No styling (CSS)](#no-styling)
 * [Bad YAML format in config settings](#bad-yaml): no response or 500 error
 * [Change of config being ignored](#requires-restart): requires restart
@@ -73,18 +72,6 @@ FixMyStreet on your machine but if we've missed one, please let us know. If you
 need a new module for something you're developing, please get in touch as
 adding things to carton (the mechanism FixMyStreet uses to manage Perl
 dependencies) is currently not as simple as we would like.
-
-<a name="bad-gateway-error-on-ec2"> </a>
-
-### 502 Bad Gateway error on EC2
-
-There's a known problem with Amazon's **micro** instance not having
-enough memory when FixMyStreet's cron jobs run. See
-[more about the AMI]({{ site.baseurl }}install/ami/) and 
-[this GitHub ticket](https://github.com/mysociety/fixmystreet/issues/640).
-
-The gateway fails once the fastcgi process dies. This doesn't occur if the
-server has enough memory.
 
 <a name="no-styling"> </a>
 
