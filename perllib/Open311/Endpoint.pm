@@ -118,8 +118,6 @@ sub check_jurisdiction_id {
     return first { $jurisdiction_id eq $_ } $self->get_jurisdiction_ids;
 }
 
-
-
 =head2 Configurable arguments
 
     * default_service_notice - default for <service_notice> if not
@@ -639,7 +637,12 @@ sub format_service_requests {
                     ),
                     (
                         map {
-                            $_ => $self->w3_dt->format_datetime( $request->$_ ),
+                            if (my $dt = $request->$_) {
+                                $_ => $self->w3_dt->format_datetime( $dt )
+                            }
+                            else {
+                                ()
+                            }
                         }
                         qw/
                             requested_datetime

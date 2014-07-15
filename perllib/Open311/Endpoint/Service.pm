@@ -28,6 +28,7 @@ has description => (
 has keywords => (
     is => 'ro',
     isa => ArrayRef[Str],
+    default => sub { [] },
 );
 
 has group => (
@@ -43,6 +44,7 @@ has type => (
 has attributes => (
     is => 'ro',
     isa => ArrayRef[ InstanceOf['Open311::Endpoint::Service::Attribute'] ],
+    default => sub { [] },
     handles_via => 'Array',
     handles => {
         has_attributes => 'count',
