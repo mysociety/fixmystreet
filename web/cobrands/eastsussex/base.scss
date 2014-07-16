@@ -5,6 +5,10 @@
 
 @import "../sass/base";
 
+body {
+    font-size: 13px;
+}
+
 a, a:visited {
     color: #369;
     &:hover, &:active {
@@ -70,8 +74,17 @@ h1.main {
     margin: 0;
     padding: 1em;
 
+    #front-main-container {
+        text-align: center;
+    }
+
     #postcodeForm {
         padding: 1em;
+
+        label {
+            text-align: center;
+        }
+
         div {
             padding-top: 0px;
             input#pc {
@@ -80,6 +93,12 @@ h1.main {
                 height: 100%;
             }
         }
+    }
+}
+
+#mysociety {
+    h1, h2 {
+        text-align: center;
     }
 }
 
