@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import urllib2
+import os
 
 TEMPLATES = {
     "header.html.template": (
@@ -29,6 +30,7 @@ def patch_fragment(fragment, patches):
 
 
 def main():
+    os.chdir(os.path.dirname(__file__))
     for template_path, fragment_names in TEMPLATES.items():
         template = open(template_path).read()
         fragments = {}
