@@ -35,6 +35,12 @@ L<Open311::Endpoint::Service::Request::mySociety> objects.
 use Moo::Role;
 no warnings 'illegalproto';
 
+use Open311::Endpoint::Service::Request::mySociety;
+has '+request_class' => (
+    is => 'ro',
+    default => 'Open311::Endpoint::Service::Request::mySociety',
+);
+
 around dispatch_request => sub {
     my ($orig, $self, @args) = @_;
     my @dispatch = $self->$orig(@args);

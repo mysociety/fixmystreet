@@ -139,6 +139,7 @@ sub check_jurisdiction_id {
             service_request_id  => ...
             # etc.
         }
+    * request_class - class to instantiate for requests via new_request
 
 =cut
 
@@ -179,6 +180,17 @@ has jurisdiction_ids => (
         get_jurisdiction_ids => 'elements',
     }
 );
+
+has request_class => (
+    is => 'ro',
+    isa => Str,
+    default => 'Open311::Endpoint::Service::Request',
+);
+
+sub new_request {
+    my ($self, %args) = @_;
+    return $self->request_class->new( %args );
+}
 
 =head2 Other accessors
 
