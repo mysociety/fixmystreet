@@ -94,23 +94,19 @@ body.mappage, body.twothirdswidthpage {
     .content {
         width: 27em;
         .sticky-sidebar aside {
-            z-order: 3;
+            z-index: 3;
             top: 16em;
         }
     }
+}
 
-    /* map page has no menu, so requires less top margin */
-    &.twothirdswidthpage .content { margin-top: 15em; }
-
-    #site-header {
-        height: 0;
-    }
-
+body.twothirdswidthpage .content {
+    margin-top: 15em;
 }
 
 body.frontpage {
     #site-header {
-        height: 13em;
+        height: auto;
 
         .mobile-header-nav {
             display: none;
@@ -119,7 +115,6 @@ body.frontpage {
 }
 
 #site-header {
-    height: 10em;
     border-top-width: 0px;
 }
 
