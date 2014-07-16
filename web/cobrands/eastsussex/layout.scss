@@ -66,7 +66,7 @@ body.mappage {
     }
 
     #mysociety {
-        margin-top: 13em;
+        margin-top: 0;
         padding-top: 0;
         width: auto;
         background: transparent;
@@ -74,6 +74,7 @@ body.mappage {
 
     .content {
         margin-top: 0;
+        width: 27em;
     }
 
     #wrapper {
@@ -90,18 +91,8 @@ body.mappage {
     }
 }
 
-body.mappage, body.twothirdswidthpage {
-    .content {
-        width: 27em;
-        .sticky-sidebar aside {
-            z-index: 3;
-            top: 16em;
-        }
-    }
-}
-
-body.twothirdswidthpage .content {
-    margin-top: 15em;
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 20em;
 }
 
 body.frontpage {
