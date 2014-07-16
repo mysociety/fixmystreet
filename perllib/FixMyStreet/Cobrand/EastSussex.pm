@@ -34,5 +34,13 @@ sub example_places {
     return ( 'BN7 2LZ', 'White Hill, Lewes' );
 }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter an East Sussex postcode, or street name and area';
+}
+
+# increase map zoom level so street names are visible
+sub default_map_zoom { return 3; }
+
 1;
 
