@@ -47,6 +47,10 @@ h1.main {
   height: 48px;
 }
 
+#breadcrumb_breadcrumbTrail ol li {
+    list-style: none;
+}
+
 #problems-nav {
     border-bottom:0.25em solid $primary;
     ul li a {

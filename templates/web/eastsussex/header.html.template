@@ -21,7 +21,32 @@
 
 <body id="eastsussex-gov-uk" class="[% bodyclass | html IF bodyclass %]">
 
-{HeaderDesktop}
+<div id="site-header">
+    {HeaderDesktop}
+
+    <div class="container" id="nav-container">
+        <nav id="breadcrumb_breadcrumbTrail">
+            <ol class="breadcrumb screen large">
+                <li class="up level1">
+                    <a href="//www.eastsussex.gov.uk/default.htm">Home</a>
+                </li>
+                <li class="current level2">
+                    <a href="/">FixMyStreet</a>
+                </li>
+                <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                    >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                %]<li><[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
+                    %]>[% loc("Your reports") %]</[% ( c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) ) ? 'span' : 'a' %]></li>[%
+                %]<li><[% IF c.req.uri.path == '/reports/East+Sussex' %]span[% ELSE %]a href="/reports/East+Sussex"[% END
+                    %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                    %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                %]<li class="last"><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                    %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+            </ol>
+        </nav>
+    </div>
+</div>
 
 <div class="wrapper" id="wrapper"><div id="wrapper2"><div id="wrapper3">
     <div id="mysociety" role="main" class="body">
