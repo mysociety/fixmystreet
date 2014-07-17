@@ -55,6 +55,10 @@ footer {
     }
 }
 
+div.form-error, p.form-error {
+    display: block !important;
+}
+
 body.mappage {
     .main-menu-wrapper {
         position: fixed
