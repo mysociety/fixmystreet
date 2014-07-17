@@ -44,6 +44,12 @@
                 %]<li class="last"><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                     %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
             </ol>
+            [% IF c.user_exists %]
+                <div class="sign-in large">
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                </div>
+            [% END %]
         </nav>
     </div>
 </div>

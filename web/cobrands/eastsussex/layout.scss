@@ -132,19 +132,30 @@ body.frontpage {
         min-height: 0;
     }
 
-    .breadcrumb {
-        margin: 9px 0 6px 0;
-
-        span {
-            font-weight: bold;
-        }
-
-        li.level1 a {
-            color: #194c7e;
-        }
+    #breadcrumb_breadcrumbTrail {
+        position: relative;
 
         a {
             color: white;
+        }
+
+
+        .breadcrumb {
+            margin: 9px 0 6px 0;
+
+            span {
+                font-weight: bold;
+            }
+
+            li.level1 a {
+                color: #194c7e;
+            }
+        }
+
+        .sign-in {
+            position: absolute;
+            top: 4px;
+            right: 4px;
         }
     }
 

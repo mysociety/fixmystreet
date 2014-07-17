@@ -16,18 +16,16 @@
                         %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
                     %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
                         %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-                    %]<li class="last"><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                    %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                         %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
+                    [% IF c.user_exists %]
+                        <li>
+                            [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                            <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                        </li>
+                    [% END %]
                 </ul>
             </div>
-        </div>
-        <div class="sign-in">
-            [% IF c.user_exists %]
-                <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                </p>
-            [% END %]
         </div>
     </div>
 </div>
