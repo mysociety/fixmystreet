@@ -21,6 +21,10 @@
     max-width: 966px;
 }
 
+#menu {
+    height: 55px;
+}
+
 footer {
     position: relative;
     z-index: 1000;
@@ -61,7 +65,7 @@ body.mappage {
     }
 
     #fms_pan_zoom {
-        top: 14em!important;
+        top: 16em!important;
     }
 
     #mysociety {
@@ -89,8 +93,13 @@ body.mappage {
     }
 }
 
+body.twothirdswidthpage.alertindex .content .sticky-sidebar aside {
+    top: -17em;
+}
+
 body.twothirdswidthpage .content .sticky-sidebar aside {
-    top: 20em;
+    top: 0;
+    position: absolute;
 }
 
 body.frontpage {
@@ -120,7 +129,7 @@ body.frontpage {
     }
 
     .breadcrumb {
-        margin: 9px 0 0 0;
+        margin: 9px 0 6px 0;
 
         span {
             font-weight: bold;
