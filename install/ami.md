@@ -12,7 +12,7 @@ title: AMI for EC2
   EC2 instance.
 </p>
 
-Note that this is just one of [three ways to install FixMyStreet]({{ site.baseurl }}install/).
+Note that this is just one of [four ways to install FixMyStreet]({{ site.baseurl }}install/).
 
 ## Installing on Amazon's Web Services
 

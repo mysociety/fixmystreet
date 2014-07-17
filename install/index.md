@@ -11,10 +11,11 @@ title: Installing
   installation script or the AMI for Amazon EC2.
 </p>
 
-## Three ways to install
+## Four ways to install
 
-* [Use an install script for Debian squeeze or Ubuntu precise servers]({{ site.baseurl }}install/install-script/)
+* [Use an install script for Debian or Ubuntu servers]({{ site.baseurl }}install/install-script/)
 * [Use a FixMyStreet AMI for Amazon EC2]({{ site.baseurl }}install/ami/)
+* [Vagrant installation]({{ site.baseurl }}install/vagrant/), for development
 * [Install the software manually]({{ site.baseurl }}install/manual-install/)
 
 FixMyStreet is a web application written in Perl, using the Catalyst framework.

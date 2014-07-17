@@ -11,8 +11,8 @@ title: Installing
   but the other installation options may be easier:</p>
 
 Note that this is just one of 
-[three ways to install FixMyStreet]({{ site.baseurl }}install/)
-(the other two ways are easier!).
+[four ways to install FixMyStreet]({{ site.baseurl }}install/)
+(the other ways are easier!).
 
 
 ## Manual installation
