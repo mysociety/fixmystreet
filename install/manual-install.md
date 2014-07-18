@@ -202,13 +202,16 @@ and:
 ### Deployment
 
 For production use of FixMyStreet, we suggest you use Apache or nginx, and
-FastCGI. It should also be possible to run it using Plack/PSGI.
+FastCGI. It should also be possible to run it using Plack/PSGI, if that is
+preferable.
 
-There is an example nginx configuration in `conf/nginx.conf.example`, and an
-example Apache vhost configuration file in `conf/apache-vhost.conf.example` and
-`conf/httpd.conf-example`, which contain a sample configuration and the
-required redirect rules. If you are using Apache and the sample configuration
-you will need the following modules enabled:
+#### Apache
+
+There is an example Apache vhost configuration file in
+`conf/apache-vhost.conf.example` and `conf/httpd.conf-example`, which contain a
+sample configuration and the required redirect rules.
+
+The sample configuration will need the following modules enabled:
 
 * mod_rewrite
 * mod_proxy
@@ -218,10 +221,19 @@ you will need the following modules enabled:
 For most Linux distributions you should be able to install these using the
 distribution's packaging system.
 
-At this point you be able to restart the webserver and see your FixMyStreet
-installation at the configured URL.
+#### nginx
+
+There is an example nginx configuration in `conf/nginx.conf.example`. With
+nginx, you need to run the FastCGI service separately - the
+`conf/sysvinit.example` file is an example script you could use to run it as a
+daemon. And you will need to install a FastCGI process manager:
+
+    apt-get install libfcgi-procmanager-perl
 
 #### Check it's working
+
+At this point you should be able to restart the webserver and see your
+FixMyStreet installation at the configured URL.
 
 You can run the unit tests by running the following command in the
 `fixmystreet` directory:
