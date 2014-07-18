@@ -24,20 +24,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # accessing "localhost:8080" will access port 80 on the guest machine.
   config.vm.network :forwarded_port, guest: 3000, host: 3000
 
-  config.vm.provider "virtualbox" do |v|
-    v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/vagrant", "1"]
-  end
+  config.vm.synced_folder ".", "/home/vagrant/fixmystreet", :owner => "vagrant", :group => "vagrant"
 
   config.vm.provision :shell, :inline => <<-EOS
     # To prevent "dpkg-preconfigure: unable to re-open stdin: No such file or directory" warnings
     export DEBIAN_FRONTEND=noninteractive
-    # To be in the shared directory where the repository might already be
-    cd /vagrant/
-    # We need curl to fetch the install script
-    apt-get update -qq
-    apt-get install -qq -y curl >/dev/null
-    curl -s -O https://raw.githubusercontent.com/mysociety/commonlib/master/bin/install-site.sh
+    # Fetch and run install script
+    wget -O install-site.sh --no-verbose https://github.com/mysociety/commonlib/raw/master/bin/install-site.sh
     sh install-site.sh --dev fixmystreet vagrant 127.0.0.1.xip.io
+    # We want to be on port 3000 for development
+    sed -i -r -e "s,^( *BASE_URL: .*)',\\1:3000'," fixmystreet/conf/general.yml
     # All done
     echo "****************"
     echo "You can now ssh into your vagrant box: vagrant ssh"

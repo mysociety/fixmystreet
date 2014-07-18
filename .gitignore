@@ -3,6 +3,7 @@
 *~
 ._*
 
+.vagrant
 .DS_Store
 .carton
 local-lib5
