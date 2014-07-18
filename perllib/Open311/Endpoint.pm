@@ -502,6 +502,13 @@ sub POST_Service_Request {
     my $service_code = $args->{service_code};
     my $service = $self->service($service_code);
 
+    for my $k (keys %$args) {
+        if ($k =~ /^attribute\[(\w+)\]$/) {
+            my $value = delete $args->{$k};
+            $args->{attributes}{$1} = $value;
+        }
+    }
+
     my @service_requests = $self->post_service_request( $service, $args );
         
     return {

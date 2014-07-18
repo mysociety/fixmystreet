@@ -7,6 +7,11 @@ use Test::MockTime ':all';
 use Data::Dumper;
 use JSON;
 
+use Module::Loaded;
+BEGIN {
+    mark_as_loaded('DBD::Oracle');
+}
+
 use Open311::Endpoint::Integration::Warwick;
 
 my $endpoint = Open311::Endpoint::Integration::Warwick->new;
