@@ -4,6 +4,7 @@ extends 'Open311::Endpoint';
 with 'Open311::Endpoint::Role::mySociety';
 with 'Open311::Endpoint::Role::ConfigFile';
 use DBI;
+use MooX::HandlesVia;
 
 BEGIN {
     # will get overridden by use below, unless we're in testing mode
@@ -14,7 +15,7 @@ BEGIN {
 use DBD::Oracle qw(:ora_types);
 
 
-has dbh => (
+has _connection_details => (
     is => 'lazy',
     default => sub {
         my $self = shift;
@@ -23,11 +24,21 @@ has dbh => (
         my $DB_PORT = $self->db_port;
         my $USERNAME = $self->db_username;
         my $PASSWORD = $self->db_password;
-
-        return DBI->connect( 
-            "dbi:Oracle:host=$DB_HOST;sid=$ORACLE_SID;port=$DB_PORT", $USERNAME, $PASSWORD
-        );
+        return [ "dbi:Oracle:host=$DB_HOST;sid=$ORACLE_SID;port=$DB_PORT", $USERNAME, $PASSWORD ]
     },
+    handles_via => 'Array',
+    handles => {
+        connection_details => 'elements',
+        dsn => [ get => 0 ],
+    },
+);
+
+has dbh => (
+    is => 'lazy',
+    default => sub {
+        my $self = shift;
+        return DBI->connect( $self->connection_details );
+    }
 );
 
 has db_host => (
@@ -62,7 +73,7 @@ has strip_control_characters => (
 
 has testing_write_to_file => (
     is => 'ro',
-    default => 1, # TODO switch to 0
+    default => 0,
 );
 
 #------------------------------------------------------------------
@@ -156,10 +167,6 @@ sub post_service_request {
     my ($self, $service, $args) = @_;
     die "No such service" unless $service;
 
-    my $pem_id;
-    my $error_value;
-    my $error_product;
-
     if ($args->{media_url}) {
         # don't put URL for full images into the database (because they're too big to see on a Blackberry)
         $args->{media_url} =~ s/\.full(\.jpe?g)$/$1/;
@@ -208,8 +215,43 @@ sub post_service_request {
     if ($self->testing_write_to_file) {
         warn Dumper(\%bindings); use Data::Dumper;
     }
+
+    my ($pem_id, $error_value, $error_product) = $self->insert_into_db(\%bindings);
+
+    # if error, maybe need to look it up:
+    # error_value is the index HER_NO in table HIG_ERRORS, which has messages
+    # actually err_product not helpful (wil always be "DOC")
+    die "$error_value $error_product" if $error_value || $error_product; 
+
+    my $request = $self->new_request(
+
+        # NB: possible race condition between next_request_id and _add_request
+        # (this is fine for synchronous test-cases)
+        
+        service => $service,
+        service_request_id => $pem_id,
+        status => 'open',
+        description => $args->{description},
+        agency_responsible => '',
+        requested_datetime => DateTime->now(),
+        updated_datetime => DateTime->now(),
+        address => $args->{address_string} // '',
+        address_id => $args->{address_id} // '',
+        media_url => $args->{media_url} // '',
+        zipcode => $args->{zipcode} // '',
+        attributes => $attributes,
+
+    );
+
+    return $request;
+}
+
+sub insert_into_db {
+    my ($self, $bindings) = @_;
+    my %bindings = %$bindings;
+
+    my ($pem_id, $error_value, $error_product);
     
-    # everything ready: now put it into the database
     my $dbh = $self->dbh;
 
     my $sth = $dbh->prepare(q#
@@ -236,7 +278,7 @@ sub post_service_request {
             error_product => :error_product,
             ce_doc_id => :ce_doc_id);
         END;
-#);
+    #);
 
     foreach my $name (sort keys %bindings) {
         next if grep {$name eq $_} (':error_value', ':error_product', ':ce_doc_id'); # return values (see below)
@@ -273,32 +315,7 @@ sub post_service_request {
     $sth->execute();
     $dbh->disconnect;
 
-    # if error, maybe need to look it up:
-    # error_value is the index HER_NO in table HIG_ERRORS, which has messages
-    # actually err_product not helpful (wil always be "DOC")
-    die "$error_value $error_product" if $error_value || $error_product; 
-
-    my $request = $self->new_request(
-
-        # NB: possible race condition between next_request_id and _add_request
-        # (this is fine for synchronous test-cases)
-        
-        service => $service,
-        service_request_id => $pem_id,
-        status => 'open',
-        description => $args->{description},
-        agency_responsible => '',
-        requested_datetime => DateTime->now(),
-        updated_datetime => DateTime->now(),
-        address => $args->{address_string} // '',
-        address_id => $args->{address_id} // '',
-        media_url => $args->{media_url} // '',
-        zipcode => $args->{zipcode} // '',
-        attributes => $attributes,
-
-    );
-
-    return $request;
+    return ($pem_id, $error_value, $error_product);
 }
 
 1;

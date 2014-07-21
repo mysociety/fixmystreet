@@ -7,14 +7,9 @@ use Test::MockTime ':all';
 use Data::Dumper;
 use JSON;
 
-use Module::Loaded;
-BEGIN {
-    mark_as_loaded('DBD::Oracle');
-}
+use t::open311::endpoint::Endpoint_Warwick;
 
-use Open311::Endpoint::Integration::Warwick;
-
-my $endpoint = Open311::Endpoint::Integration::Warwick->new;
+my $endpoint = t::open311::endpoint::Endpoint_Warwick->new;
 my $json = JSON->new;
 
 subtest "GET Service List" => sub {
@@ -27,7 +22,7 @@ subtest "GET Service List" => sub {
     <description>Bridges</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>BR</service_code>
     <service_name>Bridges</service_name>
     <type>realtime</type>
@@ -36,7 +31,7 @@ subtest "GET Service List" => sub {
     <description>Carriageway Defect</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>CD</service_code>
     <service_name>Carriageway Defect</service_name>
     <type>realtime</type>
@@ -45,7 +40,7 @@ subtest "GET Service List" => sub {
     <description>Roads/Highways</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>CD</service_code>
     <service_name>Roads/Highways</service_name>
     <type>realtime</type>
@@ -54,7 +49,7 @@ subtest "GET Service List" => sub {
     <description>Drainage</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>DR</service_code>
     <service_name>Drainage</service_name>
     <type>realtime</type>
@@ -63,7 +58,7 @@ subtest "GET Service List" => sub {
     <description>Debris/Spillage</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>DS</service_code>
     <service_name>Debris/Spillage</service_name>
     <type>realtime</type>
@@ -72,7 +67,7 @@ subtest "GET Service List" => sub {
     <description>Fences</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>FE</service_code>
     <service_name>Fences</service_name>
     <type>realtime</type>
@@ -81,7 +76,7 @@ subtest "GET Service List" => sub {
     <description>Pavements</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>F D</service_code>
     <service_name>Pavements</service_name>
     <type>realtime</type>
@@ -90,7 +85,7 @@ subtest "GET Service List" => sub {
     <description>Gully &amp; Catchpits</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>GC</service_code>
     <service_name>Gully &amp; Catchpits</service_name>
     <type>realtime</type>
@@ -99,7 +94,7 @@ subtest "GET Service List" => sub {
     <description>Ice/Snow</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>IS</service_code>
     <service_name>Ice/Snow</service_name>
     <type>realtime</type>
@@ -108,7 +103,7 @@ subtest "GET Service List" => sub {
     <description>Mud &amp; Debris</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>MD</service_code>
     <service_name>Mud &amp; Debris</service_name>
     <type>realtime</type>
@@ -117,7 +112,7 @@ subtest "GET Service List" => sub {
     <description>Manhole</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>MH</service_code>
     <service_name>Manhole</service_name>
     <type>realtime</type>
@@ -126,7 +121,7 @@ subtest "GET Service List" => sub {
     <description>Oil Spillage</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>OS</service_code>
     <service_name>Oil Spillage</service_name>
     <type>realtime</type>
@@ -135,7 +130,7 @@ subtest "GET Service List" => sub {
     <description>Other</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>OT</service_code>
     <service_name>Other</service_name>
     <type>realtime</type>
@@ -144,7 +139,7 @@ subtest "GET Service List" => sub {
     <description>Pothole</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>PO</service_code>
     <service_name>Pothole</service_name>
     <type>realtime</type>
@@ -153,7 +148,7 @@ subtest "GET Service List" => sub {
     <description>Property Damage</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>PD</service_code>
     <service_name>Property Damage</service_name>
     <type>realtime</type>
@@ -162,7 +157,7 @@ subtest "GET Service List" => sub {
     <description>Road Marking</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>RM</service_code>
     <service_name>Road Marking</service_name>
     <type>realtime</type>
@@ -171,7 +166,7 @@ subtest "GET Service List" => sub {
     <description>Road traffic signs</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>SN</service_code>
     <service_name>Road traffic signs</service_name>
     <type>realtime</type>
@@ -180,7 +175,7 @@ subtest "GET Service List" => sub {
     <description>Traffic</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>SP</service_code>
     <service_name>Traffic</service_name>
     <type>realtime</type>
@@ -189,7 +184,7 @@ subtest "GET Service List" => sub {
     <description>Utilities</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>UT</service_code>
     <service_name>Utilities</service_name>
     <type>realtime</type>
@@ -198,7 +193,7 @@ subtest "GET Service List" => sub {
     <description>Vegetation</description>
     <group>highways</group>
     <keywords></keywords>
-    <metadata>false</metadata>
+    <metadata>true</metadata>
     <service_code>VG</service_code>
     <service_name>Vegetation</service_name>
     <type>realtime</type>
@@ -228,10 +223,31 @@ subtest "POST OK" => sub {
 
     is_deeply $json->decode($res->content),
         [ {
-            "service_notice" => "This is a test service",
-            "service_request_id" => 0
+            "service_notice" => "Warwickshire Open311 Endpoint",
+            "service_request_id" => 1001
         } ], 'correct json returned';
 
+    is_deeply \%t::open311::endpoint::Endpoint_Warwick::BINDINGS, 
+        {
+          ':ce_surname' => 'MOULD',
+          ':ce_y' => '100',
+          ':ce_x' => '100',
+          ':ce_work_phone' => '',
+          ':ce_contact_type' => 'ENQUIRER',
+          ':ce_source' => 'FMS',
+          ':ce_doc_reference' => '1001',
+          ':ce_enquiry_type' => 'PO',
+          ':ce_email' => '',
+          ':ce_description' => '',
+          ':ce_location' => '22 Acacia Avenue',
+          ':ce_incident_datetime' => '2014-01-01T12:00:00Z',
+          ':ce_class' => 'SERV',
+          ':ce_compl_user_type' => 'USER',
+          ':ce_status_code' => 'RE',
+          ':ce_cat' => 'REQS',
+          ':ce_forename' => 'BOB'
+        }, 
+        'bindings as expected';
 };
 
 done_testing;
