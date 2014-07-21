@@ -209,23 +209,19 @@ XML
         or diag $res->content;
 };
 
-done_testing;
-
-__END__
 subtest "POST OK" => sub {
-    diag "Serves as sanity test of subclassing, as well as preparing our data";
-    # TODO, refactor repeated code lifted from t/open311/endpoint.t
-
     set_fixed_time('2014-01-01T12:00:00Z');
     my $res = $endpoint->run_test_request( 
         POST => '/requests.json', 
         api_key => 'test',
-        service_code => 'POT',
+        service_code => 'PO',
         address_string => '22 Acacia Avenue',
         first_name => 'Bob',
         last_name => 'Mould',
-        'attribute[depth]' => 100,
-        'attribute[shape]' => 'triangle',
+        'attribute[easting]' => 100,
+        'attribute[northing]' => 100,
+        'attribute[external_id]' => 1001,
+        'attribute[closest_address]' => '22 Acacia Avenue',
     );
     ok $res->is_success, 'valid request'
         or diag $res->content;
@@ -236,21 +232,11 @@ subtest "POST OK" => sub {
             "service_request_id" => 0
         } ], 'correct json returned';
 
-    set_fixed_time('2014-02-01T12:00:00Z');
-    $res = $endpoint->run_test_request( 
-        POST => '/requests.xml', 
-        api_key => 'test',
-        service_code => 'POT',
-        address_string => '22 Acacia Avenue',
-        first_name => 'Bob',
-        last_name => 'Mould',
-        'attribute[depth]' => 100,
-        'attribute[shape]' => 'triangle',
-    );
-
-    ok $res->is_success, 'valid request'
-        or diag $res->content;
 };
+
+done_testing;
+
+__END__
 
 subtest "GET Service Request Updates" => sub {
 

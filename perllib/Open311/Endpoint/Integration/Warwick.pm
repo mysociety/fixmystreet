@@ -1,6 +1,11 @@
 package Open311::Endpoint::Integration::Warwick;
 use Web::Simple;
 extends 'Open311::Endpoint::Integration::Exor';
+use Open311::Endpoint::Service::Exor;
+
+has '+default_service_notice' => (
+    default => 'Warwickshire Open311 Endpoint',
+);
 
 sub services {
     # TODO, get this from ::Exor
@@ -28,7 +33,7 @@ sub services {
     );
     return map {
         my ($code, $name) = @$_;
-        Open311::Endpoint::Service->new(
+        Open311::Endpoint::Service::Exor->new(
             service_code => $code,
             service_name => $name,
             description => $name,

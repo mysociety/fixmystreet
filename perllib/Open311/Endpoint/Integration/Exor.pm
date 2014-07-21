@@ -32,10 +32,12 @@ has dbh => (
 
 has db_host => (
     is => 'ro',
+    default => 'localhost',
 );
 
 has oracle_sid => (
     is => 'ro',
+    default => '1000',  # DUMMY
 );
 
 has db_port => (
@@ -50,6 +52,7 @@ has db_username => (
 
 has db_password => (
     is => 'ro',
+    default => 'SUPERSEEKRIT', # DUMMY
 );
 
 has strip_control_characters => (
@@ -119,19 +122,21 @@ sub services {
 }
 
 sub _strip_ruthless {
-    my $text = shift;
+    my $text = shift or return '';
     $text =~ s/[[:cntrl:]]/ /g; # strip all control chars, simples
     return $text;
 }
 
 sub _strip_non_ruthless {
-    my $text = shift;
+    my $text = shift or return '';
     # slightly odd doubly negated character class
     $text =~ s/[^\t\n[:^cntrl:]]/ /g; # leave tabs and newlines
     return $text;
 }
 sub strip {
     my ($self, $text, $max_len, $prefer_non_ruthless) = @_;
+    use Carp 'confess';
+    confess 'EEEK' unless $self;
     if (my $scc = $self->strip_control_characters) {
         if ($scc eq 'ruthless') {
             $text = _strip_ruthless($text);
@@ -195,7 +200,7 @@ sub post_service_request {
     $bindings{":ce_surname"}       = uc $self->strip($args->{last_name}, 30);     # 'STEWART'
     $bindings{":ce_work_phone"}    = $self->strip($args->{phone}, 25);            # '0117 600 4200'
     $bindings{":ce_email"}         = uc $self->strip($args->{email}, 50);         # 'info@exor.co.uk'
-    $bindings{":ce_description"}   = $self, strip($args->{description}, 1970, 1); # 'Large Pothole'
+    $bindings{":ce_description"}   = $self->strip($args->{description}, 1970, 1); # 'Large Pothole'
 
     # nearest address guesstimate
     $bindings{":ce_location"}      = $self->strip($location, 254);

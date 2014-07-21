@@ -413,7 +413,7 @@ sub POST_Service_Request_input_schema {
     my $service = $self->service($service_code)
         or return; # we can't fetch service, so signal error TODO
 
-    my %attributes;
+    my %attributes = ( required => {}, optional => {} );
     for my $attribute ($service->get_attributes) {
         my $section = $attribute->required ? 'required' : 'optional';
         my $key = sprintf 'attribute[%s]', $attribute->code;
@@ -450,7 +450,7 @@ sub POST_Service_Request_input_schema {
                 phone => '//str',
                 description => '//str',
                 media_url => '//str',
-                %{ $attributes{optional} },
+                %{ $attributes{optional} || {}},
                 (map %$_, @address_options),
                 $self->get_jurisdiction_id_optional_clause,
             },
