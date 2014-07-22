@@ -28,7 +28,7 @@
         <nav id="breadcrumb_breadcrumbTrail">
             <ol class="breadcrumb screen large">
                 <li class="up level1">
-                    <a href="//www.eastsussex.gov.uk/default.htm">Home</a>
+                    <span>Home</span>
                 </li>
                 <li class="current level2">
                     <a href="/">FixMyStreet</a>
