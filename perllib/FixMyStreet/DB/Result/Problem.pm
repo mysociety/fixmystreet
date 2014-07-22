@@ -135,6 +135,22 @@ __PACKAGE__->has_one(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
+__PACKAGE__->has_many(
+  "moderation_log_entries",
+  "FixMyStreet::DB::Result::ModerationLog",
+  { "foreign.problem_id" => "self.id" },
+  { where => { 'comment_id' => undef },
+    cascade_copy => 0, cascade_delete => 0 },
+);
+
+__PACKAGE__->might_have(
+  "moderation_original_data",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.problem_id" => "self.id" },
+  { where => { 'comment_id' => undef },
+    cascade_copy => 0, cascade_delete => 0 },
+);
+
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 __PACKAGE__->rabx_column('geocode');
@@ -793,6 +809,18 @@ sub as_hashref {
         created_pp => $c->cobrand->prettify_dt( $self->created ),
     };
 }
+
+=head2 latest_moderation_log_entry
+
+Return most recent ModerationLog object
+
+=cut
+
+sub latest_moderation_log_entry {
+    my $self = shift;
+    return $self->moderation_log_entries->search({}, { order_by => 'id desc' })->first;
+}
+
 
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );

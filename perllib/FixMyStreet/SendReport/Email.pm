@@ -62,12 +62,8 @@ sub get_template {
 
     my $template = 'submit.txt';
     $template = 'submit-brent.txt' if $row->bodies_str eq 2488 || $row->bodies_str eq 2237;
-    my $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $row->lang, $template )->stringify;
-    $template_path = FixMyStreet->path_to( "templates", "email", $row->cobrand, $template )->stringify
-        unless -e $template_path;
-    $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
-        unless -e $template_path;
-    $template = Utils::read_file( $template_path );
+
+    $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, $template);
     return $template;
 }
 
