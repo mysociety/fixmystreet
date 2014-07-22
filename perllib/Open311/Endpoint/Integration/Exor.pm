@@ -6,14 +6,18 @@ with 'Open311::Endpoint::Role::ConfigFile';
 use DBI;
 use MooX::HandlesVia;
 
-BEGIN {
-    # will get overridden by use below, unless we're in testing mode
-    use constant ORA_DATE => 1;
-    use constant ORA_NUMBER => 2;
-    use constant ORA_VARCHAR2 => 3;
-}
+# declare our constants, as we may not be able to easily install DBD::Oracle
+# on a development system!
+# t/open311/endpoint/warwick.t disables DBD::Oracle from loading, so the default
+# stubbed values will be used instead:
+sub ORA_DATE ();
+sub ORA_NUMBER ();
+sub ORA_VARCHAR2 ();
 use DBD::Oracle qw(:ora_types);
-
+BEGIN {
+*ORA_DATE = *ORA_NUMBER = *ORA_VARCHAR2 = sub () { 1 }
+    unless $DBD::Oracle::VERSION;
+}
 
 has _connection_details => (
     is => 'lazy',
