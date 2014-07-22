@@ -151,7 +151,7 @@ If you're thinking of running such a project, you **must** read it first -- it
 explains why these sites work, and what you need to think about before you start.
 
 If you still want to be involved, we welcome questions about how it works
-[on our mailing list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
+[on our mailing list]({{ site.baseurl }}community/).
 Or, if you're outside the UK, email
 <a href="mailto:international@mysociety.org">international@mysociety.org.</a>
 

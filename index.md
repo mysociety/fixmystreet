@@ -114,8 +114,8 @@ title: Welcome
       <ul class="action-buttons spacer-top">
         <li><a href="mailto:international&#64;mysociety.org" class="btn--blue"><i class="icon icon-email">&nbsp;</i> Email us</a></li>
         <li><a href="https://twitter.com/fixmystreet" class="btn--blue"><i class="icon icon-twitter">&nbsp;</i> Follow us</a></li>
-        <li><a href="http://www.irc.mysociety.org/" class="btn--blue"><i class="icon icon-irc">&nbsp;</i> Chat on IRC</a></li>
-        <li><a href="https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet" class="btn--blue"><i class="icon icon-post">&nbsp;</i> Mailing list</a></li>
+        <li><a href="{{ site.baseurl }}community/" class="btn--blue"><i class="icon icon-irc">&nbsp;</i> Chat on IRC</a></li>
+        <li><a href="{{ site.baseurl }}community/" class="btn--blue"><i class="icon icon-post">&nbsp;</i> Mailing list</a></li>
       </ul>
     </div>
   </div>

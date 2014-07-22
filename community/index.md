@@ -37,7 +37,7 @@ first.</p>
 <p>If you would like to discuss things in a chat room, the <a
 href="irc://irc.mysociety.org/fixmystreet">#fixmystreet</a> channel on
 irc.mysociety.org allows for just that (<a
-href="http://www.irc.mysociety.org/">web IRC interface</a>).</p>
+href="irc/">web IRC interface</a>).</p>
 
 </div>
 <div class="span6">
