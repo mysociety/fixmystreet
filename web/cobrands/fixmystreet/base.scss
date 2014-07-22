@@ -21,6 +21,15 @@
     #message_close { float: right; }
 }
 
+body.mappage {
+    .change_location {
+        color: #666;
+        padding-left: 24px;
+        background: transparent url(images/wrong-location.png) 4px 50% no-repeat;
+        margin-top: -0.5em;
+    }
+}
+
 .confirmation-header {
   padding: 2em 1em;
 
