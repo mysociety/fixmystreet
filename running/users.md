@@ -32,7 +32,7 @@ A new user record is created when an email confirmation link is clicked
 process is automatic and, unless the user subsequently sets a password, most
 people don't consider their interaction with FixMyStreet as being
 account-based. For example, around 70% of the users who have reported a
-problem on the UK's [fixmystreet.com](http://www.fixmystreet.com) site did not
+problem on the UK's [fixmystreet.com](https://www.fixmystreet.com) site did not
 use a password (this effectively means: they did not consider creating an
 account).
 

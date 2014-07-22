@@ -37,6 +37,6 @@ especially suitable if your group doesn't have the technical capacity to manage
 a whole installation.
 
 If you're trying to set a FixMyStreet project up outside the UK, let the 
-[international team](http://www.mysociety.org/about/mysociety-around-the-world/)
+[international team](https://www.mysociety.org/about/mysociety-around-the-world/)
 know by emailing
 <a href="mailto:international@mysociety.org.">international@mysociety.org</a>.

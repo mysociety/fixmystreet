@@ -16,7 +16,7 @@ Welcome to FixMyStreet Platform
       Begin with the <a href="/install/">installation documentation</a>. Put
       FixMyStreet on your own Debian/Ubuntu server, or on Amazon EC2 (or, if
       that's a problem for you, <a
-      href="http://www.mysociety.org/contact/">talk to us</a> about hosting).
+      href="https://www.mysociety.org/contact/">talk to us</a> about hosting).
     </p>
   </div>
   <div class="column">
@@ -57,10 +57,10 @@ About the FixMyStreet Platform
 ------------------------------
 
 The FixMyStreet Platform is an open source project from
-[mySociety](http://www.mysociety.org) to help people run websites for
+[mySociety](https://www.mysociety.org) to help people run websites for
 reporting common street problems such as potholes and broken street lights to
 an appropriate authority. It's been [running successfully in the
-UK](http://www.fixmystreet.com) since 2007 (in fact, it works so well some UK
+UK](https://www.fixmystreet.com) since 2007 (in fact, it works so well some UK
 councils use it too), and we're still working on making it better.
 
 FixMyStreet has been copied around the world, and is still under
@@ -84,4 +84,4 @@ Or, if you're outside the UK, email
 
 There's also the [FixMyStreet blog](blog/) where we post version release
 information and other progress reports. And we often post FixMyStreet news on
-the <a href="http://www.mysociety.org/blog">mySociety blog</a> too.
+the <a href="https://www.mysociety.org/blog">mySociety blog</a> too.

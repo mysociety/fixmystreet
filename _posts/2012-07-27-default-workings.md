@@ -37,7 +37,7 @@ and more things should work by default.
 ![Default screenshot](/assets/img/2012-07-27-screenshot.png)
 
 Lastly, the default cobrand now uses the new style that you can see on
-<http://www.fixmystreet.com>. By default, we have picked a pretty yet garish
+<https://www.fixmystreet.com>. By default, we have picked a pretty yet garish
 colour scheme, in order to remind you that you almost certainly want to change
 the colours being used for your own installation :)
 

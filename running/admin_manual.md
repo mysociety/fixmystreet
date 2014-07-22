@@ -10,7 +10,7 @@ author: dave
 <p class="lead">What is it like running a FixMyStreet site? This guide
 explains what you can expect, and the types of problem that you might
 encounter. It includes examples of how mySociety manages their own site, <a
-href="http://www.fixmystreet.com/">fixmystreet.com</a>.</p>
+href="https://www.fixmystreet.com/">fixmystreet.com</a>.</p>
 
 ## About this document
 
@@ -19,7 +19,7 @@ the UK. But there is more than one way to solve issues, and you may well find
 that your own solutions work best.
 
 We hope that you will contribute to this document with your own ideas and
-feedback. You can do this by [contacting us](http://www.mysociety.org/contact)
+feedback. You can do this by [contacting us](https://www.mysociety.org/contact)
 directly, or joining the mailing list.
 
 The [FixMyStreet mailing list](/community) is a great place to share ideas or
@@ -164,7 +164,7 @@ them by clicking on the link at the top of any admin page:
     know the ID of the report, you can tell FixMyStreet to find it directly,
     using <code>id:</code> first. The ID is in the URL of the live report: for
     example, on our site, we can find
-    <code>http://www.fixmystreet.com/report/391267</code> by searching for
+    <code>https://www.fixmystreet.com/report/391267</code> by searching for
     <code>id:391267</code>.
   </p>
 
@@ -673,7 +673,7 @@ FixMyStreet site.
       email. Clicking the link in that email will update your password for
       you.
       <p>
-        Alternatively, you can visit http://www.fixmystreet.com/auth and do
+        Alternatively, you can visit https://www.fixmystreet.com/auth and do
         the same (that is, choose the 'no' option and input your new
         password).
       </p>

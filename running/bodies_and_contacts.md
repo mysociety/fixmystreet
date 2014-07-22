@@ -11,7 +11,7 @@ reports will be sent. Each body needs one or more <strong><a href="{{ site.baseu
 (typically these are email addresses) to which particular
 <strong><a href="{{ site.baseurl }}glossary/#category" class="glossary__link">categories</a></strong> of problem are sent. </p>
 
-For [FixMyStreet in the UK](http://www.fixmystreet.com/), bodies are councils (county, district, and metropolitan).
+For [FixMyStreet in the UK](https://www.fixmystreet.com/), bodies are councils (county, district, and metropolitan).
 
 ## How to add (or edit) a body
 
@@ -112,7 +112,7 @@ need some extra information, such as the URL of the body's endpoint. This
 appears on the form if it's needed.
 
 For more information about Open311, see [this blog post explaining
-it](http://www.mysociety.org/blog/open311-explained).
+it](https://www.mysociety.org/blog/open311-explained).
 
 #### Not all of a body's contacts need to be sent the same way
 

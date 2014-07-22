@@ -4,10 +4,10 @@ title: An Introduction
 author: struan
 ---
 
-[mySociety](http://www.mysociety.org/) wrote
-[FixMyStreet](http://www.fixmystreet.com/) in 2007 in order to make it easy for
+[mySociety](https://www.mysociety.org/) wrote
+[FixMyStreet](https://www.fixmystreet.com/) in 2007 in order to make it easy for
 people in the UK to report problems in their area. Since then over
-[200,000 problems](http://www.mysociety.org/2012/01/24/fixmystreet-another-big-number/)
+[200,000 problems](https://www.mysociety.org/2012/01/24/fixmystreet-another-big-number/)
 have been reported to UK councils using the site. As with all our
 sites we want people everywhere to be able to benefit so we were delighted to
 work with the Norwegian Unix User’s Group ([NUUG](http://www.nuug.no))

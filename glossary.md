@@ -9,7 +9,7 @@ FixMyStreet glossary
 <p class="lead">Glossary of terms for FixMyStreet, mySociety's geographic
 problem reporting platform.</p>
 
-The [FixMyStreet](http://www.fixmystreet.com/) Platform is an open source
+The [FixMyStreet](https://www.fixmystreet.com/) Platform is an open source
 project to help people run websites for reporting common street problems such
 as potholes and broken street lights to an appropriate authority. For
 technical information, see
@@ -306,7 +306,7 @@ technical information, see
     code uses when deciding which style and behaviour to apply.
     <p>
       For a live example of cobranding, consider two sites in the UK. Our <a
-      href="http://www.fixmystreet.com/">FixMyStreet site</a> runs with the
+      href="https://www.fixmystreet.com/">FixMyStreet site</a> runs with the
       <code>fixmystreet</code> cobrand, which has a yellow-and-asphalt
       appearance, and has an example street from the city of Manchester in the
       "enter a street name" box. But the <a
@@ -577,7 +577,7 @@ technical information, see
         </li>
         <li>
           See <a
-          href="http://www.mysociety.org/for-councils/fixmystreet/">FixMyStreet
+          href="https://www.mysociety.org/for-councils/fixmystreet/">FixMyStreet
           for Councils</a> for mySociety's commercial support for UK councils
         </li>
         <li>
@@ -697,7 +697,7 @@ technical information, see
     </p>
     <p>
       Like FixMyStreet, MapIt is a product by <a
-      href="http://www.mysociety.org/">mySociety</a>.
+      href="https://www.mysociety.org/">mySociety</a>.
     </p>
     <div class="more-info">
       <p>More information:</p>
@@ -750,12 +750,12 @@ technical information, see
         </li>
         <li>
           mySociety blog post <a
-          href="http://www.mysociety.org/2013/01/10/open311-introduced/">introducing
+          href="https://www.mysociety.org/2013/01/10/open311-introduced/">introducing
           Open311</a>
         </li>
         <li>
           mySociety blog post <a
-          href="http://www.mysociety.org/2013/01/17/open311-explained//">explaining
+          href="https://www.mysociety.org/2013/01/17/open311-explained//">explaining
           basic Open311 functionality</a>.
         </li>
         <li>

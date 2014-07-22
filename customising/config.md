@@ -718,7 +718,7 @@ GEOCODING_DISAMBIGUATION:
     <a href="{{ site.baseurl }}glossary/#osm" class="glossary__link">OpenStreetMap</a>.
     Other options are <code>GoogleOL</code> for Google Open Layers,
     and other UK-specific values, including <code>FMS</code>
-    for UK <a href="http://www.fixmystreet.com">FixMyStreet</a>.
+    for UK <a href="https://www.fixmystreet.com">FixMyStreet</a>.
     <p>
       Check the usage terms for the type of map you use &mdash; there may be
       restrictions.
