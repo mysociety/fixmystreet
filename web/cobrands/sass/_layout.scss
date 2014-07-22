@@ -85,7 +85,7 @@ h1 {
       // position static as well so we fix lots of the z-index issues
       position:static;
     }
-  }   
+  }
 }
 
 // Resets a lot of the mobile styling. #site-header only used to help position logo on desktop
@@ -138,8 +138,8 @@ h1 {
       span {
         display: block;
         color: $nav_fg;
-        background: none;  
-        border-bottom: none;      
+        background: none;
+        border-bottom: none;
       }
       &#top-nav-privacy {
         display: none;
@@ -231,31 +231,38 @@ body.mappage {
   .container {
     width: auto;
   }
+
   .content {
     float:left;
     padding: 1em 1em 10em;
   }
+
   #main-nav ul#main-menu li a,
   #main-nav ul#main-menu li span {
     padding: 1.4em 0.75em 1.35em 0.75em;
   }
+
   #main-nav ul#main-menu li a.report-a-problem-btn {
     padding: 0.5em;
     margin:0.9em 0.25em 0.85em 0.25em;
   }
+
   .nav-wrapper{
     .nav-wrapper-2{
       position: fixed;
       background: $map_nav_bg;
     }
   }
+
   #site-logo{
     position: fixed;
   }
+
   #user-meta {
     max-width: none;
   }
 }
+
 .ie6, .ie7 {
   body.mappage {
     // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
@@ -278,7 +285,7 @@ body.mappage {
     }
   }
 }
-//ie8 needs different stuff on .nav-wrapper so we 
+//ie8 needs different stuff on .nav-wrapper so we
 //have to define all the rest of it again as this resets
 //the z-index base yet again :S
 .ie8 {
@@ -295,8 +302,6 @@ body.mappage {
     }
   }
 }
-
-
 
 // full width page
 body.fullwidthpage {

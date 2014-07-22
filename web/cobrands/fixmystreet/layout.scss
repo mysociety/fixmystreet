@@ -87,7 +87,7 @@ h3, h4 {
 body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
-              @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+            @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
         }
     }
 }
