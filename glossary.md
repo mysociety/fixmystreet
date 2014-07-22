@@ -965,7 +965,7 @@ technical information, see
         <li>
           Survey <a href="#template" class="glossary__link">templates</a> are in
           <code>/templates/email/default/questionnaire.txt</code> and
-          <code>/templates/web/default/questionnaire</code>
+          <code>/templates/web/base/questionnaire</code>
         </li>
         <li>
           If you don't want your FixMyStreet site to send out surveys, you can
