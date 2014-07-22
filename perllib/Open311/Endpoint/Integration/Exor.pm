@@ -19,6 +19,11 @@ BEGIN {
     unless $DBD::Oracle::VERSION;
 }
 
+has max_limit => (
+    is => 'ro',
+    default => 1000,
+);
+
 has _connection_details => (
     is => 'lazy',
     default => sub {
@@ -75,7 +80,7 @@ has strip_control_characters => (
     default => 'ruthless',
 );
 
-has testing_write_to_file => (
+has testing => (
     is => 'ro',
     default => 0,
 );
@@ -216,7 +221,7 @@ sub post_service_request {
     # nearest address guesstimate
     $bindings{":ce_location"}      = $self->strip($location, 254);
     
-    if ($self->testing_write_to_file) {
+    if ($self->testing) {
         warn Dumper(\%bindings); use Data::Dumper;
     }
 
@@ -224,7 +229,7 @@ sub post_service_request {
 
     # if error, maybe need to look it up:
     # error_value is the index HER_NO in table HIG_ERRORS, which has messages
-    # actually err_product not helpful (wil always be "DOC")
+    # actually err_product not helpful (will always be "DOC")
     die "$error_value $error_product" if $error_value || $error_product; 
 
     my $request = $self->new_request(
@@ -320,6 +325,86 @@ sub insert_into_db {
     $dbh->disconnect;
 
     return ($pem_id, $error_value, $error_product);
+}
+
+sub get_service_request_updates {
+    my ($self, $args) = @_;
+    my @updates = ...
+        jurisdiction_id => $args->{jurisdiction_id},
+        start_date => $args->{start_date},
+        end_date => $args->{end_date},
+    });
+
+    unless ($self->testing) {
+        $start_date = DateTime->now->subtract( days => 1 )
+            ($start_date or $end_date);
+    }
+
+    my $start_date = $self->maybe_inflate_datetime( $args->{start_date} );
+    my $end_date   = $self->maybe_inflate_datetime( $args->{end_date} );
+
+    my $ORA_W3C_FORMAT = 'YYYY-MM-DD HH24:MI:SS'; # NB: hh24 (not hh)
+    my $w3_dt = $self->w3_dt;
+
+    my @where;
+
+    push @where, sprintf 
+        'updated_timedate >= to_date(%s, %s)',
+        $w3_dt->format_datetime($start_time), $ORA_W3C_FORMAT
+        if $start_time;
+
+    push @where, sprintf 
+        'updated_timedate <= to_date(%s, %s)',
+        $w3_dt->format_datetime($end_time), $ORA_W3C_FORMAT
+        if $end_time;
+
+    push @where, "(status='OPEN' OR status='CLOSED')"
+        unless $self->testing;
+
+    $WHERE_CLAUSE = @where ?
+        'WHERE ' . join(' AND ', grep {$_} @where)
+        : '';
+
+    my $sql = qq(
+        SELECT
+            row_id, 
+            service_request_id,
+            to_char(updated_timedate, '$date_format'),
+            status,
+            description
+        FROM higatlas.fms_update 
+        $WHERE_CLAUSE
+        ORDER BY updated_timedate DESC);
+
+    my $limit = $self->max_limit; # also allow testing to modify this?
+    $sql = "SELECT * FROM ($sql) WHERE ROWNUM <= $limit" if $limit;
+
+    my @data = $self->get_updates_from_sql( $sql );
+
+    my @updates = map {
+        Open311::Endpoint::Service::Request::Update->new(
+            update_id => $_->{row_id},
+            service_request_id => $_->{service_request_id},
+            updated_datetime => $w3_dt->parse_datetime( $_->{updated_datetime} ),
+            status => $_->{id},
+            description => $_->{description}
+        )
+    } @data;
+
+    # rough and ready XML dump now (should use XML Simple to build/escape properly!)
+    my $xml = "";
+    foreach my $row(@{$ary_ref})  {
+        if (defined $row) {
+            my ($id, $service_req_id, $updated_at, $status, $desc) = map { prepare_for_xml($_) } @$row;
+            $updated_at=~s/(\d{4}-\d\d-\d\d) (\d\d:\d\d:\d\d)/${1}T${2}Z/; # for now assume OCC in Zulu time
+            $xml.= <<XML;
+    <request_update>
+        <update_id>$id</update_id>
+        <service_request_id>$service_req_id</service_request_id>
+        <status>$status</status>
+        <updated_datetime>$updated_at</updated_datetime>
+        <description>$desc</description>
+    </request_update>
 }
 
 1;
