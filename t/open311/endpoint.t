@@ -253,7 +253,7 @@ subtest "GET Service Requests" => sub {
     <address>22 Acacia Avenue</address>
     <address_id></address_id>
     <lat>0</lat>
-    <lon>0</lon>
+    <long>0</long>
     <media_url></media_url>
     <requested_datetime>2014-01-01T12:00:00Z</requested_datetime>
     <service_code>POT</service_code>
@@ -267,7 +267,7 @@ subtest "GET Service Requests" => sub {
     <address>22 Acacia Avenue</address>
     <address_id></address_id>
     <lat>0</lat>
-    <lon>0</lon>
+    <long>0</long>
     <media_url></media_url>
     <requested_datetime>2014-02-01T12:00:00Z</requested_datetime>
     <service_code>POT</service_code>
@@ -305,7 +305,7 @@ subtest "GET Service Request" => sub {
     <address>22 Acacia Avenue</address>
     <address_id></address_id>
     <lat>0</lat>
-    <lon>0</lon>
+    <long>0</long>
     <media_url></media_url>
     <requested_datetime>2014-01-01T12:00:00Z</requested_datetime>
     <service_code>POT</service_code>
@@ -323,7 +323,7 @@ REQ0
     <address>22 Acacia Avenue</address>
     <address_id></address_id>
     <lat>0</lat>
-    <lon>0</lon>
+    <long>0</long>
     <media_url></media_url>
     <requested_datetime>2014-02-01T12:00:00Z</requested_datetime>
     <service_code>POT</service_code>

@@ -94,12 +94,12 @@ has latlong => (
     handles_via => 'Array',
     handles => {
         #lat => [ get => 0 ],
-        #lon => [ get => 1 ],
+        #long => [ get => 1 ],
     }
 );
 
 sub lat { shift->latlong->[0] }
-sub lon { shift->latlong->[1] }
+sub long { shift->latlong->[1] }
 
 has media_url => (
     is => 'ro',

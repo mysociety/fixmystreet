@@ -429,7 +429,7 @@ sub POST_Service_Request_input_schema {
 
     # we have to supply at least one of these, but can supply more
     my @address_options = (
-        { lat => '//num', lon => '//num' },
+        { lat => '//num', long => '//num' },
         { address_string => '//str' },
         { address_id => '//str' },
     );
@@ -655,7 +655,7 @@ sub format_service_requests {
                             address_id
                             zipcode
                             lat
-                            lon
+                            long
                             media_url
                             / 
                     ),

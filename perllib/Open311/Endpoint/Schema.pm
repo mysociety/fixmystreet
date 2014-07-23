@@ -156,7 +156,7 @@ has schema => (
                     address_id => '//str',
                     zipcode => '//str',
                     lat => '//num',
-                    lon => '//num',
+                    long => '//num',
                     media_url => '//str',
                 },
                 optional => {
