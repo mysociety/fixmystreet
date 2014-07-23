@@ -27,10 +27,7 @@
     <div class="container" id="nav-container">
         <nav id="breadcrumb_breadcrumbTrail">
             <ol class="breadcrumb screen large">
-                <li class="up level1">
-                    <span>Home</span>
-                </li>
-                <li class="current level2">
+                <li>
                     <a href="/">FixMyStreet</a>
                 </li>
                 <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
