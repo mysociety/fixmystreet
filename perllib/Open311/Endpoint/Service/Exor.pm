@@ -8,7 +8,7 @@ has '+attributes' => (
     default => sub { [
         Open311::Endpoint::Service::Attribute->new(
             code => 'easting',
-            variable => 1,
+            variable => 0, # set by server
             datatype => 'number',
             required => 1,
             datatype_description => 'a number',
@@ -16,7 +16,7 @@ has '+attributes' => (
         ),
         Open311::Endpoint::Service::Attribute->new(
             code => 'northing',
-            variable => 1,
+            variable => 0, # set by server
             datatype => 'number',
             required => 1,
             datatype_description => 'a number',
@@ -24,7 +24,7 @@ has '+attributes' => (
         ),
         Open311::Endpoint::Service::Attribute->new(
             code => 'closest_address',
-            variable => 1,
+            variable => 0, # set by server
             datatype => 'string',
             required => 1,
             datatype_description => 'an address',
@@ -32,7 +32,7 @@ has '+attributes' => (
         ),
         Open311::Endpoint::Service::Attribute->new(
             code => 'external_id',
-            variable => 1,
+            variable => 0, # set by server
             datatype => 'string',
             required => 1,
             datatype_description => 'an id',
