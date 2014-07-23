@@ -462,7 +462,9 @@ $.fn.drawer = function(id, ajax) {
             if (cobrand == 'bromley') {
                 offset = -110;
             }
-            heightFix(window, '.content', offset, 1);
+            if (cobrand !== "eastsussex") {
+                heightFix(window, '.content', offset, 1);
+            }
             // in case we have a map that isn't full screen
             map_fix();
         }
