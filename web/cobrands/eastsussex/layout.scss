@@ -183,6 +183,14 @@ body.frontpage {
     width: auto;
 }
 
+.content, body.twothirdswidthpage .content aside {
+    box-shadow: 0 0 12px 0 #dae1e5;
+}
+
+.banner p#fixed {
+    background-position: -328px -333px;
+}
+
 #skipped-map {
     clear: both;
     margin-top: 3em; /* required to push "Your Reports" visible on Safari/IE */

@@ -11,6 +11,10 @@ body {
     font-size: 13px;
 }
 
+.content {
+    padding: 0 1em;
+}
+
 a, a:visited {
     color: #369;
     &:hover, &:active {
@@ -133,7 +137,7 @@ body > p {
             border-radius: 3px;
         }
 
-        a {
+        a, a:hover {
             background-color: #00a1de;
             color: white;
         }
