@@ -160,3 +160,16 @@ button, input[type=submit], .btn {
 .email {
     background-image: none;
 }
+
+::-webkit-input-placeholder {
+  font-style: normal;
+}
+:-moz-placeholder {
+    font-style: normal;
+}
+:-ms-placeholder {
+    font-style: normal;
+}
+.placeholder {
+    font-style: normal;
+}
