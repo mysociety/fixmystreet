@@ -90,11 +90,12 @@ body.mappage {
 
     #report-a-problem-sidebar {
         top: 1em;
-
-        .sidebar-notes .plain-list li {
-            font-size: 1em;
-        }
     }
+}
+
+.general-sidebar-notes p, #report-a-problem-sidebar p, #report-a-problem-sidebar .sidebar-notes .plain-list li {
+    font-size: 13px;
+    line-height: 14px;
 }
 
 body.twothirdswidthpage.alertindex .content .sticky-sidebar aside {
@@ -236,9 +237,19 @@ body.frontpage {
     display: none;
 }
 
+
+
 @media only screen and (max-width: 61em) {
     #main-nav {
         padding-left: 0px;
         float:none;
+    }
+
+    #site-header {
+        height: auto;
+    }
+
+    body.twothirdswidthpage .content .sticky-sidebar {
+        top: 1em;
     }
 }
