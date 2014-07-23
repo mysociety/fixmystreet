@@ -121,7 +121,8 @@ body.frontpage {
 }
 
 #site-header {
-    border-top-width: 0px;
+    border-top-width: 0;
+    margin-top: 0;
     background: rgb(3, 160, 227);
 
     .container {
