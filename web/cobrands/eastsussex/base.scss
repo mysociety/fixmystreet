@@ -152,3 +152,7 @@ body > p {
         float: none !important;
     }
 }
+
+button, input[type=submit], .btn {
+    text-transform: none;
+}
