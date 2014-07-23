@@ -121,7 +121,7 @@ sub format_updates {
                     ),
                     (
                         map {
-                            $_ => $self->w3_dt->format_datetime( $update->$_ ),
+                            $_ => $self->w3_dt->format_datetime( $update->$_ ), 
                         }
                         qw/
                             updated_datetime

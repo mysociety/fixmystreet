@@ -251,6 +251,11 @@ has w3_dt => (
     default => sub { DateTime::Format::W3CDTF->new },
 );
 
+has time_zone => (
+    is => 'ro',
+    default => 'Europe/London',
+);
+
 sub maybe_inflate_datetime {
     my ($self, $dt) = @_;
     return unless $dt;
@@ -751,8 +756,10 @@ sub call_api {
             $schema->assert_valid( $data );
         };
         if ($@) {
+            use Data::Dumper;
             return Open311::Endpoint::Result->error( 500,
                 "Error in output for $api_name",
+                Dumper($data),
                 split /\n/, $@,
                 # map $_->struct, @{ $@->failures },
             );

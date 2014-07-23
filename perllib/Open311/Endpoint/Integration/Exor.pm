@@ -5,6 +5,7 @@ with 'Open311::Endpoint::Role::mySociety';
 with 'Open311::Endpoint::Role::ConfigFile';
 use DBI;
 use MooX::HandlesVia;
+use DateTime::Format::Oracle; # default format 'YYYY-MM-DD HH24:MI:SS' # NB: hh24 (not hh)
 
 # declare our constants, as we may not be able to easily install DBD::Oracle
 # on a development system!
@@ -17,6 +18,24 @@ use DBD::Oracle qw(:ora_types);
 BEGIN {
 *ORA_DATE = *ORA_NUMBER = *ORA_VARCHAR2 = sub () { 1 }
     unless $DBD::Oracle::VERSION;
+}
+
+has ora_dt => (
+    is => 'lazy',
+    default => sub { 'DateTime::Format::Oracle' }, 
+        # NB: we just return the class name. This is to smooth over odd API,
+        # for consistency with w3_dt
+);
+
+sub parse_ora_date {
+    my ($self, $date_string) = @_;
+
+    my $date = $self->ora_dt->parse_datetime( $date_string );
+
+    # will be in floating time_zone so set
+    $date->set_time_zone( $self->time_zone );
+
+    return $date;
 }
 
 has max_limit => (
@@ -329,50 +348,48 @@ sub insert_into_db {
 
 sub get_service_request_updates {
     my ($self, $args) = @_;
-    my @updates = ...
-        jurisdiction_id => $args->{jurisdiction_id},
-        start_date => $args->{start_date},
-        end_date => $args->{end_date},
-    });
 
-    unless ($self->testing) {
-        $start_date = DateTime->now->subtract( days => 1 )
-            ($start_date or $end_date);
-    }
-
+    # ignore jurisdiction_id for now
+    #
     my $start_date = $self->maybe_inflate_datetime( $args->{start_date} );
     my $end_date   = $self->maybe_inflate_datetime( $args->{end_date} );
 
-    my $ORA_W3C_FORMAT = 'YYYY-MM-DD HH24:MI:SS'; # NB: hh24 (not hh)
+    unless ($self->testing) {
+        $start_date = DateTime->now->subtract( days => 1 )
+            unless ($start_date or $end_date);
+    }
+
     my $w3_dt = $self->w3_dt;
+    my $ora_dt = $self->ora_dt;
+    my $ORA_DT_FORMAT = $ora_dt->nls_date_format;
 
     my @where;
 
     push @where, sprintf 
         'updated_timedate >= to_date(%s, %s)',
-        $w3_dt->format_datetime($start_time), $ORA_W3C_FORMAT
-        if $start_time;
+        $ora_dt->format_datetime($start_date), $ORA_DT_FORMAT
+        if $start_date;
 
     push @where, sprintf 
         'updated_timedate <= to_date(%s, %s)',
-        $w3_dt->format_datetime($end_time), $ORA_W3C_FORMAT
-        if $end_time;
+        $ora_dt->format_datetime($end_date), $ORA_DT_FORMAT
+        if $end_date;
 
     push @where, "(status='OPEN' OR status='CLOSED')"
         unless $self->testing;
 
-    $WHERE_CLAUSE = @where ?
+    my $WHERE_CLAUSE = @where ?
         'WHERE ' . join(' AND ', grep {$_} @where)
         : '';
 
     my $sql = qq(
         SELECT
-            row_id, 
+            row_id,
             service_request_id,
-            to_char(updated_timedate, '$date_format'),
+            to_char(updated_timedate, '$ORA_DT_FORMAT'),
             status,
             description
-        FROM higatlas.fms_update 
+        FROM higatlas.fms_update
         $WHERE_CLAUSE
         ORDER BY updated_timedate DESC);
 
@@ -385,26 +402,20 @@ sub get_service_request_updates {
         Open311::Endpoint::Service::Request::Update->new(
             update_id => $_->{row_id},
             service_request_id => $_->{service_request_id},
-            updated_datetime => $w3_dt->parse_datetime( $_->{updated_datetime} ),
-            status => $_->{id},
+            updated_datetime => $self->parse_ora_date( $_->{updated_datetime} ),
+            status => $_->{status},
             description => $_->{description}
         )
     } @data;
 
-    # rough and ready XML dump now (should use XML Simple to build/escape properly!)
-    my $xml = "";
-    foreach my $row(@{$ary_ref})  {
-        if (defined $row) {
-            my ($id, $service_req_id, $updated_at, $status, $desc) = map { prepare_for_xml($_) } @$row;
-            $updated_at=~s/(\d{4}-\d\d-\d\d) (\d\d:\d\d:\d\d)/${1}T${2}Z/; # for now assume OCC in Zulu time
-            $xml.= <<XML;
-    <request_update>
-        <update_id>$id</update_id>
-        <service_request_id>$service_req_id</service_request_id>
-        <status>$status</status>
-        <updated_datetime>$updated_at</updated_datetime>
-        <description>$desc</description>
-    </request_update>
+    return @updates;
+}
+
+sub get_updates_from_sql {
+    my ($self, $sql) = @_;
+    my $dbh = $self->dbh;
+    my $ary_ref = $dbh->selectall_arrayref($sql, { Slice => {} } );
+    return @$ary_ref;
 }
 
 1;

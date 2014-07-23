@@ -250,112 +250,41 @@ subtest "POST OK" => sub {
         'bindings as expected';
 };
 
-done_testing;
+subtest 'updates' => sub {
+    my $res = $endpoint->run_test_request( GET => '/servicerequestupdates.xml', );
+    ok $res->is_success, 'valid request' or diag $res->content;
 
-__END__
-
-subtest "GET Service Request Updates" => sub {
-
-    my $empty_xml = <<CONTENT;
-<?xml version="1.0" encoding="utf-8"?>
-<service_request_updates>
-</service_request_updates>
-CONTENT
-
-    my $update_0_xml = <<CONTENT;
+my $expected = <<XML;
 <?xml version="1.0" encoding="utf-8"?>
 <service_request_updates>
   <request_updates>
-    <description>Fixed</description>
+    <description>Closed the ticket</description>
     <media_url></media_url>
-    <service_request_id>0</service_request_id>
+    <service_request_id>1001</service_request_id>
     <status>closed</status>
-    <update_id>1</update_id>
-    <updated_datetime>2014-01-01T13:00:00Z</updated_datetime>
+    <update_id>999</update_id>
+    <updated_datetime>2014-07-23T11:07:00+01:00</updated_datetime>
   </request_updates>
 </service_request_updates>
-CONTENT
+XML
 
-my $updates_xml = <<CONTENT;
-<?xml version="1.0" encoding="utf-8"?>
-<service_request_updates>
-  <request_updates>
-    <description>Fixed</description>
-    <media_url></media_url>
-    <service_request_id>0</service_request_id>
-    <status>closed</status>
-    <update_id>1</update_id>
-    <updated_datetime>2014-01-01T13:00:00Z</updated_datetime>
-  </request_updates>
-  <request_updates>
-    <description>Have investigated. Looks tricky!</description>
-    <media_url></media_url>
-    <service_request_id>1</service_request_id>
-    <status>open</status>
-    <update_id>2</update_id>
-    <updated_datetime>2014-03-01T13:00:00Z</updated_datetime>
-  </request_updates>
-</service_request_updates>
-CONTENT
+    is_string $res->content, $expected, 'xml string ok'
+    or diag $res->content;
 
-    subtest 'No updates' => sub {
-        my $res = $endpoint->run_test_request( GET => '/servicerequestupdates.xml', );
-        ok $res->is_success, 'valid request' or diag $res->content;
+    chomp (my $expected_sql = <<SQL);
+SELECT * FROM (
+        SELECT
+            row_id,
+            service_request_id,
+            to_char(updated_timedate, 'YYYY-MM-DD HH24:MI:SS'),
+            status,
+            description
+        FROM higatlas.fms_update
+        WHERE updated_timedate >= to_date(2013-12-31 12:00:00, YYYY-MM-DD HH24:MI:SS) AND (status='OPEN' OR status='CLOSED')
+        ORDER BY updated_timedate DESC) WHERE ROWNUM <= 1000
+SQL
 
-        is_string $res->content, $empty_xml, 'xml string ok'
-        or diag $res->content;
-    };
-
-    subtest 'Updated 1 ticket' => sub {
-        # an agent updates the first ticket
-        set_fixed_time('2014-01-01T13:00:00Z');
-        my $request = $endpoint->get_request(0);
-        $request->add_update(
-            update_id => 1,
-            status => 'closed',
-            description => 'Fixed',
-        );
-
-        is $request->status, 'closed', 'Status updated';
-
-        my $before='2014-01-01T12:00:00Z';
-        my $after ='2014-01-01T14:00:00Z';
-
-        for my $scenario (
-            [ '', $update_0_xml, 'Basic test', ],
-            [ "?start_date=$before", $update_0_xml, 'start date' ],
-            [ "?end_date=$after", $update_0_xml, 'end_date' ],
-            [ "?start_date=$before&end_date=$after", $update_0_xml, 'both dates' ],
-            [ "?start_date=$after", $empty_xml, 'Not found if start date after update' ],
-            [ "?end_date=$before", $empty_xml, 'Not found if end date before update' ] 
-        ) {
-            my ($query, $xml, $description) = @$scenario;
-
-            my $res = $endpoint->run_test_request( GET => '/servicerequestupdates.xml' . $query, );
-            ok $res->is_success, 'valid request' or diag $res->content;
-            is_string $res->content, $xml, $description;
-        }
-    };
-
-    subtest 'Updated another ticket' => sub {
-        set_fixed_time('2014-03-01T13:00:00Z');
-        my $request = $endpoint->get_request(1);
-        $request->add_update(
-            update_id => 2,
-            description => 'Have investigated. Looks tricky!',
-        );
-
-        for my $scenario (
-            [ '', $updates_xml, 'Both reports', ],
-            [ "?end_date=2014-01-01T14:00:00Z", $update_0_xml, 'end_date before second update' ],
-        ) {
-            my ($query, $xml, $description) = @$scenario;
-
-            my $res = $endpoint->run_test_request( GET => '/servicerequestupdates.xml' . $query, );
-            ok $res->is_success, 'valid request' or diag $res->content;
-            is_string $res->content, $xml, $description or diag $res->content;
-        }
-    };
+    is_string $t::open311::endpoint::Endpoint_Warwick::UPDATES_SQL, $expected_sql, 'SQL as expected';
 };
 
 restore_time();
