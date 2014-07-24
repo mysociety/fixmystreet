@@ -102,7 +102,7 @@ sub _process_for_xml {
 
 my %singular_map = (
     service_requests => 'request',
-    service_request_updates => 'request_updates',
+    service_request_updates => 'request_update',
 );
 
 sub _singularize {
