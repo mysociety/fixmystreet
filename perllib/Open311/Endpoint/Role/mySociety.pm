@@ -68,7 +68,8 @@ sub GET_Service_Request_Updates_input_schema {
             $self->get_jurisdiction_id_required_clause,
         },
         optional => {
-            $self->get_jurisdiction_id_optional_clause,,
+            $self->get_jurisdiction_id_optional_clause,
+            api_key => $self->get_identifier_type('api_key'),
             start_date => '/open311/datetime',
             end_date   => '/open311/datetime',
         }

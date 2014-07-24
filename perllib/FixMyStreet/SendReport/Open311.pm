@@ -12,6 +12,7 @@ use Open311;
 use Readonly;
 
 Readonly::Scalar my $COUNCIL_ID_OXFORDSHIRE => 2237;
+Readonly::Scalar my $COUNCIL_ID_WARWICKSHIRE => 2243;
 
 sub send {
     my $self = shift;
@@ -65,7 +66,7 @@ sub send {
         }
 
         # extra Oxfordshire fields: send nearest street, postcode, northing and easting, and the FMS id
-        if ( $row->bodies_str =~ /$COUNCIL_ID_OXFORDSHIRE/ ) {
+        if ( $row->bodies_str =~ /\b(?:$COUNCIL_ID_OXFORDSHIRE|$COUNCIL_ID_WARWICKSHIRE)\b/ ) {
 
             my $extra = $row->extra;
             push @$extra, { name => 'external_id', value => $row->id };
@@ -76,7 +77,12 @@ sub send {
             }
             $row->extra( $extra );
 
-            $extended_desc = 'oxfordshire';
+            if ($row->bodies_str =~ /$COUNCIL_ID_OXFORDSHIRE/) {
+                $extended_desc = 'oxfordshire';
+            }
+            elsif ($row->bodies_str =~ /$COUNCIL_ID_WARWICKSHIRE/) {
+                $extended_desc = 'warwickshire';
+            }
         }
 
         # FIXME: we've already looked this up before
