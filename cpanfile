@@ -97,6 +97,7 @@ feature 'open311-endpoint', 'Open311::Endpoint specific requirements' => sub {
     requires 'Data::Rx';
     requires 'MooX::HandlesVia';
     requires 'Types::Standard';
+    requires 'LWP::Protocol::PSGI'; # for testing end-to-end
 };
 
 #feature 'zurich', 'Zueri wie neu specific requirements' => sub {
