@@ -80,7 +80,7 @@ If you're thinking of getting involved, we welcome questions about how it
 works [on our mailing
 list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
 Or, if you're outside the UK, email
-<a href="mailto:international@mysociety.org">international@mysociety.org.</a>
+<a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org.</a>
 
 There's also the [FixMyStreet blog](blog/) where we post version release
 information and other progress reports. And we often post FixMyStreet news on

@@ -8,8 +8,8 @@ title: Community
 <p class="lead">If you are thinking of using the FixMyStreet Platform, please
 let our growing community help.</p>
 
-<div class="row-fluid">
-<div class="span6">
+<div class="contact-options">
+<div class="column">
 <h3>Mailing list</h3>
 
 <p>The <a href="https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet">FixMyStreet
@@ -18,7 +18,7 @@ their own jurisdictions and areas, and seek help with any issues they are
 facing.</p>
 
 </div>
-<div class="span6">
+<div class="column">
 <h3>GitHub</h3>
 
 <p>FixMyStreet is open source under the Affero GPL licence. The code is hosted
@@ -30,8 +30,8 @@ first.</p>
 </div>
 </div>
 
-<div class="row-fluid">
-<div class="span6">
+<div class="contact-options">
+<div class="column">
 <h3>IRC</h3>
 
 <p>If you would like to discuss things in a chat room, the <a
@@ -40,11 +40,21 @@ irc.mysociety.org allows for just that (<a
 href="irc/">web IRC interface</a>).</p>
 
 </div>
-<div class="span6">
+<div class="column">
 <h3>Twitter</h3>
 
 <p>You can follow and tweet <a href="http://twitter.com/fixmystreet">@fixmystreet</a>.</p>
+</div>
+</div>
 
+<div class="contact-options">
+<div class="column">
+<h3>Email</h3>
+<p>
+If you're trying to set a FixMyStreet project up outside the UK, let mySociety's
+[international team](https://www.mysociety.org/about/mysociety-around-the-world/)
+know by emailing
+<a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org</a>.
 </div>
 </div>
 

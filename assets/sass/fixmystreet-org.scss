@@ -280,3 +280,12 @@
         border-radius: 0 3px 3px 0;
     }
 }
+
+/* Community page */
+
+.contact-options {
+    @include clearfix;
+    .column {
+        @include grid-column--one-of-two;
+    }
+}

@@ -39,4 +39,4 @@ a whole installation.
 If you're trying to set a FixMyStreet project up outside the UK, let the 
 [international team](https://www.mysociety.org/about/mysociety-around-the-world/)
 know by emailing
-<a href="mailto:international@mysociety.org.">international@mysociety.org</a>.
+<a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org</a>.
