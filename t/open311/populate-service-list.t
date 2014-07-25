@@ -25,10 +25,12 @@ $body->body_areas->find_or_create({
     area_id => 1
 } );
 
+my $BROMLEY = 'Bromley Council';
 my $bromley = FixMyStreet::App->model('DB::Body')->find_or_create( {
     id => 2482,
-    name => 'Bromley Council',
+    name => $BROMLEY,
 } );
+$bromley->update({ name => $BROMLEY });
 $bromley->body_areas->find_or_create({
     area_id => 2482
 } );

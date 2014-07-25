@@ -64,36 +64,36 @@ CONTENT
     my $update_0_xml = <<CONTENT;
 <?xml version="1.0" encoding="utf-8"?>
 <service_request_updates>
-  <request_updates>
+  <request_update>
     <description>Fixed</description>
     <media_url></media_url>
     <service_request_id>0</service_request_id>
     <status>closed</status>
     <update_id>1</update_id>
     <updated_datetime>2014-01-01T13:00:00Z</updated_datetime>
-  </request_updates>
+  </request_update>
 </service_request_updates>
 CONTENT
 
 my $updates_xml = <<CONTENT;
 <?xml version="1.0" encoding="utf-8"?>
 <service_request_updates>
-  <request_updates>
+  <request_update>
     <description>Fixed</description>
     <media_url></media_url>
     <service_request_id>0</service_request_id>
     <status>closed</status>
     <update_id>1</update_id>
     <updated_datetime>2014-01-01T13:00:00Z</updated_datetime>
-  </request_updates>
-  <request_updates>
+  </request_update>
+  <request_update>
     <description>Have investigated. Looks tricky!</description>
     <media_url></media_url>
     <service_request_id>1</service_request_id>
     <status>open</status>
     <update_id>2</update_id>
     <updated_datetime>2014-03-01T13:00:00Z</updated_datetime>
-  </request_updates>
+  </request_update>
 </service_request_updates>
 CONTENT
 

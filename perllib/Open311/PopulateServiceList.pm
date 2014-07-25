@@ -46,6 +46,7 @@ sub process_body {
         my $areas = join( ",", keys %{$self->_current_body->areas} );
         warn "Body $id for areas $areas - $mapit_url/areas/$areas.html - did not return a service list\n"
             if $self->verbose >= 1;
+        warn $open311->error;
         return;
     }
     $self->process_services( $list );
