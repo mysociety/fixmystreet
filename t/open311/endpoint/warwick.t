@@ -374,12 +374,18 @@ subtest "End to end" => sub {
     subtest "Send report" => sub {
         # as per bin/send-reports
 
-        self_rs($problem)->send_reports;
+        FixMyStreet::override_config { 
+            ALLOWED_COBRANDS => [ 'fixmystreet' ],
+            SEND_REPORTS_ON_STAGING => 1,
+        }, sub {
+            self_rs($problem)->send_reports;
+        };
         $problem->discard_changes;
 
         # Our test endpoint returns a hardcoded external ID.
         ok $problem->whensent, 'whensent has been set';
-        is $problem->external_id, 1001, 'External ID set correctly';
+        is $problem->external_id, 1001, 'External ID set correctly'
+            or die;
     };
 
     subtest "Send update" => sub {
@@ -397,7 +403,7 @@ subtest "End to end" => sub {
         $updates->fetch;
 
         $problem->discard_changes;
-        is $problem->comments->count, 1, 'sanity check';
+        is $problem->comments->count, 1, 'comment has been added';
 
 
         my $update = $problem->comments->single;

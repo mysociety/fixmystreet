@@ -838,6 +838,12 @@ DISTRIBUTIONS
       Test::Exception 0
       Test::More 0
       ok 0
+  Convert-NLS_DATE_FORMAT-0.05
+    pathname: K/KO/KOLIBRIE/Convert-NLS_DATE_FORMAT-0.05.tar.gz
+    provides:
+      Convert::NLS_DATE_FORMAT 0.05
+    requirements:
+      ExtUtils::MakeMaker 0
   Crypt-Eksblowfish-0.009
     pathname: Z/ZE/ZEFRAM/Crypt-Eksblowfish-0.009.tar.gz
     provides:
@@ -1427,6 +1433,16 @@ DISTRIBUTIONS
       Module::Build 0
       Params::Validate 0.67
       Test::More 0.47
+  DateTime-Format-Oracle-0.06
+    pathname: K/KO/KOLIBRIE/DateTime-Format-Oracle-0.06.tar.gz
+    provides:
+      DateTime::Format::Oracle 0.06
+    requirements:
+      Convert::NLS_DATE_FORMAT 0.03
+      DateTime 0
+      DateTime::Format::Builder 0
+      ExtUtils::MakeMaker 0
+      Test::More 0
   DateTime-Format-Pg-0.16008
     pathname: D/DM/DMAKI/DateTime-Format-Pg-0.16008.tar.gz
     provides:
