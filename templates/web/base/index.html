@@ -6,10 +6,7 @@
 
 <p id="expl">        
     [% 
-        subhead
-            = c.cobrand.moniker == 'southampton'
-            ? ''
-            : loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
+        subhead = loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
     %]
     <strong>[% loc('Report, view, or discuss local problems') %]</strong>
     [% IF subhead != ' ' %]

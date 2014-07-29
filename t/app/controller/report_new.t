@@ -44,8 +44,8 @@ for my $body (
     { id => 2226, name => 'Gloucestershire County Council' },
     { id => 2326, name => 'Cheltenham Borough Council' },
     { id => 2482, name => 'Bromley Council' },
-    { id => 2240, name => 'Staffordshire County Council' },
-    { id => 2434, name => 'Lichfield District Council' },
+    { id => 2227, name => 'Hampshire County Council' },
+    { id => 2333, name => 'Hart Council' },
     { id => 2504, name => 'Westminster City Council' },
 ) {
     $mech->create_body_ok($body->{id}, $body->{name});
@@ -87,13 +87,13 @@ my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
 } );
 my $contact6 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2434, # Lichfield
+    body_id => 2333, # Hart
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact7 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2240, # Lichfield
+    body_id => 2227, # Hampshire
     category => 'Street lighting',
     email => 'highways@example.com',
 } );
@@ -1204,53 +1204,53 @@ subtest 'user title not reset if no user title in submission' => sub {
         is $user->title, 'MR', 'User title unchanged';
 };
 
-subtest "test Lichfield" => sub {
+subtest "test Hart" => sub {
     for my $test (
         {
             desc      => 'confirm link for cobrand council in two tier cobrand links to cobrand site',
             category  => 'Trees',
-            council   => 2434,
+            council   => 2333,
             national  => 0,
             button    => 'submit_register',
         },
           {
             desc      => 'confirm link for non cobrand council in two tier cobrand links to national site',
             category  => 'Street Lighting',
-            council   => 2240,
+            council   => 2227,
             national  => 1,
             button    => 'submit_register',
           },
           {
             desc      => 'confirm redirect for cobrand council in two tier cobrand redirects to cobrand site',
             category  => 'Trees',
-            council   => 2434,
+            council   => 2333,
             national  => 0,
             redirect  => 1,
           },
           {
             desc      => 'confirm redirect for non cobrand council in two tier cobrand redirect to national site',
             category  => 'Street Lighting',
-            council   => 2240,
+            council   => 2227,
             national  => 1,
             redirect  => 1,
           },
     ) {
         subtest $test->{ desc } => sub {
             my $test_email = 'test-22@example.com';
-            $mech->host( 'lichfielddc.fixmystreet.com' );
+            $mech->host( 'hart.fixmystreet.com' );
             $mech->clear_emails_ok;
             $mech->log_out_ok;
 
             my $user = $mech->log_in_ok($test_email) if $test->{redirect};
 
             FixMyStreet::override_config {
-                ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                ALLOWED_COBRANDS => [ 'hart', 'fixmystreet' ],
                 BASE_URL => 'http://www.fixmystreet.com',
                 MAPIT_URL => 'http://mapit.mysociety.org/',
             }, sub {
                 $mech->get_ok('/around');
-                $mech->content_contains( "Lichfield District Council FixMyStreet" );
-                $mech->submit_form_ok( { with_fields => { pc => 'WS13 7RD' } }, "submit location" );
+                $mech->content_contains( "Hart Council" );
+                $mech->submit_form_ok( { with_fields => { pc => 'GU51 4AE' } }, "submit location" );
                 $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
                 my %optional_fields = $test->{redirect} ?  () :
                     ( email => $test_email, phone => '07903 123 456' );
@@ -1292,7 +1292,7 @@ subtest "test Lichfield" => sub {
             if ( $test->{redirect} ) {
                 is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
                 my $base = 'www.fixmystreet.com';
-                $base = "lichfielddc.fixmystreet.com" unless $test->{national};
+                $base = "hart.fixmystreet.com" unless $test->{national};
                 is $mech->uri->host, $base, 'redirected to correct site';
             } else {
                 # receive token
@@ -1305,21 +1305,21 @@ subtest "test Lichfield" => sub {
 
                 # confirm token
                 FixMyStreet::override_config {
-                    ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                    ALLOWED_COBRANDS => [ 'hart', 'fixmystreet' ],
                     BASE_URL => 'http://www.fixmystreet.com',
                 }, sub {
                     $mech->get_ok($url);
                 };
 
                 my $base = 'www.fixmystreet.com';
-                $base = 'lichfielddc.fixmystreet.com' unless $test->{national};
+                $base = 'hart.fixmystreet.com' unless $test->{national};
                 $mech->content_contains( $base . '/report/' .
                     $report->id, 'confirm page links to correct site' );
 
                 if ( $test->{national} ) {
                     # Shouldn't be found, as it was a county problem
                     FixMyStreet::override_config {
-                        ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                        ALLOWED_COBRANDS => [ 'hart', 'fixmystreet' ],
                     }, sub {
                         is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
                     };
@@ -1328,7 +1328,7 @@ subtest "test Lichfield" => sub {
                     $mech->host( 'www.fixmystreet.com' );
                 }
                 FixMyStreet::override_config {
-                    ALLOWED_COBRANDS => [ 'lichfielddc', 'fixmystreet' ],
+                    ALLOWED_COBRANDS => [ 'hart', 'fixmystreet' ],
                 }, sub {
                     $mech->get_ok( '/report/' . $report->id );
                 };

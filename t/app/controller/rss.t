@@ -130,9 +130,9 @@ $report->delete();
 my $now = DateTime->now();
 my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
-        postcode           => 'WS13 6YY',
-        bodies_str         => '2434',
-        areas              => ',2434,2240,',
+        postcode           => 'GU51 4AE',
+        bodies_str         => '2333',
+        areas              => ',2333,2227,',
         category           => 'Other',
         title              => 'council report',
         detail             => 'Test 2 Detail',
@@ -146,17 +146,17 @@ my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
         cobrand            => 'default',
         cobrand_data       => '',
         send_questionnaire => 't',
-        latitude           => '52.727588',
-        longitude          => '-1.731322',
+        latitude           => '51.279616',
+        longitude          => '-0.846040',
         user_id            => $user1->id,
     }
 );
 
 my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
-        postcode           => 'WS13 6YY',
-        bodies_str         => '2240',
-        areas              => ',2434,2240,',
+        postcode           => 'GU51 4AE',
+        bodies_str         => '2227',
+        areas              => ',2333,2227,',
         category           => 'Other',
         title              => 'county report',
         detail             => 'Test 2 Detail',
@@ -170,23 +170,23 @@ my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_c
         cobrand            => 'default',
         cobrand_data       => '',
         send_questionnaire => 't',
-        latitude           => '52.727588',
-        longitude          => '-1.731322',
+        latitude           => '51.279616',
+        longitude          => '-0.846040',
         user_id            => $user1->id,
     }
 );
 
 subtest "check RSS feeds on cobrand have correct URLs for non-cobrand reports" => sub {
-    $mech->host('lichfielddc.fixmystreet.com');
+    $mech->host('hart.fixmystreet.com');
     my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $expected2;
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'lichfielddc' ],
+        ALLOWED_COBRANDS => [ 'hart' ],
         MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
-        $mech->get_ok("/rss/area/Lichfield");
-        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
+        $mech->get_ok("/rss/area/Hart");
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
         $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
     };
 

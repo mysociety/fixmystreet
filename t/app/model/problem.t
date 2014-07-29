@@ -381,8 +381,8 @@ for my $body (
     { id => 2651, name => 'City of Edinburgh Council' },
     { id => 2226, name => 'Gloucestershire County Council' },
     { id => 2326, name => 'Cheltenham Borough Council' },
-    { id => 2434, name => 'Lichfield District Council' },
-    { id => 2240, name => 'Staffordshire County Council' },
+    { id => 2333, name => 'Hart Council' },
+    { id => 2227, name => 'Hampshire County Council' },
     { id => 14279, name => 'Ballymoney Borough Council' },
     { id => 2636, name => 'Isle of Wight Council' },
     { id => 2649, name => 'Fife Council' },
@@ -405,11 +405,11 @@ for my $contact ( {
     category => 'potholes',
     email => '2326@example.org',
 }, {
-    body_id => 2434, # Lichfield
+    body_id => 2333, # Hart
     category => 'potholes',
     email => 'trees@example.com',
 }, {
-    body_id => 2240, # Staffordshire
+    body_id => 2227, # Hampshire
     category => 'potholes',
     email => 'highways@example.com',
 }, {
@@ -472,20 +472,20 @@ foreach my $test ( {
         desc          => 'email to two tier council that only shows district, district',
         unset_whendef => 1,
         email_count   => 1,
-        to            => qr'Lichfield District Council',
-        dear          => qr'Dear Lichfield District Council,',
-        body          => '2434',
-        cobrand       => 'lichfielddc',
-        url           => 'lichfielddc.',
+        to            => qr'Hart Council',
+        dear          => qr'Dear Hart Council,',
+        body          => '2333',
+        cobrand       => 'hart',
+        url           => 'hart.',
     }, {
         %common,
         desc          => 'email to two tier council that only shows district, county',
         unset_whendef => 1,
         email_count   => 1,
-        to            => qr'Staffordshire County Council" <highways@example',
-        dear          => qr'Dear Staffordshire County Council,',
-        body          => '2240',
-        cobrand       => 'lichfielddc',
+        to            => qr'Hampshire County Council" <highways@example',
+        dear          => qr'Dear Hampshire County Council,',
+        body          => '2227',
+        cobrand       => 'hart',
         url           => 'www.',
     }, {
         %common,
@@ -520,8 +520,8 @@ foreach my $test ( {
             BASE_URL => 'http://www.fixmystreet.com',
             MAPIT_URL => 'http://mapit.mysociety.org/',
         };
-        if ( $test->{cobrand} && $test->{cobrand} =~ /lichfielddc/ ) {
-            $override->{ALLOWED_COBRANDS} = [ 'lichfielddc' ];
+        if ( $test->{cobrand} && $test->{cobrand} =~ /hart/ ) {
+            $override->{ALLOWED_COBRANDS} = [ 'hart' ];
         }
 
         $mech->clear_emails_ok;

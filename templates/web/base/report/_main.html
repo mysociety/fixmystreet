@@ -12,12 +12,7 @@
     </em></p>
     [% INCLUDE 'report/_support.html' %]
 
-    [% IF c.cobrand.moniker == 'southampton' %]
-        [% add_links( problem.detail ) | html_para %]
-        [% INCLUDE 'report/photo.html' object=problem %]
-    [% ELSE %]
-        [% INCLUDE 'report/photo.html' object=problem %]
-        [% add_links( problem.detail ) | html_para %]
-    [% END %]
+    [% INCLUDE 'report/photo.html' object=problem %]
+    [% add_links( problem.detail ) | html_para %]
 
 </div>

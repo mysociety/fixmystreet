@@ -348,7 +348,7 @@ my $ward_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
         alert_type => 'area_problems',
         whensubscribed => $dt->ymd . ' ' . $dt->hms,
         confirmed => 1,
-        cobrand => 'lichfielddc',
+        cobrand => 'hart',
     }
 );
 
@@ -444,7 +444,7 @@ subtest "check alerts from cobrand send main site url for alerts for different c
 
     my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $expected3 = mySociety::Config::get('BASE_URL') . '/report/' . $report_outside_district->id;
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
     my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 
     like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';
@@ -460,7 +460,7 @@ my $local_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
         parameter2 => 52.727588,
         alert_type => 'local_problems',
         whensubscribed => $dt->ymd . ' ' . $dt->hms,
-        cobrand     => 'lichfielddc',
+        cobrand     => 'hart',
         confirmed => 1,
     }
 );
@@ -480,7 +480,7 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
     my $body = $email->body;
 
     my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('lichfielddc')->new();
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
     my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 
     like $body, qr#$expected1#, 'non cobrand area report point to fixmystreet.com';

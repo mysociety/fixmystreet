@@ -5,7 +5,7 @@ use Test::More;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
-foreach my $council (qw/southampton reading bromley/) {
+foreach my $council (qw/oxfordshire bromley/) {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ $council ],
     }, sub {
