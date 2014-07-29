@@ -88,14 +88,15 @@ sub admin_stats {
 
     my %councils =
         map {
-            $c->stash->{council_details}->{$_}->{name} =~ s/(?:Borough|City) Council//;
-            $_ => $c->stash->{council_details}->{$_}
+            my $name = $_->name;
+            $name =~ s/(?:Borough|City) Council//;
+            ($_->id => $name);
         }
-        @{ $self->council_id };
+        $c->model('DB::Body')->search({ id => $self->council_id });
 
     $c->stash->{council_details} = \%councils;
 
-    if ( !$c->user_exists || !grep { $_ == $c->user->from_council } @{ $self->council_id } ) {
+    if ( !$c->user_exists || !grep { $_ == $c->user->from_body->id } @{ $self->council_id } ) {
         $c->detach( '/page_error_404_not_found' );
     }
 
@@ -123,7 +124,7 @@ sub admin_stats {
         },
         {
             columns => [ qw(
-                service category subcategory council confirmed
+                service category subcategory confirmed bodies_str
             ) ],
             order_by => { -desc=> [ 'confirmed' ] },
             rows => 20,
