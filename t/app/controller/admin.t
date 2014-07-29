@@ -144,17 +144,18 @@ subtest 'check summary counts' => sub {
     };
 
     FixMyStreet::App->model('DB::Problem')->search( { bodies_str => 1 } )->update( { bodies_str => 2489 } );
-    ok $mech->host('fixmystreet.com');
+    ok $mech->host('www.fixmystreet.com');
 };
 
-my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
+# This override is wrapped around ALL the /admin/body tests
 FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.mysociety.org/',
     MAPIT_TYPES => [ 'UTA' ],
     BASE_URL => 'http://www.example.org',
 }, sub {
-    $mech->get_ok('/admin/body/2650');
-};
+
+my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
+$mech->get_ok('/admin/body/2650');
 $mech->content_contains('Aberdeen City Council');
 $mech->content_like(qr{AB\d\d});
 $mech->content_contains("http://www.example.org/around");
@@ -297,6 +298,10 @@ subtest 'check text output' => sub {
     is $mech->content_type, 'text/plain';
     $mech->content_contains('test category');
 };
+
+
+}; # END of override wrap
+
 
 my $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
     {

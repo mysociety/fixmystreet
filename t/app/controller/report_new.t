@@ -1154,7 +1154,7 @@ for my $test (
 
 subtest 'user title not reset if no user title in submission' => sub {
         $mech->log_out_ok;
-        $mech->host( 'fixmystreet.com' );
+        $mech->host( 'www.fixmystreet.com' );
 
         my $user = $mech->log_in_ok( 'userwithtitle@example.com' );
 

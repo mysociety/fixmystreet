@@ -419,7 +419,7 @@ FixMyStreet::override_config {
         }
     );
     ok $questionnaire2, 'added another questionnaire';
-    ok $mech->host("fixmystreet.com"), 'change host to fixmystreet';
+    ok $mech->host("www.fixmystreet.com"), 'change host to fixmystreet';
     $mech->get_ok("/Q/" . $token);
     $mech->title_like( qr/Questionnaire/ );
     $mech->content_contains( 'Has this problem been fixed?' );

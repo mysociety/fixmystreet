@@ -120,7 +120,7 @@ FixMyStreet::override_config {
 };
 
 subtest 'check support details not shown if not enabled in cobrand' => sub {
-    ok $mech->host('fixmystreet.com'), 'changed to fixmystreet';
+    ok $mech->host('www.fixmystreet.com'), 'changed to fixmystreet';
 
     $report->interest_count(1);
     ok $report->update, 'updated interest count';
