@@ -45,26 +45,26 @@
 
 [% IF NOT body.areas.size AND c.cobrand.country == 'GB' %]
     <p id="unknown" class="alert">This council no longer exists.
-    [% IF council.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
+    [% IF body.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
     Its area is now covered by <a href="/reports/Cornwall">Cornwall Council</a>.
-    [% ELSIF council.name.match('Durham|Easington|Sedgefield|Teesdale|Wear Valley|Derwentside|Chester le Street') %]
+    [% ELSIF body.name.match('Durham|Easington|Sedgefield|Teesdale|Wear Valley|Derwentside|Chester le Street') %]
     Its area is now covered by <a href="/reports/Durham+County">Durham County Council</a>.
-    [% ELSIF council.name.match('Blyth Valley|Wansbeck|Castle Morpeth|Tynedale|Alnwick|Berwick upon Tweed') %]
+    [% ELSIF body.name.match('Blyth Valley|Wansbeck|Castle Morpeth|Tynedale|Alnwick|Berwick upon Tweed') %]
     Its area is now covered by <a href="/reports/Northumberland">Northumberland County Council</a>.
-    [% ELSIF council.name.match('North Shropshire|Oswestry|Shrewsbury and Atcham|South Shropshire|Bridgnorth') %]
+    [% ELSIF body.name.match('North Shropshire|Oswestry|Shrewsbury and Atcham|South Shropshire|Bridgnorth') %]
     Its area is now covered by <a href="/reports/Shropshire">Shropshire Council</a>.
-    [% ELSIF council.name.match('Salisbury|West Wiltshire|Kennet|North Wiltshire') %]
+    [% ELSIF body.name.match('Salisbury|West Wiltshire|Kennet|North Wiltshire') %]
     Its area is now covered by <a href="/reports/Wiltshire">Wiltshire Council</a>.
-    [% ELSIF council.name.match('Ellesmere Port and Neston|Vale Royal|Chester') %]
+    [% ELSIF body.name.match('Ellesmere Port and Neston|Vale Royal|Chester') %]
     Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a>.
-    [% ELSIF council.name.match('Macclesfield|Congleton|Crewe and Nantwich') %]
+    [% ELSIF body.name.match('Macclesfield|Congleton|Crewe and Nantwich') %]
     Its area is now covered by <a href="/reports/Cheshire+East">Cheshire East Council</a>.
-    [% ELSIF council.name.match('Mid Bedfordshire|South Bedfordshire') %]
+    [% ELSIF body.name.match('Mid Bedfordshire|South Bedfordshire') %]
     Its area is now covered by <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
-    [% ELSIF council.name.match('Cheshire') %]
+    [% ELSIF body.name.match('Cheshire') %]
     Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a> or
     <a href="/reports/Cheshire+East">Cheshire East Council</a>.
-    [% ELSIF council.name.match('Bedfordshire') %]
+    [% ELSIF body.name.match('Bedfordshire') %]
     Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a> or
     <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
     [% END %]
