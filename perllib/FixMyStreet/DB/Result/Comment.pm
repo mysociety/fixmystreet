@@ -68,6 +68,12 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->might_have(
+  "moderation_original_data",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.comment_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 __PACKAGE__->belongs_to(
   "problem",
   "FixMyStreet::DB::Result::Problem",
@@ -82,23 +88,15 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:D/+UWcF7JO/EkCiJaAHUOw
-
-__PACKAGE__->has_many(
-  "moderation_log_entries",
-  "FixMyStreet::DB::Result::ModerationLog",
-  { "foreign.comment_id" => "self.id",
-    "foreign.problem_id" => "self.problem_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-31 15:59:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:08AtJ6CZFyUe7qKMF50MHg
+#
 __PACKAGE__->might_have(
   "moderation_original_data",
   "FixMyStreet::DB::Result::ModerationOriginalData",
-  { "foreign.comment_id" => "self.id",
-    "foreign.problem_id" => "self.problem_id" },
-  { cascade_copy => 0, cascade_delete => 0 },
+  { "foreign.problem_id" => "self.problem_id",
+    "foreign.comment_id" => "self.id", },
+    cascade_copy => 0, cascade_delete => 1 },
 );
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");

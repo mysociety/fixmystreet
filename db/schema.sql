@@ -450,44 +450,16 @@ create table admin_log (
     ),
     object_id integer not null,
     action text not null,
-    whenedited timestamp not null default ms_current_timestamp()
+    whenedited timestamp not null default ms_current_timestamp(),
+    user_id int references users(id) null
 ); 
-
--- Record basic information about edits made through moderation interface
-create table moderation_log (
-    id serial not null primary key,
-
-    -- Problem details
-    user_id int references users(id) not null,
-    problem_id int references problem(id) not null,
-    comment_id int references comment(id),
-
-    -- Metadata
-    created timestamp not null default ms_current_timestamp(),
-    reason text,
-
-    moderation_object text not null check (
-      moderation_object = 'problem'
-      or (moderation_object = 'comment' and comment_id is not null)
-    ),
-
-    moderation_type text not null check(
-        moderation_type='hide' or 
-        moderation_type='title' or
-        moderation_type='detail' or
-        moderation_type='photo' or
-        moderation_type='anonymous'
-    ),
-
-    whenedited timestamp not null default ms_current_timestamp()
-);
 
 create table moderation_original_data (
     id serial not null primary key,
 
     -- Problem details
     problem_id int references problem(id) not null,
-    comment_id int references comment(id),
+    comment_id int references comment(id) unique,
 
     title text null,
     detail text null, -- or text for comment

@@ -36,6 +36,12 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
 __PACKAGE__->has_many(
+  "admin_logs",
+  "FixMyStreet::DB::Result::AdminLog",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "alerts",
   "FixMyStreet::DB::Result::Alert",
   { "foreign.user_id" => "self.id" },
@@ -65,12 +71,6 @@ __PACKAGE__->belongs_to(
   },
 );
 __PACKAGE__->has_many(
-  "moderation_logs",
-  "FixMyStreet::DB::Result::ModerationLog",
-  { "foreign.user_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
-__PACKAGE__->has_many(
   "problems",
   "FixMyStreet::DB::Result::Problem",
   { "foreign.user_id" => "self.id" },
@@ -84,8 +84,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-06-05 15:46:02
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9FlM/jbymDTtn6tGmqBufQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-29 13:54:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y41/jGp93IxSpyJ/o6Q1gQ
 
 __PACKAGE__->add_columns(
     "password" => {
