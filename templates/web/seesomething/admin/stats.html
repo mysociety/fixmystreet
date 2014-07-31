@@ -50,7 +50,7 @@ No Results found
             <td>[% report.service || 'Other' %]</td>
             <td>[% report.category %]</td>
             <td class="nowrap">[% report.subcategory %]</td>
-            <td class="nowrap">[% council_details.${report.bodies_str}.name %]</td>
+            <td class="nowrap">[% council_details.${report.bodies_str} %]</td>
             <td class="nowrap">[% PROCESS format_time time=report.confirmed %]</td>
         </tr>
         [%- END %]
