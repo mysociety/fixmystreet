@@ -246,7 +246,7 @@ FixMyStreet can automatically use them. **This is the easiest solution if the
 data you need is there** because we already run two servers 
 ([UK MapIt](http://mapit.mysociety.org) and 
 [global MapIt](http://global.mapit.mysociety.org))
-that makes this data available.
+that make this data available.
 
 Use this type of boundary if:
 
@@ -427,8 +427,9 @@ this data into a MapIt server and use that.
       in the previous example. If you're going to do that, <strong>the
       data must be open data</strong> and you should probably ask about it on
       the <a href="http://lists.openstreetmap.org/listinfo/imports">OSM import
-      list</a> first. Of course, if you do this, it means anyone else in the
-      world can use it too, if they want.
+      list</a> first. Of course, if you do this then anyone else in the world
+      who wants the data will be able to use it too, which is why we encourage
+      this approach.
     </p>
     <p>
       But if you can't do that, or the boundary data you have is not
@@ -448,10 +449,11 @@ FixMyStreet doesn't normally display the admin areas and boundaries on the maps
 a problem). But it *is* possible, with some customisation, to change this
 behaviour. 
 
-If you just want to see what shape a boundary actually is on the map to check
-it's covering the area you want, you can see this by going to the MapIt server
-it's on, and looking at that area's HTML page. For example, see the [boundary for
-Norway](http://global.mapit.mysociety.org/area/363186.html) on the global MapIt server.
+If you just want to see a boundary drawn on a map to check that it's covering
+the area you want, you can see this by going to the MapIt server it's on, and
+looking at that area's HTML page. For example, see the [boundary for
+Norway](http://global.mapit.mysociety.org/area/363186.html) on the global MapIt
+server.
 
 
 
