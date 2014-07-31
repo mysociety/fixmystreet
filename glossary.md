@@ -596,7 +596,7 @@ technical information, see
     <a href="#mapit" class="glossary__link">MapIt</a> can read KML files. If you need
     to provide your own <a href="#area" class="glossary__link">admin boundary</a>
     data, you can use common GIS software (such as Google Earth) to create a
-    KML "shape file" containing the boundaries, and then import them to Mapit.
+    KML "shape file" containing the boundaries, and then import them to MapIt.
     <div class="more-info">
       <p>More information:</p>
       <ul>

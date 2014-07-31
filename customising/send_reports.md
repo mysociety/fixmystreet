@@ -29,7 +29,7 @@ It's possible to add a user who repeatedly sends abusive reports to the abuse li
 
 ## Where does the report get sent?
 
-FixMyStreet uses the location of the problem to identify which bodies may be responsible for fixing it, and then decides which contact (typically an email address) to use) based on the chosen category. This is described in more detail on the page about [FMS and Mapit](/customising/fms_and_mapit).
+FixMyStreet uses the location of the problem to identify which bodies may be responsible for fixing it, and then decides which contact (typically an email address) to use) based on the chosen category. This is described in more detail on the page about [FMS and MapIt](/customising/fms_and_mapit).
 
 The actual contacts can be added, changed, or deleted via the admin. See [managing bodies and contacts](/running/bodies_and_contacts) for details.
 

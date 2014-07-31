@@ -186,7 +186,7 @@ Use this type of boundary if you:
       to either your MapIt or our custom one, and set
       <code><a href="{{ site.baseurl }}customising/config/#mapit_types">MAPIT_TYPES</a></code>
       to the areas you want (the actual values will depend on what that particular
-      Mapit is returning). You should also set 
+      MapIt is returning). You should also set 
       <code><a href="{{ site.baseurl }}customising/config/#mapit_id_whitelist">MAPIT_ID_WHITELIST</a></code>
       to the ID of the single area you want.
     </p>
@@ -359,7 +359,7 @@ Use this type of boundary if:
     </p>
     <p>
       Find the areas you need by looking on the
-      <a href="http://global.mapit.mysociety.org">global Mapit website</a> or the
+      <a href="http://global.mapit.mysociety.org">global MapIt website</a> or the
       <a href="http://mapit.mysociety.org">UK one</a>. You must also nominate
       the types of area these are (effectively the <em>level</em> of admin
       boundary it is), and the generation. On global, the area types look
@@ -371,7 +371,7 @@ Use this type of boundary if:
       MapIt's data for Zurich</a>.
     </p>
     <p>
-      The UK Mapit types are different. For example, for UK FixMyStreet, we use:
+      The UK MapIt types are different. For example, for UK FixMyStreet, we use:
     </p>
 <pre><code>MAPIT_TYPES: [ 'DIS', 'LBO', 'MTD', 'UTA', 'CTY', 'COI', 'LGD' ]
 </code></pre>
@@ -451,7 +451,7 @@ behaviour.
 If you just want to see what shape a boundary actually is on the map to check
 it's covering the area you want, you can see this by going to the MapIt server
 it's on, and looking at that area's HTML page. For example, see the [boundary for
-Norway](http://global.mapit.mysociety.org/area/363186.html) on the global Mapit server.
+Norway](http://global.mapit.mysociety.org/area/363186.html) on the global MapIt server.
 
 
 
