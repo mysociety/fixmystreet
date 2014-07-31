@@ -33,6 +33,7 @@ technical information, see
   <li><a href="#contact">contact</a></li>
   <li><a href="#council">council</a></li>
   <li><a href="#dashboard">dashboard</a></li>
+  <li><a href="#development">development site</a></li>
   <li><a href="#flagged">flagged</a></li>
   <li><a href="#geocoder">geocoder</a></li>
   <li><a href="#gettext">gettext</a></li>
@@ -45,10 +46,12 @@ technical information, see
   <li><a href="#mapit">MapIt</a></li>
   <li><a href="#open311">Open311</a></li>
   <li><a href="#partial">partial report</a></li>
+  <li><a href="#production">production site</a></li>
   <li><a href="#report">problem report</a></li>
   <li><a href="#survey">questionnaire</a></li>
   <li><a href="#send-method">send method</a></li>
   <li><a href="#staff-user">staff users</a></li>
+  <li><a href="#staging">staging site</a></li>
   <li><a href="#state">state</a></li>
   <li><a href="#survey">survey</a></li>
   <li><a href="#template">template</a></li>
@@ -414,6 +417,25 @@ technical information, see
       The dashboard is shown on the FixMyStreet website at
       <code>/dashboard</code>, but can only be accessed by a <a
       href="#staff-user" class="glossary__link">staff user</a>.
+    </p>
+  </dd>
+
+  <dt>
+    <a name="development">development site</a> (also: dev, development server)
+  </dt>
+  <dd>
+    A <strong>dev server</strong> is one that is running your FixMyStreet site
+    so you can <a href="{{ site.baseurl }}customising/">customise it</a>, experiment
+    with different settings, and test that it does what you expect.
+    This is different from a
+    <a href="#production" class="glossary__link">production server</a>, which is the one your
+    users actually visit running with live data, or a
+    <a href="#staging" class="glossary__link">staging server</a>,
+    which is used for testing code before it goes live.
+    <p>
+      On your dev server, you should set
+      <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
+      to <code>1</code>.
     </p>
   </dd>
 
@@ -844,6 +866,33 @@ technical information, see
       </ul>
     </div>
   </dd>
+  
+  <dt>
+    <a name="production">production site</a> (also: live, production server)
+  </dt>
+  <dd>
+    A <strong>production server</strong> is one that is running your FixMyStreet site
+    for real users, with live data. This is different from a
+    <a href="#development" class="glossary__link">development server</a>, which you use make your
+    customisation and environment changes and try to get them to all work OK, or a
+    <a href="#staging" class="glossary__link">staging server</a>, which is used for testing code
+    and configuration after it's been finished but before it goes live.
+    <p>
+      Your production site should be configured to run as efficiently as possible: for
+      example, with caching disabled, and debugging switched off. Make sure you set
+      <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
+      to <code>0</code>.
+    <p>
+      If you have a staging server, the system environment of your staging and
+      production servers should be identical.
+    </p>
+    <p>
+      You should never need to edit code directly on your production server.
+      We recommend you make any changes to the program code on your
+      development server, add it to the appropriate branch, test it on a staging
+      server, and then deploy it directly &mdash; that is, from the repo &mdash; on production.
+    </p>
+  </dd>
 
   <dt>
     <a name="send-method">send method</a>
@@ -868,6 +917,33 @@ technical information, see
         </li>
       </ul>
     </div>
+  </dd>
+
+  <dt>
+    <a name="staging">staging server</a> (also: staging site)
+  </dt>
+  <dd>
+    A <strong>staging server</strong> is one that you use for testing code or configuration
+    before it goes live. This is different from a <a href="#development"
+    class="glossary__link">development server</a>, on which you change the code and settings to
+    make everything work, or the
+    <a href="#production" class="glossary__link">production server</a>, which is the
+    site your users visit running with live data.
+    <p>
+      On your staging server, you should set
+      <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
+      to <code>1</code>.
+    </p>
+    <p>
+      If you have a staging server, the system environment of your staging and
+      production servers should be identical.
+    </p>
+    <p>
+      You should never need to edit code directly on your staging or production servers.
+      We recommend you make any changes to the program code on your
+      development server, add it to the appropriate branch, and then deploy it directly
+      &mdash; that is, from the repo &mdash; on staging.
+    </p>
   </dd>
 
   <dt>

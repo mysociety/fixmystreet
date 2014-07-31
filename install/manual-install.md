@@ -196,7 +196,8 @@ base for your own user crontab.
 
 ### Deployment
 
-For production use of FixMyStreet, we suggest you use Apache or nginx, and
+For <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+use of FixMyStreet, we suggest you use Apache or nginx, and
 FastCGI. It should also be possible to run it using Plack/PSGI, if that is
 preferable.
 

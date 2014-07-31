@@ -190,7 +190,10 @@ The following are all the configuration settings that you can change in `config/
     <a name="staging_site"><code>STAGING_SITE</code></a>
   </dt>
   <dd>
-    Is this site a staging (development) site?
+    Is this site a 
+    <a href="{{ site.baseurl }}glossary/#staging" class="glossary__link">staging</a>
+    (or <a href="{{ site.baseurl }}glossary/#development" class="glossary__link">development</a>)
+    site?
     <p>
       On a staging site, templates/CSS modified times aren't cached. Staging
       sites also don't send reports to bodies unless explicitly configured to
@@ -202,7 +205,9 @@ The following are all the configuration settings that you can change in `config/
       <p>Example:</p>
       <ul class="examples">
         <li>
-          If this is your live, production server:
+          If this is your live
+          <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+          server:
           <p>
             <code>STAGING_SITE: 0</code>
           </p>
@@ -247,8 +252,12 @@ The following are all the configuration settings that you can change in `config/
       </li>
     </ul>
     <p>
-      Note that this setting is only relevant on a staging server.
-      On your production server (where 
+      Note that this setting is only relevant on a
+      <a href="{{ site.baseurl }}glossary/#staging" class="glossary__link">staging</a>
+      server.
+      On your
+      <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+      server (where 
       <code><a href="#staging_site">STAGING_SITE</a></code> is <code>0</code>)
       it will be ignored.
     </p>
@@ -793,8 +802,9 @@ ALLOWED_COBRANDS:
     </p>
     <p>
       If you're running a site with multiple cobrands, you'll never want to
-      serve the Default cobrand on your production server, so make sure you've
-      set ALLOWED_COBRANDS correctly.
+      serve the Default cobrand on your 
+      <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>
+      server, so make sure you've set ALLOWED_COBRANDS correctly.
     </p>
     <div class="more-info">
       <p>Examples:</p>
