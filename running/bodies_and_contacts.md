@@ -97,13 +97,21 @@ of sending the reports. Note, though, that alternatives to email are only
 possible if the body to which you are trying to send reports supports them.
 Some do; many do not.
 
-We like [Open311](http://www.open311.org/), which is an open standard for
+See
+[more about integration]({{ site.baseurl }}customising/integration/)
+to understand the different ways this can work. The first stage of
+integration is injecting problem reports directly into the body's back-end
+system.
+
+We like
+<a href="{{ site.baseurl }}glossary/#open311" class="glossary__link">Open311</a>,
+which is an open standard for
 submitting problem reports to a body automatically (by sending the data
 directly to a webservice that consumes it). FixMyStreet also has a number of
 other, custom, methods for submitting data that we've written for specific
 councils in the UK: if you need to write your own, look at the code or ask us
-to help you. Custom integrations can be difficult, depending on how easy it is
-to get data in and out of the body's internal, back-end systems.
+to help you. Custom integrations can sometimes be difficult, depending on how
+easy it is to get data in and out of the body's internal, back-end systems.
 
 You can change a body's send method -- for example, if you start by sending
 emails, but then discover the body is running an Open311 server, it's easy to
@@ -118,7 +126,8 @@ it](https://www.mysociety.org/blog/open311-explained).
 
 In fact, if you're working on an installation that can connect to bodies using
 a method other than email, not *all* of a body's contacts need to be sent the
-same way. It's possible to specify a different **send_method** for an
+same way. It's possible to specify a different 
+<a href="{{ site.baseurl }}glossary/#send-method" class="glossary__link">send method</a> for an
 individual contact. You'll need to edit the body (in `/admin`) and check the
 box marked "Contacts can be devolved". Then mark each of the contacts that are
 not using the body's send method (which by default is email) as "devolved",

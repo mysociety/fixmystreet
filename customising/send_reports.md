@@ -49,4 +49,7 @@ it successfully.
 
 ## Alternatives to email
 
-Although by default FixMyStreet sends reports by email, it's possible to inject reports *directly* into some bodies' databases or back-end systems. This is usually much better than using email because it's more convenient for the staff working at the receiving end. You can only do this if the body provides a way of doing it -- there's an open standard called Open311 that some systems support, and others that offer an integration point will need custom code. FixMyStreet already supports Open311, and there are examples of custom integrations we've done for some UK councils in the FMS repository. Get in touch with mySociety if you want to do any integration work.
+Although by default FixMyStreet sends reports by email, it's possible to inject reports *directly* into some
+bodies' databases or back-end systems. This is usually much better than using email because it's more convenient
+for the staff working at the receiving end. See
+[more about integration]({{ site.baseurl }}customising/integration/) for details.
