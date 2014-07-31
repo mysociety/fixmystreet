@@ -56,6 +56,8 @@ you're doing is [customising your installation](/customising).
       The primary configuration file is <code>general.yml</code>. This file isn't in the git
       repository (since it will contain information specific to your installation, including
       the database password), but example files are.
+      See  <a href="{{ site.baseurl }}customising/config/">details of all
+      configuration settings</a>.
     </p>
   </dd>
   <dt>
@@ -98,7 +100,8 @@ you're doing is [customising your installation](/customising).
     <p>
       The translation strings are stored in <code>.po</code> files in directories specific to
       the locale and encoding. For example, <code>nn_NO.UTF-8/</code> contains the translations
-      for the Norwegian site.
+      for the Norwegian site. See more about
+      <a href="{{ site.baseurl }}customising/language/">translating FixMyStreet</a>.
     </p>
   </dd>
   <dt>
@@ -161,6 +164,7 @@ you're doing is [customising your installation](/customising).
             Contains the <a href="{{ site.baseurl }}customising/cobrand-module/">Cobrand modules</a>, which you
             can use if you need to add custom behaviour beyond that provided by config
             and template changes.
+            See <a href="{{ site.baseurl }}customising/">more abobut customising</a> your site.
           </dd>
           <dt>
             DB
@@ -192,7 +196,9 @@ you're doing is [customising your installation](/customising).
             <p><em>code for handling report sending</em></p>
             <p>
               In addition to email and Open311, this is where the
-              custom integrations are found.
+              custom 
+              <a href="{{ site.baseurl }}customising/integration/">back-end integrations</a>
+              are found.
             </p>
           </dd>
         </dl>
@@ -243,6 +249,7 @@ you're doing is [customising your installation](/customising).
       <code>default/</code>. In this way, cobrands only need to override templates that
       differ from FixMyStreet's default &mdash; it's feasible for your cobrand's template
       directories to be empty.
+      See <a href="{{ site.baseurl }}customising/">more abobut customising</a> your site.
     </p>
     <dl>
       <dt>
