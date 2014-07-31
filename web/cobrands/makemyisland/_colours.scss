@@ -1,0 +1,21 @@
+/* COLOURS */
+
+$blue: #00909b;
+$green: rgb(178,231,221);
+
+$primary: $green;
+$primary_b: #000000;
+$primary_text: #222222;
+
+$base_bg: $blue;
+$base_fg: $primary_text;
+
+$map_nav_bg: $blue;
+$nav_fg: #fff;
+$nav_fg_hover: $primary;
+
+$col_click_map: $blue;
+$col_click_map_dark: darken($blue, 10%);
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;
