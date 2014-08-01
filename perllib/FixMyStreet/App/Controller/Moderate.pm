@@ -35,7 +35,7 @@ admin_log).
 
 DB tables:
 
-    ModerationLog
+    AdminLog
     ModerationOriginalData
     UserBodyPermissions
 
@@ -83,21 +83,22 @@ sub moderate_report : Chained('report') : PathPart('') : Args(0) {
 }
 
 sub report_moderate_audit : Private {
-    my ($self, $c, @types) = @_;;
+    my ($self, $c, @types) = @_;
 
     my $user = $c->user->obj;
     my $reason = $c->stash->{'moderation_reason'};
     my $problem = $c->stash->{problem} or die;
 
-    for my $type (@types) {
-        $c->model('DB::ModerationLog')->create({
-            user => $user,
-            problem => $problem,
-            moderation_object => 'problem',
-            moderation_type => $type,
-            reason => $reason,
-        });
-    }
+    my $types_csv = join ', ' => @types;
+
+    $c->model('DB::AdminLog')->create({
+        action => 'moderation',
+        user => $user,
+        admin_user => $user->name,
+        object_id => $problem->id,
+        object_type => 'problem',
+        reason => (sprintf '%s (%s)', $reason, $types_csv),
+    });
 
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($problem->cobrand)->new();
 
@@ -108,7 +109,7 @@ sub report_moderate_audit : Private {
 
         to      => [ [ $user->email, $user->name ] ],
         from    => [ $sender, $sender_name ],
-        types => (join ', ' => @types),
+        types => $types_csv,
         user => $user,
         problem => $problem,
         report_uri => $c->stash->{report_uri},
@@ -244,17 +245,16 @@ sub update_moderate_audit : Private {
     my $problem = $c->stash->{problem} or die;
     my $comment = $c->stash->{comment} or die;
 
-    for my $type (@types) {
-        $c->model('DB::ModerationLog')->create({
-            user => $user,
-            problem => $problem,
-            comment => $comment,
-            moderation_object => 'comment',
-            moderation_type => $type,
-            reason => $reason,
-        });
-    }
+    my $types_csv = join ', ' => @types;
 
+    $c->model('DB::AdminLog')->create({
+        action => 'moderation',
+        user => $user,
+        admin_user => $user->name,
+        object_id => $comment->id,
+        object_type => 'update',
+        reason => (sprintf '%s (%s)', $reason, $types_csv),
+    });
 }
 
 sub update_moderate_hide : Private {

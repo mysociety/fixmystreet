@@ -91,13 +91,6 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-31 15:59:43
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:08AtJ6CZFyUe7qKMF50MHg
 #
-__PACKAGE__->might_have(
-  "moderation_original_data",
-  "FixMyStreet::DB::Result::ModerationOriginalData",
-  { "foreign.problem_id" => "self.problem_id",
-    "foreign.comment_id" => "self.id", },
-    cascade_copy => 0, cascade_delete => 1 },
-);
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
@@ -197,9 +190,34 @@ Return most recent ModerationLog object
 
 sub latest_moderation_log_entry {
     my $self = shift;
-    return $self->moderation_log_entries->search({}, { order_by => 'id desc' })->first;
+    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
 }
 
+__PACKAGE__->has_many(
+  "admin_log_entries",
+  "FixMyStreet::DB::Result::AdminLog",
+  { "foreign.object_id" => "self.id" },
+  { 
+      cascade_copy => 0, cascade_delete => 0,
+      where => { 'object_type' => 'update' },
+  }
+);
+
+# we already had the `moderation_original_data` rel above, as inferred by
+# Schema::Loader, but that doesn't know about the problem_id mapping, so we now
+# (slightly hackishly) redefine here:
+#
+# TODO: should add FK on moderation_original_data field for this, to get S::L to
+# pick up without hacks.
+
+__PACKAGE__->might_have(
+  "moderation_original_data",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.comment_id" => "self.id",
+    "foreign.problem_id" => "self.problem_id",
+  },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );

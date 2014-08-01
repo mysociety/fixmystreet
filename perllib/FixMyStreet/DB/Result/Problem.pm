@@ -816,9 +816,18 @@ Return most recent ModerationLog object
 
 sub latest_moderation_log_entry {
     my $self = shift;
-    return $self->moderation_log_entries->search({}, { order_by => 'id desc' })->first;
+    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
 }
 
+__PACKAGE__->has_many(
+  "admin_log_entries",
+  "FixMyStreet::DB::Result::AdminLog",
+  { "foreign.object_id" => "self.id" },
+  { 
+      cascade_copy => 0, cascade_delete => 0,
+      where => { 'object_type' => 'problem' },
+  }
+);
 
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
