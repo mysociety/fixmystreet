@@ -124,9 +124,9 @@ sub report_moderate_hide : Private {
 
     if ($c->req->param('problem_hide')) {
 
-
         $problem->update({ state => 'hidden' });
 
+        $c->res->redirect( '/' ); # Go directly to front-page
         $c->detach( 'report_moderate_audit', ['hide'] ); # break chain here.
     }
 }
