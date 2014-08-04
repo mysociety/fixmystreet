@@ -21,6 +21,12 @@ body.frontpage {
     }
 }
 
+@media (max-width: 61em) and (min-width: 48em) {
+    #site-header {
+        height: auto;
+    }
+}
+
 body.mappage {
     #footer-container, #footer-logos-bottom {
         display: none;
