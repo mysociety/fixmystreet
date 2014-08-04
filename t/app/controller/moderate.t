@@ -151,6 +151,18 @@ subtest 'Problem moderation' => sub {
 
         $mech->content_contains('Photo of this report');
     };
+
+    subtest 'Hide report' => sub {
+        my $resp = $mech->post('/moderate/report/' . $report->id, {
+            %problem_prepopulated,
+            problem_hide => 1,
+        });
+        $mech->base_unlike( qr{/report/}, 'redirected to front page' );
+
+        # reset
+        $report->update({ state => 'confirmed' });
+        $report->discard_changes;
+    };
 };
 
 $mech->content_lacks('Posted anonymously', 'sanity check');
@@ -240,6 +252,16 @@ subtest 'updates' => sub {
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_contains('Photo of this report');
+    };
+
+    subtest 'Hide comment' => sub {
+        $mech->content_contains('update good good bad good');
+
+        $mech->post_ok( $MODERATE_UPDATE_URL, {
+            %update_prepopulated,
+            update_hide => 1,
+        });
+        $mech->content_lacks('update good good bad good');
     };
 };
 
