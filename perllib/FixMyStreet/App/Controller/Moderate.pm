@@ -339,7 +339,6 @@ sub return_text : Private {
 sub diff {
     my ($self, $old, $new) = @_;
 
-    $new =~s/\[redacted\]//g;
     $new =~s/\[\.{3}\]//g;
 
     my $diff = Algorithm::Diff->new( [ split //, $old ], [ split //, $new ] );
@@ -351,7 +350,7 @@ sub diff {
             unless ($deleted =~/^\s*$/) {
                 $string .= ' ' if $deleted =~/^ /;
                 my $letters = ($deleted=~s/\W//r);
-                $string .= length $letters > 5 ? "[redacted]" : '[...]';
+                $string .= '[...]';
                 $string .= ' ' if $deleted =~/ $/;
             }
         }
