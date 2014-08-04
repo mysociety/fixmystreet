@@ -207,6 +207,8 @@ __PACKAGE__->has_many(
 # Schema::Loader, but that doesn't know about the problem_id mapping, so we now
 # (slightly hackishly) redefine here:
 #
+# we also add cascade_delete, though this seems to be insufficient.
+#
 # TODO: should add FK on moderation_original_data field for this, to get S::L to
 # pick up without hacks.
 
@@ -216,7 +218,7 @@ __PACKAGE__->might_have(
   { "foreign.comment_id" => "self.id",
     "foreign.problem_id" => "self.problem_id",
   },
-  { cascade_copy => 0, cascade_delete => 0 },
+  { cascade_copy => 0, cascade_delete => 1 },
 );
 
 # we need the inline_constructor bit as we don't inherit from Moose
