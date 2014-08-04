@@ -31,19 +31,6 @@
     [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = c.cobrand.site_title %]
 
     [% extra_js %]
-    <script type="text/javascript">
-        $(function(){
-            var $html = $('html');
-            $(window).resize(function(){
-                if(!$html.hasClass('mobile')) {
-                    // Warwickshire has a bigger header and so needs more room for
-                    // the map controls
-                    $('#fms_pan_zoom').css({ top: '11em' });
-                }
-            }).resize();
-        });
-    </script>
-
 </head>
 
 [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
