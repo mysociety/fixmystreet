@@ -8,6 +8,7 @@ use JSON;
 use DateTime;
 use DateTime::Format::ISO8601;
 use List::MoreUtils 'uniq';
+use File::Slurp;
 use FixMyStreet::App;
 
 =head1 NAME
@@ -115,6 +116,45 @@ sub problems : Local {
 
     @problems = map { { $_->get_columns } } @problems;
     $c->stash->{response} = \@problems;
+}
+
+
+=head2 problems
+
+Provide JSON of sitewide open/fixed problems for a specified body
+
+=cut
+sub stats : Local {
+    my ( $self, $c, $body_id ) = @_;
+    eval {
+        my $body = $c->model('DB::Body')->find($body_id);
+        if (!defined $body) {
+            $c->stash->{error} = _("Sorry, that body cannot be found.");
+            return;
+        }
+        my $data = File::Slurp::read_file(
+            FixMyStreet->path_to( '../data/all-reports.json' )->stringify
+        );
+        my $j = JSON->new->utf8->decode($data);
+        my $fixed = $j->{fixed};
+        my $open = $j->{open};
+        my $body_stats = {};
+        if ($fixed->{$body->id}) {
+            $body_stats->{fixed} = $fixed->{$body->id};
+        }
+        if ($open->{$body->id}) {
+            $body_stats->{open} = $open->{$body->id};
+        }
+        $c->stash->{response} = $body_stats;
+    };
+    if ($@) {
+        $c->stash->{error} = _("There was a problem generating statistics. Please try again later.");
+        if ($c->config->{STAGING_SITE}) {
+            $c->stash->{error} .= '</p><p>Perhaps the bin/update-all-reports script needs running. Use: bin/cron-wrapper bin/update-all-reports</p><p>'
+                . sprintf(_('The error was: %s'), $@);
+        }
+        return;
+    }
 }
 
 sub end : Private {
