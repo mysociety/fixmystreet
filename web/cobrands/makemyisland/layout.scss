@@ -1,2 +1,20 @@
 @import "_colours";
+
 @import "../sass/layout";
+
+#site-logo,
+body.frontpage #site-logo {
+    margin-top: -8px;
+    margin-left: 10px;
+    height: 100px;
+    background: url(/cobrands/makemyisland/make-my-island-logo.gif) 0px 0px no-repeat;
+}
+
+body.mappage #site-logo {
+    height: 60px;
+    background-size: contain;
+}
+
+body.frontpage #site-logo {
+    margin-top: -35px;
+}
