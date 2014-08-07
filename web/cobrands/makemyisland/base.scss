@@ -20,3 +20,20 @@ body.mappage #site-header,
     @include background(none);
     background-color: $blue;
 }
+ 
+div#location-buttons {
+  margin: 1.333em auto;
+  .island-button {
+    margin:0 auto 1.5em auto;
+  }
+  a.front-page-button {
+    // @include button-reset(#FFD000, #cc9000, #aa7000, #300, #FFD000, #cc9000, #aa7000, #300);
+    @include button-reset($blue, darken($blue, 10%), darken($blue, 30%), white, $blue, darken($blue, 20%), darken($blue, 30%), white);
+    #front-main & {
+      text-decoration: none;
+    }
+    &:visited, &:hover {
+      color:white;
+    }
+  }  
+}
