@@ -7,7 +7,7 @@
     <div class="nav-wrapper clearfix">
         <div class="main-menu-wrapper">
             <div class="main-menu">
-                <ul class="clearfix" id="mobile-menu">
+                <ul class="clearfix button-nav" id="mobile-menu">
                     <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                         >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                     %]<li><[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END

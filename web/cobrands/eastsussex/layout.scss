@@ -55,6 +55,7 @@ footer {
     }
 }
 
+
 div.form-error, p.form-error {
     display: block !important;
 }
@@ -115,10 +116,6 @@ body.frontpage {
             display: none;
         }
     }
-
-    .content {
-        margin-top: 3em;
-    }
 }
 
 #site-header {
@@ -175,8 +172,11 @@ body.frontpage {
 
 #mysociety {
     margin-top: 0;
-    padding-top: 24px;
     padding-bottom: 24px;
+
+    .container {
+        padding: 0;
+    }
 }
 
 .content {
@@ -184,7 +184,7 @@ body.frontpage {
     width: auto;
 }
 
-.content, body.twothirdswidthpage .content aside {
+body.twothirdswidthpage .content aside {
     box-shadow: 0 0 12px 0 #dae1e5;
 }
 
@@ -251,5 +251,11 @@ body.frontpage {
 
     body.twothirdswidthpage .content .sticky-sidebar {
         top: 1em;
+    }
+}
+
+@media only screen and (min-width: 48em) {
+    footer {
+        display: block;
     }
 }

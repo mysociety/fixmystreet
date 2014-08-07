@@ -42,5 +42,69 @@ sub enter_postcode_text {
 # increase map zoom level so street names are visible
 sub default_map_zoom { return 3; }
 
+
+=head2 temp_update_potholes_contact
+
+Routine to update the extra for potholes (temporary setup hack, will be
+superseded by Open311/integration).
+
+Can run with a script or command line like:
+
+ bin/cron-wrapper perl -MFixMyStreet::App -MFixMyStreet::Cobrand::EastSussex -e \
+ 'FixMyStreet::Cobrand::EastSussex->new({c => FixMyStreet::App->new})->temp_update_potholes_contact'
+
+=cut
+
+use constant POTHOLE_SIZES => [
+    {'key' => ['Blank'],    'name' => ['--']}, 
+    {'key' => ['golf'],     'name' => ['Golf ball sized']}, 
+    {'key' => ['tennis'],   'name' => ['Tennis ball sized']}, 
+    {'key' => ['football'], 'name' => ['Football sized']},
+    {'key' => ['larger'],   'name' => ['Larger']}
+];
+
+use constant POTHOLE_DICT => {
+    map {
+        @{ $_->{key} }, 
+        @{ $_->{name} },
+    } @{ POTHOLE_SIZES() },
+};
+
+sub resolve_pothole_size {
+    my ($self, $key) = @_;
+    return $self->POTHOLE_DICT->{$key};
+}
+
+sub temp_update_potholes_contact {
+    my $self = shift;
+
+    my $category = 'Potholes';
+    my $contact = $self->{c}->model('DB::Contact')
+        ->search({
+            body_id => $self->council_id,
+            category => $category,
+        })->first
+        or die "No such category: $category";
+
+    my $fields = [
+        {
+            'code' => 'detail_size', # there is already builtin handling for this field in Report::New
+            'variable' => 'true',
+            'order' => '1',
+            'description' => 'Size of the pothole?',
+            'required' => 'true',
+            'datatype' => 'singlevaluelist',
+            'datatype_description' => {}, 
+            'values' => {
+                'value' => $self->POTHOLE_SIZES,
+            },
+        }
+    ];
+    # require IO::String; require RABX;
+    # RABX::wire_wr( $fields, IO::String->new(my $extra) );
+
+    $contact->update({ extra => $fields });
+}
+
 1;
 

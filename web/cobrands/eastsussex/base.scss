@@ -11,6 +11,10 @@ body {
     font-size: 13px;
 }
 
+footer {
+    background: #00a1de;
+}
+
 .content {
     padding: 0 1em;
 }
@@ -47,6 +51,16 @@ h1.main {
     border-top-width: 4px;
     margin-top: -4px;
 }
+#site-header .eastsussex .header {
+    margin: 0 0 2px;
+}
+.frontpage #site-header .eastsussex .header {
+    margin: 0 0 9px;
+}
+
+.mappage .application-nav, .twothirdswidthpage .application-nav {
+    padding: 4.5px 9px;
+}
 
 // Colour tab to match colour scheme
 #nav-link {
@@ -78,6 +92,12 @@ h1.main {
 .big-green-banner {
     text-transform: none;
     z-index: 5000;
+}
+
+.green-btn, input.green-btn, input.green-btn:hover {
+    background: #44697d;
+    font-weight: bold;
+    font-size: 1.1em;
 }
 
 #form_sign_in {
@@ -149,9 +169,11 @@ body > p {
     }
 }
 
+footer {
+    display: none;
+}
+
 .footer .languages ul {
-    padding: 0;
-    margin: 0;
 
     li {
         display: inline-block;
@@ -161,6 +183,23 @@ body > p {
 
 button, input[type=submit], .btn {
     text-transform: none;
+}
+
+/* as per email from Matt Tooke, we are using ESCC's .button-nav
+styling, but this doesn't dtrt with span, so adding ourselves */
+
+.button-nav span {
+    float: left;
+    display: block;
+    margin: 5px 2px 5px 0;
+    padding: 4px 10px;
+    background: #00a1de;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    white-space: nowrap;
+    border-radius: 3px;
+    border: 0;
 }
 
 .email {
