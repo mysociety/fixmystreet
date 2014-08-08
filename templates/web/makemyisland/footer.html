@@ -11,17 +11,17 @@
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
                     <ul id="main-menu">
-                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
+                        <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="[% c.config.BASE_URL %]/"[% END %] class="report-a-problem-btn"
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
+                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="[% c.config.BASE_URL %]/my"[% END
                             %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
+                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="[% c.config.BASE_URL %]/reports"[% END
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                        %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="[% c.config.BASE_URL %]/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
                             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
+                        %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="[% c.config.BASE_URL %]/faq"[% END
                             %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>[%
-                        %]<li id="top-nav-privacy"><[% IF c.req.uri.path == '/privacy' %]span[% ELSE %]a href="/privacy"[% END
+                        %]<li id="top-nav-privacy"><[% IF c.req.uri.path == '/privacy' %]span[% ELSE %]a href="[% c.config.BASE_URL %]/privacy"[% END
                             %]>[% loc("Privacy") %]</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li>
                     </ul>
                 </div>
