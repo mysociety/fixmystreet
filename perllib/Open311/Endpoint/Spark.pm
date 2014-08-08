@@ -1,6 +1,5 @@
 package Open311::Endpoint::Spark;
 use Moo;
-use Data::Visitor::Callback;
 
 =head1 NAME
 
