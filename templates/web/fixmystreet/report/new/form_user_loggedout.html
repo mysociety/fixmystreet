@@ -8,7 +8,11 @@
 
 <div id="form_sign_in">
     <h3>[% loc("Now to submit your report&hellip;") %]</h3>
-    <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
+    [% IF c.cobrand.moniker == 'makemyisland' %]
+        <h2>[% tprintf( loc("Do you have a %s password?"), c.cobrand.site_title) %]</h2>
+    [% ELSE %]
+        <h2>[% loc("Do you have a FixMyStreet password?") %]</h2>
+    [% END %]
 
     <div id="form_sign_in_yes" class="form-box">
 

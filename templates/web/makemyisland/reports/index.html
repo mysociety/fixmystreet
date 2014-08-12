@@ -1,0 +1,44 @@
+[% INCLUDE 'header.html', title = loc('Summary reports'),  bodyclass => 'fullwidthpage' %]
+
+<h1>[% loc('All Reports') %]</h1>
+
+<div class="intro">
+<p>
+[% loc('This is a summary of all reports on this site.') %]
+[% IF bodies.size > 1 %]
+  [% loc('Select a particular body to see the reports sent there.') %]
+[% END %]
+</p>
+</div>
+
+<table cellpadding="3" cellspacing="1" border="0" class="nicetable">
+<thead>
+<tr>
+<th class="title">[% loc('Name') %]</th>
+<th class="data">[% loc('New <br>problems') %]</th>
+<th class="data">[% loc('Older <br>problems') %]</th>
+<th class="data">[% loc('Old / unknown <br>problems') %]</th>
+<th class="data">[% loc('Recently <br>fixed') %]</th>
+<th class="data">[% loc('Older <br>fixed') %]</th>
+</tr>
+</thead>
+
+<tbody>
+[% FOREACH body IN bodies %]
+<tr align="center"
+[%- IF NOT body.areas.size %] class="gone"
+[%- ELSIF ! (loop.count % 2) %] class="a"
+[%- END %]>
+<td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
+<td class="data">[% IF open.${body.id}.new %]<a href="[% body.url(c, { t => 'new' }) %]">[% open.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF open.${body.id}.older %]<a href="[% body.url(c, { t => 'older' }) %]">[% open.${body.id}.older %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF open.${body.id}.unknown %]<a href="[% body.url(c, { t => 'unknown' }) %]">[% open.${body.id}.unknown %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF fixed.${body.id}.new %]<a href="[% body.url(c, { t => 'fixed' }) %]">[% fixed.${body.id}.new %]</a>[% ELSE %]0[% END %]</td>
+<td class="data">[% IF fixed.${body.id}.old %]<a href="[% body.url(c, { t => 'older_fixed' }) %]">[% fixed.${body.id}.old %]</a>[% ELSE %]0[% END %]</td>
+</tr>
+[% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
+[% END %]
+</tbody>
+</table>
+
+[% INCLUDE 'footer.html', pagefooter = 'yes' %]
