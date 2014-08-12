@@ -1,0 +1,32 @@
+#!/usr/bin/env perl
+use strict; use warnings;
+
+use lib 'perllib';
+use FixMyStreet;
+use FixMyStreet::App;
+
+local $ENV{DBIC_MIGRATION_SCHEMA_CLASS}='FixMyStreet::DB';
+
+{
+    # monkeypatch to prevent splitting of SQL on ; (which breaks functions)
+    # https://github.com/frioux/DBIx-Class-DeploymentHandler/issues/11
+
+    require DBIx::Class::DeploymentHandler::DeployMethod::SQL::Translator;
+    no warnings 'redefine';
+    *DBIx::Class::DeploymentHandler::DeployMethod::SQL::Translator::_split_sql_chunk = sub { @_ };
+}
+
+my ($dsn, $user, $password, $dbi_args, $dbic_args) = @{ FixMyStreet->dbic_connect_info };
+
+push @ARGV, (
+    '--target_dir' => 'db/migrations',
+    '--database'   => 'PostgreSQL',
+    '--dsn'        => $dsn,
+    '--username'   => $user,
+    '--password'   => $password,
+    # '--dbi_connect_attrs' => $dbi_args,
+    # '--dbic_connect_attrs' => $dbic_args,
+);
+
+(require DBIx::Class::Migration::Script)
+  ->run_with_options;
