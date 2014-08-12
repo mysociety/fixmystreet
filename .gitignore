@@ -34,3 +34,5 @@ phonegap/www/js/config.js
 phonegap/Android/bin/
 phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
 phonegap/Android/gen/
+
+001-auto.sql
