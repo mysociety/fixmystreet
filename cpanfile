@@ -97,6 +97,9 @@ feature 'uk', 'FixMyStreet.com specific requirements' => sub {
 #    requires 'SOAP::Lite';
 #};
 
+# Moderation by from_body user
+requires 'Algorithm::Diff';
+
 # Modules used by css watcher
 requires 'File::ChangeNotify';
 requires 'Path::Tiny';

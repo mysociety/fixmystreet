@@ -20,6 +20,8 @@ __PACKAGE__->add_columns(
   },
   "name",
   { data_type => "text", is_nullable => 0 },
+  "external_url",
+  { data_type => "text", is_nullable => 1 },
   "parent",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "endpoint",
@@ -42,8 +44,6 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "deleted",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
-  "external_url",
-  { data_type => "text", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -87,6 +87,12 @@ __PACKAGE__->belongs_to(
   },
 );
 __PACKAGE__->has_many(
+  "user_body_permissions",
+  "FixMyStreet::DB::Result::UserBodyPermission",
+  { "foreign.body_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "users",
   "FixMyStreet::DB::Result::User",
   { "foreign.from_body" => "self.id" },
@@ -94,8 +100,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 18:11:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hTOxxiiHmC8nmQK/p8dXhQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-29 13:54:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PhUeFDRLSQVMk7Sts5K6MQ
 
 sub url {
     my ( $self, $c, $args ) = @_;

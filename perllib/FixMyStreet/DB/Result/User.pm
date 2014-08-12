@@ -36,6 +36,12 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
 __PACKAGE__->has_many(
+  "admin_logs",
+  "FixMyStreet::DB::Result::AdminLog",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "alerts",
   "FixMyStreet::DB::Result::Alert",
   { "foreign.user_id" => "self.id" },
@@ -70,10 +76,16 @@ __PACKAGE__->has_many(
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "user_body_permissions",
+  "FixMyStreet::DB::Result::UserBodyPermission",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:jRAtXRLRNozCmthAg9p0dA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-29 13:54:07
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y41/jGp93IxSpyJ/o6Q1gQ
 
 __PACKAGE__->add_columns(
     "password" => {
@@ -196,6 +208,23 @@ sub split_name {
     my ($first, $last) = $self->name =~ /^(\S*)(?: (.*))?$/;
 
     return { first => $first || '', last => $last || '' };
+}
+
+sub has_permission_to {
+    my ($self, $permission_type, $body_id) = @_;
+
+    return unless $self->belongs_to_body($body_id);
+
+    my $permission = $self->user_body_permissions->find({ 
+            permission_type => $permission_type,
+            body_id => $self->from_body->id,
+        });
+    return $permission ? 1 : undef;
+}
+
+sub print {
+    my $self = shift;
+    return '[' . (join '-', @_) . ']';
 }
 
 1;

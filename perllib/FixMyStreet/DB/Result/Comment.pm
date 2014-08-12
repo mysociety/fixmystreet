@@ -68,6 +68,12 @@ __PACKAGE__->add_columns(
   { data_type => "timestamp", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->might_have(
+  "moderation_original_data",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.comment_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 __PACKAGE__->belongs_to(
   "problem",
   "FixMyStreet::DB::Result::Problem",
@@ -82,8 +88,9 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:D/+UWcF7JO/EkCiJaAHUOw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-31 15:59:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:08AtJ6CZFyUe7qKMF50MHg
+#
 
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
@@ -174,6 +181,45 @@ sub meta_problem_state {
 
     return $state;
 }
+
+=head2 latest_moderation_log_entry
+
+Return most recent ModerationLog object
+
+=cut
+
+sub latest_moderation_log_entry {
+    my $self = shift;
+    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
+}
+
+__PACKAGE__->has_many(
+  "admin_log_entries",
+  "FixMyStreet::DB::Result::AdminLog",
+  { "foreign.object_id" => "self.id" },
+  { 
+      cascade_copy => 0, cascade_delete => 0,
+      where => { 'object_type' => 'update' },
+  }
+);
+
+# we already had the `moderation_original_data` rel above, as inferred by
+# Schema::Loader, but that doesn't know about the problem_id mapping, so we now
+# (slightly hackishly) redefine here:
+#
+# we also add cascade_delete, though this seems to be insufficient.
+#
+# TODO: should add FK on moderation_original_data field for this, to get S::L to
+# pick up without hacks.
+
+__PACKAGE__->might_have(
+  "moderation_original_data",
+  "FixMyStreet::DB::Result::ModerationOriginalData",
+  { "foreign.comment_id" => "self.id",
+    "foreign.problem_id" => "self.problem_id",
+  },
+  { cascade_copy => 0, cascade_delete => 1 },
+);
 
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
