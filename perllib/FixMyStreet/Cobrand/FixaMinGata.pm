@@ -241,4 +241,13 @@ sub reports_council_check {
     }
 }
 
+# The pin is green is it's fixed, yellow if it's closed (but not fixed), and
+# red otherwise.
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'green' if $p->is_fixed;
+    return 'yellow' if $p->is_closed;
+    return 'red';
+}
+
 1;
