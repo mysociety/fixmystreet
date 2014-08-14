@@ -1,11 +1,32 @@
 #!/usr/bin/perl
-#
-# This script should hopefully work out at what state the database is and, if
-# the commit argument is provided, run the right schema files to bring it up to
-# date. Let us know if it doesn't work; as with any upgrade script, do take a
-# backup of your database before running.
-#
-# update-schema [--commit]
+
+=head1 NAME
+
+bin/update-schema - minimalist database upgrades for FixMyStreet
+
+=head1 SYNOPSIS
+
+This script should hopefully work out at what state the database is and, if
+the commit argument is provided, run the right schema files to bring it up to
+date. Let us know if it doesn't work; as with any upgrade script, do take a
+backup of your database before running.
+
+    # show status and upgrades available
+    update-schema
+    update-schema --commit   # run all available upgrades
+
+    # upgrade to a given version (NOT YET IMPLEMENTED)
+    # update-schema --version=0032 --commit
+
+    # list downgrades, (and run them with --commit)
+    update-schema --downgrade
+    update-schema --downgrade --commit  # if there is only one available downgrade
+    update-schema --downgrade --version=0031 --commit
+
+    # show this help
+    update-schema --help
+
+=cut
 
 use strict;
 use warnings;
@@ -17,6 +38,8 @@ use lib "$FindBin::Bin/../commonlib/perllib";
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
 use mySociety::MaPit;
+use Getopt::Long;
+use Pod::Usage;
 
 mySociety::Config::set_file("$FindBin::Bin/../conf/general");
 my %args = (
@@ -28,27 +51,43 @@ $args{Host} = mySociety::Config::get('FMS_DB_HOST', undef) if mySociety::Config:
 $args{Port} = mySociety::Config::get('FMS_DB_PORT', undef) if mySociety::Config::get('FMS_DB_PORT');
 mySociety::DBHandle::configure( %args );
 
-my $commit = 0;
+my ($commit, $version, $downgrade, $help);
+
+GetOptions (
+    'commit'    => \$commit,
+    'version=s' => \$version,
+    'downgrade' => \$downgrade,
+    'help|h|?'  => \$help,
+);
+
+pod2usage(1) if $help;
+
 $commit = 1 if @ARGV && $ARGV[0] eq '--commit';
 
 my $nothing = 1;
-my $current_version = get_db_version();
-print "Current database version = $current_version\n";
+my $current_version;
+
+sub get_and_print_current_version {
+    my $new_current_version = get_db_version();
+    if ($new_current_version ne ($current_version||'')) {
+        print "Current database version = $new_current_version\n";
+    }
+    $current_version = $new_current_version;
+}
+
+get_and_print_current_version();
+
 print "= Dry run =\n" unless $commit;
 
-for my $path (glob("$FindBin::Bin/../db/schema_*")) {
-    my ($name) = $path =~ /schema_(.*)\.sql$/;
-    next if $name le $current_version;
-    next if $name =~ /$current_version-/; # For number only match
-    print "* $name\n";
-    $nothing = 0;
-    next unless $commit;
+my $upgrade = !$downgrade;
 
-    open(FP, $path) or die $!;
+sub get_statements {
+    my $path = shift;
+    open(my $FP, '<', $path) or die $!;
     my @statements;
     my $s = '';
     my $in_function = 0;
-    while(<FP>) {
+    while(<$FP>) {
         next if /^--/; # Ignore comments
         $s .= $_;
         # Functions may have semicolons within them
@@ -59,32 +98,100 @@ for my $path (glob("$FindBin::Bin/../db/schema_*")) {
             $s = '';
         }
     }
-    close FP;
+    close $FP;
+    return @statements;
+}
 
-    foreach my $st (@statements) {
+sub run_statements {
+    foreach my $st (@_) {
+        print ".";
         dbh()->do($st);
     }
+    dbh()->do('COMMIT');
+    print "\n";
 }
 
-if ( $commit && $current_version lt '0028' ) {
-    print "Bodies created, fetching names from mapit\n";
-    my $area_ids = dbh()->selectcol_arrayref('SELECT area_id FROM body_areas');
-    if ( @$area_ids ) {
-        my $areas = mySociety::MaPit::call('areas', $area_ids);
-        foreach (values %$areas) {
-            dbh()->do('UPDATE body SET name=? WHERE id=?', {}, $_->{name}, $_->{id});
+if ($upgrade) {
+    if ($version) {
+        die "Not currently implemented";
+    }
+    for my $path (glob("$FindBin::Bin/../db/schema_*")) {
+        my ($name) = $path =~ /schema_(.*)\.sql$/;
+        next if $name le $current_version;
+        next if $name =~ /$current_version-/; # For number only match
+        print "* $name\n";
+        $nothing = 0;
+        next unless $commit;
+
+        my @statements = get_statements($path);
+
+        if (@statements) {
+            run_statements(@statements);
         }
-        dbh()->do('COMMIT');
+    }
+
+    if ( $commit && $current_version lt '0028' ) {
+        $nothing = 0;
+        print "Bodies created, fetching names from mapit\n";
+        my $area_ids = dbh()->selectcol_arrayref('SELECT area_id FROM body_areas');
+        if ( @$area_ids ) {
+            my $areas = mySociety::MaPit::call('areas', $area_ids);
+            foreach (values %$areas) {
+                dbh()->do('UPDATE body SET name=? WHERE id=?', {}, $_->{name}, $_->{id});
+            }
+            dbh()->do('COMMIT');
+        }
     }
 }
 
-print "Nothing to do\n" if $nothing;
+if ($downgrade) {
+    my %downgrades;
+    for my $path (glob("$FindBin::Bin/../db/downgrade_*")) {
+        my ($from, $to) = $path =~ /downgrade_(.*)---(.*)\.sql$/;
+        next unless $from eq $current_version;
+        $downgrades{$to} = $path;
+    }
+    if (keys %downgrades) {
+        if (scalar keys %downgrades == 1) {
+            ($version) = (keys %downgrades) unless $version;
+        }
+
+        if (my $path = $downgrades{$version}) {
+            print "Downgrade to $version\n";
+            $nothing = 0;
+
+            if ($commit) {
+                my @statements = get_statements($path);
+                run_statements(@statements);
+            }
+        } else {
+            warn "No downgrade to $version\n";
+        }
+
+        if ($nothing) {
+            for my $version (sort keys %downgrades) {
+                print "* $version\n";
+            }
+        }
+    }
+    else {
+        print "No downgrades available for this version\n";
+    }
+}
+
+if ($nothing) {
+    print "Nothing to do\n" if $nothing;
+}
+else {
+    get_and_print_current_version();
+}
 
 # ---
 
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0032' if table_exists('moderation_original_data');
     return '0031' if column_exists('body', 'external_url');
     return '0030' if ! constraint_exists('admin_log_action_check');
     return '0029' if column_exists('body', 'deleted');
