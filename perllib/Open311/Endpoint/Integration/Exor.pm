@@ -6,6 +6,7 @@ with 'Open311::Endpoint::Role::ConfigFile';
 use DBI;
 use MooX::HandlesVia;
 use DateTime::Format::Oracle; # default format 'YYYY-MM-DD HH24:MI:SS' # NB: hh24 (not hh)
+use Encode qw(from_to);
 
 # declare our constants, as we may not be able to easily install DBD::Oracle
 # on a development system!
@@ -41,6 +42,11 @@ sub parse_ora_date {
 has max_limit => (
     is => 'ro',
     default => 1000,
+);
+
+has encode_to_win1252 => (
+    is => 'ro',
+    default => 1,
 );
 
 has _connection_details => (
@@ -152,11 +158,8 @@ sub pem_field_type {
 }
 
 
-sub sanitize_text {
-    my ($self, $text) = @_;
-}
-
 sub services {
+    # not currently used as Warwick.pm uses a hardcoded list.
     die "TODO";
 }
 
@@ -187,7 +190,6 @@ sub strip {
             $text = _strip_ruthless($text);
         }
     }
-    # from_to($s, 'utf8', 'Windows-1252') if $ENCODE_TO_WIN1252; # separate into own method
     return $max_len ? substr($text, 0, $max_len) : $text;
 }
 
