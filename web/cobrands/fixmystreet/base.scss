@@ -89,3 +89,130 @@
   }
 }
 
+/*
+    FixMyStreet for Councils page.
+    Todo: This should be in a separate stylesheet
+*/
+$fms-orange: #f4a140;
+
+.fms-for-councils {
+    background-color: #1a1a1a;
+    a {
+      color: $fms-orange;
+      &:hover,
+      &:active,
+      &:focus {
+        color: darken($fms-orange, 5%);
+        text-decoration: underline;
+      }
+    }
+    .content {
+        background-color: transparent;
+        color: #c2c2c2;
+        padding: 0;
+        margin: 0;
+        h1,h2,h3,h4,h5,h6 {
+          color: #fff;
+          font-family: MuseoSans,Helmet,Freesans,sans-serif;
+          font-weight: bold;
+        }
+    }
+    .container {
+      width: 100%;
+      padding: 0;
+    }
+    #site-header {
+      .container {
+        width: 60em;
+      }
+    }
+
+    .fixed-container {
+      max-width: 60em;
+      padding: 0 1em;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .button-base {
+      padding: 0.5em 1.25em;
+      border-radius: 3px;
+      display: inline-block;
+      font-weight: bold;
+      &:hover,
+      &:active,
+      &:focus {
+          text-decoration: none;
+          color: #fff;
+      }
+    }
+
+    .button {
+        @extend .button-base;
+        color: #fff;
+        background-color: $fms-orange;
+        border: none;
+        &:hover,
+        &:active,
+        &:focus {
+            background-color: darken($fms-orange, 5%);
+        }
+    }
+
+    .councils-section {
+      border-bottom: 1px solid #161616;
+      border-top: 1px solid #3a3a3a;
+      padding: 2.5em 0;
+      background-image: -moz-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+      background-image: -webkit-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+      background-image: -ms-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+      background-image: gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+
+      @media only screen and (min-width: 48em) {
+        padding: 4em 0;
+      }
+
+      &.photo-break {
+        padding: 0;
+        height: 10em;
+        @media only screen and (min-width: 48em) {
+          height: 25em;
+        }
+      }
+
+      h2 {
+        font-size: 1.6875em;
+      }
+
+      p {
+        font-size: 1.0625em;
+      }
+    }
+
+    .section-content {
+      @media only screen and (min-width: 48em) {
+        max-width: 62.5%;
+      }
+    }
+
+    .hero {
+      text-align: center;
+      border-top: 0;
+    }
+
+      .hero-title {
+        color: #fff;
+        text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.114);
+        font-size: 3.375em;
+        font-weight: bold;
+      }
+
+      .hero-intro {
+        font-size: 1.25em;
+        color: #fff;
+        text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+        max-width: 37em;
+        margin-left: auto;
+        margin-right: auto;
+      }
+}
