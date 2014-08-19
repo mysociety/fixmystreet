@@ -6,6 +6,7 @@ with 'Open311::Endpoint::Role::ConfigFile';
 use DBI;
 use MooX::HandlesVia;
 use DateTime::Format::Oracle; # default format 'YYYY-MM-DD HH24:MI:SS' # NB: hh24 (not hh)
+use Encode qw(from_to);
 
 # declare our constants, as we may not be able to easily install DBD::Oracle
 # on a development system!
@@ -14,7 +15,9 @@ use DateTime::Format::Oracle; # default format 'YYYY-MM-DD HH24:MI:SS' # NB: hh2
 sub ORA_DATE ();
 sub ORA_NUMBER ();
 sub ORA_VARCHAR2 ();
+no warnings 'redefine';
 use DBD::Oracle qw(:ora_types);
+
 BEGIN {
 *ORA_DATE = *ORA_NUMBER = *ORA_VARCHAR2 = sub () { 1 }
     unless $DBD::Oracle::VERSION;
@@ -22,7 +25,10 @@ BEGIN {
 
 has ora_dt => (
     is => 'lazy',
-    default => sub { 'DateTime::Format::Oracle' }, 
+    default => sub { 
+        $ENV{NLS_DATE_FORMAT} = 'YYYY-MM-DD HH24:MI';
+	return 'DateTime::Format::Oracle' 
+    }, 
         # NB: we just return the class name. This is to smooth over odd API,
         # for consistency with w3_dt
 );
@@ -41,6 +47,11 @@ sub parse_ora_date {
 has max_limit => (
     is => 'ro',
     default => 1000,
+);
+
+has encode_to_win1252 => (
+    is => 'ro',
+    default => 1,
 );
 
 has _connection_details => (
@@ -104,6 +115,36 @@ has testing => (
     default => 0,
 );
 
+has ce_cat => (
+    is => 'ro',
+    default => 'DEF',
+);
+
+has ce_class => (
+    is => 'ro',
+    default => 'N/A',
+);
+
+has ce_cpr_id => (
+    is => 'ro',
+    default => 5,
+);
+
+has ce_contact_type => (
+    is => 'ro',
+    default => 'PU',
+);
+
+has ce_status_code => (
+    is => 'ro',
+    default => 'RE',
+);
+
+has ce_compl_user_type => (
+    is => 'ro',
+    default => 'USER',
+);
+
 #------------------------------------------------------------------
 # pem_field_types
 # return hash of types by field name: any not explicitly set here
@@ -152,11 +193,8 @@ sub pem_field_type {
 }
 
 
-sub sanitize_text {
-    my ($self, $text) = @_;
-}
-
 sub services {
+    # not currently used as Warwick.pm uses a hardcoded list.
     die "TODO";
 }
 
@@ -187,7 +225,6 @@ sub strip {
             $text = _strip_ruthless($text);
         }
     }
-    # from_to($s, 'utf8', 'Windows-1252') if $ENCODE_TO_WIN1252; # separate into own method
     return $max_len ? substr($text, 0, $max_len) : $text;
 }
 
@@ -212,16 +249,17 @@ sub post_service_request {
     my %bindings;
                                                      # comments here are suggested values
                                                      # field lengths are from OCC's Java portlet
-    # fixed values    
-    $bindings{":ce_cat"}            = 'REQS';         # or REQS ?
-    $bindings{":ce_class"}          = 'SERV';        # 'FRML' ?
-    $bindings{":ce_contact_type"}   = 'ENQUIRER';    # 'ENQUIRER' 
-    $bindings{":ce_status_code"}    = 'RE';          # RE=received (?)
-    $bindings{":ce_compl_user_type"}= 'USER';        # 'USER'
+    # fixed values (configurable via config)
+    $bindings{":ce_cat"}            = $self->ce_cat;
+    $bindings{":ce_class"}          = $self->ce_class;
+    $bindings{":ce_contact_type"}   = $self->ce_contact_type;
+    $bindings{":ce_status_code"}    = $self->ce_status_code;
+    $bindings{":ce_compl_user_type"}= $self->ce_compl_user_type;
+    $bindings{":ce_cpr_id"}         = $self->ce_cpr_id;
 
     # ce_incident_datetime is *not* an optional param, but FMS isn't sending it at the moment
     $bindings{":ce_incident_datetime"}=$args->{requested_datetime}
-        || $self->w3_dt->format_datetime( DateTime->now );
+        || $self->ora_dt->format_datetime( DateTime->now );
 
     # especially FMS-specific:
     $bindings{":ce_source"}        = "FMS";           # important, and specific to this script!
@@ -287,6 +325,7 @@ sub insert_into_db {
         PEM.create_enquiry(
             ce_cat => :ce_cat,
             ce_class => :ce_class,
+            ce_cpr_id => :ce_cpr_id,
             ce_forename => :ce_forename,
             ce_surname => :ce_surname,
             ce_contact_type => :ce_contact_type,
@@ -328,8 +367,6 @@ sub insert_into_db {
     # $sth->bind_param(":ce_building_name",     $undef);      # 'CLIFTON HEIGHTS'
     # $sth->bind_param(":ce_street",            $undef);      # 'HIGH STREET'
     # $sth->bind_param(":ce_town",              $undef);      # 'BRSITOL'
-    # $sth->bind_param(":ce_enquiry_type",      $undef);      # 'CD' , ce_source => 'T'
-    # $sth->bind_param(":ce_cpr_id",            $undef);      # '5' (priority)
     # $sth->bind_param(":ce_rse_he_id",         $undef);      #> nm3net.get_ne_id('1200D90970/09001','L')
     # $sth->bind_param(":ce_compl_target",      $undef);      # '08-JAN-2004'
     # $sth->bind_param(":ce_compl_corresp_date",$undef);      # '02-JAN-2004'
