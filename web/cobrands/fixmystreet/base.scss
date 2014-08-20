@@ -112,7 +112,7 @@ $fms-green: #62b356;
   .content {
       background-color: transparent;
       color: #c2c2c2;
-      padding: 0;
+      padding: 0 !important;
       margin: 0;
       h1,h2,h3,h4,h5,h6 {
         color: #fff;
@@ -395,6 +395,31 @@ $fms-green: #62b356;
       small {
         font-style: normal;
         color: #bab8b3;
+      }
+    }
+
+    .call-to-action {
+      background-color: $fms-orange;
+      text-align: center;
+      background-image: none;
+      h2 {
+        font-size: 2.25em;
+        margin-bottom: 0.25em;
+        margin-top: 0;
+      }
+      p {
+        max-width: 37em;
+        margin: 0 auto 2em;
+        color: #fff;
+      }
+      .button {
+        background-color: darken($fms-orange, 7.5%);
+        font-size: 1.125em;
+        &:hover,
+        &:active,
+        &:focus {
+          background-color: darken($fms-orange, 12.5%);
+        }
       }
     }
 }
