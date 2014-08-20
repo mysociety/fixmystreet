@@ -135,6 +135,7 @@ $fms-green: #62b356;
     padding: 0 1em;
     width: 100%;
     margin: 0 auto;
+    position: relative;
   }
 
   .button-base {
@@ -170,7 +171,6 @@ $fms-green: #62b356;
     background-image: -webkit-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
     background-image: -ms-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
     background-image: gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-
     @media only screen and (min-width: 48em) {
       padding: 4em 0;
     }
@@ -209,7 +209,7 @@ $fms-green: #62b356;
 
   .section-content {
     @media only screen and (min-width: 48em) {
-      max-width: 62.5%;
+      max-width: 60%;
     }
   }
 
@@ -422,4 +422,19 @@ $fms-green: #62b356;
         }
       }
     }
+
+
+    .flush-image {
+      position: absolute;
+    }
+
+    .flush-image--bottom {
+      bottom: -82px;
+      right: 2em;
+    }
+
+     .flush-image--bottom-right {
+      bottom: -82px;
+      right: 0;
+     }
 }
