@@ -178,6 +178,9 @@ $fms-green: #62b356;
     &.photo-break {
       padding: 0;
       height: 10em;
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
       @media only screen and (min-width: 48em) {
         height: 25em;
       }
@@ -192,6 +195,18 @@ $fms-green: #62b356;
     }
   }
 
+  .photo-break--street-scene {
+    background-image: url(/cobrands/fixmystreet/images/fms-for-councils/street-scene.jpg);
+  }
+
+  .photo-break--highway {
+    background-image: url(/cobrands/fixmystreet/images/fms-for-councils/highway.jpg);
+  }
+
+  .photo-break--sunset {
+    background-image: url(/cobrands/fixmystreet/images/fms-for-councils/street-sunset.jpg);
+  }
+
   .section-content {
     @media only screen and (min-width: 48em) {
       max-width: 62.5%;
@@ -201,22 +216,30 @@ $fms-green: #62b356;
   .hero {
     text-align: center;
     border-top: 0;
+    background-image: url(/cobrands/fixmystreet/images/fms-for-councils/street-crossing.jpg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    padding: 4em 0;
+    @media only screen and (min-width: 48em) {
+      padding: 9em 0;
+    }
   }
 
     .hero-title {
       color: #fff;
-      text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.114);
+      text-shadow: 0px 1px 7px rgba(0,0,0, 0.7);
       font-size: 3.375em;
       font-weight: bold;
     }
 
-    .hero-intro {
-      font-size: 1.25em;
+    p.hero-intro {
       color: #fff;
-      text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+      text-shadow: 0px 1px 3px rgba(0,0,0, 0.7);
       max-width: 37em;
       margin-left: auto;
       margin-right: auto;
+      font-size: 1.25em;
     }
 
   /* Pricing tables */
