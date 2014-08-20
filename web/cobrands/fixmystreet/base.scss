@@ -94,125 +94,284 @@
     Todo: This should be in a separate stylesheet
 */
 $fms-orange: #f4a140;
+$fms-red: #e04b4b;
+$fms-blue: #4faded;
+$fms-green: #62b356;
 
 .fms-for-councils {
-    background-color: #1a1a1a;
-    a {
-      color: $fms-orange;
-      &:hover,
-      &:active,
-      &:focus {
-        color: darken($fms-orange, 5%);
-        text-decoration: underline;
-      }
+  background-color: #1a1a1a;
+  a {
+    color: $fms-orange;
+    &:hover,
+    &:active,
+    &:focus {
+      color: darken($fms-orange, 5%);
+      text-decoration: underline;
     }
-    .content {
-        background-color: transparent;
-        color: #c2c2c2;
-        padding: 0;
-        margin: 0;
-        h1,h2,h3,h4,h5,h6 {
-          color: #fff;
-          font-family: MuseoSans,Helmet,Freesans,sans-serif;
-          font-weight: bold;
-        }
-    }
-    .container {
-      width: 100%;
+  }
+  .content {
+      background-color: transparent;
+      color: #c2c2c2;
       padding: 0;
-    }
-    #site-header {
-      .container {
-        width: 60em;
-      }
-    }
-
-    .fixed-container {
-      max-width: 60em;
-      padding: 0 1em;
-      width: 100%;
-      margin: 0 auto;
-    }
-
-    .button-base {
-      padding: 0.5em 1.25em;
-      border-radius: 3px;
-      display: inline-block;
-      font-weight: bold;
-      &:hover,
-      &:active,
-      &:focus {
-          text-decoration: none;
-          color: #fff;
-      }
-    }
-
-    .button {
-        @extend .button-base;
+      margin: 0;
+      h1,h2,h3,h4,h5,h6 {
         color: #fff;
-        background-color: $fms-orange;
-        border: none;
-        &:hover,
-        &:active,
-        &:focus {
-            background-color: darken($fms-orange, 5%);
-        }
-    }
-
-    .councils-section {
-      border-bottom: 1px solid #161616;
-      border-top: 1px solid #3a3a3a;
-      padding: 2.5em 0;
-      background-image: -moz-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-      background-image: -webkit-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-      background-image: -ms-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-      background-image: gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-
-      @media only screen and (min-width: 48em) {
-        padding: 4em 0;
-      }
-
-      &.photo-break {
-        padding: 0;
-        height: 10em;
-        @media only screen and (min-width: 48em) {
-          height: 25em;
-        }
-      }
-
-      h2 {
-        font-size: 1.6875em;
-      }
-
-      p {
-        font-size: 1.0625em;
-      }
-    }
-
-    .section-content {
-      @media only screen and (min-width: 48em) {
-        max-width: 62.5%;
-      }
-    }
-
-    .hero {
-      text-align: center;
-      border-top: 0;
-    }
-
-      .hero-title {
-        color: #fff;
-        text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.114);
-        font-size: 3.375em;
+        font-family: MuseoSans,Helmet,Freesans,sans-serif;
         font-weight: bold;
       }
+  }
+  .container {
+    width: 100%;
+    padding: 0;
+  }
+  #site-header {
+    .container {
+      width: 60em;
+    }
+  }
 
-      .hero-intro {
-        font-size: 1.25em;
+  .fixed-container {
+    max-width: 60em;
+    padding: 0 1em;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .button-base {
+    padding: 0.5em 1.25em;
+    border-radius: 3px;
+    display: inline-block;
+    font-weight: bold;
+    &:hover,
+    &:active,
+    &:focus {
+        text-decoration: none;
         color: #fff;
-        text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
-        max-width: 37em;
-        margin-left: auto;
-        margin-right: auto;
+    }
+  }
+
+  .button {
+      @extend .button-base;
+      color: #fff;
+      background-color: $fms-orange;
+      border: none;
+      &:hover,
+      &:active,
+      &:focus {
+          background-color: darken($fms-orange, 5%);
       }
+  }
+
+  .councils-section {
+    border-bottom: 1px solid #161616;
+    border-top: 1px solid #3a3a3a;
+    padding: 2.5em 0;
+    background-image: -moz-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+    background-image: -webkit-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+    background-image: -ms-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+    background-image: gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
+
+    @media only screen and (min-width: 48em) {
+      padding: 4em 0;
+    }
+
+    &.photo-break {
+      padding: 0;
+      height: 10em;
+      @media only screen and (min-width: 48em) {
+        height: 25em;
+      }
+    }
+
+    h2 {
+      font-size: 1.6875em;
+    }
+
+    p {
+      font-size: 1.0625em;
+    }
+  }
+
+  .section-content {
+    @media only screen and (min-width: 48em) {
+      max-width: 62.5%;
+    }
+  }
+
+  .hero {
+    text-align: center;
+    border-top: 0;
+  }
+
+    .hero-title {
+      color: #fff;
+      text-shadow: 0px 1px 7px rgba(0, 0, 0, 0.114);
+      font-size: 3.375em;
+      font-weight: bold;
+    }
+
+    .hero-intro {
+      font-size: 1.25em;
+      color: #fff;
+      text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+      max-width: 37em;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+  /* Pricing tables */
+  .product-pricing {
+    margin-bottom: 3em;
+  }
+
+    .pricing-table {
+      color: #fff;
+      border: 1px solid #444;
+    }
+
+    .pricing-table-column {
+      width: 33.333%;
+      display: inline-block;
+      vertical-align: top;
+    }
+
+    .pricing-table-column-wrapper {
+      border-right: 1px solid #555;
+      min-height: 472px;
+      &.last {
+        border-right: 0;
+      }
+    }
+
+    .pricing-product-header {
+      background-color: $fms-orange;
+      color: #fff;
+      padding: 0.2em 0;
+      width: 100%;
+      text-align: center;
+      font-size: 1.2em;
+      line-height: 1em;
+      position: relative;
+      &:after {
+        top: 100%;
+        left: 50%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        border-color: rgba(0,0,0,0);
+        border-top-color: $fms-orange;
+        border-width: 10px;
+        margin-left: -10px;
+      }
+      h3 {
+        font-weight: normal;
+      }
+    }
+
+    .pricing-header {
+      background-color: $fms-red;
+      padding: 1em;
+    }
+
+    .mobile-web {
+      .pricing-header {
+        background-color: $fms-blue;
+      }
+    }
+
+    .mobile-web-apps {
+      .pricing-header {
+        background-color: $fms-green;
+      }
+    }
+
+    .pricing-header-price {
+      margin-bottom: 0.5em;
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+
+    .pricing-price {
+      font-size: 2.25em;
+      line-height: 1.15em;
+      .asterisk {
+        color: rgba(255,255,255,0.5);
+      }
+    }
+
+    .pricing-note {
+      font-size: 0.388888889em;
+    }
+
+    .pricing-label {
+      color: rgba(255,255,255,0.7);
+      display: block;
+    }
+
+    .pricing-content {
+      padding: 1.5em 1em;
+      ul {
+        list-style: none outside none;
+        margin: 0;
+      }
+      li {
+        list-style: none outside none
+      }
+    }
+
+    .pricing-extras-item {
+      border-bottom: 1px solid #444;
+      overflow: hidden;
+      &:last-of-type {
+        border-bottom: 0;
+      }
+    }
+
+    .pricing-extras-column--primary {
+      float: left;
+      width: 66.6%;
+    }
+    .pricing-extras-column--secondary {
+      float: right;
+      width: 33.4%;
+    }
+
+    .pricing-extras-description {
+      padding: 1.5em 1em;
+      h4 {
+        font-weight: normal;
+        font-size: 1.125em;
+        margin: 0 0 0.25em;
+      }
+      p {
+        color: #bab8b3;
+        font-size: 0.875em;
+        margin-bottom: 0;
+      }
+    }
+
+    .pricing-extras-price {
+      background-color: #2b2b2b;
+      padding: 1.5em 1em;
+      .pricing-price {
+        font-size: 1.3125em;
+        margin-bottom: 0.5em;
+        display: inline-block;
+      }
+      .pricing-label {
+        font-size: 0.875em;
+      }
+    }
+
+    .small-print {
+      margin: 0.66em 0 0;
+      small {
+        font-style: normal;
+        color: #bab8b3;
+      }
+    }
 }
