@@ -433,8 +433,47 @@ $fms-green: #62b356;
       right: 2em;
     }
 
-     .flush-image--bottom-right {
+    .flush-image--bottom-right {
       bottom: -82px;
       right: 0;
-     }
+    }
+
+    .case-study-button {
+      background-color: #222;
+      padding: 1em 1.5em;
+      border-radius: 5px;
+      display: inline-block;
+      color: #fff;
+      margin-right: 0.5em;
+      margin-bottom: 1em;
+      &:hover,
+      &:active,
+      &:focus {
+        color: #fff;
+        background-color: #1b1b1b;
+        text-decoration: none;
+      }
+    }
+
+    .case-study-button-label {
+      display: block;
+      font-size: 0.875em;
+      color: #bab8b3;
+    }
+
+    .case-study-button-name {
+      font-size: 1.5em;
+      display: inline-block;
+      background-repeat: no-repeat;
+      background-image: url(/cobrands/fixmystreet/images/fms-for-councils/download-icon.png);
+      background-position: 0 7px;
+      padding-left: 30px;
+    }
+
+    .case-study-button-format {
+      color: #6c6b68;
+      font-size: 0.875em;
+    }
+
 }
+
