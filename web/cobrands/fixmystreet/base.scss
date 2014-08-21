@@ -486,6 +486,12 @@ $fms-green: #62b356;
       width: 50%;
       margin-bottom: 1em;
       vertical-align: middle;
+      opacity: 0.5;
+      &:hover,
+      &:active,
+      &:focus {
+        opacity: 1;
+      }
     }
     img {
       max-width: 100%;
