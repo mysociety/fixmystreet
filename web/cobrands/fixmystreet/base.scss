@@ -227,7 +227,7 @@ $fms-green: #62b356;
   }
 
   .section-content {
-    @media only screen and (min-width: 48em) {
+    @media only screen and (min-width: 60em) {
       max-width: 60%;
     }
   }
@@ -489,7 +489,7 @@ $fms-green: #62b356;
       width: 100%;
       @media only screen and (min-width: 48em) {
         width: auto;
-        padding: 1em 1.5em;
+        padding: 1em;
       }
       &:hover,
       &:active,
