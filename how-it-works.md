@@ -138,8 +138,10 @@ If you want to get FixMyStreet up and running, this is what you need to do:
       succeed. There will be
       <a href="{{ site.baseurl }}running/admin_manual">user support</a>
       to do, marketing and press to handle, liaison with the authorities you're
-      sending the reports to, and perhaps even integration (because email is 
-      the easiest, but not necessarily the best, way to send those reports).
+      sending the reports to, and perhaps even 
+      <a href="{{ site.baseurl }}customising/integration">integration</a>
+      (because email is the easiest, but not necessarily the best, way to send
+      those reports).
     </p>
   </dd>
 </dl>
