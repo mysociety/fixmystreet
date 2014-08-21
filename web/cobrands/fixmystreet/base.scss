@@ -109,6 +109,12 @@ $fms-green: #62b356;
       text-decoration: underline;
     }
   }
+  .wrapper {
+    display: block;
+    @media only screen and (min-width: 48em) {
+      display: table;
+    }
+  }
   .content {
       background-color: transparent;
       color: #c2c2c2;
@@ -126,16 +132,22 @@ $fms-green: #62b356;
   }
   #site-header {
     .container {
-      width: 60em;
+      @media only screen and (min-width: 60em) {
+        max-width: 60em;
+      }
     }
   }
 
   .fixed-container {
-    max-width: 60em;
-    padding: 0 1em;
-    width: 100%;
+    @media only screen and (min-width: 60em) {
+      max-width: 58em; /*(60em - 1em + 1em padding)*/
+      width: 100%;
+    }
+    padding: 0;
+    width: auto;
     margin: 0 auto;
     position: relative;
+    padding: 0 1em;
   }
 
   .button-base {
@@ -156,6 +168,12 @@ $fms-green: #62b356;
       color: #fff;
       background-color: $fms-orange;
       border: none;
+      width: 100%;
+      padding: 0.75em 0;
+       @media only screen and (min-width: 48em) {
+        width: auto;
+        padding: 0.5em 1.25em;
+      }
       &:hover,
       &:active,
       &:focus {
@@ -188,6 +206,7 @@ $fms-green: #62b356;
 
     h2 {
       font-size: 1.6875em;
+      margin-top: 0;
     }
 
     p {
@@ -253,9 +272,12 @@ $fms-green: #62b356;
     }
 
     .pricing-table-column {
-      width: 33.333%;
+      width: 100%;
       display: inline-block;
       vertical-align: top;
+      @media only screen and (min-width: 48em) {
+       width: 33.333%;
+      }
     }
 
     .pricing-table-column-wrapper {
@@ -355,12 +377,17 @@ $fms-green: #62b356;
     }
 
     .pricing-extras-column--primary {
-      float: left;
-      width: 66.6%;
+      @media only screen and (min-width: 32em) {
+       float: left;
+        width: 66.6%;
+      }
+
     }
     .pricing-extras-column--secondary {
-      float: right;
-      width: 33.4%;
+      @media only screen and (min-width: 32em) {
+        float: right;
+        width: 33.4%;
+      }
     }
 
     .pricing-extras-description {
@@ -425,27 +452,45 @@ $fms-green: #62b356;
 
 
     .flush-image {
-      position: absolute;
+      position: relative;
+      width: 66%;
+      margin-left: 17%;
+      @media only screen and (min-width: 60em) {
+         position: absolute;
+         margin: 0;
+         width: auto;
+      }
     }
 
     .flush-image--bottom {
-      bottom: -82px;
-      right: 2em;
+      bottom: -41px;
+      @media only screen and (min-width: 60em) {
+        bottom: -82px;
+        right: 2em;
+      }
     }
 
     .flush-image--bottom-right {
-      bottom: -82px;
-      right: 0;
+      bottom: -41px;
+      @media only screen and (min-width: 60em) {
+        bottom: -82px;
+        right: 0;
+      }
     }
 
     .case-study-button {
       background-color: #222;
-      padding: 1em 1.5em;
+      padding: 1em 0;
       border-radius: 5px;
       display: inline-block;
       color: #fff;
       margin-right: 0.5em;
       margin-bottom: 1em;
+      width: 100%;
+      @media only screen and (min-width: 48em) {
+        width: auto;
+        padding: 1em 1.5em;
+      }
       &:hover,
       &:active,
       &:focus {
@@ -459,6 +504,9 @@ $fms-green: #62b356;
       display: block;
       font-size: 0.875em;
       color: #bab8b3;
+      @media only screen and (max-width: 48em) {
+        margin-left: 30px;
+      }
     }
 
     .case-study-button-name {
@@ -468,6 +516,9 @@ $fms-green: #62b356;
       background-image: url(/cobrands/fixmystreet/images/fms-for-councils/download-icon.png);
       background-position: 0 7px;
       padding-left: 30px;
+      @media only screen and (max-width: 48em) {
+        margin-left: 30px;
+      }
     }
 
     .case-study-button-format {
@@ -476,10 +527,14 @@ $fms-green: #62b356;
     }
 
   .client-logos {
-    position: absolute;
-    right: 0;
-    top: 3em;
-    width: 35%;
+    margin: 2em 0 0;
+    @media only screen and (min-width: 60em) {
+      position: absolute;
+      right: 0;
+      top: 3em;
+      width: 35%;
+      margin-top: 0;
+    }
     a {
       text-align: center;
       display: inline-block;
