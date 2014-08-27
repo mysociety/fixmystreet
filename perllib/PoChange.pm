@@ -11,6 +11,8 @@ sub translate($$) {
         return fixmystreet_to_reportemptyhomes( $s );
     } elsif ( $file eq 'FixMyBarangay' ) {
         return fixmystreet_to_fixmybarangay( $s );
+    } elsif ( $file eq 'MakeMyIsland' ) {
+        return fixmystreet_to_makemyisland( $s );
     }
 
     return $s;
@@ -56,6 +58,13 @@ sub fixmystreet_to_fixmybarangay($) {
     $s =~ s/\bcouncils\b/barangays/g;
     $s =~ s/\bCouncils\b/Barangays/g;
 
+    return $s;
+}
+
+
+sub fixmystreet_to_makemyisland($) {
+    my $s = shift;
+    $s =~ s/FixMyStreet/MakeMyIsland/g;
     return $s;
 }
 
