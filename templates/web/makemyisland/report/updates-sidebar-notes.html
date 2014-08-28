@@ -1,0 +1,7 @@
+        <p>
+        [% IF c.cobrand.moniker != 'fixamingata' %]
+        [% IF problem.send_method_used != 'Open311' OR c.cobrand.moniker != 'fixmystreet' OR ( problem.bodies_str != '2482' AND !problem.bodies_str.match('2347') ) %]
+            [% loc( 'Please note that updates are not sent to the council.' ) %]
+        [% END %]
+        [% END %]
+        Your information will only be used in accordance with our <a href="/privacy" target="_blank">privacy policy</a></p>
