@@ -84,3 +84,10 @@ There are also email templates that FixMyStreet uses when it constructs email
 messages to send out. You can override these in a similar way: look in the
 `templates/email` directory and you'll see cobrands overriding the templates in
 `templates/email/default`.
+
+For example, many of the email templates themselves use the small
+`site-name.txt` and `signature.txt` templates, so you may want to override
+these (by copying them from `templates/email/default` into your own cobrand's
+directory within `templates/email`, and editing them) even if you're not
+changing anything else.
+
