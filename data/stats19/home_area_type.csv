@@ -1,0 +1,5 @@
+code,label
+1,Urban area
+2,Small town
+3,Rural
+-1,Data missing or out of range

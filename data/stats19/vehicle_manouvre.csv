@@ -1,0 +1,20 @@
+code,label
+1,Reversing
+2,Parked
+3,Waiting to go - held up
+4,Slowing or stopping
+5,Moving off
+6,U-turn
+7,Turning left
+8,Waiting to turn left
+9,Turning right
+10,Waiting to turn right
+11,Changing lane to left
+12,Changing lane to right
+13,Overtaking moving vehicle - offside
+14,Overtaking static vehicle - offside
+15,Overtaking - nearside
+16,Going ahead left-hand bend
+17,Going ahead right-hand bend
+18,Going ahead other
+-1,Data missing or out of range

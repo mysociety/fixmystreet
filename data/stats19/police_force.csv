@@ -1,0 +1,52 @@
+code,label
+1,Metropolitan Police
+3,Cumbria
+4,Lancashire
+5,Merseyside
+6,Greater Manchester
+7,Cheshire
+10,Northumbria
+11,Durham
+12,North Yorkshire
+13,West Yorkshire
+14,South Yorkshire
+16,Humberside
+17,Cleveland
+20,West Midlands
+21,Staffordshire
+22,West Mercia
+23,Warwickshire
+30,Derbyshire
+31,Nottinghamshire
+32,Lincolnshire
+33,Leicestershire
+34,Northamptonshire
+35,Cambridgeshire
+36,Norfolk
+37,Suffolk
+40,Bedfordshire
+41,Hertfordshire
+42,Essex
+43,Thames Valley
+44,Hampshire
+45,Surrey
+46,Kent
+47,Sussex
+48,City of London
+50,Devon and Cornwall
+52,Avon and Somerset
+53,Gloucestershire
+54,Wiltshire
+55,Dorset
+60,North Wales
+61,Gwent
+62,South Wales
+63,Dyfed-Powys
+91,Northern
+92,Grampian
+93,Tayside
+94,Fife
+95,Lothian and Borders
+96,Central
+97,Strathclyde
+98,Dumfries and Galloway

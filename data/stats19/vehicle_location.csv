@@ -1,0 +1,13 @@
+code,label
+0,On main c'way - not in restricted lane
+1,Tram/Light rail track
+2,Bus lane
+3,Busway (including guided busway)
+4,Cycle lane (on main carriageway)
+5,Cycleway or shared use footway (not part of  main carriageway)
+6,On lay-by or hard shoulder
+7,Entering lay-by or hard shoulder
+8,Leaving lay-by or hard shoulder
+9,Footway (pavement)
+10,Not on carriageway
+-1,Data missing or out of range

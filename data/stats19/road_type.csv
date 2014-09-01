@@ -1,0 +1,9 @@
+code,label
+1,Roundabout
+2,One way street
+3,Dual carriageway
+6,Single carriageway
+7,Slip road
+9,Unknown
+12,One way street/Slip road
+-1,Data missing or out of range

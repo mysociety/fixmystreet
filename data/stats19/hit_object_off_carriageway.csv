@@ -1,0 +1,14 @@
+code,label
+0,None
+1,Road sign or traffic signal
+2,Lamp post
+3,Telegraph or electricity pole
+4,Tree
+5,Bus stop or bus shelter
+6,Central crash barrier
+7,Near/Offside crash barrier
+8,Submerged in water
+9,Entered ditch
+10,Other permanent object
+11,Wall or fence
+-1,Data missing or out of range

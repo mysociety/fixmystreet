@@ -1,0 +1,11 @@
+code,label
+0,Did not leave carriageway
+1,Nearside
+2,Nearside and rebounded
+3,Straight ahead at junction
+4,Offside on to central reservation
+5,Offside on to centrl res + rebounded
+6,Offside - crossed central reservation
+7,Offside
+8,Offside and rebounded
+-1,Data missing or out of range

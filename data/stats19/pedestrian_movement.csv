@@ -1,0 +1,12 @@
+code,label
+0,Not a Pedestrian
+1,Crossing from driver's nearside
+2,Crossing from nearside - masked by parked or stationary vehicle
+3,Crossing from driver's offside
+4,Crossing from offside - masked by  parked or stationary vehicle
+5,"In carriageway, stationary - not crossing  (standing or playing)"
+6,"In carriageway, stationary - not crossing  (standing or playing) - masked by parked or stationary vehicle"
+7,"Walking along in carriageway, facing traffic"
+8,"Walking along in carriageway, back to traffic"
+9,Unknown or other
+-1,Data missing or out of range

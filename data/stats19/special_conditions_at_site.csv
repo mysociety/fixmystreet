@@ -1,0 +1,10 @@
+code,label
+0,None
+1,Auto traffic signal - out
+2,Auto signal part defective
+3,Road sign or marking defective or obscured
+4,Roadworks
+5,Road surface defective
+6,Oil or diesel
+7,Mud
+-1,Data missing or out of range
