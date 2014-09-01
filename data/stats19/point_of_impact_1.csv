@@ -1,0 +1,7 @@
+code,label
+0,Did not impact
+1,Front
+2,Back
+3,Offside
+4,Nearside
+-1,Data missing or out of range

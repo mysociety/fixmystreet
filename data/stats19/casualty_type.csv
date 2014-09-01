@@ -1,0 +1,22 @@
+code,label
+0,Pedestrian
+1,Cyclist
+2,Motorcycle 50cc and under rider or passenger
+3,Motorcycle 125cc and under rider or passenger
+4,Motorcycle over 125cc and up to 500cc rider or  passenger
+5,Motorcycle over 500cc rider or passenger
+8,Taxi/Private hire car occupant
+9,Car occupant
+10,Minibus (8 - 16 passenger seats) occupant
+11,Bus or coach occupant (17 or more pass seats)
+16,Horse rider
+17,Agricultural vehicle occupant
+18,Tram occupant
+19,Van / Goods vehicle (3.5 tonnes mgw or under) occupant
+20,Goods vehicle (over 3.5t. and under 7.5t.) occupant
+21,Goods vehicle (7.5 tonnes mgw and over) occupant
+22,Mobility scooter rider
+23,Electric motorcycle rider or passenger
+90,Other vehicle occupant
+97,Motorcycle - unknown cc rider or passenger
+98,Goods vehicle (unknown weight) occupant

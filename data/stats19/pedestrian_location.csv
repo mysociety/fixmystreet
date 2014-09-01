@@ -1,0 +1,13 @@
+code,label
+0,Not a Pedestrian
+1,Crossing on pedestrian crossing facility
+2,Crossing in zig-zag approach lines
+3,Crossing in zig-zag exit lines
+4,Crossing elsewhere within 50m. of pedestrian crossing
+5,"In carriageway, crossing elsewhere"
+6,On footway or verge
+7,"On refuge, central island or central reservation"
+8,"In centre of carriageway - not on refuge, island or central reservation"
+9,"In carriageway, not crossing"
+10,Unknown or other
+-1,Data missing or out of range

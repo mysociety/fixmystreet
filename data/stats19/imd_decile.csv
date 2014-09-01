@@ -1,0 +1,12 @@
+code,label
+1,Most deprived 10%
+2,More deprived 10-20%
+3,More deprived 20-30%
+4,More deprived 30-40%
+5,More deprived 40-50%
+6,Less deprived 40-50%
+7,Less deprived 30-40%
+8,Less deprived 20-30%
+9,Less deprived 10-20%
+10,Least deprived 10%
+-1,Data missing or out of range

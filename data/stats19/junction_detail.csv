@@ -1,0 +1,11 @@
+code,label
+0,Not at junction or within 20 metres
+1,Roundabout
+2,Mini-roundabout
+3,T or staggered junction
+5,Slip road
+6,Crossroads
+7,More than 4 arms (not roundabout)
+8,Private drive or entrance
+9,Other junction
+-1,Data missing or out of range

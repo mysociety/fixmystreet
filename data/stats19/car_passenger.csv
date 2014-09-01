@@ -1,0 +1,5 @@
+code,label
+0,Not car passenger
+1,Front seat passenger
+2,Rear seat passenger
+-1,Data missing or out of range

@@ -1,0 +1,14 @@
+code,label
+0,None
+1,Previous accident
+2,Road works
+4,Parked vehicle
+5,Bridge (roof)
+6,Bridge (side)
+7,Bollard or refuge
+8,Open door of vehicle
+9,Central island of roundabout
+10,Kerb
+11,Other object
+12,Any animal (except ridden horse)
+-1,Data missing or out of range

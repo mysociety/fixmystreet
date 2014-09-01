@@ -1,0 +1,11 @@
+code,label
+0,Not at or within 20 metres of junction
+1,Approaching junction or waiting/parked at junction approach
+2,Cleared junction or waiting/parked at junction exit
+3,Leaving roundabout
+4,Entering roundabout
+5,Leaving main road
+6,Entering main road
+7,Entering from slip road
+8,Mid Junction - on roundabout or on main road
+-1,Data missing or out of range

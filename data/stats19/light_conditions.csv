@@ -1,0 +1,7 @@
+code,label
+1,Daylight
+4,Darkness - lights lit
+5,Darkness - lights unlit
+6,Darkness - no lighting
+7,Darkness - lighting unknown
+-1,Data missing or out of range

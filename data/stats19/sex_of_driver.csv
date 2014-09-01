@@ -1,0 +1,5 @@
+code,label
+1,Male
+2,Female
+3,Not known
+-1,Data missing or out of range
