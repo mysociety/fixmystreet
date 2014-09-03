@@ -9,12 +9,8 @@ sub execute {
     my ($self, $args, $chain) = @_;
     my ($stats19) = @{ $chain };
 
-    my $path = path( $stats19->data_directory, $stats19->zipfile )->stringify;
-
-    system 'unzip', $path, '-e', $stats19->data_directory;
-
-    # my $archive = Archive::Any->new( $path );
-    # $archive->extract;
+    chdir $stats19->data_directory;
+    system 'unzip', $stats19->zipfile;
 }
 
 1;
