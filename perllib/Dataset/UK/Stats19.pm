@@ -4,11 +4,19 @@ use MooX::Options;
 use MooX::Cmd;
 use Path::Tiny;
 
+option db_file => (
+    is => 'ro',
+    default => sub {
+        my $self = shift;
+        path( $self->data_directory, 'stats19.db' )->stringify;
+    },
+);
+
 option dsn => (
     is => 'ro',
     default => sub {
         my $self = shift;
-        my $path = path( $self->data_directory, 'stats19.db' )->stringify;
+        my $path = $self->db_file;
         "dbi:SQLite:dbname=$path",
     }
 );
@@ -41,7 +49,7 @@ around data_directory => sub {
 
 option zipfile => (
     is => 'ro',
-    default => 'data.zip',
+    default => 'Stats19-Data2005-2013.zip',
 );
 
 sub execute {
