@@ -55,6 +55,7 @@ footer {
     }
 }
 
+
 div.form-error, p.form-error {
     display: block !important;
 }
@@ -77,10 +78,6 @@ body.mappage {
         padding-top: 0;
         width: auto;
         background: transparent;
-    }
-
-    .content {
-        width: 27em;
     }
 
     #wrapper {
@@ -114,10 +111,6 @@ body.frontpage {
         .mobile-header-nav {
             display: none;
         }
-    }
-
-    .content {
-        margin-top: 3em;
     }
 }
 
@@ -175,8 +168,11 @@ body.frontpage {
 
 #mysociety {
     margin-top: 0;
-    padding-top: 24px;
     padding-bottom: 24px;
+
+    .container {
+        padding: 0;
+    }
 }
 
 .content {
@@ -184,7 +180,7 @@ body.frontpage {
     width: auto;
 }
 
-.content, body.twothirdswidthpage .content aside {
+body.twothirdswidthpage .content aside {
     box-shadow: 0 0 12px 0 #dae1e5;
 }
 

@@ -26,7 +26,7 @@
 
     <div class="container" id="nav-container">
         <nav id="breadcrumb_breadcrumbTrail">
-            <ol class="breadcrumb screen large">
+            <ol class="button-nav application-nav screen">
                 <li>
                     <a href="/">FixMyStreet</a>
                 </li>
