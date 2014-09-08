@@ -27,9 +27,6 @@
     <div class="container" id="nav-container">
         <nav id="breadcrumb_breadcrumbTrail">
             <ol class="button-nav application-nav screen">
-                <li>
-                    <a href="/">FixMyStreet</a>
-                </li>
                 <li class="home"><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                     >[% "Report" %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                 %]<li><[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
