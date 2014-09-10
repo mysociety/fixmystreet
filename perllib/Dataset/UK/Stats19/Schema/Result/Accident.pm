@@ -7,6 +7,11 @@ use base 'DBIx::Class::Core';
 __PACKAGE__->load_components("FilterColumn", "InflateColumn::DateTime");
 __PACKAGE__->table("accidents");
 __PACKAGE__->add_columns(
+    id => {
+        data_type         => "integer",
+        is_auto_increment => 1,
+        is_nullable       => 0,
+    },
     accident_index => {
     },
     location_easting_osgr => {
@@ -72,6 +77,18 @@ __PACKAGE__->add_columns(
     lsoa_of_accident_location => {
     }
 );
-__PACKAGE__->set_primary_key("accident_index");
+__PACKAGE__->set_primary_key("id");
+
+__PACKAGE__->has_many(
+  "casualties",
+  "Dataset::UK::Stats19::Schema::Result::Casualty",
+  { accident_index => "accident_index" },
+);
+
+__PACKAGE__->has_many(
+  "vehicles",
+  "Dataset::UK::Stats19::Schema::Result::Vehicle",
+  { accident_index => "accident_index" },
+);
 
 1;
