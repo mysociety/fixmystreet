@@ -407,7 +407,7 @@ FixMyStreet::override_config {
     ok $token, "extracted questionnaire token '$token'";
 
     $mech->get_ok("/Q/" . $token);
-    $mech->content_contains( 'should have reported what they have done' );
+    $mech->content_lacks( 'Would you like to receive another questionnaire' );
 
     # Test already answered the ever reported question, so not shown again
     $dt = $dt->add( weeks => 4 );
@@ -428,7 +428,7 @@ FixMyStreet::override_config {
     # EHA extra checking
     ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
     $mech->get_ok("/Q/" . $token);
-    $mech->content_contains( 'made a lot of progress' );
+    $mech->content_lacks( 'Would you like to receive another questionnaire' );
 
     $token = FixMyStreet::App->model("DB::Token")->find( { scope => 'questionnaire', token => $token } );
     ok $token, 'found token for questionnaire';
