@@ -14,25 +14,91 @@ __PACKAGE__->add_columns(
     },
     accident_index => {
     },
-    vehicle_reference => {},
+    vehicle_reference => {}, 
     casualty_reference => {},
-    casualty_class => {},
-    sex_of_casualty => {},
-    age_band_of_casualty => {},
-    casualty_severity => {},
-    pedestrian_location => {},
-    pedestrian_movement => {},
-    car_passenger => {},
-    bus_or_coach_passenger => {},
-    pedestrian_road_maintenance_worker => {},
-    casualty_type => {},
-    casualty_home_area_type => {},
+    casualty_class_code => {}, # CasualtyClass
+    sex_of_casualty_code => {}, # SexOfCasualty
+    age_band_of_casualty_code => {}, # AgeBand
+    casualty_severity_code => {}, # CasualtySeverity
+    pedestrian_location_code => {}, # PedestrianLocation
+    pedestrian_movement_code => {}, # PedestrianMovement
+    car_passenger_code => {}, # CarPassenger
+    bus_or_coach_passenger_code => {}, # BusPassenger
+    pedestrian_road_maintenance_worker_code => {}, # PedestrianRoadMaintenanceWorker
+    casualty_type_code => {}, # CasualtyType
+    casualty_home_area_type_code => {}, # HomeAreaType
 );
 
 __PACKAGE__->belongs_to(
   "accident",
   "Dataset::UK::Stats19::Schema::Result::Accident",
   { accident_index => "accident_index" },
+);
+
+__PACKAGE__->belongs_to(
+  "casualty_class",
+  "Dataset::UK::Stats19::Schema::Result::CasualtyClass",
+  { code => "casualty_class_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "sex_of_casualty",
+  "Dataset::UK::Stats19::Schema::Result::SexOfCasualty",
+  { code => "sex_of_casualty_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "age_band_of_casualty",
+  "Dataset::UK::Stats19::Schema::Result::AgeBand",
+  { code => "age_band_of_casualty_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "casualty_severity",
+  "Dataset::UK::Stats19::Schema::Result::CasualtySeverity",
+  { code => "casualty_severity_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "pedestrian_location",
+  "Dataset::UK::Stats19::Schema::Result::PedestrianLocation",
+  { code => "pedestrian_location_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "pedestrian_movement",
+  "Dataset::UK::Stats19::Schema::Result::PedestrianMovement",
+  { code => "pedestrian_movement_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "car_passenger",
+  "Dataset::UK::Stats19::Schema::Result::CarPassenger",
+  { code => "car_passenger_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "bus_or_coach_passenger",
+  "Dataset::UK::Stats19::Schema::Result::BusPassenger",
+  { code => "bus_or_coach_passenger_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "pedestrian_road_maintenance_worker",
+  "Dataset::UK::Stats19::Schema::Result::PedestrianRoadMaintenanceWorker",
+  { code => "pedestrian_road_maintenance_worker_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "casualty_type",
+  "Dataset::UK::Stats19::Schema::Result::CasualtyType",
+  { code => "casualty_type_code" },
+);
+
+__PACKAGE__->belongs_to(
+  "casualty_home_area_type",
+  "Dataset::UK::Stats19::Schema::Result::HomeAreaType",
+  { code => "casualty_home_area_type_code" },
 );
 
 __PACKAGE__->set_primary_key("id");

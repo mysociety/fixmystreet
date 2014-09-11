@@ -10,7 +10,7 @@ __PACKAGE__->add_columns(
     id => {
         data_type         => "integer",
         is_auto_increment => 1,
-        is_nullable       => 0,
+       is_nullable       => 0,
     },
     accident_index => {
     },
@@ -22,62 +22,67 @@ __PACKAGE__->add_columns(
     },
     latitude => {
     },
-    police_force => {
+    police_force_code => { # PoliceForce
     },
-    accident_severity => {
+    accident_severity_code => { # AccidentSeverity
     },
     number_of_vehicles => {
     },
     number_of_casualties => {
     },
     date => {
+        data_type => "datetime",
+        default_value => '0000-00-00',
+        is_nullable => 1,
+        datetime_undef_if_invalid => 1
     },
-    day_of_week => {
+    day_of_week_code => { #DayOfWeek
     },
     time => {
     },
-    local_authority_district => {
+    local_authority_district_code => { # LocalAuthorityDistrict
     },
-    local_authority_highway => {
+    local_authority_highway_code => { # LocalAuthorityHighway
     },
-    road_1_class => {
+    road_1_class_code => { # RoadClass
     },
     road_1_number => {
     },
-    road_type => {
+    road_type_code => { # RoadType
     },
     speed_limit => {
     },
-    junction_detail => {
+    junction_detail_code => { # JunctionDetail
     },
-    junction_control => {
+    junction_control_code => { # JunctionControl
     },
-    road_2_class => {
+    road_2_class_code => { # RoadClass
     },
     road_2_number => {
     },
-    pedestrian_crossing_human_control => {
+    pedestrian_crossing_human_control_code => { # PedCrossHuman
     },
-    pedestrian_crossing_physical_facilities => {
+    pedestrian_crossing_physical_facilities_code => { # PedCrossPhysical
     },
-    light_conditions => {
+    light_conditions_code => { # LightConditions
     },
-    weather_conditions => {
+    weather_conditions_code => { # WeatherConditions
     },
-    road_surface_conditions => {
+    road_surface_conditions_code => { # RoadSurface
     },
-    special_conditions_at_site => {
+    special_conditions_at_site_code => { # SpecialConditionsAtSite
     },
-    carriageway_hazards => {
+    carriageway_hazards_code => { # CarriagewayHazards
     },
-    urban_or_rural_area => {
+    urban_or_rural_area_code => { # UrbanRural
     },
-    did_police_officer_attend_scene_of_accident => {
+    did_police_officer_attend_scene_of_accident_code => { # PoliceOfficerAttend
     },
     lsoa_of_accident_location => {
     }
 );
 __PACKAGE__->set_primary_key("id");
+__PACKAGE__->add_unique_constraint( [ "accident_index" ]);
 
 __PACKAGE__->has_many(
   "casualties",
@@ -88,7 +93,121 @@ __PACKAGE__->has_many(
 __PACKAGE__->has_many(
   "vehicles",
   "Dataset::UK::Stats19::Schema::Result::Vehicle",
-  { accident_index => "accident_index" },
+  { 'foreign.accident_index' => "self.accident_index" },
+);
+
+__PACKAGE__->belongs_to(
+  "police_force",
+  "Dataset::UK::Stats19::Schema::Result::PoliceForce",
+  { 'foreign.code' => 'self.police_force_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "accident_severity",
+  "Dataset::UK::Stats19::Schema::Result::AccidentSeverity",
+  { 'foreign.code' => 'self.accident_severity_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "day_of_week",
+  "Dataset::UK::Stats19::Schema::Result::DayOfWeek",
+  { 'foreign.code' => 'self.day_of_week_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "local_authority_district",
+  "Dataset::UK::Stats19::Schema::Result::LocalAuthorityDistrict",
+  { 'foreign.code' => 'self.local_authority_district_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "local_authority_highway",
+  "Dataset::UK::Stats19::Schema::Result::LocalAuthorityHighway",
+  { 'foreign.code' => 'self.local_authority_highway_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "road_1_class",
+  "Dataset::UK::Stats19::Schema::Result::RoadClass",
+  { 'foreign.code' => 'self.road_1_class_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "road_2_class",
+  "Dataset::UK::Stats19::Schema::Result::RoadClass",
+  { 'foreign.code' => 'self.road_2_class_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "road_type",
+  "Dataset::UK::Stats19::Schema::Result::RoadType",
+  { 'foreign.code' => 'self.road_type_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "junction_detail",
+  "Dataset::UK::Stats19::Schema::Result::JunctionDetail",
+  { 'foreign.code' => 'self.junction_detail_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "junction_control",
+  "Dataset::UK::Stats19::Schema::Result::JunctionControl",
+  { 'foreign.code' => 'self.junction_control_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "pedestrian_crossing_human_control",
+  "Dataset::UK::Stats19::Schema::Result::PedCrossHuman",
+  { 'foreign.code' => 'self.pedestrian_crossing_human_control_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "pedestrian_crossing_physical_facilities",
+  "Dataset::UK::Stats19::Schema::Result::PedCrossPhysical",
+  { 'foreign.code' => 'self.pedestrian_crossing_physical_facilities_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "light_conditions",
+  "Dataset::UK::Stats19::Schema::Result::LightConditions",
+  { 'foreign.code' => 'self.light_conditions_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "weather_conditions",
+  "Dataset::UK::Stats19::Schema::Result::WeatherConditions",
+  { 'foreign.code' => 'self.weather_conditions_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "road_surface_conditions",
+  "Dataset::UK::Stats19::Schema::Result::RoadSurface",
+  { 'foreign.code' => 'self.road_surface_conditions_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "special_conditions_at_site",
+  "Dataset::UK::Stats19::Schema::Result::SpecialConditionsAtSite",
+  { 'foreign.code' => 'self.special_conditions_at_site_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "carriageway_hazards",
+  "Dataset::UK::Stats19::Schema::Result::CarriagewayHazards",
+  { 'foreign.code' => 'self.carriageway_hazards_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "urban_or_rural_area",
+  "Dataset::UK::Stats19::Schema::Result::UrbanRural",
+  { 'foreign.code' => 'self.urban_or_rural_area_code' },
+);
+
+__PACKAGE__->belongs_to(
+  "did_police_officer_attend_scene_of_accident",
+  "Dataset::UK::Stats19::Schema::Result::PoliceOfficerAttend",
+  { 'foreign.code' => 'self.did_police_officer_attend_scene_of_accident_code' },
 );
 
 1;

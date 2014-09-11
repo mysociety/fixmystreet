@@ -5,6 +5,7 @@ use Path::Tiny;
 use Text::CSV_XS;
 use File::BOM;
 use List::MoreUtils 'zip';
+use DateTime::Format::Strptime;
 use feature 'say';
 
 has csv => (
@@ -24,71 +25,145 @@ sub execute {
 
     $db->deploy;
 
-    $self->populate_table( $stats19, 'Accident' );
-    $self->populate_table( $stats19, 'VehicleType' );
-    $self->populate_table( $stats19, 'Vehicle' );
-    $self->populate_table( $stats19, 'Casualty' );
+    for my $rs_name (qw/
+        AccidentSeverity
+        AgeBand
+        BusPassenger
+        CarPassenger
+        CarriagewayHazards
+        CasualtyClass
+        CasualtySeverity
+        CasualtyType
+        DayOfWeek
+        Highways
+        HitObjectInCarriageway
+        HitObjectOffCarriageway
+        HomeAreaType
+        ImdDecile
+        JourneyPurpose
+        JunctionControl
+        JunctionDetail
+        JunctionLocation
+        LightConditions
+        LocalAuthorityDistrict
+        LocalAuthorityHighway
+        PedCrossHuman
+        PedCrossPhysical
+        PedestrianLocation
+        PedestrianMovement
+        PedestrianRoadMaintenanceWorker
+        PointOfImpact1
+        PoliceForce
+        PoliceOfficerAttend
+        RoadClass
+        RoadSurface
+        RoadType
+        SexOfCasualty
+        SexOfDriver
+        SkiddingAndOverturning
+        SpecialConditionsAtSite
+        TowingAndArticulation
+        UrbanRural
+        VehicleLeavingCarriageway
+        VehicleLocation
+        VehicleManouvre
+        VehiclePropulsionCode
+        VehicleType
+        WasVehicleLeftHandDrive
+        WeatherConditions
 
-    # my $result = $db->resultset('Accident')->first;
-    # say Dumper({ $result->get_columns }); use Data::Dumper;
-    # say $db->resultset('Accident')->count;
+        Accident
+        Vehicle
+        Casualty
+    /) {
+        $self->populate_table( $stats19, $rs_name );
+    }
 }
 
 my %map = (
     # from Accidents
-    'Local_Authority_(District)' => 'local_authority_district',
-    'Local_Authority_(Highway)' => 'local_authority_highway',
-    'Pedestrian_Crossing-Human_Control' => 'pedestrian_crossing_human_control',
-    'Pedestrian_Crossing-Physical_Facilities' => 'pedestrian_crossing_physical_facilities',
-    '1st_Road_Class' => 'road_1_class',
-    '2nd_Road_Class' => 'road_2_class',
+    'Local_Authority_(District)' => 'local_authority_district_code',
+    'Local_Authority_(Highway)' => 'local_authority_highway_code',
+    'Pedestrian_Crossing-Human_Control' => 'pedestrian_crossing_human_control_code',
+    'Pedestrian_Crossing-Physical_Facilities' => 'pedestrian_crossing_physical_facilities_code',
+    '1st_Road_Class' => 'road_1_class_code',
+    '2nd_Road_Class' => 'road_2_class_code',
     '1st_Road_Number' => 'road_1_number',
     '2nd_Road_Number' => 'road_2_number',
 
     # from Vehicles
     'Acc_Index' => 'accident_index', # normalize
-    '1st_Point_of_Impact' => 'point_of_impact_1',
-    'Was_Vehicle_Left_Hand_Drive?' => 'was_vehicle_left_hand_drive',
+    '1st_Point_of_Impact' => 'point_of_impact_1_code',
+    'Was_Vehicle_Left_Hand_Drive?' => 'was_vehicle_left_hand_drive_code',
     'Engine_Capacity_(CC)' => 'engine_capacity_cc',
-    'Vehicle_Location-Restricted_Lane' => 'vehicle_location_restricted_lane',
+    'Vehicle_Location-Restricted_Lane' => 'vehicle_location_restricted_lane_code',
 );
 
-sub populate_table {
-    my ($self, $stats19, $table) = @_;
-
-    my $file = {
+sub _table_name {
+    my $rs_name = shift;
+    my $map = {
         Accident => 'accidents',
         Casualty => 'casualties',
         Vehicle  => 'vehicles',
-        VehicleType  => 'vehicle_type',
-    }->{$table} or die "No table for $table";
+    };
+    return $map->{$rs_name} || 
+        # decamelize
+        lc join '_' => $rs_name =~ /([A-Z0-9][a-z]*)/g;
+}
+
+sub populate_table {
+    my ($self, $stats19, $rs_name) = @_;
+
+    my $file = _table_name( $rs_name );
+    say "$rs_name => $file";
 
     my $csv = $self->csv;
-    say $file;
     open my $fh, '<:via(File::BOM)', path( $stats19->data_directory, "$file.csv" )->stringify
         or die "$file.csv: $!";
 
-    my @header = map {
-        $map{$_} || lc
-    } @{ $csv->getline ($fh) };
+    my $rs = $stats19->db->resultset($rs_name);
 
-    my $rs = $stats19->db->resultset($table);
+    my $resolve_title = do {
+        my $source = $rs->result_source;
+        sub {
+            my $name = shift;
+            $map{$name} || do {
+                $name = lc $name;
+                my $name_code = "${name}_code";
+                $source->has_column($name_code) ? $name_code : $name;
+            };
+        };
+    };
+
+    my @header = map { $resolve_title->($_) } @{ $csv->getline ($fh) };
 
     $| = 1;
 
     $stats19->db->txn_do( sub {
         eval {
             while (my $row = $csv->getline($fh) ) {
-                print $row->[0];
+                # print $row->[0];
                 my %hash = zip @header, @$row;
+
+                if (exists $hash{date}) {
+                    my $date = (exists $hash{time}) ?
+                        DateTime::Format::Strptime->new(pattern => '%d/%m/%Y %H:%M')
+                            ->parse_datetime( join ' ', @hash{'date', 'time'} ) 
+                        :
+                        DateTime::Format::Strptime->new(pattern => '%d/%m/%Y')
+                            ->parse_datetime( $hash{date} );
+                    $hash{date} = $date;
+                }
                 $rs->create( \%hash );
                 print '.';
             }
         };
         if ($@) {
+            warn join ',', $rs->result_source->columns;
             die $@ unless $@ =~ /Bizarre copy/; # known error in dev due to encoding of edited csv
         }
     });
+    say '';
 }
 
 1;
