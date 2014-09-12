@@ -1,0 +1,9 @@
+code,label
+1,Dry
+2,Wet or damp
+3,Snow
+4,Frost or ice
+5,Flood over 3cm. deep
+6,Oil or diesel
+7,Mud
+-1,Data missing or out of range

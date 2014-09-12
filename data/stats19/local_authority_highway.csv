@@ -1,0 +1,208 @@
+Code,Label
+S12000033,Aberdeen City
+S12000034,Aberdeenshire
+S12000041,Angus
+S12000035,Argyll & Bute
+E09000002,Barking and Dagenham
+E09000003,Barnet
+E08000016,Barnsley
+E06000022,Bath and North East Somerset
+E06000055,Bedford
+E09000004,Bexley
+E08000025,Birmingham
+E06000008,Blackburn with Darwen
+E06000009,Blackpool
+W06000019,Blaenau Gwent
+E08000001,Bolton
+E06000028,Bournemouth
+E06000036,Bracknell Forest
+E08000032,Bradford
+E09000005,Brent
+W06000013,Bridgend
+E06000043,Brighton and Hove
+E06000023,"Bristol, City of"
+E09000006,Bromley
+E10000002,Buckinghamshire
+E08000002,Bury
+W06000018,Caerphilly
+E08000033,Calderdale
+E10000003,Cambridgeshire
+E09000007,Camden
+W06000015,Cardiff
+W06000010,Carmarthenshire
+E06000056,Central Bedfordshire
+W06000008,Ceredigion
+E06000049,Cheshire East
+E06000050,Cheshire West and Chester
+E09000001,City of London
+S12000005,Clackmannanshire
+W06000003,Conwy
+E06000052,Cornwall
+E06000047,County Durham
+E08000026,Coventry
+E09000008,Croydon
+E10000006,Cumbria
+E06000005,Darlington
+W06000004,Denbighshire
+E06000015,Derby
+E10000007,Derbyshire
+E10000008,Devon
+E08000017,Doncaster
+E10000009,Dorset
+E08000027,Dudley
+S12000006,Dumfries & Galloway
+S12000042,Dundee City
+E09000009,Ealing
+S12000008,East Ayrshire
+S12000009,East Dunbartonshire
+S12000010,East Lothian
+S12000011,East Renfrewshire
+E06000011,East Riding of Yorkshire
+E10000011,East Sussex
+S12000036,"Edinburgh, City of"
+E09000010,Enfield
+E10000012,Essex
+S12000014,Falkirk
+S12000015,Fife
+W06000005,Flintshire
+E08000020,Gateshead
+S12000043,Glasgow City
+E10000013,Gloucestershire
+E09000011,Greenwich
+W06000002,Gwynedd
+E09000012,Hackney
+E06000006,Halton
+E09000013,Hammersmith and Fulham
+E10000014,Hampshire
+E09000014,Haringey
+E09000015,Harrow
+E06000001,Hartlepool
+E09000016,Havering
+E06000019,"Herefordshire, County of "
+E10000015,Hertfordshire
+S12000017,Highland
+E09000017,Hillingdon
+E09000018,Hounslow
+S12000018,Inverclyde
+W06000001,Isle of Anglesey
+E06000046,Isle of Wight
+E06000053,Isles of Scilly
+E09000019,Islington
+E09000020,Kensington and Chelsea
+E10000016,Kent
+E06000010,"Kingston upon Hull, City of"
+E09000021,Kingston upon Thames
+E08000034,Kirklees
+E08000011,Knowsley
+E09000022,Lambeth
+E10000017,Lancashire
+E08000035,Leeds
+E06000016,Leicester
+E10000018,Leicestershire
+E09000023,Lewisham
+E10000019,Lincolnshire
+E08000012,Liverpool
+EHEATHROW,London Airport (Heathrow)
+E06000032,Luton
+E08000003,Manchester
+E06000035,Medway
+W06000024,Merthyr Tydfil
+E09000024,Merton
+E06000002,Middlesbrough
+S12000019,Midlothian
+E06000042,Milton Keynes
+W06000021,Monmouthshire
+S12000020,Moray
+S12000013,Na h-Eileanan an Iar (Western Isles)
+W06000012,Neath Port Talbot
+E08000021,Newcastle upon Tyne
+E09000025,Newham
+W06000022,Newport
+E10000020,Norfolk
+S12000021,North Ayrshire
+E06000012,North East Lincolnshire
+S12000044,North Lanarkshire
+E06000013,North Lincolnshire
+E06000024,North Somerset
+E08000022,North Tyneside
+E10000023,North Yorkshire
+E10000021,Northamptonshire
+E06000048,Northumberland
+E06000018,Nottingham
+E10000024,Nottinghamshire
+E08000004,Oldham
+S12000023,Orkney Islands
+E10000025,Oxfordshire
+W06000009,Pembrokeshire
+S12000024,Perth and Kinross
+E06000031,Peterborough
+E06000026,Plymouth
+E06000029,Poole
+E06000044,Portsmouth
+W06000023,Powys
+E06000038,Reading
+E09000026,Redbridge
+E06000003,Redcar and Cleveland
+S12000038,Renfrewshire
+W06000016,"Rhondda, Cynon, Taff"
+E09000027,Richmond upon Thames
+E08000005,Rochdale
+E08000018,Rotherham
+E06000017,Rutland
+E08000006,Salford
+E08000028,Sandwell
+S12000026,Scottish Borders
+E08000014,Sefton
+E08000019,Sheffield
+S12000027,Shetland Islands
+E06000051,Shropshire
+E06000039,Slough
+E08000029,Solihull
+E10000027,Somerset
+S12000028,South Ayrshire
+E06000025,South Gloucestershire
+S12000029,South Lanarkshire
+E08000023,South Tyneside
+E06000045,Southampton 
+E06000033,Southend-on-Sea
+E09000028,Southwark
+E08000013,St. Helens
+E10000028,Staffordshire
+S12000030,Stirling
+E08000007,Stockport
+E06000004,Stockton-on-Tees
+E06000021,Stoke-on-Trent
+E10000029,Suffolk
+E08000024,Sunderland
+E10000030,Surrey
+E09000029,Sutton
+W06000011,Swansea
+E06000030,Swindon
+E08000008,Tameside
+E06000020,Telford and Wrekin
+W06000014,The Vale of Glamorgan
+E06000034,Thurrock
+E06000027,Torbay
+W06000020,Torfaen
+E09000030,Tower Hamlets
+E08000009,Trafford
+E08000036,Wakefield
+E08000030,Walsall
+E09000031,Waltham Forest
+E09000032,Wandsworth
+E06000007,Warrington
+E10000031,Warwickshire
+E06000037,West Berkshire
+S12000039,West Dunbartonshire
+S12000040,West Lothian
+E10000032,West Sussex
+E09000033,Westminster
+E08000010,Wigan
+E06000054,Wiltshire
+E06000040,Windsor and Maidenhead
+E08000015,Wirral
+E06000041,Wokingham
+E08000031,Wolverhampton
+E10000034,Worcestershire
+W06000006,Wrexham
+E06000014,York

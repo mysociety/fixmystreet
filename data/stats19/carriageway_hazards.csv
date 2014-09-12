@@ -1,0 +1,10 @@
+code,label
+0,None
+1,Vehicle load on road
+2,Other object on road
+3,Previous accident
+4,Dog on road
+5,Other animal on road
+6,Pedestrian in carriageway - not injured
+7,Any animal in carriageway (except ridden horse)
+-1,Data missing or out of range

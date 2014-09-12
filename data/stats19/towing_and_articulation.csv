@@ -1,0 +1,8 @@
+code,label
+0,No tow/articulation
+1,Articulated vehicle
+2,Double or multiple trailer
+3,Caravan
+4,Single trailer
+5,Other tow
+-1,Data missing or out of range

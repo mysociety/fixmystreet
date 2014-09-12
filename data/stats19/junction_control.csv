@@ -1,0 +1,7 @@
+code,label
+0,Not at junction or within 20 metres
+1,Authorised person
+2,Auto traffic signal
+3,Stop sign
+4,Give way or uncontrolled
+-1,Data missing or out of range
