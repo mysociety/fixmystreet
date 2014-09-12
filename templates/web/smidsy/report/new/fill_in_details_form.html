@@ -1,43 +1,16 @@
 <div id="report-a-problem-main">
     <h1>[% loc('Reporting a problem') %]</h1>
 
+    <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
+
     [% PROCESS 'report/new/councils_text.html' %]
 
-    [% IF c.cobrand.moniker != 'fixmybarangay' || ( c.user && c.user.from_body ) %]
-    <div id="report-a-problem-sidebar">
-        <!--
-            The text for this section needs checking, but I can't work out which bit comes from where
-        -->
-        <div class="sidebar-tips">
-            [% IF report.used_map %]
-                [% IF partial_token %]
-                    <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
-                [% END %]
-            <p>[% loc('You have located the problem at the point marked with a green pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
-            [% END %]
-
-            <p>
-            [% IF report.used_map %]
-                [% INCLUDE 'report/new/fill_in_details_text.html' %]
-            [% ELSE %]
-                [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
-            [% END %]
-            </p>
-        </div>
-
-        <div class="sidebar-notes">
-            [% INCLUDE 'report/new/notes.html' %]
-        </div>
-
-    </div>
-    [% END %]
-
     [% INCLUDE 'errors.html' %]
+
     <fieldset>
         <div id="problem_form">
 
             [% INCLUDE 'report/new/form_heading.html' %]
-
 
             [% IF field_errors.bodies %]
                 <p class='form-error'>[% field_errors.bodies %]</p>
@@ -45,108 +18,95 @@
 
             <input type="hidden" value="DUMMY" name="title" id="form_title">
 
-            <label for="form_severity"> Severity </label>
-            [% IF field_errors.severity %]
-                <p class='form-error'>[% field_errors.severity %]</p>
-            [% END %]
-
-            <select id="form_severity" name="severity">
-                [% FOR s IN c.cobrand.severity_categories %]
-                <option value="[% s.value %]"> [% s.name %] </option>
-                [% END %]
-            </select>
-            <p id="severity_description">
-                <i>loading description...</i>
+            <label>[% loc('How severe was the incident?') %]</label>
+            <p>
+                <label><input type="radio" name="severity" value="0">[% loc('No injuries – but it was close!') %]</label>
+            </p>
+            <p>
+                <label><input type="radio" name="severity" value="30">[% loc('Just bruises and scrapes') %]</label>
+            </p>
+            <p>
+                <label><input type="radio" name="severity" value="60">[% loc('Serious – broken bones, hospital trips') %]</label>
+            </p>
+            <p>
+                <label><input type="radio" name="severity" value="100">[% loc('There were one or more fatalities') %]</label>
             </p>
 
-            <label for="form_detail">[% loc('Details') %]</label>
-            [% IF field_errors.detail %]
-                <p class='form-error'>[% field_errors.detail %]</p>
-            [% END %]
-            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
-
-            [% IF js %]
-                <div id="form_category_row">
-                    <label for="form_category">[% loc('Category') %]</label>
-                    <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
-                </div>
-            [% ELSE %]
-                [% IF category_options.size %]
-                    [% IF field_errors.category %]
-                        <p class='form-error'>[% field_errors.category %]</p>
-                    [% END %]
-
-                    [% PROCESS "report/new/category.html" %]
-                [% END %]
-            [% END %]
+            <div class="describe-injury">
+                <label for="form_injury_detail">[% loc('If <em>you</em> were injured, can you tell us more about your injuries?') %]</label>
+                <textarea rows="4" cols="26" name="injury_detail" id="form_injury_detail"></textarea>
+            </div>
 
             <div class="form_datetime">
+                <label for="form_incident_date">[% loc('When did it happen?') %]</label>
                 <div>
-                    <label for="form_incident_date"> Date of Incident </label>
-                    [% IF field_errors.incident_date %]
-                        <p class='form-error'>[% field_errors.incident_date %]</p>
-                    [% END %]
+                  [% IF field_errors.incident_date %]
+                    <p class='form-error'>[% field_errors.incident_date %]</p>
+                  [% END %]
                     <input type="text" name="incident_date" id="form_incident_date" value="today">
                 </div>
-
                 <div>
-                    <label for="form_incident_time"> Time of Incident </label>
-                    [% IF field_errors.incident_time %]
-                        <p class='form-error'>[% field_errors.incident_time %]</p>
-                    [% END %]
+                  [% IF field_errors.incident_time %]
+                    <p class='form-error'>[% field_errors.incident_time %]</p>
+                  [% END %]
                     <input type="text" name="incident_time" id="form_incident_time" placeholder="hh:mm">
                 </div>
             </div>
 
-            <label for="form_participants"> Who was involved? </label>
+            <label for="form_road_type">[% loc('Where did it happen?') %]</label>
+          [% IF field_errors.road_type %]
+            <p class='form-error'>[% field_errors.road_type %]</p>
+          [% END %]
+            <select id="form_road_type" name="road_type">
+                <option value="road">[% loc('In the road') %]</option>
+                <option value="lane-onroad">[% loc('On-road bike lane') %]</option>
+                <option value="lane-separate">[% loc('Segregated bike lane') %]</option>
+                <option value="pavement">[% loc('Pavement') %]</option>
+            </select>
+
+            <label for="form_participants">[% loc('The incident involved a bike and…?') %]</label>
             [% IF field_errors.participants %]
                 <p class='form-error'>[% field_errors.participants %]</p>
             [% END %]
 
             <select id="form_participants" name="participants">
-                <option value="bike-car"> Bike - Car </option>
-                <option value="bike-motorcycle"> Bike - Motorcycle </option>
-                <option value="bike-hgv"> Bike - Heavy Goods Vehicle (HGV)</option>
-                <option value="bike-other"> Bike - Other Vehicle</option>
-                <option value="bike-bike"> Bike - Bike </option>
-                <option value="bike-pedestrian"> Bike - Pedestrian </option>
+                <option value="bike-car">[% loc('A car') %]</option>
+                <option value="bike-motorcycle">[% loc('A motorcycle') %]</option>
+                <option value="bike-hgv">[% loc('A heavy goods vehicle (HGV)') %]</option>
+                <option value="bike-other">[% loc('Some other vehicle') %]</option>
+                <option value="bike-bike">[% loc('Another bike') %]</option>
+                <option value="bike-pedestrian">[% loc('A pedestrian') %]</option>
             </select>
 
-            <label for="form_road_type"> Where did the incident take place?</label>
-            [% IF field_errors.road_type %]
-                <p class='form-error'>[% field_errors.road_type %]</p>
-            [% END %]
-
-            <select id="form_road_type" name="road_type">
-                <option value="road"> Road </option>
-                <option value="lane-onroad"> On-road bike lane</option>
-                <option value="lane-separate"> Segregated bike lane</option>
-                <option value="pavement"> Pavement </option>
-            </select>
-
-            <label for="form_registration"> Vehicle Registration </label>
-            [% IF field_errors.registration %]
+            <div class="vehicle-registration-number">
+                <label for="form_registration">[% loc('What was the vehicle’s registration number?') %]</label>
+              [% IF field_errors.registration %]
                 <p class='form-error'>[% field_errors.registration %]</p>
+              [% END %]
+                <input type="text" name="registration" id="form_registration" placeholder="MA51 ABC">
+            </div>
+
+            <label for="form_detail">[% loc('Can you describe what happened?') %]</label>
+            [% IF field_errors.detail %]
+                <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
+            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
 
-            <input type="text" name="registration" id="form_registration" placeholder="MA51 ABC">
-
-            [%- IF category_extras %]
-                [% PROCESS "report/new/category_extras.html" %]
-            [%- END %]
-
-            <label for="form_media_url"> Media URL </label>
-            <p>
-            (YouTube/Video, or forum post, etc.)
-            </p>
-            [% IF field_errors.media_url %]
-                <p class='form-error'>[% field_errors.media_url %]</p>
-            [% END %]
-
-            <input type="text" name="media_url" id="form_media_url" placeholder="http://...">
+            <div class="description_tips">
+              <h4>[% loc('Tips for successful reports:') %]</h4>
+                <ul class="do">
+                    <li>[% loc('Be polite, concise, and to the point') %]</li>
+                    <li>[% loc('Use exact locations') %]</li>
+                    <li>[% loc('Describe the events and circumstances leading to the incident') %]</li>
+                </ul>
+                <ul class="dont">
+                    <li>[% loc('Don’t leave abusive or libellous&nbsp;reports') %]</li>
+                    <li>[% loc('Don’t include private contact details in the&nbsp;description') %]</li>
+                </ul>
+            </div>
 
             [% IF c.cobrand.allow_photo_upload %]
-                <label for="form_photo">[% loc('Photo') %]</label>
+                <label for="form_photo">[% loc('Upload a photo') %]</label>
                 [% IF upload_fileid || report.photo %]
                     [% IF upload_fileid %]
                         <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
@@ -165,6 +125,16 @@
                 [% END %]
                 <input type="file" name="photo" id="form_photo">
             [% END %]
+
+            <label for="form_media_url">Or link to a video or webpage</label>
+          [% IF field_errors.media_url %]
+            <p class='form-error'>[% field_errors.media_url %]</p>
+          [% END %]
+            <input type="text" name="media_url" id="form_media_url" placeholder="http://...">
+
+          [%- IF category_extras %]
+              [% PROCESS "report/new/category_extras.html" %]
+          [%- END %]
 
             [% IF c.user_exists %]
                 <div class="form-box">
@@ -194,7 +164,7 @@
 
                     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
                     <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
-            
+
                     <div class="form-txt-submit-box">
                         <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
                     </div>
@@ -223,7 +193,7 @@
                             <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
                             <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
                         </div>
-                        
+
                         <div class="checkbox-group">
                             <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
                             <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
@@ -261,7 +231,7 @@
 
                         <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
                         <input class="form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
-                
+
                         <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
 
                         <div class="form-txt-submit-box form-focus-hidden">
