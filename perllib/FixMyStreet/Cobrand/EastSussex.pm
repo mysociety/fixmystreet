@@ -106,5 +106,9 @@ sub temp_update_potholes_contact {
     $contact->update({ extra => $fields });
 }
 
+sub get_geocoder {
+    return 'OSM'; # default of Bing gives poor results, let's try overriding.
+}
+
 1;
 
