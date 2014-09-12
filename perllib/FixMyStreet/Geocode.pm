@@ -35,7 +35,7 @@ sub lookup {
 sub string {
     my ($s, $c) = @_;
 
-    my $service = $c->config->{GEOCODER};
+    my $service = $c->cobrand->get_geocoder($c);
     $service = $service->{type} if ref $service;
     $service = 'OSM' unless $service =~ /^(Bing|Google|OSM|Zurich)$/;
     $service = 'OSM' if $service eq 'Bing' && !FixMyStreet->config('BING_MAPS_API_KEY');
