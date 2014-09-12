@@ -10,38 +10,20 @@
     width: 200px;
 }
 
-#severity-slider {
-    &.severity-low {
-        .ui-slider-range { background: green; }
-        .ui-slider-handle { 
-            background: lighten(green, 20%); 
-            border-color: darken(green, 20%); 
-        }
-    }
-    &.severity-medium {
-        .ui-slider-range { background: yellow; }
-        .ui-slider-handle { 
-            background: lighten(yellow, 20%); 
-            border-color: darken(yellow, 20%); 
-        }
-    }
-    &.severity-high {
-        .ui-slider-range { background: red; }
-        .ui-slider-handle {
-            background: lighten(red, 20%); 
-            border-color: darken(red, 20%); 
-        }
-    }
-}
-
 #ui-datepicker-div {
     font-size: 0.7em; // correct an interaction with FMS font-size?
 }
 
 div.form_datetime {
+    overflow: auto;
+
     div {
-        width: 49%;
-        display: inline-block;
+        width: 48%;
+        float: left;
+    }
+
+    div + div {
+        float: right;
     }
 }
 
@@ -54,3 +36,86 @@ a:visited {
     color: $links;
 }
 
+.change_location {
+    color: #666;
+    padding-left: 24px;
+    background: transparent url(images/wrong-location.png) 4px 50% no-repeat;
+    margin-top: -0.5em;
+}
+
+#report-a-problem-main {
+    fieldset {
+        margin: 0;
+    }
+
+    select {
+        max-width: none;
+    }
+
+    .form-box {
+        margin-top: 1.5em;
+
+        & > :first-child {
+            margin-top: 0;
+        }
+    }
+}
+
+.severity {
+    label {
+        margin-top: 0;
+    }
+
+    p {
+        margin-bottom: 0.5em;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            font-weight: normal;
+        }
+
+        input {
+            margin-right: 0.5em;
+        }
+    }
+}
+
+.description_tips {
+    @include clearfix;
+
+    h4 {
+        margin: 0.5em 0;
+    }
+
+    ul {
+        width: 49%;
+        margin: 0;
+        float: left;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    li {
+        margin-bottom: 0;
+        padding-left: 20px;
+        list-style: none;
+        background: transparent url(images/tick-10px-8px.png) 4px 5px no-repeat;
+    }
+
+    .do {
+        color: #1c8012;
+    }
+
+    .dont {
+        float: right;
+        color: #881111;
+
+        li {
+            background-image: url(images/cross-7px-7px.png);
+            background-position: 6px 6px;
+        }
+    }
+}

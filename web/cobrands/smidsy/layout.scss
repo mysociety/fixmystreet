@@ -10,3 +10,20 @@
         background: $darker_brown;
     }
 }
+
+#report-a-problem-main {
+    .form-box {
+        margin: 1.5em -1em 0.25em -1em;
+        padding: 1em;
+
+        & > :first-child {
+            margin-top: 0;
+        }
+    }
+
+    @media only screen and (min-width: 48em) {
+        input[type=text], input[type=password], input[type=email], textarea {
+            max-width: 27em;
+        }
+    }
+}
