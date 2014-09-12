@@ -18,19 +18,21 @@
 
             <input type="hidden" value="DUMMY" name="title" id="form_title">
 
-            <label>[% loc('How severe was the incident?') %]</label>
-            <p>
-                <label><input type="radio" name="severity" value="0">[% loc('No injuries – but it was close!') %]</label>
-            </p>
-            <p>
-                <label><input type="radio" name="severity" value="30">[% loc('Just bruises and scrapes') %]</label>
-            </p>
-            <p>
-                <label><input type="radio" name="severity" value="60">[% loc('Serious – broken bones, hospital trips') %]</label>
-            </p>
-            <p>
-                <label><input type="radio" name="severity" value="100">[% loc('There were one or more fatalities') %]</label>
-            </p>
+            <div class="severity">
+                <label>[% loc('How severe was the incident?') %]</label>
+                <p>
+                    <label><input type="radio" name="severity" value="0">[% loc('No injuries – but it was close!') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="severity" value="30">[% loc('Just bruises and scrapes') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="severity" value="60">[% loc('Serious – broken bones, hospital trips') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="severity" value="100">[% loc('There were one or more fatalities') %]</label>
+                </p>
+            </div>
 
             <div class="describe-injury">
                 <label for="form_injury_detail">[% loc('If <em>you</em> were injured, can you tell us more about your injuries?') %]</label>
@@ -95,9 +97,9 @@
             <div class="description_tips">
               <h4>[% loc('Tips for successful reports:') %]</h4>
                 <ul class="do">
-                    <li>[% loc('Be polite, concise, and to the point') %]</li>
+                    <li>[% loc('Be polite, and to the point') %]</li>
                     <li>[% loc('Use exact locations') %]</li>
-                    <li>[% loc('Describe the events and circumstances leading to the incident') %]</li>
+                    <li>[% loc('Describe the events leading up to the incident') %]</li>
                 </ul>
                 <ul class="dont">
                     <li>[% loc('Don’t leave abusive or libellous&nbsp;reports') %]</li>
