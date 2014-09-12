@@ -1,27 +1,52 @@
 /* COLOURS */
 
-$orange: #ff9900;
-$bluey: #6688ff;
+$color-primary-orange: #E5BB1C;
+$color-primary-blue: #42A7DB;
+$color-neutral-cream: #FCF1C6;
+$color-neutral-raincloud: #DCE7E8;
+$color-neutral-duckegg: #6b9094;
+$color-neutral-slategrey: #5D696A;
+$color-secondary-blue: #99CED4;
+$color-secondary-aquamarine: #A6D0AE;
+$color-secondary-olive: #AAB674;
+$color-secondary-brown: #C3A963;
 
-$grey:    #cccccc;
-$whitish: #eeeeee;
-$brown:   #E0BEAA;
-$darker_brown: #DD5F16;
+// Homepage banner background, mysoc tab and border-top, nav item
+// hover backgrounds, and horizontal rules all over the place.
+$primary: #ccc;
 
-$primary: $brown;
-$primary_b: #000000;
-$primary_text: #222222;
-$links: $darker_brown;
+// Used in 1px border around homepage postcode form input.
+$primary_b: #000;
 
-$base_bg: $whitish;
+// Text color in homepage banner / how-to / stats sections, and mysoc tab
+// links color. But not default .content text color (which is hardcoded to #222).
+$primary_text: #000;
+
+// The body background color.
+$base_bg: $color-neutral-slategrey;
+
+// The body text color.
 $base_fg: #000;
 
-$map_nav_bg: $whitish;
-$nav_fg: #000;
-$nav_fg_hover: $primary;
+// Background colour of navbar/header above full-screen map.
+// Similar to the semi-transparent grey from map controls in core sprite.png
+// Same opacity (0.9) as body.mappage .content
+$map_nav_bg: rgba(40, 40, 40, 0.9);
 
-$col_click_map: $whitish;
-$col_click_map_dark: darken($whitish, 10%);
+// Nav link color.
+$nav_fg: #fff;
 
+// Nav link :hover color.
+$nav_fg_hover: $color-primary-blue;
+
+// Background color for "Click map to report" message on map page.
+$col_click_map: #fff;
+
+// The darker folded triangle behind "Click map to report" message on map page.
+$col_click_map_dark: #eee;
+
+// Background color for the "fixed" banner on reports.
 $col_fixed_label: #00BD08;
+
+// The darker folded triangle behind "fixed" banner.
 $col_fixed_label_dark: #4B8304;
