@@ -110,5 +110,22 @@ sub get_geocoder {
     return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
+# for the /around/ page
+sub on_map_default_max_pin_age {
+    return '3 months';
+}
+
+# for the /reports/ page
+sub reports_per_page { return 20; }
+
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+
+    # TODO refactor to a Moo(se)? lazy attribute
+    my $open_states = $self->{open_states} ||= $p->open_states;
+
+    return $open_states->{ $p->state } ? 'yellow' : 'green';
+}
+
 1;
 
