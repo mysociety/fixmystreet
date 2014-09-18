@@ -1,27 +1,46 @@
 /* COLOURS */
 
-$orange: #ff9900;
-$bluey: #6688ff;
-
-$grey:    #cccccc;
 $whitish: #eeeeee;
 $brown:   #E0BEAA;
 $darker_brown: #DD5F16;
 
+// Homepage banner background, mysoc tab and border-top, nav item
+// hover backgrounds, and horizontal rules all over the place.
 $primary: $brown;
-$primary_b: #000000;
-$primary_text: #222222;
-$links: $darker_brown;
 
+// Used in 1px border around homepage postcode form input.
+$primary_b: #000000;
+
+// Text color in homepage banner / how-to / stats sections, and mysoc tab
+// links color. But not default .content text color (which is hardcoded to #222).
+$primary_text: #222222;
+
+// The body background color.
 $base_bg: $whitish;
+
+// The body text color.
 $base_fg: #000;
 
+// Background colour of navbar/header above full-screen map.
 $map_nav_bg: $whitish;
+
+// Nav link color.
 $nav_fg: #000;
+
+// Nav link :hover color.
 $nav_fg_hover: $primary;
 
+// Background color for "Click map to report" message on map page.
 $col_click_map: $whitish;
+
+// The darker folded triangle behind "Click map to report" message on map page.
 $col_click_map_dark: darken($whitish, 10%);
 
+// Background color for the "fixed" banner on reports.
 $col_fixed_label: #00BD08;
+
+// The darker folded triangle behind "fixed" banner.
 $col_fixed_label_dark: #4B8304;
+
+// A SMIDSY variable used for link colour.
+$links: $darker_brown;
