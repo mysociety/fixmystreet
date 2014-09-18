@@ -96,6 +96,7 @@ h1.main {
 
 .green-btn, input.green-btn, input.green-btn:hover {
     background: #44697d;
+    border: lighten(#44697d, 10%);
     font-weight: bold;
     font-size: 1.1em;
 }
