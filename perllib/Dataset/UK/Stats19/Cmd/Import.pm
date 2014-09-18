@@ -48,15 +48,29 @@ sub execute {
 
     my $user_id = $self->user->id;
 
+    my $failed = 0;
+
     while (my $v = $vehicles->next) {
         my $accident = $v->accident;
         next unless $accident->accident_index;
+
+        if ($problem_rs->search({ external_id => $accident->accident_index })->count) {
+            say sprintf "Index %s already exists!", $accident->accident_index;
+	    next;
+        }
+
         next unless $accident->date;
         next unless $accident->latitude;
         next unless $accident->longitude;
         my $text = _get_description($accident);
 
-        my @areas = $self->get_areas($accident->latitude, $accident->longitude);
+        my @areas = $self->get_areas($accident->latitude, $accident->longitude)
+            or do {
+                warn "Couldn't fetch areas: MaPit error?";
+                $failed++;
+                next;
+            };
+
         my $bodies_str = ( first { $areas{$_} } @areas ) || '';
         my $areas = join ',', '', @areas, ''; # note empty strings at beginning/end
 
@@ -73,6 +87,7 @@ sub execute {
 
         my $problem = $problem_rs->create(
             {
+		external_id  => $accident->accident_index,
                 postcode     => '',
                 latitude     => $accident->latitude,
                 longitude    => $accident->longitude,
@@ -93,11 +108,14 @@ sub execute {
                 anonymous    => 0,
                 created      => $accident->date,
                 confirmed    => $accident->date,
+                whensent     => $accident->date, # prevent imported stats19 data from getting sent again
                 extra        => $extra,
             });
         say sprintf 'Created Problem #%d', $problem->id;
     }
     say $vehicles->count;
+
+    say sprintf "Failed: %d", $failed if $failed;
 
 }
 
@@ -172,10 +190,14 @@ sub get_areas {
     my $short_longitude = Utils::truncate_coordinate($longitude);
 
     my %area_types = map { $_ => 1 } @{ $self->cobrand->area_types };
-    my $all_areas = mySociety::MaPit::call(
-        'point',
-        "4326/$short_longitude,$short_latitude"
-    );
+
+    my $all_areas = eval {
+        mySociety::MaPit::call(
+            'point',
+            "4326/$short_longitude,$short_latitude"
+        )
+    } or return;
+
     $all_areas = {
         map { $_ => $all_areas->{$_} }
         grep { $area_types{ $all_areas->{$_}->{type} } }
