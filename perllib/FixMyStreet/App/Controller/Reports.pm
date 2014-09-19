@@ -88,14 +88,20 @@ sub get_and_stash_bodies {
     my ($self, $c) = @_;
     my $rs = $c->model('DB::Body');
 
-    if (my @types = $c->req->param('type')) {
-        my $areas = mySociety::MaPit::call('areas', [ map uc, @types]);
-        my @ids = keys %$areas;
-        $rs = $rs->search({ id => \@ids });
-    }
+    my @types = $c->req->param('type');
 
-    if (my $parent = $c->req->param('parent')) {
-        my $areas = mySociety::MaPit::call('area/children', [ $parent]);
+    my $areas = do {
+        if (my $parent = $c->req->param('parent')) {
+            @types = @types || @{ $c->cobrand->area_types };
+
+            mySociety::MaPit::call('area/covers', [ $parent], 
+                { type => \@types });
+        }
+        elsif (@types) {
+            mySociety::MaPit::call('areas', [ map uc, @types]);
+        }
+    };
+    if ($areas) {
         my @ids = keys %$areas;
         $rs = $rs->search({ id => \@ids });
     }
