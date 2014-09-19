@@ -52,16 +52,8 @@ sub index : Path : Args(0) {
         $c->detach( 'redirect_body' );
     }
 
-    # Fetch all bodies
-    my @bodies = $c->model('DB::Body')->search({}, {
-        '+select' => [ { count => 'area_id' } ],
-        '+as' => [ 'area_count' ],
-        join => 'body_areas',
-        distinct => 1,
-    })->all;
-    @bodies = sort { strcoll($a->name, $b->name) } @bodies;
-    $c->stash->{bodies} = \@bodies;
-    $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
+    # Fetch all areas of the types we're interested in
+    my @bodies = $self->get_and_stash_bodies($c);
 
     eval {
         my $data = File::Slurp::read_file(
@@ -83,6 +75,48 @@ sub index : Path : Args(0) {
 
     # Down here so that error pages aren't cached.
     $c->response->header('Cache-Control' => 'max-age=3600');
+}
+
+=head2 get_and_stash_bodies
+
+Gets and stashes the body list, honouring mapit_type and mapit_container
+if provided.
+
+=cut
+
+sub get_and_stash_bodies {
+    my ($self, $c) = @_;
+    my $rs = $c->model('DB::Body')->search({}, {
+        '+select' => [ { count => 'area_id' } ],
+        '+as' => [ 'area_count' ],
+        join => 'body_areas',
+        distinct => 1,
+    });
+
+    my @types = $c->req->param('type');
+
+    my $areas = do {
+        if (my $parent = $c->req->param('parent')) {
+            @types = @types ? @types : @{ $c->cobrand->area_types };
+
+            mySociety::MaPit::call('area/covers', [ $parent], 
+                type => (join ',', @types)
+            );
+        }
+        elsif (@types) {
+            mySociety::MaPit::call('areas', [ map uc, @types]);
+        }
+    };
+    if ($areas) {
+        my @ids = keys %$areas;
+        $rs = $rs->search({ id => \@ids });
+    }
+
+    my @bodies = sort { strcoll($a->name, $b->name) } $rs->all;
+    $c->stash->{bodies} = \@bodies;
+    $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
+
+    return @bodies;
 }
 
 =head2 index
