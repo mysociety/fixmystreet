@@ -92,10 +92,11 @@ sub get_and_stash_bodies {
 
     my $areas = do {
         if (my $parent = $c->req->param('parent')) {
-            @types = @types || @{ $c->cobrand->area_types };
+            @types = @types ? @types : @{ $c->cobrand->area_types };
 
             mySociety::MaPit::call('area/covers', [ $parent], 
-                { type => \@types });
+                type => (join ',', @types)
+            );
         }
         elsif (@types) {
             mySociety::MaPit::call('areas', [ map uc, @types]);
