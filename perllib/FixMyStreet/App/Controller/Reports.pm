@@ -53,9 +53,7 @@ sub index : Path : Args(0) {
     }
 
     # Fetch all areas of the types we're interested in
-    my @bodies = $c->model('DB::Body')->all;
-    @bodies = sort { strcoll($a->name, $b->name) } @bodies;
-    $c->stash->{bodies} = \@bodies;
+    my @bodies = $self->get_and_stash_bodies($c);
 
     eval {
         my $data = File::Slurp::read_file(
@@ -77,6 +75,34 @@ sub index : Path : Args(0) {
 
     # Down here so that error pages aren't cached.
     $c->response->header('Cache-Control' => 'max-age=3600');
+}
+
+=head2 get_and_stash_bodies
+
+Gets and stashes the body list, honouring mapit_type and mapit_container
+if provided.
+
+=cut
+
+sub get_and_stash_bodies {
+    my ($self, $c) = @_;
+    my $rs = $c->model('DB::Body');
+
+    if (my @types = $c->req->param('type')) {
+        my $areas = mySociety::MaPit::call('areas', [ map uc, @types]);
+        my @ids = keys %$areas;
+        $rs = $rs->search({ id => \@ids });
+    }
+
+    if (my $parent = $c->req->param('parent')) {
+        my $areas = mySociety::MaPit::call('area/children', [ $parent]);
+        my @ids = keys %$areas;
+        $rs = $rs->search({ id => \@ids });
+    }
+
+    my @bodies = sort { strcoll($a->name, $b->name) } $rs->all;
+    $c->stash->{bodies} = \@bodies;
+    return @bodies;
 }
 
 =head2 index
