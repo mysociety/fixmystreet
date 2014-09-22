@@ -1,12 +1,6 @@
 @import "_colours";
 @import "../sass/layout";
 
-@media only screen and (min-width: 48em) {
-    body.frontpage #site-logo {
-        background: url('/cobrands/smidsy/images/icon_536_5072_text.png') 0px 0px no-repeat;
-    }
-}
-
 #report-a-problem-main {
     .form-box {
         margin: 1.5em -1em 0.25em -1em;
