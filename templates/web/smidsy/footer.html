@@ -28,10 +28,30 @@
                                 </ul>
                             </div>
                         </div>
-                        <p><a href="/privacy">Privacy and cookies</a></p>
                     </footer>
                     [% END %]
                 </div><!-- .content role=main -->
+                <div class="footer">
+                  <div class="creators">
+                    <p>Created by</p>
+                    <a class="mysociety" href="https://mysociety.org">mySociety</a>
+                    <a class="itp" href="http://www.itpworld.net">Integrated Transport Planning</a>
+                  </div>
+                  <h2>[% c.cobrand.site_title | html %]</h2>
+                  <ul>
+                    <li><a href="/">[% loc("Find &amp; report") %]</a></li>
+                    <li><a href="/reports">[% loc("Statistics") %]</a></li>
+                    <li><a href="/faq">[% loc("FAQs") %]</a></li>
+                    <li><a href="#">[% loc("Sponsors") %]</a></li>
+                    <li><a href="/my">[% IF c.user_exists %]
+                        [% loc("Your reports") %]
+                    [% ELSE %]
+                        [% loc("Log in") %]
+                    [% END %]</a></li>
+                    <li><a href="/privacy" class="secondary">[% loc("Privacy") %]</a></li>
+                    <li><a href="/contact" class="secondary">[% loc("Contact") %]</a></li>
+                  </ul>
+                </div>
             </div><!-- .container -->
         </div><!-- .table-cell -->
 
