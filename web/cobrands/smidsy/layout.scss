@@ -141,6 +141,47 @@ body {
   }
 }
 
+body.mappage {
+  #main-nav {
+    width: auto;
+    margin-right: 10px;
+
+    ul#main-menu li a {
+      padding: 0 12px; // to match normal pages
+    }
+  }
+
+  .nav-wrapper .nav-wrapper-2 {
+    min-height: 0; // no min-height; rely on the 60px lineheight of children
+  }
+
+  @media only screen and (min-width: 48em) and (max-width: 61em) {
+    #site-header {
+      height: auto; // override 6em height from core; rely on 60px lineheight of children
+    }
+
+    #fms_pan_zoom {
+      top: 4.75em !important; // similar story: core moves this down, so we move it back
+    }
+  }
+
+  .content {
+    margin: 0; // fit map page sidebar up against top and sides of window
+    background: rgba(255,255,255,0.9);
+  }
+
+  .big-green-banner {
+    color: #000;
+    right: 0;
+    margin: -15px -15px 0 -15px;
+    border-bottom: 1px solid #e9e9e9;
+
+    &:before {
+      display: none;
+    }
+  }
+}
+
 #report-a-problem-main {
     .form-box {
         margin: 1.5em -1em 0.25em -1em;

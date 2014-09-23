@@ -28,7 +28,9 @@ $base_bg: $color-neutral-slategrey;
 $base_fg: #000;
 
 // Background colour of navbar/header above full-screen map.
-$map_nav_bg: transparentize($color-neutral-slategrey, 0.05);
+// Similar to the semi-transparent grey from map controls in core sprite.png
+// Same opacity (0.9) as body.mappage .content
+$map_nav_bg: rgba(40, 40, 40, 0.9);
 
 // Nav link color.
 $nav_fg: #fff;
