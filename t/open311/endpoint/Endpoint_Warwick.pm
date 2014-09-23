@@ -1,11 +1,6 @@
 package t::open311::endpoint::Endpoint_Warwick;
 use Web::Simple;
 
-use Module::Loaded;
-BEGIN {
-    mark_as_loaded('DBD::Oracle');
-}
-
 our %BINDINGS;
 our $UPDATES_SQL;
 
