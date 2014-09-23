@@ -15,7 +15,9 @@ use Encode qw(from_to);
 sub ORA_DATE ();
 sub ORA_NUMBER ();
 sub ORA_VARCHAR2 ();
+no warnings 'redefine';
 use DBD::Oracle qw(:ora_types);
+
 BEGIN {
 *ORA_DATE = *ORA_NUMBER = *ORA_VARCHAR2 = sub () { 1 }
     unless $DBD::Oracle::VERSION;
@@ -23,7 +25,10 @@ BEGIN {
 
 has ora_dt => (
     is => 'lazy',
-    default => sub { 'DateTime::Format::Oracle' }, 
+    default => sub { 
+        $ENV{NLS_DATE_FORMAT} = 'YYYY-MM-DD HH24:MI';
+	return 'DateTime::Format::Oracle' 
+    }, 
         # NB: we just return the class name. This is to smooth over odd API,
         # for consistency with w3_dt
 );
@@ -214,16 +219,16 @@ sub post_service_request {
     my %bindings;
                                                      # comments here are suggested values
                                                      # field lengths are from OCC's Java portlet
-    # fixed values    
-    $bindings{":ce_cat"}            = 'REQS';         # or REQS ?
-    $bindings{":ce_class"}          = 'SERV';        # 'FRML' ?
-    $bindings{":ce_contact_type"}   = 'ENQUIRER';    # 'ENQUIRER' 
+    # fixed values     TODO: these should be configurable!
+    $bindings{":ce_cat"}            = 'COMP';         # or REQS ?
+    $bindings{":ce_class"}          = 'FRML';        # 'FRML' ? / SERV
+    $bindings{":ce_contact_type"}   = 'PU';    # 'ENQUIRER' 
     $bindings{":ce_status_code"}    = 'RE';          # RE=received (?)
     $bindings{":ce_compl_user_type"}= 'USER';        # 'USER'
 
     # ce_incident_datetime is *not* an optional param, but FMS isn't sending it at the moment
     $bindings{":ce_incident_datetime"}=$args->{requested_datetime}
-        || $self->w3_dt->format_datetime( DateTime->now );
+        || $self->ora_dt->format_datetime( DateTime->now );
 
     # especially FMS-specific:
     $bindings{":ce_source"}        = "FMS";           # important, and specific to this script!
