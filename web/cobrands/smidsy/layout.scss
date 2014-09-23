@@ -44,6 +44,27 @@
   text-decoration: underline;
 }
 
+.nav-wrapper .nav-wrapper-2 {
+  border-top-color: #fff;
+}
+
+body {
+  background-image: url('/cobrands/smidsy/images/background-1280x854.jpg');
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: 100%; // fill window width, calculate height automatically
+
+  &.frontpage {
+    background-image: url('/cobrands/smidsy/images/background-home-1280x854.jpg')
+  }
+}
+
+.content {
+  @include box-shadow(none);
+  margin-left: 15px; // to match nav items
+  margin-right: 15px; // to match nav items
+}
+
 #report-a-problem-main {
     .form-box {
         margin: 1.5em -1em 0.25em -1em;
