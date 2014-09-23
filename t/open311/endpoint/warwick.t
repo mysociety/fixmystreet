@@ -79,10 +79,10 @@ subtest "POST OK" => sub {
           ':ce_description' => '',
           ':ce_location' => '22 Acacia Avenue',
           ':ce_incident_datetime' => '2014-01-01 12:00',
-          ':ce_class' => 'FRML',
+          ':ce_class' => 'N/A',
           ':ce_compl_user_type' => 'USER',
           ':ce_status_code' => 'RE',
-          ':ce_cat' => 'COMP',
+          ':ce_cat' => 'DEF',
           ':ce_forename' => 'BOB'
         }, 
         'bindings as expected';
