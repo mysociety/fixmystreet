@@ -5,6 +5,15 @@
 
 @import "../sass/base";
 
+#site-logo {
+  background: 0;
+  text-indent: 0;
+  color: #fff;
+  width: auto;
+  line-height: 40px; // to match height
+  font-size: 1.2em;
+}
+
 #ui-datepicker-div {
     font-size: 0.7em; // correct an interaction with FMS font-size?
 }

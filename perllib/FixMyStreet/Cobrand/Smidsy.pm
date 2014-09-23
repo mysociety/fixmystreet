@@ -25,6 +25,8 @@ use constant language_domain => 'FixMyStreet-Smidsy';
 use constant severity_minor_threshold => 40;
 use constant severity_major_threshold => 70;
 
+sub site_title { return 'Collideoscope'; }
+
 sub severity_categories {
     return [
         {

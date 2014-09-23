@@ -1,6 +1,49 @@
 @import "_colours";
 @import "../sass/layout";
 
+#site-logo {
+  display: inline-block; // rather than block
+  position: relative; // rather than absolute, just so we can still use z-index
+  top: 0;
+  background: none;
+  height: auto;
+  width: auto; // override default 300px
+  font-size: 24px;
+  line-height: 60px;
+  padding: 0 15px;
+  margin-top: 4px; // height of border-top on #nav-wrapper-2
+
+  body.frontpage & {
+    top: 0;
+    background: none;
+    height: auto;
+    width: auto; // override default 300px
+    font-size: 30px;
+  }
+}
+
+%nav-item-style {
+  font-size: 16px;
+  line-height: 60px;
+  padding: 0 12px;
+}
+
+#main-nav ul#main-menu li a {
+  @extend %nav-item-style;
+
+  &:hover {
+    background-color: transparent;
+    text-decoration: underline;
+  }
+}
+
+#main-nav ul#main-menu li span {
+  @extend %nav-item-style;
+
+  color: #fff;
+  text-decoration: underline;
+}
+
 #report-a-problem-main {
     .form-box {
         margin: 1.5em -1em 0.25em -1em;
