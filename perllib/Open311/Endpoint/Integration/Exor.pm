@@ -115,6 +115,36 @@ has testing => (
     default => 0,
 );
 
+has ce_cat => (
+    is => 'ro',
+    default => 'DEF',
+);
+
+has ce_class => (
+    is => 'ro',
+    default => 'N/A',
+);
+
+has ce_cpr_id => ( # not currently used
+    is => 'ro',
+    default => 5,
+);
+
+has ce_contact_type => (
+    is => 'ro',
+    default => 'PU',
+);
+
+has ce_status_code => (
+    is => 'ro',
+    default => 'RE',
+);
+
+has ce_compl_user_type => (
+    is => 'ro',
+    default => 'USER',
+);
+
 #------------------------------------------------------------------
 # pem_field_types
 # return hash of types by field name: any not explicitly set here
@@ -220,11 +250,11 @@ sub post_service_request {
                                                      # comments here are suggested values
                                                      # field lengths are from OCC's Java portlet
     # fixed values     TODO: these should be configurable!
-    $bindings{":ce_cat"}            = 'COMP';         # or REQS ?
-    $bindings{":ce_class"}          = 'FRML';        # 'FRML' ? / SERV
-    $bindings{":ce_contact_type"}   = 'PU';    # 'ENQUIRER' 
-    $bindings{":ce_status_code"}    = 'RE';          # RE=received (?)
-    $bindings{":ce_compl_user_type"}= 'USER';        # 'USER'
+    $bindings{":ce_cat"}            = $self->ce_cat;
+    $bindings{":ce_class"}          = $self->ce_class;
+    $bindings{":ce_contact_type"}   = $self->ce_contact_type;
+    $bindings{":ce_status_code"}    = $self->ce_status_code;
+    $bindings{":ce_compl_user_type"}= $self->ce_compl_user_type;
 
     # ce_incident_datetime is *not* an optional param, but FMS isn't sending it at the moment
     $bindings{":ce_incident_datetime"}=$args->{requested_datetime}
