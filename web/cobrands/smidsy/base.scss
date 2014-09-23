@@ -1,9 +1,14 @@
 @import "../sass/h5bp";
-@import "./_colours";
+@import "typography";
+@import "colours";
 @import "../sass/mixins";
 @import "compass";
 
 @import "../sass/base";
+
+body {
+  font-family: Cabin, Arial, sans-serif;
+}
 
 #site-logo {
   background: 0;
