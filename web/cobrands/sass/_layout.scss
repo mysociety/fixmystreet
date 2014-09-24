@@ -68,8 +68,7 @@ h1 {
     min-height: 4em;
     position: absolute;
     border-top: 4px solid $primary;
-    border-left: 0;
-    border-right: 0;
+    border-width: 4px 0 0 0;
     z-index: 2;
   }
 }
