@@ -29,10 +29,10 @@
 
     PROCESS "maps/${map.type}.html";
 
+    SET bodyclass = 'mappage';
     SET rss = [ loc('Recent local problems, FixMyStreet'), rss_url ] IF c.cobrand.moniker != 'emptyhomes';
     INCLUDE 'header.html',
         title  => loc('Viewing a location')
-        bodyclass => 'mappage',
         robots => 'noindex,nofollow';
 
     allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_body);

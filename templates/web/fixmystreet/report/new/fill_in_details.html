@@ -1,8 +1,8 @@
 [%
-    SET class = '';
-    SET class = 'mappage' IF report.used_map;
+    SET bodyclass = '';
+    SET bodyclass = 'mappage' IF report.used_map;
     PROCESS "maps/${map.type}.html" IF report.used_map;
-    INCLUDE 'header.html', title => loc('Reporting a problem'), bodyclass => class
+    INCLUDE 'header.html', title => loc('Reporting a problem');
 %]
 
 [% IF report.used_map %]
