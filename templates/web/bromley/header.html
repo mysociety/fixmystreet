@@ -93,14 +93,14 @@
                 </div>
             </div>
 
+          [% IF c.user_exists %]
             <div id="user-meta">
-                [% IF c.user_exists %]
                 <p>
                     [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
                     <a href="/auth/sign_out">[% loc('sign out') %]</a>
                 </p>
-                [% END %]
             </div>
+          [% END %]
 
             <h1 class="main desk-only">Reporting a problem in Bromley&rsquo;s streets or parks</h1>
 

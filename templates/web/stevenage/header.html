@@ -85,16 +85,14 @@
                 </div>
             </header>
 
+          [% IF c.user_exists %]
             <div id="user-meta">
-                [% IF c.user_exists %]
                 <p>
                     [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
                     <a href="/auth/sign_out">[% loc('sign out') %]</a>
                 </p>
-                [% ELSE %]
-                    <!-- <a href="/auth">[% loc('Sign in') %]</a> -->
-                [% END %]
             </div>
+          [% END %]
 
             [% pre_container_extra %]
 

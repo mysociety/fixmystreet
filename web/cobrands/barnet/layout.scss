@@ -67,9 +67,12 @@ body.fullwidthpage {
     }
 }
 
+.content {
+    @include box-shadow(none);
+}
+
 body.twothirdswidthpage {
     .content {
-        @include box-shadow(none);
         width: 640px;
         margin-top: 0;
         .sticky-sidebar {
@@ -93,7 +96,6 @@ body.twothirdswidthpage {
 
 .frontpage .content {
     margin: 0;
-    @include box-shadow(none);
 }
 .ie6, .ie7, .ie8  {
     .frontpage .content {
@@ -193,10 +195,6 @@ body.frontpage {
     clear: both;
 }
 
-.container {
-  padding: 0 1em;
-}
-
 #site-header,
 #site-logo {
     display: none !important;
@@ -251,5 +249,5 @@ ol.big-numbers > li::before {
 
 
 #map_box {
-    border: 1px solid black;
+    border: 1px solid #999;
 }

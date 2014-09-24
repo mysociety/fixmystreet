@@ -461,6 +461,8 @@ $.fn.drawer = function(id, ajax) {
             var offset = -18 * 16;
             if (cobrand == 'bromley') {
                 offset = -110;
+            } else if (cobrand == 'oxfordshire') {
+                offset = -15 * 16;
             }
             if (cobrand !== "eastsussex") {
                 heightFix(window, '.content', offset, 1);

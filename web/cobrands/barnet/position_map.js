@@ -9,7 +9,7 @@ function position_map_box() {
         zIndex: 0, position: map_pos,
         top: 1, left: $('.wrapper').left,
         right: 0, bottom: $('.wrapper').bottom + 1,
-        width: '898px', height: map_height,
+        width: '896px', height: map_height,
         margin: 0
     });
 }
