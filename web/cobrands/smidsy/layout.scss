@@ -24,7 +24,7 @@
 }
 
 %nav-item-style {
-  font-size: 16px;
+  font-size: 18px;
   line-height: 60px;
   padding: 0 12px;
 }
@@ -218,5 +218,119 @@ body.twothirdswidthpage {
         background-color: $color-neutral-raincloud;
       }
     }
+  }
+}
+
+#front-main {
+  background: transparent;
+  color: #fff;
+  padding: 0;
+  margin-bottom: 4em;
+
+  h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+  }
+
+  p.lead {
+    font-size: 30px;
+  }
+
+  #postcodeForm {
+    padding-bottom: 1em;
+
+    div {
+      width: 500px;
+
+      input#pc {
+        width: 80%;
+        height: 54px;
+        line-height: 54px;
+        font-size: 30px;
+      }
+
+      input#sub {
+        width: 20%;
+        height: 54px;
+        line-height: 54px;
+        font-size: 30px;
+        font-weight: normal;
+        font-family: $body-font;
+        padding-top: 0; // reset some weird default padding
+      }
+    }
+  }
+
+  a#geolocate_link {
+    font-size: 21px;
+  }
+}
+
+.front__how-it-works,
+.front__statistics,
+.front__support {
+
+  h2 {
+    font-size: 32px;
+  }
+
+  p, ul {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  ul {
+    line-height: 26px;
+  }
+
+  .container {
+    padding: 0 15px;
+  }
+}
+
+.front__statistics {
+  strong {
+    font-size: 64px;
+    line-height: 64px;
+    margin-bottom: 10px;
+  }
+}
+
+.smidsy-two-column,
+.smidsy-four-column {
+  display: table;
+  width: 100%;
+  overflow: visible; // no more floats to clear, so back to default
+  margin: 0;
+
+  & > * {
+    display: table-cell;
+    float: none;
+    margin: 0;
+    width: 50%;
+    padding: 2%;
+  }
+
+  & > :first-child {
+    padding-left: 0; // line up with left edge of parent
+  }
+
+  & > :first-child + * {
+    float: none;
+  }
+
+  & > :first-child + * + * {
+    clear: none;
+  }
+
+  & > :last-child {
+    padding-right: 0; // line up with right edge of parent
+    float: none;
+  }
+}
+
+.smidsy-four-column {
+  & > * {
+    width: 25%;
   }
 }

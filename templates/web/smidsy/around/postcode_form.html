@@ -1,0 +1,20 @@
+<div id="front-main">
+    <div id="front-main-container">
+        [% INCLUDE 'around/intro.html' %]
+
+        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+
+            <label for="pc">[% c.cobrand.enter_postcode_text %]</label>
+
+            <div>
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% c.cobrand.enter_postcode_text %]">
+                <input type="submit" value="[% loc('Go') %]" id="sub">
+            </div>
+
+            [% IF partial_token %]
+                <input type="hidden" name="partial" value="[% partial_token.token %]">
+            [% END %]
+
+        </form>
+    </div>
+</div>

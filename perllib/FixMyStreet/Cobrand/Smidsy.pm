@@ -27,6 +27,11 @@ use constant severity_major_threshold => 70;
 
 sub site_title { return 'Collideoscope'; }
 
+sub enter_postcode_text {
+    my ( $self ) = @_;
+    return _('Street, area, or landmark');
+}
+
 sub severity_categories {
     return [
         {
