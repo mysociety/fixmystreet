@@ -92,6 +92,8 @@ h1 {
   height: auto;
   background: none;
   border-top: 0px;
+  // margin-top: 4px; <-- With this we compensate for 4px of content due to
+  // .nav-wrapper-2's border-top, but misaligns e.g. FAQ page
   .container {
     position: static;//reset position so the nav links become clickable
   }
@@ -214,7 +216,7 @@ h1 {
   padding: 1em 1em 3em;
   background: #fff;
   color: #222;
-  @include box-shadow(0px 0px 6px 1px #000);
+  @include box-shadow(0 0 10px rgba(0,0,0,0.5));
 }
 .ie6, .ie7, .ie8  {
   .content {
@@ -234,6 +236,7 @@ body.mappage {
   .content {
     float:left;
     padding: 1em 1em 10em;
+    margin: 0;
   }
 
   #main-nav ul#main-menu li a,
