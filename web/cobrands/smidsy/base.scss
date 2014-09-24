@@ -123,3 +123,17 @@ div.form_datetime {
         }
     }
 }
+
+body.twothirdswidthpage {
+  .content {
+    .sticky-sidebar {
+      background-color: $color-neutral-raincloud;
+      padding: 1em;
+      margin: 0 -1em;
+
+      li:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
