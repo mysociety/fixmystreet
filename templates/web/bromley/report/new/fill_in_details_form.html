@@ -1,4 +1,8 @@
 <div id="report-a-problem-main">
+  [% IF report.used_map %]
+    <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
+  [% END %]
+
     [% IF js %]
         <p id="councils_text">
         [%
@@ -18,7 +22,6 @@
             [% IF partial_token %]
                 <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
             [% END %]
-        <p>[% loc('You have located the problem at the point marked with a green pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
         [% ELSE %]
         <p>
             [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]

@@ -1,5 +1,9 @@
 <div id="report-a-problem-main">
-    <h1>[% loc('Reporting a problem') %]</h1>
+    <h1>[% loc('Report your problem') %]</h1>
+
+  [% IF report.used_map %]
+    <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
+  [% END %]
 
     [% IF js %]
         <p id="councils_text">
@@ -15,17 +19,12 @@
         [% PROCESS 'report/new/councils_text.html' %]
     [% END %]
 
-    [% IF c.cobrand.moniker != 'fixmybarangay' || ( c.user && c.user.from_council ) %]
     <div id="report-a-problem-sidebar">
-        <!--
-            The text for this section needs checking, but I can't work out which bit comes from where
-        -->
         <div class="sidebar-tips">
             [% IF report.used_map %]
                 [% IF partial_token %]
                     <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
                 [% END %]
-            <p>[% loc('You have located the problem at the point marked with a green pin on the map. If this is not the correct location, simply click on the map again. ') %]</p>
             [% END %]
 
             <p>
@@ -42,7 +41,6 @@
         </div>
 
     </div>
-    [% END %]
 
     [% INCLUDE 'errors.html' %]
     <fieldset>
