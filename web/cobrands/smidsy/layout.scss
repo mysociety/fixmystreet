@@ -263,6 +263,14 @@ body.twothirdswidthpage {
 
   a#geolocate_link {
     font-size: 21px;
+
+    &, &:hover {
+      background: transparent url('/cobrands/smidsy/images/geolocate-icon-13x20.png') left center no-repeat;
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+          background-image: url('/cobrands/smidsy/images/geolocate-icon-26x40.png');
+          background-size: 13px 20px;
+      }
+    }
   }
 }
 
