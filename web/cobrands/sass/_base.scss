@@ -1359,10 +1359,8 @@ label .muted {
   }
 }
 
-#problem_form {
-  label:first-child {
-    margin-top: 0;
-  }
+#problem_form > label:first-child {
+  margin-top: 0;
 }
 
 
