@@ -458,15 +458,11 @@ $.fn.drawer = function(id, ajax) {
      */
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
-            var offset = -18 * 16;
+            var offset = -15 * 16;
             if (cobrand == 'bromley') {
                 offset = -110;
-            } else if (cobrand == 'oxfordshire') {
-                offset = -15 * 16;
             }
-            if (cobrand !== "eastsussex") {
-                heightFix(window, '.content', offset, 1);
-            }
+            heightFix(window, '.content', offset, 1);
             // in case we have a map that isn't full screen
             map_fix();
         }
