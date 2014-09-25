@@ -275,8 +275,31 @@ body.twothirdswidthpage {
   background-color: #fff;
 }
 
+.front__how-it-works {
+  .circled-icon {
+    margin-bottom: 1em;
+  }
+}
+
+.front__how-it-works__find .circled-icon {
+  background-color: $color-secondary-blue;
+}
+
+.front__how-it-works__report .circled-icon {
+  background-color: $color-secondary-aquamarine;
+}
+
+.front__how-it-works__notify .circled-icon {
+  background-color: $color-secondary-olive;
+}
+
+.front__how-it-works__change .circled-icon {
+  background-color: $color-secondary-brown;
+}
+
 .front__statistics {
   background-color: $color-neutral-raincloud;
+  text-shadow: 0 1px 0 mix(#fff, $color-neutral-raincloud, 70%);
 
   strong {
     display: block; // break onto new line
@@ -293,6 +316,22 @@ body.twothirdswidthpage {
   & + .container > div:first-child {
     // This is the extra div created by our tag-closing trickery.
     display: none;
+  }
+}
+
+.circled-icon {
+  display: block;
+  width: 100px;
+  height: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: $color-neutral-duckegg;
+  @include border-radius(50px);
+
+  img {
+    width: 50px;
+    height: 50px;
+    margin-top: 25px;
   }
 }
 
