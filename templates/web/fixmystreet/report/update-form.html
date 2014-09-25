@@ -4,7 +4,7 @@
     <h2>[% loc( 'Provide an update') %]</h2>
 
     [% IF c.cobrand.moniker != 'emptyhomes' AND c.cobrand.moniker != 'stevenage' %]
-    <div class="general-sidebar-notes">
+    <div class="general-notes">
         [% INCLUDE 'report/updates-sidebar-notes.html' %]
     </div>
     [% END %]
@@ -73,7 +73,9 @@
 
         [% ELSE %]
 
-            <label for="form_rznvy">[% loc('Email' ) %]</label>
+            <label for="form_rznvy">[% loc('Your email' ) %]
+            <span class="muted">([% loc('We never show your email') %])</span>
+            </label>
             [% IF field_errors.email %]
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
@@ -100,9 +102,9 @@
                         <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
                     </div>
 
-                    <div class="general-sidebar-notes" id="forgotten-pw">
-                        <p class="dark">[% loc('Forgotten your password?') %]</p>
-                        <p>[% loc('Confirm by email below, providing a new password at that point. When you confirm, your password will be updated.') %]</p>
+                    <div class="general-notes">
+                        <p><strong>[% loc('Forgotten your password?') %]</strong>
+                        [% loc('Confirm by email below, providing a new password at that point. When you confirm, your password will be updated.') %]</p>
                     </div>
 
                 </div>
@@ -111,17 +113,17 @@
 
                     [% INCLUDE name %]
                     
-                    <div class="general-sidebar-notes">
-                        <p class="dark">[% loc('We never show your email') %]</p>
+                    <label for="password_register">[% loc('Password (optional)') %]</label>
+
+                    <div class="general-notes">
                         <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
                     </div>
-
-                    <label for="password_register">[% loc('Password (optional)') %]</label>
 
                     <div class="form-txt-submit-box">
                         <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
                         <input class="green-btn" type="submit" name="submit_register" id="submit_register" value="[% loc('Post') %]">
                     </div>
+
                 </div>
             </div>
 

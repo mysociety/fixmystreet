@@ -743,7 +743,7 @@ textarea.form-error {
   @include border-radius(0 0 0.25em 0.25em);
 }
 
-#report-a-problem-sidebar, .general-sidebar-notes {
+#report-a-problem-sidebar {
     position: absolute;
     left: 29em;
     width: 15em;
@@ -764,13 +764,12 @@ textarea.form-error {
   }
 }
 .ie6, .ie7 {
-  #report-a-problem-sidebar, .general-sidebar-notes {
+  #report-a-problem-sidebar {
     left: 28.5em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
     z-index: 1;
   }
 }
 
-.no-js .general-sidebar-notes,
 .no-js #report-a-problem-sidebar {
   position: static;
   width: auto;
@@ -781,26 +780,9 @@ textarea.form-error {
   }
 }
 
-// More general sidebar notes
-.general-sidebar-notes {
-  p {
-    background:#eeeeee;
-    font-size:0.75em;
-    padding:0.75em;
-    margin:0;
-    &.dark {
-      background:#333333;
-      color:#ffffff;
-    }
-  }
-}
-
-/* Adjust the above so text flow can be different from display */
-#forgotten-pw {
-    position: relative;
-    left: 26.5em;
-    top: -7em;
-    margin-bottom: -7em; // So no gap in main flow
+// More general notes
+.general-notes {
+    font-size: 0.75em;
 }
 
 // Frontpage
@@ -1174,19 +1156,6 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
   #map_box{
     left: 32em;
     width:auto;
-  }
-
-  //put the RAP notes into the main copy area
-  // Note: Also used for the non-JS case.
-  #report-a-problem-sidebar,
-  .general-sidebar-notes {
-    position: static;
-    width: auto;
-    @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
-    .sidebar-tips,
-    .sidebar-notes {
-      font-size:1em;
-    }
   }
 
   //Revert to mobile use of the .full-width class

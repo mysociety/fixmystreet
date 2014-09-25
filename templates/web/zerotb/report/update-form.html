@@ -1,7 +1,7 @@
 <div id="update_form">
     <h2>[% loc( 'Report a stockout') %]</h2>
 
-    <div class="general-sidebar-notes">
+    <div class="general-notes">
         [% INCLUDE 'report/updates-sidebar-notes.html' %]
     </div>
 
@@ -29,8 +29,8 @@
 
             <label for="form_rznvy">[% loc('Email' ) %]</label>
 
-            <div class="general-sidebar-notes">
-                <p class="dark">[% loc('We never show your email or name') %]</p>
+            <div class="general-notes">
+                <p>[% loc('We never show your email or name') %]</p>
             </div>
 
             [% IF field_errors.email %]

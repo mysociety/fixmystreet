@@ -82,18 +82,6 @@ body.twothirdswidthpage {
     }
 }
 
-// show the sidebar tips and notices in the document flow, i.e., in the
-// left-hand column, rather than in smaller text above the map
-.general-sidebar-notes {
-    position: static;
-    width: auto;
-    @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
-    .sidebar-tips,
-    .sidebar-notes {
-        font-size:1em;
-    }
-}
-
 // To prevent font size larger interfering with the fixed Oxfordshire layout
 .container { width: auto; }
 .full-width { width: 464px; }
@@ -137,14 +125,9 @@ body.mappage {
     .full-width { width: 377px; }
     .shadow-wrap { width: 377px; }
 
-    .general-sidebar-notes,
     #report-a-problem-sidebar {
         top: 1em;
         left: 23.5em;
-    }
-
-    #forgotten-pw {
-        left: 21.6em;
     }
 }
 

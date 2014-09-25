@@ -49,14 +49,15 @@
             <div id="form_sign_in_no" class="form-box">
                 <h5>[% loc('<strong>No</strong> let me sign in by email') %]</h5>
 
-                <div class="general-sidebar-notes">
-                    <p>[% loc('Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
-                </div>
-
                 <label for="name">[% loc('Name') %]</label>
                 <input type="text" name="name" value="" placeholder="[% loc('Your name') %]">
 
                 <label for="password_register">[% loc('Password (optional)') %]</label>
+
+                <div class="general-notes">
+                    <p>[% loc('Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+                </div>
+
                 <div class="form-txt-submit-box">
                     <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
                     <input class="green-btn" type="submit" name="email_sign_in" value="[% loc('Sign in') %]">

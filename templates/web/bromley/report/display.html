@@ -63,7 +63,7 @@
             [% END %]
             <textarea rows="7" cols="30" name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
 
-            <div class="general-sidebar-notes">
+            <div class="general-notes">
                 <p>Please note this comments box can only be used for this report.
                 <br><a href="http://www.bromley.gov.uk/report">Report a different issue</a>
             </div>
@@ -119,7 +119,10 @@
 
         [% ELSE %]
 
-            <label for="form_rznvy">[% loc('Email' ) %]</label>
+            <label for="form_rznvy">[% loc('Email' ) %]
+                <span class="muted">([% loc('We never show your email') %])</span>
+            </label>
+
             [% IF field_errors.email %]
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
@@ -133,12 +136,11 @@
 
                     [% INCLUDE name %]
                     
-                    <div class="general-sidebar-notes">
-                        <p class="dark">[% loc('We never show your email') %]</p>
+                    <label for="password_register">[% loc('Password (optional)') %]</label>
+
+                    <div class="general-notes">
                         <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
                     </div>
-
-                    <label for="password_register">[% loc('Password (optional)') %]</label>
 
                     <div class="form-txt-submit-box">
                         <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">

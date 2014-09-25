@@ -17,14 +17,14 @@
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %] </label>
     </div>
 
+    <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+    <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+
         [% IF c.cobrand.moniker != 'fixmybarangay' || c.user.from_body %]
-        <div class="general-sidebar-notes">
+        <div class="general-notes">
             <p>[% loc('We never show your email address or phone number.') %]</p>
         </div>
         [% END %]
-
-    <label for="form_phone">[% loc('Phone number (optional)') %]</label>
-    <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
 
     <div class="form-txt-submit-box">
         <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">

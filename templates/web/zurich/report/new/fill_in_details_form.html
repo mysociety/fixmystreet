@@ -91,12 +91,6 @@
                 [% END %]
                 <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
 
-                <!--
-                <div class="general-sidebar-notes">
-                    <p class="dark">[% loc('We never show your email address or phone number.') %]</p>
-                </div>
-                -->
-
                 <label for="form_name">[% loc('Name') %] [% loc('(optional)') %]</label>
                 [% IF field_errors.name %]
                     <p class='form-error'>[% field_errors.name %]</p>
