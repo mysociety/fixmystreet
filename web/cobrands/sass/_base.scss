@@ -156,12 +156,6 @@ img {
 
 select, input, textarea {
   font-size: 99%;
-  max-width: 95%;
-}
-.ie7 {
-    select, input, textarea {
-        max-width: none;
-    }
 }
 
 // To deal with bug from drop-down being wider than holder
@@ -249,12 +243,6 @@ h4.static-with-rule{
   }
 }
 
-// wrap anything inside the form in a fieldset to give
-// us the right spacing
-fieldset {
-  margin: 1em;
-}
-
 input[type=file] {
     width: 100%;
 }
@@ -274,14 +262,6 @@ textarea {
     input[type=email],
     textarea {
         max-width: 95%;
-    }
-    // In order to work around the IE7 specific issue of inheriting left margins
-    // http://techblog.willshouse.com/2009/07/12/ie6ie7-form-element-margin-inheritance-bug/
-    fieldset > input[type=text],
-    fieldset > input[type=password],
-    fieldset > input[type=email],
-    fieldset > textarea {
-        margin-left: -1em;
     }
 }
 
@@ -319,10 +299,10 @@ label{
 
 // grey background, full width box
 .form-box {
-  margin: 0 -2em 0.25em -2em;
-  background:#eeeeee;
-  padding:1em 2em 1em 2em;
-  >input[type=text], input[type=email] {
+  margin: 0 -1em 0.25em -1em;
+  background: #eee;
+  padding: 1em;
+  > input[type=text], input[type=email] {
     margin-bottom:1em;
   }
   .title {
@@ -361,17 +341,6 @@ label{
     padding-left: 24px;
     background: transparent url(/cobrands/fixmystreet/images/wrong-location.png) 4px 50% no-repeat;
     margin-top: -0.5em;
-}
-
-#report-a-problem-main {
-  fieldset {
-    margin: 0;
-  }
-
-  .form-box {
-    margin: 0 -1em 0.25em -1em;
-    padding: 1em;
-  }
 }
 
 .form-txt-submit-box {

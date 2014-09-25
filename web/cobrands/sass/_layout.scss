@@ -729,7 +729,7 @@ input[type=text],
 input[type=password],
 input[type=email],
 textarea{
-    max-width: 25em;
+    max-width: 27em;
 }
 
 /* form errors */
@@ -1125,13 +1125,6 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
 @media only screen and (min-width: 48em) and (max-width: 61em) {
   .container {
       width: 100%;
-  }
-  /*FORMS*/
-  input[type=text],
-  input[type=password],
-  input[type=email],
-  textarea{
-    width: 95%;
   }
 
   // Remove central positioning of mainmenu and float right.
