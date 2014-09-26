@@ -18,12 +18,29 @@ use List::MoreUtils qw(zip);
 
 my $fourweeks = 4*7*24*60*60;
 
+my $cobrand_name = do {
+    my $base_url = FixMyStreet->config('BASE_URL');
+    if ( $base_url =~ /zurich|zueri/ ) {
+        'zurich';
+    }
+    elsif ( $base_url =~ /emptyhomes/ ) {
+        'emptyhomes';
+    }
+    elsif ( $base_url =~ /smidsy|collideosco/ ) {
+        'smidsy';
+    }
+    else {
+        'default';
+    }
+};
+
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($cobrand_name)->new();
+
+my $age_column = $cobrand->age_column;
 # Age problems from when they're confirmed, except on Zurich
 # where they appear as soon as they're created.
-my $age_column = 'confirmed';
-if ( FixMyStreet->config('BASE_URL') =~ /zurich|zueri/ ) {
-    $age_column = 'created';
-}
+
+my @extra_cols = $cobrand->can('extra_stats_cols') ? $cobrand->extra_stats_cols : ();
 
 my $problems = FixMyStreet::App->model("DB::Problem")->search(
     {
@@ -31,7 +48,7 @@ my $problems = FixMyStreet::App->model("DB::Problem")->search(
     },
     {
         columns => [
-            'id', 'bodies_str', 'state', 'areas',
+            'id', 'bodies_str', 'state', 'areas', @extra_cols,
             { duration => { extract => "epoch from current_timestamp-lastupdate" } },
             { age      => { extract => "epoch from current_timestamp-$age_column"  } },
         ]
@@ -40,7 +57,12 @@ my $problems = FixMyStreet::App->model("DB::Problem")->search(
 $problems = $problems->cursor; # Raw DB cursor for speed
 
 my ( %fixed, %open );
-my @cols = ( 'id', 'bodies_str', 'state', 'areas', 'duration', 'age' );
+my %stats = (
+    fixed => \%fixed,
+    open  => \%open,
+);
+
+my @cols = ( 'id', 'bodies_str', 'state', 'areas', @extra_cols, 'duration', 'age' );
 while ( my @problem = $problems->next ) {
     my %problem = zip @cols, @problem;
     my @bodies;
@@ -56,31 +78,21 @@ while ( my @problem = $problems->next ) {
     }
     foreach my $body ( @bodies ) {
         my $duration_str = ( $problem{duration} > 2 * $fourweeks ) ? 'old' : 'new';
-        my $type = ( $problem{duration} > 2 * $fourweeks )
-            ? 'unknown'
-            : ($problem{age} > $fourweeks ? 'older' : 'new');
+
         if (FixMyStreet::DB::Result::Problem->fixed_states()->{$problem{state}} || FixMyStreet::DB::Result::Problem->closed_states()->{$problem{state}}) {
             # Fixed problems are either old or new
             $fixed{$body}{$duration_str}++;
         } else {
             # Open problems are either unknown, older, or new
+            my $type = $cobrand->stats_open_problem_type(\%problem);
             $open{$body}{$type}++;
         }
     }
 }
 
-if ( FixMyStreet->config('BASE_URL') =~ /emptyhomes/ ) {
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('emptyhomes')->new();
-    my $stats = $cobrand->old_site_stats;
-    foreach (keys %$stats) {
-        $open{$_}{unknown} += $stats->{$_};
-    }
-}
+$cobrand->munge_stats(\%stats) if $cobrand->can('munge_stats');
 
-my $body = JSON->new->utf8(1)->encode( {
-    fixed => \%fixed,
-    open  => \%open,
-} );
+my $body = JSON->new->utf8(1)->encode( \%stats );
 
 File::Path::mkpath( FixMyStreet->path_to( '../data/' )->stringify );
 File::Slurp::write_file( FixMyStreet->path_to( '../data/all-reports.json' )->stringify, \$body );

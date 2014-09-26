@@ -308,10 +308,15 @@ body.mappage {
     .form-box {
         margin: 1.5em -1em 0.25em -1em;
         padding: 1em;
+        background: transparentize($color-neutral-slategrey, 0.8);
 
         & > :first-child {
             margin-top: 0;
         }
+    }
+
+    input[type=file]{
+      background: transparent;
     }
 
     @media only screen and (min-width: 48em) {
@@ -319,6 +324,24 @@ body.mappage {
             max-width: 27em;
         }
     }
+}
+
+@media only screen and (min-width: 48em) and (max-width: 61em) {
+  input[type=text],
+  input[type=password],
+  input[type=email],
+  textarea{
+    width: 100%;
+  }
+}
+
+#forgotten-pw {
+  position: static;
+  margin: 0;
+
+  p.dark {
+    background: $color-neutral-slategrey;
+  }
 }
 
 body.twothirdswidthpage {
@@ -514,5 +537,13 @@ body.twothirdswidthpage {
 
   &:last-child {
     margin-top: 5px;
+  }
+}
+
+.statistics-filter {
+  text-align: center;
+
+  label {
+    display: inline;
   }
 }

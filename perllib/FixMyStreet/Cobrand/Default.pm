@@ -903,5 +903,18 @@ sub get_country_for_ip_address {
     return 0;
 }
 
+sub age_column { 'confirmed' }
+
+use constant fourweeks => 4*7*24*60*60;
+sub stats_open_problem_type {
+    my ($self, $problem) = @_;
+
+    my $type = ( $problem->{duration} > 2 * fourweeks )
+        ? 'unknown'
+        : ($problem->{age} > fourweeks ? 'older' : 'new');
+
+    return $type;
+}
+
 1;
 
