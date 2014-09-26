@@ -324,7 +324,9 @@ body.mappage {
 body.twothirdswidthpage {
   .content {
     width: auto;
-    padding-left: 16em; // width of sidebar, plus 1em standard padding
+    padding-left: 16em;
+    padding-right: 2em;
+    padding-top: 1.5em;
 
     .sticky-sidebar {
       left: 0;
@@ -462,5 +464,55 @@ body.twothirdswidthpage {
 .smidsy-four-column {
   & > * {
     width: 25%;
+  }
+}
+
+.sponsors__primary,
+.sponsors__secondary {
+  display: table;
+  width: 104%;
+  margin: 0 -2%;
+
+  & > * {
+    display: table-cell;
+    width: 50%;
+    padding: 0 2%;
+  }
+
+  h3 {
+    font-weight: bold;
+
+    a {
+      color: inherit;
+    }
+  }
+}
+
+.sponsors__primary {
+  p:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sponsors__secondary {
+  & > * {
+    width: 33%;
+  }
+}
+
+.sponsors__form {
+  overflow: auto;
+}
+
+.sponsors__form__question {
+  float: left;
+  width: 48%;
+
+  &:nth-child(2n){
+    float: right;
+  }
+
+  &:last-child {
+    margin-top: 5px;
   }
 }

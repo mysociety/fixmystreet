@@ -372,3 +372,27 @@ body.twothirdswidthpage {
     clear: both;
   }
 }
+
+.sponsors__primary,
+.sponsors__secondary {
+  h3 {
+    font-weight: bold;
+
+    a {
+      color: inherit;
+    }
+  }
+}
+
+.sponsors__secondary > * {
+  margin: 1em 0;
+}
+
+.sponsors__form {
+  padding: 1em;
+  background-color: #FCF8D1;
+
+  label {
+    margin-top: 0;
+  }
+}
