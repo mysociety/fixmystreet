@@ -42,7 +42,7 @@
                     <li><a href="/">[% loc("Find &amp; report") %]</a></li>
                     <li><a href="/reports">[% loc("Statistics") %]</a></li>
                     <li><a href="/faq">[% loc("FAQs") %]</a></li>
-                    <li><a href="#">[% loc("Sponsors") %]</a></li>
+                    <li><a href="/sponsors">[% loc("Sponsors") %]</a></li>
                     <li><a href="/my">[% IF c.user_exists %]
                         [% loc("Your reports") %]
                     [% ELSE %]
@@ -65,7 +65,7 @@
                             %]>[% loc("Statistics") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                             %]>[% loc("FAQs") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>[%
-                        %]<li><a href="#"[%
+                        %]<li><a href="/sponsors"[%
                             %]>[% loc("Sponsors") %]</a></li>[%
                         %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
                             %]>[% IF c.user_exists %]
