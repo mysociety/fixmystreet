@@ -89,7 +89,7 @@ sub restriction {
     return $self->moniker ? { cobrand => $self->moniker } : {};
 }
 
-=head2 base_url_with_lang 
+=head2 base_url_with_lang
 
 =cut
 
@@ -262,7 +262,7 @@ sub front_stats_data {
 
 Returns any disambiguating information available. Defaults to none.
 
-=cut 
+=cut
 
 sub disambiguate_location { FixMyStreet->config('GEOCODING_DISAMBIGUATION') or {}; }
 
@@ -633,7 +633,7 @@ sub is_two_tier { 0; }
 
 =item council_rss_alert_options
 
-Generate a set of options for council rss alerts. 
+Generate a set of options for council rss alerts.
 
 =cut
 
@@ -916,9 +916,23 @@ sub get_country_for_ip_address {
     return 0;
 }
 
+
 sub jurisdiction_id_example {
     my $self = shift;
     return $self->moniker;
+}
+
+sub age_column { 'confirmed' }
+
+use constant fourweeks => 4*7*24*60*60;
+sub stats_open_problem_type {
+    my ($self, $problem) = @_;
+
+    my $type = ( $problem->{duration} > 2 * fourweeks )
+        ? 'unknown'
+        : ($problem->{age} > fourweeks ? 'older' : 'new');
+
+    return $type;
 }
 
 1;

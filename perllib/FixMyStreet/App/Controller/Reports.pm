@@ -95,6 +95,7 @@ sub get_and_stash_bodies {
 
     my @types = $c->req->param('type');
 
+    $c->stash->{report_filter} = 'all';
     my $areas = do {
         if (my $parent = $c->req->param('parent')) {
             @types = @types ? @types : @{ $c->cobrand->area_types };
@@ -104,6 +105,17 @@ sub get_and_stash_bodies {
             );
         }
         elsif (@types) {
+
+            if ($types[0] =~/UTA/) {
+                $c->stash->{report_filter} = 'city';
+            }
+            elsif ($types[0] =~ /LBO/) {
+                $c->stash->{report_filter} = 'london';
+            }
+            elsif ($types[0] =~ /CTY/) {
+                $c->stash->{report_filter} = 'dc';
+            }
+
             mySociety::MaPit::call('areas', [ map uc, @types]);
         }
     };

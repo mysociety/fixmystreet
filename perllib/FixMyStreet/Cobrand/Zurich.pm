@@ -850,4 +850,6 @@ sub admin_stats {
     return 1;
 }
 
+sub age_column { 'created' }
+
 1;

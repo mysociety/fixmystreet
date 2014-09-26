@@ -8,6 +8,22 @@ This is a summary of cycle-related incidents reported on this site. Since the da
 </p>
 </div>
 
+<form method="get" class="statistics-filter">
+  Show:
+  <label><input type="radio" name="type" value="all" 
+      [% IF report_filter == 'all' %]checked[% END %]> 
+      All bodies</label>
+  <label><input type="radio" name="type" value="london"
+      [% IF report_filter == 'london' %]checked[% END %]> 
+      London boroughs</label>
+  <label><input type="radio" name="type" value="city"
+      [% IF report_filter == 'city' %]checked[% END %]> 
+      Cities (unitary authorities)</label>
+  <label><input type="radio" name="type" value="dc"
+      [% IF report_filter == 'dc' %]checked[% END %]> 
+      Districts and counties</label>
+</form>
+
 <table cellpadding="3" cellspacing="1" border="0" class="nicetable">
 <thead>
 <tr>
@@ -21,16 +37,16 @@ This is a summary of cycle-related incidents reported on this site. Since the da
 
 <tbody>
 [% FOREACH body IN bodies %]
-  [% IF open.${body.id}.new || open.${body.id}.older || open.${body.id}.unknown %]
+    [% IF open.${body.id}.new_accident || open.${body.id}.new_nearmiss || open.${body.id}.older_accident || open.${body.id}.older_nearmiss %]
     <tr align="center"
     [%- IF NOT body.areas.size %] class="gone"
     [%- ELSIF ! (loop.count % 2) %] class="a"
     [%- END %]>
     <td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
-    <td class="data">[% open.${body.id}.new or 0 %]</td>
-    <td class="data">[% open.${body.id}.older or 0 %]</td>
-    <td class="data">[% open.${body.id}.unknown or 0 %]</td>
-    <td class="data">0</td>
+    <td class="data">[% open.${body.id}.new_accident   or 0 %]</td>
+    <td class="data">[% open.${body.id}.new_nearmiss   or 0 %]</td>
+    <td class="data">[% open.${body.id}.older_accident or 0 %]</td>
+    <td class="data">[% open.${body.id}.older_nearmiss or 0 %]</td>
     </tr>
     [% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
   [% END %]
