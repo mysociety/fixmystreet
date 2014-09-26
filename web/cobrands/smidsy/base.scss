@@ -181,16 +181,25 @@ body.twothirdswidthpage {
 
     div {
       border: none;
+      background-color: transparent;
       @include box-shadow(0 1px 3px rgba(0,0,0,0.3));
       font-size: 21px;
 
       input#pc {
         width: 80%; // down from default 86%;
+        @include border-radius(0);
+        border: 4px solid #fff;
+        background-color: #fff;
+
+        &:focus {
+          border-color: $color-primary-blue;
+          outline: none;
+        }
       }
 
       input#sub {
         width: 20%; // up from default 14%
-        height: 41px; // to match input
+        height: 50px; // to match input
         background: $color-primary-orange;
         color: #fff;
         text-transform: none;
