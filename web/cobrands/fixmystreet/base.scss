@@ -466,6 +466,14 @@ $fms-green: #62b356;
       }
     }
 
+    .call-to-action--mini {
+      text-align: left;
+      padding: 2em 0;
+      p {
+        margin: 0;
+        font-size: 1.3125em;
+      }
+    }
 
     .flush-image {
       position: relative;
