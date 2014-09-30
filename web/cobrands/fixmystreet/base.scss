@@ -440,6 +440,10 @@ $fms-green: #62b356;
       background-color: $fms-orange;
       text-align: center;
       background-image: none;
+      a {
+        color: #fff;
+        text-decoration: underline;
+      }
       h2 {
         font-size: 2.25em;
         margin-bottom: 0.25em;
@@ -453,6 +457,7 @@ $fms-green: #62b356;
       .button {
         background-color: darken($fms-orange, 7.5%);
         font-size: 1.125em;
+        text-decoration: none;
         &:hover,
         &:active,
         &:focus {
