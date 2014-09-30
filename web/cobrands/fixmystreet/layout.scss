@@ -81,13 +81,15 @@ h3, h4 {
 }
 .nav-wrapper {
     .nav-wrapper-2 {
-        @include border-image(url(images/tile-y-border.jpg) 4 0 0 0);
+        border-image-source: url(images/tile-y-border.jpg);
+        border-image-slice: 4 0 0;
+        border-image-repeat: repeat;
     }
 }
 body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
-              @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+            @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
         }
     }
 }

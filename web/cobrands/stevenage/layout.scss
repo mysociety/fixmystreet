@@ -7,7 +7,7 @@
 // d523b431
 .nav-wrapper{
   .nav-wrapper-2{
-    min-height: auto;
+    min-height: 0;
     // e7c122a4 / 0b0a619b / - "Removed mySociety menu and positioned menu"
     top: 9.5em;
     border-top: none;
@@ -101,7 +101,7 @@ body.mappage {
             position: absolute;
             top: 11em;
             bottom: auto;
-            left: 0.5em;
+            left: 0;
             width: 29em;
             padding-top: 0.15em;
             z-index: 0;

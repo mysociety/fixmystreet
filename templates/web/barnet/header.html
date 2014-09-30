@@ -64,14 +64,14 @@
         <!-- googleon:all -->
                     </div>
                     <div id="content" class="withWidth fullWidth">
+                      [% IF c.user_exists %]
                         <div id="user-meta">
-                            [% IF c.user_exists %]
                             <p>
                                 [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
                                 <a href="/auth/sign_out">[% loc('sign out') %]</a>
                             </p>
-                            [% END %]
                         </div>
+                      [% END %]
 
                         <h1 id="page-title">
                             <span>FixMyStreet</span>

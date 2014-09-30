@@ -18,10 +18,10 @@
 
 [%
     PROCESS "maps/${map.type}.html";
+    SET bodyclass = 'mappage';
     INCLUDE 'header.html',
-    title = tprintf(loc('%s - Summary reports'), name)
-    bodyclass = 'mappage'
-    rss = [ tprintf(loc('Problems within %s, FixMyStreet'), name), rss_url ]
+        title = tprintf(loc('%s - Summary reports'), name)
+        rss = [ tprintf(loc('Problems within %s, FixMyStreet'), name), rss_url ]
 %]
 
 [% map_html %]

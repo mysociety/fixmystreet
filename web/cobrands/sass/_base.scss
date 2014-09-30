@@ -156,12 +156,6 @@ img {
 
 select, input, textarea {
   font-size: 99%;
-  max-width: 95%;
-}
-.ie7 {
-    select, input, textarea {
-        max-width: none;
-    }
 }
 
 // To deal with bug from drop-down being wider than holder
@@ -249,12 +243,6 @@ h4.static-with-rule{
   }
 }
 
-// wrap anything inside the form in a fieldset to give
-// us the right spacing
-fieldset {
-  margin: 1em;
-}
-
 input[type=file] {
     width: 100%;
 }
@@ -274,14 +262,6 @@ textarea {
     input[type=email],
     textarea {
         max-width: 95%;
-    }
-    // In order to work around the IE7 specific issue of inheriting left margins
-    // http://techblog.willshouse.com/2009/07/12/ie6ie7-form-element-margin-inheritance-bug/
-    fieldset > input[type=text],
-    fieldset > input[type=password],
-    fieldset > input[type=email],
-    fieldset > textarea {
-        margin-left: -1em;
     }
 }
 
@@ -319,10 +299,10 @@ label{
 
 // grey background, full width box
 .form-box {
-  margin: 0 -2em 0.25em -2em;
-  background:#eeeeee;
-  padding:1em 2em 1em 2em;
-  >input[type=text], input[type=email] {
+  margin: 0 -1em 0.25em -1em;
+  background: #eee;
+  padding: 1em;
+  > input[type=text], input[type=email] {
     margin-bottom:1em;
   }
   .title {
@@ -354,6 +334,13 @@ label{
     > input[type=text], input[type=email] {
         margin-left: 2em;
     }
+}
+
+.change_location {
+    color: #666;
+    padding-left: 24px;
+    background: transparent url(/cobrands/fixmystreet/images/wrong-location.png) 4px 50% no-repeat;
+    margin-top: -0.5em;
 }
 
 .form-txt-submit-box {
@@ -753,7 +740,6 @@ a:hover.button-left {
 
 .big-green-banner {
   position: relative;
-  z-index:1000;
   top:-1.75em;
   background: $col_click_map;
   color: #fff;
@@ -777,7 +763,6 @@ a:hover.button-left {
 
 .banner {
   position: relative;
-  z-index:1100;
   p {
     position: absolute;
     top:-1.95em;
@@ -1002,8 +987,9 @@ a:hover.button-left {
   overflow: hidden;
   position: relative;
   #map {
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
+    position: relative;
   }
 }
 
@@ -1087,7 +1073,6 @@ a:hover.button-left {
   left: 0;
   right:0;
   bottom: 0;
-  z-index: 1100;
   background:#333;
   background:rgba(0, 0, 0, 0.7);
   margin:0;
@@ -1137,7 +1122,6 @@ a:hover.button-left {
 
 #mob_sub_map_links {
   position: absolute;
-  z-index:1100;
   bottom:0;
   display:table;
   margin:0;
@@ -1304,6 +1288,55 @@ a:hover.rap-notes-trigger {
       float:left;
     }
   }
+}
+
+
+/* Reporting a problem bits */
+
+label .muted {
+  color: #888;
+  font-weight: normal;
+}
+
+.description_tips {
+  @include clearfix;
+
+  h4 {
+    margin: 0.5em 0;
+  }
+
+  ul {
+    width: 49%;
+    margin: 0;
+    float: left;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  li {
+    margin-bottom: 0;
+    padding-left: 20px;
+    list-style: none;
+    background: transparent url(/cobrands/fixmystreet/images/tick-10px-8px.png) 4px 5px no-repeat;
+  }
+
+  .do {
+    color: #1c8012;
+  }
+
+  .dont {
+    float: right;
+    color: #881111;
+
+    li {
+      background-image: url(/cobrands/fixmystreet/images/cross-7px-7px.png);
+      background-position: 6px 6px;
+    }
+  }
+}
+
+#problem_form > label:first-child {
+  margin-top: 0;
 }
 
 

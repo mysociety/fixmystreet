@@ -1,4 +1,7 @@
-[% INCLUDE 'header.html', title => loc('Reporting a problem'), bodyclass = 'mappage' %]
+[%
+    SET bodyclass = 'mappage';
+    INCLUDE 'header.html', title => loc('Reporting a problem')
+%]
 
 <form action="[% c.uri_for('/around') %]" method="get" name="mapForm" id="mapForm">
     <div id="side-form">

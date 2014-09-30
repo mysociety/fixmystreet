@@ -862,6 +862,19 @@ Perform any extra validation on the contact form.
 
 sub extra_contact_validation { (); }
 
+
+=head2 get_geocoder
+
+Return the default geocoder from config.
+
+=cut
+
+sub get_geocoder {
+    my ($self, $c) = @_;
+    return $c->config->{GEOCODER};
+}
+
+
 sub problem_as_hashref {
     my $self = shift;
     my $problem = shift;

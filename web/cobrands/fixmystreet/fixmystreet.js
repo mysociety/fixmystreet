@@ -458,9 +458,12 @@ $.fn.drawer = function(id, ajax) {
      */
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('frontpage'))){
-            var offset = -18 * 16;
+            var offset = -15 * 16;
             if (cobrand == 'bromley') {
                 offset = -110;
+            }
+            if (cobrand == 'oxfordshire') {
+                offset = -13 * 16;
             }
             heightFix(window, '.content', offset, 1);
             // in case we have a map that isn't full screen

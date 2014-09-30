@@ -67,9 +67,12 @@ body.fullwidthpage {
     }
 }
 
+.content {
+    @include box-shadow(none);
+}
+
 body.twothirdswidthpage {
     .content {
-        @include box-shadow(none);
         width: 640px;
         margin-top: 0;
         .sticky-sidebar {
@@ -93,7 +96,6 @@ body.twothirdswidthpage {
 
 .frontpage .content {
     margin: 0;
-    @include box-shadow(none);
 }
 .ie6, .ie7, .ie8  {
     .frontpage .content {
@@ -193,10 +195,6 @@ body.frontpage {
     clear: both;
 }
 
-.container {
-  padding: 0 1em;
-}
-
 #site-header,
 #site-logo {
     display: none !important;
@@ -204,7 +202,7 @@ body.frontpage {
 
 
 #report-a-problem-sidebar {
-    left: 30em;
+    left: 29em;
     top: 4em;
     width: 17em;
     .sidebar-tips,
@@ -215,7 +213,7 @@ body.frontpage {
 .ie6 {
     #report-a-problem-sidebar {
         margin-top: -4em;
-        left: 30em;
+        left: 29em;
         .sidebar-notes {
             padding-bottom: 0.5em;
         }
@@ -226,13 +224,8 @@ body.frontpage {
 }
 
 
-.general-sidebar-notes {
-    left: 25.5em;
-    width: 14em;
-    font-size: 1.2em;
-    p {
-        margin-bottom: 0 !important;
-    }
+.general-notes {
+    font-size: 1em;
 }
 
 #front-howto #front_stats div big,
@@ -251,5 +244,5 @@ ol.big-numbers > li::before {
 
 
 #map_box {
-    border: 1px solid black;
+    border: 1px solid #999;
 }

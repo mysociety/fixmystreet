@@ -1,6 +1,7 @@
 [%
+    SET bodyclass = 'mappage';
     PROCESS "maps/${map.type}.html" IF problems.size;
-    INCLUDE 'header.html', title = loc('Your Reports'), bodyclass = 'mappage'
+    INCLUDE 'header.html', title = loc('Your Reports')
 %]
 
 [% IF problems.size %]

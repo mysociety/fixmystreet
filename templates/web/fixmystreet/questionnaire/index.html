@@ -1,7 +1,8 @@
 [%
+    SET bodyclass = 'mappage';
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
-    INCLUDE 'header.html', title = loc('Questionnaire'), bodyclass = 'mappage'
+    INCLUDE 'header.html', title = loc('Questionnaire');
 %]
 
 [% map_html %]

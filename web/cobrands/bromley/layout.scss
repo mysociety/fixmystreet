@@ -97,17 +97,6 @@ body.frontpage {
     right: -480px;
 }
 
-.general-sidebar-notes,
-#report-a-problem-sidebar {
-  position: static;
-  width: auto;
-  @include box-shadow(rgba(0, 0, 0, 0), 0, 0, 0);
-  .sidebar-tips,
-  .sidebar-notes {
-    font-size:1em;
-  }
-}
-
 .ie7 .big-green-banner {
     right: 0;
 }

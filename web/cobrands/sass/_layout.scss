@@ -68,8 +68,7 @@ h1 {
     min-height: 4em;
     position: absolute;
     border-top: 4px solid $primary;
-    border-left: 0;
-    border-right: 0;
+    border-width: 4px 0 0 0;
     z-index: 2;
   }
 }
@@ -85,7 +84,7 @@ h1 {
       // position static as well so we fix lots of the z-index issues
       position:static;
     }
-  }   
+  }
 }
 
 // Resets a lot of the mobile styling. #site-header only used to help position logo on desktop
@@ -93,6 +92,8 @@ h1 {
   height: auto;
   background: none;
   border-top: 0px;
+  // margin-top: 4px; <-- With this we compensate for 4px of content due to
+  // .nav-wrapper-2's border-top, but misaligns e.g. FAQ page
   .container {
     position: static;//reset position so the nav links become clickable
   }
@@ -138,8 +139,8 @@ h1 {
       span {
         display: block;
         color: $nav_fg;
-        background: none;  
-        border-bottom: none;      
+        background: none;
+        border-bottom: none;
       }
       &#top-nav-privacy {
         display: none;
@@ -215,7 +216,7 @@ h1 {
   padding: 1em 1em 3em;
   background: #fff;
   color: #222;
-  @include box-shadow(0px 0px 6px 1px #000);
+  @include box-shadow(0 0 10px rgba(0,0,0,0.5));
 }
 .ie6, .ie7, .ie8  {
   .content {
@@ -231,31 +232,76 @@ body.mappage {
   .container {
     width: auto;
   }
+
   .content {
     float:left;
     padding: 1em 1em 10em;
+    margin: 0;
   }
+
+  #site-logo {
+    left: 12px;
+  }
+
+  #main-nav {
+    width: auto;
+    margin-right: 1em;
+  }
+
   #main-nav ul#main-menu li a,
   #main-nav ul#main-menu li span {
     padding: 1.4em 0.75em 1.35em 0.75em;
   }
+
   #main-nav ul#main-menu li a.report-a-problem-btn {
     padding: 0.5em;
     margin:0.9em 0.25em 0.85em 0.25em;
   }
+
   .nav-wrapper{
     .nav-wrapper-2{
       position: fixed;
       background: $map_nav_bg;
     }
   }
+
   #site-logo{
     position: fixed;
   }
+
   #user-meta {
     max-width: none;
+    p {
+      display: block;
+      height: auto;
+      width: 22.2em; // 27em (.content width) - 2em (.content padding) - 6em - 0.8em
+      padding: 0.5em 6em 0.5em 0.8em;
+      top: 0;
+      left: 0;
+      z-index: 1;
+      box-shadow: none;
+      background: #FCEA9A;
+      border-bottom: 1px solid #ffd000;
+
+      a {
+        // move the "Sign out" link in and down a bit, because of extra padding on parent
+        top: 0.8em;
+        right: 0.8em;
+      }
+    }
+
+    & + .container .content {
+      padding-top: 3.5em; // make room for user menu!
+    }
+  }
+
+  .banner {
+    p {
+      top: -2.1em; // a few pixels lower than default
+    }
   }
 }
+
 .ie6, .ie7 {
   body.mappage {
     // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
@@ -278,7 +324,7 @@ body.mappage {
     }
   }
 }
-//ie8 needs different stuff on .nav-wrapper so we 
+//ie8 needs different stuff on .nav-wrapper so we
 //have to define all the rest of it again as this resets
 //the z-index base yet again :S
 .ie8 {
@@ -295,8 +341,6 @@ body.mappage {
     }
   }
 }
-
-
 
 // full width page
 body.fullwidthpage {
@@ -685,7 +729,7 @@ input[type=text],
 input[type=password],
 input[type=email],
 textarea{
-    max-width: 25em;
+    max-width: 27em;
 }
 
 /* form errors */
@@ -699,7 +743,7 @@ textarea.form-error {
   @include border-radius(0 0 0.25em 0.25em);
 }
 
-#report-a-problem-sidebar, .general-sidebar-notes {
+#report-a-problem-sidebar {
     position: absolute;
     left: 29em;
     width: 15em;
@@ -720,13 +764,12 @@ textarea.form-error {
   }
 }
 .ie6, .ie7 {
-  #report-a-problem-sidebar, .general-sidebar-notes {
+  #report-a-problem-sidebar {
     left: 28.5em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
     z-index: 1;
   }
 }
 
-.no-js .general-sidebar-notes,
 .no-js #report-a-problem-sidebar {
   position: static;
   width: auto;
@@ -737,26 +780,9 @@ textarea.form-error {
   }
 }
 
-// More general sidebar notes
-.general-sidebar-notes {
-  p {
-    background:#eeeeee;
-    font-size:0.75em;
-    padding:0.75em;
-    margin:0;
-    &.dark {
-      background:#333333;
-      color:#ffffff;
-    }
-  }
-}
-
-/* Adjust the above so text flow can be different from display */
-#forgotten-pw {
-    position: relative;
-    left: 26.5em;
-    top: -7em;
-    margin-bottom: -7em; // So no gap in main flow
+// More general notes
+.general-notes {
+    font-size: 0.75em;
 }
 
 // Frontpage
@@ -1100,13 +1126,6 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
   .container {
       width: 100%;
   }
-  /*FORMS*/
-  input[type=text],
-  input[type=password],
-  input[type=email],
-  textarea{
-    width: 95%;
-  }
 
   // Remove central positioning of mainmenu and float right.
   // Left padding is to ensure no overlap of the site-logo
@@ -1117,43 +1136,19 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     float:right;
     padding-left: 180px;
   }
-  .nav-wrapper {
-  //   width:auto;
-    .nav-wrapper-2 {
-      // width:auto;
-    }
-  }
 
-  //Main menu drops below logo and my-soc menu
-  #main-menu{
-    margin-top: 3em;
-  }
-  //therefore header needs to open up
-  #site-header {
-    height:6em;
-  }
-  // Pull OpenLayers navigation down a bit more
-  #fms_pan_zoom {
-    top: 7em !important;
+  html #main-nav ul#mysoc-menu li a#mysoc-logo {
+    width: 16px;
+    // Just the mySociety circle logo
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABJ9JREFUeNqsVXlMHFUYf/Pe7O7M7E2Xw6UFWg5LQ1GTosa0IT00wYbGaKoltWnaRGNrjIptiUalXqlJU9RU0fSPHtqCR20pliBpQpAmxQgoLDeLQIEuh2WBndmDnZn3fMvRsqEGVv0mv3lzvPd97/u97wBgmXLUbHvOFZ/cJK1KbTtmiX4F/J+ySzBuDiakeSdWphA3RSAhTX3NaN2znLVwyQkMA/YbzAcwAAIFIBSYELjPYH6Zpf9CwrEMeGS1zhalh2zEBkIq2NCdkDvfyOxCRqHfnnpIWN9caK+5URDX2VJob8zfZsqJyIBKlVzweU7pIMIC3TFHIUAISkSx2GKE2uK8qNK0ODZbVsgKuwllnthp/S4rUZs0vx4th0dHcLp3FCv1VogEL8G9Jz2THx4Tx79+Yh23/oVs4zuBwKx3CuWQ5aHO5VYba7oDDjDj/TJEpSgWJytD0FAP5Dm6PD4ySZmSIUM0+C6DoGdUdkXkwULBC56HJtRJuxFpsu7nsll60CwHQY3D/8PRq1NFQZXg+TP8TwKphhc3GXPS4zWP9tySm07XSZe9MgkLEpCuX5uZZdqQBwEM1nsaStq87V3/xtjGTVzKB29bj0RZkK2s3PvTJ59PnWG2Rm3esTP2mW80gDUByq+CFffJoS+2tkrtTZEoz80R1pVfjrsBEGMGCvWAQ+DsV5MFcLstp0jFqsmH/cCn+qjLMGqLdcvrcOkIDpO9eYY9QMuYVRED1U8A8Sjg6Vz9AahH+mi84OhCzwISbAwT8fFoFr6EjlgvMAh2eDtP85AP7XwGHORAi9R6USVqRNrPlUqlIEgCSM8ApGMAtCBw/nvpLGqR2qoFxIMYbUwCJvh2tbv6oyt/lX8Z6fa7e+Thdsd0bdpa7QqvF49UlPmKXz0y/vEdHqyshaeDH2lNNoPGmhlUfQMuydmzHOX2VENMTKKQ0OMQu6Qxv8hqaLDMhWoY0VlxuXkPx24vZhhooa/elts1hddvfXsCE/yPyrftTdj15ME1n3J6FOsTlbFrZwbeqDrVdz4sD0Ji41fan019q1MF2Ego/wy9NIjDl5zHM1xeZ8e9lMenGuIPl2zoIIAxqjIGiO4cIeg/vrs+fbBDvBlWi3RISKF5YCQYz5XkGRchx+rT6djBpzyYaM3Zl0ftaqd++fGSt7m2NTqBT9dwyOgXldmaRWnRcgyflGnKWGTAr0hOTFQPjSQTHWciihCCJd9IM/fAxuTV712shTreHppreXz3of739+dMDFW1E0wUBjIsHQGt4gDT8BtsF52L+oE74BquH7l6kFIzoYE6agBJv49V5o/JI39G5750mNFydlWaAiHQOca45/Pfvdk17bp2ur+AM6CAYGKBlkdyQ+Xom4OdYve83rBy3Tj284U+T/N1njUmBVTf0Lh/qBdABDQ2+31Elu8mkaoAyAsxgHbIK5/1FnX9NlmVmGFa0/vHVL+zYaJloc5F/cAdGB4AIIT51FaBWFdRps94bIciB2ZaJ+T1wNf2azmYS8bOOndbCPcKhGX1g0BfqwPpzUS3Ki0ZanVeT13FuZHiQ4UkOK0stfZvAQYA/wr53nPx8cUAAAAASUVORK5CYII=);
+    background-size: auto;
+    background-position: 50% 50%;
   }
 
   //Map becomes percentage width
   #map_box{
     left: 32em;
     width:auto;
-  }
-
-  //put the RAP notes into the main copy area
-  // Note: Also used for the non-JS case.
-  #report-a-problem-sidebar,
-  .general-sidebar-notes {
-    position: static;
-    width: auto;
-    @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
-    .sidebar-tips,
-    .sidebar-notes {
-      font-size:1em;
-    }
   }
 
   //Revert to mobile use of the .full-width class
@@ -1169,10 +1164,6 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
       width:30em;
       .sticky-sidebar {
         left:32em;
-        top:30em;
-        aside {
-          top:9em;
-        }
       }
     }
   }

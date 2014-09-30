@@ -1,0 +1,262 @@
+@import "_colours";;
+@import "../sass/layout";
+
+/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before,
+.clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+/* For IE 6/7 only */
+.clearfix { *zoom: 1; }
+
+#front-main {
+    padding: 0
+}
+#front-main-container {
+    background-color: $eastsussex_primary;
+    padding: 1em;
+}
+
+.container, .eastsussex-container {
+    width: 100%;
+    max-width: 966px;
+}
+
+#menu {
+    height: 55px;
+}
+
+footer {
+    position: relative;
+    z-index: 1000;
+    margin-top: 0;
+    background: #aee1f4;
+
+    a {
+        text-decoration: underline;
+    }
+
+    h2 {
+        margin: 0;
+    }
+
+    form.newsletter.form {
+        input#newsletter {
+            display: inline-block;
+        }
+
+        input[type=submit] {
+            background: #1e5b83;
+            text-transform: none;
+        }
+
+        label {
+            font-weight: normal;
+        }
+    }
+}
+
+
+div.form-error, p.form-error {
+    display: block !important;
+}
+
+body.mappage {
+    .main-menu-wrapper {
+        position: fixed
+    }
+
+    footer {
+        display: none;
+    }
+
+    #fms_pan_zoom {
+        top: 16em!important;
+    }
+
+    #mysociety {
+        margin-top: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        width: auto;
+        background: transparent;
+    }
+
+    .content {
+        width: 27em;
+    }
+
+    #wrapper {
+        display: block;
+        width: auto;
+    }
+
+    #report-a-problem-sidebar {
+        top: 1em;
+    }
+}
+
+.general-notes, #report-a-problem-sidebar p, #report-a-problem-sidebar .sidebar-notes .plain-list li {
+    font-size: 13px;
+    line-height: 14px;
+}
+
+body.twothirdswidthpage.alertindex .content .sticky-sidebar aside {
+    top: -17em;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 0;
+    position: absolute;
+}
+
+body.frontpage {
+    #site-header {
+        height: auto;
+
+        .mobile-header-nav {
+            display: none;
+        }
+    }
+}
+
+#site-header {
+    border-top-width: 0;
+    margin-top: 0;
+    background: rgb(3, 160, 227);
+
+    .container {
+        position: relative;
+    }
+
+    #nav-container.container {
+        min-height: 0;
+    }
+
+    #breadcrumb_breadcrumbTrail {
+        position: relative;
+
+        a {
+            color: white;
+        }
+
+
+        .breadcrumb {
+            margin: 9px 0 6px 0;
+
+            span {
+                font-weight: bold;
+            }
+
+            li.level1 a {
+                color: #194c7e;
+            }
+        }
+
+        .sign-in {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+        }
+    }
+
+    .header {
+        a.contact {
+            text-decoration: underline;
+        }
+
+        .alphabet h2 {
+            font-size: 1em;
+            font-weight: bold;
+        }
+    }
+}
+
+#mysociety {
+    margin-top: 0;
+    padding-bottom: 24px;
+
+    .container {
+        padding: 0;
+    }
+}
+
+.content {
+    margin-top: 0;
+    width: auto;
+}
+
+body.twothirdswidthpage .content aside {
+    box-shadow: 0 0 12px 0 #dae1e5;
+}
+
+.banner p#fixed {
+    background-position: -328px -333px;
+}
+
+#skipped-map {
+    clear: both;
+    margin-top: 3em; /* required to push "Your Reports" visible on Safari/IE */
+}
+
+#main-nav {
+    margin-top: 106px;
+    ul {
+        margin-left: 157px;
+        float: none;
+    }
+}
+
+#main-nav ul li {
+    text-align: center;
+    text-transform: uppercase;
+    padding: 0 15px;
+    font-size: 16px;
+    border-right: solid 1px white;
+    line-height: 1.5em;
+}
+
+#main-nav ul li a {
+    padding: 0;
+    font-size: inherit;
+}
+
+#main-nav ul li:last-child {
+    border-right: none;
+}
+
+#main-nav ul li a:link, #main-nav ul li a:visited {
+    color: #fff;
+}
+
+#main-nav ul li:hover, #main-nav ul li:hover a, {
+    background-color: white;
+    color: black;
+    text-decoration: none;
+}
+
+.main-menu-wrapper {
+    display: none;
+}
+
+
+
+@media only screen and (max-width: 61em) {
+    #main-nav {
+        padding-left: 0px;
+        float:none;
+    }
+
+    #site-header {
+        height: auto;
+    }
+
+    body.twothirdswidthpage .content .sticky-sidebar {
+        top: 1em;
+    }
+}
+
+@media only screen and (min-width: 48em) {
+    footer {
+        display: block;
+    }
+}

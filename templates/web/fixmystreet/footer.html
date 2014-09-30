@@ -5,7 +5,7 @@
                     [% END %]
                 </div><!-- .content role=main -->
             </div><!-- .container -->
-            [% IF c.cobrand.moniker == 'fixmystreet' %]
+            [% IF c.cobrand.moniker == 'fixmystreet' AND bodyclass != 'mappage' %]
                 [% INCLUDE 'footer-nav.html' %]
             [% END %]
         </div><!-- .table-cell -->
