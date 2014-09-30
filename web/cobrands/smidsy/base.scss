@@ -24,6 +24,10 @@ body {
   display: none;
 }
 
+select, input, textarea {
+  max-width: none;
+}
+
 #ui-datepicker-div {
     font-size: 0.7em; // correct an interaction with FMS font-size?
 }
