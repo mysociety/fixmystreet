@@ -286,5 +286,66 @@ sub prettify_incident_dt {
     };
 }
 
+=head2 front_stats_data
+
+Return a data structure containing the front stats information that a template
+can then format.
+
+=cut
+
+sub front_stats_data {
+    my ( $self ) = @_;
+
+    my $recency         = '1 week';
+    $recency = '12 months'; # override
+
+    my $updates = $self->problems->number_comments();
+    my ($new, $miss) = $self->recent_new( $recency );
+
+    my $stats = {
+        updates => $updates,
+        new     => $new,
+        misses => $miss,
+        accidents => $new - $miss,
+        recency => $recency,
+    };
+
+    return $stats;
+}
+
+=head2 recent_new
+
+Specialised from RS::Problem
+
+=cut
+
+sub recent_new {
+    my ( $self, $interval ) = @_;
+    my $rs = $self->{c}->model('DB::Problem');
+
+    my $site_key = $self->site_key;
+
+    (my $key = $interval) =~ s/\s+//g;
+
+    my $new_key = "recent_new:$site_key:$key";
+    my $miss_key = "recent_new_miss$site_key:$key";
+
+    my ($new, $miss) = (Memcached::get($new_key), Memcached::get($miss_key));
+
+    if (! ($new && $miss)) {
+        $rs = $rs->search( {
+            state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+            confirmed => { '>', \"current_timestamp-'$interval'::interval" },
+        });
+        $new = $rs->count;
+        Memcached::set($new_key, $new, 3600);
+
+        $miss = $rs->search({ category => 'Near Miss' })->count;
+        Memcached::set($miss_key, $miss, 3600);
+    }
+
+    return ($new, $miss);
+}
+
 1;
 
