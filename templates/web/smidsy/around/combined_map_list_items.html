@@ -1,0 +1,15 @@
+[% IF around_map.size %]
+    [% FOREACH p IN around_map %]
+        <li>
+            <a href="#">
+                <h3>[% p.problem.title | html %]</h3>
+                <p>[%- prettify_dt( p.problem.confirmed, 1 ) %]</p>
+            </a>
+        </li>
+    [% END %]
+[% ELSE %]
+    <li class="no-incidents">
+        <span class="circled-icon"><img src="/cobrands/smidsy/images/circle-icon-happy.png" srcset="/cobrands/smidsy/images/circle-icon-happy@2x.png 2x" alt="" width="50" height="50"></span>
+        [% loc('There are no incidents nearby!') %]
+    </li>
+[% END %]

@@ -1,21 +1,31 @@
-[% INCLUDE 'header.html', title = loc('Summary reports'),  bodyclass => 'fullwidthpage' %]
+[% INCLUDE 'header.html', title = loc('Statistics'),  bodyclass => 'fullwidthpage' %]
 
-<h1>[% loc('All Reports') %]</h1>
+<h1>[% loc('Statistics') %]</h1>
 
 <div class="intro">
 <p>
-This is a summary of cycle-related incidents reported on this site; select a
-particular council to see the incidents in the area:
+This is a summary of cycle-related incidents reported on this site. Since the data relies on user-submitted reports, you shouldn’t use it to compare the safety of different areas.
 </p>
 </div>
+
+<form method="get" class="statistics-filter">
+  <label for="type">Show:</label>
+  <select name="type" id="type">
+    <option>all bodies</option>
+    <option>London boroughs</option>
+    <option>cities (unitary authorities)</option>
+    <option>districts and counties</option>
+  </select>
+</form>
 
 <table cellpadding="3" cellspacing="1" border="0" class="nicetable">
 <thead>
 <tr>
-<th class="title">[% loc('Name') %]</th>
-<th class="data">[% loc('New <br>problems') %]</th>
-<th class="data">[% loc('Older <br>problems') %]</th>
-<th class="data">[% loc('Old / unknown <br>problems') %]</th>
+<th class="title">[% loc('Responsible body') %]</th>
+<th class="data">[% loc('Accidents<br>this week') %]</th>
+<th class="data">[% loc('Near misses<br>this week') %]</th>
+<th class="data">[% loc('Older<br>accidents') %]</th>
+<th class="data">[% loc('Older<br>near misses') %]</th>
 </tr>
 </thead>
 
@@ -30,6 +40,7 @@ particular council to see the incidents in the area:
     <td class="data">[% open.${body.id}.new or 0 %]</td>
     <td class="data">[% open.${body.id}.older or 0 %]</td>
     <td class="data">[% open.${body.id}.unknown or 0 %]</td>
+    <td class="data">0</td>
     </tr>
     [% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
   [% END %]
@@ -37,4 +48,4 @@ particular council to see the incidents in the area:
 </tbody>
 </table>
 
-[% INCLUDE 'footer.html', pagefooter = 'yes' %]
+[% INCLUDE 'footer.html' %]

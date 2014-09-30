@@ -1,13 +1,27 @@
 @import "../sass/h5bp";
-@import "./_colours";
+@import "typography";
+@import "colours";
 @import "../sass/mixins";
 @import "compass";
 
 @import "../sass/base";
 
+body {
+  font-family: Cabin, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
 #site-logo {
-    background: url('/cobrands/smidsy/images/icon_536_5072_text_small.png') 0px 0px no-repeat;
-    width: 200px;
+  background: 0;
+  text-indent: 0;
+  color: #fff;
+  width: auto;
+  line-height: 40px; // to match height
+  font-size: 1.2em;
+}
+
+.footer {
+  display: none;
 }
 
 #ui-datepicker-div {
@@ -25,15 +39,6 @@ div.form_datetime {
     div + div {
         float: right;
     }
-}
-
-ol.big-numbers > li:before {
-  color: $primary;
-}
-
-a,
-a:visited {
-    color: $links;
 }
 
 .change_location {
@@ -118,4 +123,292 @@ a:visited {
             background-position: 6px 6px;
         }
     }
+}
+
+body.twothirdswidthpage {
+  .content {
+    .sticky-sidebar {
+      background-color: $color-neutral-raincloud;
+      padding: 1em;
+      margin: 0 -1em;
+
+      li:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+#front-main {
+  margin: 0;
+  background-image: url('/cobrands/smidsy/images/background-home-1280x854.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center top;
+  color: #fff;
+  padding: 2em;
+
+  h1, p, label, #geolocate_link {
+    text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+  }
+
+  h1 {
+    margin-top: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  p.lead {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+  }
+
+  #postcodeForm {
+    margin: 0; // override ".full-width" negative horizontal margins
+    background: transparent;
+    color: inherit;
+
+    label {
+      color: inherit;
+      margin: 0 0 0.6em 0;
+
+      html.js & {
+        display: none;
+      }
+    }
+
+    div {
+      border: none;
+      background-color: transparent;
+      @include box-shadow(0 1px 3px rgba(0,0,0,0.3));
+      font-size: 21px;
+
+      input#pc {
+        width: 80%; // down from default 86%;
+        @include border-radius(0);
+        border: 4px solid #fff;
+        background-color: #fff;
+
+        &:focus {
+          border-color: $color-primary-blue;
+          outline: none;
+        }
+      }
+
+      input#sub {
+        width: 20%; // up from default 14%
+        height: 50px; // to match input
+        background: $color-primary-orange;
+        color: #fff;
+        text-transform: none;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.5);
+
+        &:hover {
+          background: darken($color-primary-orange, 10%);
+        }
+      }
+
+      $placeholder_selectors: (
+        '::-webkit-input-placeholder',
+        ':-moz-placeholder',
+        ':-ms-placeholder',
+        '.placeholder'
+      );
+
+      @each $selector in $placeholder_selectors {
+        #{$selector} {
+          color: mix($color-neutral-raincloud, $color-neutral-slategrey, 70%);
+          font-style: normal;
+          -webkit-font-smoothing: antialiased;
+        }
+      }
+    }
+  }
+
+  a#geolocate_link {
+    color: inherit;
+    @include border-radius(0);
+    font-size: 18px;
+    padding: 0 0 0 25px;
+
+    &, &:hover {
+      background: transparent url('/cobrands/smidsy/images/geolocate-icon-13x20.png') left center no-repeat;
+
+      @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+        background-image: url('/cobrands/smidsy/images/geolocate-icon-26x40.png');
+        background-size: 13px 20px;
+      }
+    }
+  }
+
+  & + .container {
+    // The Smidsy homepage has full-width stripes on it.
+    // So we keep the first .container empty, and hide it.
+    display: none;
+  }
+}
+
+.front__how-it-works,
+.front__statistics,
+.front__support {
+  text-align: center;
+  padding: 2em 0;
+  // font-size: 21px;
+  color: $color-neutral-duckegg;
+
+  h2 {
+    margin-top: 0;
+    font-size: 28px; // up from the default 1.5em (24px on 16px base)
+  }
+
+  h3, .front__support__cta {
+    margin-top: 0;
+    font-size: 24px; // up from default 1.25em (20px on 16px base)
+    font-weight: bold;
+  }
+
+  p, ul {
+    font-size: 18px; // up from default 1em (16px)
+  }
+
+  .container {
+    padding: 0 2em;
+    box-sizing: border-box;
+  }
+}
+
+.front__how-it-works,
+.front__support {
+  background-color: #fff;
+}
+
+.front__how-it-works {
+  .circled-icon {
+    margin-bottom: 1em;
+  }
+}
+
+.front__how-it-works__find .circled-icon {
+  background-color: $color-secondary-blue;
+}
+
+.front__how-it-works__report .circled-icon {
+  background-color: $color-secondary-aquamarine;
+}
+
+.front__how-it-works__notify .circled-icon {
+  background-color: $color-secondary-olive;
+}
+
+.front__how-it-works__change .circled-icon {
+  background-color: $color-secondary-brown;
+}
+
+.front__statistics {
+  background-color: $color-neutral-raincloud;
+  text-shadow: 0 1px 0 mix(#fff, $color-neutral-raincloud, 70%);
+
+  strong {
+    display: block; // break onto new line
+    font-weight: normal;
+    font-family: Oswald, Impact, sans-serif;
+    font-size: 54px;
+    line-height: 62px;
+  }
+}
+
+.front__support {
+  text-align: left;
+
+  & + .container > div:first-child {
+    // This is the extra div created by our tag-closing trickery.
+    display: none;
+  }
+}
+
+.circled-icon {
+  display: block;
+  width: 100px;
+  height: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: $color-neutral-duckegg;
+  @include border-radius(50px);
+
+  img {
+    width: 50px;
+    height: 50px;
+    margin-top: 25px;
+  }
+}
+
+.smidsy-two-column,
+.smidsy-four-column {
+  margin: 0 0 -1em 0;
+
+  & > * {
+    margin: 0 0 1em 0;
+    list-style: none;
+  }
+}
+
+.smidsy-four-column {
+  overflow: auto;
+
+  & > * {
+    float: left;
+    width: 47%;
+  }
+
+  & > :first-child + *,
+  & > :last-child {
+    float: right;
+  }
+
+  & > :first-child + * + * {
+    // The third child should always break onto a new line
+    clear: both;
+  }
+}
+
+.sponsors__primary,
+.sponsors__secondary {
+  h3 {
+    font-weight: bold;
+
+    a {
+      color: inherit;
+    }
+  }
+}
+
+.sponsors__secondary > * {
+  margin: 1em 0;
+}
+
+.sponsors__form {
+  padding: 1em;
+  background-color: #FCF8D1;
+
+  label {
+    margin-top: 0;
+  }
+}
+
+.statistics-filter {
+  margin-bottom: 1em;
+  border-top: 1px solid #ddd;
+  padding-top: 1em;
+
+  label {
+    display: inline;
+    font-weight: inherit;
+    margin-right: 0.5em;
+  }
+
+  select {
+    width: auto;
+  }
 }
