@@ -606,6 +606,8 @@ $fms-green: #62b356;
 
       .pricing-table-column {
         width: 33.333%;
+        display: block;
+        float: left;
       }
 
       .pricing-extras-column--primary {
@@ -651,5 +653,6 @@ $fms-green: #62b356;
         margin-left: 30px;
       }
     }
+
   }
 
