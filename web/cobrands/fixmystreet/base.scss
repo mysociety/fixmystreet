@@ -145,9 +145,9 @@ $fms-green: #62b356;
 
   .fixed-container {
     @media only screen and (min-width: 60em) {
-      max-width: 58em; /*(60em - 1em + 1em padding)*/
       width: 100%;
     }
+    max-width: 58em; /*(60em - 1em + 1em padding)*/
     padding: 0;
     width: auto;
     margin: 0 auto;
@@ -253,8 +253,11 @@ $fms-green: #62b356;
     .hero-title {
       color: #fff;
       text-shadow: 0px 1px 7px rgba(0,0,0, 0.7);
-      font-size: 3.375em;
+      font-size: 2em;
       font-weight: bold;
+      @media only screen and (min-width: 48em) {
+        font-size: 3.375em;
+      }
     }
 
     p.hero-intro {
@@ -263,7 +266,10 @@ $fms-green: #62b356;
       max-width: 37em;
       margin-left: auto;
       margin-right: auto;
-      font-size: 1.25em;
+      font-size: 1.1em;
+      @media only screen and (min-width: 48em) {
+        font-size: 1.25em;
+      }
     }
 
   /* Pricing tables */
@@ -469,6 +475,9 @@ $fms-green: #62b356;
 
     .flush-image--bottom {
       bottom: -41px;
+      @media only screen and (min-width: 48em) {
+        bottom: -65px;
+      }
       @media only screen and (min-width: 60em) {
         bottom: -82px;
         right: 2em;
@@ -477,9 +486,12 @@ $fms-green: #62b356;
 
     .flush-image--bottom-right {
       bottom: -41px;
+      @media only screen and (min-width: 48em) {
+        bottom: -65px;
+      }
       @media only screen and (min-width: 60em) {
         bottom: -82px;
-        right: 0;
+        right: -1em;
       }
     }
 
@@ -557,6 +569,87 @@ $fms-green: #62b356;
       max-width: 100%;
     }
   }
-
 }
+
+ .ie8, .ie7 {
+    .fms-for-councils {
+      .wrapper {
+        display: table;
+      }
+
+      #site-header {
+        .container {
+          max-width: 60em;
+        }
+      }
+
+      .fixed-container {
+        width: 100%;
+      }
+
+      .button {
+        width: auto;
+        padding: 0.5em 1.25em;
+      }
+      .councils-section {
+        padding: 4em 0;
+      }
+
+      .photo-break {
+        height: 25em;
+        background-size: 100%;
+      }
+
+      .section-content {
+        max-width: 60%;
+      }
+
+      .pricing-table-column {
+        width: 33.333%;
+      }
+
+      .pricing-extras-column--primary {
+        float: left;
+        width: 66.6%;
+      }
+
+      .pricing-extras-column--secondary {
+        float: right;
+        width: 33.4%;
+      }
+
+      .flush-image {
+        position: absolute;
+        margin: 0;
+        width: auto;
+      }
+
+      .flush-image--bottom {
+        bottom: -82px;
+        right: 2em;
+      }
+
+      .flush-image--bottom-right {
+        bottom: -82px;
+        right: -1em;
+      }
+
+      .client-logos {
+        position: absolute;
+        right: 0;
+        top: 3em;
+        width: 35%;
+        margin-top: 0;
+      }
+
+      .case-study-button {
+        width: auto;
+        padding: 1em;
+      }
+
+      .case-study-button-name {
+        margin-left: 30px;
+      }
+    }
+  }
 
