@@ -347,5 +347,15 @@ sub recent_new {
     return ($new, $miss);
 }
 
-1;
+sub extra_stats_cols { ('category') }
 
+sub stats_open_problem_type {
+    my ($self, $problem) = @_;
+
+    my $age = $self->SUPER::stats_open_problem_type($problem);
+    my $category = $problem->{category};
+
+    return "${age}_${category}";
+}
+
+1;

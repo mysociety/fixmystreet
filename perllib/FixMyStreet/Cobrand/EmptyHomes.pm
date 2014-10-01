@@ -561,5 +561,14 @@ sub old_site_stats {
     };
 }
 
+sub munge_stats {
+    my ($self, $stats) = @_;
+    my $old_site_stats = $self->old_site_stats;
+    my $open = $stats->{open};
+    foreach (keys %$old_site_stats) {
+        $open->{$_}{unknown} += $old_site_stats->{$_};
+    }
+}
+
 1;
 

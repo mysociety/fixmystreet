@@ -31,16 +31,16 @@ This is a summary of cycle-related incidents reported on this site. Since the da
 
 <tbody>
 [% FOREACH body IN bodies %]
-  [% IF open.${body.id}.new || open.${body.id}.older || open.${body.id}.unknown %]
+    [% IF open.${body.id}.new_accident || open.${body.id}.new_nearmiss || open.${body.id}.older_accident || open.${body.id}.older_nearmiss %]
     <tr align="center"
     [%- IF NOT body.areas.size %] class="gone"
     [%- ELSIF ! (loop.count % 2) %] class="a"
     [%- END %]>
     <td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
-    <td class="data">[% open.${body.id}.new or 0 %]</td>
-    <td class="data">[% open.${body.id}.older or 0 %]</td>
-    <td class="data">[% open.${body.id}.unknown or 0 %]</td>
-    <td class="data">0</td>
+    <td class="data">[% open.${body.id}.new_accident   or 0 %]</td>
+    <td class="data">[% open.${body.id}.new_nearmiss   or 0 %]</td>
+    <td class="data">[% open.${body.id}.older_accident or 0 %]</td>
+    <td class="data">[% open.${body.id}.older_nearmiss or 0 %]</td>
     </tr>
     [% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
   [% END %]
