@@ -339,6 +339,8 @@ body.mappage {
 #forgotten-pw {
   position: static;
   margin: 0;
+  width: auto;
+  @include box-shadow(none);
 
   p.dark {
     background: $color-neutral-slategrey;
