@@ -43,11 +43,11 @@
                     <li><a href="/reports">[% loc("Statistics") %]</a></li>
                     <li><a href="/faq">[% loc("FAQs") %]</a></li>
                     <li><a href="/sponsors">[% loc("Sponsors") %]</a></li>
-                    <li><a href="/my">[% IF c.user_exists %]
-                        [% loc("Your reports") %]
-                    [% ELSE %]
-                        [% loc("Log in") %]
-                    [% END %]</a></li>
+                    [% IF c.user_exists %]
+                    <li>
+                        <a href="/auth/sign_out">[% loc('Sign out') %]</a>
+                    </li>
+                    [% END %]
                     <li><a href="/privacy" class="secondary">[% loc("Privacy") %]</a></li>
                     <li><a href="/contact" class="secondary">[% loc("Contact") %]</a></li>
                   </ul>
@@ -66,13 +66,12 @@
                         %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
                             %]>[% loc("FAQs") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>[%
                         %]<li><a href="/sponsors"[%
-                            %]>[% loc("Sponsors") %]</a></li>[%
-                        %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
-                            %]>[% IF c.user_exists %]
-                                [% loc("Your reports") %]
-                            [% ELSE %]
-                                [% loc("Log in") %]
-                            [% END %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>
+                            %]>[% loc("Sponsors") %]</a></li>
+                        [% IF c.user_exists %]
+                        <li>
+                            <a href="/auth/sign_out">[% loc('Sign out') %]</a>
+                        </li>
+                        [% END %]
                     </ul>
                 </div>
             </div>
