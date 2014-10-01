@@ -146,7 +146,8 @@ body.mappage {
     width: auto;
     margin-right: 10px;
 
-    ul#main-menu li a {
+    ul#main-menu li a,
+    ul#main-menu li span {
       padding: 0 12px; // to match normal pages
     }
   }
