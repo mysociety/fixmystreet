@@ -9,13 +9,11 @@ This is a summary of cycle-related incidents reported on this site. Since the da
 </div>
 
 <form method="get" class="statistics-filter">
-  <label for="type">Show:</label>
-  <select name="type" id="type">
-    <option>all bodies</option>
-    <option>London boroughs</option>
-    <option>cities (unitary authorities)</option>
-    <option>districts and counties</option>
-  </select>
+  Show:
+  <label><input type="radio" name="type" value="" checked> All bodies</label>
+  <label><input type="radio" name="type" value=""> London boroughs</label>
+  <label><input type="radio" name="type" value=""> Cities (unitary authorities)</label>
+  <label><input type="radio" name="type" value=""> Districts and counties</label>
 </form>
 
 <table cellpadding="3" cellspacing="1" border="0" class="nicetable">
