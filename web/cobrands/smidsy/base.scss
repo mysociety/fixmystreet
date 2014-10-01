@@ -245,8 +245,13 @@ body.twothirdswidthpage {
 
   & + .container {
     // The Smidsy homepage has full-width stripes on it.
-    // So we keep the first .container empty, and hide it.
+    // So we keep the first .container empty, and hide it...
     display: none;
+
+    // ...but we don't want to hide content on .aroundpage!
+    body.aroundpage & {
+      display: block;
+    }
   }
 }
 
