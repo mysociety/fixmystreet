@@ -25,7 +25,7 @@ use FixMyStreet;
 use FixMyStreet::App;
 
 sub _get_label {
-    my $obj = shift or return 'None';
+    my $obj = shift or return (shift || 'None');
     return $obj->label;
 }
 
@@ -77,13 +77,36 @@ sub execute {
         say "====================";
         say $text;
 
+        my @participants = $accident->grouped_participants;
+        my $category = # e.g. "pedestrian-serious"
+            $participants[-1][0] # e.g. code of highest priority participant
+            . '-' 
+            . lc(_get_label($accident->accident_severity));
+
+        my $participants_string = do {
+            my @ps = map {
+                my ($type, $count) = @$_;
+                $count > 1 ? "$count ${type}s" : "a $type";
+            } @participants;
+            if (@ps > 2) {
+                $ps[-1] = 'and ' . $ps[-1]; # oxford comma ftw
+                join ', ' => @ps;
+            }
+            else {
+                join ' and ', @ps;
+            }
+        };
+
         my $extra = {
-            participants => _get_participants($accident),
             road_type => _get_road_1_string($accident),
             severity => _get_severity_percent(_get_label($accident->accident_severity)),
             incident_date => $accident->date->strftime('%Y-%m-%d'),
             incident_time => $accident->date->strftime('%H:%M'),
         };
+
+        my $title = sprintf '%s incident involving %s',
+                    _get_label($accident->accident_severity),
+                    $participants_string;
 
         my $problem = $problem_rs->create(
             {
@@ -93,9 +116,7 @@ sub execute {
                 longitude    => $accident->longitude,
                 bodies_str   => $bodies_str,
                 areas        => $areas,
-                title        => (sprintf 'Incident #%s (%s) from UK Stats19 data', 
-                    $accident->accident_index,
-                    _get_label($accident->accident_severity)),
+                title        => $title,
                 detail       => $text,
                 used_map     => 1, # to allow pin to be shown
                 user_id      => $user_id,
@@ -104,7 +125,7 @@ sub execute {
                 service      => '',
                 cobrand      => $self->cobrand->moniker,
                 cobrand_data => '',
-                category     => 'smidsy',
+                category     => $category,
                 anonymous    => 0,
                 created      => $accident->date,
                 confirmed    => $accident->date,
@@ -133,6 +154,7 @@ sub _get_description {
     my $accident = shift;
 
     my $text = join "\n",
+        (sprintf 'Stats19 record: %s', $accident->accident_index),
         (sprintf 'Local authority district: %s', _get_label($accident->local_authority_district)),
         (sprintf 'On: %s', _get_road_1_string($accident)),
         $accident->road_2_number ?
@@ -154,14 +176,15 @@ sub _get_description {
                 _get_label($vehicle->vehicle_type),
                 _get_label($vehicle->vehicle_manoeuvre)),
             (sprintf "    Driver %s %s",
-                _get_label($vehicle->age_band_of_driver),
-                _get_label($vehicle->sex_of_driver)),
+                _get_label($vehicle->age_band_of_driver, 'Unknown'),
+                _get_label($vehicle->sex_of_driver, 'Unknown')),
             (map {
                 my $casualty = $_;
-                sprintf "    * Casualty %s (%s %s - %s)", 
+                sprintf "    * Casualty %s (%s%s %s - %s)", 
                     $casualty->casualty_reference,
-                    _get_label($casualty->age_band_of_casualty),
-                    _get_label($casualty->sex_of_casualty),
+                    $casualty->is_pedestrian ? 'Pedestrian - ' : '',
+                    _get_label($casualty->age_band_of_casualty, 'Unknown'),
+                    _get_label($casualty->sex_of_casualty, 'Unknown'),
                     _get_label($casualty->casualty_severity)
              } $vehicle->casualties->all)
         } $accident->vehicles->all)
@@ -179,7 +202,18 @@ sub _get_road_1_string {
 sub _get_participants {
     my $accident = shift;
 
-    return join ', ', map _get_label($_->vehicle_type), $accident->vehicles;
+    return join ', ', 
+        sort { 
+            (_vehicle_priority($a) <=> _vehicle_priority($b)) 
+            || 
+            ($a cmp $b)
+        } 
+        $accident->participants;
+}
+
+sub _vehicle_priority {
+    my $veh = shift;
+    return 0 if $veh =~/Pedal/;
 }
 
 sub get_areas {

@@ -146,4 +146,12 @@ __PACKAGE__->has_many(
     'foreign.vehicle_reference' => 'self.vehicle_reference', },
 );
 
+sub vehicle_short_category {
+    my $self = shift;
+    my $vehicle_type = $self->vehicle_type->label;
+    return 'bicycle' if $vehicle_type =~/Pedal/;
+    return 'horse' if $vehicle_type =~/[hH]orse/;
+    return 'vehicle';
+}
+
 1;

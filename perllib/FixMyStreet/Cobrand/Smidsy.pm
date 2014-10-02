@@ -88,13 +88,8 @@ sub on_map_default_max_pin_age {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    # TODO, switch on $p->category
 
-    my $severity = $p->extra ? $p->extra->{severity} || 0 : 0;
-
-    return 'sprocket'        if $severity < $self->severity_minor_threshold; 
-    return 'sprocket-orange' if $severity < $self->severity_major_threshold;
-    return 'sprocket-red'; 
+    return $p->category;
 }
 
 sub category_options {
