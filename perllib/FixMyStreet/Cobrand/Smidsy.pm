@@ -335,7 +335,7 @@ sub recent_new {
         $new = $rs->count;
         Memcached::set($new_key, $new, 3600);
 
-        $miss = $rs->search({ category => 'Near Miss' })->count;
+        $miss = $rs->search({ category => { like => '%miss' } })->count;
         Memcached::set($miss_key, $miss, 3600);
     }
 
@@ -350,7 +350,9 @@ sub stats_open_problem_type {
     my $age = $self->SUPER::stats_open_problem_type($problem);
     my $category = $problem->{category};
 
-    return "${age}_${category}";
+    my $metacategory = $category =~ /miss$/ ? 'miss' : 'accident';
+
+    return "${age}_${metacategory}";
 }
 
 1;
