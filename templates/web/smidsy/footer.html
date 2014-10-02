@@ -67,11 +67,11 @@
                             %]>[% loc("FAQs") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>[%
                         %]<li><a href="/sponsors"[%
                             %]>[% loc("Sponsors") %]</a></li>
-                        [% IF c.user_exists %]
+                     <!--    [% IF c.user_exists %]
                         <li>
                             <a href="/auth/sign_out">[% loc('Sign out') %]</a>
                         </li>
-                        [% END %]
+                        [% END %] -->
                     </ul>
                 </div>
             </div>
