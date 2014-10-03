@@ -26,7 +26,7 @@ my $cobrand_name = do {
     elsif ( $base_url =~ /emptyhomes/ ) {
         'emptyhomes';
     }
-    elsif ( $base_url =~ /smidsy|collideoscope/ ) {
+    elsif ( $base_url =~ /smidsy|collideosco/ ) {
         'smidsy';
     }
     else {
