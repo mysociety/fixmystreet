@@ -234,15 +234,16 @@ sub munge_report {
             '2 bicycles'
         }
         else {
-            my $participant_description = {
+            $participant = 'vehicle' unless $participant eq 'pedestrian';
+
+            my $participant_description = 
+            {
                 pedestrian => 'a pedestrian',
                 car => 'a car',
                 hgv => 'an HGV',
                 motorcycle => 'a motorcycle',
             }->{$participant} || 'a vehicle';
             "a bicycle and $participant_description";
-
-            $participant = 'vehicle' unless $participant eq 'pedestrian';
         }
     };
 
