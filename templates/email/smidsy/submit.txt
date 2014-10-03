@@ -2,7 +2,9 @@ Subject: Problem Report: <?=$values['title']?>
 
 Dear <?=$values['bodies_name']?>,
 
-<?=$values['missing']?><?=$values['multiple']?>A user of Collideoscope has submitted the following report of a cycling related incident that they believe should be brought to your attention.
+<?=$values['missing']?><?=$values['multiple']?>
+A user of Collideoscope has submitted the following report of a cycling related
+incident that they believe should be brought to your attention.
 
 <?=$values['fuzzy']?>, or to provide an update on the problem,
 please visit the following link:
@@ -13,13 +15,9 @@ please visit the following link:
 
 Name: <?=$values['name']?>
 
-Incident Involving: <?=$values['involving']?>
+Incident summary: <?=$values['title']?>
  
-Severity: <?=$values['severity']?>
-
 Details about the incident: <?=$values['detail']?>
-
-Details about injuries: <?=$values['injury']?>
 
 <?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
 
@@ -31,7 +29,7 @@ Replies to this email will go to the user who submitted the problem.
  
 <?=$values['signature']?>
  
-This message was sent via Collideoscope, created by Intergrated Transport 
+This message was sent via Collideoscope, created by Integrated Transport 
 Planning (company no. 03485430) and mySociety (company no. 05798215). If there
 is a more appropriate email address for messages about 'Cycling incidents', 
 please let us know by visiting <https://www.collideosco.pe/contact>. This will
