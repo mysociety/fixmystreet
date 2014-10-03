@@ -103,7 +103,7 @@ sub process_extras {
             name => 'severity',
             validator => sub {
                 my $sev = shift;
-                die "Severity not supplied" unless defined $sev;
+                die "Severity not supplied\n" unless defined $sev;
                 if ($sev > 0 and $sev <= 100) {
                     return $sev;
                 }
