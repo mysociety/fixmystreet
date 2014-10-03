@@ -10,10 +10,18 @@ This is a summary of cycle-related incidents reported on this site. Since the da
 
 <form method="get" class="statistics-filter">
   Show:
-  <label><input type="radio" name="type" value="" checked> All bodies</label>
-  <label><input type="radio" name="type" value=""> London boroughs</label>
-  <label><input type="radio" name="type" value=""> Cities (unitary authorities)</label>
-  <label><input type="radio" name="type" value=""> Districts and counties</label>
+  <label><input type="radio" name="type" value="all" 
+      [% IF report_filter == 'all' %]checked[% END %]> 
+      All bodies</label>
+  <label><input type="radio" name="type" value="london"
+      [% IF report_filter == 'london' %]checked[% END %]> 
+      London boroughs</label>
+  <label><input type="radio" name="type" value="city"
+      [% IF report_filter == 'city' %]checked[% END %]> 
+      Cities (unitary authorities)</label>
+  <label><input type="radio" name="type" value="dc"
+      [% IF report_filter == 'dc' %]checked[% END %]> 
+      Districts and counties</label>
 </form>
 
 <table cellpadding="3" cellspacing="1" border="0" class="nicetable">

@@ -29,4 +29,21 @@ $(function() {
         }
     });
 
+    var type = $('form.statistics-filter input[name=type]');
+    type.on('change', function () {
+        var val = $(this).val();
+        if (val == 'all') {
+            window.location = '/reports';
+        }
+        else if (val == 'london') {
+            window.location = '/reports?type=LBO';
+        }
+        else if (val == 'city') {
+            window.location = '/reports?type=UTA,MTD,COI';
+        }
+        else if (val == 'dc') {
+            window.location = '/reports?type=CTY,DIS';
+        }
+    });
+
 });
