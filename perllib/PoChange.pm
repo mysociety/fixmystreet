@@ -63,7 +63,7 @@ sub fixmystreet_to_fixmybarangay($) {
 sub fixmystreet_to_smidsy($) {
     my $s = shift;
 
-    $s =~ s/FixMyStreet/SMIDSY/g;
+    $s =~ s/FixMyStreet/CollideOscope/g;
 
     $s =~ s/\ba problem\b/an incident/g;
     $s =~ s/\bproblem\b/incident/g;

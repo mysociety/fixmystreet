@@ -183,6 +183,10 @@ sub process_extras {
             },
         },
         {
+            name => 'injury_detail',
+            validator => sub { shift } # accept as is
+        },
+        {
             name => 'media_url',
             validator => sub {
                 my $data = shift
@@ -255,6 +259,13 @@ sub munge_report {
 
     my $category = "$participant-$severity_code";
     my $title = "$type_description involving $participants";
+
+    if (my $injury_detail = $report->extra->{injury_detail}) {
+        $report->detail(
+            $report->detail . 
+                "\n\nDetails about injuries: $injury_detail\n"
+        );
+    }
 
     $report->category($category);
     $report->title($title);

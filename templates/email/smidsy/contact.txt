@@ -1,4 +1,4 @@
-Subject: Smidsy message: [% subject %]
+Subject: Collideoscope message: [% subject %]
 
 [% message %]
 
