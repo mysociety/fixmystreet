@@ -1,5 +1,7 @@
 Subject: Smidsy message: [% subject %]
 
+A message from Collideoscope:
+
 [% message %]
 
 [ Sent by contact.cgi on [% host %]. IP address [% ip %] ]

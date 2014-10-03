@@ -51,26 +51,28 @@
 <h2>Support us</h2>
 
 <div class="sponsors__form">
-    <form action="post">
+    <form action="contact/submit" method="post">
         <p class="sponsors__form__question">
             <label>Company name</label>
-            <input type="text" />
+            <input name="company" id="form_company" type="text" class="required"/>
         </p>
         <p class="sponsors__form__question">
             <label>Your name</label>
-            <input type="text" />
+            <input name="name" id="form_name" type="text" class="required"/>
         </p>
         <p class="sponsors__form__question">
             <label>Phone number</label>
-            <input type="text" />
+            <input name="tel" id="form_tel" type="text" class="required"/>
         </p>
         <p class="sponsors__form__question">
             <label>Email address</label>
-            <input type="text" />
+            <input name="em" id="form_email" type="text" class="required email"/>
         </p>
         <p class="sponsors__form__question">
             <input type="submit" class="green-btn" value="Call me back!">
         </p>
+        <input type="hidden" name="subject" value="Contact from a potential sponsor">
+        <input type="hidden" name="message" value="Contact from a potential sponsor.">
     </form>
 </div>
 
