@@ -155,6 +155,13 @@ sub prepare_params_for_email : Private {
     $c->stash->{message} =~ s/\r\n/\n/g;
     $c->stash->{subject} =~ s/\r|\n/ /g;
 
+    if (my $co = $c->req->param('company')) {
+        $c->stash->{message} .= "\n\nCompany: $co\n";
+    }
+    if (my $tel = $c->req->param('tel')) {
+        $c->stash->{message} .= "\n\nTel: $tel\n";
+    }
+
     my $base_url = $c->cobrand->base_url();
     my $admin_url = $c->cobrand->admin_base_url;
 
