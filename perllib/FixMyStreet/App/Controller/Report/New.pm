@@ -1063,6 +1063,8 @@ sub save_user_and_report : Private {
         $report->external_source( $c->config->{MESSAGE_MANAGER_URL} ) ;
     }
     
+    $c->cobrand->munge_report( $c, $report) if $c->cobrand->can('munge_report');
+
     # save the report;
     $report->in_storage ? $report->update : $report->insert();
 

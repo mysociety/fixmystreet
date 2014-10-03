@@ -36,27 +36,26 @@ sub severity_categories {
     return [
         {
             value => 10,
-            name => 'Potential Minor',
+            name => 'Near Miss',
+            code => 'miss',
             description => 'could have involved scrapes and bruises',
         },
         {
             value => 30,
             name => 'Minor',
+            code => 'slight',
             description => 'incident involved scrapes and bruises',
         },
         {
-            value => 50,
-            name => 'Potential Serious',
-            description => 'could have involved serious injury or hospitalisation',
-        },
-        {
-            value => 75,
+            value => 60,
             name => 'Serious',
+            code => 'serious',
             description => 'incident involved serious injury or hospitalisation',
         },
         {
-            value => 90,
+            value => 100,
             name => 'Fatal',
+            code => 'fatal',
             description => 'incident involved the death of one or more road users',
         },
     ];
@@ -104,8 +103,9 @@ sub process_extras {
             name => 'severity',
             validator => sub {
                 my $sev = shift;
+                die "Severity not supplied" unless defined $sev;
                 if ($sev > 0 and $sev <= 100) {
-                    return $sev+0;
+                    return $sev;
                 }
                 die "Severity must be between 1 and 100\n";
             },
@@ -145,9 +145,12 @@ sub process_extras {
                 my $data = shift;
                 die "Invalid option!\n"
                     unless {
-                        "bike-car" => 1,
-                        "bike-other" => 1,
-                        "pedestrian-bike" => 1,
+                        "bicycle" => 1,
+                        "car" => 1,
+                        "hgv" => 1,
+                        "other" => 1,
+                        "pedestrian" => 1,
+                        "motorcycle" => 1,
                     }->{ $data };
                 return $data;
             },
@@ -212,6 +215,42 @@ sub process_extras {
 
         $extra->{$field_name} = $value || '';
     }
+}
+
+sub munge_report {
+    my ($self, $c, $report) = @_;
+
+    my ($type, $type_description) = $report->extra->{severity} ?
+        ('accident', 'Accident') : 
+        ('miss', 'Near miss');
+
+    my $participant = $report->extra->{participants};
+    my $severity = $report->extra->{severity} || die Dumper($report->extra->{severity}); use Data::Dumper;
+
+    my $severity_code = $self->get_severity($severity)->{code};
+
+    my $participants = do {
+        if ($participant eq 'bicycle') {
+            '2 bicycles'
+        }
+        else {
+            my $participant_description = {
+                pedestrian => 'a pedestrian',
+                car => 'a car',
+                hgv => 'an HGV',
+                motorcycle => 'a motorcycle',
+            }->{$participant} || 'a vehicle';
+            "a bicycle and $participant_description";
+
+            $participant = 'vehicle' unless $participant eq 'pedestrian';
+        }
+    };
+
+    my $category = "$participant-$severity_code";
+    my $title = "$type_description involving $participants";
+
+    $report->category($category);
+    $report->title($title);
 }
 
 # this is required to use new style templates

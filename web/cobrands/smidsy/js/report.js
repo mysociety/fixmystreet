@@ -12,7 +12,7 @@ $(function() {
     $('input[name="severity"]').on('change', function(){
         // Assumes the severity radio buttons have numeric values,
         // where a value over 0 implies injury.
-        if( 0 + $('#mapForm')[0].severity.value > 0 ) {
+        if( 0 + $('#mapForm')[0].severity.value > 10 ) {
             $('.describe-injury').slideDown();
         } else {
             $('.describe-injury').slideUp();
