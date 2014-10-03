@@ -19,9 +19,12 @@
             <input type="hidden" value="DUMMY" name="title" id="form_title">
 
             <div class="severity">
+                [% IF field_errors.severity %]
+                    <p class='form-error'>[% field_errors.severity %]</p>
+                [% END %]
                 <label>[% loc('How severe was the incident?') %]</label>
                 <p>
-                    <label><input type="radio" name="severity" value="0">[% loc('No injuries – but it was close!') %]</label>
+                    <label><input type="radio" name="severity" value="10" checked>[% loc('No injuries – but it was close!') %]</label>
                 </p>
                 <p>
                     <label><input type="radio" name="severity" value="30">[% loc('Just bruises and scrapes') %]</label>
@@ -72,12 +75,12 @@
             [% END %]
 
             <select id="form_participants" name="participants">
-                <option value="bike-car">[% loc('A car') %]</option>
-                <option value="bike-motorcycle">[% loc('A motorcycle') %]</option>
-                <option value="bike-hgv">[% loc('A heavy goods vehicle (HGV)') %]</option>
-                <option value="bike-other">[% loc('Some other vehicle') %]</option>
-                <option value="bike-bike">[% loc('Another bike') %]</option>
-                <option value="bike-pedestrian">[% loc('A pedestrian') %]</option>
+                <option value="car">[% loc('A car') %]</option>
+                <option value="motorcycle">[% loc('A motorcycle') %]</option>
+                <option value="hgv">[% loc('A heavy goods vehicle (HGV)') %]</option>
+                <option value="other">[% loc('Some other vehicle') %]</option>
+                <option value="bicycle">[% loc('Another bike') %]</option>
+                <option value="pedestrian">[% loc('A pedestrian') %]</option>
             </select>
 
             <div class="vehicle-registration-number">
