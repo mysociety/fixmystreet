@@ -274,17 +274,6 @@ sub path_to_web_templates {
     ];
 }
 
-sub base_url {
-    my $self = shift;
-    my $base_url = mySociety::Config::get('BASE_URL');
-    my $u = $self->moniker;
-    if ( $base_url !~ /$u/ ) {
-        $base_url =~ s{http://(?!www\.)}{http://$u.}g;
-        $base_url =~ s{http://www\.}{http://$u.}g;
-    }
-    return $base_url;
-}
-
 sub get_embed_code {
     my ($self, $problem) = @_;
 
