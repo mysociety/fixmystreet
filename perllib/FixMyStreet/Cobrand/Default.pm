@@ -916,5 +916,10 @@ sub stats_open_problem_type {
     return $type;
 }
 
+sub subject_line_for_contact_email {
+    my ($self, $subject) = @_;
+    return 'FMS message: ' . $subject;
+}
+
 1;
 
