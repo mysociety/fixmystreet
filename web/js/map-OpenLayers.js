@@ -334,7 +334,7 @@ $(function(){
 
     // Set specific map config - some other JS included in the
     // template should define this
-    set_map_config(); 
+    set_map_config();
 
     // Create the basics of the map
     fixmystreet.map = new OpenLayers.Map(
@@ -573,7 +573,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
 });
 
 /* Click handler */
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     defaultHandlerOptions: {
         'single': true,
         'double': false,
@@ -587,12 +587,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             {}, this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(
             this, arguments
-        ); 
+        );
         this.handler = new OpenLayers.Handler.Click(
             this, {
                 'click': this.trigger
             }, this.handlerOptions);
-    }, 
+    },
 
     trigger: function(e) {
         var cobrand = $('meta[name="cobrand"]').attr('content');
