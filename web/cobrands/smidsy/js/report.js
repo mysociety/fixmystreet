@@ -1,7 +1,7 @@
 $(function() {
 
     $('#form_incident_date').datepicker({
-        minDate: -7,
+        minDate: -((365 * 5)+1), // 5 years plus a fudge factor of 1 day for leap years
         maxDate: +0,
         defaultDate: +0,
         dateFormat: 'dd/mm/yy'
