@@ -129,7 +129,7 @@ sub display_news_form {
 address below and we&rsquo;ll send you occasional emails about what mySociety
 and our users have been up to.</p>
 
-<form method="post" target="_blank" action="//mysociety.us9.list-manage.com/subscribe/post?u=53d0d2026dea615ed488a8834&id=287dc28511">
+<form method="post" action="//mysociety.us9.list-manage.com/subscribe/post?u=53d0d2026dea615ed488a8834&id=287dc28511">
 <label style="position: absolute; left: -5000px;">
 Leave this box empty: <input type="text" name="b_53d0d2026dea615ed488a8834_287dc28511" tabindex="-1" value="" />
 </label>
