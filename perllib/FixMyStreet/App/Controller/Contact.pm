@@ -249,10 +249,12 @@ sub send_email : Private {
       ? ' ( forwarded from ' . $c->req->header('X-Forwarded-For') . ' )'
       : '';
 
+    my $subject = $c->cobrand->subject_line_for_contact_email($c->stash->{subject});
+
     $c->send_email( 'contact.txt', {
         to      => [ [ $recipient, _($recipient_name) ] ],
         from    => [ $c->stash->{em}, $c->stash->{form_name} ],
-        subject => 'FMS message: ' . $c->stash->{subject},
+        subject => $subject,
     });
 
     # above is always succesful :(

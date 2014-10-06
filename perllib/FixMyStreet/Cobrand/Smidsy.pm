@@ -406,4 +406,9 @@ sub stats_open_problem_type {
     return "${age}_${metacategory}";
 }
 
+sub subject_line_for_contact_email {
+    my ($self, $subject) = @_;
+    return 'CollideOscope message: ' . $subject;
+}
+
 1;
