@@ -219,6 +219,7 @@ subtest 'check contact editing' => sub {
     $mech->content_contains( '<td>test2 note' );
     $mech->content_contains( '<td>Public' );
 
+    $mech->get_ok('/admin/body_edit/2650/test%20category');
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
         note     => 'test2 note',
