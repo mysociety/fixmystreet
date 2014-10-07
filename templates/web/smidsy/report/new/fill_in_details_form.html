@@ -10,9 +10,6 @@
     [% MACRO isChecked BLOCK %][% v == exp ? 'checked' : '' %][% END %]
     [% MACRO isSelected BLOCK %][% v == exp ? 'selected' : '' %][% END %]
 
-    [% USE Dumper %]
-    [% Dumper.dump_html(report.extra) %]
-
     <fieldset>
         <div id="problem_form">
 
