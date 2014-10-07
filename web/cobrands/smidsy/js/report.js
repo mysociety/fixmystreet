@@ -7,17 +7,21 @@ $(function() {
         dateFormat: 'dd/mm/yy'
     });
 
-    $('.describe-injury').hide();
-
     $('input[name="severity"]').on('change', function(){
         // Assumes the severity radio buttons have numeric values,
         // where a value over 0 implies injury.
-        if( 0 + $('#mapForm')[0].severity.value > 10 ) {
+        if( ($('#mapForm input[name="severity"]:checked').val() -0) > 10) {
             $('.describe-injury').slideDown();
         } else {
-            $('.describe-injury').slideUp();
+            $('.describe-injury').slideUp(
+                // slideUp doesn't happen if element already hidden.
+                // But it does call callback so hide when complete.
+                // (We hide on callback, to avoid the hide killing the slide
+                // animation entirely.)
+                function () { $(this).hide() }
+            );
         }
-    });
+    }).change(); // and call on page load
 
     $('#form_participants').on('change', function(){
         // In a stroke of genius, jQuery returns true for the :selected selector,
@@ -27,7 +31,7 @@ $(function() {
         } else {
             $('.vehicle-registration-number').slideUp();
         }
-    });
+    }).change(); // and call on page load
 
     var type = $('form.statistics-filter input[name=type]');
     type.on('change', function () {
