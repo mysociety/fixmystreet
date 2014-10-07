@@ -257,28 +257,23 @@ body.mappage {
       a {
         display: block;
         padding: 15px;
+        padding-left: 75px;
         color: inherit;
+        background: transparent url(/cobrands/smidsy/images/dot-generic-slight.png) 20px 50% no-repeat;
 
         &:hover {
           text-decoration: none;
           background-color: #f9f9f9;
         }
 
-        // temporary placeholder icon
-        padding-left: 75px;
-        position: relative;
-        &:before {
-          content: "";
-          display: block;
-          width: 40px;
-          height: 40px;
-          position: absolute;
-          top: 50%;
-          left: 20px;
-          margin-top: -20px;
-          @include border-radius(20px);
-          background-color: $color-secondary-olive;
+        @each $participant in 'bicycle', 'generic', 'horse', 'pedestrian', 'vehicle' {
+          @each $severity in 'miss', 'slight', 'serious' {
+            &.#{$participant}-#{$severity} {
+              background-image: url(/cobrands/smidsy/images/dot-#{$participant}-#{$severity}.png);
+            }
+          }
         }
+
       }
 
       h3 {
