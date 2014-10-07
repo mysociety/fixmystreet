@@ -226,14 +226,14 @@ sub process_extras {
 sub munge_report {
     my ($self, $c, $report) = @_;
 
-    my ($type, $type_description) = $report->extra->{severity} ?
-        ('accident', 'Accident') : 
+    my $severity = $report->extra->{severity} || die Dumper($report->extra->{severity}); use Data::Dumper;
+    my $severity_code = $self->get_severity($severity)->{code};
+
+    my ($type, $type_description) = $report->extra->{severity} > 10 ?
+        ('accident', ucfirst "$severity_code incident") :
         ('miss', 'Near miss');
 
     my $participant = $report->extra->{participants};
-    my $severity = $report->extra->{severity} || die Dumper($report->extra->{severity}); use Data::Dumper;
-
-    my $severity_code = $self->get_severity($severity)->{code};
 
     my $participants = do {
         if ($participant eq 'bicycle') {
