@@ -219,6 +219,8 @@ sub process_extras {
 
         $extra->{$field_name} = $value || '';
     }
+
+    $extra->{incident_date_as_submitted} = $ctx->request->param('incident_date') if $extra->{incident_date};
 }
 
 sub munge_report {

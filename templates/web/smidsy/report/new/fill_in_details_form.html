@@ -10,6 +10,9 @@
     [% MACRO isChecked BLOCK %][% v == exp ? 'checked' : '' %][% END %]
     [% MACRO isSelected BLOCK %][% v == exp ? 'selected' : '' %][% END %]
 
+    [% USE Dumper %]
+    [% Dumper.dump_html(report.extra) %]
+
     <fieldset>
         <div id="problem_form">
 
@@ -57,7 +60,7 @@
                     <p class='form-error'>[% field_errors.incident_date %]</p>
                   [% END %]
                     <input type="text" name="incident_date" id="form_incident_date"
-                    value="[% report.extra.incident_date || 'today' %]">
+                    value="[% report.extra.incident_date_as_submitted || 'today' %]">
                 </div>
                 <div>
                   [% IF field_errors.incident_time %]
