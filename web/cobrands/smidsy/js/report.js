@@ -22,7 +22,7 @@ $(function() {
     $('#form_participants').on('change', function(){
         // In a stroke of genius, jQuery returns true for the :selected selector,
         // if *any* of the matched elements are :selected, rather than *all* of them.
-        if( $('option[value="bike-car"], option[value="bike-motorcycle"], option[value="bike-hgv"], option[value="bike-other"]').is(':selected') ) {
+        if( $('option[value="car"], option[value="motorcycle"], option[value="hgv"], option[value="other"]').is(':selected') ) {
             $('.vehicle-registration-number').slideDown();
         } else {
             $('.vehicle-registration-number').slideUp();
