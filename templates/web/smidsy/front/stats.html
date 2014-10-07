@@ -7,7 +7,8 @@
 [%
     stats = c.cobrand.front_stats_data();
 
-    stats_period = stats.recency == '1 week' ? 'Week' : stats.recency
+    stats_period = stats.recency == '1 week' ? 'Week' : 
+        stats.recency == '12 months' ? 'Year' : stats.recency
 
     new_text =
         stats.recency == '1 week'
