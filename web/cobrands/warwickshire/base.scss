@@ -108,11 +108,11 @@ body.mappage > div.container {
 
 }
 
-@media (max-width: 978px) {
-    #mega-menu-navbar .navbar-inner {
-        display: block;
-    }
+#mega-menu-navbar .navbar-inner {
+    display: block;
+}
 
+@media (max-width: 978px) {
     .navbar-container {
         padding: 0;
         margin: 0;
