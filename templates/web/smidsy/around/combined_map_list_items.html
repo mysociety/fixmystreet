@@ -1,7 +1,7 @@
 [% IF around_map.size %]
     [% FOREACH p IN around_map %]
         <li>
-            <a href="#" class="[% p.problem.category %]">
+            <a href="[% c.uri_for('/report', p.problem.id ) %]" class="[% p.problem.category %]">
                 <h3>[% p.problem.title | html %]</h3>
                 <p>[%- prettify_dt( p.problem.confirmed, 1 ) %]</p>
             </a>
