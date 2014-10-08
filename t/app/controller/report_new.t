@@ -25,7 +25,11 @@ subtest "test that bare requests to /report/new get redirected" => sub {
     is $mech->uri->path, '/', "went to /";
     is_deeply { $mech->uri->query_form }, {}, "query empty";
 
-    $mech->get_ok('/report/new?pc=SW1A%201AA');
+    FixMyStreet::override_config {
+        MAPIT_URL => 'http://mapit.mysociety.org/',
+    }, sub {
+        $mech->get_ok('/report/new?pc=SW1A%201AA');
+    };
     is $mech->uri->path, '/around', "went to /around";
     is_deeply { $mech->uri->query_form }, { pc => 'SW1A 1AA' },
       "pc correctly transferred";
