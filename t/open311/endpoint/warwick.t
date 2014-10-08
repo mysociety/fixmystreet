@@ -80,6 +80,7 @@ subtest "POST OK" => sub {
           ':ce_location' => '22 Acacia Avenue',
           ':ce_incident_datetime' => '2014-01-01 12:00',
           ':ce_class' => 'N/A',
+          ':ce_cpr_id' => 5,
           ':ce_compl_user_type' => 'USER',
           ':ce_status_code' => 'RE',
           ':ce_cat' => 'DEF',

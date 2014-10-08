@@ -125,7 +125,7 @@ has ce_class => (
     default => 'N/A',
 );
 
-has ce_cpr_id => ( # not currently used
+has ce_cpr_id => (
     is => 'ro',
     default => 5,
 );
@@ -249,12 +249,13 @@ sub post_service_request {
     my %bindings;
                                                      # comments here are suggested values
                                                      # field lengths are from OCC's Java portlet
-    # fixed values     TODO: these should be configurable!
+    # fixed values (configurable via config)
     $bindings{":ce_cat"}            = $self->ce_cat;
     $bindings{":ce_class"}          = $self->ce_class;
     $bindings{":ce_contact_type"}   = $self->ce_contact_type;
     $bindings{":ce_status_code"}    = $self->ce_status_code;
     $bindings{":ce_compl_user_type"}= $self->ce_compl_user_type;
+    $bindings{":ce_cpr_id"}         = $self->ce_cpr_id;
 
     # ce_incident_datetime is *not* an optional param, but FMS isn't sending it at the moment
     $bindings{":ce_incident_datetime"}=$args->{requested_datetime}
@@ -324,6 +325,7 @@ sub insert_into_db {
         PEM.create_enquiry(
             ce_cat => :ce_cat,
             ce_class => :ce_class,
+            ce_cpr_id => :ce_cpr_id,
             ce_forename => :ce_forename,
             ce_surname => :ce_surname,
             ce_contact_type => :ce_contact_type,
@@ -365,8 +367,6 @@ sub insert_into_db {
     # $sth->bind_param(":ce_building_name",     $undef);      # 'CLIFTON HEIGHTS'
     # $sth->bind_param(":ce_street",            $undef);      # 'HIGH STREET'
     # $sth->bind_param(":ce_town",              $undef);      # 'BRSITOL'
-    # $sth->bind_param(":ce_enquiry_type",      $undef);      # 'CD' , ce_source => 'T'
-    # $sth->bind_param(":ce_cpr_id",            $undef);      # '5' (priority)
     # $sth->bind_param(":ce_rse_he_id",         $undef);      #> nm3net.get_ne_id('1200D90970/09001','L')
     # $sth->bind_param(":ce_compl_target",      $undef);      # '08-JAN-2004'
     # $sth->bind_param(":ce_compl_corresp_date",$undef);      # '02-JAN-2004'
