@@ -1,4 +1,5 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
+[% PROCESS 'admin/report_blocks.html' %]
 
 [% IF updated %]
   <p>
@@ -53,27 +54,30 @@
   <table cellspacing="0" cellpadding="2" border="1">
     <tr>
       <th>[% loc('Category') %]</th>
-      <th>[% loc('Email') %]</th>
-      <th>[% loc('Confirmed') %]</th>
-      <th>[% loc('Deleted') %]</th>
-      <th>[% loc('Devolved') %]</th>
+      <th colspan=2>[% loc('State') %]</th>
       <th>[% loc('Last editor') %]</th>
       <th>[% loc('Note') %]</th>
-      <th>[% loc('Public') %]</th>
-      <th>[% loc('When edited') %]</th>
       <th>[% loc('Confirm') %]</th>
     </tr>
     [% WHILE ( cat = contacts.next ) %]
       <tr [% IF cat.deleted %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for( 'body_edit', body_id, cat.category ) %]">[% cat.category %]</a></td>
-        <td>[% cat.email | html %]</td>
-        <td>[% IF cat.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-        <td>[% IF cat.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]</td>
-        <td>[% IF body.can_be_devolved && cat.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-        <td>[% cat.editor %]</td>
+        <td class="contact-category"><a href="[% c.uri_for( 'body_edit', body_id, cat.category ) %]">[% cat.category %]</a>
+            <br>[% cat.email | html %]</td>
+        <td>
+            [% loc('Confirmed') %]:&nbsp;
+            [%- IF cat.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
+            <br>[% loc('Deleted') %]:&nbsp;
+            [%- IF cat.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]
+        </td>
+        <td>
+            [% loc('Private') %]:&nbsp;
+            [%- cat.non_public ? loc('Yes') : loc('No') %]
+            <br>[% loc('Devolved') %]:&nbsp;
+            [%- IF body.can_be_devolved AND cat.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
+        </td>
+        <td>[% cat.editor %]
+            <br><small>[% PROCESS format_time time=cat.whenedited %]</small></td>
         <td>[% cat.note | html %]</td>
-        <td>[% cat.non_public ? loc('Non Public') : loc('Public') %]</td>
-        <td>[% cat.whenedited.ymd _ ' ' _ cat.whenedited.hms %]</td>
         <td><input type="checkbox" name="confirmed" value="[% cat.category %]"></td>
       </tr>
     [% END %]
