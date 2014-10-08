@@ -405,7 +405,7 @@ sub stats_open_problem_type {
 
 sub subject_line_for_contact_email {
     my ($self, $subject) = @_;
-    return 'CollideOscope message: ' . $subject;
+    return 'Collideoscope message: ' . $subject;
 }
 
 1;
