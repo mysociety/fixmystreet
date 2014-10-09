@@ -8,7 +8,7 @@ sub council_id { return 2224; }
 sub council_area { return 'East Sussex'; }
 sub council_name { return 'East Sussex County Council'; }
 sub council_url { return 'eastsussex'; }
-# sub is_two_tier { return 1; }
+sub is_two_tier { return 1; }
 
 sub path_to_web_templates {
     my $self = shift;
