@@ -27,7 +27,15 @@ sub restriction {
 # Different function to site_restriction due to two-tier use
 sub problems_clause {
     my $self = shift;
-    return { bodies_str => sprintf('%d', $self->council_id) };
+
+    if ($self->is_two_tier) {
+        return { bodies_str => {
+            like => ('%' . $self->council_id . '%')
+        }};
+    }
+    else {
+        return { bodies_str => sprintf('%d', $self->council_id) };
+    }
 }
 
 sub problems {
