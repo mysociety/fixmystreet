@@ -263,22 +263,18 @@ sub ajax : Path('/ajax') {
     # render templates to get the html
     my $on_map_list_html = $c->render_fragment(
         'around/on_map_list_items.html',
-        { on_map => $on_map }
+        { on_map => $on_map, around_map => $around_map }
     );
     my $around_map_list_html = $c->render_fragment(
         'around/around_map_list_items.html',
-        { around_map => $around_map, dist => $dist }
+        { on_map => $on_map, around_map => $around_map }
     );
 
     # JSON encode the response
-    my $body = JSON->new->utf8(1)->encode(
-        {
-            pins         => $pins,
-            current      => $on_map_list_html,
-            current_near => $around_map_list_html,
-        }
-    );
-
+    my $json = { pins => $pins };
+    $json->{current} = $on_map_list_html if $on_map_list_html;
+    $json->{current_near} = $around_map_list_html if $around_map_list_html;
+    my $body = JSON->new->utf8(1)->encode($json);
     $c->res->body($body);
 }
 

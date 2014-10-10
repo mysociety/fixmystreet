@@ -227,6 +227,10 @@ function fixmystreet_onload() {
         }
     });
 
+    if (fixmystreet.initial_hide_pins) {
+        $('#hide_pins_link').click();
+    }
+
     $('#all_pins_link').click(function(e) {
         e.preventDefault();
         fixmystreet.markers.setVisibility(true);

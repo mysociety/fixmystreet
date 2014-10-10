@@ -46,6 +46,17 @@ function tabs(elem, indirect) {
         //hide / show the right tab
         $('.tab.open').hide().removeClass('open');
         $(target).show().addClass('open');
+
+        // Clicking on tabs to show/hide pins, content experiment
+        if (typeof(variation) !== 'undefined' && variation == 1) {
+            if (target == '#current_near_tab' && !fixmystreet.markers.getVisibility()) {
+                $('#hide_pins_link').click();
+            }
+            if (target == '#reporting' && fixmystreet.markers.getVisibility()) {
+                $('#hide_pins_link').click();
+            }
+        }
+
     }
 }
 
@@ -176,8 +187,8 @@ $(function(){
      * Tabs
      */
     //make initial tab active
-    $('.tab-nav a').first().addClass('active');
-    $('.tab').first().addClass('open');
+    $('.tab-nav a:visible').first().addClass('active');
+    $('.tab:visible').first().addClass('open');
     
     //hide other tabs
     $('.tab').not('.open').hide();
