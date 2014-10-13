@@ -18,7 +18,7 @@
     [% INCLUDE 'admin/problem_row.html' %]
 </table>
 
-[% INCLUDE 'pagination.html', admin = 1, param = 'p' IF pager %]
+[% INCLUDE 'pagination.html', admin = 1, param = 'p', pager = problems_pager %]
 
 [% ELSIF searched %]
 

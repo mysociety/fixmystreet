@@ -541,6 +541,9 @@ sub reports : Path('reports') {
     $c->stash->{dir} = $dir;
     $order .= ' desc' if $dir;
 
+    my $p_page = $c->req->params->{p} || 1;
+    my $u_page = $c->req->params->{u} || 1;
+
     if (my $search = $c->req->param('search')) {
         $c->stash->{searched} = $search;
 
@@ -553,15 +556,15 @@ sub reports : Path('reports') {
 
         # when DBIC creates the join it does 'JOIN users user' in the
         # SQL which makes PostgreSQL unhappy as user is a reserved
-        # word, hence we need to quote this SQL. However, the quoting
-        # makes PostgreSQL unhappy elsewhere so we only want to do
-        # it for this query and then switch it off afterwards.
-        $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
-        $c->model('DB')->schema->storage->sql_maker->name_sep( '.' );
+        # word. So look up user ID for email separately.
+        my @user_ids = $c->model('DB::User')->search({
+            email => { ilike => $like_search },
+        }, { columns => [ 'id' ] } )->all;
+        @user_ids = map { $_->id } @user_ids;
 
         if (is_valid_email($search)) {
             $query->{'-or'} = [
-                'user.email' => { ilike => $like_search },
+                'me.user_id' => { -in => \@user_ids },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query->{'-or'} = [
@@ -578,7 +581,7 @@ sub reports : Path('reports') {
         } else {
             $query->{'-or'} = [
                 'me.id' => $search_n,
-                'user.email' => { ilike => $like_search },
+                'me.user_id' => { -in => \@user_ids },
                 'me.external_id' => { ilike => $like_search },
                 'me.name' => { ilike => $like_search },
                 'me.title' => { ilike => $like_search },
@@ -591,19 +594,17 @@ sub reports : Path('reports') {
         my $problems = $c->cobrand->problems->search(
             $query,
             {
-                prefetch => 'user',
+                rows => 50,
                 order_by => [ \"(state='hidden')", \$order ]
             }
-        );
+        )->page( $p_page );
 
-        # we need to pass this in as an array as we can't
-        # query the object in the template as the quoting
-        # will have been turned off
         $c->stash->{problems} = [ $problems->all ];
+        $c->stash->{problems_pager} = $problems->pager;
 
         if (is_valid_email($search)) {
             $query = [
-                'user.email' => { ilike => $like_search },
+                'me.user_id' => { -in => \@user_ids },
             ];
         } elsif ($search =~ /^id:(\d+)$/) {
             $query = [
@@ -616,7 +617,7 @@ sub reports : Path('reports') {
             $query = [
                 'me.id' => $search_n,
                 'problem.id' => $search_n,
-                'user.email' => { ilike => $like_search },
+                'me.user_id' => { -in => \@user_ids },
                 'me.name' => { ilike => $like_search },
                 text => { ilike => $like_search },
                 'me.cobrand_data' => { ilike => $like_search },
@@ -631,24 +632,23 @@ sub reports : Path('reports') {
                 },
                 {
                     -select   => [ 'me.*', qw/problem.bodies_str problem.state/ ],
-                    prefetch => [qw/user problem/],
+                    prefetch => [qw/problem/],
+                    rows => 50,
                     order_by => [ \"(me.state='hidden')", \"(problem.state='hidden')", 'me.created' ]
                 }
-            );
+            )->page( $u_page );
             $c->stash->{updates} = [ $updates->all ];
+            $c->stash->{updates_pager} = $updates->pager;
         }
 
-        # Switch quoting back off. See above for explanation of this.
-        $c->model('DB')->schema->storage->sql_maker->quote_char( '' );
     } else {
 
-        my $page = $c->req->params->{p} || 1;
         my $problems = $c->cobrand->problems->search(
             $query,
-            { order_by => $order }
-        )->page( $page );
+            { order_by => $order, rows => 50 }
+        )->page( $p_page );
         $c->stash->{problems} = [ $problems->all ];
-        $c->stash->{pager} = $problems->pager;
+        $c->stash->{problems_pager} = $problems->pager;
     }
 
     $c->stash->{edit_body_contacts} = 1
