@@ -181,9 +181,9 @@ subtest 'check contact creation' => sub {
     } } );
 
     $mech->content_contains( 'test category' );
-    $mech->content_contains( '<td>test@example.com' );
+    $mech->content_contains( 'test@example.com' );
     $mech->content_contains( '<td>test note' );
-    $mech->content_contains( '<td>Public' );
+    $mech->content_contains( 'Private:&nbsp;No' );
 
     $mech->submit_form_ok( { with_fields => { 
         category   => 'private category',
@@ -193,7 +193,7 @@ subtest 'check contact creation' => sub {
     } } );
 
     $mech->content_contains( 'private category' );
-    $mech->content_contains( '<td>Non Public' );
+    $mech->content_contains( 'Private:&nbsp;Yes' );
 
     $mech->submit_form_ok( { with_fields => {
         category => 'test/category',
@@ -215,17 +215,18 @@ subtest 'check contact editing' => sub {
     } } );
 
     $mech->content_contains( 'test category' );
-    $mech->content_contains( '<td>test2@example.com' );
+    $mech->content_contains( 'test2@example.com' );
     $mech->content_contains( '<td>test2 note' );
-    $mech->content_contains( '<td>Public' );
+    $mech->content_contains( 'Private:&nbsp;No' );
 
+    $mech->get_ok('/admin/body_edit/2650/test%20category');
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
         note     => 'test2 note',
         non_public => 'on',
     } } );
 
-    $mech->content_contains( '<td>Non Public' );
+    $mech->content_contains( 'Private:&nbsp;Yes' );
 
     $mech->get_ok('/admin/body_edit/2650/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );
@@ -241,7 +242,7 @@ subtest 'check contact updating' => sub {
     $mech->tick( 'confirmed', 'test category' );
     $mech->submit_form_ok({form_number => 1});
 
-    $mech->content_like(qr'test2@example.com</td>[^<]*<td>Yes's);
+    $mech->content_like(qr'test2@example.com</td>[^<]*<td>\s*Confirmed:&nbsp;Yes's);
     $mech->get_ok('/admin/body_edit/2650/test%20category');
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };

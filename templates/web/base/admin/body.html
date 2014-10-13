@@ -1,10 +1,13 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Council contacts for %s'), body.name) -%]
+[% PROCESS 'admin/report_blocks.html' %]
 
 [% IF updated %]
   <p>
     <em>[% updated %]</em>
   </p>
 [% END %]
+
+[% IF NOT errors %]
 
 <p>
   [% IF example_pc %]
@@ -51,28 +54,31 @@
   <table cellspacing="0" cellpadding="2" border="1">
     <tr>
       <th>[% loc('Category') %]</th>
-      <th>[% loc('Email') %]</th>
-      <th>[% loc('Confirmed') %]</th>
-      <th>[% loc('Deleted') %]</th>
-      <th>[% loc('Devolved') %]</th>
+      <th colspan=2>[% loc('State') %]</th>
       <th>[% loc('Last editor') %]</th>
       <th>[% loc('Note') %]</th>
-      <th>[% loc('Public') %]</th>
-      <th>[% loc('When edited') %]</th>
       <th>[% loc('Confirm') %]</th>
     </tr>
-    [% WHILE ( contact = contacts.next ) %]
-      <tr [% IF contact.deleted %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for( 'body_edit', body_id, contact.category ) %]">[% contact.category %]</a></td>
-        <td>[% contact.email | html %]</td>
-        <td>[% IF contact.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-        <td>[% IF contact.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]</td>
-        <td>[% IF body.can_be_devolved && contact.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
-        <td>[% contact.editor %]</td>
-        <td>[% contact.note | html %]</td>
-        <td>[% contact.non_public ? loc('Non Public') : loc('Public') %]</td>
-        <td>[% contact.whenedited.ymd _ ' ' _ contact.whenedited.hms %]</td>
-        <td><input type="checkbox" name="confirmed" value="[% contact.category %]"></td>
+    [% WHILE ( cat = contacts.next ) %]
+      <tr [% IF cat.deleted %]class="is-deleted"[% END %]>
+        <td class="contact-category"><a href="[% c.uri_for( 'body_edit', body_id, cat.category ) %]">[% cat.category %]</a>
+            <br>[% cat.email | html %]</td>
+        <td>
+            [% loc('Confirmed') %]:&nbsp;
+            [%- IF cat.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
+            <br>[% loc('Deleted') %]:&nbsp;
+            [%- IF cat.deleted %]<strong>[% loc('Yes') %]</strong>[% ELSE %][% loc('No') %][% END %]
+        </td>
+        <td>
+            [% loc('Private') %]:&nbsp;
+            [%- cat.non_public ? loc('Yes') : loc('No') %]
+            <br>[% loc('Devolved') %]:&nbsp;
+            [%- IF body.can_be_devolved AND cat.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
+        </td>
+        <td>[% cat.editor %]
+            <br><small>[% PROCESS format_time time=cat.whenedited %]</small></td>
+        <td>[% cat.note | html %]</td>
+        <td><input type="checkbox" name="confirmed" value="[% cat.category %]"></td>
       </tr>
     [% END %]
   </table>
@@ -84,14 +90,25 @@
   </p>
 </form>
 
-<div class="admin-box">
-  <h2>[% loc('Add new category') %]</h2>
-  <p class="fms-admin-info">
+<p class="fms-admin-info">
     [% loc("Each contact for the body has a category, which is displayed to the public. 
             Different categories <strong>can have the same contact</strong> (email address).
             This means you can add many categories even if you only have one contact for the body.
     ") %]
-  </p>
+</p>
+
+[% END %][%# Only show all the above if no errors with below form %]
+
+<div class="admin-box">
+  [% IF NOT contact %]
+    <h2>[% loc('Add new category') %]</h2>
+  [% END %]
+
+[% IF errors %]
+<div class="fms-admin-warning">
+  [% errors.values.join('<br>') %]
+</div>
+[% END %]
 
   <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
@@ -106,7 +123,7 @@
         </p>
       </div>
       <p>
-        <strong>[% loc('Category:') %] </strong><input type="text" name="category" size="30">
+        <strong>[% loc('Category:') %] </strong><input type="text" name="category" size="30" value="[% contact.category | html %]">
       </p>
     [% END %]
 
@@ -123,7 +140,7 @@
     </div>
 
     <p>
-      <strong>[% loc('Email address:') %] </strong><input type="text" name="email" size="30">
+      <strong>[% loc('Email address:') %] </strong><input type="text" name="email" size="30" value="[% contact.email | html %]">
     </p>
 
     <div class="admin-hint">
@@ -133,7 +150,7 @@
       </p>
     </div>
     <p>
-      <input type="checkbox" name="confirmed" value="1" id="confirmed"> 
+      <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
       <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
     </p>
 
@@ -144,7 +161,7 @@
       </p>
     </div>
     <p>
-      <input type="checkbox" name="deleted" value="1" id="deleted"> 
+      <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
       <label for="deleted" class="inline">[% loc('Deleted') %]</label>
     </p>
 
@@ -169,14 +186,14 @@
       </p>
     </div>
     <p>
-      <input type="checkbox" name="non_public" value="1" id="non_public"> 
+      <input type="checkbox" name="non_public" value="1" id="non_public" [% ' checked' IF contact.non_public %]>
       <label for="non_public" class="inline">[% loc('Private') %]</label>
     </p>
 
     <p>
       <input type="hidden" name="posted" value="new" >
       <input type="hidden" name="token" value="[% token %]" >
-      <input type="submit" name="Create category" value="[% loc('Create category') %]" >
+      <input type="submit" name="Create category" value="[% errors ? loc('Save changes') : loc('Create category') %]" >
     </p>
 
     <div>
@@ -185,8 +202,12 @@
     </div>
   </form>
 </div>
+
+[% IF NOT errors %]
 <div class="admin-box">
   <h2>[% loc('Edit body details') %]</h2>
   [% INCLUDE 'admin/body-form.html' %]
 </div>
+[% END %][%# Only show all the above if no errors with category form %]
+
 [% INCLUDE 'admin/footer.html' %]

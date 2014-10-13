@@ -129,12 +129,15 @@ sub display_news_form {
 address below and we&rsquo;ll send you occasional emails about what mySociety
 and our users have been up to.</p>
 
-<form method="post" action="https://secure.mysociety.org/admin/lists/mailman/subscribe/news">
+<form method="post" action="//mysociety.us9.list-manage.com/subscribe/post?u=53d0d2026dea615ed488a8834&id=287dc28511">
+<label style="position: absolute; left: -5000px;">
+Leave this box empty: <input type="text" name="b_53d0d2026dea615ed488a8834_287dc28511" tabindex="-1" value="" />
+</label>
 <label for="name">Name:</label>
-<input type="text" name="fullname" id="name" value="$input_h{name}" size="30">
+<input type="text" name="NAME" id="name" value="$input_h{name}" size="30">
 <br><label for="email">Email:</label>
-<input type="text" name="email" id="email" value="$input_h{email}" size="30">
-&nbsp; <input type="submit" value="Add me to the list">
+<input type="text" name="EMAIL" id="email" value="$input_h{email}" size="30">
+&nbsp; <input type="submit" name="subscribe" value="Add me to the list">
 </form>
 
 <p>mySociety respects your privacy, and we'll never sell or give away your private

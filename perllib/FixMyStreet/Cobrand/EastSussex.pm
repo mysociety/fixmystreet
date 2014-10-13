@@ -8,7 +8,15 @@ sub council_id { return 2224; }
 sub council_area { return 'East Sussex'; }
 sub council_name { return 'East Sussex County Council'; }
 sub council_url { return 'eastsussex'; }
-# sub is_two_tier { return 1; }
+sub is_two_tier { return 1; }
+
+# Different to councils parent due to this being a two-tier council.
+# This is now specialised for Hart, Oxfordshire, ESCC, and should
+# be genericised in the parent...
+# see https://github.com/mysociety/FixMyStreet-Commercial/issues/603
+sub problems_clause {
+    return { bodies_str => { like => '%2224%' } };
+}
 
 sub path_to_web_templates {
     my $self = shift;

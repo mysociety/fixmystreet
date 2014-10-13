@@ -343,8 +343,13 @@ sub update_contacts : Private {
     if ( $posted eq 'new' ) {
         $c->forward('check_token');
 
+        my %errors;
+
         my $category = $self->trim( $c->req->param( 'category' ) );
+        $errors{category} = _("Please choose a category") unless $category;
         my $email = $self->trim( $c->req->param( 'email' ) );
+        $errors{email} = _('Please enter a valid email') unless is_valid_email($email);
+        $errors{note} = _('Please enter a message') unless $c->req->param('note');
 
         $category = 'Empty property' if $c->cobrand->moniker eq 'emptyhomes';
 
@@ -367,7 +372,11 @@ sub update_contacts : Private {
         $contact->api_key( $c->req->param('api_key') );
         $contact->send_method( $c->req->param('send_method') );
 
-        if ( $contact->in_storage ) {
+        if ( %errors ) {
+            $c->stash->{updated} = _('Please correct the errors below');
+            $c->stash->{contact} = $contact;
+            $c->stash->{errors} = \%errors;
+        } elsif ( $contact->in_storage ) {
             $c->stash->{updated} = _('Values updated');
 
             # NB: History is automatically stored by a trigger in the database
