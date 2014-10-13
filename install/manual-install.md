@@ -93,21 +93,15 @@ which it's much simpler to install via a packaging system.
 
 #### b. Debian / Linux
 
-If you're using Debian 6.0 ("squeeze") then the packages to install
-some required dependencies are listed in `conf/packages.debian-squeeze` or
-`conf/packages.debian-squeeze+testing`. To install all of them you can run:
+If you're using Debian 7 ("wheezy") then the packages to install some required
+dependencies are listed in `conf/packages.debian-wheezy`. To install all of
+them you can run:
 
-    sudo xargs -a conf/packages.debian-squeeze apt-get install
+    sudo xargs -a conf/packages.debian-wheezy apt-get install
 
 A similar list of packages should work for other Debian-based
 distributions.  (Please let us know if you would like to contribute
 such a package list or instructions for other distributions.)
-
-Unfortunately, Compass is not packaged in Debian squeeze (or
-squeeze-backports).  You will either need to install the package
-from testing, or you could install it from the Ruby gem with:
-
-    gem install compass
 
 #### c. Other
 
