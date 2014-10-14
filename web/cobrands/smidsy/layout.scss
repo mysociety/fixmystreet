@@ -267,7 +267,7 @@ body.mappage {
         }
 
         @each $participant in 'bicycle', 'generic', 'horse', 'pedestrian', 'vehicle' {
-          @each $severity in 'miss', 'slight', 'serious' {
+          @each $severity in 'miss', 'slight', 'serious', 'fatal' {
             &.#{$participant}-#{$severity} {
               background-image: url(/cobrands/smidsy/images/dot-#{$participant}-#{$severity}.png);
             }
