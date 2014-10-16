@@ -30,7 +30,7 @@ sub disambiguate_location {
 }
 
 sub example_places {
-    return [ 'CV34 3BU', 'Stratford Rd' ];
+    return [ 'CV34 4RL', 'Stratford Rd' ];
 }
 
 1;
