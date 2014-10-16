@@ -248,7 +248,7 @@ sub _add_meta_to_contact {
             public_anonymity_required
             email_alerts_requested
         ) ],
-        #2242, 
+        #2243, 
         'Warwickshire County Council' => [qw(
             external_id
             easting
@@ -295,6 +295,16 @@ sub _delete_contacts_not_in_service_list {
             deleted => 0,
         }
     );
+
+    # for Warwickshire, which is mixed Open311 and email, don't delete the email
+    # addresses
+    if ($self->_current_body->name eq 'Warwickshire County Council') {
+        $found_contacts = $found_contacts->search(
+            {
+                email => { -not_like => '%@%' }
+            }
+        );
+    }
 
     $found_contacts->update(
         {
