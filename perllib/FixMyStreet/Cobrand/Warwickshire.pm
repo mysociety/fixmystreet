@@ -11,13 +11,6 @@ sub council_url { return 'warwickshire'; }
 
 sub is_two_tier { return 1; }
 
-# Different to councils parent due to this being a two-tier council. If we get
-# more, this can be genericised in the parent.
-sub problems_clause {
-    return { bodies_str => { like => '%2243%' } };
-}
-
-
 sub disambiguate_location {
     my $self = shift;
     return {
