@@ -482,10 +482,6 @@ sub visible_form_values {
 
     my %params = map { $_ => $form->value($_) } @visible_field_names;
 
-    # Ignore content experiment fields
-    delete $params{email_y};
-    delete $params{email_n};
-
     return \%params;
 }
 
