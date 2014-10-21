@@ -89,6 +89,7 @@ sub send {
     }
 
     my ($verbose, $nomail) = CronFns::options();
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
     my $result = FixMyStreet::App->send_email_cron(
         {
             _template_ => $self->get_template( $row ),
@@ -98,7 +99,8 @@ sub send {
         },
         mySociety::Config::get('CONTACT_EMAIL'),
         \@recips,
-        $nomail
+        $nomail,
+        $cobrand
     );
 
     if ( $result == mySociety::EmailUtil::EMAIL_SUCCESS ) {
