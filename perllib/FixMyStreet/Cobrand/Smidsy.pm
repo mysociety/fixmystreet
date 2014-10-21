@@ -68,18 +68,18 @@ sub severity_categories_json {
 
 sub get_severity {
     my ($self, $severity) = @_;
-    return first { $severity >= $_->{value} } 
+    return first { $severity >= $_->{value} }
         reverse @{ $self->severity_categories };
 }
 
-sub area_types          { 
+sub area_types          {
     my $self = shift;
     my $area_types = $self->next::method;
-    [ 
+    [
         @$area_types,
         'GLA', # Greater London Authority
     ];
-} 
+}
 
 sub on_map_default_max_pin_age {
     return '7 days';
@@ -134,7 +134,7 @@ sub process_extras {
             name => 'incident_time',
             validator => sub {
                 my $data = shift or return;
-                die "Please input a valid time in format hh:mm\n" 
+                die "Please input a valid time in format hh:mm\n"
                     unless $data =~ /^\d{1,2}:\d{2}$/;
                 return $data;
             },
@@ -242,7 +242,7 @@ sub munge_report {
         else {
             $participant = 'vehicle' unless $participant eq 'pedestrian';
 
-            my $participant_description = 
+            my $participant_description =
             {
                 pedestrian => 'a pedestrian',
                 car => 'a car',
@@ -258,7 +258,7 @@ sub munge_report {
 
     if (my $injury_detail = $report->extra->{injury_detail}) {
         $report->detail(
-            $report->detail . 
+            $report->detail .
                 "\n\nDetails about injuries: $injury_detail\n"
         );
     }
@@ -286,13 +286,13 @@ sub get_embed_code {
 
     if ($uri->host =~ /youtube.com$/) {
         my $v = $uri->query_param('v') or return;
-        return qq{<iframe width="320" height="195" src="//www.youtube.com/embed/$v" 
+        return qq{<iframe width="320" height="195" src="//www.youtube.com/embed/$v"
             frameborder="0" allowfullscreen></iframe>};
     }
 
     if ($uri->host =~ /vimeo.com$/) {
         my ($v) = $uri->path =~ m{^/(\w+)};
-        return qq{<iframe src="//player.vimeo.com/video/$v" width="320" height="195" 
+        return qq{<iframe src="//player.vimeo.com/video/$v" width="320" height="195"
             frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>};
     }
 
