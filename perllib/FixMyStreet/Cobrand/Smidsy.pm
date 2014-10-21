@@ -402,4 +402,21 @@ sub subject_line_for_contact_email {
     return 'CollideOscope message: ' . $subject;
 }
 
+=head2 _fallback_body_sender
+
+Override _fallback_body_sender from the UK cobrand so that we don't do things
+differently for bodies in London or Northern Ireland.
+
+Note: Northern Ireland reports will actually be sent to 1 of 2 (or maybe 4?)
+highways agencies, but we've assigned the appropriate email addresses to each
+NI council body in the database, so we don't need to use the special NI
+sending method to achieve this.
+
+=cut
+sub _fallback_body_sender {
+    my ( $self, $body, $category ) = @_;
+
+    return { method => 'Email' };
+};
+
 1;
