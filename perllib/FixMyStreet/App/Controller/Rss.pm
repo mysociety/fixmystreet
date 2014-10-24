@@ -278,7 +278,7 @@ sub add_row : Private {
         description => ent(ent($desc)) # Yes, double-encoded, really.
     );
     $item{pubDate} = $pubDate if $pubDate;
-    $item{category} = $row->{category} if $row->{category};
+    $item{category} = ent($row->{category}) if $row->{category};
 
     if ($c->cobrand->allow_photo_display($row) && $row->{photo}) {
         my $key = $alert_type->item_table eq 'comment' ? 'c/' : '';
