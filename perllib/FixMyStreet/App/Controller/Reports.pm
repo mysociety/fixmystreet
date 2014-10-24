@@ -369,6 +369,7 @@ sub load_and_group_problems : Private {
 
     my $page = $c->req->params->{p} || 1;
     my $type = $c->req->params->{t} || 'all';
+    my $category = $c->req->params->{c} || '';
 
     my $where = {
         non_public => 0,
@@ -394,6 +395,10 @@ sub load_and_group_problems : Private {
         $where->{state} = $not_open;
     }
 
+    if ($category) {
+        $where->{category} = $category;
+    }
+
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
         $where->{bodies_str} = [
@@ -415,6 +420,7 @@ sub load_and_group_problems : Private {
             { 'like', '%,' . $c->stash->{body}->id },
         ];
     }
+
     my $problems = $c->cobrand->problems->search(
         $where,
         {
