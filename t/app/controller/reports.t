@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use FixMyStreet::TestMech;
-use mySociety::MaPit;
 use FixMyStreet::App;
 use DateTime;
 

@@ -9,6 +9,7 @@ BEGIN {
     FixMyStreet->test_mode(1);
 }
 
+use FixMyStreet::TestMapIt;
 use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
 use Test::More;
 use Web::Scraper;
