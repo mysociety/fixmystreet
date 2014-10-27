@@ -4,7 +4,6 @@
     [% FOREACH p IN all_incidents %]
         <li>
             [% UNLESS p.title; p = p.problem; END %]
-            [% p.category %]
             <a href="[% c.uri_for('/report', p.id ) %]" class="[% p.category %]">
                 <h3>[% p.title | html %]</h3>
                 <p>[%- prettify_dt( p.confirmed, 1 ) %]</p>
