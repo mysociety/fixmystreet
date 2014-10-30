@@ -98,6 +98,8 @@ sub category_options {
 sub process_extras {
     my ($self, $ctx, undef, $extra) = @_;
 
+    return if ref $extra eq 'ARRAY'; # this is an update. Oh for strong typing. TODO refactor
+
     my @fields = (
         {
             name => 'severity',
