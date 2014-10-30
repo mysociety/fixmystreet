@@ -551,12 +551,9 @@ sub meta_line {
     my $date_time = Utils::prettify_dt( $problem->confirmed );
     my $meta = '';
 
-    # FIXME Should be in cobrand
-    if ($c->cobrand->moniker eq 'emptyhomes') {
+    if ($c->cobrand->can('report_meta_line')) {
 
-        my $category = _($problem->category);
-        utf8::decode($category);
-        $meta = sprintf(_('%s, reported at %s'), $category, $date_time);
+        $meta = $c->cobrand->report_meta_line($problem, $date_time);
 
     } else {
 
