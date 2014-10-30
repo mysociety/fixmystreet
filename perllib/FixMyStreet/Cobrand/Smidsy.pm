@@ -419,13 +419,18 @@ sub _fallback_body_sender {
     return { method => 'Email' };
 };
 
+sub is_stats19 {
+    my ($self, $problem) = @_;
+    return $problem->name eq 'Stats19 import';
+}
+
 sub report_meta_line {
     my ($self, $problem, $date_time) = @_;
 
     my $occurred = sprintf '(incident occurred: %s)',
         $self->prettify_incident_dt( $problem );
 
-    if ($problem->name eq 'Stats19 import') {
+    if ($self->is_stats19($problem)) {
         return sprintf 'Reported to the police and recorded by Stats19 %s',
             $occurred;
     }
