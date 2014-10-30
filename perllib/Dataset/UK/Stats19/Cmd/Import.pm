@@ -129,6 +129,7 @@ sub execute {
                 anonymous    => 0,
                 created      => $accident->date,
                 confirmed    => $accident->date,
+                lastupdate   => $accident->date,
                 whensent     => $accident->date, # prevent imported stats19 data from getting sent again
                 extra        => $extra,
             });
