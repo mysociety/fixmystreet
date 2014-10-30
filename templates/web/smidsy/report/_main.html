@@ -3,10 +3,9 @@
 
     <em><p>
     [% problem.meta_line(c) | html %]
-    [%- IF !problem.used_map AND c.cobrand.moniker != 'emptyhomes' %]; 
+    [%- IF !problem.used_map %]; 
         <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>
     [% END %]
-    (incident occurred: [% c.cobrand.prettify_incident_dt(problem) %])
     </p></em>
     [% INCLUDE 'report/_support.html' %]
 
