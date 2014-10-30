@@ -570,5 +570,12 @@ sub munge_stats {
     }
 }
 
+sub report_meta_line {
+    my ($self, $problem, $date_time) = @_;
+    my $category = _($problem->category);
+    utf8::decode($category);
+    return sprintf(_('%s, reported at %s'), $category, $date_time);
+}
+
 1;
 
