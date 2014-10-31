@@ -79,7 +79,7 @@
                 <option value="lane-onroad" [% isSelected(exp='lane-onroad') %]>
                     [% loc('On-road bike lane') %]</option>
                 <option value="lane-separate" [% isSelected(exp='lane-separate') %]>
-                    [% loc('Segregated bike lane') %]</option>
+                    [% loc('Segregated bike path') %]</option>
                 <option value="pavement" [% isSelected(exp='pavement') %]>
                     [% loc('Pavement') %]</option>
             </select>
@@ -103,6 +103,8 @@
                 [% loc('Another bike') %]</option>
                 <option value="pedestrian" [% isSelected(exp='pedestrian') %]>
                 [% loc('A pedestrian') %]</option>
+                <option value="generic" [% isSelected(exp='generic') %]>
+                [% loc('Nothing (e.g. street furniture)') %]</option>
             </select>
 
             <div class="vehicle-registration-number">
