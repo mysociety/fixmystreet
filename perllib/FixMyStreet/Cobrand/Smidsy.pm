@@ -157,6 +157,8 @@ sub process_extras {
                         "other" => 1,
                         "pedestrian" => 1,
                         "motorcycle" => 1,
+                        "horse" => 1, # though no option on form (as yet)
+                        "generic" => 1,
                     }->{ $data };
                 return $data;
             },
@@ -244,6 +246,9 @@ sub munge_report {
     my $participants = do {
         if ($participant eq 'bicycle') {
             '2 bicycles'
+        }
+        elsif ($participant eq 'generic') {
+            'just one bicycle';
         }
         else {
             $participant = 'vehicle' unless $participant eq 'pedestrian';
