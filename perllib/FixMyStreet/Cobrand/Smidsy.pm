@@ -82,7 +82,7 @@ sub area_types          {
 }
 
 sub on_map_default_max_pin_age {
-    return '7 days';
+    return '1 year'; # to show "current" Stats19 data too
 }
 
 sub pin_colour {
