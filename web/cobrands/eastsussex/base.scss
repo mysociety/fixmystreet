@@ -46,6 +46,7 @@ h1.main {
 }
 
 #site-header {
+    position: relative;
     background: $primary;
     height: 76px;
     border-top-width: 4px;
@@ -223,4 +224,13 @@ styling, but this doesn't dtrt with span, so adding ourselves */
 
 #geolocate_link {
     font-size: 1.0em;
+}
+
+.ie6, .ie7 {
+    body {
+        z-index: 1;
+    }
+    #site-header {
+        z-index: 1;
+    }
 }
