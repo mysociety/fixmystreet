@@ -8,8 +8,8 @@ perl
 perlmagick
 libmath-bigint-gmp-perl
 gettext
-libhaml-ruby
-postgresql-8.4
+ruby1.9.1
+postgresql
 postgresql-server-dev-8.4
 gnuplot
 ttf-bitstream-vera

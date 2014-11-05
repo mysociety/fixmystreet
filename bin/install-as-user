@@ -71,25 +71,22 @@ if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
 fi
 
 # Install the compass gem locally - it's required for generating the
-# CSS:
+# CSS. Don't trust the bundled bundler in e.g. precise.
 echo "Setting up CSS... "
-export GEM_HOME="$DIRECTORY/gems"
-mkdir -p "$GEM_HOME"
-export GEM_PATH=
-export PATH="$GEM_HOME/bin:$PATH"
+gem1.9.1 install --user-install --no-ri --no-rdoc bundler
+FMS_GEMPATH="$DIRECTORY/gem-bin"
+FMS_GEMPATH="$FMS_GEMPATH:$(ruby1.9.1 -rubygems -e 'puts Gem.user_dir')/bin"
+export PATH="$FMS_GEMPATH:$PATH"
 
-if ! grep -q 'Set up local gem directory for FixMyStreet' $HOME/.bashrc; then
+if ! grep -q 'Set up local PATH for FixMyStreet' $HOME/.bashrc; then
     cat >>$HOME/.bashrc <<EOBRC
 
-# Set up local gem directory for FixMyStreet
-export GEM_HOME="$DIRECTORY/gems"
-export GEM_PATH=
-export PATH="\$GEM_HOME/bin:\$PATH"
+# Set up local PATH for FixMyStreet
+export PATH="$FMS_GEMPATH:\$PATH"
 EOBRC
 fi
 
-gem install --no-ri --no-rdoc sass -v 3.2.14
-gem install --no-ri --no-rdoc compass -v 0.12.2
+bundle install --deployment --path "$DIRECTORY/gems" --binstubs "$DIRECTORY/gem-bin"
 
 # Use compass to generate the CSS, if it doesn't seem to already
 # exist:
