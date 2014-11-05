@@ -349,7 +349,6 @@ sub diff {
             my $deleted = join '', $diff->Items(1);
             unless ($deleted =~/^\s*$/) {
                 $string .= ' ' if $deleted =~/^ /;
-                my $letters = ($deleted=~s/\W//r);
                 $string .= '[...]';
                 $string .= ' ' if $deleted =~/ $/;
             }
