@@ -15,7 +15,6 @@ require 5.8.0;
 
 use Digest::MD5;
 use Encode;
-use Error qw(:try);
 use CronFns;
 
 use FixMyStreet::App;

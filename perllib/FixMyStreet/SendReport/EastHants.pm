@@ -4,11 +4,9 @@ use Moose;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
-# export just what we need as error if we use :try
-use Error qw(try otherwise);
+use Try::Tiny;
 use Encode;
 use mySociety::Web qw(ent);
-use EastHantsWSDL;
 
 sub construct_message {
     my %h = @_;
@@ -37,6 +35,8 @@ sub send {
     # FIXME: should not recreate this each time
     my $eh_service;
 
+    require EastHantsWSDL;
+
     $h->{category} = 'Customer Services' if $h->{category} eq 'Other';
     $h->{message} = construct_message( %$h );
     my $return = 1;
@@ -50,8 +50,8 @@ sub send {
             '', '', '', '', '', '', $message, 'Yes', $h->{image_url}
         );
         $return = 0 if $result eq 'Report received';
-    } otherwise {
-        my $e = shift;
+    } catch {
+        my $e = $_;
         print "Caught an error: $e\n";
         $self->error( "Error sending to East Hants: $e" );
     };

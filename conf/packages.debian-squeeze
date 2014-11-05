@@ -1,8 +1,6 @@
 make
 jhead
-liberror-perl
 liblocale-gettext-perl
-libsoap-lite-perl
 memcached
 perl
 perlmagick

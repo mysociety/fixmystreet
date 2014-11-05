@@ -69,7 +69,6 @@ requires 'POSIX';
 requires 'Readonly';
 requires 'Regexp::Common';
 requires 'Scalar::Util';
-requires 'SOAP::Lite';
 requires 'Statistics::Distributions';
 requires 'Storable';
 requires 'Template::Plugin::Comma';
@@ -81,12 +80,9 @@ requires 'XML::RSS';
 requires 'XML::Simple';
 requires 'YAML';
 
-# SOAP::Lite isn't needed by all cobrands, but it would require
-# code changes to only be imported when installed.
-
 feature 'uk', 'FixMyStreet.com specific requirements' => sub {
-#    # East Hampshire
-#    requires 'SOAP::Lite';
+    # East Hampshire
+    requires 'SOAP::Lite';
     # Barnet
     # TODO: This can perhaps be removed since Barnet switched to email for problem reports
     requires 'SOAP::WSDL';
@@ -101,10 +97,10 @@ feature 'open311-endpoint', 'Open311::Endpoint specific requirements' => sub {
     requires 'DateTime::Format::Oracle'; # for EXOR
 };
 
-#feature 'zurich', 'Zueri wie neu specific requirements' => sub {
+feature 'zurich', 'Zueri wie neu specific requirements' => sub {
 #    # Geocoder
-#    requires 'SOAP::Lite';
-#};
+    requires 'SOAP::Lite';
+};
 
 # Moderation by from_body user
 requires 'Algorithm::Diff';
