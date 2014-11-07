@@ -169,59 +169,13 @@ body.fullwidthpage {
 
     .container {
         .content {
-            box-shadow: none;
-            padding: 1em 1em 0em;
-            margin-bottom: 0em;
             footer {
-                margin-top: 0em;
                 .tablewrapper {
-                    padding-top: 2em;
-                    padding-bottom: 3em;
                     background: #1a1a1a url(images/tile.jpg) 0 0 repeat;
-                    color: $base_fg;
-                    a:link,
-                    a:visited {
-                        color: $primary;
-                    }
-                    #footer-mobileapps {
-                        a {
-                            padding-left: 0.5em;
-                        }
-                    }
-                    h4 {
-                        font-weight: normal;
-                        padding-bottom: 0.5em;
-                    }
-                }
-
-                a.platform-logo {
-                    vertical-align: baseline;
-                    display: inline-block;
-                    background-position: top left;
-                    background-repeat: no-repeat;
-                    background-size: auto 1.5em;
-                    background-image: url("images/fms-platform-logo.svg");
-                    text-indent: -1000%;
-                    height: 1.7em;
-                    width: 16em;
-                    padding-right: 0.25em;
                 }
             }
         }
     }
-}
-
-.ie6, .ie7, .ie8  {
-  body.frontpage,
-  body.twothirdswidthpage {
-    .content {
-      border: 0px;
-    }
-  }
-}
-.ie8 body.frontpage .container .content footer a.platform-logo {
-    background: none;
-    text-indent: 0px;
 }
 
 body.frontpage {
