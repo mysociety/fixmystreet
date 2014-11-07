@@ -1,0 +1,54 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use FixMyStreet::App;
+use FixMyStreet::Geocode::OSM;
+
+my @reports = FixMyStreet::App->model('DB::Problem')->search({
+    state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+}, {
+    rows => 40,
+})->all;
+
+my (%namecount, %refcount, %operatorcount);
+my $cobrand;
+my $cobrand_data;
+my $total = 0;
+$| = 1;
+foreach my $row (@reports) {
+    print ".";
+    $total++;
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+    my $osmtags = FixMyStreet::Geocode::OSM::get_nearest_road_tags($cobrand, $row->latitude, $row->longitude);
+    if (exists $osmtags->{name}) {
+        $namecount{$osmtags->{name}}++;
+    }
+    if (exists $osmtags->{ref}) {
+        $refcount{$osmtags->{ref}}++;
+    }
+    my $operator = $osmtags->{operator} || $osmtags->{operatorguess};
+    if ($operator) {
+        $operatorcount{$operator}++;
+    }
+    sleep 5;
+}
+print "\n";
+print_stats();
+
+sub print_stats {
+    print "Names:\n";
+    for my $name (sort keys %namecount) {
+        printf("%3d %s\n", $namecount{$name}, $name) if $namecount{$name} > 1;
+    }
+    print "Refs:\n";
+    for my $ref (sort keys %refcount) {
+        printf("%3d %s\n", $refcount{$ref}, $ref) if $refcount{$ref} > 1;
+    }
+    print "Operators:\n";
+    for my $operator (sort keys %operatorcount) {
+        printf("%3d %s\n", $operatorcount{$operator}, $operator);
+    }
+    print "Total $total\n";
+}
