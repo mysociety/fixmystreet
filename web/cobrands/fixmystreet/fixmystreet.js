@@ -468,7 +468,7 @@ $.fn.drawer = function(id, ajax) {
      * rendered height is used after any page manipulation (such as tabs)
      */
     if (!$('html.mobile').length) {
-        if (!($('body').hasClass('frontpage'))){
+        if (!($('body').hasClass('fullwidthpage'))){
             var offset = -15 * 16;
             if (cobrand == 'bromley') {
                 offset = -110;
