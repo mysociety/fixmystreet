@@ -8,8 +8,14 @@
 #
 # Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: send-reports,v 1.79 2010-01-06 16:50:26 louise Exp $
+
+COMPASS=compass
+SASS=sass
+PARENT=$(cd `dirname $0`/../.. && pwd)
+if [ -f "$PARENT/gem-bin/compass" ]; then
+    COMPASS=$PARENT/gem-bin/compass
+    SASS=$PARENT/gem-bin/sass
+fi
 
 DIRECTORY=$(cd `dirname $0`/../web && pwd)
 
@@ -17,8 +23,8 @@ DIRS=${@:-`find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq`}
 
 for dir in $DIRS; do
     if [ -e "$dir/config.rb" ]; then
-        compass compile --output-style compressed $dir
+        $COMPASS compile --output-style compressed $dir
     else
-        sass --scss --update --style compressed $dir
+        $SASS --scss --update --style compressed $dir
     fi
 done

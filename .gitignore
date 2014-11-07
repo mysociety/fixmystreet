@@ -4,6 +4,7 @@
 ._*
 
 .vagrant
+.bundle
 .DS_Store
 .carton
 local-lib5

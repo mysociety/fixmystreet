@@ -16,7 +16,6 @@ use strict;
 use Digest::MD5 qw(md5_hex);
 use File::Path ();
 use Geo::Coordinates::CH1903;
-use SOAP::Lite;
 use Storable;
 use mySociety::Locale;
 
@@ -32,6 +31,8 @@ sub setup_soap {
     my $password = $geocoder->{password};
     my $attr = 'http://ch/geoz/fixmyzuerich/service';
     my $action = "$attr/IFixMyZuerich/";
+
+    require SOAP::Lite;
 
     # Set up the SOAP handler
     $security = SOAP::Header->name("Security")->attr({

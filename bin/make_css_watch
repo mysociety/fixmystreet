@@ -2,8 +2,10 @@
 use strict;
 use warnings;
 use feature 'say';
+use Cwd qw(abs_path);
 use File::ChangeNotify;
 use File::Find::Rule;
+use FindBin;
 use Path::Tiny;
 
 my @exts = qw/
@@ -23,6 +25,14 @@ my $watcher = File::ChangeNotify->instantiate_watcher(
     directories => \@dirs,
     filter => $filter,
 );
+
+my $script_compass = 'compass';
+my $script_sass = 'sass';
+my $gem_bin = abs_path("$FindBin::Bin/../../gem-bin");
+if (-f "$gem_bin/compass") {
+    $script_compass = "$gem_bin/compass";
+    $script_sass = "$gem_bin/sass";
+}
 
 sub title {
     my $what = shift;
@@ -61,13 +71,13 @@ while ( my @events = $watcher->wait_for_events() ) {
     }
     for my $dir (@update_dirs) {
         if (-e "$dir/config.rb") {
-            system compass =>
+            system $script_compass,
                 'compile',
                 '--output-style' => 'compressed',
                 $dir;
         }
         else {
-            system sass =>
+            system $script_sass,
                 '--scss',
                 '--update',
                 '--style' => 'compressed',

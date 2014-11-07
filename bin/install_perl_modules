@@ -9,7 +9,7 @@ $DIR/bin/cpanm -l $DIR/local-carton Carton
 export PATH=$DIR/local-carton/bin:$PATH
 export PERL5LIB=$DIR/local-carton/lib/perl5
 
-carton install --deployment --without uk
+carton install --deployment --without uk --without zurich
 
 if ! perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
 then
