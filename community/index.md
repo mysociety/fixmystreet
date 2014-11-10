@@ -12,7 +12,7 @@ let our growing community help.</p>
 <div class="column">
 <h3>Mailing list</h3>
 
-<p>The <a href="https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet">FixMyStreet
+<p>The <a href="https://groups.google.com/a/mysociety.org/forum/#!forum/fixmystreet">FixMyStreet
 mailing list</a> is where people discuss implementing FixMyStreet Platform in
 their own jurisdictions and areas, and seek help with any issues they are
 facing.</p>
