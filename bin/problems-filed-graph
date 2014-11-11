@@ -36,7 +36,9 @@ my @entries = FixMyStreet::App->model('DB::Problem')->search({
     }
 );
 @entries = map { { $_->get_columns } } @entries;
-map { $fh->print($_->{date}, ' ', $_->{count}, "\n") } @entries;
+foreach (@entries) {
+    $fh->print($_->{date}, ' ', $_->{count}, "\n");
+}
 
 my $gp = <<END;
     unset border
