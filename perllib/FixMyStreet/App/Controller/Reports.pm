@@ -3,7 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use File::Slurp;
-use List::MoreUtils qw(zip);
+use List::MoreUtils qw(any);
 use POSIX qw(strcoll);
 use RABX;
 use mySociety::MaPit;
@@ -52,10 +52,16 @@ sub index : Path : Args(0) {
         $c->detach( 'redirect_body' );
     }
 
-    # Fetch all areas of the types we're interested in
-    my @bodies = $c->model('DB::Body')->all;
+    # Fetch all bodies
+    my @bodies = $c->model('DB::Body')->search({}, {
+        '+select' => [ { count => 'area_id' } ],
+        '+as' => [ 'area_count' ],
+        join => 'body_areas',
+        distinct => 1,
+    })->all;
     @bodies = sort { strcoll($a->name, $b->name) } @bodies;
     $c->stash->{bodies} = \@bodies;
+    $c->stash->{any_empty_bodies} = any { $_->get_column('area_count') == 0 } @bodies;
 
     eval {
         my $data = File::Slurp::read_file(

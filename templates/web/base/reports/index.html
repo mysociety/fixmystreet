@@ -1,11 +1,16 @@
-[% INCLUDE 'header.html', title = loc('Summary reports'),  bodyclass => 'fullwidthpage' %]
+[% INCLUDE 'header.html', title = loc('Summary reports'), bodyclass => 'fullwidthpage' %]
 
 <h1>[% loc('All Reports') %]</h1>
 
 <div class="intro">
 <p>
-[% loc('This is a summary of all reports on this site; select a particular council to see the reports sent there.') %]
-[% loc('Greyed-out lines are councils that no longer exist.') %]
+    [% loc('This is a summary of all reports on this site.') %]
+  [% IF bodies.size > 1 %]
+    [% loc('Select a particular council to see the reports sent there.') %]
+  [% END %]
+  [% IF any_empty_bodies %]
+    [% loc('Greyed-out lines are councils that no longer exist.') %]
+  [% END %]
 </p>
 </div>
 
@@ -24,7 +29,7 @@
 <tbody>
 [% FOREACH body IN bodies %]
 <tr align="center"
-[%- IF NOT body.areas.size %] class="gone"
+[%- IF NOT body.get_column("area_count") %] class="gone"
 [%- ELSIF ! (loop.count % 2) %] class="a"
 [%- END %]>
 <td class="title"><a href="[% body.url(c) %]">[% body.name %]</a></td>
