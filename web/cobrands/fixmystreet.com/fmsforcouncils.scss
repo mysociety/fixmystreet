@@ -2,6 +2,7 @@
     FixMyStreet for Councils page.
     Todo: This should be in a separate stylesheet
 */
+$fms-yellow: #FFD000; // same as $primary from cobrands/fixmystreet/_colours.scss
 $fms-orange: #f4a140;
 $fms-red: #e04b4b;
 $fms-blue: #4faded;
@@ -143,6 +144,26 @@ $fms-green: #62b356;
   .section-content {
     @media only screen and (min-width: 60em) {
       max-width: 60%;
+    }
+  }
+
+  .councils-reporting-hint {
+    display: block;
+    background: $fms-yellow;
+    color: #222;
+    padding: 0.75em;
+    line-height: 1em;
+    font-size: 0.9em;
+    text-align: center;
+
+    @media only screen and (min-width: 48em) {
+      display: none;
+    }
+
+    &:hover, &:focus, &:active {
+      text-decoration: none;
+      color: mix(#222, $fms-yellow, 50%);
+      background: mix(#ff0, $fms-yellow, 50%);
     }
   }
 
