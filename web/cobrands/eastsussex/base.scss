@@ -234,3 +234,11 @@ styling, but this doesn't dtrt with span, so adding ourselves */
         z-index: 1;
     }
 }
+
+.label-warning {
+    background: lighten(#ff3300, 20%);
+    color: white;
+    font-size: 90%;
+    padding: 2px;
+    cursor: default;
+}

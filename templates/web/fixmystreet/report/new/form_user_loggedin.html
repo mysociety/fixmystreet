@@ -1,11 +1,17 @@
-<div class="form-box">
+<div class="form-box" id="form-box--logged-in-name">
 
     <label for="form_email">[% loc('Your email') %]</label>
     <input disabled type="text" value="[% c.user.email | html %]">
 
     [% INCLUDE 'report/new/extra_name.html' %]
 
-    <label for="form_name">[% loc('Name') %]</label>
+    [% name_public = report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]
+    <label for="form_name">[% loc('Name') %]
+    [% TRY %]
+        [% INCLUDE 'report/new/after_name.html' %]
+        [% CATCH file %]
+    [% END %]
+    </label>
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
@@ -13,7 +19,7 @@
 
     [%# if there is nothing in the name field then set check box as default on form %]
     <div class="checkbox-group">
-        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]>
+        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
         <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %] </label>
     </div>
 
