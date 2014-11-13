@@ -203,6 +203,10 @@ $(function(){
         });
     });
 
+    // Map form doesn't work in some browsers with HTML5 validation and hidden form, so
+    // we disable validation by default, and add it in the JS case.
+    // For some reason, the removeAttr doesn't work if we place it at beginning.
+    $('#mapForm').removeAttr('novalidate');
 });
 
 })(jQuery);
