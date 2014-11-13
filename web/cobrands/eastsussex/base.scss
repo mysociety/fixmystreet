@@ -234,3 +234,11 @@ styling, but this doesn't dtrt with span, so adding ourselves */
         z-index: 1;
     }
 }
+
+.label-warning {
+    background: #ff3300;
+    color: white;
+    font-size: 90%;
+    padding: 2px;
+    @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 1px 1px);
+}
