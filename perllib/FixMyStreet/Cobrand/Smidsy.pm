@@ -451,4 +451,8 @@ sub report_meta_line {
     }
 }
 
+sub send_questionnaires {
+    return 0;
+}
+
 1;
