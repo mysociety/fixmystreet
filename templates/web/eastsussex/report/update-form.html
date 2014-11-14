@@ -20,7 +20,7 @@
         [% END %]
         <div class="form-field">
             <label for="form_update">[% loc( 'Update:' ) %]
-                <span class="label-warning">
+                <span class="label-warning public-warning">
                     [% loc('public') %]
                 </span>
             </label>
@@ -155,7 +155,7 @@
 
     <div>
         <label for="form_name">[% loc('Name') %]
-            <span id="name-public-warning" class="label-warning name-warning"
+            <span id="name-public-warning" class="label-warning public-warning name-warning"
                 [% 'style="display:none"' UNLESS name_public %]
             >
                 [% loc('public') %]

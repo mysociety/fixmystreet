@@ -7,7 +7,7 @@
 
     [% name_public = report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]
     <label for="form_name">[% loc('Name') %]
-        <span id="name-public-warning" class="label-warning name-warning"
+        <span id="name-public-warning" class="label-warning public-warning name-warning"
             [% 'style="display:none"' UNLESS name_public %]
         >
             [% loc('public') %]
