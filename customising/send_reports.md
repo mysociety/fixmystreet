@@ -47,6 +47,20 @@ minutes later"). Alternatively, find the report in `admin/reports` -- the
 report will show a "when sent" date if the `send_reports` task has processed
 it successfully.
 
+## Technical investigation
+
+If you have access to your server and are comfortable using the command line, 
+you can manually run the `send-reports` script. Normally you never need to do
+this -- because, as described above, FixMyStreet runs it using `crontab` every
+five minutes. But if you're investigating why reports aren't sending, you
+can run the script manually with the `--debug` option. As the script loops
+through each of the reports it's trying to send, it will try to print out
+useful detail for each attempt. It also makes it clear if the script hasn't
+found *any* reports to send. Run this with: 
+
+    bin/cron-wrapper send-reports --debug
+
+
 ## Alternatives to email
 
 Although by default FixMyStreet sends reports by email, it's possible to inject reports *directly* into some
