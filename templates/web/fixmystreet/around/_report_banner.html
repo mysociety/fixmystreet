@@ -4,11 +4,6 @@
         <span>Yellow pins show existing reports</span>
     [% END %]
 </h1>
-<p id="skip-this-step">
-    [%
-        tprintf(
-            loc("Can't see the map? <a href='%s' rel='nofollow'>Skip this step</a>"),
-            url_skip
-        )
-    %]
-</p>
+<a id="skip-this-step" href="[% url_skip %]" rel="nofollow">
+    [% loc("Can't see the map? <em>Skip this step</em>") %]
+</a>
