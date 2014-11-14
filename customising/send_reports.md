@@ -47,6 +47,13 @@ minutes later"). Alternatively, find the report in `admin/reports` -- the
 report will show a "when sent" date if the `send_reports` task has processed
 it successfully.
 
+## Alternatives to email
+
+Although by default FixMyStreet sends reports by email, it's possible to inject reports *directly* into some
+bodies' databases or back-end systems. This is usually much better than using email because it's more convenient
+for the staff working at the receiving end. See
+[more about integration]({{ site.baseurl }}customising/integration/) for details.
+
 ## Technical investigation
 
 If you have access to your server and are comfortable using the command line, 
@@ -60,10 +67,3 @@ found *any* reports to send. Run this with:
 
     bin/cron-wrapper send-reports --debug
 
-
-## Alternatives to email
-
-Although by default FixMyStreet sends reports by email, it's possible to inject reports *directly* into some
-bodies' databases or back-end systems. This is usually much better than using email because it's more convenient
-for the staff working at the receiving end. See
-[more about integration]({{ site.baseurl }}customising/integration/) for details.
