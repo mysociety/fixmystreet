@@ -527,6 +527,19 @@ body.twothirdswidthpage {
   z-index:1;
 }
 
+// Openlayers map controls (overrides)
+#fms_pan_zoom_panup,
+#fms_pan_zoom_pandown,
+#fms_pan_zoom_panleft,
+#fms_pan_zoom_panright,
+#fms_pan_zoom_zoomin,
+#fms_pan_zoom_zoomout {
+  opacity: 0.85;
+  &:hover {
+    opacity: 1;
+  }
+}
+
 // push zoom back over to right
 #fms_pan_zoom_zoomin {
   left:auto !important;

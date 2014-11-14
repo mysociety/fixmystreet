@@ -1015,11 +1015,7 @@ a:hover.button-left {
   width:36px !important;
   height:36px !important;
   text-indent:-999999px;
-  opacity:0.85;
   background:url($image-sprite) no-repeat;
-  &:hover {
-    opacity:1;
-  }
   filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
 
