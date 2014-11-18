@@ -159,4 +159,4 @@ Or, if you're outside the UK, email
 
 There's also the [FixMyStreet blog]({{ site.baseurl }}blog/) where we post version release
 information and other progress reports. And we often post FixMyStreet news on
-the <a href="https://www.mysociety.org/blog">mySociety blog</a> too.
+the <a href="https://www.mysociety.org/blog/">mySociety blog</a> too.

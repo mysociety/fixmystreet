@@ -19,7 +19,7 @@ the UK. But there is more than one way to solve issues, and you may well find
 that your own solutions work best.
 
 We hope that you will contribute to this document with your own ideas and
-feedback. You can do this by [contacting us](https://www.mysociety.org/contact)
+feedback. You can do this by [contacting us](https://www.mysociety.org/contact/)
 directly, or joining the mailing list.
 
 The [FixMyStreet mailing list](/community) is a great place to share ideas or

@@ -78,10 +78,10 @@ these sites work, and what you need to think about before you start.
 
 If you're thinking of getting involved, we welcome questions about how it
 works [on our mailing
-list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet).
+list](https://groups.google.com/a/mysociety.org/forum/#!forum/fixmystreet).
 Or, if you're outside the UK, email
 <a href="mailto:international&#64;mysociety.org">international&#64;mysociety.org.</a>
 
 There's also the [FixMyStreet blog](blog/) where we post version release
 information and other progress reports. And we often post FixMyStreet news on
-the <a href="https://www.mysociety.org/blog">mySociety blog</a> too.
+the <a href="https://www.mysociety.org/blog/">mySociety blog</a> too.

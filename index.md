@@ -58,7 +58,7 @@ title: Welcome
         In the wrong place? You might want to
         <a href="https://www.fixmystreet.com/">report problems in the UK</a>;
         or to learn about
-        <a href="https://www.mysociety.org/for-councils/fixmystreet/">FixMyStreet
+        <a href="https://www.fixmystreet.com/council">FixMyStreet
         for local governments</a>. FixMyStreet Platform is for citizens who
         want to run their own sites. Welcome!
       </p>

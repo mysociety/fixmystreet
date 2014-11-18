@@ -25,7 +25,7 @@ documentation and ironing out the installation procedure.
 However, we know that easy to install code is only part of the process.
 Building a community around the software is far more valuable in encouraging
 people to use and improve it. This site and the new
-[mailing list](https://secure.mysociety.org/admin/lists/mailman/listinfo/fixmystreet)
+[mailing list](https://groups.google.com/a/mysociety.org/forum/#!forum/fixmystreet)
 are our first steps along that road.
 
 So, if you&#8217;ve ever wanted to have a FixMyStreet for your town, state or

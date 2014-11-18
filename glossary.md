@@ -599,7 +599,7 @@ technical information, see
         </li>
         <li>
           See <a
-          href="https://www.mysociety.org/for-councils/fixmystreet/">FixMyStreet
+          href="https://www.fixmystreet.com/council">FixMyStreet
           for Councils</a> for mySociety's commercial support for UK councils
         </li>
         <li>
@@ -738,7 +738,7 @@ technical information, see
         </li>
         <li>
           See <a
-          href="http://code.mapit.mysociety.org/">code.mapit.mysociety.org</a>
+          href="http://mapit.poplus.org/">mapit.poplus.org</a>
           for technical information, including how to set up your own
           installation
         </li>
