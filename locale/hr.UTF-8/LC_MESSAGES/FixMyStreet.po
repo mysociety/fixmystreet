@@ -4,15 +4,15 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
-# Antonia <antonia.banovic@gmail.com>, 2013
-# BojanOpacak <bojan@rationalinternational.net>, 2012
+# Antonia Banović <antonia.banovic@gmail.com>, 2013
+# Bojan Opacak <bojan@rationalinternational.net>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2013-11-20 13:29+0000\n"
-"Last-Translator: mysociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2014-05-16 16:54+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Croatian (http://www.transifex.com/projects/p/fixmystreet/language/hr/)\n"
 "Language: hr\n"
 "MIME-Version: 1.0\n"
@@ -1042,9 +1042,8 @@ msgid "Enter a nearby street name and area"
 msgstr "Unesi ime obližnje ulice i kvarta"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
-#, fuzzy
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
-msgstr "Unesi ime obližnje ulice i kvarta"
+msgstr ""
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/new/fill_in_details_form.html:169
@@ -4432,24 +4431,3 @@ msgid_plural "We do <strong>not</strong> yet have details for the other councils
 msgstr[0] "Još <strong>nemamo</strong> podatke za drugo odgovorno tijelo koje je odgovorno za ovu lokaciju."
 msgstr[1] "Još <strong>nemamo</strong> podatke za ostala odgovorna tijela koja su odgovorna za ovu lokaciju."
 msgstr[2] "Još <strong>nemamo</strong> podatke za ostala odgovorna tijela koja su odgovorna za ovu lokaciju."
-
-#~ msgid "First Name"
-#~ msgstr "Ime"
-
-#~ msgid "Last Name"
-#~ msgstr "Prezime"
-
-#~ msgid "Please describe the exact location of the report. Example: “2 dumped mattresses outside Number 19 Stockwell Close”"
-#~ msgstr "Molimo opišite točnu lokaciju prijave. Primjer: “2 bačena madraca na broju 19 Stockwell Close”"
-
-#~ msgid "Please note that updates are not sent to the relevant department. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
-#~ msgstr "Napominjemo da se ažuriranja ne šalju nadležnom odjelu. Ako navedete svoje ime, bit će vidljivo. Vaše informacije će biti korištene u skaldu s našim <a href=\"/faq#privacy\">pravilima o privatnosti</a>"
-
-#~ msgid "Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports."
-#~ msgstr "Lozinka nije obvezna, ali će vam omogućiti lakše prijavljivanje  budućih problema, ažuriranja i upravljanje vašim izvješćima."
-
-#~ msgid "Your first name"
-#~ msgstr "Ime"
-
-#~ msgid "Your last name"
-#~ msgstr "Prezime"

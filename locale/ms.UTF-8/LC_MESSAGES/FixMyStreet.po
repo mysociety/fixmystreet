@@ -4,15 +4,14 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
-# klrkdekira <klrkdekira@gmail.com>, 2013
-# klrkdekira <klrkdekira@gmail.com>, 2013
+# Chow Chee Leong <klrkdekira@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2013-12-13 06:40+0000\n"
-"Last-Translator: klrkdekira <klrkdekira@gmail.com>\n"
+"PO-Revision-Date: 2014-05-16 17:12+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Malay (http://www.transifex.com/projects/p/fixmystreet/language/ms/)\n"
 "Language: ms\n"
 "MIME-Version: 1.0\n"
@@ -1031,9 +1030,8 @@ msgid "Enter a nearby street name and area"
 msgstr "Masukkan nama jalan dan kawasan terdekat"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
-#, fuzzy
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
-msgstr "Masukkan nama jalan dan kawasan terdekat"
+msgstr ""
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/new/fill_in_details_form.html:169
@@ -3711,9 +3709,8 @@ msgid "Updates"
 msgstr "Kemas kini"
 
 #: perllib/FixMyStreet/DB/Result/Comment.pm:132
-#, fuzzy
 msgid "Updates are limited to %s characters in length. Please shorten your update"
-msgstr "Kemas kini adalah diterhad kepada 2000 panjang perkataan. Sila memendekkan kemas kini anda"
+msgstr ""
 
 #: db/alert_types.pl:5 db/alert_types.pl:6
 msgid "Updates on {{title}}"
@@ -4377,36 +4374,3 @@ msgstr[0] "%d hari"
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Kita <strong>belum</strong> ada maklumat tentang majlis lain yang menutupi lokasi ini."
-
-#~ msgid "Click on the map to report a problem"
-#~ msgstr "Klik peta untuk melaporkan masalah"
-
-#~ msgid "First Name"
-#~ msgstr "Nama Pertama"
-
-#~ msgid "Incident Category"
-#~ msgstr "Kategori Kejadian"
-
-#~ msgid "Last Name"
-#~ msgstr "Nama Akhir"
-
-#~ msgid "Name (optional)"
-#~ msgstr "Nama (tidak diwajibkan)"
-
-#~ msgid "Please choose a transport category"
-#~ msgstr "Sila pilihkan kategori pengangkutan"
-
-#~ msgid "Please choose an incident category"
-#~ msgstr "Sila pilihkan kategori kejadian"
-
-#~ msgid "Transport Category"
-#~ msgstr "Kategori pengangkutan"
-
-#~ msgid "Your email (optional)"
-#~ msgstr "Emel Anda (tidak diwajibkan)"
-
-#~ msgid "Your first name"
-#~ msgstr "Nama pertama anda"
-
-#~ msgid "Your last name"
-#~ msgstr "Nama akhir anda"

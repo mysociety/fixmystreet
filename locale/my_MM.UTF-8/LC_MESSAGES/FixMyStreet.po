@@ -4,19 +4,19 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
-# berrycake <berrycake.net@gmail.com>, 2014
-# compunuts <compunuts@yahoo.com>, 2014
-# Soemoe Lwin <htetaunglwin112@gmail.com>, 2014
-# Pyae Sone <gipsyhnh@gmail.com>, 2014
+# berrycake4 <berrycake.net@gmail.com>, 2014
 # chitko <saintjohn769@gmail.com>, 2014
-# Thyu Naung <thyunaung@yahoo.com>, 2014
+# compunuts <compunuts@yahoo.com>, 2014
+# Pyae Sone <gipsyhnh@gmail.com>, 2014
+# soemoe.lwin.50 <htetaunglwin112@gmail.com>, 2014
+# bambi <thyunaung@yahoo.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-03-22 07:59+0000\n"
-"Last-Translator: Soemoe Lwin <htetaunglwin112@gmail.com>\n"
+"PO-Revision-Date: 2014-05-16 17:12+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Burmese (Myanmar) (http://www.transifex.com/projects/p/fixmystreet/language/my_MM/)\n"
 "Language: my_MM\n"
 "MIME-Version: 1.0\n"
@@ -1034,9 +1034,8 @@ msgid "Enter a nearby street name and area"
 msgstr "အနီးနားရွိလမ္းအမည္ႏွင့္ဧရိယာကိုရိုက္ထည့္ပါ"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
-#, fuzzy
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
-msgstr "အနီးနားရွိလမ္းအမည္ႏွင့္ဧရိယာကိုရိုက္ထည့္ပါ"
+msgstr ""
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/new/fill_in_details_form.html:169
@@ -4381,27 +4380,3 @@ msgstr[0] "%d ရက္မ်ား"
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "ကၽြႏု္ပ္တို႔တြင္ ဒီတည္ေနရာႏွင့္ ပတ္သက္သည့္ အျခားေကာင္အတြက္ အေသးစိတ္မရွိေသးပါ။"
-
-#~ msgid "Click on the map to report a problem"
-#~ msgstr "ျပႆနာတစ္ခုကိုအစီရင္ခံစာတင္ရင္ေျမပံုေပၚကိုႏွိပ္ပါ"
-
-#~ msgid "First Name"
-#~ msgstr "ပထမအမည္"
-
-#~ msgid "Last Name"
-#~ msgstr "နာမည္ေနာက္ဆံုးစာလံုး"
-
-#~ msgid "Name (optional)"
-#~ msgstr "အမည္(ေရြးခ်ယ္ပိုင္ခြင့္ရွိသည္)"
-
-#~ msgid "Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports."
-#~ msgstr "စကားဝွက္ကို မထည့္သြင္းခ်င္လွ်င္ ရသည္။ စကားဝွက္ ထည့္သြင္းပါက ျပႆနာမ်ားကို တင္ျပျခင္း၊ update မ်ား ျပဳလုပ္ျခင္းႏွင့္ အစီရင္ခံစာမ်ား စီမံခန္႔ခြဲျခင္းတို႔ကို ပိုမိုလြယ္ကူစြာ ျပဳလုပ္ႏိုင္မည္။"
-
-#~ msgid "Your email (optional)"
-#~ msgstr "သင္၏ အီးေမးလ္ (မထည့္ခ်င္လည္း ရသည္)"
-
-#~ msgid "Your first name"
-#~ msgstr "သင့္နာမည္၏ အေရွ႕စာလံုး"
-
-#~ msgid "Your last name"
-#~ msgstr "သင့္နာမည္၏ ေနာက္ဆံုးစာလံုး"

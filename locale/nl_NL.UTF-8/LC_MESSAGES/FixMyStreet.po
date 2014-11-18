@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2013-11-20 13:29+0000\n"
-"Last-Translator: mysociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2014-05-16 16:54+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/projects/p/fixmystreet/language/nl_NL/)\n"
 "Language: nl_NL\n"
 "MIME-Version: 1.0\n"
@@ -1027,9 +1027,8 @@ msgid "Enter a nearby street name and area"
 msgstr "Geef dichtstbijzijnde straatnaam en plaats"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
-#, fuzzy
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
-msgstr "Geef dichtstbijzijnde straatnaam en plaats"
+msgstr ""
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/new/fill_in_details_form.html:169
@@ -4380,24 +4379,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "First Name"
-#~ msgstr "Voornaam"
-
-#~ msgid "Last Name"
-#~ msgstr "Achternaam"
-
-#~ msgid "Please describe the exact location of the report. Example: “2 dumped mattresses outside Number 19 Stockwell Close”"
-#~ msgstr "Beschrijf de lokatie gedetailleerd. Bijvoorbeeld: \"2 matrassen achtergelaten bij Spoorlaan 19\""
-
-#~ msgid "Please note that updates are not sent to the relevant department. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
-#~ msgstr "Let op, updates worden niet aan de gemeente verzonden. Als je je naam achterlaat zal het publiekelijk getoond worden. Jouw gegevens worden alleen gebruikt volgens de vermeldingen van onze <a href=\"/faq#privacy\">privacy policy</a>"
-
-#~ msgid "Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports."
-#~ msgstr "Het is optioneel om een wachtwoord op de geven, maar hiermee is het makkelijker om in de toekomst problemen te melden, updates te plaatsen en je meldingen te beheren."
-
-#~ msgid "Your first name"
-#~ msgstr "Jouw voornaam"
-
-#~ msgid "Your last name"
-#~ msgstr "Jouw achternaam"

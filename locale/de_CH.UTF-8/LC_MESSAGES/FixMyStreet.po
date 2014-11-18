@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2013-11-20 13:29+0000\n"
-"Last-Translator: mysociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2014-05-16 16:54+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
 "MIME-Version: 1.0\n"
@@ -1026,9 +1026,8 @@ msgid "Enter a nearby street name and area"
 msgstr "Ungef&auml;hre Adresse des Mangels"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
-#, fuzzy
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
-msgstr "Ungef&auml;hre Adresse des Mangels"
+msgstr ""
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/new/fill_in_details_form.html:169
@@ -4377,24 +4376,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "Incident Category"
-#~ msgstr "Kategorie"
-
-#~ msgid "Last Name"
-#~ msgstr "Letzte Bearbeitung"
-
-#~ msgid "Name (optional)"
-#~ msgstr "(optional)"
-
-#~ msgid "Please note that updates are not sent to the relevant department. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
-#~ msgstr "Wir verwenden Ihre pers&ouml;nlichen Daten nur entsprechend unserer <a href=\"/faq#privacy\">Datenschutzrichtlinien.</a>"
-
-#~ msgid "Transport Category"
-#~ msgstr "Kategorie"
-
-#~ msgid "Your first name"
-#~ msgstr "Ihr Name"
-
-#~ msgid "Your last name"
-#~ msgstr "Ihr Name"

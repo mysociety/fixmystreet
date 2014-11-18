@@ -4,14 +4,15 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
-# Luis Felipe Álvarez Burgos <luisfelipealvarez@gmail.com>, 2014
+# jvlopez <jesusvlopez@gmail.com>, 2014
+# lfalvarez <luisfelipealvarez@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-03-13 14:53+0000\n"
-"Last-Translator: Luis Felipe Álvarez Burgos <luisfelipealvarez@gmail.com>\n"
+"PO-Revision-Date: 2014-07-02 21:17+0000\n"
+"Last-Translator: jvlopez <jesusvlopez@gmail.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/fixmystreet/language/es/)\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -481,12 +482,12 @@ msgstr "¿Pertenece al Ayuntamiento?"
 #: templates/web/default/admin/body-form.html:69
 #: templates/web/zurich/admin/body-form.html:24
 msgid "Area covered"
-msgstr ""
+msgstr "Area cubierta"
 
 #: templates/web/zurich/admin/report_edit.html:144
 #: templates/web/zurich/admin/stats.html:36
 msgid "Assign to different category:"
-msgstr ""
+msgstr "Asigne a otra categoria"
 
 #: templates/web/zurich/admin/report_edit.html:153
 msgid "Assign to external body:"
@@ -495,12 +496,12 @@ msgstr "Asignar a un órgano externo:"
 #: templates/web/zurich/admin/report_edit.html:133
 #: templates/web/zurich/admin/report_edit.html:190
 msgid "Assign to subdivision:"
-msgstr ""
+msgstr "Asigne a la subdivisión"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:163
 #: templates/web/zurich/report/updates.html:11
 msgid "Assigned to %s"
-msgstr ""
+msgstr "Asignado a %s"
 
 #: templates/web/default/open311/index.html:86
 msgid "At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date."
@@ -513,11 +514,11 @@ msgstr "Por el momento sólo funcionan las búsquedas y las vistas de notificaci
 #: perllib/FixMyStreet/DB/Result/Problem.pm:334
 #: templates/web/zurich/report/_item.html:11
 msgid "Awaiting moderation"
-msgstr ""
+msgstr "En espera de moderación"
 
 #: templates/web/default/js/translation_strings.html:32
 msgid "Back"
-msgstr ""
+msgstr "Atras"
 
 #: templates/web/default/admin/report_blocks.html:11
 msgid "Ban email address"
@@ -525,7 +526,7 @@ msgstr "Prohibir dirección de email"
 
 #: templates/web/fixmybarangay/report/new/notes.html:7
 msgid "Be sure to choose the right category, because we use that to determine to whom the report is sent."
-msgstr ""
+msgstr "Asegúrese de elegir la categoría correcta, debido a que usamos esto para determinar a quién se envía el informe."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1185
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:297
@@ -1075,9 +1076,8 @@ msgid "Enter a nearby street name and area"
 msgstr "Introduzca un nombre de la calle y la zona cercana"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
-#, fuzzy
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
-msgstr "Introduzca un nombre de la calle y la zona cercana"
+msgstr ""
 
 #: templates/web/default/auth/general.html:64
 #: templates/web/default/report/new/fill_in_details_form.html:169
@@ -4459,24 +4459,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Todavía <strong>no</strong> tenemos detalles para el Ayuntamiento que cubre esta zona."
 msgstr[1] "Todavía <strong>no</strong> tenemos detalles para el Ayuntamiento que cubre esta zona."
-
-#~ msgid "First Name"
-#~ msgstr "Nombre"
-
-#~ msgid "Last Name"
-#~ msgstr "Apellido"
-
-#~ msgid "Please describe the exact location of the report. Example: “2 dumped mattresses outside Number 19 Stockwell Close”"
-#~ msgstr "Por favor, describa la ubicación exacta de la notificación. Ejemplo: \"2 colchones vertidos en la calle en el número 19 de la Calle Bellavista\""
-
-#~ msgid "Please note that updates are not sent to the relevant department. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
-#~ msgstr "Tenga en cuenta que las actualizaciones no se envían al departamento pertinente. Si usted deja su nombre será público. Su información sólo será usada de acuerdo con nuestra <a href=\"/faq#privacy\">política de privacidad</ a>"
-
-#~ msgid "Providing a password is optional, but doing so will allow you to more easily report future problems, leave updates and manage your reports."
-#~ msgstr "Proporcionar una contraseña es opcional, pero al hacerlo le permitirá informar más fácilmente problemas en el futuro, dejar actualizaciones y administrar sus notificaciones."
-
-#~ msgid "Your first name"
-#~ msgstr "Su nombre:"
-
-#~ msgid "Your last name"
-#~ msgstr "Sus Apellidos"

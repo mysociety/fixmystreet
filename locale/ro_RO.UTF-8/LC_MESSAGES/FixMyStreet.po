@@ -5,15 +5,15 @@
 #
 # Translators:
 # fldrog <florin.botis@gmail.com>, 2014
-# rbilei <radu.bilei@gmail.com>, 2014
-# nistorbog <nistorbog@gmail.com>, 2014
+# test test <nistorbog@gmail.com>, 2014
+# Radu <radu.bilei@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-05-16 17:30+0100\n"
-"PO-Revision-Date: 2014-03-22 11:47+0000\n"
-"Last-Translator: rbilei <radu.bilei@gmail.com>\n"
+"PO-Revision-Date: 2014-05-16 17:12+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Romanian (Romania) (http://www.transifex.com/projects/p/fixmystreet/language/ro_RO/)\n"
 "Language: ro_RO\n"
 "MIME-Version: 1.0\n"
