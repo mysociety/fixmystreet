@@ -14,6 +14,9 @@
 
 </div>
 
+[% IF login_success %]
+    <p class='form-success'>[% loc('You have successfully signed in; please check and confirm your details are accurate:') %]</p>
+[% END %]
 
 [% INCLUDE 'report/banner.html' %]
 [% INCLUDE 'report/_main.html' %]

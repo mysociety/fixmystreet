@@ -759,7 +759,7 @@ sub process_user : Private {
         $report->user( $user );
         $report->name( $user->name );
         $c->stash->{check_name} = 1;
-        $c->stash->{field_errors}->{name} = _('You have successfully signed in; please check and confirm your details are accurate:');
+        $c->stash->{login_success} = 1;
         $c->log->info($user->id . ' logged in during problem creation');
         return 1;
     }
@@ -984,7 +984,7 @@ sub check_for_errors : Private {
     }
 
     # all good if no errors
-    return 1 unless scalar keys %field_errors;
+    return 1 unless scalar keys %field_errors || $c->stash->{login_success};
 
     $c->stash->{field_errors} = \%field_errors;
 

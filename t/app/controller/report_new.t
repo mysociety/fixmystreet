@@ -728,10 +728,8 @@ subtest "test report creation for a user who is signing in as they report" => su
             "submit good details"
         );
 
-        # check that we got the errors expected
-        is_deeply $mech->page_errors, [
-            'You have successfully signed in; please check and confirm your details are accurate:',
-        ], "check there were errors";
+        # check that we got the message expected
+        $mech->content_contains( 'You have successfully signed in; please check and confirm your details are accurate:' );
 
         # Now submit with a name
         $mech->submit_form_ok(

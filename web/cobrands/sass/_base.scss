@@ -395,6 +395,13 @@ ul.error {
   @include border-radius(0.25em);
 }
 
+.form-success {
+  background: #009900;
+  color: #fff;
+  padding: 0 0.5em;
+  @include border-radius(0.25em);
+}
+
 // don't display valid error boxes as now the page jump
 // won't be until the user submits, which is fine
 div.label-valid,

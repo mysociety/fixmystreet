@@ -932,9 +932,7 @@ for my $test (
             add_alert     => undef,
             password_sign_in => 'secret2',
         },
-        field_errors => [
-            'You have successfully signed in; please check and confirm your details are accurate:',
-        ],
+        message => 'You have successfully signed in; please check and confirm your details are accurate:',
     }
 ) {
     subtest $test->{desc} => sub {
@@ -955,7 +953,10 @@ for my $test (
             'submit update'
         );
 
-        is_deeply $mech->page_errors, $test->{field_errors}, 'check there were errors';
+        $mech->content_contains($test->{message}) if $test->{message};
+
+        is_deeply $mech->page_errors, $test->{field_errors}, 'check there were errors'
+            if $test->{field_errors};
 
         SKIP: {
             skip( "Incorrect password", 5 ) unless $test->{form_values}{password_sign_in} eq $pw;
