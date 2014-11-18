@@ -17,13 +17,13 @@ FixMyStreet::override_config {
     # check that geting the page as EHA produces a different page
     ok $mech->host("reportemptyhomes.co.uk"), 'change host to reportemptyhomes';
     $mech->get_ok('/about');
-    $mech->content_like(qr{About us ::\s+Report Empty Homes});
+    $mech->content_like(qr{About us ::});
     $mech->content_contains('html lang="en-gb"');
 
     # check that geting the page as EHA in welsh produces a different page
     ok $mech->host("cy.reportemptyhomes.co.uk"), 'host to cy.reportemptyhomes';
     $mech->get_ok('/about');
-    $mech->content_like(qr{Amdanom ni ::\s+Rhoi gwybod am eiddo gwag});
+    $mech->content_like(qr{Amdanom ni ::});
     $mech->content_contains('html lang="cy"');
 };
 

@@ -24,6 +24,6 @@ for (glob( 'locale/*/LC_MESSAGES' ) ) {
     my $out = "$_/auto$cobrand.po";
     if ( -e $cobrand_po and -e $fms ) {
         print "$_\n";
-        system("msgcat --no-wrap -o $out $fms $cobrand_po");
+        system("msgcat --use-first --no-wrap -o $out $fms $cobrand_po");
     }
 }
