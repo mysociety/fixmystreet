@@ -1,4 +1,43 @@
+<script>
+    $(function () {
+        $('#update_form_content').hide();
+        $('#display_update').show();
+
+        $('#display_update').click( function () {
+            $('#update_form_content').show();
+            $('#display_update').hide();
+            $('#create_new').hide();
+            $('#form_update').focus();
+        });
+    });
+</script>
+
+<div id="create_new">
+    <h2> Create a <strong>new</strong> report near this location </h2>
+
+    <p>
+    If you've discovered a new, or recurring problem (even if it's similar to the one in this
+    report) then :
+    </p>
+
+    <form method="post" action="/report/new">
+        <input type="hidden" name="latitude" value="[% problem.latitude %]">
+        <input type="hidden" name="longitude" value="[% problem.longitude %]">
+        <input type="submit" class="green-btn" value="CREATE A NEW PROBLEM NEARBY">
+    </form>
+</div>
+
 <div id="update_form">
+    <h2> <strong>OR</strong> discuss <strong>this</strong> report </h2>
+
+    <p>
+    This allows you to comment on this report, and discuss with local residents.
+    </p>
+
+    <input type="button" id="display_update" class="green-btn" value="Comment on this report" 
+     style="display:none">
+
+  <div id="update_form_content">
 
     <h2>[% loc( 'Provide an update') %]</h2>
 
@@ -144,6 +183,7 @@
 [% END %]
 
     </form>
+  </div> <!-- update_form_content -->
 </div>
 
 [% BLOCK name %]
