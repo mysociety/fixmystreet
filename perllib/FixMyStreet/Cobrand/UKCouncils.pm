@@ -11,6 +11,15 @@ sub is_council {
     1;
 }
 
+sub path_to_web_templates {
+    my $self = shift;
+    return [
+        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
+        FixMyStreet->path_to( 'templates/web/fixmystreet-uk-councils' )->stringify,
+        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
+    ];
+}
+
 sub site_restriction {
     my $self = shift;
     return { bodies_str => sprintf('%d', $self->council_id) };

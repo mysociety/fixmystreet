@@ -10,14 +10,6 @@ sub council_name { return 'East Sussex County Council'; }
 sub council_url { return 'eastsussex'; }
 sub is_two_tier { return 1; }
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
-    ];
-}
-
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;

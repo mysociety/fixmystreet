@@ -1,0 +1,49 @@
+[% INCLUDE 'header.html',
+    title = loc('Frequently Asked Questions'),
+    bodyclass = 'twothirdswidthpage' %]
+
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li><a href="/faq">Frequently Asked Questions</a></li>
+            <li><a href="/faq#practical">Practical Questions</a></li>
+            <li><a href="/faq#organisation">Organisation Questions</a></li>
+            <li><strong>Privacy and cookies</strong></li>
+            <li><a href="/contact">Contact [% c.cobrand.site_title %]</a></li>
+        </ul>
+    </aside>
+</div>
+
+<h1>Privacy, cookies, and third party services</h1>
+
+<p><strong>Our use of your data, cookies, and external services: what you
+should know, and how to opt out if you want to.</strong></p>
+
+<h2>Privacy</h2>
+
+    <dl>
+        <dt>Who gets to see my personal details?</dt>
+        <dd>This will depend upon the installation of the FixMyStreet Platform,
+who should create their own <code>static/privacy.html</code> template in their
+cobrand directory to replace this default. In normal cases, your details will
+be passed to the people responsible for dealing with your report, and no-one
+else.</dd>
+
+        <dt>What will you do with my personal details?</dt>
+        <dd>Another question hopefully answered by the installation.</dd>
+    </dl>
+
+<h2>Cookies</h2>
+
+<p>To make our service easier or more useful, we sometimes place small data
+files on your computer or mobile phone, known as cookies; many websites do
+this. We use this information to, for example, remember you have logged in so
+you don't need to do that on every page. Below, we list the cookies and
+services that this site can use.
+
+<table cellpadding=5>
+<tr align="left"><th scope="col">Name</th><th scope="col">Typical Content</th><th scope="col">Expires</th></tr>
+<tr><td>fixmystreet_app_session</td><td nowrap>A random unique identifier</td><td>When browser is closed, or four weeks if &ldquo;Keep me signed in&rdquo; is ticked</td></tr>
+</table>
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]
