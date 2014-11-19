@@ -17,30 +17,11 @@
       [% PROCESS 'report/new/councils_text.html' %]
   [% END %]
 
-  [% IF c.cobrand.moniker == "fixmystreet" && report.used_map && partial_token %]
+  [% IF report.used_map && partial_token %]
     <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
   [% END %]
 
-  [% IF c.cobrand.moniker != "fixmystreet" && (c.cobrand.moniker != 'fixmybarangay' || ( c.user && c.user.from_body ) ) %]
-    <div id="report-a-problem-sidebar">
-        <div class="sidebar-tips">
-          [% IF report.used_map AND partial_token %]
-            <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
-          [% END %]
-
-            <p>
-              [% IF report.used_map %]
-                [% INCLUDE 'report/new/fill_in_details_text.html' %]
-              [% ELSE %]
-                [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
-              [% END %]
-            </p>
-        </div>
-        <div class="sidebar-notes">
-            [% INCLUDE 'report/new/notes.html' %]
-        </div>
-    </div>
-  [% END %]
+  [% TRY %][% PROCESS 'report/new/sidebar.html' %][% CATCH file %][% END %]
 
   [% INCLUDE 'errors.html' %]
 
@@ -65,20 +46,7 @@
           [% END %]
             <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Explain what’s wrong, exactly where it is, and how long it’s been there…') %]" required>[% report.detail | html %]</textarea>
 
-          [% IF c.cobrand.moniker == "fixmystreet" %]
-            <div class="description_tips">
-              <h4>Tips for successful reports:</h4>
-                <ul class="do">
-                    <li>Be polite</li>
-                    <li>Use exact locations</li>
-                    <li>Say how long the issue’s been&nbsp;present</li>
-                </ul>
-                <ul class="dont">
-                    <li>Don’t leave abusive or libellous&nbsp;messages</li>
-                    <li>Don’t include private contact details in the&nbsp;description</li>
-                </ul>
-            </div>
-          [% END %]
+          [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
 
           [% IF js %]
               <div id="form_category_row">
@@ -120,6 +88,8 @@
               [% END %]
             <input type="file" name="photo" id="form_photo">
           [% END %]
+
+          [% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
 
           [% IF c.user_exists %]
             [% PROCESS "report/new/form_user_loggedin.html" %]

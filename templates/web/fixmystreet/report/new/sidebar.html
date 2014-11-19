@@ -1,0 +1,14 @@
+<div id="report-a-problem-sidebar">
+    <div class="sidebar-tips">
+        <p>
+          [% IF report.used_map %]
+            [% INCLUDE 'report/new/fill_in_details_text.html' %]
+          [% ELSE %]
+            [% loc('Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box.') %]
+          [% END %]
+        </p>
+    </div>
+    <div class="sidebar-notes">
+        [% INCLUDE 'report/new/notes.html' %]
+    </div>
+</div>

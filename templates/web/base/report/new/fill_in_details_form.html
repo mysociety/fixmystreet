@@ -2,10 +2,10 @@
 
 [% IF report.used_map %]
     <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
+[% END %]
 
-    [% IF partial_token %]
-        <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
-    [% END %]
+[% IF partial_token %]
+    <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
 [% END %]
 
 [% IF js %]
