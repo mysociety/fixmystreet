@@ -8,11 +8,6 @@ use Carp;
 use mySociety::MaPit;
 use FixMyStreet::Geocode::OSM;
 
-sub path_to_web_templates {
-    my $self = shift;
-    return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
-}
-
 sub country {
     return 'NO';
 }
@@ -39,17 +34,6 @@ sub area_types {
 
 sub admin_base_url {
     return 'http://www.fiksgatami.no/admin';
-}
-
-# If lat/lon are present in the URL, OpenLayers will use that to centre the map.
-# Need to specify a zoom to stop it defaulting to null/0.
-sub uri {
-    my ( $self, $uri ) = @_;
-
-    $uri->query_param( zoom => 3 )
-      if $uri->query_param('lat') && !$uri->query_param('zoom');
-
-    return $uri;
 }
 
 sub geocode_postcode {

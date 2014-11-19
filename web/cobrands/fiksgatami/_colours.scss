@@ -1,0 +1,24 @@
+$image-sprite: '/cobrands/fiksgatami/sprite.png';
+
+/* COLOURS */
+
+$header_darker: #0a3f6f;
+
+$bg: #1a4f7f;
+
+$primary: #99bfe1;
+$primary_b: #000000;
+$primary_text: #222222;
+
+$base_bg: $bg;
+$base_fg: #fff;
+
+$map_nav_bg: $bg;
+$nav_fg: #fff;
+$nav_fg_hover: $primary;
+
+$col_click_map: $bg;
+$col_click_map_dark: darken($bg, 10%);
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;

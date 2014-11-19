@@ -1,30 +1,59 @@
 <!doctype html>
-<!--[if lt IE 7]><html class="ie6 oldie" lang="[% lang_code %]"><![endif]-->
-<!--[if IE 7]>   <html class="ie7 oldie" lang="[% lang_code %]"><![endif]-->
-<!--[if IE 8]>   <html class="ie8 oldie" lang="[% lang_code %]"><![endif]-->
-<!--[if gt IE 8]><!--><html lang="[% lang_code %]"><!--<![endif]-->
+<!--[if lt IE 7]><html class="no-js ie6 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 7]>   <html class="no-js ie7 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 8]>   <html class="no-js ie8 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if IE 9]>   <html class="no-js ie9 oldie" lang="[% lang_code %]"><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js" lang="[% lang_code %]"><!--<![endif]-->
     <head>
+        <meta name="viewport" content="initial-scale=1.0">
 
-        <link rel="stylesheet" type="text/css" href="[% version('/css/core.css') %]">
-        <link rel="stylesheet" type="text/css" href="[% version('/cobrands/fiksgatami/css.css') %]">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="HandHeldFriendly" content="true">
+        <meta name="mobileoptimized" content="0">
 
-    [% INCLUDE 'common_header_tags.html', site_title = 'FiksGataMi' %]
+        [% INCLUDE 'header_opengraph.html' %]
+
+[% SET start = c.config.ADMIN_BASE_URL IF admin %]
+
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+        [% extra_css %]
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
+        <![endif]-->
+
+        <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
+        <script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
+        [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js', site_title = 'FiksGataMi' %]
+        [% extra_js %]
+
+        [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
+
     </head>
-    <body>
+    [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
+    <body class="[% bodyclass | html IF bodyclass %]">
 
-        [% IF NOT title AND NOT c.req.path %]<h1 id="header">[% ELSE %]<div id="header"><a href="/">[% END %]
-            [%- loc('Fix<span id="my">My</span>Street') %]
-        [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
+    <div class="wrapper">
+        <div class="table-cell">
+            <header id="site-header" role="banner">
+                <div class="container">
+                    [% INCLUDE 'header_logo.html' %]
+                    <a href="#main-nav" id="nav-link">Main Navigation</a>
+                </div>
+            </header>
 
-        <ul id="meta">
-            [% IF c.user_exists %]
-                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
-                <li><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
-            [% ELSE %]
-                <li>&nbsp;</li>
-            [% END %]
-        </ul>
+          [% IF c.user_exists %]
+            <div id="user-meta">
+                <p>
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                </p>
+            </div>
+          [% END %]
 
-        <div id="wrapper"><div id="mysociety">
+            [% pre_container_extra %]
 
-    [% INCLUDE 'debug_header.html' %]
+            <div class="container">
+                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
+
+        <!-- [% INCLUDE 'debug_header.html' %] -->
