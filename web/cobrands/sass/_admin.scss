@@ -1,0 +1,152 @@
+// Admin tables
+
+$table_border_color:   #ccc;
+$table_heading_bg_col: #595959;
+$table_heading_border_col:   #7a7a7a;
+$table_heading_col:    #fff;
+$table_heading_underline_col: #393939;
+$button_col:    #fff;
+$button_bg_col: #a1a1a1;  // also search bar (tables)
+
+.admin {
+    table {
+        width: 100%;
+        font-size: 0.9em;
+        border: 1px solid $table_border_color;
+        border-collapse: collapse;
+        margin-bottom: 1em;
+        th, td {
+            padding: 0.666em 0.5em;
+            border: 1px solid $table_border_color;
+        }
+        th {
+            color: white;
+            background-color: $table_heading_bg_col;
+            border-bottom: 2px solid $table_heading_underline_col;
+            border-left: 1px solid $table_heading_border_col;
+            border-right: 1px solid $table_heading_border_col;
+            a:link, a:visited {
+                color: white;
+            }
+        }
+        td.record-id {
+            text-align: center;
+            font-weight: bold;
+        }
+        tr.filter-row td {
+            display: none; /* TODO: reveal when filtering is implemented */
+            padding: 4px 4px 4px 40px;
+            background-color: $button_bg_col;
+            background-image: url('search-icon-white.png');
+            background-position: 14px center;
+            background-repeat: no-repeat;
+            border-bottom: 2px solid $table_border_color;
+        }
+        tr.filter-row td input[type=text] {
+            background-color: #e1e1e1;
+            width: 16em;
+            @include border-radius(4px);
+            border: none;
+            padding: 3px 0.5em;
+        }
+        tr.is-deleted {
+          background-color: #ffdddd;
+          td.contact-category {
+            text-decoration: line-through;
+          }
+        }
+    }
+    .no-bullets {
+      margin-left: 0;
+      > li {
+        list-style: none;
+      }
+    }
+    .admin-box { // for delimiting forms, etc
+      border:1px solid #999;
+      padding:0.5em 1em;
+      margin:1.5em 0;
+      h2 { // only really want on first-child
+        margin-top: 0;
+      }
+    }
+  .fms-admin-warning, .fms-admin-info, .admin-hint, .admin-offsite-link {
+    display: none; // don't display admin-notes unless .show-admin-notes class is present
+  }
+  &.show-admin-notes {
+    .fms-admin-warning, .fms-admin-info, .admin-hint {
+      display: block;
+    }
+    .admin-offsite-link {
+      display: inline;
+    }
+    .fms-admin-warning, .fms-admin-info {
+      padding: 1em;
+      font-size: 90%;
+      border-style: solid;
+      border-width: 1px;
+      border-left-width: 1em;
+      margin-bottom: 1em;
+    }
+    .fms-admin-warning {
+        border-color: #f99;
+        background-color: #ffe1e1;
+    }
+    .fms-admin-info {
+        border-color: #9f9;
+        background-color: #e1ffe1;
+    }
+    .admin-open311-only {
+      border:1px solid #666;
+      padding:1em;
+      margin: 1em 0;
+    }
+    .admin-hint {
+      font-size: 80%; // little question marks are small
+      cursor: pointer;
+      display: block;
+      float:left;
+      overflow: hidden;
+      padding: 0.2em;
+      margin-right: 0.666em;
+      text-align: center;
+      color: #fff;
+      font-weight: bold;
+      background-color: #f93;
+      -moz-border-radius: 0.333em;
+      -webkit-border-radius: 0.333em;
+      border-radius: 0.333em;
+      p {
+        display:none;
+      }
+      &:before { content: "?" }
+      &.admin-hint-show {
+        font-size: 90%;
+        text-align: left;
+        display: block;
+        float:none;
+        margin:1em 0;
+        &:before { content: "" }
+        background-color: inherit !important;
+        p {
+          font-weight: normal;
+          display: block;
+          background-color: #ff9;
+          color: #000;
+          border-style: solid;
+          border-width: 1px;
+          border-left-width: 1em;
+          border-color: #f93;
+          padding:1em;
+          margin: 0;
+        }
+      }
+    }
+    .admin-offsite-link {
+      padding-right: 12px;
+      background-image: url(../../i/external-link.png);
+      background-position: right top;
+      background-repeat: no-repeat;
+    }
+  }
+}
