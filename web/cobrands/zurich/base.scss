@@ -137,3 +137,50 @@ h4.static-with-rule {
 #fms_pan_zoom_panright {
     display: none;
 }
+
+.admin-nav {
+    background: #f4f4f4;
+    @include background(linear-gradient(#fbfbfb, #efefef));
+    border-bottom: 2px solid $table_border_color;
+    ul {
+        overflow:auto;
+        margin:0 0 -2px 0;
+        list-style: none;
+        padding: 0;
+        border-top: 1px solid $table_border_color;
+        border-left: 1px solid $table_border_color;
+        border-right: 1px solid $table_border_color;
+        li {
+            border-right: 1px solid $table_border_color;
+            float:left;
+            list-style: none;
+            margin:0;
+            padding: 0.5em 1em;
+            font-weight: bold;
+            color: #000;
+            a {
+                color: #000;
+            }
+        }
+        li.search-box {
+            float: right;
+        }
+        li.current {
+            background-color: #fff;
+            border-bottom: 2px solid #fff;
+        }
+        li.search-box {
+            border:none;
+            padding: 0.2em 0.5em 0.2em 30px;
+            background-image: url('search-icon.png');
+            background-position: 2px center;
+            background-repeat: no-repeat;
+            input {
+                height: 100%;
+                width: 12em;
+                border: none;
+                padding: 6px 0.5em;
+            }
+        }
+    }
+}
