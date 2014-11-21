@@ -58,12 +58,26 @@ for the staff working at the receiving end. See
 
 If you have access to your server and are comfortable using the command line, 
 you can manually run the `send-reports` script. Normally you never need to do
-this -- because, as described above, FixMyStreet runs it using `crontab` every
-five minutes. But if you're investigating why reports aren't sending, you
-can run the script manually with the `--debug` option. As the script loops
-through each of the reports it's trying to send, it will try to print out
-useful detail for each attempt. It also makes it clear if the script hasn't
-found *any* reports to send. Run this with: 
+this because, as described above, FixMyStreet runs it using `crontab` every
+five minutes. But if you're investigating why reports aren't sending, you can
+run the script manually. The `send-reports` script normally runs silently, that
+is, it produces no output (this is to prevent cron sending a logging email
+every time it runs, including the times there are no reports to send anyway).
+But if you want to see what's going on, you can use these options:
+
+   * the `--verbose` option prints out a summary of reports that did not get
+     sent. Incidentally, this option is useful even in
+     <a href="{{ site.baseurl }}glossary/#production" class="glossary__link">production</a>,
+     because it causes cron to send a logging email containing this summary of
+     failed-to-send reports if anything goes wrong.
+
+   * the `--debug` option prints out detail about the sending process as
+     it is being attempted. As the script loops through each of the reports
+     it's trying to send, it will try to print out useful information for each
+     attempt. It also makes it clear if the script hasn't found *any* reports
+     to send.
+
+For example, to run `send-reports` with debugging output, do:
 
     bin/cron-wrapper send-reports --debug
 
