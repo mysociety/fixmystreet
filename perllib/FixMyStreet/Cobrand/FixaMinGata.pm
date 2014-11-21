@@ -9,9 +9,6 @@ use mySociety::MaPit;
 use FixMyStreet::Geocode::FixaMinGata;
 use DateTime;
 
-
-DateTime->DefaultLocale('sv_SE');
-
 sub site_title {
     my ($self) = @_;
     return 'FixaMinGata';

@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use FixMyStreet;
 use FixMyStreet::Geocode::Bing;
+use DateTime;
 use Encode;
 use URI;
 use Digest::MD5 qw(md5_hex);
@@ -172,6 +173,13 @@ sub set_lang_and_domain {
     my $set_lang = mySociety::Locale::negotiate_language( $languages, $lang_override, $headers );
     mySociety::Locale::gettext_domain( $lang_domain, $unicode, $dir );
     mySociety::Locale::change();
+
+    if ($mySociety::Locale::langmap{$set_lang}) {
+        DateTime->DefaultLocale( $mySociety::Locale::langmap{$set_lang} );
+    } else {
+        DateTime->DefaultLocale( 'en_US' );
+    }
+
     return $set_lang;
 }
 sub languages { FixMyStreet->config('LANGUAGES') || [ 'en-gb,English,en_GB' ] }

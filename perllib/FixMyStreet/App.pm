@@ -6,7 +6,6 @@ use namespace::autoclean;
 $Return::Value::NO_CLUCK = 1;
 
 use Catalyst::Runtime 5.80;
-use DateTime;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use Memcached;
@@ -207,9 +206,6 @@ sub setup_request {
     # XXX Put in cobrand / do properly
     if ($c->cobrand->moniker eq 'zurich') {
         FixMyStreet::DB::Result::Problem->visible_states_add_unconfirmed();
-        DateTime->DefaultLocale( 'de_CH' );
-    } else {
-        DateTime->DefaultLocale( 'en_US' );
     }
 
     if (FixMyStreet->test_mode) {
