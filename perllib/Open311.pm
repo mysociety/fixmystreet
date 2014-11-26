@@ -368,7 +368,8 @@ sub _get {
 
     my $uri = URI->new( $self->endpoint );
 
-    $params->{ jurisdiction_id } = $self->jurisdiction;
+    $params->{ jurisdiction_id } = $self->jurisdiction
+        if $self->jurisdiction;
     $uri->path( $uri->path . $path );
     $uri->query_form( $params );
 
@@ -412,12 +413,11 @@ sub _post {
     my $uri = URI->new( $self->endpoint );
     $uri->path( $uri->path . $path );
 
-    my $req = POST $uri->as_string,
-    [
-        jurisdiction_id => $self->jurisdiction,
-        api_key => $self->api_key,
-        %{ $params }
-    ];
+    $params->{jurisdiction_id} = $self->jurisdiction
+        if $self->jurisdiction;
+    $params->{api_key} = $self->api_key
+        if $self->api_key;
+    my $req = POST $uri->as_string, $params;
 
     $self->debug_details( $self->debug_details . "\nrequest:" . $req->as_string );
 
