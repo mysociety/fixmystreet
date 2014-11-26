@@ -40,11 +40,11 @@ sub process_body {
     $self->_check_endpoints;
 
     my $list = $open311->get_service_list;
-    unless ( $list ) {
-        my $id = $self->_current_body->id;
-        my $mapit_url = mySociety::Config::get('MAPIT_URL');
-        my $areas = join( ",", keys %{$self->_current_body->areas} );
+    unless ( $list && $list->{service} ) {
         if ($self->verbose >= 1) {
+            my $id = $self->_current_body->id;
+            my $mapit_url = mySociety::Config::get('MAPIT_URL');
+            my $areas = join( ",", keys %{$self->_current_body->areas} );
             warn "Body $id for areas $areas - $mapit_url/areas/$areas.html - did not return a service list\n";
             warn $open311->error;
         }
@@ -156,9 +156,10 @@ sub _handle_existing_contact {
         }
     }
 
-    if ( $contact and lc( $self->_current_service->{metadata} ) eq 'true' ) {
+    my $metadata = $self->_current_service->{metadata} || '';
+    if ( $contact and lc($metadata) eq 'true' ) {
         $self->_add_meta_to_contact( $contact );
-    } elsif ( $contact and $contact->extra and lc( $self->_current_service->{metadata} ) eq 'false' ) {
+    } elsif ( $contact and $contact->extra and lc($metadata) eq 'false' ) {
         $contact->update( { extra => undef } );
     }
 
@@ -192,7 +193,8 @@ sub _create_contact {
         return;
     }
 
-    if ( $contact and lc( $self->_current_service->{metadata} ) eq 'true' ) {
+    my $metadata = $self->_current_service->{metadata} || '';
+    if ( $contact and lc($metadata) eq 'true' ) {
         $self->_add_meta_to_contact( $contact );
     }
 
@@ -205,7 +207,7 @@ sub _create_contact {
 sub _add_meta_to_contact {
     my ( $self, $contact ) = @_;
 
-    print "Fetching meta data for $self->_current_service->{service_code}\n" if $self->verbose >= 2;
+    print "Fetching meta data for " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
     my $meta_data = $self->_current_open311->get_service_meta_info( $self->_current_service->{service_code} );
 
     if ( ref $meta_data->{ attributes }->{ attribute } eq 'HASH' ) {
