@@ -237,18 +237,12 @@ The following are all the configuration settings that you can change in `config/
     </p>
     <ul>
       <li>
-        If you're running 
-        <a href="{{ site.baseurl }}2013/11/25/v1.3/">version 1.3</a> (which
-        you will be if you've installed the 
-        <a href="{{ site.baseurl }}install/ami">AMI</a>, for example), then
-        the report will be sent to your site's 
-        <code><a href="#contact_email">CONTACT_EMAIL</a></code>.
+        If you're running version 1.4 or later, the report will be sent to the
+        reporter; that is, the email address you used to confirm the report.
       </li>
       <li>
-        However, if you're running the latest version (off the master branch),
-        the report will be sent to the reporter, that is, the email address
-        you used to confirm the report. We have found this behaviour is much 
-        more useful because it's more flexible.
+        If you're running version 1.3 or earlier, then the report will be sent
+        to your site's <code><a href="#contact_email">CONTACT_EMAIL</a></code>.
       </li>
     </ul>
     <p>
