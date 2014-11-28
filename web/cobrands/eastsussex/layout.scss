@@ -82,8 +82,16 @@ body.mappage {
     }
 
     .content {
-        width: 27em;
+        div {
+            max-width: 27em;
+        }
+
+        // required for non-js placement
+        #map_box {
+            left: 30em;
+        }
     }
+
 
     #wrapper {
         display: block;
