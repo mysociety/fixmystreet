@@ -1,0 +1,25 @@
+@import "_colours";
+@import "../sass/layout";
+
+@media only screen and (min-width: 48em) {
+    body.frontpage #site-logo,
+    .ie6 body.frontpage #site-logo,
+    body.twothirdswidthpage #site-logo,
+    .ie6 body.twothirdswidthpage #site-logo
+    {
+            position: relative;
+            top: 5px;
+            margin: 0;
+            margin-left: 2.25em;
+            padding: 0;
+            background: url("/cobrands/harrogate/HBCLogo.png") 0 0 no-repeat;
+            width: 227px;
+            height: 122px;
+    }
+}
+
+#main-nav ul#main-menu li {
+    span {
+        color: $nav_fg;
+    }
+}
