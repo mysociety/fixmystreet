@@ -1,0 +1,36 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+#site-logo
+{
+    display: block;
+    background: url("/cobrands/harrogate/HBCLogo-mobile.png") 0 0 no-repeat;
+    margin: 2px;
+    padding-left: 10px;
+    position: static;
+    width: 106px;
+    height: 37px;
+}
+
+#main-nav ul#main-menu li {
+
+    // blue button background, darker if selected
+    background: $primary;
+    &.menu-item-selected { background: $primary_dark; }
+
+    @include border-radius(1em);
+    padding: 0.25em;
+    margin: 0.25em;
+    border: solid 1px black;
+
+    span {
+        color: $nav_fg;
+    }
+}
