@@ -34,3 +34,9 @@ body.frontpage #site-logo,
         color: $nav_fg;
     }
 }
+
+label[for=form_INFO_TEXT] {
+    background: yellow;
+    border: solid 1px black;
+    padding: 1em;
+}

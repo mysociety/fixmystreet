@@ -3,6 +3,7 @@ use base 'FixMyStreet::Cobrand::UKCouncils';
 
 use strict;
 use warnings;
+use feature 'say';
 
 sub council_id { return 2407; }
 sub council_area { return 'Harrogate'; }
@@ -54,39 +55,197 @@ Can run with a script or command line like:
 
 =cut
 
+sub temp_email_to_update {
+    return 'test@example.com';
+}
+
 sub temp_update_contacts {
     my $self = shift;
 
-    my $category = 'Potholes';
-    my $contact = $self->{c}->model('DB::Contact')
-        ->search({
-            body_id => $self->council_id,
-            category => $category,
-        })->first
-        or die "No such category: $category";
+    my $contact_rs = $self->{c}->model('DB::Contact');
 
-    my $fields = [
-        {
-            'code' => 'detail_size', # there is already builtin handling for this field in Report::New
-            'variable' => 'true',
-            'order' => '1',
-            'description' => 'Size of the pothole?',
-            'required' => 'true',
-            'datatype' => 'singlevaluelist',
-            'datatype_description' => {}, 
-            'values' => {
-                'value' => $self->POTHOLE_SIZES,
+    my $email = $self->temp_email_to_update;
+    my $_update = sub {
+        my ($category, $field, $category_details) = @_; 
+        # NB: we're accepting just 1 field, but supply as array [ $field ]
+
+        my $contact = $contact_rs->find_or_create(
+            {
+                body_id => $self->council_id,
+                category => $category,
+
+                confirmed => 1,
+                deleted => 0,
+                email => $email,
+                editor => 'automated script',
+                note => '',
+                send_method => '',
+                whenedited => \'NOW()',
+                %{ $category_details || {} },
             },
-        }
-    ];
-    # require IO::String; require RABX;
-    # RABX::wire_wr( $fields, IO::String->new(my $extra) );
+            {
+                key => 'contacts_body_id_category_idx'
+            }
+        );
 
-    $contact->update({ extra => $fields });
+        say "Editing category: $category";
+
+        my %default = (
+            variable => 'true',
+            order => '1',
+            required => 'no',
+            datatype => 'string',
+            datatype_description => 'a string',
+        );
+
+        if ($field->{datatype} || '' eq 'boolean') {
+            my $description = $field->{description};
+            %default = (
+                %default,
+                datatype => 'singlevaluelist',
+                datatype_description => 'Yes or No',
+                values => { value => [ 
+                        { key => ['No'],  name => ['No'] },
+                        { key => ['Yes'], name => ['Yes'] }, 
+                ] },
+            );
+        }
+
+        $contact->update({
+            extra => [ { %default, %$field } ],
+            confirmed => 1,
+            deleted => 0,
+            editor => 'automated script',
+            whenedited => \'NOW()',
+            note => 'Edited by script as per requirements Dec 2014',
+        });
+    };
+
+    # Note that we use 'detail' because template already includes this value
+    # (It would be better to make the email template smarter, but aiui the email
+    # templates are faked-up-PHP rather than a full template engine, so that's
+    # harder than it should be.  One good option might be to allow passing a TT
+    # template to send_email_cron? TODO)
+
+    $_update->( 'Abandoned vehicles', {
+            code => 'registration',
+            description => 'Vehicle Registration number:',
+        });
+
+    $_update->( 'Dead animals', {
+            code => 'INFO_TEXT',
+            variable => 'false',
+            description => 'We do not remove small species, e.g. squirrels, rabbits, and small birds.',
+        });
+
+    $_update->( 'Flyposting', {
+            code => 'offensive',
+            description => 'Is it offensive?',
+            datatype => 'boolean', # mapped onto singlevaluelist
+        });
+
+    $_update->( 'Flytipping', {
+            code => 'size',
+            description => 'Size?',
+            datatype => 'singlevaluelist',
+            values => { value => [ 
+                    { key => ['Single Item'],       name => ['Single item'] },
+                    { key => ['Car boot load'],     name => ['Car boot load'] },
+                    { key => ['Small van load'],    name => ['Small van load'] },
+                    { key => ['Transit van load'],  name => ['Transit van load'] },
+                    { key => ['Tipper lorry load'], name => ['Tipper lorry load'] },
+                    { key => ['Significant load'],  name => ['Significant load'] },
+                ] },
+        });
+
+    $_update->( 'Graffiti', {
+            code => 'offensive',
+            description => 'Is it offensive?',
+            datatype => 'boolean', # mapped onto singlevaluelist
+        });
+
+    $_update->( 'Parks and playgrounds', {
+            code => 'dangerous',
+            description => 'Is it dangerous or could cause injury?',
+            datatype => 'boolean', # mapped onto singlevaluelist
+        });
+
+    $_update->( 'Trees', {
+            code => 'detail',
+            description => 'Is it dangerous or could cause injury?',
+            datatype => 'boolean', # mapped onto singlevaluelist
+        });
+
+    # also ensure that the following categories are created:
+    for my $category (
+        'Car parking',
+        'Dog and litter bins',
+        'Dog fouling',
+        'Other',
+        'Rubbish (refuse and recycling)',
+        'Street cleaning',
+        'Street lighting',
+        'Street nameplates',
+    ) {
+        say "Creating $category if required";
+        my $contact = $contact_rs->find_or_create(
+            {
+                body_id => $self->council_id,
+                category => $category,
+                confirmed => 1,
+                deleted => 0,
+                email => $email,
+                editor => 'automated script',
+                note => 'Created by script as per requirements Dec 2014',
+                send_method => '',
+                whenedited => \'NOW()',
+            }
+        );
+    }
+
+    my @to_delete = (
+        'Parks/landscapes', # delete in favour of to parks and playgrounds
+        'Public toilets',   # as no longer in specs
+    );
+    say sprintf "Deleting: %s (if present)", join ',' => @to_delete;
+    $contact_rs->search({
+        body_id => $self->council_id,
+        category => \@to_delete,
+        deleted => 0
+    })->update({
+        deleted => 1,
+        editor => 'automated script',
+        whenedited => \'NOW()',
+        note => 'Deleted by script as per requirements Dec 2014',
+    });
 }
 
-sub get_geocoder {
+#sub get_geocoder {
     # return 'OSM'; # default of Bing gives poor results for ESCC, uncomment this if relevant to Harrogate?
+#}
+
+sub contact_email {
+    my $self = shift;
+    return join( '@', 'customerservices', 'harrogate.gov.uk' );
+}
+
+sub process_additional_metadata_for_email {
+    my ($self, $problem, $h) = @_;
+
+    my $additional = '';
+    if (my $extra = $problem->extra) {
+        $additional = join "\n\n", map {
+            if ($_->{name} eq 'INFO_TEXT') {
+                ();
+            }
+            else {
+                sprintf '%s: %s', $_->{description}, $_->{value};
+            }
+        } @$extra;
+        $additional = "\n\n$additional" if $additional;
+    }
+
+    $h->{additional_information} = $additional;
 }
 
 1;
