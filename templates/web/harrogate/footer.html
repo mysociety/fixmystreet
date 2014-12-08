@@ -13,9 +13,6 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
-                    <ul id="mysoc-menu">
-                        <li><a id="mysoc-logo" href="https://www.mysociety.org/">mySociety</a></li>
-                    </ul>
 
                     <ul id="main-menu">
                         [% selected = c.req.uri.path == '/' %]
@@ -40,7 +37,6 @@
 
                         [% selected = c.req.uri.path == '/faq' %]
                         <li [% selected ? 'class="menu-item-selected"' : '' %]>
-                            <[% IF selected %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END %]>
                             <[% IF selected %]span[% ELSE %]a href="/faq"[% END %]>
                             [% loc("Help") %]</[% selected ? 'span' : 'a' %]></li>
 
