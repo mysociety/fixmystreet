@@ -35,7 +35,7 @@ sub example_places {
 
 sub enter_postcode_text {
     my ($self) = @_;
-    return 'Enter a Harrogate postcode, or street name and area';
+    return 'Enter a Harrogate district postcode, or street name and area';
 }
 
 # increase map zoom level so street names are visible
