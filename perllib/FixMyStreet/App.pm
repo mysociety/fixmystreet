@@ -380,9 +380,11 @@ sub send_email_cron {
     });
     my ($sig, $site_name);
     $tt->process( 'signature.txt', $params, \$sig );
+    $sig = Encode::decode('utf8', $sig);
     $params->{_parameters_}->{signature} = $sig;
 
     $tt->process( 'site_name.txt', $params, \$site_name );
+    $site_name = Encode::decode('utf8', $site_name);
     my $site_title = $cobrand ? $cobrand->site_title : '';
     $params->{_parameters_}->{site_name} = $site_name || $site_title;
 
