@@ -5,4 +5,27 @@
 
 [% INCLUDE 'admin/user-form.html' %]
 
+[% IF user.alerts %]
+<table>
+<tr>
+    <th>ID</th>
+    <th>Type</th>
+    <th>Parameters</th>
+    <th>Confirmed</th>
+    <th>State</th>
+</tr>
+[% FOREACH alert IN user.alerts %]
+<tr>
+    <td>[% alert.id %]</td>
+    <td>[% alert.alert_type.ref %]</td>
+    <td>[% alert.parameter %] [% alert.parameter2 %]</td>
+    <td>[% IF alert.confirmed %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</td>
+    <td>Subscribed: [% alert.whensubscribed %]
+        <br>Disabled: [% alert.whendisabled %]
+    </td>
+</tr>
+[% END %]
+</table>
+[% END %]
+
 [% INCLUDE 'admin/footer.html' %]
