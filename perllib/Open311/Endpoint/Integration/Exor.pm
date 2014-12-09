@@ -12,9 +12,6 @@ use Encode qw(from_to);
 # on a development system!
 # t/open311/endpoint/warwick.t disables DBD::Oracle from loading, so the default
 # stubbed values will be used instead:
-sub ORA_DATE ();
-sub ORA_NUMBER ();
-sub ORA_VARCHAR2 ();
 no warnings 'redefine';
 use DBD::Oracle qw(:ora_types);
 
