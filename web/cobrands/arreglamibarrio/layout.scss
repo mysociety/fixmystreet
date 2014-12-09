@@ -1,0 +1,14 @@
+@import "_colours";
+@import "../sass/layout";
+
+body.frontpage {
+    #site-header{
+        height: 10em;
+    }
+    #site-logo {
+        top: 2em;
+        width: 300px;
+        height: 111px;
+        background: url(logo.png);
+    }
+}
