@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-11-19 16:48+0000\n"
-"PO-Revision-Date: 2014-10-11 00:47+0000\n"
+"PO-Revision-Date: 2014-11-19 18:50+0000\n"
 "Last-Translator: Ettore Atalan <atalanttore@googlemail.com>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/projects/p/fixmystreet/language/de_DE/)\n"
 "Language: de_DE\n"
@@ -76,7 +76,7 @@ msgstr "%s Stadtteil, %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:554
 msgid "%s, reported at %s"
-msgstr ""
+msgstr "%s, gemeldet am %s"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:292 perllib/FixMyStreet/Cobrand/UK.pm:304
 msgid "%s, within %s ward"
@@ -140,9 +140,8 @@ msgstr "(optional)"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:37
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:43
-#, fuzzy
 msgid "(public)"
-msgstr "Öffentlich"
+msgstr "(öffentlich)"
 
 #: templates/web/base/reports/_list-entry.html:2
 #: templates/web/fixmystreet/report/_item.html:20
@@ -243,9 +242,8 @@ msgstr ""
 
 #: templates/web/base/tokens/confirm_problem.html:19
 #: templates/web/base/tokens/confirm_problem.html:20
-#, fuzzy
 msgid "<strong>We will now send it to the council</strong>."
-msgstr "und <strong> wir werden es nun an die Gemeinde senden</strong>"
+msgstr ""
 
 #: templates/web/base/auth/general.html:37
 #: templates/web/base/report/new/fill_in_details_form.html:141
@@ -597,7 +595,7 @@ msgstr ""
 
 #: templates/web/base/admin/body_edit.html:47
 msgid "Configure Endpoint"
-msgstr ""
+msgstr "Endpunkt konfigurieren"
 
 #: templates/web/base/admin/body.html:60
 msgid "Confirm"
@@ -722,7 +720,7 @@ msgstr ""
 #: templates/web/base/dashboard/index.html:6
 #: templates/web/base/dashboard/index.html:7
 msgid "Dashboard"
-msgstr ""
+msgstr "Übersichtsseite"
 
 #: templates/web/zurich/admin/stats.html:35
 msgid "Dealt with by subdivision within 5 working days"
@@ -782,7 +780,7 @@ msgstr "Weiß ich nicht"
 
 #: templates/web/fixmystreet/contact/index.html:119
 msgid "Don't like forms?"
-msgstr ""
+msgstr "Sie mögen keine Formulare?"
 
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/report_edit.html:47
@@ -921,7 +919,7 @@ msgstr ""
 
 #: templates/web/base/admin/stats.html:70
 msgid "End Date:"
-msgstr ""
+msgstr "Enddatum:"
 
 #: templates/web/base/admin/body-form.html:126
 msgid "Endpoint"
@@ -1000,7 +998,7 @@ msgstr ""
 #: templates/web/zurich/admin/index-dm.html:33
 #: templates/web/zurich/admin/index-sdm.html:30
 msgid "Filter report list"
-msgstr ""
+msgstr "Berichtliste filtern"
 
 #: templates/web/base/questionnaire/index.html:55
 #: templates/web/fixmystreet/questionnaire/index.html:74
@@ -1713,7 +1711,7 @@ msgstr "Bisher wurden noch keine Meldungen erfasst."
 
 #: templates/web/base/js/translation_strings.html:38
 msgid "No result returned"
-msgstr ""
+msgstr "Kein Ergebnis zurückgegeben"
 
 #: templates/web/base/admin/body-form.html:60
 #: templates/web/base/admin/body-form.html:61
@@ -2232,9 +2230,8 @@ msgid "Previous"
 msgstr "Vorherige"
 
 #: templates/web/fixmystreet/footer.html:32
-#, fuzzy
 msgid "Privacy"
-msgstr "Privat"
+msgstr "Datenschutz"
 
 #: templates/web/base/admin/body.html:190
 #: templates/web/base/admin/body.html:73
@@ -2328,7 +2325,7 @@ msgstr ""
 
 #: templates/web/base/admin/report_edit.html:32
 msgid "Property address:"
-msgstr ""
+msgstr "Immobilien-Adresse:"
 
 #: templates/web/base/report/new/category.html:8
 msgid "Property type:"
@@ -2358,7 +2355,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:80
 #: templates/web/zurich/admin/stats.html:38
 msgid "Publish photo"
-msgstr ""
+msgstr "Foto veröffentlichen"
 
 #: templates/web/zurich/admin/report_edit.html:222
 msgid "Publish the response"
@@ -2373,7 +2370,7 @@ msgstr ""
 #: templates/web/fixmystreet/questionnaire/index.html:33
 #: templates/web/fixmystreet/questionnaire/index.html:5
 msgid "Questionnaire"
-msgstr ""
+msgstr "Fragebogen"
 
 #: templates/web/base/admin/timeline.html:30
 msgid "Questionnaire %d answered for problem %d, %s to %s"
@@ -2512,9 +2509,8 @@ msgstr "Bericht auf %s"
 
 #: templates/web/base/report/new/fill_in_details_form.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:2
-#, fuzzy
 msgid "Report your problem"
-msgstr "Eine Meldung erfassen"
+msgstr ""
 
 #: templates/web/base/index.html:11
 #: templates/web/fixmystreet/around/intro.html:1
@@ -2715,7 +2711,7 @@ msgstr "Teilen"
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:53
 #: templates/web/fixmystreet/report/update-form.html:146
 msgid "Show my name publicly"
-msgstr ""
+msgstr "Meinen Namen öffentlich anzeigen"
 
 #: templates/web/base/around/display_location.html:69
 msgid "Show old"
@@ -2877,7 +2873,7 @@ msgstr "Änderungen senden"
 #: templates/web/base/questionnaire/index.html:88
 #: templates/web/fixmystreet/questionnaire/index.html:106
 msgid "Submit questionnaire"
-msgstr ""
+msgstr "Fragebogen absenden"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:133
 #: templates/web/zurich/admin/header.html:2
@@ -2897,7 +2893,7 @@ msgstr "Gesendet"
 #: templates/web/fixmystreet/alert/updates.html:23
 #: templates/web/fixmystreet/report/display.html:72
 msgid "Subscribe"
-msgstr ""
+msgstr "Abonnieren"
 
 #: templates/web/base/alert/_list.html:97
 #: templates/web/fixmystreet/alert/_list.html:92
@@ -3829,9 +3825,8 @@ msgid "Your phone number"
 msgstr "Ihre Telefonnummer"
 
 #: templates/web/base/tokens/confirm_problem.html:4
-#, fuzzy
 msgid "Your problem has been confirmed!"
-msgstr "Dieser Mangel wurde behoben"
+msgstr "Ihr Problem wurde bestätigt!"
 
 #: templates/web/fixmystreet/questionnaire/index.html:16
 msgid "Your report"
@@ -3848,9 +3843,8 @@ msgid "Your reports"
 msgstr "Ihre Meldungen"
 
 #: templates/web/base/tokens/confirm_update.html:4
-#, fuzzy
 msgid "Your update has been confirmed!"
-msgstr "Ihr Passwort wurde ge&auml;ndert"
+msgstr "Ihre Aktualisierung wurde bestätigt!"
 
 #: templates/web/base/my/my.html:53 templates/web/fixmystreet/my/my.html:59
 msgid "Your updates"
@@ -3947,7 +3941,7 @@ msgstr ""
 #: templates/web/base/admin/questionnaire.html:15
 #: templates/web/base/admin/questionnaire.html:16
 msgid "n/a"
-msgstr ""
+msgstr "n/v"
 
 #: templates/web/base/alert/_list.html:87
 #: templates/web/fixmystreet/alert/_list.html:85
@@ -4103,49 +4097,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "%d addresses"
-#~ msgstr "%d Adressen"
-
-#~ msgid "<big>%s</big> reports"
-#~ msgstr "<big>%s</big> Berichte"
-
-#~ msgid "Contact"
-#~ msgstr "Kontakt"
-
-#~ msgid "Fix<span id=\"my\">My</span>Street"
-#~ msgstr "Fix<span id=\"my\">My</span>Street"
-
-#~ msgid "Navigation"
-#~ msgstr "Navigation"
-
-#~ msgid "New problems"
-#~ msgstr "Neue Meldungen"
-
-#~ msgid "New!"
-#~ msgstr "Neu!"
-
-#~ msgid "Non Public"
-#~ msgstr "Nicht öffentlich"
-
-#~ msgid "Old problems,<br>state unknown"
-#~ msgstr "Alte Probleme,<br>Status unbekannt"
-
-#~ msgid "Older problems"
-#~ msgstr "Ältere Probleme"
-
-#~ msgid ""
-#~ "Please fill in details of the problem below. The council won't be able\n"
-#~ "to help unless you leave as much detail as you can, so please describe the exact location of\n"
-#~ "the problem (e.g. on a wall), what it is, how long it has been there, a description (and a\n"
-#~ "photo of the problem if you have one), etc."
-#~ msgstr "Bitte beschreiben sie Ihre Meldung weiter unten. Wir k&ouml;nnen den Mangel nur beheben, wenn Sie soviel Details wie m&ouml;glich angeben: Beschreiben sie die exakte Lage (z.B. An der Wand Richtung Strasse), was genau der Mangel ist, wie lange dieser schon da ist und laden sie wenn m&ouml;glich ein Photo des Mangels hoch."
-
-#~ msgid "Recently fixed"
-#~ msgstr "K&uuml;rzlich gel&ouml;st"
-
-#~ msgid "Source code"
-#~ msgstr "Quellcode"
-
-#~ msgid "You have successfully confirmed your problem"
-#~ msgstr "Sie haben Ihre Meldung erfolgreich best&auml;tigt"

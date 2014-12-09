@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2014-11-19 16:48+0000\n"
-"PO-Revision-Date: 2014-11-09 19:22+0000\n"
-"Last-Translator: Christophe Ocivélo Saint-Etienne <ocivelo@gmail.com>\n"
+"PO-Revision-Date: 2014-11-20 19:58+0000\n"
+"Last-Translator: fixmystreetfr <fixmystreet@fixmystreet.fr>\n"
 "Language-Team: French (France) (http://www.transifex.com/projects/p/fixmystreet/language/fr_FR/)\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
@@ -141,9 +141,8 @@ msgstr "(facultatif)"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:37
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:43
-#, fuzzy
 msgid "(public)"
-msgstr "Public"
+msgstr "(public)"
 
 #: templates/web/base/reports/_list-entry.html:2
 #: templates/web/fixmystreet/report/_item.html:20
@@ -261,9 +260,8 @@ msgstr "<strong>Non</strong>, laissez-moi confirmer ma mise à jour par email :"
 
 #: templates/web/base/tokens/confirm_problem.html:19
 #: templates/web/base/tokens/confirm_problem.html:20
-#, fuzzy
 msgid "<strong>We will now send it to the council</strong>."
-msgstr " et <strong>nous allons maintenant l'envoyer à l'administration</strong>"
+msgstr "<strong>Nous allons maintenant l'envoyer a l'administration</strong>."
 
 #: templates/web/base/auth/general.html:37
 #: templates/web/base/report/new/fill_in_details_form.html:141
@@ -296,6 +294,9 @@ msgid ""
 "          to which problem reports can be sent. You can add one or more contacts (for different\n"
 "          categories of problem) to each body."
 msgstr ""
+"Ajouer un <strong>body</strong> pour chaque organe administratif, comme une mairie ou un département\n"
+"         ou les rapports de problèmes peuvent être envoyés. Vous pouvez ajouter un ou plusieurs contact (pour differentes\n"
+"          catégories de problèmes) à chaque body."
 
 #: templates/web/base/admin/body.html:48
 msgid "Add a contact using the form below."
@@ -798,7 +799,7 @@ msgstr "Tableau d'honneur de la réactivité"
 
 #: templates/web/fixmystreet/auth/general.html:30
 msgid "Do you have a FixMyBarangay password?"
-msgstr ""
+msgstr "Avez-vous un mot de passe FixMyBarangay?"
 
 #: templates/web/base/auth/general.html:32
 #: templates/web/fixmystreet/auth/general.html:32
@@ -984,7 +985,7 @@ msgstr "Saisir un code postal proche, ou une rue et une localité"
 #: templates/web/base/around/postcode_form.html:2
 #: templates/web/fixmystreet/around/postcode_form.html:11
 msgid "Enter a nearby street name and area"
-msgstr "Saisissez un nom de rue proche et une localité"
+msgstr "Saisissez un nom de rue proche,  la localité ou le code postal"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
@@ -1028,7 +1029,7 @@ msgstr "Exemples :"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:47
 msgid "Explain what’s wrong, exactly where it is, and how long it’s been there…"
-msgstr ""
+msgstr "Expliquez ce qui ne va pas, sa position exact, et depuis combien de temps..."
 
 #: templates/web/base/admin/report_edit.html:76
 msgid "Extra data:"
@@ -1686,7 +1687,7 @@ msgstr "Nouveaux rapports"
 
 #: db/alert_types_eha.pl:23
 msgid "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
-msgstr ""
+msgstr "Nouveaux rapports pour {{COUNCIL}} au sein de {{WARD}} sur reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:5
 msgid "New reports on reportemptyhomes.com"
@@ -1694,15 +1695,15 @@ msgstr "Nouveaux rapports sur reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:16
 msgid "New reports on reportemptyhomes.com near {{POSTCODE}}"
-msgstr ""
+msgstr "Nouveaux rapports sur reportemptyhomes.com près de {{POSTCODE}}"
 
 #: db/alert_types_eha.pl:19
 msgid "New reports to {{COUNCIL}} on reportemptyhomes.com"
-msgstr ""
+msgstr "Nouveaux rapports à {{COUNCIL}}  sur reportemptyhomes.com"
 
 #: db/alert_types_eha.pl:27
 msgid "New reports within {{NAME}}'s boundary on reportemptyhomes.com"
-msgstr ""
+msgstr "De nouveaux rapports au sein de {{name}} 's sur reportemptyhomes.com"
 
 #: templates/web/base/admin/questionnaire.html:24
 msgid "New state"
@@ -1893,7 +1894,7 @@ msgstr "Anciens <br />problèmes"
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:37
 msgid "One-line summary"
-msgstr ""
+msgstr "Résumé"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:137
 #: templates/web/base/admin/report_edit.html:35
@@ -2084,9 +2085,8 @@ msgid "Please choose a property type"
 msgstr "Merci de choisir un type de propriété"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:376
-#, fuzzy
 msgid "Please correct the errors below"
-msgstr "Merci de sélectionner le type de flux que vous voulez"
+msgstr "Merci de corriger les erreurs ci-dessous"
 
 #: templates/web/base/contact/blurb.html:2
 #: templates/web/fixmystreet/contact/blurb.html:12
@@ -2303,9 +2303,8 @@ msgid "Previous"
 msgstr "Précédent"
 
 #: templates/web/fixmystreet/footer.html:32
-#, fuzzy
 msgid "Privacy"
-msgstr "Privé"
+msgstr "Confidentialité"
 
 #: templates/web/base/admin/body.html:190
 #: templates/web/base/admin/body.html:73
@@ -2583,15 +2582,14 @@ msgstr "Signaler sur %s"
 
 #: templates/web/base/report/new/fill_in_details_form.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:2
-#, fuzzy
 msgid "Report your problem"
-msgstr "Signaler un problème"
+msgstr "Signaler votre problème"
 
 #: templates/web/base/index.html:11
 #: templates/web/fixmystreet/around/intro.html:1
 #: templates/web/zurich/around/intro.html:1
 msgid "Report, view, or discuss local problems"
-msgstr "Signalez, voyez ou discutez des problèmes locaux"
+msgstr "Signalez et suivez les problèmes locaux"
 
 #: templates/web/base/my/my.html:82
 msgid "Reported %s"
@@ -3023,7 +3021,7 @@ msgstr "Merci &mdash; vous pouvez <a href=\"%s\">voir votre problème mis à jou
 
 #: templates/web/base/tokens/confirm_problem.html:18
 msgid "Thank you for reporting this issue"
-msgstr ""
+msgstr "Merci d'avoir signalé ce problème"
 
 #: templates/web/base/tokens/error.html:7
 msgid "Thank you for trying to confirm your update or problem. We seem to have an error ourselves though, so <a href=\"%s\">please let us know what went on</a> and we'll look into it."
@@ -3226,9 +3224,8 @@ msgid "The subject and details of the problem will be public, plus your name if 
 msgstr "Le sujet et les détails du problème seront rendus publics, ainsi que votre nom si vous nous donnez la permission."
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:14
-#, fuzzy
 msgid "The summary and description will also be made public (see our <a href=\"/privacy\">privacy policy</a>)."
-msgstr "Votre information sera utilisée seulement en accord avec notre <a href=\"/privacy\">politique de confidentialité</a>"
+msgstr "Le résumé et la description seront également rendus publics (voir notre <a href=\"/privacy\"> politique de confidentialité </a>)."
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:296
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
@@ -3652,7 +3649,7 @@ msgstr "Nous aimerions beaucoup savoir ce que vous pensez de ce site. Il suffit 
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:41
 msgid "What’s the issue, and where is it?"
-msgstr ""
+msgstr "Quel est le problème, et où est-il?"
 
 #: templates/web/base/admin/body_edit.html:82
 #: templates/web/zurich/admin/body.html:18
@@ -3673,9 +3670,8 @@ msgstr "Avec les recherches à requètes, il est également possible de recherch
 
 #: templates/web/fiksgatami/front/footer-marketing.html:15
 #: templates/web/fixmystreet/front/footer-marketing.html:15
-#, fuzzy
 msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
-msgstr "Aimeriez-vous contribuer à FixMyStreet? Notre code est open source et <a href=\"http://github.com/grischard/fixmystreet\"> disponible sur GitHub </a>."
+msgstr "Aimeriez-vous contribuer à FixMyStreet? Notre code est open source et <a href=\"http://fixmystreetf.org\"> disponible sur fixmystreet.org </a>"
 
 #: templates/web/base/questionnaire/index.html:78
 #: templates/web/fixmystreet/questionnaire/index.html:97
@@ -3689,7 +3685,7 @@ msgstr "Si vous rédigez votre message entièrement en capitales, ou sans ponctu
 #: templates/web/base/report/new/fill_in_details_form.html:4
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:5
 msgid "Wrong location? Just click again on the map."
-msgstr ""
+msgstr "Mauvais emplacement? Il suffit de cliquer à nouveau sur la carte."
 
 #: templates/web/base/admin/stats.html:10
 msgid "Year"
@@ -3724,7 +3720,7 @@ msgstr "Oui j'ai un mot de passe"
 #: templates/web/base/contact/index.html:38
 #: templates/web/fixmystreet/contact/index.html:55
 msgid "You are complaining that this problem report was unnecessarily moderated:"
-msgstr ""
+msgstr "Vous ne comprenez pas les raisons pour lesquelles ce rapport a été inutilement retiré:"
 
 #: templates/web/base/contact/index.html:40
 #: templates/web/fixmystreet/contact/index.html:57
@@ -3927,9 +3923,8 @@ msgid "Your phone number"
 msgstr "Votre numéro de téléphone"
 
 #: templates/web/base/tokens/confirm_problem.html:4
-#, fuzzy
 msgid "Your problem has been confirmed!"
-msgstr "Ce problème a été résolu"
+msgstr "Votre problème a été confirmé!"
 
 #: templates/web/fixmystreet/questionnaire/index.html:16
 msgid "Your report"
@@ -3946,9 +3941,8 @@ msgid "Your reports"
 msgstr "Vos rapports"
 
 #: templates/web/base/tokens/confirm_update.html:4
-#, fuzzy
 msgid "Your update has been confirmed!"
-msgstr "Votre mot de passe a été changé"
+msgstr "Votre mise à jour a été confirmée!"
 
 #: templates/web/base/my/my.html:53 templates/web/fixmystreet/my/my.html:59
 msgid "Your updates"
@@ -4054,7 +4048,7 @@ msgstr " ou "
 
 #: templates/web/base/js/translation_strings.html:27
 msgid "or locate me automatically"
-msgstr "ou me localiser automatiquement"
+msgstr "Clickez ici pour vous localiser automatiquement"
 
 #: templates/web/base/admin/report_edit.html:25
 #: templates/web/base/admin/report_edit.html:26
@@ -4201,132 +4195,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Nous n'avons pas encore de détails pour l'autre administration responsable de ce lieu."
 msgstr[1] "Nous n'avons pas encore de détails pour les autres administrations responsables de ce lieu."
-
-#~ msgid "%d addresses"
-#~ msgstr "%d adresses"
-
-#~ msgid "<big>%s</big> reports"
-#~ msgstr "<big>%s</big> rapports"
-
-#~ msgid ""
-#~ "<p style=\"font-size:150%\">We&rsquo;re sorry to hear that. We have two\n"
-#~ "suggestions: why not try <a href=\"http://www.writetothem.com/\">writing direct\n"
-#~ "to your councillor(s)</a> or, if it&rsquo;s a problem that could be fixed by\n"
-#~ "local people working together, why not\n"
-#~ "<a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
-#~ "</p>"
-#~ msgstr ""
-#~ "<p style=\"font-size:150%\">Nous somme désolé d'entendre cela. Nous avons deux \n"
-#~ "suggestions: pourquoi ne pas essayer <a href=\"http://www.writetothem.com/\"> et écrire \n"
-#~ "directement à votre conseiller(s)</a>ou, si c'est un problème qui pourrait être \n"
-#~ "fixé par les populations locales, pourquoi ne pas\n"
-#~ "<a href=\"http://www.pledgebank.com/new\">déclarer votre engagement</a>?\n"
-#~ "</p>"
-
-#~ msgid "Are you from a council?"
-#~ msgstr "Vous faites partie d'une administration ?"
-
-#~ msgid "Be sure to choose the right category, because we use that to determine to whom the report is sent."
-#~ msgstr "Choisissez la bonne catégorie, car nous l'utilisons pour choisir le destinataire de votre rapport."
-
-#~ msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained by <a href=\"http://www.nuug.no/\">NUUG</a>"
-#~ msgstr "Créé par <a href=\"http://www.mysociety.org/\">mySociety</a> et administré par <a href=\"http://stereo.lu/\">Guillaume Rischard</a>"
-
-#~ msgid "Contact"
-#~ msgstr "Contact"
-
-#~ msgid "Empty property details form"
-#~ msgstr "formulaire de saisie de propriété vide"
-
-#~ msgid "Find latest local and national news"
-#~ msgstr "Trouvez les dernières nouvelles nationales ou locales"
-
-#~ msgid "Fix<span id=\"my\">My</span>Street"
-#~ msgstr "Fi<span id=\"my\">x</span>.lu"
-
-#~ msgid "If you submit a report here it will be left on the site, but not reported to the council &ndash; please still leave your report, so that we can show to the council the activity in their area."
-#~ msgstr "Si vous soumettez un rapport ici il sera affiché sur le site, mais ne sera pas signalé à l'administration responsable ; merci de le soumettre malgré tout pour que nous puissions montrer à l'administration qu'il y a de l'activité sur leur territoire."
-
-#~ msgid "Navigation"
-#~ msgstr "Navigation"
-
-#~ msgid "New problems"
-#~ msgstr "Nouveaux problèmes"
-
-#~ msgid "New!"
-#~ msgstr "Nouveau !"
-
-#~ msgid "Non Public"
-#~ msgstr "Pas public"
-
-#~ msgid "Old problems,<br>state unknown"
-#~ msgstr "Probèmes anciens,<br /> état inconnu"
-
-#~ msgid "Older fixed"
-#~ msgstr "Anciens résolus"
-
-#~ msgid "Older problems"
-#~ msgstr "Anciens problèmes"
-
-#~ msgid "Please do not give address or personal information in this section."
-#~ msgstr "Merci de ne pas donner d'adresse ou d'information personnelle dans cette section."
-
-#~ msgid ""
-#~ "Please fill in details of the problem below. Leave as much detail as you can, \n"
-#~ "and if possible describe the exact location of\n"
-#~ "the problem (e.g. if there is a streetlight number or road name)."
-#~ msgstr ""
-#~ "Saisissez les détails du problème ci-dessous. Donnez autant de détails que vous pouvez,\n"
-#~ "et si possible décrivez la localisation exacte \n"
-#~ "du problème (ex. un numéro de rue ou autre )"
-
-#~ msgid ""
-#~ "Please fill in details of the problem below. The council won't be able\n"
-#~ "to help unless you leave as much detail as you can, so please describe the exact location of\n"
-#~ "the problem (e.g. on a wall), what it is, how long it has been there, a description (and a\n"
-#~ "photo of the problem if you have one), etc."
-#~ msgstr ""
-#~ "Merci de saisir les détails du problème ci-dessous. L'administration ne pourra pas\n"
-#~ "le résoudre si vous ne fournissez pas autant de détails que possible; merci de décrire\n"
-#~ "l'emplacement exact du problème (par exemple sur un mur), ce que c'est, depuis\n"
-#~ "combien de temps il existe, une description (et une photo du problème si vous en\n"
-#~ "avez une), etc."
-
-#~ msgid "Private information (not shown on site)"
-#~ msgstr "Information privée (non visible sur le site)"
-
-#~ msgid "Provide a title"
-#~ msgstr "Entrez un titre"
-
-#~ msgid "Public information (shown on site)"
-#~ msgstr "Information publique (affichée sur le site)"
-
-#~ msgid "Recently fixed"
-#~ msgstr "Récemment résolus"
-
-#~ msgid "Report Empty Homes"
-#~ msgstr "Rapport sur les maisons vides"
-
-#~ msgid "Source code"
-#~ msgstr "Code source"
-
-#~ msgid "This is a summary of all reports on this site; select a particular council to see the empty homes news for that area."
-#~ msgstr "Ceci est un résumé de tous les rapports sur ce site; sélectionner une administration particuliere afin de voir les nouvelles maison vides pour cette zone."
-
-#~ msgid "View your report"
-#~ msgstr "Voir votre rapport"
-
-#~ msgid "We may contact you periodically to ask if anything has changed with the property you reported."
-#~ msgstr "Nous pouvons vous contacter périodiquement pour vous demander si quelque chose a changé avec la propriété que vous avez déclaré."
-
-#~ msgid "We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>"
-#~ msgstr "Nous n'utiliserons vos renseignements personnels que conformément à notre <a href=\"/faq#privacy\">politique de confidentialité</a>."
-
-#~ msgid "We&rsquo;d love to hear what you think about this website. Just fill in the form. Please don&rsquo;t contact us about individual empty homes; use the box accessed from <a href=\"/\">the front page</a>."
-#~ msgstr "Nous aimerions savoir ce que vous pensez de ce site. Il suffit de remplir le formulaire. Merci de ne pas nous contacter au sujet des maisons individuelles vides; utiliser la boîte accessible à partir de la <a href=\"/\">Page principale</a>."
-
-#~ msgid "Would you like better integration with FixMyStreet? <a href=\"http://www.mysociety.org/for-councils/fixmystreet/\">Find out about FixMyStreet for councils</a>."
-#~ msgstr "Aimeriez vous une meilleure intégration de FixMyStreet? <a href=\"http://www.mysociety.org/for-councils/fixmystreet/\">Renseignez vous sur FixMyStreet pour les collectivités</a>."
-
-#~ msgid "You have successfully confirmed your problem"
-#~ msgstr "Vous avez réussi à confirmer votre problème."
