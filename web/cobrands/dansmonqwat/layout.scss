@@ -1,0 +1,11 @@
+@import "_colours";
+@import "../sass/layout";
+
+body.frontpage {
+  #site-logo {
+    top: 2em;
+    width: 300px;
+    height: 77px;
+    background: url(/cobrands/dansmonqwat/logo.png);
+  }
+}
