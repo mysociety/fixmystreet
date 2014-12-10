@@ -1,5 +1,6 @@
 package Open311;
 
+use utf8;
 use URI;
 use Moose;
 use XML::Simple;
