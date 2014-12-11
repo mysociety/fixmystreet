@@ -54,8 +54,12 @@ foreach my $test (
 {
     subtest "test bad pc value '$test->{pc}'" => sub {
         $mech->get_ok('/');
-        $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
-            "bad location" );
+        FixMyStreet::override_config {
+            GEOCODER => '',
+        }, sub {
+            $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
+                "bad location" );
+        };
         is_deeply $mech->page_errors, $test->{errors},
           "expected errors for pc '$test->{pc}'";
         is_deeply $mech->pc_alternatives, $test->{pc_alternatives},

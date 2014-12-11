@@ -86,6 +86,7 @@ sub admin_stats {
 
     my %filters = ();
 
+    # XXX The below lookup assumes a body ID === MapIt area ID
     my %councils =
         map {
             my $name = $_->name;

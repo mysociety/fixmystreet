@@ -43,16 +43,20 @@ my %contact_params = (
     note => 'Created for test',
 );
 
+my %body_ids;
 for my $body (
-    { id => 2651, name => 'City of Edinburgh Council' },
-    { id => 2226, name => 'Gloucestershire County Council' },
-    { id => 2326, name => 'Cheltenham Borough Council' },
-    { id => 2482, name => 'Bromley Council' },
-    { id => 2227, name => 'Hampshire County Council' },
-    { id => 2333, name => 'Hart Council' },
-    { id => 2504, name => 'Westminster City Council' },
+    { area_id => 2651, name => 'City of Edinburgh Council' },
+    { area_id => 2226, name => 'Gloucestershire County Council' },
+    { area_id => 2326, name => 'Cheltenham Borough Council' },
+    { area_id => 2504, name => 'Westminster City Council' },
+    # The next three have fixed IDs because bits of the code rely on
+    # the body ID === MapIt area ID.
+    { area_id => 2482, name => 'Bromley Council', id => 2482 },
+    { area_id => 2227, name => 'Hampshire County Council', id => 2227 },
+    { area_id => 2333, name => 'Hart Council', id => 2333 },
 ) {
-    $mech->create_body_ok($body->{id}, $body->{name});
+    my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, id => $body->{id});
+    $body_ids{$body->{area_id}} = $body_obj->id;
 }
 
 # Let's make some contacts to send things to!
@@ -61,43 +65,43 @@ FixMyStreet::App->model('DB::Contact')->search( {
 } )->delete;
 my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2651, # Edinburgh
+    body_id => $body_ids{2651}, # Edinburgh
     category => 'Street lighting',
     email => 'highways@example.com',
 } );
 my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2226, # Gloucestershire
+    body_id => $body_ids{2226}, # Gloucestershire
     category => 'Potholes',
     email => 'potholes@example.com',
 } );
 my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2326, # Cheltenham
+    body_id => $body_ids{2326}, # Cheltenham
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2482, # Bromley
+    body_id => $body_ids{2482}, # Bromley
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2651, # Edinburgh
+    body_id => $body_ids{2651}, # Edinburgh
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact6 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2333, # Hart
+    body_id => $body_ids{2333}, # Hart
     category => 'Trees',
     email => 'trees@example.com',
 } );
 my $contact7 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2227, # Hampshire
+    body_id => $body_ids{2227}, # Hampshire
     category => 'Street lighting',
     email => 'highways@example.com',
 } );
@@ -586,7 +590,7 @@ foreach my $test (
     is $mech->get( '/report/' . $report->id )->code, 404, "report not found";
 
     # Check the report has been assigned appropriately
-    is $report->bodies_str, 2651;
+    is $report->bodies_str, $body_ids{2651};
 
     # receive token
     my $email = $mech->get_email;
@@ -750,7 +754,7 @@ subtest "test report creation for a user who is signing in as they report" => su
     is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
 
     # Check the report has been assigned appropriately
-    is $report->bodies_str, 2651;
+    is $report->bodies_str, $body_ids{2651};
 
     # check that no emails have been sent
     $mech->email_count_is(0);
@@ -846,7 +850,7 @@ foreach my $test (
         ok $report, "Found the report";
 
         # Check the report has been assigned appropriately
-        is $report->bodies_str, $test->{council};
+        is $report->bodies_str, $body_ids{$test->{council}};
 
         # check that we got redirected to /report/
         is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
@@ -1289,7 +1293,7 @@ subtest "test Hart" => sub {
             ok $report, "Found the report";
 
             # Check the report has been assigned appropriately
-            is $report->bodies_str, $test->{council};
+            is $report->bodies_str, $body_ids{$test->{council}};
 
             if ( $test->{redirect} ) {
                 is $mech->uri->path, "/report/" . $report->id, "redirected to report page";
@@ -1353,10 +1357,10 @@ subtest "test SeeSomething" => sub {
 
     my $cobrand = FixMyStreet::Cobrand::SeeSomething->new();
 
-    $mech->create_body_ok(2535, 'Sandwell Borough Council');
+    my $body_ss = $mech->create_body_ok(2535, 'Sandwell Borough Council', id => 2535);
     my $bus_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( {
         %contact_params,
-        body_id => 2535,
+        body_id => $body_ss->id,
         category => 'Bus',
         email => 'bus@example.com',
         non_public => 1,

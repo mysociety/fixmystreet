@@ -470,33 +470,33 @@ subtest "Zurich banners are displayed correctly" => sub {
   };
 };
 
-$mech->create_body_ok(2504, 'Westminster City Council');
-$mech->create_body_ok(2505, 'Camden Borough Council');
+my $body_westminster = $mech->create_body_ok(2504, 'Westminster City Council');
+my $body_camden = $mech->create_body_ok(2505, 'Camden Borough Council');
 
 for my $test ( 
     {
         desc => 'no state dropdown if user not from authority',
         from_body => undef,
         no_state => 1,
-        report_body => '2504',
+        report_body => $body_westminster->id,
     },
     {
         desc => 'state dropdown if user from authority',
-        from_body => 2504,
+        from_body => $body_westminster->id,
         no_state => 0,
-        report_body => '2504',
+        report_body => $body_westminster->id,
     },
     {
         desc => 'no state dropdown if user not from same body as problem',
-        from_body => 2505,
+        from_body => $body_camden->id,
         no_state => 1,
-        report_body => '2504',
+        report_body => $body_westminster->id,
     },
     {
         desc => 'state dropdown if user from authority and problem sent to multiple bodies',
-        from_body => 2504,
+        from_body => $body_westminster->id,
         no_state => 0,
-        report_body => '2504,2506',
+        report_body => $body_westminster->id . ',2506',
     },
 ) {
     subtest $test->{desc} => sub {
@@ -518,10 +518,7 @@ for my $test (
     };
 }
 
-$report->discard_changes;
-$report->bodies_str( 2504 );
-$report->update;
-
-# tidy up
-$mech->delete_user('test@example.com');
-done_testing();
+END {
+    $mech->delete_user('test@example.com');
+    done_testing();
+}

@@ -24,7 +24,7 @@ sub create_report {
     FixMyStreet::App->model('DB::Problem')->create(
     {
         postcode           => 'BR1 3SB',
-        bodies_str         => $BROMLEY_ID,
+        bodies_str         => $body->id,
         areas              => ",$BROMLEY_ID,",
         category           => 'Other',
         title              => 'Good bad good',
@@ -64,7 +64,7 @@ subtest 'Auth' => sub {
         $mech->get_ok($REPORT_URL);
         $mech->content_lacks('Moderat');
 
-        $user->update({ from_body => $BROMLEY_ID });
+        $user->update({ from_body => $body->id });
 
         $mech->get_ok($REPORT_URL);
         $mech->content_lacks('Moderat');

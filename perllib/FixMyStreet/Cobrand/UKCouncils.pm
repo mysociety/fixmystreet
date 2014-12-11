@@ -1,6 +1,8 @@
 package FixMyStreet::Cobrand::UKCouncils;
 use base 'FixMyStreet::Cobrand::UK';
 
+# XXX Things using this cobrand base assume that a body ID === MapIt area ID
+
 use strict;
 use warnings;
 

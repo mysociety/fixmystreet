@@ -20,7 +20,7 @@ $db->resultset('Problem')->delete;
 
 my $user = $mech->create_user_ok( $EMAIL );
 
-my $body = $mech->create_body_ok( 2520, 'Coventry City Council' );
+my $body = $mech->create_body_ok( 2520, 'Coventry City Council', id => 2520 );
 $mech->create_body_ok( 2522, 'Dudley Borough Council' );
 $mech->create_body_ok( 2514, 'Birmingham City Council' );
 $mech->create_body_ok( 2546, 'Walsall Borough Council' );

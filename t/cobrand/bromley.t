@@ -7,9 +7,9 @@ my $mech = FixMyStreet::TestMech->new;
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com' );
-my $body = $mech->create_body_ok( 2482, 'Bromley' );
+my $body = $mech->create_body_ok( 2482, 'Bromley', id => 2482 );
 
-my @reports = $mech->create_problems_for_body( 1, 2482, 'Test', {
+my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'bromley',
     user => $user,
 });
@@ -38,5 +38,5 @@ $mech->content_contains( 'marked as no further action' );
 
 # Clean up
 $mech->delete_user($user);
-$mech->delete_problems_for_body( 2482 );
+$mech->delete_problems_for_body( $body->id );
 done_testing();

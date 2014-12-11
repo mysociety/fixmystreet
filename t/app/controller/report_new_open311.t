@@ -29,7 +29,7 @@ my %contact_params = (
 # Let's make some contacts to send things to!
 my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2651, # Edinburgh
+    body_id => $body->id, # Edinburgh
     category => 'Street lighting',
     email => '100',
     extra => [ { description => 'Lamppost number', code => 'number', required => 'True' },
@@ -40,7 +40,7 @@ my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
 } );
 my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 2651, # Edinburgh
+    body_id => $body->id, # Edinburgh
     category => 'Graffiti Removal',
     email => '101',
 } );

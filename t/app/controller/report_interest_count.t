@@ -54,7 +54,7 @@ ok $report, "created test report - $report_id";
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixmybarangay' ],
 }, sub {
-    $mech->create_body_ok(2504, 'Westminster City Council');
+    my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 
     for my $test (
         {
@@ -64,13 +64,13 @@ FixMyStreet::override_config {
         },
         {
             desc => 'from body user can increment supported count',
-            from_body => 2504,
+            from_body => $body->id,
             support_string => 'No supporters',
             updated_support => '1 supporter'
         },
         {
             desc => 'correct grammar for more than one supporter',
-            from_body => 2504,
+            from_body => $body->id,
             support_string => '1 supporter',
             updated_support => '2 supporters'
         },
@@ -129,10 +129,7 @@ subtest 'check support details not shown if not enabled in cobrand' => sub {
     $mech->content_lacks( '1 supporter' );
 };
 
-$report->discard_changes;
-$report->bodies_str( 2504 );
-$report->update;
-
-# tidy up
-$mech->delete_user('test@example.com');
-done_testing();
+END {
+    $mech->delete_user('test@example.com');
+    done_testing();
+}

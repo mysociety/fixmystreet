@@ -534,6 +534,17 @@ sub get_ok_json {
     return decode_json( $res->content );
 }
 
+sub delete_body {
+    my $mech = shift;
+    my $body = shift;
+
+    $mech->delete_problems_for_body($body->id);
+    $body->contacts->delete;
+    $mech->delete_user($_) for $body->users;
+    $body->body_areas->delete;
+    $body->delete;
+}
+
 sub delete_problems_for_body {
     my $mech = shift;
     my $body = shift;
@@ -542,6 +553,7 @@ sub delete_problems_for_body {
     if ( $reports ) {
         for my $r ( $reports->all ) {
             $r->comments->delete;
+            $r->questionnaires->delete;
         }
         $reports->delete;
     }
@@ -549,16 +561,21 @@ sub delete_problems_for_body {
 
 sub create_body_ok {
     my $self = shift;
-    my ( $id, $name ) = @_;
+    my ( $area_id, $name, %extra ) = @_;
 
-    my $params = { id => $id, name => $name };
-    my $body = FixMyStreet::App->model('DB::Body')->find_or_create($params);
-    $body->update($params); # Make sure
-    ok $body, "found/created user for $id $name";
+    my $body = FixMyStreet::App->model('DB::Body');
+    my $params = { name => $name };
+    if ($extra{id}) {
+        $body = $body->update_or_create({ %$params, id => $extra{id} }, { key => 'primary' });
+    } else {
+        $body = $body->find_or_create($params);
+    }
+    ok $body, "found/created body $name";
 
+    $body->body_areas->delete;
     FixMyStreet::App->model('DB::BodyArea')->find_or_create({
-        area_id => $id,
-        body_id => $id,
+        area_id => $area_id,
+        body_id => $body->id,
     });
 
     return $body;

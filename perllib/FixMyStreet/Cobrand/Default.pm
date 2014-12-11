@@ -633,10 +633,10 @@ sub council_rss_alert_options {
         ( $_->{id_name} = $_->{short_name} ) =~ tr/+/_/;
         push @options, {
             type      => 'council',
-            id        => sprintf( 'council:%s:%s', $_->{id}, $_->{id_name} ),
+            id        => sprintf( 'area:%s:%s', $_->{id}, $_->{id_name} ),
             text      => sprintf( _('Problems within %s'), $_->{name}),
             rss_text  => sprintf( _('RSS feed of problems within %s'), $_->{name}),
-            uri       => $c->uri_for( '/rss/reports/' . $_->{short_name} ),
+            uri       => $c->uri_for( '/rss/area/' . $_->{short_name} ),
         };
     }
 

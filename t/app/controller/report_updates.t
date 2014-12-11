@@ -23,6 +23,8 @@ my $user2 =
   ->find_or_create( { email => 'commenter@example.com', name => 'Commenter' } );
 ok $user2, "created comment user";
 
+my $body = $mech->create_body_ok(2504, 'Westminster City Council');
+
 my $dt = DateTime->new(
     year   => 2011,
     month  => 04,
@@ -35,7 +37,7 @@ my $dt = DateTime->new(
 my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
-        bodies_str         => '2504',
+        bodies_str         => $body->id,
         areas              => ',105255,11806,11828,2247,2504,',
         category           => 'Other',
         title              => 'Test 2',
@@ -513,12 +515,10 @@ subtest 'check non authority user cannot change set state' => sub {
     is $report->state, 'confirmed', 'state unchanged';
 };
 
-$mech->create_body_ok(2504, 'Westminster City Council');
-
 for my $state ( qw/unconfirmed hidden partial/ ) {
     subtest "check that update cannot set state to $state" => sub {
         $mech->log_in_ok( $user->email );
-        $user->from_body( 2504 );
+        $user->from_body( $body->id );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -668,7 +668,7 @@ for my $test (
             state => 'fixed',
         },
         state => 'fixed - council',
-        report_bodies => '2504,2505',
+        report_bodies => $body->id . ',2505',
     },
 ) {
     subtest $test->{desc} => sub {
@@ -679,7 +679,7 @@ for my $test (
         }
 
         $mech->log_in_ok( $user->email );
-        $user->from_body( 2504 );
+        $user->from_body( $body->id );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -798,7 +798,7 @@ subtest "check comment with no status change has not status in meta" => sub {
         my $update_meta = $mech->extract_update_metas;
         unlike $update_meta->[1], qr/marked as/, 'update meta does not include state change';
 
-        $user->from_body( 2504 );
+        $user->from_body( $body->id );
         $user->update;
 
         $mech->get_ok("/report/$report_id");
@@ -905,7 +905,7 @@ $user->from_body(undef);
 $user->update;
 
 $report->state('confirmed');
-$report->bodies_str('2504');
+$report->bodies_str($body->id);
 $report->update;
 
 for my $test (

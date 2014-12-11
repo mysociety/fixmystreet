@@ -32,7 +32,7 @@ FixMyStreet::App->model('DB::Contact')->find_or_create({
     note => 'Note',
 });
 
-my @reports = $mech->create_problems_for_body( 1, 1, 'Test', {
+my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'fixamingata',
     latitude => '55.605833',
     longitude => '13.035833',

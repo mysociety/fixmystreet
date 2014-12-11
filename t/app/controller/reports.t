@@ -9,17 +9,17 @@ use DateTime;
 ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 $mech->create_body_ok(2514, 'Birmingham City Council');
-$mech->create_body_ok(2651, 'City of Edinburgh Council');
-$mech->create_body_ok(2504, 'Westminster City Council');
-$mech->create_body_ok(2649, 'Fife Council');
+my $body_edin_id = $mech->create_body_ok(2651, 'City of Edinburgh Council')->id;
+my $body_west_id = $mech->create_body_ok(2504, 'Westminster City Council')->id;
+my $body_fife_id = $mech->create_body_ok(2649, 'Fife Council')->id;
 
-$mech->delete_problems_for_body( 2504 );
-$mech->delete_problems_for_body( 2651 );
-$mech->delete_problems_for_body( 2649 );
+$mech->delete_problems_for_body( $body_west_id );
+$mech->delete_problems_for_body( $body_edin_id );
+$mech->delete_problems_for_body( $body_fife_id );
 
-my @edinburgh_problems = $mech->create_problems_for_body(3, 2651, 'All reports');
-my @westminster_problems = $mech->create_problems_for_body(5, 2504, 'All reports');
-my @fife_problems = $mech->create_problems_for_body(15, 2649, 'All reports');
+my @edinburgh_problems = $mech->create_problems_for_body(3, $body_edin_id, 'All reports');
+my @westminster_problems = $mech->create_problems_for_body(5, $body_west_id, 'All reports');
+my @fife_problems = $mech->create_problems_for_body(15, $body_fife_id, 'All reports');
 
 is scalar @westminster_problems, 5, 'correct number of westminster problems created';
 is scalar @edinburgh_problems, 3, 'correct number of edinburgh problems created';
@@ -114,7 +114,7 @@ FixMyStreet::override_config {
 
 $mech->title_like(qr/Westminster City Council/);
 $mech->content_contains('Westminster City Council');
-$mech->content_contains('All reports Test 3 for 2504', 'problem to be marked non public visible');
+$mech->content_contains('All reports Test 3 for ' . $body_west_id, 'problem to be marked non public visible');
 
 my $problems = $mech->extract_problem_list;
 is scalar @$problems, 5, 'correct number of problems displayed';
@@ -185,7 +185,7 @@ FixMyStreet::override_config {
 $problems = $mech->extract_problem_list;
 is scalar @$problems, 4, 'only public problems are displayed';
 
-$mech->content_lacks('All reports Test 3 for 2504', 'non public problem is not visible');
+$mech->content_lacks('All reports Test 3 for ' . $body_west_id, 'non public problem is not visible');
 
 $mech->get_ok('/reports');
 $stats = $mech->extract_report_stats;

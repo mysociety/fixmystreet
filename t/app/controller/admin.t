@@ -155,23 +155,23 @@ FixMyStreet::override_config {
 }, sub {
 
 my $body = $mech->create_body_ok(2650, 'Aberdeen City Council');
-$mech->get_ok('/admin/body/2650');
+$mech->get_ok('/admin/body/' . $body->id);
 $mech->content_contains('Aberdeen City Council');
 $mech->content_like(qr{AB\d\d});
 $mech->content_contains("http://www.example.org/around");
 
 subtest 'check contact creation' => sub {
     my $contact = FixMyStreet::App->model('DB::Contact')->search(
-        { body_id => 2650, category => [ 'test category', 'test/category' ] }
+        { body_id => $body->id, category => [ 'test category', 'test/category' ] }
     );
     $contact->delete_all;
 
     my $history = FixMyStreet::App->model('DB::ContactsHistory')->search(
-        { body_id => 2650, category => [ 'test category', 'test/category' ] }
+        { body_id => $body->id, category => [ 'test category', 'test/category' ] }
     );
     $history->delete_all;
 
-    $mech->get_ok('/admin/body/2650');
+    $mech->get_ok('/admin/body/' . $body->id);
 
     $mech->submit_form_ok( { with_fields => { 
         category   => 'test category',
@@ -201,12 +201,12 @@ subtest 'check contact creation' => sub {
         note     => 'test/note',
         non_public => 'on',
     } } );
-    $mech->get_ok('/admin/body_edit/2650/test/category');
+    $mech->get_ok('/admin/body_edit/' . $body->id . '/test/category');
 
 };
 
 subtest 'check contact editing' => sub {
-    $mech->get_ok('/admin/body_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/' . $body->id .'/test%20category');
 
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
@@ -219,7 +219,7 @@ subtest 'check contact editing' => sub {
     $mech->content_contains( '<td>test2 note' );
     $mech->content_contains( 'Private:&nbsp;No' );
 
-    $mech->get_ok('/admin/body_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
         note     => 'test2 note',
@@ -228,29 +228,29 @@ subtest 'check contact editing' => sub {
 
     $mech->content_contains( 'Private:&nbsp;Yes' );
 
-    $mech->get_ok('/admin/body_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );
 };
 
 subtest 'check contact updating' => sub {
-    $mech->get_ok('/admin/body_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
     $mech->content_like(qr{test2\@example.com</strong>[^<]*</td>[^<]*<td>No}s);
 
-    $mech->get_ok('/admin/body/2650');
+    $mech->get_ok('/admin/body/' . $body->id);
 
     $mech->form_number( 1 );
     $mech->tick( 'confirmed', 'test category' );
     $mech->submit_form_ok({form_number => 1});
 
     $mech->content_like(qr'test2@example.com</td>[^<]*<td>\s*Confirmed:&nbsp;Yes's);
-    $mech->get_ok('/admin/body_edit/2650/test%20category');
+    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };
 
 $body->update({ send_method => undef }); 
 
 subtest 'check open311 configuring' => sub {
-    $mech->get_ok('/admin/body/2650');
+    $mech->get_ok('/admin/body/' . $body->id);
     $mech->content_lacks('Council contacts configured via Open311');
 
     $mech->form_number(3);
@@ -268,7 +268,7 @@ subtest 'check open311 configuring' => sub {
     $mech->content_contains('Council contacts configured via Open311');
     $mech->content_contains('Configuration updated - contacts will be generated automatically later');
 
-    my $conf = FixMyStreet::App->model('DB::Body')->find( 2650 );
+    my $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
     is $conf->endpoint, 'http://example.com/open311', 'endpoint configured';
     is $conf->api_key, 'api key', 'api key configured';
     is $conf->jurisdiction, 'mySociety', 'jurisdiction configures';
@@ -288,14 +288,14 @@ subtest 'check open311 configuring' => sub {
 
     $mech->content_contains('Configuration updated');
 
-    $conf = FixMyStreet::App->model('DB::Body')->find( 2650 );
+    $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
     is $conf->endpoint, 'http://example.org/open311', 'endpoint updated';
     is $conf->api_key, 'new api key', 'api key updated';
     is $conf->jurisdiction, 'open311', 'jurisdiction configures';
 };
 
 subtest 'check text output' => sub {
-    $mech->get_ok('/admin/body/2650?text=1');
+    $mech->get_ok('/admin/body/' . $body->id . '?text=1');
     is $mech->content_type, 'text/plain';
     $mech->content_contains('test category');
 };
@@ -851,7 +851,9 @@ for my $test (
     };
 }
 
-$mech->create_body_ok(2504, 'Westminster City Council');
+my $westminster = $mech->create_body_ok(2504, 'Westminster City Council');
+$report->bodies_str($westminster->id);
+$report->update;
 
 for my $test (
     {
@@ -871,8 +873,8 @@ for my $test (
         update_fixed  => 0,
         update_reopen => 0,
         update_state  => undef,
-        user_body     => 2504,
-        content       => 'user is from same council as problem - 2504',
+        user_body     => $westminster->id,
+        content       => 'user is from same council as problem - ' . $westminster->id,
     },
     {
         desc          => 'update changed problem state',
@@ -881,7 +883,7 @@ for my $test (
         update_fixed  => 0,
         update_reopen => 0,
         update_state  => 'planned',
-        user_body     => 2504,
+        user_body     => $westminster->id,
         content       => 'Update changed problem state to planned',
     },
     {
@@ -1096,7 +1098,7 @@ subtest 'show flagged entries' => sub {
     $mech->content_contains( $user->email );
 };
 
-$mech->create_body_ok(2509, 'Haringey Borough Council');
+my $haringey = $mech->create_body_ok(2509, 'Haringey Borough Council');
 
 subtest 'user search' => sub {
     $mech->get_ok('/admin/users');
@@ -1110,9 +1112,9 @@ subtest 'user search' => sub {
 
     $mech->content_like( qr{user_edit/$u_id">Edit</a>} );
 
-    $user->from_body(2509);
+    $user->from_body($haringey->id);
     $user->update;
-    $mech->get_ok('/admin/users?search=2509' );
+    $mech->get_ok('/admin/users?search=' . $haringey->id );
     $mech->content_contains('Haringey');
 };
 
@@ -1131,7 +1133,7 @@ is $log_entries->count, 0, 'no admin log entries';
 $user->flagged( 0 );
 $user->update;
 
-$mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
+my $southend = $mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
 
 for my $test (
     {
@@ -1139,7 +1141,7 @@ for my $test (
         fields => {
             name => 'Test User',
             email => 'test@example.com',
-            body => 2509,
+            body => $haringey->id,
             flagged => undef,
         },
         changes => {
@@ -1153,7 +1155,7 @@ for my $test (
         fields => {
             name => 'Changed User',
             email => 'test@example.com',
-            body => 2509,
+            body => $haringey->id,
             flagged => undef,
         },
         changes => {
@@ -1167,11 +1169,11 @@ for my $test (
         fields => {
             name => 'Changed User',
             email => 'changed@example.com',
-            body => 2509,
+            body => $haringey->id,
             flagged => undef,
         },
         changes => {
-            body => 2607,
+            body => $southend->id,
         },
         log_count => 3,
         log_entries => [qw/edit edit edit/],
@@ -1181,7 +1183,7 @@ for my $test (
         fields => {
             name => 'Changed User',
             email => 'changed@example.com',
-            body => 2607,
+            body => $southend->id,
             flagged => undef,
         },
         changes => {
@@ -1195,7 +1197,7 @@ for my $test (
         fields => {
             name => 'Changed User',
             email => 'changed@example.com',
-            body => 2607,
+            body => $southend->id,
             flagged => 'on',
         },
         changes => {

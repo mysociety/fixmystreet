@@ -49,7 +49,7 @@ my $body = $mech->create_body_ok(2501, 'Wandsworth Borough Council');
 
 my $problem_args = {
     postcode  => 'sw1a 1aa',
-    bodies_str => '2501',
+    bodies_str => $body->id,
     areas     => ',105164,11806,11827,2247,2501,34817,42011,66045,70786,8519,',
     category  => 'test category',
     title     => 'Test title',

@@ -377,52 +377,54 @@ my %contact_params = (
     note => 'Created for test',
 );
 
+my %body_ids;
 for my $body (
-    { id => 2651, name => 'City of Edinburgh Council' },
-    { id => 2226, name => 'Gloucestershire County Council' },
-    { id => 2326, name => 'Cheltenham Borough Council' },
-    { id => 2333, name => 'Hart Council' },
-    { id => 2227, name => 'Hampshire County Council' },
-    { id => 14279, name => 'Ballymoney Borough Council' },
-    { id => 2636, name => 'Isle of Wight Council' },
-    { id => 2649, name => 'Fife Council' },
+    { area_id => 2651, name => 'City of Edinburgh Council' },
+    { area_id => 2226, name => 'Gloucestershire County Council' },
+    { area_id => 2326, name => 'Cheltenham Borough Council' },
+    { area_id => 2333, name => 'Hart Council' },
+    { area_id => 2227, name => 'Hampshire County Council' },
+    { area_id => 14279, name => 'Ballymoney Borough Council' },
+    { area_id => 2636, name => 'Isle of Wight Council' },
+    { area_id => 2649, name => 'Fife Council' },
 ) {
-    $mech->create_body_ok($body->{id}, $body->{name});
+    my $aid = $body->{area_id};
+    $body_ids{$aid} = $mech->create_body_ok($aid, $body->{name}, id => $body->{id})->id;
 }
 
 # Let's make some contacts to send things to!
 my @contacts;
 for my $contact ( {
-    body_id => 2651, # Edinburgh
+    body_id => $body_ids{2651}, # Edinburgh
     category => 'potholes',
     email => 'test@example.org',
 }, {
-    body_id => 2226, # Gloucestershire
+    body_id => $body_ids{2226}, # Gloucestershire
     category => 'potholes',
     email => '2226@example.org',
 }, {
-    body_id => 2326, # Cheltenham
+    body_id => $body_ids{2326}, # Cheltenham
     category => 'potholes',
     email => '2326@example.org',
 }, {
-    body_id => 2333, # Hart
+    body_id => $body_ids{2333}, # Hart
     category => 'potholes',
     email => 'trees@example.com',
 }, {
-    body_id => 2227, # Hampshire
+    body_id => $body_ids{2227}, # Hampshire
     category => 'potholes',
     email => 'highways@example.com',
 }, {
-    body_id => 14279, # Ballymoney
+    body_id => $body_ids{14279}, # Ballymoney
     category => 'Street lighting',
     email => 'roads.western@drdni.example.org',
 }, {
-    body_id => 14279, # Ballymoney
+    body_id => $body_ids{14279}, # Ballymoney
     category => 'Graffiti',
     email => 'highways@example.com',
 }, {
     confirmed => 0,
-    body_id => 2636, # Isle of Wight
+    body_id => $body_ids{2636}, # Isle of Wight
     category => 'potholes',
     email => '2636@example.com',
 } ) {
@@ -442,13 +444,13 @@ foreach my $test ( {
         email_count   => 1,
         dear          => qr'Dear City of Edinburgh Council',
         to            => qr'City of Edinburgh Council',
-        body          => 2651,
+        body          => $body_ids{2651},
     }, {
         %common,
         desc          => 'no email sent if no unsent problems',
         unset_whendef => 0,
         email_count   => 0,
-        body          => 2651,
+        body          => $body_ids{2651},
     }, {
         %common,
         desc          => 'email to two tier council',
@@ -456,7 +458,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Cheltenham Borough Council.*Gloucestershire County Council',
         dear          => qr'Dear Cheltenham Borough Council and Gloucestershire County',
-        body          => '2226,2326',
+        body          => $body_ids{2226} . ',' . $body_ids{2326},
         multiple      => 1,
     }, {
         %common,
@@ -465,7 +467,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Gloucestershire County Council" <2226@example',
         dear          => qr'Dear Gloucestershire County Council,',
-        body          => '2226|2649',
+        body          => $body_ids{2226}  . '|' . $body_ids{2649},
         missing       => qr'problem might be the responsibility of Fife.*Council'ms,
     }, {
         %common,
@@ -474,7 +476,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Hart Council',
         dear          => qr'Dear Hart Council,',
-        body          => '2333',
+        body          => $body_ids{2333},
         cobrand       => 'hart',
         url           => 'hart.',
     }, {
@@ -484,7 +486,7 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Hampshire County Council" <highways@example',
         dear          => qr'Dear Hampshire County Council,',
-        body          => '2227',
+        body          => $body_ids{2227},
         cobrand       => 'hart',
         url           => 'www.',
     }, {
@@ -494,7 +496,7 @@ foreach my $test ( {
         email_count   => 1,
         dear          => qr'Dear Ballymoney Borough Council',
         to            => qr'Ballymoney Borough Council',
-        body          => 14279,
+        body          => $body_ids{14279},
         category      => 'Graffiti',
     }, {
         %common,
@@ -503,7 +505,7 @@ foreach my $test ( {
         email_count   => 1,
         dear          => qr'Dear Roads Service \(Western\)',
         to            => qr'Roads Service \(Western\)" <roads',
-        body          => 14279,
+        body          => $body_ids{14279},
         category      => 'Street lighting',
     }, {
         %common,
@@ -511,7 +513,7 @@ foreach my $test ( {
         unset_whendef => 1,
         stays_unsent  => 1,
         email_count   => 0,
-        body          => 2636,
+        body          => $body_ids{2636},
     },
 ) {
     subtest $test->{ desc } => sub {
@@ -586,7 +588,7 @@ subtest 'check can set mutiple emails as a single contact' => sub {
     };
 
     my $contact = {
-        body_id => 2651, # Edinburgh
+        body_id => $body_ids{2651}, # Edinburgh
         category => 'trees',
         email => '2636@example.com,2636-2@example.com',
     };
@@ -639,7 +641,7 @@ subtest 'check can turn on report sent email alerts' => sub {
 
     $problem->discard_changes;
     $problem->update( {
-        bodies_str => 2651,
+        bodies_str => $body_ids{2651},
         state => 'confirmed',
         confirmed => \'ms_current_timestamp()',
         whensent => undef,
@@ -684,7 +686,7 @@ subtest 'check iOS app store test reports not sent' => sub {
 
     $problem->discard_changes;
     $problem->update( {
-        bodies_str => 2651,
+        bodies_str => $body_ids{2651},
         title => 'App store test',
         state => 'confirmed',
         confirmed => \'ms_current_timestamp()',
@@ -713,7 +715,7 @@ subtest 'check reports from abuser not sent' => sub {
 
     $problem->discard_changes;
     $problem->update( {
-        bodies_str => 2651,
+        bodies_str => $body_ids{2651},
         title => 'Report',
         state => 'confirmed',
         confirmed => \'ms_current_timestamp()',

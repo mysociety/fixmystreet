@@ -22,16 +22,16 @@ $mech->content_like( qr/FixMyBarangay/ );
 
 # Set up bodies
 
-my $luz = $mech->create_body_ok( 1, 'Bgy Luz' );
+my $luz = $mech->create_body_ok( 1, 'Bgy Luz', id => 1 );
 $luz->update( { send_method => 'Email' } );
 
-my $bsn = $mech->create_body_ok( 2, 'Bgy BSN' );
+my $bsn = $mech->create_body_ok( 2, 'Bgy BSN', id => 2 );
 $bsn->update( { send_method => 'Email' } );
 
 my $dps = $mech->create_body_ok( 3, 'DPS' );
 $dps->update( { send_method => 'Open311', endpoint => 'http://dps.endpoint.example.com', jurisdiction => 'FMB', api_key => 'test' } );
-FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 1, body_id => 3 });
-FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 2, body_id => 3 });
+FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 1, body_id => $dps->id });
+FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 2, body_id => $dps->id });
 
 # Create contacts for these bodies
 # TODO: log in as a Bgy user, and create a report using the front end,
@@ -49,26 +49,26 @@ FixMyStreet::App->model('DB::Contact')->search( {
 } )->delete;
 my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 1, 
+    body_id => $luz->id, 
     category => 'Streetlight (BGY)',
     email => 'bgy@example.com',
 } );
 my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
     %contact_params,
-    body_id => 3, 
+    body_id => $dps->id, 
     category => 'Streetlight (DPS)',
     email => 'LIGHT',
 } );
 
 # Create a couple of reports
 
-my @reports = $mech->create_problems_for_body( 1, 1, 'Test', {
+my @reports = $mech->create_problems_for_body( 1, $luz->id, 'Test', {
     cobrand => 'fixmybarangay',
     category => 'Streetlight (BGY)',
 });
 my $luz_report = $reports[0];
 
-@reports = $mech->create_problems_for_body( 1, 3, 'Test', {
+@reports = $mech->create_problems_for_body( 1, $dps->id, 'Test', {
     cobrand => 'fixmybarangay',
     category => 'Streetlight (DPS)',
 });
@@ -101,7 +101,7 @@ is $dps_report->send_method_used, 'Open311', 'DPS report sent via Open311';
 is $dps_report->external_id, 248, 'DPS report has right external ID';
 
 my $fmb_test_email = 'luz_test_user@example.com';
-my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $fmb_test_email, from_body => 1, password => 'fmbsecret' } );
+my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $fmb_test_email, from_body => $luz->id, password => 'fmbsecret' } );
 ok $user, "test user does exist";
 
 $mech->log_out_ok;
@@ -132,8 +132,8 @@ is $luz_report->state, 'hidden', 'should be hidden';
 
 $mech->delete_user($fmb_test_email);
 
-$mech->delete_problems_for_body( 1 );
-$mech->delete_problems_for_body( 3 );
+$mech->delete_problems_for_body( $luz->id );
+$mech->delete_problems_for_body( $dps->id );
 
 ok $mech->host("www.fixmystreet.com"), "change host back";
 

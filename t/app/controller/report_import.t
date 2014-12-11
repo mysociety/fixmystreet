@@ -17,6 +17,8 @@ ok -e $sample_file, "sample file $sample_file exists";
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
+$mech->create_body_ok(2504, 'Westminster City Council');
+
 # submit an empty report to import - check we get all errors
 subtest "Test creating bad partial entries" => sub {
 
@@ -121,7 +123,7 @@ subtest "Submit a correct entry" => sub {
       "check only pc field is shown";
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
         MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
         $mech->submit_form_ok(

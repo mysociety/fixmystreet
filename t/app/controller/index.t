@@ -63,8 +63,6 @@ subtest "does pc, (x,y), (e,n) or (lat,lon) go to /around" => sub {
     }
 };
 
-$mech->delete_problems_for_body( 2651 );
-
 my $problem_rs = FixMyStreet::App->model('DB::Problem');
 my $num = $problem_rs->count;
 
@@ -82,4 +80,7 @@ ok $mech->get('/report/' . $edinburgh_problems[2]->id);
 is $mech->res->code, 403, 'page forbidden';
 is $problem_rs->count, $num+5;
 
-done_testing();
+END {
+    $mech->delete_problems_for_body( 2651 );
+    done_testing();
+}

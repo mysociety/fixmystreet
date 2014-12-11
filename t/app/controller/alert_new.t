@@ -349,7 +349,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
         },
         {
             fields => {
-                feed => 'council:2651:City_of_Edinburgh',
+                feed => 'area:2651:City_of_Edinburgh',
             }
         },
     ) {
@@ -383,7 +383,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     my $report_time = '2011-03-01 12:00:00';
     my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
         postcode           => 'EH1 1BB',
-        bodies_str         => '2651',
+        bodies_str         => '1',
         areas              => ',11808,135007,14419,134935,2651,20728,',
         category           => 'Street lighting',
         title              => 'Testing',
@@ -451,7 +451,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     my $count;
     for (@emails) {
         $count++ if $_->body =~ /The following updates have been left on this report:/;
-        $count++ if $_->body =~ /The following new FixMyStreet reports have been sent to City of\s+Edinburgh\s+Council:/;
+        $count++ if $_->body =~ /The following new FixMyStreet reports have been added in City of\s+Edinburgh\s+Council:/;
         $count++ if $_->body =~ /The following FixMyStreet reports have been made within the area you\s+specified:/;
         $count++ if $_->body =~ /\s+-\s+Testing/;
     }

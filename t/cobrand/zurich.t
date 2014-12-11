@@ -71,13 +71,6 @@ $external_body->send_method( 'Zurich' );
 $external_body->endpoint( 'external_body@example.org' );
 $external_body->update;
 
-sub cleanup {
-    $mech->delete_problems_for_body( $division->id );
-    $mech->delete_problems_for_body( $subdivision->id );
-    $mech->delete_user( 'dm1@example.org' );
-    $mech->delete_user( 'sdm1@example.org' );
-}
-
 sub get_export_rows_count {
     my $mech = shift;
     FixMyStreet::override_config {
@@ -93,8 +86,6 @@ sub get_export_rows_count {
     return;
 }
 
-cleanup();
-
 my $EXISTING_REPORT_COUNT = 0;
 
 subtest "set up superuser" => sub {
@@ -105,7 +96,7 @@ subtest "set up superuser" => sub {
     $mech->log_out_ok;
 };
 
-my @reports = $mech->create_problems_for_body( 1, 2, 'Test', {
+my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
@@ -131,7 +122,7 @@ FixMyStreet::override_config {
     $user->update;
     $mech->get_ok( '/admin' );
     is $mech->uri->path, '/my', "got sent to /my";
-    $user->from_body( 2 );
+    $user->from_body( $division->id );
     $user->update;
 
     $mech->get_ok( '/admin' );
@@ -325,10 +316,10 @@ FixMyStreet::override_config {
     # Original description
     $mech->submit_form_ok( { with_fields => { detail => 'Edited details text.' } } );
     $mech->content_contains( 'Edited details text.' );
-    $mech->content_contains( 'Originaltext: &ldquo;Test Test 1 for 2 Detail&rdquo;' );
+    $mech->content_contains( 'Originaltext: &ldquo;Test Test 1 for ' . $division->id . ' Detail&rdquo;' );
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { body_subdivision => 3, send_rejected_email => 1 } } );
+    $mech->submit_form_ok( { with_fields => { body_subdivision => $subdivision->id, send_rejected_email => 1 } } );
 
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('In Bearbeitung');
@@ -351,7 +342,7 @@ FixMyStreet::override_config {
     $mech->get_ok( '/admin' );
 };
 is $mech->uri->path, '/my', "got sent to /my";
-$user->from_body( 3 );
+$user->from_body( $subdivision->id );
 $user->update;
 
 FixMyStreet::override_config {
@@ -431,7 +422,7 @@ like $email->body, qr/FINAL UPDATE/, 'body looks correct';
 $mech->clear_emails_ok;
 
 # Assign directly to planned, don't confirm email
-@reports = $mech->create_problems_for_body( 1, 2, 'Second', {
+@reports = $mech->create_problems_for_body( 1, $division->id, 'Second', {
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
@@ -465,7 +456,7 @@ $mech->email_count_is(0);
 
 # Report assigned to third party
 
-@reports = $mech->create_problems_for_body( 1, 2, 'Third', {
+@reports = $mech->create_problems_for_body( 1, $division->id, 'Third', {
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
@@ -476,7 +467,7 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
 }, sub {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { body_external => 4 } } );
+    $mech->submit_form_ok( { with_fields => { body_external => $external_body->id } } );
     $mech->get_ok( '/report/' . $report->id );
 };
 $mech->content_contains('Beantwortet');
@@ -499,7 +490,7 @@ FixMyStreet::override_config {
     $mech->content_contains( 'report_edit/' . $report->id );
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => { state => 'unconfirmed' } } );
-    $mech->submit_form_ok( { with_fields => { body_external => 4, third_personal => 1 } } );
+    $mech->submit_form_ok( { with_fields => { body_external => $external_body->id, third_personal => 1 } } );
     $mech->get_ok( '/report/' . $report->id );
 };
 $mech->content_contains('Beantwortet');
@@ -604,7 +595,7 @@ subtest "phone number is not mandatory for reports from mobile apps" => sub {
 
 subtest "problems can't be assigned to deleted bodies" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org' );
-    $user->from_body( 1 );
+    $user->from_body( $zurich->id );
     $user->update;
     $report->state( 'confirmed' );
     $report->update;
@@ -619,7 +610,7 @@ subtest "problems can't be assigned to deleted bodies" => sub {
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->content_lacks( $external_body->name );
     };
-    $user->from_body( 2 );
+    $user->from_body( $division->id );
     $user->update;
     $mech->log_out_ok;
 };
@@ -681,7 +672,12 @@ subtest "test admin_log" => sub {
 };
 
 END {
-    cleanup();
+    $mech->delete_body($subdivision);
+    $mech->delete_body($division);
+    $mech->delete_body($zurich);
+    $mech->delete_body($external_body);
+    $mech->delete_user( 'dm1@example.org' );
+    $mech->delete_user( 'sdm1@example.org' );
     ok $mech->host("www.fixmystreet.com"), "change host back";
     done_testing();
 }

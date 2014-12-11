@@ -15,6 +15,7 @@ $mech->content_contains('html class="no-js" lang="en-gb"');
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
     MAPIT_URL => 'http://mapit.mysociety.org/',
+    GEOCODER => '',
 }, sub {
     $mech->get_ok('/alert/list');
     $mech->title_like(qr/^Local RSS feeds and email alerts/);
