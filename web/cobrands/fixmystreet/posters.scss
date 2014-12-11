@@ -1,0 +1,145 @@
+@import "_colours";
+
+body.goodies {
+  .content {
+    .sticky-sidebar {
+      background-color: mix($primary, #fff, 20%);
+      padding: 1em;
+      margin: 0 -1em;
+
+      li:last-child {
+        margin-bottom: 0;
+      }
+
+      a {
+        color: mix($primary, #000, 40%);
+      }
+    }
+  }
+
+  h2 {
+    padding-top: 1em;
+    border-top: 1px solid mix($primary, #eee, 20%);
+  }
+
+  .pack-preview {
+    float: right;
+    margin: 0 0 1em 1em;
+    max-width: 33%;
+  }
+
+  .download-button {
+    display: inline-block;
+    padding: 0.7em 1.2em 0.5em 1.2em;
+    font-weight: bold;
+    line-height: 1em;
+    background-color: $primary;
+    color: #000;
+    border-radius: 2em;
+
+    &:before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      background: transparent url(/cobrands/fixmystreet/images/arrow-down-16px-16px.png) 0 0 no-repeat;
+      margin-right: 0.5em;
+      vertical-align: -0.1em;
+    }
+  }
+
+  .badge-preview {
+    float: right;
+    margin-top: -3em;
+    margin-left: 1em;
+  }
+
+  .downloads {
+    margin-left: 0;
+
+    li {
+      list-style: none;
+      text-align: center;
+      margin-bottom: 2em;
+    }
+
+    a {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+
+      &:hover, &:focus {
+        strong {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    img {
+      max-width: 200px;
+      max-height: 200px;
+    }
+
+    strong {
+      display: block;
+      margin-top: 1em;
+    }
+
+    @media only screen and (min-width: 30em) {
+      overflow: auto;
+
+      li {
+        float: left;
+        width: 50%;
+      }
+
+      li:nth-child(odd) {
+        clear: both;
+        width: 48%;
+      }
+
+      li:nth-child(even) {
+        width: 48%;
+        float: right;
+      }
+    }
+  }
+}
+
+@media only screen and (min-width: 48em) {
+    body.goodies {
+      .container .content {
+        // overloaded selector to match default .content styling
+        width: auto;
+        padding: 1.5em 2em 1.5em 16em;
+
+        & > :last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .content {
+        .sticky-sidebar {
+          left: 0;
+          top: 0;
+          bottom: 0;
+          z-index: 1;
+          width: 15em;
+          padding: 0;
+
+          aside {
+            box-shadow: none;
+            background-color: inherit;
+          }
+        }
+      }
+
+      .badge-code {
+        max-width: 18em;
+
+        @media only screen and (min-width: 57em) {
+          max-width: 27em;
+        }
+      }
+    }
+}

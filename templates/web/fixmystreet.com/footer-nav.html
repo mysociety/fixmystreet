@@ -9,6 +9,8 @@
                 %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
             %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
                 %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+            %]<li><[% IF c.req.uri.path == '/posters' %]span[% ELSE %]a href="/posters"[% END
+                %]>[% loc("FixMyStreet Goodies") %]</[% c.req.uri.path == '/posters' ? 'span' : 'a' %]></li>[%
             %]<li><[% IF c.req.uri.path == '/contact' %]span[% ELSE %]a href="/contact"[% END
                 %]>[% loc("Contact") %]</[% c.req.uri.path == '/contact' ? 'span' : 'a' %]></li>
         </ul>
