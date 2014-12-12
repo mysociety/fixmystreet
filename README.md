@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.5.
+Platform is now at version 1.5.1.
 
 ## Installation
 
@@ -37,6 +37,21 @@ We've extracted all of the mobile apps from this repository into the
 [fixmystreet-mobile repository](https://github.com/mysociety/fixmystreet-mobile).
 
 ## Releases
+
+* v1.5.1 (12th December 2014)
+    - Bugfixes
+        - Use correct cobrand signature in SendReport emails. #960
+        - Fix double encoding of non-ASCII signature in emails. #961
+        - Use area-based alerts by default, as they function correctly. #959
+        - Set DefaultLocale appropriately when language set, for date display.
+    - Open311
+        - Better error if Open311 server returns a nil service list.
+        - Cope better with Open311 server not liking a blank jurisdiction_id.
+    - Installation/developer improvements:
+        - Add a script to use a test database for running tests. #786
+        - Make base FAQ more generic, move out UK-specific parts. #753 #935
+        - Provide guidance at top of example config file.
+        - Don't install open311-endpoint feature by default.
 
 * v1.5 (19th November 2014)
     - Installation/developer improvements:
