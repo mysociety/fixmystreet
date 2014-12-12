@@ -1,0 +1,24 @@
+[% FILTER collapse %]
+[% IF category_options.size %]
+    [% IF category;
+        category = category | lower;
+       END; %]
+    <label for='form_category' id="form_category_label">
+        [%- loc('Category') %]
+    </label>
+    <select name='category' id='form_category'>
+      [% FOREACH cat_op IN category_options %]
+      [% cat_op_lc = cat_op | lower %]
+        <option value='[% cat_op | html %]'[% ' selected' IF report.category == cat_op || category == cat_op_lc -%]>
+          [% IF loop.first %]
+            [% cat_op %]
+          [% ELSIF lang_code == 'fr' %]
+            [% c.cobrand.change_category_text(cat_op) | html %]
+          [% ELSE %]
+            [% cat_op | html %]
+          [% END %]
+        </option>
+        [% END %]
+    </select>
+[% END %]
+[% END -%]

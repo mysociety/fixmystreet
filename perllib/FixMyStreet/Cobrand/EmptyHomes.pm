@@ -81,6 +81,18 @@ sub short_name {
     return $name;
 }
 
+sub change_category_text {
+    my ($self, $category) = @_;
+    my $category = _($category);
+    utf8::decode($category);
+    return $category;
+}
+
+sub report_meta_line {
+    my ($self, $category, $date_time) = @_;
+    return sprintf(_('%s, reported at %s'), $category, $date_time);
+}
+
 =item council_rss_alert_options
 
 Generate a set of options for council rss alerts. 

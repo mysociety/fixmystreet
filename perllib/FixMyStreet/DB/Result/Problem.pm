@@ -546,59 +546,44 @@ sub meta_line {
     my $date_time = Utils::prettify_dt( $problem->confirmed );
     my $meta = '';
 
-    # FIXME Should be in cobrand
-    if ($c->cobrand->moniker eq 'emptyhomes') {
+    my $category = $problem->category;
+    if ($c->cobrand->can('change_category_text')) {
+        $category = $c->cobrand->change_category_text($category);
+    }
+    if ($c->cobrand->can('report_meta_line')) {
+        return $c->cobrand->report_meta_line($category, $date_time);
+    }
 
-        my $category = _($problem->category);
-        utf8::decode($category);
-        $meta = sprintf(_('%s, reported at %s'), $category, $date_time);
-
+    if ( $problem->anonymous ) {
+        if ($problem->service and $category && $category ne _('Other') ) {
+            $meta =
+            sprintf( _('Reported via %s in the %s category anonymously at %s'),
+                $problem->service, $category, $date_time );
+        } elsif ( $problem->service ) {
+            $meta = sprintf( _('Reported via %s anonymously at %s'),
+                $problem->service, $date_time );
+        } elsif ( $category and $category ne _('Other') ) {
+            $meta = sprintf( _('Reported in the %s category anonymously at %s'),
+                $category, $date_time );
+        } else {
+            $meta = sprintf( _('Reported anonymously at %s'), $date_time );
+        }
     } else {
-
-        if ( $problem->anonymous ) {
-            if (    $problem->service
-                and $problem->category && $problem->category ne _('Other') )
-            {
-                $meta =
-                sprintf( _('Reported via %s in the %s category anonymously at %s'),
-                    $problem->service, $problem->category, $date_time );
-            }
-            elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported via %s anonymously at %s'),
-                    $problem->service, $date_time );
-            }
-            elsif ( $problem->category and $problem->category ne _('Other') ) {
-                $meta = sprintf( _('Reported in the %s category anonymously at %s'),
-                    $problem->category, $date_time );
-            }
-            else {
-                $meta = sprintf( _('Reported anonymously at %s'), $date_time );
-            }
+        if ($problem->service and $category && $category ne _('Other') ) {
+            $meta = sprintf(
+                _('Reported via %s in the %s category by %s at %s'),
+                $problem->service, $category,
+                $problem->name, $date_time
+            );
+        } elsif ( $problem->service ) {
+            $meta = sprintf( _('Reported via %s by %s at %s'),
+                $problem->service, $problem->name, $date_time );
+        } elsif ( $category and $category ne _('Other') ) {
+            $meta = sprintf( _('Reported in the %s category by %s at %s'),
+                $category, $problem->name, $date_time );
+        } else {
+            $meta = sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
         }
-        else {
-            if (    $problem->service
-                and $problem->category && $problem->category ne _('Other') )
-            {
-                $meta = sprintf(
-                    _('Reported via %s in the %s category by %s at %s'),
-                    $problem->service, $problem->category,
-                    $problem->name,    $date_time
-                );
-            }
-            elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported via %s by %s at %s'),
-                    $problem->service, $problem->name, $date_time );
-            }
-            elsif ( $problem->category and $problem->category ne _('Other') ) {
-                $meta = sprintf( _('Reported in the %s category by %s at %s'),
-                    $problem->category, $problem->name, $date_time );
-            }
-            else {
-                $meta =
-                sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
-            }
-        }
-
     }
 
     return $meta;
