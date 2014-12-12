@@ -2,6 +2,7 @@
 *.swp
 *~
 ._*
+.prove
 
 .vagrant
 .bundle
