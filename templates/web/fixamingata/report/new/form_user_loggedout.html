@@ -1,0 +1,66 @@
+<label for="form_email">[% loc('Your email') %]</label>
+[% IF field_errors.email %]
+    <p class='form-error'>[% field_errors.email %]</p>
+[% END %]
+<input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
+
+<div id="form_sign_in">
+    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
+
+    <div id="form_sign_in_no" class="form-box">
+        <h5>Om du inte har ett lösenord fyller du i ditt namn och eventuellt telefonnummer och nytt lösenord (valfria) här. När du skickar din rapport får du epost med en länk som du måste klicka på för att bekräfta rapporten. Om du redan har ett lösenord fyller du i detta längre ner på sidan och behöver då inte bekräfta rapporten.</h5>
+
+        [% INCLUDE 'report/new/extra_name.html' %]
+
+        [% name_public = report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]
+        <label for="form_name">[% loc('Name') %]</label>
+        [% IF field_errors.name %]
+            <p class='form-error'>[% field_errors.name %]</p>
+        [% END %]
+
+        <input type="text" class="form-focus-trigger validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+
+        [%# if there is nothing in the name field then set check box as default on form %]
+        <div class="checkbox-group">
+            <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
+            <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+        </div>
+
+        <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+        <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+
+        <div class="general-notes form-focus-hidden">
+            <p>[% loc('We never show your email address or phone number.') %]</p>
+        </div>
+
+        <label for="password_register">[% loc('Password (optional)') %]</label>
+
+        <div class="general-notes form-focus-hidden">
+            <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+        </div>
+
+        <div class="form-txt-submit-box">
+            <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+        </div>
+    </div>
+    <div id="form_sign_in_yes" class="form-box">
+
+        <h5>Jag har ett lösenord sedan tidigare:</h5>
+
+        <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
+        <div class="form-txt-submit-box">
+            [% IF field_errors.password %]
+                <p class='form-error'>[% field_errors.password %]</p>
+            [% END %]
+            <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
+            <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
+        </div>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+            <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+        </div>
+    </div>
+
+</div>
