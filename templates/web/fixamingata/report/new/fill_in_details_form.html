@@ -54,18 +54,17 @@
             [% END %]
 
 
-
-            <label for="form_title">[% loc('Subject') %]</label>
+            <label for="form_title">Ämne</label>
             [% IF field_errors.title %]
                 <p class='form-error'>[% field_errors.title %]</p>
             [% END %]
-            <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('Provide a title') %]" required>
+            <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="Ange en titel" required>
 
             <label for="form_detail">[% loc('Details') %]</label>
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
-            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
+            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="Fyll i information om problemet nedan." required>[% report.detail | html %]</textarea>
 
             [% IF js %]
                 <div id="form_category_row">
