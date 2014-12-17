@@ -44,6 +44,8 @@
 [% END -%]
 </table>
 
+[% IF updates_pager %]
 [% INCLUDE 'pagination.html', admin = 1, param = 'u', pager = updates_pager %]
+[% END %]
 
 [% END %]
