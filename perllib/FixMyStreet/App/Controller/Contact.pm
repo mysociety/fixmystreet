@@ -59,33 +59,24 @@ generic contact request and set up things accordingly
 sub determine_contact_type : Private {
     my ( $self, $c ) = @_;
 
-    my $id        = $c->req->param('id');
+    my $id = $c->req->param('id');
     my $update_id = $c->req->param('update_id');
+    my $token = $c->req->param('m');
     $id        = undef unless $id        && $id        =~ /^[1-9]\d*$/;
     $update_id = undef unless $update_id && $update_id =~ /^[1-9]\d*$/;
 
-    if ($id) {
-
-        # if we're moderating, then we don't show errors in every case, e.g.
-        # for hidden reports
-        if ($c->req->param('m')) {
-            my $problem
-            = ( !$id || $id =~ m{\D} ) # is id non-numeric?
-            ? undef                    # ...don't even search
-            : $c->cobrand->problems->find( { id => $id } );
-
-            if ($problem) {
-                $c->stash->{problem} = $problem;
-                $c->stash->{moderation_complaint} = 1;
-            }
-            else {
-                $c->forward( '/report/load_problem_or_display_error', [ $id ] );
-            }
-        }
-        else {
+    if ($token) {
+        my $token_obj = $c->forward('/tokens/load_auth_token', [ $token, 'moderation' ]);
+        my $problem = $c->cobrand->problems->find( { id => $token_obj->data->{id} } );
+        if ($problem) {
+            $c->stash->{problem} = $problem;
+            $c->stash->{moderation_complaint} = $token;
+        } else {
             $c->forward( '/report/load_problem_or_display_error', [ $id ] );
         }
 
+    } elsif ($id) {
+        $c->forward( '/report/load_problem_or_display_error', [ $id ] );
         if ($update_id) {
             my $update = $c->model('DB::Comment')->find(
                 { id => $update_id }
@@ -132,9 +123,8 @@ sub validate : Private {
     );
 
     push @errors, _('Illegal ID')
-      if $c->req->param('id') && $c->req->param('id') !~ /^[1-9]\d*$/
-          or $c->req->param('update_id')
-          && $c->req->param('update_id') !~ /^[1-9]\d*$/;
+      if $c->req->param('id') && !$c->stash->{problem}
+          or $c->req->param('update_id') && !$c->stash->{update};
 
     push @errors, _('There was a problem showing this page. Please try again later.')
       if $c->req->params->{message} && $c->req->params->{message} =~ /\[url=|<a/;

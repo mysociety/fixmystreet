@@ -105,6 +105,11 @@ sub report_moderate_audit : Private {
     my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
     my $sender_name = _($cobrand->contact_name);
 
+    my $token = $c->model("DB::Token")->create({
+        scope => 'moderation',
+        data => { id => $problem->id }
+    });
+
     $c->send_email( 'problem-moderated.txt', {
 
         to      => [ [ $user->email, $user->name ] ],
@@ -113,7 +118,7 @@ sub report_moderate_audit : Private {
         user => $user,
         problem => $problem,
         report_uri => $c->stash->{report_uri},
-        report_complain_uri => $c->stash->{cobrand_base} . '/contact?m=1&id=' . $problem->id,
+        report_complain_uri => $c->stash->{cobrand_base} . '/contact?m=' . $token->token,
     });
 }
 

@@ -66,28 +66,20 @@
     </em></p>
     [% INCLUDE 'report/_support.html' %]
 
-    [% IF c.cobrand.moniker != 'southampton' %]
-        [% INCLUDE 'report/photo.html' object=problem %]
-    [% END %]
+    [% INCLUDE 'report/photo.html' object=problem %]
+    <div class="moderate-display">
+        [% add_links( problem.detail ) | html_para %]
+    </div>
 
-        <div class="moderate-display">
-            [% add_links( problem.detail ) | html_para %]
-        </div>
-        [% IF moderating %]
-            <div class="moderate-edit">
-            [% IF problem.detail != original.detail %]
-            <input type="checkbox" name="problem_revert_detail" class="revert-textarea">
-            <label for="problem_revert_detail">Revert to original text</label>
-            [% END %]
-            <textarea name="problem_detail">[% add_links( problem.detail ) %]</textarea>
-            </div>
+    [% IF moderating %]
+        <div class="moderate-edit">
+        [% IF problem.detail != original.detail %]
+        <input type="checkbox" name="problem_revert_detail" class="revert-textarea">
+        <label for="problem_revert_detail">Revert to original text</label>
         [% END %]
+        <textarea name="problem_detail">[% add_links( problem.detail ) %]</textarea>
+        </div>
 
-    [% IF c.cobrand.moniker == 'southampton' %]
-        [% INCLUDE 'report/photo.html' object=problem %]
-    [% END %]
-
-  [% IF moderating %]
         <div class="moderate-edit">
             <label for="moderation_reason">Moderation reason:</label>
             <input type="text" name="moderation_reason" placeholder="Describe why you are moderating this">

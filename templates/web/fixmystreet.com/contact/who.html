@@ -1,3 +1,4 @@
+[% IF NOT problem %]
 <h4>Topic:</h4>
 
 [% IF field_errors.dest %]
@@ -55,8 +56,8 @@
 </div>
 
 <div class="checkbox-group">
-    <input name="dest" id="dest_feeback" type="radio" value="feeback" class="required"[% IF dest AND dest == 'feeback' %] checked[% END %]>
-    <label class="inline" for="dest_feeback">I have feedback about the site</label>
+    <input name="dest" id="dest_feedback" type="radio" value="feedback" class="required"[% IF dest AND dest == 'feedback' %] checked[% END %]>
+    <label class="inline" for="dest_feedback">I have feedback about the site</label>
 </div>
 
 <div class="checkbox-group">
@@ -73,3 +74,4 @@
     <input name="dest" id="dest_update" type="radio" value="update"[% IF dest AND dest == 'update' %] checked[% END %]>
     <label class="inline" for="dest_update">My street problem hasn't been fixed</label>
 </div>
+[% END %]

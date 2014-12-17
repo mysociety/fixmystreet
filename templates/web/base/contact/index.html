@@ -35,6 +35,7 @@
 [% ELSIF problem %]
     <p>
     [% IF moderation_complaint %]
+    <input type="hidden" name="m" value="[% moderation_complaint %]">
     [% loc('You are complaining that this problem report was unnecessarily moderated:') %]
     [% ELSE %]
     [% loc('You are reporting the following problem report for being abusive, containing personal information, or similar:') %]

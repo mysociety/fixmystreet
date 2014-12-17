@@ -68,6 +68,9 @@ subtest 'Auth' => sub {
 
         $mech->get_ok($REPORT_URL);
         $mech->content_lacks('Moderat');
+
+        $mech->get_ok('/contact?m=1&id=' . $report->id);
+        $mech->content_lacks('Good bad bad bad');
     };
 
     subtest 'Affiliated and permissioned user can see moderation' => sub {
@@ -158,6 +161,8 @@ subtest 'Problem moderation' => sub {
     };
 
     subtest 'Hide report' => sub {
+        $mech->clear_emails_ok;
+
         my $resp = $mech->post('/moderate/report/' . $report->id, {
             %problem_prepopulated,
             problem_hide => 1,
@@ -166,6 +171,13 @@ subtest 'Problem moderation' => sub {
 
         $report->discard_changes;
         is $report->state, 'hidden', 'Is hidden';
+
+        my $email = $mech->get_email;
+        my ($url) = $email->body =~ m{(http://\S+)};
+        ok $url, "extracted complain url '$url'";
+
+        $mech->get_ok($url);
+        $mech->content_contains('Good bad bad bad');
 
         # reset
         $report->update({ state => 'confirmed' });

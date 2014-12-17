@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.5.1.
+Platform is now at version 1.5.2.
 
 ## Installation
 
@@ -37,6 +37,12 @@ We've extracted all of the mobile apps from this repository into the
 [fixmystreet-mobile repository](https://github.com/mysociety/fixmystreet-mobile).
 
 ## Releases
+
+* v1.5.2 (17th December 2014)
+    - Hide unneeded heading on default footer.
+    - Suppress 'Argument "" isn't numeric' warning on admin report edit page.
+    - [UK] Don't show topic form field when reporting abuse.
+    - Use token in moderation response URL to prevent hidden report leak.
 
 * v1.5.1 (12th December 2014)
     - Bugfixes
