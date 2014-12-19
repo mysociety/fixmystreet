@@ -65,6 +65,7 @@ if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
     sed -i \
         -e 's,$FMS,'"$REPOSITORY,g" \
         -e 's,$LOCK_DIR,'"$DIRECTORY,g" \
+        -e 's,$UNIX_USER,'"$UNIX_USER,g" \
         "$TEMPORARY_CRONTAB"
     crontab $TEMPORARY_CRONTAB
     echo $DONE_MSG
