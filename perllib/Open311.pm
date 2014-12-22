@@ -383,6 +383,9 @@ sub _get {
         $self->test_uri_used( $uri->as_string );
     } else {
         my $ua = LWP::UserAgent->new;
+        if (mySociety::Config::get('STAGING_SITE')) {
+            $ua->ssl_opts( verify_hostname => 0 );
+        }
 
         my $req = HTTP::Request->new(
             GET => $uri->as_string
@@ -423,6 +426,10 @@ sub _post {
     $self->debug_details( $self->debug_details . "\nrequest:" . $req->as_string );
 
     my $ua = LWP::UserAgent->new();
+    if (mySociety::Config::get('STAGING_SITE')) {
+        $ua->ssl_opts( verify_hostname => 0 );
+    }
+
     my $res;
 
     if ( $self->test_mode ) {
