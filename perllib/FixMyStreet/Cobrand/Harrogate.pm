@@ -121,12 +121,6 @@ sub temp_update_contacts {
         });
     };
 
-    # Note that we use 'detail' because template already includes this value
-    # (It would be better to make the email template smarter, but aiui the email
-    # templates are faked-up-PHP rather than a full template engine, so that's
-    # harder than it should be.  One good option might be to allow passing a TT
-    # template to send_email_cron? TODO)
-
     $_update->( 'Abandoned vehicles', {
             code => 'registration',
             description => 'Vehicle Registration number:',
@@ -171,7 +165,7 @@ sub temp_update_contacts {
         });
 
     $_update->( 'Trees', {
-            code => 'detail',
+            code => 'dangerous',
             description => 'Is it dangerous or could cause injury?',
             datatype => 'boolean', # mapped onto singlevaluelist
         });
