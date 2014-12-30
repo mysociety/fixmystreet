@@ -210,4 +210,66 @@ __PACKAGE__->belongs_to(
   { 'foreign.code' => 'self.did_police_officer_attend_scene_of_accident_code' },
 );
 
+=head2 C<participants>
+
+    my @participants = $accident->participants;
+
+    (
+        [ 'Car', 'vehicle',  $veh1 ],
+        [ 'Pedestrian', 'pedestrian', $veh1 ],
+        [ 'Pedal cycle', 'bike', $veh2 ],
+    )
+
+Returns a list of tuples C<[ $stats19_description, $short_category, $vehicle_object ]>
+of each participant in the crash.  Note that pedestrians are linked to the vehicle that
+hit them.
+
+=cut
+
+sub participants {
+    my $self = shift;
+    return map {
+        [ $_->vehicle_type, $_->vehicle_short_category, $_ ],
+        map {
+            [ 'Pedestrian', 'pedestrian', $_ ]
+        }
+        grep { 
+            $_->is_pedestrian 
+        } $_->casualties;
+    } $self->vehicles,
+}
+
+=head2 C<grouped_participants>
+
+    my @grouped = $accident->grouped_participants;
+
+    (
+        [ 'bike' => 1 ],
+        [ 'pedestrian' => 1 ],
+        [ 'vehicle' => 1 ]
+    )
+
+=cut
+
+sub grouped_participants {
+    my $self = shift;
+    my %priority = (
+        bicycle => 0,
+        pedestrian => 1,
+        vehicle => 2,
+        horse => 3,
+    );
+
+    my %count;
+    for my $p ($self->participants) {
+        $count{$p->[1]}++;
+    }
+
+    return (
+        map [ $_ => $count{$_} ],
+        sort { $priority{$a} <=> $priority{$b} } 
+        keys %count
+    );
+}
+
 1;

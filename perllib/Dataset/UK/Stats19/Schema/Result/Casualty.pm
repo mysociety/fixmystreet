@@ -103,4 +103,14 @@ __PACKAGE__->belongs_to(
 
 __PACKAGE__->set_primary_key("id");
 
+sub is_pedestrian {
+    # 0 is not a pedestrian
+    # -1 is invalid record
+    # so all positive numbers represent a pedestrian
+
+    my $self = shift;
+    my $pedestrian_location_code = $self->pedestrian_location_code;
+    return $pedestrian_location_code > 0;
+}
+
 1;
