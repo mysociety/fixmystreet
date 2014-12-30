@@ -15,7 +15,7 @@ author: dave
 
 The CSS is stored in `web/cobrands/` under which there are directories for
 Cobrands. Note that FixMyStreet uses SCSS and Compass to generate its CSS so
-there are no CSS files until `bin/make_css` has been run.
+there are no CSS files until `bin/make_css` has been run as the site user.
 
 The CSS provided with FixMyStreet uses CSS3 media queries in a mobile-first
 format order to adapt the layout to work on different devices. It is structured
@@ -233,11 +233,15 @@ For more about SCSS, see [the SASS website](http://sass-lang.com).
 
 FixMyStreet now needs to absorb those changes by rebuilding the CSS. There's a
 task in the `bin` directory called `make_css` that will do this for you. You'll
-need to be logged into your shell in the `fixmystreet` directory, then do:
+need to be logged into your shell in the `fixmystreet` directory as the site
+user, then do:
 
     bin/make_css
 
-This will update the CSS files.
+This will update the CSS files. You can run the command just for your cobrand
+by specifying the path to your cobrand’s SCSS as an argument, e.g.:
+
+    bin/make_css web/cobrands/fixmypark
 
 Keep an eye on the output of that command &mdash; if there's a problem (for
 example, if you've made a mistake in the SCSS syntax, which is easy to do), it
