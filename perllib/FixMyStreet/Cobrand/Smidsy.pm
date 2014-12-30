@@ -88,13 +88,8 @@ sub on_map_default_max_pin_age {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
-    # TODO, switch on $p->category
 
-    my $severity = $p->extra ? $p->extra->{severity} || 0 : 0;
-
-    return 'sprocket'        if $severity < $self->severity_minor_threshold; 
-    return 'sprocket-orange' if $severity < $self->severity_major_threshold;
-    return 'sprocket-red'; 
+    return $p->category;
 }
 
 sub path_to_pin_icons {
@@ -335,7 +330,7 @@ sub recent_new {
         $new = $rs->count;
         Memcached::set($new_key, $new, 3600);
 
-        $miss = $rs->search({ category => 'Near Miss' })->count;
+        $miss = $rs->search({ category => { like => '%miss' } })->count;
         Memcached::set($miss_key, $miss, 3600);
     }
 
@@ -350,7 +345,9 @@ sub stats_open_problem_type {
     my $age = $self->SUPER::stats_open_problem_type($problem);
     my $category = $problem->{category};
 
-    return "${age}_${category}";
+    my $metacategory = $category =~ /miss$/ ? 'miss' : 'accident';
+
+    return "${age}_${metacategory}";
 }
 
 1;
