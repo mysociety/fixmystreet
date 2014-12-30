@@ -211,7 +211,7 @@ function fixmystreet_onload() {
         var showhide = [
             'Show pins', 'Hide pins',
             'Dangos pinnau', 'Cuddio pinnau',
-            "Vis nåler", "Gjem nåler",
+            "Vis nåler", "Skjul nåler",
             "Zeige Stecknadeln", "Stecknadeln ausblenden"
         ];
         for (var i=0; i<showhide.length; i+=2) {
@@ -236,7 +236,7 @@ function fixmystreet_onload() {
         fixmystreet.markers.setVisibility(true);
         var texts = [
             'en', 'Show old', 'Hide old',
-            'nb', 'Inkluder utdaterte problemer', 'Skjul utdaterte rapporter',
+            'nb', 'Vis gamle', 'Skjul gamle',
             'cy', 'Cynnwys hen adroddiadau', 'Cuddio hen adroddiadau'
         ];
         for (var i=0; i<texts.length; i+=3) {
@@ -255,7 +255,7 @@ function fixmystreet_onload() {
         if (lang == 'cy') {
             document.getElementById('hide_pins_link').innerHTML = 'Cuddio pinnau';
         } else if (lang == 'nb') {
-            document.getElementById('hide_pins_link').innerHTML = 'Gjem nåler';
+            document.getElementById('hide_pins_link').innerHTML = 'Skjul nåler';
         } else {
             document.getElementById('hide_pins_link').innerHTML = 'Hide pins';
         }
