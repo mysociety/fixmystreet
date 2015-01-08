@@ -323,6 +323,10 @@ sub send_reports {
              $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
          }
 
+        if ($cobrand->can('process_additional_metadata_for_email')) {
+            $cobrand->process_additional_metadata_for_email($row, \%h);
+        }
+
         my %reporters = ();
         my ( $sender_count );
         if ($site eq 'emptyhomes') {

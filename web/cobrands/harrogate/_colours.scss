@@ -1,0 +1,22 @@
+/* COLOURS */
+
+$harrogate_primary: #7EB7D8;
+
+$primary: $harrogate_primary;
+$primary_dark: darken($harrogate_primary, 20%);
+
+$col_click_map: $harrogate_primary;
+$col_click_map_dark: $harrogate_primary;
+$col_fixed_label_dark: $harrogate_primary;
+$col_fixed_label: $harrogate_primary;
+
+$primary_b: #000000;
+$primary_text: #ffffff;
+
+$base_bg: #fff;
+$base_fg: #1a1a1a;
+
+/* Following seem to be required in layout.scss */
+$map_nav_bg: #222;
+$nav_fg: #000;
+$nav_fg_hover: #444;

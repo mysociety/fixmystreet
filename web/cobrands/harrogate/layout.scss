@@ -1,0 +1,185 @@
+@import "_colours";
+@import "../sass/layout";
+
+@media only screen and (min-width: 48em) {
+    #site-logo,
+    .ie6 #site-logo,
+
+    body.frontpage #site-logo,
+    .ie6 body.frontpage #site-logo,
+    
+    body.authpage #site-logo,
+    .ie6 body.authpage #site-logo,
+
+    body.twothirdswidthpage #site-logo,
+    .ie6 body.twothirdswidthpage #site-logo
+    {
+            position: relative;
+            top: 1.2em;
+            margin: 0;
+            padding: 0;
+            background: url("/cobrands/harrogate/HBCLogo.png") 0 0 no-repeat;
+            width: 227px;
+            height: 122px;
+    }
+
+    body.frontpage #site-header,
+    .ie6 body.frontpage #site-header,
+
+    body.twothirdswidthpage #site-header,
+    .ie6 body.twothirdswidthpage #site-header,
+
+    body.authpage #site-header,
+    .ie6 body.authpage #site-header,
+
+    body.mappage #site-header,
+    .ie6 body.mappage #site-header,
+    body.mappage .nav-wrapper-2,
+    .ie6 body.mappage .nav-wrapper-2
+    {
+        height: 10em;
+    }
+
+    #fms_pan_zoom {
+        top: 10.75em!important;
+    }
+}
+
+@media only screen and (min-width: 48em) {
+    body.twothirdswidthpage .container .content footer .tablewrapper a:link,
+    body.twothirdswidthpage .container .content footer .tablewrapper a:visited,
+    body.fullwidthpage .container .content footer .tablewrapper a:link,
+    body.fullwidthpage .container .content footer .tablewrapper a:visited {
+        color: white;
+    }
+
+    body.mappage #user-meta+.container .content {
+        padding-top: 1.5em;
+    }
+}
+
+body.fullwidthpage #main-nav,
+body.frontpage #main-nav,
+body.twothirdswidthpage #main-nav,
+body.authpage #main-nav
+{
+    margin-top: 3.2em;
+}
+
+body.mappage #main-nav,
+{
+    // TODO would be better to edit containers to figure out where missing em is defined
+    margin-top: 2.2em;
+}
+
+body.fullwidthpage .container .content,
+body.twothirdswidthpage .container .content {
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+@media only screen and (min-width: 48em) {
+    body.fullwidthpage .container .content {
+        margin-top: 3em; // push far enough for the sign-out link to also be visible
+    }
+}
+
+body.twothirdswidthpage .content aside {
+    margin-top: 2em;
+    @include box-shadow(none);
+}
+
+
+body.twothirdswidthpage form.full-width {
+    margin: 0;
+}
+
+body.mappage #main-nav {
+    ul#main-menu {
+        padding: 1em 0;
+    }
+}
+
+body.mappage #main-nav ul#main-menu li a, body.mappage #main-nav ul#main-menu li span {
+    padding: 0.75em;
+}
+
+body.mappage #main-nav ul#main-menu li a.report-a-problem-btn,
+#main-nav ul#main-menu li a.report-a-problem-btn {
+    margin: 0;
+    padding: 0.75em;
+}
+#main-nav ul#main-menu li a.report-a-problem-btn {
+    &:hover {
+        background: #444;
+        color: #fff;
+        @include border-radius(0em);
+    }
+}
+
+#main-nav {
+    ul#main-menu {
+        li {
+            a.report-a-problem-btn {
+                color: #000;
+                background: #ededed;
+            }
+        }
+    }
+}
+
+body.mappage .nav-wrapper .nav-wrapper-2 {
+    background: #fff;
+    border-bottom: solid 4px $primary;
+}
+
+.nav-wrapper .nav-wrapper-2 {
+    border-top: 0px;
+}
+
+#front-main {
+    background: none;
+    padding: 0;
+
+    #front-main-container {
+        background: $primary;
+        padding: 2em 0;
+        margin-bottom: 1.2em;
+        @include border-radius(12px);
+
+        #postcode-intro {
+            margin: 0 2em;
+        }
+    }
+
+}
+
+body.frontpage #user-meta p {
+    top: -2.4em;
+}
+
+body.mappage #user-meta {
+    top: 2em;
+    p {
+        background: $primary;
+        border-color: $primary_dark;
+    }
+}
+
+body.mappage .content {
+    margin-top: 4em;
+}
+
+
+body.twothirdswidthpage .container .content footer,
+body.fullwidthpage .container .content footer
+{
+    .tablewrapper {
+        width: 100%;
+        background: $primary;
+        @include border-radius(12px);
+        margin-bottom: 2em;
+
+    }
+}
