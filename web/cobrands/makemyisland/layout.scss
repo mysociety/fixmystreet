@@ -37,3 +37,10 @@ body.frontpage #united-nations-dp-logo {
 ul#main-menu {
   margin-right: 70px; // to clear the UNDP logo
 }
+
+// to push the user-mata clear of the unusually deep (square) logo
+body.twothirdswidthpage #user-meta p,
+body.fullwidthpage #user-meta p {
+  margin-left: 120px;
+}
+

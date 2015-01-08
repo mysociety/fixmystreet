@@ -1,0 +1,39 @@
+  <input type="hidden" name="type" value="local">
+  <input type="hidden" name="pc" value="Fonadhoo">
+
+  [%# note: hardcoded rss_feed_id for Fonadhoo latlong %]
+  <input type="hidden" name="feed" value="local:1.842587:73.508274">
+
+  <p>
+    Click the button for an RSS feed, or enter your email address to subscribe to an email alert.
+  </p>
+  <p id="rss_local">
+    For
+    <strong>all</strong>
+    problems reported on
+    <strong>Fonadhoo</strong>:
+    <a href='[% rss_feed_uri %]'><img src='/i/feed.png' width='16' height='16' title='[% loc('RSS feed of nearby problems') %]' alt='[% loc('RSS feed') %]' border='0'></a>
+  </p>
+
+  <div id="rss_buttons">
+    <p>
+      <input type="submit" name="rss" class="green-btn" value="[% loc('Give me an RSS feed') %]">
+    <p>
+
+    <p id="alert_or">
+      [% loc('or') %]
+    </p>
+
+    [% INCLUDE 'errors.html' %]
+
+    [% UNLESS c.user_exists %]
+      <p>
+        [% loc('Your email:') %] <input type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]" size="30">
+      </p>
+    [% END %]
+
+    <p>
+      <input type="submit" name="alert" class="green-btn" value="[% loc('Subscribe me to an email alert') %]">
+    </p>
+  </div>
+

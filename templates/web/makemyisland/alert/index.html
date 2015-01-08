@@ -1,0 +1,30 @@
+[%
+  title = "Local RSS feeds and email alerts for Fonadhoo"
+%]
+
+
+[% INCLUDE 'header.html', title = title, bodyclass = 'twothirdswidthpage' %]
+
+<h1>[% title %]</h1>
+
+<form id="alerts" name="alerts" method="post" action="/alert/subscribe">
+
+  [% IF photos.size %]
+    <div id="alert_photos" class="sticky-sidebar">
+      <aside>
+        <h2>[% loc('Photos of recent nearby reports') %]</h2>
+        [% FOREACH p IN photos;
+            photo = p.get_photo_params;
+        %]
+            <a href="/report/[% p.id %]"><img border="0" height="100"
+                src="[% photo.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+        [% END %]
+      </aside>
+    </div>
+  [% END %]
+
+  [% INCLUDE 'alert/_list.html' %]
+
+</form>
+
+[% INCLUDE 'footer.html' %]

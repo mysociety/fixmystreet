@@ -1,0 +1,96 @@
+[% INCLUDE 'header.html', title => loc('Frequently Asked Questions'), bodyclass => 'twothirdswidthpage' %]
+
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li><a href="/faq">[% loc("Frequently Asked Questions") %]</a></li>
+            <li><a href="/faq#practical">[% loc("Practical Questions") %]</a></li>
+            <li><a href="/faq#organisation">[% loc("Organisation Questions") %]</a></li>
+            <li><a href="/privacy">[% loc("Privacy and cookies") %]</a></li>
+            <li><a href="/contact">Contact MakeMyIsland</a></li>
+        </ul>
+    </aside>
+</div>
+
+<h1><a name="faq"></a>Frequently Asked Questions</h1>
+    <dl>
+        <dt>What is MakeMyIsland?</dt>
+        <dd>MakeMyIsland is a site to help people report, view,
+or discuss local problems they&rsquo;ve found to their local council by
+simply locating them on a map. Alternatively, send a problem report to
+us via SMS and we'll enter it into MakeMyIsland for you.
+        </dd>
+        <dt>How do I get in touch with MakeMyIsland?</dt>
+        <dd>Here&rsquo;s our <a href="/contact">contact page</a>.</dd>
+        <dt>What sort of problems should I report with MakeMyIsland?</dt>
+        <dd>Currently we're accepting reports about problems with:
+    <ul><li>Erosion
+    <li>Street lights
+    <li>Dumped waste
+    </ul>
+    </dd>
+
+    <dt>What isn&rsquo;t MakeMyIsland for?</dt>
+    <dd>FixMyStreet is not a way of getting in touch with[% c.cobrand.is_council ? 'the' : 'your' %] council for all
+    issues &ndash; please use MakeMyIsland only for problems such as the above.
+    <strong>You will need to contact [% c.cobrand.is_council ? 'the' : 'your' %] council
+    directly for problems such as</strong>: 
+
+    <ul><li>Anti-social behaviour
+    <li>Any urgent or emergency problems
+    <li>Noise pollution or barking dogs
+    <li>Fires and smoke/smell pollution
+    <li>Proposals for speed bumps/ CCTV/ pedestrian crossings/ new road layouts/ etc.
+    <li>Complaining about your neighbours
+    <li>Complaining about the council
+    <li>Joy riding, drug taking, animal cruelty, or other criminal activity
+    </ul>
+  </dd>
+
+        <dt>How do I use the site?</dt>
+        <dd>After choosing the right area (currently we're just running the 
+          project on Fonadhoo), you'll see a map of that area. You can view
+          problems already reported in that area, or report ones of your own
+          simply by clicking on the map at the location of
+          the problem.</dd>
+        <dt>How are the problems solved?</dt>
+        <dd>They are reported to the [% IF !c.cobrand.is_council %]relevant[% END %] council by email.
+          The council can then resolve the problem the way they normally would.
+          Alternatively, you can discuss the problem on the website with others, and
+          then together lobby the council to fix it, or fix it directly yourselves.</dd>
+        <dt>Is it free?</dt>
+        <dd>The site is free to use, yes. MakeMyIsland is being supported by 
+          <a hrfe="http://www.undp.org">UNDP</a> locally, with help from
+          <a href="http://www.mysociety.org">mySociety</a> who provide the
+          <a href="http://fixmystreet.org">FixMyStreet platform</a> that's powering
+          this site.
+        </dd>
+
+	<dt>Can I use MakeMyIsland on my mobile?</dt>
+	<dd>
+	<p>The MakeMyIsland website will already work on your mobile phone, adapting to
+	the size of your screen automatically. We don't currently have MakeMyIsland apps
+  for specific phones.
+	</dd>
+    </dl>
+    <h2><a name="practical"></a>Practical Questions</h2>
+    <dl>
+        <dt>I&rsquo;m from a council, where do you send the reports?</dt>
+        <dd><a href="/contact">Contact us</a>
+          to find out where reports go at the moment, or to ask us to
+          update the address or addresses we use.</dd>
+        </dd>
+        <dt>Do you remove silly or illegal content?</dt>
+        <dd>MakeMyIsland is not responsible for the content and accuracy
+of material submitted by its users. We reserve the right to edit or remove any
+problems or updates which we consider to be inappropriate upon being informed
+by a user of the site.
+        </dd>
+    <h2><a name="organisation"></a>Organisation Questions</h2>
+    <dl>
+        <dt>Who built MakeMyIsland?</dt>
+        <dd>MakeMyIsland is running the <a href="http://fixmystreet.org/">FixMyStreet platform</a>
+          by UK charity <a href="http://www.mysociety.org/">mySociety</a>.
+        </dd>
+    </dl>
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

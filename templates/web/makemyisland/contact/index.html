@@ -1,0 +1,119 @@
+[% INCLUDE 'header.html',
+    title = loc('Contact Us')
+    robots = 'noindex,nofollow'
+    bodyclass = 'twothirdswidthpage'
+%]
+
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li><a href="/faq">[% loc("Frequently Asked Questions") %]</a></li>
+            <li><a href="/faq#practical">[% loc("Practical Questions") %]</a></li>
+            <li><a href="/faq#organisation">[% loc("Organisation Questions") %]</a></li>
+            <li><a href="/privacy">[% loc("Privacy and cookies") %]</a></li>
+            <li><strong>Contact MakeMyIsland</strong></li>
+        </ul>
+    </aside>
+</div>
+
+<h1>[% loc('Contact the team') %]</h1>
+ 
+<form method="post" action="/contact/submit" class="validate">
+    <fieldset>
+        [% INCLUDE 'errors.html' %]
+
+        [% IF update %]
+
+            <p>
+            [% loc('You are reporting the following update for being abusive, containing personal information, or similar:') %]
+            </p>
+
+            <blockquote>
+                <p>
+                    [% IF update.anonymous %]
+                        [% tprintf( loc('Update below added anonymously at %s'), prettify_dt( update.confirmed ) ) %]
+                    [% ELSE %]
+                        [% tprintf( loc('Update below added by %s at %s'), update.name, prettify_dt( update.confirmed ) ) | html %]
+                    [% END %]
+                </p>
+
+                <p>
+                    [% update.text | html %]
+                </p>
+
+            </blockquote>
+            <input type="hidden" name="update_id" value="[% update.id %]">
+            <input type="hidden" name="id" value="[% update.problem_id %]">
+
+        [% ELSIF problem %]
+            <p>
+            [% loc('You are reporting the following problem report for being abusive, containing personal information, or similar:') %]
+            </p>
+            
+            <blockquote>
+                <h2>[% problem.title_safe | html %]</h2>
+
+                <p>
+                    [% IF problem.anonymous %]
+                        [% tprintf( loc('Reported anonymously at %s'), prettify_dt( problem.confirmed ) ) %]
+                    [% ELSE %]
+                        [% tprintf( loc('Reported by %s at %s'), problem.user.name, prettify_dt( problem.confirmed ) ) | html %]
+                    [% END %]
+                </p>
+
+                <p>
+                    [% problem.detail | html %]
+                </p>
+
+            </blockquote>
+            <input type="hidden" name="id" value="[% problem.id %]">
+
+        [% ELSE %]
+
+            [% INCLUDE 'contact/blurb.html' %]
+
+        [% END %]
+
+        <label for="form_name">[% loc('Your name') %]</label>
+        [% IF field_errors.name %]
+           <div class="form-error">[% field_errors.name %]</div>
+        [% END %]
+        <input type="text" class="required" name="name" id="form_name" value="[% form_name | html %]" size="30">
+
+
+        <label for="form_email">[% loc('Your email') %]</label>
+        [% IF field_errors.em %]
+           <div class="form-error">[% field_errors.em %]</div>
+        [% END %]
+        <input type="text" class="required email" name="em" id="form_email" value="[% em | html %]" size="30">
+
+
+        <label for="form_subject">[% loc('Subject') %]</label>
+        [% IF field_errors.subject %]
+           <div class="form-error">[% field_errors.subject %]</div>
+        [% END %]
+        <input type="text" class="required" name="subject" id="form_subject" value="[% subject | html %]" size="30">
+
+        [% INCLUDE 'contact/who.html' %]
+
+        <label for="form_message">[% loc('Message') %]</label>
+        [% IF field_errors.message %]
+           <div class="form-error">[% field_errors.message %]</div>
+        [% END %]
+        <textarea class="required" name="message" id="form_message" rows="7" cols="50">[% message | html %]</textarea>
+
+        
+        <input class="final-submit green-btn" type="submit" value="[% loc('Post') %]">
+
+    </fieldset>
+</form>
+
+<h4>[% loc("Don't like forms?") %]</h4>
+
+<p>
+[% tprintf( loc("You can contact technical support on <a href='mailto:%s'>%s</a>"), contact_email, contact_email) %]
+</p>
+
+[% TRY %][% INCLUDE 'contact/address.html' %][% CATCH file %][% END %]
+
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

@@ -21,6 +21,7 @@ tags
 *.mo
 FixMyStreet-EmptyHomes.po
 FixMyBarangay.po
+MakeMyIsland.po
 
 /web/css/core.css
 /web/css/main.css
