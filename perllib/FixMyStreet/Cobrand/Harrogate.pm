@@ -56,7 +56,7 @@ Can run with a script or command line like:
 =cut
 
 sub temp_email_to_update {
-    return 'test@example.com';
+    return 'CustomerServices@harrogate.gov.uk';
 }
 
 sub temp_update_contacts {
