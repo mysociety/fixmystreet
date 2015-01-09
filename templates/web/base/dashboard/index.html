@@ -147,6 +147,15 @@
 </select>
 <input type="submit" value="Look up">
 <a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">Export as CSV</a>
+</form>
+
+<form action="[% c.uri_for('/report') %]/" id="goto-report-form">
+<p>
+    <label for="goto-report">Jump to #</label>
+    <input type="text" name="id" id="goto-report-id">
+    <input type="submit" name="submit-goto" value="Go to report #">
+</p>
+</form>
 
 <table width="100%" id="reports">
     <tr>
@@ -161,7 +170,6 @@
     </tr>
 </table>
 
-</form>
 
 [% INCLUDE 'footer.html' %]
 
