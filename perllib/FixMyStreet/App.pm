@@ -10,7 +10,6 @@ use FixMyStreet;
 use FixMyStreet::Cobrand;
 use Memcached;
 use mySociety::Email;
-use mySociety::EmailUtil;
 use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
 
@@ -348,9 +347,19 @@ sub send_email {
 }
 
 sub send_email_cron {
-    my ( $c, $params, $env_from, $env_to, $nomail, $cobrand, $lang_code ) = @_;
+    my ( $c, $params, $env_from, $nomail, $cobrand, $lang_code ) = @_;
 
-    return 1 if $c->is_abuser( $env_to );
+    my $first_to;
+    if (ref($params->{To}) eq 'ARRAY') {
+        if (ref($params->{To}[0]) eq 'ARRAY') {
+            $first_to = $params->{To}[0][0];
+        } else {
+            $first_to = $params->{To}[0];
+        }
+    } else {
+        $first_to = $params->{To};
+    }
+    return 1 if $c->is_abuser($first_to);
 
     $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@%s>', time(),
         unpack('h*', random_bytes(5, 1)), FixMyStreet->config('EMAIL_DOMAIN')
@@ -387,15 +396,16 @@ sub send_email_cron {
     $params->{_line_indent} = '';
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
 
-    if ( FixMyStreet->test_mode ) {
-        my $sender = Email::Send->new({ mailer => 'Test' });
-        $sender->send( $email );
-        return 0;
-    } elsif (!$nomail) {
-        return mySociety::EmailUtil::send_email( $email, $env_from, @$env_to );
-    } else {
+    if ($nomail) {
         print $email;
         return 1; # Failure
+    } else {
+        my %model_args;
+        if (!FixMyStreet->test_mode && $env_from eq FixMyStreet->config('CONTACT_EMAIL')) {
+            $model_args{mailer} = 'FixMyStreet::EmailSend::ContactEmail';
+        }
+        my $result = $c->model('EmailSend', %model_args)->send($email);
+        return $result ? 0 : 1;
     }
 }
 

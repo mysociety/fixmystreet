@@ -21,7 +21,6 @@ use FixMyStreet::App;
 
 use Utils;
 use mySociety::Config;
-use mySociety::EmailUtil;
 
 use Open311;
 

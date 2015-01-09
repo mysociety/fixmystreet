@@ -26,7 +26,7 @@ sub build_recipient_list {
     }
 
     push @{ $self->to }, [ $body_email, $body->name ];
-    return $body_email;
+    return 1;
 }
 
 sub get_template {

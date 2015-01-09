@@ -50,14 +50,14 @@ foreach my $test ( {
     },
     {
         desc => 'unconfirmed contact results in no receipients',
-        count => undef,
+        count => 0,
         add_council => 1,
         unconfirmed => 1,
         expected_note => 'Body 1000 deleted',
     },
     {
         desc => 'unconfirmed contact note uses note from contact table',
-        count => undef,
+        count => 0,
         add_council => 1,
         unconfirmed => 1,
         note => 'received bounced so unconfirmed',

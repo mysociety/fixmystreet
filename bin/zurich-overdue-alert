@@ -62,16 +62,14 @@ sub send_alert {
         admin_url => $cobrand->admin_base_url,
     };
 
-    my $env_to = [ $body_email ];
     my $to = [ [ $body_email, $body->name ] ];
     if ( $include_parent ) {
         my $parent = $body->parent;
         my $parent_email = $parent->endpoint;
-        push @$env_to, $parent_email;
         push @$to, [ $parent_email, $parent->name ];
     }
 
-    my $result = FixMyStreet::App->send_email_cron(
+    FixMyStreet::App->send_email_cron(
         {
             _template_ => $template,
             _parameters_ => $h,
@@ -79,7 +77,6 @@ sub send_alert {
             From => [ FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') ],
         },
         FixMyStreet->config('CONTACT_EMAIL'),
-        $env_to,
         $nomail
     );
 }

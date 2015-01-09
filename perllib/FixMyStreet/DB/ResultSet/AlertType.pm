@@ -5,7 +5,6 @@ use strict;
 use warnings;
 
 use mySociety::DBHandle qw(dbh);
-use mySociety::EmailUtil;
 use mySociety::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
@@ -262,13 +261,12 @@ sub _send_aggregated_alert_email(%) {
             To => $data{alert_email},
         },
         $sender,
-        [ $data{alert_email} ],
         0,
         $cobrand,
         $data{lang}
     );
 
-    if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+    unless ($result) {
         $token->insert();
     } else {
         print "Failed to send alert $data{alert_id}!";

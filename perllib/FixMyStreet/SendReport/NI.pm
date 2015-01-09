@@ -6,7 +6,6 @@ BEGIN { extends 'FixMyStreet::SendReport::Email'; }
 
 sub build_recipient_list {
     my ( $self, $row, $h ) = @_;
-    my %recips;
 
     my $all_confirmed = 1;
     foreach my $body ( @{ $self->bodies } ) {
@@ -30,11 +29,9 @@ sub build_recipient_list {
             $row->external_body( 'Roads Service' );
         }
         push @{ $self->to }, [ $email, $name ];
-        $recips{$email} = 1;
     }
 
-    return () unless $all_confirmed;
-    return keys %recips;
+    return $all_confirmed && @{$self->to};
 }
 
 1;

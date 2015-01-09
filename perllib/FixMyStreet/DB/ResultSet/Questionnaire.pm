@@ -5,7 +5,6 @@ use strict;
 use warnings;
 use Encode;
 use Utils;
-use mySociety::EmailUtil;
 
 sub send_questionnaires {
     my ( $rs, $params ) = @_;
@@ -103,11 +102,10 @@ sub send_questionnaires_period {
                 From => [ $sender, $sender_name ],
             },
             $sender,
-            [ $row->user->email ],
             $params->{nomail},
             $cobrand
         );
-        if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+        unless ($result) {
             print "  ...success\n" if $params->{verbose};
             $row->update();
             $token->insert();
