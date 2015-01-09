@@ -92,15 +92,6 @@ body.mappage {
             @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
         }
     }
-
-    #reporting {
-      padding: 1em;
-      text-align: center;
-
-      h1 {
-        line-height: 1.2em;
-      }
-    }
 }
 
 #main-nav {

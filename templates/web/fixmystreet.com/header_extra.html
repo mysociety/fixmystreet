@@ -1,24 +1,3 @@
 <script src="[% start %][% version('/js/jquery.cookie.min.js') %]" type="text/javascript" charset="utf-8"></script>
 
-[%# We are conducting an A/B experiment on the first step of reporting process %]
-[% IF page == 'around' %]
-<script src="//www.google-analytics.com/cx/api.js?experiment=1gdSSsSMQgy99AsCPeBalg"></script>
-<script>
-if (window.matchMedia) {
-    var desktop = window.matchMedia("(min-width: 48em)").matches;
-    if (desktop) {
-        var variation = cxApi.chooseVariation(),
-            docElement = document.documentElement,
-            className = docElement.className;
-        docElement.className = className + ' ' + 'variant' + variation;
-    }
-}
-</script>
-<style>
-html .variant1 { display: none !important; }
-html.variant1 .variant0 { display: none !important; }
-html.variant1 .variant1 { display: block !important; }
-</style>
-[% END %]
-
 [% INCLUDE 'tracking_code.html' %]
