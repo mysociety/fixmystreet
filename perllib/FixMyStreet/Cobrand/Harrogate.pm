@@ -238,5 +238,9 @@ sub process_additional_metadata_for_email {
     $h->{additional_information} = $additional;
 }
 
+sub send_questionnaires {
+    return 0;
+}
+
 1;
 
