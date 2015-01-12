@@ -14,7 +14,8 @@ use FixMyStreet;
 
 # load the config file and store the contents in a readonly hash
 
-mySociety::Config::set_file( FixMyStreet->path_to("conf/general") );
+my $CONF_FILE = $ENV{FMS_OVERRIDE_CONFIG} || 'general';
+mySociety::Config::set_file( FixMyStreet->path_to("conf/${CONF_FILE}") );
 
 BAIL_OUT( "Test suite modifies databases so should not be run on live servers" )
     unless mySociety::Config::get('STAGING_SITE', undef);

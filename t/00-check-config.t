@@ -16,7 +16,8 @@ use FixMyStreet;
 # load the config file and store the contents in a readonly hash
 
 my $example_config = YAML::LoadFile( FixMyStreet->path_to("conf/general.yml-example") );
-my $local_config = YAML::LoadFile( FixMyStreet->path_to("conf/general.yml") );
+my $CONF_FILE = $ENV{FMS_OVERRIDE_CONFIG} || 'general';
+my $local_config = YAML::LoadFile( FixMyStreet->path_to("conf/${CONF_FILE}.yml") );
 
 # find all keys missing from each config
 my @missing_from_example = find_missing( $example_config, $local_config );

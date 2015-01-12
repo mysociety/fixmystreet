@@ -111,6 +111,10 @@ requires 'File::ChangeNotify';
 requires 'Path::Tiny';
 requires 'File::Find::Rule';
 
+feature 'test-wrapper', 'Spin up a test database and config to run tests' => sub {
+    requires 'Test::PostgreSQL';
+};
+
 # Modules used by the test suite
 requires 'CGI::Simple';
 requires 'HTTP::Headers';

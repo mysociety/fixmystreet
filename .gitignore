@@ -2,6 +2,7 @@
 *.swp
 *~
 ._*
+.prove
 
 .vagrant
 .DS_Store
