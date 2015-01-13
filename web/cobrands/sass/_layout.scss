@@ -388,10 +388,11 @@ body.fullwidthpage {
     .container {
         .content {
             box-shadow: none;
-            padding: 1em 1em 0em;
+            padding: 1em;
             margin-bottom: 0em;
             footer {
                 margin-top: 0em;
+                margin-bottom: -1em;
                 .tablewrapper {
                     padding-top: 2em;
                     padding-bottom: 3em;
