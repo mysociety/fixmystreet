@@ -745,9 +745,15 @@ sub call_api {
     }
 
     my $data = eval { $self->$api_method(@args) }
-        or return Open311::Endpoint::Result->error( 
-            $@ ? (500 => $@) : (404 => 'Resource not found')
-        );
+        or do {
+            if ($@) {
+                warn $@;
+	        return Open311::Endpoint::Result->error( 500 => $@ ); # TODO sanitize errors for prod
+            }
+            else {
+	        return Open311::Endpoint::Result->error( 404 => 'Resource not found' );
+            }
+        };
 
     if (my $output_schema_method = $self->can("${api_name}_output_schema")) {
         my $definition = $self->$output_schema_method(@args);

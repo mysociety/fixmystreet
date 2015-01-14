@@ -12,9 +12,9 @@ use Encode qw(from_to);
 # on a development system!
 # t/open311/endpoint/warwick.t disables DBD::Oracle from loading, so the default
 # stubbed values will be used instead:
-sub ORA_DATE ();
-sub ORA_NUMBER ();
-sub ORA_VARCHAR2 ();
+# sub ORA_DATE ();
+# sub ORA_NUMBER ();
+# sub ORA_VARCHAR2 ();
 no warnings 'redefine';
 use DBD::Oracle qw(:ora_types);
 
@@ -403,12 +403,12 @@ sub get_service_request_updates {
     my @where;
 
     push @where, sprintf 
-        'updated_timedate >= to_date(%s, %s)',
+        'to_date(updated_timedate, \'DD-MON-YYYY HH24:MI:SS\') >= to_date(\'%s\', \'%s\')',
         $ora_dt->format_datetime($start_date), $ORA_DT_FORMAT
         if $start_date;
 
     push @where, sprintf 
-        'updated_timedate <= to_date(%s, %s)',
+        'to_date(updated_timedate, \'DD-MON-YYYY HH24:MI:SS\') <= to_date(\'%s\', \'%s\')',
         $ora_dt->format_datetime($end_date), $ORA_DT_FORMAT
         if $end_date;
 
@@ -419,16 +419,16 @@ sub get_service_request_updates {
         'WHERE ' . join(' AND ', grep {$_} @where)
         : '';
 
-    my $sql = qq(
+    my $sql = qq{
         SELECT
             row_id,
             service_request_id,
-            to_char(updated_timedate, '$ORA_DT_FORMAT'),
+            to_char( to_date(updated_timedate, 'DD-MON-YYYY HH24:MI:SS'), '$ORA_DT_FORMAT') updated_datetime,
             status,
             description
-        FROM higatlas.fms_update
+        FROM highways.fms_update
         $WHERE_CLAUSE
-        ORDER BY updated_timedate DESC);
+        ORDER BY updated_timedate DESC};
 
     my $limit = $self->max_limit; # also allow testing to modify this?
     $sql = "SELECT * FROM ($sql) WHERE ROWNUM <= $limit" if $limit;
@@ -437,11 +437,11 @@ sub get_service_request_updates {
 
     my @updates = map {
         Open311::Endpoint::Service::Request::Update->new(
-            update_id => $_->{row_id},
-            service_request_id => $_->{service_request_id},
-            updated_datetime => $self->parse_ora_date( $_->{updated_datetime} ),
-            status => $_->{status},
-            description => $_->{description}
+            update_id => $_->{ROW_ID},
+            service_request_id => $_->{SERVICE_REQUEST_ID},
+            updated_datetime => $self->parse_ora_date( $_->{UPDATED_DATETIME} ),
+            status => lc $_->{STATUS},
+            description => $_->{DESCRIPTION}
         )
     } @data;
 
@@ -451,7 +451,8 @@ sub get_service_request_updates {
 sub get_updates_from_sql {
     my ($self, $sql) = @_;
     my $dbh = $self->dbh;
-    my $ary_ref = $dbh->selectall_arrayref($sql, { Slice => {} } );
+    my $ary_ref = $dbh->selectall_arrayref($sql, { Slice => {} } )
+      or die $dbh->errstr;
     return @$ary_ref;
 }
 
