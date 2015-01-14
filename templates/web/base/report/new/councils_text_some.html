@@ -7,9 +7,8 @@
     [%- '.' IF loop.last %]    
 [% END %]
 
-[%
-    loc('The subject and details of the problem will be public, plus your name if you give us permission.');
-%]
+[% loc('The summary and description will also be made public (see our <a href="/privacy">privacy policy</a>).') %]
+
 [%
     nget(
         "We do <strong>not</strong> yet have details for the other council that covers this location.",
