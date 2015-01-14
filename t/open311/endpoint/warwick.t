@@ -115,11 +115,11 @@ SELECT * FROM (
         SELECT
             row_id,
             service_request_id,
-            to_char(updated_timedate, 'YYYY-MM-DD HH24:MI'),
+            to_char( to_date(updated_timedate, 'DD-MON-YYYY HH24:MI:SS'), 'YYYY-MM-DD HH24:MI') updated_datetime,
             status,
             description
-        FROM higatlas.fms_update
-        WHERE updated_timedate >= to_date(2013-12-31 12:00, YYYY-MM-DD HH24:MI) AND (status='OPEN' OR status='CLOSED')
+        FROM highways.fms_update
+        WHERE to_date(updated_timedate, 'DD-MON-YYYY HH24:MI:SS') >= to_date('2013-12-31 12:00', 'YYYY-MM-DD HH24:MI') AND (status='OPEN' OR status='CLOSED')
         ORDER BY updated_timedate DESC) WHERE ROWNUM <= 1000
 SQL
 

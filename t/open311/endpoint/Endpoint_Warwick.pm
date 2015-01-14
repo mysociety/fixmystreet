@@ -19,11 +19,11 @@ sub get_updates_from_sql {
     $UPDATES_SQL = $sql;
     return (
         {
-            row_id => 999,
-            service_request_id => 1001,
-            updated_datetime => '2014-07-23 11:07:00',
-            status => 'closed',
-            description => 'Closed the ticket',
+            ROW_ID => 999,
+            SERVICE_REQUEST_ID => 1001,
+            UPDATED_DATETIME => '2014-07-23 11:07:00',
+            STATUS => 'CLOSED',
+            DESCRIPTION => 'Closed the ticket',
         }
     );
 }
