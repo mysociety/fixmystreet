@@ -105,6 +105,11 @@ has db_password => (
     default => 'SUPERSEEKRIT', # DUMMY
 );
 
+has db_schema => (
+    is => 'ro',
+    default => 'highways',
+);
+
 has strip_control_characters => (
     is => 'ro',
     default => 'ruthless',
@@ -419,6 +424,8 @@ sub get_service_request_updates {
         'WHERE ' . join(' AND ', grep {$_} @where)
         : '';
 
+    my $schema = $self->db_schema;
+
     my $sql = qq{
         SELECT
             row_id,
@@ -426,7 +433,7 @@ sub get_service_request_updates {
             to_char( to_date(updated_timedate, 'DD-MON-YYYY HH24:MI:SS'), '$ORA_DT_FORMAT') updated_datetime,
             status,
             description
-        FROM highways.fms_update
+        FROM ${schema}.fms_update
         $WHERE_CLAUSE
         ORDER BY updated_timedate DESC};
 
