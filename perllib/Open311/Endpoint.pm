@@ -748,10 +748,10 @@ sub call_api {
         or do {
             if ($@) {
                 warn $@;
-	        return Open311::Endpoint::Result->error( 500 => $@ ); # TODO sanitize errors for prod
+                return Open311::Endpoint::Result->error( 500 => $@ ); # TODO sanitize errors for prod
             }
             else {
-	        return Open311::Endpoint::Result->error( 404 => 'Resource not found' );
+                return Open311::Endpoint::Result->error( 404 => 'Resource not found' );
             }
         };
 
