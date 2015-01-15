@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::GoogleOL
 # Google maps on FixMyStreet, using OpenLayers.
 #

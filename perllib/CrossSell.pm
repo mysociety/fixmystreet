@@ -1,5 +1,3 @@
-#!/usr/bin/perl -w
-#
 # CrossSell.pm:
 # Adverts from FixMyStreet to another site.
 #

@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet::Geocode::Bing
 # Geocoding with Bing for FixMyStreet.
 #

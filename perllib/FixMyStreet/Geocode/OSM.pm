@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Geocode::OSM
 # OpenStreetmap forward and reverse geocoding for FixMyStreet.
 #

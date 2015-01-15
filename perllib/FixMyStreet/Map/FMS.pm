@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::FMS
 # Bing and OS StreetView maps on FixMyStreet, using OpenLayers.
 #

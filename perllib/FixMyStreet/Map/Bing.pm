@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::Bing
 # Bing maps on FixMyStreet.
 #

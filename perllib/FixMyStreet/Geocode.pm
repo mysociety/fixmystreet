@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet::Geocode
 # The geocoding functions for FixMyStreet.
 #

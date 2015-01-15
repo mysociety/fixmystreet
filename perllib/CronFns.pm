@@ -1,5 +1,3 @@
-#!/usr/bin/perl -w
-
 # CronFns.pm:
 # Shared functions for cron-run scripts
 #

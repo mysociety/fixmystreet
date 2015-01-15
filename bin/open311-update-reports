@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # This script utilises the standard Open311 way of getting updates on reports
 # (by fetching all reports for a body and looking for updates). If possible,

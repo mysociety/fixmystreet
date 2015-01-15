@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::Bromley
 # Bromley have slightly different tiles, with trees etc.
 #

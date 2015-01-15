@@ -1,6 +1,4 @@
-#!/usr/bin/perl
-#
-# FixMyStreet::Geocode
+# FixMyStreet::Geocode::Google
 # The geocoding functions for FixMyStreet.
 #
 # Copyright (c) 2010 UK Citizens Online Democracy. All rights reserved.

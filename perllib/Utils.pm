@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # Utils.pm:
 # Various generic utilities for FixMyStreet.
 #

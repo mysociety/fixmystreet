@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet::Geocode::Zurich
 # Geocoding with Zurich web service.
 #

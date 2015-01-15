@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map
 # Adding the ability to have different maps on FixMyStreet.
 #
