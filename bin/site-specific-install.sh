@@ -66,4 +66,4 @@ fi
 echo Installation complete - you should now be able to view the site at:
 echo   http://$HOST/
 echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
-echo running: $REPOSITORY/bin/cron-wrapper prove -r t
+echo running: $REPOSITORY/bin/run-tests t

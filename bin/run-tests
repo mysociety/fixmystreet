@@ -12,22 +12,22 @@ use FixMyStreet::TestAppProve;
 
 =head1 NAME
 
-bin/test-wrapper - spin up a clean database and configuration for tests
+bin/run-tests - spin up a clean database and configuration for tests
 
 =head1 USAGE
 
-    bin/test-wrapper t/              #  runs prove -r t/ (recursively, saving state)
-    bin/test-wrapper --state=failed  #  runs just failing tests
+    bin/run-tests t/              #  runs prove -r t/ (recursively, saving state)
+    bin/run-tests --state=failed  #  runs just failing tests
                                      #  delete .prove to reset
  
-    bin/test-wrapper t/foo.t         #  runs with prove -v (single test)
+    bin/run-tests t/foo.t         #  runs with prove -v (single test)
 
 By default we use conf/general.yml-example as the template, and spin up a fresh
 Postgres cluster and database.  We can override this by doing:
 
-    bin/test-wrapper --config=general.mycobrand.yml
-    bin/test-wrapper --db-config=general.yml # e.g. use your current DB settings
-    bin/test-wrapper --all-config=general.yml # e.g. use your current DB settings
+    bin/run-tests --config=general.mycobrand.yml
+    bin/run-tests --db-config=general.yml # e.g. use your current DB settings
+    bin/run-tests --all-config=general.yml # e.g. use your current DB settings
 
 (NB: passing --state=save automagically is experimental, and will be removed if
 it turns out to be annoying.)

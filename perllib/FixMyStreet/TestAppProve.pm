@@ -14,7 +14,7 @@ FixMyStreet::TestAppProve - spin up a clean database and configuration for tests
 
 =head1 USAGE
 
-see bin/test-wrapper for usage
+see bin/run-tests for usage
 
 =cut
 

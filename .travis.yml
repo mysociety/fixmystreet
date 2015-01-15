@@ -35,6 +35,6 @@ before_script:
   - ./bin/make_po FixMyStreet-EmptyHomes
   - ./bin/emptyhomes/make_welsh_po
   - commonlib/bin/gettext-makemo FixMyStreet
-script: "bin/cron-wrapper perl /usr/bin/prove -rl t"
+script: "bin/run-tests t"
 after_script:
   - .travis/after_script
