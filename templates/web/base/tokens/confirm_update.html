@@ -19,6 +19,11 @@
 
 </div>
 
-[% display_crosssell_advert( update.user.email, update.name ) %]
+[% INCLUDE
+  next_steps.html,
+  just_interacted = 1,
+  share_url = c.cobrand.base_url_for_report(update.problem) _ update.problem.url,
+  twitter_comment = 'I just updated a problem on @fixmystreet'
+%]
 
 [% INCLUDE 'footer.html' %]

@@ -55,47 +55,59 @@
   }
 }
 
-.advert-mobile-apps {
+.next-steps {
   margin: 0 -1em; // counteract padding on parent
-  background-color: #fff9cc;
-  padding: 2em;
+  background-color: #faf7e2;
+}
 
-  @media only screen and (min-width: 48em) {
-    padding-left: 37%;
-    background: #fff9cc url(/cobrands/fixmystreet/images/advert-app-watercolour.jpg) 7% 50% no-repeat;
+.next-steps__step {
+  box-sizing: border-box;
+  padding: 1em;
+
+  & + .next-steps__step {
+    border-top: 1px solid #ede8c9;
   }
 
-  h1 {
+  h2 {
     margin-top: 0;
   }
 
   p {
-    font-size: 1.3em;
-    line-height: 1.4em;
+    color: #666666;
+    margin-bottom: 0;
+  }
+}
+
+.next-steps__step__cta {
+  @include pie-clearfix;
+  padding-top: 0.4em; // extra padding between buttons and previous paragraph
+
+  a {
+    float: left;
+    margin: 1em 0.6em 0 0;
+
+    &:last-child {
+      margin-right: 0;
+    }
   }
 
-  .app-links {
-    @include clearfix;
-    margin-bottom: 1em;
+  .next-steps__step--goodies {
+    min-height: 37px; // stop absolutely positioned img overlapping bottom of parent element
 
-    a {
-      float: left;
-      margin-right: 1em;
-    }
-
-    a[href*="itunes.apple.com"] {
-      margin-top: 3px; // compensate for slightly smaller itunes button
+    img {
+      // absolute positioning to overlap floated goodies image to the right
+      position: absolute;
+      max-width: none;
     }
   }
+}
 
-  .desktop-advice {
-    clear: left;
-    font-size: 1em;
-    line-height: 1.2em;
-    color: #745D17; // brown
+.next-steps__step--goodies {
+  @include pie-clearfix;
 
-    @media only screen and (min-width: 48em) {
-      width: 28em; // break line at a nice point
-    }
+  .goodies-preview {
+    float: right;
+    margin-left: 1em;
+    margin-right: -0.5em;
   }
 }
