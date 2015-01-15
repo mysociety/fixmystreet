@@ -1,6 +1,6 @@
         <meta property="og:url" content="[% c.cobrand.base_url %][% c.req.uri.path %]">
         <meta property="og:title" content="[% title || 'FixMyStreet' %]">
-        <meta property="og:site_name" content="[% c.cobrand.site_title %]">
+        <meta property="og:site_name" content="[%- PROCESS 'site-name.html' -%]">
         [% IF c.req.uri.path == '/' %]<meta property="og:description" content="Report, view, and discuss local street-related problems.">[% END %]
         <meta property="og:type" content="website">
         <meta property="og:image" content="[% c.cobrand.base_url %]/cobrands/fixmystreet/fms-og_image.png">

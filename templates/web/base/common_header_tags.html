@@ -42,5 +42,5 @@
 
 <title>
     [% "$title :: " | html IF title %]
-    [% site_title || 'FixMyStreet' %]
+    [% PROCESS 'site-name.html' -%]
 </title>
