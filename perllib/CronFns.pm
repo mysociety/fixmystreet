@@ -3,18 +3,11 @@
 #
 # Copyright (c) 2009 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org. WWW: http://www.mysociety.org
-#
-# $Id: CronFns.pm,v 1.1 2009-07-10 15:17:29 matthew Exp $
 
 package CronFns;
 
 use strict;
 require 5.8.0;
-
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
 
 use mySociety::Locale;
 

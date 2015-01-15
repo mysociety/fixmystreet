@@ -6,10 +6,6 @@ use Test::More;
 
 use FixMyStreet::App;
 
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
-
 use_ok( 'Open311::PopulateServiceList' );
 use_ok( 'Open311' );
 

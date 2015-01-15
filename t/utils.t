@@ -4,10 +4,6 @@ use strict;
 use warnings;
 use Test::More;
 
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
-
 use Utils;
 
 my @truncate_tests = (

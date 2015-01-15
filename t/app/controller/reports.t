@@ -85,7 +85,7 @@ $fife_problems[10]->update( {
 });
 
 # Run the cron script that makes the data for /reports so we don't get an error.
-system( "bin/cron-wrapper update-all-reports" );
+system( "bin/update-all-reports" );
 
 # check that we can get the page
 $mech->get_ok('/reports');

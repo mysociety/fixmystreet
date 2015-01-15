@@ -5,10 +5,6 @@ use warnings;
 use Test::More;
 use CGI::Simple;
 
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
-
 use_ok( 'Open311' );
 
 use_ok( 'Open311::GetServiceRequestUpdates' );

@@ -74,7 +74,7 @@ sub index : Path : Args(0) {
     if ($@) {
         $c->stash->{message} = _("There was a problem showing the All Reports page. Please try again later.");
         if ($c->config->{STAGING_SITE}) {
-            $c->stash->{message} .= '</p><p>Perhaps the bin/update-all-reports script needs running. Use: bin/cron-wrapper bin/update-all-reports</p><p>'
+            $c->stash->{message} .= '</p><p>Perhaps the bin/update-all-reports script needs running. Use: bin/update-all-reports</p><p>'
                 . sprintf(_('The error was: %s'), $@);
         }
         $c->stash->{template} = 'errors/generic.html';

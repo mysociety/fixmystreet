@@ -5,6 +5,7 @@ use Moose;
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
 use Digest::MD5;
+use FindBin;
 use LWP::UserAgent;
 use LWP::Simple;
 

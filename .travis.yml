@@ -25,8 +25,8 @@ before_install:
 install:
   - .travis/install
 before_script:
-  - ./bin/cron-wrapper ./bin/make_po FixMyStreet-EmptyHomes
-  - ./bin/cron-wrapper ./bin/emptyhomes/make_welsh_po
+  - ./bin/make_po FixMyStreet-EmptyHomes
+  - ./bin/emptyhomes/make_welsh_po
   - commonlib/bin/gettext-makemo FixMyStreet
 script: "bin/run-tests t"
 after_script:

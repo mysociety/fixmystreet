@@ -24,7 +24,7 @@ test -f $DAEMON || exit 0
 set -e
 
 start_daemon() {
-  su -l -c "cd $SITE_HOME/fixmystreet && bin/cron-wrapper web/fixmystreet_app_fastcgi.cgi -d -l :9000 -n 2" $USER
+  su -l -c "cd $SITE_HOME/fixmystreet && web/fixmystreet_app_fastcgi.cgi -d -l :9000 -n 2" $USER
 }
 
 stop_daemon() {
