@@ -11,10 +11,6 @@ use HTTP::Response;
 use DateTime;
 use DateTime::Format::W3CDTF;
 
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
-
 use_ok( 'Open311' );
 
 my $o = Open311->new();

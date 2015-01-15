@@ -38,7 +38,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     echo "****************"
     echo "You can now ssh into your vagrant box: vagrant ssh"
     echo "The website code is found in: ~/fixmystreet"
-    echo "You can run the dev server with: bin/cron-wrapper script/fixmystreet_app_server.pl [-d] [-r] [--fork]"
+    echo "You can run the dev server with: script/fixmystreet_app_server.pl [-d] [-r] [--fork]"
   EOS
 
   # Create a private network, which allows host-only access to the machine

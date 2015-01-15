@@ -11,24 +11,24 @@
 PATH=/usr/local/bin:/usr/bin:/bin
 
 # send-reports has three rows so that its 8am entry can be run with --verbose to send a morning summary of anything that's gone wrong
-5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$FMS/send-reports.lock" "$FMS/bin/cron-wrapper send-reports" || echo "stalled?"
-0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports" || echo "stalled?"
-0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/cron-wrapper send-reports --verbose" || echo "stalled?"
+5,10,15,20,25,30,35,40,45,50,55 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$FMS/send-reports.lock" "$FMS/bin/send-reports" || echo "stalled?"
+0 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/send-reports" || echo "stalled?"
+0 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-reports.lock" "$FMS/bin/send-reports --verbose" || echo "stalled?"
 
-2 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-alerts.lock" "$FMS/bin/cron-wrapper send-alerts" || echo "stalled?"
-22,52 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-questionnaires.lock" "$FMS/bin/cron-wrapper send-questionnaires" || echo "stalled?"
+2 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-alerts.lock" "$FMS/bin/send-alerts" || echo "stalled?"
+22,52 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-questionnaires.lock" "$FMS/bin/send-questionnaires" || echo "stalled?"
 
 # If you utilise Open311 and the updates extension, you will need to run these scripts
-#*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-comments.lock" "$FMS/bin/cron-wrapper send-comments" || echo "stalled?"
-#*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/fetch-comments.lock" "$FMS/bin/cron-wrapper fetch-comments" || echo "stalled?"
+#*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/send-comments.lock" "$FMS/bin/send-comments" || echo "stalled?"
+#*/5 * * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/fetch-comments.lock" "$FMS/bin/fetch-comments" || echo "stalled?"
 
-47 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list" || echo "stalled?"
-47 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/cron-wrapper open311-populate-service-list --warn" || echo "stalled?"
+47 0-7,9-23 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/open311-populate-service-list" || echo "stalled?"
+47 8 * * * "$FMS/commonlib/bin/run-with-lockfile.sh" -n "$LOCK_DIR/open311-populate-service-list.lock" "$FMS/bin/open311-populate-service-list --warn" || echo "stalled?"
 
 # Once an hour, update the all reports stats
-13 * * * * "$FMS/bin/cron-wrapper" update-all-reports
+13 * * * * "$FMS/bin/update-all-reports"
 
 # Once a day on all servers
-39 2 * * * "$FMS/bin/cron-wrapper" problems-filed-graph
-43 2 * * * "$FMS/bin/cron-wrapper" problem-creation-graph
+39 2 * * * "$FMS/bin/problems-filed-graph"
+43 2 * * * "$FMS/bin/problem-creation-graph"
 00 8 * * * "$FMS/bin/check-for-zombies" $UNIX_USER
