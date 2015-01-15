@@ -1,7 +1,10 @@
 [% INCLUDE 'header.html', title = loc('Sign out'), bodyclass = 'fullwidthpage' %]
 
-<h1>[% loc('You have been signed out') %]</h1>
+<div class="confirmation-header">
+  <h1>[% loc('You have been signed out') %]</h1>
+  <p>[% tprintf( loc('Please feel free to <a href="%s">sign in again</a>, or go back to the <a href="/">front page</a>.'), c.uri_for('/auth') ) %]</p>
+</div>
 
-<p>[% tprintf( loc('Please feel free to <a href="%s">sign in again</a>, or go back to the <a href="/">front page</a>.'), c.uri_for('/auth') ) %]</p>
+[% INCLUDE next_steps.html %]
 
 [% INCLUDE 'footer.html' %]

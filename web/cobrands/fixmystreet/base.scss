@@ -32,29 +32,6 @@
   background: url($image-sprite) -3px -3px no-repeat;
 }
 
-.confirmation-header {
-  padding: 2em 1em;
-
-  @media only screen and (min-width: 48em) {
-    padding: 3em 0;
-    text-align: center;
-  }
-
-  h1 {
-    margin-top: 0;
-  }
-
-  p {
-    font-size: 1.3em;
-    line-height: 1.4em;
-    margin-bottom: 0;
-  }
-
-  p + p {
-    margin-top: 0.5em;
-  }
-}
-
 .next-steps {
   margin: 0 -1em; // counteract padding on parent
   background-color: #faf7e2;

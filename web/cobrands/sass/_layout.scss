@@ -1080,6 +1080,14 @@ body.frontpage {
   }
 }
 
+.confirmation-header {
+    width: 25em;
+    margin: 0 auto 1em;
+    text-align: left;
+    padding: 3em 0 3em 132px; // for tick icon
+    background-position: 0 2em;
+}
+
 /* Admin interface */
 
 .fms-admin-floated {

@@ -64,13 +64,13 @@ h3 {
 h4 {
   font-size: 1em;
   font-weight: normal;
-  margin-bottom: 1em; 
+  margin-bottom: 1em;
 }
 
 // default list styles
 ul, ol {
   font-size: 1em;
-  margin-bottom: 2em;  
+  margin-bottom: 2em;
   margin-left: 2em;
   padding:0;
 }
@@ -171,7 +171,7 @@ a:visited {
   &:hover,
   &:active {
     text-decoration:underline;
-    color:#0D7CCE;    
+    color:#0D7CCE;
   }
 }
 
@@ -711,7 +711,7 @@ a.button-left {
   font-size: 1em;
   line-height: 1;
   margin:0;
-  border:1px solid #999;  
+  border:1px solid #999;
   color:#333;
   background: #eee;
   @include border-radius(4px);
@@ -719,7 +719,7 @@ a.button-left {
     color:#fff;
     background:#777;
     text-decoration: none;
-    border:1px solid #666;  
+    border:1px solid #666;
   }
 }
 .button-right,
@@ -1575,6 +1575,49 @@ table.nicetable {
     img[width="16"] {
         float: right;
     }
+}
+
+.confirmation-header {
+  padding: 140px 0 2em;
+  text-align: center;
+
+  background: transparent url(/cobrands/fixmystreet/images/tick-in-circle-100px.png) center 1em no-repeat;
+  &.confirmation-header--failure {
+    background-image: url(/cobrands/fixmystreet/images/sad-face-in-circle-100px.png);
+  }
+
+  h1, h2 {
+    margin: 0;
+    line-height: 1.2em;
+  }
+
+  h1 {
+    a {
+      text-decoration: underline;
+      color: inherit;
+
+      &:hover,
+      &:focus {
+        text-decoration: none;
+        color: #0BA7D1; // default link colour
+      }
+    }
+  }
+
+  h1 + h2,
+  h1 ~ p {
+    margin-top: 12px;
+  }
+
+  p {
+    color: #666666;
+    font-size: 1.2em;
+    margin-bottom: 0.5em;
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
 }
 
 @import "_admin";
