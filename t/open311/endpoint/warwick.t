@@ -230,8 +230,8 @@ subtest "End to end" => sub {
             or die;
     };
 
-    subtest "Send update" => sub {
-        # as per bin/send-reports
+    subtest "Fetch update" => sub {
+        # as per bin/fetch-comments
 
         $problem->update({ lastupdate => '2014-07-20 15:05:00' }); # override
 
