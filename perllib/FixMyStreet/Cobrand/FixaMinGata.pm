@@ -9,11 +9,6 @@ use mySociety::MaPit;
 use FixMyStreet::Geocode::FixaMinGata;
 use DateTime;
 
-sub site_title {
-    my ($self) = @_;
-    return 'FixaMinGata';
-}
-
 sub country {
     return 'SE';
 }

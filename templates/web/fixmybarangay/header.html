@@ -22,7 +22,7 @@
 
         <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
         <script src="[% start %][% version('/cobrands/fixmybarangay/position_map.js') %]" charset="utf-8"></script>
-        [% INCLUDE 'common_header_tags.html', site_title = 'FixMyBarangay', js_override = '/cobrands/fixmystreet/fixmystreet.js' %]
+        [% INCLUDE 'common_header_tags.html' js_override = '/cobrands/fixmystreet/fixmystreet.js' %]
         [% extra_js %]
 
         [% allow_creation = !c.cobrand.only_authed_can_create || (c.user && c.user.from_body); %]

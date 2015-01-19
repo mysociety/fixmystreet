@@ -1,7 +1,7 @@
 [% INCLUDE 'admin/header.html' title=loc('Summary') -%]
 
 <div class="fms-admin-info fms-admin-floated">
-This is the administration interface for [% c.cobrand.site_title %]. If you
+This is the administration interface for [% PROCESS 'site-name.html' -%]. If you
 need any help or guidance, there is <a href="http://fixmystreet.org/">plenty of
 online documentation</a>. The FixMyStreet Platform is
 <a href="https://github.com/mysociety/fixmystreet">actively supported</a> by

@@ -92,8 +92,6 @@ sub send_questionnaires_period {
             . $row->user->email . "\n"
             if $params->{verbose};
 
-        $h{site_name} = $cobrand->site_title();
-
         my $result = FixMyStreet::App->send_email_cron(
             {
                 _template_ => $template,

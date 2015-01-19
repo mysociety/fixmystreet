@@ -12,6 +12,7 @@ use Memcached;
 use mySociety::Email;
 use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
+use Utils;
 
 use Path::Class;
 use URI;
@@ -388,10 +389,9 @@ sub send_email_cron {
     $sig = Encode::decode('utf8', $sig);
     $params->{_parameters_}->{signature} = $sig;
 
-    $tt->process( 'site_name.txt', $params, \$site_name );
-    $site_name = Encode::decode('utf8', $site_name);
-    my $site_title = $cobrand ? $cobrand->site_title : '';
-    $params->{_parameters_}->{site_name} = $site_name || $site_title;
+    $tt->process( 'site-name.txt', $params, \$site_name );
+    $site_name = Utils::trim_text(Encode::decode('utf8', $site_name));
+    $params->{_parameters_}->{site_name} = $site_name;
 
     $params->{_line_indent} = '';
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
