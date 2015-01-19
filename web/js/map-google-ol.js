@@ -1,3 +1,13 @@
+$(function(){
+    $('#map_layer_toggle').toggle(function(){
+        $(this).text(translation_strings.map_map);
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+    }, function(){
+        $(this).text(translation_strings.map_satellite);
+        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
+    });
+});
+
 function set_map_config(perm) {
     var permalink_id;
     if ($('#map_permalink').length) {
@@ -15,5 +25,9 @@ function set_map_config(perm) {
     fixmystreet.map_options = {
         zoomDuration: 10
     };
+    fixmystreet.layer_options = [
+        {},
+        { type: google.maps.MapTypeId.HYBRID }
+    ];
 }
 

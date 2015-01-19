@@ -631,8 +631,8 @@ body.twothirdswidthpage {
     display:block;
     cursor: pointer;
     position:absolute;
-    left:-1em;
-    width:1em;
+    left: -0.97em; /* 1em leaves a tiny gap, font issue */
+    width: 1em;
     height:100%;
     background:#000 url($image-sprite) right -4119px no-repeat;
     @include border-radius(0.25em 0 0 0.25em);

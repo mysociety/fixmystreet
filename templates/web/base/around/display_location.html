@@ -27,7 +27,7 @@
         }
     );
 
-    PROCESS "maps/${map.type}.html";
+    PROCESS "maps/${map.type}.html" around_page = 1;
 
     SET bodyclass = 'mappage';
     SET rss = [ loc('Recent local problems, FixMyStreet'), rss_url ] IF c.cobrand.moniker != 'emptyhomes';
@@ -53,9 +53,7 @@
 
       [% IF c.cobrand.moniker != 'emptyhomes' %]
         <p id='sub_map_links'>
-            [% IF c.cobrand.moniker == 'zurich' %]
-                <a class="hidden-nojs" id="map_layer_toggle" href="">Stadtplan</a>
-            [% END %]
+            [% map_sub_links %]
             [% IF c.req.params.no_pins %]
                 <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 0 } ) %]'>[% loc('Show pins') %]</a>
             [% ELSE %]
