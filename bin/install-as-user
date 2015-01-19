@@ -134,7 +134,7 @@ echo $DONE_MSG
 # Generate po and mo files (these invocations taken from Kagee's script):
 echo "Creating locale .mo files"
 bin/cron-wrapper bin/make_po FixMyStreet-EmptyHomes
-bin/cron-wrapper bin/make_emptyhomes_welsh_po
+bin/cron-wrapper bin/emptyhomes/make_welsh_po
 commonlib/bin/gettext-makemo FixMyStreet
 echo $DONE_MSG
 

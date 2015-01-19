@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# zurich-overdue-alert:
+# zurich/overdue-alert:
 # Send email alerts to administrators for overdue admin activities.
 #
 # Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
