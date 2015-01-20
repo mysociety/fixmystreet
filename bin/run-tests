@@ -34,4 +34,4 @@ it turns out to be annoying.)
 
 =cut
 
-FixMyStreet::TestAppProve->run(@ARGV);
+exit( FixMyStreet::TestAppProve->run(@ARGV) ? 0 : 1);
