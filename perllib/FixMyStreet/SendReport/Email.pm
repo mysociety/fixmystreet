@@ -56,7 +56,10 @@ sub get_template {
     my ( $self, $row ) = @_;
 
     my $template = 'submit.txt';
-    $template = 'submit-brent.txt' if $row->bodies_str eq 2488 || $row->bodies_str eq 2237;
+
+    if ($row->cobrand eq 'fixmystreet') {
+        $template = 'submit-oxfordshire.txt' if $row->bodies_str eq 2237;
+    }
 
     $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, $template);
     return $template;
