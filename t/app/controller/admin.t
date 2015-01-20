@@ -266,7 +266,7 @@ subtest 'check open311 configuring' => sub {
         }
     );
     $mech->content_contains('Council contacts configured via Open311');
-    $mech->content_contains('Configuration updated - contacts will be generated automatically later');
+    $mech->content_contains('Values updated');
 
     my $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
     is $conf->endpoint, 'http://example.com/open311', 'endpoint configured';
@@ -286,7 +286,7 @@ subtest 'check open311 configuring' => sub {
         }
     );
 
-    $mech->content_contains('Configuration updated');
+    $mech->content_contains('Values updated');
 
     $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
     is $conf->endpoint, 'http://example.org/open311', 'endpoint updated';

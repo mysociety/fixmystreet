@@ -28,7 +28,7 @@ $luz->update( { send_method => 'Email' } );
 my $bsn = $mech->create_body_ok( 2, 'Bgy BSN', id => 2 );
 $bsn->update( { send_method => 'Email' } );
 
-my $dps = $mech->create_body_ok( 3, 'DPS' );
+my $dps = $mech->create_body_ok( 3, 'DPS', id => 3 );
 $dps->update( { send_method => 'Open311', endpoint => 'http://dps.endpoint.example.com', jurisdiction => 'FMB', api_key => 'test' } );
 FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 1, body_id => $dps->id });
 FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 2, body_id => $dps->id });
@@ -103,6 +103,27 @@ is $dps_report->external_id, 248, 'DPS report has right external ID';
 my $fmb_test_email = 'luz_test_user@example.com';
 my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $fmb_test_email, from_body => $luz->id, password => 'fmbsecret' } );
 ok $user, "test user does exist";
+
+my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create({
+    user => $user,
+    parameter => '-0.142497580865087',
+    parameter2 => '51.5016605453401',
+    alert_type => 'local_problems',
+    whensubscribed => '2014-01-01 10:00:00',
+    confirmed => 1,
+    cobrand => 'fixmybarangay',
+});
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'fixmybarangay' ],
+}, sub {
+    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+};
+
+$mech->email_count_is(1);
+$email = $mech->get_email;
+like $email->body, qr/The following FixMyBarangay reports/, 'Start of email looks correct';
+$mech->clear_emails_ok;
 
 $mech->log_out_ok;
 $mech->get_ok( '/report/' . $luz_report->id );
