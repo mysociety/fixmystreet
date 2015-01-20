@@ -296,7 +296,6 @@ sub admin_pages {
     $pages = { %$pages,
         'bodies' => [_('Bodies'), 1],
         'body' => [undef, undef],
-        'body_edit' => [undef, undef],
     };
     return $pages if $type eq 'dm';
 
