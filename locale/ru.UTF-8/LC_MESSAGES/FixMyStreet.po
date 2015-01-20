@@ -4,25 +4,25 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
-# Guy Koth <guykoth@gmail.com>, 2014
+# Илья Владимирович Кучаев <kuchaev.iv@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2015-01-20 16:59+0000\n"
-"PO-Revision-Date: 2014-11-19 18:31+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
-"Language-Team: Hebrew (Israel) (http://www.transifex.com/projects/p/fixmystreet/language/he_IL/)\n"
-"Language: he_IL\n"
+"PO-Revision-Date: 2015-01-20 16:45+0000\n"
+"Last-Translator: Илья Владимирович Кучаев <kuchaev.iv@gmail.com>\n"
+"Language-Team: Russian (http://www.transifex.com/projects/p/fixmystreet/language/ru/)\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:618
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:386
 msgid " and "
-msgstr ""
+msgstr "и"
 
 #: templates/web/base/report/new/councils_text_all.html:12
 #: templates/web/base/report/new/councils_text_all.html:19
@@ -33,11 +33,11 @@ msgstr ""
 #: templates/web/base/report/new/councils_text_some.html:22
 #: templates/web/base/report/new/councils_text_some.html:5
 msgid " or "
-msgstr "או"
+msgstr "или"
 
 #: templates/web/base/admin/index.html:36
 msgid "%d confirmed alerts, %d unconfirmed"
-msgstr ""
+msgstr "%d подтвержденных уведомлений, %d неподтвержденных"
 
 #: templates/web/base/admin/index.html:38
 #: templates/web/zurich/admin/index.html:6
@@ -46,11 +46,11 @@ msgstr ""
 
 #: templates/web/base/admin/edit-league.html:12
 msgid "%d edits by %s"
-msgstr ""
+msgstr "%d правок от %s"
 
 #: templates/web/base/admin/index.html:35
 msgid "%d live updates"
-msgstr ""
+msgstr "%d обновлений"
 
 #: templates/web/base/admin/index.html:37
 msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
@@ -256,7 +256,7 @@ msgstr ""
 #: templates/web/base/static/about-en-gb.html:1
 #: templates/web/base/static/about-en-gb.html:3
 msgid "About us"
-msgstr ""
+msgstr "О нас"
 
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/report_edit.html:39
@@ -277,7 +277,7 @@ msgstr ""
 
 #: templates/web/base/admin/body.html:48
 msgid "Add a contact using the form below."
-msgstr ""
+msgstr "Добавить контакт с помощью формы."
 
 #: templates/web/base/admin/bodies.html:74
 #: templates/web/base/admin/body-form.html:233
@@ -288,11 +288,11 @@ msgstr ""
 #: templates/web/base/admin/body.html:108
 #: templates/web/zurich/admin/body.html:31
 msgid "Add new category"
-msgstr ""
+msgstr "Добавить категорию"
 
 #: templates/web/base/admin/users.html:45
 msgid "Add user"
-msgstr ""
+msgstr "Добавить пользователя"
 
 #: templates/web/base/my/my.html:64 templates/web/fixmystreet/my/my.html:70
 msgid "Added %s"
@@ -300,7 +300,7 @@ msgstr ""
 
 #: templates/web/base/auth/change_password.html:29
 msgid "Again:"
-msgstr ""
+msgstr "Снова:"
 
 #: templates/web/base/admin/timeline.html:35
 msgid "Alert %d created for %s, type %s, parameters %s / %s"
@@ -319,7 +319,7 @@ msgstr ""
 #: templates/web/zurich/admin/stats.html:5
 #: templates/web/zurich/reports/index.html:12
 msgid "All Reports"
-msgstr ""
+msgstr "Все Отчеты"
 
 #: templates/web/base/footer.html:11 templates/web/fiksgatami/footer.html:23
 #: templates/web/fiksgatami/nn/footer.html:23
@@ -329,12 +329,12 @@ msgstr ""
 #: templates/web/zurich/footer.html:19
 #: templates/web/zurich/nav_over_content.html:6
 msgid "All reports"
-msgstr ""
+msgstr "Все отчеты"
 
 #: templates/web/base/admin/stats.html:5
 #: templates/web/zurich/admin/stats.html:8
 msgid "All reports between %s and %s"
-msgstr ""
+msgstr "Все отчеты с %s по %s"
 
 #: templates/web/base/report/new/councils_text_some.html:2
 msgid "All the information you provide here will be sent to"
@@ -482,18 +482,18 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit-sdm.html:42
 #: templates/web/zurich/admin/report_edit.html:140
 msgid "Category:"
-msgstr "קטגוריה"
+msgstr ""
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:377
 msgid "Category: %s"
-msgstr "קטגוריה: %s"
+msgstr ""
 
 #: templates/web/base/auth/change_password.html:1
 #: templates/web/base/auth/change_password.html:3
 #: templates/web/base/auth/change_password.html:33
 #: templates/web/base/my/my.html:17 templates/web/fixmystreet/my/my.html:17
 msgid "Change password"
-msgstr "החלף ססמא"
+msgstr ""
 
 #: templates/web/base/admin/body.html:152
 msgid ""
@@ -591,7 +591,7 @@ msgstr ""
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1201
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
-msgstr "תצורה"
+msgstr ""
 
 #: templates/web/base/admin/category_edit.html:47
 msgid "Configure Endpoint"
@@ -599,11 +599,11 @@ msgstr ""
 
 #: templates/web/base/admin/body.html:64
 msgid "Confirm"
-msgstr "אשר"
+msgstr ""
 
 #: templates/web/base/auth/token.html:1
 msgid "Confirm account"
-msgstr "אשר חשבון"
+msgstr ""
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:33
 #: templates/web/fixmystreet/report/update-form.html:107
@@ -616,7 +616,7 @@ msgstr ""
 #: templates/web/zurich/tokens/confirm_problem.html:1
 #: templates/web/zurich/tokens/confirm_problem.html:3
 msgid "Confirmation"
-msgstr "אישור"
+msgstr ""
 
 #: templates/web/base/admin/body.html:158
 #: templates/web/base/admin/body.html:71
@@ -624,7 +624,7 @@ msgstr "אישור"
 #: templates/web/base/admin/category_edit.html:84
 #: templates/web/zurich/admin/stats.html:40
 msgid "Confirmed"
-msgstr "אישר"
+msgstr ""
 
 #: templates/web/base/admin/stats.html:5
 msgid "Confirmed reports between %s and %s"
@@ -634,7 +634,7 @@ msgstr ""
 #: templates/web/base/admin/problem_row.html:36
 #: templates/web/base/admin/report_edit.html:70
 msgid "Confirmed:"
-msgstr "אישר:"
+msgstr ""
 
 #: templates/web/base/footer.html:24
 msgid "Contact FixMyStreet"
@@ -646,7 +646,7 @@ msgstr ""
 #: templates/web/fixmystreet/contact/index.html:1
 #: templates/web/fixmystreet/contact/index.html:2
 msgid "Contact Us"
-msgstr "צור קשר"
+msgstr ""
 
 #: templates/web/base/contact/index.html:6
 #: templates/web/base/contact/submit.html:3
@@ -665,7 +665,7 @@ msgstr ""
 
 #: templates/web/base/admin/list_updates.html:9
 msgid "Council"
-msgstr "עירייה"
+msgstr ""
 
 #: templates/web/base/admin/body.html:1
 #: templates/web/base/admin/category_edit.html:1
@@ -682,16 +682,16 @@ msgstr ""
 #: templates/web/zurich/admin/stats.html:45
 #: templates/web/zurich/admin/stats.html:50
 msgid "Count"
-msgstr "ספירה"
+msgstr ""
 
 #: templates/web/base/email_sent.html:1
 msgid "Create a report"
-msgstr "צור דו\"ח"
+msgstr ""
 
 #: templates/web/base/admin/body.html:200
 #: templates/web/zurich/admin/body.html:59
 msgid "Create category"
-msgstr "צור קטגוריה"
+msgstr ""
 
 #: templates/web/base/admin/problem_row.html:34
 #: templates/web/zurich/admin/list_updates.html:29
@@ -732,19 +732,19 @@ msgstr ""
 #: templates/web/base/admin/category_edit.html:37
 #: templates/web/base/admin/category_edit.html:85
 msgid "Deleted"
-msgstr "נמחק"
+msgstr ""
 
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:43
 #: templates/web/zurich/admin/index-dm.html:22
 #: templates/web/zurich/admin/index-sdm.html:20
 #: templates/web/zurich/admin/reports.html:12
 msgid "Description"
-msgstr "תיאור"
+msgstr ""
 
 #: templates/web/base/js/translation_strings.html:34
 #: templates/web/zurich/report/new/fill_in_details_form.html:42
 msgid "Details"
-msgstr "פרטים"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:20
 #: templates/web/base/report/new/fill_in_details_form.html:62
@@ -780,7 +780,7 @@ msgstr ""
 
 #: templates/web/fixmystreet/contact/index.html:118
 msgid "Don't like forms?"
-msgstr "לא אוהב טפסים?"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/report_edit.html:47
@@ -789,7 +789,7 @@ msgstr "לא אוהב טפסים?"
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/fixmystreet/report/update-form.html:30
 msgid "Duplicate"
-msgstr "כפול"
+msgstr ""
 
 #: templates/web/base/admin/body.html:98
 msgid ""
@@ -804,12 +804,12 @@ msgstr ""
 #: templates/web/base/admin/users.html:31
 #: templates/web/zurich/admin/problem_row.html:42
 msgid "Edit"
-msgstr "ערוך"
+msgstr ""
 
 #: templates/web/base/admin/body.html:212
 #: templates/web/zurich/admin/body.html:71
 msgid "Edit body details"
-msgstr "ערוך פרטי גוף"
+msgstr ""
 
 #: templates/web/base/admin/report_edit.html:1
 #: templates/web/zurich/admin/report_edit-sdm.html:2
@@ -817,20 +817,20 @@ msgstr "ערוך פרטי גוף"
 #: templates/web/zurich/admin/report_edit.html:2
 #: templates/web/zurich/admin/report_edit.html:5
 msgid "Editing problem %d"
-msgstr "ערוך בעיה %d"
+msgstr ""
 
 #: templates/web/base/admin/update_edit.html:1
 #: templates/web/zurich/admin/update_edit.html:1
 msgid "Editing update %d"
-msgstr "ערוך עידכון %d"
+msgstr ""
 
 #: templates/web/base/admin/user_edit.html:1
 msgid "Editing user %d"
-msgstr "ערוך משתמש %d"
+msgstr ""
 
 #: templates/web/base/admin/category_edit.html:86
 msgid "Editor"
-msgstr "עורך"
+msgstr ""
 
 #: templates/web/base/admin/bodies.html:23
 #: templates/web/base/admin/category_edit.html:83
@@ -842,27 +842,27 @@ msgstr "עורך"
 #: templates/web/zurich/auth/general.html:24
 #: templates/web/zurich/auth/general.html:54
 msgid "Email"
-msgstr "דואר אלקטרוני"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1303
 msgid "Email added to abuse list"
-msgstr "דואר אלקטרוני הוסף לרשימת המשתמשים לרעה"
+msgstr ""
 
 #: templates/web/base/admin/body.html:147
 msgid "Email address:"
-msgstr "כתובת דואר אלקטרוני:"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1300
 msgid "Email already in abuse list"
-msgstr "דואר אלקטרוני כבר ברשימת המשתמשים לרעה"
+msgstr ""
 
 #: templates/web/base/around/_updates.html:5
 msgid "Email me new local problems"
-msgstr "שלח לי דואר אלקטרוני על בעיות מקומיות חדשות"
+msgstr ""
 
 #: templates/web/base/report/display.html:38
 msgid "Email me updates"
-msgstr "שלח לי דואר אלקטרוני על עדכונים"
+msgstr ""
 
 #: templates/web/base/admin/category_edit.html:26
 #: templates/web/base/admin/report_edit.html:67
@@ -874,11 +874,11 @@ msgstr "שלח לי דואר אלקטרוני על עדכונים"
 #: templates/web/zurich/admin/report_edit-sdm.html:44
 #: templates/web/zurich/admin/report_edit.html:57
 msgid "Email:"
-msgstr "דואר אלקטרוני:"
+msgstr ""
 
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:322
 msgid "Email: %s"
-msgstr "דואר אלקטרוני: %s"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:620
 msgid "Empty flat or maisonette"
@@ -4033,6 +4033,7 @@ msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: perllib/Utils.pm:282
 #, perl-format
@@ -4040,6 +4041,7 @@ msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: templates/web/base/report/_support.html:6
 #, perl-format
@@ -4047,6 +4049,7 @@ msgid "%d supporter"
 msgid_plural "%d supporters"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: perllib/Utils.pm:284
 #, perl-format
@@ -4054,6 +4057,7 @@ msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: templates/web/base/front/stats.html:29
 #, perl-format
@@ -4061,6 +4065,7 @@ msgid "<big>%s</big> update on reports"
 msgid_plural "<big>%s</big> updates on reports"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: templates/web/emptyhomes/report/new/councils_text_none.html:3
 #, perl-format
@@ -4068,13 +4073,15 @@ msgid "We do not yet have details for the council that covers this location."
 msgid_plural "We do not yet have details for the councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: perllib/Utils.pm:278
 #, perl-format
 msgid "%d week"
 msgid_plural "%d weeks"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%d неделя"
+msgstr[1] "%d недели"
+msgstr[2] "%d недель"
 
 #: templates/web/base/front/stats.html:12
 #, perl-format
@@ -4082,6 +4089,7 @@ msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: templates/web/base/front/stats.html:23
 #, perl-format
@@ -4089,6 +4097,7 @@ msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: perllib/Utils.pm:280
 #, perl-format
@@ -4096,6 +4105,7 @@ msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: templates/web/base/report/new/councils_text_some.html:13
 #, perl-format
@@ -4103,3 +4113,4 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
