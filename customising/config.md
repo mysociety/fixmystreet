@@ -13,10 +13,10 @@ title: Configuration settings
 ## The general configuration file
 
 The FixMyStreet code ships with an example configuration file:
-`config/general.yml-example`.
+`conf/general.yml-example`.
 
 As part of the [installation process]({{ site.baseurl }}install ), the example
-file gets copied to `config/general.yml`. You **must** edit this file to suit
+file gets copied to `conf/general.yml`. You **must** edit this file to suit
 your needs.
 
 When you edit this file, remember it must be in the <a
@@ -28,7 +28,7 @@ tabs.
 
 ## Config settings by topic
 
-The following are all the configuration settings that you can change in `config/general.yml`.
+The following are all the configuration settings that you can change in `conf/general.yml`.
 
 ### Database config
 
