@@ -44,7 +44,7 @@ cobrand's name: for example, do:
 Then, to override an existing template, copy it into the
 `templates/web/fixmypark/` directory and edit it there. You *must* use the
 same directory and file names as in the parent cobrand (that is, in
-`templates/web/fixmystreet` or `templates/web/base` - base might be default if
+`templates/web/fixmystreet` or `templates/web/base` – base might be `default` if
 you have an older version of the code).
 
 <div class="attention-box">
@@ -56,11 +56,22 @@ you have an older version of the code).
     <a href="/feeding-back/">Feeding back page</a> has more details.
 </div>
 
-For example, it's likely you'll want to change the footer template, which puts
-text right at the bottom of every page. Copy the footer template into your
-cobrand like this:
+One template you will probably want to override is the `site-name.html`, which
+contains the name of your site for use in various other templates, and e.g. the
+site's &lt;title&gt;. Copy this template into your cobrand like this:
+
+    cp templates/web/base/site-name.html templates/web/fixmypark/
+
+Or it’s likely you’ll want to change the footer template, which puts text right
+at the bottom of every page. Copy the footer template into your cobrand like
+this:
 
     cp templates/web/fixmystreet/footer.html templates/web/fixmypark/
+
+<div class="attention-box helpful-hint">
+Note we’ve used the <code>fixmystreet</code> copy there, as that is the first
+“parent” of your cobrand, in preference to <code>base</code>.
+</div>
 
 The templates use the popular <a
 href="http://www.template-toolkit.org">Template Toolkit</a> system &mdash; look
