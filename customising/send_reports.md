@@ -79,5 +79,5 @@ But if you want to see what's going on, you can use these options:
 
 For example, to run `send-reports` with debugging output, do:
 
-    bin/cron-wrapper send-reports --debug
+    bin/send-reports --debug
 

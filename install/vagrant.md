@@ -60,7 +60,7 @@ To start the dev server:
     cd fixmystreet
 
     # run the dev server
-    bin/cron-wrapper script/fixmystreet_app_server.pl -d -r --fork
+    script/fixmystreet_app_server.pl -d -r --fork
 
 The server will now be running and you can visit it at the address
 `http://fixmystreet.127.0.0.1.xip.io:3000/`

@@ -158,7 +158,7 @@ convert the SCSS files to CSS files:
 
 The development server can now hopefully be run with:
 
-     bin/cron-wrapper script/fixmystreet_app_server.pl -d --fork
+     script/fixmystreet_app_server.pl -d --fork
 
 The server will be accessible as <http://localhost:3000/>. You can run with -r
 in order for the server to automatically restart when you update the code.
@@ -228,7 +228,7 @@ FixMyStreet installation at the configured URL.
 You can run the unit tests by running the following command in the
 `fixmystreet` directory:
 
-    bin/cron-wrapper prove -r t
+    bin/run-tests t
 
 These currently require that the fixmystreet cobrand is enabled in the
 [ALLOWED_COBRANDS]({{ site.baseurl }}customising/config/#allowed_cobrands)
