@@ -12,6 +12,12 @@ title: Configuration settings
 
 ## The general configuration file
 
+<div class="attention-box info">
+You can look at a summary of the live configuration of your site by going to
+the Configuration page of your administration interface, at
+<code>/admin/config</code>.
+</div>
+
 The FixMyStreet code ships with an example configuration file:
 `conf/general.yml-example`.
 
@@ -24,7 +30,6 @@ href="http://yaml.org">YAML syntax</a>. It's not complicated but &mdash;
 especially if you're editing a list &mdash; be careful to get the indentation
 correct. If in doubt, look at the examples already in the file, and don't use
 tabs.
-
 
 ## Config settings by topic
 

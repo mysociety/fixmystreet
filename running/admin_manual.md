@@ -227,6 +227,9 @@ them by clicking on the link at the top of any admin page:
     sent to a specific body since launch.
   </p>
 
+* **Configuration** <br/> This page shows you a summary of the live
+  configuration information for your site.
+ 
 <a name="report-states"></a>
 
 ## Report states
