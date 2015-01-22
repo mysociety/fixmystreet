@@ -6,14 +6,14 @@
     rss_url
         = pc
         ? c.uri_for( "/rss/pc", pc )
-        : c.uri_for( "/rss/l/$short_latitude,$short_longitude" );
+        : c.uri_for( "/rss/l/$latitude,$longitude" );
             
     email_url = c.uri_for(
         '/alert/list',
         {
-            lat  => short_latitude,
-            lon  => short_longitude,
-            feed => "local:$short_latitude:$short_longitude",
+            lat  => latitude,
+            lon  => longitude,
+            feed => "local:$latitude:$longitude",
         }
     );
 
@@ -21,8 +21,8 @@
         '/report/new',
         {
             pc         => pc
-            latitude   => short_latitude,
-            longitude  => short_longitude,
+            latitude   => latitude,
+            longitude  => longitude,
             skipped    => 1,
         }
     );
@@ -45,8 +45,8 @@
     [% END %]
     <input type="hidden" name="pc" value="[% pc | html %]">
 
-    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
-    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% latitude | html %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
 [% END %]
 
     [% map_html %]

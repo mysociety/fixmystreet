@@ -12,7 +12,7 @@ use File::Slurp;
 use File::Path ();
 use LWP::Simple;
 use Digest::MD5 qw(md5_hex);
-use mySociety::Locale;
+use Utils;
 
 # string STRING CONTEXT
 # Looks up on Google Maps API, and caches, a user-inputted location.
@@ -78,15 +78,14 @@ sub string {
         next unless $_->{AddressDetails}->{Accuracy} >= 4;
         my $address = $_->{address};
         next unless $c->cobrand->geocoded_string_check( $address );
-        ( $longitude, $latitude ) = @{ $_->{Point}->{coordinates} };
-        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-        mySociety::Locale::in_gb_locale {
-            push (@$error, {
-                address => $address,
-                latitude => sprintf('%0.6f', $latitude),
-                longitude => sprintf('%0.6f', $longitude)
-            });
-        };
+        ( $longitude, $latitude ) =
+            map { Utils::truncate_coordinate($_) }
+            @{ $_->{Point}->{coordinates} };
+        push (@$error, {
+            address => $address,
+            latitude => $latitude,
+            longitude => $longitude
+        });
         push (@valid_locations, $_);
     }
     return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;

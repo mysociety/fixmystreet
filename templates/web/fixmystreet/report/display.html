@@ -38,9 +38,9 @@
         <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>
         [% END %]
       [% IF c.cobrand.moniker == 'zurich' %]
-        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'Problems on the map' ) %]</a></li>
+        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems on the map' ) %]</a></li>
       [% ELSE %]
-        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
+        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
       [% END %]
     </ul>
 

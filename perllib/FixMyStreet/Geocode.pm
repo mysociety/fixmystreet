@@ -12,6 +12,7 @@ use FixMyStreet::Geocode::Bing;
 use FixMyStreet::Geocode::Google;
 use FixMyStreet::Geocode::OSM;
 use FixMyStreet::Geocode::Zurich;
+use Utils;
 
 # lookup STRING CONTEXT
 # Given a user-inputted string, try and convert it into co-ordinates using either
@@ -21,6 +22,11 @@ use FixMyStreet::Geocode::Zurich;
 sub lookup {
     my ($s, $c) = @_;
     my $data = $c->cobrand->geocode_postcode($s);
+    if (defined $data->{latitude}) {
+        ( $data->{latitude}, $data->{longitude} ) =
+            map { Utils::truncate_coordinate($_) }
+            ( $data->{latitude}, $data->{longitude} );
+    }
     $data = string($s, $c)
         unless $data->{error} || defined $data->{latitude};
     $data->{error} = _('Sorry, we could not find that location.')

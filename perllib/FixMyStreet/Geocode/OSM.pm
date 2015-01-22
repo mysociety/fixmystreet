@@ -16,7 +16,7 @@ use File::Path ();
 use LWP::Simple qw($ua);
 use Memcached;
 use XML::Simple;
-use mySociety::Locale;
+use Utils;
 
 my $osmapibase    = "http://www.openstreetmap.org/api/";
 my $nominatimbase = "http://nominatim.openstreetmap.org/";
@@ -68,15 +68,14 @@ sub string {
 
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
-        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-        ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
-        mySociety::Locale::in_gb_locale {
-            push (@$error, {
-                address => $_->{display_name},
-                latitude => sprintf('%0.6f', $latitude),
-                longitude => sprintf('%0.6f', $longitude)
-            });
-        };
+        ( $latitude, $longitude ) =
+            map { Utils::truncate_coordinate($_) }
+            ( $_->{lat}, $_->{lon} );
+        push (@$error, {
+            address => $_->{display_name},
+            latitude => $latitude,
+            longitude => $longitude
+        });
         push (@valid_locations, $_);
     }
 
