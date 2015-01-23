@@ -1,0 +1,204 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+require 5.8.0;
+use feature 'say';
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::App;
+
+my $moniker = $ARGV[0];
+
+my $c = FixMyStreet::App->new();
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($moniker)->new({ c => $c });
+$c->stash->{cobrand} = $cobrand;
+
+die "Not a staging site, bailing out" unless $c->config->{STAGING_SITE}; # TODO, allow override via --force
+say "Applying contacts for $cobrand";
+
+
+ensure_bodies();
+setup_contacts();
+
+=head2 setup_contacts, ensure_bodies
+
+routines to update extra data for contacts.  These can be called by
+a script:
+
+    bin/setup-contacts zurich
+
+=cut
+
+sub ensure_bodies {
+    my @bodies = $cobrand->body_details_data;
+
+    my $bodies_rs = $c->model('DB::Body');
+
+    for my $body (@bodies) {
+        # following should work (having added Unique name/parent constraint, but doesn't)
+        # $bodies_rs->find_or_create( $body, { $parent ? ( key => 'body_name_parent_key' ) : () }  );
+        # let's keep it simple and just allow unique names
+        next if $bodies_rs->search({ name => $body->{name} })->count;
+        if (my $area_id = delete $body->{area_id}) {
+            $body->{body_areas} = [ { area_id => $area_id } ];
+        }
+        my $parent = $body->{parent};
+        if ($parent and ! ref $parent) {
+            $body->{parent} = { name => $parent };
+        }
+        $bodies_rs->find_or_create( $body );
+    }
+}
+
+sub setup_contacts {
+    die "Not a staging site, bailing out" unless $c->config->{STAGING_SITE}; # TODO, allow override via --force
+
+    my @contact_details = $cobrand->contact_details_data;
+
+    for my $detail (@contact_details) {
+        update_contact( $detail, $description );
+    }
+}
+
+sub update_contact {
+    my ($contact_data, $description) = @_;
+
+    my $contact_rs = $c->model('DB::Contact');
+
+    my $category = $contact_data->{category} or die "No category provided";
+    $description ||= "Update contact";
+
+    my $contact = ensure_contact($contact_data, $description)
+        or return; # e.g. nothing returned if deleted
+
+    if (my $fields = $contact_data->{fields}) {
+
+        my @fields = map { get_field_extra($_) } @$fields;
+        my $note = sprintf 'Fields edited by automated script%s', $description ? " ($description)" : '';
+        $contact->set_extra_fields(@fields);
+        $contact->set_inflated_columns({
+            confirmed => 1,
+            deleted => 0,
+            editor => 'automated script',
+            whenedited => \'NOW()',
+            note => "Updated fields $description",
+        });
+        $contact->update;
+    }
+}
+
+sub ensure_contact {
+    my ($contact_data, $description) = @_;
+
+    my $category = $contact_data->{category} or die "No category provided";
+    $description ||= "Ensure contact exists $category";
+
+    my $email = temp_email_to_update(); # will only be set if newly created
+
+    my $body = get_body_for_contact($contact_data) or die "No body found for $category";
+
+    my $contact_rs = $c->model('DB::Contact');
+
+    my $category_details = $contact_data->{category_details} || {};
+
+    if (my $old_name = delete $contact_data->{rename_from}) {
+        if (my $old_category = $contact_rs->find({
+                category => $old_name,
+            ,   body => $body,
+            })) {
+            $old_category->update({
+                category => $category,
+                whenedited => \'NOW()',
+                note => "Renamed $description",
+                %{ $category_details || {} },
+            });
+            return $old_category;
+        }
+    }
+
+    if ($contact_data->{delete}) {
+        my $contact = $contact_rs->search({
+            body_id => $body->id,
+            category => $category,
+            deleted => 0
+        });
+        if ($contact->count) {
+            print sprintf "Deleting: %s\n", $category;
+            $contact->update({
+                deleted => 1,
+                editor => 'automated script',
+                whenedited => \'NOW()',
+                note => "Deleted by script $description",
+            });
+        }
+        return;
+    }
+
+    return $contact_rs->find_or_create(
+        {
+            body => $body,
+            category => $category,
+
+            confirmed => 1,
+            deleted => 0,
+            email => $email,
+            editor => 'automated script',
+            note => 'created by automated script',
+            send_method => '',
+            whenedited => \'NOW()',
+            %{ $category_details || {} },
+        },
+        {
+            key => 'contacts_body_id_category_idx'
+        }
+    );
+}
+
+sub get_field_extra {
+    my ($field) = @_;
+
+    my %default = (
+        variable => 'true',
+        order => '1',
+        required => 'no',
+        datatype => 'string',
+        datatype_description => 'a string',
+    );
+
+    if (($field->{datatype} || '') eq 'boolean') {
+        %default = (
+            %default,
+            datatype => 'singlevaluelist',
+            datatype_description => 'Yes or No',
+            values => { value => [
+                    { key => ['No'],  name => ['No'] },
+                    { key => ['Yes'], name => ['Yes'] },
+            ] },
+        );
+    }
+
+    return { %default, %$field };
+}
+
+sub temp_email_to_update { 'test@example.com' }
+
+sub get_body_for_contact {
+    my ($contact_data) = @_;
+    if (my $body_name = $contact_data->{body_name}) {
+        return $c->model('DB::Body')->find({ name => $body_name });
+    }
+    if ($cobrand->can('contact_details_data_body_default')) {
+        return $cobrand->contact_details_data_body_default;
+    }
+    return;
+    # TODO: for UK Councils use
+    #   $c->model('DB::Body')->find(id => $cobrand->council_id);
+    #   # NB: (or better that's the area in BodyAreas)
+}
