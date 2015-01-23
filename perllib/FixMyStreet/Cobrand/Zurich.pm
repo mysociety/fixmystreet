@@ -7,6 +7,7 @@ use RABX;
 
 use strict;
 use warnings;
+use feature 'say';
 
 =head1 NAME
 
@@ -814,5 +815,191 @@ sub admin_stats {
 
     return 1;
 }
+
+=head2 setup_contacts
+
+TODO: refactor into cobrand
+
+routines to update the extra for potholes (temporary setup hack, cargo-culted
+from Eastsussex/Harrogate, may in future be superseded either by
+Open311/integration or a better mechanism for creating rich contacts).
+
+Can run with a script or command line like:
+
+ bin/cron-wrapper perl -MFixMyStreet::App -MFixMyStreet::Cobrand::Zurich -e \
+ 'FixMyStreet::Cobrand::Zurich->new({c => FixMyStreet::App->new})->setup_contacts'
+
+=cut
+
+sub ensure_contact {
+    my ($self, $contact_data, $description) = @_;
+
+    my $category = $contact_data->{category} or die "No category provided";
+    my $email = $self->temp_email_to_update; # will only be set if newly created
+
+    my $contact_rs = $self->{c}->model('DB::Contact');
+
+    my $category_details = $contact_data->{category_details} || {};
+
+    if (my $old_name = delete $contact_data->{rename_from}) {
+        if (my $category = $contact_rs->find({
+                body_id => $self->council_id,
+                category => $old_name,
+            })) {
+            $category->update({
+                category => $category,
+                whenedited => \'NOW()',
+                note => "Renamed $description",
+                %{ $category_details || {} },
+            });
+            return $category;
+        }
+    }
+
+    if ($contact_data->{delete}) {
+        my $contact = $contact_rs->search({
+            body_id => $self->council_id,
+            category => $category,
+            deleted => 0
+        });
+        if ($contact) {
+            say sprintf "Deleting: %s", $category;
+            $contact->update({
+                deleted => 1,
+                editor => 'automated script',
+                whenedited => \'NOW()',
+                note => "Deleted by script $description",
+            });
+        }
+        return;
+    }
+
+    return $contact_rs->find_or_create(
+        {
+            body_id => $self->council_id,
+            category => $category,
+
+            confirmed => 1,
+            deleted => 0,
+            email => $email,
+            editor => 'automated script',
+            note => 'created by automated script',
+            send_method => '',
+            whenedited => \'NOW()',
+            %{ $category_details || {} },
+        },
+        {
+            key => 'contacts_body_id_category_idx'
+        }
+    );
+}
+
+sub setup_contacts {
+    my ($self, $description);
+
+    my @contact_details = $self->contact_details;
+
+    for my $detail (@contact_details) {
+        my ($category, $field, $category_details) = @$detail;
+        $self->update_contact( $category, $field, $category_details, $description );
+    }
+}
+
+sub update_contact {
+    my ($self, $contact_data, $description) = @_; 
+
+    my $contact_rs = $self->{c}->model('DB::Contact');
+
+    my $category = $contact_data->{category} or die "No category provided";
+
+    my $contact = $self->ensure_contact($category, $contact_data->{category_details})
+        or return; # e.g. nothing returned if deleted
+
+    if (my $fields = $contact_data->{fields}) {
+
+        my @fields = map { $self->get_field_extra($_) } @$fields;
+        my $note = sprintf 'Fields edited by automated script%s', $description ? " ($description)" : '';
+        $contact->update({
+            extra => \@fields,
+            confirmed => 1,
+            deleted => 0,
+            editor => 'automated script',
+            whenedited => \'NOW()',
+            note => "Updated fields $description",
+        });
+    }
+};
+
+sub get_field_extra {
+    my ($self, $field) = @_;
+
+    my %default = (
+        variable => 'true',
+        order => '1',
+        required => 'no',
+        datatype => 'string',
+        datatype_description => 'a string',
+    );
+
+    if ($field->{datatype} || '' eq 'boolean') {
+        %default = (
+            %default,
+            datatype => 'singlevaluelist',
+            datatype_description => 'Yes or No',
+            values => { value => [ 
+                    { key => ['No'],  name => ['No'] },
+                    { key => ['Yes'], name => ['Yes'] }, 
+            ] },
+        );
+    }
+
+    return { %default, %$field };
+}
+
+sub contact_details {
+    return (
+        {
+            category => 'Beleuchtung / Uhren',
+            fields => [
+                {
+                    code => 'strasse',
+                    description => 'Strasse',
+                    datatype => 'string',
+                    required => 'yes',
+                },
+                {
+                    code => 'mast_nr',
+                    description => 'Mast-Nr.',
+                    datatype => 'string',
+                },
+                {
+                    code => 'haus_nr',
+                    description => 'Haus-Nr.',
+                    datatype => 'string',
+                }
+            ],
+        },
+        {
+            category => 'Brunnen / Hydranten',
+            fields => [
+                {
+                    code => 'hydranten_nr',
+                    description => 'Hydranten-Nr.',
+                    datatype => 'string',
+                },
+            ],
+        },
+        {
+            category => "Grühen / Spielpläe",
+            rename_from => "Tiere / Grühen", 
+        },
+        {
+            category => 'Spielplatz / Sitzbank',
+            delete => 1,
+        },
+    );
+}
+
+sub temp_email_to_update { 'test@example.com' } 
 
 1;
