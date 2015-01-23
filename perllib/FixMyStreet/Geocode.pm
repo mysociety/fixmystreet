@@ -7,6 +7,11 @@
 package FixMyStreet::Geocode;
 
 use strict;
+use Digest::MD5 qw(md5_hex);
+use Encode;
+use File::Slurp;
+use File::Path ();
+use LWP::Simple qw($ua);
 use URI::Escape;
 use FixMyStreet::Geocode::Bing;
 use FixMyStreet::Geocode::Google;
@@ -53,6 +58,27 @@ sub escape {
     $s = URI::Escape::uri_escape_utf8($s);
     $s =~ s/%20/+/g;
     return $s;
+}
+
+sub cache {
+    my ($type, $url, $args, $re) = @_;
+    my $cache_dir = FixMyStreet->config('GEO_CACHE') . $type . '/';
+    my $cache_file = $cache_dir . md5_hex($url);
+    my $js;
+    if (-s $cache_file && -M $cache_file <= 7) {
+        $js = File::Slurp::read_file($cache_file);
+    } else {
+        $url .= '&' . $args if $args;
+        $ua->timeout(15);
+        $js = LWP::Simple::get($url);
+        $js = encode_utf8($js) if utf8::is_utf8($js);
+        File::Path::mkpath($cache_dir);
+        if ($js && (!$re || $js !~ $re)) {
+            File::Slurp::write_file($cache_file, $js);
+        }
+    }
+    $js = JSON->new->utf8->allow_nonref->decode($js) if $js;
+    return $js;
 }
 
 1;

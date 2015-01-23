@@ -14,13 +14,8 @@ package FixMyStreet::Geocode::FixaMinGata;
 
 use warnings;
 use strict;
-use Data::Dumper;
 
-use Digest::MD5 qw(md5_hex);
-use Encode;
-use File::Slurp;
-use File::Path ();
-use LWP::Simple qw($ua);
+use LWP::Simple;
 use Memcached;
 use XML::Simple;
 use mySociety::Locale;
@@ -56,24 +51,10 @@ sub string {
         if $params->{country};
     $url .= join('&', map { "$_=$query_params{$_}" } keys %query_params);
 
-    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'osm/';
-    my $cache_file = $cache_dir . md5_hex($url);
-    my $js;
-    if (-s $cache_file) {
-        $js = File::Slurp::read_file($cache_file);
-    } else {
-        $ua->timeout(15);
-        $js = LWP::Simple::get($url);
-        $js = encode_utf8($js) if utf8::is_utf8($js);
-        File::Path::mkpath($cache_dir);
-        File::Slurp::write_file($cache_file, $js) if $js;
-    }
-
+    my $js = FixMyStreet::Geocode::cache('osm', $url);
     if (!$js) {
         return { error => _('Sorry, we could not find that location.') };
     }
-
-    $js = JSON->new->utf8->allow_nonref->decode($js);
 
     my ( %locations, $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
