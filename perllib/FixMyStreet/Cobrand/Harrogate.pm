@@ -67,7 +67,6 @@ sub temp_update_contacts {
     my $email = $self->temp_email_to_update;
     my $_update = sub {
         my ($category, $field, $category_details) = @_; 
-        # NB: we're accepting just 1 field, but supply as array [ $field ]
 
         my $contact = $contact_rs->find_or_create(
             {
