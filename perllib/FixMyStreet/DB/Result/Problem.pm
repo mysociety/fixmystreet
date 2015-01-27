@@ -819,6 +819,31 @@ sub latest_moderation_log_entry {
     return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
 }
 
+=head2 get_photoset
+
+Return a Photo-set object for all photos attached to this field
+
+    $obj->get_photoset( $c );
+
+=cut
+
+sub get_photoset {
+    my ($self, $c) = @_;
+    my $class = 'FixMyStreet::App::Model::PhotoSet';
+    eval "use $class";
+    return $class->new({
+        c => $c,
+        data => $self->photo,
+    });
+}
+
+=head2 number_of_photos
+
+Return the number of photos attached to an entry
+
+=cut
+
+
 __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",
