@@ -876,11 +876,116 @@ Can run with a script or command line like:
 
 =cut
 
+sub get_body_for_contact {
+    my ($self, $contact_data) = @_;
+    if (my $body_name = $contact_data->{body_name}) {
+        return $self->{c}->model('DB::Body')->find({ name => $body_name });
+    }
+    return;
+    # TODO: for UK Councils use
+    #   $self->{c}->model('DB::Body')->find(id => $self->council_id); 
+    #   # NB: (or better that's the area in BodyAreas)
+}
+
+sub ensure_bodies {
+    my ($self, $contact_data, $description) = @_;
+
+    die "Not a staging site, bailing out" unless $self->{c}->config->{STAGING_SITE}; # TODO, allow override via --force
+
+    my @bodies = $self->body_details_data;
+
+    my $bodies_rs = $self->{c}->model('DB::Body');
+
+    for my $body (@bodies) {
+        # following should work (having added Unique name/parent constraint, but doesn't)
+        # $bodies_rs->find_or_create( $body, { $parent ? ( key => 'body_name_parent_key' ) : () }  );
+        # let's keep it simple and just allow unique names
+        next if $bodies_rs->search({ name => $body->{name} })->count;
+        if (my $area_id = delete $body->{area_id}) {
+            $body->{body_areas} = [ { area_id => $area_id } ];
+        }
+        my $parent = $body->{parent};
+        if ($parent and ! ref $parent) {
+            $body->{parent} = { name => $parent };
+        }
+        $bodies_rs->find_or_create( $body );
+    }
+}
+
+=head2 body_details_data
+
+Returns a list of bodies to create with ensure_body.  These
+are mostly just passed to ->find_or_create, but there is some
+pre-processing so that you can enter:
+
+    area_id => 123,
+    parent => 'Big Town',
+
+instead of
+
+    body_areas => [ { area_id => 123 } ],
+    parent => { name => 'Big Town' },
+
+For example:
+
+    return (
+        {
+            name => 'Big Town',
+        },
+        {
+            name => 'Small town',
+            parent => 'Big Town',
+            area_id => 1234,
+        },
+            
+
+=cut
+
+sub body_details_data {
+    return (
+        {
+            name => 'Stadt Zurich'
+        },
+        {
+            name => 'Elektrizitäwerk Stadt Zürich',
+            parent => 'Stadt Zurich',
+            area_id => 423017,
+        },
+        {
+            name => 'ERZ Entsorgung + Recycling Zürich',
+            parent => 'Stadt Zurich',
+            area_id => 423017,
+        },
+        {
+            name => 'Fachstelle Graffiti',
+            parent => 'Stadt Zurich',
+            area_id => 423017,
+        },
+        {
+            name => 'Grün Stadt Zürich',
+            parent => 'Stadt Zurich',
+            area_id => 423017,
+        },
+        {
+            name => 'Tiefbauamt Stadt Zürich',
+            parent => 'Stadt Zurich',
+            area_id => 423017,
+        },
+        {
+            name => 'Dienstabteilung Verkehr',
+            parent => 'Stadt Zurich',
+            area_id => 423017,
+        },
+    );
+}
+
 sub ensure_contact {
     my ($self, $contact_data, $description) = @_;
 
     my $category = $contact_data->{category} or die "No category provided";
     my $email = $self->temp_email_to_update; # will only be set if newly created
+
+    my $body = $self->get_body_for_contact($contact_data) or die "No body found for $category";
 
     my $contact_rs = $self->{c}->model('DB::Contact');
 
@@ -888,8 +993,8 @@ sub ensure_contact {
 
     if (my $old_name = delete $contact_data->{rename_from}) {
         if (my $category = $contact_rs->find({
-                body_id => $self->council_id,
                 category => $old_name,
+            ,   body => $body,
             })) {
             $category->update({
                 category => $category,
@@ -903,7 +1008,7 @@ sub ensure_contact {
 
     if ($contact_data->{delete}) {
         my $contact = $contact_rs->search({
-            body_id => $self->council_id,
+            body => $body,
             category => $category,
             deleted => 0
         });
@@ -921,7 +1026,7 @@ sub ensure_contact {
 
     return $contact_rs->find_or_create(
         {
-            body_id => $self->council_id,
+            body => $body,
             category => $category,
 
             confirmed => 1,
@@ -940,9 +1045,12 @@ sub ensure_contact {
 }
 
 sub setup_contacts {
-    my ($self, $description);
+    my ($self, $description) = @_;
 
-    my @contact_details = $self->contact_details;
+    my $c = $self->{c};
+    die "Not a staging site, bailing out" unless $c->config->{STAGING_SITE}; # TODO, allow override via --force
+
+    my @contact_details = $self->contact_details_data;
 
     for my $detail (@contact_details) {
         my ($category, $field, $category_details) = @$detail;
@@ -973,7 +1081,7 @@ sub update_contact {
             note => "Updated fields $description",
         });
     }
-};
+}
 
 sub get_field_extra {
     my ($self, $field) = @_;
@@ -1001,10 +1109,11 @@ sub get_field_extra {
     return { %default, %$field };
 }
 
-sub contact_details {
+sub contact_details_data {
     return (
         {
-            category => 'Beleuchtung / Uhren',
+            category => 'Beleuchtung/Uhren',
+            body_name => 'Elektrizitäwerk Stadt Zürich',
             fields => [
                 {
                     code => 'strasse',
@@ -1026,6 +1135,7 @@ sub contact_details {
         },
         {
             category => 'Brunnen / Hydranten',
+            # body_name ???
             fields => [
                 {
                     code => 'hydranten_nr',
@@ -1035,11 +1145,13 @@ sub contact_details {
             ],
         },
         {
-            category => "Grühen / Spielpläe",
-            rename_from => "Tiere / Grühen", 
+            category => "Grünflächen/Spielplätze",
+            body_name => 'Grün Stadt Zürich',
+            rename_from => "Tiere/Grünflächen", 
         },
         {
-            category => 'Spielplatz / Sitzbank',
+            category => 'Spielplatz/Sitzbank',
+            body_name => 'Grün Stadt Zürich',
             delete => 1,
         },
     );
