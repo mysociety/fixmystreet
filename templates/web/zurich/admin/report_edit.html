@@ -63,15 +63,16 @@
 
 [% IF problem.photo %]
 <li>
-[% photo = problem.get_photo_params %]
+[% FOR photo IN problem.get_photoset(c).images %]
 <div class="update-img">
-    <a href="[% c.cobrand.base_url %]/photo/[% problem.photo %].fulltemp.jpeg" rel="fancy">
-        <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg">
+    <a href="[% c.cobrand.base_url %]/photo/[% photo.0 %].fulltemp.jpeg" rel="fancy">
+        <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
     <span>zoom</span></a>
 </div>
+<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
+<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+[% END %]
 <br>
-<input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
-<input type="submit" name="rotate_photo" value="[% loc('Rotate Right') %]">
 <br>
 <input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
 <label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
