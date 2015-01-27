@@ -10,6 +10,7 @@ use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email);
 use if !$ENV{TRAVIS}, 'Image::Magick';
 use DateTime::Format::Strptime;
+use List::Util 'first';
 
 
 use FixMyStreet::SendReport;
@@ -672,8 +673,8 @@ sub report_edit : Path('report_edit') : Args(1) {
         );
     }
 
-    if ( $c->get_param('rotate_photo') ) {
-        $c->forward('rotate_photo');
+    if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
+        $self->rotate_photo($c,  @$rotate_photo_param);
         return 1;
     }
 
@@ -1370,36 +1371,28 @@ Rotate a photo 90 degrees left or right
 
 =cut
 
-sub rotate_photo : Private {
-    my ( $self, $c ) =@_;
+# returns index of photo to rotate, if any
+sub _get_rotate_photo_param {
+    my ($self, $c) = @_;
+    my $params = $c->req->parameters;
+    my $key = first { /^rotate_photo/ } $c->req->param or return;
+    my ($index) = $key =~ /(\d+)$/;
+    my $direction = $c->req->param($key);
+    return [ $index || 0, $key, $direction ];
+}
 
-    my $direction = $c->get_param('rotate_photo');
+sub rotate_photo : Private {
+    my ( $self, $c, $index, $key, $direction ) = @_;
+
     return unless $direction eq _('Rotate Left') or $direction eq _('Rotate Right');
 
-    my $photo = $c->stash->{problem}->photo;
-    my $file;
+    my $problem = $c->stash->{problem};
+    my $fileid = $problem->get_photoset($c)->rotate_image(
+        $index,
+        $direction eq _('Rotate Left') ? -90 : 90
+    ) or return;
 
-    # If photo field contains a hash
-    if ( length($photo) == 40 ) {
-        $file = file( $c->config->{UPLOAD_DIR}, "$photo.jpeg" );
-        $photo = $file->slurp;
-    }
-
-    $photo = _rotate_image( $photo, $direction eq _('Rotate Left') ? -90 : 90 );
-    return unless $photo;
-
-    # Write out to new location
-    my $fileid = sha1_hex($photo);
-    $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
-
-    my $fh = $file->open('w');
-    print $fh $photo;
-    close $fh;
-
-    unlink glob FixMyStreet->path_to( 'web', 'photo', $c->stash->{problem}->id . '.*' );
-
-    $c->stash->{problem}->photo( $fileid );
-    $c->stash->{problem}->update();
+    $problem->update({ photo => $fileid });
 
     return 1;
 }
@@ -1448,18 +1441,6 @@ sub trim {
     $e =~ s/\s+$//;
     return $e;
 }
-
-sub _rotate_image {
-    my ($photo, $direction) = @_;
-    my $image = Image::Magick->new;
-    $image->BlobToImage($photo);
-    my $err = $image->Rotate($direction);
-    return 0 if $err;
-    my @blobs = $image->ImageToBlob();
-    undef $image;
-    return $blobs[0];
-}
-
 
 =head1 AUTHOR
 

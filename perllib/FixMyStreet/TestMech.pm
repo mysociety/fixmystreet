@@ -631,7 +631,7 @@ sub create_problems_for_body {
             latitude           => '51.5016605453401',
             longitude          => '-0.142497580865087',
             user_id            => $user->id,
-            photo              => 1,
+            photo              => $mech->get_photo_data,
         };
 
         my %report_params = ( %$default_params, %$params );
@@ -644,6 +644,15 @@ sub create_problems_for_body {
     }
 
     return @problems;
+}
+
+sub get_photo_data {
+    my $mech = shift;
+    return $mech->{sample_photo} ||= do {
+        my $sample_file = FixMyStreet->path_to( 't/app/controller/sample.jpg' );
+        $mech->builder->ok( -f "$sample_file", "sample file $sample_file exists" );
+        $sample_file->slurp(iomode => '<:raw');
+    };
 }
 
 1;
