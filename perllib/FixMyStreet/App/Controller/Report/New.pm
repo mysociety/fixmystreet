@@ -93,6 +93,7 @@ sub report_new : Path : Args(0) {
     $c->forward('check_for_category');
 
     # deal with the user and report and check both are happy
+
     return unless $c->forward('check_form_submitted');
     $c->forward('process_user');
     $c->forward('process_report');
@@ -290,7 +291,7 @@ sub report_import : Path('/import') {
     }
 
     # handle the photo upload
-    $c->forward( '/photo/process_photo_upload' );
+    $c->forward( '/photo/process_photo' );
     my $fileid = $c->stash->{upload_fileid};
     if ( my $error = $c->stash->{photo_error} ) {
         push @errors, $error;

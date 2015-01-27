@@ -483,11 +483,17 @@ sub url {
 
 =head2 get_photo_params
 
-Returns a hashref of details of any attached photo for use in templates.
+Returns a hashref of details of the attached photo, if any, for use in templates.
+
+NB: this method doesn't currently support multiple photos gracefully.  
+
+Use get_photoset($c) instead to do the right thing with reports with 0, 1, or more photos.
 
 =cut
 
 sub get_photo_params {
+    # use Carp 'cluck';
+    # cluck "get_photo_params called"; # TEMPORARY die to make sure I've done right thing with Zurich templates
     my $self = shift;
     return FixMyStreet::App::get_photo_params($self, 'id');
 }
@@ -826,6 +832,27 @@ Return most recent ModerationLog object
 sub latest_moderation_log_entry {
     my $self = shift;
     return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
+}
+
+=head2 get_photoset
+
+Return a PhotoSet object for all photos attached to this field
+
+    my $photoset = $obj->get_photoset( $c );
+    print $photoset->num_images;
+    return $photoset->get_image_data(num => 0, size => 'full');
+
+=cut
+
+sub get_photoset {
+    my ($self, $c) = @_;
+    my $class = 'FixMyStreet::App::Model::PhotoSet';
+    eval "use $class";
+    return $class->new({
+        c => $c,
+        data => $self->photo,
+        object => $self,
+    });
 }
 
 __PACKAGE__->has_many(
