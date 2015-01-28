@@ -20,6 +20,7 @@ has images => ( # jpeg data for actual image
     lazy => 1,
     handles => {
         num_images => 'count',
+        get_raw_image_data => 'get',
     },
     default => sub {
         my $self = shift;
@@ -47,5 +48,16 @@ has images => ( # jpeg data for actual image
         return \@photos;
     },
 );
+
+sub get_image_data {
+    my ($self, %args) = @_;
+    my $num = $args{num} || 1;
+    # my $data = $self->get_raw_image_data($num-1); # should work, but doesn't???
+    #
+    # my $dummy = $self->num_images; # force lazy attribute
+    my $data = $self->get_raw_image_data( 0 ); # for test 
+
+    return $data;
+}
 
 1;

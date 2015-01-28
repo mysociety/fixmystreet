@@ -48,13 +48,13 @@ sub during :LocalRegex('^([0-9a-f]{40})\.(temp|fulltemp)\.jpeg$') {
     $c->forward( 'output', [ $photo ] );
 }
 
-sub index :LocalRegex('^(c/)?(\d+)(?:\.(full|tn|fp))?\.jpeg$') {
+sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.jpeg$') {
     my ( $self, $c ) = @_;
-    my ( $is_update, $id, $size ) = @{ $c->req->captures };
+    my ( $is_update, $id, $photo_number, $size ) = @{ $c->req->captures };
 
-    my @photo;
+    my $item;
     if ( $is_update ) {
-        @photo = $c->model('DB::Comment')->search( {
+        ($item) = $c->model('DB::Comment')->search( {
             id => $id,
             state => 'confirmed',
             photo => { '!=', undef },
@@ -66,35 +66,21 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(full|tn|fp))?\.jpeg$') {
         }
 
         $c->detach( 'no_photo' ) if $id =~ /\D/;
-        @photo = $c->cobrand->problems->search( {
+        ($item) = $c->cobrand->problems->search( {
             id => $id,
             state => [ FixMyStreet::DB::Result::Problem->visible_states(), 'partial' ],
             photo => { '!=', undef },
         } );
     }
 
-    $c->detach( 'no_photo' ) unless @photo;
+    $c->detach( 'no_photo' ) unless $item;
 
-    my $item = $photo[0];
     $c->detach( 'no_photo' ) unless $c->cobrand->allow_photo_display($item); # Should only be for reports, not updates
-    my $photo = $item->photo;
 
-    # If photo field contains a hash
-    if (length($photo) == 40) {
-        my $file = file( $c->config->{UPLOAD_DIR}, "$photo.jpeg" );
-        $photo = $file->slurp;
-    }
-
-    if ( $size eq 'tn' ) {
-        $photo = _shrink( $photo, 'x100' );
-    } elsif ( $size eq 'fp' ) {
-        $photo = _crop( $photo );
-    } elsif ( $size eq 'full' ) {
-    } elsif ( $c->cobrand->default_photo_resize ) {
-        $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
-    } else {
-        $photo = _shrink( $photo, '250x250' );
-    }
+    my $photo = $item->get_photoset( $c )
+        ->get_image_data( num => $photo_number, size => $size )
+        
+    or $c->detach( 'no_photo' );
 
     $c->forward( 'output', [ $photo ] );
 }
