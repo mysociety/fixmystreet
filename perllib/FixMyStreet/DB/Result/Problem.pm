@@ -821,9 +821,11 @@ sub latest_moderation_log_entry {
 
 =head2 get_photoset
 
-Return a Photo-set object for all photos attached to this field
+Return a PhotoSet object for all photos attached to this field
 
-    $obj->get_photoset( $c );
+    my $photoset = $obj->get_photoset( $c );
+    print $photoset->num_images;
+    return $photoset->get_image_data(num => 0, size => 'full');
 
 =cut
 
@@ -834,15 +836,9 @@ sub get_photoset {
     return $class->new({
         c => $c,
         data => $self->photo,
+        item => $self,
     });
 }
-
-=head2 number_of_photos
-
-Return the number of photos attached to an entry
-
-=cut
-
 
 __PACKAGE__->has_many(
   "admin_log_entries",

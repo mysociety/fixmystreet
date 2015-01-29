@@ -53,6 +53,7 @@ sub make_report {
 
 
 subtest 'Photoset with photo inline in DB' => sub {
+    warn length($image_path->slurp);
     my $report = make_report( $image_path->slurp );
     my $photoset = $report->get_photoset($c);
     is $photoset->num_images, 1, 'Found just 1 image';
