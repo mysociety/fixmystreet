@@ -49,7 +49,6 @@ EXAMPLE_PLACES: [ 'High Street', 'Main Street' ]
 
 # An array of languages for the site, in the following format:
 # <language code>,<pretty name>,<locale>
-# Do not remove the en-gb line as it is needed for correct operation.
 LANGUAGES:
   - 'en-gb,English,en_GB'
 

@@ -7,6 +7,7 @@ use FixMyStreet;
 use FixMyStreet::Geocode::Bing;
 use DateTime;
 use Encode;
+use List::Util 'none';
 use URI;
 use Digest::MD5 qw(md5_hex);
 
@@ -157,7 +158,9 @@ Set the language and domain of the site based on the cobrand and host.
 sub set_lang_and_domain {
     my ( $self, $lang, $unicode, $dir ) = @_;
 
-    my $languages = join('|', @{$self->languages});
+    my @languages = @{$self->languages};
+    push @languages, 'en-gb,English,en_GB' if none { /en-gb/ } @languages;
+    my $languages = join('|', @languages);
     my $lang_override = $self->language_override || $lang;
     my $lang_domain = $self->language_domain || 'FixMyStreet';
 
@@ -174,7 +177,7 @@ sub set_lang_and_domain {
 
     return $set_lang;
 }
-sub languages { FixMyStreet->config('LANGUAGES') || [ 'en-gb,English,en_GB' ] }
+sub languages { FixMyStreet->config('LANGUAGES') || [] }
 sub language_domain { }
 sub language_override { }
 

@@ -8,7 +8,7 @@ sub country {
     return 'CV';
 }
 
-sub languages { [ 'pt-cv,Portuguese,pt_CV', 'en-gb,English,en_GB' ] }
+sub languages { [ 'pt-cv,Portuguese,pt_CV' ] }
 sub language_override { 'pt-cv' }
 
 sub disambiguate_location {

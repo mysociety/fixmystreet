@@ -13,7 +13,7 @@ sub country {
     return 'SE';
 }
 
-sub languages { [ 'en-gb,English,en_GB', 'sv,Swedish,sv_SE' ] }
+sub languages { [ 'sv,Swedish,sv_SE' ] }
 sub language_override { 'sv' }
 
 sub enter_postcode_text {
