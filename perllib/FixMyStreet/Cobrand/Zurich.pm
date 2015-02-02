@@ -275,11 +275,41 @@ sub get_or_check_overdue {
     return $self->overdue($problem);
 }
 
+=head1 C<set_problem_state>
+
+If the state has changed, sets the state and calls C::Admin's C<log_edit> action.
+If the state hasn't changed, defers to update_admin_log (to update time_spent if any).
+
+Returns either undef or the AdminLog entry created.
+
+=cut
+
 sub set_problem_state {
     my ($self, $c, $problem, $new_state) = @_;
-    return if $new_state eq $problem->state;
+    return $self->update_admin_log($c, $problem) if $new_state eq $problem->state;
     $problem->state( $new_state );
     $c->forward( 'log_edit', [ $problem->id, 'problem', "state change to $new_state" ] );
+}
+
+=head1 C<update_admin_log>
+
+Calls C::Admin's C<log_edit> if either a) text is provided, or b) there has
+been time_spent on the task.  As set_problem_state will already call log_edit
+if required, don't call this as well.
+
+Returns either undef or the AdminLog entry created.
+
+=cut
+
+sub update_admin_log {
+    my ($self, $c, $problem, $text) = @_;
+
+    if (!$text) {
+        return unless $c->req->param('time_spent');
+        $text = "Logging time_spent";
+    }
+
+    $c->forward( 'log_edit', [ $problem->id, 'problem', $text ] );
 }
 
 # Specific administrative displays
@@ -499,6 +529,7 @@ sub admin_report_edit {
             $problem->whensent( undef );
             $problem->set_extra_metadata($c, changed_category => 1);
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
+            $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $problem->set_extra_metadata_if_undefined($c, moderated_overdue => $self->overdue( $problem ) );
@@ -531,6 +562,9 @@ sub admin_report_edit {
                 if ( $state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
                     _admin_send_email( $c, 'problem-rejected.txt', $problem );
                 }
+            }
+            else {
+                $self->update_admin_log($c, $problem); # just update if time_spent
             }
         }
 
@@ -632,6 +666,9 @@ sub admin_report_edit {
                 $self->set_problem_state($c, $problem, 'planned');
                 $problem->update;
                 $c->res->redirect( '/admin/summary' );
+            }
+            else {
+                $self->update_admin_log($c, $problem); # just update if time_spent
             }
         }
 

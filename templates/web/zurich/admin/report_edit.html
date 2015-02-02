@@ -214,6 +214,20 @@ Ihre Stadt Zürich
 
 [% END %]
 
+<p>
+<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+<input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+<script>
+    $(function () {
+        $('#form_time_spent').spinner({
+            spin: function (e, ui) {
+                if (ui.value < 0) { return false }
+            }
+        });
+    });
+</script>
+</p>
+
 <p align="right">
 [% IF problem.state == 'planned' %]
 <input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
