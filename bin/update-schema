@@ -195,6 +195,7 @@ else {
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0033' if column_exists('admin_log', 'time_spent');
     return '0032' if table_exists('moderation_original_data');
     return '0031' if column_exists('body', 'external_url');
     return '0030' if ! constraint_exists('admin_log_action_check');
