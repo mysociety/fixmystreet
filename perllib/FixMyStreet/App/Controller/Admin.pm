@@ -1339,13 +1339,24 @@ Adds an entry into the admin_log table using the current user.
 =cut
 
 sub log_edit : Private {
-    my ( $self, $c, $id, $object_type, $action ) = @_;
+    my ( $self, $c, $id, $object_type, $action, $time_spent ) = @_;
+
+    $time_spent //= 0;
+    $time_spent = 0 if $time_spent < 0;
+
+    my $user_object = do {
+        my $auth_user = $c->user;
+        $auth_user ? $auth_user->get_object : undef;
+    };
+
     $c->model('DB::AdminLog')->create(
         {
             admin_user => $c->forward('get_user'),
+            $user_object ? ( user => $user_object ) : (), # as (rel => undef) doesn't work
             object_type => $object_type,
             action => $action,
             object_id => $id,
+            time_spent => $time_spent,
         }
     )->insert();
 }

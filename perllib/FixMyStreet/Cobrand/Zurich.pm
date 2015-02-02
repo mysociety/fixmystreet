@@ -5,6 +5,7 @@ use DateTime;
 use POSIX qw(strcoll);
 use RABX;
 use Scalar::Util 'blessed';
+use DateTime::Format::Pg;
 
 use strict;
 use warnings;
@@ -277,11 +278,44 @@ sub get_or_check_overdue {
     return $self->overdue($problem);
 }
 
+=head1 C<set_problem_state>
+
+If the state has changed, sets the state and calls C::Admin's C<log_edit> action.
+If the state hasn't changed, defers to update_admin_log (to update time_spent if any).
+
+Returns either undef or the AdminLog entry created.
+
+=cut
+
 sub set_problem_state {
     my ($self, $c, $problem, $new_state) = @_;
-    return if $new_state eq $problem->state;
+    return $self->update_admin_log($c, $problem) if $new_state eq $problem->state;
     $problem->state( $new_state );
     $c->forward( 'log_edit', [ $problem->id, 'problem', "state change to $new_state" ] );
+}
+
+=head1 C<update_admin_log>
+
+Calls C::Admin's C<log_edit> if either a) text is provided, or b) there has
+been time_spent on the task.  As set_problem_state will already call log_edit
+if required, don't call this as well.
+
+Returns either undef or the AdminLog entry created.
+
+=cut
+
+sub update_admin_log {
+    my ($self, $c, $problem, $text) = @_;
+
+    my $time_spent = ( ($c->req->param('time_spent') // 0) + 0 );
+    $c->req->param('time_spent' => 0); # explicitly zero this to avoid duplicates
+
+    if (!$text) {
+        return unless $time_spent;
+        $text = "Logging time_spent";
+    }
+
+    $c->forward( 'log_edit', [ $problem->id, 'problem', $text, $time_spent ] );
 }
 
 # Specific administrative displays
@@ -503,6 +537,7 @@ sub admin_report_edit {
             $problem->whensent( undef );
             $problem->set_extra_metadata(changed_category => 1);
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
+            $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->get_param('body_subdivision') ) {
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
@@ -575,6 +610,10 @@ sub admin_report_edit {
                 extra => { is_internal_note => 1 },
             } );
         }
+
+        # Just update if time_spent still hasn't been logged
+        # (this will only happen if no other update_admin_log has already been called)
+        $self->update_admin_log($c, $problem);
 
         if ( $redirect ) {
             $c->detach('index');
@@ -748,7 +787,10 @@ sub admin_stats {
     if ($y && $m) {
         $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
         $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
-        $date_params{created} = { '>=', $c->stash->{start_date}, '<', $c->stash->{end_date} };
+        $date_params{created} = {
+            '>=', DateTime::Format::Pg->format_datetime($c->stash->{start_date}), 
+            '<',  DateTime::Format::Pg->format_datetime($c->stash->{end_date}),
+        };
     }
 
     my %params = (
@@ -760,6 +802,8 @@ sub admin_stats {
         my $problems = $c->model('DB::Problem')->search(
             {%date_params},
             {
+                join => 'admin_log_entries',
+                distinct => 1,
                 columns => [
                     'id',       'created',
                     'latitude', 'longitude',
@@ -771,10 +815,11 @@ sub admin_stats {
                     'whensent', 'lastupdate',
                     'service',
                     'extra',
-                ],
+                    { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
+                ]
             }
         );
-        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Title,Detail,Media URL,Interface Used,Council Response\n";
+        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
         require Text::CSV;
         my $csv = Text::CSV->new({ binary => 1 });
         while ( my $report = $problems->next ) {
@@ -802,6 +847,7 @@ sub admin_stats {
                 $report->local_coords, $report->category,
                 $report->state,        $report->user_id,
                 $body_name,
+                $report->get_column('sum_time_spent') || 0,
                 $report->title,
                 $detail,
                 $media_url,

@@ -46,6 +46,10 @@
 <li><span class="mock-label">[% loc('Phone:') %]</span> [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
 
+<li>
+    <label>[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
+</li>
+
 [% IF problem.photo %]
 <li><img alt="" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg"></li>
 [% END %]
@@ -59,6 +63,20 @@
 <textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
 
 </ul>
+
+<p class="report-edit-action">
+<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+<input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+<script>
+    $(function () {
+        $('#form_time_spent').spinner({
+            spin: function (e, ui) {
+                if (ui.value < 0) { return false }
+            }
+        });
+    });
+</script>
+</p>
 
 <p class="cf">
     <input style="float:left" type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
