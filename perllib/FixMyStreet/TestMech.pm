@@ -167,6 +167,7 @@ sub delete_user {
         ok( $a->delete, "delete alert " . $a->alert_type );
     }
     ok( $_->delete, "delete comment " . $_->text )     for $user->comments;
+    ok( $_->delete, "delete admin_log " . $_->action )     for $user->admin_logs;
     ok $user->delete, "delete test user " . $user->email;
 
     return 1;
