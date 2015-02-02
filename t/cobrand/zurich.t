@@ -731,8 +731,6 @@ subtest "test stats" => sub {
             $mech->content_contains(',fixed - council,');
             $mech->content_contains(',hidden,');
         }
-
-        $mech->log_out_ok;
     };
 };
 
@@ -748,6 +746,31 @@ subtest "test admin_log" => sub {
     is scalar @entries, 1, 'State changes logged'; 
     is $entries[-1]->action, 'state change to hidden', 'State change logged as expected';
 };
+
+subtest 'time_spent' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        my $report = $reports[0];
+
+        is get_time_spent($report), 0, '0 minutes spent';
+        $report->update({ state => 'in progress' });
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->form_with_fields( 'time_spent' );
+        $mech->submit_form_ok( {
+            with_fields => {
+                time_spent => 10,
+            } });
+        is get_time_spent($report), 10, '10 minutes spent';
+    };
+};
+
+$mech->log_out_ok;
+
+sub get_time_spent {
+    my $report = shift;
+    return $report->admin_log_entries->get_column('time_spent')->sum // 0;
+}
 
 END {
     $mech->delete_body($subdivision);
