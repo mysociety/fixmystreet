@@ -179,6 +179,13 @@ h4.static-with-rule {
     }
 }
 
+.ui-spinner input {
+    // stop jQuery UI spinner inputs from inheriting FMS input styles
+    padding: 1px;
+    border: none;
+    border-radius: 0;
+}
+
 @media print {
     #site-header .container {
         position: relative;
