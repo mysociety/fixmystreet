@@ -705,8 +705,6 @@ subtest "test stats" => sub {
             $mech->content_contains('fixed - council');
             $mech->content_contains(',hidden,');
         }
-
-        $mech->log_out_ok;
     };
 };
 
@@ -763,6 +761,26 @@ subtest 'email images to external partners' => sub {
             };
         };
 };
+
+subtest 'time_spent' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        my $report = $reports[0];
+
+        is $report->get_time_spent, 0, '0 minutes spent';
+        $report->update({ state => 'in progress' });
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->form_with_fields( 'time_spent' );
+        $mech->submit_form_ok( {
+            with_fields => {
+                time_spent => 10,
+            } });
+        is $report->get_time_spent, 10, '10 minutes spent';
+    };
+};
+
+$mech->log_out_ok;
 
 END {
     $mech->delete_body($subdivision);

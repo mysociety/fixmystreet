@@ -886,6 +886,18 @@ __PACKAGE__->has_many(
   }
 );
 
+sub get_time_spent {
+    my $self = shift;
+    my $admin_logs = $self->admin_log_entries->search({},
+        {
+            group_by => 'object_id',
+            columns => [
+                { sum_time_spent => { sum => 'time_spent' } },
+            ]
+        })->single;
+    return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
+}
+
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
