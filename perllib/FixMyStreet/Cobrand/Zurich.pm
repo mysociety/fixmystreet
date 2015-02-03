@@ -5,6 +5,7 @@ use DateTime;
 use POSIX qw(strcoll);
 use RABX;
 use Scalar::Util 'blessed';
+use DateTime::Format::Pg;
 
 use strict;
 use warnings;
@@ -755,7 +756,10 @@ sub admin_stats {
     if ($y && $m) {
         $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
         $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
-        $date_params{created} = { '>=', $c->stash->{start_date}, '<', $c->stash->{end_date} };
+        $date_params{created} = {
+            '>=', DateTime::Format::Pg->format_datetime($c->stash->{start_date}), 
+            '<',  DateTime::Format::Pg->format_datetime($c->stash->{end_date}),
+        };
     }
 
     my %params = (
@@ -767,12 +771,15 @@ sub admin_stats {
         my $problems = $c->model('DB::Problem')->search(
             {%date_params},
             {
+                join => 'admin_log_entries',
+                distinct => 1,
                 columns => [
                     'id',       'created',
                     'latitude', 'longitude',
                     'cobrand',  'category',
                     'state',    'user_id',
-                    'external_body'
+                    'external_body',
+                    { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
                 ]
             }
         );
@@ -787,8 +794,9 @@ sub admin_stats {
                 $report->id,           $report->created,
                 $report->local_coords, $report->category,
                 $report->state,        $report->user_id,
-                "\"$body_name\"" )
-              . "\n";
+                "\"$body_name\"",
+                $report->get_column('sum_time_spent') || 0,
+            ) . "\n";
         }
         $c->res->content_type('text/csv; charset=utf-8');
         $c->res->body($body);
