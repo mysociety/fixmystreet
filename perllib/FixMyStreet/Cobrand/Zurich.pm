@@ -5,6 +5,7 @@ use DateTime;
 use POSIX qw(strcoll);
 use RABX;
 use Scalar::Util 'blessed';
+use DateTime::Format::Pg;
 
 use strict;
 use warnings;
@@ -930,7 +931,10 @@ sub admin_stats {
     if ($y && $m) {
         $c->stash->{start_date} = DateTime->new( year => $y, month => $m, day => 1 );
         $c->stash->{end_date} = $c->stash->{start_date} + DateTime::Duration->new( months => 1 );
-        $date_params{created} = { '>=', $c->stash->{start_date}, '<', $c->stash->{end_date} };
+        $date_params{created} = {
+            '>=', DateTime::Format::Pg->format_datetime($c->stash->{start_date}), 
+            '<',  DateTime::Format::Pg->format_datetime($c->stash->{end_date}),
+        };
     }
 
     my %params = (
@@ -942,6 +946,8 @@ sub admin_stats {
         my $problems = $c->model('DB::Problem')->search(
             {%date_params},
             {
+                join => 'admin_log_entries',
+                distinct => 1,
                 columns => [
                     'id',       'created',
                     'latitude', 'longitude',
@@ -953,10 +959,11 @@ sub admin_stats {
                     'whensent', 'lastupdate',
                     'service',
                     'extra',
-                ],
+                    { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
+                ]
             }
         );
-        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Title,Detail,Media URL,Interface Used,Council Response\n";
+        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
         require Text::CSV;
         my $csv = Text::CSV->new({ binary => 1 });
         while ( my $report = $problems->next ) {
@@ -981,6 +988,7 @@ sub admin_stats {
                 $report->local_coords, $report->category,
                 $report->state,        $report->user_id,
                 $body_name,
+                $report->get_column('sum_time_spent') || 0,
                 $report->title,
                 $detail,
                 $c->cobrand->base_url . $report->get_photo_params->{url},
