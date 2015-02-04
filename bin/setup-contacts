@@ -1,0 +1,29 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+require 5.8.0;
+use feature 'say';
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::App;
+
+my $moniker = $ARGV[0];
+
+my $c = FixMyStreet::App->new();
+my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($moniker)->new({ c => $c });
+$c->stash->{cobrand} = $cobrand;
+
+die "Not a staging site, bailing out" unless $c->config->{STAGING_SITE}; # TODO, allow override via --force
+say "Applying contacts for $cobrand";
+
+
+$cobrand->ensure_bodies;
+$cobrand->setup_contacts;
+

@@ -1023,86 +1023,6 @@ sub admin_stats {
     return 1;
 }
 
-=head2 setup_contacts
-
-TODO: refactor into cobrand
-
-routines to update the extra for potholes (temporary setup hack, cargo-culted
-from Eastsussex/Harrogate, may in future be superseded either by
-Open311/integration or a better mechanism for creating rich contacts).
-
-Can run with a script or command line like:
-
- bin/cron-wrapper perl -MFixMyStreet::App -MFixMyStreet::Cobrand::Zurich -e \
- 'FixMyStreet::Cobrand::Zurich->new({c => FixMyStreet::App->new})->setup_contacts'
-
-=cut
-
-sub get_body_for_contact {
-    my ($self, $contact_data) = @_;
-    if (my $body_name = $contact_data->{body_name}) {
-        return $self->{c}->model('DB::Body')->find({ name => $body_name });
-    }
-    return;
-    # TODO: for UK Councils use
-    #   $self->{c}->model('DB::Body')->find(id => $self->council_id); 
-    #   # NB: (or better that's the area in BodyAreas)
-}
-
-sub ensure_bodies {
-    my ($self, $contact_data, $description) = @_;
-
-    die "Not a staging site, bailing out" unless $self->{c}->config->{STAGING_SITE}; # TODO, allow override via --force
-
-    my @bodies = $self->body_details_data;
-
-    my $bodies_rs = $self->{c}->model('DB::Body');
-
-    for my $body (@bodies) {
-        # following should work (having added Unique name/parent constraint, but doesn't)
-        # $bodies_rs->find_or_create( $body, { $parent ? ( key => 'body_name_parent_key' ) : () }  );
-        # let's keep it simple and just allow unique names
-        next if $bodies_rs->search({ name => $body->{name} })->count;
-        if (my $area_id = delete $body->{area_id}) {
-            $body->{body_areas} = [ { area_id => $area_id } ];
-        }
-        my $parent = $body->{parent};
-        if ($parent and ! ref $parent) {
-            $body->{parent} = { name => $parent };
-        }
-        $bodies_rs->find_or_create( $body );
-    }
-}
-
-=head2 body_details_data
-
-Returns a list of bodies to create with ensure_body.  These
-are mostly just passed to ->find_or_create, but there is some
-pre-processing so that you can enter:
-
-    area_id => 123,
-    parent => 'Big Town',
-
-instead of
-
-    body_areas => [ { area_id => 123 } ],
-    parent => { name => 'Big Town' },
-
-For example:
-
-    return (
-        {
-            name => 'Big Town',
-        },
-        {
-            name => 'Small town',
-            parent => 'Big Town',
-            area_id => 1234,
-        },
-            
-
-=cut
-
 sub body_details_data {
     return (
         {
@@ -1139,136 +1059,6 @@ sub body_details_data {
             area_id => 423017,
         },
     );
-}
-
-sub ensure_contact {
-    my ($self, $contact_data, $description) = @_;
-
-    my $category = $contact_data->{category} or die "No category provided";
-    my $email = $self->temp_email_to_update; # will only be set if newly created
-
-    my $body = $self->get_body_for_contact($contact_data) or die "No body found for $category";
-
-    my $contact_rs = $self->{c}->model('DB::Contact');
-
-    my $category_details = $contact_data->{category_details} || {};
-
-    if (my $old_name = delete $contact_data->{rename_from}) {
-        if (my $category = $contact_rs->find({
-                category => $old_name,
-            ,   body => $body,
-            })) {
-            $category->update({
-                category => $category,
-                whenedited => \'NOW()',
-                note => "Renamed $description",
-                %{ $category_details || {} },
-            });
-            return $category;
-        }
-    }
-
-    if ($contact_data->{delete}) {
-        my $contact = $contact_rs->search({
-            body => $body,
-            category => $category,
-            deleted => 0
-        });
-        if ($contact) {
-            say sprintf "Deleting: %s", $category;
-            $contact->update({
-                deleted => 1,
-                editor => 'automated script',
-                whenedited => \'NOW()',
-                note => "Deleted by script $description",
-            });
-        }
-        return;
-    }
-
-    return $contact_rs->find_or_create(
-        {
-            body => $body,
-            category => $category,
-
-            confirmed => 1,
-            deleted => 0,
-            email => $email,
-            editor => 'automated script',
-            note => 'created by automated script',
-            send_method => '',
-            whenedited => \'NOW()',
-            %{ $category_details || {} },
-        },
-        {
-            key => 'contacts_body_id_category_idx'
-        }
-    );
-}
-
-sub setup_contacts {
-    my ($self, $description) = @_;
-
-    my $c = $self->{c};
-    die "Not a staging site, bailing out" unless $c->config->{STAGING_SITE}; # TODO, allow override via --force
-
-    my @contact_details = $self->contact_details_data;
-
-    for my $detail (@contact_details) {
-        my ($category, $field, $category_details) = @$detail;
-        $self->update_contact( $category, $field, $category_details, $description );
-    }
-}
-
-sub update_contact {
-    my ($self, $contact_data, $description) = @_; 
-
-    my $contact_rs = $self->{c}->model('DB::Contact');
-
-    my $category = $contact_data->{category} or die "No category provided";
-
-    my $contact = $self->ensure_contact($category, $contact_data->{category_details})
-        or return; # e.g. nothing returned if deleted
-
-    if (my $fields = $contact_data->{fields}) {
-
-        my @fields = map { $self->get_field_extra($_) } @$fields;
-        my $note = sprintf 'Fields edited by automated script%s', $description ? " ($description)" : '';
-        $contact->update({
-            extra => \@fields,
-            confirmed => 1,
-            deleted => 0,
-            editor => 'automated script',
-            whenedited => \'NOW()',
-            note => "Updated fields $description",
-        });
-    }
-}
-
-sub get_field_extra {
-    my ($self, $field) = @_;
-
-    my %default = (
-        variable => 'true',
-        order => '1',
-        required => 'no',
-        datatype => 'string',
-        datatype_description => 'a string',
-    );
-
-    if ($field->{datatype} || '' eq 'boolean') {
-        %default = (
-            %default,
-            datatype => 'singlevaluelist',
-            datatype_description => 'Yes or No',
-            values => { value => [ 
-                    { key => ['No'],  name => ['No'] },
-                    { key => ['Yes'], name => ['Yes'] }, 
-            ] },
-        );
-    }
-
-    return { %default, %$field };
 }
 
 sub contact_details_data {
@@ -1319,6 +1109,13 @@ sub contact_details_data {
     );
 }
 
-sub temp_email_to_update { 'test@example.com' } 
+sub get_body_for_contact {
+    my ($self, $contact) = @_;
+    # temporary measure to assign un-bodied contacts to parent
+    # (this isn't at all how things will be setup in live, but is
+    # handy during dev.)
+    return $self->SUPER::get_body_for_contact($contact) || 
+        $self->{c}->model('DB::Body')->find({ name => 'Stadt Zurich' });
+}
 
 1;
