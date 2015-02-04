@@ -624,8 +624,7 @@ subtest "external report triggers email" => sub {
     $report->comments->delete; # delete the comments, as they confuse later tests
 };
 
-subtest "only superuser can see stats" => sub {
-    $mech->log_out_ok;
+subtest "superuser and dm can see stats" => sub {
     $user = $mech->log_in_ok( 'super@example.org' );
 
     FixMyStreet::override_config {
@@ -642,7 +641,7 @@ subtest "only superuser can see stats" => sub {
     }, sub {
         $mech->get( '/admin/stats' );
     };
-    is $mech->res->code, 404, "only superuser should be able to see stats page";
+    is $mech->res->code, 200, "dm can now also see stats page";
     $mech->log_out_ok;
 };
 
