@@ -309,11 +309,13 @@ sub admin_pages {
     my $c = $self->{c};
 
     my $type = $c->stash->{admin_type};
+
     my $pages = {
         'summary' => [_('Summary'), 0],
         'reports' => [_('Reports'), 2],
         'report_edit' => [undef, undef],
         'update_edit' => [undef, undef],
+        'stats' => [_('Stats'), 4],
     };
     return $pages if $type eq 'sdm';
 
@@ -325,7 +327,6 @@ sub admin_pages {
 
     $pages = { %$pages,
         'users' => [_('Users'), 3],
-        'stats' => [_('Stats'), 4],
         'user_edit' => [undef, undef],
     };
     return $pages if $type eq 'super';
