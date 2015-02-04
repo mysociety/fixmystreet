@@ -503,7 +503,7 @@ like $email->body, qr/test\@example.com/, 'body does contain email address';
 $mech->clear_emails_ok;
 $mech->log_out_ok;
 
-subtest "only superuser can see stats" => sub {
+subtest "superuser and dm can see stats" => sub {
     $user = $mech->log_in_ok( 'super@example.org' );
 
     FixMyStreet::override_config {
@@ -520,7 +520,7 @@ subtest "only superuser can see stats" => sub {
     }, sub {
         $mech->get( '/admin/stats' );
     };
-    is $mech->res->code, 404, "only superuser should be able to see stats page";
+    is $mech->res->code, 200, "dm can now also see stats page";
     $mech->log_out_ok;
 };
 

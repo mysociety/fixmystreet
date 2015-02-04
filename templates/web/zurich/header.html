@@ -68,10 +68,10 @@
             <li [% IF pagename == 'users' OR pagename == 'user_edit' %]class="current"[% END %]>
                 <a href="/admin/users">[% loc('Users') %]</a>
             </li>
+            [% END %]
             <li [% IF pagename == 'stats' %]class="current"[% END %]>
                 <a href="/admin/stats">[% loc('Stats') %]</a>
             </li>
-            [% END %]
             <li class="search-box">
                 <form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
                     <input type="text" name="search" size="20" id="search" placeholder="[% loc('Search reports') %]">
