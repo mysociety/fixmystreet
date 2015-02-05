@@ -4,3 +4,15 @@
 .big-green-banner {
     background-color: $trinidad_primary;
 }
+
+#site-logo,
+body.frontpage #site-logo {
+    margin-top: -10px;
+    margin-left: 10px;
+    height: 100px;
+    background: url(fixmystreett.png) 0px 0px no-repeat;
+    background-size: contain;
+}
+body.frontpage #site-logo {
+  margin-top: -20px;
+}
