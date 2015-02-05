@@ -69,6 +69,7 @@ $division->parent( $zurich->id );
 $division->send_method( 'Zurich' );
 $division->endpoint( 'division@example.org' );
 $division->update;
+$division->body_areas->find_or_create({ area_id => 274456 });
 my $subdivision = $mech->create_body_ok( 3, 'Subdivision A' );
 $subdivision->parent( $division->id );
 $subdivision->send_method( 'Zurich' );
@@ -641,6 +642,41 @@ subtest "hidden report email are only sent when requested" => sub {
         $mech->email_count_is(0);
         $mech->clear_emails_ok;
         $mech->log_out_ok;
+    };
+};
+
+subtest "photo must be supplied for categories that require it" => sub {
+    FixMyStreet::App->model('DB::Contact')->find_or_create({
+        body => $division,
+        category => "Graffiti - photo required",
+        email => "graffiti\@example.org",
+        confirmed => 1,
+        deleted => 0,
+        editor => "editor",
+        whenedited => DateTime->now(),
+        note => "note for graffiti",
+        extra => { photo_required => 1 }
+    });
+    FixMyStreet::override_config {
+        MAPIT_TYPES => [ 'O08' ],
+        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        ALLOWED_COBRANDS => [ 'zurich' ],
+        MAPIT_ID_WHITELIST => [ 274456 ],
+        MAPIT_GENERATION => 2,
+    }, sub {
+        $mech->post_ok( '/report/new', {
+            detail => 'Problem-Bericht',
+            lat => 47.381817,
+            lon => 8.529156,
+            email => 'user@example.org',
+            pc => '',
+            name => '',
+            category => 'Graffiti - photo required',
+            photo => '',
+            submit_problem => 1,
+        });
+        is $mech->res->code, 200, "missing photo shouldn't return anything but 200";
+        $mech->content_contains(_("Photo is required."), 'response should contain photo error message');
     };
 };
 
