@@ -20,7 +20,7 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq jhead libgmp-dev python-boto
 # A couple of other modules that normally come from packages, but no system stuff here
-  - cpanm -q Locale::gettext Math::BigInt::GMP
+  - cpanm -q Math::BigInt::GMP
   - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8 sv_SE.UTF-8
 install:
   - .travis/install
