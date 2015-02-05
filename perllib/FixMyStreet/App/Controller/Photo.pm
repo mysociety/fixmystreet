@@ -8,6 +8,7 @@ use DateTime::Format::HTTP;
 use Digest::SHA qw(sha1_hex);
 use File::Path;
 use File::Slurp;
+use Image::Size;
 use Path::Class;
 use if !$ENV{TRAVIS}, 'Image::Magick';
 
@@ -181,7 +182,11 @@ sub process_photo_upload : Private {
     my $photo_blob = eval {
         my $filename = $upload->tempname;
         my $out = `jhead -se -autorot $filename 2>&1`;
-        die _("Please upload a JPEG image only"."\n") if $out =~ /Not JPEG:/;
+        unless (defined $out) {
+            my ($w, $h, $err) = Image::Size::imgsize($filename);
+            die _("Please upload a JPEG image only") . "\n" if !defined $w || $err ne 'JPG';
+        }
+        die _("Please upload a JPEG image only") . "\n" if $out && $out =~ /Not JPEG:/;
         my $photo = $upload->slurp;
         return $photo;
     };
