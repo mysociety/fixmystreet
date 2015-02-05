@@ -43,6 +43,9 @@
       [% IF c.cobrand.moniker != 'zurich' %]
         <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]>
         <label class="inline" for="non_public">[% loc('Private') %]</label>
+      [% ELSE %]
+        <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
+        <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
       [% END %]
     </p>
 

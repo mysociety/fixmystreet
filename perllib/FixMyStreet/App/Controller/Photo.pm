@@ -143,6 +143,7 @@ sub process_photo : Private {
 
     return
          $c->forward('process_photo_upload_or_cache')
+      || $c->forward('process_photo_required')
       || 1;    # always return true
 }
 
@@ -164,6 +165,44 @@ sub process_photo_upload_or_cache : Private {
     my $fileid = $photoset->data;
 
     $c->stash->{upload_fileid} = $fileid or return;
+    return 1;
+}
+
+=head2 process_photo_required
+
+Checks that a report has a photo attached if any of its Contacts
+require it (by setting extra->photo_required == 1). Puts an error in
+photo_error on the stash if it's required and missing, otherwise returns
+true.
+
+(Note that as we have reached this action, we *know* that the photo
+is missing, otherwise it would have already been handled.)
+
+=cut
+
+sub process_photo_required : Private {
+    my ( $self, $c ) = @_;
+
+    # load the report
+    my $report = $c->stash->{report} or return 1; # don't check photo for updates
+    my $bodies = $c->stash->{bodies};
+
+    my @contacts = $c->       #
+      model('DB::Contact')    #
+      ->not_deleted           #
+      ->search(
+        {
+            body_id => [ keys %$bodies ],
+            category => $report->category
+        }
+      )->all;
+      foreach my $contact ( @contacts ) {
+          if ( $contact->get_extra_metadata('photo_required') ) {
+              $c->stash->{photo_error} = _("Photo is required.");
+              return;
+          }
+      }
+
     return 1;
 }
 
