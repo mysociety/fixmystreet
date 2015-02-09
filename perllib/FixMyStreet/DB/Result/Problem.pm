@@ -261,11 +261,11 @@ sub all_states {
 
 =head2
 
-    @states = FixMyStreet::DB::Problem::visible_states();
+    @visible_states = FixMyStreet::DB::Problem::visible_states();
+    @hidden_states  = FixMyStreet::DB::Problem::hidden_states();
 
-Get a list of states that should be visible on the site. If called in
-array context then returns an array of names, otherwise returns a
-HASHREF.
+Get a list of states that should be visible (or hidden) on the site. If called
+in array context then returns an array of names, otherwise returns a HASHREF.
 
 =cut
 
@@ -294,6 +294,10 @@ my $visible_states = {
     # 'duplicate'                   => 1,
     # 'closed'                      => 1,
     # 'internal referral'           => 1,
+
+sub hidden_states {
+    return wantarray ? keys %{$hidden_states} : $hidden_states;
+}
 
 sub visible_states {
     return wantarray ? keys %{$visible_states} : $visible_states;
