@@ -228,38 +228,6 @@ sub closed_states {
 
 =head2
 
-    @states = FixMyStreet::DB::Problem::visible_states();
-
-Get a list of states that should be visible on the site. If called in
-array context then returns an array of names, otherwise returns a
-HASHREF.
-
-=cut
-
-my $visible_states = {
-    'confirmed'                   => 1,
-    'investigating'               => 1,
-    'in progress'                 => 1,
-    'planned'                     => 1,
-    'action scheduled'            => 1,
-    'fixed'                       => 1,
-    'fixed - council'             => 1,
-    'fixed - user'                => 1,
-    'unable to fix'               => 1,
-    'not responsible'             => 1,
-    'duplicate'                   => 1,
-    'closed'                      => 1,
-    'internal referral'           => 1,
-};
-sub visible_states {
-    return wantarray ? keys %{$visible_states} : $visible_states;
-}
-sub visible_states_add_unconfirmed {
-    $visible_states->{unconfirmed} = 1;
-}
-
-=head2
-
     @states = FixMyStreet::DB::Problem::all_states();
 
 Get a list of all states that a problem can have. If called in
@@ -289,6 +257,66 @@ sub all_states {
     };
 
     return wantarray ? keys %{$states} : $states;
+}
+
+=head2
+
+    @states = FixMyStreet::DB::Problem::visible_states();
+
+Get a list of states that should be visible on the site. If called in
+array context then returns an array of names, otherwise returns a
+HASHREF.
+
+=cut
+
+my $hidden_states = {
+    'hidden' => 1,
+    'partial' => 1,
+    'unconfirmed' => 1,
+};
+
+my $visible_states = {
+    map {
+        $hidden_states->{$_} ? () : ($_ => 1)
+    } all_states()
+};
+    ## e.g.:
+    # 'confirmed'                   => 1,
+    # 'investigating'               => 1,
+    # 'in progress'                 => 1,
+    # 'planned'                     => 1,
+    # 'action scheduled'            => 1,
+    # 'fixed'                       => 1,
+    # 'fixed - council'             => 1,
+    # 'fixed - user'                => 1,
+    # 'unable to fix'               => 1,
+    # 'not responsible'             => 1,
+    # 'duplicate'                   => 1,
+    # 'closed'                      => 1,
+    # 'internal referral'           => 1,
+
+sub visible_states {
+    return wantarray ? keys %{$visible_states} : $visible_states;
+}
+
+sub visible_states_add {
+    my ($self, @states) = @_;
+    for my $state (@states) {
+        delete $hidden_states->{$state};
+        $visible_states->{$state} = 1;
+    }
+}
+
+sub visible_states_remove {
+    my ($self, @states) = @_;
+    for my $state (@states) {
+        delete $visible_states->{$state};
+        $hidden_states->{$state} = 1;
+    }
+}
+
+sub visible_states_add_unconfirmed {
+    $_[0]->visible_states_add('unconfirmed')
 }
 
 =head2
