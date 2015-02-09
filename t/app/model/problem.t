@@ -33,6 +33,23 @@ my $problem = $problem_rs->new(
     }
 );
 
+my $visible_states = $problem->visible_states;
+is_deeply $visible_states, {
+    'confirmed'                   => 1,
+    'investigating'               => 1,
+    'in progress'                 => 1,
+    'planned'                     => 1,
+    'action scheduled'            => 1,
+    'fixed'                       => 1,
+    'fixed - council'             => 1,
+    'fixed - user'                => 1,
+    'unable to fix'               => 1,
+    'not responsible'             => 1,
+    'duplicate'                   => 1,
+    'closed'                      => 1,
+    'internal referral'           => 1,
+    }, 'visible_states is correct';
+
 is $problem->confirmed,  undef, 'inflating null confirmed ok';
 is $problem->whensent,   undef, 'inflating null confirmed ok';
 is $problem->lastupdate, undef, 'inflating null confirmed ok';
