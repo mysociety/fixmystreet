@@ -299,9 +299,24 @@ sub visible_states {
     return wantarray ? keys %{$visible_states} : $visible_states;
 }
 
+sub visible_states_add {
+    my ($self, @states) = @_;
+    for my $state (@states) {
+        delete $hidden_states->{$state};
+        $visible_states->{$state} = 1;
+    }
+}
+
+sub visible_states_remove {
+    my ($self, @states) = @_;
+    for my $state (@states) {
+        delete $visible_states->{$state};
+        $hidden_states->{$state} = 1;
+    }
+}
+
 sub visible_states_add_unconfirmed {
-    delete $hidden_states->{unconfirmed};
-    $visible_states->{unconfirmed} = 1;
+    $_[0]->visible_states_add('unconfirmed')
 }
 
 =head2
