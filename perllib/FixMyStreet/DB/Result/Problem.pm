@@ -323,10 +323,6 @@ sub visible_states_remove {
     }
 }
 
-sub visible_states_add_unconfirmed {
-    $_[0]->visible_states_add('unconfirmed')
-}
-
 =head2
 
     @states = FixMyStreet::DB::Problem::council_states();
