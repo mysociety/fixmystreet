@@ -101,11 +101,14 @@
         ['confirmed', loc('Open')],
         ['planned', loc('Planned')],
         ['hidden', loc('Hidden')],
+        ['investigating', loc('Wish')],
+        ['partial', loc('Not contactable')],
+        ['unable to fix', loc('Jurisdiction unknown')],
   ] %]
     <option [% 'selected ' IF s.0 == problem.state %] value="[% s.0 %]">[% s.1 %]</option>
   [% END %]
   [% IF problem.state == 'closed' %]
-    <option selected value="closed">[% loc('Closed') %]</option>
+    <option selected value="closed">[% loc('Extern') %]</option>
   [% ELSIF problem.state == 'fixed - council' %]
     <option selected value="fixed - council">[% loc('Closed') %]</option>
   [% ELSIF problem.state == 'in progress' %]

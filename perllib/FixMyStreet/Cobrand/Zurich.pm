@@ -135,16 +135,35 @@ sub problem_as_hashref {
         $hashref->{title} = _('This report is awaiting moderation.');
         $hashref->{state} = 'submitted';
         $hashref->{state_t} = _('Submitted');
+        $hashref->{banner_id} = 'closed';
     } else {
         if ( $problem->state eq 'confirmed' ) {
             $hashref->{state} = 'open';
             $hashref->{state_t} = _('Open');
+            $hashref->{banner_id} = 'closed';
+        } elsif ( $problem->state eq 'closed' ) {
+            $hashref->{state} = 'extern'; # is this correct?
+            $hashref->{banner_id} = 'closed';
+            $hashref->{state_t} = _('Extern');
+        } elsif ( $problem->state eq 'unable to fix' ) {
+            $hashref->{state} = 'jurisdiction unknown'; # is this correct?
+            $hashref->{state_t} = _('Jurisdiction Unknown');
+            $hashref->{banner_id} = 'fixed'; # green
+        } elsif ( $problem->state eq 'partial' ) {
+            $hashref->{state} = 'not contactable'; # is this correct?
+            $hashref->{state_t} = _('Not contactable');
+            # no banner_id as hidden
+        } elsif ( $problem->state eq 'investigating' ) {
+            $hashref->{state} = 'wish'; # is this correct?
+            $hashref->{state_t} = _('Wish');
         } elsif ( $problem->is_fixed ) {
             $hashref->{state} = 'closed';
+            $hashref->{banner_id} = 'fixed';
             $hashref->{state_t} = _('Closed');
         } elsif ( $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
             $hashref->{state} = 'in progress';
             $hashref->{state_t} = _('In progress');
+            $hashref->{banner_id} = 'progress';
         }
     }
 

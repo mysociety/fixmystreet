@@ -99,13 +99,20 @@ sub load_problem_or_display_error : Private {
     my $problem
       = ( !$id || $id =~ m{\D} ) # is id non-numeric?
       ? undef                    # ...don't even search
-      : $c->cobrand->problems->find( { id => $id } );
+      : $c->cobrand->problems->find( { id => $id } )
+          or $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
 
     # check that the problem is suitable to show.
-    if ( !$problem || ($problem->state eq 'unconfirmed' && !$c->cobrand->show_unconfirmed_reports) || $problem->state eq 'partial' ) {
+    # hidden_states includes partial and unconfirmed, but they have specific handling,
+    # so we check for them first.
+    if ( $problem->state eq 'partial' ) {
         $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] );
     }
-    elsif ( $problem->state eq 'hidden' ) {
+    elsif ( $problem->state eq 'unconfirmed' ) {
+        $c->detach( '/page_error_404_not_found', [ _('Unknown problem ID') ] )
+            unless $c->cobrand->show_unconfirmed_reports ;
+    }
+    elsif ( $problem->hidden_states->{ $problem->state } ) {
         $c->detach(
             '/page_error_410_gone',
             [ _('That report has been removed from FixMyStreet.') ]    #
