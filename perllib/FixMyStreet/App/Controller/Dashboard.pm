@@ -128,7 +128,7 @@ sub index : Path : Args(0) {
     my $dtf = $c->model('DB')->storage->datetime_parser;
 
     my %counts;
-    my $now = DateTime->now( time_zone => 'local' );
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
     my $t = $now->clone->truncate( to => 'day' );
     $counts{wtd} = $c->forward( 'updates_search',
         [ $dtf->format_datetime( $t->clone->subtract( days => $t->dow - 1 ) ) ] );

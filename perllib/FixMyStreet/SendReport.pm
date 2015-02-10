@@ -23,8 +23,7 @@ sub should_skip {
 
     return 0 unless $row->send_fail_count;
 
-    my $tz = DateTime::TimeZone->new( name => 'local' );
-    my $now = DateTime->now( time_zone => $tz );
+    my $now = DateTime->now( time_zone => FixMyStreet->local_time_zone );
     my $diff = $now - $row->send_fail_timestamp;
 
     my $backoff = $row->send_fail_count > 1 ? 30 : 5;

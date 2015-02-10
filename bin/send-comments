@@ -145,7 +145,7 @@ while ( my $body = $bodies->next ) {
 sub bromley_retry_timeout {
     my $row = shift;
 
-    my $tz = DateTime::TimeZone->new( name => 'local' );
+    my $tz = FixMyStreet->local_time_zone;
     my $now = DateTime->now( time_zone => $tz );
     my $diff = $now - $row->send_fail_timestamp;
     if ( $diff->in_units( 'minutes' ) < 30 ) {

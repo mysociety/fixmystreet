@@ -95,25 +95,17 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
-use DateTime::TimeZone;
 use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 
 with 'FixMyStreet::Roles::Abuser';
 
-my $tz = DateTime::TimeZone->new( name => "local" );
-
-my $tz_f;
-$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
-    if FixMyStreet->config('TIME_ZONE');
-
 my $stz = sub {
     my ( $orig, $self ) = ( shift, shift );
     my $s = $self->$orig(@_);
     return $s unless $s && UNIVERSAL::isa($s, "DateTime");
-    $s->set_time_zone($tz);
-    $s->set_time_zone($tz_f) if $tz_f;
+    FixMyStreet->set_time_zone($s);
     return $s;
 };
 

@@ -115,24 +115,14 @@ sub email_alerts ($) {
                 }
                 $data{data} .= $row->{item_name} . ' : ' if $row->{item_name} && !$row->{item_anonymous};
                 if ( $cobrand->include_time_in_update_alerts ) {
-                    # this is basically recreating the code from the inflate wrapper
-                    # in the database model.
-                    my $tz;
-                    if ( FixMyStreet->config('TIME_ZONE') ) {
-                        $tz = FixMyStreet->config('TIME_ZONE');
-                    }
-
                     my $parser = DateTime::Format::Pg->new();
                     my $dt = $parser->parse_timestamp( $row->{item_confirmed} );
-                    my $l_tz = DateTime::TimeZone->new( name => "local" );
                     # We need to always set this otherwise we end up with the DateTime
                     # object being in the floating timezone in which case applying a
                     # subsequent timezone set will have no effect. 
-                    $dt->set_time_zone( $l_tz );
-                    if ( $tz ) {
-                        my $tz_obj = DateTime::TimeZone->new( name => $tz );
-                        $dt->set_time_zone( $tz_obj );
-                    }
+                    # this is basically recreating the code from the inflate wrapper
+                    # in the database model.
+                    FixMyStreet->set_time_zone($dt);
                     $data{data} .= $cobrand->prettify_dt( $dt, 'alert' ) . "\n\n";
                 }
                 $data{data} .= $row->{item_text} . "\n\n------\n\n";
