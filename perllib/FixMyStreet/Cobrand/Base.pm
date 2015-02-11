@@ -169,7 +169,6 @@ sub ensure_contact {
     }
 
     if ($contact_data->{delete}) {
-        warn "$body / $category";
         my $contact = $contact_rs->search({
             body_id => $body->id,
             category => $category,
