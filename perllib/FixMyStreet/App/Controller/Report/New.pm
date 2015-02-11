@@ -649,8 +649,9 @@ sub setup_categories_and_bodies : Private {
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
 
-                $category_extras{ $contact->category } = $contact->extra
-                    if $contact->extra;
+                if ( $contact->extra && $c->cobrand->moniker ne 'zurich' ) {
+                    $category_extras{ $contact->category } = $contact->extra;
+                }
 
                 $non_public_categories{ $contact->category } = 1 if $contact->non_public;
             }
