@@ -649,8 +649,9 @@ sub setup_categories_and_bodies : Private {
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
 
-                $category_extras{ $contact->category } = $contact->extra
-                    if $contact->extra;
+                if ( $contact->extra && $c->cobrand->moniker ne 'zurich' ) {
+                    $category_extras{ $contact->category } = $contact->extra;
+                }
 
                 $non_public_categories{ $contact->category } = 1 if $contact->non_public;
             }
@@ -889,31 +890,33 @@ sub process_report : Private {
             if $body_string && @{ $c->stash->{missing_details_bodies} };
         $report->bodies_str($body_string);
 
-        my @extra = ();
-        my $metas = $contacts[0]->extra;
-
-        foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' ) {
-                unless ( $c->request->param( $field->{code} ) ) {
-                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
-                }
-            }
-            push @extra, {
-                name => $field->{code},
-                description => $field->{description},
-                value => $c->request->param( $field->{code} ) || '',
-            };
-        }
-
         if ( $c->stash->{non_public_categories}->{ $report->category } ) {
             $report->non_public( 1 );
         }
 
-        $c->cobrand->process_extras( $c, $contacts[0]->body_id, \@extra );
+        if ($c->cobrand->moniker ne 'zurich') {
+            my @extra = ();
+            my $metas = $contacts[0]->extra;
 
-        if ( @extra ) {
-            $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
-            $report->extra( \@extra );
+            foreach my $field ( @$metas ) {
+                if ( lc( $field->{required} ) eq 'true' ) {
+                    unless ( $c->request->param( $field->{code} ) ) {
+                        $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                    }
+                }
+                push @extra, {
+                    name => $field->{code},
+                    description => $field->{description},
+                    value => $c->request->param( $field->{code} ) || '',
+                };
+            }
+
+            $c->cobrand->process_extras( $c, $contacts[0]->body_id, \@extra );
+
+            if ( @extra ) {
+                $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
+                $report->extra( \@extra );
+            }
         }
     } elsif ( @{ $c->stash->{bodies_to_list} } ) {
 
