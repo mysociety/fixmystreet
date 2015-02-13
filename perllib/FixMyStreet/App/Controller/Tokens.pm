@@ -66,10 +66,8 @@ sub confirm_problem : Path('/P') {
     # For Zurich, email confirmation simply sets a flag, it does not change the
     # problem state, log in, or anything else
     if ($c->cobrand->moniker eq 'zurich') {
-        my $extra = { %{ $problem->extra || {} } };
-        $extra->{email_confirmed} = 1;
+        $problem->set_extra_metadata( email_confirmed => 1 );
         $problem->update( {
-            extra => $extra,
             confirmed => \'ms_current_timestamp()',
         } );
 

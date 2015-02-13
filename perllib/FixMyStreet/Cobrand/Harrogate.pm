@@ -112,7 +112,9 @@ sub temp_update_contacts {
         }
 
         $contact->update({
-            extra => [ { %default, %$field } ],
+            # XXX: we're just setting extra with the expected layout,
+            # this could be encapsulated more nicely
+            extra => { _fields => [ { %default, %$field } ] },
             confirmed => 1,
             deleted => 0,
             editor => 'automated script',
@@ -223,7 +225,7 @@ sub process_additional_metadata_for_email {
     my ($self, $problem, $h) = @_;
 
     my $additional = '';
-    if (my $extra = $problem->extra) {
+    if (my $extra = $problem->get_extra_fields) {
         $additional = join "\n\n", map {
             if ($_->{name} eq 'INFO_TEXT') {
                 ();

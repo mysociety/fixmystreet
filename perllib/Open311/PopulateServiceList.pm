@@ -265,11 +265,7 @@ sub _add_meta_to_contact {
         @meta = grep { ! $ignore{ $_->{ code } } } @meta;
     }
 
-    if ( @meta ) {
-        $contact->extra( \@meta );
-    } else {
-        $contact->extra( undef );
-    }
+    $contact->set_extra_fields(@meta);
     $contact->update;
 }
 

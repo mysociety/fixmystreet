@@ -37,7 +37,7 @@ sub send {
 
             $revert = 1;
 
-            my $extra = $row->extra;
+            my $extra = $row->get_extra_fields();
             if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
                 push @$extra, { name => 'northing', value => $h->{northing} };
                 push @$extra, { name => 'easting', value => $h->{easting} };
@@ -49,33 +49,31 @@ sub send {
             push @$extra, { name => 'email_alerts_requested', value => 'FALSE' }; # always false as can never request them
             push @$extra, { name => 'requested_datetime', value => DateTime::Format::W3CDTF->format_datetime($row->confirmed->set_nanosecond(0)) };
             push @$extra, { name => 'email', value => $row->user->email };
-            $row->extra( $extra );
-
-            $always_send_latlong = 0;
-            $send_notpinpointed = 1;
-            $use_service_as_deviceid = 0;
-
             # make sure we have last_name attribute present in row's extra, so
             # it is passed correctly to Bromley as attribute[]
             if ( $row->cobrand ne 'bromley' ) {
                 my ( $firstname, $lastname ) = ( $row->name =~ /(\w+)\.?\s+(.+)/ );
                 push @$extra, { name => 'last_name', value => $lastname };
             }
+            $row->set_extra_fields( @$extra );
 
+            $always_send_latlong = 0;
+            $send_notpinpointed = 1;
+            $use_service_as_deviceid = 0;
             $extended_desc = 0;
         }
 
         # extra Oxfordshire fields: send nearest street, postcode, northing and easting, and the FMS id
         if ( $row->bodies_str =~ /\b(?:$COUNCIL_ID_OXFORDSHIRE|$COUNCIL_ID_WARWICKSHIRE)\b/ ) {
 
-            my $extra = $row->extra;
+            my $extra = $row->get_extra_fields;
             push @$extra, { name => 'external_id', value => $row->id };
             push @$extra, { name => 'closest_address', value => $h->{closest_address} } if $h->{closest_address};
             if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
                 push @$extra, { name => 'northing', value => $h->{northing} };
                 push @$extra, { name => 'easting', value => $h->{easting} };
             }
-            $row->extra( $extra );
+            $row->set_extra_fields( @$extra );
 
             if ($row->bodies_str =~ /$COUNCIL_ID_OXFORDSHIRE/) {
                 $extended_desc = 'oxfordshire';
@@ -131,7 +129,7 @@ sub send {
 
         if ($row->cobrand eq 'fixmybarangay') {
             # FixMyBarangay endpoints expect external_id as an attribute, as do Oxfordshire
-            $row->extra( [ { 'name' => 'external_id', 'value' => $row->id  } ]  );
+            $row->set_extra_fields( { 'name' => 'external_id', 'value' => $row->id  } );
             $revert = 1;
         }
 
