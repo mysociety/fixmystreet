@@ -815,4 +815,6 @@ sub admin_stats {
     return 1;
 }
 
+sub default_extra_layout { {} }
+
 1;
