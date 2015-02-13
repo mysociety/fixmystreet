@@ -232,8 +232,9 @@ sub process_photo_required : Private {
     my ( $self, $c ) = @_;
 
     # load the report
-    my $report = $c->stash->{report};
+    my $report = $c->stash->{report} or return 1; # don't check photo for updates
     my $bodies = $c->stash->{bodies};
+
     my @contacts = $c->       #
       model('DB::Contact')    #
       ->not_deleted           #
