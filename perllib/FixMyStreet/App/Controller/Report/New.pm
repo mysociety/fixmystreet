@@ -890,33 +890,31 @@ sub process_report : Private {
             if $body_string && @{ $c->stash->{missing_details_bodies} };
         $report->bodies_str($body_string);
 
+        my @extra = ();
+        my $metas = $contacts[0]->extra;
+
+        foreach my $field ( @$metas ) {
+            if ( lc( $field->{required} ) eq 'true' ) {
+                unless ( $c->request->param( $field->{code} ) ) {
+                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                }
+            }
+            push @extra, {
+                name => $field->{code},
+                description => $field->{description},
+                value => $c->request->param( $field->{code} ) || '',
+            };
+        }
+
         if ( $c->stash->{non_public_categories}->{ $report->category } ) {
             $report->non_public( 1 );
         }
 
-        if ($c->cobrand->moniker ne 'zurich') {
-            my @extra = ();
-            my $metas = $contacts[0]->extra;
+        $c->cobrand->process_extras( $c, $contacts[0]->body_id, \@extra );
 
-            foreach my $field ( @$metas ) {
-                if ( lc( $field->{required} ) eq 'true' ) {
-                    unless ( $c->request->param( $field->{code} ) ) {
-                        $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
-                    }
-                }
-                push @extra, {
-                    name => $field->{code},
-                    description => $field->{description},
-                    value => $c->request->param( $field->{code} ) || '',
-                };
-            }
-
-            $c->cobrand->process_extras( $c, $contacts[0]->body_id, \@extra );
-
-            if ( @extra ) {
-                $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
-                $report->extra( \@extra );
-            }
+        if ( @extra ) {
+            $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
+            $report->extra( \@extra );
         }
     } elsif ( @{ $c->stash->{bodies_to_list} } ) {
 
