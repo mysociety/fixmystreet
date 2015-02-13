@@ -889,8 +889,9 @@ sub process_report : Private {
             if $body_string && @{ $c->stash->{missing_details_bodies} };
         $report->bodies_str($body_string);
 
-        my @extra = ();
-        my $metas = $contacts[0]->extra;
+        my @extra;
+        # NB: we are only checking extras for the *first* retrieved contact.
+        my $metas = $contacts[0]->get_extra_fields($c);
 
         foreach my $field ( @$metas ) {
             if ( lc( $field->{required} ) eq 'true' ) {
@@ -913,7 +914,7 @@ sub process_report : Private {
 
         if ( @extra ) {
             $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
-            $report->extra( \@extra );
+            $report->set_extra_fields( $c, @extra );
         }
     } elsif ( @{ $c->stash->{bodies_to_list} } ) {
 

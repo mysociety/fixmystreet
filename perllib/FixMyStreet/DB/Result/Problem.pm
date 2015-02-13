@@ -158,7 +158,8 @@ use Moose;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
 
-with 'FixMyStreet::Roles::Abuser';
+with 'FixMyStreet::Roles::Abuser',
+     'FixMyStreet::Roles::Extra';
 
 =head2
 
