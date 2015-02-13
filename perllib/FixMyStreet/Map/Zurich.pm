@@ -11,10 +11,11 @@ use Geo::Coordinates::CH1903;
 use Math::Trig;
 use Utils;
 
-use constant ZOOM_LEVELS    => 8;
+use constant ZOOM_LEVELS    => 9;
 use constant DEFAULT_ZOOM   => 5;
 use constant MIN_ZOOM_LEVEL => 0;
 use constant ID_OFFSET      => 2;
+use constant TILE_SIZE      => 256;
 
 sub map_tiles {
     my ( $self, %params ) = @_;
@@ -83,13 +84,12 @@ sub latlon_to_tile($$$) {
     my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($lat, $lon);
 
     my $matrix_id = $zoom + ID_OFFSET;
-    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500' );
+    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500', '250' );
     my $tileOrigin = { lat => 30814423, lon => -29386322 };
-    my $tileSize = 256;
     my $res = $scales[$matrix_id] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
 
-    my $fx = ( $x - $tileOrigin->{lon} ) / ($res * $tileSize);
-    my $fy = ( $tileOrigin->{lat} - $y ) / ($res * $tileSize);
+    my $fx = ( $x - $tileOrigin->{lon} ) / ($res * TILE_SIZE);
+    my $fy = ( $tileOrigin->{lat} - $y ) / ($res * TILE_SIZE);
 
     return ( $fx, $fy, $matrix_id );
 }
@@ -115,13 +115,12 @@ sub tile_to_latlon {
     my ($fx, $fy, $zoom) = @_;
 
     my $matrix_id = $zoom + ID_OFFSET;
-    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500' );
+    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500', '250' );
     my $tileOrigin = { lat => 30814423, lon => -29386322 };
-    my $tileSize = 256;
     my $res = $scales[$matrix_id] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
 
-    my $x = $fx * $res * $tileSize + $tileOrigin->{lon};
-    my $y = $tileOrigin->{lat} - $fy * $res * $tileSize;
+    my $x = $fx * $res * TILE_SIZE + $tileOrigin->{lon};
+    my $y = $tileOrigin->{lat} - $fy * $res * TILE_SIZE;
 
     my ($lat, $lon) = Geo::Coordinates::CH1903::to_latlon($x, $y);
 
@@ -141,16 +140,16 @@ sub latlon_to_px($$$$$) {
 # C is centre tile reference of displayed map
 sub tile_to_px {
     my ($p, $c) = @_;
-    $p = 256 * ($p - $c + 1);
+    $p = TILE_SIZE * ($p - $c + 1);
     $p = int($p + .5 * ($p <=> 0));
     return $p;
 }
 
 sub click_to_tile {
     my ($pin_tile, $pin) = @_;
-    $pin -= 256 while $pin > 256;
-    $pin += 256 while $pin < 0;
-    return $pin_tile + $pin / 256;
+    $pin -= TILE_SIZE while $pin > TILE_SIZE;
+    $pin += TILE_SIZE while $pin < 0;
+    return $pin_tile + $pin / TILE_SIZE;
 }
 
 # Given some click co-ords (the tile they were on, and where in the
