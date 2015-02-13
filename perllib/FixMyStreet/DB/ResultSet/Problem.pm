@@ -302,10 +302,14 @@ sub send_reports {
             ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude} );
 
             # email templates don't have conditionals so we need to farmat this here
-            $h{easting_northing}                             #
+            if ($row->bodies_str =~ /\b2224\b/) { # East Sussex County Council
+              # East Sussex's Dynamics: convenient to cut-and-past with a slash
+              $h{easting_northing} = "Easting/Northing: $h{easting}/$h{northing}\n\n";
+            } else {
+              $h{easting_northing}                             #
               = "Easting: $h{easting}\n\n"                   #
               . "Northing: $h{northing}\n\n";
-
+            }
         }
 
         if ( $row->used_map ) {
