@@ -957,4 +957,6 @@ sub get_body_for_contact {
         $self->{c}->model('DB::Body')->find({ name => 'Stadt Zurich' });
 }
 
+sub default_extra_layout { {} }
+
 1;

@@ -273,5 +273,7 @@ sub get_field_extra {
 
 sub temp_email_to_update { 'test@example.com' } 
 
+sub default_extra_layout { [] }
+
 1;
 
