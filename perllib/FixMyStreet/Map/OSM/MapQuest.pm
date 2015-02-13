@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::OSM::CycleMap
 # OSM CycleMap maps on FixMyStreet.
 #

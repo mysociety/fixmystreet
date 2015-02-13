@@ -5,19 +5,18 @@ use warnings;
 
 my $root;
 
-BEGIN {    # add the local perllibs too
-
-    # Can't use Path::Class here as we'd load the old debian one.
-    $root = __FILE__ =~ m{^(.*)/(web|bin)/\.\..*$} ? $1 : `pwd`;
-    chomp($root);
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    $root = dirname(File::Spec->rel2abs(__FILE__));
 }
 
 # Set the environment for the FixMyStreet project
 
-# Add the lib/perl5 in perl-external so that we can load local::lib from there
+# Add the lib/perl5 in local so that we can load local::lib from there
 use lib "$root/local/lib/perl5";
 
-# Add the perl-external dirs properly using local::lib
+# Now add the local dir properly using local::lib
 use local::lib "$root/local";
 
 use lib "$root/commonlib/perllib";

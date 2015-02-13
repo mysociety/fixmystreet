@@ -1,0 +1,55 @@
+                    [% IF pagefooter %]
+                    <footer role="content-info">
+                        [% INCLUDE 'front/footer-marketing.html' %]
+                    </footer>
+                    [% END %]
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+            [% IF c.cobrand.moniker == 'fixmystreet' AND bodyclass != 'mappage' %]
+                [% INCLUDE 'footer-nav.html' %]
+            [% END %]
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+
+                    <ul id="main-menu">
+                        [% selected = c.req.uri.path == '/' %]
+                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                            <[% IF selected %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn">
+                            [% loc("Report a problem") %]</[% selected == '/' ? 'span' : 'a' %]></li>
+
+                        [% selected = c.req.uri.path == '/my' %]
+                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                            <[% IF selected %]span[% ELSE %]a href="/my"[% END %]>
+                            [% loc("Your reports") %]</[% selected ? 'span' : 'a' %]></li>
+
+                        [% selected = c.req.uri.path == '/reports/Harrogate' %]
+                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                            <[% IF selected %]span[% ELSE %]a href="/reports"[% END %]>
+                            [% loc("All reports") %]</[% selected ? 'span' : 'a' %]></li>
+
+                        [% selected = c.req.uri.path == '/alert' %]
+                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                            <[% IF selected %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END %]>
+                            [% loc("Local alerts") %]</[% selected ? 'span' : 'a' %]></li>
+
+                        [% selected = c.req.uri.path == '/faq' %]
+                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                            <[% IF selected %]span[% ELSE %]a href="/faq"[% END %]>
+                            [% loc("Help") %]</[% selected ? 'span' : 'a' %]></li>
+
+                        [% selected = c.req.uri.path == '/privacy' %]
+                        <li id="top-nav-privacy" [% selected ? 'class="menu-item-selected"' : '' %]>
+                            <[% IF selected %]span[% ELSE %]a href="/privacy"[% END %]>
+                            [% loc("Privacy") %]</[% selected ? 'span' : 'a' %]></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+<!-- [% INCLUDE 'debug_footer.html' %] -->
+    </div> <!-- .wrapper -->
+</body>
+</html>

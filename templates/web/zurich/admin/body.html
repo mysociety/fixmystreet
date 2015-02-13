@@ -19,7 +19,7 @@
         </tr>
         [% WHILE ( cat = contacts.next ) %]
             <tr[% IF cat.deleted %] class="is-deleted"[% END %]>
-                <td><a href="[% c.uri_for( 'body_edit', body_id, cat.category ) %]">[% cat.category %]</a></td>
+                <td><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category %]</a></td>
                 <td>[% cat.email | html %]</td>
                 <td>[% cat.editor %]</td>
                 <td>[% cat.note | html %]</td>

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # This script utilises the standard Open311 way of getting updates on reports
 # (by fetching all reports for a body and looking for updates). If possible,
@@ -8,6 +8,14 @@
 
 use strict;
 use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
 use Open311::GetUpdates;
 use FixMyStreet::App;
 

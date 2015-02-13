@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 =head1 NAME
 
@@ -31,9 +31,13 @@ backup of your database before running.
 use strict;
 use warnings;
 
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../commonlib/perllib";
+my $bin_dir;
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    $bin_dir = dirname(File::Spec->rel2abs($0));
+    require "$bin_dir/../setenv.pl";
+}
 
 use mySociety::Config;
 use mySociety::DBHandle qw(dbh);
@@ -41,7 +45,7 @@ use mySociety::MaPit;
 use Getopt::Long;
 use Pod::Usage;
 
-mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+mySociety::Config::set_file("$bin_dir/../conf/general");
 my %args = (
     Name => mySociety::Config::get('FMS_DB_NAME'),
     User => mySociety::Config::get('FMS_DB_USER'),
@@ -115,7 +119,7 @@ if ($upgrade) {
     if ($version) {
         die "Not currently implemented";
     }
-    for my $path (glob("$FindBin::Bin/../db/schema_*")) {
+    for my $path (glob("$bin_dir/../db/schema_*")) {
         my ($name) = $path =~ /schema_(.*)\.sql$/;
         next if $name le $current_version;
         next if $name =~ /$current_version-/; # For number only match
@@ -146,7 +150,7 @@ if ($upgrade) {
 
 if ($downgrade) {
     my %downgrades;
-    for my $path (glob("$FindBin::Bin/../db/downgrade_*")) {
+    for my $path (glob("$bin_dir/../db/downgrade_*")) {
         my ($from, $to) = $path =~ /downgrade_(.*)---(.*)\.sql$/;
         next unless $from eq $current_version;
         $downgrades{$to} = $path;

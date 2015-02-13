@@ -40,8 +40,10 @@ sub around_index : Path : Args(0) {
     # Try to create a location for whatever we have
     my $ret = $c->forward('/location/determine_location_from_coords')
         || $c->forward('/location/determine_location_from_pc');
-    return unless $ret;
-    return $c->res->redirect('/') if $ret == -1 && !$partial_report;
+    unless ($ret) {
+        return $c->res->redirect('/') unless $c->req->param('pc') || $partial_report;
+        return;
+    }
 
     # Check to see if the spot is covered by a area - if not show an error.
     return unless $c->cobrand->moniker eq 'fixmybarangay' || $c->forward('check_location_is_acceptable');
@@ -158,12 +160,6 @@ sub display_location : Private {
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
 
-    # truncate the lat,lon for nicer rss urls, and strings for outputting
-    my $short_latitude  = Utils::truncate_coordinate($latitude);
-    my $short_longitude = Utils::truncate_coordinate($longitude);
-    $c->stash->{short_latitude}  = $short_latitude;
-    $c->stash->{short_longitude} = $short_longitude;
-
     # Deal with pin hiding/age
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     $c->stash->{all_pins} = $all_pins;
@@ -171,7 +167,7 @@ sub display_location : Private {
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
-      FixMyStreet::Map::map_features( $c, $short_latitude, $short_longitude,
+      FixMyStreet::Map::map_features( $c, $latitude, $longitude,
         $interval );
 
     # copy the found reports to the stash
@@ -199,8 +195,8 @@ sub display_location : Private {
     $c->stash->{page} = 'around'; # So the map knows to make clickable pins, update on pan
     FixMyStreet::Map::display_map(
         $c,
-        latitude  => $short_latitude,
-        longitude => $short_longitude,
+        latitude  => $latitude,
+        longitude => $longitude,
         clickable => 1,
         pins      => \@pins,
         area      => $c->cobrand->areas_on_around,
@@ -317,7 +313,7 @@ sub _geocode : Private {
         if ( ref($suggestions) eq 'ARRAY' ) {
             foreach (@$suggestions) {
                 push @addresses, decode_utf8($_->{address});
-		push @locations, { address => decode_utf8($_->{address}), lat => $_->{latitude}, long => $_->{longitude} };
+                push @locations, { address => decode_utf8($_->{address}), lat => $_->{latitude}, long => $_->{longitude} };
             }
             $response = { suggestions => \@addresses, locations => \@locations };
         } else {

@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2014-11-19 16:48+0000\n"
-"PO-Revision-Date: 2014-10-13 21:23+0000\n"
-"Last-Translator: Vladyslav <vladislav.turenko@gmail.com>\n"
+"POT-Creation-Date: 2015-01-20 16:59+0000\n"
+"PO-Revision-Date: 2014-11-19 18:30+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Ukrainian (Ukraine) (http://www.transifex.com/projects/p/fixmystreet/language/uk_UA/)\n"
 "Language: uk_UA\n"
 "MIME-Version: 1.0\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:618
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:383
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:386
 msgid " and "
 msgstr "і"
 
@@ -30,8 +30,8 @@ msgstr "і"
 #: templates/web/base/report/new/councils_text_all.html:5
 #: templates/web/base/report/new/councils_text_none.html:19
 #: templates/web/base/report/new/councils_text_none.html:21
-#: templates/web/base/report/new/councils_text_some.html:21
-#: templates/web/base/report/new/councils_text_some.html:23
+#: templates/web/base/report/new/councils_text_some.html:20
+#: templates/web/base/report/new/councils_text_some.html:22
 #: templates/web/base/report/new/councils_text_some.html:5
 msgid " or "
 msgstr "або"
@@ -138,11 +138,9 @@ msgstr "(не відправлено муніципалітету)"
 msgid "(optional)"
 msgstr "(вибірково)"
 
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:37
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:43
-#, fuzzy
+#: templates/web/fixmystreet/report/public_label.html:1
 msgid "(public)"
-msgstr "Публічно"
+msgstr ""
 
 #: templates/web/base/reports/_list-entry.html:2
 #: templates/web/fixmystreet/report/_item.html:20
@@ -200,7 +198,6 @@ msgstr ""
 "</p>"
 
 #: templates/web/base/questionnaire/completed-open.html:6
-#, fuzzy
 msgid ""
 "<p style=\"font-size:150%\">We&rsquo;re sorry to hear that. We have two\n"
 "suggestions: why not try writing to your local representatives or, if\n"
@@ -208,11 +205,6 @@ msgid ""
 "not <a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
 "</p>"
 msgstr ""
-"<p style=\"font-size:150%\">We&rsquo;re sorry to hear that. We have two\n"
-"suggestions: why not try writing to your local representative or, if it&rsquo;s\n"
-"a problem that could be fixed by local people working together, why not\n"
-"<a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
-"</p>"
 
 #: templates/web/base/questionnaire/completed.html:9
 msgid ""
@@ -239,7 +231,7 @@ msgstr "<strong>Ні</strong> Я підтверджу сповіщення е-п
 msgid "<strong>No</strong> Let me confirm my update by email"
 msgstr "<strong>Ні</strong> Я підтверджу поновлення е-поштою"
 
-#: templates/web/fixmystreet/auth/general.html:50
+#: templates/web/fixmystreet/auth/general.html:51
 #: templates/web/zurich/auth/general.html:51
 msgid "<strong>No</strong> let me sign in by email"
 msgstr "<strong>Ні</strong> я залогінюсь через е-пошту"
@@ -258,15 +250,14 @@ msgstr "<strong>Ні</strong>, Я підтверджу поновлення е-�
 
 #: templates/web/base/tokens/confirm_problem.html:19
 #: templates/web/base/tokens/confirm_problem.html:20
-#, fuzzy
 msgid "<strong>We will now send it to the council</strong>."
-msgstr "і <strong>ми надішлем це відповідним органам</strong>"
+msgstr ""
 
 #: templates/web/base/auth/general.html:37
 #: templates/web/base/report/new/fill_in_details_form.html:141
 #: templates/web/base/report/update-form.html:95
-#: templates/web/fixmystreet/auth/general.html:36
-#: templates/web/fixmystreet/auth/general.html:38
+#: templates/web/fixmystreet/auth/general.html:37
+#: templates/web/fixmystreet/auth/general.html:39
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:15
 #: templates/web/fixmystreet/report/update-form.html:89
 msgid "<strong>Yes</strong> I have a password"
@@ -298,13 +289,13 @@ msgstr "Додайте <strong>запис</strong> для кожної адмі�
 msgid "Add a contact using the form below."
 msgstr "Додати контакт через форму нижче."
 
-#: templates/web/base/admin/bodies.html:67
+#: templates/web/base/admin/bodies.html:74
 #: templates/web/base/admin/body-form.html:233
 #: templates/web/zurich/admin/body-form.html:51
 msgid "Add body"
 msgstr "Додати запис"
 
-#: templates/web/base/admin/body.html:104
+#: templates/web/base/admin/body.html:108
 #: templates/web/zurich/admin/body.html:31
 msgid "Add new category"
 msgstr "Додати нову категорію"
@@ -336,7 +327,7 @@ msgstr "Повідомляти мене про оновлення"
 
 #: templates/web/base/reports/index.html:3
 #: templates/web/zurich/admin/stats.html:5
-#: templates/web/zurich/reports/index.html:15
+#: templates/web/zurich/reports/index.html:12
 msgid "All Reports"
 msgstr "Всі звіти"
 
@@ -398,7 +389,7 @@ msgid "Are you a <strong>developer</strong>? Would you like to contribute to Fix
 msgstr "Ви <strong>розробник</strong>? Хочете долучитись до проекту?"
 
 #: templates/web/fiksgatami/front/footer-marketing.html:14
-#: templates/web/fixmystreet/front/footer-marketing.html:14
+#: templates/web/fixmystreet/front/footer-marketing.html:16
 msgid "Are you a developer?"
 msgstr "Ви розробник?"
 
@@ -407,17 +398,22 @@ msgstr "Ви розробник?"
 msgid "Area covered"
 msgstr "Зона покрита"
 
-#: templates/web/zurich/admin/report_edit.html:144
+#: templates/web/base/admin/bodies.html:15
+#: templates/web/base/admin/body.html:52
+msgid "As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."
+msgstr ""
+
+#: templates/web/zurich/admin/report_edit.html:141
 #: templates/web/zurich/admin/stats.html:36
 msgid "Assign to different category:"
 msgstr "Назначити іншу категорію:"
 
-#: templates/web/zurich/admin/report_edit.html:153
+#: templates/web/zurich/admin/report_edit.html:150
 msgid "Assign to external body:"
 msgstr "Назначити зовнішньому відділу:"
 
-#: templates/web/zurich/admin/report_edit.html:133
-#: templates/web/zurich/admin/report_edit.html:190
+#: templates/web/zurich/admin/report_edit.html:130
+#: templates/web/zurich/admin/report_edit.html:187
 msgid "Assign to subdivision:"
 msgstr "Назначити підрозділу:"
 
@@ -426,11 +422,11 @@ msgstr "Назначити підрозділу:"
 msgid "Assigned to %s"
 msgstr "Назначити %s"
 
-#: templates/web/base/open311/index.html:86
+#: templates/web/base/open311/index.html:84
 msgid "At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date."
 msgstr "At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date."
 
-#: templates/web/base/open311/index.html:78
+#: templates/web/base/open311/index.html:76
 msgid "At the moment only searching for and looking at reports work."
 msgstr "Наразі лише роздивляюсь як працюють звіти"
 
@@ -471,7 +467,7 @@ msgstr "По даті"
 msgid "Can't see the map? <em>Skip this step</em>"
 msgstr "Не бачите мапу? <em>Пропустіть цей крок</em>"
 
-#: templates/web/base/admin/body.html:56
+#: templates/web/base/admin/body.html:60
 #: templates/web/base/admin/index.html:55
 #: templates/web/base/report/new/category.html:10
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:53
@@ -488,17 +484,17 @@ msgstr "Категорія"
 msgid "Category fix rate for problems > 4 weeks old"
 msgstr "В цій категорії проблеми не вирішуються > 4 тижнів"
 
-#: templates/web/base/admin/body.html:126
-#: templates/web/base/admin/body_edit.html:23
+#: templates/web/base/admin/body.html:130
+#: templates/web/base/admin/category_edit.html:23
 #: templates/web/base/admin/report_edit.html:61
 #: templates/web/base/report/new/fill_in_details_form.html:68
 #: templates/web/zurich/admin/body.html:43
-#: templates/web/zurich/admin/report_edit-sdm.html:45
-#: templates/web/zurich/admin/report_edit.html:143
+#: templates/web/zurich/admin/report_edit-sdm.html:42
+#: templates/web/zurich/admin/report_edit.html:140
 msgid "Category:"
 msgstr "Категорія:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:374
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:377
 msgid "Category: %s"
 msgstr "Категорія: %s"
 
@@ -509,7 +505,7 @@ msgstr "Категорія: %s"
 msgid "Change password"
 msgstr "Змінити пароль"
 
-#: templates/web/base/admin/body.html:148
+#: templates/web/base/admin/body.html:152
 msgid ""
 "Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.\n"
 "                If you are not sure of the origin or validity of the contact, leave this unchecked."
@@ -517,13 +513,13 @@ msgstr ""
 "Позначте <strong>підтверджений</strong>, щоб вказати, що цей контакт був підтверджений як вірний.\n"
 "Якщо ви не впевнені у походженні та достовірність контакта, залиште не позначеним."
 
-#: templates/web/base/admin/body.html:159
+#: templates/web/base/admin/body.html:163
 msgid ""
 "Check <strong>deleted</strong> to remove the category from use. \n"
 "        It will not appear as an available category in the drop-down menu on the report-a-problem page."
 msgstr ""
 
-#: templates/web/base/admin/body.html:179
+#: templates/web/base/admin/body.html:183
 msgid ""
 "Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.\n"
 "                <br>\n"
@@ -534,7 +530,7 @@ msgid ""
 "                at a specific address."
 msgstr ""
 
-#: templates/web/base/admin/body.html:118
+#: templates/web/base/admin/body.html:122
 msgid ""
 "Choose a <strong>category</strong> name that makes sense to the public (e.g., \"Pothole\", \"Street lighting\") but is helpful\n"
 "                  to the body too. These will appear in the drop-down menu on the report-a-problem page."
@@ -545,7 +541,7 @@ msgstr ""
 msgid "Click here or enter as dd/mm/yyyy"
 msgstr "Натисніть тут або введіть в форматі дд/мм/рррр"
 
-#: templates/web/base/js/translation_strings.html:47
+#: templates/web/base/js/translation_strings.html:50
 #: templates/web/fixmystreet/around/_report_banner.html:2
 msgid "Click map to report a problem"
 msgstr "Натисніть на точку на мапі щоб прозвітувати проблему"
@@ -560,8 +556,8 @@ msgstr "Натисніть на точку на мапі щоб прозвіту
 #: templates/web/zurich/admin/header.html:10
 #: templates/web/zurich/admin/header.html:12
 #: templates/web/zurich/admin/header.html:2
-#: templates/web/zurich/admin/report_edit.html:100
-#: templates/web/zurich/admin/report_edit.html:98
+#: templates/web/zurich/admin/report_edit.html:95
+#: templates/web/zurich/admin/report_edit.html:97
 #: templates/web/zurich/admin/stats.html:31
 #: templates/web/zurich/report/banner.html:13
 msgid "Closed"
@@ -585,8 +581,8 @@ msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
 msgstr "Найближчі проблеми <small>(в межах&nbsp;%sкм)</small>"
 
 #: templates/web/base/admin/report_edit.html:23
-#: templates/web/zurich/admin/report_edit-sdm.html:36
-#: templates/web/zurich/admin/report_edit.html:49
+#: templates/web/zurich/admin/report_edit-sdm.html:33
+#: templates/web/zurich/admin/report_edit.html:46
 msgid "Co-ordinates:"
 msgstr "Погоджувачы:"
 
@@ -604,19 +600,16 @@ msgstr "Cobrand data:"
 msgid "Cobrand:"
 msgstr "Cobrand:"
 
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1201
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
 msgstr "Конфігурація"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:430
-msgid "Configuration updated - contacts will be generated automatically later"
-msgstr "Конфігурацію оновлено - контакти будуть згенеровані автоматично пізніше"
-
-#: templates/web/base/admin/body_edit.html:47
+#: templates/web/base/admin/category_edit.html:47
 msgid "Configure Endpoint"
 msgstr "Налаштувати ендпойнт"
 
-#: templates/web/base/admin/body.html:60
+#: templates/web/base/admin/body.html:64
 msgid "Confirm"
 msgstr "Підтвердити"
 
@@ -637,10 +630,10 @@ msgstr "Підтвердіть е-адресу, ввівши новий паро
 msgid "Confirmation"
 msgstr "Підтвердження"
 
-#: templates/web/base/admin/body.html:154
-#: templates/web/base/admin/body.html:67
-#: templates/web/base/admin/body_edit.html:32
-#: templates/web/base/admin/body_edit.html:84
+#: templates/web/base/admin/body.html:158
+#: templates/web/base/admin/body.html:71
+#: templates/web/base/admin/category_edit.html:32
+#: templates/web/base/admin/category_edit.html:84
 #: templates/web/zurich/admin/stats.html:40
 msgid "Confirmed"
 msgstr "Підтверджено"
@@ -669,12 +662,12 @@ msgstr "Зворотній звязок"
 
 #: templates/web/base/contact/index.html:6
 #: templates/web/base/contact/submit.html:3
-#: templates/web/fixmystreet/contact/index.html:22
+#: templates/web/fixmystreet/contact/index.html:20
 msgid "Contact the team"
 msgstr "Звернутись до команди"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1328
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1356
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1327
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1355
 msgid "Could not find user"
 msgstr "Не вдалось знайти користувача"
 
@@ -687,7 +680,7 @@ msgid "Council"
 msgstr "Рада"
 
 #: templates/web/base/admin/body.html:1
-#: templates/web/base/admin/body_edit.html:1
+#: templates/web/base/admin/category_edit.html:1
 #: templates/web/zurich/admin/body.html:1
 msgid "Council contacts for %s"
 msgstr "Контакти ради для %s"
@@ -707,7 +700,7 @@ msgstr "Число"
 msgid "Create a report"
 msgstr "Створити сповіщення"
 
-#: templates/web/base/admin/body.html:196
+#: templates/web/base/admin/body.html:200
 #: templates/web/zurich/admin/body.html:59
 msgid "Create category"
 msgstr "Створити категорію"
@@ -721,8 +714,8 @@ msgstr "Створено"
 #: templates/web/base/admin/list_updates.html:38
 #: templates/web/base/admin/report_edit.html:69
 #: templates/web/base/admin/update_edit.html:51
-#: templates/web/zurich/admin/report_edit-sdm.html:50
-#: templates/web/zurich/admin/report_edit.html:64
+#: templates/web/zurich/admin/report_edit-sdm.html:47
+#: templates/web/zurich/admin/report_edit.html:61
 #: templates/web/zurich/admin/update_edit.html:29
 msgid "Created:"
 msgstr "Створено:"
@@ -745,11 +738,11 @@ msgstr "Дашборд"
 msgid "Dealt with by subdivision within 5 working days"
 msgstr "Dealt with by subdivision within 5 working days"
 
-#: templates/web/base/admin/bodies.html:20
-#: templates/web/base/admin/body.html:165
-#: templates/web/base/admin/body.html:69
-#: templates/web/base/admin/body_edit.html:37
-#: templates/web/base/admin/body_edit.html:85
+#: templates/web/base/admin/bodies.html:27
+#: templates/web/base/admin/body.html:169
+#: templates/web/base/admin/body.html:73
+#: templates/web/base/admin/category_edit.html:37
+#: templates/web/base/admin/category_edit.html:85
 msgid "Deleted"
 msgstr "Видалено"
 
@@ -767,13 +760,13 @@ msgstr "Подробиці"
 
 #: templates/web/base/admin/report_edit.html:20
 #: templates/web/base/report/new/fill_in_details_form.html:62
-#: templates/web/zurich/admin/report_edit-sdm.html:28
-#: templates/web/zurich/admin/report_edit.html:28
-#: templates/web/zurich/admin/report_edit.html:38
+#: templates/web/zurich/admin/report_edit-sdm.html:25
+#: templates/web/zurich/admin/report_edit.html:25
+#: templates/web/zurich/admin/report_edit.html:35
 msgid "Details:"
 msgstr "Подробиці:"
 
-#: templates/web/base/admin/body.html:75
+#: templates/web/base/admin/body.html:79
 msgid "Devolved"
 msgstr "Передано"
 
@@ -781,12 +774,12 @@ msgstr "Передано"
 msgid "Diligency prize league table"
 msgstr "Таблиця найстаранніших призерів"
 
-#: templates/web/fixmystreet/auth/general.html:30
+#: templates/web/fixmystreet/auth/general.html:31
 msgid "Do you have a FixMyBarangay password?"
 msgstr "Ви маєте пароль до FixMyBarangay?"
 
 #: templates/web/base/auth/general.html:32
-#: templates/web/fixmystreet/auth/general.html:32
+#: templates/web/fixmystreet/auth/general.html:33
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:11
 #: templates/web/fixmystreet/report/update-form.html:86
 msgid "Do you have a FixMyStreet password?"
@@ -797,7 +790,7 @@ msgstr "Ви маєте пароль до FixMyStreet?"
 msgid "Don&rsquo;t know"
 msgstr "Не знаю"
 
-#: templates/web/fixmystreet/contact/index.html:119
+#: templates/web/fixmystreet/contact/index.html:118
 msgid "Don't like forms?"
 msgstr "Не любите форми?"
 
@@ -810,7 +803,7 @@ msgstr "Не любите форми?"
 msgid "Duplicate"
 msgstr "Дубль"
 
-#: templates/web/base/admin/body.html:94
+#: templates/web/base/admin/body.html:98
 msgid ""
 "Each contact for the body has a category, which is displayed to the public. \n"
 "            Different categories <strong>can have the same contact</strong> (email address).\n"
@@ -825,7 +818,7 @@ msgstr ""
 msgid "Edit"
 msgstr "Редагувати"
 
-#: templates/web/base/admin/body.html:208
+#: templates/web/base/admin/body.html:212
 #: templates/web/zurich/admin/body.html:71
 msgid "Edit body details"
 msgstr "Редагувати дані про орган"
@@ -847,15 +840,15 @@ msgstr "Редагуємо оновлення %d"
 msgid "Editing user %d"
 msgstr "Редагуємо користувача %d"
 
-#: templates/web/base/admin/body_edit.html:86
+#: templates/web/base/admin/category_edit.html:86
 msgid "Editor"
 msgstr "Редактор"
 
-#: templates/web/base/admin/bodies.html:16
-#: templates/web/base/admin/body_edit.html:83
+#: templates/web/base/admin/bodies.html:23
+#: templates/web/base/admin/category_edit.html:83
 #: templates/web/base/admin/flagged.html:38
 #: templates/web/base/admin/users.html:16
-#: templates/web/fixmystreet/auth/general.html:20
+#: templates/web/fixmystreet/auth/general.html:21
 #: templates/web/zurich/admin/body-form.html:9
 #: templates/web/zurich/admin/body.html:15
 #: templates/web/zurich/auth/general.html:24
@@ -863,15 +856,15 @@ msgstr "Редактор"
 msgid "Email"
 msgstr "Е-пошта"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1304
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1303
 msgid "Email added to abuse list"
 msgstr "Пошта занесена в чорний список"
 
-#: templates/web/base/admin/body.html:143
+#: templates/web/base/admin/body.html:147
 msgid "Email address:"
 msgstr "Адреса е-пошти:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1301
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1300
 msgid "Email already in abuse list"
 msgstr "Адреса вже в чорному списку"
 
@@ -883,19 +876,19 @@ msgstr "Повідомляйте мене про локальні проблем
 msgid "Email me updates"
 msgstr "Надсилайте мені новини"
 
-#: templates/web/base/admin/body_edit.html:26
+#: templates/web/base/admin/category_edit.html:26
 #: templates/web/base/admin/report_edit.html:67
 #: templates/web/base/admin/update_edit.html:33
 #: templates/web/base/admin/user-form.html:20
 #: templates/web/base/alert/updates.html:13
 #: templates/web/base/report/display.html:42
 #: templates/web/zurich/admin/body.html:47
-#: templates/web/zurich/admin/report_edit-sdm.html:47
-#: templates/web/zurich/admin/report_edit.html:60
+#: templates/web/zurich/admin/report_edit-sdm.html:44
+#: templates/web/zurich/admin/report_edit.html:57
 msgid "Email:"
 msgstr "Е-пошта:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:323
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:322
 msgid "Email: %s"
 msgstr "Е-пошта: %s"
 
@@ -953,7 +946,7 @@ msgid "Enter a nearby UK postcode, or street name and area"
 msgstr "Вкажіть поштовий код UK або назву вулиці та місця"
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:20
-#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:29
+#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:21
 msgid "Enter a nearby postcode, or street name and area"
 msgstr "Введіть найближчу поштову адресу, або назву вулиці чи району"
 
@@ -962,7 +955,7 @@ msgstr "Введіть найближчу поштову адресу, або н
 msgid "Enter a nearby street name and area"
 msgstr "Введіть назву вулиці чи району поблизу"
 
-#: perllib/FixMyStreet/Cobrand/ZeroTB.pm:9
+#: perllib/FixMyStreet/Cobrand/ZeroTB.pm:7
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
 msgstr ""
 
@@ -972,8 +965,8 @@ msgstr ""
 msgid "Enter a new password:"
 msgstr "Введіть новий пароль:"
 
-#: templates/web/fixmystreet/auth/general.html:62
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:69
+#: templates/web/fixmystreet/auth/general.html:63
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:75
 #: templates/web/fixmystreet/report/update-form.html:123
 #: templates/web/zurich/auth/general.html:65
 msgid "Enter a password"
@@ -994,11 +987,11 @@ msgid "Error"
 msgstr "Помилка"
 
 #: templates/web/base/admin/body.html:14
-#: templates/web/base/admin/body_edit.html:18
+#: templates/web/base/admin/category_edit.html:18
 msgid "Example postcode %s"
 msgstr "Зразок поштового коду %s"
 
-#: templates/web/base/open311/index.html:96
+#: templates/web/base/open311/index.html:94
 msgid "Examples:"
 msgstr "Приклади:"
 
@@ -1140,16 +1133,15 @@ msgstr "Забули пароль?"
 #: templates/web/base/static/privacy.html:2
 #: templates/web/fiksgatami/faq/faq-nb.html:1
 #: templates/web/fiksgatami/nn/faq/faq-nn.html:1
-#: templates/web/fixmystreet/faq/faq-en-gb.html:1
 msgid "Frequently Asked Questions"
 msgstr "Часто задавані питання"
 
-#: templates/web/base/open311/index.html:138
+#: templates/web/base/open311/index.html:136
 msgid "GeoRSS on Google Maps"
 msgstr ""
 
 #: templates/web/fixmystreet/around/_updates.html:3
-#: templates/web/fixmystreet/report/display.html:42
+#: templates/web/fixmystreet/report/display.html:35
 msgid "Get updates"
 msgstr "Отримувати оновлення"
 
@@ -1223,22 +1215,22 @@ msgstr "Вітаємо, %s"
 #: templates/web/base/admin/update_edit.html:28
 #: templates/web/zurich/admin/header.html:11
 #: templates/web/zurich/admin/header.html:2
-#: templates/web/zurich/admin/report_edit.html:89
-#: templates/web/zurich/admin/report_edit.html:93
+#: templates/web/zurich/admin/report_edit.html:86
+#: templates/web/zurich/admin/report_edit.html:90
 #: templates/web/zurich/admin/stats.html:32
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Hidden"
 msgstr "Прихований"
 
-#: templates/web/base/around/display_location.html:67
+#: templates/web/base/around/display_location.html:65
 msgid "Hide old"
 msgstr "Приховати застарілі"
 
-#: templates/web/base/around/display_location.html:62
+#: templates/web/base/around/display_location.html:60
 msgid "Hide pins"
 msgstr "Приховати привязки"
 
-#: templates/web/base/admin/body_edit.html:79
+#: templates/web/base/admin/category_edit.html:79
 msgid "History"
 msgstr "Історія"
 
@@ -1290,7 +1282,7 @@ msgstr ""
 "Визначіть <strong>предка</strong> якщо цей орган є частиною іншого органу.\n"
 "          Для базових налаштувань вам не потрібно поєднувати органи таким чином."
 
-#: templates/web/base/admin/body.html:121
+#: templates/web/base/admin/body.html:125
 msgid ""
 "If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in\n"
 "                  the menu. Make sure you use the same category name in the bodies if you want this to happen."
@@ -1326,7 +1318,7 @@ msgid ""
 "your experience of getting the problem fixed?"
 msgstr "Якщо ви хочете додати якусь публічну інформацію про проблему, введіть її тут (зауважте, що ця інформація не буде надіслана департаментам). Наприклад, розкажіть яки кроками була вирішена проблема."
 
-#: templates/web/base/admin/body.html:137
+#: templates/web/base/admin/body.html:141
 msgid "If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here."
 msgstr "If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here."
 
@@ -1353,7 +1345,7 @@ msgid ""
 "          when they are shown on the site. Enter the ID (number) of that user."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:134
+#: perllib/FixMyStreet/App/Controller/Contact.pm:127
 msgid "Illegal ID"
 msgstr "Невірний ідентифікатор"
 
@@ -1374,7 +1366,7 @@ msgstr "В процесі"
 msgid "In abuse table?"
 msgstr "В чорний список?"
 
-#: templates/web/base/open311/index.html:90
+#: templates/web/base/open311/index.html:88
 msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
 msgstr ""
 
@@ -1384,12 +1376,12 @@ msgstr ""
 #: templates/web/fixmystreet/report/banner.html:19
 #: templates/web/zurich/admin/header.html:2
 #: templates/web/zurich/admin/header.html:8
-#: templates/web/zurich/admin/report_edit.html:102
+#: templates/web/zurich/admin/report_edit.html:99
 #: templates/web/zurich/report/banner.html:15
 msgid "In progress"
 msgstr "В процесі"
 
-#: templates/web/zurich/admin/report_edit.html:163
+#: templates/web/zurich/admin/report_edit.html:160
 msgid "Include reporter personal details"
 msgstr "Додати особисті дані автора сповіщення"
 
@@ -1444,14 +1436,14 @@ msgstr ""
 #: templates/web/base/auth/general.html:44
 #: templates/web/base/report/new/fill_in_details_form.html:150
 #: templates/web/base/report/update-form.html:104
-#: templates/web/fixmystreet/auth/general.html:46
+#: templates/web/fixmystreet/auth/general.html:47
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:28
 #: templates/web/fixmystreet/report/update-form.html:102
 #: templates/web/zurich/auth/general.html:40
 msgid "Keep me signed in on this computer"
 msgstr "Запам'ятати мене на цьому комп'ютері"
 
-#: templates/web/base/admin/body.html:58
+#: templates/web/base/admin/body.html:62
 #: templates/web/zurich/admin/body.html:16
 msgid "Last editor"
 msgstr "Остання правка"
@@ -1508,7 +1500,11 @@ msgstr "Позначте проблему на карті району"
 msgid "MAP"
 msgstr "Мапа"
 
-#: perllib/FixMyStreet/Map/OSM.pm:44
+#: templates/web/base/js/translation_strings.html:45
+msgid "Map"
+msgstr ""
+
+#: perllib/FixMyStreet/Map/OSM.pm:42
 msgid "Map &copy; <a id=\"osm_link\" href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
 msgstr ""
 
@@ -1516,11 +1512,11 @@ msgstr ""
 msgid "Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>."
 msgstr "Позначте користувачів, чию поведінку ви хочете відстежувати <strong>прапорцем</strong>."
 
-#: templates/web/fixmystreet/contact/index.html:107
+#: templates/web/fixmystreet/contact/index.html:106
 msgid "Message"
 msgstr "Повідомлення"
 
-#: templates/web/base/contact/index.html:96
+#: templates/web/base/contact/index.html:97
 msgid "Message:"
 msgstr "Повідомлення:"
 
@@ -1540,7 +1536,7 @@ msgstr "Місяць"
 msgid "More problems nearby"
 msgstr "Ще проблеми поблизу"
 
-#: templates/web/base/admin/bodies.html:14
+#: templates/web/base/admin/bodies.html:21
 #: templates/web/base/admin/body-form.html:18
 #: templates/web/base/admin/flagged.html:16
 #: templates/web/base/admin/flagged.html:37
@@ -1548,9 +1544,9 @@ msgstr "Ще проблеми поблизу"
 #: templates/web/base/admin/reports.html:13
 #: templates/web/base/admin/users.html:15
 #: templates/web/base/reports/index.html:20
-#: templates/web/fixmystreet/auth/general.html:52
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:8
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:43
+#: templates/web/fixmystreet/auth/general.html:53
+#: templates/web/fixmystreet/report/new/form_user_loggedin.html:9
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:44
 #: templates/web/fixmystreet/report/update-form.html:138
 #: templates/web/zurich/admin/body-form.html:4
 #: templates/web/zurich/auth/general.html:60
@@ -1561,18 +1557,18 @@ msgstr "Ім'я"
 #: templates/web/base/admin/report_edit.html:66
 #: templates/web/base/admin/update_edit.html:32
 #: templates/web/base/admin/user-form.html:18
-#: templates/web/zurich/admin/report_edit-sdm.html:46
-#: templates/web/zurich/admin/report_edit.html:59
+#: templates/web/zurich/admin/report_edit-sdm.html:43
+#: templates/web/zurich/admin/report_edit.html:56
 #: templates/web/zurich/admin/stats.html:41
 msgid "Name:"
 msgstr "Ім'я:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:322
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:321
 msgid "Name: %s"
 msgstr "Ім'я: %s"
 
-#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:188
-#: perllib/FixMyStreet/Geocode/OSM.pm:166
+#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:186
+#: perllib/FixMyStreet/Geocode/OSM.pm:164
 msgid "Nearest named road to the pin placed on the map (automatically generated using OpenStreetMap): %s%s"
 msgstr "Найближча дорога до шпильки на карті (автоматично згенеровано через OpenStreetMap): %s%s"
 
@@ -1585,7 +1581,7 @@ msgstr "Найближчий поштовий індекс до шпильки �
 msgid "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s"
 msgstr "Найближча дорога до шпильки на карті (автоматично згенеровано через Bing карти): %s%s"
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:290
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:288
 msgid ""
 "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s\n"
 "\n"
@@ -1609,8 +1605,8 @@ msgstr "Новий орган додано"
 msgid "New category contact added"
 msgstr "Новий контакт категорії додано"
 
-#: templates/web/zurich/admin/report_edit-sdm.html:58
-#: templates/web/zurich/admin/report_edit.html:84
+#: templates/web/zurich/admin/report_edit-sdm.html:55
+#: templates/web/zurich/admin/report_edit.html:81
 msgid "New internal note:"
 msgstr "Новий внутрішній нотаток:"
 
@@ -1670,7 +1666,7 @@ msgstr ""
 msgid "New state"
 msgstr "Новий стан"
 
-#: templates/web/zurich/admin/report_edit-sdm.html:61
+#: templates/web/zurich/admin/report_edit-sdm.html:58
 msgid "New update:"
 msgstr "Поновлення:"
 
@@ -1678,9 +1674,9 @@ msgstr "Поновлення:"
 msgid "Next"
 msgstr "Далі"
 
-#: templates/web/base/admin/body.html:68 templates/web/base/admin/body.html:70
-#: templates/web/base/admin/body.html:74 templates/web/base/admin/body.html:76
-#: templates/web/base/admin/body_edit.html:4
+#: templates/web/base/admin/body.html:72 templates/web/base/admin/body.html:74
+#: templates/web/base/admin/body.html:78 templates/web/base/admin/body.html:80
+#: templates/web/base/admin/category_edit.html:4
 #: templates/web/base/admin/list_updates.html:32
 #: templates/web/base/admin/list_updates.html:34
 #: templates/web/base/admin/list_updates.html:35
@@ -1720,7 +1716,7 @@ msgstr "Не знайдено маркованих проблем"
 msgid "No flagged users found."
 msgstr "Не знайдено маркованих користувачів"
 
-#: templates/web/zurich/admin/report_edit-sdm.html:68
+#: templates/web/zurich/admin/report_edit-sdm.html:65
 msgid "No further updates"
 msgstr "Подальші оновлення відсутні"
 
@@ -1751,8 +1747,8 @@ msgid "No supporters"
 msgstr "Ніхто не підтримав"
 
 #: templates/web/base/admin/report_edit.html:30
-#: templates/web/zurich/admin/report_edit-sdm.html:49
-#: templates/web/zurich/admin/report_edit.html:63
+#: templates/web/zurich/admin/report_edit-sdm.html:46
+#: templates/web/zurich/admin/report_edit.html:60
 msgid "None"
 msgstr "Нічого"
 
@@ -1774,7 +1770,7 @@ msgstr ""
 msgid "Not Responsible"
 msgstr "Не відповідальний"
 
-#: templates/web/zurich/admin/report_edit-sdm.html:21
+#: templates/web/zurich/admin/report_edit-sdm.html:18
 msgid "Not for my subdivision"
 msgstr "Не мій підрозділ"
 
@@ -1786,8 +1782,8 @@ msgstr "Не прозвітовано раніше"
 msgid "Not reported to council"
 msgstr "Не прозвітовано департаменту"
 
-#: templates/web/base/admin/body.html:59
-#: templates/web/base/admin/body_edit.html:87
+#: templates/web/base/admin/body.html:63
+#: templates/web/base/admin/category_edit.html:87
 #: templates/web/zurich/admin/body.html:17
 msgid "Note"
 msgstr "Нотатка"
@@ -1796,13 +1792,13 @@ msgstr "Нотатка"
 msgid "Note that when including unconfirmed reports we use the date the report was created which may not be in the same month the report was confirmed so the numbers may jump about a little"
 msgstr "Зауважте, коли включаєм непідтвердженне сповіщення ми використовуєм дату створення сповіщення. Вона може відрізнятись від дати підтвердження сповіщення, тому цифри в датах можуть трошки стрибати."
 
-#: templates/web/base/admin/body.html:174
-#: templates/web/base/admin/body_edit.html:44
+#: templates/web/base/admin/body.html:178
+#: templates/web/base/admin/category_edit.html:44
 #: templates/web/zurich/admin/body.html:53
 msgid "Note:"
 msgstr "Нотатка:"
 
-#: templates/web/base/open311/index.html:75
+#: templates/web/base/open311/index.html:73
 msgid "Note: <strong>%s</strong>"
 msgstr "Нотатка: <strong>%s</strong>"
 
@@ -1861,8 +1857,8 @@ msgstr ""
 #: templates/web/fixmystreet/report/update-form.html:28
 #: templates/web/zurich/admin/header.html:2
 #: templates/web/zurich/admin/header.html:7
-#: templates/web/zurich/admin/report_edit.html:89
-#: templates/web/zurich/admin/report_edit.html:91
+#: templates/web/zurich/admin/report_edit.html:86
+#: templates/web/zurich/admin/report_edit.html:88
 #: templates/web/zurich/admin/update_edit.html:18
 #: templates/web/zurich/report/banner.html:11
 msgid "Open"
@@ -1872,15 +1868,15 @@ msgstr "Відкрити"
 msgid "Open reports"
 msgstr "Відкрити сповіщення"
 
-#: templates/web/base/open311/index.html:72
+#: templates/web/base/open311/index.html:70
 msgid "Open311 API for the mySociety FixMyStreet server"
 msgstr ""
 
-#: templates/web/base/open311/index.html:82
+#: templates/web/base/open311/index.html:80
 msgid "Open311 initiative web page"
 msgstr ""
 
-#: templates/web/base/open311/index.html:83
+#: templates/web/base/open311/index.html:81
 msgid "Open311 specification"
 msgstr ""
 
@@ -1901,8 +1897,8 @@ msgstr "Або ви можете підписатись на алярми від
 #: perllib/FixMyStreet/DB/Result/Problem.pm:570
 #: perllib/FixMyStreet/DB/Result/Problem.pm:580
 #: perllib/FixMyStreet/DB/Result/Problem.pm:592
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:369
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:384
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:372
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:387
 msgid "Other"
 msgstr "Інше"
 
@@ -1929,8 +1925,8 @@ msgstr "Предок"
 msgid "Partial"
 msgstr "Частково"
 
-#: templates/web/fixmystreet/auth/general.html:55
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:62
+#: templates/web/fixmystreet/auth/general.html:56
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:68
 #: templates/web/fixmystreet/report/update-form.html:116
 #: templates/web/zurich/auth/general.html:32
 #: templates/web/zurich/auth/general.html:63
@@ -1941,7 +1937,7 @@ msgstr "Пароль (опціонально)"
 msgid "Password:"
 msgstr "Пароль:"
 
-#: templates/web/base/js/translation_strings.html:45
+#: templates/web/base/js/translation_strings.html:48
 msgid "Permalink"
 msgstr "Постійне посилання"
 
@@ -1949,16 +1945,16 @@ msgstr "Постійне посилання"
 msgid "Phone number"
 msgstr "Номер телефону"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:20
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:56
+#: templates/web/fixmystreet/report/new/form_user_loggedin.html:26
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:62
 msgid "Phone number (optional)"
 msgstr "Номер телефону (опціонально)"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:287
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:286
 #: templates/web/base/admin/report_edit.html:68
 #: templates/web/base/report/new/fill_in_details_form.html:216
-#: templates/web/zurich/admin/report_edit-sdm.html:49
-#: templates/web/zurich/admin/report_edit.html:63
+#: templates/web/zurich/admin/report_edit-sdm.html:46
+#: templates/web/zurich/admin/report_edit.html:60
 #: templates/web/zurich/admin/stats.html:39
 msgid "Phone:"
 msgstr "Телефон:"
@@ -1995,8 +1991,8 @@ msgstr "Розмістіть шпильку на карті"
 #: templates/web/zurich/admin/header.html:2
 #: templates/web/zurich/admin/header.html:9
 #: templates/web/zurich/admin/index-dm.html:9
+#: templates/web/zurich/admin/report_edit.html:86
 #: templates/web/zurich/admin/report_edit.html:89
-#: templates/web/zurich/admin/report_edit.html:92
 msgid "Planned"
 msgstr "Заплановано"
 
@@ -2019,8 +2015,8 @@ msgstr "Будь ласка перевірте вашу пошту"
 
 #: templates/web/base/auth/general.html:14
 #: templates/web/base/auth/general.html:8
-#: templates/web/fixmystreet/auth/general.html:15
-#: templates/web/fixmystreet/auth/general.html:9
+#: templates/web/fixmystreet/auth/general.html:10
+#: templates/web/fixmystreet/auth/general.html:16
 #: templates/web/zurich/auth/general.html:3
 #: templates/web/zurich/auth/general.html:9
 msgid "Please check your email address is correct"
@@ -2040,9 +2036,8 @@ msgid "Please choose a property type"
 msgstr "Будь ласка оберіть тип майна"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:376
-#, fuzzy
 msgid "Please correct the errors below"
-msgstr "Оберіть бажаний потік інформації"
+msgstr ""
 
 #: templates/web/base/contact/blurb.html:2
 #: templates/web/fixmystreet/contact/blurb.html:12
@@ -2068,7 +2063,7 @@ msgstr "Будь ласка введіть повідомлення"
 msgid "Please enter a password"
 msgstr "Будь ласка введіть пароль"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:115
+#: perllib/FixMyStreet/App/Controller/Contact.pm:108
 #: perllib/FixMyStreet/DB/Result/Problem.pm:370
 #: templates/web/base/js/translation_strings.html:3
 msgid "Please enter a subject"
@@ -2084,7 +2079,7 @@ msgid "Please enter a valid email"
 msgstr "Будь ласка введіть правильну адресу е-пошти"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:346
-#: perllib/FixMyStreet/App/Controller/Contact.pm:125
+#: perllib/FixMyStreet/App/Controller/Contact.pm:118
 msgid "Please enter a valid email address"
 msgstr "Будь ласка введіть правильну адресу е-пошти"
 
@@ -2093,14 +2088,14 @@ msgstr "Будь ласка введіть правильну адресу е-п
 msgid "Please enter some details"
 msgstr "Будь ласка додайте трохи подробиць"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:114
+#: perllib/FixMyStreet/App/Controller/Contact.pm:107
 #: perllib/FixMyStreet/DB/Result/User.pm:124
 #: templates/web/base/auth/general.html:13
 #: templates/web/base/auth/general.html:8
 #: templates/web/base/js/translation_strings.html:11
 #: templates/web/base/js/translation_strings.html:15
-#: templates/web/fixmystreet/auth/general.html:14
-#: templates/web/fixmystreet/auth/general.html:9
+#: templates/web/fixmystreet/auth/general.html:10
+#: templates/web/fixmystreet/auth/general.html:15
 #: templates/web/zurich/auth/general.html:3
 #: templates/web/zurich/auth/general.html:8
 msgid "Please enter your email"
@@ -2120,7 +2115,7 @@ msgstr "Будь ласка введіть ім'я"
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Будь ласка введіть ім'я та прізвище - департаментам потрібні ці дані. Якщо не хочете їх показувати - не ставте галочку внизу."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:113
+#: perllib/FixMyStreet/App/Controller/Contact.pm:106
 #: perllib/FixMyStreet/DB/Result/Comment.pm:130
 #: perllib/FixMyStreet/DB/Result/Problem.pm:381
 #: perllib/FixMyStreet/DB/Result/User.pm:120
@@ -2220,7 +2215,7 @@ msgstr "Будь ласка завантажуйте тільки JPEG зобр�
 msgid "Please upload a JPEG image only\n"
 msgstr "Будь ласка завантажуйте тільки JPEG зображення\n"
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:116
+#: perllib/FixMyStreet/App/Controller/Contact.pm:109
 msgid "Please write a message"
 msgstr "Будь ласка напишіть повідомлення"
 
@@ -2228,11 +2223,11 @@ msgstr "Будь ласка напишіть повідомлення"
 msgid "Please write your update here"
 msgstr "Будь ласка напишіть поновлення"
 
-#: templates/web/base/contact/index.html:99
+#: templates/web/base/contact/index.html:100
 #: templates/web/base/report/update-form.html:109
 #: templates/web/base/report/update-form.html:131
 #: templates/web/base/report/update-form.html:72
-#: templates/web/fixmystreet/contact/index.html:114
+#: templates/web/fixmystreet/contact/index.html:113
 #: templates/web/fixmystreet/report/update-form.html:124
 #: templates/web/fixmystreet/report/update-form.html:71
 #: templates/web/fixmystreet/report/update-form.html:97
@@ -2256,13 +2251,12 @@ msgid "Previous"
 msgstr "Попередній"
 
 #: templates/web/fixmystreet/footer.html:32
-#, fuzzy
 msgid "Privacy"
-msgstr "Приватний"
+msgstr ""
 
-#: templates/web/base/admin/body.html:190
-#: templates/web/base/admin/body.html:73
-#: templates/web/base/admin/body_edit.html:40
+#: templates/web/base/admin/body.html:194
+#: templates/web/base/admin/body.html:77
+#: templates/web/base/admin/category_edit.html:40
 #: templates/web/base/admin/report_edit.html:79
 msgid "Private"
 msgstr "Приватний"
@@ -2305,12 +2299,12 @@ msgid "Problems in this area"
 msgstr "Проблеми в цьому районі"
 
 #: templates/web/fixmystreet/around/tabbed_lists.html:4
-#: templates/web/fixmystreet/report/display.html:50
+#: templates/web/fixmystreet/report/display.html:43
 msgid "Problems nearby"
 msgstr "Проблеми поблизу"
 
 #: templates/web/fixmystreet/around/tabbed_lists.html:3
-#: templates/web/fixmystreet/report/display.html:48
+#: templates/web/fixmystreet/report/display.html:41
 msgid "Problems on the map"
 msgstr "Проблеми на мапі"
 
@@ -2326,7 +2320,7 @@ msgstr "Проблеми в радіусі %.1fkm від цієї точки"
 #: perllib/FixMyStreet/Cobrand/Default.pm:629
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:114
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:139
-#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:159
+#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:151
 #: perllib/FixMyStreet/Cobrand/UK.pm:217
 msgid "Problems within %s"
 msgstr "Проблеми в межах %s"
@@ -2363,28 +2357,28 @@ msgstr "Тип майна:"
 msgid "Provide an update"
 msgstr "Надішліть оновлення"
 
-#: templates/web/fixmystreet/auth/general.html:58
+#: templates/web/fixmystreet/auth/general.html:59
 msgid "Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
 msgstr "Вказання імені і паролю не обов'язкове, проте це дозволить вам більш легко сповіщати про проблеми, залишати поновлення та керувати вашими сповіщеннями"
 
 #: templates/web/base/report/new/fill_in_details_form.html:174
 #: templates/web/base/report/update-form.html:128
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:65
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:71
 #: templates/web/fixmystreet/report/update-form.html:119
 msgid "Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
 msgstr "Вказання паролю не обов'язкове, проте це дозволить вам більш легко сповіщати про проблеми, залишати поновлення та керувати вашими сповіщеннями"
 
-#: templates/web/zurich/admin/report_edit.html:198
-#: templates/web/zurich/admin/report_edit.html:214
+#: templates/web/zurich/admin/report_edit.html:195
+#: templates/web/zurich/admin/report_edit.html:211
 msgid "Public response:"
 msgstr "Публічна відповідь:"
 
-#: templates/web/zurich/admin/report_edit.html:80
+#: templates/web/zurich/admin/report_edit.html:77
 #: templates/web/zurich/admin/stats.html:38
 msgid "Publish photo"
 msgstr "Публічне фото"
 
-#: templates/web/zurich/admin/report_edit.html:222
+#: templates/web/zurich/admin/report_edit.html:219
 msgid "Publish the response"
 msgstr "Опублікувати відповідь"
 
@@ -2417,7 +2411,7 @@ msgstr "Анкета заповнена автором сповіщення"
 #: templates/web/base/reports/_rss.html:1
 #: templates/web/fixmystreet/alert/_list.html:22
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:65
+#: templates/web/fixmystreet/report/display.html:58
 msgid "RSS feed"
 msgstr "RSS потік"
 
@@ -2433,10 +2427,10 @@ msgstr "RSS потік для %s району, %s"
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:163
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:173
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:181
+#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:167
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:175
-#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:183
+#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:185
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:193
-#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:201
 #: perllib/FixMyStreet/Cobrand/UK.pm:286 perllib/FixMyStreet/Cobrand/UK.pm:298
 msgid "RSS feed of %s"
 msgstr "RSS потік з %s"
@@ -2457,7 +2451,7 @@ msgstr ""
 #: perllib/FixMyStreet/Cobrand/Default.pm:630
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:115
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:138
-#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:158
+#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:150
 #: perllib/FixMyStreet/Cobrand/UK.pm:224
 msgid "RSS feed of problems within %s"
 msgstr ""
@@ -2474,14 +2468,14 @@ msgstr "RSS стрічка недавніх локальних проблем"
 
 #: templates/web/base/report/display.html:50
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:65
+#: templates/web/fixmystreet/report/display.html:58
 msgid "RSS feed of updates to this problem"
 msgstr "RSS стрічка з оновленнями по цій проблемі"
 
 #: templates/web/base/alert/updates.html:9
 #: templates/web/base/report/display.html:41
 #: templates/web/fixmystreet/alert/updates.html:14
-#: templates/web/fixmystreet/report/display.html:67
+#: templates/web/fixmystreet/report/display.html:60
 msgid "Receive email when updates are left on this problem."
 msgstr "Отримувати листа коли інформація по проблемі буде оновлена"
 
@@ -2521,7 +2515,7 @@ msgstr "Видалити фото (це незворотня операція!)"
 msgid "Report a problem"
 msgstr "Сповістити про проблему"
 
-#: templates/web/fixmystreet/report/display.html:39
+#: templates/web/fixmystreet/report/display.html:32
 msgid "Report abuse"
 msgstr "Поскаржитись"
 
@@ -2536,9 +2530,8 @@ msgstr "Звіт по %s"
 
 #: templates/web/base/report/new/fill_in_details_form.html:1
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:2
-#, fuzzy
 msgid "Report your problem"
-msgstr "Сповістити про проблему"
+msgstr ""
 
 #: templates/web/base/index.html:11
 #: templates/web/fixmystreet/around/intro.html:1
@@ -2555,8 +2548,8 @@ msgid "Reported %s, to %s"
 msgstr "Сповіщено %s, до %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:575
-#: templates/web/base/contact/index.html:49
-#: templates/web/fixmystreet/contact/index.html:66
+#: templates/web/base/contact/index.html:50
+#: templates/web/fixmystreet/contact/index.html:65
 msgid "Reported anonymously at %s"
 msgstr "Сповіщено анонімно по %s"
 
@@ -2567,8 +2560,8 @@ msgid "Reported before"
 msgstr "Сповіщено раніше"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:598
-#: templates/web/base/contact/index.html:51
-#: templates/web/fixmystreet/contact/index.html:68
+#: templates/web/base/contact/index.html:52
+#: templates/web/fixmystreet/contact/index.html:67
 msgid "Reported by %s at %s"
 msgstr "Перевідкрито %s о %s"
 
@@ -2641,31 +2634,36 @@ msgstr "Перевідіслати сповіщення"
 msgid "Right place?"
 msgstr "Те місце?"
 
-#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:195
-#: perllib/FixMyStreet/Geocode/OSM.pm:173
+#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:193
+#: perllib/FixMyStreet/Geocode/OSM.pm:171
 msgid "Road operator for this named road (derived from road reference number and type): %s"
 msgstr "Обслуговувач цієї дороги (отримано з дорожнього сервісу): %s"
 
-#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:192
-#: perllib/FixMyStreet/Geocode/OSM.pm:170
+#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:190
+#: perllib/FixMyStreet/Geocode/OSM.pm:168
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "Обслуговувач цієї дороги (з OpenStreetMap): %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1395
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1406
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1394
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1405
 #: templates/web/base/admin/report_edit.html:90
-#: templates/web/zurich/admin/report_edit.html:76
+#: templates/web/zurich/admin/report_edit.html:73
 msgid "Rotate Left"
 msgstr "Повернули вліво"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1395
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1394
 #: templates/web/base/admin/report_edit.html:91
-#: templates/web/zurich/admin/report_edit.html:77
+#: templates/web/zurich/admin/report_edit.html:74
 msgid "Rotate Right"
 msgstr "Повернути вправо"
 
-#: templates/web/base/admin/body.html:196
-#: templates/web/base/admin/body_edit.html:76
+#: templates/web/base/js/translation_strings.html:46
+#: templates/web/base/maps/google-ol.html:13
+msgid "Satellite"
+msgstr ""
+
+#: templates/web/base/admin/body.html:200
+#: templates/web/base/admin/category_edit.html:76
 #: templates/web/zurich/admin/body.html:59
 msgid "Save changes"
 msgstr "Зберети зміни"
@@ -2729,31 +2727,31 @@ msgstr "Надіслано:"
 msgid "Service:"
 msgstr "Сервіс:"
 
-#: templates/web/fixmystreet/report/display.html:45
+#: templates/web/fixmystreet/report/display.html:38
 msgid "Share"
 msgstr "Поширити"
 
 #: templates/web/base/report/new/fill_in_details_form.html:211
 #: templates/web/base/report/update-form.html:157
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:17
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:53
+#: templates/web/fixmystreet/report/new/form_user_loggedin.html:23
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:59
 #: templates/web/fixmystreet/report/update-form.html:146
 msgid "Show my name publicly"
 msgstr "Показувати моє ім'я публічно"
 
-#: templates/web/base/around/display_location.html:69
+#: templates/web/base/around/display_location.html:67
 msgid "Show old"
 msgstr "Показувати старі"
 
-#: templates/web/base/around/display_location.html:60
+#: templates/web/base/around/display_location.html:58
 msgid "Show pins"
 msgstr "Показувати шпильки"
 
 #: templates/web/base/auth/general.html:3
 #: templates/web/base/auth/general.html:49
-#: templates/web/fixmystreet/auth/general.html:3
-#: templates/web/fixmystreet/auth/general.html:42
-#: templates/web/fixmystreet/auth/general.html:63
+#: templates/web/fixmystreet/auth/general.html:4
+#: templates/web/fixmystreet/auth/general.html:43
+#: templates/web/fixmystreet/auth/general.html:64
 #: templates/web/zurich/auth/general.html:18
 #: templates/web/zurich/auth/general.html:35
 msgid "Sign in"
@@ -2807,17 +2805,17 @@ msgid "Sorry, there has been an error confirming your problem."
 msgstr "Вибачте, сталася помилка"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:215
-#: perllib/FixMyStreet/Geocode.pm:28 perllib/FixMyStreet/Geocode/Bing.pm:58
-#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:75
-#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:95
-#: perllib/FixMyStreet/Geocode/Google.pm:74
-#: perllib/FixMyStreet/Geocode/OSM.pm:66
+#: perllib/FixMyStreet/Geocode.pm:26 perllib/FixMyStreet/Geocode/Bing.pm:56
+#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:73
+#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:93
+#: perllib/FixMyStreet/Geocode/Google.pm:72
+#: perllib/FixMyStreet/Geocode/OSM.pm:64
 msgid "Sorry, we could not find that location."
 msgstr "Вибачте, ми не знайшли це місце"
 
-#: perllib/FixMyStreet/Geocode/Bing.pm:53
-#: perllib/FixMyStreet/Geocode/Google.pm:69
-#: perllib/FixMyStreet/Geocode/Zurich.pm:89
+#: perllib/FixMyStreet/Geocode/Bing.pm:51
+#: perllib/FixMyStreet/Geocode/Google.pm:67
+#: perllib/FixMyStreet/Geocode/Zurich.pm:87
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr "Вибачте, ми не можем розпізнати це місце. Спробуйте пізніше."
 
@@ -2825,7 +2823,7 @@ msgstr "Вибачте, ми не можем розпізнати це місц�
 msgid "Start Date:"
 msgstr "Початкова дата:"
 
-#: templates/web/base/admin/body.html:57
+#: templates/web/base/admin/body.html:61
 #: templates/web/base/admin/flagged.html:18
 #: templates/web/base/admin/list_updates.html:11
 #: templates/web/base/admin/reports.html:15
@@ -2836,14 +2834,14 @@ msgstr "Стан"
 #: templates/web/base/admin/report_edit.html:34
 #: templates/web/base/admin/update_edit.html:27
 #: templates/web/base/report/update-form.html:28
-#: templates/web/zurich/admin/report_edit-sdm.html:56
-#: templates/web/zurich/admin/report_edit.html:87
+#: templates/web/zurich/admin/report_edit-sdm.html:53
+#: templates/web/zurich/admin/report_edit.html:84
 #: templates/web/zurich/admin/update_edit.html:17
 msgid "State:"
 msgstr "Стан:"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1200
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:305
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:304
 #: templates/web/base/admin/stats.html:1
 #: templates/web/zurich/admin/stats.html:1 templates/web/zurich/header.html:72
 msgid "Stats"
@@ -2859,7 +2857,7 @@ msgstr "Статус"
 msgid "Still open, via questionnaire, %s"
 msgstr "Все ще відкрито, через анкету, %s"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:378
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:381
 msgid "Subcategory: %s"
 msgstr "Підкатегорія: %s"
 
@@ -2867,14 +2865,14 @@ msgstr "Підкатегорія: %s"
 msgid "Subdivision/Body"
 msgstr "Підрозділ/Орган"
 
-#: templates/web/fixmystreet/contact/index.html:99
+#: templates/web/fixmystreet/contact/index.html:98
 msgid "Subject"
 msgstr "Тема"
 
 #: templates/web/base/admin/report_edit.html:19
-#: templates/web/base/contact/index.html:87
+#: templates/web/base/contact/index.html:88
 #: templates/web/base/report/new/fill_in_details_form.html:53
-#: templates/web/zurich/admin/report_edit.html:37
+#: templates/web/zurich/admin/report_edit.html:34
 msgid "Subject:"
 msgstr "Тема:"
 
@@ -2882,9 +2880,9 @@ msgstr "Тема:"
 #: templates/web/base/report/new/fill_in_details_form.html:115
 #: templates/web/base/report/new/fill_in_details_form.html:155
 #: templates/web/base/report/new/fill_in_details_form.html:177
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:30
+#: templates/web/fixmystreet/report/new/form_user_loggedin.html:36
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:23
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:70
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:76
 #: templates/web/zurich/report/new/fill_in_details_form.html:108
 msgid "Submit"
 msgstr "Підтвердити"
@@ -2892,8 +2890,8 @@ msgstr "Підтвердити"
 #: templates/web/base/admin/report_edit.html:97
 #: templates/web/base/admin/update_edit.html:65
 #: templates/web/base/admin/user-form.html:55
-#: templates/web/zurich/admin/report_edit-sdm.html:67
-#: templates/web/zurich/admin/report_edit.html:224
+#: templates/web/zurich/admin/report_edit-sdm.html:64
+#: templates/web/zurich/admin/report_edit.html:221
 #: templates/web/zurich/admin/update_edit.html:38
 msgid "Submit changes"
 msgstr "Підтвердити зміни"
@@ -2909,8 +2907,8 @@ msgstr "Підтвердити анкету"
 #: templates/web/zurich/admin/index-dm.html:23
 #: templates/web/zurich/admin/index-dm.html:6
 #: templates/web/zurich/admin/index-sdm.html:21
-#: templates/web/zurich/admin/report_edit.html:89
-#: templates/web/zurich/admin/report_edit.html:90
+#: templates/web/zurich/admin/report_edit.html:86
+#: templates/web/zurich/admin/report_edit.html:87
 #: templates/web/zurich/admin/reports.html:13
 #: templates/web/zurich/report/banner.html:9
 msgid "Submitted"
@@ -2919,7 +2917,7 @@ msgstr "Підтверджено"
 #: templates/web/base/alert/updates.html:17
 #: templates/web/base/report/display.html:46
 #: templates/web/fixmystreet/alert/updates.html:23
-#: templates/web/fixmystreet/report/display.html:72
+#: templates/web/fixmystreet/report/display.html:65
 msgid "Subscribe"
 msgstr "Підписатись"
 
@@ -2930,7 +2928,7 @@ msgstr "Підпишіть мене на поштові алярми"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1193
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:289
-#: templates/web/base/admin/bodies.html:18
+#: templates/web/base/admin/bodies.html:25
 #: templates/web/base/admin/index.html:1
 #: templates/web/zurich/admin/index-dm.html:1
 #: templates/web/zurich/admin/index-sdm.html:1
@@ -3005,7 +3003,7 @@ msgid "That location does not appear to be in the UK; please try again."
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:47
-#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:71
+#: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:63
 #: perllib/FixMyStreet/Cobrand/UK.pm:81
 msgid "That postcode was not recognised, sorry."
 msgstr "Поштовий код не розпізнано, вибачте."
@@ -3014,7 +3012,7 @@ msgstr "Поштовий код не розпізнано, вибачте."
 msgid "That problem will now be resent."
 msgstr "Цю проблему зараз перезвітують."
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:117
+#: perllib/FixMyStreet/App/Controller/Report.pm:118
 msgid "That report cannot be viewed on %s."
 msgstr "Цей сповіщення неможливо показати на %s."
 
@@ -3022,7 +3020,7 @@ msgstr "Цей сповіщення неможливо показати на %s.
 msgid "That report has been removed from FixMyStreet."
 msgstr "Це сповіщення було видалено."
 
-#: templates/web/base/admin/body.html:132
+#: templates/web/base/admin/body.html:136
 msgid ""
 "The <strong>email address</strong> is the destination to which reports about this category will be sent. \n"
 "        Other categories for this body may have the same email address."
@@ -3053,7 +3051,7 @@ msgid ""
 "           If you leave this blank, <strong>send method defaults to email</strong>."
 msgstr ""
 
-#: templates/web/base/open311/index.html:92
+#: templates/web/base/open311/index.html:90
 msgid "The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification."
 msgstr ""
 
@@ -3091,12 +3089,12 @@ msgstr ""
 msgid "The error was: %s"
 msgstr "Трапилась помилка: %s"
 
-#: templates/web/base/open311/index.html:88
+#: templates/web/base/open311/index.html:86
 msgid "The following Open311 v2 attributes are returned for each request: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name."
 msgstr ""
 
-#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:187
-#: perllib/FixMyStreet/Geocode/OSM.pm:165
+#: perllib/FixMyStreet/Geocode/FixaMinGata.pm:185
+#: perllib/FixMyStreet/Geocode/OSM.pm:163
 msgid "The following information about the nearest road might be inaccurate or irrelevant, if the problem is close to several roads or close to a road without a name registered in OpenStreetMap."
 msgstr "The following information about the nearest road might be inaccurate or irrelevant, if the problem is close to several roads or close to a road without a name registered in OpenStreetMap."
 
@@ -3165,17 +3163,13 @@ msgid "The simplest alert is our geographic one:"
 msgstr "Найпростіший алярм - географічний:"
 
 #: templates/web/base/report/new/councils_extra_text.html:1
-#: templates/web/base/report/new/councils_text_some.html:11
+#: templates/web/base/report/new/councils_text_some.html:10
 #: templates/web/base/report/new/fill_in_details_form.html:18
-msgid "The subject and details of the problem will be public, plus your name if you give us permission."
-msgstr "Тема і подробиці проблеми будуть публічними. З вашого дозволу можна опублікувати ім'я"
-
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:14
-#, fuzzy
 msgid "The summary and description will also be made public (see our <a href=\"/privacy\">privacy policy</a>)."
-msgstr "Ваша інформація буде використана згідно <a href=\"/privacy\">політики конфіденційності</a>"
+msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:296
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:295
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
 msgstr "Користувач не зміг позначити проблему на карті, тільки введену зону"
 
@@ -3192,7 +3186,7 @@ msgstr ""
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Сталась проблема з відображенням сторінки всіх сповіщень. Спробуйте пізніше."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:139
+#: perllib/FixMyStreet/App/Controller/Contact.pm:131
 #: perllib/FixMyStreet/App/Controller/Dashboard.pm:59
 msgid "There was a problem showing this page. Please try again later."
 msgstr "Сталась помилка при спробі показати сторінку. Будь ласка спробуйте пізніше."
@@ -3200,7 +3194,7 @@ msgstr "Сталась помилка при спробі показати ст�
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:755
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:134
 #: templates/web/base/auth/general.html:23
-#: templates/web/fixmystreet/auth/general.html:24
+#: templates/web/fixmystreet/auth/general.html:25
 #: templates/web/zurich/auth/general.html:28
 msgid "There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form."
 msgstr "З комбінацією поштової адреси і паролю щось не так. Якщо ви не в змозі пригадати пароль або у вас його немає, заповніть секцію &lsquo;увійти поштою&rsquo;"
@@ -3213,7 +3207,7 @@ msgstr "Сталась проблема з вашою комбінацією а�
 msgid "There was a problem with your update. Please try again."
 msgstr "Сталась проблема з поновленням. Будь ласка спробуйте ще раз."
 
-#: perllib/FixMyStreet/App/Controller/Contact.pm:143
+#: perllib/FixMyStreet/App/Controller/Contact.pm:135
 msgid "There were problems with your report. Please see below."
 msgstr "Зі сповіщенням є негаразди. Гляньте нижче."
 
@@ -3231,7 +3225,7 @@ msgid ""
 "           "
 msgstr ""
 
-#: templates/web/base/open311/index.html:79
+#: templates/web/base/open311/index.html:77
 msgid "This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future."
 msgstr ""
 
@@ -3253,11 +3247,11 @@ msgid ""
 "          A body will not receive any reports unless it covers at least one area."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:385
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:388
 msgid "This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:388
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:391
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr ""
 
@@ -3309,23 +3303,23 @@ msgstr "Ця проблема застаріла і її статус невід
 msgid "This report is awaiting moderation."
 msgstr "Це сповіщення очікує модерації."
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:88
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:87
 msgid "This report is currently marked as closed."
 msgstr "Це сповіщення наразі відмічено закритим."
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:86
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:85
 msgid "This report is currently marked as fixed."
 msgstr "Це сповіщення наразі відмічено вирішеним."
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:90
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:89
 msgid "This report is currently marked as open."
 msgstr "Це сповіщення відмічено відкритим."
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:320
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:319
 msgid "This report was submitted anonymously"
 msgstr "Це сповіщення надіслано анонімно"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:289
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:288
 msgid "This web page also contains a photo of the problem, provided by the user."
 msgstr "Ця веб-сторінка також містить фото проблеми, які надав користувач."
 
@@ -3347,7 +3341,7 @@ msgstr "Щоб <strong>сповістити про проблему</strong>, н
 msgid "To find out what local alerts we have for you, please enter your postcode or street name and area"
 msgstr "Щоб дізнатись які локальні алярми ми маєм для вас, введіть ваш поштовий код, назву вулиці та район"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:295
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:294
 msgid "To view a map of the precise location of this issue"
 msgstr "До перегляду точного місцезнаходження проблеми на карті"
 
@@ -3375,8 +3369,8 @@ msgstr "Неможливо виправити"
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/report_edit.html:51
 #: templates/web/base/admin/update_edit.html:28
-#: templates/web/zurich/admin/report_edit-sdm.html:48
-#: templates/web/zurich/admin/report_edit.html:61
+#: templates/web/zurich/admin/report_edit-sdm.html:45
+#: templates/web/zurich/admin/report_edit.html:58
 #: templates/web/zurich/admin/update_edit.html:18
 msgid "Unconfirmed"
 msgstr "Не підтверджено"
@@ -3406,12 +3400,12 @@ msgid "Update %s created for problem %d; by %s"
 msgstr "Поновлення %s створено для проблеми %d; від %s"
 
 #: templates/web/base/contact/index.html:21
-#: templates/web/fixmystreet/contact/index.html:38
+#: templates/web/fixmystreet/contact/index.html:36
 msgid "Update below added anonymously at %s"
 msgstr "Поновлення додано анонімно о %s"
 
 #: templates/web/base/contact/index.html:23
-#: templates/web/fixmystreet/contact/index.html:40
+#: templates/web/fixmystreet/contact/index.html:38
 msgid "Update below added by %s at %s"
 msgstr "Поновлення нижче додано %s о %s"
 
@@ -3441,7 +3435,7 @@ msgstr "Поновлення відмітило проблему як виріш
 msgid "Update reopened problem"
 msgstr "Поновлення перевідкрило проблему"
 
-#: templates/web/base/admin/body.html:89
+#: templates/web/base/admin/body.html:93
 msgid "Update statuses"
 msgstr "Поновити статуси"
 
@@ -3459,8 +3453,8 @@ msgstr "Поновлено"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1060
 #: perllib/FixMyStreet/App/Controller/Admin.pm:810
 #: perllib/FixMyStreet/App/Controller/Admin.pm:958
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:550
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:619
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:549
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:618
 msgid "Updated!"
 msgstr "Поновлено!"
 
@@ -3487,7 +3481,7 @@ msgstr "Поновлення стосовно {{title}}"
 msgid "Updates to this problem, FixMyStreet"
 msgstr "Оновлення по цій проблемі, FixMyStreet"
 
-#: templates/web/base/admin/body.html:170
+#: templates/web/base/admin/body.html:174
 msgid "Use the <strong>note</strong> to record details that are only displayed in the admin. Notes are not shown publicly, and are not sent to the body."
 msgstr ""
 
@@ -3496,11 +3490,11 @@ msgstr ""
 msgid "User"
 msgstr "Користувач"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1360
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1359
 msgid "User flag removed"
 msgstr "Користувацький прапорець видалено"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1332
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1331
 msgid "User flagged"
 msgstr "Користувач відмічений"
 
@@ -3509,7 +3503,7 @@ msgid "User search finds matches in users' names and email addresses."
 msgstr "Пошук користувачів знайшов співпадіння в іменах та поштових адресах"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1198
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:304
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:303
 #: templates/web/base/admin/flagged.html:29
 #: templates/web/zurich/header.html:69
 msgid "Users"
@@ -3517,13 +3511,14 @@ msgstr "Користувачі"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:380
 #: perllib/FixMyStreet/App/Controller/Admin.pm:410
+#: perllib/FixMyStreet/App/Controller/Admin.pm:430
 msgid "Values updated"
 msgstr "Значення оновлено"
 
 #: templates/web/base/admin/report_edit.html:18
 #: templates/web/base/admin/update_edit.html:18
-#: templates/web/zurich/admin/report_edit-sdm.html:24
-#: templates/web/zurich/admin/report_edit.html:23
+#: templates/web/zurich/admin/report_edit-sdm.html:21
+#: templates/web/zurich/admin/report_edit.html:20
 #: templates/web/zurich/admin/update_edit.html:10
 msgid "View report on site"
 msgstr "Переглянути сповіщення на сайті"
@@ -3565,12 +3560,12 @@ msgstr "Ми відправили вам листа з посиланням на
 msgid "We never show your email"
 msgstr "Ми ніколи не публікуєм вашу поштову адресу"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:25
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:59
+#: templates/web/fixmystreet/report/new/form_user_loggedin.html:31
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:65
 msgid "We never show your email address or phone number."
 msgstr "Ми ніколи не публікуємо вашу поштову адресу чи номер телефону."
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:394
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:397
 msgid "We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch."
 msgstr "Ми розумієм, що проблема може лежати у відповідальності %s; нажаль, наразі у нас немає їх контактних даних. Якщо ви знаєте точну адресу, будь ласка залишайтесь на зв'язку."
 
@@ -3591,7 +3586,7 @@ msgstr ""
 msgid "What’s the issue, and where is it?"
 msgstr ""
 
-#: templates/web/base/admin/body_edit.html:82
+#: templates/web/base/admin/category_edit.html:82
 #: templates/web/zurich/admin/body.html:18
 msgid "When edited"
 msgstr "Коли відредаговано"
@@ -3604,15 +3599,14 @@ msgstr "Коли відправлено"
 msgid "Whole block of empty flats"
 msgstr "Whole block of empty flats"
 
-#: templates/web/base/open311/index.html:94
+#: templates/web/base/open311/index.html:92
 msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
 msgstr ""
 
 #: templates/web/fiksgatami/front/footer-marketing.html:15
-#: templates/web/fixmystreet/front/footer-marketing.html:15
-#, fuzzy
+#: templates/web/fixmystreet/front/footer-marketing.html:17
 msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
-msgstr "Our code is open source and <a href=\"http://github.com/mysociety/fixmystreet\">available on GitHub</a>."
+msgstr ""
 
 #: templates/web/base/questionnaire/index.html:78
 #: templates/web/fixmystreet/questionnaire/index.html:97
@@ -3632,10 +3626,10 @@ msgstr ""
 msgid "Year"
 msgstr "Рік"
 
-#: templates/web/base/admin/bodies.html:59
-#: templates/web/base/admin/body.html:68 templates/web/base/admin/body.html:70
-#: templates/web/base/admin/body.html:74 templates/web/base/admin/body.html:76
-#: templates/web/base/admin/body_edit.html:5
+#: templates/web/base/admin/bodies.html:66
+#: templates/web/base/admin/body.html:72 templates/web/base/admin/body.html:74
+#: templates/web/base/admin/body.html:78 templates/web/base/admin/body.html:80
+#: templates/web/base/admin/category_edit.html:5
 #: templates/web/base/admin/flagged.html:47
 #: templates/web/base/admin/list_updates.html:32
 #: templates/web/base/admin/list_updates.html:34
@@ -3658,18 +3652,18 @@ msgstr "Так"
 msgid "Yes I have a password"
 msgstr "Так, в мене є пароль"
 
-#: templates/web/base/contact/index.html:38
-#: templates/web/fixmystreet/contact/index.html:55
+#: templates/web/base/contact/index.html:39
+#: templates/web/fixmystreet/contact/index.html:54
 msgid "You are complaining that this problem report was unnecessarily moderated:"
 msgstr ""
 
-#: templates/web/base/contact/index.html:40
-#: templates/web/fixmystreet/contact/index.html:57
+#: templates/web/base/contact/index.html:41
+#: templates/web/fixmystreet/contact/index.html:56
 msgid "You are reporting the following problem report for being abusive, containing personal information, or similar:"
 msgstr "You are reporting the following problem report for being abusive, containing personal information, or similar:"
 
 #: templates/web/base/contact/index.html:15
-#: templates/web/fixmystreet/contact/index.html:32
+#: templates/web/fixmystreet/contact/index.html:30
 msgid "You are reporting the following update for being abusive, containing personal information, or similar:"
 msgstr "You are reporting the following update for being abusive, containing personal information, or similar:"
 
@@ -3684,7 +3678,7 @@ msgstr "Ви можете <a href=\"%s%s\">переглянути проблем
 msgid "You can add an abusive user's email to the abuse list, which automatically hides (and never sends) reports they create."
 msgstr "You can add an abusive user's email to the abuse list, which automatically hides (and never sends) reports they create."
 
-#: templates/web/fixmystreet/contact/index.html:122
+#: templates/web/fixmystreet/contact/index.html:121
 msgid "You can contact technical support on <a href='mailto:%s'>%s</a>"
 msgstr "Технічна підтримка доступна за адресою <a href='mailto:%s'>%s</a>"
 
@@ -3697,8 +3691,8 @@ msgstr ""
 
 #: templates/web/base/report/new/councils_text_none.html:19
 #: templates/web/base/report/new/councils_text_none.html:20
+#: templates/web/base/report/new/councils_text_some.html:20
 #: templates/web/base/report/new/councils_text_some.html:21
-#: templates/web/base/report/new/councils_text_some.html:22
 msgid "You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."
 msgstr ""
 
@@ -3758,7 +3752,7 @@ msgstr "Ви успішно видалили свою алярму."
 
 #: templates/web/base/report/display.html:20
 #: templates/web/base/report/new/fill_in_details.html:37
-#: templates/web/fixmystreet/report/display.html:24
+#: templates/web/fixmystreet/report/display.html:17
 msgid "You have successfully signed in; please check and confirm your details are accurate:"
 msgstr "Ви успішно увійшли; будь ласка перевірте чи деталі вірні:"
 
@@ -3798,9 +3792,9 @@ msgstr "Ваші сповіщення"
 #: templates/web/fixmystreet/alert/_list.html:89
 #: templates/web/fixmystreet/alert/updates.html:19
 #: templates/web/fixmystreet/alert/updates.html:22
-#: templates/web/fixmystreet/contact/index.html:92
-#: templates/web/fixmystreet/report/display.html:69
-#: templates/web/fixmystreet/report/display.html:71
+#: templates/web/fixmystreet/contact/index.html:91
+#: templates/web/fixmystreet/report/display.html:62
+#: templates/web/fixmystreet/report/display.html:64
 #: templates/web/fixmystreet/report/new/form_user_loggedin.html:3
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:1
 #: templates/web/fixmystreet/report/update-form.html:76
@@ -3808,7 +3802,7 @@ msgstr "Ваші сповіщення"
 msgid "Your email"
 msgstr "Ваша пошта"
 
-#: templates/web/fixmystreet/auth/general.html:26
+#: templates/web/fixmystreet/auth/general.html:27
 #: templates/web/fixmystreet/report/update-form.html:82
 #: templates/web/zurich/auth/general.html:30
 #: templates/web/zurich/auth/general.html:58
@@ -3829,10 +3823,10 @@ msgstr "Ваша е-пошта:"
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
 msgstr "Ваша інформація буде використана згідно <a href=\"/privacy\">політики конфіденційності</a>"
 
-#: templates/web/fixmystreet/auth/general.html:53
-#: templates/web/fixmystreet/contact/index.html:85
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:12
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:48
+#: templates/web/fixmystreet/auth/general.html:54
+#: templates/web/fixmystreet/contact/index.html:84
+#: templates/web/fixmystreet/report/new/form_user_loggedin.html:18
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:54
 #: templates/web/fixmystreet/report/update-form.html:142
 #: templates/web/zurich/auth/general.html:61
 #: templates/web/zurich/report/new/fill_in_details_form.html:98
@@ -3840,13 +3834,13 @@ msgid "Your name"
 msgstr "Ваше ім'я"
 
 #: templates/web/base/auth/general.html:59
-#: templates/web/base/contact/index.html:72
+#: templates/web/base/contact/index.html:73
 #: templates/web/base/report/new/fill_in_details_form.html:204
 #: templates/web/base/report/update-form.html:151
 msgid "Your name:"
 msgstr "Ваше ім'я:"
 
-#: templates/web/fixmystreet/auth/general.html:41
+#: templates/web/fixmystreet/auth/general.html:42
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:22
 #: templates/web/fixmystreet/report/update-form.html:96
 #: templates/web/zurich/auth/general.html:34
@@ -3857,16 +3851,15 @@ msgstr "Ваш пароль"
 msgid "Your password has been changed"
 msgstr "Ваш пароль було змінено"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:21
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:57
+#: templates/web/fixmystreet/report/new/form_user_loggedin.html:27
+#: templates/web/fixmystreet/report/new/form_user_loggedout.html:63
 #: templates/web/zurich/report/new/fill_in_details_form.html:104
 msgid "Your phone number"
 msgstr "Ваш телефон"
 
 #: templates/web/base/tokens/confirm_problem.html:4
-#, fuzzy
 msgid "Your problem has been confirmed!"
-msgstr "Цю проблему вирішено"
+msgstr ""
 
 #: templates/web/fixmystreet/questionnaire/index.html:16
 msgid "Your report"
@@ -3883,15 +3876,14 @@ msgid "Your reports"
 msgstr "Ваші сповіщення"
 
 #: templates/web/base/tokens/confirm_update.html:4
-#, fuzzy
 msgid "Your update has been confirmed!"
-msgstr "Ваш пароль було змінено"
+msgstr ""
 
 #: templates/web/base/my/my.html:53 templates/web/fixmystreet/my/my.html:59
 msgid "Your updates"
 msgstr "Ваші поновлення"
 
-#: templates/web/base/contact/index.html:80
+#: templates/web/base/contact/index.html:81
 msgid "Your&nbsp;email:"
 msgstr "Ваша&nbsp;е-пошта:"
 
@@ -3909,8 +3901,8 @@ msgid "council ref:&nbsp;%s"
 msgstr "рада ref:&nbsp;%s"
 
 #: templates/web/base/admin/report_edit.html:28
-#: templates/web/zurich/admin/report_edit-sdm.html:43
-#: templates/web/zurich/admin/report_edit.html:57
+#: templates/web/zurich/admin/report_edit-sdm.html:40
+#: templates/web/zurich/admin/report_edit.html:54
 msgid "didn't use map"
 msgstr "не використовував карту"
 
@@ -3933,7 +3925,7 @@ msgstr "від %d різних користувачів"
 msgid "last updated %s"
 msgstr "останнє поновлення %s"
 
-#: perllib/Utils.pm:266
+#: perllib/Utils.pm:263
 msgid "less than a minute"
 msgstr "менше хвилини"
 
@@ -3995,16 +3987,16 @@ msgstr "або знайти мене автоматично"
 
 #: templates/web/base/admin/report_edit.html:25
 #: templates/web/base/admin/report_edit.html:26
-#: templates/web/zurich/admin/report_edit-sdm.html:31
-#: templates/web/zurich/admin/report_edit-sdm.html:32
-#: templates/web/zurich/admin/report_edit-sdm.html:40
-#: templates/web/zurich/admin/report_edit-sdm.html:41
-#: templates/web/zurich/admin/report_edit.html:31
-#: templates/web/zurich/admin/report_edit.html:32
-#: templates/web/zurich/admin/report_edit.html:42
-#: templates/web/zurich/admin/report_edit.html:43
-#: templates/web/zurich/admin/report_edit.html:54
-#: templates/web/zurich/admin/report_edit.html:55
+#: templates/web/zurich/admin/report_edit-sdm.html:28
+#: templates/web/zurich/admin/report_edit-sdm.html:29
+#: templates/web/zurich/admin/report_edit-sdm.html:37
+#: templates/web/zurich/admin/report_edit-sdm.html:38
+#: templates/web/zurich/admin/report_edit.html:28
+#: templates/web/zurich/admin/report_edit.html:29
+#: templates/web/zurich/admin/report_edit.html:39
+#: templates/web/zurich/admin/report_edit.html:40
+#: templates/web/zurich/admin/report_edit.html:51
+#: templates/web/zurich/admin/report_edit.html:52
 msgid "originally entered: &ldquo;%s&rdquo;"
 msgstr "в оригіналі вказано: &ldquo;%s&rdquo;"
 
@@ -4035,17 +4027,17 @@ msgstr "місцевий орган"
 msgid "there is no pin shown as the user did not use the map"
 msgstr "шпильки немає так як користувач не використав мапу"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:370
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:373
 msgid "this type of local problem"
 msgstr "цей тип локальної проблеми"
 
-#: perllib/Utils.pm:238
+#: perllib/Utils.pm:235
 msgid "today"
 msgstr "сьогодні"
 
 #: templates/web/base/admin/report_edit.html:28
-#: templates/web/zurich/admin/report_edit-sdm.html:43
-#: templates/web/zurich/admin/report_edit.html:57
+#: templates/web/zurich/admin/report_edit-sdm.html:40
+#: templates/web/zurich/admin/report_edit.html:54
 msgid "used map"
 msgstr "викроистана мапа"
 
@@ -4070,7 +4062,7 @@ msgstr[0] "<big>%s</big> звіт недавно"
 msgstr[1] "<big>%s</big> звітів недавно"
 msgstr[2] "<big>%s</big> звітів недавно"
 
-#: perllib/Utils.pm:285
+#: perllib/Utils.pm:282
 #, perl-format
 msgid "%d hour"
 msgid_plural "%d hours"
@@ -4086,7 +4078,7 @@ msgstr[0] "%d прибічник"
 msgstr[1] "%d прибічників"
 msgstr[2] "%d прибічників"
 
-#: perllib/Utils.pm:287
+#: perllib/Utils.pm:284
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
@@ -4110,7 +4102,7 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: perllib/Utils.pm:281
+#: perllib/Utils.pm:278
 #, perl-format
 msgid "%d week"
 msgid_plural "%d weeks"
@@ -4134,7 +4126,7 @@ msgstr[0] "<big>%s</big> полагоджено минувшого місяця"
 msgstr[1] "<big>%s</big> полагоджено минувшого місяця"
 msgstr[2] "<big>%s</big> полагоджено минувшого місяця"
 
-#: perllib/Utils.pm:283
+#: perllib/Utils.pm:280
 #, perl-format
 msgid "%d day"
 msgid_plural "%d days"
@@ -4142,7 +4134,7 @@ msgstr[0] "%d день"
 msgstr[1] "%d днів"
 msgstr[2] "%d днів"
 
-#: templates/web/base/report/new/councils_text_some.html:14
+#: templates/web/base/report/new/councils_text_some.html:13
 #, perl-format
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
@@ -4150,156 +4142,8 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#~ msgid "%d addresses"
-#~ msgstr "%d адрес"
+#~ msgid "Configuration updated - contacts will be generated automatically later"
+#~ msgstr "Конфігурацію оновлено - контакти будуть згенеровані автоматично пізніше"
 
-#~ msgid "<big>%s</big> reports"
-#~ msgstr "<big>%s</big> звіти"
-
-#~ msgid ""
-#~ "<p style=\"font-size:150%\">We&rsquo;re sorry to hear that. We have two\n"
-#~ "suggestions: why not try <a href=\"http://www.writetothem.com/\">writing direct\n"
-#~ "to your councillor(s)</a> or, if it&rsquo;s a problem that could be fixed by\n"
-#~ "local people working together, why not\n"
-#~ "<a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
-#~ "</p>"
-#~ msgstr ""
-#~ "<p style=\"font-size:150%\">We&rsquo;re sorry to hear that. We have two\n"
-#~ "suggestions: why not try <a href=\"http://www.writetothem.com/\">writing direct\n"
-#~ "to your councillor(s)</a> or, if it&rsquo;s a problem that could be fixed by\n"
-#~ "local people working together, why not\n"
-#~ "<a href=\"http://www.pledgebank.com/new\">make and publicise a pledge</a>?\n"
-#~ "</p>"
-
-#~ msgid ""
-#~ "<p>Getting empty homes back into use can be difficult, but by now a good council\n"
-#~ "will have made a lot of progress and reported what they have done on the\n"
-#~ "website. Even so properties can remain empty for many months if the owner is\n"
-#~ "unwilling or the property is in very poor repair.  If nothing has happened or\n"
-#~ "you are not satisfied with the progress the council is making, now is the right\n"
-#~ "time to say so. We think it&rsquo;s a good idea to contact some other people who\n"
-#~ "may be able to help or put pressure on the council  For advice on how to do\n"
-#~ "this and other useful information please go to <a\n"
-#~ "href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
-#~ msgstr ""
-#~ "<p>Getting empty homes back into use can be difficult, but by now a good council\n"
-#~ "will have made a lot of progress and reported what they have done on the\n"
-#~ "website. Even so properties can remain empty for many months if the owner is\n"
-#~ "unwilling or the property is in very poor repair.  If nothing has happened or\n"
-#~ "you are not satisfied with the progress the council is making, now is the right\n"
-#~ "time to say so. We think it&rsquo;s a good idea to contact some other people who\n"
-#~ "may be able to help or put pressure on the council  For advice on how to do\n"
-#~ "this and other useful information please go to <a\n"
-#~ "href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
-
-#~ msgid ""
-#~ "<p>Getting empty homes back into use can be difficult. You shouldn&rsquo;t expect\n"
-#~ "the property to be back into use yet. But a good council will have started work\n"
-#~ "and should have reported what they have done on the website. If you are not\n"
-#~ "satisfied with progress or information from the council, now is the right time\n"
-#~ "to say. You may also want to try contacting some other people who may be able\n"
-#~ "to help.  For advice on how to do this and other useful information please\n"
-#~ "go to <a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
-#~ msgstr ""
-#~ "<p>Getting empty homes back into use can be difficult. You shouldn&rsquo;t expect\n"
-#~ "the property to be back into use yet. But a good council will have started work\n"
-#~ "and should have reported what they have done on the website. If you are not\n"
-#~ "satisfied with progress or information from the council, now is the right time\n"
-#~ "to say. You may also want to try contacting some other people who may be able\n"
-#~ "to help.  For advice on how to do this and other useful information please\n"
-#~ "go to <a href=\"http://www.emptyhomes.com/getinvolved/campaign.html\">http://www.emptyhomes.com/getinvolved/campaign.html</a>.</p>\n"
-
-#~ msgid "Are you from a council?"
-#~ msgstr "Ви орган влади?"
-
-#~ msgid "Be sure to choose the right category, because we use that to determine to whom the report is sent."
-#~ msgstr "Обирайте правильну категорію, від цього залежатиме куди надішлеться сповіщення."
-
-#~ msgid "Built by <a href=\"http://www.mysociety.org/\">mySociety</a> and maintained by <a href=\"http://www.nuug.no/\">NUUG</a>"
-#~ msgstr "Розроблено <a href=\"http://www.mysociety.org/\">mySociety</a> і підтримується <a href=\"http://www.nuug.no/\">NUUG</a>"
-
-#~ msgid "Contact"
-#~ msgstr "Контакт"
-
-#~ msgid "Empty property details form"
-#~ msgstr "Порожня форма інформації нерухомості"
-
-#~ msgid "Find latest local and national news"
-#~ msgstr "Знайти свіжі місцеві та державні новини"
-
-#~ msgid "Fix<span id=\"my\">My</span>Street"
-#~ msgstr "Вирішіть<span id=\"my\">Мою</span>Проблему"
-
-#~ msgid "If you submit a report here it will be left on the site, but not reported to the council &ndash; please still leave your report, so that we can show to the council the activity in their area."
-#~ msgstr "Якщо ви відправите сповіщення тут, воно залишиться на сайті, але не буде подане у департаменти &ndash; Будь ласка залиште своє сповіщення все одно, щоб департаменти бодай бачили активність в цьому районі."
-
-#~ msgid "Navigation"
-#~ msgstr "Навігація"
-
-#~ msgid "New problems"
-#~ msgstr "Нові проблеми"
-
-#~ msgid "New!"
-#~ msgstr "Новий!"
-
-#~ msgid "Non Public"
-#~ msgstr "Не публічно"
-
-#~ msgid "Old problems,<br>state unknown"
-#~ msgstr "Застарілі проблеми,<br>стан невідомий"
-
-#~ msgid "Older fixed"
-#~ msgstr "Раніше виправлені"
-
-#~ msgid "Older problems"
-#~ msgstr "Старіші проблеми"
-
-#~ msgid "Please do not give address or personal information in this section."
-#~ msgstr "Будь ласка не публікуйте адресу чи інші персональні дані в цьому розділі"
-
-#~ msgid ""
-#~ "Please fill in details of the problem below. Leave as much detail as you can, \n"
-#~ "and if possible describe the exact location of\n"
-#~ "the problem (e.g. if there is a streetlight number or road name)."
-#~ msgstr ""
-#~ "Будь ласка додайте подробиці проблеми. Залиште якнаймога більше інформації, \n"
-#~ "і при можливості опишіть точне місцезнаходження проблеми (наприклад якщо там є номер ліхтаря або бодай назва дороги)."
-
-#~ msgid ""
-#~ "Please fill in details of the problem below. The council won't be able\n"
-#~ "to help unless you leave as much detail as you can, so please describe the exact location of\n"
-#~ "the problem (e.g. on a wall), what it is, how long it has been there, a description (and a\n"
-#~ "photo of the problem if you have one), etc."
-#~ msgstr ""
-#~ "Будь ласка опишіть подробиці проблеми. Департамент не зможе допомгти доки інформація не буде достатьою, тому будь ласка опишіть точне місцезнаходження проблеми\n"
-#~ "(наприклад на стіні), що це за проблема, як довго вона існує, опис (і фото проблеми, якщо є), і т.д."
-
-#~ msgid "Private information (not shown on site)"
-#~ msgstr "Приватна інформація (не буде вказана на сайті)"
-
-#~ msgid "Provide a title"
-#~ msgstr "Встановіть назву"
-
-#~ msgid "Public information (shown on site)"
-#~ msgstr "Публічна інформація (показується на сайті)"
-
-#~ msgid "Recently fixed"
-#~ msgstr "Нещодавно вирішені"
-
-#~ msgid "Source code"
-#~ msgstr "Вихідний код"
-
-#~ msgid "Subscribe to an alert based upon what baranagay you&rsquo;re in:"
-#~ msgstr "Subscribe to an alert based upon what baranagay you&rsquo;re in:"
-
-#~ msgid "View your report"
-#~ msgstr "Переглянути своє сповіщення"
-
-#~ msgid "We may contact you periodically to ask if anything has changed with the property you reported."
-#~ msgstr "Ми можем періодично контактувати з вами щоб запитати чи щось змінилось відносно сповіщеної проблеми."
-
-#~ msgid "We will only use your personal information in accordance with our <a href=\"/faq#privacy\">privacy policy.</a>"
-#~ msgstr "Ми будем використовувати ваші персональні дані лише у відповідності до <a href=\"/faq#privacy\">політики конфіденційності.</a>"
-
-#~ msgid "You have successfully confirmed your problem"
-#~ msgstr "Ви успішно підтвердили проблему."
+#~ msgid "The subject and details of the problem will be public, plus your name if you give us permission."
+#~ msgstr "Тема і подробиці проблеми будуть публічними. З вашого дозволу можна опублікувати ім'я"

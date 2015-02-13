@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::OSM::StreetView
 # OSM StreetView maps on FixMyStreet.
 #

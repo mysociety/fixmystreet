@@ -153,7 +153,6 @@ __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 __PACKAGE__->rabx_column('geocode');
 
-use DateTime::TimeZone;
 use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
@@ -316,18 +315,11 @@ sub council_states {
     return wantarray ? keys %{$states} : $states;
 }
 
-my $tz = DateTime::TimeZone->new( name => "local" );
-
-my $tz_f;
-$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
-    if FixMyStreet->config('TIME_ZONE');
-
 my $stz = sub {
     my ( $orig, $self ) = ( shift, shift );
     my $s = $self->$orig(@_);
     return $s unless $s && UNIVERSAL::isa($s, "DateTime");
-    $s->set_time_zone($tz);
-    $s->set_time_zone($tz_f) if $tz_f;
+    FixMyStreet->set_time_zone($s);
     return $s;
 };
 
@@ -745,7 +737,7 @@ sub update_from_open311_service_request {
     # of course if local timezone is not the one that went into the data
     # base then we're also in trouble
     my $lastupdate = $self->lastupdate;
-    $lastupdate->set_time_zone( DateTime::TimeZone->new( name => 'local' ) );
+    $lastupdate->set_time_zone( FixMyStreet->local_time_zone );
 
     # update from open311 is older so skip
     if ( $req_time < $lastupdate ) {

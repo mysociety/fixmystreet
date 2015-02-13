@@ -65,6 +65,7 @@ if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
     sed -i \
         -e 's,$FMS,'"$REPOSITORY,g" \
         -e 's,$LOCK_DIR,'"$DIRECTORY,g" \
+        -e 's,$UNIX_USER,'"$UNIX_USER,g" \
         "$TEMPORARY_CRONTAB"
     crontab $TEMPORARY_CRONTAB
     echo $DONE_MSG
@@ -126,15 +127,15 @@ then
     psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/alert_types.sql
     psql -U "$UNIX_USER" "$DB_NAME" < "$REPOSITORY"/db/generate_secret.sql
 else
-    bin/cron-wrapper update-schema --commit
+    bin/update-schema --commit
 fi
 echo $DONE_MSG
 
 # Generate po and mo files (these invocations taken from Kagee's script):
 echo "Creating locale .mo files"
-bin/cron-wrapper bin/make_po FixMyStreet-EmptyHomes
-bin/cron-wrapper bin/make_emptyhomes_welsh_po
+bin/make_po FixMyStreet-EmptyHomes
+bin/emptyhomes/make_welsh_po
 commonlib/bin/gettext-makemo FixMyStreet
 echo $DONE_MSG
 
-bin/cron-wrapper update-all-reports
+bin/update-all-reports

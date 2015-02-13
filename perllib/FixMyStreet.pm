@@ -6,6 +6,7 @@ use warnings;
 use Path::Class;
 my $ROOT_DIR = file(__FILE__)->parent->parent->absolute->resolve;
 
+use DateTime::TimeZone;
 use Readonly;
 use Sub::Override;
 
@@ -215,6 +216,25 @@ sub get_email_template {
         unless -e $template_path;
     $template = Utils::read_file( $template_path );
     return $template;
+}
+
+my $tz = DateTime::TimeZone->new( name => "local" );
+my $tz_f;
+$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
+    if FixMyStreet->config('TIME_ZONE');
+
+sub local_time_zone {
+    return $tz;
+}
+
+sub time_zone {
+    return $tz_f;
+}
+
+sub set_time_zone {
+    my ($class, $dt)  = @_;
+    $dt->set_time_zone($tz);
+    $dt->set_time_zone($tz_f) if $tz_f;
 }
 
 1;

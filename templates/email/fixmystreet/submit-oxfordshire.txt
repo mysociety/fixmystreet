@@ -33,7 +33,7 @@ Replies to this email will go to the user who submitted the problem.
 
 This message was sent via FixMyStreet, a project of UKCOD, registered charity
 number 1076346. If there is a more appropriate email address for messages about
-<?=$values['category_footer']?>, please let us know by visiting <http://www.fixmystreet.com/contact>.
+<?=$values['category_footer']?>, please let us know by visiting <https://www.fixmystreet.com/contact>.
 This will help improve the service for local people. We
 also welcome any other feedback you may have.
 

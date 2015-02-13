@@ -5,9 +5,9 @@ use warnings;
 
 use Test::More;
 
+use FixMyStreet::TestMech;
 use FixMyStreet;
 use FixMyStreet::App;
-use FixMyStreet::TestMech;
 use mySociety::Locale;
 use Sub::Override;
 

@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::Zurich
 # Zurich have their own tileserver.
 #

@@ -119,5 +119,9 @@ sub pin_colour {
     return $open_states->{ $p->state } ? 'yellow' : 'green';
 }
 
+sub send_questionnaires {
+    return 0;
+}
+
 1;
 

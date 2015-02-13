@@ -1,0 +1,37 @@
+#!/usr/bin/env perl
+use strict; use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use FixMyStreet::TestAppProve;
+
+=head1 NAME
+
+bin/run-tests - spin up a clean database and configuration for tests
+
+=head1 USAGE
+
+    bin/run-tests t/              #  runs prove -r t/ (recursively, saving state)
+    bin/run-tests --state=failed  #  runs just failing tests
+                                     #  delete .prove to reset
+ 
+    bin/run-tests t/foo.t         #  runs with prove -v (single test)
+
+By default we use conf/general.yml-example as the template, and spin up a fresh
+Postgres cluster and database.  We can override this by doing:
+
+    bin/run-tests --config=general.mycobrand.yml
+    bin/run-tests --db-config=general.yml # e.g. use your current DB settings
+    bin/run-tests --all-config=general.yml # e.g. use your current DB settings
+
+(NB: passing --state=save automagically is experimental, and will be removed if
+it turns out to be annoying.)
+
+=cut
+
+exit( FixMyStreet::TestAppProve->run(@ARGV) ? 0 : 1);

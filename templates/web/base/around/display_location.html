@@ -6,14 +6,14 @@
     rss_url
         = pc
         ? c.uri_for( "/rss/pc", pc )
-        : c.uri_for( "/rss/l/$short_latitude,$short_longitude" );
+        : c.uri_for( "/rss/l/$latitude,$longitude" );
             
     email_url = c.uri_for(
         '/alert/list',
         {
-            lat  => short_latitude,
-            lon  => short_longitude,
-            feed => "local:$short_latitude:$short_longitude",
+            lat  => latitude,
+            lon  => longitude,
+            feed => "local:$latitude:$longitude",
         }
     );
 
@@ -21,13 +21,13 @@
         '/report/new',
         {
             pc         => pc
-            latitude   => short_latitude,
-            longitude  => short_longitude,
+            latitude   => latitude,
+            longitude  => longitude,
             skipped    => 1,
         }
     );
 
-    PROCESS "maps/${map.type}.html";
+    PROCESS "maps/${map.type}.html" around_page = 1;
 
     SET bodyclass = 'mappage';
     SET rss = [ loc('Recent local problems, FixMyStreet'), rss_url ] IF c.cobrand.moniker != 'emptyhomes';
@@ -45,17 +45,15 @@
     [% END %]
     <input type="hidden" name="pc" value="[% pc | html %]">
 
-    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
-    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% latitude | html %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
 [% END %]
 
     [% map_html %]
 
       [% IF c.cobrand.moniker != 'emptyhomes' %]
         <p id='sub_map_links'>
-            [% IF c.cobrand.moniker == 'zurich' %]
-                <a class="hidden-nojs" id="map_layer_toggle" href="">Stadtplan</a>
-            [% END %]
+            [% map_sub_links %]
             [% IF c.req.params.no_pins %]
                 <a id='hide_pins_link' rel='nofollow' href='[% c.uri_with( { no_pins => 0 } ) %]'>[% loc('Show pins') %]</a>
             [% ELSE %]

@@ -1,11 +1,15 @@
 use strict;
 use warnings;
 use Test::More;
+use LWP::Protocol::PSGI;
 
 BEGIN {
     use FixMyStreet;
     FixMyStreet->test_mode(1);
 }
+
+use t::MapIt;
+use mySociety::Locale;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -95,6 +99,25 @@ $email = $mech->get_email;
 like $email->header('Content-Type'), qr/iso-8859-1/, 'encoding looks okay';
 like $email->body, qr/V=E4nligen,/, 'signature looks correct';
 $mech->clear_emails_ok;
+
+subtest "Test ajax decimal points" => sub {
+    # The following line is so we are definitely not in Swedish before
+    # requesting the page, so that the code performs a full switch to Swedish
+    mySociety::Locale::push('en-gb');
+
+    # A note to the future - the run_if_script line must be within a subtest
+    # otherwise it fails to work
+    LWP::Protocol::PSGI->register(t::MapIt->run_if_script, host => 'mapit.sweden');
+
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixamingata' ],
+        MAPIT_URL => 'http://mapit.sweden/'
+    }, sub {
+        $mech->get_ok('/ajax/lookup_location?term=12345');
+        # We want an actual decimal point in a JSON response...
+        $mech->content_contains('51.5');
+    };
+};
 
 END {
     $mech->delete_problems_for_body(1);

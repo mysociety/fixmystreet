@@ -25,16 +25,9 @@ before_install:
 install:
   - .travis/install
 before_script:
-  - psql -c 'create database fms;' -U postgres
-  - psql fms postgres < db/schema.sql
-  - psql fms postgres < db/alert_types.sql
-  - psql fms postgres < db/generate_secret.sql
-  - >
-    sed -r -e "s,(FMS_DB_USER:) 'fms',\\1 'postgres',"
-    conf/general.yml-example > conf/general.yml
-  - ./bin/cron-wrapper ./bin/make_po FixMyStreet-EmptyHomes
-  - ./bin/cron-wrapper ./bin/make_emptyhomes_welsh_po
+  - ./bin/make_po FixMyStreet-EmptyHomes
+  - ./bin/emptyhomes/make_welsh_po
   - commonlib/bin/gettext-makemo FixMyStreet
-script: "bin/cron-wrapper perl /usr/bin/prove -rl t"
+script: "bin/run-tests t"
 after_script:
   - .travis/after_script

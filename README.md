@@ -38,6 +38,29 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.5.3 (21st January 2015)
+    - New features:
+        - Satellite map toggle option on Google Maps view. #1002
+        - Greek translation.
+    - Bugfixes:
+        - Fix cron-based email to use configured SMTP settings. #988
+        - Update UNIX_USER variable on installation setup of crontab. #974
+        - Improve make_css finding of bundled compass when in symlink. #978
+        - Remove hard-coded site name from submit email template.
+        - Allow forked repository pull requests to run on Travis.
+        - Fix title of Privacy page, and other minor text fixes.
+        - CSS: add some bottom content padding and fix a tiny map links issue.
+    - Development improvements:
+        - Replace site_title cobrand function with site-name web template. #979
+        - Remove need for 'cron-wrapper' to run scripts. #852
+        - Rename 'test-wrapper' to 'run-tests'. #999
+        - Add client_max_body_size nginx config option. #995
+        - Tidy up bin directory and #! lines.
+    - Admin improvements:
+        - Add staging email warning on admin body pages if needed. #982
+        - Add admin navigation link to Configuration page. #1005
+        - Better URL for body category editing.
+
 * v1.5.2 (17th December 2014)
     - Hide unneeded heading on default footer.
     - Suppress 'Argument "" isn't numeric' warning on admin report edit page.

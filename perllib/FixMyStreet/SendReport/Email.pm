@@ -4,11 +4,8 @@ use Moose;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
-use mySociety::EmailUtil;
-
 sub build_recipient_list {
     my ( $self, $row, $h ) = @_;
-    my %recips;
 
     my $all_confirmed = 1;
     foreach my $body ( @{ $self->bodies } ) {
@@ -49,19 +46,20 @@ sub build_recipient_list {
         }
         for my $email ( @emails ) {
             push @{ $self->to }, [ $email, $body_name ];
-            $recips{$email} = 1;
         }
     }
 
-    return () unless $all_confirmed;
-    return keys %recips;
+    return $all_confirmed && @{$self->to};
 }
 
 sub get_template {
     my ( $self, $row ) = @_;
 
     my $template = 'submit.txt';
-    $template = 'submit-brent.txt' if $row->bodies_str eq 2488 || $row->bodies_str eq 2237;
+
+    if ($row->cobrand eq 'fixmystreet') {
+        $template = 'submit-oxfordshire.txt' if $row->bodies_str eq 2237;
+    }
 
     $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, $template);
     return $template;
@@ -76,34 +74,36 @@ sub send {
     my $self = shift;
     my ( $row, $h ) = @_;
 
-    my @recips = $self->build_recipient_list( $row, $h );
+    my $recips = $self->build_recipient_list( $row, $h );
 
     # on a staging server send emails to ourselves rather than the bodies
     if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING') && !FixMyStreet->test_mode) {
-        @recips = ( $row->user->email );
+        $recips = 1;
+        @{$self->to} = [ $row->user->email, $self->to->[0][1] || $row->name ];
     }
 
-    unless ( @recips ) {
+    unless ($recips) {
         $self->error( 'No recipients' );
         return 1;
     }
 
     my ($verbose, $nomail) = CronFns::options();
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+    my $params = {
+        _template_ => $self->get_template( $row ),
+        _parameters_ => $h,
+        To => $self->to,
+        From => $self->send_from( $row ),
+    };
+    $params->{Bcc} = $self->bcc if @{$self->bcc};
     my $result = FixMyStreet::App->send_email_cron(
-        {
-            _template_ => $self->get_template( $row ),
-            _parameters_ => $h,
-            To => $self->to,
-            From => $self->send_from( $row ),
-        },
+        $params,
         mySociety::Config::get('CONTACT_EMAIL'),
-        \@recips,
         $nomail,
         $cobrand
     );
 
-    if ( $result == mySociety::EmailUtil::EMAIL_SUCCESS ) {
+    unless ($result) {
         $self->success(1);
     } else {
         $self->error( 'Failed to send email' );
@@ -143,4 +143,5 @@ sub _get_district_for_contact {
     ($district) = keys %$district;
     return $district;
 }
+
 1;

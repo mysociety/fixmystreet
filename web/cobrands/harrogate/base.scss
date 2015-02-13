@@ -1,0 +1,65 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+#site-logo
+{
+    display: block;
+    margin: 2px;
+    padding-left: 10px;
+    position: static;
+
+    background: url("/cobrands/harrogate/HBCLogo-mobile.png") 0 0 no-repeat;
+    width: 106px;
+    height: 37px;
+}
+
+#main-nav ul#main-menu li {
+
+    // blue button background, darker if selected
+    background: #ededed;
+    &.menu-item-selected {
+        background: $primary;
+        span {
+            color: #fff;
+        }
+    }
+
+    span {
+        color: $nav_fg;
+    }
+}
+
+#main-nav ul#main-menu li,
+body.mappage #main-nav ul#main-menu li,
+{
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    padding-top: 0;
+    padding-bottom: 0;
+
+    a { padding: 0 }
+}
+
+label[for=form_INFO_TEXT] {
+    background: yellow;
+    border: solid 1px black;
+    padding: 1em;
+}
+
+#site-header {
+    background: none;
+}
+
+
+#council_responsibilities_note {
+    background-color: lighten($primary, 30%);
+    padding: 0.5em;
+    font-size: 0.8em;
+}

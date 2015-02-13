@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::OSM
 # OSM maps on FixMyStreet.
 #
@@ -29,10 +27,10 @@ sub map_tiles {
     my ( $x, $y, $z ) = ( $params{x_tile}, $params{y_tile}, $params{zoom_act} );
     my $tile_url = $self->base_tile_url();
     return [
-        "http://a.$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
-        "http://b.$tile_url/$z/$x/" . ($y - 1) . ".png",
-        "http://c.$tile_url/$z/" . ($x - 1) . "/$y.png",
-        "http://$tile_url/$z/$x/$y.png",
+        "https://a.$tile_url/$z/" . ($x - 1) . "/" . ($y - 1) . ".png",
+        "https://b.$tile_url/$z/$x/" . ($y - 1) . ".png",
+        "https://c.$tile_url/$z/" . ($x - 1) . "/$y.png",
+        "https://a.$tile_url/$z/$x/$y.png",
     ];
 }
 

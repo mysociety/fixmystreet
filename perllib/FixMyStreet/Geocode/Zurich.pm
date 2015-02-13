@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet::Geocode::Zurich
 # Geocoding with Zurich web service.
 #
@@ -17,7 +15,7 @@ use Digest::MD5 qw(md5_hex);
 use File::Path ();
 use Geo::Coordinates::CH1903;
 use Storable;
-use mySociety::Locale;
+use Utils;
 
 my ($soap, $method, $security);
 
@@ -68,7 +66,7 @@ sub string {
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'zurich/';
     my $cache_file = $cache_dir . md5_hex($s);
     my $result;
-    if (-s $cache_file) {
+    if (-s $cache_file && -M $cache_file <= 7) {
         $result = retrieve($cache_file);
     } else {
         my $search = SOAP::Data->name('search' => $s)->type('');
@@ -94,14 +92,14 @@ sub string {
 
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$results) {
-        ($latitude, $longitude) = Geo::Coordinates::CH1903::to_latlon($_->{easting}, $_->{northing});
-        mySociety::Locale::in_gb_locale {
-            push (@$error, {
-                address => $_->{text},
-                latitude => sprintf('%0.6f', $latitude),
-                longitude => sprintf('%0.6f', $longitude)
-            });
-        };
+        ($latitude, $longitude) =
+            map { Utils::truncate_coordinate($_) }
+            Geo::Coordinates::CH1903::to_latlon($_->{easting}, $_->{northing});
+        push (@$error, {
+            address => $_->{text},
+            latitude => $latitude,
+            longitude => $longitude
+        });
         push (@valid_locations, $_);
         last if lc($_->{text}) eq lc($s);
     }

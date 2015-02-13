@@ -9,7 +9,6 @@ BEGIN { extends 'FixMyStreet::SendReport::Email'; }
 
 sub build_recipient_list {
     my ( $self, $row, $h ) = @_;
-    my %recips;
 
     my $all_confirmed = 1;
     foreach my $body ( @{ $self->bodies } ) {
@@ -31,24 +30,22 @@ sub build_recipient_list {
         }
 
         push @{ $self->to }, [ $body_email, $body->name ];
-        $recips{$body_email} = 1;
 
         my $area_info = mySociety::MaPit::call('area', $body->body_areas->first->area_id);
         my $country = $area_info->{country};
         if ($country eq 'W') {
-            $recips{ 'wales@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
+            push @{$self->bcc}, 'wales@' . mySociety::Config::get('EMAIL_DOMAIN');
         } elsif ($country eq 'S') {
-            $recips{ 'scotland@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
+            push @{$self->bcc}, 'scotland@' . mySociety::Config::get('EMAIL_DOMAIN');
         } else {
-            $recips{ 'eha@' . mySociety::Config::get('EMAIL_DOMAIN') } = 1;
+            push @{$self->bcc}, 'eha@' . mySociety::Config::get('EMAIL_DOMAIN');
         }
     }
 
     # Set address email parameter from added data
     $h->{address} = $row->extra->{address};
 
-    return () unless $all_confirmed;
-    return keys %recips;
+    return $all_confirmed && @{$self->to};
 }
 
 sub get_template {

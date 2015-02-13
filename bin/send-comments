@@ -13,6 +13,13 @@ use strict;
 use warnings;
 require 5.8.0;
 
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
 use Digest::MD5;
 use Encode;
 use CronFns;
@@ -21,7 +28,6 @@ use FixMyStreet::App;
 
 use Utils;
 use mySociety::Config;
-use mySociety::EmailUtil;
 
 use Open311;
 
@@ -139,7 +145,7 @@ while ( my $body = $bodies->next ) {
 sub bromley_retry_timeout {
     my $row = shift;
 
-    my $tz = DateTime::TimeZone->new( name => 'local' );
+    my $tz = FixMyStreet->local_time_zone;
     my $now = DateTime->now( time_zone => $tz );
     my $diff = $now - $row->send_fail_timestamp;
     if ( $diff->in_units( 'minutes' ) < 30 ) {

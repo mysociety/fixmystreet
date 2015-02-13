@@ -25,7 +25,7 @@
     <ul id="key-tools">
         <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse') %]</a></li>
         <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
-        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
+        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
     </ul>
 
 <div id="report-updates-data" class="hidden-js">

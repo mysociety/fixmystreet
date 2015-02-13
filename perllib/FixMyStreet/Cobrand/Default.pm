@@ -146,14 +146,6 @@ Can be specified in template.
 
 sub enter_postcode_text { }
 
-=head2 site_title
-
-The name of the site
-
-=cut
-
-sub site_title { return 'FixMyStreet'; }
-
 =head2 set_lang_and_domain
 
     my $set_lang = $cobrand->set_lang_and_domain( $lang, $unicode, $dir )

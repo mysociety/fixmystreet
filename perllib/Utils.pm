@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # Utils.pm:
 # Various generic utilities for FixMyStreet.
 #
@@ -15,7 +13,6 @@ use strict;
 use DateTime;
 use Encode;
 use File::Slurp qw();
-use mySociety::DBHandle qw(dbh);
 use mySociety::GeoUtil;
 use mySociety::Locale;
 
@@ -228,7 +225,7 @@ sub prettify_dt {
     $type ||= '';
     $type = 'short' if $type eq '1';
 
-    my $now = DateTime->now( time_zone => FixMyStreet->config('TIME_ZONE') || 'local' );
+    my $now = DateTime->now( time_zone => FixMyStreet->time_zone || FixMyStreet->local_time_zone );
 
     my $tt = '';
     return "[unknown time]" unless ref $dt;

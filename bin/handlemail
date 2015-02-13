@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 #
 # handlemail:
 # Handle an individual incoming mail message.
@@ -14,6 +14,7 @@
 my $rcsid = ''; $rcsid .= '$Id: handlemail,v 1.2 2009-02-11 11:04:48 matthew Exp $';
 
 use strict;
+use warnings;
 require 5.8.0;
 
 # Horrible boilerplate to set up appropriate library paths.

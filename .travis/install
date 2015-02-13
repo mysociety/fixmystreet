@@ -4,28 +4,22 @@ import hashlib
 import os
 import sys
 import tarfile
-
-import boto
-from boto.s3.key import Key
-from boto.exception import S3ResponseError
+import urllib
 
 root = os.path.join(os.path.dirname(__file__), '..')
 with open(os.path.join(root, 'cpanfile.snapshot')) as cpanfile:
     hash = hashlib.md5(cpanfile.read()).hexdigest()
 wanted_filename = 'fixmystreet-local-%s.tgz' % hash
 
-conn = boto.connect_s3()
-bucket = conn.get_bucket('fixmystreet-bundle-cache')
-
-k = Key(bucket)
-k.key = wanted_filename
+url = 'https://fixmystreet-bundle-cache.s3.amazonaws.com/%s' % wanted_filename
 try:
-    k.get_contents_to_filename(wanted_filename)
+    urllib.urlretrieve(url, wanted_filename)
     if tarfile.is_tarfile(wanted_filename):
         tfile = tarfile.open(wanted_filename)
         tfile.extractall()
+        print "Cached copy found and extracted"
         sys.exit(0)
-except S3ResponseError:
+except IOError:
     os.remove(wanted_filename)
 
 print "No cached copy found, running carton install..."

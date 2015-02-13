@@ -1,5 +1,5 @@
 package FixMyStreet::App::Model::EmailSend;
-use base 'Catalyst::Model::Adaptor';
+use base 'Catalyst::Model::Factory';
 
 use strict;
 use warnings;
@@ -54,7 +54,7 @@ elsif ( my $smtp_host = FixMyStreet->config('SMTP_SMARTHOST') ) {
     push @$mailer_args, username => $username, password => $password
         if $username && $password;
     $args = {
-        mailer      => 'FixMyStreet::EmailSend',
+        mailer      => 'FixMyStreet::EmailSend::DoNotReply',
         mailer_args => $mailer_args,
     };
 }

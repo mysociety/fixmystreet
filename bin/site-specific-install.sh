@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set this to the version we want to check out
-VERSION=${VERSION_OVERRIDE:-v1.5.2}
+VERSION=${VERSION_OVERRIDE:-v1.5.3}
 
 PARENT_SCRIPT_URL=https://github.com/mysociety/commonlib/blob/master/bin/install-site.sh
 
@@ -66,4 +66,4 @@ fi
 echo Installation complete - you should now be able to view the site at:
 echo   http://$HOST/
 echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
-echo running: $REPOSITORY/bin/cron-wrapper prove -r t
+echo running: $REPOSITORY/bin/run-tests t

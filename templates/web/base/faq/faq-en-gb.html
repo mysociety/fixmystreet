@@ -5,7 +5,7 @@
         <ul class="plain-list">
             <li><strong>Frequently Asked Questions</strong></li>
             <li><a href="/privacy">Privacy and cookies</a></li>
-            <li><a href="/contact">Contact [% c.cobrand.site_title %]</a></li>
+            <li><a href="/contact">Contact [% PROCESS 'site-name.html' -%]</a></li>
         </ul>
     </aside>
 </div>
@@ -15,15 +15,15 @@
 <dl>
 
     <dt>What is this site?</dt>
-    <dd>[% c.cobrand.site_title %] is a site to help people report to their
+    <dd>[% PROCESS 'site-name.html' -%] is a site to help people report to their
     local authority, view, or discuss local issues they&rsquo;ve found, by
     simply locating them on a map.</dd>
 
-    <dt>How do I get in touch with [% c.cobrand.site_title %]?</dt>
+    <dt>How do I get in touch with [% PROCESS 'site-name.html' -%]?</dt>
     <dd>Here&rsquo;s our <a href="/contact">contact page</a>.</dd>
 
-    <dt>What sort of problems should I report with [% c.cobrand.site_title %]?</dt>
-    <dd>This depends upon the precise purpose of [% c.cobrand.site_title %];
+    <dt>What sort of problems should I report with [% PROCESS 'site-name.html' -%]?</dt>
+    <dd>This depends upon the precise purpose of [% PROCESS 'site-name.html' -%];
     in the UK, FixMyStreet is primarily for reporting things which are
     <strong>broken or dirty or damaged or dumped, and need fixing, cleaning
     or clearing</strong>, such as:
@@ -38,8 +38,8 @@
     </ul>
     </dd>
 
-    <dt>What isn&rsquo;t [% c.cobrand.site_title %] for?</dt>
-    <dd>[% c.cobrand.site_title %] is not a way of getting in touch with your
+    <dt>What isn&rsquo;t [% PROCESS 'site-name.html' -%] for?</dt>
+    <dd>[% PROCESS 'site-name.html' -%] is not a way of getting in touch with your
     authority for all issues &ndash; please use this site only for problems
     such as the above. We often route problem reports via cleansing services or
     highways and so using this site for other matters may result in a delay in
@@ -75,9 +75,9 @@
     a registered charity, so if you want to make a contribution,
         <a href="https://www.mysociety.org/donate/">please do</a>.</dd>
 
-    <dt>Can I use [% c.cobrand.site_title %] on my mobile?</dt>
+    <dt>Can I use [% PROCESS 'site-name.html' -%] on my mobile?</dt>
     <dd>
-    <p>The [% c.cobrand.site_title %] website will already work on your mobile
+    <p>The [% PROCESS 'site-name.html' -%] website will already work on your mobile
     phone, adapting to the size of your screen automatically.</p>
     </dd>
 </dl>
@@ -90,18 +90,18 @@
 to find out where reports go at the moment. Also <a href="/contact">contact us</a>
 to update the address or addresses we use.</dd>
 
-    <dt>I&rsquo;m from an authority, can we have [% c.cobrand.site_title %]
+    <dt>I&rsquo;m from an authority, can we have [% PROCESS 'site-name.html' -%]
     on our website?</dt>
     <dd>Quite possibly &ndash; contact the people who run this site.</dd>
 
     <dt>Do you remove silly or illegal content?</dt>
-    <dd>[% c.cobrand.site_title %] is not responsible for the content and
+    <dd>[% PROCESS 'site-name.html' -%] is not responsible for the content and
     accuracy of material submitted by its users. We reserve the right to
     edit or remove any problems or updates which we consider to be
     inappropriate upon being informed by a user of the site.</dd>
 
     <dt>Why can&rsquo;t I zoom out more on the reporting map?</dt>
-    <dd>We want to keep [% c.cobrand.site_title %] locally focused, so restrict
+    <dd>We want to keep [% PROCESS 'site-name.html' -%] locally focused, so restrict
     the ability to move radically between areas. The map on Your Reports will
     let you see all the reports you&rsquo;ve made, wherever they are. If
     you&rsquo;re from the authority then the emailed version of the problem
@@ -111,7 +111,7 @@ to update the address or addresses we use.</dd>
 <h2><a name="organisation"></a>Organisation Questions</h2>
 
 <dl>
-    <dt>Who built [% c.cobrand.site_title %]?</dt>
+    <dt>Who built [% PROCESS 'site-name.html' -%]?</dt>
     <dd>This will depend upon the installation of the FixMyStreet Platform,
     who should create their own <code>faq/</code> template in their cobrand
     directory to replace this default one. The FixMyStreet Platform was

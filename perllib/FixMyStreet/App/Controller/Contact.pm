@@ -4,6 +4,8 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
+use mySociety::EmailUtil;
+
 =head1 NAME
 
 FixMyStreet::App::Controller::Contact - Catalyst Controller

@@ -3,7 +3,7 @@ Subject: Problem Report: <?=$values['title']?>
 Dear <?=$values['bodies_name']?>,
 
 <?=$values['missing']?><?=$values['multiple']?>A user of
-FixMyStreet has submitted the following report
+<?=$values['site_name']?> has submitted the following report
 of a local problem that they believe might require your attention.
 
 <?=$values['fuzzy']?>, or to provide an update on the problem,
@@ -31,13 +31,6 @@ Replies to this email will go to the user who submitted the problem.
 
 <?=$values['signature']?>
 
-This message was sent via FixMyStreet, a project of UKCOD, registered charity
-number 1076346. If there is a more appropriate email address for messages about
-<?=$values['category_footer']?>, please let us know by visiting <https://www.fixmystreet.com/contact>.
-This will help improve the service for local people. We
-also welcome any other feedback you may have.
-
-FixMyStreet is now available for full integration into council
-websites, making life easier for both you and your residents.
-Read more here: https://www.fixmystreet.com/council
-
+If there is a more appropriate email address for messages about
+<?=$values['category_footer']?>, please let us know. This will help improve the
+service for local people. We also welcome any other feedback you may have.

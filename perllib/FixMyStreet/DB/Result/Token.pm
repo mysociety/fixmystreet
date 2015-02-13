@@ -30,9 +30,6 @@ __PACKAGE__->set_primary_key("scope", "token");
 # Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+LLZ8P5GXqPetuGyrra2vw
 
-# Trying not to use this
-# use mySociety::DBHandle qw(dbh);
-
 use mySociety::AuthToken;
 
 =head1 NAME
@@ -42,8 +39,6 @@ FixMyStreet::DB::Result::Token
 =head2 DESCRIPTION
 
 Representation of mySociety::AuthToken in the DBIx::Class world.
-
-Mostly done so that we don't need to use mySociety::DBHandle.
 
 The 'data' value is automatically inflated and deflated in the same way that the
 AuthToken would do it. 'token' is set to a new random value by default and the

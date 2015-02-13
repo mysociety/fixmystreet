@@ -441,11 +441,6 @@ sub determine_location : Private {
         $c->go('index');
     }
 
-    # truncate the lat,lon for nicer urls
-    ( $c->stash->{latitude}, $c->stash->{longitude} ) =
-      map { Utils::truncate_coordinate($_) }
-      ( $c->stash->{latitude}, $c->stash->{longitude} );
-
     my $dist =
       mySociety::Gaze::get_radius_containing_population( $c->stash->{latitude},
         $c->stash->{longitude}, 200000 );

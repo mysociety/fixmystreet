@@ -22,6 +22,8 @@ server {
     gzip_disable "msie6";
     gzip_types application/javascript application/x-javascript text/css;
 
+    client_max_body_size 10m;
+
     # Set a long expiry time for CSS and Javascript, and prevent
     # the mangling of Javascript by proxies:
 

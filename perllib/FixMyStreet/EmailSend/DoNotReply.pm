@@ -1,4 +1,4 @@
-package FixMyStreet::EmailSend;
+package FixMyStreet::EmailSend::DoNotReply;
 use base Email::Send::SMTP;
 
 sub get_env_sender {

@@ -39,7 +39,10 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE with_cobrand value="ADMIN_BASE_URL" cob=c.cobrand.admin_base_url %]
 
 [% INCLUDE subsection heading="Display" %]
-[% INCLUDE just_value value="Site title" conf = c.cobrand.site_title %]
+<tr>
+    <td>Site title</td>
+    <td colspan=2>[% PROCESS 'site-name.html' -%]</td>
+</tr>
 [% allowed_conf = FOR k IN c.config.ALLOWED_COBRANDS %]
     [% IF k.keys %][% k.items.join(':') %][% ELSE %][% k %][% END %]
     [%- ',' IF NOT loop.last %]

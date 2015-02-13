@@ -201,12 +201,12 @@ subtest 'check contact creation' => sub {
         note     => 'test/note',
         non_public => 'on',
     } } );
-    $mech->get_ok('/admin/body_edit/' . $body->id . '/test/category');
+    $mech->get_ok('/admin/body/' . $body->id . '/test/category');
 
 };
 
 subtest 'check contact editing' => sub {
-    $mech->get_ok('/admin/body_edit/' . $body->id .'/test%20category');
+    $mech->get_ok('/admin/body/' . $body->id .'/test%20category');
 
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
@@ -219,7 +219,7 @@ subtest 'check contact editing' => sub {
     $mech->content_contains( '<td>test2 note' );
     $mech->content_contains( 'Private:&nbsp;No' );
 
-    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->submit_form_ok( { with_fields => { 
         email    => 'test2@example.com',
         note     => 'test2 note',
@@ -228,12 +228,12 @@ subtest 'check contact editing' => sub {
 
     $mech->content_contains( 'Private:&nbsp;Yes' );
 
-    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_contains( '<td><strong>test2@example.com' );
 };
 
 subtest 'check contact updating' => sub {
-    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_like(qr{test2\@example.com</strong>[^<]*</td>[^<]*<td>No}s);
 
     $mech->get_ok('/admin/body/' . $body->id);
@@ -243,7 +243,7 @@ subtest 'check contact updating' => sub {
     $mech->submit_form_ok({form_number => 1});
 
     $mech->content_like(qr'test2@example.com</td>[^<]*<td>\s*Confirmed:&nbsp;Yes's);
-    $mech->get_ok('/admin/body_edit/' . $body->id . '/test%20category');
+    $mech->get_ok('/admin/body/' . $body->id . '/test%20category');
     $mech->content_like(qr{test2\@example.com[^<]*</td>[^<]*<td><strong>Yes}s);
 };
 
@@ -266,7 +266,7 @@ subtest 'check open311 configuring' => sub {
         }
     );
     $mech->content_contains('Council contacts configured via Open311');
-    $mech->content_contains('Configuration updated - contacts will be generated automatically later');
+    $mech->content_contains('Values updated');
 
     my $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
     is $conf->endpoint, 'http://example.com/open311', 'endpoint configured';
@@ -286,7 +286,7 @@ subtest 'check open311 configuring' => sub {
         }
     );
 
-    $mech->content_contains('Configuration updated');
+    $mech->content_contains('Values updated');
 
     $conf = FixMyStreet::App->model('DB::Body')->find( $body->id );
     is $conf->endpoint, 'http://example.org/open311', 'endpoint updated';

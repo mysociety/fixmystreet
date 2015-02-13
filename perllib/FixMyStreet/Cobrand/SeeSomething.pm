@@ -9,8 +9,6 @@ sub council_area { return 'West Midlands'; }
 sub council_name { return 'See Something Say Something'; }
 sub council_url { return 'seesomething'; }
 sub area_types  { [ 'MTD' ] }
-sub site_title { return 'See Something, Say Something'; }
-
 
 sub site_restriction {
     my $self = shift;

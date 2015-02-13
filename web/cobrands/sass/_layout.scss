@@ -388,10 +388,11 @@ body.fullwidthpage {
     .container {
         .content {
             box-shadow: none;
-            padding: 1em 1em 0em;
+            padding: 1em;
             margin-bottom: 0em;
             footer {
                 margin-top: 0em;
+                margin-bottom: -1em;
                 .tablewrapper {
                     padding-top: 2em;
                     padding-bottom: 3em;
@@ -630,8 +631,8 @@ body.twothirdswidthpage {
     display:block;
     cursor: pointer;
     position:absolute;
-    left:-1em;
-    width:1em;
+    left: -0.97em; /* 1em leaves a tiny gap, font issue */
+    width: 1em;
     height:100%;
     background:#000 url($image-sprite) right -4119px no-repeat;
     @include border-radius(0.25em 0 0 0.25em);

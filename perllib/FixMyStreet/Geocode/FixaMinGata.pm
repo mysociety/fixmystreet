@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Geocode::FixaMinGata
 # OpenStreetmap forward and reverse geocoding for FixMyStreet.
 #
@@ -16,16 +14,11 @@ package FixMyStreet::Geocode::FixaMinGata;
 
 use warnings;
 use strict;
-use Data::Dumper;
 
-use Digest::MD5 qw(md5_hex);
-use Encode;
-use File::Slurp;
-use File::Path ();
-use LWP::Simple qw($ua);
+use LWP::Simple;
 use Memcached;
 use XML::Simple;
-use mySociety::Locale;
+use Utils;
 
 my $osmapibase    = "http://www.openstreetmap.org/api/";
 my $nominatimbase = "http://nominatim.openstreetmap.org/";
@@ -47,8 +40,8 @@ sub string {
     my %query_params = (
         q => $s,
         format => 'json',
-	addressdetails => 1,
-	limit => 20,
+        addressdetails => 1,
+        limit => 20,
         #'accept-language' => '',
         email => 'info' . chr(64) . 'morus.se',
     );
@@ -58,53 +51,32 @@ sub string {
         if $params->{country};
     $url .= join('&', map { "$_=$query_params{$_}" } keys %query_params);
 
-    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'osm/';
-    my $cache_file = $cache_dir . md5_hex($url);
-    my $js;
-    if (-s $cache_file) {
-        $js = File::Slurp::read_file($cache_file);
-    } else {
-        $ua->timeout(15);
-        $js = LWP::Simple::get($url);
-        $js = encode_utf8($js) if utf8::is_utf8($js);
-        File::Path::mkpath($cache_dir);
-        File::Slurp::write_file($cache_file, $js) if $js;
-    }
-
+    my $js = FixMyStreet::Geocode::cache('osm', $url);
     if (!$js) {
         return { error => _('Sorry, we could not find that location.') };
     }
 
-    $js = JSON->new->utf8->allow_nonref->decode($js);
-
     my ( %locations, $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
-        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-	next if $_->{class} eq "boundary";
-
-	my @s = split(/,/, $_->{display_name});
-
-	my $address = join(",", @s[0,1,2]);
-
+        next if $_->{class} eq "boundary";
+        my @s = split(/,/, $_->{display_name});
+        my $address = join(",", @s[0,1,2]);
         $locations{$address} = [$_->{lat}, $_->{lon}];
     }
 
-    my ($key) = keys %locations;
-
-    return { latitude => $locations{$key}[0], longitude => $locations{$key}[1] } if scalar keys %locations == 1;
-    return { error => _('Sorry, we could not find that location.') } if scalar keys %locations == 0;
-
-    foreach $key (keys %locations) {
-        ( $latitude, $longitude ) = ($locations{$key}[0], $locations{$key}[1]);
-        mySociety::Locale::in_gb_locale {
-            push (@$error, {
-		address => $key,
-                latitude => sprintf('%0.6f', $latitude),
-                longitude => sprintf('%0.6f', $longitude)
-            });
-        };
+    foreach my $key (keys %locations) {
+        ( $latitude, $longitude ) =
+            map { Utils::truncate_coordinate($_) }
+            ($locations{$key}[0], $locations{$key}[1]);
+        push (@$error, {
+            address => $key,
+            latitude => $latitude,
+            longitude => $longitude
+        });
+        push (@valid_locations, $_);
     }
 
+    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
     return { error => $error };
 }
 

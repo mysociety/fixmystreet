@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # Geo::Coordinates::CH1903
 # Conversion between WGS84 and Swiss CH1903.
 #

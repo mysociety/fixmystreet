@@ -427,7 +427,7 @@ sub update_contacts : Private {
         # Remove any others
         $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
 
-        $c->stash->{updated} = _('Configuration updated - contacts will be generated automatically later');
+        $c->stash->{updated} = _('Values updated');
     }
 }
 
@@ -485,13 +485,13 @@ sub lookup_body : Private {
 }
 
 # This is for if the category name contains a '/'
-sub body_edit_all : Path('body_edit') {
+sub category_edit_all : Path('body') {
     my ( $self, $c, $body_id, @category ) = @_;
     my $category = join( '/', @category );
-    $c->go( 'body_edit', [ $body_id, $category ] );
+    $c->go( 'category_edit', [ $body_id, $category ] );
 }
 
-sub body_edit : Path('body_edit') : Args(2) {
+sub category_edit : Path('body') : Args(2) {
     my ( $self, $c, $body_id, $category ) = @_;
 
     $c->stash->{body_id} = $body_id;
@@ -1197,11 +1197,10 @@ sub set_allowed_pages : Private {
              'questionnaire' => [_('Survey'), 4],
              'users' => [_('Users'), 5],
              'flagged'  => [_('Flagged'), 6],
-             'stats'  => [_('Stats'), 6],
-             'config' => [ undef, undef ],
+             'stats'  => [_('Stats'), 7],
+             'config' => [ _('Configuration'), 8],
              'user_edit' => [undef, undef], 
              'body' => [undef, undef],
-             'body_edit' => [undef, undef],
              'report_edit' => [undef, undef],
              'update_edit' => [undef, undef],
              'abuse_edit'  => [undef, undef],

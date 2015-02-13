@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::Google
 # Google maps on FixMyStreet.
 #

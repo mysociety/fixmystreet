@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Geocode::OSM
 # OpenStreetmap forward and reverse geocoding for FixMyStreet.
 #
@@ -11,14 +9,10 @@ package FixMyStreet::Geocode::OSM;
 use warnings;
 use strict;
 
-use Digest::MD5 qw(md5_hex);
-use Encode;
-use File::Slurp;
-use File::Path ();
-use LWP::Simple qw($ua);
+use LWP::Simple;
 use Memcached;
 use XML::Simple;
-use mySociety::Locale;
+use Utils;
 
 my $osmapibase    = "http://www.openstreetmap.org/api/";
 my $nominatimbase = "http://nominatim.openstreetmap.org/";
@@ -49,36 +43,21 @@ sub string {
         if $params->{country};
     $url .= join('&', map { "$_=$query_params{$_}" } keys %query_params);
 
-    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'osm/';
-    my $cache_file = $cache_dir . md5_hex($url);
-    my $js;
-    if (-s $cache_file) {
-        $js = File::Slurp::read_file($cache_file);
-    } else {
-        $ua->timeout(15);
-        $js = LWP::Simple::get($url);
-        $js = encode_utf8($js) if utf8::is_utf8($js);
-        File::Path::mkpath($cache_dir);
-        File::Slurp::write_file($cache_file, $js) if $js;
-    }
-
+    my $js = FixMyStreet::Geocode::cache('osm', $url);
     if (!$js) {
         return { error => _('Sorry, we could not find that location.') };
     }
 
-    $js = JSON->new->utf8->allow_nonref->decode($js);
-
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
-        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-        ( $latitude, $longitude ) = ( $_->{lat}, $_->{lon} );
-        mySociety::Locale::in_gb_locale {
-            push (@$error, {
-                address => $_->{display_name},
-                latitude => sprintf('%0.6f', $latitude),
-                longitude => sprintf('%0.6f', $longitude)
-            });
-        };
+        ( $latitude, $longitude ) =
+            map { Utils::truncate_coordinate($_) }
+            ( $_->{lat}, $_->{lon} );
+        push (@$error, {
+            address => $_->{display_name},
+            latitude => $latitude,
+            longitude => $longitude
+        });
         push (@valid_locations, $_);
     }
 

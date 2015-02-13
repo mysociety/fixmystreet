@@ -110,7 +110,7 @@ requires 'File::ChangeNotify';
 requires 'Path::Tiny';
 requires 'File::Find::Rule';
 
-feature 'test-wrapper', 'Spin up a test database and config to run tests' => sub {
+feature 'run-tests', 'Spin up a test database and config to run tests' => sub {
     requires 'Test::PostgreSQL';
 };
 

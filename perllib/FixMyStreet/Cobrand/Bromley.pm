@@ -24,6 +24,24 @@ sub disambiguate_location {
     # Bromley by Bow.
     $town .= ', BR1' if $string =~ /^high\s+st(reet)?$/i;
 
+    # Disambiguations required for BR5
+    $town .= ', BR5' if $string =~ /^kelsey\s+r(?:oa)?d$/i;
+    $town = 'BR5 Bromley' if $string =~ /^leith\s+hill$/i; # doesn't like appended BR5 for some reason
+    
+    #  There has also been a road name change for a section of Ramsden Road
+    #  (BR5) between Church Hill and Court Road has changed to 'Old Priory
+    #  Avenue' - presently entering Old Priory Avenue simply takes the user to
+    #  a different Priory Avenue in Petts Wood
+    #  From Google maps search, "BR6 0PL" is a valid postcode for Old Priory Avenue
+    if ($string =~/^old\s+priory\s+av\w*$/i) {
+        $string = 'Ramsden Road';
+        $town = ', BR6 0PL';
+    }
+    $town .= ', BR5' if $string =~ /^meadway/i;
+
+    # and BR6
+    $town .= ', BR6' if $string =~ /^berrylands/i;
+
     # White Horse Hill is on boundary with Greenwich, so need a 
     # specific postcode
     $town = 'chislehurst, BR7 6DH' if $string =~ /^white\s+horse/i;

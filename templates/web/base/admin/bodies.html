@@ -9,6 +9,13 @@
     contacts (such as an email address) to which reports are sent.') %]
   </p>
 [% ELSE %]
+
+  [% IF c.config.STAGING_SITE and !c.config.SEND_REPORTS_ON_STAGING %]
+  <p class="fms-admin-warning">
+    [% tprintf(loc("As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."), "<a class='admin-offsite-link' href='http://fixmystreet.org/customising/config/#send_reports_on_staging'><code>SEND_REPORTS_ON_STAGING</code></a>") %]
+  </p>
+  [% END %]
+
   <table cellspacing="0" cellpadding="2" border="1">
       <tr>
           <th>[% loc('Name') %]</th>

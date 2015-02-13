@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 
-# zurich-overdue-alert:
+# zurich/overdue-alert:
 # Send email alerts to administrators for overdue admin activities.
 #
 # Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
@@ -9,6 +9,13 @@
 use strict;
 use warnings;
 require 5.8.0;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
 
 use DateTime;
 use CronFns;
@@ -62,16 +69,14 @@ sub send_alert {
         admin_url => $cobrand->admin_base_url,
     };
 
-    my $env_to = [ $body_email ];
     my $to = [ [ $body_email, $body->name ] ];
     if ( $include_parent ) {
         my $parent = $body->parent;
         my $parent_email = $parent->endpoint;
-        push @$env_to, $parent_email;
         push @$to, [ $parent_email, $parent->name ];
     }
 
-    my $result = FixMyStreet::App->send_email_cron(
+    FixMyStreet::App->send_email_cron(
         {
             _template_ => $template,
             _parameters_ => $h,
@@ -79,7 +84,6 @@ sub send_alert {
             From => [ FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') ],
         },
         FixMyStreet->config('CONTACT_EMAIL'),
-        $env_to,
         $nomail
     );
 }

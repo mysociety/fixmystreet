@@ -8,7 +8,6 @@ use CronFns;
 
 use Utils;
 use mySociety::Config;
-use mySociety::EmailUtil;
 use mySociety::MaPit;
 
 use FixMyStreet::App;
@@ -323,6 +322,10 @@ sub send_reports {
              $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
          }
 
+        if ($cobrand->can('process_additional_metadata_for_email')) {
+            $cobrand->process_additional_metadata_for_email($row, \%h);
+        }
+
         my %reporters = ();
         my ( $sender_count );
         if ($site eq 'emptyhomes') {
@@ -434,7 +437,7 @@ sub send_reports {
             }
         }
 
-        if ($result == mySociety::EmailUtil::EMAIL_SUCCESS) {
+        unless ($result) {
             $row->update( {
                 whensent => \'ms_current_timestamp()',
                 lastupdate => \'ms_current_timestamp()',
@@ -497,7 +500,7 @@ sub _send_report_sent_email {
 
     my $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, 'confirm_report_sent.txt');
 
-    my $result = FixMyStreet::App->send_email_cron(
+    FixMyStreet::App->send_email_cron(
         {
             _template_ => $template,
             _parameters_ => $h,
@@ -505,7 +508,6 @@ sub _send_report_sent_email {
             From => mySociety::Config::get('CONTACT_EMAIL'),
         },
         mySociety::Config::get('CONTACT_EMAIL'),
-        [ $row->user->email ],
         $nomail,
         $cobrand
     );

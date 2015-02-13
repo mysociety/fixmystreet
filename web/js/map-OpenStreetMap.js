@@ -8,7 +8,7 @@ function set_map_config(perm) {
         //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
         new OpenLayers.Control.PermalinkFMS(permalink_id),
-        new OpenLayers.Control.PermalinkFMSz('osm_link', 'http://www.openstreetmap.org/'),
+        new OpenLayers.Control.PermalinkFMSz('osm_link', 'https://www.openstreetmap.org/'),
         new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' })
     ];
 }
@@ -31,9 +31,9 @@ OpenLayers.Layer.OSM.Mapnik = OpenLayers.Class(OpenLayers.Layer.OSM, {
      */
     initialize: function(name, options) {
         var url = [
-            "http://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "http://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
-            "http://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
+            "https://a.tile.openstreetmap.org/${z}/${x}/${y}.png",
+            "https://b.tile.openstreetmap.org/${z}/${x}/${y}.png",
+            "https://c.tile.openstreetmap.org/${z}/${x}/${y}.png"
         ];
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
