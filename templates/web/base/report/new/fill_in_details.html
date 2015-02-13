@@ -22,8 +22,8 @@
 
 [% END %]
 
-    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
-    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% latitude | html %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
 
     [% IF report.used_map %]
         [% map_html %]

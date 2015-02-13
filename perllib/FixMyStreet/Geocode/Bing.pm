@@ -8,7 +8,7 @@ package FixMyStreet::Geocode::Bing;
 
 use strict;
 
-use mySociety::Locale;
+use Utils;
 
 # string STRING CONTEXT
 # Looks up on Bing Maps API, and caches, a user-inputted location.
@@ -52,15 +52,14 @@ sub string {
                 || $valid_locations[-1]{address}{locality} eq $_->{address}{locality}
                );
 
-        ( $latitude, $longitude ) = @{ $_->{point}->{coordinates} };
-        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-        mySociety::Locale::in_gb_locale {
-            push (@$error, {
-                address => $address,
-                latitude => sprintf('%0.6f', $latitude),
-                longitude => sprintf('%0.6f', $longitude)
-            });
-        };
+        ( $latitude, $longitude ) =
+            map { Utils::truncate_coordinate($_) }
+            @{ $_->{point}->{coordinates} };
+        push (@$error, {
+            address => $address,
+            latitude => $latitude,
+            longitude => $longitude
+        });
         push (@valid_locations, $_);
     }
 

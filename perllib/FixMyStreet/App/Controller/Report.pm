@@ -159,7 +159,7 @@ sub format_problem_for_display : Private {
 
     my $problem = $c->stash->{problem};
 
-    ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
+    ( $c->stash->{latitude}, $c->stash->{longitude} ) =
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 

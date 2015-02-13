@@ -279,10 +279,6 @@ sub display : Private {
 
     my $problem = $c->stash->{questionnaire}->problem;
 
-    ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
-      map { Utils::truncate_coordinate($_) }
-      ( $problem->latitude, $problem->longitude );
-
     $c->stash->{updates} = [ $c->model('DB::Comment')->search(
         { problem_id => $problem->id, state => 'confirmed' },
         { order_by => 'confirmed' }

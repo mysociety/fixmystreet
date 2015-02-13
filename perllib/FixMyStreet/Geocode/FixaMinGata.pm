@@ -18,7 +18,7 @@ use strict;
 use LWP::Simple;
 use Memcached;
 use XML::Simple;
-use mySociety::Locale;
+use Utils;
 
 my $osmapibase    = "http://www.openstreetmap.org/api/";
 my $nominatimbase = "http://nominatim.openstreetmap.org/";
@@ -40,8 +40,8 @@ sub string {
     my %query_params = (
         q => $s,
         format => 'json',
-	addressdetails => 1,
-	limit => 20,
+        addressdetails => 1,
+        limit => 20,
         #'accept-language' => '',
         email => 'info' . chr(64) . 'morus.se',
     );
@@ -58,32 +58,25 @@ sub string {
 
     my ( %locations, $error, @valid_locations, $latitude, $longitude );
     foreach (@$js) {
-        # These co-ordinates are output as query parameters in a URL, make sure they have a "."
-	next if $_->{class} eq "boundary";
-
-	my @s = split(/,/, $_->{display_name});
-
-	my $address = join(",", @s[0,1,2]);
-
+        next if $_->{class} eq "boundary";
+        my @s = split(/,/, $_->{display_name});
+        my $address = join(",", @s[0,1,2]);
         $locations{$address} = [$_->{lat}, $_->{lon}];
     }
 
-    my ($key) = keys %locations;
-
-    return { latitude => $locations{$key}[0], longitude => $locations{$key}[1] } if scalar keys %locations == 1;
-    return { error => _('Sorry, we could not find that location.') } if scalar keys %locations == 0;
-
-    foreach $key (keys %locations) {
-        ( $latitude, $longitude ) = ($locations{$key}[0], $locations{$key}[1]);
-        mySociety::Locale::in_gb_locale {
-            push (@$error, {
-		address => $key,
-                latitude => sprintf('%0.6f', $latitude),
-                longitude => sprintf('%0.6f', $longitude)
-            });
-        };
+    foreach my $key (keys %locations) {
+        ( $latitude, $longitude ) =
+            map { Utils::truncate_coordinate($_) }
+            ($locations{$key}[0], $locations{$key}[1]);
+        push (@$error, {
+            address => $key,
+            latitude => $latitude,
+            longitude => $longitude
+        });
+        push (@valid_locations, $_);
     }
 
+    return { latitude => $latitude, longitude => $longitude } if scalar @valid_locations == 1;
     return { error => $error };
 }
 

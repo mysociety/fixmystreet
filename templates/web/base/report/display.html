@@ -31,7 +31,7 @@
 
 [% IF c.cobrand.moniker != 'emptyhomes' %]
 <p style="padding-bottom: 0.5em; border-bottom: dotted 1px #999999;" align="right">
-    <a href="[% c.uri_for( '/around', { lat => short_latitude, lon => short_longitude } ) %]">[% loc( 'More problems nearby' ) %]</a>
+    <a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'More problems nearby' ) %]</a>
 </p>
 
 <div id="alert_links">

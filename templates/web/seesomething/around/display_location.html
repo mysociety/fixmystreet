@@ -4,8 +4,8 @@
         '/report/new',
         {
             pc         => pc
-            latitude   => short_latitude,
-            longitude  => short_longitude,
+            latitude   => latitude,
+            longitude  => longitude,
             skipped    => 1,
         }
     );
@@ -25,8 +25,8 @@
     [% END %]
     <input type="hidden" name="pc" value="[% pc | html %]">
 
-    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% short_latitude | html %]">
-    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% short_longitude | html %]">
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% latitude | html %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
 
     [% map_html %]
 

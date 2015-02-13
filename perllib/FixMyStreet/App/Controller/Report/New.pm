@@ -540,8 +540,8 @@ sub determine_location_from_tile_click : Private {
     );
 
     # store it on the stash
-    $c->stash->{latitude}  = $latitude;
-    $c->stash->{longitude} = $longitude;
+    ($c->stash->{latitude}, $c->stash->{longitude}) =
+        map { Utils::truncate_coordinate($_) } ($latitude, $longitude);
 
     # set a flag so that the form is not considered submitted. This will prevent
     # errors showing on the fields.
@@ -1089,10 +1089,6 @@ sub generate_map : Private {
     my ( $self, $c ) = @_;
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};
-
-    ( $c->stash->{short_latitude}, $c->stash->{short_longitude} ) =
-      map { Utils::truncate_coordinate($_) }
-      ( $c->stash->{latitude}, $c->stash->{longitude} );
 
     # Don't do anything if the user skipped the map
     if ( $c->stash->{report}->used_map ) {
