@@ -647,7 +647,7 @@ subtest "photo must be supplied for categories that require it" => sub {
         editor => "editor",
         whenedited => DateTime->now(),
         note => "note for graffiti",
-        extra => [ { photo_required => 1 } ]
+        extra => { photo_required => 1 }
     });
     FixMyStreet::override_config {
         MAPIT_TYPES => [ 'O08' ],

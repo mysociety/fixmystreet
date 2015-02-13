@@ -45,6 +45,22 @@ sub set_extra_metadata {
     return $self->dirty_extra;
 };
 
+=head2 unset_extra_metadata
+
+    $contact->unset_extra_metadata($c, 'photo_required');
+
+=cut
+
+sub unset_extra_metadata {
+    my ($self, $c, $key) = @_;
+    my $extra = $self->get_extra($c);
+
+    return unless ref $extra eq 'HASH';
+    return 1 unless exists $extra->{$key};
+    delete $extra->{$key};
+    return $self->dirty_extra;
+};
+
 =head2 set_extra_metadata
 
     my $overdue = $problem->get_extra_metadata($c, 'overdue');

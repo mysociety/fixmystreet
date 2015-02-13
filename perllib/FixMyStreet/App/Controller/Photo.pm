@@ -226,6 +226,9 @@ require it (by setting extra->photo_required == 1). Puts an error in
 photo_error on the stash if it's required and missing, otherwise returns
 true.
 
+(Note that as we have reached this action, we *know* that the photo
+is missing, otherwise it would have already been handled.)
+
 =cut
 
 sub process_photo_required : Private {
@@ -245,8 +248,7 @@ sub process_photo_required : Private {
         }
       )->all;
       foreach my $contact ( @contacts ) {
-          my $extra = $contact->extra;
-          if ( eval { @$extra[0]->{photo_required} } ) {
+          if ( $contact->get_extra_metadata($c, 'photo_required') ) {
               $c->stash->{photo_error} = _("Photo is required.");
               return;
           }
