@@ -51,5 +51,7 @@ sub is_default {
     return $self->moniker eq 'default';
 }
 
+sub default_extra_layout { [] }
+
 1;
 
