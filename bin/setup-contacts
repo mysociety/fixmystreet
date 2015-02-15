@@ -18,8 +18,9 @@ my $moniker = $ARGV[0];
 
 my $c = FixMyStreet::App->new();
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($moniker)->new({ c => $c });
+$c->stash->{cobrand} = $cobrand;
 
-die "Not a staging site, bailing out" unless $cobrand->{c}->config->{STAGING_SITE}; # TODO, allow override via --force
+die "Not a staging site, bailing out" unless $c->config->{STAGING_SITE}; # TODO, allow override via --force
 say "Applying contacts for $cobrand";
 
 

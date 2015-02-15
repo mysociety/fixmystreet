@@ -222,7 +222,9 @@ sub setup_contacts {
 sub update_contact {
     my ($self, $contact_data, $description) = @_; 
 
-    my $contact_rs = $self->{c}->model('DB::Contact');
+    my $c = $self->{c};
+
+    my $contact_rs = $c->model('DB::Contact');
 
     my $category = $contact_data->{category} or die "No category provided";
     $description ||= "Update contact";
@@ -234,14 +236,15 @@ sub update_contact {
 
         my @fields = map { $self->get_field_extra($_) } @$fields;
         my $note = sprintf 'Fields edited by automated script%s', $description ? " ($description)" : '';
-        $contact->update({
-            extra => \@fields,
+        $contact->set_extra_fields($c, @fields);
+        $contact->set_inflated_columns({
             confirmed => 1,
             deleted => 0,
             editor => 'automated script',
             whenedited => \'NOW()',
             note => "Updated fields $description",
         });
+        $contact->update;
     }
 }
 
@@ -256,7 +259,7 @@ sub get_field_extra {
         datatype_description => 'a string',
     );
 
-    if ($field->{datatype} || '' eq 'boolean') {
+    if (($field->{datatype} || '') eq 'boolean') {
         %default = (
             %default,
             datatype => 'singlevaluelist',
