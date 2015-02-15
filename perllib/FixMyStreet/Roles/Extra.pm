@@ -41,8 +41,7 @@ sub set_extra_metadata {
     my $extra = $self->get_extra($c);
 
     return unless ref $extra eq 'HASH';
-    $extra->{$key} = $value;
-    return $self->dirty_extra;
+    $self->extra({ %$extra, $key => $value });
 };
 
 =head2 unset_extra_metadata
@@ -58,7 +57,7 @@ sub unset_extra_metadata {
     return unless ref $extra eq 'HASH';
     return 1 unless exists $extra->{$key};
     delete $extra->{$key};
-    return $self->dirty_extra;
+    $self->extra($extra);
 };
 
 =head2 set_extra_metadata
@@ -81,13 +80,15 @@ sub get_extra_metadata {
 
 =cut
 
+my $META_FIELD = '_fields';
+
 sub get_extra_metadata_as_hashref {
     my ($self, $c) = @_;
     my $extra = $self->get_extra($c);
 
     return {} unless ref $extra eq 'HASH';
     my %extra = %$extra;
-    delete $extra{_fields};
+    delete $extra{$META_FIELD};
     return \%extra;
 }
 
@@ -102,15 +103,16 @@ sub get_extra_fields {
     my $extra = $self->get_extra($c);
 
     return $extra if ref $extra eq 'ARRAY';
-    return $extra->{_fields} ||= do {
+    return $extra->{$META_FIELD} ||= do {
         $self->dirty_extra;
+        # not sure this will work transparently with RABX encoding
         [];
     };
 }
 
 =head2 set_extra_fields
 
-    $problem->get_extra_fields($c, { ... }, { ... } );
+    $problem->set_extra_fields($c, { ... }, { ... } );
 
 =cut
 
@@ -123,10 +125,8 @@ sub set_extra_fields {
         $self->extra(\@fields);
     }
     else {
-        $extra->{_fields} = \@fields;
+        $self->extra({ %$extra, $META_FIELD => \@fields });
     }
-
-    $self->dirty_extra;
 }
 
 =head1 HELPER METHODS
@@ -163,7 +163,6 @@ sub get_extra {
     return $self->extra || do {
         my $extra = $c->cobrand->default_extra_layout;
         $self->extra($extra);
-        $self->dirty_extra;
         return $extra;
     };
 }
