@@ -17,10 +17,6 @@ env:
     - secure: "qW+WCgAF68itADxcbcq+nCnKx3vf3GX73HMfjfbkFFUsYmIR+ZaJ9yQMnGJwxIpCHTWLAeqyx4KO8N8T3GmNdKYzIMZemOzp4ED29YC31QOQeq1CwNp2hD5sq/o47d2BzXWwMYNvNXfxz1K6r2c6EMPUtu8X3B8ExZq1RzSFdXs="
 
 before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq jhead libgmp-dev python-boto
-# A couple of other modules that normally come from packages, but no system stuff here
-  - cpanm -q Locale::gettext Math::BigInt::GMP
   - sudo locale-gen cy_GB.UTF-8 en_GB.UTF-8 nb_NO.UTF-8 de_CH.UTF-8 sv_SE.UTF-8
 install:
   - .travis/install

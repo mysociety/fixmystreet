@@ -2,12 +2,10 @@
 
 import hashlib
 import os
+import site
 import subprocess
 import sys
 import tarfile
-
-import boto
-from boto.s3.key import Key
 
 root = os.path.join(os.path.dirname(__file__), '..')
 with open(os.path.join(root, 'cpanfile.snapshot')) as cpanfile:
@@ -17,6 +15,12 @@ wanted_filename = 'fixmystreet-local-%s.tgz' % hash
 if os.path.exists(wanted_filename) and os.path.getsize(wanted_filename):
     print "File was downloaded, no need to upload"
     sys.exit()
+
+site.addsitedir(site.getusersitepackages())
+os.system('pip install --user boto')
+
+import boto
+from boto.s3.key import Key
 
 print "Creating archive..."
 tfile = tarfile.open(wanted_filename, 'w:gz')

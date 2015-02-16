@@ -55,6 +55,7 @@ requires 'Image::Size';
 requires 'IO::String';
 requires 'JSON';
 requires 'JSON::XS';
+requires 'Locale::gettext';
 requires 'LWP::Simple';
 requires 'LWP::UserAgent';
 requires 'Math::Trig';

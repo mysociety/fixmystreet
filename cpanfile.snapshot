@@ -6599,6 +6599,12 @@ DISTRIBUTIONS
       common::sense 3.6
     requirements:
       ExtUtils::MakeMaker 0
+  gettext-1.05
+    pathname: P/PV/PVANDRY/gettext-1.05.tar.gz
+    provides:
+      Locale::gettext 1.05
+    requirements:
+      ExtUtils::MakeMaker 0
   libwww-perl-6.05
     pathname: G/GA/GAAS/libwww-perl-6.05.tar.gz
     provides:

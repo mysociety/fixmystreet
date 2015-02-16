@@ -19,6 +19,8 @@ try:
         tfile.extractall()
         print "Cached copy found and extracted"
         sys.exit(0)
+    else:
+        os.remove(wanted_filename)
 except IOError:
     os.remove(wanted_filename)
 
