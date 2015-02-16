@@ -302,10 +302,7 @@ sub send_reports {
             ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude} );
 
             # email templates don't have conditionals so we need to farmat this here
-            $h{easting_northing}                             #
-              = "Easting: $h{easting}\n\n"                   #
-              . "Northing: $h{northing}\n\n";
-
+            $h{easting_northing} = "Easting/Northing: $h{easting}/$h{northing}\n\n";
         }
 
         if ( $row->used_map ) {

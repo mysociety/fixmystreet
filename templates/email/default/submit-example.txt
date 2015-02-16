@@ -27,9 +27,7 @@ you approach the junction along Bournville Lane from the east,
 which leads to vehicles rolling back as they fall in and out of it
 whilst waiting at the junction.
 
-Easting: 404517
-
-Northing: 280922
+Easting/Northing: 404517/280922
 
 Latitude: 52.4262642791826
 
