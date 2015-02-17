@@ -2,6 +2,8 @@
 
 $oxfordshire_dk_green: #114500;
 $oxfordshire_lt_green: #339E00;
+$oxfordshire_very_light_green: #f6fcf0;
+$oxfordshire_mid_grey_green: #e0e5da;
 
 $primary: $oxfordshire_lt_green;
 $primary_b: $oxfordshire_dk_green;
@@ -9,6 +11,9 @@ $primary_text: #fff;
 
 $base_bg: #fff;
 $base_fg: #000;
+
+// Taken from the OCC website
+$oxfordshire_link_colour: #0c62ba;
 
 /* Unused here */
 $map_nav_bg: #222;
@@ -19,7 +24,7 @@ $col_click_map: $oxfordshire_lt_green;
 $col_click_map_dark: $primary_text;
 
 $col_fixed_label: $oxfordshire_lt_green;
-$col_fixed_label_dark: $primary_text;
+$col_fixed_label_dark: mix(#000, $oxfordshire_lt_green, 50%);
 
 // Oxfordshire have toasty orange buttons
 
