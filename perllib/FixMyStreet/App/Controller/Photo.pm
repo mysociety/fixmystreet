@@ -8,7 +8,6 @@ use DateTime::Format::HTTP;
 use Digest::SHA qw(sha1_hex);
 use File::Path;
 use File::Slurp;
-use Image::Size;
 use Path::Class;
 use FixMyStreet::App::Model::PhotoSet;
 use if !$ENV{TRAVIS}, 'Image::Magick';
