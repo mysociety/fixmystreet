@@ -7,6 +7,7 @@ use Path::Tiny 'path';
 use if !$ENV{TRAVIS}, 'Image::Magick';
 use Scalar::Util 'openhandle', 'blessed';
 use Digest::SHA qw(sha1_hex);
+use Image::Size;
 
 has c => (
     is => 'ro',
@@ -70,7 +71,26 @@ sub _jpeg_magic {
     #     and \x{49}\x{49} (Tiff, 3 results in live DB) ?
 }
 
-has images => ( # jpeg data for actual image
+=head2 C<images>, C<num_images>, C<get_raw_image_data>, C<all_images>
+
+C<$photoset-E<GT>images> is an AoA containing the filed and the binary image data.
+
+    [
+        [ $fileid1, $binary_data ],
+        [ $fileid2, $binary_data ],
+        ...
+    ]
+
+Various accessors are provided onto it:
+
+    num_images: count
+    get_raw_image_data ($index): return the [$fileid, $binary_data] tuple
+    all_images: return AoA as an array (e.g. rather than arrayref)
+        (NB: don't use all_images in templates, as TT will bite you)
+
+=cut
+
+has images => ( #  AoA of [$fileid, $binary_data] tuples
     isa => 'ArrayRef',
     is => 'rw',
     traits => ['Array'],
@@ -102,7 +122,11 @@ has images => ( # jpeg data for actual image
                 my $photo_blob = eval {
                     my $filename = $upload->tempname;
                     my $out = `jhead -se -autorot $filename 2>&1`;
-                    die _("Please upload a JPEG image only"."\n") if $out =~ /Not JPEG:/;
+                    unless (defined $out) {
+                        my ($w, $h, $err) = Image::Size::imgsize($filename);
+                        die _("Please upload a JPEG image only") . "\n" if !defined $w || $err ne 'JPG';
+                    }
+                    die _("Please upload a JPEG image only") . "\n" if $out && $out =~ /Not JPEG:/;
                     my $photo = $upload->slurp;
                 };
                 if ( my $error = $@ ) {
@@ -130,8 +154,14 @@ has images => ( # jpeg data for actual image
             if (length($part) == 40) {
                 my $fileid = $part;
                 my $file = $self->get_file($fileid);
-                my $photo = $file->slurp_raw;
-                [$fileid, $photo];
+                if ($file->exists) {
+                    my $photo = $file->slurp_raw;
+                    [$fileid, $photo];
+                }
+                else {
+                    warn "File $fileid doesn't exist";
+                    ();
+                }
             }
             else {
                 warn sprintf "Received bad photo hash of length %d", length($part);
@@ -155,9 +185,9 @@ sub get_file {
 
 sub get_image_data {
     my ($self, %args) = @_;
-    my $num = $args{num} || 1;
+    my $num = $args{num} || 0;
 
-    my $data = $self->get_raw_image_data( 0 ) # for test, because of broken IE/Windows caching
+    my $data = $self->get_raw_image_data( $num )
         or return;
 
     my ($fileid, $photo) = @$data;
@@ -177,13 +207,13 @@ sub get_image_data {
 }
 
 sub delete_cached {
-    my ($self, $index) = @_;
+    my ($self) = @_;
     my $object = $self->object or return;
 
     unlink glob FixMyStreet->path_to(
         'web',
         'photo',
-        $object->id . (defined $index ? ".$index" : '') . '.*'
+        $object->id . '.*'
     );
 }
 
@@ -202,13 +232,14 @@ sub rotate_image {
         object => $self->object,
     });
 
-    $self->delete_cached($index);
+    $self->delete_cached();
 
     return $new_set->data; # e.g. new comma-separated fileid
 }
 
 sub _rotate_image {
     my ($photo, $direction) = @_;
+    return $photo unless $Image::Magick::VERSION;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Rotate($direction);
@@ -227,6 +258,7 @@ sub _rotate_image {
 # Shrinks a picture to the specified size, but keeping in proportion.
 sub _shrink {
     my ($photo, $size) = @_;
+    return $photo unless $Image::Magick::VERSION;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Scale(geometry => "$size>");
@@ -240,6 +272,7 @@ sub _shrink {
 # Shrinks a picture to 90x60, cropping so that it is exactly that.
 sub _crop {
     my ($photo) = @_;
+    return $photo unless $Image::Magick::VERSION;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Resize( geometry => "90x60^" );
