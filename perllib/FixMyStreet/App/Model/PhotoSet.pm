@@ -12,7 +12,7 @@ has c => (
     is => 'ro',
 );
 
-has item => (
+has object => (
     is => 'ro',
 );
 
@@ -175,6 +175,52 @@ sub get_image_data {
 
     return $photo;
 }
+
+sub delete_cached {
+    my ($self, $index) = @_;
+    my $object = $self->object or return;
+
+    unlink glob FixMyStreet->path_to(
+        'web',
+        'photo',
+        $object->id . (defined $index ? ".$index" : '') . '.*'
+    );
+}
+
+sub rotate_image {
+    my ($self, $index, $direction) = @_;
+
+    my @images = $self->all_images;
+    return if $index > $#images;
+
+    my @items = map $_->[0], @images;
+    $items[$index] = _rotate_image( $images[$index][1], $direction );
+
+    my $new_set = (ref $self)->new({
+        data_items => \@items,
+        c => $self->c,
+        object => $self->object,
+    });
+
+    $self->delete_cached($index);
+
+    return $new_set->data; # e.g. new comma-separated fileid
+}
+
+sub _rotate_image {
+    my ($photo, $direction) = @_;
+    my $image = Image::Magick->new;
+    $image->BlobToImage($photo);
+    my $err = $image->Rotate($direction);
+    return 0 if $err;
+    my @blobs = $image->ImageToBlob();
+    undef $image;
+    return $blobs[0];
+}
+
+
+
+
 
 # NB: These 2 subs stolen from A::C::Photo, should be purged from there!
 #
