@@ -6,6 +6,7 @@ use warnings;
 use DateTime;
 use Test::More;
 use JSON;
+use Path::Tiny;
 
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
@@ -21,6 +22,10 @@ my $c = FixMyStreet::App->new();
 my $cobrand = FixMyStreet::Cobrand::Zurich->new({ c => $c });
 $c->stash->{cobrand} = $cobrand;
 
+my $sample_file = path(__FILE__)->parent->parent->child("app/controller/sample.jpg");
+ok $sample_file->exists, "sample file $sample_file exists";
+my $sample_photo = $sample_file->slurp_raw;
+
 # This is a helper method that will send the reports but with the config
 # correctly set - notably SEND_REPORTS_ON_STAGING needs to be true.
 sub send_reports_for_zurich {
@@ -32,15 +37,12 @@ sub send_reports_for_zurich {
 sub reset_report_state {
     my ($report, $created) = @_;
     $report->discard_changes;
-    my $extra = $report->extra;
-    delete $extra->{moderated_overdue};
-    delete $extra->{subdiv_overdue};
-    delete $extra->{closed_overdue};
-    $report->update({
-        extra   => { %$extra },
-        state   => 'unconfirmed',
-        $created ? ( created => $created ) : (),
-    });
+    $report->unset_extra_metadata('moderated_overdue');
+    $report->unset_extra_metadata('subdiv_overdue');
+    $report->unset_extra_metadata('closed_overdue');
+    $report->state('unconfirmed');
+    $report->created($created) if $created;
+    $report->update;
 }
 
 use FixMyStreet::TestMech;
@@ -103,6 +105,7 @@ my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
+    photo         => $sample_photo,
 });
 my $report = $reports[0];
 
@@ -135,7 +138,6 @@ is $mech->uri->path, '/admin', "am logged in";
 $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'Erfasst' );
-
 
 subtest "changing of categories" => sub {
     # create a few categories (which are actually contacts)
@@ -207,7 +209,8 @@ sub get_moderated_count {
 
 subtest "report_edit" => sub {
 
-    ok ( ! exists ${$report->extra}{moderated_overdue}, 'Report currently unmoderated' );
+    reset_report_state($report);
+    ok ( ! $report->get_extra_metadata('moderated_overdue'), 'Report currently unmoderated' );
 
     is get_moderated_count(), 0;
 
@@ -218,16 +221,17 @@ subtest "report_edit" => sub {
         $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
         $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
         $mech->get_ok( '/report/' . $report->id );
+
+        $report->discard_changes();
+        is $report->state, 'confirmed', 'state has been updated to confirmed';
     };
 
     $mech->content_contains('Aufgenommen');
     $mech->content_contains('Test Test');
-    $mech->content_lacks('photo/' . $report->id . '.jpeg');
+    $mech->content_lacks('photo/' . $report->id . '.1.jpeg');
     $mech->email_count_is(0);
 
-    $report->discard_changes;
-
-    is ( $report->extra->{moderated_overdue}, 0, 'Report now marked moderated' );
+    is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Report now marked moderated' );
     is get_moderated_count(), 1;
 
 
@@ -245,7 +249,7 @@ subtest "report_edit" => sub {
         $mech->get_ok( '/report/' . $report->id );
     };
     $report->discard_changes;
-    is ( $report->extra->{moderated_overdue}, 1, 'moderated_overdue set correctly when overdue' );
+    is ( $report->get_extra_metadata('moderated_overdue'), 1, 'moderated_overdue set correctly when overdue' );
     is get_moderated_count(), 0, 'Moderated count not increased when overdue';
 
     reset_report_state($report, $created);
@@ -307,7 +311,7 @@ FixMyStreet::override_config {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => { state => 'confirmed', publish_photo => 1 } } );
     $mech->get_ok( '/report/' . $report->id );
-    $mech->content_contains('photo/' . $report->id . '.jpeg');
+    $mech->content_contains('photo/' . $report->id . '.1.jpeg');
 
     # Internal notes
     $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -398,9 +402,7 @@ $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 
 # User confirms their email address
-my $extra = $report->extra;
-$extra->{email_confirmed} = 1;
-$report->extra ( { %$extra } );
+$report->set_extra_metadata(email_confirmed => 1);
 $report->update;
 
 FixMyStreet::override_config {
@@ -429,6 +431,7 @@ $mech->clear_emails_ok;
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
+    photo         => $sample_photo,
 });
 $report = $reports[0];
 
@@ -463,6 +466,7 @@ $mech->email_count_is(0);
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
+    photo         => $sample_photo,
 });
 $report = $reports[0];
 
@@ -620,9 +624,7 @@ subtest "problems can't be assigned to deleted bodies" => sub {
 
 subtest "hidden report email are only sent when requested" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org') ;
-    $extra = $report->extra;
-    $extra->{email_confirmed} = 1;
-    $report->extra ( { %$extra } );
+    $report->set_extra_metadata(email_confirmed => 1);
     $report->update;
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
@@ -684,3 +686,5 @@ END {
     ok $mech->host("www.fixmystreet.com"), "change host back";
     done_testing();
 }
+
+1;

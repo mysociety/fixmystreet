@@ -63,7 +63,6 @@
 
 [% IF problem.photo %]
 <li>
-[% photo = problem.get_photo_params %]
 [% FOR photo IN problem.get_photoset(c).all_images %]
 <div class="update-img">
     <a href="[% c.cobrand.base_url %]/photo/[% photo.0 %].fulltemp.jpeg" rel="fancy">
