@@ -1,28 +1,22 @@
-/**
- * Position the map box correctly on window resize.
- *
- * Called from fixmystreet.js when the window 'resize' event is fired
- * and the page is transitioning to a desktop version.
- */
 function position_map_box() {
     var $html = $('html');
-    var oxfordshire_right;
-    if ($html.hasClass('ie6') || $html.hasClass('ie7')) {
-        oxfordshire_right = '-480px';
+    if ($html.hasClass('ie6')) {
+        $('#map_box').prependTo('body').css({
+            zIndex: 0, position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            width: '100%', height: $(window).height(),
+            margin: 0
+        });
     } else {
-        oxfordshire_right = '0em';
+        $('#map_box').prependTo('body').css({
+            zIndex: 0, position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            width: '100%', height: '100%',
+            margin: 0
+        });
     }
-
-    var map_box_width = "956px";
-    var map_box_height = "600px";
-    // Do the same as CSS (in case resized from mobile).
-    $('#map_box').prependTo('.wrapper').css({
-        zIndex: 1, position: 'absolute',
-        top: '1em', left: '', right: oxfordshire_right, bottom: '',
-        width: map_box_width, height: map_box_height,
-        margin: "0 1em"
-    });
 }
 
 function map_fix() {}
-var slide_wards_down = 1;
+var slide_wards_down = 0;
+
