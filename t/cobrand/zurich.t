@@ -6,6 +6,7 @@ use warnings;
 use DateTime;
 use Test::More;
 use JSON;
+use Path::Tiny;
 
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
@@ -20,6 +21,10 @@ use FixMyStreet;
 my $c = FixMyStreet::App->new();
 my $cobrand = FixMyStreet::Cobrand::Zurich->new({ c => $c });
 $c->stash->{cobrand} = $cobrand;
+
+my $sample_file = path(__FILE__)->parent->parent->child("app/controller/sample.jpg");
+ok $sample_file->exists, "sample file $sample_file exists";
+my $sample_photo = $sample_file->slurp_raw;
 
 # This is a helper method that will send the reports but with the config
 # correctly set - notably SEND_REPORTS_ON_STAGING needs to be true, and
@@ -105,6 +110,7 @@ my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
+    photo         => $sample_photo,
 });
 my $report = $reports[0];
 
@@ -137,7 +143,6 @@ is $mech->uri->path, '/admin', "am logged in";
 $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
 $mech->content_contains( 'Erfasst' );
-
 
 subtest "changing of categories" => sub {
     # create a few categories (which are actually contacts)
@@ -220,11 +225,14 @@ subtest "report_edit" => sub {
         $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
         $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
         $mech->get_ok( '/report/' . $report->id );
+
+        $report->discard_changes();
+        is $report->state, 'confirmed', 'state has been updated to confirmed';
     };
 
     $mech->content_contains('Aufgenommen');
     $mech->content_contains('Test Test');
-    $mech->content_lacks('photo/' . $report->id . '.jpeg');
+    $mech->content_lacks('photo/' . $report->id . '.1.jpeg');
     $mech->email_count_is(0);
 
     $report->discard_changes;
@@ -309,7 +317,7 @@ FixMyStreet::override_config {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => { state => 'confirmed', publish_photo => 1 } } );
     $mech->get_ok( '/report/' . $report->id );
-    $mech->content_contains('photo/' . $report->id . '.jpeg');
+    $mech->content_contains('photo/' . $report->id . '.1.jpeg');
 
     # Internal notes
     $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -460,6 +468,7 @@ $mech->clear_emails_ok;
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
+    photo         => $sample_photo,
 });
 $report = $reports[0];
 
@@ -494,6 +503,7 @@ $mech->email_count_is(0);
     state              => 'unconfirmed',
     confirmed          => undef,
     cobrand            => 'zurich',
+    photo         => $sample_photo,
 });
 $report = $reports[0];
 
@@ -754,3 +764,5 @@ END {
     ok $mech->host("www.fixmystreet.com"), "change host back";
     done_testing();
 }
+
+1;

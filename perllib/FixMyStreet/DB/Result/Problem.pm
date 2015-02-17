@@ -867,7 +867,7 @@ sub get_photoset {
     return $class->new({
         c => $c,
         data => $self->photo,
-        item => $self,
+        object => $self,
     });
 }
 

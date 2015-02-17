@@ -42,10 +42,7 @@ sub create_report {
         latitude           => '51.4129',
         longitude          => '0.007831',
         user_id            => $user->id,
-        photo              => 'DUMMY DATA', # this obv fake data would not be
-                                            # accepted by front-end but is
-                                            # enough to trigger "I have a
-                                            # photo" behaviour
+        photo              => $mech->get_photo_data,
     });
 }
 my $report = create_report();
@@ -216,7 +213,7 @@ sub create_update {
         user      => $user,
         name      => 'Test User',
         anonymous => 'f',
-        photo     => 'DUMMY DATA', # as above
+        photo     => $mech->get_photo_data,
         text      => 'update good good bad good',
         state     => 'confirmed',
         mark_fixed => 0,
@@ -283,7 +280,8 @@ subtest 'updates' => sub {
 
         $mech->get_ok($REPORT_URL);
 
-        $mech->content_contains('Photo of this report');
+        $mech->content_contains('Photo of this report')
+            or die $mech->content;
 
         $mech->post_ok( $MODERATE_UPDATE_URL, {
             %update_prepopulated,
