@@ -340,6 +340,16 @@ sub reports_per_page {
     return FixMyStreet->config('ALL_REPORTS_PER_PAGE') || 100;
 }
 
+=head2 reports_ordering
+
+The order_by clause to use for reports on all reports page
+
+=cut
+
+sub reports_ordering {
+    return { -desc => 'lastupdate' };
+}
+
 =head2 on_map_list_limit
 
 Return the maximum number of items to be given in the list of reports on the map
