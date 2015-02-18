@@ -4176,6 +4176,22 @@ DISTRIBUTIONS
       Test::More 0.88
       namespace::autoclean 0
       namespace::clean 0.10
+  MooseX-NonMoose-0.26
+    pathname: D/DO/DOY/MooseX-NonMoose-0.26.tar.gz
+    provides:
+      MooseX::NonMoose 0.26
+      MooseX::NonMoose::InsideOut 0.26
+      MooseX::NonMoose::Meta::Role::Class 0.26
+      MooseX::NonMoose::Meta::Role::Constructor 0.26
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      List::MoreUtils 0
+      Module::Runtime 0
+      Moose::Exporter 0
+      Moose::Role 2.0000
+      Moose::Util 0
+      Try::Tiny 0
+      warnings 0
   MooseX-Params-Validate-0.18
     pathname: D/DR/DROLSKY/MooseX-Params-Validate-0.18.tar.gz
     provides:
