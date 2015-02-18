@@ -12,7 +12,7 @@ sub country {
     return 'NO';
 }
 
-sub languages { [ 'en-gb,English,en_GB', 'nb,Norwegian,nb_NO' ] }
+sub languages { [ 'nb,Norwegian,nb_NO' ] }
 sub language_override { 'nb' }
 
 sub enter_postcode_text {

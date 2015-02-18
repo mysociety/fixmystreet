@@ -12,7 +12,7 @@ sub example_places {
     return ( 'Dominica, Recoleta', 'Pio Nono' );
 }
 
-sub languages { [ 'es-cl,Castellano,es_CL', 'en-gb,English,en_GB' ] }
+sub languages { [ 'es-cl,Castellano,es_CL' ] }
 
 sub disambiguate_location {
     return {

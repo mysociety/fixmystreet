@@ -10,9 +10,6 @@ sub country {
     return 'IN';
 }
 
-sub languages { [ 'en-gb,English,en_GB' ] }
-sub language_override { 'en-gb' }
-
 sub disambiguate_location {
     return {
         country => 'in',
