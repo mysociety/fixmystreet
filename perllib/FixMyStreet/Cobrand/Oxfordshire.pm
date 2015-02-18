@@ -93,4 +93,12 @@ sub reports_ordering {
     return { -desc => 'confirmed' };
 }
 
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $p->state eq 'not responsible';
+    return 'green' if $p->is_fixed || $p->is_closed;
+    return 'red' if $p->state eq 'confirmed';
+    return 'yellow';
+}
+
 1;
