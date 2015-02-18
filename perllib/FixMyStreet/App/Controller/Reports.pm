@@ -430,7 +430,7 @@ sub load_and_group_problems : Private {
     my $problems = $c->cobrand->problems->search(
         $where,
         {
-            order_by => { -desc => 'lastupdate' },
+            order_by => $c->cobrand->reports_ordering,
             rows => $c->cobrand->reports_per_page,
         }
     )->page( $page );
