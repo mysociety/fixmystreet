@@ -25,20 +25,97 @@ yourself, proceed with the instructions below.
 Fetch the latest version from GitHub:
 
 {% highlight bash %}
-mkdir FixMyStreet
-cd FixMyStreet
-git clone --recursive https://github.com/mysociety/fixmystreet.git
-cd fixmystreet
+$ mkdir FixMyStreet
+$ cd FixMyStreet
+$ git clone --recursive https://github.com/mysociety/fixmystreet.git
+$ cd fixmystreet
 {% endhighlight %}
 
-(if you're running an old version of git, prior to 1.6.5, you'll have to clone
-and then run `git submodule update --init` separately).
+<div class="attention-box helpful-hint">
+If you're running an old version of git, prior to 1.6.5, you'll have to clone
+and then run <code>git submodule update --init</code> separately.
+</div>
 
-### 2. Create a new PostgreSQL database
+### 2. Install prerequisite packages
 
-FixMyStreet uses a PostgreSQL database, so install PostgreSQL first (e.g. `port
-install postgresql91-server` with MacPorts, or `apt-get install postgresql-8.4`
-on Debian, or install from the PostgreSQL website).
+#### a. Debian / Linux
+
+If you're using Debian 7 ("wheezy") or a LTS version of Ubuntu, then the
+packages to install some required dependencies are listed in
+`conf/packages.debian-wheezy` or `conf/packages.ubuntu-precise` (which also
+works fine for trusty). To install all of them you can run e.g.:
+
+{% highlight bash %}
+$ sudo xargs -a conf/packages.debian-wheezy apt-get install
+{% endhighlight %}
+
+A similar list of packages should work for other Debian-based distributions.
+(Please let us know if you would like to contribute such a package list or
+instructions for other distributions.)
+
+#### b. Mac OS X
+
+Install either MacPorts or HomeBrew (you might well have one already), and then
+use the command below to install a few packages that FixMyStreet needs, for
+which it's much simpler to install via a packaging system.
+
+##### i. MacPorts
+
+{% highlight bash %}
+$ port install gettext p5-locale-gettext p5-perlmagick jhead postgresql91-server
+{% endhighlight %}
+
+##### ii. HomeBrew
+
+{% highlight bash %}
+$ brew install gettext perlmagick jhead postgresql
+$ brew link gettext --force
+{% endhighlight %}
+
+<div class="attention-box">
+gettext needs to be linked for the Locale::gettext Perl module to install; you
+can unlink gettext once everything is installed.
+</div>
+
+#### c. Other
+
+You need Perl 5.8, ImageMagick with the perl bindings, gettext, and compass.
+If you're expecting a lot of traffic it's recommended that you install memcached: <http://memcached.org/>
+
+### 3. Install prerequisite Perl modules
+
+FixMyStreet uses a number of CPAN modules; to install them, run:
+
+{% highlight bash %}
+$ bin/install_perl_modules
+{% endhighlight %}
+
+This should tell you what it is installing as it goes. It takes some time, so
+feel free to continue with further steps whilst it's running.
+
+<div class="attention-box helpful-hint">
+<!-- Below hopefully not needed as installed p5-locale-gettext above
+<p>Note, with MacPorts you might have to specify some compilation PATHs:</p>
+<pre><code>C_INCLUDE_PATH=/opt/local/include LIBRARY_PATH=/opt/local/lib bin/install_perl_modules</code></pre>
+-->
+<p>It is possible you may need to install some source packages to allow some of
+the included modules to be built, including expat (libexpat1-dev), postgresql
+(postgresql-server-dev-8.4), or the GMP math library (libgmp3-dev).</p>
+</div>
+
+### 4. Install compass and generate CSS
+
+There is a script, `bin/make_css`, that uses Compass and sass to convert the
+SCSS files to CSS files. So let's install compass and run that:
+
+{% highlight bash %}
+$ gem install --user-install --no-ri --no-rdoc bundler
+$ $(ruby -rubygems -e 'puts Gem.user_dir')/bin/bundle install \
+> --deployment --path ../gems --binstubs ../gem-bin
+$ bin/make_css
+{% endhighlight %}
+
+### 5. Create a new PostgreSQL database
 
 The default settings assume the database is called fms and the user the same.
 You can change these if you like. Using the defaults, create a user and
@@ -61,72 +138,26 @@ $
 You should be able to connect to the database with `psql -U fms fms` -- if not,
 you will need to investigate [how to allow access to your PostgreSQL database]({{ site.baseurl }}install/database).
 
-#### 2b. Install database schema
+#### 5b. Install database schema
 
 Now you can use the provided SQL in `db` to create the required
 tables, triggers, and initial data. Run the following:
 
 {% highlight bash %}
 $ psql -U fms fms < db/schema.sql
-...
 $ psql -U fms fms < db/generate_secret.sql
-...
 $ psql -U fms fms < db/alert_types.sql
-...
 {% endhighlight %}
 
-### 3. Install prerequisite packages
-
-#### a. Mac OS X
-
-Install either MacPorts or HomeBrew (you might well have one already), and then
-use the command below to install a few packages that FixMyStreet needs, for
-which it's much simpler to install via a packaging system.
-
-##### i. MacPorts
-
-    port install gettext p5.12-perlmagick jhead rb-rubygems
-
-##### ii. HomeBrew
-
-    brew install gettext imagemagick jhead
-
-#### b. Debian / Linux
-
-If you're using Debian 7 ("wheezy") then the packages to install some required
-dependencies are listed in `conf/packages.debian-wheezy`. To install all of
-them you can run:
-
-    sudo xargs -a conf/packages.debian-wheezy apt-get install
-
-A similar list of packages should work for other Debian-based
-distributions.  (Please let us know if you would like to contribute
-such a package list or instructions for other distributions.)
-
-#### c. Other
-
-You need Perl 5.8, ImageMagick with the perl bindings, gettext, and compass.
-If you're expecting a lot of traffic it's recommended that you install memcached: <http://memcached.org/>
-
-### 4. Install prerequisite Perl modules
-
-FixMyStreet uses a number of CPAN modules; to install them, run:
-
-    bin/install_perl_modules
-
-This should tell you what it is installing as it goes.
-
-It is possible you may need to install some source packages to allow some of
-the included modules to be built, including expat (libexpat1-dev), postgresql
-(postgresql-server-dev-8.4), and the GMP math library (libgmp3-dev).
-
-### 5. Set up config
+### 6. Set up config
 
 The settings for FixMyStreet are defined in `conf/general.yml` using the YAML
 markup language. There are some defaults in `conf/general.yml-example` which
 you should copy to `conf/general.yml`:
 
-    cp conf/general.yml-example conf/general.yml
+{% highlight bash %}
+$ cp conf/general.yml-example conf/general.yml
+{% endhighlight %}
 
 The bare minimum of settings you will need to fill in or update are:
 
@@ -147,18 +178,13 @@ If you are using Bing or Google maps you should also set one of
 [BING_MAPS_API_KEY]({{ site.baseurl }}customising/config/#bing_maps_api_key) or 
 [GOOGLE_MAPS_API_KEY]({{ site.baseurl }}customising/config/#google_maps_api_key).
 
-### 6. Generate CSS
-
-There is a script, bin/make_css, that uses Compass and sass to
-convert the SCSS files to CSS files:
-
-    bin/make_css
-
 ### 7. Run
 
 The development server can now hopefully be run with:
 
-     script/fixmystreet_app_server.pl -d --fork
+{% highlight bash %}
+$ script/fixmystreet_app_server.pl -d --fork
+{% endhighlight %}
 
 The server will be accessible as <http://localhost:3000/>. You can run with -r
 in order for the server to automatically restart when you update the code.
@@ -175,7 +201,8 @@ in order for the server to automatically restart when you update the code.
 #### Tile server
 
 You will also need a tile server to serve up map tiles. FixMyStreet can
-currently use Bing and OpenStreetMap tile servers, defaulting to OpenStreetMap.
+currently use tile servers such as Bing, OpenStreetMap and Google, defaulting
+to OpenStreetMap.
 
 #### Geocoding
 
@@ -218,7 +245,9 @@ nginx, you need to run the FastCGI service separately - the
 `conf/sysvinit.example` file is an example script you could use to run it as a
 daemon. And you will need to install a FastCGI process manager:
 
-    apt-get install libfcgi-procmanager-perl
+{% highlight bash %}
+$ apt-get install libfcgi-procmanager-perl
+{% endhighlight %}
 
 #### Check it's working
 
@@ -228,7 +257,9 @@ FixMyStreet installation at the configured URL.
 You can run the unit tests by running the following command in the
 `fixmystreet` directory:
 
-    bin/run-tests t
+{% highlight bash %}
+$ bin/run-tests t
+{% endhighlight %}
 
 The `master` branch of the repository should always be passing all tests for
 our developers and on mySociety's servers.
