@@ -53,6 +53,9 @@ sub pin_colour {
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';
     return 'yellow';
+
+sub reports_ordering {
+    return { -desc => 'confirmed' };
 }
 
 1;
