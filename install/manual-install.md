@@ -230,12 +230,6 @@ You can run the unit tests by running the following command in the
 
     bin/run-tests t
 
-These currently require that the fixmystreet cobrand is enabled in the
-[ALLOWED_COBRANDS]({{ site.baseurl }}customising/config/#allowed_cobrands)
-setting, and also might assume other config is set up
-correctly. Note that this may leave entries in your database at the moment and
-should not be run on a live site.
-
 The `master` branch of the repository should always be passing all tests for
 our developers and on mySociety's servers.
 
