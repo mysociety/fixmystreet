@@ -89,4 +89,8 @@ sub problem_response_days {
     return undef;
 }
 
+sub reports_ordering {
+    return { -desc => 'confirmed' };
+}
+
 1;
