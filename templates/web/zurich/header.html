@@ -72,6 +72,11 @@
             <li [% IF pagename == 'stats' %]class="current"[% END %]>
                 <a href="/admin/stats">[% loc('Stats') %]</a>
             </li>
+            [% IF admin_type == 'dm' %]
+            <li [% IF pagename == 'templates' OR pagename == 'template' %]class="current"[% END %]>
+                <a href="/admin/templates">[% loc('Templates') %]</a>
+            </li>
+            [% END %]
             <li class="search-box">
                 <form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
                     <input type="text" name="search" size="20" id="search" placeholder="[% loc('Search reports') %]">
