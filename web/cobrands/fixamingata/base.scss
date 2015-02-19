@@ -29,3 +29,40 @@ $image-sprite: '/cobrands/fixamingata/images/sprite.png';
         font-size: 0.9em;
     }
 }
+
+.description_tips {
+  @include clearfix;
+
+  h4 {
+    margin: 1em 0 0.5em; /* Jon added some margin-top here! */
+  }
+
+  ul {
+    width: 49%;
+    margin: 0;
+    float: left;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  li {
+    margin-bottom: 0;
+    padding-left: 20px;
+    list-style: none;
+    background: transparent url(/cobrands/fixamingata/images/tick-10px-8px.png) 4px 5px no-repeat;
+  }
+
+  .do {
+    color: #1c8012;
+  }
+
+  .dont {
+    float: right;
+    color: #881111;
+
+    li {
+      background-image: url(/cobrands/fixamingata/images/cross-7px-7px.png);
+      background-position: 6px 6px;
+    }
+  }
+}
