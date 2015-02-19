@@ -28,6 +28,16 @@ problem but are not logged in.
 sub confirm_problem : Path('/P') {
     my ( $self, $c, $token_code ) = @_;
 
+    if ($token_code eq '_test_') {
+        $c->stash->{report} = {
+            id => 123,
+            title => 'Title of Report',
+            bodies_str => 'True',
+            url => '/report/123',
+        };
+        return;
+    }
+
     my $auth_token =
       $c->forward( 'load_auth_token', [ $token_code, 'problem' ] );
 
@@ -134,6 +144,11 @@ alert but are not logged in.
 sub confirm_alert : Path('/A') {
     my ( $self, $c, $token_code ) = @_;
 
+    if ($token_code eq '_test_') {
+        $c->stash->{confirm_type} = $c->req->params->{confirm_type};
+        return;
+    }
+
     my $auth_token = $c->forward( 'load_auth_token', [ $token_code, 'alert' ] );
 
     # Load the problem
@@ -168,6 +183,16 @@ update but are not logged in.
 
 sub confirm_update : Path('/C') {
     my ( $self, $c, $token_code ) = @_;
+
+    if ($token_code eq '_test_') {
+        $c->stash->{problem} = {
+            id => 123,
+            title => 'Title of Report',
+            bodies_str => 'True',
+            url => '/report/123',
+        };
+        return;
+    }
 
     my $auth_token =
       $c->forward( 'load_auth_token', [ $token_code, 'comment' ] );
