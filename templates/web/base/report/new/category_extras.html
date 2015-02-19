@@ -5,24 +5,21 @@
         [%- FOR meta IN category_extras.$category %]
         [%- meta_name = meta.code -%]
 
-[% IF field_errors.$meta_name %]
-    <div class='form-error'>[% field_errors.$meta_name %]</div>
-[% END -%]
-
-    <div class="form-field">
-        <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
-        [% IF meta.variable != 'false' %]
-            [% IF meta.exists('values') 
-            <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-                [% FOR option IN meta.values.value.value %]
-                    <option value="[% option.key.0 %]"[% IF option.key.0 == report_meta.$meta_name.value %] selected[% END %]>[% option.name.0 %]</option>
+            <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
+            [% IF field_errors.$meta_name %]
+                <p class='form-error'>[% field_errors.$meta_name %]</p>
+            [% END -%]
+            [% IF meta.variable != 'false' %]
+                [% IF meta.exists('values') %]
+                    <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+                        [% FOR option IN meta.values.value %]
+                            <option value="[% option.key.0 %]"[% IF option.key.0 == report_meta.$meta_name.value %] selected[% END %]>[% option.name.0 %]</option>
+                        [% END %]
+                    </select>
+                [% ELSE %]
+                    <input type="text" value="[% report_meta.$meta_name.value | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
                 [% END %]
-            </select>
-            [% ELSE %]
-            <input type="text" value="[% report_meta.$meta_name | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
             [% END %]
-        [% END %]
-    </div>
         [%- END %]
     [%- END %]
 </div>
