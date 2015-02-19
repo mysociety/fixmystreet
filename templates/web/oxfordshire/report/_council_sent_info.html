@@ -3,6 +3,14 @@
         [% IF problem.whensent %]
         [% problem.duration_string(c) %]<br>
         [% END %]
+        [% IF c.cobrand.problem_response_days(problem) > 0 %]
+            Problems in the
+            [% problem.category %]
+            category are generally responded to within
+            [% c.cobrand.problem_response_days(problem) %]
+            working days.
+            <br />
+        [% END %]
         <strong>
         [% IF problem.can_display_external_id %]
             [% IF problem.whensent %]
