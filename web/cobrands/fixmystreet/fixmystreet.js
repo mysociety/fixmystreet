@@ -463,7 +463,8 @@ $.fn.drawer = function(id, ajax) {
                 offset = -110;
             }
             if (cobrand == 'oxfordshire') {
-                offset = -13 * 16;
+                // Oxfordshire uses box-sizing:border-box and padding to work out height
+                offset = 0;
             }
             heightFix(window, '.content', offset, 1);
             // in case we have a map that isn't full screen
