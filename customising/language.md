@@ -32,8 +32,7 @@ have:
         - 'de,German,de_DE'
 
 This would then set up things appropriately to use the relevant language files
-you have made. Always keep the en-gb line, as some things need that to work
-properly.
+you have made.
 
 You must make sure that the locale for any language you use is installed on the
 server in order for the translations to work properly. On Debian, you can alter

@@ -320,10 +320,6 @@ The following are all the configuration settings that you can change in `conf/ge
         Put the default language as the first entry in the list.
       </li>
       <li>
-        Do not remove the <code>en-gb</code> line because it is needed for correct operation, even if your site isn't running in English
-        (so, typically, you'll put it as the last language in the list).
-      </li>
-      <li>
         Don't put any extra spaces in the strings (e.g., after the commas).
       </li>
       <li>
@@ -336,7 +332,7 @@ The following are all the configuration settings that you can change in `conf/ge
     <p>
       Just adding a language here does not necessarily mean FixMyStreet will
       always use it (for example, a language coded subdomain name or browser preference may be considered). See this page about
-      <a href="{{ site.baseurl }}customising/language">languages and FixMyStreet</a> for more information.      
+      <a href="{{ site.baseurl }}customising/language">languages and FixMyStreet</a> for more information.
     </p>
     <div class="more-info">
       <p>Example:</p>
@@ -353,10 +349,6 @@ LANGUAGES:
   - 'de,German,de_DE'
   - 'en-gb,English,en_GB'
 </pre>
-          <p>
-            Remember that you must always include <code>en-gb,English,en_GB</code>
-            in the list.
-          </p>
         </li>
       </ul>
     </div>
