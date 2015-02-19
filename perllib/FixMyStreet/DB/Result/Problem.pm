@@ -643,7 +643,28 @@ sub body {
     return $body;
 }
 
-# returns true if the external id is the council's ref, i.e., useful to publish it.
+=head2 response_templates
+
+Returns all ResponseTemplates attached to this problem's bodies, in alphabetical
+order of title.
+
+=cut
+
+sub response_templates {
+    my $problem = shift;
+    return FixMyStreet::App->model('DB::ResponseTemplate')->search(
+        {
+            body_id => $problem->bodies_str_ids
+        },
+        {
+            order_by => 'title'
+        }
+    );
+}
+
+# returns true if the external id is the council's ref, i.e., useful to publish it
+# (by way of an example, the barnet send method returns a useful reference when
+# it succeeds, so that is the ref we should show on the problem report page).
 #     Future: this is installation-dependent so maybe should be using the contact
 #             data to determine if the external id is public on a council-by-council basis.
 #     Note:   this only makes sense when called on a problem that has been sent!

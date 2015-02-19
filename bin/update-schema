@@ -195,6 +195,7 @@ else {
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0036' if table_exists('response_templates');
     return '0035' if column_exists('problem', 'bodies_missing');
     return '0034' if ! function_exists('ms_current_timestamp');
     return '0033' if ! function_exists('angle_between');
