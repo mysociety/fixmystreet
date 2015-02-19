@@ -2,7 +2,7 @@
 
 <h1>[% loc('Confirmation') %]</h1>
 
-[% IF problem.bodies_str %]
+[% IF report.bodies_str %]
     <p>[%
         loc(
             'Thank you for reporting an empty property on ReportEmptyHomes.com. We have emailed the lead officer for empty homes in the council responsible with details, and asked them to do whatever they can to get the empty property back into use as soon as possible.'
@@ -36,7 +36,7 @@ as possible will be covered.')
 [% END %]
 
 <p>
-    <a href="[% c.uri_for( '/report', problem.id ) | html %]">[% loc('View your report') %]</a>.
+    <a href="[% c.uri_for( '/report', report.id ) | html %]">[% loc('View your report') %]</a>.
 </p>
 
 [% INCLUDE 'footer.html' %]

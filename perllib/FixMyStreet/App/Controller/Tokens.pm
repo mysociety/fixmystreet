@@ -37,7 +37,7 @@ sub confirm_problem : Path('/P') {
     # Look at all problems, not just cobrand, in case am approving something we don't actually show
     my $problem = $c->model('DB::Problem')->find( { id => $problem_id } )
       || $c->detach('token_error');
-    $c->stash->{problem} = $problem;
+    $c->stash->{report} = $problem;
 
     if ( $problem->state eq 'unconfirmed' && $auth_token->created < DateTime->now->subtract( months => 1 ) ) {
         $c->stash->{template} = 'errors/generic.html';
@@ -83,7 +83,6 @@ sub confirm_problem : Path('/P') {
     ) if $problem->state eq 'unconfirmed';
 
     # Subscribe problem reporter to email updates
-    $c->stash->{report} = $c->stash->{problem};
     $c->forward( '/report/new/create_reporter_alert' );
 
     # log the problem creation user in to the site

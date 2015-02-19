@@ -106,6 +106,7 @@ sub submit_creator_fixed : Private {
     }
 
     my $problem = $c->cobrand->problems->find( { id => $c->stash->{problem_id} } );
+    $c->stash->{problem} = $problem;
 
     # you should not be able to answer questionnaires about problems
     # that you've not submitted

@@ -1132,23 +1132,10 @@ sub redirect_or_confirm_creation : Private {
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
-        my $report_uri;
-
-        if ( $c->cobrand->moniker eq 'fixmybarangay' && $c->user->from_body && $c->stash->{external_source_id}) {
-            $report_uri = $c->uri_for( '/report', $report->id, undef, { external_source_id => $c->stash->{external_source_id} } );
-        } elsif ( $c->cobrand->never_confirm_reports && $report->non_public ) {
-            $c->log->info( 'cobrand was set to always confirm reports and report was non public, success page showed');
-            $c->stash->{template} = 'report_created.html';
-            return 1;
-        } else {
-            $report_uri = $c->cobrand->base_url_for_report( $report ) . $report->url;
-        }
-        $c->log->info($report->user->id . ' was logged in, redirecting to /report/' . $report->id);
-        if ( $c->sessionid ) {
-            $c->flash->{created_report} = 'loggedin';
-        }
-        $c->res->redirect($report_uri);
-        $c->detach;
+        $c->log->info($report->user->id . ' was logged in, showing confirmation page for ' . $report->id);
+        $c->stash->{created_report} = 'loggedin';
+        $c->stash->{template} = 'tokens/confirm_problem.html';
+        return 1;
     }
 
     # otherwise create a confirm token and email it to them.
