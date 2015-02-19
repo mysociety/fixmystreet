@@ -9,6 +9,7 @@ use Scalar::Util 'blessed';
 use strict;
 use warnings;
 use feature 'say';
+use utf8;
 
 =head1 NAME
 
@@ -303,6 +304,7 @@ sub admin_pages {
     $pages = { %$pages,
         'bodies' => [_('Bodies'), 1],
         'body' => [undef, undef],
+        'templates' => [_('Templates'), 2],
     };
     return $pages if $type eq 'dm';
 
@@ -450,7 +452,7 @@ sub admin_report_edit {
 
     }
 
-    # If super or sdm check that the token is correct before proceeding
+    # If super or dm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
         $c->forward('check_token');
     }
