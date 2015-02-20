@@ -186,7 +186,7 @@ body.mappage {
     .extra-text {
       padding: 1em;
       margin: 0 -1em;
-      border-bottom: 1px solid #e9e9e9;
+      border-bottom: 1px solid $oxfordshire_mid_grey_green;
 
       p:last-child {
         margin-bottom: 0;
@@ -209,6 +209,7 @@ body.mappage {
 
 .report-list-filters {
   padding: 1em 1em 0 1em;
+  margin-bottom: 0.5em;
   color: #666;
   font-size: 0.85em;
 
@@ -231,7 +232,7 @@ body.mappage {
     font-family: inherit;
     font-size: 1em;
 
-    border-color: #ced7c4;
+    border: 1px solid #ced7c4;
     box-shadow: 0 1px 0 #fff;
     height: 2em;
     margin-left: 0.2em;
@@ -313,6 +314,7 @@ body.mappage {
   }
 }
 
+// So as not to interfere with the Oxfordshire footer, make the fixed nav ("get updates" etc) static.
 .shadow-wrap {
     width: 432px;
 
@@ -368,7 +370,7 @@ input.green-btn{
   color: #000;
   margin: 0 -1em;
   padding: 18px;
-  border-bottom: 1px solid #e9e9e9;
+  border-bottom: 1px solid $oxfordshire_mid_grey_green;
   background: #fff url('/cobrands/oxfordshire/images/click-map-chevron-big.gif') 90% 12px no-repeat;
 
   h2 {
