@@ -256,3 +256,30 @@ body.alertindex {
     display: none;
   }
 }
+
+.next-steps {
+  @include clearfix;
+  margin-bottom: 2em; // add some space between this and the footer
+}
+
+.next-steps__step {
+  font-family: MuseoSans,Helmet,Freesans,sans-serif;
+  float: left;
+  width: 33%;
+  padding: 1.8em;
+
+  & + .next-steps__step {
+    border-top: none;
+    border-left: 1px solid #ede8c9;
+  }
+
+  h2 {
+    font-family: inherit;
+    font-weight: bold;
+    line-height: 1.2em;
+  }
+
+  p {
+    line-height: 1.4em;
+  }
+}

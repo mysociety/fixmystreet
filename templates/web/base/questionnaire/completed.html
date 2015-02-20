@@ -1,28 +1,21 @@
-[%
-    INCLUDE 'header.html', title = loc('Questionnaire')
-%]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Questionnaire') %]
 
-[% advert_outcome = 1 %]
+<div class="confirmation-header">
 
-[% IF been_fixed == 'Unknown' %]
+  <h1>[% loc('Thank you for your feedback') %]</h1>
 
-[% loc('<p>Thank you very much for filling in our questionnaire; if you
-get some more information about the status of your problem, please come back to the
-site and leave an update.</p>') %]
+  [% IF been_fixed == 'Unknown' %]
+    <p>[% loc('If you get some more information about the status of your problem, please come back to the site and leave an update.') %]</p>
 
-[% ELSIF new_state == 'confirmed' OR (!new_state AND problem.is_open) OR (!new_state AND problem.is_closed) %]
+  [% ELSIF new_state == 'confirmed' OR (!new_state AND problem.is_open) OR (!new_state AND problem.is_closed) %]
+    [% INCLUDE 'questionnaire/completed-open.html' %]
 
-[% INCLUDE 'questionnaire/completed-open.html' %]
-[% advert_outcome = 0 %]
+  [% ELSIF been_fixed == 'Yes' %]
+    <p>[% loc('Glad to hear it’s been fixed!') %]</p>
 
-[% ELSIF been_fixed == 'Yes' %]
+  [% END %]
 
-[% loc('<p style="font-size:150%">Thank you very much for filling in our questionnaire; glad to hear it&rsquo;s been fixed.</p>') %]
-
-[% END %]
-
-[% IF advert_outcome %]
-    [% display_crosssell_advert( problem.user.email, problem.name, 'council', problem.bodies_str ) %]
-[% END %]
+</div>
+[% INCLUDE next_steps.html %]
 
 [% INCLUDE 'footer.html' %]

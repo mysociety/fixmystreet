@@ -132,7 +132,7 @@ foreach my $test (
         ok $token->data->{id} == $existing_id, 'subscribed to existing alert';
 
         $mech->get_ok("/A/$url_token");
-        $mech->content_contains('successfully confirmed');
+        $mech->content_contains('alert created');
 
         $alert =
           FixMyStreet::App->model('DB::Alert')->find( { id => $existing_id, } );
@@ -370,9 +370,9 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
             my ( $url, $url_token ) = $email->body =~ m{http://\S+(/A/(\S+))};
             my $token = FixMyStreet::App->model('DB::Token')->find( { token => $url_token, scope => 'alert' } );
             $mech->get_ok( $url );
-            $mech->content_contains('successfully confirmed');
+            $mech->content_contains('alert created');
         } else {
-            $mech->content_contains('successfully created');
+            $mech->content_contains('alert created');
         }
     }
 
@@ -473,7 +473,7 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
 
     ($url) = $emails[0]->body =~ m{http://\S+(/A/\S+)};
     $mech->get_ok( $url );
-    $mech->content_contains('successfully deleted');
+    $mech->content_contains('alert deleted');
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);

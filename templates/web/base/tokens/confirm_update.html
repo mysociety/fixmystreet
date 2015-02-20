@@ -1,24 +1,26 @@
-[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title => loc('Confirmation') %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation');
+
+DEFAULT problem = update.problem;
+SET problem_url = c.uri_for('/report', problem.id);
+IF update;
+    problem_url = problem_url _ '#update_' _ update.id;
+END;
+
+%]
 
 <div class="confirmation-header">
-  <h1>[% loc('Your update has been confirmed!') %]</h1>
 
-<p class="confirmed">
-[% IF creator_fixed %]
-[%
-    tprintf(loc('Thank you &mdash; you can <a href="%s">view your updated problem</a> on the site.'),
-        c.uri_for( '/report', problem_id ) );
-%]
-[% ELSE %]
-[%
-    tprintf( loc('You have successfully confirmed your update and you can now <a href="%s">view it on the site</a>.'),
-        c.uri_for( '/report', update.problem.id ) _ '#update_' _ update.id );
-%]
-[% END %]
-</p>
+  <h1><a href="[% problem_url %]">[% problem.title %]</a></h1>
+
+  <h2>[% loc('Thank you for updating this issue!') %]</h2>
 
 </div>
 
-[% display_crosssell_advert( update.user.email, update.name ) %]
+[% INCLUDE
+  next_steps.html,
+  just_interacted = 1,
+  share_url = c.cobrand.base_url_for_report(problem) _ problem.url,
+  twitter_comment = loc('I just updated a problem on @fixmystreet')
+%]
 
 [% INCLUDE 'footer.html' %]

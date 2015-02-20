@@ -252,13 +252,13 @@ foreach my $test (
 
         # Check the right HTML page has been returned
         $mech->content_like( qr/<title>[^<]*Questionnaire/m );
-        $mech->content_contains( 'glad to hear it&rsquo;s been fixed' )
+        $mech->content_contains( 'Glad to hear' )
             if $result =~ /fixed/;
-        $mech->content_lacks( 'glad to hear it&rsquo;s been fixed' )
+        $mech->content_lacks( 'Glad to hear' )
             if $result !~ /fixed/;
         $mech->content_contains( 'get some more information about the status of your problem' )
             if $result eq 'unknown';
-        $mech->content_contains( "sorry to hear that" )
+        $mech->content_contains( "sorry to hear" )
             if $result eq 'confirmed' || $result eq 'closed';
 
         # Check the database has the right information
@@ -319,7 +319,7 @@ subtest 'Check updates are shown correctly on questionnaire page' => sub {
     $mech->content_contains( 'This is some update text' );
 };
 
-for my $test ( 
+for my $test (
     {
         state => 'confirmed',
         fixed => 0

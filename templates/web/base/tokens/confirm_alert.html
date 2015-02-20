@@ -1,20 +1,19 @@
 [% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title =>  loc('Local RSS feeds and email alerts') %]
 
 <div class="confirmation-header">
-    <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
-<p>
-[% IF confirm_type == 'subscribe' %]
-  [% loc('You have successfully confirmed your alert.') %]
-[% ELSIF confirm_type == 'unsubscribe' %]
-  [% loc('You have successfully deleted your alert.') %]
-[% ELSIF confirm_type == 'created' %]
-  [% loc('You have successfully created your alert.') %]
-[% END %]
-</p>
+  [% IF confirm_type == 'subscribe' || confirm_type == 'created' %]
+    <h1>[% loc('Email alert created') %]</h1>
+    <p>[% loc('Why stop there? <a href="/alert">Set up more alerts</a> for free.') %]</p>
+
+  [% ELSIF confirm_type == 'unsubscribe' %]
+    <h1>[% loc('Email alert deleted') %]</h1>
+    <p>[% loc('Inbox zero, here we come!') %]</p>
+
+  [% END %]
 
 </div>
 
-[% display_crosssell_advert( alert.user.email, alert.user.name ) %]
+[% INCLUDE next_steps.html %]
 
 [% INCLUDE 'footer.html' %]

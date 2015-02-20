@@ -1,20 +1,21 @@
-[% INCLUDE 'header.html', title = loc('Contact Us'), bodyclass = 'fullwidthpage' %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Contact Us') %]
 
-<h1>[% loc('Contact the team') %]</h1>
- 
 [% IF success %]
 
-    <p>
-    [% loc("Thanks for your feedback.  We'll get back to you as soon as we can!") %]
-    </p>
-    [% display_crosssell_advert( em, form_name, 'emailunvalidated', 1 ) %]
+  <div class="confirmation-header">
+    <h1>[% loc('Thank you for your feedback') %]</h1>
+    <p>[% loc('We’ll get back to you as soon as we can.') %]</p>
+  </div>
 
 [% ELSE %]
 
-    <p>
-    [% tprintf( loc('Failed to send message.  Please try again, or <a href="mailto:%s">email us</a>.'), contact_email ) %]
-    </p>
+  <div class="confirmation-header confirmation-header--failure">
+    <h1>[% loc('Failed to send message') %]</h1>
+    <p>[% loc('Try emailing us directly:') %] <a href="mailto:[% contact_email %]">[% contact_email %]</a></p>
+  </div>
 
 [% END %]
+
+[% INCLUDE next_steps.html %]
 
 [% INCLUDE 'footer.html' %]

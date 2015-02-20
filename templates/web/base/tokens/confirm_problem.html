@@ -1,40 +1,30 @@
 [% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirmation') %]
 
 <div class="confirmation-header">
-  <h1>[% loc('Your problem has been confirmed!') %]</h1>
 
-[% IF c.cobrand.is_council %]
+  <h1><a href="[% c.cobrand.base_url_for_report( report ) %][% report.url %]">[% report.title %]</a></h1>
 
-  <p>
-    Thank you. You have successfully confirmed your report
-    and this will now be investigated by the council.
-    You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">view the problem on this site</a>.
-  </p>
-  <p>Your reference for this problem is [% problem.id %], please quote it in any enquiries.</p>
+  [% IF c.cobrand.is_council %]
+    <h2>Your issue is on its way to the council.</h2>
+    <p>Your reference for this report is [% report.id %], please quote it in any enquiries.</p>
 
-[% ELSE %]
+  [% ELSE %]
+    <h2>[% loc('Thank you for reporting this issue!') %]</h2>
+    [% IF report.bodies_str %]
+      <p>[% loc('It’s on its way to the council right now.') %]</p>
+    [% END %]
 
-  <p>
-    [% loc('Thank you for reporting this issue') %].
-    [% IF problem.bodies_str;
-         loc('<strong>We will now send it to the council</strong>.');
-     END; %]
-  </p>
-
-  <p>
-    [% tprintf(
-         loc( 'You can <a href="%s%s">view the problem on this site</a>.' ),
-         c.cobrand.base_url_for_report( problem ),
-         problem.url
-    ); %]
-  </p>
-
-[% END %]
+  [% END %]
 
 [% TRY %][% INCLUDE 'tokens/_extras_confirm.html' %][% CATCH file %][% END %]
 
 </div>
 
-[% display_crosssell_advert( problem.user.email, problem.name ) %]
+[% INCLUDE
+  next_steps.html,
+  just_interacted = 1,
+  share_url = c.cobrand.base_url_for_report(report) _ report.url,
+  twitter_comment = loc('I just reported a problem on @fixmystreet')
+%]
 
 [% INCLUDE 'footer.html' %]

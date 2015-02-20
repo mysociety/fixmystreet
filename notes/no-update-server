@@ -333,9 +333,6 @@ GAZE_URL: 'http://gaze.mysociety.org/gaze'
 # empty = use /usr/sbin/sendmail'
 SMTP_SMARTHOST: ''
 
-AUTH_SHARED_SECRET: ''
-HEARFROMYOURMP_BASE_URL: ''
-
 ANDROID_URL: 'http://wiki.nuug.no/grupper/fiksgatami/android'
 
 ALLOWED_COBRANDS: 'fiksgatami'

@@ -7,7 +7,6 @@ use warnings;
 use mySociety::Locale;
 use mySociety::Web qw(ent);
 use FixMyStreet;
-use CrossSell;
 use Utils;
 
 __PACKAGE__->config(
@@ -18,7 +17,7 @@ __PACKAGE__->config(
     ENCODING       => 'utf8',
     render_die     => 1,
     expose_methods => [
-        'loc', 'nget', 'tprintf', 'display_crosssell_advert', 'prettify_dt',
+        'loc', 'nget', 'tprintf', 'prettify_dt',
         'add_links', 'version', 'decode',
     ],
     FILTERS => {
@@ -77,19 +76,6 @@ sub tprintf {
     my ( $self, $c, $format, @args ) = @_;
     @args = @{$args[0]} if ref $args[0] eq 'ARRAY';
     return sprintf $format, @args;
-}
-
-=head2 display_crosssell_advert
-
-    [% display_crosssell_advert( email, name ) %]
-
-Displays a crosssell advert (will be fixmystreet cobrand only).
-
-=cut
-
-sub display_crosssell_advert {
-    my ( $self, $c, $email, $name, %data ) = @_;
-    return CrossSell::display_advert( $c, $email, $name, %data );
 }
 
 =head2 Utils::prettify_dt

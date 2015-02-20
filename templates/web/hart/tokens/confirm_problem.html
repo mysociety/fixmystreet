@@ -4,18 +4,16 @@
 
 <p class="confirmed">
 Thank you. You have successfully confirmed your report
-[% IF c.cobrand.owns_problem( problem ) %]
+[% IF c.cobrand.owns_problem( report ) %]
 and this will now be investigated by the council.
-You can <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">view the problem on this site</a>.
+You can <a href="[% c.cobrand.base_url_for_report( report ) %][% report.url %]">view the report on this site</a>.
 [% ELSE %]
 and this has now been passed on to [%# TODO make this generic %] <b>Hampshire County Council</b> to investigate.
-Note that Hart District Council is not responsible for this type of problem.  However you can continue to view your problem on the <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]"><i>fixmystreet.com</i> website</a>.
+Note that Hart District Council is not responsible for this type of problem.  However you can continue to view your report on the <a href="[% c.cobrand.base_url_for_report( report ) %][% report.url %]"><i>fixmystreet.com</i> website</a>.
 [% END %]
 </p>
 
-<p>Your reference for this problem is [% problem.id %], please quote it in any enquiries.
+<p>Your reference for this report is [% report.id %], please quote it in any enquiries.
 </p>
-
-[% display_crosssell_advert( problem.user.email, problem.name ) %]
 
 [% INCLUDE 'footer.html' %]

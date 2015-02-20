@@ -1,23 +1,19 @@
-[% IF c.cobrand.is_council %]
-    <p style="font-size: 150%">
-    Thank you very much for filling in our questionnaire.
-    </p>
-[% ELSE %]
-    <p style="font-size:150%">We&rsquo;re sorry to hear that your problem hasn't been fixed.</p>
+[% IF ! c.cobrand.is_council %]
+    <h2>We’re sorry to hear that your problem hasn’t been fixed.</h2>
 
     <p>
-    FixMyStreet helps you send a report to your council, but we're not responsible for fixing things.
-    If you'd like to chase your issue, please search your inbox for the latest reply, or auto-reply
+    FixMyStreet helps you send a report to your council, but we’re not responsible for fixing things.
+    If you’d like to chase your issue, please search your inbox for the latest reply, or auto-reply
     from your council, and respond to that.
     </p>
 
     <p>
-    Meanwhile, if you're getting nowhere, you might consider writing to your local councillor or other
+    Meanwhile, if you’re getting nowhere, you might consider writing to your local councillor or other
     representative to see if they can help.
     </p>
 
     <p>
-    You can do this on <a href="https://www.writetothem.com/">https://www.writetothem.com/</a>, another
+    You can do this on <a href="https://www.writetothem.com/">WriteToThem</a>, another
     useful mySociety website.
     </p>
 [% END %]

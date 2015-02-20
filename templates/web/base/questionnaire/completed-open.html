@@ -1,11 +1,3 @@
-[% IF c.cobrand.is_council %]
-<p style="font-size: 150%">
-Thank you very much for filling in our questionnaire.
-</p>
-[% ELSE %]
-[% loc('<p style="font-size:150%">We&rsquo;re sorry to hear that. We have two
-suggestions: why not try writing to your local representatives or, if
-it&rsquo;s a problem that could be fixed by local people working together, why
-not <a href="http://www.pledgebank.com/new">make and publicise a pledge</a>?
-</p>') %]
+[% IF ! c.cobrand.is_council %]
+    <p>[% loc('We&rsquo;re sorry to hear the problem’s not fixed. Why not try writing to your local representatives?') %]</p>
 [% END %]

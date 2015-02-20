@@ -67,9 +67,16 @@ token), or the mini own-report one (when we'll have a problem ID).
 sub submit : Path('submit') {
     my ( $self, $c ) = @_;
 
-    if ( $c->req->params->{token} ) {
+    if (my $token = $c->req->params->{token}) {
+        if ($token eq '_test_') {
+            $c->stash->{been_fixed} = $c->req->params->{been_fixed};
+            $c->stash->{new_state} = $c->req->params->{new_state};
+            $c->stash->{template} = 'questionnaire/completed.html';
+            return;
+        }
         $c->forward('submit_standard');
-    } elsif ( $c->req->params->{problem} ) {
+    } elsif (my $p = $c->req->params->{problem}) {
+        $c->detach('creator_fixed') if $p eq '_test_';
         $c->forward('submit_creator_fixed');
     } else {
         $c->detach( '/page_error_404_not_found' );
@@ -106,6 +113,7 @@ sub submit_creator_fixed : Private {
     }
 
     my $problem = $c->cobrand->problems->find( { id => $c->stash->{problem_id} } );
+    $c->stash->{problem} = $problem;
 
     # you should not be able to answer questionnaires about problems
     # that you've not submitted
