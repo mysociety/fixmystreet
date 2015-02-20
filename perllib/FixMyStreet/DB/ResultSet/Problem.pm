@@ -295,16 +295,6 @@ sub send_reports {
             : _('The user could not locate the problem on a map, but to see the area around the location they entered');
         $h{closest_address} = '';
 
-        # If we are in the UK include eastings and northings, and nearest stuff
-        $h{easting_northing} = '';
-        if ( $cobrand->country eq 'GB' ) {
-
-            ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude} );
-
-            # email templates don't have conditionals so we need to farmat this here
-            $h{easting_northing} = "Easting/Northing: $h{easting}/$h{northing}\n\n";
-        }
-
         if ( $row->used_map ) {
             $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude}, $row );
         }
@@ -405,6 +395,20 @@ sub send_reports {
         if (! $sender_count) {
             debug_print("can't send because sender count is zero", $row->id) if $debug_mode;
             next;
+        }
+
+        # If we are in the UK include eastings and northings, and nearest stuff
+        $h{easting_northing} = '';
+        if ( $cobrand->country eq 'GB' ) {
+
+            my $coordsyst = 'G';
+            $coordsyst = 'I' if grep { /FixMyStreet::SendReport::NI/ } keys %reporters;
+            ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude}, $coordsyst );
+
+            # email templates don't have conditionals so we need to farmat this here
+            $h{easting_northing} = "Easting/Northing";
+            $h{easting_northing} .= " (IE)" if $coordsyst eq 'I';
+            $h{easting_northing} .= ": $h{easting}/$h{northing}\n\n";
         }
 
         if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING')) {

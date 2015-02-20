@@ -25,12 +25,13 @@ Takes the WGS84 latitude and longitude and returns OSGB36 easting and northing.
 =cut
 
 sub convert_latlon_to_en {
-    my ( $latitude, $longitude ) = @_;
+    my ( $latitude, $longitude, $coordsyst ) = @_;
+    $coordsyst ||= 'G';
 
     local $SIG{__WARN__} = sub { die $_[0] };
     my ( $easting, $northing ) =
         mySociety::Locale::in_gb_locale {
-            mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude, 'G' );
+            mySociety::GeoUtil::wgs84_to_national_grid( $latitude, $longitude, $coordsyst );
         };
 
     return ( $easting, $northing );
