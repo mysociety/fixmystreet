@@ -7,7 +7,7 @@ use FixMyStreet;
 use FixMyStreet::Geocode::Bing;
 use DateTime;
 use Encode;
-use List::Util 'none';
+use List::MoreUtils 'none';
 use URI;
 use Digest::MD5 qw(md5_hex);
 
