@@ -15,7 +15,7 @@ rm -f $PO
 
 # we don't want to extract strings from all the cobrand templates so list
 # the ones we care about
-find templates/web/base templates/web/fixmystreet templates/web/zurich templates/web/fiksgatami -name '*.html' > template_list
+find templates/web/base templates/web/fixmystreet templates/web/zurich -name '*.html' > template_list
 
 # Extract from Perl
 xgettext.pl --gnu-gettext --verbose --output $PO --plugin perl=* --plugin tt2 --directory perllib -f template_list --directory db --directory bin

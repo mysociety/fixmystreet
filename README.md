@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.5.2.
+Platform is now at version 1.5.4.
 
 ## Installation
 
@@ -37,6 +37,29 @@ We've extracted all of the mobile apps from this repository into the
 [fixmystreet-mobile repository](https://github.com/mysociety/fixmystreet-mobile).
 
 ## Releases
+
+* v1.5.4 (25th February 2015)
+    - New features:
+        - Stamen toner-lite and Bing Maps tiles.
+        - Czech and part-done Lithuanian translations.
+    - Front end improvements:
+        - Nicer confirmation pages, with next steps template example. #972
+        - Always show report/update confirmation page, even if logged in. #1003
+        - Expire cached geolocations after a week. #684
+    - Bugfixes:
+        - Make sure all co-ordinates are stringified/truncated. #1009
+        - Correct "Open Street Map" to "OpenStreetMap". #1021
+        - Only create timezone objects once, at startup.
+    - Development improvements:
+        - Remove need to specify en-gb in LANGUAGES. #1015
+        - Mac installation improvements. #1014
+        - Make use of jhead and Math::BigInt::GMP optional. #1016
+        - Link from admin config page to MapIt. #1022
+        - Test URLs for confirmation pages.
+        - New configuration variable for setting up behind a secure proxy.
+    - UK specific improvements:
+        - Output easting/northing on one line. #997
+        - Output Irish easting/northing in Northern Ireland. #822
 
 * v1.5.3 (21st January 2015)
     - New features:
