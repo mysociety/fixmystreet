@@ -207,6 +207,38 @@ body.mappage {
   }
 }
 
+.report-list-filters {
+  padding: 1em 1em 0 1em;
+  color: #666;
+  font-size: 0.85em;
+
+  label, select {
+    display: inline-block;
+    width: auto;
+  }
+
+  label {
+    font-weight: normal;
+    margin: 0;
+
+    & + label {
+      margin-left: 0.2em;
+    }
+  }
+
+  select {
+    color: inherit;
+    font-family: inherit;
+    font-size: 1em;
+
+    border-color: #ced7c4;
+    box-shadow: 0 1px 0 #fff;
+    height: 2em;
+    margin-left: 0.2em;
+    max-width: 13em;
+  }
+}
+
 // So as not to interfere with the Oxfordshire footer, make the fixed nav ("get updates" etc) static.
 .shadow-wrap {
     width: 432px;
