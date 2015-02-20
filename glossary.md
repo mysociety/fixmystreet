@@ -44,10 +44,12 @@ technical information, see
   <li><a href="#locale">locale</a></li>
   <li><a href="#map">map</a></li>
   <li><a href="#mapit">MapIt</a></li>
+  <li><a href="#message-manager">Message Manager</a></li>
   <li><a href="#open311">Open311</a></li>
   <li><a href="#partial">partial report</a></li>
   <li><a href="#production">production site</a></li>
   <li><a href="#report">problem report</a></li>
+  <li><a href="#sms">SMS</a></li>
   <li><a href="#survey">questionnaire</a></li>
   <li><a href="#send-method">send method</a></li>
   <li><a href="#staff-user">staff users</a></li>
@@ -751,6 +753,29 @@ technical information, see
   </dd>
 
   <dt>
+    <a name="message-manager">Message Manager</a>
+  </dt>
+  <dd>
+    <strong>Message Manager</strong> is a mySociety web application that
+    can integrate an <a href="#sms" class="glossary__link">SMS</a> gateway
+    with FixMyStreet.
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          <a href="https://github.com/mysociety/message-manager/">Message
+          Manager on github</a>.
+        </li>
+        <li>
+          More about
+          <a href="{{ site.baseurl }}install/fixmystreet-with-sms/">running
+          FixMyStreet with SMS</a>, and the limitations of doing so.
+        </li>
+      </ul>
+    </div>
+  </dd>
+  
+  <dt>
     <a name="open311">Open311</a>
   </dt>
   <dd>
@@ -1016,6 +1041,39 @@ technical information, see
         <li>
           See <a href="{{ site.baseurl }}running/users/">About users</a> for more about managing
           users, including how to create a staff account.
+        </li>
+      </ul>
+    </div>
+  </dd>
+
+  <dt>
+    <a name="sms">SMS</a> (Short Message Service, or texting)
+  </dt>
+  <dd>
+      <strong>SMS</strong> is the service for sending text messages across a
+      phone network. FixMyStreet is primarily a web-based application, but
+      it is possible to run it so that it can accept
+      <a href="#report" class="glossary__link">problem reports</a>
+      over SMS too.
+      <p>
+        An <strong>SMS gateway</strong> is a service that passes SMS messages
+        between the phone network and the internet. This allows you to receive
+        or send messages from a web application, such as FixMyStreet.
+      </p>
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          More about <a
+          href="{{ site.baseurl }}install/fixmystreet-with-sms/">running FixMyStreet with SMS</a>, and the limitations of doing so.
+        </li>
+        <li>
+          <a href="http://en.wikipedia.org/wiki/Short_Message_Service">More about SMS</a>
+          on wikipedia.
+        </li>
+        <li>
+          The <a href="#message-manager" class="glossary__link">Message Manager</a> web application can be used to integrate FixMyStreet
+          with an SMS gateway.
         </li>
       </ul>
     </div>
