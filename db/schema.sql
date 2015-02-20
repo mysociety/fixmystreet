@@ -489,5 +489,6 @@ create table response_templates (
     title text not null,
     text text not null,
     created timestamp not null default ms_current_timestamp(),
+    whenedited timestamp not null, 
     unique(body_id, title)
 );
