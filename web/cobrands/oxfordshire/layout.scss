@@ -117,7 +117,6 @@ body.mappage {
 
     & > * {
       display: none;
-      // what about div.oxford-user ??
     }
 
     a.logo {
@@ -158,6 +157,21 @@ body.mappage {
           padding-top: ($mappage-header-height - 20px) / 2;
           padding-bottom: ($mappage-header-height - 20px) / 2;
         }
+      }
+    }
+
+    .oxford-user {
+      display: block;
+      font-size: 13px;
+      line-height: 20px;
+      padding-top: ($mappage-header-height - 20px) / 2;
+      padding-bottom: ($mappage-header-height - 20px) / 2;
+      margin: 0;
+      color: mix(#ddd, #069b01, 80%);
+
+      a {
+        padding: 0 10px;
+        text-decoration: none;
       }
     }
   }
