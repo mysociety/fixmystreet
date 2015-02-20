@@ -186,7 +186,7 @@ body.mappage {
     .extra-text {
       padding: 1em;
       margin: 0 -1em;
-      border-bottom: 1px solid #e9e9e9;
+      border-bottom: 1px solid $oxfordshire_mid_grey_green;
 
       p:last-child {
         margin-bottom: 0;
@@ -209,6 +209,7 @@ body.mappage {
 
 .report-list-filters {
   padding: 1em 1em 0 1em;
+  margin-bottom: 0.5em;
   color: #666;
   font-size: 0.85em;
 
@@ -231,11 +232,58 @@ body.mappage {
     font-family: inherit;
     font-size: 1em;
 
-    border-color: #ced7c4;
+    border: 1px solid #ced7c4;
     box-shadow: 0 1px 0 #fff;
     height: 2em;
     margin-left: 0.2em;
     max-width: 13em;
+  }
+}
+
+.report-list {
+  margin-left: 0;
+
+  li {
+    list-style: none;
+    position: relative;
+    margin-bottom: 0;
+
+    a {
+      display: block;
+      padding: 1em;
+      padding-left: 4em;
+      background: transparent url(/i/pin-yellow-small.png) no-repeat 1em center;
+
+      &:hover, &:focus {
+        background-color: #fff;
+        text-decoration: none;
+      }
+    }
+
+    &:after {
+      content: "";
+      display: block;
+      height: 1px;
+      position: absolute;
+      left: 4em;
+      right: 0;
+      bottom: 0;
+      background-color: $oxfordshire_mid_grey_green;
+    }
+  }
+
+  h3, p {
+    margin: 0;
+  }
+
+  h3 {
+    color: inherit;
+    margin-bottom: 0.2em;
+  }
+
+  p {
+    font-size: 0.8em;
+    color: #777;
   }
 }
 
@@ -295,7 +343,7 @@ input.green-btn{
   color: #000;
   margin: 0 -1em;
   padding: 18px;
-  border-bottom: 1px solid #e9e9e9;
+  border-bottom: 1px solid $oxfordshire_mid_grey_green;
   background: #fff url('/cobrands/oxfordshire/images/click-map-chevron-big.gif') 90% 12px no-repeat;
 
   h2 {
