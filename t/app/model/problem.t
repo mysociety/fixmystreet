@@ -561,7 +561,11 @@ foreach my $test ( {
             like $email->body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
             like $email->body, qr/Subject: A Title/, 'more email body checking';
             like $email->body, $test->{ dear }, 'Salutation looks correct';
-            like $email->body, qr{Easting/Northing \(IE\): 95938/28531} if $test->{longitude};
+            if ($test->{longitude}) {
+                like $email->body, qr{Easting/Northing \(IE\): 95938/28531};
+            } else {
+                like $email->body, qr{Easting/Northing: };
+            }
 
             if ( $test->{multiple} ) {
                 like $email->body, qr/This email has been sent to several councils /, 'multiple body text correct';

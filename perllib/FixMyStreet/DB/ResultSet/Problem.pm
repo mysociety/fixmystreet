@@ -405,7 +405,7 @@ sub send_reports {
             $coordsyst = 'I' if grep { /FixMyStreet::SendReport::NI/ } keys %reporters;
             ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude}, $coordsyst );
 
-            # email templates don't have conditionals so we need to farmat this here
+            # email templates don't have conditionals so we need to format this here
             $h{easting_northing} = "Easting/Northing";
             $h{easting_northing} .= " (IE)" if $coordsyst eq 'I';
             $h{easting_northing} .= ": $h{easting}/$h{northing}\n\n";
