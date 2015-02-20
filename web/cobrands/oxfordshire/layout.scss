@@ -184,7 +184,13 @@ body.mappage {
     box-sizing: border-box;
 
     .extra-text {
-      padding-top: 1em;
+      padding: 1em;
+      margin: 0 -1em;
+      border-bottom: 1px solid #e9e9e9;
+
+      p:last-child {
+        margin-bottom: 0;
+      }
     }
 
     .full-width {
