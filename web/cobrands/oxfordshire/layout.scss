@@ -214,6 +214,10 @@ body.mappage {
     .full-width {
       width: auto;
     }
+
+    input[type="file"] {
+      background-color: transparent;
+    }
   }
 
   // Space between green header and sidebar content
@@ -367,7 +371,6 @@ body.mappage {
   }
 }
 
-// So as not to interfere with the Oxfordshire footer, make the fixed nav ("get updates" etc) static.
 .shadow-wrap {
     width: 432px;
 
@@ -377,6 +380,11 @@ body.mappage {
         box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
         border-top-width: 2px;
     }
+}
+
+// Stop bottom of update form disappearing behind the #key-tools shadow
+#update_form {
+  padding-bottom: 4em;
 }
 
 #oxford-wrapper #front-main #postcodeForm div {
