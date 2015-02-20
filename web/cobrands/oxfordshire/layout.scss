@@ -165,7 +165,6 @@ body.mappage {
   .wrapper .table-cell {
     padding-left: 0;
     padding-right: 0;
-    padding-top: $mappage-header-height;
   }
 
   .container {
@@ -174,14 +173,28 @@ body.mappage {
 
   .content {
     padding: 1em;
+    padding-top: $mappage-header-height;
     position: relative;
     z-index: 1;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
     background-color: $oxfordshire_very_light_green;
 
+    // fixmystreet.js gives this element a min-height equal to the window height.
+    // Set border-box sizing, so that our padding doesn't get added onto height.
+    box-sizing: border-box;
+
     .extra-text {
       padding-top: 1em;
     }
+
+    .shadow-wrap,
+    .full-width {
+      width: auto;
+    }
+  }
+
+  #report-a-problem-main {
+    padding-top: 1em;
   }
 
   #oxford-footer {
@@ -242,7 +255,7 @@ input.green-btn{
 
 .click-the-map {
   color: #000;
-  margin: -1em -1em 0 -1em;
+  margin: 0 -1em;
   padding: 18px;
   border-bottom: 1px solid #e9e9e9;
   background: #fff url('/cobrands/oxfordshire/images/click-map-chevron-big.gif') 90% 12px no-repeat;
