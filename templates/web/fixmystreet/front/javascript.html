@@ -1,0 +1,15 @@
+[%# Assume using OpenStreetMap maps %]
+<script>
+yepnope.addPrefix( 'preload', function ( resource ) {
+    resource.noexec = true;
+    return resource;
+});
+Modernizr.load({
+    load: [
+        "preload![% version('/js/OpenLayers.fixmystreet.js') %]",
+        "preload![% version('/js/map-OpenLayers.js') %]",
+        "preload![% version('/js/map-OpenStreetMap.js') %]",
+        "preload![% version('/js/jquery.ba-hashchange.min.js') %]"
+    ]
+});
+</script>

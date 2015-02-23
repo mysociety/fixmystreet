@@ -1,7 +1,6 @@
 function set_map_config(perm) {
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
-        //new OpenLayers.Control.LayerSwitcher(),
         new OpenLayers.Control.Navigation(),
         new OpenLayers.Control.Permalink(),
         new OpenLayers.Control.PanZoomFMS()
@@ -38,8 +37,7 @@ OpenLayers.Layer.StreetView = OpenLayers.Class(OpenLayers.Layer.XYZ, {
             /* Below line added to OSM's file in order to allow minimum zoom level */
             maxResolution: 156543.03390625/Math.pow(2, options.zoomOffset || 0),
             numZoomLevels: 19,
-            sphericalMercator: true,
-            attribution: "Contains Ordnance Survey data © Crown copyright and database right 2012"
+            sphericalMercator: true
         }, options);
         var newArguments = [name, url, options];
         OpenLayers.Layer.XYZ.prototype.initialize.apply(this, newArguments);
