@@ -1,20 +1,4 @@
-[%# Assumes fixmystreet cobrand is using FMS map template - for bonus points preload all the right map elements. %]
-[% map_js = BLOCK %]
-<script>
-yepnope.addPrefix( 'preload', function ( resource ) {
-    resource.noexec = true;
-    return resource;
-});
-Modernizr.load({
-    load: [
-        "preload![% version('/js/OpenLayers.fixmystreet.js') %]",
-        "preload![% version('/js/map-OpenLayers.js') %]",
-        "preload![% version('/js/map-bing-ol.js') %]",
-        "preload![% version('/js/jquery.ba-hashchange.min.js') %]"
-    ]
-});
-</script>
-[% END %]
+[% map_js = PROCESS 'front/javascript.html' %]
 
 [% pre_container_extra = PROCESS 'around/postcode_form.html' %]
 [% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
@@ -23,13 +7,7 @@ Modernizr.load({
     <p class="form-error">[% error %]</p>
 [% END %]
 
-[% IF c.cobrand.moniker == 'bromley' %]
-<p>This is primarily for reporting physical problems that can be fixed
-like graffiti, cleansing issues or road defects. To report other
-kinds of problems like missed bins use our
-<a href="http://www.bromley.gov.uk/report">online report it forms</a>.
-</p>
-[% END %]
+[% TRY %][% PROCESS 'front/pre-steps.html' %][% CATCH file %][% END %]
 
 <div class="tablewrapper">
     <div id="front-howto">

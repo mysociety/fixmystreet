@@ -63,7 +63,6 @@ $(function(){
     fixmystreet.nav_control = new OpenLayers.Control.Navigation(nav_opts);
 
     fixmystreet.controls = [
-        new OpenLayers.Control.Attribution(),
         new OpenLayers.Control.ArgParser(),
         fixmystreet.nav_control
     ];

@@ -39,7 +39,7 @@ sub base_tile_url {
 }
 
 sub copyright {
-    return _('Map &copy; <a id="osm_link" href="http://www.openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>');
+    _('&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors');
 }
 
 # display_map C PARAMS
