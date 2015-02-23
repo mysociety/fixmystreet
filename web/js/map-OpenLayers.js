@@ -69,6 +69,7 @@ function fixmystreet_zoomToBounds(bounds) {
 
 function fms_markers_list(pins, transform) {
     var markers = [];
+    var size = fms_marker_size_for_zoom(fixmystreet.map.getZoom() + fixmystreet.zoomOffset);
     for (var i=0; i<pins.length; i++) {
         var pin = pins[i];
         var loc = new OpenLayers.Geometry.Point(pin[1], pin[0]);
@@ -81,13 +82,31 @@ function fms_markers_list(pins, transform) {
         }
         var marker = new OpenLayers.Feature.Vector(loc, {
             colour: pin[2],
-            size: pin[5] || 'normal',
+            size: pin[5] || size,
             id: pin[3],
             title: pin[4] || ''
         });
         markers.push( marker );
     }
     return markers;
+}
+
+function fms_marker_size_for_zoom(zoom) {
+    if (zoom >= 15) {
+        return 'normal';
+    } else if (zoom >= 13) {
+        return 'small';
+    } else {
+        return 'mini';
+    }
+}
+
+function fms_markers_resize() {
+    var size = fms_marker_size_for_zoom(fixmystreet.map.getZoom() + fixmystreet.zoomOffset);
+    for (var i = 0; i < fixmystreet.markers.features.length; i++) {
+        fixmystreet.markers.features[i].attributes.size = size;
+    }
+    fixmystreet.markers.redraw();
 }
 
 function fixmystreet_onload() {
@@ -131,7 +150,8 @@ function fixmystreet_onload() {
             backgroundWidth: 60,
             backgroundHeight: 30,
             backgroundXOffset: -7,
-            backgroundYOffset: -30
+            backgroundYOffset: -30,
+            popupYOffset: -40
         },
         'big': {
             externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-big.png",
@@ -144,6 +164,27 @@ function fixmystreet_onload() {
             backgroundHeight: 40,
             backgroundXOffset: -10,
             backgroundYOffset: -35
+        },
+        'small': {
+            externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-small.png",
+            graphicWidth: 24,
+            graphicHeight: 32,
+            graphicXOffset: -12,
+            graphicYOffset: -32,
+            backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow-small.png",
+            backgroundWidth: 30,
+            backgroundHeight: 15,
+            backgroundXOffset: -4,
+            backgroundYOffset: -15,
+            popupYOffset: -20
+        },
+        'mini': {
+            externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-mini.png",
+            graphicWidth: 16,
+            graphicHeight: 20,
+            graphicXOffset: -8,
+            graphicYOffset: -20,
+            popupYOffset: -10
         }
     });
     var pin_layer_options = {
@@ -186,17 +227,19 @@ function fixmystreet_onload() {
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
             var feature = evt.feature;
             selectedFeature = feature;
+            var popupYOffset = feature.layer.styleMap.createSymbolizer(feature).popupYOffset || -40;
             var popup = new OpenLayers.Popup.FramedCloud("popup",
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
                 feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">" + translation_strings.more_details + "</a>",
-                { size: new OpenLayers.Size(0,0), offset: new OpenLayers.Pixel(0,-40) },
+                { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(0, popupYOffset) },
                 true, onPopupClose);
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
         });
         fixmystreet.map.addControl( fixmystreet.select_feature );
         fixmystreet.select_feature.activate();
+        fixmystreet.map.events.register( 'zoomend', null, fms_markers_resize );
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
