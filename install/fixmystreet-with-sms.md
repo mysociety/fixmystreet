@@ -31,7 +31,7 @@ means we can present the user with a map to click on.
 
 This interface, encouraging people to click on a map, serves a couple of functions: 
 
-   * it deters duplicate reports being sent for the same problem, because it's obvious if a problem has already been reported (a the pin will already be there)
+   * it deters duplicate reports being sent for the same problem, because it's obvious if a problem has already been reported (a pin will already be there)
 
    * it provides an accurate 
      <a href="{{ site.baseurl }}glossary/#latlong" class="glossary__link">lat-long</a>
