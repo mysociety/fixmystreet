@@ -22,6 +22,7 @@ sub base_tile_url {
 }
 
 sub copyright {
+    'Contains OS data &copy; Crown copyright and database right 2013';
 }
 
 1;

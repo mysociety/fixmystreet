@@ -33,4 +33,8 @@ sub base_tile_url {
     return 'mqcdn.com/tiles/1.0.0/map/';
 }
 
+sub copyright {
+    'Data, imagery and map information provided by <a href="http://www.mapquest.com/">MapQuest</a> <img src="http://developer.mapquest.com/content/osm/mq_logo.png" />, <a href="http://openstreetmap.org/">OpenStreetMap</a> and contributors, <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>'
+}
+
 1;
