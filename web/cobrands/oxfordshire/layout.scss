@@ -152,7 +152,7 @@ body.mappage {
           margin-bottom: 0;
         }
 
-        a {
+        a, span {
           line-height: 20px;
           padding-top: ($mappage-header-height - 20px) / 2;
           padding-bottom: ($mappage-header-height - 20px) / 2;
@@ -163,11 +163,15 @@ body.mappage {
     .oxford-user {
       display: block;
       font-size: 13px;
-      line-height: 20px;
-      padding-top: ($mappage-header-height - 20px) / 2;
-      padding-bottom: ($mappage-header-height - 20px) / 2;
       margin: 0;
       color: mix(#ddd, #069b01, 80%);
+
+      p {
+          margin: 0;
+          padding-top: ($mappage-header-height - 20px) / 2;
+          padding-bottom: ($mappage-header-height - 20px) / 2;
+          line-height: 20px;
+      }
 
       a {
         padding: 0 10px;
@@ -187,7 +191,7 @@ body.mappage {
 
   .content {
     padding: 1em;
-    padding-top: $mappage-header-height;
+    padding-top: $mappage-header-height + 10px;
     position: relative;
     z-index: 1;
     box-shadow: 0 0 5px rgba(0,0,0,0.3);
