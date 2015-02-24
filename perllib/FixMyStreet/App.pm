@@ -89,15 +89,15 @@ __PACKAGE__->config(
 # Start the application
 __PACKAGE__->setup();
 
-# Due to some current issues with proxyings, need to manually
-# tell the code we're secure if we are.
+# If your site is secure but running behind a proxy, you might need to set the
+# SECURE_PROXY_SSL_HEADER configuration variable so this can be spotted.
 after 'prepare_headers' => sub {
     my $self = shift;
     my $base_url = $self->config->{BASE_URL};
+    my $ssl_header = $self->config->{SECURE_PROXY_SSL_HEADER};
     my $host = $self->req->headers->header('Host');
-    $self->req->secure( 1 ) if $base_url eq 'https://www.zueriwieneu.ch';
-    $self->req->secure( 1 ) if $base_url eq 'https://www.fixmystreet.com'
-        && ( $host eq 'fix.bromley.gov.uk' || $host eq 'www.fixmystreet.com' );
+    $self->req->secure(1) if $ssl_header && ref $ssl_header eq 'ARRAY'
+        && @$ssl_header == 2 && $self->req->header($ssl_header->[0]) eq $ssl_header->[1];
 };
 
 # set up DB handle for old code

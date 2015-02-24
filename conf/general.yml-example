@@ -24,6 +24,10 @@ FMS_DB_PASS: ''
 BASE_URL: 'http://www.example.org'
 # Use the below if you're using the Catalyst development server
 #   BASE_URL: 'http://localhost:3000'
+SECURE_PROXY_SSL_HEADER: ''
+# If you're behind a proxy, set this to a two-element list containing the
+# trusted HTTP header and the required value. For example:
+#   SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]
 
 # Email domain used for emails, and contact name/email for admin use.
 EMAIL_DOMAIN: 'example.org'
