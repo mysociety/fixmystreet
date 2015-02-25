@@ -1,7 +1,7 @@
 Subject: New <?=$values['site_name']?> reports in <?=$values['area_name']?>
 
 The following new <?=$values['site_name']?> reports have been added in
-<?=$values['area_name']?>:
+the <?=$values['area_name']?> area:
 
 <?=$values['data']?>
 
@@ -14,7 +14,7 @@ You asked us to send you an email when someone makes a new <?=$values['site_name
 report in <?=$values['area_name']?>. This is a free service from <?=$values['site_name']?>.
 
 If you no longer wish to receive an email whenever there are new reports in
-<?=$values['area_name']?>, please follow this link:
+the <?=$values['area_name']?> area, please follow this link:
 
 <?=$values['unsubscribe_url']?>
 
