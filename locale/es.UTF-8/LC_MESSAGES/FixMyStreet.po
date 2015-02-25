@@ -176,7 +176,7 @@ msgstr ""
 
 #: templates/web/base/questionnaire/completed.html:20
 msgid "<p style=\"font-size:150%\">Thank you very much for filling in our questionnaire; glad to hear it&rsquo;s been fixed.</p>"
-msgstr "<p style=\"font-size:150%\"> Muchas gracias por rellenar el cuestionario; alegra saber que ha sido arreglado </ p>."
+msgstr "<p style=\"font-size:150%\"> Muchas gracias por rellenar el cuestionario; alegra saber que ha sido arreglado </p>."
 
 #: templates/web/fiksgatami/questionnaire/completed-open.html:1
 msgid ""
@@ -189,9 +189,9 @@ msgid ""
 msgstr ""
 "<p style=\"font-size:150%\"> Sentimos tener que oír eso. Tenemos dos\n"
 "sugerencias: ¿por qué no tratar de escribir <a href=\"http://www.norge.no/styresmakter/\">\n"
-"directamente a su concejal (es)</ a> o, si es un problema que podría ser\n"
+"directamente a su concejal (es)</a> o, si es un problema que podría ser\n"
 "arreglado de forma conjunta por conciudadanos, ¿por qué no\n"
-"<a href=\"http://www.pledgebank.com/new\">comprometerse y darlo a conocer</ a>?\n"
+"<a href=\"http://www.pledgebank.com/new\">comprometerse y darlo a conocer</a>?\n"
 "</p>"
 
 #: templates/web/base/questionnaire/completed-open.html:6
@@ -204,9 +204,9 @@ msgid ""
 msgstr ""
 "<p style=\"font-size:150%\">Sentimos tener que oír eso. Tenemos dos\n"
 "sugerencias: ¿por qué no tratar de escribir <a href=\"http://www.norge.no/styresmakter/\">\n"
-"directamente a su concejal (es)</ a> o, si es un problema que podría ser\n"
+"directamente a su concejal (es)</a> o, si es un problema que podría ser\n"
 "arreglado de forma conjunta por conciudadanos, ¿por qué no\n"
-"<a href=\"http://www.pledgebank.com/new\">comprometerse y darlo a conocer</ a>?\n"
+"<a href=\"http://www.pledgebank.com/new\">comprometerse y darlo a conocer</a>?\n"
 "</p>"
 
 #: templates/web/base/questionnaire/completed.html:9
@@ -222,16 +222,16 @@ msgstr ""
 #: templates/web/base/around/_report_banner.html:4
 #: templates/web/base/around/_report_banner.html:5
 msgid "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this step</a>.</small>"
-msgstr "<small>Si no puede ver el mapa, <a href='%s' rel='nofollow'> omita este paso</ a>.</small>"
+msgstr "<small>Si no puede ver el mapa, <a href='%s' rel='nofollow'> omita este paso</a>.</small>"
 
 #: templates/web/base/admin/index.html:33
 #: templates/web/zurich/admin/index.html:4
 msgid "<strong>%d</strong> live problems"
-msgstr "<strong>%d</ strong> notificaciones en curso"
+msgstr "<strong>%d</strong> notificaciones en curso"
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:39
 msgid "<strong>No</strong> Let me confirm my report by email"
-msgstr "<strong>No</ strong> permítanme confirmar mi notificación por email"
+msgstr "<strong>No</strong> permítanme confirmar mi notificación por email"
 
 #: templates/web/fixmystreet/report/update-form.html:112
 msgid "<strong>No</strong> Let me confirm my update by email"
@@ -240,7 +240,7 @@ msgstr "<strong>No</strong> permítanme confirmar mi actualización por email"
 #: templates/web/fixmystreet/auth/general.html:51
 #: templates/web/zurich/auth/general.html:51
 msgid "<strong>No</strong> let me sign in by email"
-msgstr "<strong>No</ strong> permítanme registrarme por email"
+msgstr "<strong>No</strong> permítanme registrarme por email"
 
 #: templates/web/base/auth/general.html:55
 msgid "<strong>No</strong>, I do not, let me sign in by email:"
@@ -248,7 +248,7 @@ msgstr "<strong>No</strong>, no lo haré, permítanme registrarme por email:"
 
 #: templates/web/base/report/new/fill_in_details_form.html:163
 msgid "<strong>No</strong>, let me confirm my report by email:"
-msgstr "<strong>No</ strong>, permítanme confirmar mi notificación por email:"
+msgstr "<strong>No</strong>, permítanme confirmar mi notificación por email:"
 
 #: templates/web/base/report/update-form.html:117
 msgid "<strong>No</strong>, let me confirm my update by email:"
@@ -1326,7 +1326,7 @@ msgstr ""
 
 #: templates/web/base/report/new/councils_text_none.html:9
 msgid "If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council."
-msgstr "Si envía un problema, el título y detalles serán públicos pero el problema <strong>no</ strong> se informará al Ayuntamiento."
+msgstr "Si envía un problema, el título y detalles serán públicos pero el problema <strong>no</strong> se informará al Ayuntamiento."
 
 #: templates/web/base/auth/token.html:22 templates/web/base/email_sent.html:9
 msgid "If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way."
@@ -1531,7 +1531,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/Map/OSM.pm:42
 msgid "Map &copy; <a id=\"osm_link\" href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> and contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
-msgstr "Mapa © <a id=\"osm_link\" href=\"http://www.openstreetmap.org/\">OpenStreetMap</ a> y colaboradores, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
+msgstr "Mapa © <a id=\"osm_link\" href=\"http://www.openstreetmap.org/\">OpenStreetMap</a> y colaboradores, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>"
 
 #: templates/web/base/admin/user-form.html:43
 msgid "Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>."
@@ -2193,13 +2193,13 @@ msgstr "Tenga en cuenta que las actualizaciones no se envían al Ayuntamiento."
 
 #: templates/web/base/report/update-form.html:7
 msgid "Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
-msgstr "Tenga en cuenta que las actualizaciones no se envían al Ayuntamiento. Si usted deja su nombre será público. Su información sólo será usada de acuerdo con nuestra <a href=\"/faq#privacy\">política de privacidad</ a>"
+msgstr "Tenga en cuenta que las actualizaciones no se envían al Ayuntamiento. Si usted deja su nombre será público. Su información sólo será usada de acuerdo con nuestra <a href=\"/faq#privacy\">política de privacidad</a>"
 
 #: templates/web/base/report/new/fill_in_details_form.html:8
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:21
 #: templates/web/zurich/report/new/fill_in_details_form.html:11
 msgid "Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit."
-msgstr "Por favor, tenga en cuenta la notificación <strong>no ha sido enviada aún</ strong>. Elija una categoría y añada más información a continuación antes que enviar."
+msgstr "Por favor, tenga en cuenta la notificación <strong>no ha sido enviada aún</strong>. Elija una categoría y añada más información a continuación antes que enviar."
 
 #: templates/web/base/report/new/notes.html:1
 #: templates/web/zurich/report/new/notes.html:1

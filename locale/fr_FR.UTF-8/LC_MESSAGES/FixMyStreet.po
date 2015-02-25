@@ -3034,7 +3034,7 @@ msgstr "Merci d'avoir signalé ce problème"
 
 #: templates/web/base/tokens/error.html:7
 msgid "Thank you for trying to confirm your update or problem. We seem to have an error ourselves though, so <a href=\"%s\">please let us know what went on</a> and we'll look into it."
-msgstr "Merci d'essayer de confirmer votre mise à jour ou un problème. Nous semblons rencontrer une erreur de notre côté ; s'il vous plaît, <a href=\"%s\"> dites-nous nous ce qui s'est passé</ a> et nous nous pencherons sur la question."
+msgstr "Merci d'essayer de confirmer votre mise à jour ou un problème. Nous semblons rencontrer une erreur de notre côté ; s'il vous plaît, <a href=\"%s\"> dites-nous nous ce qui s'est passé</a> et nous nous pencherons sur la question."
 
 #: templates/web/fixmystreet/around/around_index.html:28
 msgid "Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box above&nbsp;:"
@@ -3128,7 +3128,7 @@ msgstr ""
 
 #: templates/web/base/auth/token.html:19 templates/web/base/email_sent.html:6
 msgid "The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient."
-msgstr "L'email de confirmation <strong>peut</ strong> prendre quelques minutes pour arriver — <em>merci</em> de patienter."
+msgstr "L'email de confirmation <strong>peut</strong> prendre quelques minutes pour arriver — <em>merci</em> de patienter."
 
 #: templates/web/base/report/new/fill_in_details_text.html:2
 #: templates/web/base/report/new/fill_in_details_text.html:3
@@ -3407,7 +3407,7 @@ msgstr "Titre"
 
 #: templates/web/base/around/_report_banner.html:2
 msgid "To <strong>report a problem</strong>, click on the map at the correct location."
-msgstr "Pour <strong>signaler un problème</ strong>, cliquez sur la carte à l'emplacement correct."
+msgstr "Pour <strong>signaler un problème</strong>, cliquez sur la carte à l'emplacement correct."
 
 #: templates/web/base/alert/index.html:27
 msgid "To find out what local alerts we have for you, please enter your postcode or street name and area"
@@ -3673,7 +3673,7 @@ msgstr "Tout le bloc d'appartements vides"
 
 #: templates/web/base/open311/index.html:92
 msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
-msgstr "Avec les recherches à requètes, il est également possible de rechercher des agency_responsible pour limiter les demandes à celles qui sont envoyées à une administration unique. Le terme de recherche est l'ID de l'administration fourni par <a href=\"%s\">MapIt</ a>."
+msgstr "Avec les recherches à requètes, il est également possible de rechercher des agency_responsible pour limiter les demandes à celles qui sont envoyées à une administration unique. Le terme de recherche est l'ID de l'administration fourni par <a href=\"%s\">MapIt</a>."
 
 #: templates/web/fiksgatami/front/footer-marketing.html:15
 #: templates/web/fixmystreet/front/footer-marketing.html:17
