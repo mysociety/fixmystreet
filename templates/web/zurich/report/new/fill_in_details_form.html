@@ -65,7 +65,10 @@
             [%- END %]
 
             [% IF c.cobrand.allow_photo_upload %]
-                <label for="form_photo">[% loc('Photo') %]</label>
+                <label for="form_photo">
+                    [% loc('Photo') %]
+                    [% loc('(Defect & location of defect)') %]
+                </label>
                 [% IF upload_fileid || report.photo %]
                     [% IF upload_fileid %]
                         <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
