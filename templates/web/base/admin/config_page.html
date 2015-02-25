@@ -37,6 +37,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE subsection heading="URLs" %]
 [% INCLUDE with_cobrand value="BASE_URL" cob=c.cobrand.base_url %]
 [% INCLUDE with_cobrand value="ADMIN_BASE_URL" cob=c.cobrand.admin_base_url %]
+[% INCLUDE just_value value="SECURE_PROXY_SSL_HEADER" %]
 
 [% INCLUDE subsection heading="Display" %]
 <tr>
@@ -84,10 +85,20 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
     cob = discob %]
 
 [% INCLUDE subsection heading="MapIt" %]
-[% INCLUDE just_value value="MAPIT_URL" %]
+[% INCLUDE just_value value="MAPIT_URL"
+    conf = "<a href='" _ c.config.MAPIT_URL _ "'>" _ c.config.MAPIT_URL _ "</a>" %]
 [% INCLUDE with_cobrand value="MAPIT_TYPES"
     cob = c.cobrand.area_types %]
-[% INCLUDE just_value value="MAPIT_ID_WHITELIST" %]
+<tr>
+    <td>MAPIT_ID_WHITELIST</td>
+    <td colspan=2>
+    [% FOR id IN c.config.MAPIT_ID_WHITELIST %]
+        <a href="[% c.config.MAPIT_URL %][%
+        '/' UNLESS c.config.MAPIT_URL.search('/$')
+        %]area/[% id %].html">[% id %]</a>[% ',' UNLESS loop.last %]
+    [% END %]
+    </td>
+</tr>
 [% INCLUDE just_value value="MAPIT_GENERATION" %]
 [% INCLUDE with_cobrand value="MAPIT_TYPES_CHILDREN"
     cob = c.cobrand.area_types_children %]
