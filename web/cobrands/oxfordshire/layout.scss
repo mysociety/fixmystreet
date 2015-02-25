@@ -318,6 +318,19 @@ body.mappage {
       }
     }
 
+    &.yellow a {
+        background-image: url(/i/pin-yellow-small.png);
+    }
+    &.green a {
+        background-image: url(/i/pin-green-small.png);
+    }
+    &.red a {
+        background-image: url(/i/pin-red-small.png);
+    }
+    &.grey a {
+        background-image: url(/i/pin-grey-small.png);
+    }
+
     &:after {
       content: "";
       display: block;
