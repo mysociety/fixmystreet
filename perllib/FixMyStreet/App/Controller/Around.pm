@@ -1,6 +1,7 @@
 package FixMyStreet::App::Controller::Around;
 use Moose;
 use namespace::autoclean;
+use List::MoreUtils 'uniq';
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -268,6 +269,44 @@ sub ajax : Path('/ajax') {
     my $json = { pins => $pins };
     $json->{current} = $on_map_list_html if $on_map_list_html;
     $json->{current_near} = $around_map_list_html if $around_map_list_html;
+    my $body = JSON->new->utf8(1)->encode($json);
+    $c->res->body($body);
+}
+
+=head2 /ajax/categories
+
+Handle the ajax calls to update the 'categories' dropdown on the /around page
+when the map is dragged. Renders a JSON list of all categories in use for the
+pins inside the specified bounding box.
+
+=cut
+
+sub ajax_categories : Path('/ajax/categories') {
+    my ( $self, $c ) = @_;
+
+    $c->res->content_type('application/json; charset=utf-8');
+
+    unless ( $c->req->param('bbox') ) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    # assume this is not cacheable - may need to be more fine-grained later
+    $c->res->header( 'Cache_Control' => 'max-age=0' );
+
+    # Need to be the class that can handle it
+    FixMyStreet::Map::set_map_class( 'OSM' );
+
+    # extract the data from the map
+    # Use undef for $interval to get all pins
+    my ( $pins, $on_map, $around_map, $dist ) =
+      FixMyStreet::Map::map_pins( $c, undef );
+
+    # Get a sorted & unique list of categories used by the displayed pins
+    my @categories = uniq map { @$_[6] } @$pins;
+    @categories = sort @categories;
+    my $json = { categories => \@categories };
     my $body = JSON->new->utf8(1)->encode($json);
     $c->res->body($body);
 }
