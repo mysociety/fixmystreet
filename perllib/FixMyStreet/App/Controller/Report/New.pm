@@ -1162,6 +1162,9 @@ sub redirect_or_confirm_creation : Private {
         }
     } );
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
+    if ($c->cobrand->can('problem_confirm_email_extras')) {
+        $c->cobrand->problem_confirm_email_extras($report);
+    }
     $c->send_email( $template, {
         to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
     } );

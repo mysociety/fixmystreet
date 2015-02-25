@@ -851,4 +851,13 @@ sub admin_stats {
     return 1;
 }
 
+sub problem_confirm_email_extras {
+    my ($self, $report) = @_;
+    my $confirmed_reports = $report->user->problems->search({
+        extra => { like => '%email_confirmed%' },
+    })->count;
+
+    $self->{c}->stash->{email_confirmed} = $confirmed_reports;
+}
+
 1;
