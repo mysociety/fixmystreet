@@ -17,9 +17,9 @@
     <input type="hidden" name="submit" value="1" >
 
 <ul class="no-bullets">
-<li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
+<li class="report-edit-action"><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
 
-<li><a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
+<li class="report-edit-action"><a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
 
 [% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
     <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
