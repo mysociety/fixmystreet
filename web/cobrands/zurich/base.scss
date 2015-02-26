@@ -52,7 +52,7 @@
 }
 
 #site-header {
-    background: $mobile_header_blue; 
+    background: $mobile_header_blue;
     border-top: 4px solid $mobile_menu_tab_bg_col;
     height: 48px;
 }
@@ -60,7 +60,7 @@
     background: url(logo_portal.jpg) 0px -24px no-repeat;
     width: 200px;
     height: 48px;
-    left:0; 
+    left:0;
     top:4px;
 }
 // Colour tab to match colour scheme
@@ -182,5 +182,14 @@ h4.static-with-rule {
                 padding: 6px 0.5em;
             }
         }
+    }
+}
+
+@media print {
+    #site-header .container {
+        position: relative;
+    }
+    #site-logo {
+        top: 0;
     }
 }
