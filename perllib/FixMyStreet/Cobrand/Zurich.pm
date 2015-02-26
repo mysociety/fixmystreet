@@ -4,6 +4,7 @@ use base 'FixMyStreet::Cobrand::Default';
 use DateTime;
 use POSIX qw(strcoll);
 use RABX;
+use Scalar::Util 'blessed';
 
 use strict;
 use warnings;
@@ -158,7 +159,8 @@ sub updates_as_hashref {
         $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
         if ( $problem->state eq 'fixed - council' ) {
-            $hashref->{details} = FixMyStreet::App::View::Web->add_links( $ctx, $problem->extra ? $problem->extra->{public_response} : '' );
+            $hashref->{details} = FixMyStreet::App::View::Web->add_links(
+                $ctx, $problem->get_extra_metadata($ctx, 'public_response') || '' );
         } elsif ( $problem->state eq 'closed' ) {
             $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body($ctx)->name );
         }
@@ -169,13 +171,16 @@ sub updates_as_hashref {
 
 sub allow_photo_display {
     my ( $self, $r ) = @_;
-    if (ref($r) ne 'HASH') {
-        return $r->extra && $r->extra->{publish_photo};
+    if (blessed $r) {
+        return $r->get_extra_metadata( $self->{c}, 'publish_photo' );
     }
+
+    # additional munging in case $r isn't an object, TODO see if we can remove this
     my $extra = $r->{extra};
     utf8::encode($extra) if utf8::is_utf8($extra);
     my $h = new IO::String($extra);
     $extra = RABX::wire_rd($h);
+    return unless ref $extra eq 'HASH';
     return $extra->{publish_photo};
 }
 
@@ -264,10 +269,9 @@ sub get_or_check_overdue {
     my ($self, $problem) = @_;
 
     # use the cached version is it exists (e.g. when called from template)
-    my $extra = $problem->extra;
-    if (exists $extra->{closed_overdue} and defined $extra->{closed_overdue}) {
-        return $extra->{closed_overdue}
-    }
+    my $overdue = $problem->get_extra_metadata($self->{c}, 'closed_overdue');
+    return $overdue if defined $overdue;
+
     return $self->overdue($problem);
 }
 
@@ -466,12 +470,18 @@ sub admin_report_edit {
 
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
-        # Predefine the hash so it's there for lookups
-        my $extra = $problem->extra || {};
-        $extra->{publish_photo} = $c->req->params->{publish_photo} || 0;
-        $extra->{third_personal} = $c->req->params->{third_personal} || 0;
+        $problem->set_extra_metadata($c, 'publish_photo' => $c->req->params->{publish_photo} || 0 );
+        $problem->set_extra_metadata($c, 'third_personal' => $c->req->params->{third_personal} || 0 );
+
         # Make sure we have a copy of the original detail field
-        $extra->{original_detail} = $problem->detail if !$extra->{original_detail} && $c->req->params->{detail} && $problem->detail ne $c->req->params->{detail};
+        if (my $new_detail = $c->req->params->{detail}) {
+            my $old_detail = $problem->detail;
+            if (! $problem->get_extra_metadata($c, 'original_detail')
+                && ($old_detail ne $new_detail))
+            {
+                $problem->set_extra_metadata( $c, original_detail => $old_detail );
+            }
+        }
 
         # Some changes will be accompanied by an internal note, which if needed
         # should be stored in this variable.
@@ -487,20 +497,20 @@ sub admin_report_edit {
             $problem->external_body( undef );
             $problem->bodies_str( $cat->body_id );
             $problem->whensent( undef );
-            $extra->{changed_category} = 1;
+            $problem->set_extra_metadata($c, changed_category => 1);
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
-            $extra->{moderated_overdue} //= $self->overdue( $problem );
+            $problem->set_extra_metadata_if_undefined($c, moderated_overdue => $self->overdue( $problem ) );
             $self->set_problem_state($c, $problem, 'in progress');
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
         } elsif ( my $external = $c->req->params->{body_external} ) {
-            $extra->{moderated_overdue} //= $self->overdue( $problem );
+            $problem->set_extra_metadata_if_undefined($c, moderated_overdue => $self->overdue( $problem ) );
             $self->set_problem_state($c, $problem, 'closed');
-            $extra->{closed_overdue} //= $self->overdue( $problem );
+            $problem->set_extra_metadata_if_undefined($c, closed_overdue => $self->overdue( $problem ) );
             $problem->external_body( $external );
             $problem->whensent( undef );
             _admin_send_email( $c, 'problem-external.txt', $problem );
@@ -510,13 +520,13 @@ sub admin_report_edit {
 
                 if ($problem->state eq 'unconfirmed' and $state ne 'unconfirmed') {
                     # only set this for the first state change
-                    $extra->{moderated_overdue} //= $self->overdue( $problem );
+                    $problem->set_extra_metadata_if_undefined($c, moderated_overdue => $self->overdue( $problem ) );
                 }
 
                 $self->set_problem_state($c, $problem, $state);
 
                 if ($self->problem_is_closed($problem)) {
-                    $extra->{closed_overdue} //= $self->overdue( $problem );
+                    $problem->set_extra_metadata_if_undefined($c, closed_overdue => $self->overdue( $problem ) );
                 }
                 if ( $state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
                     _admin_send_email( $c, 'problem-rejected.txt', $problem );
@@ -524,7 +534,6 @@ sub admin_report_edit {
             }
         }
 
-        $problem->extra( $extra );
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
         $problem->latitude( $c->req->param('latitude') );
@@ -532,12 +541,10 @@ sub admin_report_edit {
 
         # Final, public, Update from DM
         if (my $update = $c->req->param('status_update')) {
-            $extra->{public_response} = $update;
-            $problem->extra( $extra );
+            $problem->set_extra_metadata($c, public_response => $update);
             if ($c->req->params->{publish_response}) {
                 $self->set_problem_state($c, $problem, 'fixed - council');
-                $extra->{closed_overdue} = $self->overdue( $problem );
-                $problem->extra( { %$extra } );
+                $problem->set_extra_metadata_if_undefined($c, closed_overdue => $self->overdue( $problem ) );
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
             }
         }
@@ -619,9 +626,7 @@ sub admin_report_edit {
 
             # If they clicked the no more updates button, we're done.
             if ($c->req->param('no_more_updates')) {
-                my $extra = $problem->extra || {};
-                $extra->{subdiv_overdue} = $self->overdue( $problem );
-                $problem->extra( $extra );
+                $problem->set_extra_metadata_if_undefined($c, subdiv_overdue => $self->overdue( $problem ) );
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
                 $self->set_problem_state($c, $problem, 'planned');
@@ -645,7 +650,7 @@ sub admin_report_edit {
 sub _admin_send_email {
     my ( $c, $template, $problem ) = @_;
 
-    return unless $problem->extra && $problem->extra->{email_confirmed};
+    return unless $problem->get_extra_metadata($c, 'email_confirmed');
 
     my $to = $problem->name
         ? [ $problem->user->email, $problem->name ]
