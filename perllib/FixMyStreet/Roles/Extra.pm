@@ -44,6 +44,22 @@ sub set_extra_metadata {
     $self->extra({ %$extra, $key => $value });
 };
 
+=head2 set_extra_metadata_if_undefined
+
+    $problem->set_extra_metadata_if_undefined($c, overdue => 1);
+    # as above, but won't set if, for example 'overdue' is already set to 0
+
+=cut
+
+sub set_extra_metadata_if_undefined {
+    my ($self, $c, $key, $value) = @_;
+    my $extra = $self->get_extra($c);
+
+    return unless ref $extra eq 'HASH';
+    return if defined $extra->{$key};
+    $self->extra({ %$extra, $key => $value });
+};
+
 =head2 unset_extra_metadata
 
     $contact->unset_extra_metadata($c, 'photo_required');
