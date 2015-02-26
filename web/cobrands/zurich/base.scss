@@ -178,3 +178,12 @@ h4.static-with-rule {
         }
     }
 }
+
+@media print {
+    #site-header .container {
+        position: relative;
+    }
+    #site-logo {
+        top: 0;
+    }
+}

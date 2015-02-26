@@ -14,7 +14,7 @@
 [% SET start = c.config.ADMIN_BASE_URL IF admin %]
 
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
-        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="screen and (min-width:48em)">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
             <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
