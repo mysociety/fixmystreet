@@ -17,13 +17,16 @@ use JSON;
 #     commonlib/bin/gettext-makemo FixMyStreet
 
 use FixMyStreet;
+my $c = FixMyStreet::App->new();
+my $cobrand = FixMyStreet::Cobrand::Zurich->new({ c => $c });
+$c->stash->{cobrand} = $cobrand;
 
 # This is a helper method that will send the reports but with the config
 # correctly set - notably SEND_REPORTS_ON_STAGING needs to be true.
 sub send_reports_for_zurich {
     FixMyStreet::override_config { SEND_REPORTS_ON_STAGING => 1 }, sub {
         # Actually send the report
-        FixMyStreet::App->model('DB::Problem')->send_reports('zurich');
+        $c->model('DB::Problem')->send_reports('zurich');
     };
 }
 sub reset_report_state {
@@ -290,9 +293,9 @@ subtest "report_edit" => sub {
     is ( $report->extra->{closed_overdue},    0, 'Marking hidden from scratch also set closed_overdue' );
     is get_moderated_count(), 1;
 
-    is (FixMyStreet::Cobrand::Zurich->new->get_or_check_overdue($report), 0, 'sanity check');
+    is ($cobrand->get_or_check_overdue($report), 0, 'sanity check');
     $report->update({ created => $created->clone->subtract(days => 10) });
-    is (FixMyStreet::Cobrand::Zurich->new->get_or_check_overdue($report), 0, 'overdue call not increased');
+    is ($cobrand->get_or_check_overdue($report), 0, 'overdue call not increased');
 
     reset_report_state($report, $created);
 };
