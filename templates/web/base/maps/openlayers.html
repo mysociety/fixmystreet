@@ -30,7 +30,7 @@ var fixmystreet = {
 </script>
 <div id="map_box" aria-hidden="true">
     [% pre_map %]
-    <div id="map"><noscript>
+    <div id="map"><div class="noscript">
         <div id="drag"><[% map.img_type %]
             alt="NW map tile" id="t2.2"
             name="tile_[% map.x_tile - 1 %].[% map.y_tile - 1 %]"
@@ -50,7 +50,7 @@ var fixmystreet = {
             style="top:256px; left:256px;"></div>
         <div id="pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
         [% INCLUDE compass %]
-    </noscript></div>
+    </div></div>
     [% IF map.copyright %]
     <div class="olControlAttribution" style="position: absolute;">[% map.copyright %]</div>
     [% END %]
