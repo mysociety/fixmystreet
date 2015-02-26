@@ -93,6 +93,8 @@ sub reports_ordering {
     return { -desc => 'confirmed' };
 }
 
+sub combine_tabs_on_around { return 1; }
+
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
     return 'grey' if $p->state eq 'not responsible';

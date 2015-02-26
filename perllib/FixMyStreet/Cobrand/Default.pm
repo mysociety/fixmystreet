@@ -733,6 +733,14 @@ If set to an arrayref, will plot those area ID(s) from mapit on all the /around 
 
 sub areas_on_around { []; }
 
+=head2 combine_tabs_on_around
+
+If true, includes a combined list of reports on /around instead of the tabs
+
+=cut
+
+sub combine_tabs_on_around { return 0; }
+
 sub process_extras {}
 
 =head 2 pin_colour
