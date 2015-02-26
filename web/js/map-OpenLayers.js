@@ -539,6 +539,9 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         if (typeof(obj.current_near) != 'undefined' && (current_near = document.getElementById('current_near'))) {
             current_near.innerHTML = obj.current_near;
         }
+        if (typeof(obj.current_combined) != 'undefined' && (current_combined = document.getElementById('current_combined'))) {
+            current_combined.innerHTML = obj.current_combined;
+        }
         var markers = fms_markers_list( obj.pins, false );
         return markers;
     },
