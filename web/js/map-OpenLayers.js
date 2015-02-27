@@ -224,7 +224,7 @@ function fixmystreet_onload() {
     if (fixmystreet.page == 'around') {
         fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
-        pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
+        pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
             url: '/ajax',
             params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
@@ -522,6 +522,19 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
     updateLink: function() {
         this._updateLink(1);
     }
+});
+
+/* Pan data request handler */
+OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    read: function(options) {
+        var category = $("#categories").val();
+        if (!!category) {
+            options.params = options.params || {};
+            options.params.category = category;
+        }
+        return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
+    },
+    CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"
 });
 
 /* Pan data handler */
