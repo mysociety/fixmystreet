@@ -6,6 +6,8 @@ Die folgende Meldung wurde auf http://www.stadt-zuerich.ch/zueriwieneu erfasst:
 
 Öffentliche URL: <?=$values['url']?>
 
+<?=$values['external_message']?>
+
 Name des Meldenden: <?=$values['name']?>
 
 Email des Meldenden: <?=$values['email']?>
