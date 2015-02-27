@@ -55,7 +55,7 @@ sub display_map {
 }
 
 sub map_features {
-    my ( $c, $lat, $lon, $interval ) = @_;
+    my ( $c, $lat, $lon, $interval, $category ) = @_;
 
    # TODO - be smarter about calculating the surrounding square
    # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
@@ -65,12 +65,12 @@ sub map_features {
         $c, $lat, $lon,
         $lon - $lon_delta, $lat - $lat_delta,
         $lon + $lon_delta, $lat + $lat_delta,
-        $interval
+        $interval, $category
     );
 }
 
 sub map_features_bounds {
-    my ( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval ) = @_;
+    my ( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category ) = @_;
 
     my $lat = ( $max_lat + $min_lat ) / 2;
     my $lon = ( $max_lon + $min_lon ) / 2;
@@ -78,20 +78,20 @@ sub map_features_bounds {
         $c, $lat, $lon,
         $min_lon, $min_lat,
         $max_lon, $max_lat,
-        $interval
+        $interval, $category
     );
 }
 
 sub _map_features {
-    my ( $c, $lat, $lon, $min_lon, $min_lat, $max_lon, $max_lat, $interval ) = @_;
+    my ( $c, $lat, $lon, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category ) = @_;
 
     # list of problems around map can be limited, but should show all pins
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
-    my $around_map      = $c->cobrand->problems->around_map( @around_args, undef );
+    my $around_map      = $c->cobrand->problems->around_map( @around_args, undef, $category );
     my $around_map_list = $around_limit
-        ? $c->cobrand->problems->around_map( @around_args, $around_limit )
+        ? $c->cobrand->problems->around_map( @around_args, $around_limit, $category )
         : $around_map;
 
     my $dist;
@@ -105,7 +105,7 @@ sub _map_features {
     my $limit  = 20;
     my @ids    = map { $_->id } @$around_map_list;
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, \@ids, $limit, $lat, $lon, $interval
+        $c, $dist, \@ids, $limit, $lat, $lon, $interval, $category
     );
 
     return ( $around_map, $around_map_list, $nearby, $dist );
@@ -116,9 +116,10 @@ sub map_pins {
 
     my $bbox = $c->req->param('bbox');
     my ( $min_lon, $min_lat, $max_lon, $max_lat ) = split /,/, $bbox;
+    my $category = $c->req->param('category');
 
     my ( $around_map, $around_map_list, $nearby, $dist ) =
-      FixMyStreet::Map::map_features_bounds( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval );
+      FixMyStreet::Map::map_features_bounds( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category );
 
     # create a list of all the pins
     my @pins = map {
