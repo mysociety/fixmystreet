@@ -229,8 +229,13 @@ sub send_reports {
     my $base_url = mySociety::Config::get('BASE_URL');
     my $site = $site_override || CronFns::site($base_url);
 
-    my $states = [ 'confirmed', 'fixed' ];
-    $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed' ] if $site eq 'zurich';
+    my $states = $site eq 'zurich' ?
+        [ 'unconfirmed', 'confirmed',
+          'in progress', 'planned',
+          'closed', 'investigating' ] 
+        :
+        [ 'confirmed', 'fixed' ];
+
     my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
         state => $states,
         whensent => undef,
