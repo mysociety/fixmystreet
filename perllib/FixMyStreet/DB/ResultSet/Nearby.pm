@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval ) = @_;
+    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $category ) = @_;
 
     my $params = {
         non_public => 0,
@@ -19,6 +19,7 @@ sub nearby {
         %{ $c->cobrand->problems_clause },
         %$params
     } if $c->cobrand->problems_clause;
+    $params->{category} = $category if $category;
 
     my $attrs = {
         prefetch => 'problem',

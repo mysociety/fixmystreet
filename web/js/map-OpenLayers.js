@@ -196,7 +196,7 @@ function fixmystreet_onload() {
     if (fixmystreet.page == 'around') {
         fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
-        pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
+        pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
             url: '/ajax',
             params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
@@ -488,6 +488,30 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
     updateLink: function() {
         this._updateLink(1);
     }
+});
+
+/* Pan data request handler */
+// This class is used to get a JSON object from /ajax that contains
+// pins for the map and HTML for the sidebar. It does a fetch whenever the map
+// is dragged (modulo a buffer extending outside the viewport).
+// This subclass is required so we can pass the 'category' and 'status' query
+// params to /ajax if the user has filtered the map.
+OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    read: function(options) {
+        // Pass the values of the category and status fields as query params
+        var category = $("#categories").val();
+        if (category !== undefined) {
+            options.params = options.params || {};
+            options.params.category = category;
+        }
+        var status = $("#statuses").val();
+        if (status !== undefined) {
+            options.params = options.params || {};
+            options.params.status = status;
+        }
+        return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
+    },
+    CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"
 });
 
 /* Pan data handler */
