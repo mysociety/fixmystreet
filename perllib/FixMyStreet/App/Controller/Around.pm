@@ -168,6 +168,7 @@ sub display_location : Private {
 
     # Filter by report category
     my $category = $c->req->param('category');
+    $c->stash->{category} = $category;
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =

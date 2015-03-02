@@ -9,9 +9,17 @@
     </label>
     <label>
         about
-        <select id="categories" disabled>
-            <option>loading&hellip;</option>
-        </select>
+        [% IF category %]
+            <select id="categories">
+                <option value="[% category | html %]" selected>
+                    [% category | html %]
+                </option>
+            </select>
+        [% ELSE %]
+            <select id="categories" disabled>
+                <option value="">loading&hellip;</option>
+            </select>
+        [% END %]
     </label>
 </p>
 
