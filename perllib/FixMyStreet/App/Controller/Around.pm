@@ -166,10 +166,13 @@ sub display_location : Private {
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
+    # Filter by report category
+    my $category = $c->req->param('category');
+
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval );
+        $interval, $category );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
