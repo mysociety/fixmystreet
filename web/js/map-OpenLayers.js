@@ -111,30 +111,56 @@ function fms_markers_resize() {
 
 function fms_categories_update() {
     var bbox = fixmystreet.bbox_strategy.getMapBounds().toBBOX();
-    var default_categories = [{label: "Everything", value: ""}];
-    $.getJSON("/ajax/categories", {bbox: bbox})
-        .done(function(data) {
-            var categories = default_categories.slice();
-            for (var i = 0; i < data.categories.length; i++) {
-                categories.push({value: data.categories[i]});
-            }
-            fms_set_categories_options(categories);
-        })
-        .fail(function() {
-            fms_set_categories_options(default_categories);
-        });
+    // Only refresh the contents of the categories select field if
+    // the map has moved since last time we did it.
+    if (bbox !== fixmystreet.categories_bbox) {
+        var default_categories = [{label: "Everything", value: ""}];
+        $.getJSON("/ajax/categories", {bbox: bbox})
+            .done(function(data) {
+                var categories = default_categories.slice();
+                for (var i = 0; i < data.categories.length; i++) {
+                    categories.push({value: data.categories[i]});
+                }
+                fms_set_categories_options(categories);
+                fixmystreet.categories_bbox = bbox;
+            })
+            .fail(function() {
+                fms_set_categories_options(default_categories);
+            });
+    }
+}
+
+function fms_categories_changed() {
+    // If the category has changed we need to re-fetch markers that match
+    // the new value
+    fixmystreet.markers.refresh({force: true});
 }
 
 function fms_set_categories_options(options) {
-    var select = $("#categories");
-    select.prop("disabled", false);
-    var old_value = select.find("option:selected").val();
-    select.empty();
+    var old_value = $("#categories").val();
+    var select = $("<select>").attr("id", "categories");
+    var option_els = [];
     for (var i = 0; i < options.length; i++) {
         var value = options[i].value;
         var label = options[i].label || value;
-        $("<option>").val(value).html(label).appendTo(select);
+        var option = $("<option>").val(value).html(label);
+        if (old_value == value) {
+            option.prop('selected', true);
+            old_value = null;
+        }
+        select.append(option);
     }
+    // If the selected option isn't available in the new list,
+    // append it to the options so the user experience isn't damaged.
+    if (!!old_value) {
+        var option = $("<option>").val(old_value).html(old_value).prop("selected", true);
+        select.append(option);
+    }
+    // Replace the existing select with the new one
+    // NB: Leaving the <select> intact and replacing the <options> within
+    // seems to mess up event handling in Chrome/Safari, so replacing the
+    // entire element is the way to go.
+    $("#categories").replaceWith(select);
 }
 
 function fixmystreet_onload() {
@@ -269,10 +295,12 @@ function fixmystreet_onload() {
         fixmystreet.select_feature.activate();
         fixmystreet.map.events.register( 'zoomend', null, fms_markers_resize );
 
-        // Zoom-level-specific pin sizes on Oxfordshire
-        var cobrand = $('meta[name="cobrand"]').attr('content');
-        if (cobrand === 'oxfordshire') {
+        // If the category filter dropdown exists on the page set up the
+        // event handlers to populate it and react to it changing
+        if ($("select#categories").length) {
             fixmystreet.markers.events.register( 'loadend', null, fms_categories_update );
+            fixmystreet.categories_bbox = null;
+            $("body").on("change", "#categories", fms_categories_changed);
         }
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
@@ -555,8 +583,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         if (typeof(obj.current_combined) != 'undefined' && (current_combined = document.getElementById('current_combined'))) {
             current_combined.innerHTML = obj.current_combined;
         }
-        var markers = fms_markers_list( obj.pins, false );
-        return markers;
+        return fms_markers_list( obj.pins, false );
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
 });
