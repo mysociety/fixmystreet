@@ -1,10 +1,10 @@
 <menu id="problems-nav" class="tab-nav">
     <ul>
         <li><a href="#current">[% loc('Problems on the map') %]</a></li>
-        <li><a href="#current_near">[% loc( 'Problems nearby' ) %]</a></li>
+        <li><a href="#current_near" data-clicktrack="problems-nearby">[% loc( 'Problems nearby' ) %]</a></li>
     </ul>
 </menu>
-        
+
 <ul id="current" class="issue-list-a tab">
     [% INCLUDE "around/on_map_list_items.html" %]
 </ul>

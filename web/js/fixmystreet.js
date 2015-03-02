@@ -207,6 +207,7 @@ $(function(){
     // we disable validation by default, and add it in the JS case.
     // For some reason, the removeAttr doesn't work if we place it at beginning.
     $('#mapForm').removeAttr('novalidate');
+
 });
 
 })(jQuery);
