@@ -117,9 +117,8 @@ function fms_markers_resize() {
     fixmystreet.markers.redraw();
 }
 
-function fms_categories_changed() {
-    // If the category has changed we need to re-fetch markers that match
-    // the new value
+function fms_categories_or_status_changed() {
+    // If the category or status has changed we need to re-fetch map markers
     fixmystreet.markers.refresh({force: true});
 }
 
@@ -258,7 +257,11 @@ function fixmystreet_onload() {
         // If the category filter dropdown exists on the page set up the
         // event handlers to populate it and react to it changing
         if ($("select#categories").length) {
-            $("body").on("change", "#categories", fms_categories_changed);
+            $("body").on("change", "#categories", fms_categories_or_status_changed);
+        }
+        // Do the same for the status dropdown
+        if ($("select#statuses").length) {
+            $("body").on("change", "#statuses", fms_categories_or_status_changed);
         }
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
@@ -521,6 +524,11 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
         if (!!category) {
             options.params = options.params || {};
             options.params.category = category;
+        }
+        var status = $("#statuses").val();
+        if (!!status) {
+            options.params = options.params || {};
+            options.params.status = status;
         }
         return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
     },
