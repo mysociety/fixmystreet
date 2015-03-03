@@ -165,14 +165,13 @@ sub display_location : Private {
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
-    # Filter by report category
-    my $category = $c->req->param('category');
-    $c->stash->{category} = $category;
+    # Check the category to filter by, if any, is valid
+    $c->forward('check_and_stash_category');
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval, $category );
+        $interval, $c->stash->{category} );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
@@ -223,6 +222,38 @@ sub check_location_is_acceptable : Private {
     $c->stash->{area_check_action} = 'submit_problem';
     $c->stash->{remove_redundant_areas} = 1;
     return $c->forward('/council/load_and_check_areas');
+}
+
+=head2 check_and_stash_category
+
+Check that the 'category' query param is valid, if it's present. Stores
+the validated string in the stash as filter_category.
+Puts all the valid categories in filter_categories on the stash.
+
+=cut
+
+sub check_and_stash_category : Private {
+    my ( $self, $c ) = @_;
+
+    my $category = $c->req->param('category');
+    if ( $category ) {
+        my $all_areas = $c->stash->{all_areas};
+        my @bodies = $c->model('DB::Body')->search(
+            { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
+            { join => 'body_areas' }
+        )->all;
+        my %bodies = map { $_->id => $_ } @bodies;
+
+        my $count = $c->model('DB::Contact')->not_deleted->search(
+            {
+                body_id => [ keys %bodies ],
+                category => $category
+            }
+        )->count;
+        if ( $count ) {
+            $c->stash->{category} = $category;
+        }
+    }
 }
 
 =head2 /ajax
