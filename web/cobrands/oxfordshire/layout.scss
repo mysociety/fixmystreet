@@ -331,6 +331,13 @@ body.mappage {
         background-image: url(/i/pin-grey-small.png);
     }
 
+    &.empty p {
+        display: block;
+        padding: 1em;
+        font-size: 1em;
+        text-align: center;
+    }
+
     &:after {
       content: "";
       display: block;
