@@ -343,6 +343,10 @@ sub send_email {
         }
     ) };
 
+    if (my $attachments = $extra_stash_values->{attachments}) {
+        $email_text = munge_attachments($email_text, $attachments);
+    }
+
     # send the email
     $c->model('EmailSend')->send($email_text);
 
@@ -393,7 +397,11 @@ sub send_email_cron {
     $params->{_parameters_}->{site_name} = $site_name;
 
     $params->{_line_indent} = '';
+    my $attachments = delete $params->{attachments};
+
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
+
+    $email = munge_attachments($email, $attachments) if $attachments;
 
     if ($nomail) {
         print $email;
@@ -407,6 +415,44 @@ sub send_email_cron {
         return $result ? 0 : 1;
     }
 }
+
+sub munge_attachments {
+    my ($message, $attachments) = @_;
+    # $attachments should be an array_ref of things that can be parsed to Email::MIME,
+    # for example
+    #    [
+    #      body => $binary_data,
+    #      attributes => {
+    #          content_type => 'image/jpeg',
+    #          encoding => 'base64',
+    #          filename => '1234.1.jpeg',
+    #          name     => '1234.1.jpeg',
+    #      },
+    #      ...
+    #    ]
+    #
+    # XXX: mySociety::Email::construct_email isn't using a MIME library and
+    # requires more analysis to refactor, so for now, we'll simply parse the
+    # generated MIME and add attachments.
+    #
+    # (Yes, this means that the email is constructed by Email::Simple, munged
+    # manually by custom code, turned back into Email::Simple, and then munged
+    # with Email::MIME.  What's your point?)
+
+    require Email::MIME;
+    my $mime = Email::MIME->new($message);
+    $mime->parts_add([ map { Email::MIME->create(%$_)} @$attachments ]);
+    my $data = $mime->as_string;
+
+    # unsure why Email::MIME adds \r\n. Possibly mail client should handle
+    # gracefully, BUT perhaps as the segment constructed by
+    # mySociety::Email::construct_email strips to \n, they seem not to.
+    # So we re-run the same regexp here to the added part.
+    $data =~ s/\r\n/\n/gs;
+
+    return $data;
+}
+
 
 =head2 uri_with
 

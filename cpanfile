@@ -43,6 +43,7 @@ requires 'DBIx::Class::ResultSet';
 requires 'DBIx::Class::Schema::Loader';
 requires 'Digest::MD5';
 requires 'Digest::SHA';
+requires 'Email::MIME';
 requires 'Email::Send';
 requires 'Email::Send::SMTP';
 requires 'Email::Simple';
