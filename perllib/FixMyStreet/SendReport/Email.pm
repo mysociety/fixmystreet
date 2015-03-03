@@ -95,8 +95,13 @@ sub send {
         To => $self->to,
         From => $self->send_from( $row ),
     };
+
+    my $app = FixMyStreet::App->new( cobrand => $cobrand );
+
+    $cobrand->munge_sendreport_params($app, $row, $h, $params) if $cobrand->can('munge_sendreport_params');
+
     $params->{Bcc} = $self->bcc if @{$self->bcc};
-    my $result = FixMyStreet::App->send_email_cron(
+    my $result = $app->send_email_cron(
         $params,
         mySociety::Config::get('CONTACT_EMAIL'),
         $nomail,
