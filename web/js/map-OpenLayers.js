@@ -29,6 +29,14 @@ function fixmystreet_update_pin(lonlat) {
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
+        // If the category filter appears on the map and the user has selected
+        // something from it, then pre-fill the category field in the report
+        if ($("select#categories").length) {
+            var category = $("#categories").val();
+            if (!!category && $("#form_category option[value="+category+"]")) {
+                $("#form_category").val(category);
+            }
+        }
     });
 
     if (!$('#side-form-error').is(':visible')) {
