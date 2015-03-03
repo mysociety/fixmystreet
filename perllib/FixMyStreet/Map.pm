@@ -55,7 +55,7 @@ sub display_map {
 }
 
 sub map_features {
-    my ( $c, $lat, $lon, $interval, $category ) = @_;
+    my ( $c, $lat, $lon, $interval, $category, $states ) = @_;
 
    # TODO - be smarter about calculating the surrounding square
    # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
@@ -65,12 +65,12 @@ sub map_features {
         $c, $lat, $lon,
         $lon - $lon_delta, $lat - $lat_delta,
         $lon + $lon_delta, $lat + $lat_delta,
-        $interval, $category
+        $interval, $category, $states
     );
 }
 
 sub map_features_bounds {
-    my ( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category ) = @_;
+    my ( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category, $states ) = @_;
 
     my $lat = ( $max_lat + $min_lat ) / 2;
     my $lon = ( $max_lon + $min_lon ) / 2;
@@ -78,20 +78,21 @@ sub map_features_bounds {
         $c, $lat, $lon,
         $min_lon, $min_lat,
         $max_lon, $max_lat,
-        $interval, $category
+        $interval, $category,
+        $states
     );
 }
 
 sub _map_features {
-    my ( $c, $lat, $lon, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category ) = @_;
+    my ( $c, $lat, $lon, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category, $states ) = @_;
 
     # list of problems around map can be limited, but should show all pins
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
-    my $around_map      = $c->cobrand->problems->around_map( @around_args, undef, $category );
+    my $around_map      = $c->cobrand->problems->around_map( @around_args, undef, $category, $states );
     my $around_map_list = $around_limit
-        ? $c->cobrand->problems->around_map( @around_args, $around_limit, $category )
+        ? $c->cobrand->problems->around_map( @around_args, $around_limit, $category, $states )
         : $around_map;
 
     my $dist;
@@ -105,7 +106,7 @@ sub _map_features {
     my $limit  = 20;
     my @ids    = map { $_->id } @$around_map_list;
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, \@ids, $limit, $lat, $lon, $interval, $category
+        $c, $dist, \@ids, $limit, $lat, $lon, $interval, $category, $states
     );
 
     return ( $around_map, $around_map_list, $nearby, $dist );
@@ -118,8 +119,17 @@ sub map_pins {
     my ( $min_lon, $min_lat, $max_lon, $max_lat ) = split /,/, $bbox;
     my $category = $c->req->param('category');
 
+    # Filter reports by status, if present in query params
+    my $status = $c->req->param('status');
+    my $states;
+    if ( $status eq 'open' ) {
+        $states = FixMyStreet::DB::Result::Problem->open_states();
+    } elsif ( $status eq 'fixed' ) {
+        $states = FixMyStreet::DB::Result::Problem->fixed_states();
+    }
+
     my ( $around_map, $around_map_list, $nearby, $dist ) =
-      FixMyStreet::Map::map_features_bounds( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category );
+      FixMyStreet::Map::map_features_bounds( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category, $states );
 
     # create a list of all the pins
     my @pins = map {

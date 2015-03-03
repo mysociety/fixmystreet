@@ -131,15 +131,19 @@ sub _recent {
 # Problems around a location
 
 sub around_map {
-    my ( $rs, $min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit, $category ) = @_;
+    my ( $rs, $min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit, $category, $states ) = @_;
     my $attr = {
         order_by => { -desc => 'created' },
     };
     $attr->{rows} = $limit if $limit;
 
+    unless ( $states ) {
+        $states = FixMyStreet::DB::Result::Problem->visible_states();
+    }
+
     my $q = {
             non_public => 0,
-            state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+            state => [ keys %$states ],
             latitude => { '>=', $min_lat, '<', $max_lat },
             longitude => { '>=', $min_lon, '<', $max_lon },
     };
