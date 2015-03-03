@@ -2584,6 +2584,63 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::More 0.47
       Time::Local 0.000
+  Email-MIME-1.929
+    pathname: R/RJ/RJBS/Email-MIME-1.929.tar.gz
+    provides:
+      Email::MIME 1.929
+      Email::MIME::Creator 1.929
+      Email::MIME::Encode 1.929
+      Email::MIME::Header 1.929
+      Email::MIME::Modifier 1.929
+    requirements:
+      Carp 0
+      Email::Address 0
+      Email::MIME::ContentType 1.016
+      Email::MIME::Encodings 1.314
+      Email::MessageID 0
+      Email::Simple 2.102
+      Email::Simple::Creator 0
+      Email::Simple::Header 0
+      Encode 1.9801
+      ExtUtils::MakeMaker 0
+      MIME::Base64 0
+      MIME::Types 1.13
+      Scalar::Util 0
+      parent 0
+      perl 5.008001
+      strict 0
+      warnings 0
+  Email-MIME-ContentType-1.018
+    pathname: R/RJ/RJBS/Email-MIME-ContentType-1.018.tar.gz
+    provides:
+      Email::MIME::ContentType 1.018
+    requirements:
+      Carp 0
+      Exporter 5.57
+      ExtUtils::MakeMaker 0
+      strict 0
+      warnings 0
+  Email-MIME-Encodings-1.315
+    pathname: R/RJ/RJBS/Email-MIME-Encodings-1.315.tar.gz
+    provides:
+      Email::MIME::Encodings 1.315
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 6.30
+      MIME::Base64 3.05
+      MIME::QuotedPrint 3.05
+      strict 0
+      warnings 0
+  Email-MessageID-1.405
+    pathname: R/RJ/RJBS/Email-MessageID-1.405.tar.gz
+    provides:
+      Email::MessageID 1.405
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      Sys::Hostname 0
+      overload 0
+      strict 0
+      warnings 0
   Email-Send-2.198
     pathname: R/RJ/RJBS/Email-Send-2.198.tar.gz
     provides:
@@ -2670,6 +2727,9 @@ DISTRIBUTIONS
     pathname: S/SH/SHLOMIF/Error-0.17019.tar.gz
     provides:
       Error 0.17019
+      Error::Simple 0.17019
+      Error::WarnDie undef
+      Error::subs undef
     requirements:
       Module::Build 0.39
       Scalar::Util 0
@@ -3498,6 +3558,20 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.52
       Test::More 0.82
       perl 5.00503
+  MIME-Lite-3.030
+    pathname: R/RJ/RJBS/MIME-Lite-3.030.tar.gz
+    provides:
+      MIME::Lite 3.030
+      MIME::Lite::IO_Handle 3.030
+      MIME::Lite::IO_Scalar 3.030
+      MIME::Lite::IO_ScalarArray 3.030
+      MIME::Lite::SMTP 3.030
+      MailTool undef
+    requirements:
+      Email::Date::Format 1.000
+      ExtUtils::MakeMaker 0
+      File::Basename 0
+      File::Spec 0
   MIME-Types-1.38
     pathname: M/MA/MARKOV/MIME-Types-1.38.tar.gz
     provides:
@@ -5077,6 +5151,7 @@ DISTRIBUTIONS
       IO::Socket::SSL 0
       LWP::UserAgent 0
       MIME::Base64 0
+      MIME::Lite 0
       MIME::Parser 0
       Net::POP3 0
       Scalar::Util 0
