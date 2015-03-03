@@ -29,6 +29,13 @@ function fixmystreet_update_pin(lonlat) {
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
+        // If the category filter appears on the map and the user has selected
+        // something from it, then pre-fill the category field in the report,
+        // if it's a value already present in the drop-down.
+        var category = $("#categories").val();
+        if (category !== undefined && $("#form_category option[value="+category+"]").length) {
+            $("#form_category").val(category);
+        }
     });
 
     if (!$('#side-form-error').is(':visible')) {
@@ -402,6 +409,7 @@ $(function(){
         fixmystreet.drag.deactivate();
         $('#side-form').hide();
         $('#side').show();
+        $("select#categories").attr("name", "category");
         $('#sub_map_links').show();
         //only on mobile
         $('#mob_sub_map_links').remove();
@@ -614,6 +622,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
+        // Although it's now hidden, the category filter for the map is still
+        // posted to the server when the report is sent. The name clashes with
+        // the category select element in the report form, which can cause
+        // issues with the wrong/no category being used for the report.
+        // Work around this by renaming the field when it's not shown.
+        $("select#categories").attr("name", "category_filter");
         if (typeof heightFix !== 'undefined') {
             heightFix('#report-a-problem-sidebar', '.content', 26);
         }
