@@ -670,6 +670,32 @@ sub _admin_send_email {
     } );
 }
 
+sub munge_sendreport_params {
+    my ($self, $c, $row, $h, $params) = @_;
+    if ($row->state =~ /^(closed|investigating)$/ && $row->get_extra_metadata('publish_photo')) {
+        # we attach images to reports sent to external bodies
+        my $photoset = $row->get_photoset($c);
+        my @images = $photoset->all_images
+            or return;
+        my $index = 0;
+        my $id = $row->id;
+        my @attachments = map {
+            my $i = $index++;
+            {
+                body => $_->[1],
+                attributes => {
+                    filename => "$id.$i.jpeg",
+                    content_type => 'image/jpeg',
+                    encoding => 'base64',
+                        # quoted-printable ends up with newlines corrupting binary data
+                    name => "$id.$i.jpeg",
+                },
+            }
+        } @images;
+        $params->{attachments} = \@attachments;
+    }
+}
+
 sub admin_fetch_all_bodies {
     my ( $self, @bodies ) = @_;
 
@@ -761,7 +787,7 @@ sub admin_stats {
 
             # replace newlines with HTML <br/> element
             $detail =~ s{\r?\n}{ <br/> }g;
-            $public_response =~ s{\r?\n}{ <br/> }g;
+            $public_response =~ s{\r?\n}{ <br/> }g if $public_response;
 
             # Assemble photo URL, if report has a photo
             my $media_url = $report->get_photo_params->{url} ? ($c->cobrand->base_url . $report->get_photo_params->{url}) : '';
