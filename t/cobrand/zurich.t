@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use DateTime;
 use Test::More;
+use Test::LongString;
 use JSON;
 use Path::Tiny;
 
@@ -29,7 +30,10 @@ my $sample_photo = $sample_file->slurp_raw;
 # This is a helper method that will send the reports but with the config
 # correctly set - notably SEND_REPORTS_ON_STAGING needs to be true.
 sub send_reports_for_zurich {
-    FixMyStreet::override_config { SEND_REPORTS_ON_STAGING => 1 }, sub {
+    FixMyStreet::override_config {
+        SEND_REPORTS_ON_STAGING => 1,
+        ALLOWED_COBRANDS => ['zurich']
+    }, sub {
         # Actually send the report
         $c->model('DB::Problem')->send_reports('zurich');
     };
@@ -41,6 +45,7 @@ sub reset_report_state {
     delete $extra->{moderated_overdue};
     delete $extra->{subdiv_overdue};
     delete $extra->{closed_overdue};
+    $report->whensent(undef);
     $report->update({
         extra   => { %$extra },
         state   => 'unconfirmed',
@@ -713,6 +718,50 @@ subtest "test admin_log" => sub {
     });
     is scalar @entries, 4, 'State changes logged'; 
     is $entries[-1]->action, 'state change to hidden', 'State change logged as expected';
+};
+
+subtest 'email images to external partners' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        reset_report_state($report);
+
+        my $photo = path(__FILE__)->parent->child('zurich-logo_portal.x.jpg')->slurp_raw;
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+            c => $c,
+            data_items => [ $photo ],
+        });
+        my $fileid = $photoset->data;
+
+        $report->set_extra_metadata('publish_photo' => 1);
+        $report->update({
+            state => 'closed',
+            photo => $fileid,
+            external_body => $external_body->id,
+        });
+
+        $mech->clear_emails_ok;
+        send_reports_for_zurich();
+
+        my @emails = $mech->get_email;
+        my $email_as_string = $mech->get_first_email(@emails);
+        my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
+        my $changes = $email_as_string =~ s{$boundary}{}g;
+        is $changes, 4, '4 boundaries'; # header + 3 around the 2x parts (text + 1 image)
+
+        my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
+
+        my $REPORT_ID = $report->id;
+        $expected_email_content =~ s{REPORT_ID}{$REPORT_ID}g;
+
+        is_string $email_as_string, $expected_email_content, 'MIME email text ok'
+            or do {
+                (my $test_name = $0) =~ s{/}{_}g;
+                my $path = path("test-output-$test_name.tmp");
+                $path->spew($email_as_string);
+                diag "Saved output in $path";
+            };
+        };
 };
 
 END {
