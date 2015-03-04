@@ -328,6 +328,10 @@ body.mappage {
       bottom: 0;
       background-color: $oxfordshire_mid_grey_green;
     }
+
+    &.empty:after {
+        left: 0;
+    }
   }
 
   h3, p {
