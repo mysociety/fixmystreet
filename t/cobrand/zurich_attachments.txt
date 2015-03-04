@@ -1,0 +1,60 @@
+MIME-Version: 1.0
+Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #1
+Content-Type: multipart/mixed; boundary=""
+To: "External Body" <external_body@example.org>
+Content-Transfer-Encoding: 7bit
+From: FixMyStreet <division@example.org>
+
+
+--
+MIME-Version: 1.0
+Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #1
+Content-Type: text/plain; charset="iso-8859-1"
+To: "External Body" <external_body@example.org>
+Content-Transfer-Encoding: quoted-printable
+From: FixMyStreet <division@example.org>
+
+Gr=FCezi External Body,
+
+Die folgende Meldung wurde auf
+http://www.stadt-zuerich.ch/zueriwieneu erfasst:
+
+=D6ffentliche URL: http://www.example.org/report/1
+
+"Z=FCri wie neu" ist eine Dienstleistung der Stadt Z=FCrich zum Thema
+B=FCrgerbeteiligung. Auf dieser Plattform kann die Bev=F6lkerung auf
+Sch=E4den und M=E4ngel an der st=E4dtischen Infrastruktur hinweisen. Diese
+Meldung wurde Ihnen von der Stadt Z=FCrich gesendet, da es Ihr
+Zust=E4ndigkeitsgebiet betreffen k=F6nnte.
+
+Bei Fragen zu "Z=FCri wie neu" wenden Sie sich bitte an
+gis-zentrum@zuerich.ch.
+
+Freundliche Gr=FCsse
+
+Ihre Stadt Z=FCrich=20=
+
+
+
+--
+MIME-Version: 1.0
+Content-Type: image/jpeg; name="1.0.jpeg"
+Content-Disposition: inline; filename="1.0.jpeg"
+Content-Transfer-Encoding: quoted-printable
+
+=FF=D8=FF=E0=00=10JFIF=00=01=01=01=00H=00H=00=00=FF=DB=00C=00=05=03=04=04=
+=04=03=05=04=04=04=05=05=05=06=07=0C=08=07=07=07=07=0F=0B=0B	=0C=11=0F=12=
+=12=11=0F=11=11=13=16=1C=17=13=14=1A=15=11=11=18!=18=1A=1D=1D=1F=1F=1F=13=
+=17"$"=1E$=1C=1E=1F=1E=FF=DB=00C=01=05=05=05=07=06=07=0E=08=08=0E=1E=14=11=
+=14=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=
+=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=1E=
+=1E=FF=C0=00=11=08=00S=00=01=03=01=11=00=02=11=01=03=11=01=FF=C4=00=17=00=
+=00=03=01=00=00=00=00=00=00=00=00=00=00=00=00=00=00=02=08=07=FF=C4=00=1F=10=
+=01=00=00=04=07=00=00=00=00=00=00=00=00=00=00=00=00=03=04=06=D3=07=17=18UV=
+=94=A5=FF=C4=00=17=01=01=01=01=01=00=00=00=00=00=00=00=00=00=00=00=00=00=05=
+=06=04=FF=C4=00 =11=01=00=00=04=07=01=00=00=00=00=00=00=00=00=00=00=00=03=
+=04=15R=01=02=16Sa=A1=D1=B1=FF=DA=00=0C=03=01=00=02=11=03=11=00?=00=B2=C0=
+=02(=CF,R=E5=1E|=B5=B6=EE=8D%=B7=DE>=B3=15=18=F7|f=CAn0=06=02=00=00
+=CFM=14&=EDQ=F6 =DAc=B5=04=CD=B9{=F5~=95=07=96=DC=84=A8=FF=D9=
+
+----
