@@ -266,7 +266,7 @@ sub _add_meta_to_contact {
     }
 
     if ( @meta ) {
-        $contact->extra( \@meta );
+        $contact->extra( { _fields => \@meta } );
     } else {
         $contact->extra( undef );
     }

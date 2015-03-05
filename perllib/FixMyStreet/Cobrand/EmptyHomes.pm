@@ -547,7 +547,5 @@ sub old_site_stats {
     };
 }
 
-sub default_extra_layout { {} }
-
 1;
 
