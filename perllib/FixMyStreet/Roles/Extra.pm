@@ -17,60 +17,57 @@ inherit from Moose, see ::Problem for an example.)
 
 Then:
 
-    $contact->set_extra_fields($c,
+    $contact->set_extra_fields(
         { name => 'pothole_size', ... },
         { name => 'pothole_shape, ... } );
-    my $metas = $contact->get_extra_fields($c);
+    my $metas = $contact->get_extra_fields();
 
 And
 
     # e.g. for sites like Zurich (but handled gracefully otherwise)
-    $problem->set_extra_metadata($c, overdue => 1 );
-    if ($problem->get_extra_metadata($c, 'overdue')) { ... }
+    $problem->set_extra_metadata( overdue => 1 );
+    if ($problem->get_extra_metadata( 'overdue')) { ... }
 
 =head1 METHODS
 
 =head2 set_extra_metadata
 
-    $problem->set_extra_metadata($c, overdue => 1);
+    $problem->set_extra_metadata( overdue => 1);
 
 =cut
 
 sub set_extra_metadata {
-    my ($self, $c, $key, $value) = @_;
-    my $extra = $self->get_extra($c);
+    my ($self,  $key, $value) = @_;
+    my $extra = $self->get_extra();
 
-    return unless ref $extra eq 'HASH';
     $self->extra({ %$extra, $key => $value });
 };
 
 =head2 set_extra_metadata_if_undefined
 
-    $problem->set_extra_metadata_if_undefined($c, overdue => 1);
+    $problem->set_extra_metadata_if_undefined( overdue => 1);
     # as above, but won't set if, for example 'overdue' is already set to 0
 
 =cut
 
 sub set_extra_metadata_if_undefined {
-    my ($self, $c, $key, $value) = @_;
-    my $extra = $self->get_extra($c);
+    my ($self, $key, $value) = @_;
+    my $extra = $self->get_extra();
 
-    return unless ref $extra eq 'HASH';
     return if defined $extra->{$key};
     $self->extra({ %$extra, $key => $value });
 };
 
 =head2 unset_extra_metadata
 
-    $contact->unset_extra_metadata($c, 'photo_required');
+    $contact->unset_extra_metadata('photo_required');
 
 =cut
 
 sub unset_extra_metadata {
-    my ($self, $c, $key) = @_;
-    my $extra = $self->get_extra($c);
+    my ($self, $key) = @_;
+    my $extra = $self->get_extra();
 
-    return unless ref $extra eq 'HASH';
     return 1 unless exists $extra->{$key};
     delete $extra->{$key};
     $self->extra($extra);
@@ -78,31 +75,29 @@ sub unset_extra_metadata {
 
 =head2 set_extra_metadata
 
-    my $overdue = $problem->get_extra_metadata($c, 'overdue');
+    my $overdue = $problem->get_extra_metadata('overdue');
 
 =cut
 
 sub get_extra_metadata {
-    my ($self, $c, $key) = @_;
-    my $extra = $self->get_extra($c);
+    my ($self, $key) = @_;
+    my $extra = $self->get_extra();
 
-    return unless ref $extra eq 'HASH';
     return $extra->{$key};
 };
 
 =head2 get_extra_metadata_as_hashref
 
-    my $hashref = $contact->get_extra_metadata_as_hashref($c);
+    my $hashref = $contact->get_extra_metadata_as_hashref();
 
 =cut
 
 my $META_FIELD = '_fields';
 
 sub get_extra_metadata_as_hashref {
-    my ($self, $c) = @_;
-    my $extra = $self->get_extra($c);
+    my ($self) = @_;
+    my $extra = $self->get_extra();
 
-    return {} unless ref $extra eq 'HASH';
     my %extra = %$extra;
     delete $extra{$META_FIELD};
     return \%extra;
@@ -110,39 +105,49 @@ sub get_extra_metadata_as_hashref {
 
 =head2 get_extra_fields
 
-    my $metas = $problem->get_extra_fields($c);
+    my $metas = $problem->get_extra_fields();
 
 =cut
 
 sub get_extra_fields {
-    my ($self, $c) = @_;
-    my $extra = $self->get_extra($c);
+    my ($self) = @_;
+    my $extra = $self->get_extra();
 
-    return $extra if ref $extra eq 'ARRAY';
     return $extra->{$META_FIELD} ||= do {
-        $self->dirty_extra;
-        # not sure this will work transparently with RABX encoding
-        [];
+        my $metas = [];
+        $self->extra({ %$extra, $META_FIELD => $metas });
+        $metas;
     };
 }
 
 =head2 set_extra_fields
 
-    $problem->set_extra_fields($c, { ... }, { ... } );
+    $problem->set_extra_fields( { ... }, { ... } );
 
 =cut
 
 sub set_extra_fields {
-    my ($self, $c, @fields) = @_;
-    my $extra = $self->get_extra($c);
+    my ($self, @fields) = @_;
+    my $extra = $self->get_extra();
 
-    if (ref $extra eq 'ARRAY') {
-        # replace extra entirely with provided fields
-        $self->extra(\@fields);
-    }
-    else {
-        $self->extra({ %$extra, $META_FIELD => \@fields });
-    }
+    $self->extra({ %$extra, $META_FIELD => \@fields });
+}
+
+=head2 push_extra_fields
+
+    $problem->push_extra_fields( { ... } );
+
+like set_extra_fields, but pushes the new fields onto the end of the existing list.
+
+=cut
+
+sub push_extra_fields {
+    my ($self, @fields) = @_;
+    my $extra = $self->get_extra();
+
+    my $existing = $self->get_extra_fields;
+
+    $self->extra({ %$extra, $META_FIELD => [ @$existing, @fields ] });
 }
 
 =head1 HELPER METHODS
@@ -164,23 +169,25 @@ sub dirty_extra {
 
 =head2 get_extra
 
-Get the extra data.  If this is not set, then returns a {} or [] reference
-I<as appropriate>, e.g. depending on the Cobrand's expected layout.  This
-worrying about whether we should return a hash or array reference is the reason
-that we have to pass $c to Every Single Method (i.e. so that we can get access
-to C<$c-E<gt>cobrand>.
-
-(This is a bit of a wart, can we do better?)
+Get the extra data.  If this is not set, then returns a {}
 
 =cut
 
 sub get_extra {
-    my ($self, $c) = @_;
-    return $self->extra || do {
-        my $extra = $c->cobrand->default_extra_layout;
-        $self->extra($extra);
+    my ($self) = @_;
+    my $extra = $self->extra or do {
+        my $extra = {};
+        $self->extra({});
         return $extra;
     };
+
+    if (ref $extra eq 'ARRAY') {
+        # upgrade layout transparently
+        $extra = { $META_FIELD => $extra };
+        $self->extra($extra);
+    }
+
+    return $extra;
 }
 
 1;
