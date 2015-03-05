@@ -158,7 +158,7 @@ foreach my $test (
         my $prob = $user->problems->first;
         ok $prob, 'problem created';
 
-        is_deeply $prob->extra, $test->{extra}, 'extra open311 data added to problem';
+        is_deeply $prob->extra, { _fields => $test->{extra} }, 'extra open311 data added to problem';
 
         $user->problems->delete;
         $user->delete;
