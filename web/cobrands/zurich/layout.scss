@@ -266,6 +266,27 @@ body.mappage.admin {
     float: right;
     font-size: 0.9em;
     box-sizing: border-box;
+
+    button, input[type="submit"], .btn {
+        padding: 0.5em 0.5em 0.3em 0.5em;
+        text-transform: none;
+    }
+}
+
+.admin-report-edit--details {
+    label[for="title"],
+    label[for="detail"] {
+        display: none;
+    }
+
+    #title {
+        margin-top: 1em;
+        font-weight: bold;
+    }
+
+    #detail {
+        margin-bottom: 1em;
+    }
 }
 
 .admin {
