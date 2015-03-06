@@ -15,7 +15,7 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
-<p align="right"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+<div class="admin-report-edit admin-report-edit--details">
 
 <ul class="no-bullets">
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
@@ -51,21 +51,30 @@
 [% END %]
 
 <li><span class="mock-label">[% loc('State:') %]</span> [% states.${problem.state} %]</li>
+</ul>
 
+</div>
+
+<div class="admin-report-edit admin-report-edit--interact">
+
+<p align="right"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+
+<ul class="no-bullets">
 <li><label for="new_internal_note">[% loc('New internal note:') %]</label>
 <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=5></textarea></li>
 
 <li><label for="status_update">[% loc('New update:') %]</label>
 <textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
-
 </ul>
 
 <p class="cf">
     <input style="float:left" type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
     <input style="float:right" type="submit" name="no_more_updates" value="[% loc('No further updates') %]">
 </p>
-</form>
 
 [% INCLUDE 'admin/list_updates.html' %]
+
+</div>
+</form>
 
 [% INCLUDE 'admin/footer.html' %]

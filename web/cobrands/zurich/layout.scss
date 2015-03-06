@@ -249,10 +249,25 @@ body.fullwidthpage.admin .content {
     width: 100%;
 }
 
-body.mappage.admin .content {
-    margin-top: 6em;
-    margin-left: 0.5em;
+body.mappage.admin {
+    .content {
+        margin-top: 5em;
+        margin-left: 0;
+        padding: 0px;
+        width: 40em;
+        background: #fff url(/cobrands/zurich/admin-faux-columns.gif) top center repeat-y;
+        @include box-shadow(0 0 5px rgba(0,0,0,0.5));
+    }
 }
+
+.admin-report-edit {
+    padding: 1.5em;
+    width: 50%;
+    float: right;
+    font-size: 0.9em;
+    box-sizing: border-box;
+}
+
 .admin {
     .content {
         margin: 2em 0 1em;
@@ -270,6 +285,10 @@ body.mappage.admin .content {
           font-weight: bold;
           padding-right: 0.333em;
         }
+        :first-child > label {
+            // avoid empty space above first label in a container
+            margin-top: 0;
+        }
     }
 
     #zurich-footer {
@@ -281,11 +300,12 @@ body.mappage.admin .content {
     background-color: white;
     padding: 1.5em 0 1em;
 }
+
 body.mappage .admin-nav-wrapper {
     box-sizing: border-box;
     padding-left: 10px;
     padding-right: 10px;
     position: fixed;
     width: 100%;
-    @include box-shadow(0 0 6px 1px #000);
+    @include box-shadow(0 0 5px rgba(0,0,0,0.5));
 }

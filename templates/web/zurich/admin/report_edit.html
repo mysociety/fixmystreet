@@ -16,6 +16,8 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
+<div class="admin-report-edit admin-report-edit--details">
+
 <ul class="no-bullets">
 <li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
 
@@ -77,6 +79,10 @@
 <label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
 [% END %]
 </ul>
+
+</div>
+
+<div class="admin-report-edit admin-report-edit--interact">
 
 <p><label for="new_internal_note">[% loc('New internal note:') %]</label>
 <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=5>[% new_internal_note | html %]</textarea></p>
@@ -221,8 +227,10 @@ Ihre Stadt Zürich
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
 
-</form>
-
 [% INCLUDE 'admin/list_updates.html' %]
+
+</div>
+
+</form>
 
 [% INCLUDE 'admin/footer.html' %]
