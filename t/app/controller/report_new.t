@@ -1018,7 +1018,7 @@ for my $test (
         host  => 'www.fixmystreet.com',
         postcode => 'EH99 1SP',
         fms_extra_title => '',
-        extra => undef,
+        extra => [],
         user_title => undef,
     },
     {
@@ -1146,7 +1146,7 @@ for my $test (
 
         my $report = $user->problems->first;
         ok $report, "Found the report";
-        my $extras = $report->extra;
+        my $extras = $report->get_extra_fields;
         is $user->title, $test->{'user_title'}, 'user title correct';
         is_deeply $extras, $test->{extra}, 'extra contains correct values';
 
