@@ -1,10 +1,14 @@
 [% IF updates.size %]
 
-<h2>[% loc('Internal notes') %]</h3>
+[%# We assume internal notes are lowest priority, and thus displayed last.
+    All other updates (eg: "I've done this work, here's what you should tell
+    the citizen") are displayed first. %]
+
+<h2>[% loc('Updates') %]</h2>
 
 [% FOREACH update IN updates -%]
-    [% IF update.extra.is_internal_note %]
-        <div class="admin-note [% 'admininternal' IF update.extra.is_internal_note %]" title="[% loc('ID') %]: [% update.id %]">
+    [% IF ! update.extra.is_internal_note %]
+        <div class="admin-note [% 'adminhidden' IF update.state == 'hidden' || update.problem.state == 'hidden' %]" title="[% loc('ID') %]: [% update.id %]">
           <p class="admin-note__text">[% update.text | html %]</p>
           <p class="admin-note__creator">
             <a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a>
@@ -14,11 +18,11 @@
     [% END %]
 [% END -%]
 
-<h2>[% loc('Updates') %]</h2>
+<h2>[% loc('Internal notes') %]</h3>
 
 [% FOREACH update IN updates -%]
-    [% IF ! update.extra.is_internal_note %]
-        <div class="admin-note [% 'adminhidden' IF update.state == 'hidden' || update.problem.state == 'hidden' %]" title="[% loc('ID') %]: [% update.id %]">
+    [% IF update.extra.is_internal_note %]
+        <div class="admin-note [% 'admininternal' IF update.extra.is_internal_note %]" title="[% loc('ID') %]: [% update.id %]">
           <p class="admin-note__text">[% update.text | html %]</p>
           <p class="admin-note__creator">
             <a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a>

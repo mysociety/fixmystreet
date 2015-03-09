@@ -212,12 +212,6 @@ Ihre Stadt Zürich
     </li>
 </ul>
 
-[% ELSIF problem.state == 'fixed - council' %]
-
-<p><span class="mock-label">[% loc('Public response:') %]</span>
-[% problem.extra.public_response | html %]
-</p>
-
 [% END %]
 
 <p align="right">
@@ -226,6 +220,13 @@ Ihre Stadt Zürich
 [% END %]
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
+
+[% IF problem.state == 'fixed - council' %]
+    <h2>[% loc('Public response:') %]</h2>
+    <div class="admin-official-answer">
+        [% problem.extra.public_response | html_para %]
+    </div>
+[% END %]
 
 [% INCLUDE 'admin/list_updates.html' %]
 
