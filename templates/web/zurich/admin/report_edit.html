@@ -35,7 +35,7 @@
 [% ELSE %]
     <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
     <li><label for='detail'>[% loc('Details:') %]</label>
-    <textarea name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea>
+    <textarea name='detail' id='detail' cols=60 rows=4>[% problem.detail | html %]</textarea>
     [% IF problem.extra.original_detail %]
     [%
         SET detail_safe = problem.extra.original_detail | html;
@@ -85,7 +85,7 @@
 <div class="admin-report-edit admin-report-edit--interact">
 
 <p><label for="new_internal_note">[% loc('New internal note:') %]</label>
-<textarea name='new_internal_note' id='new_internal_note' cols=60 rows=5>[% new_internal_note | html %]</textarea></p>
+<textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea></p>
 
 <p><span class="mock-label">[% loc('State:') %]</span> <select name="state"  id="state">
     <option value="">--</option>

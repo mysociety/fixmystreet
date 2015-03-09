@@ -362,6 +362,9 @@ body.mappage.admin {
             // avoid empty space above first label in a container
             margin-top: 0;
         }
+        textarea {
+            min-height: 0;
+        }
     }
 
     #zurich-footer {
