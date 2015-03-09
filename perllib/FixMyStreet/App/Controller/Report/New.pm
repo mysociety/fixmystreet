@@ -649,8 +649,9 @@ sub setup_categories_and_bodies : Private {
             unless ( $seen{$contact->category} ) {
                 push @category_options, $contact->category;
 
-                $category_extras{ $contact->category } = $contact->extra
-                    if $contact->extra;
+                my $metas = $contact->get_extra_fields;
+                $category_extras{ $contact->category } = $metas
+                    if scalar @$metas;
 
                 $non_public_categories{ $contact->category } = 1 if $contact->non_public;
             }
@@ -889,8 +890,9 @@ sub process_report : Private {
             if $body_string && @{ $c->stash->{missing_details_bodies} };
         $report->bodies_str($body_string);
 
-        my @extra = ();
-        my $metas = $contacts[0]->extra;
+        my @extra;
+        # NB: we are only checking extras for the *first* retrieved contact.
+        my $metas = $contacts[0]->get_extra_fields();
 
         foreach my $field ( @$metas ) {
             if ( lc( $field->{required} ) eq 'true' ) {
@@ -913,7 +915,7 @@ sub process_report : Private {
 
         if ( @extra ) {
             $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
-            $report->extra( \@extra );
+            $report->set_extra_fields( @extra );
         }
     } elsif ( @{ $c->stash->{bodies_to_list} } ) {
 

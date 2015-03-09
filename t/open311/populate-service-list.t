@@ -254,7 +254,7 @@ subtest 'check meta data population' => sub {
 
     $contact->discard_changes;
 
-    is_deeply $contact->extra, $extra, 'meta data saved';
+    is_deeply $contact->get_extra_fields, $extra, 'meta data saved';
 };
 
 for my $test (
@@ -332,7 +332,7 @@ for my $test (
     {
         desc => 'check meta data removed',
         has_meta => 0,
-        end_meta => undef,
+        end_meta => [],
         orig_meta => [ {
                 variable => 'true',
                 code => 'type',
@@ -364,7 +364,7 @@ for my $test (
         desc => 'check empty meta data handled',
         has_meta => 1,
         orig_meta => undef,
-        end_meta => undef,
+        end_meta => [],
         meta_xml => '<?xml version="1.0" encoding="utf-8"?>
     <service_definition>
         <service_code>100</service_code>
@@ -427,7 +427,7 @@ for my $test (
 
         $contact->discard_changes;
 
-        is_deeply $contact->extra, $test->{end_meta}, 'meta data saved';
+        is_deeply $contact->get_extra_fields, $test->{end_meta}, 'meta data saved';
     };
 }
 
@@ -530,7 +530,7 @@ subtest 'check attribute ordering' => sub {
 
     $contact->discard_changes;
 
-    is_deeply $contact->extra, $extra, 'meta data re-ordered correctly';
+    is_deeply $contact->get_extra_fields, $extra, 'meta data re-ordered correctly';
 };
 
 subtest 'check bromely skip code' => sub {
@@ -610,7 +610,7 @@ subtest 'check bromely skip code' => sub {
 
     $contact->discard_changes;
 
-    is_deeply $contact->extra, $extra, 'only non std bromley meta data saved';
+    is_deeply $contact->get_extra_fields, $extra, 'only non std bromley meta data saved';
 
     $processor->_current_body( $body );
     $processor->_add_meta_to_contact( $contact );
@@ -650,7 +650,7 @@ subtest 'check bromely skip code' => sub {
 
     $contact->discard_changes;
 
-    is_deeply $contact->extra, $extra, 'all meta data saved for non bromley';
+    is_deeply $contact->get_extra_fields, $extra, 'all meta data saved for non bromley';
 };
 
 sub get_standard_xml {
