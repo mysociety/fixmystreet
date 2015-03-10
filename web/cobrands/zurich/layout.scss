@@ -285,52 +285,6 @@ body.mappage.admin {
     }
 }
 
-.admin-note__text {
-    background-color: #eee;
-    padding: 0.5em 1em;
-    border-radius: 4px;
-    position: relative;
-    margin-bottom: 0.5em;
-
-    // add a little speech bubble triangle to the bottom left corner
-    &:after {
-        content: "";
-        display: block;
-        position: absolute;
-        bottom: -10px;
-        left: 10px;
-        border-top: 10px solid #eee;
-        border-left: 10px solid transparent;
-    }
-
-    .admininternal & {
-        background-color: #eef;
-
-        &:after {
-            border-top-color: #eef;
-        }
-    }
-}
-
-.admin-note__creator {
-    padding-left: 30px;
-}
-
-.admin-official-answer {
-    background-color: #1F52A3; // official Zurich blue colour
-    color: #fff;
-    padding: 0.8em 1em;
-    border-radius: 4px;
-
-    p {
-        margin-bottom: 0.5em;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-}
-
 .admin {
     .content {
         margin: 2em 0 1em;
