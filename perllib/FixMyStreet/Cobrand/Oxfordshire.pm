@@ -101,4 +101,6 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub on_map_default_status { return 'open'; }
+
 1;
