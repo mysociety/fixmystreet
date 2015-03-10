@@ -165,6 +165,7 @@ sub display_location : Private {
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
+    my $states = $c->cobrand->on_map_default_states;
 
     # Check the category to filter by, if any, is valid
     $c->forward('check_category_is_valid');
@@ -172,7 +173,7 @@ sub display_location : Private {
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval, $c->stash->{category} );
+        $interval, $c->stash->{category}, $states );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
