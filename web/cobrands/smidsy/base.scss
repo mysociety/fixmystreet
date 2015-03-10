@@ -328,6 +328,18 @@ body.twothirdswidthpage {
   }
 }
 
+.front__stats19 {
+    margin-top: 2em;
+    margin-bottom: 0;
+
+    strong {
+        display: inline;
+        font-size: 1.2em;
+        line-height: 1em;
+        margin: 0 0.1em;
+    }
+}
+
 .front__support {
   text-align: left;
 
@@ -423,4 +435,13 @@ body.twothirdswidthpage {
     margin-left: 1em;
     margin-right: 0.3em;
   }
+}
+
+// Highlight FAQ sections when they are the target of the URL hash fragment
+dt:target {
+    & + dd {
+        margin-top: 0.5em;
+        padding: 1em 1.5em;
+        background-color: $color-neutral-cream;
+    }
 }
