@@ -99,12 +99,12 @@
         <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
     <span>zoom</span></a>
 </div>
-<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
-<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]" class="report-edit-action">
+<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]" class="report-edit-action">
 [% END %]
 <br>
-<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
-<label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
+<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]  class="report-edit-action">
+<label class="inline report-edit-action" for="publish_photo">[% loc("Publish photo") %]</label></li>
 [% END %]
 </ul>
 
@@ -112,10 +112,12 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
-<p><label for="new_internal_note">[% loc('New internal note:') %]</label>
-<textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea></p>
+<p class="report-edit-action">
+    <label for="new_internal_note">[% loc('New internal note:') %]</label>
+    <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea>
+</p>
 
-<p>
+<p class="report-edit-action">
 <label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
 <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
 <script>
@@ -136,7 +138,7 @@
   [% END %]
 </select></p>
 
-<p id="automatic-reply">
+<p id="automatic-reply" class="report-edit-action">
     <span class="mock-label">Automatische Antwort</span>
     <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" />
 </p>
@@ -208,7 +210,7 @@ $(function(){
     <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
 [% END %]
   [% IF admin_type != 'super' AND list %]
-    <li class="assignation" id="assignation__subdivision">
+    <li class="assignation report-edit-action" id="assignation__subdivision">
         <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision">
             <option value="">--</option>
@@ -223,7 +225,7 @@ $(function(){
 [% SWITCH problem.state %]
     [% CASE ['closed','investigating'] %]
     <ul class="no-bullets">
-    <li class="assignation" id="assignation__external">
+    <li class="assignation report-edit-action" id="assignation__external">
     <label for="body_external">
         [% IF problem.state == 'closed' %]
             [% loc('Assign to external body:') %]
@@ -253,7 +255,7 @@ $(function(){
   # Zustandigkeit unbekannt/Wunsch/Nicht kontaktierbar/Unsichtbar %]
 [% SWITCH problem.state %]
     [% CASE ['planned','closed','unable to fix','investigating','partial','hidden'] %]
-        <ul class="no-bullets">
+        <ul class="no-bullets report-edit-action">
             <li><label for="status_update">[% loc('Public response:') %]</label>
             [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
             <textarea name='status_update' id='status_update' cols=60 rows=5>
@@ -263,7 +265,7 @@ $(function(){
         </ul>
 [% END %]
 
-<p align="right">
+<p align="right" class="report-edit-action">
 [% IF problem.state == 'planned' %]
 <input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
 [% END %]
