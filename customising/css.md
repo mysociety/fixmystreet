@@ -265,6 +265,8 @@ class="glossary__link">templates</a>) but this is just so you can get going.
 
 ## Next steps...
 
+If you want to customise the logo, [we have a tutorial for that](..logo/).
+
 Now you have your own cobrand, adding your own HTML <a
 href="{{ site.baseurl }}glossary/#template" class="glossary__link">templates</a> is straightforward.
 
