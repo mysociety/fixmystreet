@@ -151,23 +151,21 @@ sub delete_user {
       ->find( { email => $email_or_user } );
 
     # If no user found we can't delete them
-    if ( !$user ) {
-        ok( 1, "No user found to delete" );
-        return 1;
-    }
+    return 1 unless $user;
 
-    $mech->log_out_ok;
+    $mech->get('/auth/sign_out');
+
     for my $p ( $user->problems ) {
-        ok( $_->delete, "delete comment " . $_->text ) for $p->comments;
-        ok( $_->delete, "delete questionnaire " . $_->id ) for $p->questionnaires;
-        ok( $p->delete, "delete problem " . $p->title );
+        $p->comments->delete;
+        $p->questionnaires->delete;
+        $p->delete;
     }
     for my $a ( $user->alerts ) {
         $a->alerts_sent->delete;
-        ok( $a->delete, "delete alert " . $a->alert_type );
+        $a->delete;
     }
-    ok( $_->delete, "delete comment " . $_->text )     for $user->comments;
-    ok $user->delete, "delete test user " . $user->email;
+    $_->delete for $user->comments;
+    $user->delete;
 
     return 1;
 }
@@ -557,6 +555,21 @@ sub delete_problems_for_body {
         }
         $reports->delete;
     }
+}
+
+sub create_contact_ok {
+    my $self = shift;
+    my %contact_params = (
+        confirmed => 1,
+        deleted => 0,
+        editor => 'Test',
+        whenedited => \'current_timestamp',
+        note => 'Created for test',
+        @_
+    );
+    my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create( \%contact_params );
+    ok $contact, 'found/created contact ' . $contact->category;;
+    return $contact;
 }
 
 sub create_body_ok {

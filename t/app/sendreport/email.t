@@ -7,10 +7,11 @@ use Test::More;
 
 use FixMyStreet;
 use FixMyStreet::App;
-use FixMyStreet::DB::Result::Contact;
 use FixMyStreet::SendReport::Email;
 use FixMyStreet::TestMech;
 use mySociety::Locale;
+
+ok( my $mech = FixMyStreet::TestMech->new, 'Created mech object' );
 
 my $e = FixMyStreet::SendReport::Email->new();
 
@@ -19,14 +20,10 @@ my $params = { id => 1000, name => 'Council of the Thousand' };
 my $body = FixMyStreet::App->model('DB::Body')->find_or_create($params);
 ok $body, "found/created body";
 
-my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create(
+my $contact = $mech->create_contact_ok(
     email => 'council@example.com',
     body_id => 1000,
     category => 'category',
-    confirmed => 1,
-    deleted => 0,
-    editor => 'test suite',
-    whenedited => DateTime->now,
     note => '',
 );
 
@@ -78,6 +75,8 @@ foreach my $test ( {
     };
 }
 
-$contact->delete;
-
 done_testing();
+
+END {
+    $mech->delete_body($body);
+}

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11;
+use Test::More;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -17,3 +17,4 @@ is $mech->uri->path, '/my', "stayed on '/my/' page";
 # cleanup
 $mech->delete_user( $user );
 
+done_testing();

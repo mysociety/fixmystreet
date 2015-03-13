@@ -37,28 +37,16 @@ FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 2, body_id 
 # TODO: log in as a Bgy user, and create a report using the front end,
 # testing that the drop-down has the right things in it, and so on.
 
-my %contact_params = (
-    confirmed => 1,
-    deleted => 0,
-    editor => 'Test',
-    whenedited => \'current_timestamp',
-    note => 'Created for test',
-);
-FixMyStreet::App->model('DB::Contact')->search( {
-    email => { 'like', '%example.com' },
-} )->delete;
-my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+$mech->create_contact_ok(
     body_id => $luz->id, 
     category => 'Streetlight (BGY)',
     email => 'bgy@example.com',
-} );
-my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+$mech->create_contact_ok(
     body_id => $dps->id, 
     category => 'Streetlight (DPS)',
     email => 'LIGHT',
-} );
+);
 
 # Create a couple of reports
 

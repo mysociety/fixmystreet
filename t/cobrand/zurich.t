@@ -137,16 +137,11 @@ $mech->content_contains( 'Erfasst' );
 subtest "changing of categories" => sub {
     # create a few categories (which are actually contacts)
     foreach my $name ( qw/Cat1 Cat2/ ) {
-        FixMyStreet::App->model('DB::Contact')->find_or_create({
+        $mech->create_contact_ok(
             body => $division,
             category => $name,
             email => "$name\@example.org",
-            confirmed => 1,
-            deleted => 0,
-            editor => "editor",
-            whenedited => DateTime->now(),
-            note => "note for $name",
-        });
+        );
     }
 
     # put report into known category

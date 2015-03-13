@@ -25,16 +25,11 @@ FixMyStreet::override_config {
 $mech->content_like( qr/FixaMinGata/ );
 
 my $body = $mech->create_body_ok( 1, 'Body' );
-FixMyStreet::App->model('DB::Contact')->find_or_create({
+$mech->create_contact_ok(
     body => $body,
     category => "Other",
     email => "other\@example.org",
-    confirmed => 1,
-    deleted => 0,
-    editor => "Editor",
-    whenedited => \'now()',
-    note => 'Note',
-});
+);
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'fixamingata',

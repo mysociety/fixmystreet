@@ -369,15 +369,8 @@ for my $test (
 
 my $mech = FixMyStreet::TestMech->new();
 
-my %contact_params = (
-    confirmed => 1,
-    deleted => 0,
-    editor => 'Test',
-    whenedited => \'ms_current_timestamp()',
-    note => 'Created for test',
-);
-
 my %body_ids;
+my @bodies;
 for my $body (
     { area_id => 2651, name => 'City of Edinburgh Council' },
     { area_id => 2226, name => 'Gloucestershire County Council' },
@@ -389,11 +382,12 @@ for my $body (
     { area_id => 2649, name => 'Fife Council' },
 ) {
     my $aid = $body->{area_id};
-    $body_ids{$aid} = $mech->create_body_ok($aid, $body->{name}, id => $body->{id})->id;
+    my $body = $mech->create_body_ok($aid, $body->{name});
+    $body_ids{$aid} = $body->id;
+    push @bodies, $body;
 }
 
 # Let's make some contacts to send things to!
-my @contacts;
 for my $contact ( {
     body_id => $body_ids{2651}, # Edinburgh
     category => 'potholes',
@@ -428,9 +422,7 @@ for my $contact ( {
     category => 'potholes',
     email => '2636@example.com',
 } ) {
-    my $new_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( { %contact_params, %$contact } );
-    ok $new_contact, "created test contact";
-    push @contacts, $new_contact;
+    $mech->create_contact_ok( %$contact );
 }
 
 my %common = (
@@ -600,10 +592,7 @@ subtest 'check can set mutiple emails as a single contact' => sub {
         category => 'trees',
         email => '2636@example.com,2636-2@example.com',
     };
-    my $new_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-            %contact_params, 
-            %$contact } );
-    ok $new_contact, "created multiple email test contact";
+    $mech->create_contact_ok( %$contact );
 
     $mech->clear_emails_ok;
 
@@ -764,9 +753,7 @@ END {
     $problem->delete if $problem;
     $mech->delete_user( $user ) if $user;
 
-    foreach (@contacts) {
-        $_->delete;
-    }
+    $mech->delete_body($_) for @bodies;
 
     done_testing();
 }

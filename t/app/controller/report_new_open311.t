@@ -19,16 +19,8 @@ $body->update({
     api_key => 'apikey',
 });
 
-my %contact_params = (
-    confirmed => 1,
-    deleted => 0,
-    editor => 'Test',
-    whenedited => \'current_timestamp',
-    note => 'Created for test',
-);
 # Let's make some contacts to send things to!
-my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+my $contact1 = $mech->create_contact_ok(
     body_id => $body->id, # Edinburgh
     category => 'Street lighting',
     email => '100',
@@ -37,15 +29,12 @@ my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
                    { value => [ { name => ['Gas'], key => ['old'] }, { name => [ 'Yellow' ], key => [ 'modern' ] } ] }
                } 
              ],
-} );
-my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+my $contact2 = $mech->create_contact_ok(
     body_id => $body->id, # Edinburgh
     category => 'Graffiti Removal',
     email => '101',
-} );
-ok $contact1, "created test contact 1";
-ok $contact2, "created test contact 2";
+);
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -176,7 +165,8 @@ foreach my $test (
     };
 }
 
-$contact1->delete;
-$contact2->delete;
-
 done_testing();
+
+END {
+    $mech->delete_body($body);
+}

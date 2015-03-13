@@ -789,6 +789,7 @@ subtest "check comment with no status change has not status in meta" => sub {
             },
             'submit update'
         );
+        $mech->get_ok("/report/$report_id");
 
         $report->discard_changes;
         my @updates = $report->comments->all;

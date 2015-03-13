@@ -2,7 +2,6 @@ use strict;
 use utf8; # sign in error message has &ndash; in it
 use warnings;
 use Test::More;
-use utf8;
 
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
@@ -35,15 +34,8 @@ subtest "test that bare requests to /report/new get redirected" => sub {
       "pc correctly transferred";
 };
 
-my %contact_params = (
-    confirmed => 1,
-    deleted => 0,
-    editor => 'Test',
-    whenedited => \'current_timestamp',
-    note => 'Created for test',
-);
-
 my %body_ids;
+my @bodies;
 for my $body (
     { area_id => 2651, name => 'City of Edinburgh Council' },
     { area_id => 2226, name => 'Gloucestershire County Council' },
@@ -56,62 +48,46 @@ for my $body (
     { area_id => 2333, name => 'Hart Council', id => 2333 },
 ) {
     my $body_obj = $mech->create_body_ok($body->{area_id}, $body->{name}, id => $body->{id});
+    push @bodies, $body_obj;
     $body_ids{$body->{area_id}} = $body_obj->id;
 }
 
 # Let's make some contacts to send things to!
-FixMyStreet::App->model('DB::Contact')->search( {
-    email => { 'like', '%example.com' },
-} )->delete;
-my $contact1 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+my $contact1 = $mech->create_contact_ok(
     body_id => $body_ids{2651}, # Edinburgh
     category => 'Street lighting',
     email => 'highways@example.com',
-} );
-my $contact2 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+my $contact2 = $mech->create_contact_ok(
     body_id => $body_ids{2226}, # Gloucestershire
     category => 'Potholes',
     email => 'potholes@example.com',
-} );
-my $contact3 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+my $contact3 = $mech->create_contact_ok(
     body_id => $body_ids{2326}, # Cheltenham
     category => 'Trees',
     email => 'trees@example.com',
-} );
-my $contact4 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+my $contact4 = $mech->create_contact_ok(
     body_id => $body_ids{2482}, # Bromley
     category => 'Trees',
     email => 'trees@example.com',
-} );
-my $contact5 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+my $contact5 = $mech->create_contact_ok(
     body_id => $body_ids{2651}, # Edinburgh
     category => 'Trees',
     email => 'trees@example.com',
-} );
-my $contact6 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+my $contact6 = $mech->create_contact_ok(
     body_id => $body_ids{2333}, # Hart
     category => 'Trees',
     email => 'trees@example.com',
-} );
-my $contact7 = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-    %contact_params,
+);
+my $contact7 = $mech->create_contact_ok(
     body_id => $body_ids{2227}, # Hampshire
     category => 'Street lighting',
     email => 'highways@example.com',
-} );
-ok $contact1, "created test contact 1";
-ok $contact2, "created test contact 2";
-ok $contact3, "created test contact 3";
-ok $contact4, "created test contact 4";
-ok $contact5, "created test contact 5";
-ok $contact6, "created test contact 6";
-ok $contact7, "created test contact 7";
+);
 
 # test that the various bit of form get filled in and errors correctly
 # generated.
@@ -1356,13 +1332,12 @@ subtest "test SeeSomething" => sub {
     my $cobrand = FixMyStreet::Cobrand::SeeSomething->new();
 
     my $body_ss = $mech->create_body_ok(2535, 'Sandwell Borough Council', id => 2535);
-    my $bus_contact = FixMyStreet::App->model('DB::Contact')->find_or_create( {
-        %contact_params,
+    my $bus_contact = $mech->create_contact_ok(
         body_id => $body_ss->id,
         category => 'Bus',
         email => 'bus@example.com',
         non_public => 1,
-    } );
+    );
 
     for my $test ( {
             desc => 'report with no user details works',
@@ -1597,12 +1572,8 @@ subtest "extra google analytics code displayed on email confirmation problem cre
     };
 };
 
-$contact1->delete;
-$contact2->delete;
-$contact3->delete;
-$contact4->delete;
-$contact5->delete;
-$contact6->delete;
-$contact7->delete;
-
 done_testing();
+
+END {
+    $mech->delete_body($_) foreach @bodies;
+}
