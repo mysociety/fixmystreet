@@ -88,6 +88,11 @@ my $contact7 = $mech->create_contact_ok(
     category => 'Street lighting',
     email => 'highways@example.com',
 );
+my $contact8 = $mech->create_contact_ok(
+    body_id => $body_ids{2504},
+    category => 'Street lighting',
+    email => 'highways@example.com'
+);
 
 # test that the various bit of form get filled in and errors correctly
 # generated.

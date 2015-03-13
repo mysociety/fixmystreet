@@ -186,11 +186,3 @@ TESTING_COUNCILS: ''
 
 # if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
 MESSAGE_MANAGER_URL: ''
-
-# -----------------------------------------------------------------------
-
-# fixmystreet.com specific config variables. You won't need any of these.
-KASABI_API_KEY: ''
-LONDON_REPORTIT_URL: ''
-LONDON_REPORTIT_KEY: ''
-LONDON_REPORTIT_SECRET: ''

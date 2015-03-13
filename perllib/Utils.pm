@@ -91,35 +91,6 @@ sub truncate_coordinate {
     return $out;
 }
 
-sub london_categories {
-    return {
-        'Abandoned vehicle' => 'AbandonedVehicle',
-        'Car parking' => 'Parking',
-        'Dangerous structure' => 'DangerousStructure',
-        'Dead animal' => 'DeadAnimal',
-        'Dumped cylinder' => 'DumpedCylinder',
-        'Dumped rubbish' => 'DumpedRubbish',
-        'Flyposting' => 'FlyPosting',
-        'Graffiti' => 'Graffiti',
-        'Litter bin' => 'LitterBin',
-        'Public toilet' => 'PublicToilet',
-        'Refuse collection' => 'RefuseCollection',
-        'Road or pavement defect' => 'Road',
-        'Road or pavement obstruction' => 'Obstruction',
-        'Skip problem' => 'Skip',
-        'Street cleaning' => 'StreetCleaning',
-        'Street drainage' => 'StreetDrainage',
-        'Street furniture' => 'StreetFurniture',
-        'Street needs gritting' => 'StreetGritting',
-        'Street lighting' => 'StreetLighting',
-        'Street sign' => 'StreetSign',
-        'Traffic light' => 'TrafficLight',
-        'Tree (dangerous)' => 'DangerousTree',
-        'Tree (fallen branches)' => 'FallenTree',
-        'Untaxed vehicle' => 'UntaxedVehicle',
-    };
-}
-
 sub barnet_categories {
     # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting.
     # They are no longer used since Barnet switched to email for delivery of problem reports.

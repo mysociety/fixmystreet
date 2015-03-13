@@ -31,7 +31,6 @@ sub _fallback_body_sender {
 
     my $first_area = $body->body_areas->first->area_id;
     my $area_info = mySociety::MaPit::call('area', $first_area);
-    return { method => 'London' } if $area_info->{type} eq 'LBO';
     return { method => 'NI' } if $area_info->{type} eq 'LGD';
     return { method => 'Email' };
 }

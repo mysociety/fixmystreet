@@ -74,7 +74,6 @@ partial
 
 =cut
 
-use constant COUNCIL_ID_BARNET => 2489;
 use constant COUNCIL_ID_BROMLEY => 2482;
 
 sub report_new : Path : Args(0) {
@@ -624,18 +623,6 @@ sub setup_categories_and_bodies : Private {
             _('Empty public building - school, hospital, etc.')
         );
 
-    } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY 
-          && $first_area->{id} != COUNCIL_ID_BARNET 
-          && $first_area->{type} eq 'LBO') {
-
-        $bodies_to_list{ $first_body->id } = 1;
-        my @local_categories;
-        @local_categories =  sort keys %{ Utils::london_categories() };
-        @category_options = (
-            _('-- Pick a category --'),
-            @local_categories 
-        );
-
     } else {
 
         # keysort does not appear to obey locale so use strcoll (see i18n.t)
@@ -850,15 +837,6 @@ sub process_report : Private {
         if ( %extra ) {
             $report->extra( \%extra );
         }
-
-    } elsif ($first_area->{id} != COUNCIL_ID_BROMLEY 
-          && $first_area->{id} != COUNCIL_ID_BARNET 
-          && $first_area->{type} eq 'LBO') {
-
-        unless ( Utils::london_categories()->{ $report->category } ) {
-            $c->stash->{field_errors}->{category} = _('Please choose a category');
-        }
-        $report->bodies_str( $first_body->id );
 
     } elsif ( $report->category ) {
 

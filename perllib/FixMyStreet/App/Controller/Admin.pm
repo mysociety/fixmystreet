@@ -266,9 +266,6 @@ sub bodies : Path('bodies') : Args(0) {
 
     $c->forward( 'fetch_all_bodies' );
 
-    # XXX For fixmystreet.com, need to exclude bodies that are covering London.
-    # But soon, this means just don't have bodies covering London.
-
     my $contacts = $c->model('DB::Contact')->search(
         undef,
         {

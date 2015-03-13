@@ -17,7 +17,17 @@ ok -e $sample_file, "sample file $sample_file exists";
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-$mech->create_body_ok(2504, 'Westminster City Council');
+my $body = $mech->create_body_ok(2504, 'Westminster City Council');
+$mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Street lighting',
+    email => 'streetlighting@example.com',
+);
+$mech->create_contact_ok(
+    body_id => $body->id,
+    category => 'Potholes',
+    email => 'highways@example.com',
+);
 
 # submit an empty report to import - check we get all errors
 subtest "Test creating bad partial entries" => sub {

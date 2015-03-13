@@ -26,9 +26,8 @@ FixMyStreet::override_config {
     MAPIT_URL => 'http://mapit.mysociety.org/',
 }, sub {
     is_deeply $c->get_body_sender( $body ), { method => 'Email' }, 'defaults to email';
-
     $body_area->update({ area_id => 2481 }); # Croydon LBO
-    is_deeply $c->get_body_sender( $body ), { method => 'London' }, 'returns london report it if London borough';
+    is_deeply $c->get_body_sender( $body ), { method => 'Email' }, 'still email if London borough';
 };
 
 $body->send_method( 'TestMethod' );
