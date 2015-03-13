@@ -26,6 +26,15 @@ sub disambiguate_location {
     };
 }
 
+sub _fallback_body_sender {
+    my ( $self, $body, $category ) = @_;
+
+    my $first_area = $body->body_areas->first->area_id;
+    my $area_info = mySociety::MaPit::call('area', $first_area);
+    return { method => 'NI' } if $area_info->{type} eq 'LGD';
+    return { method => 'Email' };
+}
+
 sub process_extras {
     my $self    = shift;
     my $ctx     = shift;
