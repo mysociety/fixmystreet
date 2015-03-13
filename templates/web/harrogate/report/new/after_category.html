@@ -1,0 +1,48 @@
+<script>
+    // we link to the informational articles rather than the forms, because in some
+    // cases the former have more information or links to track progress of faults
+    // etc..
+    var links = {
+        'Bus stops': 'http://www.northyorks.gov.uk/article/25853/Bus-stops-and-shelters',
+        // Pavements/footpaths (multiple options)
+        'Potholes': 'http://www.northyorks.gov.uk/article/25215/Roads---potholes',
+        // Roads/highways (multiple options)
+        'Road traffic signs': 'http://www.northyorks.gov.uk/article/25667/Road-signs-and-bollards',
+        // Street lighting (not considered, as also a Harrogate category)
+        'Traffic lights': 'http://www.northyorks.gov.uk/article/25626/Traffic-lights',
+        'default': 'http://www.northyorks.gov.uk/article/28237/Report-it-online'
+    };
+    $(function () {
+        var notice = $('.nycc-notice');
+        $("#problem_form").on("change.category", "select#form_category", function(){
+            var cat = $(this).val();
+            if (cat.search(/NYCC/) > 0) {
+                cat = cat.replace(' (NYCC)', '');
+                var link = links[cat] || links ['default'];
+                notice.find('a').attr({ href: link });
+                notice.show();
+            }
+            else {
+                notice.hide();
+            }
+
+        });
+    });
+</script>
+<noscript>
+  <p class="nycc-notice">
+    Please report issues for categories labelled <b>(NYCC)</b> directly to
+    <a href="http://www.northyorks.gov.uk/article/28237/Report-it-online">
+        North Yorkshire County Council.
+    </a>
+  </p>
+</noscript>
+
+<p class="nycc-notice" style="display:none">
+    Please report issues for <b>NYCC</b> managed categories directly to
+    <a href="http://www.northyorks.gov.uk/article/28237/Report-it-online">
+        North Yorkshire County Council.
+    </a>
+</p>
+
+<p><small>[% loc("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website.") %]</small></p>

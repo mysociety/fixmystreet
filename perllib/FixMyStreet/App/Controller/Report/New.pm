@@ -651,6 +651,9 @@ sub setup_categories_and_bodies : Private {
         }
     }
 
+    $c->cobrand->munge_category_list(\@category_options, \@contacts, \%category_extras)
+        if $c->cobrand->can('munge_category_list');
+
     if ($c->cobrand->can('hidden_categories')) {
         my %hidden_categories = map { $_ => 1 }
             $c->cobrand->hidden_categories;
