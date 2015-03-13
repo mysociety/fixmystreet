@@ -242,5 +242,40 @@ sub send_questionnaires {
     return 0;
 }
 
+sub munge_category_list {
+    my ($self, $categories_ref, $contacts_ref, $extras_ref) = @_;
+
+    # we want to know which contacts *only* belong to NYCC
+    # that's because for shared responsibility, we don't expect
+    # the user to have to figure out which authority to contact.
+
+    # so we start building up the list of both
+    my (%harrogate_contacts, %nycc_contacts);
+    my $harrogate_id = $self->council_id;
+    for my $contact (@$contacts_ref) {
+        my $category = $contact->category;
+        if ($contact->body_id == $harrogate_id) {
+            $harrogate_contacts{$category} = 1;
+        }
+        else {
+            $nycc_contacts{$category}++;
+        }
+    }
+
+    # and then remove any that also have Harrogate involvement
+    delete $nycc_contacts{$_} for keys %harrogate_contacts;
+
+    # here, we simply *mark* the text with (NYCC) at the end, and
+    # the rest will get done in the template with javascript
+    my @categories = map {
+        $nycc_contacts{$_} ?
+            "$_ (NYCC)"
+            : $_
+    } @$categories_ref;
+
+    # replace the entire list with this transformed one
+    @$categories_ref = @categories;
+}
+
 1;
 
