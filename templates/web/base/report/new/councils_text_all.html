@@ -1,4 +1,12 @@
 <p>
+[% IF all_areas.${bodies_to_list.0}.type == 'LGD' %]
+[%
+    tprintf(
+        loc('All the information you provide here will be sent to <strong>%s</strong> or <strong>Roads Service</strong>.'),
+        all_body_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+    );
+%]
+[% ELSE %]
 [%
     tprintf(
         loc('All the information you provide here will be sent to <strong>%s</strong>.'),
