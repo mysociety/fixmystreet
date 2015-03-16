@@ -154,17 +154,17 @@ sub ensure_contact {
     my $category_details = $contact_data->{category_details} || {};
 
     if (my $old_name = delete $contact_data->{rename_from}) {
-        if (my $category = $contact_rs->find({
+        if (my $old_category = $contact_rs->find({
                 category => $old_name,
             ,   body => $body,
             })) {
-            $category->update({
+            $old_category->update({
                 category => $category,
                 whenedited => \'NOW()',
                 note => "Renamed $description",
                 %{ $category_details || {} },
             });
-            return $category;
+            return $old_category;
         }
     }
 
