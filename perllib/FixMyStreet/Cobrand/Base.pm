@@ -236,7 +236,7 @@ sub update_contact {
 
         my @fields = map { $self->get_field_extra($_) } @$fields;
         my $note = sprintf 'Fields edited by automated script%s', $description ? " ($description)" : '';
-        $contact->set_extra_fields($c, @fields);
+        $contact->set_extra_fields(@fields);
         $contact->set_inflated_columns({
             confirmed => 1,
             deleted => 0,
