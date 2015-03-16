@@ -13,6 +13,12 @@ sub path_to_web_templates {
     return [ FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify ];
 }
 
+sub _fallback_body_sender {
+    my ( $self, $body, $category ) = @_;
+
+    return { method => 'EmptyHomes' };
+};
+
 =item
 
 Return the base url for this cobranded site

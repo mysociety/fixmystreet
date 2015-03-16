@@ -380,10 +380,15 @@ for my $body (
     { area_id => 14279, name => 'Ballymoney Borough Council' },
     { area_id => 2636, name => 'Isle of Wight Council' },
     { area_id => 2649, name => 'Fife Council' },
+    { area_id => 14279, name => 'TransportNI (Western)' },
 ) {
     my $aid = $body->{area_id};
     my $body = $mech->create_body_ok($aid, $body->{name});
-    $body_ids{$aid} = $body->id;
+    if ($body_ids{$aid}) {
+        $body_ids{$aid} = [ $body_ids{$aid}, $body->id ];
+    } else {
+        $body_ids{$aid} = $body->id;
+    }
     push @bodies, $body;
 }
 
@@ -409,11 +414,11 @@ for my $contact ( {
     category => 'potholes',
     email => 'highways@example.com',
 }, {
-    body_id => $body_ids{14279}, # Ballymoney
+    body_id => $body_ids{14279}[1], # TransportNI
     category => 'Street lighting',
     email => 'roads.western@drdni.example.org',
 }, {
-    body_id => $body_ids{14279}, # Ballymoney
+    body_id => $body_ids{14279}[0], # Ballymoney
     category => 'Graffiti',
     email => 'highways@example.com',
 }, {
@@ -488,7 +493,7 @@ foreach my $test ( {
         email_count   => 1,
         dear          => qr'Dear Ballymoney Borough Council',
         to            => qr'Ballymoney Borough Council',
-        body          => $body_ids{14279},
+        body          => $body_ids{14279}[0],
         category      => 'Graffiti',
         longitude => -9.5,
     }, {
@@ -496,9 +501,9 @@ foreach my $test ( {
         desc          => 'directs NI correctly, 2',
         unset_whendef => 1,
         email_count   => 1,
-        dear          => qr'Dear Roads Service \(Western\)',
-        to            => qr'Roads Service \(Western\)" <roads',
-        body          => $body_ids{14279},
+        dear          => qr'Dear TransportNI \(Western\)',
+        to            => qr'TransportNI \(Western\)" <roads',
+        body          => $body_ids{14279}[1],
         category      => 'Street lighting',
         longitude => -9.5,
     }, {

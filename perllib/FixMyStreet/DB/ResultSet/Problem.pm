@@ -302,118 +302,106 @@ sub send_reports {
         if ( $cobrand->allow_anonymous_reports &&
              $row->user->email eq $cobrand->anonymous_account->{'email'}
          ) {
-             $h{anonymous_report} = 1;
-             $h{user_details} = _('This report was submitted anonymously');
-         } else {
-             $h{user_details} = sprintf(_('Name: %s'), $row->name) . "\n\n";
-             $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
-         }
+            $h{anonymous_report} = 1;
+            $h{user_details} = _('This report was submitted anonymously');
+        } else {
+            $h{user_details} = sprintf(_('Name: %s'), $row->name) . "\n\n";
+            $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
+        }
+
+        $h{easting_northing} = '';
 
         if ($cobrand->can('process_additional_metadata_for_email')) {
             $cobrand->process_additional_metadata_for_email($row, \%h);
         }
 
+        # XXX Needs locks!
+        # XXX Only copes with at most one missing body
+        my ($bodies, $missing) = $row->bodies_str =~ /^([\d,]+)(?:\|(\d+))?/;
+        my @bodies = split(/,/, $bodies);
+        $bodies = FixMyStreet::App->model("DB::Body")->search(
+            { id => \@bodies },
+            { order_by => 'name' },
+        );
+        $missing = FixMyStreet::App->model("DB::Body")->find($missing) if $missing;
+
+        my @dear;
         my %reporters = ();
-        my ( $sender_count );
-        if ($site eq 'emptyhomes') {
+        while (my $body = $bodies->next) {
+            my $sender_info = $cobrand->get_body_sender( $body, $row->category );
+            my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
-            my $body = $row->bodies_str;
-            $body = FixMyStreet::App->model("DB::Body")->find($body);
-            my $sender = "FixMyStreet::SendReport::EmptyHomes";
-            $reporters{ $sender } = $sender->new() unless $reporters{$sender};
-            $reporters{ $sender }->add_body( $body );
-            $sender_count = 1;
-
-        } else {
-
-            # XXX Needs locks!
-            # XXX Only copes with at most one missing body
-            my ($bodies, $missing) = $row->bodies_str =~ /^([\d,]+)(?:\|(\d+))?/;
-            my @bodies = split(/,/, $bodies);
-            $bodies = FixMyStreet::App->model("DB::Body")->search(
-                { id => \@bodies },
-                { order_by => 'name' },
-            );
-            $missing = FixMyStreet::App->model("DB::Body")->find($missing) if $missing;
-            my @dear;
-
-            while (my $body = $bodies->next) {
-                my $sender_info = $cobrand->get_body_sender( $body, $row->category );
-                my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
-
-                if ( ! exists $senders->{ $sender } ) {
-                    warn "No such sender [ $sender ] for body $body->name ( $body->id )";
-                    next;
-                }
-                $reporters{ $sender } ||= $sender->new();
-
-                if ( $reporters{ $sender }->should_skip( $row ) ) {
-                    debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;
-                } else {
-                    debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $body->send_method, $row->id) if $debug_mode;
-                    push @dear, $body->name;
-                    $reporters{ $sender }->add_body( $body, $sender_info->{config} );
-                }
+            if ( ! exists $senders->{ $sender } ) {
+                warn "No such sender [ $sender ] for body $body->name ( $body->id )";
+                next;
             }
+            $reporters{ $sender } ||= $sender->new();
 
-            if ($h{category} eq _('Other')) {
-                $h{category_footer} = _('this type of local problem');
-                $h{category_line} = '';
+            if ( $reporters{ $sender }->should_skip( $row ) ) {
+                debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;
             } else {
-                $h{category_footer} = "'" . $h{category} . "'";
-                $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
+                debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $body->send_method, $row->id) if $debug_mode;
+                push @dear, $body->name;
+                $reporters{ $sender }->add_body( $body, $sender_info->{config} );
             }
 
-            if ( $row->subcategory ) {
-                $h{subcategory_line} = sprintf(_("Subcategory: %s"), $row->subcategory) . "\n\n";
-            } else {
-                $h{subcategory_line} = "\n\n";
-            }
+            # If we are in the UK include eastings and northings, and nearest stuff
+            if ( $cobrand->country eq 'GB' && !$h{easting} ) {
+                my $coordsyst = 'G';
+                my $first_area = $body->body_areas->first->area_id;
+                my $area_info = mySociety::MaPit::call('area', $first_area);
+                $coordsyst = 'I' if $area_info->{type} eq 'LGD';
 
-            $h{bodies_name} = join(_(' and '), @dear);
-            if ($h{category} eq _('Other')) {
-                $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
-                    : '';
-            } else {
-                $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue.") . " ]\n\n"
-                    : '';
-            }
-            $h{missing} = '';
-            if ($missing) {
-                $h{missing} = '[ '
-                  . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $missing->name)
-                  . " ]\n\n";
-            }
+                ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude}, $coordsyst );
 
-            $sender_count = scalar @dear;
+                # email templates don't have conditionals so we need to format this here
+                $h{easting_northing} = "Easting/Northing";
+                $h{easting_northing} .= " (IE)" if $coordsyst eq 'I';
+                $h{easting_northing} .= ": $h{easting}/$h{northing}\n\n";
+            }
         }
 
         unless ( keys %reporters ) {
             die 'Report not going anywhere for ID ' . $row->id . '!';
         }
 
-        if (! $sender_count) {
+        unless (@dear) {
             debug_print("can't send because sender count is zero", $row->id) if $debug_mode;
             next;
         }
 
-        # If we are in the UK include eastings and northings, and nearest stuff
-        $h{easting_northing} = '';
-        if ( $cobrand->country eq 'GB' ) {
+        if ($h{category} eq _('Other')) {
+            $h{category_footer} = _('this type of local problem');
+            $h{category_line} = '';
+        } else {
+            $h{category_footer} = "'" . $h{category} . "'";
+            $h{category_line} = sprintf(_("Category: %s"), $h{category}) . "\n\n";
+        }
 
-            my $coordsyst = 'G';
-            $coordsyst = 'I' if grep { /FixMyStreet::SendReport::NI/ } keys %reporters;
-            ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude}, $coordsyst );
+        if ( $row->subcategory ) {
+            $h{subcategory_line} = sprintf(_("Subcategory: %s"), $row->subcategory) . "\n\n";
+        } else {
+            $h{subcategory_line} = "\n\n";
+        }
 
-            # email templates don't have conditionals so we need to format this here
-            $h{easting_northing} = "Easting/Northing";
-            $h{easting_northing} .= " (IE)" if $coordsyst eq 'I';
-            $h{easting_northing} .= ": $h{easting}/$h{northing}\n\n";
+        $h{bodies_name} = join(_(' and '), @dear);
+        if ($h{category} eq _('Other')) {
+            $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system.") . " ]\n\n"
+                : '';
+        } else {
+            $h{multiple} = @dear>1 ? "[ " . _("This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue.") . " ]\n\n"
+                : '';
+        }
+        $h{missing} = '';
+        if ($missing) {
+            $h{missing} = '[ '
+              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $missing->name)
+              . " ]\n\n";
         }
 
         if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING')) {
             # on a staging server send emails to ourselves rather than the bodies
-            %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes)/ } keys %reporters;
+            %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|EmptyHomes)/ } keys %reporters;
             unless (%reporters) {
                 %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
             }

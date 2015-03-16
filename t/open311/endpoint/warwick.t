@@ -212,6 +212,7 @@ subtest "End to end" => sub {
         FixMyStreet::override_config { 
             ALLOWED_COBRANDS => [ 'fixmystreet' ],
             SEND_REPORTS_ON_STAGING => 1,
+            MAPIT_URL => 'http://mapit.mysociety.org/',
         }, sub {
             ## we can't (yet) just do following due to
             ## https://github.com/mysociety/fixmystreet/issues/893
