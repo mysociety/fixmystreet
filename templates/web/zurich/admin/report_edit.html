@@ -10,6 +10,8 @@
 [% map_html %]
 </div>
 
+[% pstate = problem.get_extra_metadata('closure_status') || problem.state %]
+
 [% status_message %]
 
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
@@ -23,7 +25,7 @@
 
 <li class="report-edit-action">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
 
-[% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
+[% IF problem_is_closed %]
     <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
     [% IF problem.extra.original_detail %]
     <br>[%
@@ -134,19 +136,14 @@
 <p><span class="mock-label">[% loc('State:') %]</span> <select name="state"  id="state">
     <option value="">--</option>
   [% FOREACH s IN states %]
-    <option [% 'selected ' IF s.state == problem.state %] value="[% s.state %]">[% s.trans %]</option>
+    <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
   [% END %]
 </select></p>
-
-<p id="automatic-reply" class="report-edit-action">
-    <span class="mock-label">Automatische Antwort</span>
-    <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" />
-</p>
 
 <script type="text/javascript">
 $(function(){
 
-    $('.assignation select').change(function(){
+    $('.assignation__select').change(function(){
         if (this.value == "") {
             $('.assignation').css('color', '#000');
         } else {
@@ -159,11 +156,6 @@ $(function(){
     $('#state').change(function(){
         // Show or hide the automatic reply field
         var state = $(this).val();
-        if (state === 'hidden') {
-            $('#automatic-reply').show();
-        } else {
-            $('#automatic-reply').hide();
-        }
 
         // Show or hide the categories
         if (state === 'confirmed') {
@@ -183,6 +175,19 @@ $(function(){
             $('#assignation__external').hide();
         }
 
+        // disable the templates, public_response, publish if we've selected a
+        // different state to the one we started on
+        if ((state === '[% pstate %]')) {
+            $('input[name=publish_response]').show();
+            $('.response_templates_select').show();
+            $('#status_update').show();
+        }
+        else {
+            $('input[name=publish_response]').hide();
+            $('.response_templates_select').hide();
+            $('#status_update').hide();
+        }
+
     }).change();
 });
 </script>
@@ -196,7 +201,7 @@ $(function(){
 
     <div id="assignation__category">
     [% loc('Assign to different category:') %]</label>
-    <select name="category" id="category">
+    <select name="category" id="category" class="assignation__select">
             <option value="">--</option>
         [% FOREACH cat IN categories %]
             <option value="[% cat %]">[% cat %]</option>
@@ -212,7 +217,7 @@ $(function(){
   [% IF admin_type != 'super' AND list %]
     <li class="assignation report-edit-action" id="assignation__subdivision">
         <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
-        <select name="body_subdivision" id="body_subdivision">
+        <select name="body_subdivision" id="body_subdivision" class="assignation__select">
             <option value="">--</option>
             [% list %]
         </select>
@@ -222,12 +227,12 @@ $(function(){
 [% END %]
 
 [%# 3rd party messages sent for Extern/Wunsch states %]
-[% SWITCH problem.state %]
+[% SWITCH pstate %]
     [% CASE ['closed','investigating'] %]
     <ul class="no-bullets">
     <li class="assignation report-edit-action" id="assignation__external">
     <label for="body_external">
-        [% IF problem.state == 'closed' %]
+        [% IF pstate == 'closed' %]
             [% loc('Assign to external body:') %]
         [% ELSE %]
             [% loc('Assign to competent body:') %]
@@ -241,19 +246,19 @@ $(function(){
         [% END %]
         </select>
         <br>
-        [% IF problem.state == 'closed' %]
+        [% IF pstate == 'closed' %]
         <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
         <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
         [% END %]
         [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
-        <textarea name='external_message' id='external_body' cols=60 rows=5></textarea>
+        <textarea name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') | html %]</textarea>
     </li>
     </ul>
 [% END %]
 
 [%# Public response field shown for Ruckmeldung ausstehend/Extern/
   # Zustandigkeit unbekannt/Wunsch/Nicht kontaktierbar/Unsichtbar %]
-[% SWITCH problem.state %]
+[% SWITCH pstate %]
     [% CASE ['planned','closed','unable to fix','investigating','partial','hidden'] %]
         <ul class="no-bullets report-edit-action">
             <li><label for="status_update">[% loc('Public response:') %]</label>
@@ -266,7 +271,7 @@ $(function(){
 [% END %]
 
 <p align="right" class="report-edit-action">
-[% IF problem.state == 'planned' %]
+[% IF show_publish_response %]
 <input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
 [% END %]
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >

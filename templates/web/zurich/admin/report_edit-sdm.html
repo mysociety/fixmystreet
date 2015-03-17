@@ -67,7 +67,11 @@
 </li>
 
 [% IF problem.photo %]
-<li><img alt="" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg"></li>
+[% FOR photo IN problem.get_photoset(c).images %]
+<li>
+    <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
+</li>
+[% END %]
 [% END %]
 </ul>
 
