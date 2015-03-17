@@ -887,13 +887,14 @@ __PACKAGE__->has_many(
 
 sub get_time_spent {
     my $self = shift;
-    return $self->admin_log_entries->search({},
+    my $admin_logs = $self->admin_log_entries->search({},
         {
             group_by => 'object_id',
             columns => [
                 { sum_time_spent => { sum => 'time_spent' } },
             ]
-        })->single->get_column('sum_time_spent') || 0;
+        })->single;
+    return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
 }
 
 # we need the inline_constructor bit as we don't inherit from Moose
