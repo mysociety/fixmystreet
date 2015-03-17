@@ -87,7 +87,7 @@
                 [% IF field_errors.phone %]
                     <p class='form-error'>[% field_errors.phone %]</p>
                 [% END %]
-                <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+                <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]" required>
 
                 <div class="form-txt-submit-box">
                     [%# ID of submit_sign_in so name can be option, name of submit_register so it doesn't try and sign us in %]
