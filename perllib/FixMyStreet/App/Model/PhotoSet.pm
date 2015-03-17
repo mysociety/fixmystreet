@@ -86,6 +86,7 @@ Various accessors are provided onto it:
     num_images: count
     get_raw_image_data ($index): return the [$fileid, $binary_data] tuple
     all_images: return AoA as an array (e.g. rather than arrayref)
+        (NB: don't use all_images in templates, as TT will bite you)
 
 =cut
 
