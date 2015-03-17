@@ -153,8 +153,14 @@ has images => ( #  AoA of [$fileid, $binary_data] tuples
             if (length($part) == 40) {
                 my $fileid = $part;
                 my $file = $self->get_file($fileid);
-                my $photo = $file->slurp_raw;
-                [$fileid, $photo];
+                if ($file->exists) {
+                    my $photo = $file->slurp_raw;
+                    [$fileid, $photo];
+                }
+                else {
+                    warn "File $fileid doesn't exist";
+                    ();
+                }
             }
             else {
                 warn sprintf "Received bad photo hash of length %d", length($part);
