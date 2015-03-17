@@ -235,7 +235,7 @@ $(function(){
         <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
         <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
         [% END %]
-        [% INCLUDE 'admin/response_templates_select.html' for='external_message' %]
+        [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
         <textarea name='external_message' id='external_body' cols=60 rows=5></textarea>
     </li>
     </ul>
