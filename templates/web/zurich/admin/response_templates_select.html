@@ -1,6 +1,6 @@
 [% template_name="templates_for_${for}" %]
 
-[% response_templates = problem.body(c).response_templates %]
+[% response_templates = problem.body_object(c).response_templates %]
 <p>
 <span class="mock-label" for="[% template_name %]">[% loc('Templates:') %]</span>
 <select id="[% template_name %]">
