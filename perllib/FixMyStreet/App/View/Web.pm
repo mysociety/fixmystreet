@@ -133,6 +133,9 @@ sub escape_js {
         '>'  => 'u003e',
     );
     $text =~ s/([\\"'<>])/\\$lookup{$1}/g;
+
+    $text =~ s/(?:\r\n|\n|\r)/\\n/g; # replace newlines
+
     return $text;
 }
 
