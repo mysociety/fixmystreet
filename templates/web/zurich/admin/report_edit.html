@@ -164,7 +164,7 @@ $(function(){
             $('#assignation__subdivision select').val('');
         }
 
-        if (state === 'closed' or state === 'investigating') {
+        if ((state === 'closed') || (state === 'investigating')) {
             $('#assignation__external').show();
         } else {
             $('#assignation__external select').val('');
