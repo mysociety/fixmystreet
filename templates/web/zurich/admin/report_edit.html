@@ -75,7 +75,7 @@
     [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('(No phone number)') %]</em>[% END %]
 </li>
 <li>
-    [% loc('Time spent (in minutes):') %] [% problem.get_time_spent %]
+    <label>[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
 </li>
 
 
