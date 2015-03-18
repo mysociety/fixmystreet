@@ -53,6 +53,7 @@ The following are all the configuration settings that you can change in `conf/ge
 ### URLs and directories
 
 * <code><a href="#base_url">BASE_URL</a></code>
+* <code><a href="#secure_proxy_ssl_header">SECURE_PROXY_SSL_HEADER</a></code>
 * <code><a href="#upload_dir">UPLOAD_DIR</a></code>
 * <code><a href="#geo_cache">GEO_CACHE</a></code>
 * <code><a href="#admin_base_url">ADMIN_BASE_URL</a></code>
@@ -129,7 +130,7 @@ The following are all the configuration settings that you can change in `conf/ge
       </ul>
     </div>
   </dd>
-    
+
   <dt>
     <a name="base_url"><code>BASE_URL</code></a>
   </dt>
@@ -151,6 +152,24 @@ The following are all the configuration settings that you can change in `conf/ge
     </div>
   </dd>
 
+  <dt>
+    <a name="secure_proxy_ssl_header"><code>SECURE_PROXY_SSL_HEADER</code></a>
+  </dt>
+  <dd>
+    If you are behind a proxy that is performing SSL termination, and so
+    FixMyStreet is e.g. responding locally on a non-HTTPS connection, then you
+    need to make your proxy set a custom HTTP header saying that the request
+    was via HTTPS, and then set this value to a two-element list containing the
+    trusted HTTP header and the required value.
+    <div class="more-info">
+      <p>Example:</p>
+      <ul class="examples">
+        <li>
+          <code>SECURE_PROXY_SSL_HEADER: [ 'X-Forwarded-Proto', 'https' ]</code>
+        </li>
+      </ul>
+    </div>
+  </dd>
 
   <dt>
     <a name="email_domain"><code>EMAIL_DOMAIN</code></a>, 
