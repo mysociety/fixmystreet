@@ -1,0 +1,17 @@
+[% all_incidents = on_map.merge(around_map) %]
+[% IF all_incidents.size %]
+    [% IF all_incidents.size > 10; all_incidents = all_incidents.slice(0,9); END %]
+    [% FOREACH p IN all_incidents %]
+        [% UNLESS p.title; p = p.problem; END %]
+        <li class="[% c.cobrand.pin_colour(p) %]">
+            <a href="[% c.uri_for('/report', p.id ) %]" class="[% p.category %]">
+                <h3>[% p.title | html %]</h3>
+                <p>Reported [%- prettify_dt( p.confirmed, 1 ) %]</p>
+            </a>
+        </li>
+    [% END %]
+[% ELSE %]
+    <li class="empty">
+        <p>[% loc('There are no reports to show.') %]</p>
+    </li>
+[% END %]

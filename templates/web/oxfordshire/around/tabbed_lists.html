@@ -1,0 +1,28 @@
+<p class="report-list-filters">
+    <label>
+        Show
+        <select id="statuses">
+            <option value="">all reports</option>
+            <option value="open" selected>unfixed reports</option>
+            <option value="fixed">fixed reports</option>
+        </select>
+    </label>
+    <label>
+        about
+        [% IF category %]
+            <select id="categories">
+                <option value="[% category | html %]" selected>
+                    [% category | html %]
+                </option>
+            </select>
+        [% ELSE %]
+            <select id="categories">
+                <option value="">Everything</option>
+            </select>
+        [% END %]
+    </label>
+</p>
+
+<ul class="report-list" id="current_combined">
+    [% INCLUDE "around/combined_map_list_items.html" %]
+</ul>

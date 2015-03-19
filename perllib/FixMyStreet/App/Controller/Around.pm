@@ -1,6 +1,7 @@
 package FixMyStreet::App::Controller::Around;
 use Moose;
 use namespace::autoclean;
+use List::MoreUtils 'uniq';
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -164,11 +165,15 @@ sub display_location : Private {
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
+    my $states = $c->cobrand->on_map_default_states;
+
+    # Check the category to filter by, if any, is valid
+    $c->forward('check_category_is_valid');
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval );
+        $interval, $c->stash->{category}, $states );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
@@ -221,6 +226,36 @@ sub check_location_is_acceptable : Private {
     return $c->forward('/council/load_and_check_areas');
 }
 
+=head2 check_category_is_valid
+
+Check that the 'category' query param is valid, if it's present.
+
+=cut
+
+sub check_category_is_valid : Private {
+    my ( $self, $c ) = @_;
+
+    my $category = $c->req->param('category');
+    if ( $category ) {
+        my $all_areas = $c->stash->{all_areas};
+        my @bodies = $c->model('DB::Body')->search(
+            { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
+            { join => 'body_areas' }
+        )->all;
+        my %bodies = map { $_->id => $_ } @bodies;
+
+        my $count = $c->model('DB::Contact')->not_deleted->search(
+            {
+                body_id => [ keys %bodies ],
+                category => $category
+            }
+        )->count;
+        if ( $count ) {
+            $c->stash->{category} = $category;
+        }
+    }
+}
+
 =head2 /ajax
 
 Handle the ajax calls that the map makes when it is dragged. The info returned
@@ -254,20 +289,69 @@ sub ajax : Path('/ajax') {
     my ( $pins, $on_map, $around_map, $dist ) =
       FixMyStreet::Map::map_pins( $c, $interval );
 
-    # render templates to get the html
-    my $on_map_list_html = $c->render_fragment(
-        'around/on_map_list_items.html',
-        { on_map => $on_map, around_map => $around_map }
-    );
-    my $around_map_list_html = $c->render_fragment(
-        'around/around_map_list_items.html',
-        { on_map => $on_map, around_map => $around_map }
-    );
 
     # JSON encode the response
     my $json = { pins => $pins };
-    $json->{current} = $on_map_list_html if $on_map_list_html;
-    $json->{current_near} = $around_map_list_html if $around_map_list_html;
+
+    # render templates to get the html
+    if ($c->cobrand->combine_tabs_on_around) {
+        my $combined_map_list_html = $c->render_fragment(
+            'around/combined_map_list_items.html',
+            { on_map => $on_map, around_map => $around_map }
+        );
+        $json->{current_combined} = $combined_map_list_html if $combined_map_list_html;
+    } else {
+        my $on_map_list_html = $c->render_fragment(
+            'around/on_map_list_items.html',
+            { on_map => $on_map, around_map => $around_map }
+        );
+        $json->{current} = $on_map_list_html if $on_map_list_html;
+
+        my $around_map_list_html = $c->render_fragment(
+            'around/around_map_list_items.html',
+            { on_map => $on_map, around_map => $around_map }
+        );
+        $json->{current_near} = $around_map_list_html if $around_map_list_html;
+    }
+
+    my $body = JSON->new->utf8(1)->encode($json);
+    $c->res->body($body);
+}
+
+=head2 /ajax/categories
+
+Handle the ajax calls to update the 'categories' dropdown on the /around page
+when the map is dragged. Renders a JSON list of all categories in use for the
+pins inside the specified bounding box.
+
+=cut
+
+sub ajax_categories : Path('/ajax/categories') {
+    my ( $self, $c ) = @_;
+
+    $c->res->content_type('application/json; charset=utf-8');
+
+    unless ( $c->req->param('bbox') ) {
+        $c->res->status(404);
+        $c->res->body('');
+        return;
+    }
+
+    # assume this is not cacheable - may need to be more fine-grained later
+    $c->res->header( 'Cache_Control' => 'max-age=0' );
+
+    # Need to be the class that can handle it
+    FixMyStreet::Map::set_map_class( 'OSM' );
+
+    # extract the data from the map
+    # Use undef for $interval to get all pins
+    my ( $pins, $on_map, $around_map, $dist ) =
+      FixMyStreet::Map::map_pins( $c, undef );
+
+    # Get a sorted & unique list of categories used by the displayed pins
+    my @categories = uniq map { @$_[6] } @$pins;
+    @categories = sort @categories;
+    my $json = { categories => \@categories };
     my $body = JSON->new->utf8(1)->encode($json);
     $c->res->body($body);
 }

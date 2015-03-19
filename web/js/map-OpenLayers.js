@@ -29,6 +29,14 @@ function fixmystreet_update_pin(lonlat) {
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
+        // If the category filter appears on the map and the user has selected
+        // something from it, then pre-fill the category field in the report
+        if ($("select#categories").length) {
+            var category = $("#categories").val();
+            if (!!category && $("#form_category option[value="+category+"]")) {
+                $("#form_category").val(category);
+            }
+        }
     });
 
     if (!$('#side-form-error').is(':visible')) {
@@ -107,6 +115,59 @@ function fms_markers_resize() {
         fixmystreet.markers.features[i].attributes.size = size;
     }
     fixmystreet.markers.redraw();
+}
+
+function fms_categories_update() {
+    var bbox = fixmystreet.bbox_strategy.getMapBounds().toBBOX();
+    // Only refresh the contents of the categories select field if
+    // the map has moved since last time we did it.
+    if (bbox !== fixmystreet.categories_bbox) {
+        var default_categories = [{label: "Everything", value: ""}];
+        $.getJSON("/ajax/categories", {bbox: bbox})
+            .done(function(data) {
+                var categories = default_categories.slice();
+                for (var i = 0; i < data.categories.length; i++) {
+                    categories.push({value: data.categories[i]});
+                }
+                fms_set_categories_options(categories);
+                fixmystreet.categories_bbox = bbox;
+            })
+            .fail(function() {
+                fms_set_categories_options(default_categories);
+            });
+    }
+}
+
+function fms_categories_or_status_changed() {
+    // If the category or status has changed we need to re-fetch map markers
+    fixmystreet.markers.refresh({force: true});
+}
+
+function fms_set_categories_options(options) {
+    var old_value = $("#categories").val();
+    var select = $("<select>").attr("id", "categories");
+    var option_els = [];
+    for (var i = 0; i < options.length; i++) {
+        var value = options[i].value;
+        var label = options[i].label || value;
+        var option = $("<option>").val(value).html(label);
+        if (old_value == value) {
+            option.prop('selected', true);
+            old_value = null;
+        }
+        select.append(option);
+    }
+    // If the selected option isn't available in the new list,
+    // append it to the options so the user experience isn't damaged.
+    if (!!old_value) {
+        var option = $("<option>").val(old_value).html(old_value).prop("selected", true);
+        select.append(option);
+    }
+    // Replace the existing select with the new one
+    // NB: Leaving the <select> intact and replacing the <options> within
+    // seems to mess up event handling in Chrome/Safari, so replacing the
+    // entire element is the way to go.
+    $("#categories").replaceWith(select);
 }
 
 function fixmystreet_onload() {
@@ -196,7 +257,7 @@ function fixmystreet_onload() {
     if (fixmystreet.page == 'around') {
         fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
-        pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
+        pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
             url: '/ajax',
             params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
@@ -240,6 +301,18 @@ function fixmystreet_onload() {
         fixmystreet.map.addControl( fixmystreet.select_feature );
         fixmystreet.select_feature.activate();
         fixmystreet.map.events.register( 'zoomend', null, fms_markers_resize );
+
+        // If the category filter dropdown exists on the page set up the
+        // event handlers to populate it and react to it changing
+        if ($("select#categories").length) {
+            fixmystreet.markers.events.register( 'loadend', null, fms_categories_update );
+            fixmystreet.categories_bbox = null;
+            $("body").on("change", "#categories", fms_categories_or_status_changed);
+        }
+        // Do the same for the status dropdown
+        if ($("select#statuses").length) {
+            $("body").on("change", "#statuses", fms_categories_or_status_changed);
+        }
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
@@ -490,6 +563,24 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
     }
 });
 
+/* Pan data request handler */
+OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    read: function(options) {
+        var category = $("#categories").val();
+        if (!!category) {
+            options.params = options.params || {};
+            options.params.category = category;
+        }
+        var status = $("#statuses").val();
+        if (!!status) {
+            options.params = options.params || {};
+            options.params.status = status;
+        }
+        return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
+    },
+    CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"
+});
+
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
@@ -505,8 +596,10 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         if (typeof(obj.current_near) != 'undefined' && (current_near = document.getElementById('current_near'))) {
             current_near.innerHTML = obj.current_near;
         }
-        var markers = fms_markers_list( obj.pins, false );
-        return markers;
+        if (typeof(obj.current_combined) != 'undefined' && (current_combined = document.getElementById('current_combined'))) {
+            current_combined.innerHTML = obj.current_combined;
+        }
+        return fms_markers_list( obj.pins, false );
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
 });

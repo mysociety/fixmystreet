@@ -366,6 +366,15 @@ Return the default maximum age for pins.
 
 sub on_map_default_max_pin_age { return '6 months'; }
 
+=head2 on_map_default_states
+
+Return the default filter to use for report states on map page.
+Return undef to show all visible reports.
+
+=cut
+
+sub on_map_default_states { return undef; }
+
 =head2 allow_photo_upload
 
 Return a boolean indicating whether the cobrand allows photo uploads
@@ -732,6 +741,14 @@ If set to an arrayref, will plot those area ID(s) from mapit on all the /around 
 =cut
 
 sub areas_on_around { []; }
+
+=head2 combine_tabs_on_around
+
+If true, includes a combined list of reports on /around instead of the tabs
+
+=cut
+
+sub combine_tabs_on_around { return 0; }
 
 sub process_extras {}
 
