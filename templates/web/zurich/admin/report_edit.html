@@ -10,6 +10,8 @@
 [% map_html %]
 </div>
 
+[% pstate = problem.get_extra_metadata('closure_status') || problem.state %]
+
 [% status_message %]
 
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
@@ -23,7 +25,7 @@
 
 <li>&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
 
-[% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
+[% IF problem_is_closed %]
     <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
     [% IF problem.extra.original_detail %]
     <br>[%
@@ -115,14 +117,16 @@
 <p><span class="mock-label">[% loc('State:') %]</span> <select name="state"  id="state">
     <option value="">--</option>
   [% FOREACH s IN states %]
-    <option [% 'selected ' IF s.state == problem.state %] value="[% s.state %]">[% s.trans %]</option>
+    <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
   [% END %]
 </select></p>
 
+[% IF pstate == 'hidden' %]
 <p id="automatic-reply">
     <span class="mock-label">Automatische Antwort</span>
     <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" />
 </p>
+[% END %]
 
 <script type="text/javascript">
 $(function(){
@@ -206,11 +210,11 @@ $(function(){
 
 [%# 3rd party messages sent for Extern/Wunsch states %]
 [% FOR s IN ['closed','investigating'] %]
-    [% IF problem.state == s %]
+    [% IF pstate == s %]
     <ul class="no-bullets">
     <li class="assignation" id="assignation__external">
     <label for="body_external">
-        [% IF problem.state == 'closed' %]
+        [% IF pstate == 'closed' %]
             [% loc('Assign to external body:') %]
         [% ELSE %]
             [% loc('Assign to competent body:') %]
@@ -224,7 +228,7 @@ $(function(){
         [% END %]
         </select>
         <br>
-        [% IF problem.state == 'closed' %]
+        [% IF pstate == 'closed' %]
         <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
         <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
         [% END %]
@@ -238,7 +242,7 @@ $(function(){
 [%# Public response field shown for Ruckmeldung ausstehend/Extern/
   # Zustandigkeit unbekannt/Wunsch/Nicht kontaktierbar/Unsichtbar %]
 [% FOR s IN ['planned','closed','unable to fix','investigating','partial','hidden'] %]
-    [% IF problem.state == s %]
+    [% IF pstate == s %]
         <ul class="no-bullets">
             <li><label for="status_update">[% loc('Public response:') %]</label>
             [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
@@ -251,7 +255,7 @@ $(function(){
 [% END %]
 
 <p align="right">
-[% IF problem.state == 'planned' %]
+[% IF show_publish_response %]
 <input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
 [% END %]
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
