@@ -107,8 +107,11 @@ sub prettify_dt {
 sub zurich_closed_states {
     my $states = {
         'fixed - council' => 1,
-        'closed'          => 1,
+        'closed'          => 1, # extern
         'hidden'          => 1,
+        'investigating'   => 1, # wish
+        'unable to fix'   => 1, # jurisdiction  unknown
+        'partial'         => 1, # not contactable
     };
 
     return wantarray ? keys %{ $states } : $states;
@@ -521,6 +524,7 @@ sub admin_report_edit {
         }
     }
 
+
     # Problem updates upon submission
     if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
         $problem->set_extra_metadata('publish_photo' => $c->req->params->{publish_photo} || 0 );
@@ -551,6 +555,17 @@ sub admin_report_edit {
         my $redirect = 0;
         my $new_cat = $c->req->params->{category} || '';
         my $state = $c->req->params->{state} || '';
+        my $oldstate = $problem->state;
+
+        my %closure_states = (
+            'closed' => 1,
+            'investigating' => 1,
+            'hidden' => 1,
+            'partial' => 1,
+            'unable to fix' => 1,
+        );
+
+        my $old_closure_state = $problem->get_extra_metadata('closure_status');
 
         if (
             ($state eq 'confirmed') 
@@ -567,6 +582,22 @@ sub admin_report_edit {
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
+        } elsif ( $closure_states{$state} and
+                    ( $oldstate ne 'planned' )
+                    || ($old_closure_state and $old_closure_state ne $state))
+        {
+            # for these states
+            #  - closed (Extern)
+            #  - investigating (Wish)
+            #  - hidden
+            #  - partial (Not contactable)
+            #  - unable to fix (Jurisdiction unknown)
+            # we divert to planned (Rueckmeldung ausstehend) and set closure_status to the requested state
+            # From here, the DM can reply to the user, triggering the setting of problem to correct state
+            $problem->set_extra_metadata( closure_status => $state );
+            $self->set_problem_state($c, $problem, 'planned');
+            $state = 'planned';
+
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
             $self->set_problem_state($c, $problem, 'in progress');
@@ -574,53 +605,20 @@ sub admin_report_edit {
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
-        } elsif ( my $external = $c->req->params->{body_external} and $state =~/^(closed|investigating)$/) {
-            # Extern | Wish
-            my $external_body = $c->model('DB::Body')->find($external)
-                or die "Body $external not found";
-            $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
-            $problem->set_extra_metadata_if_undefined( closed_overdue => $self->overdue( $problem ) );
-            $problem->external_body( $external );
-            $problem->whensent( undef );
-            $self->set_problem_state($c, $problem, $state);
-            if ( my $external_message = $c->req->params->{external_message} ) {
-                $problem->add_to_comments( {
-                    text => (
-                        sprintf '(%s %s) %s',
-                        $state eq 'closed' ?
-                            _('Forwarded to external body') :
-                            _('Forwarded wish to external body'),
-                        $external_body->name,
-                        $external_message,
-                    ),
-                    user => $c->user->obj,
-                    state => 'hidden', # seems best fit, should not be shown publicly
-                    mark_fixed => 0,
-                    anonymous => 1,
-                    extra => { is_internal_note => 1, is_external_message => 1 },
-                } );
-                # set the external_message in extra, so that it will be picked up
-                # later by send-reports
-                $problem->set_extra_metadata( external_message => $external_message );
-            }
-            my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
-            _admin_send_email( $c, $template, $problem );
-            $redirect = 1;
         } else {
             if ($state) {
 
-                if ($problem->state eq 'unconfirmed' and $state ne 'unconfirmed') {
+                if ($oldstate eq 'unconfirmed' and $state ne 'unconfirmed') {
                     # only set this for the first state change
                     $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
                 }
 
-                $self->set_problem_state($c, $problem, $state);
+                $self->set_problem_state($c, $problem, $state)
+                    unless $closure_states{$state}; # in closure-states case, we'll defer to clause below
 
                 if ($self->problem_is_closed($problem)) {
                     $problem->set_extra_metadata_if_undefined( closed_overdue => $self->overdue( $problem ) );
-                }
-                if ( $state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
-                    _admin_send_email( $c, 'problem-rejected.txt', $problem );
+                    $c->stash->{problem_is_closed} = 1;
                 }
             }
             else {
@@ -628,21 +626,91 @@ sub admin_report_edit {
             }
         }
 
+        if ($problem->state eq 'planned') {
+            # Rueckmeldung ausstehend
+            # override $state from the metadata set above
+            $state = $problem->get_extra_metadata('closure_status') || '';
+            my $closed = 0;
+
+            if ($state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
+                _admin_send_email( $c, 'problem-rejected.txt', $problem );
+                $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
+                $self->set_problem_state($c, $problem, $state);
+                $closed++;
+            }
+            elsif ($state =~/^(closed|investigating)$/ # Extern | Wish
+                and my $external = $c->req->params->{body_external}) {
+                my $external_body = $c->model('DB::Body')->find($external)
+                    or die "Body $external not found";
+                $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
+                $problem->external_body( $external );
+                $problem->whensent( undef );
+                $self->set_problem_state($c, $problem, $state);
+                my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
+                _admin_send_email( $c, $template, $problem );
+                $redirect = 1;
+                $closed++;
+            }
+            elsif ($c->req->params->{publish_response}) {
+                # otherwise we only set the state if publish_response is set
+
+                # if $state wasn't set, then we are simply closing the message as fixed
+                $state ||= 'fixed - council';
+                _admin_send_email( $c, 'problem-closed.txt', $problem );
+                $redirect = 1;
+                $closed++;
+            }
+
+            if ($closed) {
+                # set to either the closure_status from metadata or 'fixed - council' as above
+                $self->set_problem_state($c, $problem, $state);
+                $problem->set_extra_metadata_if_undefined( closed_overdue => $self->overdue( $problem ) );
+                $problem->unset_extra_metadata('closure_status');
+            }
+        }
+        else {
+            $problem->unset_extra_metadata('closure_status');
+        }
+
         $problem->title( $c->req->param('title') );
         $problem->detail( $c->req->param('detail') );
         $problem->latitude( $c->req->param('latitude') );
         $problem->longitude( $c->req->param('longitude') );
 
-        # Final, public, Update from DM
+        # update the public update from DM
         if (my $update = $c->req->param('status_update')) {
             $problem->set_extra_metadata(public_response => $update);
-            if ($c->req->params->{publish_response}) {
-                $self->set_problem_state($c, $problem, 'fixed - council');
-                $problem->set_extra_metadata( closed_overdue => $self->overdue( $problem ) );
-                _admin_send_email( $c, 'problem-closed.txt', $problem );
-            }
         }
-        $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
+
+        # send external_message if provided and state is *now* Wish|Extern
+        # e.g. was already, or was set in the Rueckmeldung ausstehend clause above.
+        if ( my $external_message = $c->req->params->{external_message}
+             and $problem->state =~ /^(closed|investigating)$/) 
+        {
+            my $external = $problem->external_body;
+            my $external_body = $c->model('DB::Body')->find($external)
+                or die "Body $external not found";
+
+            $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
+            $problem->add_to_comments( {
+                text => (
+                    sprintf '(%s %s) %s',
+                    $state eq 'closed' ?
+                        _('Forwarded to external body') :
+                        _('Forwarded wish to external body'),
+                    $external_body->name,
+                    $external_message,
+                ),
+                user => $c->user->obj,
+                state => 'hidden', # seems best fit, should not be shown publicly
+                mark_fixed => 0,
+                anonymous => 1,
+                extra => { is_internal_note => 1, is_external_message => 1 },
+            } );
+            # set the external_message in extra, so that it will be picked up
+            # later by send-reports
+            $problem->set_extra_metadata( external_message => $external_message );
+        }
 
         $problem->lastupdate( \'ms_current_timestamp()' );
         $problem->update;
@@ -694,8 +762,14 @@ sub admin_report_edit {
             my $not_contactable = $c->req->param('not_contactable');
 
             $problem->bodies_str( $body->parent->id );
-            my $new_state = $not_contactable ? 'partial' : 'confirmed';
-            $self->set_problem_state($c, $problem, $new_state);
+            if ($not_contactable) {
+                # we can't directly set state, but mark the closure_status for DM to confirm.
+                $self->set_problem_state($c, $problem, 'planned');
+                $problem->set_extra_metadata( closure_status => 'partial');
+            }
+            else {
+                $self->set_problem_state($c, $problem, 'confirmed');
+            }
             $problem->update;
             $c->forward( 'log_edit', [ $problem->id, 'problem', 
                 $not_contactable ?
@@ -777,11 +851,6 @@ sub stash_states {
             unconfirmed => 1,
         },
         {
-            # Rueckmeldung ausstehend
-            state => 'planned',
-            trans => _('Planned'),
-        },
-        {
             # Unsichtbar (hidden)
             state => 'hidden',
             trans => _('Hidden'),
@@ -809,7 +878,26 @@ sub stash_states {
             trans => _('Not contactable'),
         },
     );
+    my %state_trans = map { $_->{state} => $_->{trans} } @states;
+
     my $state = $problem->state;
+
+    # Rueckmeldung ausstehend may also indicate the status it's working towards.
+    push @states, do {
+        if ($state eq 'planned' and my $closure_status = $problem->get_extra_metadata('closure_status')) {
+            {
+                state => $closure_status,
+                trans => sprintf '%s (%s)', _('Planned'), $state_trans{$closure_status},
+            };
+        }
+        else {
+            {
+                state => 'planned',
+                trans => _('Planned'),
+            };
+        }
+    };
+
     if ($state eq 'in progress') {
         push @states, {
             state => 'in progress',
@@ -827,6 +915,12 @@ sub stash_states {
     }
     $c->stash->{states} = \@states;
     $c->stash->{states_debug} = Dumper($state, \@states); use Data::Dumper;
+
+    # stash details about the public response
+    $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
+    $c->stash->{show_publish_response} = 
+        ($problem->state eq 'planned'); # && ($state !~ /^(closed|investigating|hidden)$/);
+
 }
 
 =head2 _admin_send_email

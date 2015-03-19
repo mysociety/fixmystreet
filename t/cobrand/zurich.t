@@ -46,6 +46,7 @@ sub reset_report_state {
     $report->unset_extra_metadata('moderated_overdue');
     $report->unset_extra_metadata('subdiv_overdue');
     $report->unset_extra_metadata('closed_overdue');
+    $report->unset_extra_metadata('closure_status');
     $report->state('unconfirmed');
     $report->created($created) if $created;
     $report->update;
@@ -255,102 +256,99 @@ sub get_moderated_count {
 
 subtest "report_edit" => sub {
 
-    reset_report_state($report);
-
-    ok ( ! $report->get_extra_metadata('moderated_overdue'), 'Report currently unmoderated' );
-
-    is get_moderated_count(), 0;
-
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
     }, sub {
+
+        reset_report_state($report);
+        ok ( ! $report->get_extra_metadata('moderated_overdue'), 'Report currently unmoderated' );
+        is get_moderated_count(), 0;
+
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->content_contains( 'Unbest&auml;tigt' ); # Unconfirmed email
         $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
         $mech->get_ok( '/report/' . $report->id );
 
         $report->discard_changes();
-        is $report->state, 'confirmed', 'state has been updated to confirmed';
-    };
 
-    $mech->content_contains('Aufgenommen');
-    $mech->content_contains('Test Test');
-    $mech->content_lacks('photo/' . $report->id . '.1.jpeg');
-    $mech->email_count_is(0);
+        $mech->content_contains('Aufgenommen');
+        $mech->content_contains('Test Test');
+        $mech->content_lacks('photo/' . $report->id . '.1.jpeg');
+        $mech->email_count_is(0);
 
-    $report->discard_changes;
+        $report->discard_changes;
 
-    is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Report now marked moderated' );
-    is get_moderated_count(), 1;
+        is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Report now marked moderated' );
+        is get_moderated_count(), 1;
 
+        # Set state back to 10 days ago so that report is overdue
+        my $created = $report->created;
+        reset_report_state($report, $created->clone->subtract(days => 10));
 
-    # Set state back to 10 days ago so that report is overdue
-    my $created = $report->created;
-    reset_report_state($report, $created->clone->subtract(days => 10));
+        is get_moderated_count(), 0;
 
-    is get_moderated_count(), 0;
-
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'zurich' ],
-    }, sub {
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
         $mech->get_ok( '/report/' . $report->id );
-    };
-    $report->discard_changes;
-    is ( $report->get_extra_metadata('moderated_overdue'), 1, 'moderated_overdue set correctly when overdue' );
-    is get_moderated_count(), 0, 'Moderated count not increased when overdue';
 
-    reset_report_state($report, $created);
+        $report->discard_changes;
+        is ( $report->get_extra_metadata('moderated_overdue'), 1, 'moderated_overdue set correctly when overdue' );
+        is get_moderated_count(), 0, 'Moderated count not increased when overdue';
 
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'zurich' ],
-    }, sub {
+        reset_report_state($report, $created);
+
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
         $mech->get_ok( '/report/' . $report->id );
-    };
-    $report->discard_changes;
-    is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Marking confirmed sets moderated_overdue' );
-    is ( $report->get_extra_metadata('closed_overdue'), undef, 'Marking confirmed does NOT set closed_overdue' );
-    is get_moderated_count(), 1;
+        $report->discard_changes;
+        is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Marking confirmed sets moderated_overdue' );
+        is ( $report->get_extra_metadata('closed_overdue'), undef, 'Marking confirmed does NOT set closed_overdue' );
+        is get_moderated_count(), 1;
 
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'zurich' ],
-    }, sub {
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( { with_fields => { state => 'hidden' } } );
         $mech->get_ok( '/admin/report_edit/' . $report->id );
-    };
-    $report->discard_changes;
-    is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Still marked moderated_overdue' );
-    is ( $report->get_extra_metadata('closed_overdue'),    0, 'Marking hidden also set closed_overdue' );
-    is get_moderated_count(), 1, 'Check still counted moderated'
-        or diag $report->get_column('extra');
 
-    reset_report_state($report);
+        $report->discard_changes;
+        is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Still marked moderated_overdue' );
+        is ( $report->get_extra_metadata('closed_overdue'),    undef, "Marking hidden doesn't set closed_overdue..." );
+        is ( $report->state, 'planned', 'Marking hidden actually sets state to planned');
+        is ( $report->get_extra_metadata('closure_status'), 'hidden', 'Marking hidden sets closure_status to hidden');
+        is get_moderated_count(), 1, 'Check still counted moderated'
+            or diag $report->get_column('extra');
 
-    is ( $report->get_extra_metadata('moderated_overdue'), undef, 'Sanity check' );
-    is get_moderated_count(), 0;
+        # marking "Automatisch Antwort" checkbox actually
+        $mech->submit_form_ok( { with_fields => { send_rejected_email => '1' } } );
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $report->discard_changes;
 
-    # Check that setting to 'hidden' also triggers moderation
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'zurich' ],
-    }, sub {
+        is ( $report->get_extra_metadata('closed_overdue'),    0, "Closing as hidden sets closed_overdue..." );
+        is ( $report->state, 'hidden', 'Closing as hidden sets state to hidden');
+        is ( $report->get_extra_metadata('closure_status'), undef, 'Closing as hidden unsets closure_status');
+
+
+        reset_report_state($report);
+        is ( $report->get_extra_metadata('moderated_overdue'), undef, 'Sanity check' );
+        is get_moderated_count(), 0;
+
+        # Check that setting to 'hidden' also triggers moderation
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( { with_fields => { state => 'hidden' } } );
         $mech->get_ok( '/admin/report_edit/' . $report->id );
-    };
-    $report->discard_changes;
-    is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Marking hidden from scratch sets moderated_overdue' );
-    is ( $report->get_extra_metadata('closed_overdue'),    0, 'Marking hidden from scratch also set closed_overdue' );
-    is get_moderated_count(), 1;
+        $mech->submit_form_ok( { with_fields => { send_rejected_email => '1' } } );
+        $mech->get_ok( '/admin/report_edit/' . $report->id );
 
-    is ($cobrand->get_or_check_overdue($report), 0, 'sanity check');
-    $report->update({ created => $created->clone->subtract(days => 10) });
-    is ($cobrand->get_or_check_overdue($report), 0, 'overdue call not increased');
+        $report->discard_changes;
+        is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Marking hidden from scratch sets moderated_overdue' );
+        is ( $report->get_extra_metadata('closed_overdue'),    0, 'Marking hidden from scratch also set closed_overdue' );
+        is get_moderated_count(), 1;
 
-    reset_report_state($report, $created);
+        is ($cobrand->get_or_check_overdue($report), 0, 'sanity check');
+        $report->update({ created => $created->clone->subtract(days => 10) });
+        is ($cobrand->get_or_check_overdue($report), 0, 'overdue call not increased');
+
+        reset_report_state($report, $created);
+    }
 };
 
 FixMyStreet::override_config {
@@ -375,7 +373,7 @@ FixMyStreet::override_config {
     $mech->content_contains( 'Originaltext: &ldquo;Test Test 1 for ' . $division->id . ' Detail&rdquo;' );
 
     $mech->get_ok( '/admin/report_edit/' . $report->id );
-    $mech->submit_form_ok( { with_fields => { body_subdivision => $subdivision->id, send_rejected_email => 1 } } );
+    $mech->submit_form_ok( { with_fields => { body_subdivision => $subdivision->id } } );
 
     $mech->get_ok( '/report/' . $report->id );
     $mech->content_contains('In Bearbeitung');
@@ -461,12 +459,11 @@ subtest 'SDM' => sub {
             $mech->get_ok( '/admin/report_edit/' . $report->id );
             $mech->submit_form_ok( { button => 'not_contactable', form_number => 2 } );
             $report->discard_changes;
-            is $report->state, 'partial', 'Report sent back to partial (not_contactable) state';
+            is $report->state, 'planned', 'Report sent back to Rueckmeldung ausstehend state';
+            is $report->get_extra_metadata('closure_status'), 'partial', 'Report sent back to partial (not_contactable) state';
             is $report->bodies_str, $division->id, 'Report sent back to division';
         };
     };
-
-    $report->update({ state => 'planned' });
 
     $mech->log_out_ok;
 };
@@ -477,6 +474,9 @@ FixMyStreet::override_config {
 }, sub {
     $mech->get_ok( '/admin' );
 };
+
+reset_report_state($report);
+$report->update({ state => 'planned' });
 
 $mech->content_contains( 'report_edit/' . $report->id );
 $mech->content_contains( DateTime->now->strftime("%d.%m.%Y") );
@@ -506,7 +506,7 @@ like $email->header('From'), qr/division\@example.org/, 'from line looks correct
 like $email->body, qr/FINAL UPDATE/, 'body looks correct';
 $mech->clear_emails_ok;
 
-# Assign directly to planned, don't confirm email
+# Assign planned (via confirmed), don't confirm email
 @reports = $mech->create_problems_for_body( 1, $division->id, 'Second', {
     state              => 'unconfirmed',
     confirmed          => undef,
@@ -519,6 +519,8 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
 }, sub {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
+    $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
+    $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => { state => 'planned' } } );
     $mech->get_ok( '/report/' . $report->id );
 };
@@ -530,6 +532,8 @@ FixMyStreet::override_config {
 }, sub {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_contains( 'Unbest&auml;tigt' );
+    $report->discard_changes;
+    diag $report->state . " !!!";
     $mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
 
     $mech->get_ok( '/report/' . $report->id );
@@ -742,16 +746,17 @@ subtest "problems can't be assigned to deleted bodies" => sub {
 subtest "hidden report email are only sent when requested" => sub {
     $user = $mech->log_in_ok( 'dm1@example.org') ;
     $report->set_extra_metadata(email_confirmed => 1);
+    $report->state('hidden');
     $report->update;
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
     }, sub {
         $mech->get_ok( '/admin/report_edit/' . $report->id );
-        $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => 1 } } );
+        $mech->submit_form_ok( { with_fields => { send_rejected_email => 1 } } );
         $mech->email_count_is(1);
         $mech->clear_emails_ok;
         $mech->get_ok( '/admin/report_edit/' . $report->id );
-        $mech->submit_form_ok( { with_fields => { state => 'hidden', send_rejected_email => undef } } );
+        $mech->submit_form_ok( { with_fields => { send_rejected_email => undef } } );
         $mech->email_count_is(0);
         $mech->clear_emails_ok;
         $mech->log_out_ok;
@@ -809,9 +814,10 @@ subtest "test stats" => sub {
         
         my $export_count = get_export_rows_count($mech);
         if (defined $export_count) {
+            diag $mech->content;
             is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
             $mech->content_contains('fixed - council');
-            $mech->content_contains(',hidden,');
+            $mech->content_contains(',planned,');
         }
 
         $mech->log_out_ok;
@@ -827,8 +833,8 @@ subtest "test admin_log" => sub {
 
     # XXX: following is dependent on all of test up till now, rewrite to explicitly
     # test which things need to be logged!
-    is scalar @entries, 1, 'State changes logged'; 
-    is $entries[-1]->action, 'state change to hidden', 'State change logged as expected';
+    is scalar @entries, 9, 'State changes logged'; 
+    is $entries[-1]->action, 'state change to planned', 'State change logged as expected';
 };
 
 END {
