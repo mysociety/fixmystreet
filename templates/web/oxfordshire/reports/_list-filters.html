@@ -1,0 +1,31 @@
+[% IF use_section_wrapper %]
+<section class="full-width">
+    <form method="get" action="">
+[% END %]
+
+        <p class="report-list-filters">
+            <label>
+                Show
+                <select name="status">
+                    <option value="">all reports</option>
+                    <option value="open">unfixed reports</option>
+                    <option value="fixed">fixed reports</option>
+                </select>
+            </label>
+            <label>
+                about
+                <select name="category">
+                    <option value="">anything</option>
+                    <option value="">bridges</option>
+                    <option value="">carriageway defect</option>
+                    <option value="">debris/spillage</option>
+                    <option value="">…</option>
+                </select>
+            </label>
+            <input type=submit value="go" />
+        </p>
+
+[% IF use_section_wrapper %]
+    </form>
+</section>
+[% END %]
