@@ -164,7 +164,20 @@ sub display_location : Private {
     my $all_pins = $c->req->param('all_pins') ? 1 : undef;
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
+
     my $states = $c->cobrand->on_map_default_states;
+    $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
+    my $status = $c->req->param('status');
+    if ( !defined $states || $status eq 'all' ) {
+        $states = FixMyStreet::DB::Result::Problem->visible_states();
+        $c->stash->{filter_status} = 'all';
+    } elsif ( $status eq 'open' ) {
+        $states = FixMyStreet::DB::Result::Problem->open_states();
+        $c->stash->{filter_status} = 'open';
+    } elsif ( $status eq 'fixed' ) {
+        $states = FixMyStreet::DB::Result::Problem->fixed_states();
+        $c->stash->{filter_status} = 'fixed';
+    }
 
     # Check the category to filter by, if any, is valid
     $c->forward('check_and_stash_category');
