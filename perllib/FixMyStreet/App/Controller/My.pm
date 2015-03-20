@@ -55,6 +55,7 @@ sub my : Path : Args(0) {
         };
         my $state = $problem->is_fixed ? 'fixed' : $problem->is_closed ? 'closed' : 'confirmed';
         push @{ $problems->{$state} }, $problem;
+        push @{ $problems->{all} }, $problem;
     }
     $c->stash->{problems_pager} = $rs->pager;
     $c->stash->{problems} = $problems;
