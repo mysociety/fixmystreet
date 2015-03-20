@@ -120,6 +120,16 @@ sub ward : Path : Args(2) {
 
     $c->stash->{stats} = $c->cobrand->get_report_stats();
 
+    $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
+    my $status = $c->req->param('status') || '';
+    if ( !defined $c->cobrand->on_map_default_states || $status eq 'all' ) {
+        $c->stash->{filter_status} = 'all';
+    } elsif ( $status eq 'open' ) {
+        $c->stash->{filter_status} = 'open';
+    } elsif ( $status eq 'fixed' ) {
+        $c->stash->{filter_status} = 'fixed';
+    }
+
     my $pins = $c->stash->{pins};
 
     $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
