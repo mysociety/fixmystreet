@@ -120,9 +120,11 @@ sub map_pins {
     my $category = $c->req->param('category');
 
     # Filter reports by status, if present in query params
+    my $states = $c->cobrand->on_map_default_states;
     my $status = $c->req->param('status') || '';
-    my $states;
-    if ( $status eq 'open' ) {
+    if ( !defined $states || $status eq 'all' ) {
+        $states = FixMyStreet::DB::Result::Problem->visible_states();
+    } elsif ( $status eq 'open' ) {
         $states = FixMyStreet::DB::Result::Problem->open_states();
     } elsif ( $status eq 'fixed' ) {
         $states = FixMyStreet::DB::Result::Problem->fixed_states();
