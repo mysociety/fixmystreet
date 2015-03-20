@@ -375,11 +375,24 @@ sub load_and_group_problems : Private {
 
     my $page = $c->req->params->{p} || 1;
     my $type = $c->req->params->{t} || 'all';
-    my $category = $c->req->params->{c} || '';
+    my $category = $c->req->params->{c} || $c->req->params->{category} || '';
+
+    # Unlike the 't' query param, 'status' isn't affected by
+    # the age of a report, so treat the filtering separately.
+    # If 't' is specified, it will override 'status'.
+    my $states = $c->cobrand->on_map_default_states;
+    my $status = $c->req->param('status') || '';
+    if ( !defined $states || $status eq 'all' ) {
+        $states = FixMyStreet::DB::Result::Problem->visible_states();
+    } elsif ( $status eq 'open' ) {
+        $states = FixMyStreet::DB::Result::Problem->open_states();
+    } elsif ( $status eq 'fixed' ) {
+        $states = FixMyStreet::DB::Result::Problem->fixed_states();
+    }
 
     my $where = {
         non_public => 0,
-        state      => [ FixMyStreet::DB::Result::Problem->visible_states() ]
+        state      => [ keys %$states ]
     };
 
     my $not_open = [ FixMyStreet::DB::Result::Problem::fixed_states(), FixMyStreet::DB::Result::Problem::closed_states() ];
