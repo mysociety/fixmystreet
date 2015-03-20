@@ -34,27 +34,7 @@
     param = 'p'
 %]
 
-[% FOREACH p = problems.confirmed %]
-    [% IF loop.first %]<h2>[% loc('Open reports') %]</h2>[% END %]
-    [% INCLUDE problem %]
-[% END %]
-
-[% FOREACH p = problems.fixed %]
-    [% IF loop.first %]<h2>[% loc('Fixed reports') %]</h2>[% END %]
-    [% INCLUDE problem %]
-[% END %]
-
-[% FOREACH p = problems.closed %]
-    [% IF loop.first %]<h2>[% loc('Closed reports') %]</h2>[% END %]
-    [% INCLUDE problem %]
-[% END %]
-
-[%# FOREACH p = problems.unconfirmed;
-    IF loop.first;
-        '<h2>' _ loc('Unconfirmed reports') _ '</h2>';
-    END;
-    INCLUDE problem;
-END %]
+[% INCLUDE 'my/_problem-list.html' %]
 
 [% FOREACH u IN updates %]
     [% IF loop.first %]
@@ -78,13 +58,3 @@ END %]
 </div>
 
 [% INCLUDE 'footer.html' %]
-
-[% BLOCK problem %]
-    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
-    [% IF c.cobrand.moniker == 'oxfordshire' %]
-        [% INCLUDE 'reports/_list-entry.html', problem = p, no_fixed =1 %]
-    [% ELSE %]
-        [% INCLUDE 'report/_item.html', problem = p, no_fixed =1 %]
-    [% END %]
-    [% "</ul>" IF loop.last %]
-[% END %]
