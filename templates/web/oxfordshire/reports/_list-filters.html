@@ -6,10 +6,10 @@
         <p class="report-list-filters">
             <label>
                 Show
-                <select id="statuses">
-                    <option value="">all reports</option>
-                    <option value="open" selected>unfixed reports</option>
-                    <option value="fixed">fixed reports</option>
+                <select name="status" id="statuses">
+                    <option value="all"[% ' selected' IF filter_status == 'all' %]>all reports</option>
+                    <option value="open"[% ' selected' IF filter_status == 'open' %]>unfixed reports</option>
+                    <option value="fixed"[% ' selected' IF filter_status == 'fixed' %]>fixed reports</option>
                 </select>
             </label>
             <label>
