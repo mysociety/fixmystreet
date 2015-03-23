@@ -54,6 +54,12 @@ sub my : Path : Args(0) {
         %$params
     } if $c->cobrand->problems_clause;
 
+    my $category = $c->req->param('category');
+    if ( $category ) {
+        $params->{category} = $category;
+        $c->stash->{filter_category} = $category;
+    }
+
     my $rs = $c->user->problems->search( $params, {
         order_by => { -desc => 'confirmed' },
         rows => 50
@@ -86,6 +92,14 @@ sub my : Path : Args(0) {
     $c->stash->{has_content} += scalar @updates;
     $c->stash->{updates} = \@updates;
     $c->stash->{updates_pager} = $rs->pager;
+
+    my @categories = $c->user->problems->search( undef, {
+        columns => [ 'category' ],
+        distinct => 1,
+        order_by => [ 'category' ],
+    } )->all;
+    @categories = map { $_->category } @categories;
+    $c->stash->{filter_categories} = \@categories;
 
     $c->stash->{page} = 'my';
     FixMyStreet::Map::display_map(
