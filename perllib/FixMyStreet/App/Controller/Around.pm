@@ -185,7 +185,7 @@ sub display_location : Private {
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval, $c->stash->{category}, $states );
+        $interval, $c->stash->{filter_category}, $states );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
@@ -241,21 +241,36 @@ sub check_location_is_acceptable : Private {
 =head2 check_category_is_valid
 
 Check that the 'category' query param is valid, if it's present.
+Puts all the valid categories in filter_categories on the stash.
 
 =cut
 
 sub check_category_is_valid : Private {
     my ( $self, $c ) = @_;
 
+    my $all_areas = $c->stash->{all_areas};
+    my @bodies = $c->model('DB::Body')->search(
+        { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
+        { join => 'body_areas' }
+    )->all;
+    my %bodies = map { $_->id => $_ } @bodies;
+
+    my @contacts = $c->model('DB::Contact')->not_deleted->search(
+        {
+            body_id => [ keys %bodies ],
+        },
+        {
+            columns => [ 'category' ],
+            order_by => [ 'category' ],
+            distinct => 1
+        }
+    )->all;
+    my @categories = map { $_->category } @contacts;
+    $c->stash->{filter_categories} = \@categories;
+
+
     my $category = $c->req->param('category');
     if ( $category ) {
-        my $all_areas = $c->stash->{all_areas};
-        my @bodies = $c->model('DB::Body')->search(
-            { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
-            { join => 'body_areas' }
-        )->all;
-        my %bodies = map { $_->id => $_ } @bodies;
-
         my $count = $c->model('DB::Contact')->not_deleted->search(
             {
                 body_id => [ keys %bodies ],
@@ -263,7 +278,7 @@ sub check_category_is_valid : Private {
             }
         )->count;
         if ( $count ) {
-            $c->stash->{category} = $category;
+            $c->stash->{filter_category} = $category;
         }
     }
 }
