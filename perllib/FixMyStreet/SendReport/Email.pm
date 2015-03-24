@@ -40,13 +40,8 @@ sub build_recipient_list {
             $body_name = 'See Something, Say Something';
         }
 
-        my @emails;
-        # allow multiple emails per contact
-        if ( $body_email =~ /,/ ) {
-            @emails = split(/,/, $body_email);
-        } else {
-            @emails = ( $body_email );
-        }
+        my @emails = split /,/ => $body_email;
+
         for my $email ( @emails ) {
             push @{ $self->to }, [ $email, $body_name ];
             $recips{$email} = 1;

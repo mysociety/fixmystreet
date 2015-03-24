@@ -399,6 +399,26 @@ sub send_email_cron {
     }
 }
 
+
+=head1 send_email_simple
+
+NB: we may later try to refactor send_email to point at this.  Accepts an
+L<Email::Simple> object (so you need to create that, and set To/From/Subject
+yourself), and just sets a common Message-ID and sends.
+
+=cut
+
+sub send_email_simple {
+    my ($self, $email) = @_;
+    $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
+        time(), unpack('h*', random_bytes(5, 1)), $self->config->{EMAIL_DOMAIN}
+    ) );
+
+    # send the email
+    return $self->model('EmailSend')->send($email) # Email::Send accepts ->as_string or Email::Simple objects
+        && $email; # return the email object on success, undef otherwise
+}
+
 =head2 uri_with
 
     $uri = $c->uri_with( ... );
