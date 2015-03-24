@@ -7,3 +7,17 @@
     [% INCLUDE 'reports/_list-entry.html', problem = p, no_fixed =1 %]
     [% "</ul>" IF loop.last %]
 [% END %]
+
+[% IF ! problems.size %]
+<!-- Preserve behaviour of map filters despite map not being shown -->
+<script type="text/javascript">
+    (function($) {
+        $(function() {
+            $(".report-list-filters [type=submit]").hide();
+            $(".report-list-filters select").change(function() {
+                $(this).closest("form").submit();
+            });
+        })
+    })(window.jQuery);
+</script>
+[% END %]
