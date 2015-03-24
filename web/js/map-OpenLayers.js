@@ -424,6 +424,12 @@ $(function(){
     // to refresh the map when the filter inputs are changed.
     $(".report-list-filters [type=submit]").hide();
 
+    if (fixmystreet.page == "my" || fixmystreet.page == "reports") {
+        $(".report-list-filters select").change(function() {
+            $(this).closest("form").submit();
+        });
+    }
+
     // Vector layers must be added onload as IE sucks
     if ($.browser.msie) {
         $(window).load(fixmystreet_onload);
