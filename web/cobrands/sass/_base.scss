@@ -1622,8 +1622,8 @@ table.nicetable {
 }
 
 @media print {
-  body {
-    padding: 3em;
+  @page {
+    margin: 3em;
   }
 
   #main-nav,
