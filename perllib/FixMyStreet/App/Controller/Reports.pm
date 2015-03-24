@@ -130,6 +130,15 @@ sub ward : Path : Args(2) {
         $c->stash->{filter_status} = 'fixed';
     }
 
+    my @categories = $c->stash->{body}->contacts->search( undef, {
+        columns => [ 'category' ],
+        distinct => 1,
+        order_by => [ 'category' ],
+    } )->all;
+    @categories = map { $_->category } @categories;
+    $c->stash->{filter_categories} = \@categories;
+    $c->stash->{filter_category} = $c->req->param('category');
+
     my $pins = $c->stash->{pins};
 
     $c->stash->{page} = 'reports'; # So the map knows to make clickable pins
