@@ -247,11 +247,69 @@ h4.static-with-rule {
     border-radius: 0;
 }
 
+@media screen {
+    dd.screen-no-space-after {
+      margin-bottom: 0;
+    }
+}
+
 @media print {
     #site-header .container {
         position: relative;
     }
     #site-logo {
         top: 0;
+    }
+
+    .mappage.admin {
+      .container {
+        padding: 0;
+      }
+
+      .content {
+        overflow: auto;
+        font-size: 0.8em;
+        background: transparent url(/cobrands/zurich/admin-print-columns.gif) top center repeat-y;
+        min-height: 0 !important; // override hard-coded inline min-height style
+      }
+
+      #map_box {
+        display: none; // I am out of ideas for this element, so let's hide it for now
+      }
+    }
+
+    .admin-report-edit {
+        margin-top: 1em;
+        width: 47%;
+
+        input[type=text],
+        textarea {
+            border: none;
+            padding: 0;
+        }
+
+        dd {
+            padding-left: 1em;
+        }
+
+        h2 {
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: bold;
+        }
+    }
+
+    .admin-report-edit--details {
+        float: left;
+        border-right: 1px solid #ddd;
+        padding-right: 3%;
+    }
+
+    .admin-report-edit--interact {
+        float: right;
+    }
+
+    dd.print-no-space-after {
+        margin-bottom: 0;
     }
 }

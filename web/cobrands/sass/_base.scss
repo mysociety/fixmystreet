@@ -1621,9 +1621,15 @@ table.nicetable {
   }
 }
 
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+
 @media print {
-  body {
-    padding: 3em;
+  @page {
+    margin: 3em;
   }
 
   #main-nav,
@@ -1633,7 +1639,7 @@ table.nicetable {
   .olControlPanZoom,
   #sub_map_links,
   #fms_pan_zoom,
-  .report-edit-action,
+  .screen-only,
   .olMapViewport {
     display: none !important;
   }
