@@ -220,6 +220,17 @@ sub get_admin_url {
     return $cobrand->admin_base_url . '/report_edit/' . $row->id;
 }
 
+sub unsent_reports {
+    my ($rs, $site) = @_;
+    my $states = [ 'confirmed', 'fixed' ];
+    $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed' ] if $site eq 'zurich';
+    my $unsent = $rs->search( {
+        state => $states,
+        whensent => undef,
+        bodies_str => { '!=', undef },
+    } );
+}
+
 sub send_reports {
     my ( $rs, $site_override ) = @_;
 
@@ -229,13 +240,7 @@ sub send_reports {
     my $base_url = mySociety::Config::get('BASE_URL');
     my $site = $site_override || CronFns::site($base_url);
 
-    my $states = [ 'confirmed', 'fixed' ];
-    $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed' ] if $site eq 'zurich';
-    my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
-        state => $states,
-        whensent => undef,
-        bodies_str => { '!=', undef },
-    } );
+    my $unsent = $rs->unsent_reports($site);
     my (%notgot, %note);
 
     my $send_report = FixMyStreet::SendReport->new();
@@ -247,11 +252,7 @@ sub send_reports {
 
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
 
-        if ($debug_mode) {
-            $debug_unsent_count++;
-            print "\n";
-            debug_print("state=" . $row->state . ", bodies_str=" . $row->bodies_str . ($row->cobrand? ", cobrand=" . $row->cobrand : ""), $row->id);
-        }
+        _debug1($row, \$debug_unsent_count) if $debug_mode;
 
         # Cobranded and non-cobranded messages can share a database. In this case, the conf file
         # should specify a vhost to send the reports for each cobrand, so that they don't get sent
@@ -263,15 +264,8 @@ sub send_reports {
         }
 
         $cobrand->set_lang_and_domain($row->lang, 1);
-        if ( $row->is_from_abuser) {
-            $row->update( { state => 'hidden' } );
-            debug_print("hiding because its sender is flagged as an abuser", $row->id) if $debug_mode;
-            next;
-        } elsif ( $row->title =~ /app store test/i ) {
-            $row->update( { state => 'hidden' } );
-            debug_print("hiding because it is an app store test message", $row->id) if $debug_mode;
-            next;
-        }
+
+        next if _hide_row($row, $debug_mode);
 
         # Template variables for the email
         my $email_base_url = $cobrand->base_url_for_report($row);
@@ -479,6 +473,138 @@ sub send_reports {
             print "The following reports had problems sending:\n$sending_errors";
         }
     }
+}
+
+sub _hide_row {
+    my ($row, $debug_mode) = @_;
+    if ( $row->is_from_abuser) {
+        $row->update( { state => 'hidden' } );
+        debug_print("hiding because its sender is flagged as an abuser", $row->id) if $debug_mode;
+        return 1;
+    } elsif ( $row->title =~ /app store test/i ) {
+        $row->update( { state => 'hidden' } );
+        debug_print("hiding because it is an app store test message", $row->id) if $debug_mode;
+        return 1;
+    }
+    return;
+}
+
+sub _debug1 {
+    my ($row, $debug_unsent_count) = @_;
+    $$debug_unsent_count++;
+    print "\n";
+    debug_print("state=" . $row->state . ", bodies_str=" . $row->bodies_str . 
+        ($row->cobrand? ", cobrand=" . $row->cobrand : ""), $row->id);
+}
+
+sub send_reports_batched {
+    my ( $rs, $options ) = @_;
+
+    my $debug_mode = $options->{debug};
+    my $verbose = $options->{verbose};
+    my $nomail = $options->{nomail};
+    my $c = $options->{c} || FixMyStreet::App->new();;
+
+    my $base_url = mySociety::Config::get('BASE_URL');
+    my $site = $options->{site} || CronFns::site($base_url);
+
+    my $unsent = $rs->unsent_reports($site);
+    my (%notgot, %note);
+
+    my $send_report = FixMyStreet::SendReport->new();
+    my $senders = $send_report->get_senders;
+
+    # as per send_reports above
+    my @cobrands = 
+        grep FixMyStreet::Cobrand->get_class_for_moniker($_)->new()->email_host,
+        map $_->cobrand,
+        $unsent->search({}, { columns => ['cobrand'], distinct => 1 })->all;
+    $unsent = $unsent->search({ cobrand => \@cobrands });
+
+    # would be nice to do same for bodies, but the modelling of `bodies_str` makes
+    # that difficult, so we'll do this in perl-space, and reassemble RS at the end
+    # by filtering on { id => \@list_of_ids }
+
+    my $debug_unsent_count = 0;
+    debug_print("starting to loop through unsent problem reports...") if $debug_mode;
+
+    my (%skip_sender, %skip_body_category, %body_category_senders, %bodies); # caches
+    my %batched_for_body; # store of data for each email alias
+        # %batched_for_body = (
+        #   body_id => (
+        #       'recipient1@example.com' => (
+        #           object => $obj,
+        #           list => [ list, of, problems ],
+        #       ),
+        #       'recipient2@example.com' => (
+        #           object => $obj,
+        #           list => [ list, of, problems ],
+        #       ),
+        #   ),
+        #   ...
+        # )
+
+    while (my $row = $unsent->next) {
+        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+        _debug1($row, \$debug_unsent_count) if $debug_mode;
+
+        next if _hide_row($row, $debug_mode);
+
+        my $bodies = $row->bodies;
+        for my $body (values %$bodies) {
+            my $body_category = join ',' => $body->id, $row->category;
+            next if $skip_body_category{$body_category};
+            my $sender_info = $cobrand->get_body_sender( $body, $row->category );
+            my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
+            next if $skip_sender{$sender};
+            unless ($senders->{ $sender } and $sender->can('send_batch')) {
+                $skip_sender{$sender}++;
+                $skip_body_category{$body_category}++;
+                next;
+            }
+            $bodies{$body->id} ||= $body;
+            my $sender_hash = $body_category_senders{$body_category}
+                ||= do {
+                    my $obj = $sender->new;
+                    my @recipients = $obj->build_recipient_list_from_body_category($body, $row->category);
+                    {
+                        object => $obj,
+                        recipients => \@recipients,
+                    };
+                };
+            my $sender_object = $sender_hash->{object};
+            my @recipients = @{ $sender_hash->{recipients} };
+
+            for my $recipient (@recipients) {
+                my $node = $batched_for_body{$body->id}{$recipient} ||= {};
+                $node->{sender} ||= $sender_object;
+                push @{ $node->{list} }, $row;
+            }
+        }
+    }
+
+    # now prepare the batches
+    my %sent; # problem has been sent to at least one entity
+    while (my ($body_id, $v) = each %batched_for_body) {
+        my $body = $bodies{$body_id};
+        while (my ($recipient, $v2) = each %$v) {
+            my $sender = $v2->{sender};
+            my @ids = map $_->id, @{$v2->{list}};
+            my $rs_ids = $rs->search({
+                    id => \@ids
+                },
+                {
+                    order_by => 'confirmed',
+                }
+            );
+            if ($sender->send_batch($c, $body, $recipient, $rs_ids)) {
+                for (@ids) { $sent{$_}++ };
+            }
+        }
+    }
+
+    my $rs_to_update = $rs->search({ id => [ keys %sent ] });
+    $rs_to_update->update({ whensent => \'ms_current_timestamp()' });
 }
 
 sub _send_report_sent_email {
