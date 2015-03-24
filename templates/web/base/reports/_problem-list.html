@@ -1,0 +1,17 @@
+<section class="full-width">
+    [% INCLUDE column
+        problems = problems.${body.id}
+    %]
+</section>
+
+[% BLOCK column %]
+[% IF problems %]
+
+<ul class="issue-list-a">
+[% FOREACH problem IN problems %]
+    [% INCLUDE 'reports/_list-entry.html' %]
+[% END %]
+</ul>
+
+[% END %]
+[% END %]
