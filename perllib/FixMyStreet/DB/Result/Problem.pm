@@ -838,4 +838,9 @@ __PACKAGE__->has_many(
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
+sub cobrand_object {
+    my ($self, $c) = @_;
+    FixMyStreet::Cobrand->get_class_for_moniker($self->cobrand)->new({ c => $c });
+}
+
 1;
