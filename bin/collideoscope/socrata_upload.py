@@ -6,12 +6,17 @@ import yaml
 import sodapy
 import psycopg2
 import psycopg2.extras
+import rabx
+
 
 yml_path = os.path.abspath(os.path.join(
     os.path.dirname(__file__), "..", "..", "conf", "general.yml"
 ))
 with open(yml_path) as f:
     config = yaml.load(f)
+
+
+PHOTO_URL = "http://collideosco.pe/photo/{id}.full.jpeg?{photo}"
 
 def get_cursor():
     db = psycopg2.connect( "host='{host}' dbname='{name}' user='{user}' password='{password}'".format(
@@ -37,12 +42,17 @@ def query_recent_reports(cursor, limit=100):
     the most recent `limit` reports from the DB, ordered
     by ascending order of confirmation date.
     """
-    query = "SELECT id, latitude, longitude, confirmed, category, title " \
+    query = "SELECT id, latitude, longitude, category, title, extra, " \
+            "detail, confirmed as reported, lastupdate, whensent, " \
+            "bodies_str as body, photo " \
             "FROM problem " \
             "WHERE state = 'confirmed' " \
-            "ORDER BY confirmed ASC " \
-            "LIMIT %s"
-    cursor.execute(query, (limit, ))
+            "ORDER BY reported DESC"
+    params = []
+    if limit:
+        query = "{query} LIMIT %s".format(query=query)
+        params = [limit]
+    cursor.execute(query, params)
 
 def transform_results(cursor):
     """
@@ -51,15 +61,32 @@ def transform_results(cursor):
     it operates on results held in the cursor.
     """
     for row in cursor:
-        # Turn the date into a string ourselves as the JSON encoder can't
-        # TODO: Parse the problem 'extra' field to get actual incident date
-        row['occurred'] = row['confirmed'].isoformat()
-        del row['confirmed']
         row['url'] = "http://collideosco.pe/report/{id}".format(id=row['id'])
         # Convert the raw lat/lon columns into a dict as expected by SODA
         row['location'] = {'longitude': row['longitude'], 'latitude': row['latitude']}
         del row['longitude']
         del row['latitude']
+        # Date fields aren't handled by the JSON encoder, so do it manually
+        row['reported'] = row['reported'].isoformat()
+        row['lastupdate'] = row['lastupdate'].isoformat()
+        if row['whensent']:
+            row['whensent'] = row['whensent'].isoformat()
+        # Photo is stored as a 40-byte ID which needs appending to a URL base
+        if row.get("photo"):
+            row['photo_url'] = PHOTO_URL.format(id=row['id'], photo=row['photo'])
+        del row['photo']
+        # Make sure only one receiving body is included
+        if row.get("body"):
+            row['body'] = row['body'].split(",")[0]
+        # Collideoscope stores details about the incident in the 'extra' field
+        extra = rabx.unserialise(row['extra'])
+        del row['extra']
+        row['severity'] = extra.get("severity")
+        row['road_type'] = extra.get("road_type")
+        row['injury_detail'] = extra.get("injury_detail")
+        row['participants'] = extra.get("participants")
+        row['media_url'] = extra.get("media_url")
+        row['incident_date'] = " ".join((extra.get("incident_date", ""), extra.get("incident_time", "")))
         yield row
 
 def upload_reports(socrata, reports):
