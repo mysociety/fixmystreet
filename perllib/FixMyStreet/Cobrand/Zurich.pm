@@ -914,6 +914,7 @@ sub stash_states {
         @states = grep { $_->{$state} } @states;
     }
     $c->stash->{states} = \@states;
+    $c->stash->{states_trans} = { map { $_->{state} => $_->{trans} } @states }; # [% states_trans.${problem.state} %]
     $c->stash->{states_debug} = Dumper($state, \@states); use Data::Dumper;
 
     # stash details about the public response
