@@ -681,6 +681,10 @@ sub local_coords {
         my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($self->latitude, $self->longitude);
         return ( int($x+0.5), int($y+0.5) );
     }
+    else {
+        # return a dummy value until this function is implemented.  useful for testing.
+        return (0, 0);
+    }
 }
 
 =head2 update_from_open311_service_request

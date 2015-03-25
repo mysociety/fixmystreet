@@ -257,8 +257,7 @@ sub output_requests : Private {
                 $problem->get_extra_metadata('public_response')
             ];
         }
-
-        if ( $c->cobrand->moniker ne 'zurich' ) { # XXX
+        else {
             # FIXME Not according to Open311 v2
             $request->{agency_responsible} = $problem->bodies;
         }
