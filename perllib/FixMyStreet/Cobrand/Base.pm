@@ -276,5 +276,10 @@ sub get_field_extra {
 
 sub temp_email_to_update { 'test@example.com' } 
 
+sub jurisdiction_id_example {
+    my $self = shift;
+    return $self->moniker;
+}
+
 1;
 
