@@ -223,4 +223,8 @@ sub reports_body_check {
     }
 }
 
+sub jurisdiction_id_example {
+    'fiksgatami.no';
+}
+
 1;
