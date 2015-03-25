@@ -763,6 +763,9 @@ sub admin_stats {
             $detail =~ s{\r?\n}{ <br/> }g;
             $public_response =~ s{\r?\n}{ <br/> }g;
 
+            # Assemble photo URL, if report has a photo
+            my $media_url = $report->get_photo_params->{url} ? ($c->cobrand->base_url . $report->get_photo_params->{url}) : '';
+
             my @columns = (
                 $report->id,
                 $report->created,
@@ -773,7 +776,7 @@ sub admin_stats {
                 $body_name,
                 $report->title,
                 $detail,
-                $c->cobrand->base_url . $report->get_photo_params->{url},
+                $media_url,
                 $report->service || 'Web interface',
                 $public_response,
             );
