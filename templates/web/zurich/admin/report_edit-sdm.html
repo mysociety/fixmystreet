@@ -97,6 +97,12 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
+<script type="text/javascript">
+    $(function(){
+        $('#map_box .noscript').clone().removeClass('noscript').addClass('map_clone print-only').prependTo('.admin-report-edit--interact');
+    });
+</script>
+
 <p align="right" class="screen-only"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 <p align="right" class="screen-only"><input type="submit" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
 
@@ -134,5 +140,9 @@
 
 </div>
 </form>
+
+<div id="print_report_map" class="print-only">
+[% INCLUDE 'maps/noscript_map.html' map=print_report_map nsm_prefix="large_" %]
+</div>
 
 [% INCLUDE 'admin/footer.html' %]

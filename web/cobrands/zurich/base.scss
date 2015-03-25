@@ -247,6 +247,29 @@ h4.static-with-rule {
     border-radius: 0;
 }
 
+.square-map__outer {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; // 100% of parent WIDTH!! Makes a square element.
+    position: relative;
+}
+
+.square-map__inner {
+    position: absolute; // Parent must keep its 0 height, so we need to create a new container for tiles.
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    #drag .square-map__tile {
+        position: static; // override position:absolute
+    }
+}
+
+#map_box {
+    top: 6em; // the default, 3em, overlaps the header
+}
+
 @media screen {
     dd.screen-no-space-after {
       margin-bottom: 0;
@@ -263,18 +286,23 @@ h4.static-with-rule {
 
     .mappage.admin {
       .container {
-        padding: 0;
+          padding: 0;
+          position: relative;
       }
 
       .content {
-        overflow: auto;
-        font-size: 0.8em;
-        background: transparent url(/cobrands/zurich/admin-print-columns.gif) top center repeat-y;
-        min-height: 0 !important; // override hard-coded inline min-height style
+          overflow: auto;
+          font-size: 0.8em;
+          background: transparent url(/cobrands/zurich/admin-print-columns.gif) top center repeat-y;
+          min-height: 0 !important; // override hard-coded inline min-height style
+
+          form {
+              @include clearfix; // because .admin-report-edit children are floated
+          }
       }
 
       #map_box {
-        display: none; // I am out of ideas for this element, so let's hide it for now
+          display: none; // Zurich has its own clone of the map, inside admin-report-edit--interact
       }
     }
 
@@ -309,7 +337,17 @@ h4.static-with-rule {
         float: right;
     }
 
+    .map_clone {
+        -webkit-transform: none;
+        -ms-transform: none;
+        transform: none;
+    }
+
     dd.print-no-space-after {
         margin-bottom: 0;
+    }
+
+    #print_report_map {
+      page-break-before: always;
     }
 }

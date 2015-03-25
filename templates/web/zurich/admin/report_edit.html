@@ -127,6 +127,12 @@
 
 [% status_message %]
 
+<script type="text/javascript">
+    $(function(){
+        $('#map_box .noscript').clone().removeClass('noscript').addClass('map_clone print-only').prependTo('.admin-report-edit--interact');
+    });
+</script>
+
 <dl>
 
     <dt class="screen-only">
@@ -338,5 +344,9 @@ $(function(){
     }).change();
 });
 </script>
+
+<div id="print_report_map" class="print-only">
+[% INCLUDE 'maps/noscript_map.html' map=print_report_map nsm_prefix="large_" %]
+</div>
 
 [% INCLUDE 'admin/footer.html' %]
