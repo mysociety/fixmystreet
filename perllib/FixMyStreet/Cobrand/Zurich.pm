@@ -1049,25 +1049,52 @@ sub admin_stats {
                     'state',    'user_id',
                     'external_body',
                     { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
-                ]
+                    'title', 'detail',
+                    'photo',
+                    'whensent',
+                    'service',
+                    'extra',
+                ],
             }
         );
-        my $body = "ID,Created,E,N,Category,Status,UserID,External Body\n";
+        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
+        require Text::CSV;
+        my $csv = Text::CSV->new({ binary => 1 });
         while ( my $report = $problems->next ) {
             my $external_body;
             my $body_name = "";
             if ( $external_body = $report->body($c) ) {
-                $body_name = $external_body->name;
+                $body_name = $external_body->name || '[Unknown body]';
             }
-            $body .= join( ',',
-                $report->id,           $report->created,
+            my $detail = $report->detail;
+
+            # replace newlines with slash
+            $detail =~ s{\r?\n}{ / }g;
+
+            my @columns = (
+                $report->id,
+                $report->created,
+                $report->whensent,
+                $report->lastupdate,
                 $report->local_coords, $report->category,
                 $report->state,        $report->user_id,
-                "\"$body_name\"",
+                $body_name,
                 $report->get_column('sum_time_spent') || 0,
-            ) . "\n";
+                $report->title,
+                $detail,
+                $report->get_photo_params->{url},
+                $report->service || 'Web interface',
+                $report->get_extra_metadata('public_response')
+            );
+            if ($csv->combine(@columns)) {
+                $body .= $csv->string . "\n";
+            }
+            else {
+                $body .= sprintf "{{error emitting CSV line: %s}}\n", $csv->error_diag;
+            }
         }
         $c->res->content_type('text/csv; charset=utf-8');
+        $c->res->header('Content-Disposition' => 'attachment; filename=stats.csv');
         $c->res->body($body);
     }
 

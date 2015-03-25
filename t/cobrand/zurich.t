@@ -816,7 +816,7 @@ subtest "test stats" => sub {
         if (defined $export_count) {
             diag $mech->content;
             is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
-            $mech->content_contains(',fixed - council,');
+            $mech->content_contains('fixed - council');
             $mech->content_contains(',planned,');
         }
 
