@@ -263,18 +263,19 @@ h4.static-with-rule {
 
     .mappage.admin {
       .container {
-        padding: 0;
+          padding: 0;
+          position: relative;
       }
 
       .content {
-        overflow: auto;
-        font-size: 0.8em;
-        background: transparent url(/cobrands/zurich/admin-print-columns.gif) top center repeat-y;
-        min-height: 0 !important; // override hard-coded inline min-height style
+          overflow: auto;
+          font-size: 0.8em;
+          background: transparent url(/cobrands/zurich/admin-print-columns.gif) top center repeat-y;
+          min-height: 0 !important; // override hard-coded inline min-height style
       }
 
       #map_box {
-        display: none; // I am out of ideas for this element, so let's hide it for now
+          display: none; // Zurich has its own clone of the map, inside admin-report-edit--interact
       }
     }
 
@@ -307,6 +308,17 @@ h4.static-with-rule {
 
     .admin-report-edit--interact {
         float: right;
+    }
+
+    .map_clone {
+        height: 256px;
+        width: 256px;
+        -webkit-transform: scale(0.5);
+        -ms-transform: scale(0.5);
+        transform: scale(0.5);
+        -webkit-transform-origin: 0 0;
+        -ms-transform-origin: 0 0;
+        transform-origin: 0 0;
     }
 
     dd.print-no-space-after {
