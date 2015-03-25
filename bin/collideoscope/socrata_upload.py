@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+from itertools import groupby
 
 import yaml
 import sodapy
@@ -62,7 +63,14 @@ def transform_results(cursor):
         yield row
 
 def upload_reports(socrata, reports):
-    print socrata.upsert(config['SOCRATA_DATASET_URL'], list(reports))
+    """
+    The API chokes if you send too many items at once, so split the
+    reports we want to send into smaller batches
+    """
+    batch_size = 50
+    for k, group in groupby(enumerate(reports), lambda x: x[0] // batch_size):
+        reports_batch = [i[1] for i in group]
+        print socrata.upsert(config['SOCRATA_DATASET_URL'], reports_batch)
 
 def main():
     socrata = socrata_connect()
