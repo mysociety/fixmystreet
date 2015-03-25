@@ -1054,7 +1054,12 @@ sub admin_stats {
                     'service',
                     'extra',
                     { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
-                ]
+                    'title', 'detail',
+                    'photo',
+                    'whensent',
+                    'service',
+                    'extra',
+                ],
             }
         );
         my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
