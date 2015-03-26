@@ -70,7 +70,7 @@ div.form_datetime {
     }
 }
 
-.severity {
+.severity, .emergency-services {
     label {
         margin-top: 0;
     }
@@ -90,6 +90,10 @@ div.form_datetime {
             margin-right: 0.5em;
         }
     }
+}
+
+.emergency-services {
+    margin-top: 1em;
 }
 
 .description_tips {

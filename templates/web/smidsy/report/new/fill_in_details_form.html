@@ -116,6 +116,27 @@
               [% IF report.extra.registration%]value="[% report.extra.registration %]"[% END %]>
             </div>
 
+            <div class="emergency-services">
+                [% IF field_errors.emergency_services %]
+                    <p class='form-error'>[% field_errors.emergency_services %]</p>
+                [% END %]
+                <label>[% loc('Did the emergency services attend?') %]</label>
+                [% v = report.extra.emergency_services %]
+                <p>
+                    <label><input type="radio" name="emergency_services" value="yes" [% isChecked(exp='yes') %]>
+                    [% loc('Yes') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="emergency_services" value="no" [% isChecked(exp='no') %]>
+                        [% loc('No') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="emergency_services" value="unsure" [% isChecked(exp='unsure') %]>
+                        [% loc('Unsure') %]</label>
+                </p>
+            </div>
+
+
             <label for="form_detail">[% loc('Can you describe what happened?') %]</label>
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
