@@ -187,3 +187,15 @@ MESSAGE_MANAGER_URL: ''
 # -----------------------------------------------------------------------
 
 SECURE_PROXY_SSL_HEADER: ''
+# fixmystreet.com specific config variables. You won't need any of these.
+KASABI_API_KEY: ''
+LONDON_REPORTIT_URL: ''
+LONDON_REPORTIT_KEY: ''
+LONDON_REPORTIT_SECRET: ''
+AUTH_SHARED_SECRET: ''
+HEARFROMYOURMP_BASE_URL: ''
+
+# Collideoscope config variables. You won't need any of these either.
+SOCRATA_USERNAME: ''
+SOCRATA_PASSWORD: ''
+SOCRATA_DATASET_URL: ''
