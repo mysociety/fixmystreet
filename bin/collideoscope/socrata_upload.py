@@ -102,7 +102,7 @@ def upload_reports(socrata, reports):
 def main():
     socrata = socrata_connect()
     cursor = get_cursor()
-    query_recent_reports(cursor, limit=5)
+    query_recent_reports(cursor, limit=None)
     reports = transform_results(cursor)
     upload_reports(socrata, reports)
 
