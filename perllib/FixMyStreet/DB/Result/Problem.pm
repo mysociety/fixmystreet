@@ -655,14 +655,14 @@ sub processed_summary_string {
     }
     if ($problem->can_display_external_id) {
         if ($duration_clause) {
-            $external_ref_clause = sprintf(_('council ref:&nbsp;%s'), $problem->external_id);
+            $external_ref_clause = '<strong>' . sprintf(_('Council ref:&nbsp;%s'), $problem->external_id) . '.</strong>';
         } else {
-            $external_ref_clause = sprintf(_('%s ref:&nbsp;%s'), $problem->external_body, $problem->external_id);
+            $external_ref_clause = '<strong>' . sprintf(_('%s ref:&nbsp;%s'), $problem->external_body, $problem->external_id) . '.</strong>';
         }
     }
     if ($duration_clause and $external_ref_clause) {
-        return "$duration_clause, $external_ref_clause"
-    } else { 
+        return "$duration_clause. $external_ref_clause"
+    } else {
         return $duration_clause || $external_ref_clause
     }
 }
