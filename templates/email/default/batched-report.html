@@ -65,7 +65,9 @@ Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
           </tr>
           <tr>
             <td style="background:#ffffff;padding:0;border:1px solid #A8B1B2;border-top:0;border-bottom:0;">
-              <img src="https://maps.googleapis.com/maps/api/staticmap.gif?size=598x300&markers=size:mid|51.824,-3.017|51.829,%20-3.029&name=dummy.gif" alt="Map of incidents" width="598" height"300" style="width:100%;height:auto;">
+              [% IF has_map %]
+              <img src="cid:[% map_cid %]" alt="Map of incidents" width="598" height"300" style="width:100%;height:auto;">
+              [% END %]
             </td>
           </tr>
           <tr>
