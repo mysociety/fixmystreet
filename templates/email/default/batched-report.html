@@ -56,7 +56,7 @@ Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
                     <strong style="display:block;font-size:48px;line-height:48px;color:#E5BB1C;">[% misses.count %]</strong>
                     Near [% misses.count != 1 ? 'misses' : 'miss' %]
                     [% IF misses.count %]
-                    <small style="display:block;">By [% misses_people_count %] i[% misses_people_count != 1 ? 'people' : 'person' %]</small>
+                    <small style="display:block;">By [% misses_people_count %] [% misses_people_count != 1 ? 'people' : 'person' %]</small>
                     [% END %]
                   </td>
                 </tr>
