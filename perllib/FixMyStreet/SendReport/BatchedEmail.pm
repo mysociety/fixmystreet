@@ -2,8 +2,19 @@ package FixMyStreet::SendReport::BatchedEmail;
 
 use Moose;
 use Email::MIME;
+use LWP::UserAgent;
+use URI;
+use mySociety::Random qw(random_bytes);
 
 BEGIN { extends 'FixMyStreet::SendReport::Email'; }
+
+has user_agent => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        LWP::UserAgent->new();
+    },
+);
 
 =head1 should_skip
 
@@ -35,6 +46,26 @@ sub send_batch {
 
     my $period = 'month'; # XXX hardcoded for now
 
+    my @latlon = map { sprintf '%0.3f,%0.3f', $_->latitude, $_->longitude } $rs->all;
+
+    my $map_data = do {
+        my $url = 'https://maps.googleapis.com/maps/api/staticmap?size=598x300&markers=size:mid|'
+            . join '|' => @latlon;
+        my $ua = $self->user_agent;
+        my $resp = $ua->get($url);
+        if ($resp->is_success) {
+            $resp->decoded_content;
+        }
+        else {
+            warn sprintf "Error fetching %s (%s)\n", $url, $resp->status_line;
+        }
+    };
+
+    # TODO refactor ID generation, see also FMS::App
+    my $map_cid = $map_data && 
+        sprintf('fms-map-%s-%s@%s',
+            time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN});
+
     my $vars = {
         period => $period,
         body => $body,
@@ -42,6 +73,8 @@ sub send_batch {
         cobrand => $cobrand,
         incidents => $incidents,
         misses => $misses,
+        has_map => $map_data ? 1 : 0,
+        map_cid => $map_cid,
         incidents_people_count => $incidents_people_count,
         misses_people_count => $misses_people_count,
         additional_template_paths => [
@@ -54,10 +87,25 @@ sub send_batch {
 
     my $email = Email::MIME->new($content);
     # NB: using parse here rather than ->create just so we can simply template the subject line.
-
+    
     $email->header_set(From => mySociety::Config::get('CONTACT_EMAIL'));
     $email->header_set(To => $recipient);
     $email->content_type_set('text/html');
+
+    if ($map_data) {
+        my $map_part = Email::MIME->create(
+            body => $map_data,
+            attributes => {
+                content_type => 'image/gif',
+                encoding => 'base64',
+                filename => 'map.gif',
+                name => 'map.gif',
+                content_disposition => 'inline',
+            });
+        $map_part->header_raw_set('Content-ID' => "<$map_cid>"); # bracketed version in header
+
+        $email->parts_add([ $map_part ]);
+    }
 
     $c->send_email_simple($email)
         or die "Couldn't send email $email";
