@@ -1066,10 +1066,13 @@ sub admin_stats {
             if ( $external_body = $report->body($c) ) {
                 $body_name = $external_body->name || '[Unknown body]';
             }
-            my $detail = $report->detail;
 
-            # replace newlines with slash
-            $detail =~ s{\r?\n}{ / }g;
+            my $detail = $report->detail;
+            my $public_response = $report->get_extra_metadata('public_response');
+
+            # replace newlines with HTML <br/> element
+            $detail =~ s{\r?\n}{ <br/> }g;
+            $public_response =~ s{\r?\n}{ <br/> }g;
 
             my @columns = (
                 $report->id,
@@ -1084,7 +1087,7 @@ sub admin_stats {
                 $detail,
                 $report->get_photo_params->{url},
                 $report->service || 'Web interface',
-                $report->get_extra_metadata('public_response')
+                $public_response,
             );
             if ($csv->combine(@columns)) {
                 $body .= $csv->string . "\n";
