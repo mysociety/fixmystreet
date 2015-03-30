@@ -25,6 +25,9 @@ use constant language_domain => 'FixMyStreet-Smidsy';
 use constant severity_minor_threshold => 40;
 use constant severity_major_threshold => 70;
 
+use constant STATS19_IMPORT_USER => 'hakim+smidsy@mysociety.org';
+use constant LATEST_STATS19_UPDATE => 2013; # TODO, constant for now
+
 sub site_title { return 'Collideoscope'; }
 
 sub enter_postcode_text {
@@ -348,22 +351,25 @@ sub front_stats_data {
     $recency = '12 months'; # override
 
     my $updates = $self->problems->number_comments();
-    my ($new, $miss) = $self->recent_new( $recency );
+    my $stats = $self->recent_new( $recency );
 
-    my $stats = {
+    warn Dumper($stats); use Data::Dumper;
+
+    my ($new, $miss) = ($stats->{new}, $stats->{miss});
+
+    return {
         updates => $updates,
         new     => $new,
         misses => $miss,
         accidents => $new - $miss,
+        stats19 => $stats->{stats19},,
         recency => $recency,
     };
-
-    return $stats;
 }
 
 =head2 recent_new
 
-Specialised from RS::Problem
+Specialised from RS::Problem's C<recent_new>
 
 =cut
 
@@ -375,24 +381,44 @@ sub recent_new {
 
     (my $key = $interval) =~ s/\s+//g;
 
-    my $new_key = "recent_new:$site_key:$key";
-    my $miss_key = "recent_new_miss$site_key:$key";
+    my %keys = (
+        'new'     => "recent_new:$site_key:$key",
+        'miss'    => "recent_new_miss:$site_key:$key",
+        'stats19' => sprintf ("latest_stats19:$site_key:%d", LATEST_STATS19_UPDATE),
+    );
 
-    my ($new, $miss) = (Memcached::get($new_key), Memcached::get($miss_key));
+    my $recent_rs = $rs->search( {
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        created => { '>', \"current_timestamp-'$interval'::interval" },
+        'user.email' => { '!=', STATS19_IMPORT_USER },
+    }, {
+        join => 'user',
+    });
 
-    if (! ($new && $miss)) {
-        $rs = $rs->search( {
-            state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
-            confirmed => { '>', \"current_timestamp-'$interval'::interval" },
-        });
-        $new = $rs->count;
-        Memcached::set($new_key, $new, 3600);
+    my $stats_rs = $rs->search( {
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        created => { '>=', sprintf ('%d-01-01', LATEST_STATS19_UPDATE ),
+                        '<', sprintf ('%d-01-01', LATEST_STATS19_UPDATE+1 ) },
+        'user.email' => STATS19_IMPORT_USER,
+    }, {
+        join => 'user',
+    });
 
-        $miss = $rs->search({ category => { like => '%miss' } })->count;
-        Memcached::set($miss_key, $miss, 3600);
-    }
+    my %values = map { 
+        my $mkey = $keys{$_};
+        my $value = Memcached::get($mkey) || do {
+            my $value = 
+                $_ eq 'new'  ? $recent_rs->count :
+                $_ eq 'miss' ? $recent_rs->search({ category => { like => '%miss' } })->count :
+                $_ eq 'stats19' ? $stats_rs->count : die 'FATAL error';
 
-    return ($new, $miss);
+            Memcached::set($mkey, $value, 3600);
+            $value
+        };
+        ( $_ => $value );
+    } keys %keys;
+
+    return \%values;
 }
 
 sub extra_stats_cols { ('category') }
