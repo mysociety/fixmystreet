@@ -1051,7 +1051,7 @@ sub admin_stats {
                     { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
                     'title', 'detail',
                     'photo',
-                    'whensent',
+                    'whensent', 'lastupdate',
                     'service',
                     'extra',
                 ],
@@ -1085,7 +1085,7 @@ sub admin_stats {
                 $report->get_column('sum_time_spent') || 0,
                 $report->title,
                 $detail,
-                $report->get_photo_params->{url},
+                $c->cobrand->base_url . $report->get_photo_params->{url},
                 $report->service || 'Web interface',
                 $public_response,
             );
