@@ -1056,7 +1056,7 @@ sub admin_stats {
                     { sum_time_spent => { sum => 'admin_log_entries.time_spent' } },
                     'title', 'detail',
                     'photo',
-                    'whensent',
+                    'whensent', 'lastupdate',
                     'service',
                     'extra',
                 ],
