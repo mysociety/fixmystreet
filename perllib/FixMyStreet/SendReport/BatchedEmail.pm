@@ -84,13 +84,12 @@ sub send_batch {
     };
 
     my $content = $c->view('Email')->render( $c, 'batched-report.html', $vars );
+    my $text_content = $c->view('Email')->render( $c, 'batched-report.txt', $vars );
 
-    my $email = Email::MIME->new($content);
+    my $html = Email::MIME->new($content);
     # NB: using parse here rather than ->create just so we can simply template the subject line.
     
-    $email->header_set(From => mySociety::Config::get('CONTACT_EMAIL'));
-    $email->header_set(To => $recipient);
-    $email->content_type_set('text/html');
+    $html->content_type_set('text/html');
 
     if ($map_data) {
         my $map_part = Email::MIME->create(
@@ -104,8 +103,27 @@ sub send_batch {
             });
         $map_part->header_raw_set('Content-ID' => "<$map_cid>"); # bracketed version in header
 
-        $email->parts_add([ $map_part ]);
+        $html->parts_add([ $map_part ]);
     }
+
+    my $text = Email::MIME->create(
+        body => $text_content,
+        attributes => {
+            content_type => 'text/plain',
+            encoding => 'quoted-printable',
+        },
+    );
+
+    my $email = Email::MIME->create(
+        attributes => {
+            content_type => 'multipart/alternative',
+        },
+        parts => [ $text, $html ],
+    );
+
+    $email->header_set(From => mySociety::Config::get('CONTACT_EMAIL'));
+    $email->header_set(To => $recipient);
+    $email->header_set(Subject => $html->header('Subject'));
 
     $c->send_email_simple($email)
         or die "Couldn't send email $email";
