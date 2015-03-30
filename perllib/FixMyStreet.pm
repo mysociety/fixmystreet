@@ -167,7 +167,12 @@ sub dbic_connect_info {
         AutoCommit     => 1,
         pg_enable_utf8 => 1,
     };
-    my $dbic_args = {};
+    my $dbic_args = {
+        # adding this should makeabunch of
+        # $c->model('DB')->schema->storage->sql_maker->quote_char() 
+        # etc. wrangling obsolete?
+        quote_names => 1, 
+    };
 
     return [ $dsn, $user, $password, $dbi_args, $dbic_args ];
 }
