@@ -186,11 +186,4 @@ MESSAGE_MANAGER_URL: ''
 
 # -----------------------------------------------------------------------
 
-# fixmystreet.com specific config variables. You won't need any of these.
-KASABI_API_KEY: ''
-LONDON_REPORTIT_URL: ''
-LONDON_REPORTIT_KEY: ''
-LONDON_REPORTIT_SECRET: ''
-AUTH_SHARED_SECRET: ''
-HEARFROMYOURMP_BASE_URL: ''
-
+SECURE_PROXY_SSL_HEADER: ''
