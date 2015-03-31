@@ -37,7 +37,6 @@ This is a summary of cycle-related incidents reported on this site. Since the da
 
 <tbody>
 [% FOREACH body IN bodies %]
-    [% IF open.${body.id}.new_accident || open.${body.id}.new_nearmiss || open.${body.id}.older_accident || open.${body.id}.older_nearmiss %]
     <tr align="center"
     [%- IF NOT body.areas.size %] class="gone"
     [%- ELSIF ! (loop.count % 2) %] class="a"
@@ -49,7 +48,6 @@ This is a summary of cycle-related incidents reported on this site. Since the da
     <td class="data">[% open.${body.id}.older_nearmiss or 0 %]</td>
     </tr>
     [% TRY %][% PROCESS "reports/_extras.html" %][% CATCH file %][% END %]
-  [% END %]
 [% END %]
 </tbody>
 </table>
