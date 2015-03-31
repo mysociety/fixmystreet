@@ -1,0 +1,89 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "./_fonts";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+#site-logo
+{
+    background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
+    background-size: contain;
+    width: 82px;
+    height: 40px;
+    top: 8px;
+    left: 4px;
+}
+
+#nav-link {
+  background: url('/cobrands/greenwich/tab-red.png') 0 0 no-repeat;
+}
+
+
+#site-header {
+    background-color: $base_bg;
+    background: url("/cobrands/greenwich/mastWave.gif") 0 0 no-repeat;
+    background-size: cover;
+}
+
+
+#mysoc-menu {
+    display: none;
+}
+
+.issue-list-a li, .list-a li, #user-meta p, #front-main #postcodeForm {
+    background: $greenwich_light_grey;
+}
+
+label[for=pc] {
+    color: $greenwich_dark_red;
+}
+
+ol.big-numbers > li:before {
+    color: $primary;
+}
+
+#front-howto #front_stats {
+    color: $nav_fg;
+}
+
+#greenwich-menu-desktop, #fms-menu-desktop, #greenwich-breadcrumb {
+    display: none;
+}
+
+footer {
+    ul li {
+        list-style: none;
+    }
+
+    hr {
+        padding: 0;
+        margin: 0 -16px;
+        height: 4px;
+        background-color: $greenwich_red;
+        border: none;
+    }
+}
+
+h1, h2 {
+    font-style: italic;
+}
+
+button, input[type=submit], .btn, .green-btn, button.green-btn, input.green-btn {
+    border: none;
+    border-radius: 0;
+    text-transform: none;
+    color: white;
+    background: $greenwich_dark_grey;
+    border-bottom: solid 4px $greenwich_red;
+
+    &:hover {
+        border: none;
+        border-bottom: solid 4px lighten($greenwich_red, 5%);
+        text-decoration: underline;
+        background: lighten($greenwich_dark_grey, 2%);
+    }
+}
