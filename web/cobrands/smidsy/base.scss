@@ -445,3 +445,7 @@ dt:target {
         background-color: $color-neutral-cream;
     }
 }
+
+// for expediency, we are relabelling this functionality in Collideoscope for
+// Stats19 data, so hide the link to avoid confusing interactions
+#sub_map_links a#all_pins_link { display: none }
