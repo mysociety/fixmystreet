@@ -353,8 +353,6 @@ sub front_stats_data {
     my $updates = $self->problems->number_comments();
     my $stats = $self->recent_new( $recency );
 
-    warn Dumper($stats); use Data::Dumper;
-
     my ($new, $miss) = ($stats->{new}, $stats->{miss});
 
     return {
@@ -387,21 +385,26 @@ sub recent_new {
         'stats19' => sprintf ("latest_stats19:$site_key:%d", LATEST_STATS19_UPDATE),
     );
 
+    # unfortunately, we can't just do 
+    #     'user.email' => { '!=', STATS19_IMPORT_USER }, }, { join => 'user', });
+    # for the following 2 queries
+    # until https://github.com/mysociety/fixmystreet/issues/1084 is fixed
+    my $user_id = do {
+        my $user = $self->{c}->model('DB::User')->find({ email => STATS19_IMPORT_USER });
+        $user ? $user->id : undef;
+    };
+
     my $recent_rs = $rs->search( {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
         created => { '>', \"current_timestamp-'$interval'::interval" },
-        'user.email' => { '!=', STATS19_IMPORT_USER },
-    }, {
-        join => 'user',
+        $user_id ? ( user_id => { '!=', $user_id } ) : (),
     });
 
     my $stats_rs = $rs->search( {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
         created => { '>=', sprintf ('%d-01-01', LATEST_STATS19_UPDATE ),
                         '<', sprintf ('%d-01-01', LATEST_STATS19_UPDATE+1 ) },
-        'user.email' => STATS19_IMPORT_USER,
-    }, {
-        join => 'user',
+        $user_id ? ( user_id => $user_id ) : (),
     });
 
     my %values = map { 
