@@ -735,25 +735,55 @@ sub admin_stats {
                     'latitude', 'longitude',
                     'cobrand',  'category',
                     'state',    'user_id',
-                    'external_body'
-                ]
+                    'external_body',
+                    'title', 'detail',
+                    'photo',
+                    'whensent', 'lastupdate',
+                    'service',
+                    'extra',
+                ],
             }
         );
-        my $body = "ID,Created,E,N,Category,Status,UserID,External Body\n";
+        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Title,Detail,Media URL,Interface Used,Council Response\n";
+        require Text::CSV;
+        my $csv = Text::CSV->new({ binary => 1 });
         while ( my $report = $problems->next ) {
             my $external_body;
             my $body_name = "";
             if ( $external_body = $report->body($c) ) {
-                $body_name = $external_body->name;
+                $body_name = $external_body->name || '[Unknown body]';
             }
-            $body .= join( ',',
-                $report->id,           $report->created,
+
+            my $detail = $report->detail;
+            my $public_response = $report->get_extra_metadata('public_response') || '';
+
+            # replace newlines with HTML <br/> element
+            $detail =~ s{\r?\n}{ <br/> }g;
+            $public_response =~ s{\r?\n}{ <br/> }g;
+
+            my @columns = (
+                $report->id,
+                $report->created,
+                $report->whensent,
+                $report->lastupdate,
                 $report->local_coords, $report->category,
                 $report->state,        $report->user_id,
-                "\"$body_name\"" )
-              . "\n";
+                $body_name,
+                $report->title,
+                $detail,
+                $c->cobrand->base_url . $report->get_photo_params->{url},
+                $report->service || 'Web interface',
+                $public_response,
+            );
+            if ($csv->combine(@columns)) {
+                $body .= $csv->string . "\n";
+            }
+            else {
+                $body .= sprintf "{{error emitting CSV line: %s}}\n", $csv->error_diag;
+            }
         }
         $c->res->content_type('text/csv; charset=utf-8');
+        $c->res->header('Content-Disposition' => 'attachment; filename=stats.csv');
         $c->res->body($body);
     }
 

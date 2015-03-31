@@ -51,5 +51,8 @@ sub is_default {
     return $self->moniker eq 'default';
 }
 
+# NB: this Base class is for 'meta' features.  To add base methods for all cobrands,
+# you may want to look at FMS::Cobrand::Default instead!
+
 1;
 

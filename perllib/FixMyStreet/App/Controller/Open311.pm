@@ -252,7 +252,12 @@ sub output_requests : Private {
             'interface_used' => [ $problem->service ], # Not in Open311 v2
         };
 
-        if ( $c->cobrand->moniker ne 'zurich' ) { # XXX
+        if ( $c->cobrand->moniker eq 'zurich' ) {
+            $request->{service_notice} = [ 
+                $problem->get_extra_metadata('public_response')
+            ];
+        }
+        else {
             # FIXME Not according to Open311 v2
             $request->{agency_responsible} = $problem->bodies;
         }
