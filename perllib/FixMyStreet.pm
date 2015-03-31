@@ -171,7 +171,8 @@ sub dbic_connect_info {
         # adding this should makeabunch of
         # $c->model('DB')->schema->storage->sql_maker->quote_char() 
         # etc. wrangling obsolete?
-        quote_names => 1, 
+        # BUT causes hilarious consequences, needs major test/refactor
+        ## quote_names => 1, 
     };
 
     return [ $dsn, $user, $password, $dbi_args, $dbic_args ];
