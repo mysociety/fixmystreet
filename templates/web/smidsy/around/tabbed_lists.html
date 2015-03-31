@@ -1,7 +1,15 @@
 <p class="report-list-filters">
-  <label>
-    <input type="checkbox"> Include Stats19 reports
-  </label>
+  <input id="show_stats19_checkbox" type="checkbox" [% IF c.req.params.all_pins %]checked[% END %]>
+  <label>Show reports from the Department of Transport</label>
+      <script>
+          $(function () {
+              $('#show_stats19_checkbox').change( function () {
+                  // for now, defer to #all_pins_link functionality
+                  // we will replace this hack when we have proper backend plumbing for it
+                  $('#all_pins_link').click();
+              });
+          });
+      </script>
   <a href="/faq#stats19" title="What is Stats19?">(?)</a>
 </p>
 
