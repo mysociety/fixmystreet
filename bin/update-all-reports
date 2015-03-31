@@ -56,8 +56,8 @@ my $problems = FixMyStreet::App->model("DB::Problem")->search(
     {
         columns => [
             'id', 'bodies_str', 'state', 'areas', @extra_cols,
-            { duration => { extract => "epoch from current_timestamp-lastupdate" } },
-            { age      => { extract => "epoch from current_timestamp-$age_column"  } },
+            { duration => { extract => \"epoch from current_timestamp-lastupdate" } },
+            { age      => { extract => \"epoch from current_timestamp-$age_column"  } },
         ]
     }
 );
