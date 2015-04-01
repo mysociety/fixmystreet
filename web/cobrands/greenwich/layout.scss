@@ -23,7 +23,7 @@ body.twothirdswidthpage #site-logo,
     background-color: $base_bg;
 
     #front-main-container {
-        background-color: $greenwich_sub_bg;
+        background-color: $greenwich_light_grey;
         padding: 1em 0;
     }
 }
@@ -44,4 +44,19 @@ body.twothirdswidthpage #site-logo,
     font-style: italic;
     font-variant: normal;
     font-weight: normal;
+}
+
+#main-nav ul#main-menu {
+    background: $greenwich_dark_grey;
+
+    li {
+        span {
+            color: $nav_fg;
+            text-decoration: underline;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    }
 }

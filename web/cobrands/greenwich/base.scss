@@ -5,10 +5,37 @@
 
 @import "../sass/base";
 
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+#site-logo
+{
+    background: url("/cobrands/greenwich/logo-mobile.gif") 0 0 no-repeat;
+    width: 82px;
+    height: 50px;
+}
+
+#nav-link {
+  background: url('/cobrands/greenwich/tab-red.png') 0 0 no-repeat;
+}
+
+
+#site-header {
+    background: $base_bg;
+}
+
+
 #mysoc-menu {
     display: none;
 }
 
-.issue-list-a li, .list-a li {
-    background: $greenwich_sub_bg;
+.issue-list-a li, .list-a li, #user-meta p, #front-main #postcodeForm {
+    background: $greenwich_light_grey;
+}
+
+ol.big-numbers > li:before {
+    color: $primary;
+}
+
+#front-howto #front_stats {
+    color: $nav_fg;
 }

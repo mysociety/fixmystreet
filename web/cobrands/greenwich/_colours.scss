@@ -1,9 +1,10 @@
 /* COLOURS */
 
-$greenwich_primary: #d42828;
-$greenwich_sub_bg: #e0e6e9;
+$greenwich_red: #d42828;
+$greenwich_dark_grey: #4b5459;
+$greenwich_light_grey: #e0e6e9;
 
-$primary: $greenwich_primary;
+$primary: $greenwich_red;
 $primary_b: #000000;
 $primary_text: #222222;
 
@@ -11,10 +12,10 @@ $base_bg: #fff;
 $base_fg: #000;
 
 $map_nav_bg: #fff;
-$nav_fg: #000;
-$nav_fg_hover: $primary;
+$nav_fg: #fff;
+$nav_fg_hover: transparent;
 
-$col_click_map: $greenwich_primary;
+$col_click_map: $greenwich_red;
 $col_click_map_dark: darken($col_click_map, 10%);
 
 $col_fixed_label: #00BD08;
