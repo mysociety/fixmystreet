@@ -4,3 +4,11 @@
 @import "compass";
 
 @import "../sass/base";
+
+#mysoc-menu {
+    display: none;
+}
+
+.issue-list-a li, .list-a li {
+    background: $greenwich_sub_bg;
+}

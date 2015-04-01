@@ -1,2 +1,47 @@
 @import "_colours";
 @import "../sass/layout";
+
+#site-logo,
+.ie6 #site-logo,
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+body.authpage #site-logo,
+.ie6 body.authpage #site-logo,
+body.twothirdswidthpage #site-logo,
+.ie6 body.twothirdswidthpage #site-logo
+{
+        position: relative;
+        top: 1.2em;
+        margin: 0;
+        padding: 0;
+        background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
+        width: 170px;
+        height: 83px;
+}
+
+#front-main {
+    background-color: $base_bg;
+
+    #front-main-container {
+        background-color: $greenwich_sub_bg;
+        padding: 1em 0;
+    }
+}
+
+#site-header .container {
+    background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
+    min-height: 110px;
+    border-bottom: solid 4px $primary;
+}
+
+.nav-wrapper .nav-wrapper-2 {
+    border-top: none;
+}
+
+#main-menu {
+    font-family: georgia, 'new century schoolbook', 'times new roman', times, serif;
+    font-size: 15px;
+    font-style: italic;
+    font-variant: normal;
+    font-weight: normal;
+}
