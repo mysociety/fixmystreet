@@ -125,6 +125,23 @@ body.mappage {
         background-size: contain;
         border-bottom: solid 4px $primary;
     }
+
+    #main-nav {
+        ul#main-menu {
+            li a.report-a-problem-btn {
+                color: $nav_fg;
+            }
+        }
+
+        ul li {
+            a, span {
+                color: $primary_text;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+        }
+    }
 }
 
 body.twothirdswidthpage .content .sticky-sidebar aside {
