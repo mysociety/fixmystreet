@@ -147,3 +147,40 @@ body.mappage {
 body.twothirdswidthpage .content .sticky-sidebar aside {
     top: 13em;
 }
+
+body.fullwidthpage, body.twothirdswidthpage {
+    .container .content footer {
+        .tablewrapper {
+            padding: 1em 0;
+
+            ul {
+                margin: 0;
+                padding: 0;
+                text-align: center;
+
+                li {
+                    display: inline;
+                    padding: 0 4px 0 7px;
+                    font-size: 0.8em;
+                    border-left: solid 1px $greenwich_dark_grey;
+
+                    &:first-child {
+                        border-left: none;
+                    }
+
+                    a, a:link, a:visited {
+                        color: $primary_text;
+                    }
+                }
+            }
+        }
+
+        hr {
+            padding: 0;
+            margin: 0 -24px;
+            border-bottom: solid 8px $greenwich_red;
+            border-top: solid 48px $greenwich_dark_grey;
+            height: 0;
+        }
+    }
+}

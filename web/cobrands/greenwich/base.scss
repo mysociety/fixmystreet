@@ -45,3 +45,17 @@ ol.big-numbers > li:before {
 #main-menu-desktop {
     display: none;
 }
+
+footer {
+    ul li {
+        list-style: none;
+    }
+
+    hr {
+        padding: 0;
+        margin: 0 -16px;
+        height: 4px;
+        background-color: $greenwich_red;
+        border: none;
+    }
+}
