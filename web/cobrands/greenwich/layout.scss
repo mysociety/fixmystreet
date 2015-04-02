@@ -1,6 +1,13 @@
 @import "_colours";
 @import "../sass/layout";
 
+/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+/* For IE 6/7 only */
+.clearfix { *zoom: 1; }
+
+
 #site-logo,
 .ie6 #site-logo,
 body.frontpage #site-logo,
@@ -11,7 +18,8 @@ body.twothirdswidthpage #site-logo,
 .ie6 body.twothirdswidthpage #site-logo
 {
         position: relative;
-        top: 1.2em;
+        top: 14px;
+        left: 14px;
         margin: 0;
         padding: 0;
         background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
@@ -28,10 +36,27 @@ body.twothirdswidthpage #site-logo,
     }
 }
 
-#site-header .container {
-    background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
-    min-height: 110px;
-    border-bottom: solid 4px $primary;
+body.frontpage #site-header, #site-header {
+    height: auto;
+
+    .container {
+        min-height: 0;
+    }
+
+    .container:first-child {
+        background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
+        min-height: 110px;
+    }
+}
+
+body.frontpage {
+    #user-meta p {
+        top: -9em;
+    }
+
+    .issue-list-a li {
+        border-left: solid 4px $primary;
+    }
 }
 
 .nav-wrapper .nav-wrapper-2 {
@@ -39,23 +64,35 @@ body.twothirdswidthpage #site-logo,
 }
 
 #main-menu {
+    display: none;
+}
+
+#main-menu-desktop {
+    display: block;
+    background: $greenwich_dark_grey;
     font-family: georgia, 'new century schoolbook', 'times new roman', times, serif;
     font-size: 15px;
     font-style: italic;
-    font-variant: normal;
-    font-weight: normal;
-}
-
-#main-nav ul#main-menu {
-    background: $greenwich_dark_grey;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: solid 4px $primary;
+    border-bottom: solid 4px $greenwich_med_grey;
+    text-align: right;
+    padding-right: 1em;
 
     li {
-        span {
+        display: inline-block;
+        list-style: none;
+        margin: 0;
+        padding: 0.25em 0.5em;
+
+        span, a {
             color: $nav_fg;
-            text-decoration: underline;
+            padding: 0.5em;
         }
 
-        a:hover {
+        span, a:hover {
             text-decoration: underline;
         }
     }
