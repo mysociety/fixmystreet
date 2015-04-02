@@ -158,8 +158,33 @@ body.fullwidthpage, body.twothirdswidthpage {
     }
 
     .container .content footer {
+        a.platform-logo {
+            background-color: $greenwich_dark_grey;
+            background-position: center center;
+            background-size: 13em 1.5em;
+            width: 14em;
+            height: 3em;
+            border-radius: 1.5em;
+        }
+
         .tablewrapper {
-            padding: 1em 0;
+            padding: 0;
+            margin: 1em 0;
+
+            div {
+                text-align: center;
+
+                p {
+                    margin: 0;
+                    padding: 0;
+                    line-height: 3em;
+                }
+            }
+        }
+
+        .footer-nav {
+            padding: 0;
+            margin: 1em 0;
 
             ul {
                 margin: 0;
