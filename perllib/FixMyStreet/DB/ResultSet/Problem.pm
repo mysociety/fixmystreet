@@ -401,7 +401,7 @@ sub send_reports {
             # on a staging server send emails to ourselves rather than the bodies
             %reporters = map { $_ => $reporters{$_} }
                 # TODO refactor to class constant instead of textual grep
-                grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes|Blackhole)/ }
+                grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes)/ }
                 keys %reporters;
             unless (%reporters) {
                 %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
@@ -500,7 +500,7 @@ sub _debug1 {
     my ($row, $debug_unsent_count) = @_;
     $$debug_unsent_count++;
     print "\n";
-    debug_print("state=" . $row->state . ", bodies_str=" . $row->bodies_str . 
+    debug_print("state=" . $row->state . ", bodies_str=" . $row->bodies_str .
         ($row->cobrand? ", cobrand=" . $row->cobrand : ""), $row->id);
 }
 
@@ -522,7 +522,7 @@ sub send_reports_batched {
     my $senders = $send_report->get_senders;
 
     # as per send_reports above
-    my @cobrands = 
+    my @cobrands =
         grep FixMyStreet::Cobrand->get_class_for_moniker($_)->new()->email_host,
         map $_->cobrand,
         $unsent->search({}, { columns => ['cobrand'], distinct => 1 })->all;
