@@ -97,3 +97,36 @@ body.frontpage {
         }
     }
 }
+
+body.mappage {
+    #site-header .container {
+        min-height: 68px;
+    }
+
+    .main-menu-container {
+        display: none;
+    }
+
+    #main-menu {
+        display: block;
+    }
+
+    #site-logo {
+        top: 5px;
+        left: 6px;
+        background: url("/cobrands/greenwich/logo-map.gif") 0 0 no-repeat;
+        width: 111px;
+        height: 54px;
+    }
+
+    .nav-wrapper .nav-wrapper-2 {
+        background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
+        background-color: $base_bg;
+        background-size: contain;
+        border-bottom: solid 4px $primary;
+    }
+}
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+    top: 13em;
+}
