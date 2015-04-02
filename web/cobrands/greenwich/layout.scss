@@ -1,6 +1,9 @@
 @import "_colours";
 @import "../sass/layout";
 
+$greenwich_header_font: georgia, 'new century schoolbook', 'times new roman', times, serif;
+$greenwich_header_font_style: italic;
+
 /* from http://nicolasgallagher.com/micro-clearfix-hack/ */
 .clearfix:before, .clearfix:after { content: " "; display: table; }
 .clearfix:after { clear: both; }
@@ -70,9 +73,9 @@ body.frontpage {
 #main-menu-desktop {
     display: block;
     background: $greenwich_dark_grey;
-    font-family: georgia, 'new century schoolbook', 'times new roman', times, serif;
     font-size: 15px;
-    font-style: italic;
+    font-family: $greenwich_header_font;
+    font-style: $greenwich_header_font_style;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -149,6 +152,11 @@ body.twothirdswidthpage .content .sticky-sidebar aside {
 }
 
 body.fullwidthpage, body.twothirdswidthpage {
+    h1, h2 {
+        font-family: $greenwich_header_font;
+        font-style: $greenwich_header_font_style;
+    }
+
     .container .content footer {
         .tablewrapper {
             padding: 1em 0;
