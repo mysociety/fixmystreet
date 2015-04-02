@@ -430,7 +430,7 @@ input.green-btn{
 
 .click-the-map {
   color: #000;
-  margin: 0 -1em;
+  margin: -10px -1em 0 -1em; // overlap padding on parents
   padding: 18px;
   border-bottom: 1px solid $oxfordshire_mid_grey_green;
   background: #fff url('/cobrands/oxfordshire/images/click-map-chevron-big.gif') 90% 12px no-repeat;
