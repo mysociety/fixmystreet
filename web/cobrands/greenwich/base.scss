@@ -20,7 +20,9 @@ body.frontpage #site-logo,
 
 
 #site-header {
-    background: $base_bg;
+    background-color: $base_bg;
+    background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
+    background-size: contain;
 }
 
 
