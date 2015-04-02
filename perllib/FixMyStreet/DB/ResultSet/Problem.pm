@@ -404,7 +404,7 @@ sub send_reports {
             # on a staging server send emails to ourselves rather than the bodies
             %reporters = map { $_ => $reporters{$_} } 
                 # TODO refactor to class constant instead of textual grep
-                grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes|Blackhole)/ } 
+                grep { /FixMyStreet::SendReport::(Email|NI|EmptyHomes)/ } 
                 keys %reporters;
             unless (%reporters) {
                 %reporters = ( 'FixMyStreet::SendReport::Email' => FixMyStreet::SendReport::Email->new() );
