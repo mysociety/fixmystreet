@@ -9,9 +9,12 @@ body.frontpage #site-logo,
 .ie6 body.frontpage #site-logo,
 #site-logo
 {
-    background: url("/cobrands/greenwich/logo-mobile.gif") 0 0 no-repeat;
+    background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
+    background-size: contain;
     width: 82px;
-    height: 50px;
+    height: 40px;
+    top: 8px;
+    left: 4px;
 }
 
 #nav-link {
@@ -22,7 +25,7 @@ body.frontpage #site-logo,
 #site-header {
     background-color: $base_bg;
     background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
-    background-size: contain;
+    background-size: cover;
 }
 
 
