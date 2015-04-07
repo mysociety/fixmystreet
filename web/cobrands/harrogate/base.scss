@@ -24,6 +24,15 @@ body.frontpage #site-logo,
     background-image: url(/cobrands/fixmystreet/images/menu-black.svg), none;
 }
 
+#report-cta {
+    border-color: #ddd;
+    color: #000;
+
+    &:hover, &:focus {
+      background-color: #eee;
+    }
+}
+
 #main-nav ul#main-menu li {
 
     // blue button background, darker if selected

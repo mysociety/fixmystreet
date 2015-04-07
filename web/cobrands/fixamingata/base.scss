@@ -28,6 +28,19 @@ $image-sprite: '/cobrands/fixamingata/images/sprite.png';
     background-image: url(/cobrands/fixmystreet/images/menu-black.svg), none;
 }
 
+#report-cta {
+    font-size: 0.8em;
+    margin-top: -0.25em;
+    border-color: #999;
+    color: #000;
+    padding-bottom: 0.2em;
+    padding-top: 0.5em;
+
+    &:hover, &:focus {
+      background-color: #bbb;
+    }
+}
+
 #front-main {
     a#geolocate_link {
         font-size: 0.9em;
