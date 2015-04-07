@@ -450,17 +450,16 @@ p.label-valid {
 
 // this is a skip to nav for mobile users only
 #nav-link {
-  width: 50px;
-  height: 48px;
-  background: url($image-sprite) -5px -916px no-repeat;
+  width: 3em;
+  height: 3em; // same height as #site-header
+  background: transparent url(/cobrands/fixmystreet/images/menu-white.png) center center no-repeat;
+  background-image: url(/cobrands/fixmystreet/images/menu-white.svg), none;
+  background-size: 22px 18px;
   display: block;
   text-indent: -999999px;
   position: absolute;
-  right:2em;
-  top:-2px;
-  &:hover {
-    top:2px;
-  }
+  right: 0;
+  top: 0.25em; // same as border-top on #site-header
 }
 
 

@@ -22,12 +22,6 @@
 }
 
 #nav-link {
-    width: 50px;
-    height: 48px;
-    background: url("/cobrands/trinidadtobago/images/sprite.png") -5px -916px no-repeat;
-    display: block;
-    text-indent: -999999px;
-    position: absolute;
-    right: 2em;
-    top: -2px
+    background-image: url(/cobrands/fixmystreet/images/menu-black.png);
+    background-image: url(/cobrands/fixmystreet/images/menu-black.svg), none;
 }
