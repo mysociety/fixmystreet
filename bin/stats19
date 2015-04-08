@@ -1,7 +1,0 @@
-#!/usr/bin/env perl
-use strictures;
-
-use lib 'perllib';
-use Dataset::UK::Stats19;
-
-Dataset::UK::Stats19->new_with_cmd->execute;
