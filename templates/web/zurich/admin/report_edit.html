@@ -128,13 +128,6 @@
   [% END %]
 </select></p>
 
-[% IF pstate == 'hidden' %]
-<p id="automatic-reply" class="report-edit-action">
-    <span class="mock-label">Automatische Antwort</span>
-    <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" />
-</p>
-[% END %]
-
 <script type="text/javascript">
 $(function(){
 
@@ -151,11 +144,6 @@ $(function(){
     $('#state').change(function(){
         // Show or hide the automatic reply field
         var state = $(this).val();
-        if (state === 'hidden') {
-            $('#automatic-reply').show();
-        } else {
-            $('#automatic-reply').hide();
-        }
 
         // Show or hide the categories
         if (state === 'confirmed') {
@@ -173,6 +161,19 @@ $(function(){
         } else {
             $('#assignation__external select').val('');
             $('#assignation__external').hide();
+        }
+
+        // disable the templates, public_response, publish if we've selected a
+        // different state to the one we started on
+        if ((state === '[% pstate %]')) {
+            $('input[name=publish_response]').show();
+            $('.response_templates_select').show();
+            $('#status_update').show();
+        }
+        else {
+            $('input[name=publish_response]').hide();
+            $('.response_templates_select').hide();
+            $('#status_update').hide();
         }
 
     }).change();
