@@ -1,0 +1,27 @@
+[% FOREACH p = problems.confirmed %]
+    [% IF loop.first %]<h2>[% loc('Open reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[% FOREACH p = problems.fixed %]
+    [% IF loop.first %]<h2>[% loc('Fixed reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[% FOREACH p = problems.closed %]
+    [% IF loop.first %]<h2>[% loc('Closed reports') %]</h2>[% END %]
+    [% INCLUDE problem %]
+[% END %]
+
+[%# FOREACH p = problems.unconfirmed;
+    IF loop.first;
+        '<h2>' _ loc('Unconfirmed reports') _ '</h2>';
+    END;
+    INCLUDE problem;
+END %]
+
+[% BLOCK problem %]
+    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
+    [% INCLUDE 'report/_item.html', problem = p, no_fixed =1 %]
+    [% "</ul>" IF loop.last %]
+[% END %]

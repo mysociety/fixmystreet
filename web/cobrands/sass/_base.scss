@@ -982,6 +982,19 @@ a:hover.button-left {
     margin-bottom: 0.5em;
 }
 
+.report_meta_info,
+.council_sent_info {
+  font-size: 0.9em;
+}
+
+.council_sent_info {
+  color: #666;
+
+  p + & {
+    margin-top: -0.6em; // partly counteract margin-bottom on previous paragraph
+  }
+}
+
 // map stuff
 #map_box{
   @extend .full-width;

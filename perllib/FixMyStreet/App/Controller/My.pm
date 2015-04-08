@@ -28,16 +28,37 @@ sub my : Path : Args(0) {
     my $p_page = $c->req->params->{p} || 1;
     my $u_page = $c->req->params->{u} || 1;
 
+    my $states = $c->cobrand->on_map_default_states;
+    $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
+    my $status = $c->req->param('status') || '';
+    if ( !defined $states || $status eq 'all' ) {
+        $states = FixMyStreet::DB::Result::Problem->visible_states();
+        $c->stash->{filter_status} = 'all';
+    } elsif ( $status eq 'open' ) {
+        $states = FixMyStreet::DB::Result::Problem->open_states();
+        $c->stash->{filter_status} = 'open';
+    } elsif ( $status eq 'fixed' ) {
+        $states = FixMyStreet::DB::Result::Problem->fixed_states();
+        $c->stash->{filter_status} = 'fixed';
+    }
+
     my $pins = [];
     my $problems = {};
 
+
     my $params = {
-        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+        state => [ keys %$states ],
     };
     $params = {
         %{ $c->cobrand->problems_clause },
         %$params
     } if $c->cobrand->problems_clause;
+
+    my $category = $c->req->param('category');
+    if ( $category ) {
+        $params->{category} = $category;
+        $c->stash->{filter_category} = $category;
+    }
 
     my $rs = $c->user->problems->search( $params, {
         order_by => { -desc => 'confirmed' },
@@ -55,6 +76,7 @@ sub my : Path : Args(0) {
         };
         my $state = $problem->is_fixed ? 'fixed' : $problem->is_closed ? 'closed' : 'confirmed';
         push @{ $problems->{$state} }, $problem;
+        push @{ $problems->{all} }, $problem;
     }
     $c->stash->{problems_pager} = $rs->pager;
     $c->stash->{problems} = $problems;
@@ -70,6 +92,14 @@ sub my : Path : Args(0) {
     $c->stash->{has_content} += scalar @updates;
     $c->stash->{updates} = \@updates;
     $c->stash->{updates_pager} = $rs->pager;
+
+    my @categories = $c->user->problems->search( undef, {
+        columns => [ 'category' ],
+        distinct => 1,
+        order_by => [ 'category' ],
+    } )->all;
+    @categories = map { $_->category } @categories;
+    $c->stash->{filter_categories} = \@categories;
 
     $c->stash->{page} = 'my';
     FixMyStreet::Map::display_map(

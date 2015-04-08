@@ -101,4 +101,8 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub on_map_default_states { return FixMyStreet::DB::Result::Problem->open_states(); }
+
+sub on_map_default_status { return 'open'; }
+
 1;

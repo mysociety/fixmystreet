@@ -29,6 +29,14 @@ function fixmystreet_update_pin(lonlat) {
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
+        // If the category filter appears on the map and the user has selected
+        // something from it, then pre-fill the category field in the report
+        if ($("select#categories").length) {
+            var category = $("#categories").val();
+            if (!!category && $("#form_category option[value="+category+"]")) {
+                $("#form_category").val(category);
+            }
+        }
     });
 
     if (!$('#side-form-error').is(':visible')) {
@@ -107,6 +115,11 @@ function fms_markers_resize() {
         fixmystreet.markers.features[i].attributes.size = size;
     }
     fixmystreet.markers.redraw();
+}
+
+function fms_categories_or_status_changed() {
+    // If the category or status has changed we need to re-fetch map markers
+    fixmystreet.markers.refresh({force: true});
 }
 
 function fixmystreet_onload() {
@@ -196,7 +209,7 @@ function fixmystreet_onload() {
     if (fixmystreet.page == 'around') {
         fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
-        pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
+        pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
             url: '/ajax',
             params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
@@ -240,6 +253,16 @@ function fixmystreet_onload() {
         fixmystreet.map.addControl( fixmystreet.select_feature );
         fixmystreet.select_feature.activate();
         fixmystreet.map.events.register( 'zoomend', null, fms_markers_resize );
+
+        // If the category filter dropdown exists on the page set up the
+        // event handlers to populate it and react to it changing
+        if ($("select#categories").length) {
+            $("body").on("change", "#categories", fms_categories_or_status_changed);
+        }
+        // Do the same for the status dropdown
+        if ($("select#statuses").length) {
+            $("body").on("change", "#statuses", fms_categories_or_status_changed);
+        }
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
@@ -397,6 +420,16 @@ $(function(){
         fixmystreet.page = 'around';
     });
 
+    // Hide the pin filter submit button. Not needed because we'll use JS
+    // to refresh the map when the filter inputs are changed.
+    $(".report-list-filters [type=submit]").hide();
+
+    if (fixmystreet.page == "my" || fixmystreet.page == "reports") {
+        $(".report-list-filters select").change(function() {
+            $(this).closest("form").submit();
+        });
+    }
+
     // Vector layers must be added onload as IE sucks
     if ($.browser.msie) {
         $(window).load(fixmystreet_onload);
@@ -490,6 +523,24 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
     }
 });
 
+/* Pan data request handler */
+OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    read: function(options) {
+        var category = $("#categories").val();
+        if (!!category) {
+            options.params = options.params || {};
+            options.params.category = category;
+        }
+        var status = $("#statuses").val();
+        if (!!status) {
+            options.params = options.params || {};
+            options.params.status = status;
+        }
+        return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
+    },
+    CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"
+});
+
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
@@ -505,8 +556,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         if (typeof(obj.current_near) != 'undefined' && (current_near = document.getElementById('current_near'))) {
             current_near.innerHTML = obj.current_near;
         }
-        var markers = fms_markers_list( obj.pins, false );
-        return markers;
+        return fms_markers_list( obj.pins, false );
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
 });

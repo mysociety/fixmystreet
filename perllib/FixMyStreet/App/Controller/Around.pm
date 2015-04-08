@@ -165,10 +165,27 @@ sub display_location : Private {
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
+    my $states = $c->cobrand->on_map_default_states;
+    $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
+    my $status = $c->req->param('status') || '';
+    if ( !defined $states || $status eq 'all' ) {
+        $states = FixMyStreet::DB::Result::Problem->visible_states();
+        $c->stash->{filter_status} = 'all';
+    } elsif ( $status eq 'open' ) {
+        $states = FixMyStreet::DB::Result::Problem->open_states();
+        $c->stash->{filter_status} = 'open';
+    } elsif ( $status eq 'fixed' ) {
+        $states = FixMyStreet::DB::Result::Problem->fixed_states();
+        $c->stash->{filter_status} = 'fixed';
+    }
+
+    # Check the category to filter by, if any, is valid
+    $c->forward('check_category_is_valid');
+
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval );
+        $interval, $c->stash->{filter_category}, $states );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
@@ -219,6 +236,51 @@ sub check_location_is_acceptable : Private {
     $c->stash->{area_check_action} = 'submit_problem';
     $c->stash->{remove_redundant_areas} = 1;
     return $c->forward('/council/load_and_check_areas');
+}
+
+=head2 check_category_is_valid
+
+Check that the 'category' query param is valid, if it's present.
+Puts all the valid categories in filter_categories on the stash.
+
+=cut
+
+sub check_category_is_valid : Private {
+    my ( $self, $c ) = @_;
+
+    my $all_areas = $c->stash->{all_areas};
+    my @bodies = $c->model('DB::Body')->search(
+        { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
+        { join => 'body_areas' }
+    )->all;
+    my %bodies = map { $_->id => $_ } @bodies;
+
+    my @contacts = $c->model('DB::Contact')->not_deleted->search(
+        {
+            body_id => [ keys %bodies ],
+        },
+        {
+            columns => [ 'category' ],
+            order_by => [ 'category' ],
+            distinct => 1
+        }
+    )->all;
+    my @categories = map { $_->category } @contacts;
+    $c->stash->{filter_categories} = \@categories;
+
+
+    my $category = $c->req->param('category');
+    if ( $category ) {
+        my $count = $c->model('DB::Contact')->not_deleted->search(
+            {
+                body_id => [ keys %bodies ],
+                category => $category
+            }
+        )->count;
+        if ( $count ) {
+            $c->stash->{filter_category} = $category;
+        }
+    }
 }
 
 =head2 /ajax
