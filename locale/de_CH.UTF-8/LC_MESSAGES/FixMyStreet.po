@@ -2341,7 +2341,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:195
 #: templates/web/zurich/admin/report_edit.html:211
 msgid "Public response:"
-msgstr "Offizielle Antwort"
+msgstr "R&uuml;ckmeldung an User"
 
 #: templates/web/zurich/admin/report_edit.html:77
 #: templates/web/zurich/admin/stats.html:38
