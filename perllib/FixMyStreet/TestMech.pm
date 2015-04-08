@@ -320,6 +320,7 @@ sub extract_problem_meta {
     my $result = scraper {
         process 'div#side p em', 'meta', 'TEXT';
         process '.problem-header p em', 'meta', 'TEXT';
+        process '.problem-header p.report_meta_info', 'meta', 'TEXT';
     }
     ->scrape( $mech->response );
 
