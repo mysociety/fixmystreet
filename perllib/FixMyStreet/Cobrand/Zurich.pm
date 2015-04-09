@@ -1269,4 +1269,6 @@ sub problem_confirm_email_extras {
     $c->stash->{email_confirmed} = $confirmed_reports;
 }
 
+sub reports_per_page { return 20; }
+
 1;
