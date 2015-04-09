@@ -131,7 +131,7 @@
 <script type="text/javascript">
 $(function(){
 
-    $('.assignation select').change(function(){
+    $('.assignation__select').change(function(){
         if (this.value == "") {
             $('.assignation').css('color', '#000');
         } else {
@@ -190,7 +190,7 @@ $(function(){
 [% IF problem.state == 'confirmed' %]
     <div id="assignation__category">
     [% loc('Assign to different category:') %]</label>
-    <select name="category" id="category">
+    <select name="category" id="category" class="assignation__select">
             <option value="">--</option>
         [% FOREACH cat IN categories %]
             <option value="[% cat %]">[% cat %]</option>
@@ -207,7 +207,7 @@ $(function(){
   [% IF admin_type != 'super' AND list %]
     <li class="assignation report-edit-action" id="assignation__subdivision">
         <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
-        <select name="body_subdivision" id="body_subdivision">
+        <select name="body_subdivision" id="body_subdivision" class="assignation__select">
             <option value="">--</option>
             [% list %]
         </select>
