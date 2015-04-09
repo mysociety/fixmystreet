@@ -48,6 +48,7 @@ sub reset_report_state {
     $report->unset_extra_metadata('closed_overdue');
     $report->unset_extra_metadata('closure_status');
     $report->state('unconfirmed');
+    $report->whensent(undef);
     $report->created($created) if $created;
     $report->update;
 }
@@ -115,55 +116,15 @@ my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
     cobrand            => 'zurich',
     photo         => $sample_photo,
 });
-my $report = $reports[0];
-
-subtest 'email images to external partners' => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'zurich' ],
-    }, sub {
-        reset_report_state($report);
-        my $photo = path(__FILE__)->parent->child('zurich-logo_portal.x.jpg')->slurp_raw;
-        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-            c => $c,
-            data_items => [ $photo ],
-        });
-        my $fileid = $photoset->data;
-        $report->update({
-            state => 'closed',
-            photo => $fileid,
-            external_body => $external_body->id,
-        });
-
-        $mech->clear_emails_ok;
-        send_reports_for_zurich();
-
-        my $email = $mech->get_email;
-        # TODO factor out with t/app/helpers/send_email.t
-        my $email_as_string = $email->as_string;
-        ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xmsg, "Found and stripped out date";
-        ok $email_as_string =~ s{\s+Message-ID:\s+\S.*?$}{}xmsg, "Found and stripped out message ID (contains epoch)";
-        my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
-        my $changes = $email_as_string =~ s{$boundary}{}g;
-        is $changes, 4, '4 boundaries'; # header + 3 around the 2x parts (text + 1 image)
-
-        my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
-        is_string $email_as_string, $expected_email_content, 'MIME email text ok'
-            or do {
-                (my $test_name = $0) =~ s{/}{_}g;
-                my $path = path("test-output-$test_name.tmp");
-                $path->spew($email_as_string);
-                diag "Saved output in $path";
-            };
-        };
-};
-
+my $report = my $report0 = $reports[0];
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
 }, sub {
     $mech->get_ok( '/report/' . $report->id );
 };
-$mech->content_contains('&Uuml;berpr&uuml;fung ausstehend');
+$mech->content_contains('&Uuml;berpr&uuml;fung ausstehend')
+    or die $mech->content;
 
 # Check logging in to deal with this report
 FixMyStreet::override_config {
@@ -317,8 +278,9 @@ subtest "report_edit" => sub {
         is get_moderated_count(), 1, 'Check still counted moderated'
             or diag $report->get_column('extra');
 
-        # marking "Automatisch Antwort" checkbox actually
-        $mech->submit_form_ok( { with_fields => { send_rejected_email => '1' } } );
+        # publishing actually sets hidden
+        $mech->form_with_fields( 'status_update' );
+        $mech->submit_form_ok( { button => 'publish_response' } );
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $report->discard_changes;
 
@@ -335,8 +297,8 @@ subtest "report_edit" => sub {
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( { with_fields => { state => 'hidden' } } );
         $mech->get_ok( '/admin/report_edit/' . $report->id );
-        $mech->submit_form_ok( { with_fields => { send_rejected_email => '1' } } );
-        $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->form_with_fields( 'status_update' );
+        $mech->submit_form_ok( { button => 'publish_response' } );
 
         $report->discard_changes;
         is ( $report->get_extra_metadata('moderated_overdue'), 0, 'Marking hidden from scratch sets moderated_overdue' );
@@ -358,7 +320,7 @@ FixMyStreet::override_config {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => { state => 'confirmed', publish_photo => 1 } } );
     $mech->get_ok( '/report/' . $report->id );
-    $mech->content_contains('photo/' . $report->id . '.1.jpeg');
+    $mech->content_contains('photo/' . $report->id . '.0.jpeg');
 
     # Internal notes
     $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -533,7 +495,7 @@ FixMyStreet::override_config {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_contains( 'Unbest&auml;tigt' );
     $report->discard_changes;
-    diag $report->state . " !!!";
+    $mech->form_with_fields( 'status_update' );
     $mech->submit_form_ok( { button => 'publish_response', with_fields => { status_update => 'FINAL UPDATE' } } );
 
     $mech->get_ok( '/report/' . $report->id );
@@ -743,26 +705,6 @@ subtest "problems can't be assigned to deleted bodies" => sub {
     $mech->log_out_ok;
 };
 
-subtest "hidden report email are only sent when requested" => sub {
-    $user = $mech->log_in_ok( 'dm1@example.org') ;
-    $report->set_extra_metadata(email_confirmed => 1);
-    $report->state('hidden');
-    $report->update;
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'zurich' ],
-    }, sub {
-        $mech->get_ok( '/admin/report_edit/' . $report->id );
-        $mech->submit_form_ok( { with_fields => { send_rejected_email => 1 } } );
-        $mech->email_count_is(1);
-        $mech->clear_emails_ok;
-        $mech->get_ok( '/admin/report_edit/' . $report->id );
-        $mech->submit_form_ok( { with_fields => { send_rejected_email => undef } } );
-        $mech->email_count_is(0);
-        $mech->clear_emails_ok;
-        $mech->log_out_ok;
-    };
-};
-
 subtest "photo must be supplied for categories that require it" => sub {
     FixMyStreet::App->model('DB::Contact')->find_or_create({
         body => $division,
@@ -817,7 +759,6 @@ subtest "test stats" => sub {
             diag $mech->content;
             is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
             $mech->content_contains('fixed - council');
-            $mech->content_contains(',planned,');
         }
 
         $mech->log_out_ok;
@@ -833,8 +774,52 @@ subtest "test admin_log" => sub {
 
     # XXX: following is dependent on all of test up till now, rewrite to explicitly
     # test which things need to be logged!
-    is scalar @entries, 9, 'State changes logged'; 
-    is $entries[-1]->action, 'state change to planned', 'State change logged as expected';
+    is scalar @entries, 6, 'State changes logged'; 
+    is $entries[-1]->action, 'state change to investigating', 'State change logged as expected';
+};
+
+subtest 'email images to external partners' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        reset_report_state($report);
+        $mech->clear_emails_ok;
+        send_reports_for_zurich();
+
+        my $photo = path(__FILE__)->parent->child('zurich-logo_portal.x.jpg')->slurp_raw;
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+            c => $c,
+            data_items => [ $photo ],
+        });
+        my $fileid = $photoset->data;
+        $report0->update({
+            state => 'closed',
+            photo => $fileid,
+            external_body => $external_body->id,
+        });
+
+        $mech->clear_emails_ok;
+        send_reports_for_zurich();
+
+        my $email = $mech->get_email;
+
+        # TODO factor out with t/app/helpers/send_email.t
+        my $email_as_string = $email->as_string;
+        ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xmsg, "Found and stripped out date";
+        ok $email_as_string =~ s{\s+Message-ID:\s+\S.*?$}{}xmsg, "Found and stripped out message ID (contains epoch)";
+        my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
+        my $changes = $email_as_string =~ s{$boundary}{}g;
+        is $changes, 4, '4 boundaries'; # header + 3 around the 2x parts (text + 1 image)
+
+        my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
+        is_string $email_as_string, $expected_email_content, 'MIME email text ok'
+            or do {
+                (my $test_name = $0) =~ s{/}{_}g;
+                my $path = path("test-output-$test_name.tmp");
+                $path->spew($email_as_string);
+                diag "Saved output in $path";
+            };
+        };
 };
 
 END {

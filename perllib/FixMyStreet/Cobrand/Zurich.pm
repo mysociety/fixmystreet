@@ -632,7 +632,7 @@ sub admin_report_edit {
             $state = $problem->get_extra_metadata('closure_status') || '';
             my $closed = 0;
 
-            if ($state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
+            if ($state eq 'hidden' && $c->req->params->{publish_response} ) {
                 _admin_send_email( $c, 'problem-rejected.txt', $problem );
                 $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
                 $self->set_problem_state($c, $problem, $state);
