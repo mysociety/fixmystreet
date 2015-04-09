@@ -756,7 +756,6 @@ subtest "test stats" => sub {
         
         my $export_count = get_export_rows_count($mech);
         if (defined $export_count) {
-            diag $mech->content;
             is $export_count - $EXISTING_REPORT_COUNT, 3, 'Correct number of reports';
             $mech->content_contains('fixed - council');
         }
