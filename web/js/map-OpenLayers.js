@@ -524,15 +524,21 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
 });
 
 /* Pan data request handler */
+// This class is used to get a JSON object from /ajax that contains
+// pins for the map and HTML for the sidebar. It does a fetch whenever the map
+// is dragged (modulo a buffer extending outside the viewport).
+// This subclass is required so we can pass the 'category' and 'status' query
+// params to /ajax if the user has filtered the map.
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     read: function(options) {
+        // Pass the values of the category and status fields as query params
         var category = $("#categories").val();
-        if (!!category) {
+        if (category !== undefined) {
             options.params = options.params || {};
             options.params.category = category;
         }
         var status = $("#statuses").val();
-        if (!!status) {
+        if (status !== undefined) {
             options.params = options.params || {};
             options.params.status = status;
         }
