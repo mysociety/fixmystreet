@@ -30,12 +30,11 @@ function fixmystreet_update_pin(lonlat) {
             lb.before(data.extra_name_info);
         }
         // If the category filter appears on the map and the user has selected
-        // something from it, then pre-fill the category field in the report
-        if ($("select#categories").length) {
-            var category = $("#categories").val();
-            if (!!category && $("#form_category option[value="+category+"]")) {
-                $("#form_category").val(category);
-            }
+        // something from it, then pre-fill the category field in the report,
+        // if it's a value already present in the drop-down.
+        var category = $("#categories").val();
+        if (category !== undefined && $("#form_category option[value="+category+"]").length) {
+            $("#form_category").val(category);
         }
     });
 
