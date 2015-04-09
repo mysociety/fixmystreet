@@ -584,7 +584,7 @@ sub admin_report_edit {
             $redirect = 1 if $cat->body_id ne $body->id;
         } elsif ( $closure_states{$state} and
                     ( $oldstate ne 'planned' )
-                    || ($old_closure_state and $old_closure_state ne $state))
+                    || (($old_closure_state ||'') ne $state))
         {
             # for these states
             #  - closed (Extern)
