@@ -180,7 +180,7 @@ sub display_location : Private {
     }
 
     # Check the category to filter by, if any, is valid
-    $c->forward('check_category_is_valid');
+    $c->forward('check_and_stash_category');
 
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
@@ -238,14 +238,15 @@ sub check_location_is_acceptable : Private {
     return $c->forward('/council/load_and_check_areas');
 }
 
-=head2 check_category_is_valid
+=head2 check_and_stash_category
 
-Check that the 'category' query param is valid, if it's present.
+Check that the 'category' query param is valid, if it's present. Stores
+the validated string in the stash as filter_category.
 Puts all the valid categories in filter_categories on the stash.
 
 =cut
 
-sub check_category_is_valid : Private {
+sub check_and_stash_category : Private {
     my ( $self, $c ) = @_;
 
     my $all_areas = $c->stash->{all_areas};
