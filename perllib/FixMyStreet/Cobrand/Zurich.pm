@@ -955,4 +955,6 @@ sub contact_details_data_body_default {
     return $self->{c}->model('DB::Body')->find({ name => 'Stadt Zurich' });
 }
 
+sub reports_per_page { return 20; }
+
 1;
