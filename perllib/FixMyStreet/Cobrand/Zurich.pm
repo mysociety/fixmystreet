@@ -597,6 +597,7 @@ sub admin_report_edit {
             $problem->set_extra_metadata( closure_status => $state );
             $self->set_problem_state($c, $problem, 'planned');
             $state = 'planned';
+            $redirect = 1;
 
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
@@ -638,18 +639,25 @@ sub admin_report_edit {
                 $self->set_problem_state($c, $problem, $state);
                 $closed++;
             }
-            elsif ($state =~/^(closed|investigating)$/ # Extern | Wish
-                and my $external = $c->req->params->{body_external}) {
-                my $external_body = $c->model('DB::Body')->find($external)
-                    or die "Body $external not found";
-                $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
-                $problem->external_body( $external );
-                $problem->whensent( undef );
-                $self->set_problem_state($c, $problem, $state);
-                my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
-                _admin_send_email( $c, $template, $problem );
-                $redirect = 1;
-                $closed++;
+            elsif ($state =~/^(closed|investigating)$/) { # Extern | Wish
+                # Nested if instead of `and` because in these cases, we *don't*
+                # want to close unless we have body_external (so we don't want
+                # the final elsif clause below to kick in on publish_response)
+                if (my $external = $c->req->params->{body_external}) {
+                    my $external_body = $c->model('DB::Body')->find($external)
+                        or die "Body $external not found";
+                    $problem->external_body( $external );
+                }
+                if ($problem->external_body && $c->req->params->{publish_response}) {
+                    $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
+                    $problem->whensent( undef );
+                    $self->set_problem_state($c, $problem, $state);
+                    my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
+                    _admin_send_email( $c, $template, $problem );
+                    $redirect = 1;
+                    $closed++;
+                }
+                # else should really return a message here
             }
             elsif ($c->req->params->{publish_response}) {
                 # otherwise we only set the state if publish_response is set
@@ -736,7 +744,7 @@ sub admin_report_edit {
         }
 
         if ( $redirect ) {
-            $c->detach('index');
+            $c->go('index');
         }
 
         $c->stash->{updates} = [ $c->model('DB::Comment')
