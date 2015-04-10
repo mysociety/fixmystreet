@@ -952,7 +952,7 @@ sub _admin_send_email {
 
 sub munge_sendreport_params {
     my ($self, $c, $row, $h, $params) = @_;
-    if ($row->state eq 'closed') {
+    if ($row->state eq 'closed' && $row->get_extra_metadata('publish_photo')) {
         # we attach images to reports sent to external bodies
         my $photoset = $row->get_photoset($c);
         my @images = $photoset->all_images
