@@ -28,10 +28,10 @@ sub my : Path : Args(0) {
     my $p_page = $c->req->params->{p} || 1;
     my $u_page = $c->req->params->{u} || 1;
 
-    my $states = $c->cobrand->on_map_default_states;
+    my $states;
     $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
-    my $status = $c->req->param('status') || '';
-    if ( !defined $states || $status eq 'all' ) {
+    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
+    if ( $status eq 'all' ) {
         $states = FixMyStreet::DB::Result::Problem->visible_states();
         $c->stash->{filter_status} = 'all';
     } elsif ( $status eq 'open' ) {
