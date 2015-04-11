@@ -1034,4 +1034,6 @@ sub contact_details_data_body_default {
 
 sub reports_per_page { return 20; }
 
+sub singleton_bodies_str { 1 }
+
 1;
