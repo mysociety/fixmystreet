@@ -864,12 +864,27 @@ sub process_report : Private {
         }
 
         # construct the bodies string:
-        #  'x,x' - x are body IDs that have this category
-        #  'x,x|y' - x are body IDs that have this category, y body IDs with *no* contact
-        my $body_string = join( ',', map { $_->body_id } @contacts );
-        $body_string .=
-          '|' . join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } )
-            if $body_string && @{ $c->stash->{missing_details_bodies} };
+        my $body_string = do {
+            if ( $c->cobrand->can('singleton_bodies_str') && $c->cobrand->singleton_bodies_str ) {
+                # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
+                # relies on string comparison against bodies_str.
+                if (@contacts) {
+                    $contacts[0]->body_id;
+                }
+                else {
+                    '';
+                }
+            }
+            else {
+                #  'x,x' - x are body IDs that have this category
+                #  'x,x|y' - x are body IDs that have this category, y body IDs with *no* contact
+                my $bs = join( ',', map { $_->body_id } @contacts );
+                $bs .=
+                '|' . join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } )
+                    if $bs && @{ $c->stash->{missing_details_bodies} };
+                $bs;
+            };
+        };
         $report->bodies_str($body_string);
 
         my @extra;
