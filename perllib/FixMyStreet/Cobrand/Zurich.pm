@@ -1279,4 +1279,6 @@ sub problem_confirm_email_extras {
 
 sub reports_per_page { return 20; }
 
+sub singleton_bodies_str { 1 }
+
 1;
