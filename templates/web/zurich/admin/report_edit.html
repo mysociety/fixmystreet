@@ -65,6 +65,14 @@
         tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
     %]
 </li>
+[% SET fields = problem.get_extra_fields; IF fields.size %]
+<li>
+    [% FOR f IN fields %]
+    <strong>[% f.description %]</strong> [% f.value %]
+    <br>
+    [% END %]
+</li>
+[% END %]
 
 <li>
     <strong>[% IF problem.name %][% problem.name | html %][% ELSE %][% loc('(No name)') %][% END %]</strong>
