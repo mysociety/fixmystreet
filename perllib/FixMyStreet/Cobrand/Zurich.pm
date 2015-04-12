@@ -922,13 +922,12 @@ sub stash_states {
         @states = grep { $_->{$state} } @states;
     }
     $c->stash->{states} = \@states;
-    $c->stash->{states_debug} = Dumper($state, \@states); use Data::Dumper;
+    # $c->stash->{states_debug} = Dumper($state, \@states); use Data::Dumper;
 
     # stash details about the public response
     $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
     $c->stash->{show_publish_response} = 
-        ($problem->state eq 'planned'); # && ($state !~ /^(closed|investigating|hidden)$/);
-
+        ($problem->state eq 'planned');
 }
 
 =head2 _admin_send_email
