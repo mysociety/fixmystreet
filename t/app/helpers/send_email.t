@@ -43,6 +43,6 @@ $name = "\"$name\"" if $name =~ / /;
 my $sender = $name . ' <' . FixMyStreet->config('DO_NOT_REPLY_EMAIL') . '>';
 $expected_email_content =~ s{CONTACT_EMAIL}{$sender};
 
-is $email_as_string,
-$expected_email_content,
-  "email is as expected";
+is_string $email_as_string, $expected_email_content, "email is as expected";
+
+done_testing;

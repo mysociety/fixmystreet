@@ -249,7 +249,7 @@ sub send_email : Private {
     my $subject = $c->cobrand->subject_line_for_contact_email($c->stash->{subject});
 
     $c->send_email( 'contact.txt', {
-        to      => [ [ $recipient, _($recipient_name) ] ],
+        to      => [ $recipient, _($recipient_name) ],
         from    => [ $c->stash->{em}, $c->stash->{form_name} ],
         subject => $subject,
     });
