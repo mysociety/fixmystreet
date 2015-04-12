@@ -306,9 +306,11 @@ sub send_email {
     my $sender = $c->config->{DO_NOT_REPLY_EMAIL};
     my $sender_name = $c->cobrand->contact_name;
 
+    my $from = $sender_name ? mySociety::Email::format_email_address(_($sender_name), $sender) : $sender;
+
     # create the vars to pass to the email template
     my $vars = {
-        from => [ $sender, _($sender_name) ],
+        from => $from,
         %{ $c->stash },
         %$extra_stash_values,
         additional_template_paths => [

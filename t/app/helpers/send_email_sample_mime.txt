@@ -3,7 +3,7 @@ Subject: test email =?utf-8?Q?=E2=98=BA?=
 Content-Type: multipart/mixed; boundary=""
 To: test@recipient.com
 Content-Transfer-Encoding: 7bit
-From: FixMyStreet <help@fixmystreet.127.0.0.1.xip.io>
+From: CONTACT_EMAIL
 
 
 --
@@ -12,7 +12,7 @@ Subject: test email =?utf-8?Q?=E2=98=BA?=
 Content-Type: text/plain; charset="utf-8"
 To: test@recipient.com
 Content-Transfer-Encoding: quoted-printable
-From: FixMyStreet <help@fixmystreet.127.0.0.1.xip.io>
+From: CONTACT_EMAIL
 
 Hello,
 

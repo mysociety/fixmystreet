@@ -85,6 +85,8 @@ subtest 'MIME attachments' => sub {
     is $changes, 5, '5 boundaries'; # header + 4 around the 3x parts (text + 2 images)
 
     my $expected_email_content = path(__FILE__)->parent->child('send_email_sample_mime.txt')->slurp;
+    $expected_email_content =~ s{CONTACT_EMAIL}{$sender}g;
+
     is_string $email_as_string, $expected_email_content, 'MIME email text ok'
         or do {
             (my $test_name = $0) =~ s{/}{_}g;
