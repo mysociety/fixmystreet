@@ -839,6 +839,8 @@ subtest 'email images to external partners' => sub {
         my $changes = $email_as_string =~ s{$boundary}{}g;
         is $changes, 4, '4 boundaries'; # header + 3 around the 2x parts (text + 1 image)
 
+        $email_as_string =~ s{Meldung #\d+}{Meldung #1}g;
+
         my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
         is_string $email_as_string, $expected_email_content, 'MIME email text ok'
             or do {

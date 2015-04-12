@@ -1079,7 +1079,7 @@ sub admin_stats {
 
             # replace newlines with HTML <br/> element
             $detail =~ s{\r?\n}{ <br/> }g;
-            $public_response =~ s{\r?\n}{ <br/> }g;
+            $public_response =~ s{\r?\n}{ <br/> }g if $public_response;
 
             my @columns = (
                 $report->id,
