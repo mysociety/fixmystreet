@@ -521,16 +521,26 @@ subtest "external report triggers email" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
     }, sub {
-        $report->update({ state => 'closed' }); # required to see body_external field
+
+        # required to see body_external field
+        $report->state('planned');
+        $report->set_extra_metadata('closure_status' => 'closed');
+        $report->update;
+
         $mech->get_ok( '/admin/report_edit/' . $report->id );
+        $mech->form_with_fields( 'publish_response' );
         $mech->submit_form_ok( {
+            button => 'publish_response',
             with_fields => {
                 body_external => $external_body->id,
                 external_message => $EXTERNAL_MESSAGE,
             } });
+        $report->discard_changes;
         $mech->get_ok( '/report/' . $report->id );
     };
-    $mech->content_contains('Extern');
+    is ($report->state, 'closed', 'Report was closed correctly') or return; # skipping remaining tests
+    $mech->content_contains('Extern')
+        or die $mech->content;
     $mech->content_contains('Third Test');
     $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
     send_reports_for_zurich();
@@ -547,13 +557,23 @@ subtest "external report triggers email" => sub {
             ALLOWED_COBRANDS => [ 'zurich' ],
         }, sub {
             $mech->get_ok( '/admin' );
-            $report->update({ state => 'closed' }); # required to see body_external field
+            # required to see body_external field
+            $report->state('planned');
+            $report->set_extra_metadata('closure_status' => 'closed');
+            $report->update;
+
             is $mech->uri->path, '/admin', "am logged in";
             $mech->content_contains( 'report_edit/' . $report->id );
             $mech->get_ok( '/admin/report_edit/' . $report->id );
-            $mech->submit_form_ok( { with_fields => { body_external => $external_body->id, third_personal => 1 } } );
-            $mech->get_ok( '/report/' . $report->id );
-        };
+            $mech->form_with_fields( 'publish_response' );
+            $mech->submit_form_ok( {
+                button => 'publish_response',
+                with_fields => {
+                    body_external => $external_body->id,
+                    third_personal => 1,
+                } });
+                $mech->get_ok( '/report/' . $report->id );
+            };
         $mech->content_contains('Extern');
         $mech->content_contains('Third Test');
         $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
@@ -570,9 +590,18 @@ subtest "external report triggers email" => sub {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ 'zurich' ],
         }, sub {
-            $report->update({ state => 'investigating' }); # Wish
+            # set as wish
+            $report->discard_changes;
+            $report->state('planned');
+            $report->set_extra_metadata('closure_status' => 'investigating');
+            $report->update;
+            is ($report->state, 'planned', 'Sanity check') or die;
+
             $mech->get_ok( '/admin/report_edit/' . $report->id );
+
+            $mech->form_with_fields( 'publish_response' );
             $mech->submit_form_ok( {
+                button => 'publish_response',
                 with_fields => {
                     body_external => $external_body->id,
                     external_message => $EXTERNAL_MESSAGE,
@@ -773,7 +802,7 @@ subtest "test admin_log" => sub {
 
     # XXX: following is dependent on all of test up till now, rewrite to explicitly
     # test which things need to be logged!
-    is scalar @entries, 6, 'State changes logged'; 
+    is scalar @entries, 3, 'State changes logged'; 
     is $entries[-1]->action, 'state change to investigating', 'State change logged as expected';
 };
 
