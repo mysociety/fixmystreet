@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #1
+Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #REPORT_ID
 Content-Type: multipart/mixed; boundary=""
 To: "External Body" <external_body@example.org>
 Content-Transfer-Encoding: 7bit
@@ -8,7 +8,7 @@ From: FixMyStreet <division@example.org>
 
 --
 MIME-Version: 1.0
-Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #1
+Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #REPORT_ID
 Content-Type: text/plain; charset="iso-8859-1"
 To: "External Body" <external_body@example.org>
 Content-Transfer-Encoding: quoted-printable
@@ -19,7 +19,7 @@ Gr=FCezi External Body,
 Die folgende Meldung wurde auf
 http://www.stadt-zuerich.ch/zueriwieneu erfasst:
 
-=D6ffentliche URL: http://www.example.org/report/1
+=D6ffentliche URL: http://www.example.org/report/REPORT_ID
 
 "Z=FCri wie neu" ist eine Dienstleistung der Stadt Z=FCrich zum Thema
 B=FCrgerbeteiligung. Auf dieser Plattform kann die Bev=F6lkerung auf
@@ -38,8 +38,8 @@ Ihre Stadt Z=FCrich=20=
 
 --
 MIME-Version: 1.0
-Content-Type: image/jpeg; name="1.0.jpeg"
-Content-Disposition: inline; filename="1.0.jpeg"
+Content-Type: image/jpeg; name="REPORT_ID.0.jpeg"
+Content-Disposition: inline; filename="REPORT_ID.0.jpeg"
 Content-Transfer-Encoding: quoted-printable
 
 =FF=D8=FF=E0=00=10JFIF=00=01=01=01=00H=00H=00=00=FF=DB=00C=00=05=03=04=04=
