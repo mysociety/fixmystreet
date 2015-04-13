@@ -17,6 +17,12 @@ to allow the site to offer versions localised to a single authority and should
 not be needed for most installs. Listed below are the most useful options that
 can be changed:
 
+* language_override
+
+    Return a language code string from this function if you wish your cobrand
+to always be in a particular language, rather than try and work it out from the
+domain name or the browser’s settings.
+
 * geocode_postcode
 
     This function is used to convert postcodes (zip codes, etc.) entered into a
