@@ -47,6 +47,9 @@
     </li>
 [% END %]
 
+[%# repeated as static in this column %]
+<li><span class="mock-label">[% loc('Category:') %]</span> [% problem.category | html %] </li>
+
 <li>
     <strong>[% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</strong>
     <br>
