@@ -249,7 +249,7 @@ $(function(){
         <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
         [% END %]
         [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
-        <textarea name='external_message' id='external_body' cols=60 rows=5></textarea>
+        <textarea name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') %]</textarea>
     </li>
     </ul>
     [% END %]
