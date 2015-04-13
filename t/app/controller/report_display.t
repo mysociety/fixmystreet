@@ -503,12 +503,10 @@ subtest "Zurich banners are displayed correctly" => sub {
             description => 'jurisdiction unknown',
             state => 'unable to fix',
             banner_id => 'fixed',
-            # This will be 'Zust\x{e4}ndigkeit unbekannt' once the translations are updated.
-            banner_text => 'Jurisdiction Unknown',
             # We can't use _('Jurisdiction Unknown') here because
             # TestMech::extract_problem_banner decodes the HTML entities before
             # the string is passed back.
-            # banner_text => 'Zust\x{e4}ndigkeit unbekannt',
+            banner_text => 'Zust\x{e4}ndigkeit unbekannt',
         },
     ) {
         subtest "banner for $test->{description}" => sub {
