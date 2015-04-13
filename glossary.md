@@ -47,6 +47,7 @@ technical information, see
   <li><a href="#message-manager">Message Manager</a></li>
   <li><a href="#open311">Open311</a></li>
   <li><a href="#partial">partial report</a></li>
+  <li><a href="#po">.po&nbsp;file</a></li>
   <li><a href="#production">production site</a></li>
   <li><a href="#report">problem report</a></li>
   <li><a href="#sms">SMS</a></li>
@@ -863,6 +864,43 @@ technical information, see
     </div>
   </dd>
 
+  <dt>
+    <a name="po"><code>.po</code> file</a> (and <code>.pot</code> file)
+  </dt>
+  <dd>
+    These are the files needed by the <code>gettext</code> mechanism FixMyStreet
+    uses for localisation. A <code>.pot</code> file is effectively a list of
+    all the strings in the application that need translating. Each
+    <code>.po</code> file contains the mapping between those strings, used as
+    keys, and their translations for one particular language. The key is called
+    the <em>msgid</em>, and its corresponding translation is the
+    <em>msgstr</em>.
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See more about <a href="{{ site.baseurl }}customising/language/">changing
+          the language</a> FixMyStreet uses.
+        </li>
+        <li>
+          If you're a developer, see this technical page about
+          <a href="{{ site.baseurl }}customising/language/technical/">Adding
+          new strings</a>.
+        </li>
+        <li>
+          FixMyStreet is on the
+          <a href="https://www.transifex.com/projects/p/fixmystreet/">Transifex</a>
+          website, which lets translators work on FixMyStreet's text in a
+          browser without needing to worry about this underlying structure.
+        </li>
+        <li>
+          See more about the
+          <a href="https://www.gnu.org/software/gettext/"><code>gettext</code>
+          system</a>.
+        </li>
+      </ul>
+    </div>
+  </dd>
 
   <dt>
     <a name="report">problem report</a>
