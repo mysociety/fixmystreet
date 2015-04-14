@@ -312,5 +312,54 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
+=head1 restrict_bodies_for_reports
+
+Hook called from FMS::App::Controller::Reports->get_and_stash_bodies
+
+This gives us the opportunity to filter the bodies for particular criteria, for
+example the UK (originally Collideoscope) feature of being able to choose
+C<?type=LBO> or C<?parent=11807>
+
+This code is in UK cobrand as a) currently relies on area_id==body_id mapping
+(not true in general, but true for UK for now)  and b) uses types from UK
+mapit rather than global.
+
+=cut
+
+sub restrict_bodies_for_reports {
+    my ($self, $c, $rs) = @_;
+    my @types = $c->req->param('type');
+
+    $c->stash->{report_filter} = 'all';
+    my $areas = do {
+        if (my $parent = $c->req->param('parent')) {
+            @types = @types ? @types : @{ $c->cobrand->area_types };
+
+            mySociety::MaPit::call('area/covers', [ $parent], 
+                type => (join ',', @types)
+            );
+        }
+        elsif (@types) {
+
+            if ($types[0] =~/UTA/) {
+                $c->stash->{report_filter} = 'city';
+            }
+            elsif ($types[0] =~ /LBO/) {
+                $c->stash->{report_filter} = 'london';
+            }
+            elsif ($types[0] =~ /CTY/) {
+                $c->stash->{report_filter} = 'dc';
+            }
+
+            mySociety::MaPit::call('areas', [ map uc, @types]);
+        }
+    };
+    if ($areas) {
+        my @ids = keys %$areas;
+        $rs = $rs->search({ id => \@ids });
+    }
+    return $rs;
+}
+
 1;
 
