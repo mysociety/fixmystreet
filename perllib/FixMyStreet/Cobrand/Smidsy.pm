@@ -17,7 +17,6 @@ use List::Util 'first';
 use constant area_id => 2247;
 
 use constant extra_global_fields => 1;
-
 use constant uses_global_categories => 1;
 
 use constant language_domain => 'FixMyStreet-Smidsy';

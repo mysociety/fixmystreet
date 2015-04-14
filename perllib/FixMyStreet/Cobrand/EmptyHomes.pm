@@ -25,6 +25,7 @@ Return the base url for this cobranded site
 
 =cut
 
+use constant extra_global_fields => 1;
 use constant uses_global_categories => 1;
 
 sub base_url {
