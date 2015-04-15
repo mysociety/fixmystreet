@@ -2,13 +2,24 @@ use strict;
 use warnings;
 use Test::More;
 
-use FixMyStreet::TestMech;
-my $mech = FixMyStreet::TestMech->new;
+# use minimum number of modules to avoid MAP_TYPE being overridden
+# too late (XXX cleanup needed)
+
+use FixMyStreet;
+use mySociety::MaPit;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'smidsy' ],
     BASE_URL => 'http://collideosco.pe',
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+    MAP_TYPE => 'OSM::TonerLite',
 }, sub {
+
+    require FixMyStreet::TestMech;
+    my $mech = FixMyStreet::TestMech->new;
+
+    my $c = FixMyStreet::App->new();
+
     ok $mech->host("collideosco.pe"), "change host to collideosco.pe";
     $mech->get_ok('/');
     $mech->content_contains( 'Find road collisions' );
@@ -37,8 +48,17 @@ FixMyStreet::override_config {
     };
 
     subtest 'post an incident' => sub {
+        my $liverpool = $c->model("DB::Body")->find_or_create({
+            id => 2527,
+            name => 'Liverpool City Council',
+        });
+        $liverpool->body_areas->create({
+            area_id => 2527,
+        });
+
         $mech->submit_form_ok({
             form_number => 1,
+            button => 'submit_register',
             with_fields => {
                 latitude => 53.387401499999996,
                 longitude=> -2.9439968,
@@ -56,10 +76,14 @@ FixMyStreet::override_config {
                 media_url => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             },
         });
-        ok ($mech->uri =~ /(\d+)$/, 'Report posted and returned an ID') or return; # abort if fail
+        my $uri = $mech->uri;
+        ok ($mech->uri =~ m{/report/(\d+)$}, "Report posted and returned an ID $uri") or do {
+            die;
+            return; # abort if fail
+        };
         my $id = $1;
 
-        ok (my $report = FixMyStreet::App->model('DB::Problem')->find($id), 
+        ok (my $report = $c->model('DB::Problem')->find($id), 
             "Retrieved report $id from DB") or return;
         is $report->category, 'vehicle-serious', 'category set correctly in DB';
 
@@ -72,7 +96,8 @@ FixMyStreet::override_config {
         $mech->content_contains( 'Media URL' );
         $mech->content_contains( '<iframe width="320" height="195" src="//www.youtube.com/embed/dQw4w9WgXcQ"' );
         $mech->content_contains( '<img border="0" class="pin" src="http://collideosco.pe/cobrands/smidsy/images/pin-vehicle-serious.png"' );
-        $mech->content_contains( q{'map_type': OpenLayers.Layer.Stamen,} );
+        $mech->content_contains( q{'map_type': OpenLayers.Layer.Stamen,} )
+            or diag $mech->content;
     };
 
     subtest 'Sponsor contact form' => sub {
