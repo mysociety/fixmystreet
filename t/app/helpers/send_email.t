@@ -10,6 +10,7 @@ BEGIN {
 }
 
 use Test::More tests => 5;
+use Test::LongString;
 
 use Catalyst::Test 'FixMyStreet::App';
 
