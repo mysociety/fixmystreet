@@ -236,7 +236,7 @@ sub process_extras {
 sub munge_report {
     my ($self, $c, $report) = @_;
 
-    my $severity = $report->extra->{severity} || die Dumper($report->extra->{severity}); use Data::Dumper;
+    my $severity = $report->extra->{severity} or die;
     my $severity_code = $self->get_severity($severity)->{code};
 
     my ($type, $type_description) = $report->extra->{severity} > 10 ?
