@@ -973,7 +973,8 @@ sub munge_sendreport_params {
                 attributes => {
                     filename => "$id.$i.jpeg",
                     content_type => 'image/jpeg',
-                    encoding => 'quoted-printable',
+                    encoding => 'base64',
+                        # quoted-printable ends up with newlines corrupting binary data
                     name => "$id.$i.jpeg",
                 },
             }
