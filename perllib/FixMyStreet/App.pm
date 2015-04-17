@@ -428,7 +428,7 @@ sub munge_attachments {
     #      body => $binary_data,
     #      attributes => {
     #          content_type => 'image/jpeg',
-    #          encoding => 'quoted-printable',
+    #          encoding => 'base64',
     #          filename => '1234.1.jpeg',
     #          name     => '1234.1.jpeg',
     #      },
