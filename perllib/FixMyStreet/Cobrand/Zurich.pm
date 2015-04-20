@@ -329,12 +329,15 @@ Returns either undef or the AdminLog entry created.
 sub update_admin_log {
     my ($self, $c, $problem, $text) = @_;
 
+    my $time_spent = ( ($c->req->param('time_spent') // 0) + 0 );
+    $c->req->param('time_spent' => 0); # explicitly zero this to avoid duplicates
+
     if (!$text) {
-        return unless $c->req->param('time_spent');
+        return unless $time_spent;
         $text = "Logging time_spent";
     }
 
-    $c->forward( 'log_edit', [ $problem->id, 'problem', $text ] );
+    $c->forward( 'log_edit', [ $problem->id, 'problem', $text, $time_spent ] );
 }
 
 # Specific administrative displays
@@ -623,9 +626,6 @@ sub admin_report_edit {
                     $c->stash->{problem_is_closed} = 1;
                 }
             }
-            else {
-                $self->update_admin_log($c, $problem); # just update if time_spent
-            }
         }
 
         if ($problem->state eq 'planned') {
@@ -744,6 +744,10 @@ sub admin_report_edit {
             } );
         }
 
+        # Just update if time_spent still hasn't been logged
+        # (this will only happen if no other update_admin_log has already been called)
+        $self->update_admin_log($c, $problem);
+
         if ( $redirect ) {
             $c->go('index');
         }
@@ -820,9 +824,6 @@ sub admin_report_edit {
                 $self->set_problem_state($c, $problem, 'planned');
                 $problem->update;
                 $c->res->redirect( '/admin/summary' );
-            }
-            else {
-                $self->update_admin_log($c, $problem); # just update if time_spent
             }
         }
 

@@ -1341,10 +1341,9 @@ Adds an entry into the admin_log table using the current user.
 =cut
 
 sub log_edit : Private {
-    my ( $self, $c, $id, $object_type, $action ) = @_;
+    my ( $self, $c, $id, $object_type, $action, $time_spent ) = @_;
 
-    my $time_spent = $c->req->param('time_spent') || 0;
-    $time_spent = $time_spent + 0;
+    $time_spent //= 0;
     $time_spent = 0 if $time_spent < 0;
 
     my $user_object = do {
