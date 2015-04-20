@@ -875,7 +875,7 @@ sub template_edit : Path('templates') : Args(2) {
 
     $c->stash->{response_template} = $template;
 
-    $c->stash->{template} = 'admin/edit_template.html';
+    $c->stash->{template} = 'admin/template_edit.html';
 }
 
 
