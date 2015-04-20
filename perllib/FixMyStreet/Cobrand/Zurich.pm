@@ -10,6 +10,7 @@ use DateTime::Format::Pg;
 use strict;
 use warnings;
 use feature 'say';
+use utf8;
 
 =head1 NAME
 
