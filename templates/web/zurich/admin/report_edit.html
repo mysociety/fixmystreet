@@ -25,7 +25,7 @@
 
 <li class="report-edit-action">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
 
-[% IF problem_is_closed %]
+[% IF c.cobrand.problem_is_closed(problem) %]
     <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
     [% IF problem.extra.original_detail %]
     <br>[%
@@ -258,26 +258,24 @@ $(function(){
     [% END %]
 [% END %]
 
-[%# Public response field shown for Ruckmeldung ausstehend/Extern/
-  # Zustandigkeit unbekannt/Wunsch/Nicht kontaktierbar/Unsichtbar %]
-[% FOR s IN ['planned','closed','unable to fix','investigating','partial','hidden'] %]
-    [% IF pstate == s %]
-        <ul class="no-bullets report-edit-action">
-            <li id="status_update_container"><label for="status_update">
-            [% SWITCH pstate %]
-                [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
-                    [% loc('Reply to user:') %]
-                [% CASE DEFAULT %]
-                    [% loc('Public response:') %]
-            [% END %]
-            </label>
-            [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
-            <textarea name='status_update' id='status_update' cols=60 rows=5>
-            [%- problem.extra.public_response || default_public_response | html -%]
-            </textarea>
-            </li>
-        </ul>
-    [% END %]
+[%# Public response field shown for Ruckmeldung ausstehend states
+  # (e.g. various pstates) %]
+[% IF problem.state == 'planned' %]
+    <ul class="no-bullets report-edit-action">
+        <li id="status_update_container"><label for="status_update">
+        [% SWITCH pstate %]
+            [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
+                [% loc('Reply to user:') %]
+            [% CASE DEFAULT %]
+                [% loc('Public response:') %]
+        [% END %]
+        </label>
+        [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
+        <textarea name='status_update' id='status_update' cols=60 rows=5>
+        [%- problem.extra.public_response || default_public_response | html -%]
+        </textarea>
+        </li>
+    </ul>
 [% END %]
 
 <p align="right" class="report-edit-action">
@@ -295,7 +293,7 @@ $(function(){
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
 
-[% IF problem.state == 'fixed - council' %]
+[% IF c.cobrand.problem_has_public_response(problem) %]
     <h2>[% loc('Public response:') %]</h2>
     <div class="admin-official-answer">
         [% problem.extra.public_response | html_para %]
