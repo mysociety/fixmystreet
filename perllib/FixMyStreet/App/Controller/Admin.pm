@@ -695,7 +695,9 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
         $self->rotate_photo($c,  @$rotate_photo_param);
-        return 1;
+
+        return 1 
+            unless $c->cobrand->moniker eq 'zurich'; # as we want to prep page below
     }
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
