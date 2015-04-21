@@ -782,7 +782,7 @@ subtest "test stats" => sub {
         $mech->get_ok( '/admin/stats' );
         is $mech->res->code, 200, "superuser should be able to see stats page";
 
-        $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 2'); # now including hidden
+        $mech->content_contains('Innerhalb eines Arbeitstages moderiert: 3');
         $mech->content_contains('Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen: 3');
         # my @data = $mech->content =~ /(?:moderiert|abgeschlossen): \d+/g;
         # diag Dumper(\@data); use Data::Dumper;
@@ -853,6 +853,42 @@ subtest 'email images to external partners' => sub {
             };
         };
 };
+
+subtest 'Status update shown as appropriate' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        # ALL closed states must hide the public_response edit, and public ones
+        # must show the answer in blue.
+        for (['planned', 1, 0],
+             ['fixed - council', 0, 1],
+             ['closed', 0, 1],
+             ['hidden', 0, 0])
+         {
+            my ($state, $update, $public) = @$_;
+            $report->update({ state => $state });
+            $mech->get_ok( '/admin/report_edit/' . $report->id );
+            contains_or_lacks($mech, $update, "<textarea name='status_update'");
+            contains_or_lacks($mech, $public, '<div class="admin-official-answer">');
+
+            if ($public) {
+                $mech->get_ok( '/report/' . $report->id );
+                $mech->content_contains('Antwort</h4>');
+            }
+       }
+    };
+};
+
+# TODO refactor into FixMyStreet::TestMech;
+sub contains_or_lacks {
+    my ($mech, $contains, $text) = @_;
+    if ($contains) {
+        $mech->content_contains($text);
+    }
+    else {
+        $mech->content_lacks($text);
+    }
+}
 
 subtest 'time_spent' => sub {
     FixMyStreet::override_config {

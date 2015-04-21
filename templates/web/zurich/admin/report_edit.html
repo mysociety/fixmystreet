@@ -25,7 +25,7 @@
 
 <li class="report-edit-action">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
 
-[% IF problem_is_closed %]
+[% IF c.cobrand.problem_is_closed(problem) %]
     <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
     [% IF problem.extra.original_detail %]
     <br>[%
@@ -133,12 +133,15 @@
 </script>
 </p>
 
-<p><span class="mock-label">[% loc('State:') %]</span> <select name="state"  id="state">
-    <option value="">--</option>
-  [% FOREACH s IN states %]
-    <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
-  [% END %]
-</select></p>
+<p> 
+    <span class="mock-label">[% loc('State:') %]</span>
+    <select name="state"  id="state">
+        <option value="">--</option>
+    [% FOREACH s IN states %]
+        <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
+    [% END %]
+    </select>
+</p>
 
 <script type="text/javascript">
 $(function(){
@@ -157,35 +160,33 @@ $(function(){
         // Show or hide the automatic reply field
         var state = $(this).val();
 
-        // Show or hide the categories
-        if (state === 'confirmed') {
-            $('#assignation__category').show();
-            $('#assignation__subdivision').show();
-        } else {
-            $('#assignation__category').hide();
-            $('#assignation__subdivision').hide();
-            $('#assignation__category select').val('');
-            $('#assignation__subdivision select').val('');
-        }
-
-        if ((state === 'closed') || (state === 'investigating')) {
-            $('#assignation__external').show();
-        } else {
-            $('#assignation__external select').val('');
-            $('#assignation__external').hide();
-        }
-
-        // disable the templates, public_response, publish if we've selected a
-        // different state to the one we started on
+        // show or disable assignation, templates, public_response, publish if
+        // same or different state to the one we started on
         if ((state === '[% pstate %]')) {
             $('input[name=publish_response]').show();
             $('.response_templates_select').show();
-            $('#status_update').show();
+            $('#status_update_container').show();
+
+            if (state === 'confirmed') {
+                $('#assignation__category').show();
+                $('#assignation__subdivision').show();
+            }
+            if ((state === 'closed') || (state === 'investigating')) {
+                $('#assignation__external').show();
+            }
         }
         else {
             $('input[name=publish_response]').hide();
             $('.response_templates_select').hide();
-            $('#status_update').hide();
+            $('#status_update_container').hide();
+
+            $('#assignation__category').hide();
+            $('#assignation__subdivision').hide();
+            $('#assignation__category select').val('');
+            $('#assignation__subdivision select').val('');
+
+            $('#assignation__external select').val('');
+            $('#assignation__external').hide();
         }
 
     }).change();
@@ -256,28 +257,42 @@ $(function(){
     </ul>
 [% END %]
 
-[%# Public response field shown for Ruckmeldung ausstehend/Extern/
-  # Zustandigkeit unbekannt/Wunsch/Nicht kontaktierbar/Unsichtbar %]
-[% SWITCH pstate %]
-    [% CASE ['planned','closed','unable to fix','investigating','partial','hidden'] %]
-        <ul class="no-bullets report-edit-action">
-            <li><label for="status_update">[% loc('Public response:') %]</label>
-            [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
-            <textarea name='status_update' id='status_update' cols=60 rows=5>
-            [%- problem.extra.public_response || default_public_response | html -%]
-            </textarea>
-            </li>
-        </ul>
+[%# Public response field shown for Ruckmeldung ausstehend states
+  # (e.g. various pstates) %]
+[% IF problem.state == 'planned' %]
+    <ul class="no-bullets report-edit-action">
+        <li id="status_update_container"><label for="status_update">
+        [% SWITCH pstate %]
+            [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
+                [% loc('Reply to user:') %]
+            [% CASE DEFAULT %]
+                [% loc('Public response:') %]
+        [% END %]
+        </label>
+        [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
+        <textarea name='status_update' id='status_update' cols=60 rows=5>
+        [%- problem.extra.public_response || default_public_response | html -%]
+        </textarea>
+        </li>
+    </ul>
 [% END %]
 
 <p align="right" class="report-edit-action">
 [% IF show_publish_response %]
-<input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
+    [%# While we call this 'publish_response', the response will not actually
+      # be "published" for these cases: Wish / Hidden / Not contactable (for these,
+      # only a private email will be sent to the user.  However, in all cases,
+      # this is the end of processing, so we mark this with the same text used
+      # for 'No further updates %]
+<input type="submit" name="publish_response" value="[% loc('No further updates') %]">
 [% END %]
+
+    [%# This button simply saves changes, but does NOT close the report (though
+      # it may trigger other workflow %]
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
 
-[% IF problem.state == 'fixed - council' %]
+[% IF c.cobrand.problem_has_public_response(problem) %]
     <h2>[% loc('Public response:') %]</h2>
     <div class="admin-official-answer">
         [% problem.extra.public_response | html_para %]
