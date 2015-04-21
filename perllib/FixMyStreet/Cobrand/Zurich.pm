@@ -601,7 +601,6 @@ sub admin_report_edit {
             $problem->set_extra_metadata( closure_status => $state );
             $self->set_problem_state($c, $problem, 'planned');
             $state = 'planned';
-            $redirect = 1;
 
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
@@ -748,7 +747,9 @@ sub admin_report_edit {
         # (this will only happen if no other update_admin_log has already been called)
         $self->update_admin_log($c, $problem);
 
-        if ( $redirect ) {
+        if ( $redirect and $type eq 'dm' ) {
+            # only redirect for DM
+            $c->stash->{status_message} ||= '<p><em>' . _('Updated!') . '</em></p>';
             $c->go('index');
         }
 
