@@ -683,7 +683,15 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
         $self->rotate_photo($c,  @$rotate_photo_param);
-        return 1;
+        if ( $c->cobrand->moniker eq 'zurich' ) {
+            # Clicking the photo rotation buttons should do nothing
+            # except for rotating the photo, so return the user
+            # to the report screen now.
+            $c->res->redirect( $c->uri_for( 'report_edit', $problem->id ) );
+            return;
+        } else {
+            return 1;
+        }
     }
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
