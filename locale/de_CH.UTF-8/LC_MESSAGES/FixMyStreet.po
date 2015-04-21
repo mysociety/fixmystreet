@@ -2406,6 +2406,9 @@ msgstr ""
 msgid "Public response:"
 msgstr "Offizielle Antwort"
 
+msgid "Reply to user:"
+msgstr "Rückmeldung an User:"
+
 #: templates/web/zurich/admin/report_edit.html:105
 #: templates/web/zurich/admin/stats.html:38
 msgid "Publish photo"

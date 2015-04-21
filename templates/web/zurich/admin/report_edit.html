@@ -179,12 +179,12 @@ $(function(){
         if ((state === '[% pstate %]')) {
             $('input[name=publish_response]').show();
             $('.response_templates_select').show();
-            $('#status_update').show();
+            $('#status_update_container').show();
         }
         else {
             $('input[name=publish_response]').hide();
             $('.response_templates_select').hide();
-            $('#status_update').hide();
+            $('#status_update_container').hide();
         }
 
     }).change();
@@ -263,7 +263,14 @@ $(function(){
 [% FOR s IN ['planned','closed','unable to fix','investigating','partial','hidden'] %]
     [% IF pstate == s %]
         <ul class="no-bullets report-edit-action">
-            <li><label for="status_update">[% loc('Public response:') %]</label>
+            <li id="status_update_container"><label for="status_update">
+            [% SWITCH pstate %]
+                [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
+                    [% loc('Reply to user:') %]
+                [% CASE DEFAULT %]
+                    [% loc('Public response:') %]
+            [% END %]
+            </label>
             [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
             <textarea name='status_update' id='status_update' cols=60 rows=5>
             [%- problem.extra.public_response || default_public_response | html -%]
@@ -275,8 +282,16 @@ $(function(){
 
 <p align="right" class="report-edit-action">
 [% IF show_publish_response %]
-<input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
+    [%# While we call this 'publish_response', the response will not actually
+      # be "published" for these cases: Wish / Hidden / Not contactable (for these,
+      # only a private email will be sent to the user.  However, in all cases,
+      # this is the end of processing, so we mark this with the same text used
+      # for 'No further updates %]
+<input type="submit" name="publish_response" value="[% loc('No further updates') %]">
 [% END %]
+
+    [%# This button simply saves changes, but does NOT close the report (though
+      # it may trigger other workflow %]
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
 
