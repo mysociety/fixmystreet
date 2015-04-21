@@ -822,35 +822,14 @@ a:hover.button-left {
     padding: 0.5em 1em;
     display:block;
     .update-wrap {
-      display:table;
-      width:100%;
-      .update-text,
-      .update-img {
-        display:table-cell;
-        vertical-align:top;
-        p {
-          margin-bottom: 0.5em;
-        }
-      }
-      .update-img {
-        text-align:right;
-        img {
-          margin:-0.5em -1em 0 0.5em;
-          height:auto;
-        }
-      }
+      @include clearfix;
     }
-  }
-}
-//display:table fixes
-.ie7, .ie7 {
-  .issue-list li .update-wrap {
-    .update-text {
-      float:left;
-      width:19em;
+    .update-text p {
+      margin-bottom: 0.5em;
     }
     .update-img {
-      float:right;
+      float: right;
+      margin: 0.5em 0 0.5em 1em; // gutter between text and floated image
     }
   }
 }
@@ -965,12 +944,6 @@ a:hover.button-left {
       opacity: 1;
     }
   }
-}
-//bit of a hack - as we can't use em's, push the span out to the right
-//by how much it would be if the user did not resize the text
-.issue-list li .update-wrap .update-img a span {
-  right:-16px;
-  top:-8px;
 }
 
 .problem-header {

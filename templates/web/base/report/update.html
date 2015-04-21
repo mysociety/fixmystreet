@@ -6,10 +6,11 @@
         [% INCLUDE meta_line %]
     </em></p></div>
 [% IF NOT update.whenanswered %]
+
+    [% INCLUDE 'report/photo.html' object=update %]
+
     <div class="update-text">
         [% add_links( update.text ) | html_para %]
-
-        [% INCLUDE 'report/photo.html' object=update %]
 
         [% IF c.cobrand.allow_update_reporting %]
         <p align="right">
@@ -17,6 +18,7 @@
         </p>
         [% END %]
     </div>
+
 [% END %]
     </div>
 [% '</div>' IF loop.last %]

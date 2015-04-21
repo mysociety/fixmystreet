@@ -28,6 +28,7 @@
                     <p class="meta-2"> [% INCLUDE meta_line %] </p>
                 </div>
             [% ELSE %]
+                [% INCLUDE 'report/photo.html' object=update %]
                 <div class="update-text">
                     <div class="moderate-display">
                         [% add_links( update.text ) | html_para %]
@@ -50,7 +51,6 @@
                         [% END %]
                     </p>
                 </div>
-                [% INCLUDE 'report/photo.html' object=update %]
             [% END %]
             </div>
             [% IF moderating %]
