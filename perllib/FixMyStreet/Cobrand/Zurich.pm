@@ -123,6 +123,26 @@ sub problem_is_closed {
     return exists $self->zurich_closed_states->{ $problem->state } ? 1 : 0;
 }
 
+sub zurich_public_response_states {
+    my $states = {
+        'fixed - council' => 1,
+        'closed'          => 1, # extern
+        'unable to fix'   => 1, # jurisdiction  unknown
+
+        # e.g. as above, but WITHOUT the following (as they are hidden)
+        # 'hidden'          => 1,
+        # 'investigating'   => 1, # wish
+        # 'partial'         => 1, # not contactable
+    };
+
+    return wantarray ? keys %{ $states } : $states;
+}
+
+sub problem_has_public_response {
+    my ($self, $problem) = @_;
+    return exists $self->zurich_public_response_states->{ $problem->state } ? 1 : 0;
+}
+
 sub problem_as_hashref {
     my $self = shift;
     my $problem = shift;
@@ -561,13 +581,8 @@ sub admin_report_edit {
         my $state = $c->req->params->{state} || '';
         my $oldstate = $problem->state;
 
-        my %closure_states = (
-            'closed' => 1,
-            'investigating' => 1,
-            'hidden' => 1,
-            'partial' => 1,
-            'unable to fix' => 1,
-        );
+        my $closure_states = $self->zurich_closed_states;
+        delete $closure_states->{'fixed - council'}; # may not be needed?
 
         my $old_closure_state = $problem->get_extra_metadata('closure_status');
 
@@ -586,7 +601,7 @@ sub admin_report_edit {
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $self->update_admin_log($c, $problem, "Changed category from $old_cat to $new_cat");
             $redirect = 1 if $cat->body_id ne $body->id;
-        } elsif ( $closure_states{$state} and
+        } elsif ( $closure_states->{$state} and
                     ( $oldstate ne 'planned' )
                     || (($old_closure_state ||'') ne $state))
         {
@@ -601,6 +616,7 @@ sub admin_report_edit {
             $problem->set_extra_metadata( closure_status => $state );
             $self->set_problem_state($c, $problem, 'planned');
             $state = 'planned';
+            $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
 
         } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
@@ -618,12 +634,8 @@ sub admin_report_edit {
                 }
 
                 $self->set_problem_state($c, $problem, $state)
-                    unless $closure_states{$state}; # in closure-states case, we'll defer to clause below
-
-                if ($self->problem_is_closed($problem)) {
-                    $problem->set_extra_metadata_if_undefined( closed_overdue => $self->overdue( $problem ) );
-                    $c->stash->{problem_is_closed} = 1;
-                }
+                    unless $closure_states->{$state};
+                    # we'll defer to 'planned' clause below to change the state
             }
         }
 
@@ -631,15 +643,17 @@ sub admin_report_edit {
             # Rueckmeldung ausstehend
             # override $state from the metadata set above
             $state = $problem->get_extra_metadata('closure_status') || '';
-            my $closed = 0;
+            my ($moderated, $closed) = (0, 0);
 
             if ($state eq 'hidden' && $c->req->params->{publish_response} ) {
                 _admin_send_email( $c, 'problem-rejected.txt', $problem );
-                $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
+
                 $self->set_problem_state($c, $problem, $state);
+                $moderated++;
                 $closed++;
             }
             elsif ($state =~/^(closed|investigating)$/) { # Extern | Wish
+                $moderated++;
                 # Nested if instead of `and` because in these cases, we *don't*
                 # want to close unless we have body_external (so we don't want
                 # the final elsif clause below to kick in on publish_response)
@@ -649,7 +663,6 @@ sub admin_report_edit {
                     $problem->external_body( $external );
                 }
                 if ($problem->external_body && $c->req->params->{publish_response}) {
-                    $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
                     $problem->whensent( undef );
                     $self->set_problem_state($c, $problem, $state);
                     my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
@@ -661,12 +674,18 @@ sub admin_report_edit {
             }
             elsif ($c->req->params->{publish_response}) {
                 # otherwise we only set the state if publish_response is set
+                #
 
                 # if $state wasn't set, then we are simply closing the message as fixed
                 $state ||= 'fixed - council';
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
                 $redirect = 1;
+                $moderated++;
                 $closed++;
+            }
+
+            if ($moderated) {
+                $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
             }
 
             if ($closed) {
