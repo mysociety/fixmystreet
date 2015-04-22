@@ -132,12 +132,15 @@
 </script>
 </p>
 
-<p><span class="mock-label">[% loc('State:') %]</span> <select name="state"  id="state">
-    <option value="">--</option>
-  [% FOREACH s IN states %]
-    <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
-  [% END %]
-</select></p>
+<p> 
+    <span class="mock-label">[% loc('State:') %]</span>
+    <select name="state"  id="state">
+        <option value="">--</option>
+    [% FOREACH s IN states %]
+        <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
+    [% END %]
+    </select>
+</p>
 
 <script type="text/javascript">
 $(function(){
@@ -156,35 +159,33 @@ $(function(){
         // Show or hide the automatic reply field
         var state = $(this).val();
 
-        // Show or hide the categories
-        if (state === 'confirmed') {
-            $('#assignation__category').show();
-            $('#assignation__subdivision').show();
-        } else {
-            $('#assignation__category').hide();
-            $('#assignation__subdivision').hide();
-            $('#assignation__category select').val('');
-            $('#assignation__subdivision select').val('');
-        }
-
-        if ((state === 'closed') || (state === 'investigating')) {
-            $('#assignation__external').show();
-        } else {
-            $('#assignation__external select').val('');
-            $('#assignation__external').hide();
-        }
-
-        // disable the templates, public_response, publish if we've selected a
-        // different state to the one we started on
+        // show or disable assignation, templates, public_response, publish if
+        // same or different state to the one we started on
         if ((state === '[% pstate %]')) {
             $('input[name=publish_response]').show();
             $('.response_templates_select').show();
             $('#status_update_container').show();
+
+            if (state === 'confirmed') {
+                $('#assignation__category').show();
+                $('#assignation__subdivision').show();
+            }
+            if ((state === 'closed') || (state === 'investigating')) {
+                $('#assignation__external').show();
+            }
         }
         else {
             $('input[name=publish_response]').hide();
             $('.response_templates_select').hide();
             $('#status_update_container').hide();
+
+            $('#assignation__category').hide();
+            $('#assignation__subdivision').hide();
+            $('#assignation__category select').val('');
+            $('#assignation__subdivision select').val('');
+
+            $('#assignation__external select').val('');
+            $('#assignation__external').hide();
         }
 
     }).change();
