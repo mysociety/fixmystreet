@@ -12,9 +12,22 @@ geocode - commandline tool to test geocoders
     $ bin/geocode --cobrand=bromley "Glebe Rd"
 
     # ... if you want to use config that you have in conf/general.bing.yml
-    $ bin/geocode --override-config=general.bing --cobrand=bromley "Glebe Rd"
+    $ bin/geocode --override-config=general.yml.bing --cobrand=bromley "Glebe Rd"
+
+    # ... if your config only has a single entry in ALLOWED_COBRANDS
+    $ bin/geocode --override-config=general.yml.zurich "Im eisernen Zeit"
 
     ## ... output from geocoder
+
+=head1 OPTIONS
+
+    --help|h           show this help
+    --use-cache        use the configured GEO_CACHE (default OFF)
+
+    # the following options take a string argument:
+    --geocoder         e.g. OSM/Bing/Google/Zurich
+    --cobrand          (default, bromley, zurich etc.)
+    --override-config  e.g. conf/general.yml 
 
 =cut
 
@@ -32,6 +45,7 @@ BEGIN {
 use Data::Dumper;
 use Pod::Usage;
 use feature 'say';
+use File::Temp 'tempdir';
 
 use Getopt::Long;
 
@@ -41,12 +55,11 @@ GetOptions \%options,
     'geocoder=s',
     'help|h',
     'cobrand=s',
-    'override-config=s';
+    'override-config=s',
+    'use-cache';
 
 my $s = join ' ', @ARGV
     or pod2usage(0);
-
-pod2usage(0) unless $options{cobrand};
 
 local $ENV{FMS_OVERRIDE_CONFIG} = $options{'override-config'} if $options{'override-config'};
 
@@ -63,22 +76,41 @@ my $geocoder_type = $options{geocoder} || do {
 } or pod2usage(0);
 
 my $geocoder_name = "FixMyStreet::Geocode::${geocoder_type}";
+chomp $geocoder_name;
 my $code_ref = $geocoder_name->can('string')
     or die "$geocoder_name is not a valid geocoder?";
 
-my @allowed_cobrands = FixMyStreet::Cobrand->get_allowed_cobrands();
+my @allowed_cobrands = @{ FixMyStreet::Cobrand->get_allowed_cobrands() };
 
-my $cobrand_name = FixMyStreet::Cobrand->get_class_for_moniker($options{cobrand});
+my $cobrand_option = $options{cobrand}
+    || do {
+        $allowed_cobrands[0]->{moniker} if scalar @allowed_cobrands == 1;
+    } or pod2usage(0);
+
+my $cobrand_name = FixMyStreet::Cobrand->get_class_for_moniker($cobrand_option);
 my $cobrand = $cobrand_name->new();
 
 say "USING COBRAND $cobrand_name";
-if ($cobrand->moniker ne lc($options{cobrand})) {
-    say "!!! asked for $options{cobrand}";
+if ($cobrand->moniker ne lc($cobrand_option)) {
+    say "!!! asked for $cobrand_option";
     say "!!! Check ALLOWED_COBRANDS setting in conf/general.yml (or supplied --override-config file)";
     say Dumper(\@allowed_cobrands);
 }
 
+say "USING GEOCODER $geocoder_name "
+    . ( $options{'use-cache'} ? 
+        'WITH ' . FixMyStreet->config('GEO_CACHE') :
+        'WITHOUT cache');
+
 my $c = FixMyStreet::App->new();
 $c->stash->{cobrand} = $cobrand;
 
-say Dumper( $code_ref->( $s, $c ) );
+FixMyStreet::override_config({
+    # if we're not using cache, then set GEO_CACHE to a temporary directory
+    $options{'use-cache'} ?
+        () :
+        ( GEO_CACHE => (tempdir( CLEANUP => 1 ) . '/') ),
+}, sub {
+    my $result = $code_ref->( $s, $c );
+    say Dumper $result;
+});
