@@ -26,9 +26,9 @@ h1.main {
 
 // Colour tab to match colour scheme
 #nav-link {
-  width: 50px;
-  height: 48px;
-  background: url('/cobrands/bromley/tab-blue.png') 0 0 no-repeat;
+  height: 4em; // to match #site-header
+  background-image: url(/cobrands/fixmystreet/images/menu-black.png);
+  background-image: url(/cobrands/fixmystreet/images/menu-black.svg), none;
 }
 
 // Change logo to logo of council

@@ -28,6 +28,10 @@ $image-sprite: 'images/sprite.png';
   background: url('images/sprite.png') -8px -915px no-repeat;
 }
 
+#report-cta {
+  display: none;
+}
+
 #footer-help ul li {
   padding-right: 3em;
   a {

@@ -100,6 +100,7 @@ h1 {
 }
 #site-logo {
   top: 0.9em;
+  left: auto;
   position: absolute;
   z-index: 3;
 }
@@ -117,8 +118,10 @@ h1 {
     top:-3.25em;
   }
 }
-#nav-link {
-  left:-999999px;
+#nav-link,
+#report-cta {
+  right: auto;
+  left: -999999px;
 }
 #main-nav{
   margin: 0 auto;

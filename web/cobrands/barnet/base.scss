@@ -18,12 +18,14 @@
     background-color: white;
 }
 #site-logo {
-    width: 235px;
-    background: url('/cobrands/barnet/img/barnet-logo.gif') -3px -3px no-repeat;
+    width: 240px;
+    background: url('/cobrands/barnet/img/barnet-logo.gif') 0 0 no-repeat;
+    top: 0.6em;
+    left: 0.5em;
 }
 #nav-link {
-    right: 1em;
-    background: url('/cobrands/barnet/img/barnet-skipnav.png') no-repeat;
+    background-image: url(/cobrands/fixmystreet/images/menu-black.png);
+    background-image: url(/cobrands/fixmystreet/images/menu-black.svg), none;
 }
 
 #front-main #postcodeForm div input#sub,

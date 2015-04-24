@@ -439,6 +439,7 @@ p.label-valid {
   width: 175px;
   height: 40px;
   top: 0.4em;
+  left: 0.5em;
   background: url($image-sprite) -3px -3px no-repeat;
   text-indent: -999999px;
   position: absolute;
@@ -450,16 +451,36 @@ p.label-valid {
 
 // this is a skip to nav for mobile users only
 #nav-link {
-  width: 50px;
-  height: 48px;
-  background: url($image-sprite) -5px -916px no-repeat;
+  width: 3em;
+  height: 3em; // same height as #site-header
+  background: transparent url(/cobrands/fixmystreet/images/menu-white.png) center center no-repeat;
+  background-image: url(/cobrands/fixmystreet/images/menu-white.svg), none;
+  background-size: 22px 18px;
   display: block;
   text-indent: -999999px;
   position: absolute;
-  right:2em;
-  top:-2px;
-  &:hover {
-    top:2px;
+  right: 0;
+  top: 0.25em; // same as border-top on #site-header
+}
+
+// A shortcut to the Reporting page, in the mobile header
+#report-cta {
+  display: block;
+  position: absolute;
+  top: (3em / 2); // half the height of #site-header
+  right: 3.5em;
+  margin-top: -0.5em;
+
+  font-size: 0.9em;
+  line-height: 1em;
+  border: 1px solid #666;
+  color: #fff;
+  padding: 0.4em;
+  border-radius: 0.3em;
+
+  &:hover, &:focus {
+    text-decoration: none;
+    background-color: #444;
   }
 }
 

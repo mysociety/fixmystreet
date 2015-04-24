@@ -5,14 +5,6 @@
 
 @import "../sass/base";
 
-
-// Colour tab to match colour scheme
-#nav-link {
-  width: 50px;
-  height: 48px;
-  background: url('/cobrands/oxfordshire/images/tab-green.png') 0 0 no-repeat;
-}
-
 #site-header {
   background: none;
   background-color: $oxfordshire_dk_green;
@@ -27,6 +19,10 @@
   border: 4px solid $oxfordshire_dk_green;
   width: 173px;
   height: 38px;
+}
+
+#nav-link {
+  height: 60px; // to match #site-header
 }
 
 #main-nav ul#mysoc-menu li a#mysoc-logo {

@@ -69,6 +69,17 @@ h1.main {
   height: 48px;
 }
 
+#report-cta {
+  top: 24px; // height of header
+  margin-top: -0.7em;
+  font-size: 1em;
+  border-color: mix(#fff, $primary, 20%);
+
+  &:hover, &:focus {
+    background-color: mix(#fff, $primary, 10%);
+  }
+}
+
 #breadcrumb_breadcrumbTrail ol li {
     list-style: none;
 }
