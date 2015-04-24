@@ -31,6 +31,7 @@ sub setup_soap {
     my $action = "$attr/IFixMyZuerich/";
 
     require SOAP::Lite;
+    # SOAP::Lite->import( +trace => [transport => \&log_message ] );
 
     # Set up the SOAP handler
     $security = SOAP::Header->name("Security")->attr({
@@ -107,6 +108,16 @@ sub string {
         return { latitude => $latitude, longitude => $longitude };
     }
     return { error => $error };
+}
+
+sub log_message {
+    my ($in) = @_;
+    eval {
+        printf "log_message [$in]: %s\n\n", $in->content; # ...for example
+    };
+    if ($@) {
+        print "log_message [$in]: ???? \n\n";
+    }
 }
 
 1;
