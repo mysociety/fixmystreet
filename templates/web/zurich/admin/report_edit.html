@@ -12,8 +12,6 @@
 
 [% pstate = problem.get_extra_metadata('closure_status') || problem.state %]
 
-[% status_message %]
-
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
@@ -113,6 +111,8 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
+[% status_message %]
+
 <p class="report-edit-action">
     <label for="new_internal_note">[% loc('New internal note:') %]</label>
     <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea>
@@ -128,6 +128,11 @@
                 if (ui.value < 0) { return false }
             }
         });
+        setTimeout(function(){
+          $('.message-updated').slideUp(250, function(){
+            $(this).remove();
+          });
+        }, 5000);
     });
 </script>
 </p>
