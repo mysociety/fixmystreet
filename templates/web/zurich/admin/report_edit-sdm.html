@@ -9,8 +9,6 @@
 [% map_html %]
 </div>
 
-[% status_message %]
-
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
@@ -63,7 +61,7 @@
 </li>
 
 <li>
-    <label>[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
+    <label class="admin-label--inline">[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
 </li>
 
 [% IF problem.photo %]
@@ -79,6 +77,8 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
+[% status_message %]
+
 <p align="right"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 <p align="right"><input type="submit" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
 
@@ -91,7 +91,7 @@
 </ul>
 
 <p class="report-edit-action">
-<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+<label class="admin-label--inline" for="time_spent">[% loc('Time spent (in minutes):') %]</label>
 <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
 <script>
     $(function () {
@@ -100,6 +100,11 @@
                 if (ui.value < 0) { return false }
             }
         });
+        setTimeout(function(){
+          $('.message-updated').slideUp(250, function(){
+            $(this).remove();
+          });
+        }, 5000);
     });
 </script>
 </p>
