@@ -86,7 +86,7 @@
     [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('(No phone number)') %]</em>[% END %]
 </li>
 <li>
-    <label>[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
+    <label class="admin-label--inline">[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
 </li>
 
 
@@ -119,7 +119,7 @@
 </p>
 
 <p class="report-edit-action">
-<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+<label class="admin-label--inline" for="time_spent">[% loc('Time spent (in minutes):') %]</label>
 <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
 <script>
     $(function () {
@@ -137,7 +137,7 @@
 </script>
 </p>
 
-<p> 
+<p>
     <span class="mock-label">[% loc('State:') %]</span>
     <select name="state"  id="state">
         <option value="">--</option>
