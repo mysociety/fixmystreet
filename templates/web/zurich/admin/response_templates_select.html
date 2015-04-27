@@ -2,7 +2,6 @@
 
 [% response_templates = problem.body_object(c).response_templates %]
 <div class="response_templates_select">
-<span class="mock-label" for="[% template_name %]">[% loc('Templates:') %]</span>
 <select id="[% template_name %]">
     <option value="">Choose a template</option>
 [% FOR t IN response_templates %]

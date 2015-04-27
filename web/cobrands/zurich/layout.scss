@@ -258,10 +258,10 @@ body.mappage.admin {
 }
 
 .admin-report-edit {
-    padding: 1.5em;
+    padding: 1em;
     width: 50%;
     float: right;
-    font-size: 0.9em;
+    font-size: 0.8em;
     box-sizing: border-box;
 
     button, input[type="submit"], .btn {
@@ -320,6 +320,11 @@ body.mappage.admin {
 
     #zurich-footer {
         margin: 2em auto 3em auto;
+    }
+
+    .message-updated {
+      color: #060;
+      font-weight: bold;
     }
 }
 
