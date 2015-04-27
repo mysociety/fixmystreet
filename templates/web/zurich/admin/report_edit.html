@@ -197,30 +197,23 @@ $(function(){
 });
 </script>
 
+[% IF problem.state == 'confirmed' %]
 <ul class="no-bullets">
-[% IF problem.state == 'confirmed' %]
 
-<li class="assignation">
-<label for="category">
-[% loc('Category:') %] [% problem.category %]<br>
-
-[% IF problem.state == 'confirmed' %]
-    <div id="assignation__category">
-    [% loc('Assign to different category:') %]</label>
+  <li class="assignation report-edit-action" id="assignation__category">
+    <label for="category">[% loc('Assign to category:') %]</label>
     <select name="category" id="category" class="assignation__select">
             <option value="">--</option>
         [% FOREACH cat IN categories %]
             <option value="[% cat %]">[% cat %]</option>
         [% END %]
     </select>
-    </div>
-[% END %]
-</li>
+  </li>
 
-[% list = FOR body IN bodies %]
+  [% list = FOR body IN bodies %]
     [%- NEXT UNLESS body.parent.id == c.user.from_body.id %]
     <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
-[% END %]
+  [% END %]
   [% IF admin_type != 'super' AND list %]
     <li class="assignation report-edit-action" id="assignation__subdivision">
         <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
@@ -231,6 +224,7 @@ $(function(){
     </li>
   [% END %]
 
+</ul>
 [% END %]
 
 [%# 3rd party messages sent for Extern/Wunsch states %]
