@@ -225,6 +225,21 @@ h4.static-with-rule {
     }
 }
 
+.admin {
+  label.inline {
+    padding: 0;
+  }
+
+  input[type="checkbox"] + label.inline {
+    margin-right: 0.2em;
+  }
+}
+
+.admin-label--inline {
+  display: inline; // rather than block
+  margin-right: 0.333em; // bit of space between this and the following input
+}
+
 .ui-spinner input {
     // stop jQuery UI spinner inputs from inheriting FMS input styles
     padding: 1px;
