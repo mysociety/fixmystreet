@@ -7,9 +7,7 @@
                     <p class="meta-2">[% prettify_dt( problem.lastupdate, 'zurich' ) %]</p>
                     [%# XXX following should honour zurich_closed_states instead? %]
                     [% IF problem.state == 'fixed - council'
-                    || ( problem.external_body AND (
-                        problem.state == 'closed' 
-                        OR problem.state == 'investigating' )) %]
+                    || ( problem.external_body AND problem.state == 'closed' ) %]
                     [% add_links( problem.extra.public_response ) | html_para %]
                   [% END %]
                 </div>
