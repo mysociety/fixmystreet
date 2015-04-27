@@ -12,8 +12,6 @@
 
 [% pstate = problem.get_extra_metadata('closure_status') || problem.state %]
 
-[% status_message %]
-
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
@@ -90,7 +88,7 @@
 </li>
 
 <li>
-    <label>[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
+    <label class="admin-label--inline">[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
 </li>
 
 [% IF problem.photo %]
@@ -114,26 +112,9 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
-<p class="report-edit-action">
-    <label for="new_internal_note">[% loc('New internal note:') %]</label>
-    <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea>
-</p>
+[% status_message %]
 
-<p class="report-edit-action">
-<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
-<input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
-<script>
-    $(function () {
-        $('#form_time_spent').spinner({
-            spin: function (e, ui) {
-                if (ui.value < 0) { return false }
-            }
-        });
-    });
-</script>
-</p>
-
-<p> 
+<p>
     <span class="mock-label">[% loc('State:') %]</span>
     <select name="state"  id="state">
         <option value="">--</option>
@@ -143,8 +124,141 @@
     </select>
 </p>
 
+[% IF problem.state == 'confirmed' %]
+<ul class="no-bullets">
+
+  <li class="assignation report-edit-action" id="assignation__category">
+    <label for="category">[% loc('Assign to category:') %]</label>
+    <select name="category" id="category" class="assignation__select">
+            <option value="">--</option>
+        [% FOREACH cat IN categories %]
+            <option value="[% cat %]">[% cat %]</option>
+        [% END %]
+    </select>
+  </li>
+
+  [% list = FOR body IN bodies %]
+    [%- NEXT UNLESS body.parent.id == c.user.from_body.id %]
+    <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
+  [% END %]
+  [% IF admin_type != 'super' AND list %]
+    <li class="assignation report-edit-action" id="assignation__subdivision">
+        <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
+        <select name="body_subdivision" id="body_subdivision" class="assignation__select">
+            <option value="">--</option>
+            [% list %]
+        </select>
+    </li>
+  [% END %]
+
+</ul>
+[% END %]
+
+[%# 3rd party messages sent for Extern/Wunsch states %]
+[% SWITCH pstate %]
+    [% CASE ['closed','investigating'] %]
+    <ul class="no-bullets assignation report-edit-action" id="assignation__external">
+    <li>
+        <label for="body_external">
+          [% IF pstate == 'closed' %]
+            [% loc('Assign to external body:') %]
+          [% ELSE %]
+            [% loc('Assign to competent body:') %]
+          [% END %]
+        </label>
+        <select name="body_external" id="body_external">
+            <option value="">--</option>
+          [% FOR body IN bodies %]
+            [% NEXT IF body.parent OR body.bodies OR body.deleted %]
+            <option value="[% body.id %]"[% IF body.id == problem.external_body %] selected[% END %]>[% body.name %]</option>
+          [% END %]
+        </select>
+    </li>
+    <li>
+      [% IF pstate == 'closed' %]
+        <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
+        <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
+      [% END %]
+    </li>
+    <li>
+        [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
+        <textarea name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') | html %]</textarea>
+    </li>
+    </ul>
+[% END %]
+
+[%# Public response field shown for Ruckmeldung ausstehend states
+  # (e.g. various pstates) %]
+[% IF problem.state == 'planned' %]
+    <ul class="no-bullets report-edit-action">
+        <li id="status_update_container"><label for="status_update">
+        [% SWITCH pstate %]
+            [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
+                [% loc('Reply to user:') %]
+            [% CASE DEFAULT %]
+                [% loc('Public response:') %]
+        [% END %]
+        </label>
+        [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
+        <textarea name='status_update' id='status_update' cols=60 rows=5>
+        [%- problem.extra.public_response || default_public_response | html -%]
+        </textarea>
+        </li>
+    </ul>
+[% END %]
+
+<p class="report-edit-action">
+    <label for="new_internal_note">[% loc('New internal note:') %]</label>
+    <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea>
+</p>
+
+<p class="report-edit-action">
+    <label class="admin-label--inline" for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+    <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+</p>
+
+<p align="right" class="report-edit-action">
+  [% IF show_publish_response %]
+    [%# While we call this 'publish_response', the response will not actually
+      # be "published" for these cases: Wish / Hidden / Not contactable (for these,
+      # only a private email will be sent to the user.  However, in all cases,
+      # this is the end of processing, so we mark this with the same text used
+      # for 'No further updates %]
+    <input type="submit" name="publish_response" value="[% loc('No further updates') %]">
+  [% END %]
+
+    [%# This button simply saves changes, but does NOT close the report (though
+      # it may trigger other workflow %]
+    <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
+</p>
+
+[% IF c.cobrand.problem_has_public_response(problem) %]
+    <h2>[% loc('Public response:') %]</h2>
+    <div class="admin-official-answer">
+        [% problem.extra.public_response | html_para %]
+    </div>
+[% END %]
+
+[% INCLUDE 'admin/list_updates.html' %]
+
+</div>
+
+</form>
+
 <script type="text/javascript">
 $(function(){
+
+    $('#form_time_spent').spinner({
+        spin: function (e, ui) {
+            if (ui.value < 0) { return false }
+        }
+    });
+
+    setTimeout(function(){
+        $('.message-updated').slideUp(250, function(){
+            $(this).remove();
+        });
+    }, 5000);
 
     $('.assignation__select').change(function(){
         if (this.value == "") {
@@ -173,6 +287,8 @@ $(function(){
             }
             if ((state === 'closed') || (state === 'investigating')) {
                 $('#assignation__external').show();
+            } else {
+                $('#assignation__external').hide();
             }
         }
         else {
@@ -187,122 +303,12 @@ $(function(){
 
             $('#assignation__external select').val('');
             $('#assignation__external').hide();
+            $('#external_body').hide();
+            $('#third_personal, label[for=third_personal]').hide();
         }
 
     }).change();
 });
 </script>
-
-<ul class="no-bullets">
-[% IF problem.state == 'confirmed' %]
-
-<li class="assignation">
-<label for="category">
-[% loc('Category:') %] [% problem.category %]<br>
-
-    <div id="assignation__category">
-    [% loc('Assign to different category:') %]</label>
-    <select name="category" id="category" class="assignation__select">
-            <option value="">--</option>
-        [% FOREACH cat IN categories %]
-            <option value="[% cat %]">[% cat %]</option>
-        [% END %]
-    </select>
-    </div>
-</li>
-
-[% list = FOR body IN bodies %]
-    [%- NEXT UNLESS body.parent.id == c.user.from_body.id %]
-    <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
-[% END %]
-  [% IF admin_type != 'super' AND list %]
-    <li class="assignation report-edit-action" id="assignation__subdivision">
-        <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
-        <select name="body_subdivision" id="body_subdivision" class="assignation__select">
-            <option value="">--</option>
-            [% list %]
-        </select>
-    </li>
-  [% END %]
-
-[% END %]
-
-[%# 3rd party messages sent for Extern/Wunsch states %]
-[% SWITCH pstate %]
-    [% CASE ['closed','investigating'] %]
-    <ul class="no-bullets">
-    <li class="assignation report-edit-action" id="assignation__external">
-    <label for="body_external">
-        [% IF pstate == 'closed' %]
-            [% loc('Assign to external body:') %]
-        [% ELSE %]
-            [% loc('Assign to competent body:') %]
-        [% END %]
-    </label>
-        <select name="body_external" id="body_external">
-            <option value="">--</option>
-        [% FOR body IN bodies %]
-            [% NEXT IF body.parent OR body.bodies OR body.deleted %]
-            <option value="[% body.id %]"[% IF body.id == problem.external_body %] selected[% END %]>[% body.name %]</option>
-        [% END %]
-        </select>
-        <br>
-        [% IF pstate == 'closed' %]
-        <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
-        <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
-        [% END %]
-        [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
-        <textarea name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') | html %]</textarea>
-    </li>
-    </ul>
-[% END %]
-
-[%# Public response field shown for Ruckmeldung ausstehend states
-  # (e.g. various pstates) %]
-[% IF problem.state == 'planned' %]
-    <ul class="no-bullets report-edit-action">
-        <li id="status_update_container"><label for="status_update">
-        [% SWITCH pstate %]
-            [% CASE ['hidden', 'investigating', 'partial'] %][%# Hidden/Wish/Not contactable %]
-                [% loc('Reply to user:') %]
-            [% CASE DEFAULT %]
-                [% loc('Public response:') %]
-        [% END %]
-        </label>
-        [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
-        <textarea name='status_update' id='status_update' cols=60 rows=5>
-        [%- problem.extra.public_response || default_public_response | html -%]
-        </textarea>
-        </li>
-    </ul>
-[% END %]
-
-<p align="right" class="report-edit-action">
-[% IF show_publish_response %]
-    [%# While we call this 'publish_response', the response will not actually
-      # be "published" for these cases: Wish / Hidden / Not contactable (for these,
-      # only a private email will be sent to the user.  However, in all cases,
-      # this is the end of processing, so we mark this with the same text used
-      # for 'No further updates %]
-<input type="submit" name="publish_response" value="[% loc('No further updates') %]">
-[% END %]
-
-    [%# This button simply saves changes, but does NOT close the report (though
-      # it may trigger other workflow %]
-<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
-</p>
-
-[% IF c.cobrand.problem_has_public_response(problem) %]
-    <h2>[% loc('Public response:') %]</h2>
-    <div class="admin-official-answer">
-        [% problem.extra.public_response | html_para %]
-    </div>
-[% END %]
-
-[% INCLUDE 'admin/list_updates.html' %]
-
-</div>
-
-</form>
 
 [% INCLUDE 'admin/footer.html' %]
