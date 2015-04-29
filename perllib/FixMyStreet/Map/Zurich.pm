@@ -15,22 +15,62 @@ use constant ZOOM_LEVELS    => 9;
 use constant DEFAULT_ZOOM   => 5;
 use constant MIN_ZOOM_LEVEL => 0;
 use constant ID_OFFSET      => 2;
-use constant TILE_SIZE      => 256;
+use constant TILE_SIZE      => 512;
 
 sub map_tiles {
-    my ( $self, %params ) = @_;
-    my ( $col, $row, $z ) = ( $params{x_tile}, $params{y_tile}, $params{matrix_id} );
+    my ($self, %params) = @_;
+    my ($centre_col, $centre_row, $z) = @params{'x_tile', 'y_tile', 'matrix_id'};
     my $tile_url = $self->base_tile_url();
+    my $square_size = $params{square_size};
+
+    my ($left_col, $top_row) = map {
+        # centre_(row|col) is either in middle, or just to right.
+        # e.g. if centre is the number in parens:
+        # 1 (2) 3 => 2 - int( 3/2 ) = 1
+        # 1 2 (3) 4 => 3 - int( 4/2 ) = 1
+        $_ - int ($square_size / 2);
+    } $centre_col, $centre_row;
+
+    my @offsets = (0.. ($square_size-1) );
+
     return [
-        "$tile_url/$z/" . ($row - 1) . "/" . ($col - 1) . ".jpg",
-        "$tile_url/$z/" . ($row - 1) . "/$col.jpg",
-        "$tile_url/$z/$row/" . ($col - 1) . ".jpg",
-        "$tile_url/$z/$row/$col.jpg",
+        map {
+            my $row_offset = $_;
+            [
+                map {
+                    my $col_offset = $_;
+                    my $row = $top_row + $row_offset;
+                    my $col = $left_col + $col_offset;
+                    my $src = sprintf '%s/%d/%d/%d.jpg',
+                        $tile_url, $z, $row, $col;
+                    my $dotted_id = sprintf '%d.%d', $col, $row;
+
+                    # return the data structure for the cell
+                    +{
+                        src => $src,
+                        row_offset => $row_offset,
+                        col_offset => $col_offset,
+                        dotted_id => $dotted_id,
+                        alt => "Map tile $dotted_id", # TODO "NW map tile"?
+                    }
+                }
+                @offsets
+            ]
+        }
+        @offsets
     ];
 }
 
 sub base_tile_url {
-    return '/maps/Hybrid/1.0.0/Hybrid/default/nativeTileMatrixSet';
+    # return '/maps/Hybrid/1.0.0/Hybrid/default/nativeTileMatrixSet';
+    ## above is rewritten to:
+    # return 'http://www.wmts.stadt-zuerich.ch/Hybrid/MapServer/WMTS/tile/default/nativeTileMatrixSet';
+    ## (for testing locally, where I don't have rewrite)
+    # return 'http://zurich.fixmystreet.staging.mysociety.org/maps/Hybrid/1.0.0/Hybrid/default/nativeTileMatrixSet';
+    
+    # use the new 512px maps as used by Javascript in
+    # https://github.com/mysociety/FixMyStreet-Commercial/issues/668
+    return 'http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled/LuftbildHybrid/MapServer/WMTS/tile/1.0.0/tiled_LuftbildHybrid/default/default028mm';
 }
 
 sub copyright {
@@ -51,29 +91,51 @@ sub display_map {
     $params{longitude} = Utils::truncate_coordinate($c->req->params->{lon} + 0)
         if defined $c->req->params->{lon};
 
-    my $zoom = defined $c->req->params->{zoom}
-        ? $c->req->params->{zoom} + 0
-        : $c->stash->{page} eq 'report'
-            ? DEFAULT_ZOOM+1
-            : DEFAULT_ZOOM;
-    $zoom = ZOOM_LEVELS - 1 if $zoom >= ZOOM_LEVELS;
-    $zoom = 0 if $zoom < 0;
+    $params{square_size} //= 2; # 2x2 square is default
 
-    ($params{x_tile}, $params{y_tile}, $params{matrix_id}) = latlon_to_tile_with_adjust($params{latitude}, $params{longitude}, $zoom);
+    $params{zoom} = do {
+        my $zoom = defined $c->req->params->{zoom}
+            ? $c->req->params->{zoom} + 0
+            : $c->stash->{page} eq 'report'
+                ? DEFAULT_ZOOM+1
+                : DEFAULT_ZOOM;
+        $zoom = ZOOM_LEVELS - 1 if $zoom >= ZOOM_LEVELS;
+        $zoom = 0 if $zoom < 0;
+        $zoom;
+    };
+
+    $c->stash->{map} = $self->get_map_hash( %params );
+
+    if ($params{print_report}) {
+        $c->stash->{print_report_map}
+            = $self->get_map_hash( %params, square_size => 4, img_type => 'img' );
+        # we can passthrough img_type as literal here, as only designed for print
+    }
+}
+
+sub get_map_hash {
+    my ($self, %params) = @_;
+
+    @params{'x_tile', 'y_tile', 'matrix_id'}
+        = latlon_to_tile_with_adjust(
+            @params{'latitude', 'longitude', 'zoom', 'square_size'});
 
     foreach my $pin (@{$params{pins}}) {
-        ($pin->{px}, $pin->{py}) = latlon_to_px($pin->{latitude}, $pin->{longitude}, $params{x_tile}, $params{y_tile}, $zoom);
+        ($pin->{px}, $pin->{py})
+            = latlon_to_px($pin->{latitude}, $pin->{longitude},
+                           @params{'x_tile', 'y_tile', 'zoom'});
     }
 
-    $c->stash->{map} = {
+    return {
         %params,
         type => 'zurich',
         map_type => 'OpenLayers.Layer.WMTS',
         tiles => $self->map_tiles( %params ),
         copyright => $self->copyright(),
-        zoom => $zoom,
+        zoom => $params{zoom},,
         zoomOffset => MIN_ZOOM_LEVEL,
         numZoomLevels => ZOOM_LEVELS,
+        tile_size => TILE_SIZE,
     };
 }
 
@@ -84,9 +146,17 @@ sub latlon_to_tile($$$) {
     my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($lat, $lon);
 
     my $matrix_id = $zoom + ID_OFFSET;
-    my @scales = ( '250000', '125000', '64000', '32000', '16000', '8000', '4000', '2000', '1000', '500', '250' );
+    my @scales = (
+        '250000', '125000',
+        '64000', '32000',
+        '16000', '8000',
+        '4000', '2000',
+        '1000', '500',
+        '250'
+    );
     my $tileOrigin = { lat => 30814423, lon => -29386322 };
-    my $res = $scales[$matrix_id] / (39.3701 * 96); # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
+    my $res = $scales[$matrix_id] / (39.3701 * 96);
+        # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
 
     my $fx = ( $x - $tileOrigin->{lon} ) / ($res * TILE_SIZE);
     my $fy = ( $tileOrigin->{lat} - $y ) / ($res * TILE_SIZE);
@@ -96,9 +166,17 @@ sub latlon_to_tile($$$) {
 
 # Given a lat/lon, convert it to OSM tile co-ordinates (nearest actual tile,
 # adjusted so the point will be near the centre of a 2x2 tiled map).
-sub latlon_to_tile_with_adjust($$$) {
-    my ($lat, $lon, $zoom) = @_;
-    my ($x_tile, $y_tile, $matrix_id) = latlon_to_tile($lat, $lon, $zoom);
+#
+# Takes parameter for square_size.  For even sizes (2x2, 4x4 etc.) will
+# do adjustment, but simply returns actual for odd sizes.
+#
+sub latlon_to_tile_with_adjust {
+    my ($lat, $lon, $zoom, $square_size) = @_;
+    my ($x_tile, $y_tile, $matrix_id)
+        = my @ret
+        = latlon_to_tile($lat, $lon, $zoom);
+
+    return @ret if $square_size % 2; # just pass through if odd
 
     # Try and have point near centre of map
     if ($x_tile - int($x_tile) > 0.5) {
