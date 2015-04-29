@@ -1,0 +1,64 @@
+<div class="noscript">
+    <div id="[% nsm_prefix %]drag">
+        <[% map.img_type %]
+            alt="NW map tile" id="[% nsm_prefix %]t2.2"
+            name="tile_[% map.x_tile - 1 %].[% map.y_tile - 1 %]"
+            src="[% map.tiles.0 %]"
+            style="top:0; left:0;">
+        <[% map.img_type %]
+            alt="NE map tile" id="[% nsm_prefix %]t2.3"
+            name="tile_[% map.x_tile %].[% map.y_tile - 1 %]"
+            src="[% map.tiles.1 %]"
+            style="top:0px; left:256px;">
+        <br>
+        <[% map.img_type %]
+            alt="SW map tile" id="[% nsm_prefix %]t3.2"
+            name="tile_[% map.x_tile - 1 %].[% map.y_tile %]"
+            src="[% map.tiles.2 %]"
+            style="top:256px; left:0;">
+        <[% map.img_type %]
+            alt="SE map tile" id="[% nsm_prefix %]t3.3"
+            name="tile_[% map.x_tile %].[% map.y_tile %]"
+            src="[% map.tiles.3 %]"
+            style="top:256px; left:256px;">
+    </div>
+    <div id="[% nsm_prefix %]pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
+    [% INCLUDE compass %]
+</div>
+
+[% BLOCK compass %]
+[%
+    north    = c.uri_with( { lat = map.compass.north.0, lon = map.compass.north.1, zoom = map.zoom } )
+    south    = c.uri_with( { lat = map.compass.south.0, lon = map.compass.south.1, zoom = map.zoom } )
+    east     = c.uri_with( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
+    west     = c.uri_with( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } )
+    world    = c.uri_with( { zoom = 0 } );
+    SET zoom_in  = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
+    SET zoom_out = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom - 1 } ) IF map.zoom > 0;
+    SET zoom_in  = '#' IF map.zoom >= map.numZoomLevels - 1;
+    SET zoom_out = '#' IF map.zoom <= 0;
+%]
+<div style="position: absolute; left: 4px; top: 4px;" class="olControlPanZoom olControlNoSelect" unselectable="on">
+    <div style="position: absolute; left: 13px; top: 4px; width: 18px; height: 18px;"><a rel="nofollow" href="[% north %]"><img style="position: relative; width: 18px; height: 18px;" src="/js/OpenLayers-2.13.1/img/north-mini.png" border="0"></a></div>
+    <div style="position: absolute; left: 4px; top: 22px; width: 18px; height: 18px;"><a rel="nofollow" href="[% west %]"><img style="position: relative; width: 18px; height: 18px;" src="/js/OpenLayers-2.13.1/img/west-mini.png" border="0"></a></div>
+    <div style="position: absolute; left: 22px; top: 22px; width: 18px; height: 18px;"><a rel="nofollow" href="[% east %]"><img style="position: relative; width: 18px; height: 18px;" src="/js/OpenLayers-2.13.1/img/east-mini.png" border="0"></a></div>
+    <div style="position: absolute; left: 13px; top: 40px; width: 18px; height: 18px;"><a rel="nofollow" href="[% south %]"><img style="position: relative; width: 18px; height: 18px;" src="/js/OpenLayers-2.13.1/img/south-mini.png" border="0"></a></div>
+    <div style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px;"><a rel="nofollow" href="[% zoom_in %]"><img style="position: relative; width: 18px; height: 18px;" src="/js/OpenLayers-2.13.1/img/zoom-plus-mini.png" border="0"></a></div>
+    <div style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px;"><a rel="nofollow" href="[% world %]"><img style="position: relative; width: 18px; height: 18px;" src="/js/OpenLayers-2.13.1/img/zoom-world-mini.png" border="0"></a></div>
+    <div style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px;"><a rel="nofollow" href="[% zoom_out %]"><img style="position: relative; width: 18px; height: 18px;" src="/js/OpenLayers-2.13.1/img/zoom-minus-mini.png" border="0"></a></div>
+</div>
+[% END %]
+
+
+[% BLOCK pin %]
+
+[% IF pin.id %]
+<a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
+[%- END -%]
+<img border="0" class="pin" src="[% c.uri_for( c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png') %]"
+    alt="[% loc('Problem') %]" style="top:[% pin.py - 64 %]px; left:[% pin.px - 24 %]px; position: absolute;">
+[%- IF pin.id -%]
+</a>
+[% END %]
+
+[% END %]
