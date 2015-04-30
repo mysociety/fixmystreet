@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2015-04-13 13:29+0000\n"
-"PO-Revision-Date: 2015-01-21 16:27+0000\n"
+"PO-Revision-Date: 2015-04-21 09:53+0100\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.7.6\n"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:649
 #: perllib/FixMyStreet/DB/ResultSet/Problem.pm:392
@@ -84,7 +85,7 @@ msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:70
 msgid "(Defect & location of defect)"
-msgstr ""
+msgstr "(Schaden & Ort des Schadens)"
 
 #: templates/web/base/email_sent.html:29
 msgid "(Don't worry &mdash; we'll hang on to your alert while you're checking your email.)"
@@ -105,13 +106,11 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:57
 #: templates/web/zurich/admin/report_edit.html:78
-#, fuzzy
 msgid "(No name)"
 msgstr "Ihr Name"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:62
 #: templates/web/zurich/admin/report_edit.html:85
-#, fuzzy
 msgid "(No phone number)"
 msgstr "Ihre Telefonnummer"
 
@@ -362,7 +361,6 @@ msgid "As this is a staging site and %s is false, reports made on this site will
 msgstr ""
 
 #: templates/web/zurich/admin/report_edit.html:236
-#, fuzzy
 msgid "Assign to competent body:"
 msgstr "Einer externen Stelle zuweisen:"
 
@@ -504,7 +502,7 @@ msgstr ""
 #: templates/web/base/js/translation_strings.html:50
 #: templates/web/fixmystreet/around/_report_banner.html:2
 msgid "Click map to report a problem"
-msgstr "Mangel lokalisieren"
+msgstr "Schaden lokalisieren"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:164
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:918
@@ -658,12 +656,11 @@ msgstr "Erfasse eine Meldung"
 #: templates/web/base/admin/body.html:200
 #: templates/web/zurich/admin/body.html:59
 msgid "Create category"
-msgstr ""
+msgstr "Kategorie erstellen"
 
 #: templates/web/zurich/admin/edit_template.html:28
-#, fuzzy
 msgid "Create template"
-msgstr "Erfasse eine Meldung"
+msgstr "Vorlage erstellen"
 
 #: templates/web/base/admin/problem_row.html:34
 #: templates/web/zurich/admin/templates.html:10
@@ -689,7 +686,7 @@ msgstr "Bisher wurden noch keine Organisationseinheiten erfasst."
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:784
 #: templates/web/zurich/admin/report_edit-sdm.html:83
 msgid "Customer not contactable"
-msgstr ""
+msgstr "Kunde nicht kontaktierbar"
 
 #: templates/web/base/dashboard/index.html:5
 #: templates/web/base/dashboard/index.html:7
@@ -734,7 +731,6 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:47
 #: templates/web/zurich/admin/report_edit.html:60
-#, fuzzy
 msgid "Didn't use map"
 msgstr "hat Karte nicht verwendet"
 
@@ -785,7 +781,7 @@ msgstr ""
 #: templates/web/zurich/admin/problem_row.html:48
 #: templates/web/zurich/admin/templates.html:20
 msgid "Edit"
-msgstr ""
+msgstr "Anpassen"
 
 #: templates/web/base/admin/body.html:212
 #: templates/web/zurich/admin/body.html:71
@@ -793,9 +789,8 @@ msgid "Edit body details"
 msgstr "Details editieren"
 
 #: templates/web/zurich/admin/body-form.html:51
-#, fuzzy
 msgid "Edit templates"
-msgstr "Schicken Sie mir Aktualisierungen"
+msgstr "Vorlagen editieren"
 
 #: templates/web/base/admin/report_edit.html:1
 #: templates/web/zurich/admin/report_edit-sdm.html:1
@@ -839,14 +834,12 @@ msgid "Email address:"
 msgstr ""
 
 #: templates/web/base/tokens/confirm_alert.html:6
-#, fuzzy
 msgid "Email alert created"
-msgstr "Schicken Sie mir Aktualisierungen"
+msgstr "E-Mail Benachrichtigung erstellt"
 
 #: templates/web/base/tokens/confirm_alert.html:10
-#, fuzzy
 msgid "Email alert deleted"
-msgstr "Als gel&#246;scht markieren"
+msgstr "E-Mail Benachrichtigung gel&ouml;scht"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1385
 msgid "Email already in abuse list"
@@ -921,7 +914,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:75
 msgid "Enter a Z&uuml;rich street name"
-msgstr "Ungef&auml;hre Adresse des Mangels"
+msgstr "Ungef&auml;hre Adresse des Schadens"
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:13
 msgid "Enter a nearby UK postcode, or street name and area"
@@ -930,14 +923,14 @@ msgstr "Geben Sie eine Adresse an"
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:20
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:21
 msgid "Enter a nearby postcode, or street name and area"
-msgstr "Ungef&auml;hre Adresse des Mangels"
+msgstr "Ungef&auml;hre Adresse des Schadens"
 
 #: templates/web/base/around/postcode_form.html:1
 #: templates/web/base/around/postcode_form.html:2
 #: templates/web/fixmystreet/around/postcode_form.html:10
 #: templates/web/fixmystreet/around/postcode_form.html:11
 msgid "Enter a nearby street name and area"
-msgstr "Ungef&auml;hre Adresse des Mangels"
+msgstr "Ungef&auml;hre Adresse des Schadens"
 
 #: perllib/FixMyStreet/Cobrand/ZeroTB.pm:7
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
@@ -958,7 +951,7 @@ msgstr "Ihr Passwort"
 
 #: templates/web/base/index-steps.html:33
 msgid "Enter details of the problem"
-msgstr "Beschreiben Sie den Mangel"
+msgstr "Beschreiben Sie den Schaden"
 
 #: templates/web/base/auth/token.html:5
 #: templates/web/base/errors/generic.html:1
@@ -1120,14 +1113,12 @@ msgid "Forgotten your password?"
 msgstr "Ihr Passwort"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:707
-#, fuzzy
 msgid "Forwarded to external body"
-msgstr "Einer externen Stelle zuweisen:"
+msgstr "An externe Stelle weitergeleitet"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:708
-#, fuzzy
 msgid "Forwarded wish to external body"
-msgstr "Einer externen Stelle zuweisen:"
+msgstr "Wunsch an externe Stelle weitergeleitet"
 
 #: templates/web/base/faq/faq-en-gb.html:1
 #: templates/web/base/static/privacy.html:1
@@ -1147,7 +1138,7 @@ msgstr ""
 #: templates/web/fixmystreet/reports/_rss.html:3
 #: templates/web/fixmystreet/reports/_rss.html:9
 msgid "Get updates of %s problems"
-msgstr "Beschreiben Sie den Mangel"
+msgstr "Beschreiben Sie den Schaden"
 
 #: templates/web/fixmystreet/reports/_rss.html:11
 #: templates/web/fixmystreet/reports/_rss.html:3
@@ -1452,13 +1443,13 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:152
 msgid "Jurisdiction Unknown"
-msgstr ""
+msgstr "Zust&auml;ndigkeit unbekannt"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:876
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:15
 msgid "Jurisdiction unknown"
-msgstr ""
+msgstr "Zust&auml;ndigkeit unbekannt"
 
 #: templates/web/base/auth/general.html:44
 #: templates/web/base/report/new/fill_in_details_form.html:150
@@ -1518,7 +1509,7 @@ msgstr "RSS"
 
 #: templates/web/base/index-steps.html:31
 msgid "Locate the problem on a map of the area"
-msgstr "Lokalisieren Sie den Mangel auf der Karte"
+msgstr "Lokalisieren Sie den Schaden auf der Karte"
 
 #: templates/web/base/js/translation_strings.html:43
 msgid "MAP"
@@ -1635,7 +1626,6 @@ msgid "New local reports on reportemptyhomes.com"
 msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:89
-#, fuzzy
 msgid "New note to DM:"
 msgstr "Neue interne Notiz"
 
@@ -1688,9 +1678,8 @@ msgid "New state"
 msgstr "Neuer Status"
 
 #: templates/web/zurich/admin/templates.html:26
-#, fuzzy
 msgid "New template"
-msgstr "Neuer Status"
+msgstr "Neue Vorlage"
 
 #: templates/web/base/pagination.html:13
 msgid "Next"
@@ -1795,7 +1784,7 @@ msgstr ""
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:13
 msgid "Not contactable"
-msgstr ""
+msgstr "Nicht kontaktierbar"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:82
 msgid "Not for my subdivision"
@@ -1997,14 +1986,12 @@ msgid "Photo"
 msgstr "Foto"
 
 #: perllib/FixMyStreet/App/Controller/Photo.pm:201
-#, fuzzy
 msgid "Photo is required."
-msgstr "Diese Information wird ben&ouml;tigt"
+msgstr "Foto wird ben&ouml;tigt"
 
 #: templates/web/base/admin/category_edit.html:43
-#, fuzzy
 msgid "Photo required"
-msgstr "Diese Information wird ben&ouml;tigt"
+msgstr "Foto ben&ouml;tigt"
 
 #: templates/web/base/questionnaire/index.html:71
 #: templates/web/base/report/new/fill_in_details_form.html:103
@@ -2183,13 +2170,13 @@ msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:46
 msgid "Please fill in details of the problem."
-msgstr "Beschreiben Sie den Mangel."
+msgstr "Beschreiben Sie den Schaden."
 
 #: templates/web/base/report/new/fill_in_details_form.html:28
 #: templates/web/fixmystreet/report/new/sidebar.html:7
 #: templates/web/zurich/report/new/fill_in_details_form.html:20
 msgid "Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box."
-msgstr "F&uuml;llen Sie das Formular mit den Details des Mangels aus und beschreiben Sie den Ort des Mangels m&ouml;glichst genau."
+msgstr "F&uuml;llen Sie das Formular mit den Details des Schadens aus und beschreiben Sie den Ort des Schadens m&ouml;glichst genau."
 
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:251
 msgid "Please indicate whether you'd like to receive another questionnaire"
@@ -2404,10 +2391,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:263
 #: templates/web/zurich/admin/report_edit.html:281
 msgid "Public response:"
-msgstr "Offizielle Antwort"
-
-msgid "Reply to user:"
-msgstr "Rückmeldung an User:"
+msgstr "R&uuml;ckmeldung an User"
 
 #: templates/web/zurich/admin/report_edit.html:105
 #: templates/web/zurich/admin/stats.html:38
@@ -2527,7 +2511,7 @@ msgstr "K&uuml;rzlich erfasste Meldungen:"
 
 #: templates/web/zurich/report/new/notes.html:5
 msgid "Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website."
-msgstr "Z&uuml;ri wie neu dient dazu M&auml;ngel an der Infrastruktur zu melden. Meldungen und W&uuml;nsche bez&uuml;glich Verbesserungen an der Infrastruktur sowie Gestaltungsvorschl&auml;ge k&ouml;nnen über Z&uuml;ri wie neu nicht ber&uuml;cksichtigt werden. Notf&auml;lle m&uuml;ssen der Polizei gemeldet werden via Telefon 117."
+msgstr "Z&uuml;ri wie neu dient dazu Sch&auml;den an der Infrastruktur zu melden. Meldungen und W&uuml;nsche bez&uuml;glich Verbesserungen an der Infrastruktur sowie Gestaltungsvorschl&auml;ge k&ouml;nnen über Z&uuml;ri wie neu nicht ber&uuml;cksichtigt werden. Notf&auml;lle m&uuml;ssen der Polizei gemeldet werden via Telefon 117."
 
 #: templates/web/base/admin/report_blocks.html:16
 msgid "Remove flag"
@@ -2562,7 +2546,7 @@ msgstr ""
 #: templates/web/fixmystreet/around/intro.html:1
 #: templates/web/zurich/around/intro.html:1
 msgid "Report, view, or discuss local problems"
-msgstr "Melden Sie M&auml;ngel an der Infrastruktur von Z&uuml;rich"
+msgstr "Melden Sie Sch&auml;den an der Infrastruktur von Z&uuml;rich"
 
 #: templates/web/base/my/my.html:82
 msgid "Reported %s"
@@ -2748,9 +2732,8 @@ msgid "Select which type of alert you'd like and click the button for an RSS fee
 msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:785
-#, fuzzy
 msgid "Sent report back"
-msgstr "Offene Meldungen"
+msgstr "Meldung zur&uuml;ckgewiesen"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:734
 msgid "Sent to %s %s later"
@@ -2988,13 +2971,12 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:359
 #: templates/web/zurich/header.html:77
-#, fuzzy
 msgid "Templates"
-msgstr "Antwort"
+msgstr "Vorlagen"
 
 #: templates/web/zurich/admin/response_templates_select.html:5
 msgid "Templates:"
-msgstr ""
+msgstr "Vorlagen:"
 
 #: templates/web/base/admin/list_updates.html:12
 #: templates/web/zurich/admin/templates.html:9
@@ -3042,7 +3024,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Council.pm:97
 msgid "That location does not appear to be covered by a council; perhaps it is offshore or outside the country. Please try again."
-msgstr "Sie k&ouml;nnen M&auml;ngel nur innerhalb der Stadt Z&uuml;rich melden. Verwenden Sie daf&uuml;r die Adressuche."
+msgstr "Sie k&ouml;nnen Sch&auml;den nur innerhalb der Stadt Z&uuml;rich melden. Verwenden Sie daf&uuml;r die Adressuche."
 
 #: perllib/FixMyStreet/App/Controller/Location.pm:126
 msgid "That location does not appear to be in the UK; please try again."
@@ -3111,7 +3093,7 @@ msgstr ""
 #: templates/web/base/report/new/fill_in_details_text.html:1
 #: templates/web/base/report/new/fill_in_details_text.html:3
 msgid "The council won&rsquo;t be able to help unless you leave as much detail as you can. Please describe the exact location of the problem (e.g. on a wall), what it is, how long it has been there, a description (and a photo of the problem if you have one), etc."
-msgstr "Bitte machen Sie so genaue Angaben wie m&ouml;glich: Beschreiben Sie die Art des Mangels und wo er sich befindet (z.B. an der Wand). Senden Sie uns ein Foto des Mangels (inkl. Umgebung). <br/>Beschreiben Sie nur einen Mangel pro Meldung."
+msgstr "Bitte machen Sie so genaue Angaben wie m&ouml;glich: Beschreiben Sie die Art des Schadens und wo er sich befindet (z.B. an der Wand). Senden Sie uns mindestens ein Foto des Schadens (inkl. Umgebung). <br/>Beschreiben Sie <b>nur einen Schaden pro Meldung</b>."
 
 #: templates/web/fixmystreet/questionnaire/index.html:44
 msgid "The details of your problem are available from the other tab above."
@@ -3322,16 +3304,16 @@ msgstr ""
 #: templates/web/base/report/update-form.html:48
 #: templates/web/fixmystreet/report/update-form.html:46
 msgid "This problem has been fixed"
-msgstr "Dieser Mangel wurde behoben"
+msgstr "Dieser Schaden wurde behoben"
 
 #: templates/web/base/report/update-form.html:43
 #: templates/web/fixmystreet/report/update-form.html:40
 msgid "This problem has not been fixed"
-msgstr "Dieser Mangel wurde nicht behoben"
+msgstr "Dieser Schaden wurde nicht behoben"
 
 #: templates/web/base/report/banner.html:19
 msgid "This problem is in progress"
-msgstr "Dieser Mangel ist in Bearbeitung"
+msgstr "Dieser Schaden ist in Bearbeitung"
 
 #: templates/web/base/report/banner.html:9
 msgid "This problem is old and of unknown status."
@@ -3368,7 +3350,7 @@ msgstr ""
 #: templates/web/zurich/admin/report_edit.html:119
 #: templates/web/zurich/admin/report_edit.html:88
 msgid "Time spent (in minutes):"
-msgstr ""
+msgstr "Aufwand (in Minuten):"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1269
 #: templates/web/base/admin/timeline.html:1
@@ -3382,9 +3364,8 @@ msgid "Title"
 msgstr "Titel"
 
 #: templates/web/zurich/admin/edit_template.html:19
-#, fuzzy
 msgid "Title:"
-msgstr "Titel"
+msgstr "Titel:"
 
 #: templates/web/base/around/_report_banner.html:2
 msgid "To <strong>report a problem</strong>, click on the map at the correct location."
@@ -3545,7 +3526,6 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:45
 #: templates/web/zurich/admin/report_edit.html:58
-#, fuzzy
 msgid "Used map"
 msgstr "Karte verwendet"
 
@@ -3675,7 +3655,7 @@ msgstr ""
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:14
 msgid "Wish"
-msgstr ""
+msgstr "Wunsch"
 
 #: templates/web/base/open311/index.html:92
 msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
