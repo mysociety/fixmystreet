@@ -197,5 +197,6 @@ HEARFROMYOURMP_BASE_URL: ''
 
 # Collideoscope config variables. You won't need any of these either.
 SOCRATA_USERNAME: ''
+SOCRATA_APP_TOKEN: ''
 SOCRATA_PASSWORD: ''
 SOCRATA_DATASET_URL: ''

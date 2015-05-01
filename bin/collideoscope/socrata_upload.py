@@ -44,9 +44,9 @@ def query_recent_reports(cursor, limit=100):
     """
     query = "SELECT id, latitude, longitude, category, title, extra, " \
             "detail, confirmed as reported, lastupdate, whensent, " \
-            "bodies_str as body, photo " \
+            "bodies_str as body, photo, non_public, state " \
             "FROM problem " \
-            "WHERE state = 'confirmed' " \
+            "WHERE state IN ('confirmed', 'hidden') " \
             "ORDER BY reported DESC"
     params = []
     if limit:
@@ -61,32 +61,38 @@ def transform_results(cursor):
     it operates on results held in the cursor.
     """
     for row in cursor:
-        row['url'] = "http://collideosco.pe/report/{id}".format(id=row['id'])
-        # Convert the raw lat/lon columns into a dict as expected by SODA
-        row['location'] = {'longitude': row['longitude'], 'latitude': row['latitude']}
-        del row['longitude']
-        del row['latitude']
-        # Date fields aren't handled by the JSON encoder, so do it manually
-        row['reported'] = row['reported'].isoformat()
-        row['lastupdate'] = row['lastupdate'].isoformat()
-        if row['whensent']:
-            row['whensent'] = row['whensent'].isoformat()
-        # Photo is stored as a 40-byte ID which needs appending to a URL base
-        if row.get("photo"):
-            row['photo_url'] = PHOTO_URL.format(id=row['id'], photo=row['photo'])
-        del row['photo']
-        # Make sure only one receiving body is included
-        if row.get("body"):
-            row['body'] = row['body'].split(",")[0]
-        # Collideoscope stores details about the incident in the 'extra' field
-        extra = rabx.unserialise(row['extra'])
-        del row['extra']
-        row['severity'] = extra.get("severity")
-        row['road_type'] = extra.get("road_type")
-        row['injury_detail'] = extra.get("injury_detail")
-        row['participants'] = extra.get("participants")
-        row['media_url'] = extra.get("media_url")
-        row['incident_date'] = " ".join((extra.get("incident_date", ""), extra.get("incident_time", "")))
+        if row['non_public'] or row['state'] == "hidden":
+            row = {
+                ':id': row['id'],
+                ':deleted': True
+            }
+        else:
+            row['url'] = "http://collideosco.pe/report/{id}".format(id=row['id'])
+            # Convert the raw lat/lon columns into a dict as expected by SODA
+            row['location'] = {'longitude': row['longitude'], 'latitude': row['latitude']}
+            del row['longitude'], row['latitude']
+            # Date fields aren't handled by the JSON encoder, so do it manually
+            row['reported'] = row['reported'].isoformat()
+            row['lastupdate'] = row['lastupdate'].isoformat()
+            if row['whensent']:
+                row['whensent'] = row['whensent'].isoformat()
+            # Photo is stored as a 40-byte ID which needs appending to a URL base
+            if row.get("photo"):
+                row['photo_url'] = PHOTO_URL.format(id=row['id'], photo=row['photo'])
+            del row['photo']
+            # Make sure only one receiving body is included
+            if row.get("body"):
+                row['body'] = row['body'].split(",")[0]
+            del row['state'], row['non_public']
+            # Collideoscope stores details about the incident in the 'extra' field
+            extra = rabx.unserialise(row['extra'])
+            del row['extra']
+            row['severity'] = extra.get("severity")
+            row['road_type'] = extra.get("road_type")
+            row['injury_detail'] = extra.get("injury_detail")
+            row['participants'] = extra.get("participants")
+            row['media_url'] = extra.get("media_url")
+            row['incident_date'] = " ".join((extra.get("incident_date", ""), extra.get("incident_time", "")))
         yield row
 
 def upload_reports(socrata, reports):
