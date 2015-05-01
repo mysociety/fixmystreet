@@ -19,17 +19,10 @@ use constant TILE_SIZE      => 512;
 
 sub map_tiles {
     my ($self, %params) = @_;
-    my ($centre_col, $centre_row, $z) = @params{'x_tile', 'y_tile', 'matrix_id'};
+    my ($left_col, $top_row, $z) = @params{'x_left_tile', 'y_top_tile', 'matrix_id'};
     my $tile_url = $self->base_tile_url();
     my $square_size = $params{square_size};
 
-    my ($left_col, $top_row) = map {
-        # centre_(row|col) is either in middle, or just to right.
-        # e.g. if centre is the number in parens:
-        # 1 (2) 3 => 2 - int( 3/2 ) = 1
-        # 1 2 (3) 4 => 3 - int( 4/2 ) = 1
-        $_ - int ($square_size / 2);
-    } $centre_col, $centre_row;
 
     my @offsets = (0.. ($square_size-1) );
 
@@ -116,14 +109,22 @@ sub display_map {
 sub get_map_hash {
     my ($self, %params) = @_;
 
-    @params{'x_tile', 'y_tile', 'matrix_id'}
+    @params{'x_centre_tile', 'y_centre_tile', 'matrix_id'}
         = latlon_to_tile_with_adjust(
             @params{'latitude', 'longitude', 'zoom', 'square_size'});
+
+    @params{'x_left_tile', 'y_top_tile'} = map {
+        # centre_(row|col) is either in middle, or just to right.
+        # e.g. if centre is the number in parens:
+        # 1 (2) 3 => 2 - int( 3/2 ) = 1
+        # 1 2 (3) 4 => 3 - int( 4/2 ) = 1
+        $_ - int ($params{square_size} / 2);
+    } @params{'x_centre_tile', 'y_centre_tile'};
 
     foreach my $pin (@{$params{pins}}) {
         ($pin->{px}, $pin->{py})
             = latlon_to_px($pin->{latitude}, $pin->{longitude},
-                           @params{'x_tile', 'y_tile', 'zoom'});
+                           @params{'x_left_tile', 'y_top_tile', 'zoom'});
     }
 
     return {
