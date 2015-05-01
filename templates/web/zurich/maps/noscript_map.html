@@ -1,21 +1,23 @@
-<div class="noscript">
-    <div id="[% nsm_prefix %]drag">
-        [%- FOR row IN map.tiles -%]
-            [%- FOR tile IN row -%]
-                [%- top_px = tile.row_offset * map.tile_size -%]
-                [%- left_px = tile.col_offset * map.tile_size %]
-                <[% map.img_type %]
-                    alt="[% tile.alt %]"
-                    id="[% nsm_prefix %]t[% tile.dotted_id %]"
-                    name="tile_[% tile.dotted_id %]"
-                    src="[% tile.src %]"
-                    style="top:[% top_px %]px; left:[% left_px %]px;">
-            [%- END -%]
-            [% IF ! loop.last -%] <br> [%- END -%]
-        [% END %]
+<div class="noscript square-map__outer">
+    <div class="square-map__inner">
+        <div id="[% nsm_prefix %]drag">
+            [%- FOR row IN map.tiles -%]
+                [%- FOR tile IN row -%]
+                    [%- top_px = tile.row_offset * map.tile_size -%]
+                    [%- left_px = tile.col_offset * map.tile_size %]
+                    <[% map.img_type %]
+                        class="square-map__tile"
+                        alt="[% tile.alt %]"
+                        id="[% nsm_prefix %]t[% tile.dotted_id %]"
+                        name="tile_[% tile.dotted_id %]"
+                        src="[% tile.src %]"
+                        style="width: [% 100 / map.square_size %]%; height: auto; float: left;">
+                [%- END -%]
+            [% END %]
+        </div>
+        <div id="[% nsm_prefix %]pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
+        [% INCLUDE compass %]
     </div>
-    <div id="[% nsm_prefix %]pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
-    [% INCLUDE compass %]
 </div>
 
 [% BLOCK compass %]
@@ -47,8 +49,20 @@
 [% IF pin.id %]
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
-<img border="0" class="pin" src="[% c.uri_for( c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png') %]"
-    alt="[% loc('Problem') %]" style="top:[% pin.py - 64 %]px; left:[% pin.px - 24 %]px; position: absolute;">
+<img
+    data-foo="[% pin.px %],[% pin.py %]"
+    border="0"
+    class="pin"
+    src="[% c.uri_for( c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png') %]"
+    alt="[% loc('Problem') %]"
+    style="
+        top: [% pin.py / ( map.tile_size * map.square_size ) %]%;
+        left: [% pin.px / ( map.tile_size * map.square_size ) %]%;
+        position: absolute;
+        margin-left: -24px; /* Half of 48px wide image */
+        margin-top: -64px; /* All of 64px tall image */
+    "
+>
 [%- IF pin.id -%]
 </a>
 [% END %]
