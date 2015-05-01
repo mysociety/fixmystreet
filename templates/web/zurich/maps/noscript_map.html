@@ -11,7 +11,7 @@
                         id="[% nsm_prefix %]t[% tile.dotted_id %]"
                         name="tile_[% tile.dotted_id %]"
                         src="[% tile.src %]"
-                        style="width: [% 100 / map.square_size %]%; height: auto; float: left;">
+                        style="width: [% 100 / map.cols %]%; height: auto; float: left;">
                 [%- END -%]
             [% END %]
         </div>
@@ -50,14 +50,14 @@
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
 <img
-    data-foo="[% pin.px %],[% pin.py %]/ [% map.tile_size %]*[% map.square_size %]"
+    data-foo="[% pin.px %],[% pin.py %]/ [% map.tile_size %]*[% map.cols %],[% map.rows %]"
     border="0"
     class="pin"
     src="[% c.uri_for( c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png') %]"
     alt="[% loc('Problem') %]"
     style="
-        top: [% pin.py / ( map.tile_size * map.square_size ) * 100  %]%;
-        left: [% pin.px / ( map.tile_size * map.square_size ) * 100  %]%;
+        top: [% pin.py / ( map.tile_size * map.rows ) * 100  %]%;
+        left: [% pin.px / ( map.tile_size * map.cols ) * 100  %]%;
         position: absolute;
         margin-left: -24px; /* Half of 48px wide image */
         margin-top: -64px; /* All of 64px tall image */
