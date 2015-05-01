@@ -121,11 +121,15 @@ sub get_map_hash {
         $_ - int ($params{square_size} / 2);
     } @params{'x_centre_tile', 'y_centre_tile'};
 
-    foreach my $pin (@{$params{pins}}) {
-        ($pin->{px}, $pin->{py})
-            = latlon_to_px($pin->{latitude}, $pin->{longitude},
-                           @params{'x_left_tile', 'y_top_tile', 'zoom'});
-    }
+    $params{pins} = [
+        map {
+            my $pin = { %$_ }; # shallow clone
+            ($pin->{px}, $pin->{py})
+                = latlon_to_px($pin->{latitude}, $pin->{longitude},
+                            @params{'x_left_tile', 'y_top_tile', 'zoom'});
+            $pin;
+        } @{ $params{pins} }
+    ];
 
     return {
         %params,
@@ -219,7 +223,7 @@ sub latlon_to_px($$$$$) {
 # C is centre tile reference of displayed map
 sub tile_to_px {
     my ($p, $c) = @_;
-    $p = TILE_SIZE * ($p - $c + 1);
+    $p = TILE_SIZE * ($p - $c);
     $p = int($p + .5 * ($p <=> 0));
     return $p;
 }

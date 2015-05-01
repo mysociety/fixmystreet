@@ -50,14 +50,14 @@
 <a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
 [%- END -%]
 <img
-    data-foo="[% pin.px %],[% pin.py %]"
+    data-foo="[% pin.px %],[% pin.py %]/ [% map.tile_size %]*[% map.square_size %]"
     border="0"
     class="pin"
     src="[% c.uri_for( c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png') %]"
     alt="[% loc('Problem') %]"
     style="
-        top: [% pin.py / ( map.tile_size * map.square_size ) %]%;
-        left: [% pin.px / ( map.tile_size * map.square_size ) %]%;
+        top: [% pin.py / ( map.tile_size * map.square_size ) * 100  %]%;
+        left: [% pin.px / ( map.tile_size * map.square_size ) * 100  %]%;
         position: absolute;
         margin-left: -24px; /* Half of 48px wide image */
         margin-top: -64px; /* All of 64px tall image */
