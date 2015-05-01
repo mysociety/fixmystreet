@@ -21,10 +21,11 @@ sub map_tiles {
     my ($self, %params) = @_;
     my ($left_col, $top_row, $z) = @params{'x_left_tile', 'y_top_tile', 'matrix_id'};
     my $tile_url = $self->base_tile_url();
-    my $square_size = $params{square_size};
+    my $cols = $params{cols};
+    my $rows = $params{rows};
 
-
-    my @offsets = (0.. ($square_size-1) );
+    my @col_offsets = (0.. ($cols-1) );
+    my @row_offsets = (0.. ($rows-1) );
 
     return [
         map {
@@ -47,10 +48,10 @@ sub map_tiles {
                         alt => "Map tile $dotted_id", # TODO "NW map tile"?
                     }
                 }
-                @offsets
+                @col_offsets
             ]
         }
-        @offsets
+        @row_offsets
     ];
 }
 
@@ -84,7 +85,8 @@ sub display_map {
     $params{longitude} = Utils::truncate_coordinate($c->req->params->{lon} + 0)
         if defined $c->req->params->{lon};
 
-    $params{square_size} //= 2; # 2x2 square is default
+    $params{rows} //= 2; # 2x2 square is default
+    $params{cols} //= 2;
 
     $params{zoom} = do {
         my $zoom = defined $c->req->params->{zoom}
@@ -100,9 +102,23 @@ sub display_map {
     $c->stash->{map} = $self->get_map_hash( %params );
 
     if ($params{print_report}) {
+        $params{zoom}++ unless $params{zoom} >= ZOOM_LEVELS;
         $c->stash->{print_report_map}
-            = $self->get_map_hash( %params, square_size => 4, img_type => 'img' );
-        # we can passthrough img_type as literal here, as only designed for print
+            = $self->get_map_hash(
+                %params,
+                img_type => 'img',
+                cols => 4, rows => 4,
+            );
+        # NB: we can passthrough img_type as literal here, as only designed for print
+
+        # NB we can do arbitrary size, including non-squares, however we'd have
+        # to modify .square-map style with padding-bottom percentage calculated in
+        # an inline style:
+        # <zarino> in which case, the only change that'd be required is
+        # removing { padding-bottom: 100% } from .square-map__outer, putting
+        # the percentage into an inline style on the element itself, and then
+        # probably renaming .square-map__* to .fixed-aspect-map__* or something
+        # since it's no longer necessarily square
     }
 }
 
@@ -111,15 +127,14 @@ sub get_map_hash {
 
     @params{'x_centre_tile', 'y_centre_tile', 'matrix_id'}
         = latlon_to_tile_with_adjust(
-            @params{'latitude', 'longitude', 'zoom', 'square_size'});
+            @params{'latitude', 'longitude', 'zoom', 'rows', 'cols'});
 
-    @params{'x_left_tile', 'y_top_tile'} = map {
-        # centre_(row|col) is either in middle, or just to right.
-        # e.g. if centre is the number in parens:
-        # 1 (2) 3 => 2 - int( 3/2 ) = 1
-        # 1 2 (3) 4 => 3 - int( 4/2 ) = 1
-        $_ - int ($params{square_size} / 2);
-    } @params{'x_centre_tile', 'y_centre_tile'};
+    # centre_(row|col) is either in middle, or just to right.
+    # e.g. if centre is the number in parens:
+    # 1 (2) 3 => 2 - int( 3/2 ) = 1
+    # 1 2 (3) 4 => 3 - int( 4/2 ) = 1
+    $params{x_left_tile} = $params{x_centre_tile} - int($params{cols} / 2);
+    $params{y_top_tile}  = $params{y_centre_tile} - int($params{rows} / 2);
 
     $params{pins} = [
         map {
@@ -172,23 +187,25 @@ sub latlon_to_tile($$$) {
 # Given a lat/lon, convert it to OSM tile co-ordinates (nearest actual tile,
 # adjusted so the point will be near the centre of a 2x2 tiled map).
 #
-# Takes parameter for square_size.  For even sizes (2x2, 4x4 etc.) will
+# Takes parameter for rows/cols.  For even sizes (2x2, 4x4 etc.) will
 # do adjustment, but simply returns actual for odd sizes.
 #
 sub latlon_to_tile_with_adjust {
-    my ($lat, $lon, $zoom, $square_size) = @_;
+    my ($lat, $lon, $zoom, $rows, $cols) = @_;
     my ($x_tile, $y_tile, $matrix_id)
         = my @ret
         = latlon_to_tile($lat, $lon, $zoom);
 
-    return @ret if $square_size % 2; # just pass through if odd
-
-    # Try and have point near centre of map
-    if ($x_tile - int($x_tile) > 0.5) {
-        $x_tile += 1;
+    # Try and have point near centre of map, passing through if odd
+    unless ($cols % 2) {
+        if ($x_tile - int($x_tile) > 0.5) {
+            $x_tile += 1;
+        }
     }
-    if ($y_tile - int($y_tile) > 0.5) {
-        $y_tile += 1;
+    unless ($rows % 2) {
+        if ($y_tile - int($y_tile) > 0.5) {
+            $y_tile += 1;
+        }
     }
 
     return ( int($x_tile), int($y_tile), $matrix_id );
