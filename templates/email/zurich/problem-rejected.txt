@@ -2,26 +2,12 @@ Subject: Züri wie neu: Meldung #[% problem.id %]
 
 Grüezi [% problem.name %]
 
-Ihre Meldung wurde aufgrund des Inhalts zurückgewiesen.
-Dies kann verschiedene Gründe haben wie zum Beispiel unzureichenden, nicht nachvollziehbaren oder diskriminierenden Inhalt.
-
-Bitte geben Sie die Meldung nochmals, mit möglichst detaillierten, sachlichen Informationen ein.
-
-Besten Dank für Ihr Verständnis.
-
-Freundliche Grüsse
-
-Ihre Stadt Zürich
+[% problem.extra.public_response %]
 
 Ihre Meldung lautet:
 
 [% problem.detail %]
 
-
-
-Freundliche Grüsse
-
-Ihre Stadt Zürich
 
 
 
