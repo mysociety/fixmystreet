@@ -668,6 +668,31 @@ sub _admin_send_email {
     } );
 }
 
+sub munge_sendreport_params {
+    my ($self, $c, $row, $h, $params) = @_;
+    if ($row->state eq 'closed') {
+        # we attach images to reports sent to external bodies
+        my $photoset = $row->get_photoset($c);
+        my @images = $photoset->all_images
+            or return;
+        my $index = 0;
+        my $id = $row->id;
+        my @attachments = map {
+            my $i = $index++;
+            {
+                body => $_->[1],
+                attributes => {
+                    filename => "$id.$i.jpeg",
+                    content_type => 'image/jpeg',
+                    encoding => 'quoted-printable',
+                    name => "$id.$i.jpeg",
+                },
+            }
+        } @images;
+        $params->{attachments} = \@attachments;
+    }
+}
+
 sub admin_fetch_all_bodies {
     my ( $self, @bodies ) = @_;
 

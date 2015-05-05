@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use DateTime;
 use Test::More;
+use Test::LongString;
 use JSON;
 use Path::Tiny;
 
@@ -29,7 +30,10 @@ my $sample_photo = $sample_file->slurp_raw;
 # This is a helper method that will send the reports but with the config
 # correctly set - notably SEND_REPORTS_ON_STAGING needs to be true.
 sub send_reports_for_zurich {
-    FixMyStreet::override_config { SEND_REPORTS_ON_STAGING => 1 }, sub {
+    FixMyStreet::override_config {
+        SEND_REPORTS_ON_STAGING => 1,
+        ALLOWED_COBRANDS => ['zurich']
+    }, sub {
         # Actually send the report
         $c->model('DB::Problem')->send_reports('zurich');
     };
@@ -109,6 +113,47 @@ my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
     photo         => $sample_photo,
 });
 my $report = $reports[0];
+
+subtest 'email images to external partners' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+    }, sub {
+        reset_report_state($report);
+        my $photo = path(__FILE__)->parent->child('zurich-logo_portal.x.jpg')->slurp_raw;
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+            c => $c,
+            data_items => [ $photo ],
+        });
+        my $fileid = $photoset->data;
+        $report->update({
+            state => 'closed',
+            photo => $fileid,
+            external_body => $external_body->id,
+        });
+
+        $mech->clear_emails_ok;
+        send_reports_for_zurich();
+
+        my $email = $mech->get_email;
+        # TODO factor out with t/app/helpers/send_email.t
+        my $email_as_string = $email->as_string;
+        ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xmsg, "Found and stripped out date";
+        ok $email_as_string =~ s{\s+Message-ID:\s+\S.*?$}{}xmsg, "Found and stripped out message ID (contains epoch)";
+        my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
+        my $changes = $email_as_string =~ s{$boundary}{}g;
+        is $changes, 4, '4 boundaries'; # header + 3 around the 2x parts (text + 1 image)
+
+        my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
+        is_string $email_as_string, $expected_email_content, 'MIME email text ok'
+            or do {
+                (my $test_name = $0) =~ s{/}{_}g;
+                my $path = path("test-output-$test_name.tmp");
+                $path->spew($email_as_string);
+                diag "Saved output in $path";
+            };
+        };
+};
+
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
