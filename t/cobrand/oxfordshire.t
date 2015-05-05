@@ -45,4 +45,6 @@ subtest 'check /ajax defaults to open reports only' => sub {
     }
 };
 
+# Clean up
+$mech->delete_problems_for_body( 2237 );
 done_testing();
