@@ -145,3 +145,11 @@
     margin-left: 0.2em;
   }
 }
+
+body.frontpage {
+    .issue-list-a, .list-a {
+        li .text {
+            padding-left: 3em;
+        }
+    }
+}
