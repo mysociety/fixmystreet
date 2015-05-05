@@ -818,6 +818,73 @@ sub report_edit : Path('report_edit') : Args(1) {
     return 1;
 }
 
+sub templates : Path('templates') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->detach( '/page_error_404_not_found' )
+        unless $c->cobrand->moniker eq 'zurich';
+
+    my $user = $c->user;
+
+    $self->templates_for_body($c, $user->from_body );
+}
+
+sub templates_view : Path('templates') : Args(1) {
+    my ($self, $c, $body_id) = @_;
+
+    # e.g. for admin
+
+    my $body = $c->model('DB::Body')->find($body_id)
+        or $c->detach( '/page_error_404_not_found' );
+
+    $self->templates_for_body($c, $body);
+}
+
+sub template_edit : Path('templates') : Args(2) {
+    my ( $self, $c, $body_id, $template_id ) = @_;
+
+    my $body = $c->model('DB::Body')->find($body_id)
+        or $c->detach( '/page_error_404_not_found' );
+    $c->stash->{body} = $body;
+
+    my $template;
+    if ($template_id eq 'new') {
+        $template = $body->response_templates->new({});
+    }
+    else {
+        $template = $body->response_templates->find( $template_id )
+            or $c->detach( '/page_error_404_not_found' );
+    }
+
+    if ($c->req->method eq 'POST') {
+        $template->title( $c->req->param('title') );
+        $template->text ( $c->req->param('text') );
+        $template->update_or_insert;
+
+        # log_edit currently has hard-coded types, do we need auditing on this?
+        # $c->forward( 'log_edit', [ $object_id, $object_type, $action_performed ] );
+
+        $c->res->redirect( $c->uri_for( 'templates', $body->id ) );
+    }
+
+    $c->stash->{response_template} = $template;
+
+    $c->stash->{template} = 'admin/template_edit.html';
+}
+
+
+sub templates_for_body {
+    my ( $self, $c, $body ) = @_;
+
+    $c->stash->{body} = $body;
+
+    my @templates = $body->response_templates;
+
+    $c->stash->{response_templates} = \@templates;
+
+    $c->stash->{template} = 'admin/templates.html';
+}
+
 sub users: Path('users') : Args(0) {
     my ( $self, $c ) = @_;
 

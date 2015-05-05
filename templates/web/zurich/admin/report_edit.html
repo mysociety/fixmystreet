@@ -123,7 +123,7 @@ $(function(){
             $('#assignation__subdivision select').val('');
         }
 
-        if (state === 'closed' or state === 'investigating') {
+        if ((state === 'closed') || (state === 'investigating')) {
             $('#assignation__external').show();
         } else {
             $('#assignation__external select').val('');
@@ -194,6 +194,7 @@ $(function(){
         <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
         <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
         [% END %]
+        [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
         <textarea name='external_message' id='external_body' cols=60 rows=5></textarea>
     </li>
     </ul>
@@ -206,6 +207,7 @@ $(function(){
     [% IF problem.state == s %]
         <ul class="no-bullets">
             <li><label for="status_update">[% loc('Public response:') %]</label>
+            [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
             <textarea name='status_update' id='status_update' cols=60 rows=5>
             [%- problem.extra.public_response || default_public_response | html -%]
             </textarea>
