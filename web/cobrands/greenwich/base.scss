@@ -38,6 +38,10 @@ body.frontpage #site-logo,
     background: $greenwich_light_grey;
 }
 
+label[for=pc] {
+    color: $greenwich_dark_red;
+}
+
 ol.big-numbers > li:before {
     color: $primary;
 }
