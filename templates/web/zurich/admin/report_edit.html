@@ -59,6 +59,9 @@
 </li>
 <li><span class="mock-label">[% loc('Phone:') %]</span> [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
 <li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
+<li>
+    <label>[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
+</li>
 
 
 [% IF problem.photo %]
@@ -226,6 +229,20 @@ $(function(){
 
 <p><label for="new_internal_note">[% loc('New internal note:') %]</label>
 <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=5>[% new_internal_note | html %]</textarea></p>
+
+<p>
+<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+<input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+<script>
+    $(function () {
+        $('#form_time_spent').spinner({
+            spin: function (e, ui) {
+                if (ui.value < 0) { return false }
+            }
+        });
+    });
+</script>
+</p>
 
 <p align="right">
 [% IF problem.state == 'planned' %]
