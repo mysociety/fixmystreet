@@ -4,6 +4,7 @@
 
 $greenwich_header_font: georgia, 'new century schoolbook', 'times new roman', times, serif;
 $greenwich_header_font_style: italic;
+$fixed_page_width: 990px;
 
 /* from http://nicolasgallagher.com/micro-clearfix-hack/ */
 .clearfix:before, .clearfix:after { content: " "; display: table; }
@@ -31,10 +32,15 @@ body.twothirdswidthpage #site-logo,
         height: 83px;
 }
 
+.container, #main-nav {
+    width: $fixed_page_width;
+}
+
 #front-main {
     background-color: $base_bg;
 
     #front-main-container {
+        max-width: $fixed_page_width;
         background-color: $greenwich_light_grey;
         padding: 1em 0;
     }
