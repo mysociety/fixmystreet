@@ -59,12 +59,14 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
             }
         } else {
             var type = '';
-            if (z > 10 && in_uk) { type = '&productSet=mmOS'; }
+            if (z > 10 && in_uk) {
+                type = '&productSet=mmOS&key=' + fixmystreet.key;
+            }
             urls = [
-                "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=3293" + type,
-                "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=3293" + type,
-                "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=3293" + type,
-                "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=3293" + type
+                "//ecn.t0.tiles.virtualearth.net/tiles/r${id}.png?g=3467" + type,
+                "//ecn.t1.tiles.virtualearth.net/tiles/r${id}.png?g=3467" + type,
+                "//ecn.t2.tiles.virtualearth.net/tiles/r${id}.png?g=3467" + type,
+                "//ecn.t3.tiles.virtualearth.net/tiles/r${id}.png?g=3467" + type
             ];
         }
         return urls;
