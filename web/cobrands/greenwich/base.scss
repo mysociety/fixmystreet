@@ -1,5 +1,6 @@
 @import "../sass/h5bp";
 @import "./_colours";
+@import "./_fonts";
 @import "../sass/mixins";
 @import "compass";
 
@@ -61,4 +62,8 @@ footer {
         background-color: $greenwich_red;
         border: none;
     }
+}
+
+h1, h2 {
+    font-style: italic;
 }
