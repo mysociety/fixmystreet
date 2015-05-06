@@ -37,6 +37,7 @@ body.twothirdswidthpage #site-logo,
 
 #front-main {
     background-color: $base_bg;
+    padding-top: 0.5em;
 
     #front-main-container {
         max-width: $fixed_page_width;
@@ -76,19 +77,12 @@ body.frontpage {
     display: none;
 }
 
-#main-menu-desktop {
+#greenwich-menu-desktop, #fms-menu-desktop {
     display: block;
-    background: $greenwich_dark_grey;
     font-size: 15px;
-    font-family: $heading-font;
-    font-style: italic;
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: solid 4px $primary;
-    border-bottom: solid 4px $greenwich_med_grey;
-    text-align: right;
-    padding-right: 1em;
 
     li {
         display: inline-block;
@@ -97,12 +91,41 @@ body.frontpage {
         padding: 0.25em 0.5em;
 
         span, a {
-            color: $nav_fg;
             padding: 0.5em;
         }
 
         span, a:hover {
             text-decoration: underline;
+        }
+    }
+}
+
+#greenwich-menu-desktop {
+    background: $greenwich_dark_grey;
+    font-family: $heading-font;
+    font-style: italic;
+    border-top: solid 4px $primary;
+    border-bottom: solid 4px $greenwich_med_grey;
+    text-align: right;
+    padding-right: 1em;
+
+    li {
+        span, a {
+            color: $nav_fg;
+        }
+    }
+}
+
+#fms-menu-desktop {
+    background: $greenwich_light_grey;
+    margin-top: 0.5em;
+
+    li {
+        a {
+            color: $greenwich_dark_grey;
+        }
+        span {
+            color: $greenwich_red;
         }
     }
 }

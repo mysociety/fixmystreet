@@ -1,7 +1,17 @@
     <a href="http://www.royalgreenwich.gov.uk/" id="site-logo">[%- PROCESS 'site-name.html' -%]</a>
 </div>
 <div class="container main-menu-container">
-    <ul id="main-menu-desktop">
+    <ul id="greenwich-menu-desktop">
+        <li><a href="http://www.royalgreenwich.gov.uk/pay">Make a payment</a></li>
+        <li><a href="http://www.royalgreenwich.gov.uk/apply">Apply for it</a></li>
+        <li><a href="/">Report a problem</a></li>
+        <li><a href="http://www.royalgreenwich.gov.uk/a_to_z">A to Z of services</a></li>
+        <li><a href="http://www.royalgreenwich.gov.uk/contact">Contact us</a></li>
+        <li><a href="http://www.royalgreenwich.gov.uk/about">About us</a></li>
+    </ul>
+</div>
+<div class="container main-menu-container">
+    <ul id="fms-menu-desktop">
         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
         %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
