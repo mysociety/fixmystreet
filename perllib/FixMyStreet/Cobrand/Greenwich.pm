@@ -13,6 +13,11 @@ sub example_places {
     return ( 'SE18 6HQ', "Woolwich Road" );
 }
 
+sub enter_postcode_text {
+    my ($self) = @_;
+    return 'Enter a Royal Greenwich postcode, or street name and area';
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
