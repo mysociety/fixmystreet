@@ -9,8 +9,12 @@
         <li><a href="http://www.royalgreenwich.gov.uk/contact">Contact us</a></li>
         <li><a href="http://www.royalgreenwich.gov.uk/about">About us</a></li>
     </ul>
-</div>
-<div class="container main-menu-container">
+
+    <ul id="greenwich-breadcrumb">
+        <li><a class="bc_arrow" href="http://www.royalgreenwich.gov.uk/">Home</a></li>
+        <li><a href="/">FixMyStreet</a></li>
+    </ul>
+
     <ul id="fms-menu-desktop">
         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
