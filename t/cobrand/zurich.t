@@ -120,6 +120,7 @@ my $report = my $report0 = $reports[0];
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
 }, sub {
     $mech->get_ok( '/report/' . $report->id );
 };
@@ -174,6 +175,7 @@ subtest "changing of categories" => sub {
     # change the category via the web interface
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( { with_fields => { category => 'Cat2' } } );
@@ -219,6 +221,7 @@ subtest "report_edit" => sub {
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
 
         reset_report_state($report);
@@ -315,6 +318,7 @@ subtest "report_edit" => sub {
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
 }, sub {
     # Photo publishing
     $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -375,6 +379,7 @@ subtest 'SDM' => sub {
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->content_contains( 'Initial internal note' );
@@ -403,6 +408,7 @@ subtest 'SDM' => sub {
     subtest 'send_back' => sub {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ 'zurich' ],
+            MAP_TYPE => 'Zurich,OSM',
         }, sub {
             $report->update({ bodies_str => $subdivision->id, state => 'in progress' });
             $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -416,6 +422,7 @@ subtest 'SDM' => sub {
     subtest 'not contactable' => sub {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ 'zurich' ],
+            MAP_TYPE => 'Zurich,OSM',
         }, sub {
             $report->update({ bodies_str => $subdivision->id, state => 'in progress' });
             $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -449,6 +456,7 @@ $report->update;
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
 }, sub {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_lacks( 'Unbest&auml;tigt' ); # Confirmed email
@@ -479,6 +487,7 @@ $report = $reports[0];
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
 }, sub {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->submit_form_ok( { with_fields => { state => 'confirmed' } } );
@@ -491,6 +500,7 @@ $mech->content_contains('Second Test');
 
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
 }, sub {
     $mech->get_ok( '/admin/report_edit/' . $report->id );
     $mech->content_contains( 'Unbest&auml;tigt' );
@@ -520,11 +530,14 @@ subtest "external report triggers email" => sub {
     my $EXTERNAL_MESSAGE = 'Look Ma, no hands!';
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
 
         # required to see body_external field
         $report->state('planned');
         $report->set_extra_metadata('closure_status' => 'closed');
+        # Set the public_response manually here because the default one will have line breaks that get escaped as HTML, causing the comparison to fail.
+        $report->set_extra_metadata('public_response' => 'Freundliche Gruesse Ihre Stadt Zuerich');
         $report->update;
 
         $mech->get_ok( '/admin/report_edit/' . $report->id );
@@ -542,7 +555,7 @@ subtest "external report triggers email" => sub {
     $mech->content_contains('Extern')
         or die $mech->content;
     $mech->content_contains('Third Test');
-    $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
+    $mech->content_contains($report->get_extra_metadata('public_response')) or die $mech->content;
     send_reports_for_zurich();
     $email = $mech->get_email;
     like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
@@ -555,11 +568,13 @@ subtest "external report triggers email" => sub {
     subtest "Test third_personal boolean setting" => sub {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ 'zurich' ],
+            MAP_TYPE => 'Zurich,OSM',
         }, sub {
             $mech->get_ok( '/admin' );
             # required to see body_external field
             $report->state('planned');
             $report->set_extra_metadata('closure_status' => 'closed');
+            $report->set_extra_metadata('public_response' => 'Freundliche Gruesse Ihre Stadt Zuerich');
             $report->update;
 
             is $mech->uri->path, '/admin', "am logged in";
@@ -576,7 +591,7 @@ subtest "external report triggers email" => sub {
             };
         $mech->content_contains('Extern');
         $mech->content_contains('Third Test');
-        $mech->content_contains('Wir haben Ihr Anliegen an External Body weitergeleitet');
+        $mech->content_contains($report->get_extra_metadata('public_response'));
         send_reports_for_zurich();
         $email = $mech->get_email;
         like $email->header('Subject'), qr/Weitergeleitete Meldung/, 'subject looks okay';
@@ -589,6 +604,7 @@ subtest "external report triggers email" => sub {
     subtest "Test external wish sending" => sub {
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ 'zurich' ],
+            MAP_TYPE => 'Zurich,OSM',
         }, sub {
             # set as wish
             $report->discard_changes;
@@ -672,6 +688,7 @@ subtest "phone number is mandatory" => sub {
         ALLOWED_COBRANDS => [ 'zurich' ],
         MAPIT_ID_WHITELIST => [ 274456 ],
         MAPIT_GENERATION => 2,
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $user = $mech->log_in_ok( 'dm1@example.org' );
         $mech->get_ok( '/report/new?lat=47.381817&lon=8.529156' );
@@ -688,6 +705,7 @@ subtest "phone number is not mandatory for reports from mobile apps" => sub {
         ALLOWED_COBRANDS => [ 'zurich' ],
         MAPIT_ID_WHITELIST => [ 423017 ],
         MAPIT_GENERATION => 4,
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->post_ok( '/report/new/mobile?lat=47.381817&lon=8.529156' , {
             service => 'iPhone',
@@ -718,6 +736,7 @@ subtest "problems can't be assigned to deleted bodies" => sub {
         MAPIT_URL => 'http://global.mapit.mysociety.org/',
         MAPIT_TYPES => [ 'O08' ],
         MAPIT_ID_WHITELIST => [ 423017 ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->get_ok( '/admin/body/' . $external_body->id );
         $mech->submit_form_ok( { with_fields => { deleted => 1 } } );
@@ -752,6 +771,7 @@ subtest "photo must be supplied for categories that require it" => sub {
         ALLOWED_COBRANDS => [ 'zurich' ],
         MAPIT_ID_WHITELIST => [ 274456 ],
         MAPIT_GENERATION => 2,
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->post_ok( '/report/new', {
             detail => 'Problem-Bericht',
@@ -807,6 +827,7 @@ subtest "test admin_log" => sub {
 subtest 'email images to external partners' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         reset_report_state($report);
         $mech->clear_emails_ok;
@@ -855,6 +876,7 @@ subtest 'email images to external partners' => sub {
 subtest 'Status update shown as appropriate' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         # ALL closed states must hide the public_response edit, and public ones
         # must show the answer in blue.
@@ -891,6 +913,7 @@ sub contains_or_lacks {
 subtest 'time_spent' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         my $report = $reports[0];
 
