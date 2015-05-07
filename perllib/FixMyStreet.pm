@@ -124,11 +124,14 @@ sub override_config($&) {
         }
     );
 
+    FixMyStreet::Map::reload_allowed_maps() if $config->{MAP_TYPE};
+
     $code->();
 
     $override_guard1->restore();
     $override_guard2->restore();
-    mySociety::MaPit::configure() if $config->{MAPIT_URL};;
+    mySociety::MaPit::configure() if $config->{MAPIT_URL};
+    FixMyStreet::Map::reload_allowed_maps() if $config->{MAP_TYPE};
 }
 
 =head2 dbic_connect_info
