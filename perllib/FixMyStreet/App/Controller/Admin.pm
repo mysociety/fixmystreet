@@ -345,7 +345,7 @@ sub update_contacts : Private {
         my $category = $self->trim( $c->get_param('category') );
         $errors{category} = _("Please choose a category") unless $category;
         my $email = $self->trim( $c->get_param('email') );
-        $errors{email} = _('Please enter a valid email') unless is_valid_email($email);
+        $errors{email} = _('Please enter a valid email') unless is_valid_email($email) || $email eq 'REFUSED';
         $errors{note} = _('Please enter a message') unless $c->get_param('note');
 
         $category = 'Empty property' if $c->cobrand->moniker eq 'emptyhomes';

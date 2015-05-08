@@ -45,22 +45,7 @@
 
 <p>[% loc('Please do not give address or personal information in this section.') %]</p>
 
-[% IF js %]
-    <div class="form-field" id="form_category_row">
-        <label for="form_category">[% loc('Category:') %]</label>
-        <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
-    </div>
-[% ELSE %]
-    [% IF category_options.size %]
-        [% IF field_errors.category %]
-            <div class='form-error'>[% field_errors.category %]</div>
-        [% END %]
-
-        <div class="form-field">
-            [% PROCESS "report/new/category.html" %]
-        </div>
-    [% END %]
-[% END %]
+[% PROCESS "report/new/category_wrapper.html" %]
 
 [% IF field_errors.title %]
     <div class='form-error'>[% field_errors.title %]</div>

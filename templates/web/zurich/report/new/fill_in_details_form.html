@@ -45,24 +45,7 @@
             [% END %]
             <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
 
-            [% IF js %]
-                <div id="form_category_row">
-                    <label for="form_category">[% loc('Category') %]</label>
-                    <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
-                </div>
-            [% ELSE %]
-                [% IF category_options.size %]
-                    [% IF field_errors.category %]
-                        <p class='form-error'>[% field_errors.category %]</p>
-                    [% END %]
-
-                    [% PROCESS "report/new/category.html" %]
-                [% END %]
-            [% END %]
-
-            [%- IF category_extras %]
-                [% PROCESS "report/new/category_extras.html" %]
-            [%- END %]
+            [% PROCESS "report/new/category_wrapper.html" %]
 
             [% IF c.cobrand.allow_photo_upload %]
                 <label for="form_photo">[% loc('Photo') %]</label>
