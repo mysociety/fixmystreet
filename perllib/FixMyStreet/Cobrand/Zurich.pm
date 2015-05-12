@@ -816,6 +816,8 @@ sub admin_report_edit {
                 $not_contactable ?
                     _('Customer not contactable')
                     : _('Sent report back') ] );
+            # Make sure the problem's time_spent is updated
+            $self->update_admin_log($c, $problem);
             $c->res->redirect( '/admin/summary' );
         } elsif ($c->req->param('submit')) {
             $c->forward('check_token');
@@ -841,6 +843,8 @@ sub admin_report_edit {
                     anonymous => 1,
                 } );
             }
+            # Make sure the problem's time_spent is updated
+            $self->update_admin_log($c, $problem);
 
             $c->stash->{status_message} = '<p class="message-updated">' . _('Updated!') . '</p>';
 
