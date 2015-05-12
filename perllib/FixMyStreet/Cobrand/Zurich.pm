@@ -1119,6 +1119,9 @@ sub admin_stats {
             $detail =~ s{\r?\n}{ <br/> }g;
             $public_response =~ s{\r?\n}{ <br/> }g if $public_response;
 
+            # Assemble photo URL, if report has a photo
+            my $media_url = ($c->cobrand->base_url . $report->get_photo_params->{url}) if $report->get_photo_params->{url};
+
             my @columns = (
                 $report->id,
                 $report->created,
@@ -1130,7 +1133,7 @@ sub admin_stats {
                 $report->get_column('sum_time_spent') || 0,
                 $report->title,
                 $detail,
-                $c->cobrand->base_url . $report->get_photo_params->{url},
+                $media_url,
                 $report->service || 'Web interface',
                 $public_response,
             );
