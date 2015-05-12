@@ -72,7 +72,7 @@
             <li [% IF pagename == 'stats' %]class="current"[% END %]>
                 <a href="/admin/stats">[% loc('Stats') %]</a>
             </li>
-            [% IF admin_type == 'dm' %] [%# NB: super can also edit, via the /body/ page %]
+            [% IF admin_type == 'dm' %]
             <li [% IF pagename == 'templates' OR pagename == 'template' %]class="current"[% END %]>
                 <a href="/admin/templates">[% loc('Templates') %]</a>
             </li>
