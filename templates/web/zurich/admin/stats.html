@@ -48,7 +48,7 @@
 
 <table>
 <tr><th>[% loc('Category') %]</th><th>[% loc('Count') %]</th></tr>
-[% WHILE ( c = per_category.next ) %]<tr><td>[% c.category %]</td><td>[% c.get_column('c') %]</td></tr>[% END %]
+[% WHILE ( cc = per_category.next ) %]<tr><td>[% cc.category %]</td><td>[% cc.get_column('c') %]</td></tr>[% END %]
 </table>
 
 [% INCLUDE 'admin/footer.html' %]
