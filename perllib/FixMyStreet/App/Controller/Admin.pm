@@ -893,7 +893,12 @@ sub templates_for_body {
 
     $c->stash->{body} = $body;
 
-    my @templates = $body->response_templates;
+    my @templates = $body->response_templates->search(
+        undef,
+        {
+            order_by => 'title'
+        }
+    );
 
     $c->stash->{response_templates} = \@templates;
 
