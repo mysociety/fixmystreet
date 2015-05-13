@@ -1,9 +1,12 @@
 use strict;
 use warnings;
 use Test::More;
+use LWP::Protocol::PSGI;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
+
+use t::Nominatim;
 
 # check that we can get the page
 $mech->get_ok('/alert');
@@ -38,8 +41,11 @@ FixMyStreet::override_config {
     $mech->content_contains('council:2651:City_of_Edinburgh');
     $mech->content_contains('ward:2651:20728:City_of_Edinburgh:City_Centre');
 
-    $mech->get_ok('/alert/list?pc=High Street');
-    $mech->content_contains('We found more than one match for that location');
+    subtest "Test Nominatim lookup" => sub {
+        LWP::Protocol::PSGI->register(t::Nominatim->run_if_script, host => 'nominatim.openstreetmap.org');
+        $mech->get_ok('/alert/list?pc=High Street');
+        $mech->content_contains('We found more than one match for that location');
+    };
 
     $mech->get_ok('/alert/list?pc=');
     $mech->content_contains('To find out what local alerts we have for you');
