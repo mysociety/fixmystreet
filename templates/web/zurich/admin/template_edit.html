@@ -28,6 +28,11 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="submit" name="Edit templates" value="[% rt.id ? loc('Save changes') : loc('Create template') %]" >
     </p>
+    [% IF rt.id %]
+        <p>
+            <input class="delete" type="submit" name="delete_template" value="[% loc('Delete template') %]">
+        </p>
+    [% END %]
 </form>
 
 [% INCLUDE 'admin/footer.html' %]

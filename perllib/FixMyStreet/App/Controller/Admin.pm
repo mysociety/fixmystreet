@@ -872,12 +872,16 @@ sub template_edit : Path('templates') : Args(2) {
     }
 
     if ($c->req->method eq 'POST') {
-        $template->title( $c->req->param('title') );
-        $template->text ( $c->req->param('text') );
-        $template->update_or_insert;
+        if ($c->req->param('delete_template') eq _("Delete template")) {
+            $template->delete;
+        } else {
+            $template->title( $c->req->param('title') );
+            $template->text ( $c->req->param('text') );
+            $template->update_or_insert;
 
-        # log_edit currently has hard-coded types, do we need auditing on this?
-        # $c->forward( 'log_edit', [ $object_id, $object_type, $action_performed ] );
+            # log_edit currently has hard-coded types, do we need auditing on this?
+            # $c->forward( 'log_edit', [ $object_id, $object_type, $action_performed ] );
+        }
 
         $c->res->redirect( $c->uri_for( 'templates', $body->id ) );
     }
