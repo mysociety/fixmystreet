@@ -21,7 +21,9 @@
 <dl>
     <dd class="screen-only">&raquo; <a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></dd>
 
-    <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></dd>
+    <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&amp;Search=Koord&amp;West=[% problem.local_coords.0 %]&amp;Nord=[% problem.local_coords.1 %]&amp;B=300" target="_blank">Standort in AV-Online anzeigen</a></dd>
+
+    <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/stapo/GoogleStreetView.asp?lat=[% problem.latitude %]&amp;lon=[% problem.longitude %]" target="_blank">[% loc('Street View') %]</a></dd>
 
   [% IF c.cobrand.problem_is_closed(problem) %]
     <dt><span class="mock-label">[% loc('Details:') %]</span></dt>
