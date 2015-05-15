@@ -198,42 +198,43 @@
 [% END %]
 </ul>
 
-[%# 3rd party messages sent for Extern/Wunsch states %]
-[% SWITCH pstate %]
-    [% CASE ['closed','investigating'] %]
-    <ul class="no-bullets screen-only">
-    <li class="assignation" id="assignation__external">
-    <label for="body_external">
-          [% IF pstate == 'closed' %]
-            [% loc('Assign to external body:') %]
-          [% ELSE %]
-            [% loc('Assign to competent body:') %]
-          [% END %]
-        </label>
-        <select name="body_external" id="body_external">
-            <option value="">--</option>
-          [% FOR body IN bodies %]
-            [% NEXT IF body.parent OR body.bodies OR body.deleted %]
-            <option value="[% body.id %]"[% IF body.id == problem.external_body %] selected[% END %]>[% body.name %]</option>
-          [% END %]
-        </select>
-    </li>
-    <li>
-      [% IF pstate == 'closed' %]
-        <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
-        <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
-      [% END %]
-    </li>
-    <li>
-        [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
-        <textarea name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') | html %]</textarea>
-    </li>
-    </ul>
-[% END %]
 
-[%# Public response field shown for Ruckmeldung ausstehend states
-  # (e.g. various pstates) %]
 [% IF problem.state == 'planned' %]
+    [%# 3rd party messages sent for Extern/Wunsch states %]
+    [% SWITCH pstate %]
+        [% CASE ['closed','investigating'] %]
+        <ul class="no-bullets screen-only">
+        <li class="assignation" id="assignation__external">
+        <label for="body_external">
+              [% IF pstate == 'closed' %]
+                [% loc('Assign to external body:') %]
+              [% ELSE %]
+                [% loc('Assign to competent body:') %]
+              [% END %]
+            </label>
+            <select name="body_external" id="body_external">
+                <option value="">--</option>
+              [% FOR body IN bodies %]
+                [% NEXT IF body.parent OR body.bodies OR body.deleted %]
+                <option value="[% body.id %]"[% IF body.id == problem.external_body %] selected[% END %]>[% body.name %]</option>
+              [% END %]
+            </select>
+        </li>
+        <li>
+          [% IF pstate == 'closed' %]
+            <input type="checkbox" name="third_personal" id="third_personal" value="1"[% ' checked' IF problem.extra.third_personal %]>
+            <label for="third_personal" class="inline">[% loc('Include reporter personal details') %]</label>
+          [% END %]
+        </li>
+        <li>
+            [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
+            <textarea name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') | html %]</textarea>
+        </li>
+        </ul>
+    [% END %]
+
+    [%# Public response field shown for Ruckmeldung ausstehend states
+      # (e.g. various pstates) %]
     <ul class="no-bullets screen-only">
         <li id="status_update_container"><label for="status_update">
         [% SWITCH pstate %]
@@ -272,6 +273,21 @@
         [% problem.extra.public_response | html_para %]
     </div>
 [% END %]
+
+[% SWITCH problem.state %]
+    [% CASE ['closed','investigating'] %]
+    <h2>
+          [% IF problem.state == 'closed' %]
+            [% loc('Message to external body:') %]
+          [% ELSE %]
+            [% loc('Message to competent body:') %]
+          [% END %]
+    </h2>
+    <div class="admin-external-message">
+        [% problem.extra.external_message | html_para %]
+    </div>
+[% END %]
+
 
 [% INCLUDE 'admin/list_updates.html' %]
 
