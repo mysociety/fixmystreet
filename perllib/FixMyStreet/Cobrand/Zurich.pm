@@ -721,8 +721,11 @@ sub admin_report_edit {
         # send external_message if provided and state is *now* Wish|Extern
         # e.g. was already, or was set in the Rueckmeldung ausstehend clause above.
         if ( my $external_message = $c->req->params->{external_message}
-             and $problem->state =~ /^(closed|investigating)$/) 
-        {
+             and (
+                 $problem->state =~ /^(closed|investigating)$/
+                 || $problem->get_extra_metadata('closure_status') =~ /^(closed|investigating)$/
+             )
+        ) {
             my $external = $problem->external_body;
             my $external_body = $c->model('DB::Body')->find($external)
                 or die "Body $external not found";
