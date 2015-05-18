@@ -12,7 +12,7 @@
 
 [% pstate = problem.get_extra_metadata('closure_status') || problem.state %]
 
-<form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form id="report_edit" method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
@@ -205,6 +205,7 @@
         [% CASE ['closed','investigating'] %]
         <ul class="no-bullets screen-only">
         <li class="assignation" id="assignation__external">
+        <span class="error hidden">[% loc('Please select a body.') %]</span>
         <label for="body_external">
               [% IF pstate == 'closed' %]
                 [% loc('Assign to external body:') %]
@@ -360,6 +361,26 @@ $(function(){
         }
 
     }).change();
+
+    $("form#report_edit input[type=submit]").click(function() {
+        $("form#report_edit").data("clicked_button", $(this).attr("name"));
+    });
+
+    $("form#report_edit").submit(function() {
+        // Make sure the external body field has a value if it's visible
+        // and the form is submitted as a 'save' action (i.e. not a rotate
+        // photo).
+        var clicked = $(this).data("clicked_button");
+        if (clicked == "publish_response" || clicked == "Submit changes") {
+            var visible = $("select#body_external:visible").length > 0;
+            var val = parseInt($("select#body_external").val());
+            if (visible && isNaN(val)) {
+                $("#assignation__external .error").removeClass("hidden");
+                $("select#body_external").focus().get(0).scrollIntoView();
+                return false;
+            }
+        }
+    });
 });
 </script>
 
