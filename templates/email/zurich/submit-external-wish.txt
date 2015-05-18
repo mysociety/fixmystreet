@@ -9,11 +9,10 @@ Name des Meldenden: <?=$values['name']?>
 
 Telefonnummer des Meldenden: <?=$values['phone']?>
 
-Meldung: [% problem.detail %]
+Meldung: <?=$values['detail']?>
 
 Standort in AV-Online anzeigen:
-http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[%
-problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300
+http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=<?=$values['west']?>&Nord=<?=$values['nord']?>&B=300
 
 
 Bei Fragen zu "Züri wie neu" wenden Sie sich bitte an gis-zentrum@zuerich.ch.

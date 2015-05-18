@@ -20,6 +20,11 @@ sub build_recipient_list {
     }
     $h->{external_message} //= '';
 
+    my ($west, $nord) = $row->local_coords;
+    $h->{west} = $west;
+    $h->{nord} = $nord;
+    $h->{detail} = $row->detail;
+
     my $body_email = $body->endpoint;
 
     my $parent = $body->parent;
