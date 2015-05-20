@@ -1,6 +1,8 @@
 -- was created in previous versions of this branch
 DROP TABLE IF EXISTS moderation_log;
 
+BEGIN;
+
 alter table admin_log add column
     user_id int references users(id) null;
 
@@ -34,3 +36,5 @@ create table user_body_permissions (
     ),
     unique(user_id, body_id, permission_type)
 );
+
+COMMIT;
