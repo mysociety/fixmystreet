@@ -8,9 +8,9 @@
     sdm_notes=[];
     FOREACH update IN updates;
         IF update.extra.is_internal_note;
-            internal_updates.push(update);
+            internal_updates.unshift(update);
         ELSE;
-            sdm_notes.push(update);
+            sdm_notes.unshift(update);
         END;
     END
 %]
