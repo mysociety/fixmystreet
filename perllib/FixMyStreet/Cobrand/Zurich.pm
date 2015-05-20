@@ -1270,13 +1270,13 @@ sub contact_details_data {
                     required => 'yes',
                 },
                 {
-                    code => 'mast_nr',
-                    description => 'Mast-Nr.',
+                    code => 'haus_nr',
+                    description => 'Haus-Nr.',
                     datatype => 'string',
                 },
                 {
-                    code => 'haus_nr',
-                    description => 'Haus-Nr.',
+                    code => 'mast_nr',
+                    description => 'Mast-Nr.',
                     datatype => 'string',
                 }
             ],
