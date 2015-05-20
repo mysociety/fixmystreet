@@ -95,8 +95,8 @@
         [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('(No phone number)') %]</em>[% END %]
     </dd>
 
-    <dt class="print-only">[% loc('Category:') %] <!-- Kategorie --></dt>
-    <dd class="print-only">[% problem.category | html %]</dd>
+    <dt>[% loc('Category:') %] <!-- Kategorie --></dt>
+    <dd>[% problem.category | html %]</dd>
 
     <dt class="print-only">[% loc('State:') %] <!-- Status --></dt>
     <dd class="print-only">[% states_trans.${problem.state} %]</dd>
@@ -224,11 +224,8 @@ $(function(){
 
 [% IF problem.state == 'confirmed' %]
     <li class="assignation">
-        <label for="category">[% loc('Category:') %]<label>
-        [% problem.category %]
-
         <div id="assignation__category">
-            <label>[% loc('Assign to different category:') %]</label>
+            <label for="category">[% loc('Assign to different category:') %]</label>
             <select name="category" id="category">
                 <option value="">--</option>
               [% FOREACH cat IN categories %]
