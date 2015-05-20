@@ -298,10 +298,12 @@
 
 <script type="text/javascript">
 $(function(){
+    var form_fields_changed = false;
 
     $('#form_time_spent').spinner({
         spin: function (e, ui) {
             if (ui.value < 0) { return false }
+            form_fields_changed = true;
         }
     });
 
@@ -380,6 +382,18 @@ $(function(){
                 return false;
             }
         }
+        // If the user has clicked to rotate a photo and has edited other
+        // fields, ask for confirmation before submitting the form
+        if (/rotate_photo/.test(clicked) && form_fields_changed) {
+            var message = "[% loc('Rotating this photo will discard unsaved changes to the report.') %]";
+            if (!confirm(message)) {
+                return false;
+            }
+        }
+    });
+
+    $("form#report_edit").find("input, select, textarea").change(function() {
+        form_fields_changed = true;
     });
 });
 </script>
