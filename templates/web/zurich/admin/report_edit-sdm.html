@@ -22,7 +22,7 @@
 
     <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></dd>
 
-    <dd class="screen-only">&raquo; <a href="http://maps.google.com/maps?q=&layer=c&cbll=[% problem.latitude %],[% problem.longitude %]&q=[% problem.latitude %],[% problem.longitude %]" target="_blank">[% loc('Street View') %]</a></dd>
+    <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/stapo/GoogleStreetView.asp?lat=[% problem.latitude %]&lon=[% problem.longitude %]" target="_blank">[% loc('Street View') %]</a></dd>
 
     <dt><span class="mock-label">[% loc('Details:') %]</span></dt>
     <dd>[% problem.detail | html %]</dd>
