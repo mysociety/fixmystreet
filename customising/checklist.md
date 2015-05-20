@@ -121,8 +121,8 @@ at the same time as others -- but if you're not sure then just work through the 
     to match your project.
     <p>
       To do this, copy the template files into your own cobrand's directory and
-      rewrite them. For example, the FAQ page on the UK's FixMyStreet site is
-      <code>templates/web/fixmystreet/faq/faq-en-gb.html</code>
+      rewrite them. The generic base FAQ can be found at
+      <code>templates/web/base/faq/faq-en-gb.html</code>
     </p>
     <p>
       See <a href="{{ site.baseurl }}customising/templates/">more about templates</a>.

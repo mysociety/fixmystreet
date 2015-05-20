@@ -86,7 +86,7 @@ copy into your own cobrand from `fixmystreet` or `base` and edit.
 </div>
 
 The other template you will probably make your own version of is the FAQ which
-is in `templates/web/fixmystreet/faq/faq-en-gb.html`. If you translate it too,
+is in `templates/web/base/faq/faq-en-gb.html`. If you translate it too,
 you will need to rename it accordingly.
 
 ## Emails
