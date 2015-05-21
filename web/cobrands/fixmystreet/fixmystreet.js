@@ -54,10 +54,6 @@ $(function(){
     var $html = $('html');
 
     var cobrand = $('meta[name="cobrand"]').attr('content');
-    var is_small_map = false;
-    if (cobrand === 'bromley') {
-        is_small_map = true;
-    }
 
     // Deal with switching between mobile and desktop versions on resize
     var last_type;
@@ -80,9 +76,7 @@ $(function(){
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Immediately go full screen map if on around page
-                if (cobrand != 'bromley') {
-                    $('#site-header').hide();
-                }
+                $('#site-header').hide();
                 $('#map_box').prependTo('.wrapper').css({
                     position: 'absolute',
                     top: 0, left: 0, right: 0, bottom: 0,
@@ -107,19 +101,12 @@ $(function(){
             $html.removeClass('mobile');
             position_map_box();
             if (typeof fixmystreet !== 'undefined') {
-                if (is_small_map) {
-                    //$('#bromley-footer').hide();
-                } else {
-                    fixmystreet.state_map = 'full';
-                }
+                fixmystreet.state_map = 'full';
             }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
                 // Remove full-screen-ness
                 var banner_text = translation_strings.report_problem_heading;
-                if (cobrand == 'bromley') {
-                    banner_text += '<span>Yellow pins show existing reports</span>';
-                }
-                if (! is_small_map && cobrand !== 'oxfordshire') {
+                if (cobrand !== 'oxfordshire') {
                     $('#site-header').show();
                     banner_text = translation_strings.report_problem_heading;
                 }
@@ -459,9 +446,6 @@ $.fn.drawer = function(id, ajax) {
     if (!$('html.mobile').length) {
         if (!($('body').hasClass('fullwidthpage'))){
             var offset = -15 * 16;
-            if (cobrand == 'bromley') {
-                offset = -110;
-            }
             if (cobrand == 'oxfordshire') {
                 // Oxfordshire uses box-sizing:border-box and padding to work out height
                 offset = 0;

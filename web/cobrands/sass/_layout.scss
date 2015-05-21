@@ -441,12 +441,14 @@ body.fullwidthpage {
     }
   }
 }
-.ie8 {
+.ie6, .ie7, .ie8 {
   body.twothirdswidthpage,
   body.fullwidthpage {
     .container .content footer a.platform-logo {
+      color: #ffffff;
       background: none;
       text-indent: 0px;
+      height: auto;
     }
   }
 }
