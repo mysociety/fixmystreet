@@ -44,4 +44,11 @@
 </tbody>
 </table>
 
+<script type="text/javascript" src="[% version('/js/jquery.fixedthead.js') %]"></script>
+<script type="text/javascript">
+$(function(){
+    $('.nicetable thead').fixedThead();
+});
+</script>
+
 [% INCLUDE 'footer.html', pagefooter = 'yes' %]
