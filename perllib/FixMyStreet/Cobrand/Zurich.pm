@@ -676,7 +676,7 @@ sub admin_report_edit {
                     $self->set_problem_state($c, $problem, $state);
                     my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
                     _admin_send_email( $c, $template, $problem );
-                    $redirect = 1;
+                    $redirect = 0;
                     $closed++;
                 }
                 # else should really return a message here
