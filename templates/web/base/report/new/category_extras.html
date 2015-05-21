@@ -6,7 +6,7 @@
     [%- END %]
 
     [%- IF report_meta %]
-    <h4>Additional Information</h4>
+    <h4>[% loc('Additional Information') %]</h4>
         [%- FOR meta IN category_extras.$category %]
         [%- meta_name = meta.code -%]
 
