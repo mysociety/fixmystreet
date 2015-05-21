@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2015-05-21 14:52+0000\n"
+"POT-Creation-Date: 2015-05-21 15:17+0000\n"
 "PO-Revision-Date: 2015-05-19 15:24+0100\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
@@ -291,9 +291,13 @@ msgid "Alert me to future updates"
 msgstr ""
 
 #: templates/web/base/reports/index.html:3
-#: templates/web/zurich/admin/stats.html:5
 #: templates/web/zurich/reports/index.html:12
 msgid "All Reports"
+msgstr "Alle Meldungen"
+
+#: templates/web/zurich/admin/stats.html:5
+#, fuzzy
+msgid "All Reports as CSV"
 msgstr "Alle Meldungen"
 
 #: templates/web/base/footer.html:11 templates/web/fixmystreet/footer.html:26

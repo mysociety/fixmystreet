@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.0\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2015-05-21 14:52+0000\n"
+"POT-Creation-Date: 2015-05-21 15:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <team@fixmystreet.com>\n"
@@ -251,8 +251,12 @@ msgstr ""
 msgid "Alert me to future updates"
 msgstr ""
 
-#: templates/web/base/reports/index.html:3 templates/web/zurich/admin/stats.html:5 templates/web/zurich/reports/index.html:12
+#: templates/web/base/reports/index.html:3 templates/web/zurich/reports/index.html:12
 msgid "All Reports"
+msgstr ""
+
+#: templates/web/zurich/admin/stats.html:5
+msgid "All Reports as CSV"
 msgstr ""
 
 #: templates/web/base/footer.html:11 templates/web/fixmystreet/footer.html:26 templates/web/zurich/admin/index-dm.html:12 templates/web/zurich/admin/stats.html:13 templates/web/zurich/footer.html:20 templates/web/zurich/nav_over_content.html:6
