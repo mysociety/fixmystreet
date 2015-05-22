@@ -32,6 +32,9 @@ before_script:
   - >
     sed -r -e "s,(FMS_DB_USER:) 'fms',\\1 'postgres',"
     conf/general.yml-example > conf/general.yml
+  - ./bin/make_po FixMyStreet-EmptyHomes
+  - ./bin/make_po FixMyStreet-Smidsy
+  - ./bin/make_emptyhomes_welsh_po
   - commonlib/bin/gettext-makemo FixMyStreet
 script: "bin/run-tests t"
 after_script:
