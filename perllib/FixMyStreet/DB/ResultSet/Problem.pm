@@ -594,7 +594,6 @@ sub send_reports_batched {
     }
 
     # now prepare the batches
-    my %sent; # problem has been sent to at least one entity
     while (my ($body_id, $v) = each %batched_for_body) {
         my $body = $bodies{$body_id};
         while (my ($recipient, $v2) = each %$v) {
@@ -608,13 +607,10 @@ sub send_reports_batched {
                 }
             );
             if ($sender->send_batch($c, $body, $recipient, $rs_ids)) {
-                for (@ids) { $sent{$_}++ };
+                $rs->search({ id => \@ids })->update({ whensent => \'ms_current_timestamp()' });
             }
         }
     }
-
-    my $rs_to_update = $rs->search({ id => [ keys %sent ] });
-    $rs_to_update->update({ whensent => \'ms_current_timestamp()' });
 }
 
 sub _send_report_sent_email {
