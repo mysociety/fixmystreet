@@ -1,2 +1,206 @@
 @import "_colours";
 @import "../sass/layout";
+
+// Alter the logo and the header on every page *but* the map page. On the map
+// page it stays small like in base.css
+body.fullwidthpage,
+body.twothirdswidthpage {
+  #site-header {
+    // Increase the height of the site-header to suit the taller logo image
+    height: auto;
+  }
+  // Override the logo
+  #site-logo {
+    width: 159px;
+    height: 114px;
+    background: url(/cobrands/bromley/bromley-logo.png) 0 0 no-repeat;
+  }
+}
+
+// On the map page, we want the header to be much smaller, otherwise it pushes
+// the sidebar down too much
+body.mappage {
+  #site-header {
+    height: 5em;
+  }
+}
+
+//logo fix
+.ie6, .ie7 {
+  body.frontpage {
+    // TODO - how tall should this be in IE6/7?
+    #site-header {
+      height:4em;
+    }
+    #site-logo {
+      // TODO - what should this be in IE6/7?
+      top:-1em;
+    }
+  }
+}
+.ie6 body.frontpage #site-logo {
+  background:url(/cobrands/bromley/bromley-logo.png) 0 0 no-repeat;
+}
+
+// Override the container width to match Bromley' site, which is wider
+.container {
+  width: 100%;
+  max-width: 1200px;
+}
+
+// Override the FMS main menu to give it a background colour
+#main-menu {
+  background-color: $bromley_blue;
+}
+// Override the selected element to match. We need to do this separately
+// because of FMS's selectors being quite specific
+#main-nav ul#main-menu li span {
+  color: $nav_fg;
+  background-color: $nav_fg_hover;
+}
+
+// Override the "report a problem" button because it's not really a button
+#main-nav ul#main-menu li a.report-a-problem-btn {
+  color: $nav_fg;
+}
+
+// Fix bad margin on local alerts form
+body.alertindex form.full-width {
+  margin-left: 0;
+}
+
+// Override the little banner you get when you're logged in on the map page
+// because FMS makes it a different colour and moves it over to the left.
+body.mappage #user-meta p {
+  background-color: $bromley_blue;
+  border-bottom: 1px solid #444;
+  left: 2.65em;
+}
+
+// And also override the banner on other pages so that it lines up properly
+#user-meta {
+  max-width: 1200px;
+}
+#user-meta p,
+body.frontpage #user-meta p {
+  top: 0;
+  right: auto;
+  background-color: $bromley_blue;
+  color: #fff;
+  box-shadow: none;
+}
+
+// Because we've moved the user-meta, we also have to move the #front-main div
+// down a bit so that it shows the #user-meta
+#front-main {
+  margin-top:3em
+}
+
+// Because we've changed the page background, the footer looks a bit rubbish
+footer,
+body.twothirdswidthpage .container .content footer .tablewrapper,
+body.fullwidthpage .container .content footer .tablewrapper {
+  background-color: $bromley_blue;
+}
+
+// This is our custom wrapper for Bromley's header elements
+.bromley-header {
+  // Bromley's logo has a bottom margin to space it out from the A-Z nav, we
+  // can't do that because they're in separate divs, so add a margin here
+  // instead.
+  margin-bottom: 20px;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Bromley desktop styles
+//////////////////////////////////////////////////////////////////////////////
+
+// Bromley's logo is bigger on big screens so that it appears to have some
+// left padding
+#site-logo,
+body.frontpage #site-logo {
+  float: left;
+  width: 239px;
+  clear: left;
+  margin-bottom: 20px;
+  // Bromley uses an image element inside a link, so it can be centered using
+  // text-align. We use a background image, so this approximates that.
+  background-position: 50% 0%;
+}
+
+// Bromley's .top-links section floats to the right on bigger screens
+.top-links {
+    float: right;
+    width: auto;
+}
+
+// Bromley's search form floats to the right too
+.main-search {
+  width: 35%;
+  margin: 10px 0 0 0;
+  float: right;
+  min-width: 287px;
+  clear: right;
+}
+
+// Bromley's A-Z nav gets the background coloured in on biggger screens to
+// appear full-screen
+.a-z-container {
+  background: #647890;
+  padding: 0;
+}
+
+// The link to open the A-Z nav gets hidden on big screens
+.drop-down-nav > li > a {
+  display: none;
+}
+
+// And the rest of the A-Z nav gets show with a horrible !important
+.main-a-z ul li ul {
+  display: block!important;
+}
+
+// Bromley's footer
+.site-footer {
+  // Undo our footer background styling above
+  background-color: #d5d2c3;
+  padding-top: 1em;
+
+  .column {
+    margin-right: 1.66667%;
+    display: block;
+    float: left;
+    .additional-links {
+      float: left;
+      width: 24%;
+      margin-left: 2%;
+      margin-right: 2%;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      &:first-child,
+      &:last-child {
+        margin-left: 0%;
+        margin-right: 0%;
+      }
+      li {
+        padding: 0 1em;
+      }
+    }
+    .footer-list2 {
+      width: 48%;
+      ul {
+        overflow: auto;
+      }
+    }
+    .footer-list2 ul li,
+    .footer-list1 ul li {
+      width: 41%;
+      margin-right: 2%;
+      padding-left: 1em;
+    }
+    .social ul li {
+      padding: 0 0 0 1em;
+    }
+  }
+}
