@@ -121,14 +121,6 @@ feature 'run-tests', 'Spin up a test database and config to run tests' => sub {
     requires 'Test::PostgreSQL';
 };
 
-# stats19
-requires 'MooX::Options';
-requires 'MooX::Cmd';
-requires 'Text::CSV_XS';
-requires 'File::BOM';
-requires 'DBIx::Class::Helper::Row::SubClass';
-requires 'DBD::SQLite'; # NB: this seems to require upgrade of DBI
-
 # Modules used by the test suite
 requires 'CGI::Simple';
 requires 'HTTP::Headers';
