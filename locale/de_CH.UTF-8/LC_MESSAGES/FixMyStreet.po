@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2015-05-21 15:17+0000\n"
-"PO-Revision-Date: 2015-05-19 15:24+0100\n"
+"PO-Revision-Date: 2015-05-21 17:26+0100\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
@@ -269,9 +269,8 @@ msgid "Added %s"
 msgstr ""
 
 #: templates/web/base/report/new/category_extras.html:4
-#, fuzzy
 msgid "Additional Information"
-msgstr "Überprüfung ausstehend"
+msgstr "Zusätzliche Angaben"
 
 #: templates/web/base/auth/change_password.html:29
 msgid "Again:"
@@ -296,9 +295,8 @@ msgid "All Reports"
 msgstr "Alle Meldungen"
 
 #: templates/web/zurich/admin/stats.html:5
-#, fuzzy
 msgid "All Reports as CSV"
-msgstr "Alle Meldungen"
+msgstr "Als CSV exportieren"
 
 #: templates/web/base/footer.html:11 templates/web/fixmystreet/footer.html:26
 #: templates/web/zurich/admin/index-dm.html:12
@@ -490,9 +488,8 @@ msgid ""
 msgstr ""
 
 #: templates/web/zurich/admin/response_templates_select.html:6
-#, fuzzy
 msgid "Choose a template"
-msgstr "Vorlage erstellen"
+msgstr "Vorlage wählen"
 
 #: templates/web/base/admin/stats.html:65
 #: templates/web/base/admin/stats.html:71
@@ -698,9 +695,8 @@ msgstr "Innerhalb von f&uuml;nf Arbeitstagen abgeschlossen"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:875
 #: templates/web/zurich/admin/template_edit.html:33
-#, fuzzy
 msgid "Delete template"
-msgstr "Vorlage erstellen"
+msgstr "Vorlage löschen"
 
 #: templates/web/base/admin/bodies.html:27
 #: templates/web/base/admin/body.html:169
@@ -2472,7 +2468,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit.html:298
 msgid "Reply to user:"
-msgstr ""
+msgstr "Antwort an User"
 
 #: templates/web/fixmystreet/header_logo.html:2
 #, fuzzy
@@ -2941,7 +2937,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/template_edit.html:7
 msgid "Template &laquo;%s&raquo;"
-msgstr ""
+msgstr "Vorlage &laquo;%s&raquo;"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:383
 #: templates/web/zurich/header.html:77
