@@ -36,7 +36,7 @@ Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
                 <img src="logo.gif" width="236" height="44" alt="Collideoscope" style="font-family:'Gill Sans MT','Gill Sans',Helvetica,Arial,sans-serif;font-size:32px;line-height:40px;vertical-align:middle;"/>
               -->
                 <h1 style="font-weight:normal;font-family:'Gill Sans MT','Gill Sans',Helvetica,Arial,sans-serif;font-size:32px;line-height:40px;margin:0;">
-                  <a href="#" style="color:#fff;text-decoration:none;">Collideoscope</a>
+                  <a href="[% cobrand.base_url %]" style="color:#fff;text-decoration:none;">Collideoscope</a>
                 </h1>
             </td>
           </tr>
@@ -48,14 +48,14 @@ Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
                     <td>
                     <strong style="display:block;font-size:48px;line-height:48px;color:#E5BB1C;">[% incidents.count %]</strong>
                     New [% incidents.count != 1 ? 'incidents' : 'incident' %]
-                    [% IF incidents.count %]
+                    [% IF incidents_people_count %]
                     <small style="display:block;">By [% incidents_people_count %] [% incidents_people_count != 1 ? 'people' : 'person' %]</small>
                     [% END %]
                   </td>
                   <td>
                     <strong style="display:block;font-size:48px;line-height:48px;color:#E5BB1C;">[% misses.count %]</strong>
                     Near [% misses.count != 1 ? 'misses' : 'miss' %]
-                    [% IF misses.count %]
+                    [% IF incidents_people_count %]
                     <small style="display:block;">By [% misses_people_count %] [% misses_people_count != 1 ? 'people' : 'person' %]</small>
                     [% END %]
                   </td>
