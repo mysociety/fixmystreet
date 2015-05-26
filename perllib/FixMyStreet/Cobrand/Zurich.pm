@@ -695,6 +695,10 @@ sub admin_report_edit {
                     $redirect = 0;
                     $closed++;
                 }
+                # set the external_message in extra, so that it can be edited again
+                if ( my $external_message = $c->req->params->{external_message} ) {
+                    $problem->set_extra_metadata( external_message => $external_message );
+                }
                 # else should really return a message here
             }
             elsif ($c->req->params->{publish_response}) {
@@ -737,11 +741,8 @@ sub admin_report_edit {
         # send external_message if provided and state is *now* Wish|Extern
         # e.g. was already, or was set in the Rueckmeldung ausstehend clause above.
         if ( my $external_message = $c->req->params->{external_message}
-             and (
-                 $problem->state =~ /^(closed|investigating)$/
-                 || $problem->get_extra_metadata('closure_status') =~ /^(closed|investigating)$/
-             )
-        ) {
+             and $problem->state =~ /^(closed|investigating)$/)
+        {
             my $external = $problem->external_body;
             my $external_body = $c->model('DB::Body')->find($external)
                 or die "Body $external not found";
