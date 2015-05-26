@@ -18,6 +18,10 @@
   position: absolute;
   z-index:2;
 }
+// Override in IE too
+.ie6 #site-logo {
+  background: url('/cobrands/bromley/bromley-logo.s.png') 0 0 no-repeat;
+}
 
 // Change the colour and size of the site header to suit
 #site-header {
@@ -162,6 +166,7 @@ h1,h2,h3,h4,h5 {
     display: inline-block;
     padding: 0 10px;
     font-size: 0.9em;
+    list-style-type: none;
     a {
       font-family: "Helvetica", sans-serif;
       color: #235e1c;
@@ -346,6 +351,14 @@ input.field, input.text,
 .drop-down-nav > li {
   margin-left: 0!important;
   border-bottom: none!important;
+}
+
+// Fix the A-Z menu in IE 6/7
+.ie6, .ie7 {
+  .main-a-z ul li {
+    display:block;
+    float:left;
+  }
 }
 
 // Bromley's breadcrumb
