@@ -7,10 +7,12 @@
 [%  internal_updates=[];
     sdm_notes=[];
     FOREACH update IN updates;
-        IF update.extra.is_internal_note;
-            internal_updates.unshift(update);
-        ELSE;
-            sdm_notes.unshift(update);
+        IF NOT update.extra.is_external_message;
+            IF update.extra.is_internal_note;
+                internal_updates.unshift(update);
+            ELSE;
+                sdm_notes.unshift(update);
+            END;
         END;
     END
 %]
