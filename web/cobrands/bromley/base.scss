@@ -122,6 +122,11 @@ a:active {
   color: $bromley_dark_green;
 }
 
+// The map page header looks a bit high for some reason
+.big-green-banner {
+  top: 0;
+}
+
 // Override some of FMS's button styling so that Bromley's styles don't break
 // form submit buttons
 .form-txt-submit-box input[type=submit] {
