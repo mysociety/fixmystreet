@@ -25,16 +25,17 @@ body.mappage {
   }
 }
 
-//logo fix
-.ie6, .ie7 {
-  body.frontpage {
-    // TODO - how tall should this be in IE6/7?
+// We have to specify this again for IE, since FMS overrides it
+.ie6, .ie7, .ie8 {
+  body.fullwidthpage,
+  body.twothirdswidthpage {
     #site-header {
-      height:4em;
+    // Increase the height of the site-header to suit the taller logo image
+      height: auto;
     }
     #site-logo {
-      // TODO - what should this be in IE6/7?
-      top:-1em;
+      width: 159px;
+      height: 114px;
     }
   }
 }
@@ -101,6 +102,20 @@ footer,
 body.twothirdswidthpage .container .content footer .tablewrapper,
 body.fullwidthpage .container .content footer .tablewrapper {
   background-color: $bromley_blue;
+}
+
+// Make the powered by FMS logo work in Old IE. FMS fixes this in IE8, but
+// it's broken in IE6 and 7 too.
+.ie6, .ie7, .ie8 {
+  body.twothirdswidthpage,
+  body.fullwidthpage {
+    .container .content footer a.platform-logo {
+      color: #ffffff;
+      background: none;
+      text-indent: 0px;
+      height: auto;
+    }
+  }
 }
 
 // This is our custom wrapper for Bromley's header elements
@@ -204,3 +219,32 @@ body.frontpage #site-logo {
     }
   }
 }
+
+// Fix the footer in Old IE because it doesn't like last-child selectors
+.ie6, .ie7, .ie8 {
+  .site-footer {
+    .column {
+      // Old IE won't float the social media links unless we force the width to be
+      // smaller and take a more traditional display/float tack.
+      .social ul li {
+        display: block;
+        width: 36px;
+        float: left;
+      }
+      .additional-links {
+        margin-left: 0%;
+        margin-right: 0%;
+      }
+      .footer-list2 {
+        margin-left: 2%;
+        margin-right: 2%;
+      }
+      .footer-list2 ul li,
+      .footer-list1 ul li {
+        // Old IE needs to know to float these for some reason
+        float: left;
+      }
+    }
+  }
+}
+
