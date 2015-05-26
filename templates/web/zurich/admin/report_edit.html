@@ -150,16 +150,6 @@
     <dd class="screen-only">
       <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
     </dd>
-    <script>
-        $(function () {
-            $('#form_time_spent').spinner({
-                spin: function (e, ui) {
-                    if (ui.value < 0) { return false }
-                }
-            });
-        });
-    </script>
-
     <dt class="screen-only">
         <span class="mock-label">[% loc('State:') %]</span>
     </dt>
@@ -173,52 +163,6 @@
     </dd>
 
 </dl>
-
-<script type="text/javascript">
-$(function(){
-
-    // When the user changes a select box, this bit of code
-    // makes the labels for the other two select boxes grey.
-    $('.assignation select').change(function(){
-        if (this.value == "") {
-            $('.assignation').css('color', '#000');
-        } else {
-            var a = $(this).closest('li').css('color', '#000');
-            $('.assignation select').not(this).val("");
-            $('.assignation').not(a).css('color', '#999');
-        }
-    });
-
-    $('#state').change(function(){
-        // Show or hide the automatic reply field
-        var state = $(this).val();
-        if (state === 'hidden') {
-            $('#automatic-reply').show();
-        } else {
-            $('#automatic-reply').hide();
-        }
-
-        // Show or hide the categories
-        if (state === 'confirmed') {
-            $('#assignation__category').show();
-            $('#assignation__subdivision').show();
-        } else {
-            $('#assignation__category').hide();
-            $('#assignation__subdivision').hide();
-            $('#assignation__category select').val('');
-            $('#assignation__subdivision select').val('');
-        }
-
-        if ((state === 'closed') || (state === 'investigating')) {
-            $('#assignation__external').show();
-        } else {
-            $('#assignation__external select').val('');
-            $('#assignation__external').hide();
-        }
-
-    }).change();
-});
-</script>
 
 <ul class="no-bullets screen-only">
 
@@ -368,7 +312,10 @@ $(function(){
         });
     }, 5000);
 
-    $('.assignation__select').change(function(){
+
+    // When the user changes a select box, this bit of code
+    // makes the labels for the other two select boxes grey.
+    $('.assignation__select, .assignation select').change(function(){
         if (this.value == "") {
             $('.assignation').css('color', '#000');
         } else {
