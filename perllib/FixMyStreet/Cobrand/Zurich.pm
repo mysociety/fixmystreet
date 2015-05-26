@@ -743,6 +743,8 @@ sub admin_report_edit {
                 or die "Body $external not found";
 
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
+            # Create a Comment on this Problem with the content of the external message.
+            # NB this isn't directly shown anywhere, but is for logging purposes.
             $problem->add_to_comments( {
                 text => (
                     sprintf '(%s %s) %s',
