@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2015-05-21 15:17+0000\n"
-"PO-Revision-Date: 2015-05-21 17:26+0100\n"
+"PO-Revision-Date: 2015-05-22 14:00+0100\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
@@ -612,7 +612,6 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:40
 #: templates/web/zurich/admin/report_edit.html:59
-#, fuzzy
 msgid "Coordinates:"
 msgstr "Koordinaten"
 
@@ -1485,12 +1484,10 @@ msgid "Message"
 msgstr "Nachricht"
 
 #: templates/web/zurich/admin/report_edit.html:339
-#, fuzzy
 msgid "Message to competent body:"
-msgstr "Nachricht an zuständige Stelle:"
+msgstr "Nachricht an zuständige Stelle"
 
 #: templates/web/zurich/admin/report_edit.html:337
-#, fuzzy
 msgid "Message to external body:"
 msgstr "Nachricht an zuständige Stelle"
 
@@ -2162,7 +2159,6 @@ msgid "Please say whether you've ever reported a problem to your council before"
 msgstr ""
 
 #: templates/web/zurich/admin/report_edit.html:263
-#, fuzzy
 msgid "Please select a body."
 msgstr "Organisation wählen"
 
@@ -2471,9 +2467,8 @@ msgid "Reply to user:"
 msgstr "Antwort an User"
 
 #: templates/web/fixmystreet/header_logo.html:2
-#, fuzzy
 msgid "Report"
-msgstr "Meldungen"
+msgstr "Meldung"
 
 #: templates/web/base/footer.html:7 templates/web/fixmystreet/footer.html:22
 #: templates/web/fixmystreet/header_logo.html:2
@@ -2529,9 +2524,8 @@ msgstr "Gemeldet von %s um %s"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:58
 #: templates/web/zurich/admin/report_edit.html:86
-#, fuzzy
 msgid "Reported by:"
-msgstr "Gemeldet von %s um %s"
+msgstr "Gemeldet von"
 
 #: templates/web/zurich/report/_main.html:2
 msgid "Reported in the %s category"
@@ -2563,9 +2557,8 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:36
 #: templates/web/zurich/admin/report_edit.html:55
-#, fuzzy
 msgid "Reported:"
-msgstr "Meldungen"
+msgstr "Gemeldet"
 
 #: templates/web/base/around/around_index.html:3
 #: templates/web/base/js/translation_strings.html:41
@@ -2638,7 +2631,7 @@ msgstr "Rechts drehen"
 
 #: templates/web/zurich/admin/report_edit.html:439
 msgid "Rotating this photo will discard unsaved changes to the report."
-msgstr ""
+msgstr "Durch das Drehen des Fotos gehen nicht gespeicherte Änderungen verloren."
 
 #: templates/web/base/js/translation_strings.html:46
 #: templates/web/base/maps/google-ol.html:13
