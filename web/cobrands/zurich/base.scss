@@ -274,6 +274,10 @@ h4.static-with-rule {
     dd.screen-no-space-after {
       margin-bottom: 0;
     }
+
+    .admin-report-edit--interact dl.with-message {
+        margin-top: 1.5em;
+    }
 }
 
 @media print {

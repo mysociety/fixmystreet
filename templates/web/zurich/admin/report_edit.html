@@ -135,7 +135,7 @@
     });
 </script>
 
-<dl>
+<dl [% IF status_message %]class="with-message"[% END %]>
 
     <dt class="screen-only">
         <label for="new_internal_note">[% loc('New internal note:') %]</label>
@@ -308,7 +308,7 @@ $(function(){
     });
 
     setTimeout(function(){
-        $('.message-updated').slideUp(250, function(){
+        $('.message-updated').fadeOut(250, function(){
             $(this).remove();
         });
     }, 5000);
