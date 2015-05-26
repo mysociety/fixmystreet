@@ -268,7 +268,7 @@
     <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
 
-[% IF c.cobrand.problem_has_public_response(problem) %]
+[% IF c.cobrand.problem_has_public_response(problem) || c.cobrand.problem_has_user_response(problem) %]
     <h2>[% loc('Public response:') %]</h2>
     <div class="admin-official-answer">
         [% problem.extra.public_response | html_para %]
