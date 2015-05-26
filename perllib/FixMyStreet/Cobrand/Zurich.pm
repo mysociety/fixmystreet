@@ -127,12 +127,17 @@ sub zurich_public_response_states {
     my $states = {
         'fixed - council' => 1,
         'closed'          => 1, # extern
-        'unable to fix'   => 1, # jurisdiction  unknown
+        'unable to fix'   => 1, # jurisdiction unknown
+    };
 
-        # e.g. as above, but WITHOUT the following (as they are hidden)
-        # 'hidden'          => 1,
-        # 'investigating'   => 1, # wish
-        # 'partial'         => 1, # not contactable
+    return wantarray ? keys %{ $states } : $states;
+}
+
+sub zurich_user_response_states {
+    my $states = {
+        'hidden'          => 1,
+        'investigating'   => 1, # wish
+        'partial'         => 1, # not contactable
     };
 
     return wantarray ? keys %{ $states } : $states;
@@ -141,6 +146,12 @@ sub zurich_public_response_states {
 sub problem_has_public_response {
     my ($self, $problem) = @_;
     return exists $self->zurich_public_response_states->{ $problem->state } ? 1 : 0;
+}
+
+sub problem_has_user_response {
+    my ($self, $problem) = @_;
+    my $state_matches = exists $self->zurich_user_response_states->{ $problem->state } ? 1 : 0;
+    return $state_matches && $problem->get_extra_metadata('public_response');
 }
 
 sub problem_as_hashref {
