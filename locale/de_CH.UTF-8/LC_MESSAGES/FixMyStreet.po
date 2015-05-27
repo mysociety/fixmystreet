@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2015-05-21 15:17+0000\n"
-"PO-Revision-Date: 2015-05-22 14:00+0100\n"
+"PO-Revision-Date: 2015-05-27 16:55+0100\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
@@ -1591,7 +1591,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/report_edit-sdm.html:117
 msgid "New note to DM:"
-msgstr "Neue interne Notiz"
+msgstr "Neue Nachricht an die Kommunikation"
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
