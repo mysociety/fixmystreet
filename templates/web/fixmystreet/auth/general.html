@@ -24,7 +24,7 @@
         [% ELSIF sign_in_error %]
             <div class="form-error">[% loc('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.') %]</div>
         [% END %]
-        <input type="email" class="required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]">
+        <input type="email" class="required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]" autofocus>
 
         <div id="form_sign_in">
             [% IF c.cobrand.moniker == 'fixmybarangay' %]
