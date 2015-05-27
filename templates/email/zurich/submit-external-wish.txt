@@ -7,6 +7,8 @@ Grüezi <?=$values['bodies_name']?>,
 
 Name des Meldenden: <?=$values['name']?>
 
+Email des Meldenden: <?=$values['email']?>
+
 Telefonnummer des Meldenden: <?=$values['phone']?>
 
 Meldung: <?=$values['detail']?>
