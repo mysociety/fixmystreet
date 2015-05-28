@@ -370,24 +370,26 @@ body.mappage {
 }
 
 body.twothirdswidthpage {
-  .content {
-    width: auto;
-    padding-left: 16em;
-    padding-right: 2em;
-    padding-top: 1.5em;
+  .container {
+    .content {
+      width: auto;
+      padding-left: 16em;
+      padding-right: 2em;
+      padding-top: 1.5em;
 
-    .sticky-sidebar {
-      left: 0;
-      top: 0;
-      bottom: 0;
-      z-index: 1;
-      background-color: $color-neutral-raincloud;
-      width: 15em;
-      padding: 0;
-
-      aside {
-        box-shadow: none;
+      .sticky-sidebar {
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1;
         background-color: $color-neutral-raincloud;
+        width: 15em;
+        padding: 0;
+
+        aside {
+          box-shadow: none;
+          background-color: $color-neutral-raincloud;
+        }
       }
     }
   }
