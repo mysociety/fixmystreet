@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 import os
-from itertools import groupby
+import sys
+from itertools import groupby, islice
+from csv import DictWriter
 
 import yaml
 import sodapy
@@ -30,7 +32,7 @@ def get_cursor():
 
 def socrata_connect():
     return sodapy.Socrata(
-        "opendata.socrata.com",
+        "mysociety.azure-westeurope-prod.socrata.com",
         config['SOCRATA_APP_TOKEN'],
         username=config['SOCRATA_USERNAME'],
         password=config['SOCRATA_PASSWORD']
@@ -54,7 +56,7 @@ def query_recent_reports(cursor, limit=100):
         params = [limit]
     cursor.execute(query, params)
 
-def transform_results(cursor):
+def transform_results(cursor, csv=False):
     """
     Returns an iterable of dicts suitable for uploading to Socrata.
     This must be called immediately after query_recent_reports because
@@ -62,23 +64,27 @@ def transform_results(cursor):
     """
     for row in cursor:
         if row['non_public'] or row['state'] == "hidden":
-            row = {
-                ':id': row['id'],
-                ':deleted': True
-            }
+            if csv:
+                # don't include hidden reports in the CSV
+                continue
+            else:
+                row = {
+                    ':id': row['id'],
+                    ':deleted': True
+                }
         else:
             row['url'] = "http://collideosco.pe/report/{id}".format(id=row['id'])
-            # Convert the raw lat/lon columns into a dict as expected by SODA
-            row['location'] = {'longitude': row['longitude'], 'latitude': row['latitude']}
-            del row['longitude'], row['latitude']
+            if not csv:
+                # Convert the raw lat/lon columns into a dict as expected by SODA
+                row['location'] = {'longitude': row['longitude'], 'latitude': row['latitude']}
+                del row['longitude'], row['latitude']
             # Date fields aren't handled by the JSON encoder, so do it manually
             row['reported'] = row['reported'].isoformat()
             row['lastupdate'] = row['lastupdate'].isoformat()
             if row['whensent']:
                 row['whensent'] = row['whensent'].isoformat()
             # Photo is stored as a 40-byte ID which needs appending to a URL base
-            if row.get("photo"):
-                row['photo_url'] = PHOTO_URL.format(id=row['id'], photo=row['photo'])
+            row['photo_url'] = PHOTO_URL.format(id=row['id'], photo=row['photo']) if row.get("photo") else None
             del row['photo']
             # Make sure only one receiving body is included
             if row.get("body"):
@@ -105,12 +111,31 @@ def upload_reports(socrata, reports):
         reports_batch = [i[1] for i in group]
         print socrata.upsert(config['SOCRATA_DATASET_URL'], reports_batch)
 
+def write_csv(reports, limit):
+    with open("output.csv", "wb") as f:
+        writer = None
+        for row in islice(reports, limit):
+            if writer is None:
+                writer = DictWriter(f, row.keys())
+                writer.writeheader()
+            writer.writerow(row)
+
 def main():
-    socrata = socrata_connect()
     cursor = get_cursor()
     query_recent_reports(cursor, limit=None)
-    reports = transform_results(cursor)
-    upload_reports(socrata, reports)
+
+    # Are we producing an initial kickstart CSV for uploading to Socrata?
+    if len(sys.argv) > 1 and sys.argv[1] == "csv":
+        try:
+            limit = int(sys.argv[2])
+        except (IndexError, ValueError):
+            limit = 10
+        reports = transform_results(cursor, csv=True)
+        write_csv(reports, limit)
+    else:
+        reports = transform_results(cursor)
+        socrata = socrata_connect()
+        upload_reports(socrata, reports)
 
 
 if __name__ == '__main__':
