@@ -708,7 +708,7 @@ sub admin_report_edit {
                 # if $state wasn't set, then we are simply closing the message as fixed
                 $state ||= 'fixed - council';
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
-                $redirect = 1;
+                $redirect = 0;
                 $moderated++;
                 $closed++;
             }
