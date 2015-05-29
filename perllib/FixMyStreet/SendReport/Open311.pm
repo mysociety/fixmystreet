@@ -127,8 +127,8 @@ sub send {
             $revert = 1;
         }
 
-        if ($row->cobrand eq 'fixmybarangay') {
-            # FixMyBarangay endpoints expect external_id as an attribute, as do Oxfordshire
+        if ($row->cobrand eq 'fixmybarangay' || $row->cobrand eq 'greenwich') {
+            # FixMyBarangay endpoints expect external_id as an attribute, as do Greenwich
             $row->set_extra_fields( { 'name' => 'external_id', 'value' => $row->id  } );
             $revert = 1;
         }
