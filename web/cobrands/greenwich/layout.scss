@@ -38,11 +38,21 @@ body.twothirdswidthpage #site-logo,
 #front-main {
     background-color: $base_bg;
     padding-top: 0.5em;
+    text-align: left;
 
     #front-main-container {
         max-width: $fixed_page_width;
-        background-color: $greenwich_light_grey;
+        background-color: transparent;
         padding: 1em 0;
+    }
+
+    #postcodeForm div {
+        margin: 0;
+    }
+
+    h1 {
+        color: $greenwich_dark_red;
+        padding-bottom: 3em;
     }
 }
 
@@ -66,6 +76,12 @@ body.frontpage {
 
     .issue-list-a li {
         border-left: solid 4px $primary;
+    }
+
+    #fms-menu-desktop {
+        position: absolute;
+        width: 990px;
+        top: 262px;
     }
 }
 
