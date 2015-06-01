@@ -278,3 +278,44 @@ body.fullwidthpage, body.twothirdswidthpage {
         }
     }
 }
+
+body.fullwidthpage.with-map {
+    #site-header {
+        position: relative;
+        z-index: 1;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 0 0 2em 0;
+        width: 29em;
+        position: relative;
+        margin-top: 0;
+    }
+
+    #side {
+        width: 29em;
+        margin-left: 0;
+        padding-left: 0;
+
+        h1 {
+            padding-top: 0.5em;
+        }
+    }
+
+    .shadow-wrap {
+        margin-left: 0;
+    }
+
+    .main-menu-container {
+        background-color: white;
+    }
+
+    .full-width {
+        margin-left: 0;
+    }
+
+    #fms_pan_zoom {
+        top: 13.75em !important
+    }
+}
