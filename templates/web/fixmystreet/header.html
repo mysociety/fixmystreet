@@ -23,7 +23,7 @@
         <![endif]-->
 
         <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
-        <script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
+        [% INCLUDE 'position_map.html' %]
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js' %]
         [% extra_js %]
 
