@@ -1,15 +1,19 @@
-function position_map_box() {
+function resize_map() {
     var container = $(".content").closest('.container');
     var content_width = $(".content").width();
-
     var width = container.width() - content_width;
-    var left = ((window.screen.width - width) / 2) + (content_width /2);
-    $('#map_box').prependTo(container).css({
+    var left = ((document.body.clientWidth - width) / 2) + (content_width /2);
+    $("#map_box").css({left: left, width: width+'px'});
+}
+
+function position_map_box() {
+    $('#map_box').prependTo($(".content").closest('.container')).css({
         zIndex: 0, position: 'fixed',
-        top: 0, left: left, right: 0, bottom: 0,
-        width: width+'px', height: '100%',
-        margin: 0
+        top: 0, right: 0, bottom: 0,
+        height: '100%', margin: 0
     });
+    $(window).resize(resize_map);
+    resize_map();
 }
 
 function map_fix() {}
