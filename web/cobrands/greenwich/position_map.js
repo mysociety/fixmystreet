@@ -8,9 +8,9 @@ function resize_map() {
 
 function position_map_box() {
     $('#map_box').prependTo($(".content").closest('.container')).css({
-        zIndex: 0, position: 'fixed',
-        top: 0, right: 0, bottom: 0,
-        height: '100%', margin: 0
+        zIndex: 0,
+        top: 0, right: 0, bottom: 0, left:auto,
+        height: '100%', width: '50%', margin: 0
     });
     $(window).resize(resize_map);
     resize_map();
