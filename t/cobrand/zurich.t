@@ -629,7 +629,7 @@ subtest "external report triggers email" => sub {
         like $email->header('To'), qr/external_body\@example.org/, 'to line looks correct';
         like $email->body, qr/External Body/, 'body has right name';
         like $email->body, qr/$EXTERNAL_MESSAGE/, 'external_message was passed on';
-        unlike $email->body, qr/test\@example.com/, 'body does not contain email address';
+        like $email->body, qr/test\@example.com/, 'body contains email address';
         $mech->clear_emails_ok;
     };
     $report->comments->delete; # delete the comments, as they confuse later tests
@@ -785,7 +785,7 @@ subtest "photo must be supplied for categories that require it" => sub {
             submit_problem => 1,
         });
         is $mech->res->code, 200, "missing photo shouldn't return anything but 200";
-        $mech->content_contains("Photo is required", 'response should contain photo error message');
+        $mech->content_contains(_("Photo is required."), 'response should contain photo error message');
     };
 };
 
