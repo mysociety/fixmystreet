@@ -1278,7 +1278,7 @@ sub contact_details_data {
     return (
         {
             category => 'Beleuchtung/Uhren',
-            body_name => 'Elektrizitäwerk Stadt Zürich',
+            body_name => 'Elektrizitätswerk Stadt Zürich',
             fields => [
                 {
                     code => 'strasse',
