@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2015-05-21 15:17+0000\n"
-"PO-Revision-Date: 2015-05-27 16:55+0100\n"
+"PO-Revision-Date: 2015-06-02 13:18+0100\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/projects/p/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
@@ -3710,7 +3710,7 @@ msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:78
 msgid "You have already attached photos to this report.  Note that you can attach a maximum of 3 to this report (if you try to upload more, the oldest will be removed)."
-msgstr ""
+msgstr "Sie haben dieser Meldung bereits Fotos angehängt. Sie können maximal 3 Fotos anhängen (wenn Sie mehr anhängen, wird das Älteste entfernt)."
 
 #: templates/web/base/auth/sign_out.html:4
 #: templates/web/zurich/auth/sign_out.html:3
