@@ -879,16 +879,16 @@ subtest 'Status update shown as appropriate' => sub {
     }, sub {
         # ALL closed states must hide the public_response edit, and public ones
         # must show the answer in blue.
-        for (['planned', 1, 0],
-             ['fixed - council', 0, 1],
-             ['closed', 0, 1],
-             ['hidden', 0, 0])
+        for (['planned', 1, 0, 0],
+             ['fixed - council', 0, 1, 0],
+             ['closed', 0, 1, 0],
+             ['hidden', 0, 0, 1])
          {
-            my ($state, $update, $public) = @$_;
+            my ($state, $update, $public, $user_response) = @$_;
             $report->update({ state => $state });
             $mech->get_ok( '/admin/report_edit/' . $report->id );
             contains_or_lacks($mech, $update, "<textarea name='status_update'");
-            contains_or_lacks($mech, $public, '<div class="admin-official-answer">');
+            contains_or_lacks($mech, $public || $user_response, '<div class="admin-official-answer">');
 
             if ($public) {
                 $mech->get_ok( '/report/' . $report->id );
