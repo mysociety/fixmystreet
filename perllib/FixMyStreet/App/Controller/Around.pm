@@ -271,16 +271,9 @@ sub check_and_stash_category : Private {
 
 
     my $category = $c->req->param('filter_category');
-    if ( $category ) {
-        my $count = $c->model('DB::Contact')->not_deleted->search(
-            {
-                body_id => [ keys %bodies ],
-                category => $category
-            }
-        )->count;
-        if ( $count ) {
-            $c->stash->{filter_category} = $category;
-        }
+    my %categories_mapped = map { $_ => 1 } @categories;
+    if ( $categories_mapped{$category} ) {
+        $c->stash->{filter_category} = $category;
     }
 }
 
