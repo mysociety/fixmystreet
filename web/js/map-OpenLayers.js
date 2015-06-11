@@ -32,7 +32,7 @@ function fixmystreet_update_pin(lonlat) {
         // If the category filter appears on the map and the user has selected
         // something from it, then pre-fill the category field in the report,
         // if it's a value already present in the drop-down.
-        var category = $("#categories").val();
+        var category = $("#filter_categories").val();
         if (category !== undefined && $("#form_category option[value="+category+"]").length) {
             $("#form_category").val(category);
         }
@@ -255,8 +255,8 @@ function fixmystreet_onload() {
 
         // If the category filter dropdown exists on the page set up the
         // event handlers to populate it and react to it changing
-        if ($("select#categories").length) {
-            $("body").on("change", "#categories", fms_categories_or_status_changed);
+        if ($("select#filter_categories").length) {
+            $("body").on("change", "#filter_categories", fms_categories_or_status_changed);
         }
         // Do the same for the status dropdown
         if ($("select#statuses").length) {
@@ -412,7 +412,6 @@ $(function(){
         fixmystreet.drag.deactivate();
         $('#side-form').hide();
         $('#side').show();
-        $("select#categories").attr("name", "category");
         $('#sub_map_links').show();
         //only on mobile
         $('#mob_sub_map_links').remove();
@@ -527,15 +526,15 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
 // This class is used to get a JSON object from /ajax that contains
 // pins for the map and HTML for the sidebar. It does a fetch whenever the map
 // is dragged (modulo a buffer extending outside the viewport).
-// This subclass is required so we can pass the 'category' and 'status' query
+// This subclass is required so we can pass the 'filter_category' and 'status' query
 // params to /ajax if the user has filtered the map.
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     read: function(options) {
         // Pass the values of the category and status fields as query params
-        var category = $("#categories").val();
-        if (category !== undefined) {
+        var filter_category = $("#filter_categories").val();
+        if (filter_category !== undefined) {
             options.params = options.params || {};
-            options.params.category = category;
+            options.params.filter_category = filter_category;
         }
         var status = $("#statuses").val();
         if (status !== undefined) {
@@ -631,12 +630,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
-        // Although it's now hidden, the category filter for the map is still
-        // posted to the server when the report is sent. The name clashes with
-        // the category select element in the report form, which can cause
-        // issues with the wrong/no category being used for the report.
-        // Work around this by renaming the field when it's not shown.
-        $("select#categories").attr("name", "category_filter");
         if (typeof heightFix !== 'undefined') {
             heightFix('#report-a-problem-sidebar', '.content', 26);
         }
