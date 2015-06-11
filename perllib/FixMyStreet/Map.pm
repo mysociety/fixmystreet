@@ -117,7 +117,7 @@ sub map_pins {
 
     my $bbox = $c->req->param('bbox');
     my ( $min_lon, $min_lat, $max_lon, $max_lat ) = split /,/, $bbox;
-    my $category = $c->req->param('category');
+    my $category = $c->req->param('filter_category');
 
     # Filter reports by status, if present in query params
     my $states;

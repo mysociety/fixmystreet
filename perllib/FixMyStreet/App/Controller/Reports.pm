@@ -137,7 +137,7 @@ sub ward : Path : Args(2) {
     } )->all;
     @categories = map { $_->category } @categories;
     $c->stash->{filter_categories} = \@categories;
-    $c->stash->{filter_category} = $c->req->param('category');
+    $c->stash->{filter_category} = $c->req->param('filter_category');
 
     my $pins = $c->stash->{pins};
 
@@ -394,7 +394,7 @@ sub load_and_group_problems : Private {
 
     my $page = $c->req->params->{p} || 1;
     my $type = $c->req->params->{t} || 'all';
-    my $category = $c->req->params->{c} || $c->req->params->{category} || '';
+    my $category = $c->req->params->{c} || $c->req->params->{filter_category} || '';
 
     # Unlike the 't' query param, 'status' isn't affected by
     # the age of a report, so treat the filtering separately.

@@ -54,7 +54,7 @@ sub my : Path : Args(0) {
         %$params
     } if $c->cobrand->problems_clause;
 
-    my $category = $c->req->param('category');
+    my $category = $c->req->param('filter_category');
     if ( $category ) {
         $params->{category} = $category;
         $c->stash->{filter_category} = $category;
