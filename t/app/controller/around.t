@@ -153,7 +153,7 @@ subtest 'check category and status filtering works on /ajax' => sub {
     my $pins = $json->{pins};
     is scalar @$pins, 6, 'correct number of reports when no filters';
 
-    $json = $mech->get_ok_json( '/ajax?category=Pothole&bbox=' . $bbox );
+    $json = $mech->get_ok_json( '/ajax?filter_category=Pothole&bbox=' . $bbox );
     $pins = $json->{pins};
     is scalar @$pins, 2, 'correct number of Pothole reports';
 
@@ -161,7 +161,7 @@ subtest 'check category and status filtering works on /ajax' => sub {
     $pins = $json->{pins};
     is scalar @$pins, 3, 'correct number of open reports';
 
-    $json = $mech->get_ok_json( '/ajax?status=fixed&category=Vegetation&bbox=' . $bbox );
+    $json = $mech->get_ok_json( '/ajax?status=fixed&filter_category=Vegetation&bbox=' . $bbox );
     $pins = $json->{pins};
     is scalar @$pins, 1, 'correct number of fixed Vegetation reports';
 };

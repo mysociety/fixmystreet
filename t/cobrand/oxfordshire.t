@@ -39,7 +39,7 @@ subtest 'check /ajax defaults to open reports only' => sub {
         $pins = $json->{pins};
         is scalar @$pins, 3, 'correct number of reports returned with no filters';
 
-        $json = $mech->get_ok_json( '/ajax?category=Fences&bbox=' . $bbox );
+        $json = $mech->get_ok_json( '/ajax?filter_category=Fences&bbox=' . $bbox );
         $pins = $json->{pins};
         is scalar @$pins, 1, 'only one Fences report by default';
     }
