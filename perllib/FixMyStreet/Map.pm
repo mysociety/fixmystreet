@@ -119,16 +119,8 @@ sub map_pins {
     my ( $min_lon, $min_lat, $max_lon, $max_lat ) = split /,/, $bbox;
     my $category = $c->req->param('filter_category');
 
-    # Filter reports by status, if present in query params
-    my $states;
-    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
-    if ( $status eq 'all' ) {
-        $states = FixMyStreet::DB::Result::Problem->visible_states();
-    } elsif ( $status eq 'open' ) {
-        $states = FixMyStreet::DB::Result::Problem->open_states();
-    } elsif ( $status eq 'fixed' ) {
-        $states = FixMyStreet::DB::Result::Problem->fixed_states();
-    }
+    $c->forward( '/reports/stash_report_filter_status' );
+    my $states = $c->stash->{filter_problem_states};
 
     my ( $around_map, $around_map_list, $nearby, $dist ) =
       FixMyStreet::Map::map_features_bounds( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category, $states );

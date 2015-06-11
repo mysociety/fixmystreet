@@ -165,19 +165,7 @@ sub display_location : Private {
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
-    my $states;
-    $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
-    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
-    if ( $status eq 'all' ) {
-        $states = FixMyStreet::DB::Result::Problem->visible_states();
-        $c->stash->{filter_status} = 'all';
-    } elsif ( $status eq 'open' ) {
-        $states = FixMyStreet::DB::Result::Problem->open_states();
-        $c->stash->{filter_status} = 'open';
-    } elsif ( $status eq 'fixed' ) {
-        $states = FixMyStreet::DB::Result::Problem->fixed_states();
-        $c->stash->{filter_status} = 'fixed';
-    }
+    $c->forward( '/reports/stash_report_filter_status' );
 
     # Check the category to filter by, if any, is valid
     $c->forward('check_and_stash_category');
@@ -185,7 +173,7 @@ sub display_location : Private {
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval, $c->stash->{filter_category}, $states );
+        $interval, $c->stash->{filter_category}, $c->stash->{filter_problem_states} );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
