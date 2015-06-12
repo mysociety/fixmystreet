@@ -47,9 +47,8 @@ sub disambiguate_location {
     $town = 'chislehurst, BR7 6DH' if $string =~ /^white\s+horse/i;
 
     # Mottingham Lane is 90% inside Bromley, but goes outside too and Bing
-    # defaults to the top end of it. For some reason, we need both a postcode
-    # and "Bromley" to make this work.
-    $town = 'Mottingham Lane, SE9 4RW, Bromley' if $string =~ /^mottingham\s+lane/i;
+    # defaults to the top end of it.
+    $town = 'Mottingham Lane, SE9 4RW' if $string =~ /^mottingham\s+lane/i;
 
     $town = '' if $string =~ /orpington/i;
 
