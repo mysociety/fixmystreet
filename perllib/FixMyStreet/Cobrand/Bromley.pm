@@ -20,14 +20,14 @@ sub disambiguate_location {
 
     my $town = 'Bromley';
 
-    # Bing turns High St Bromley into Bromley High St which is in 
+    # Bing turns High St Bromley into Bromley High St which is in
     # Bromley by Bow.
     $town .= ', BR1' if $string =~ /^high\s+st(reet)?$/i;
 
     # Disambiguations required for BR5
     $town .= ', BR5' if $string =~ /^kelsey\s+r(?:oa)?d$/i;
     $town = 'BR5 Bromley' if $string =~ /^leith\s+hill$/i; # doesn't like appended BR5 for some reason
-    
+
     #  There has also been a road name change for a section of Ramsden Road
     #  (BR5) between Church Hill and Court Road has changed to 'Old Priory
     #  Avenue' - presently entering Old Priory Avenue simply takes the user to
@@ -42,9 +42,13 @@ sub disambiguate_location {
     # and BR6
     $town .= ', BR6' if $string =~ /^berrylands/i;
 
-    # White Horse Hill is on boundary with Greenwich, so need a 
+    # White Horse Hill is on boundary with Greenwich, so need a
     # specific postcode
     $town = 'chislehurst, BR7 6DH' if $string =~ /^white\s+horse/i;
+
+    # Mottingham Lane is 90% inside Bromley, but goes outside too and Bing
+    # defaults to the top end of it.
+    $town = 'Mottingham Lane, SE9 4RW' if $string =~ /^mottingham\s+lane/i;
 
     $town = '' if $string =~ /orpington/i;
 
