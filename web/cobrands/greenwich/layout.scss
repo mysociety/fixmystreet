@@ -85,6 +85,11 @@ body.frontpage {
     }
 }
 
+body.twothirdswidthpage #user-meta p {
+    padding-bottom: 0;
+    z-index: 2;
+}
+
 .nav-wrapper .nav-wrapper-2 {
     border-top: none;
 }
@@ -213,8 +218,13 @@ body.mappage {
     }
 }
 
-body.twothirdswidthpage .content .sticky-sidebar aside {
-    top: 13em;
+body.twothirdswidthpage .content .sticky-sidebar {
+    z-index: 0;
+    left: 43em;
+
+    aside {
+        top: 14em;
+    }
 }
 
 body.fullwidthpage, body.twothirdswidthpage {
