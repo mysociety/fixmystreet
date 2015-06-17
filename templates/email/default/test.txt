@@ -1,5 +1,4 @@
 Subject: test email ☺
-From: bad-sender@duff.com
 
 Hello,
 

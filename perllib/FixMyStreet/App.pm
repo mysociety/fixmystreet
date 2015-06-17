@@ -316,15 +316,15 @@ sub send_email {
         ]
     };
 
+    return if $c->is_abuser($vars->{to});
+
     # render the template
     my $content = $c->view('Email')->render( $c, $template, $vars );
 
     # create an email - will parse headers out of content
     my $email = Email::Simple->new($content);
-    $email->header_set( ucfirst($_), $vars->{$_} )
-      for grep { $vars->{$_} } qw( to from subject Reply-To);
-
-    return if $c->is_abuser( $email->header('To') );
+    $email->header_set( 'Subject', $vars->{subject} ) if $vars->{subject};
+    $email->header_set( 'Reply-To', $vars->{'Reply-To'} ) if $vars->{'Reply-To'};
 
     $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
         time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
@@ -337,6 +337,8 @@ sub send_email {
             _template_ => $email->body,    # will get line wrapped
             _parameters_ => {},
             _line_indent => '',
+            From => $vars->{from},
+            To => $vars->{to},
             $email->header_pairs
         }
     ) };
@@ -357,17 +359,7 @@ sub send_email_cron {
         $params->{From} = [ $sender, _($sender_name) ];
     }
 
-    my $first_to;
-    if (ref($params->{To}) eq 'ARRAY') {
-        if (ref($params->{To}[0]) eq 'ARRAY') {
-            $first_to = $params->{To}[0][0];
-        } else {
-            $first_to = $params->{To}[0];
-        }
-    } else {
-        $first_to = $params->{To};
-    }
-    return 1 if $c->is_abuser($first_to);
+    return 1 if $c->is_abuser($params->{To});
 
     $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@%s>', time(),
         unpack('h*', random_bytes(5, 1)), FixMyStreet->config('EMAIL_DOMAIN')
@@ -531,7 +523,17 @@ sub get_photo_params {
 }
 
 sub is_abuser {
-    my ($c, $email) = @_;
+    my ($c, $to) = @_;
+    my $email;
+    if (ref($to) eq 'ARRAY') {
+        if (ref($to->[0]) eq 'ARRAY') {
+            $email = $to->[0][0];
+        } else {
+            $email = $to->[0];
+        }
+    } else {
+        $email = $to;
+    }
     my ($domain) = $email =~ m{ @ (.*) \z }x;
     return $c->model('DB::Abuse')->search( { email => [ $email, $domain ] } )->first;
 }
