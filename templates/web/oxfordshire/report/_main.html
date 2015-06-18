@@ -56,10 +56,8 @@
         [% problem.meta_line(c) | html %]
         [%- IF !problem.used_map AND c.cobrand.moniker != 'emptyhomes' %]; <strong>([% loc('there is no pin shown as the user did not use the map') %])</strong>[% END %]
     </p>
-    [% IF problem.bodies_str %]
-        [% INCLUDE 'report/_council_sent_info.html' %]
-    [% ELSE %]
-        <p class="council_sent_info">[% loc('Not reported to council') %]</p>
+    [% IF problem.whensent %]
+        <p class="council_sent_info">[% problem.duration_string(c) %]</p>
     [% END %]
     [% mlog = problem.latest_moderation_log_entry(); IF mlog %]
         <p>Moderated by [% mlog.user.from_body.name %] at [% prettify_dt(mlog.whenedited) %]</p>
@@ -88,5 +86,13 @@
             <input type="button" class="btn cancel" value="cancel">
         </div>
     </form>
+  [% END %]
+
+  [% IF problem.bodies_str %]
+      [% INCLUDE 'report/_council_sent_info.html' %]
+  [% ELSE %]
+      <div class="council_info_box">
+          <p>[% loc('Not reported to council') %]</p>
+      </div>
   [% END %]
 </div>

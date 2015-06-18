@@ -340,6 +340,16 @@ sub reports_per_page {
     return FixMyStreet->config('ALL_REPORTS_PER_PAGE') || 100;
 }
 
+=head2 reports_ordering
+
+The order_by clause to use for reports on all reports page
+
+=cut
+
+sub reports_ordering {
+    return { -desc => 'lastupdate' };
+}
+
 =head2 on_map_list_limit
 
 Return the maximum number of items to be given in the list of reports on the map
@@ -355,6 +365,14 @@ Return the default maximum age for pins.
 =cut
 
 sub on_map_default_max_pin_age { return '6 months'; }
+
+=head2 on_map_default_status
+
+Return the default ?status= query parameter to use for filter on map page.
+
+=cut
+
+sub on_map_default_status { return 'all'; }
 
 =head2 allow_photo_upload
 
@@ -904,4 +922,3 @@ sub jurisdiction_id_example {
 }
 
 1;
-

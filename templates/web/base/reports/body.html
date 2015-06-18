@@ -84,28 +84,13 @@
 </p>
 [% END %]
 
+[% INCLUDE "reports/_list-filters.html", use_section_wrapper = 1 %]
+
 [% INCLUDE 'pagination.html', param = 'p' %]
 
-<section class="full-width">
-    [% INCLUDE column
-        problems = problems.${body.id}
-    %]
-</section>
+[% INCLUDE 'reports/_problem-list.html' %]
 
 [% INCLUDE 'pagination.html', param = 'p' %]
 
 </div>
 [% INCLUDE 'footer.html' %]
-
-[% BLOCK column %]
-[% IF problems %]
-
-<ul class="issue-list-a">
-[% FOREACH problem IN problems %]
-    [% INCLUDE 'reports/_list-entry.html' %]
-[% END %]
-</ul>
-
-[% END %]
-[% END %]
-

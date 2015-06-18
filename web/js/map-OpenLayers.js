@@ -29,6 +29,13 @@ function fixmystreet_update_pin(lonlat) {
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
+        // If the category filter appears on the map and the user has selected
+        // something from it, then pre-fill the category field in the report,
+        // if it's a value already present in the drop-down.
+        var category = $("#filter_categories").val();
+        if (category !== undefined && $("#form_category option[value="+category+"]").length) {
+            $("#form_category").val(category);
+        }
     });
 
     if (!$('#side-form-error').is(':visible')) {
@@ -69,6 +76,7 @@ function fixmystreet_zoomToBounds(bounds) {
 
 function fms_markers_list(pins, transform) {
     var markers = [];
+    var size = fms_marker_size_for_zoom(fixmystreet.map.getZoom() + fixmystreet.zoomOffset);
     for (var i=0; i<pins.length; i++) {
         var pin = pins[i];
         var loc = new OpenLayers.Geometry.Point(pin[1], pin[0]);
@@ -81,13 +89,36 @@ function fms_markers_list(pins, transform) {
         }
         var marker = new OpenLayers.Feature.Vector(loc, {
             colour: pin[2],
-            size: pin[5] || 'normal',
+            size: pin[5] || size,
             id: pin[3],
             title: pin[4] || ''
         });
         markers.push( marker );
     }
     return markers;
+}
+
+function fms_marker_size_for_zoom(zoom) {
+    if (zoom >= 15) {
+        return 'normal';
+    } else if (zoom >= 13) {
+        return 'small';
+    } else {
+        return 'mini';
+    }
+}
+
+function fms_markers_resize() {
+    var size = fms_marker_size_for_zoom(fixmystreet.map.getZoom() + fixmystreet.zoomOffset);
+    for (var i = 0; i < fixmystreet.markers.features.length; i++) {
+        fixmystreet.markers.features[i].attributes.size = size;
+    }
+    fixmystreet.markers.redraw();
+}
+
+function fms_categories_or_status_changed() {
+    // If the category or status has changed we need to re-fetch map markers
+    fixmystreet.markers.refresh({force: true});
 }
 
 function fixmystreet_onload() {
@@ -131,7 +162,8 @@ function fixmystreet_onload() {
             backgroundWidth: 60,
             backgroundHeight: 30,
             backgroundXOffset: -7,
-            backgroundYOffset: -30
+            backgroundYOffset: -30,
+            popupYOffset: -40
         },
         'big': {
             externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-big.png",
@@ -144,6 +176,27 @@ function fixmystreet_onload() {
             backgroundHeight: 40,
             backgroundXOffset: -10,
             backgroundYOffset: -35
+        },
+        'small': {
+            externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-small.png",
+            graphicWidth: 24,
+            graphicHeight: 32,
+            graphicXOffset: -12,
+            graphicYOffset: -32,
+            backgroundGraphic: fixmystreet.pin_prefix + "pin-shadow-small.png",
+            backgroundWidth: 30,
+            backgroundHeight: 15,
+            backgroundXOffset: -4,
+            backgroundYOffset: -15,
+            popupYOffset: -20
+        },
+        'mini': {
+            externalGraphic: fixmystreet.pin_prefix + "pin-${colour}-mini.png",
+            graphicWidth: 16,
+            graphicHeight: 20,
+            graphicXOffset: -8,
+            graphicYOffset: -20,
+            popupYOffset: -10
         }
     });
     var pin_layer_options = {
@@ -155,7 +208,7 @@ function fixmystreet_onload() {
     if (fixmystreet.page == 'around') {
         fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
-        pin_layer_options.protocol = new OpenLayers.Protocol.HTTP({
+        pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
             url: '/ajax',
             params: fixmystreet.all_pins ? { all_pins: 1 } : { },
             format: new OpenLayers.Format.FixMyStreet()
@@ -186,17 +239,29 @@ function fixmystreet_onload() {
         fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
             var feature = evt.feature;
             selectedFeature = feature;
+            var popupYOffset = feature.layer.styleMap.createSymbolizer(feature).popupYOffset || -40;
             var popup = new OpenLayers.Popup.FramedCloud("popup",
                 feature.geometry.getBounds().getCenterLonLat(),
                 null,
                 feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">" + translation_strings.more_details + "</a>",
-                { size: new OpenLayers.Size(0,0), offset: new OpenLayers.Pixel(0,-40) },
+                { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(0, popupYOffset) },
                 true, onPopupClose);
             feature.popup = popup;
             fixmystreet.map.addPopup(popup);
         });
         fixmystreet.map.addControl( fixmystreet.select_feature );
         fixmystreet.select_feature.activate();
+        fixmystreet.map.events.register( 'zoomend', null, fms_markers_resize );
+
+        // If the category filter dropdown exists on the page set up the
+        // event handlers to populate it and react to it changing
+        if ($("select#filter_categories").length) {
+            $("body").on("change", "#filter_categories", fms_categories_or_status_changed);
+        }
+        // Do the same for the status dropdown
+        if ($("select#statuses").length) {
+            $("body").on("change", "#statuses", fms_categories_or_status_changed);
+        }
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
@@ -354,6 +419,16 @@ $(function(){
         fixmystreet.page = 'around';
     });
 
+    // Hide the pin filter submit button. Not needed because we'll use JS
+    // to refresh the map when the filter inputs are changed.
+    $(".report-list-filters [type=submit]").hide();
+
+    if (fixmystreet.page == "my" || fixmystreet.page == "reports") {
+        $(".report-list-filters select").change(function() {
+            $(this).closest("form").submit();
+        });
+    }
+
     // Vector layers must be added onload as IE sucks
     if ($.browser.msie) {
         $(window).load(fixmystreet_onload);
@@ -447,6 +522,30 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
     }
 });
 
+/* Pan data request handler */
+// This class is used to get a JSON object from /ajax that contains
+// pins for the map and HTML for the sidebar. It does a fetch whenever the map
+// is dragged (modulo a buffer extending outside the viewport).
+// This subclass is required so we can pass the 'filter_category' and 'status' query
+// params to /ajax if the user has filtered the map.
+OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
+    read: function(options) {
+        // Pass the values of the category and status fields as query params
+        var filter_category = $("#filter_categories").val();
+        if (filter_category !== undefined) {
+            options.params = options.params || {};
+            options.params.filter_category = filter_category;
+        }
+        var status = $("#statuses").val();
+        if (status !== undefined) {
+            options.params = options.params || {};
+            options.params.status = status;
+        }
+        return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
+    },
+    CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"
+});
+
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
@@ -462,8 +561,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         if (typeof(obj.current_near) != 'undefined' && (current_near = document.getElementById('current_near'))) {
             current_near.innerHTML = obj.current_near;
         }
-        var markers = fms_markers_list( obj.pins, false );
-        return markers;
+        return fms_markers_list( obj.pins, false );
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
 });

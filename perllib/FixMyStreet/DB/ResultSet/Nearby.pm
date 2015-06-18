@@ -5,11 +5,15 @@ use strict;
 use warnings;
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval ) = @_;
+    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $category, $states ) = @_;
+
+    unless ( $states ) {
+        $states = FixMyStreet::DB::Result::Problem->visible_states();
+    }
 
     my $params = {
         non_public => 0,
-        state => [ FixMyStreet::DB::Result::Problem::visible_states() ],
+        state => [ keys %$states ],
     };
     $params->{'current_timestamp-lastupdate'} = { '<', \"'$interval'::interval" }
         if $interval;
@@ -19,6 +23,7 @@ sub nearby {
         %{ $c->cobrand->problems_clause },
         %$params
     } if $c->cobrand->problems_clause;
+    $params->{category} = $category if $category;
 
     my $attrs = {
         prefetch => 'problem',

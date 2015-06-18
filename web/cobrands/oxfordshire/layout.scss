@@ -1,8 +1,9 @@
 @import "_colours";
 @import "../sass/layout";
+@import "../sass/report_list";
 
 body, body a {
-  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif; 
+  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif;
 }
 
 #front-main {
@@ -65,23 +66,6 @@ body.twothirdswidthpage {
     }
 }
 
-//-------------------------------------------------
-// following declarations concern the map display:
-//-------------------------------------------------
-// So that map appears underneath the header
-.wrapper {
-    position: relative;
-    .table-cell {
-      padding-left: 13px; // added 13px to match Oxfordshire's normal look
-      padding-right: 13px;
-    }
-}
-.ie6, .ie7 {
-    .wrapper {
-        padding-top: 1em;
-    }
-}
-
 // To prevent font size larger interfering with the fixed Oxfordshire layout
 .container { width: auto; }
 .full-width { width: 464px; }
@@ -110,57 +94,231 @@ body.twothirdswidthpage .content {
 }
 
 body.mappage {
-    .content {
-        width: 345px;
-        padding: 1em;
-        position: relative;
-        z-index: 1;
-    }
+  $mappage-header-height: 60px;
 
-    .container {
-        width: auto;
-        min-height: 635px;
-        z-index: auto;
-    }
-    .full-width { width: 377px; }
-    .shadow-wrap { width: 377px; }
+  #oxford-wrapper {
+    width: auto;
+    padding: 0;
+    background: transparent;
+  }
 
-    #report-a-problem-sidebar {
-        top: 1em;
-        left: 23.5em;
-    }
-}
-
-.ie6, .ie7 {
-    body.mappage .container {
-        width: 464px;
-        margin-left: 0;
-    }
-}
-
-// As map can scroll and isn't at the top, give it an edge
-#map_box {
-    border: solid 1px #999;
-    top: 1em;
-    right: 0;
+  #oxford-header {
+    position: fixed;
+    top: 0;
     left: 0;
-    margin: 0 1em;
-}
+    right: 0;
+    z-index: 2; // 1 more than `body.mappage .content`
+    width: auto;
+    min-height: $mappage-header-height;
+    padding: 0;
+    background-color: #069b01; // picked from header.jpg
+    background-position: 100% 40%;
+    overflow: auto;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
 
-// Perhaps fix map location (should be in central?)
-.ie6 #map_box, .ie7 #map_box {
-    right: -480px;
-}
-
-// So as not to interfere with the Oxfordshire footer, make the fixed nav ("get updates" etc) static.
-.shadow-wrap {
-    position: static;
-    padding-top: 0;
-    margin-bottom: 1em;
-    ul#key-tools {
-        border-top: none;
-        border-bottom: 1px solid $primary;
+    & > * {
+      display: none;
     }
+
+    a.logo {
+      display: block;
+      float: left;
+      height: $mappage-header-height;
+      width: 200px;
+      margin: 0;
+      background: transparent url("/cobrands/oxfordshire/images/logo-light-green.gif") no-repeat 50% 50%;
+      text-indent: -999px;
+
+      * {
+        display: none;
+      }
+    }
+
+    #navigation {
+      display: block;
+      position: static;
+      float: right;
+    }
+
+    .menubar {
+      display: block;
+      width: auto;
+      border-top: none;
+      padding: 0;
+
+      // override super-specific "#navigation .menubar .menu-inner .menu>li>a"
+      // selector from OCC header styles in oxfordshire.scss
+      .menu-inner .menu {
+        li {
+          margin-bottom: 0;
+        }
+
+        a, span {
+          line-height: 20px;
+          padding-top: ($mappage-header-height - 20px) / 2;
+          padding-bottom: ($mappage-header-height - 20px) / 2;
+        }
+      }
+    }
+
+    .oxford-user {
+      display: block;
+      font-size: 13px;
+      margin: 0;
+      color: mix(#ddd, #069b01, 80%);
+
+      p {
+          margin: 0;
+          padding-top: ($mappage-header-height - 20px) / 2;
+          padding-bottom: ($mappage-header-height - 20px) / 2;
+          line-height: 20px;
+      }
+
+      a {
+        padding: 0 10px;
+        text-decoration: none;
+      }
+    }
+  }
+
+  .wrapper .table-cell {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .container {
+    width: auto;
+  }
+
+  .content {
+    padding: 1em;
+    padding-top: $mappage-header-height + 10px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    background-color: $oxfordshire_very_light_green;
+
+    // fixmystreet.js gives this element a min-height equal to the window height.
+    // Set border-box sizing, so that our padding doesn't get added onto height.
+    box-sizing: border-box;
+
+    .extra-text {
+      padding: 1em;
+      margin: 0 -1em;
+      border-bottom: 1px solid $oxfordshire_mid_grey_green;
+
+      p:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .full-width {
+      width: auto;
+      margin: 0 -1em;
+    }
+
+    input[type="file"] {
+      background-color: transparent;
+    }
+  }
+
+  // Space between green header and sidebar content
+  #report-a-problem-main,
+  .problem-header {
+    padding-top: 1em;
+  }
+
+  // The "Fixed" / "Unknown" tabs on Oxford report pages are "folded"
+  // round right edge of the sidebar, rather than over the top of it.
+  .banner {
+    margin: 0 -1em; // line tab up with right edge of 1em padded sidebar
+
+    // Float the tab, rather than absolute positioning, to benefit
+    // from text wrapping and stop content being hidden behind it.
+    p {
+      position: relative; // still required for :before positioning
+      top: auto;
+      right: auto;
+      float: right;
+      margin: 1em -0.75em 0.5em 1em;
+
+      // Swap "fold" triangle to bottom right corner of box, rather than top left.
+      &:before {
+        left: auto;
+        right: 0;
+        top: auto;
+        bottom: -0.75em;
+        border-left: none;
+        border-bottom: none !important; // override default id selectors
+        border-top: 0.75em solid #888;
+        border-right: 0.75em solid transparent;
+      }
+
+      &#fixed:before {
+        border-top-color: #1D4D05; // dark green
+        border-top-color: $col_fixed_label_dark;
+      }
+    }
+  }
+
+  #oxford-footer {
+    display: none;
+  }
+}
+
+.report-list, .issue-list-a {
+    li:after {
+        background-color: $oxfordshire_mid_grey_green;
+    }
+
+    h3 {
+        color: $oxfordshire_link_colour;
+    }
+}
+
+h4.static-with-rule {
+  margin-top: 1em; // down from default 2em, avoid extra space between heading and .council_info_box
+  margin-bottom: 0; // no space between this and the .issue-list items
+  background: transparent; // rather than light grey
+  padding: 0.75em 1em * (1/0.875); // compensate for 0.875 font-size
+}
+
+.issue-list li {
+  background: transparent;
+  margin-top: 0; // no space between list items
+
+  // Replicate .report-list styling, a bit
+  border-top: 1px solid $oxfordshire_mid_grey_green;
+  padding: 1em 1em 1em 0;
+  margin-left: 1em;
+
+  .update-wrap .update-text > :last-child {
+    margin-bottom: 0;
+  }
+
+  .meta-2 {
+    font-style: normal;
+  }
+}
+
+.form-box {
+  background-color: darken($oxfordshire_very_light_green, 5%);
+}
+
+.shadow-wrap {
+    width: 432px;
+
+    ul#key-tools {
+        -webkit-box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
+        -moz-box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
+        box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
+        border-top-width: 2px;
+    }
+}
+
+// Stop bottom of update form disappearing behind the #key-tools shadow
+#update_form {
+  padding-bottom: 4em;
 }
 
 #oxford-wrapper #front-main #postcodeForm div {
@@ -195,19 +353,46 @@ input.green-btn{
   cursor: pointer;
 }
 
-.big-green-banner {
-    text-align: left;
-    text-transform: inherit;
-    font-family: inherit;
-    font-size: 1.5em;
-    padding: 0.5em 2em 0.5em 0.5em;
-    line-height: 1.3;
-    background: #339e00 url("/cobrands/fixmystreet/images/sprite.png") right -2177px no-repeat;
+.click-the-map {
+    border-bottom-color: $oxfordshire_mid_grey_green;
 
-    .ie6 &, .ie7 & {
-        zoom: 1;
-        position: relative;
+    p {
+        color: $oxfordshire_lt_green;
+        background-image: url(/cobrands/oxfordshire/images/click-map-chevron-small.gif);
     }
+}
+
+#skip-this-step {
+  display: block;
+  color: inherit;
+  margin: 0 -15px;
+  padding: 16px;
+  font-size: 18px;
+  line-height: 20px;
+  border-bottom: 1px solid #E7E1C0;
+  background: #FDF4C5;
+
+  em {
+    font-style: normal;
+    text-decoration: underline;
+    color: $primary;
+  }
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  html.js & {
+    // If javascript is enabled, hide the skip link off-screen,
+    // but keep it visible for screen readers.
+    position: absolute;
+    top: -999px;
+
+    &:focus {
+      // And show it again if it receives focus (eg: via tab key)
+      position: static;
+    }
+  }
 }
 
 .extra-text__image {

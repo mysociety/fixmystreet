@@ -1,0 +1,155 @@
+// You should @import this file in a cobrand's layout.scss if it's using
+// the new-style combined report list with category/status filters.
+
+.report-list-filters {
+  padding: 1em 1em 0 1em;
+  margin-bottom: 0.5em;
+  color: #666;
+  font-size: 0.85em;
+
+  label, select {
+    display: inline-block;
+    width: auto;
+  }
+
+  label {
+    font-weight: normal;
+    margin: 0;
+
+    & + label {
+      margin-left: 0.2em;
+    }
+  }
+
+  select {
+    color: inherit;
+    font-family: inherit;
+    font-size: 1em;
+
+    border: 1px solid #ced7c4;
+    box-shadow: 0 1px 0 #fff;
+    height: 2em;
+    margin-left: 0.2em;
+    max-width: 13em;
+  }
+}
+
+.report-list, .issue-list-a {
+  margin-left: 0;
+
+  li {
+    list-style: none;
+    position: relative;
+    margin: 0;
+    background: none;
+
+    a {
+      display: block;
+      padding: 1em;
+      padding-left: 4em;
+      background: transparent url(/i/pin-yellow-small.png) no-repeat 1em center;
+
+      &:hover, &:focus {
+        background-color: #fff;
+        background-repeat: no-repeat;
+        background-position: 1em center;
+        background: transparent url(/i/pin-yellow-small.png) no-repeat 1em center;
+        text-decoration: none;
+      }
+    }
+
+    &.yellow a {
+        background-image: url(/i/pin-yellow-small.png);
+    }
+    &.green a {
+        background-image: url(/i/pin-green-small.png);
+    }
+    &.red a {
+        background-image: url(/i/pin-red-small.png);
+    }
+    &.grey a {
+        background-image: url(/i/pin-grey-small.png);
+    }
+
+    &.empty p {
+        display: block;
+        padding: 1em;
+        font-size: 1em;
+        text-align: center;
+    }
+
+    &:after {
+      content: "";
+      display: block;
+      height: 1px;
+      position: absolute;
+      left: 4em;
+      right: 0;
+      bottom: 0;
+      background-color: #e5e5e5;
+    }
+
+    &.empty:after {
+        left: 0;
+    }
+  }
+
+  h3, p {
+    margin: 0;
+  }
+
+  h3 {
+    color: $primary;
+    margin-bottom: 0.2em;
+  }
+
+  p {
+    font-size: 0.8em;
+    color: #777;
+  }
+}
+
+.big-green-banner {
+  display: none; // hide the empty banner by default
+
+  &.mobile-map-banner {
+    display: block; // show it again once the mobile javascript adds this class
+  }
+}
+
+.click-the-map {
+  color: #000;
+  margin: -10px -1em 0 -1em; // overlap padding on parents
+  padding: 18px;
+  border-bottom: 1px solid #e5e5e5;
+  background: #fff url('/i/click-map-chevron-big.gif') 90% 12px no-repeat;
+
+  h2 {
+    font-family: inherit;
+    margin: 0 0 5px 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 20px;
+    color: $primary;
+    padding-right: 20px;
+    background: transparent url('/i/click-map-chevron-small.gif') 100% center no-repeat;
+    display: inline-block;
+  }
+
+  img {
+    // the little chevron icon
+    vertical-align: -1px;
+    margin-left: 0.2em;
+  }
+}
+
+body.frontpage {
+    .issue-list-a, .list-a {
+        li .text {
+            padding-left: 3em;
+        }
+    }
+}
