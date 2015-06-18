@@ -1,0 +1,32 @@
+[% IF use_section_wrapper %]
+<section class="full-width">
+    <form method="get" action="">
+[% END %]
+
+        <p class="report-list-filters">
+            <label>
+                Show
+                <select name="status" id="statuses">
+                    <option value="all"[% ' selected' IF filter_status == 'all' %]>all reports</option>
+                    <option value="open"[% ' selected' IF filter_status == 'open' %]>unfixed reports</option>
+                    <option value="fixed"[% ' selected' IF filter_status == 'fixed' %]>fixed reports</option>
+                </select>
+            </label>
+            <label>
+                about
+                <select name="filter_category" id="filter_categories">
+                    <option value="">Everything</option>
+                    [% FOR category IN filter_categories %]
+                        <option value="[% category | html %]"[% ' selected' IF filter_category == category %]>
+                            [% category | html %]
+                        </option>
+                    [% END %]
+                </select>
+            </label>
+            <input type=submit value="Go" />
+        </p>
+
+[% IF use_section_wrapper %]
+    </form>
+</section>
+[% END %]
