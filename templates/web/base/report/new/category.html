@@ -9,7 +9,7 @@
       [%- ELSE %]
         [%- loc('Category') %]
       [%- END -%]</label>
-    <select name='category' id='form_category'[% ' onchange="form_category_onchange()"' IF category_extras.size %]>
+    <select name='category' id='form_category'>
         [% FOREACH cat_op IN category_options %]
         [% cat_op_lc = cat_op | lower %]
         <option value='[% cat_op | html %]'[% ' selected' IF report.category == cat_op || category == cat_op_lc || (category_options.size == 2 AND loop.last) -%]
