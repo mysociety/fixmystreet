@@ -548,9 +548,18 @@ sub admin_report_edit {
         #
         #   Note that 2 types of email may be sent
         #    1) _admin_send_email()  sends an email to the *user*, if their email is confirmed
+        #
         #    2) setting $problem->whensent(undef) may make it eligible for generating an email
         #   to the body (internal or external).  See DBRS::Problem->send_reports for Zurich-
         #   specific categories which are eligible for this.
+        #
+        #   It looks like both of these will do:
+        #       a) TT processing of [% ... %] directives, in FMS::App->send_email(_cron)
+        #       b) pseudo-PHP substitution of <?=$values['name']?> which is done as
+        #       naive substitution
+        #       commonlib mySociety::Email
+        #
+        #   So it makes sense to add new parameters as the more powerful TT (a).
 
         my $redirect = 0;
         my $new_cat = $c->get_param('category') || '';
@@ -858,6 +867,7 @@ sub _admin_send_email {
         to => [ $to ],
         url => $c->uri_for_email( $problem->url ),
         from => [ $sender, $sender_name ],
+        problem => $problem,
     } );
 }
 
