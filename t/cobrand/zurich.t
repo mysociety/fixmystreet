@@ -515,6 +515,8 @@ subtest "external report triggers email" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
     }, sub {
+        # Set the public_response manually here because the default one will have line breaks that get escaped as HTML, causing the comparison to fail.
+        $report->set_extra_metadata('public_response' => 'Freundliche Gruesse Ihre Stadt Zuerich');
         $report->update({ state => 'closed' }); # required to see body_external field
         $mech->get_ok( '/admin/report_edit/' . $report->id );
         $mech->submit_form_ok( {
