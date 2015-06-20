@@ -16,23 +16,10 @@ From: FixMyStreet <division@example.org>
 
 Gr=FCezi External Body,
 
-Die folgende Meldung wurde auf
-http://www.stadt-zuerich.ch/zueriwieneu erfasst:
-
 =D6ffentliche URL: http://www.example.org/report/REPORT_ID
 
-"Z=FCri wie neu" ist eine Dienstleistung der Stadt Z=FCrich zum Thema
-B=FCrgerbeteiligung. Auf dieser Plattform kann die Bev=F6lkerung auf
-Sch=E4den und M=E4ngel an der st=E4dtischen Infrastruktur hinweisen. Diese
-Meldung wurde Ihnen von der Stadt Z=FCrich gesendet, da es Ihr
-Zust=E4ndigkeitsgebiet betreffen k=F6nnte.
-
 Bei Fragen zu "Z=FCri wie neu" wenden Sie sich bitte an
-gis-zentrum@zuerich.ch.
-
-Freundliche Gr=FCsse
-
-Ihre Stadt Z=FCrich=20=
+gis-zentrum@zuerich.ch.=
 
 
 
