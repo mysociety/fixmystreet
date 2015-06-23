@@ -15,13 +15,13 @@
             <label>
                 about
                 [% IF category %]
-                    <select name=category id="categories">
+                    <select name="category" id="categories">
                         <option value="[% category | html %]" selected>
                             [% category | html %]
                         </option>
                     </select>
                 [% ELSE %]
-                    <select name=category id="categories">
+                    <select name="category" id="categories">
                         <option value="">Everything</option>
                     </select>
                 [% END %]
