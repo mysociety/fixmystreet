@@ -45,3 +45,15 @@ dd, p {
   line-height: 1.4em;
 }
 
+// TODO: Should this be applied to the base base stylesheet, to prevent possible similar issues in other cobrands?
+#sub_map_links {
+  line-height: 1em;
+}
+
+body.frontpage {
+    .issue-list-a, .list-a {
+        li .text {
+            padding-left: 3em;
+        }
+    }
+}
