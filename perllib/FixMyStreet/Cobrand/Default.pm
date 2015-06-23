@@ -375,6 +375,14 @@ Return undef to show all visible reports.
 
 sub on_map_default_states { return undef; }
 
+=head2 on_map_default_status
+
+Return the default ?status= query parameter to use for filter on map page.
+
+=cut
+
+sub on_map_default_status { return 'all'; }
+
 =head2 allow_photo_upload
 
 Return a boolean indicating whether the cobrand allows photo uploads
