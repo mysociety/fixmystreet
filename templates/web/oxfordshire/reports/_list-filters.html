@@ -14,13 +14,17 @@
             </label>
             <label>
                 about
-                <select name="category">
-                    <option value="">anything</option>
-                    <option value="">bridges</option>
-                    <option value="">carriageway defect</option>
-                    <option value="">debris/spillage</option>
-                    <option value="">…</option>
-                </select>
+                [% IF category %]
+                    <select name=category id="categories">
+                        <option value="[% category | html %]" selected>
+                            [% category | html %]
+                        </option>
+                    </select>
+                [% ELSE %]
+                    <select name=category id="categories" disabled>
+                        <option value="">loading&hellip;</option>
+                    </select>
+                [% END %]
             </label>
             <input type=submit value="go" />
         </p>
