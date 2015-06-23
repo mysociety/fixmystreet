@@ -27,6 +27,8 @@
     [% INCLUDE '_hart_hants_note.html' %]
 [% END %]
 
+[% INCLUDE "reports/_list-filters.html", use_section_wrapper = 1 %]
+
 [% INCLUDE 'pagination.html',
     pager = problems_pager,
     param = 'p'
