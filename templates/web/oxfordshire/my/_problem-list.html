@@ -1,0 +1,9 @@
+[% FOREACH p = problems.all %]
+    [% INCLUDE problem %]
+[% END %]
+
+[% BLOCK problem %]
+    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
+    [% INCLUDE 'reports/_list-entry.html', problem = p, no_fixed =1 %]
+    [% "</ul>" IF loop.last %]
+[% END %]

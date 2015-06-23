@@ -58,13 +58,3 @@
 </div>
 
 [% INCLUDE 'footer.html' %]
-
-[% BLOCK problem %]
-    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
-    [% IF c.cobrand.moniker == 'oxfordshire' %]
-        [% INCLUDE 'reports/_list-entry.html', problem = p, no_fixed =1 %]
-    [% ELSE %]
-        [% INCLUDE 'report/_item.html', problem = p, no_fixed =1 %]
-    [% END %]
-    [% "</ul>" IF loop.last %]
-[% END %]
