@@ -1,12 +1,14 @@
-[% FOREACH p = problems.all %]
-    [% INCLUDE problem %]
-[% END %]
-
-[% BLOCK problem %]
-    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
-    [% INCLUDE 'reports/_list-entry.html', problem = p, no_fixed =1 %]
-    [% "</ul>" IF loop.last %]
-[% END %]
+<ul class='issue-list-a full-width'>
+    [% IF problems.all %]
+        [% FOREACH p = problems.all %]
+            [% INCLUDE 'reports/_list-entry.html', problem = p, no_fixed =1 %]
+        [% END %]
+    [% ELSE %]
+        <li class="empty">
+            <p>[% loc('There are no reports to show.') %]</p>
+        </li>
+    [% END %]
+</ul>
 
 [% IF ! problems.size %]
 <!-- Preserve behaviour of map filters despite map not being shown -->
