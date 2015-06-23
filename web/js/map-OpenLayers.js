@@ -109,6 +109,12 @@ function fms_markers_resize() {
     fixmystreet.markers.redraw();
 }
 
+function fms_categories_changed() {
+    // If the category has changed we need to re-fetch markers that match
+    // the new value
+    fixmystreet.markers.refresh({force: true});
+}
+
 function fixmystreet_onload() {
     if ( fixmystreet.area.length ) {
         for (var i=0; i<fixmystreet.area.length; i++) {
@@ -240,6 +246,12 @@ function fixmystreet_onload() {
         fixmystreet.map.addControl( fixmystreet.select_feature );
         fixmystreet.select_feature.activate();
         fixmystreet.map.events.register( 'zoomend', null, fms_markers_resize );
+
+        // If the category filter dropdown exists on the page set up the
+        // event handlers to populate it and react to it changing
+        if ($("select#categories").length) {
+            $("body").on("change", "#categories", fms_categories_changed);
+        }
     } else if (fixmystreet.page == 'new') {
         fixmystreet_activate_drag();
     }
@@ -397,6 +409,10 @@ $(function(){
         fixmystreet.page = 'around';
     });
 
+    // Hide the pin filter submit button. Not needed because we'll use JS
+    // to refresh the map when the filter inputs are changed.
+    $(".report-list-filters [type=submit]").hide();
+
     // Vector layers must be added onload as IE sucks
     if ($.browser.msie) {
         $(window).load(fixmystreet_onload);
@@ -529,8 +545,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         if (typeof(obj.current_near) != 'undefined' && (current_near = document.getElementById('current_near'))) {
             current_near.innerHTML = obj.current_near;
         }
-        var markers = fms_markers_list( obj.pins, false );
-        return markers;
+        return fms_markers_list( obj.pins, false );
     },
     CLASS_NAME: "OpenLayers.Format.FixMyStreet"
 });
