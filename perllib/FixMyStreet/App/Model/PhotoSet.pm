@@ -8,6 +8,7 @@ use if !$ENV{TRAVIS}, 'Image::Magick';
 use Scalar::Util 'openhandle', 'blessed';
 use Digest::SHA qw(sha1_hex);
 use Image::Size;
+use MIME::Base64;
 
 has c => (
     is => 'ro',
@@ -22,7 +23,7 @@ has data => ( # generic data from DB field
     lazy => 1,
     default => sub {
         # yes, this is a little circular: data -> data_items -> items -> data
-        # e.g. if not provided, then we're presumably uploading/etc., so calculate from 
+        # e.g. if not provided, then we're presumably uploading/etc., so calculate from
         # the stored cached fileids
         # (obviously if you provide none of these, then you'll get an infinite loop)
         my $self = shift;
@@ -115,6 +116,24 @@ has images => ( #  AoA of [$fileid, $binary_data] tuples
                     $c->log->info('Bad photo tried to upload, type=' . $ct);
                     $c->stash->{photo_error} = _('Please upload a JPEG image only');
                     return ();
+                }
+
+                # base64 decode the file if it's encoded that way
+                # Catalyst::Request::Upload doesn't do this automatically
+                # unfortunately.
+                my $transfer_encoding = $upload->headers->header('Content-Transfer-Encoding');
+                if (defined $transfer_encoding && $transfer_encoding eq 'base64') {
+                    my $decoded = decode_base64($upload->slurp);
+                    if (open my $fh, '>', $upload->tempname) {
+                        binmode $fh;
+                        print $fh $decoded;
+                        close $fh
+                    } else {
+                        my $c = $self->c;
+                        $c->log->info('Couldn\'t open temp file to save base64 decoded image: ' . $!);
+                        $c->stash->{photo_error} = _("Sorry, we couldn't save your image(s), please try again.");
+                        return ();
+                    }
                 }
 
                 # get the photo into a variable
