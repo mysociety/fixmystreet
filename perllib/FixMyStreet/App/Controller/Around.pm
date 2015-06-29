@@ -240,7 +240,7 @@ sub check_location_is_acceptable : Private {
 
 =head2 check_and_stash_category
 
-Check that the 'category' query param is valid, if it's present. Stores
+Check that the 'filter_category' query param is valid, if it's present. Stores
 the validated string in the stash as filter_category.
 Puts all the valid categories in filter_categories on the stash.
 
@@ -270,17 +270,10 @@ sub check_and_stash_category : Private {
     $c->stash->{filter_categories} = \@categories;
 
 
-    my $category = $c->req->param('category');
-    if ( $category ) {
-        my $count = $c->model('DB::Contact')->not_deleted->search(
-            {
-                body_id => [ keys %bodies ],
-                category => $category
-            }
-        )->count;
-        if ( $count ) {
-            $c->stash->{filter_category} = $category;
-        }
+    my $category = $c->req->param('filter_category');
+    my %categories_mapped = map { $_ => 1 } @categories;
+    if ( defined $category && $categories_mapped{$category} ) {
+        $c->stash->{filter_category} = $category;
     }
 }
 
