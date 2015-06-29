@@ -109,6 +109,7 @@ sub ward : Path : Args(2) {
     $c->forward( 'ward_check', [ $ward ] )
         if $ward;
     $c->forward( 'check_canonical_url', [ $body ] );
+    $c->forward( 'stash_report_filter_status' );
     $c->forward( 'load_and_group_problems' );
 
     my $body_short = $c->cobrand->short_name( $c->stash->{body} );
@@ -119,16 +120,6 @@ sub ward : Path : Args(2) {
     $c->stash->{body_url} = '/reports/' . $body_short;
 
     $c->stash->{stats} = $c->cobrand->get_report_stats();
-
-    $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
-    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
-    if ( $status eq 'all' ) {
-        $c->stash->{filter_status} = 'all';
-    } elsif ( $status eq 'open' ) {
-        $c->stash->{filter_status} = 'open';
-    } elsif ( $status eq 'fixed' ) {
-        $c->stash->{filter_status} = 'fixed';
-    }
 
     my @categories = $c->stash->{body}->contacts->search( undef, {
         columns => [ 'category' ],
@@ -393,22 +384,11 @@ sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
     my $page = $c->req->params->{p} || 1;
+    # NB: If 't' is specified, it will override 'status'.
     my $type = $c->req->params->{t} || 'all';
     my $category = $c->req->params->{c} || $c->req->params->{filter_category} || '';
 
-    # Unlike the 't' query param, 'status' isn't affected by
-    # the age of a report, so treat the filtering separately.
-    # If 't' is specified, it will override 'status'.
-    my $states;
-    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
-    if ( $status eq 'all' ) {
-        $states = FixMyStreet::DB::Result::Problem->visible_states();
-    } elsif ( $status eq 'open' ) {
-        $states = FixMyStreet::DB::Result::Problem->open_states();
-    } elsif ( $status eq 'fixed' ) {
-        $states = FixMyStreet::DB::Result::Problem->fixed_states();
-    }
-
+    my $states = $c->stash->{filter_problem_states};
     my $where = {
         non_public => 0,
         state      => [ keys %$states ]
@@ -515,6 +495,26 @@ sub redirect_body : Private {
     $url   .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
         if $c->stash->{ward};
     $c->res->redirect( $c->uri_for($url, $c->req->params ) );
+}
+
+sub stash_report_filter_status : Private {
+    my ( $self, $c ) = @_;
+
+    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
+    if ( $status eq 'all' ) {
+        $c->stash->{filter_status} = 'all';
+        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->visible_states();
+    } elsif ( $status eq 'open' ) {
+        $c->stash->{filter_status} = 'open';
+        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->open_states();
+    } elsif ( $status eq 'fixed' ) {
+        $c->stash->{filter_status} = 'fixed';
+        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->fixed_states();
+    } else {
+        $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
+    }
+
+    return 1;
 }
 
 sub add_row {

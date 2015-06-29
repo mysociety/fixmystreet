@@ -28,24 +28,12 @@ sub my : Path : Args(0) {
     my $p_page = $c->req->params->{p} || 1;
     my $u_page = $c->req->params->{u} || 1;
 
-    my $states;
-    $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
-    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
-    if ( $status eq 'all' ) {
-        $states = FixMyStreet::DB::Result::Problem->visible_states();
-        $c->stash->{filter_status} = 'all';
-    } elsif ( $status eq 'open' ) {
-        $states = FixMyStreet::DB::Result::Problem->open_states();
-        $c->stash->{filter_status} = 'open';
-    } elsif ( $status eq 'fixed' ) {
-        $states = FixMyStreet::DB::Result::Problem->fixed_states();
-        $c->stash->{filter_status} = 'fixed';
-    }
+    $c->forward( '/reports/stash_report_filter_status' );
 
     my $pins = [];
     my $problems = {};
 
-
+    my $states = $c->stash->{filter_problem_states};
     my $params = {
         state => [ keys %$states ],
     };
