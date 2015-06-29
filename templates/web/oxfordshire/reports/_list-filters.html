@@ -14,7 +14,7 @@
             </label>
             <label>
                 about
-                <select name="category" id="categories">
+                <select name="filter_category" id="filter_categories">
                     <option value="">Everything</option>
                     [% FOR category IN filter_categories %]
                         <option value="[% category | html %]"[% ' selected' IF filter_category == category %]>
