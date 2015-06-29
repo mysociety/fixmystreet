@@ -276,6 +276,35 @@ body.mappage {
     }
 }
 
+h4.static-with-rule {
+  margin-top: 1em; // down from default 2em, avoid extra space between heading and .council_info_box
+  margin-bottom: 0; // no space between this and the .issue-list items
+  background: transparent; // rather than light grey
+  padding: 0.75em 1em * (1/0.875); // compensate for 0.875 font-size
+}
+
+.issue-list li {
+  background: transparent;
+  margin-top: 0; // no space between list items
+
+  // Replicate .report-list styling, a bit
+  border-top: 1px solid $oxfordshire_mid_grey_green;
+  padding: 1em 1em 1em 0;
+  margin-left: 1em;
+
+  .update-wrap .update-text > :last-child {
+    margin-bottom: 0;
+  }
+
+  .meta-2 {
+    font-style: normal;
+  }
+}
+
+.form-box {
+  background-color: darken($oxfordshire_very_light_green, 5%);
+}
+
 .shadow-wrap {
     width: 432px;
 
