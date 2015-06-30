@@ -1,0 +1,296 @@
+@import "_colours";
+@import "_fonts";
+@import "../sass/layout";
+@import "../sass/report_list";
+
+$fixed_page_width: 990px;
+
+/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+/* For IE 6/7 only */
+.clearfix { *zoom: 1; }
+
+
+#site-logo,
+.ie6 #site-logo,
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+body.authpage #site-logo,
+.ie6 body.authpage #site-logo,
+body.twothirdswidthpage #site-logo,
+.ie6 body.twothirdswidthpage #site-logo
+{
+        position: relative;
+        top: 14px;
+        left: 14px;
+        margin: 0;
+        padding: 0;
+        background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
+        width: 170px;
+        height: 83px;
+}
+
+.container, #main-nav {
+    width: $fixed_page_width;
+}
+
+#front-main {
+    background-color: $base_bg;
+    padding-top: 0.5em;
+    text-align: left;
+
+    #front-main-container {
+        max-width: $fixed_page_width;
+        background-color: transparent;
+        padding: 1em 0;
+    }
+
+    #postcodeForm div {
+        margin: 0;
+    }
+
+    h1 {
+        color: $greenwich_dark_red;
+        padding-bottom: 3em;
+    }
+}
+
+body.frontpage #site-header, #site-header {
+    height: auto;
+
+    .container {
+        min-height: 0;
+    }
+
+    .container:first-child {
+        background: url("/cobrands/greenwich/mastWave.gif") 0 0 no-repeat;
+        min-height: 110px;
+    }
+}
+
+body.frontpage {
+    #user-meta p {
+        top: -9em;
+    }
+
+    .issue-list-a li {
+        border-left: solid 4px $primary;
+    }
+
+    #fms-menu-desktop {
+        position: absolute;
+        width: 990px;
+        top: 262px;
+    }
+}
+
+body.twothirdswidthpage #user-meta p {
+    padding-bottom: 0;
+    z-index: 2;
+}
+
+.nav-wrapper .nav-wrapper-2 {
+    border-top: none;
+}
+
+#main-menu {
+    display: none;
+}
+
+#greenwich-menu-desktop, #fms-menu-desktop, #greenwich-breadcrumb {
+    display: block;
+    font-size: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+    li {
+        display: inline-block;
+        list-style: none;
+        margin: 0;
+        padding: 0.25em 0.5em;
+
+        span, a {
+            padding: 0.5em;
+        }
+
+        span, a:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+#greenwich-menu-desktop {
+    background: $greenwich_dark_grey;
+    font-family: $heading-font;
+    font-style: italic;
+    border-top: solid 4px $primary;
+    border-bottom: solid 4px $greenwich_med_grey;
+    text-align: right;
+    padding-right: 1em;
+
+    li {
+        span, a {
+            color: $nav_fg;
+        }
+    }
+}
+
+#greenwich-breadcrumb {
+    background: transparent;
+    margin-top: 0.25em;
+
+    li {
+        padding: 0;
+        margin: 0;
+        font-size: 11px;
+
+        span, a {
+            color: black;
+
+            &.bc_arrow {
+                background: url('/cobrands/greenwich/bcArrow.gif') no-repeat right 0.4em;
+                padding: 0 15px 0 0;
+            }
+        }
+    }
+}
+
+#fms-menu-desktop {
+    background: $greenwich_light_grey;
+    margin-top: 0.5em;
+
+    li {
+        a {
+            color: $greenwich_dark_grey;
+        }
+        span {
+            color: $greenwich_red;
+        }
+    }
+}
+
+body.mappage {
+    #site-header .container {
+        min-height: 68px;
+    }
+
+    .main-menu-container {
+        display: none;
+    }
+
+    #main-menu {
+        display: block;
+    }
+
+    #site-logo {
+        top: 5px;
+        left: 6px;
+        background: url("/cobrands/greenwich/logo.gif") 0 0 no-repeat;
+        background-size: 111px 54px;
+        width: 111px;
+        height: 54px;
+    }
+
+    .nav-wrapper .nav-wrapper-2 {
+        background: url("/cobrands/greenwich/mastWave.gif") 100% 0 no-repeat;
+        background-color: $base_bg;
+        background-size: contain;
+        border-bottom: solid 4px $primary;
+    }
+
+    #main-nav {
+        ul#main-menu {
+            li a.report-a-problem-btn {
+                color: $nav_fg;
+            }
+        }
+
+        ul li {
+            a, span {
+                color: $primary_text;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    z-index: 0;
+    left: 43em;
+
+    aside {
+        top: 14em;
+    }
+}
+
+body.fullwidthpage, body.twothirdswidthpage {
+    .container .content footer {
+        a.platform-logo {
+            background-color: $greenwich_dark_grey;
+            background-position: center center;
+            background-size: 13em 1.5em;
+            width: 14em;
+            height: 3em;
+            border-radius: 1.5em;
+        }
+
+        .tablewrapper {
+            padding: 0;
+            margin: 1em 0;
+
+            div {
+                text-align: center;
+
+                p {
+                    margin: 0;
+                    padding: 0;
+                    line-height: 3em;
+                }
+            }
+        }
+
+        .footer-nav {
+            padding: 0;
+            margin: 1em 0;
+
+            ul {
+                margin: 0;
+                padding: 0;
+                text-align: center;
+
+                li {
+                    display: inline;
+                    padding: 0 4px 0 7px;
+                    font-size: 0.8em;
+                    border-left: solid 1px $greenwich_dark_grey;
+
+                    &:first-child {
+                        border-left: none;
+                    }
+
+                    a, a:link, a:visited {
+                        color: $primary_text;
+                    }
+                }
+            }
+        }
+
+        hr {
+            padding: 0;
+            margin: 0 -24px;
+            border-bottom: solid 8px $greenwich_red;
+            border-top: solid 48px $greenwich_dark_grey;
+            height: 0;
+        }
+    }
+}
+
+// Override the default issue (report) list styling on the /my page, so that
+// reports don't pop out the side of the sidebar
+.issue-list-a.full-width {
+    margin-left: -1em;
+}
