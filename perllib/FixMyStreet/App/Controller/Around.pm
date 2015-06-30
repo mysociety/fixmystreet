@@ -165,10 +165,15 @@ sub display_location : Private {
     $c->stash->{all_pins} = $all_pins;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
+    $c->forward( '/reports/stash_report_filter_status' );
+
+    # Check the category to filter by, if any, is valid
+    $c->forward('check_and_stash_category');
+
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval );
+        $interval, $c->stash->{filter_category}, $c->stash->{filter_problem_states} );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
@@ -219,6 +224,45 @@ sub check_location_is_acceptable : Private {
     $c->stash->{area_check_action} = 'submit_problem';
     $c->stash->{remove_redundant_areas} = 1;
     return $c->forward('/council/load_and_check_areas');
+}
+
+=head2 check_and_stash_category
+
+Check that the 'filter_category' query param is valid, if it's present. Stores
+the validated string in the stash as filter_category.
+Puts all the valid categories in filter_categories on the stash.
+
+=cut
+
+sub check_and_stash_category : Private {
+    my ( $self, $c ) = @_;
+
+    my $all_areas = $c->stash->{all_areas};
+    my @bodies = $c->model('DB::Body')->search(
+        { 'body_areas.area_id' => [ keys %$all_areas ], deleted => 0 },
+        { join => 'body_areas' }
+    )->all;
+    my %bodies = map { $_->id => $_ } @bodies;
+
+    my @contacts = $c->model('DB::Contact')->not_deleted->search(
+        {
+            body_id => [ keys %bodies ],
+        },
+        {
+            columns => [ 'category' ],
+            order_by => [ 'category' ],
+            distinct => 1
+        }
+    )->all;
+    my @categories = map { $_->category } @contacts;
+    $c->stash->{filter_categories} = \@categories;
+
+
+    my $category = $c->req->param('filter_category');
+    my %categories_mapped = map { $_ => 1 } @categories;
+    if ( defined $category && $categories_mapped{$category} ) {
+        $c->stash->{filter_category} = $category;
+    }
 }
 
 =head2 /ajax

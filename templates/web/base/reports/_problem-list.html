@@ -1,0 +1,19 @@
+<section class="full-width">
+    [% INCLUDE column
+        problems = problems.${body.id}
+    %]
+</section>
+
+[% BLOCK column %]
+    <ul class="issue-list-a">
+        [% IF problems %]
+            [% FOREACH problem IN problems %]
+                [% INCLUDE 'reports/_list-entry.html' %]
+            [% END %]
+        [% ELSE %]
+            <li class="empty">
+                <p>[% loc('There are no reports to show.') %]</p>
+            </li>
+        [% END %]
+    </ul>
+[% END %]

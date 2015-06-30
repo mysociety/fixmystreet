@@ -127,4 +127,43 @@ subtest 'check non public reports are not displayed on around page' => sub {
 };
 
 
+subtest 'check category and status filtering works on /ajax' => sub {
+    my $categories = [ 'Pothole', 'Vegetation', 'Flytipping' ];
+    my $params = {
+        postcode  => 'OX1 1ND',
+        latitude  => 51.7435918829363,
+        longitude => -1.23201966270446,
+    };
+    my $bbox = ($params->{longitude} - 0.01) . ',' .  ($params->{latitude} - 0.01)
+                . ',' . ($params->{longitude} + 0.01) . ',' .  ($params->{latitude} + 0.01);
+
+    # Create one open and one fixed report in each category
+    foreach my $category ( @$categories ) {
+        foreach my $state ( 'confirmed', 'fixed' ) {
+            my %report_params = (
+                %$params,
+                category => $category,
+                state => $state,
+            );
+            $mech->create_problems_for_body( 1, 2237, 'Around page', \%report_params );
+        }
+    }
+
+    my $json = $mech->get_ok_json( '/ajax?bbox=' . $bbox );
+    my $pins = $json->{pins};
+    is scalar @$pins, 6, 'correct number of reports when no filters';
+
+    $json = $mech->get_ok_json( '/ajax?filter_category=Pothole&bbox=' . $bbox );
+    $pins = $json->{pins};
+    is scalar @$pins, 2, 'correct number of Pothole reports';
+
+    $json = $mech->get_ok_json( '/ajax?status=open&bbox=' . $bbox );
+    $pins = $json->{pins};
+    is scalar @$pins, 3, 'correct number of open reports';
+
+    $json = $mech->get_ok_json( '/ajax?status=fixed&filter_category=Vegetation&bbox=' . $bbox );
+    $pins = $json->{pins};
+    is scalar @$pins, 1, 'correct number of fixed Vegetation reports';
+};
+
 done_testing();
