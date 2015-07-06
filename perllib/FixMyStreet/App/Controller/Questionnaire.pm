@@ -67,15 +67,15 @@ token), or the mini own-report one (when we'll have a problem ID).
 sub submit : Path('submit') {
     my ( $self, $c ) = @_;
 
-    if (my $token = $c->req->params->{token}) {
+    if (my $token = $c->get_param('token')) {
         if ($token eq '_test_') {
-            $c->stash->{been_fixed} = $c->req->params->{been_fixed};
-            $c->stash->{new_state} = $c->req->params->{new_state};
+            $c->stash->{been_fixed} = $c->get_param('been_fixed');
+            $c->stash->{new_state} = $c->get_param('new_state');
             $c->stash->{template} = 'questionnaire/completed.html';
             return;
         }
         $c->forward('submit_standard');
-    } elsif (my $p = $c->req->params->{problem}) {
+    } elsif (my $p = $c->get_param('problem')) {
         $c->detach('creator_fixed') if $p eq '_test_';
         $c->forward('submit_creator_fixed');
     } else {
@@ -103,8 +103,8 @@ sub submit_creator_fixed : Private {
 
     my @errors;
 
-    $c->stash->{reported} = $c->req->params->{reported};
-    $c->stash->{problem_id} = $c->req->params->{problem};
+    $c->stash->{reported} = $c->get_param('reported');
+    $c->stash->{problem_id} = $c->get_param('problem');
 
     # should only be able to get to here if we are logged and we have a
     # problem
@@ -156,7 +156,7 @@ sub submit_creator_fixed : Private {
 sub submit_standard : Private {
     my ( $self, $c ) = @_;
 
-    $c->forward( '/tokens/load_questionnaire', [ $c->req->params->{token} ] );
+    $c->forward( '/tokens/load_questionnaire', [ $c->get_param('token') ] );
     $c->forward( 'check_questionnaire' );
     $c->forward( 'process_questionnaire' );
 
@@ -232,7 +232,7 @@ sub submit_standard : Private {
 sub process_questionnaire : Private {
     my ( $self, $c ) = @_;
 
-    map { $c->stash->{$_} = $c->req->params->{$_} || '' } qw(been_fixed reported another update);
+    map { $c->stash->{$_} = $c->get_param($_) || '' } qw(been_fixed reported another update);
 
     # EHA questionnaires done for you
     if ($c->cobrand->moniker eq 'emptyhomes') {

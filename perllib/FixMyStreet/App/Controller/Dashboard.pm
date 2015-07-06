@@ -32,9 +32,9 @@ sub example : Local : Args(0) {
     #$c->forward( '/report/new/setup_categories_and_bodies' );
 
     # See if we've had anything from the dropdowns - perhaps vary results if so
-    $c->stash->{ward} = $c->req->param('ward');
-    $c->stash->{category} = $c->req->param('category');
-    $c->stash->{q_state} = $c->req->param('state');
+    $c->stash->{ward} = $c->get_param('ward');
+    $c->stash->{category} = $c->get_param('category');
+    $c->stash->{q_state} = $c->get_param('state');
 
     eval {
         my $data = File::Slurp::read_file(
@@ -108,8 +108,8 @@ sub index : Path : Args(0) {
 
     # See if we've had anything from the dropdowns
 
-    $c->stash->{ward} = $c->req->param('ward');
-    $c->stash->{category} = $c->req->param('category');
+    $c->stash->{ward} = $c->get_param('ward');
+    $c->stash->{category} = $c->get_param('category');
 
     my %where = (
         bodies_str => $body->id, # XXX Does this break in a two tier council? Restriction needs looking at...
@@ -143,7 +143,7 @@ sub index : Path : Args(0) {
 
     # List of reports underneath summary table
 
-    $c->stash->{q_state} = $c->req->param('state') || '';
+    $c->stash->{q_state} = $c->get_param('state') || '';
     if ( $c->stash->{q_state} eq 'fixed' ) {
         $prob_where->{'me.state'} = [ FixMyStreet::DB::Result::Problem->fixed_states() ];
     } elsif ( $c->stash->{q_state} ) {
@@ -170,7 +170,7 @@ sub index : Path : Args(0) {
     }
     $c->stash->{lists} = \%problems;
 
-    if ( $c->req->params->{export} ) {
+    if ( $c->get_param('export') ) {
         $self->export_as_csv($c, $problems_rs, $body);
     }
 }

@@ -38,9 +38,9 @@ sub problems : Local {
       :                         '';
 
     # gather the parameters
-    my $start_date = $c->req->param('start_date') || '';
-    my $end_date   = $c->req->param('end_date')   || '';
-    my $category   = $c->req->param('category')   || '';
+    my $start_date = $c->get_param('start_date') || '';
+    my $end_date = $c->get_param('end_date') || '';
+    my $category = $c->get_param('category') || '';
 
     my $yyyy_mm_dd = qr{^\d{4}-\d\d-\d\d$};
     if (   $start_date !~ $yyyy_mm_dd

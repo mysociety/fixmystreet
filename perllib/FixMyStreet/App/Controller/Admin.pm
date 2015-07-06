@@ -246,14 +246,14 @@ sub bodies : Path('bodies') : Args(0) {
 
     $c->stash->{edit_activity} = $edit_activity;
 
-    my $posted = $c->req->param('posted') || '';
+    my $posted = $c->get_param('posted') || '';
     if ( $posted eq 'body' ) {
         $c->forward('check_for_super_user');
         $c->forward('check_token');
 
         my $params = $c->forward('body_params');
         my $body = $c->model('DB::Body')->create( $params );
-        my $area_ids = $c->req->params->{area_ids};
+        my $area_ids = $c->get_param('area_ids');
         if ($area_ids) {
             $area_ids = [ $area_ids ] unless ref $area_ids;
             foreach (@$area_ids) {
@@ -314,7 +314,7 @@ sub body : Path('body') : Args(1) {
     $c->forward( 'fetch_all_bodies' );
     $c->forward( 'body_form_dropdowns' );
 
-    if ( $c->req->param('posted') ) {
+    if ( $c->get_param('posted') ) {
         $c->log->debug( 'posted' );
         $c->forward('update_contacts');
     }
@@ -334,7 +334,7 @@ sub check_for_super_user : Private {
 sub update_contacts : Private {
     my ( $self, $c ) = @_;
 
-    my $posted = $c->req->param('posted');
+    my $posted = $c->get_param('posted');
     my $editor = $c->forward('get_user');
 
     if ( $posted eq 'new' ) {
@@ -342,11 +342,11 @@ sub update_contacts : Private {
 
         my %errors;
 
-        my $category = $self->trim( $c->req->param( 'category' ) );
+        my $category = $self->trim( $c->get_param('category') );
         $errors{category} = _("Please choose a category") unless $category;
-        my $email = $self->trim( $c->req->param( 'email' ) );
+        my $email = $self->trim( $c->get_param('email') );
         $errors{email} = _('Please enter a valid email') unless is_valid_email($email);
-        $errors{note} = _('Please enter a message') unless $c->req->param('note');
+        $errors{note} = _('Please enter a message') unless $c->get_param('note');
 
         $category = 'Empty property' if $c->cobrand->moniker eq 'emptyhomes';
 
@@ -358,16 +358,16 @@ sub update_contacts : Private {
         );
 
         $contact->email( $email );
-        $contact->confirmed( $c->req->param('confirmed') ? 1 : 0 );
-        $contact->deleted( $c->req->param('deleted') ? 1 : 0 );
-        $contact->non_public( $c->req->param('non_public') ? 1 : 0 );
-        $contact->note( $c->req->param('note') );
+        $contact->confirmed( $c->get_param('confirmed') ? 1 : 0 );
+        $contact->deleted( $c->get_param('deleted') ? 1 : 0 );
+        $contact->non_public( $c->get_param('non_public') ? 1 : 0 );
+        $contact->note( $c->get_param('note') );
         $contact->whenedited( \'ms_current_timestamp()' );
         $contact->editor( $editor );
-        $contact->endpoint( $c->req->param('endpoint') );
-        $contact->jurisdiction( $c->req->param('jurisdiction') );
-        $contact->api_key( $c->req->param('api_key') );
-        $contact->send_method( $c->req->param('send_method') );
+        $contact->endpoint( $c->get_param('endpoint') );
+        $contact->jurisdiction( $c->get_param('jurisdiction') );
+        $contact->api_key( $c->get_param('api_key') );
+        $contact->send_method( $c->get_param('send_method') );
 
         if ( %errors ) {
             $c->stash->{updated} = _('Please correct the errors below');
@@ -386,7 +386,7 @@ sub update_contacts : Private {
     } elsif ( $posted eq 'update' ) {
         $c->forward('check_token');
 
-        my @categories = $c->req->param('confirmed');
+        my @categories = $c->get_param_list('confirmed');
 
         my $contacts = $c->model('DB::Contact')->search(
             {
@@ -413,7 +413,7 @@ sub update_contacts : Private {
         $c->stash->{body}->update( $params );
         my @current = $c->stash->{body}->body_areas->all;
         my %current = map { $_->area_id => 1 } @current;
-        my $area_ids = $c->req->params->{area_ids};
+        my $area_ids = $c->get_param('area_ids');
         if ($area_ids) {
             $area_ids = [ $area_ids ] unless ref $area_ids;
             foreach (@$area_ids) {
@@ -442,7 +442,7 @@ sub body_params : Private {
         parent => undef,
         deleted => 0,
     );
-    my %params = map { $_ => $c->req->param($_) || $defaults{$_} } @fields;
+    my %params = map { $_ => $c->get_param($_) || $defaults{$_} } @fields;
     return \%params;
 }
 
@@ -453,7 +453,7 @@ sub display_contacts : Private {
     $c->stash->{contacts} = $contacts;
     $c->stash->{live_contacts} = $contacts->search({ deleted => 0 });
 
-    if ( $c->req->param('text') && $c->req->param('text') == 1 ) {
+    if ( $c->get_param('text') && $c->get_param('text') == 1 ) {
         $c->stash->{template} = 'admin/council_contacts.txt';
         $c->res->content_type('text/plain; charset=utf-8');
         return 1;
@@ -532,16 +532,16 @@ sub reports : Path('reports') {
         }
     }
 
-    my $order = $c->req->params->{o} || 'created';
-    my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+    my $order = $c->get_param('o') || 'created';
+    my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
     $c->stash->{order} = $order;
     $c->stash->{dir} = $dir;
     $order .= ' desc' if $dir;
 
-    my $p_page = $c->req->params->{p} || 1;
-    my $u_page = $c->req->params->{u} || 1;
+    my $p_page = $c->get_param('p') || 1;
+    my $u_page = $c->get_param('u') || 1;
 
-    if (my $search = $c->req->param('search')) {
+    if (my $search = $c->get_param('search')) {
         $c->stash->{searched} = $search;
 
         my $site_restriction = $c->cobrand->site_restriction;
@@ -684,7 +684,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         );
     }
 
-    if ( $c->req->param('rotate_photo') ) {
+    if ( $c->get_param('rotate_photo') ) {
         $c->forward('rotate_photo');
         return 1;
     }
@@ -701,7 +701,7 @@ sub report_edit : Path('report_edit') : Args(1) {
           ->search( { problem_id => $problem->id }, { order_by => 'created' } )
           ->all ];
 
-    if ( $c->req->param('resend') ) {
+    if ( $c->get_param('resend') ) {
         $c->forward('check_token');
 
         $problem->whensent(undef);
@@ -711,24 +711,24 @@ sub report_edit : Path('report_edit') : Args(1) {
 
         $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
     }
-    elsif ( $c->req->param('flaguser') ) {
+    elsif ( $c->get_param('flaguser') ) {
         $c->forward('flag_user');
         $c->stash->{problem}->discard_changes;
     }
-    elsif ( $c->req->param('removeuserflag') ) {
+    elsif ( $c->get_param('removeuserflag') ) {
         $c->forward('remove_user_flag');
         $c->stash->{problem}->discard_changes;
     }
-    elsif ( $c->req->param('banuser') ) {
+    elsif ( $c->get_param('banuser') ) {
         $c->forward('ban_user');
     }
-    elsif ( $c->req->param('submit') ) {
+    elsif ( $c->get_param('submit') ) {
         $c->forward('check_token');
 
         my $done   = 0;
         my $edited = 0;
 
-        my $new_state = $c->req->param('state');
+        my $new_state = $c->get_param('state');
         my $old_state = $problem->state;
         if (   $new_state eq 'confirmed'
             && $problem->state eq 'unconfirmed'
@@ -741,35 +741,35 @@ sub report_edit : Path('report_edit') : Args(1) {
             $done = 1;
         }
 
-        my $flagged = $c->req->param('flagged') ? 1 : 0;
-        my $non_public = $c->req->param('non_public') ? 1 : 0;
+        my $flagged = $c->get_param('flagged') ? 1 : 0;
+        my $non_public = $c->get_param('non_public') ? 1 : 0;
 
         # do this here so before we update the values in problem
-        if (   $c->req->param('anonymous') ne $problem->anonymous
-            || $c->req->param('name')   ne $problem->name
-            || $c->req->param('email')  ne $problem->user->email
-            || $c->req->param('title')  ne $problem->title
-            || $c->req->param('detail') ne $problem->detail
-            || ($c->req->param('body') && $c->req->param('body') ne $problem->bodies_str)
+        if ( $c->get_param('anonymous') ne $problem->anonymous
+            || $c->get_param('name') ne $problem->name
+            || $c->get_param('email') ne $problem->user->email
+            || $c->get_param('title') ne $problem->title
+            || $c->get_param('detail') ne $problem->detail
+            || ($c->get_param('body') && $c->get_param('body') ne $problem->bodies_str)
             || $flagged != $problem->flagged
             || $non_public != $problem->non_public )
         {
             $edited = 1;
         }
 
-        $problem->anonymous( $c->req->param('anonymous') );
-        $problem->title( $c->req->param('title') );
-        $problem->detail( $c->req->param('detail') );
+        $problem->anonymous( $c->get_param('anonymous') );
+        $problem->title( $c->get_param('title') );
+        $problem->detail( $c->get_param('detail') );
         $problem->state( $new_state );
-        $problem->name( $c->req->param('name') );
-        $problem->bodies_str( $c->req->param('body') ) if $c->req->param('body');
+        $problem->name( $c->get_param('name') );
+        $problem->bodies_str( $c->get_param('body') ) if $c->get_param('body');
 
         $problem->flagged( $flagged );
         $problem->non_public( $non_public );
 
-        if ( $c->req->param('email') ne $problem->user->email ) {
+        if ( $c->get_param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(
-                { email => $c->req->param('email') }
+                { email => $c->get_param('email') }
             );
 
             $user->insert unless $user->in_storage;
@@ -777,11 +777,11 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         # Deal with photos
-        if ( $c->req->param('remove_photo') ) {
+        if ( $c->get_param('remove_photo') ) {
             $problem->photo(undef);
         }
 
-        if ( $c->req->param('remove_photo') || $new_state eq 'hidden' ) {
+        if ( $c->get_param('remove_photo') || $new_state eq 'hidden' ) {
             unlink glob FixMyStreet->path_to( 'web', 'photo', $problem->id . '.*' );
         }
 
@@ -818,7 +818,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 sub users: Path('users') : Args(0) {
     my ( $self, $c ) = @_;
 
-    if (my $search = $c->req->param('search')) {
+    if (my $search = $c->get_param('search')) {
         $c->stash->{searched} = $search;
 
         my $isearch = '%' . $search . '%';
@@ -890,52 +890,52 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     $c->forward('check_email_for_abuse', [ $update->user->email ] );
 
-    if ( $c->req->param('banuser') ) {
+    if ( $c->get_param('banuser') ) {
         $c->forward('ban_user');
     }
-    elsif ( $c->req->param('flaguser') ) {
+    elsif ( $c->get_param('flaguser') ) {
         $c->forward('flag_user');
         $c->stash->{update}->discard_changes;
     }
-    elsif ( $c->req->param('removeuserflag') ) {
+    elsif ( $c->get_param('removeuserflag') ) {
         $c->forward('remove_user_flag');
         $c->stash->{update}->discard_changes;
     }
-    elsif ( $c->req->param('submit') ) {
+    elsif ( $c->get_param('submit') ) {
         $c->forward('check_token');
 
         my $old_state = $update->state;
-        my $new_state = $c->req->param('state');
+        my $new_state = $c->get_param('state');
 
         my $edited = 0;
 
         # $update->name can be null which makes ne unhappy
         my $name = $update->name || '';
 
-        if ( $c->req->param('name') ne $name
-          || $c->req->param('email')     ne $update->user->email
-          || $c->req->param('anonymous') ne $update->anonymous
-          || $c->req->param('text')      ne $update->text ){
+        if ( $c->get_param('name') ne $name
+          || $c->get_param('email') ne $update->user->email
+          || $c->get_param('anonymous') ne $update->anonymous
+          || $c->get_param('text') ne $update->text ) {
               $edited = 1;
           }
 
-        if ( $c->req->param('remove_photo') ) {
+        if ( $c->get_param('remove_photo') ) {
             $update->photo(undef);
         }
 
-        if ( $c->req->param('remove_photo') || $new_state eq 'hidden' ) {
+        if ( $c->get_param('remove_photo') || $new_state eq 'hidden' ) {
             unlink glob FixMyStreet->path_to( 'web', 'photo', 'c', $update->id . '.*' );
         }
 
-        $update->name( $c->req->param('name') || '' );
-        $update->text( $c->req->param('text') );
-        $update->anonymous( $c->req->param('anonymous') );
+        $update->name( $c->get_param('name') || '' );
+        $update->text( $c->get_param('text') );
+        $update->anonymous( $c->get_param('anonymous') );
         $update->state( $new_state );
 
-        if ( $c->req->param('email') ne $update->user->email ) {
+        if ( $c->get_param('email') ne $update->user->email ) {
             my $user =
               $c->model('DB::User')
-              ->find_or_create( { email => $c->req->param('email') } );
+              ->find_or_create( { email => $c->get_param('email') } );
 
             $user->insert unless $user->in_storage;
             $update->user($user);
@@ -986,22 +986,22 @@ sub user_add : Path('user_edit') : Args(0) {
     $c->forward('get_token');
     $c->forward('fetch_all_bodies');
 
-    return 1 unless $c->req->param('submit');
+    return 1 unless $c->get_param('submit');
 
     $c->forward('check_token');
 
-    if ( $c->cobrand->moniker eq 'zurich' and $c->req->param('email') eq '' ) {
+    if ( $c->cobrand->moniker eq 'zurich' and $c->get_param('email') eq '' ) {
         $c->stash->{field_errors}->{email} = _('Please enter a valid email');
         return 1;
     }
 
-    return unless $c->req->param('name') && $c->req->param('email');
+    return unless $c->get_param('name') && $c->get_param('email');
 
     my $user = $c->model('DB::User')->find_or_create( {
-        name => $c->req->param('name'),
-        email => $c->req->param('email'),
-        from_body => $c->req->param('body') || undef,
-        flagged => $c->req->param('flagged') || 0,
+        name => $c->get_param('name'),
+        email => $c->get_param('email'),
+        from_body => $c->get_param('body') || undef,
+        flagged => $c->get_param('flagged') || 0,
     }, {
         key => 'users_email_key'
     } );
@@ -1025,23 +1025,23 @@ sub user_edit : Path('user_edit') : Args(1) {
 
     $c->forward('fetch_all_bodies');
 
-    if ( $c->req->param('submit') ) {
+    if ( $c->get_param('submit') ) {
         $c->forward('check_token');
 
         my $edited = 0;
 
-        if ( $user->email ne $c->req->param('email') ||
-            $user->name ne $c->req->param('name' ) ||
-            ($user->from_body && $user->from_body->id ne $c->req->param('body')) ||
-            (!$user->from_body && $c->req->param('body'))
+        if ( $user->email ne $c->get_param('email') ||
+            $user->name ne $c->get_param('name') ||
+            ($user->from_body && $user->from_body->id ne $c->get_param('body')) ||
+            (!$user->from_body && $c->get_param('body'))
         ) {
                 $edited = 1;
         }
 
-        $user->name( $c->req->param('name') );
-        $user->email( $c->req->param('email') );
-        $user->from_body( $c->req->param('body') || undef );
-        $user->flagged( $c->req->param('flagged') || 0 );
+        $user->name( $c->get_param('name') );
+        $user->email( $c->get_param('email') );
+        $user->from_body( $c->get_param('body') || undef );
+        $user->flagged( $c->get_param('flagged') || 0 );
 
         if ( $c->cobrand->moniker eq 'zurich' and $user->email eq '' ) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');
@@ -1097,16 +1097,16 @@ sub stats : Path('stats') : Args(0) {
         return $c->cobrand->admin_stats();
     }
 
-    if ( $c->req->param('getcounts') ) {
+    if ( $c->get_param('getcounts') ) {
 
         my ( $start_date, $end_date, @errors );
         my $parser = DateTime::Format::Strptime->new( pattern => '%d/%m/%Y' );
 
-        $start_date = $parser-> parse_datetime ( $c->req->param('start_date') );
+        $start_date = $parser-> parse_datetime ( $c->get_param('start_date') );
 
         push @errors, _('Invalid start date') unless defined $start_date;
 
-        $end_date = $parser-> parse_datetime ( $c->req->param('end_date') ) ;
+        $end_date = $parser-> parse_datetime ( $c->get_param('end_date') ) ;
 
         push @errors, _('Invalid end date') unless defined $end_date;
 
@@ -1114,21 +1114,21 @@ sub stats : Path('stats') : Args(0) {
         $c->stash->{start_date} = $start_date;
         $c->stash->{end_date} = $end_date;
 
-        $c->stash->{unconfirmed} = $c->req->param('unconfirmed') eq 'on' ? 1 : 0;
+        $c->stash->{unconfirmed} = $c->get_param('unconfirmed') eq 'on' ? 1 : 0;
 
         return 1 if @errors;
 
-        my $bymonth = $c->req->param('bymonth');
+        my $bymonth = $c->get_param('bymonth');
         $c->stash->{bymonth} = $bymonth;
         my ( %body, %dates );
-        $body{bodies_str} = { like => $c->req->param('body') } 
-            if $c->req->param('body');
+        $body{bodies_str} = { like => $c->get_param('body') }
+            if $c->get_param('body');
 
-        $c->stash->{selected_body} = $c->req->param('body');
+        $c->stash->{selected_body} = $c->get_param('body');
 
         my $field = 'confirmed';
 
-        $field = 'created' if $c->req->param('unconfirmed');
+        $field = 'created' if $c->get_param('unconfirmed');
 
         my $one_day = DateTime::Duration->new( days => 1 );
 
@@ -1140,7 +1140,7 @@ sub stats : Path('stats') : Args(0) {
                 order_by => [ 'state' ],
         );
 
-        if ( $c->req->param('bymonth') ) {
+        if ( $c->get_param('bymonth') ) {
             %select = (
                 select => [ 
                     { extract => \"year from $field", -as => 'c_year' },
@@ -1249,7 +1249,7 @@ not then display 404 page
 sub check_token : Private {
     my ( $self, $c ) = @_;
 
-    if ( !$c->req->param('token') || $c->req->param('token' ) ne $c->stash->{token} ) {
+    if ( !$c->get_param('token') || $c->get_param('token') ne $c->stash->{token} ) {
         $c->detach( '/page_error_404_not_found' );
     }
 
@@ -1287,7 +1287,7 @@ accordingly
 sub ban_user : Private {
     my ( $self, $c ) = @_;
 
-    my $email = $c->req->param('email');
+    my $email = $c->get_param('email');
 
     return unless $email;
 
@@ -1314,7 +1314,7 @@ Sets the flag on a user with the given email
 sub flag_user : Private {
     my ( $self, $c ) = @_;
 
-    my $email = $c->req->param('email');
+    my $email = $c->get_param('email');
 
     return unless $email;
 
@@ -1342,7 +1342,7 @@ Remove the flag on a user with the given email
 sub remove_user_flag : Private {
     my ( $self, $c ) = @_;
 
-    my $email = $c->req->param('email');
+    my $email = $c->get_param('email');
 
     return unless $email;
 
@@ -1387,7 +1387,7 @@ Rotate a photo 90 degrees left or right
 sub rotate_photo : Private {
     my ( $self, $c ) =@_;
 
-    my $direction = $c->req->param('rotate_photo');
+    my $direction = $c->get_param('rotate_photo');
     return unless $direction eq _('Rotate Left') or $direction eq _('Rotate Right');
 
     my $photo = $c->stash->{problem}->photo;

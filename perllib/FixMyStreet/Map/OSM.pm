@@ -64,12 +64,12 @@ sub display_map {
     $default_zoom = $numZoomLevels - 3 if $dist < 10;
 
     # Map centre may be overridden in the query string
-    $params{latitude} = Utils::truncate_coordinate($c->req->params->{lat} + 0)
-        if defined $c->req->params->{lat};
-    $params{longitude} = Utils::truncate_coordinate($c->req->params->{lon} + 0)
-        if defined $c->req->params->{lon};
+    $params{latitude} = Utils::truncate_coordinate($c->get_param('lat') + 0)
+        if defined $c->get_param('lat');
+    $params{longitude} = Utils::truncate_coordinate($c->get_param('lon') + 0)
+        if defined $c->get_param('lon');
 
-    my $zoom = defined $c->req->params->{zoom} ? $c->req->params->{zoom} + 0 : $default_zoom;
+    my $zoom = defined $c->get_param('zoom') ? $c->get_param('zoom') + 0 : $default_zoom;
     $zoom = $numZoomLevels - 1 if $zoom >= $numZoomLevels;
     $zoom = 0 if $zoom < 0;
     $params{zoom_act} = $zoomOffset + $zoom;
@@ -168,7 +168,7 @@ sub click_to_wgs84 {
     my ($self, $c, $pin_tile_x, $pin_x, $pin_tile_y, $pin_y) = @_;
     my $tile_x = click_to_tile($pin_tile_x, $pin_x);
     my $tile_y = click_to_tile($pin_tile_y, $pin_y);
-    my $zoom = MIN_ZOOM_LEVEL + (defined $c->req->params->{zoom} ? $c->req->params->{zoom} : 3);
+    my $zoom = MIN_ZOOM_LEVEL + (defined $c->get_param('zoom') ? $c->get_param('zoom') : 3);
     my ($lat, $lon) = tile_to_latlon($tile_x, $tile_y, $zoom);
     return ( $lat, $lon );
 }

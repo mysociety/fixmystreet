@@ -29,15 +29,15 @@ Use latitude and longitude if provided in parameters.
 sub determine_location_from_coords : Private {
     my ( $self, $c ) = @_;
 
-    my $latitude  = $c->req->param('latitude')  || $c->req->param('lat');
-    my $longitude = $c->req->param('longitude') || $c->req->param('lon');
+    my $latitude = $c->get_param('latitude') || $c->get_param('lat');
+    my $longitude = $c->get_param('longitude') || $c->get_param('lon');
 
     if ( defined $latitude && defined $longitude ) {
         ($c->stash->{latitude}, $c->stash->{longitude}) =
             map { Utils::truncate_coordinate($_) } ($latitude, $longitude);
 
         # Also save the pc if there is one
-        if ( my $pc = $c->req->param('pc') ) {
+        if ( my $pc = $c->get_param('pc') ) {
             $c->stash->{pc} = $pc;
         }
 
@@ -65,7 +65,7 @@ sub determine_location_from_pc : Private {
     my ( $self, $c, $pc ) = @_;
 
     # check for something to search
-    $pc ||= $c->req->param('pc') || return;
+    $pc ||= $c->get_param('pc') || return;
     $c->stash->{pc} = $pc;    # for template
 
     if ( $pc =~ /^(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)$/ ) {

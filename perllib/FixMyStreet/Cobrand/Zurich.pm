@@ -342,8 +342,8 @@ sub admin {
         my @children = map { $_->id } $body->bodies->all;
         my @all = (@children, $body->id);
 
-        my $order = $c->req->params->{o} || 'created';
-        my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+        my $order = $c->get_param('o') || 'created';
+        my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
         $c->stash->{order} = $order;
         $c->stash->{dir} = $dir;
         $order .= ' desc' if $dir;
@@ -362,7 +362,7 @@ sub admin {
             order_by => $order,
         });
 
-        my $page = $c->req->params->{p} || 1;
+        my $page = $c->get_param('p') || 1;
         $c->stash->{other} = $c->cobrand->problems->search({
             state => { -not_in => [ 'unconfirmed', 'confirmed', 'planned' ] },
             bodies_str => \@all,
@@ -376,8 +376,8 @@ sub admin {
 
         my $body = $c->stash->{body};
 
-        my $order = $c->req->params->{o} || 'created';
-        my $dir = defined $c->req->params->{d} ? $c->req->params->{d} : 1;
+        my $order = $c->get_param('o') || 'created';
+        my $dir = defined $c->get_param('d') ? $c->get_param('d') : 1;
         $c->stash->{order} = $order;
         $c->stash->{dir} = $dir;
         $order .= ' desc' if $dir;
@@ -396,7 +396,7 @@ sub admin {
             order_by => $order
         } );
 
-        my $page = $c->req->params->{p} || 1;
+        my $page = $c->get_param('p') || 1;
         $c->stash->{reports_published} = $c->cobrand->problems->search( {
             state => 'fixed - council',
             bodies_str => $body->parent->id,
@@ -449,14 +449,14 @@ sub admin_report_edit {
     }
 
     # If super or sdm check that the token is correct before proceeding
-    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
+    if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
         $c->forward('check_token');
     }
 
     # All types of users can add internal notes
-    if ( ($type eq 'super' || $type eq 'dm' || $type eq 'sdm') && $c->req->param('submit') ) {
+    if ( ($type eq 'super' || $type eq 'dm' || $type eq 'sdm') && $c->get_param('submit') ) {
         # If there is a new note add it as a comment to the problem (with is_internal_note set true in extra).
-        if ( my $new_internal_note = $c->req->params->{new_internal_note} ) {
+        if ( my $new_internal_note = $c->get_param('new_internal_note') ) {
             $problem->add_to_comments( {
                 text => $new_internal_note,
                 user => $c->user->obj,
@@ -469,12 +469,12 @@ sub admin_report_edit {
     }
 
     # Problem updates upon submission
-    if ( ($type eq 'super' || $type eq 'dm') && $c->req->param('submit') ) {
-        $problem->set_extra_metadata('publish_photo' => $c->req->params->{publish_photo} || 0 );
-        $problem->set_extra_metadata('third_personal' => $c->req->params->{third_personal} || 0 );
+    if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
+        $problem->set_extra_metadata('publish_photo' => $c->get_param('publish_photo') || 0 );
+        $problem->set_extra_metadata('third_personal' => $c->get_param('third_personal') || 0 );
 
         # Make sure we have a copy of the original detail field
-        if (my $new_detail = $c->req->params->{detail}) {
+        if (my $new_detail = $c->get_param('detail')) {
             my $old_detail = $problem->detail;
             if (! $problem->get_extra_metadata('original_detail')
                 && ($old_detail ne $new_detail))
@@ -489,9 +489,9 @@ sub admin_report_edit {
 
         # Workflow things
         my $redirect = 0;
-        my $new_cat = $c->req->params->{category};
+        my $new_cat = $c->get_param('category');
         if ( $new_cat && $new_cat ne $problem->category ) {
-            my $cat = $c->model('DB::Contact')->search( { category => $c->req->params->{category} } )->first;
+            my $cat = $c->model('DB::Contact')->search( { category => $c->get_param('category') } )->first;
             my $old_cat = $problem->category;
             $problem->category( $new_cat );
             $problem->external_body( undef );
@@ -500,14 +500,14 @@ sub admin_report_edit {
             $problem->set_extra_metadata(changed_category => 1);
             $internal_note_text = "Weitergeleitet von $old_cat an $new_cat";
             $redirect = 1 if $cat->body_id ne $body->id;
-        } elsif ( my $subdiv = $c->req->params->{body_subdivision} ) {
+        } elsif ( my $subdiv = $c->get_param('body_subdivision') ) {
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
             $self->set_problem_state($c, $problem, 'in progress');
             $problem->external_body( undef );
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
-        } elsif ( my $external = $c->req->params->{body_external} ) {
+        } elsif ( my $external = $c->get_param('body_external') ) {
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
             $self->set_problem_state($c, $problem, 'closed');
             $problem->set_extra_metadata_if_undefined( closed_overdue => $self->overdue( $problem ) );
@@ -516,7 +516,7 @@ sub admin_report_edit {
             _admin_send_email( $c, 'problem-external.txt', $problem );
             $redirect = 1;
         } else {
-            if (my $state = $c->req->params->{state}) {
+            if (my $state = $c->get_param('state')) {
 
                 if ($problem->state eq 'unconfirmed' and $state ne 'unconfirmed') {
                     # only set this for the first state change
@@ -528,21 +528,21 @@ sub admin_report_edit {
                 if ($self->problem_is_closed($problem)) {
                     $problem->set_extra_metadata_if_undefined( closed_overdue => $self->overdue( $problem ) );
                 }
-                if ( $state eq 'hidden' && $c->req->params->{send_rejected_email} ) {
+                if ( $state eq 'hidden' && $c->get_param('send_rejected_email') ) {
                     _admin_send_email( $c, 'problem-rejected.txt', $problem );
                 }
             }
         }
 
-        $problem->title( $c->req->param('title') );
-        $problem->detail( $c->req->param('detail') );
-        $problem->latitude( $c->req->param('latitude') );
-        $problem->longitude( $c->req->param('longitude') );
+        $problem->title( $c->get_param('title') ) if $c->get_param('title');
+        $problem->detail( $c->get_param('detail') ) if $c->get_param('detail');
+        $problem->latitude( $c->get_param('latitude') );
+        $problem->longitude( $c->get_param('longitude') );
 
         # Final, public, Update from DM
-        if (my $update = $c->req->param('status_update')) {
+        if (my $update = $c->get_param('status_update')) {
             $problem->set_extra_metadata(public_response => $update);
-            if ($c->req->params->{publish_response}) {
+            if ($c->get_param('publish_response')) {
                 $self->set_problem_state($c, $problem, 'fixed - council');
                 $problem->set_extra_metadata( closed_overdue => $self->overdue( $problem ) );
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
@@ -588,7 +588,7 @@ sub admin_report_edit {
         # Has cut-down edit template for adding update and sending back up only
         $c->stash->{template} = 'admin/report_edit-sdm.html';
 
-        if ($c->req->param('send_back')) {
+        if ($c->get_param('send_back')) {
             $c->forward('check_token');
 
             $problem->bodies_str( $body->parent->id );
@@ -597,20 +597,20 @@ sub admin_report_edit {
             # log here
             $c->res->redirect( '/admin/summary' );
 
-        } elsif ($c->req->param('submit')) {
+        } elsif ($c->get_param('submit')) {
             $c->forward('check_token');
 
             my $db_update = 0;
-            if ( $c->req->param('latitude') != $problem->latitude || $c->req->param('longitude') != $problem->longitude ) {
-                $problem->latitude( $c->req->param('latitude') );
-                $problem->longitude( $c->req->param('longitude') );
+            if ( $c->get_param('latitude') != $problem->latitude || $c->get_param('longitude') != $problem->longitude ) {
+                $problem->latitude( $c->get_param('latitude') );
+                $problem->longitude( $c->get_param('longitude') );
                 $db_update = 1;
             }
 
             $problem->update if $db_update;
 
             # Add new update from status_update
-            if (my $update = $c->req->param('status_update')) {
+            if (my $update = $c->get_param('status_update')) {
                 FixMyStreet::App->model('DB::Comment')->create( {
                     text => $update,
                     user => $c->user->obj,
@@ -625,7 +625,7 @@ sub admin_report_edit {
             $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
 
             # If they clicked the no more updates button, we're done.
-            if ($c->req->param('no_more_updates')) {
+            if ($c->get_param('no_more_updates')) {
                 $problem->set_extra_metadata( subdiv_overdue => $self->overdue( $problem ) );
                 $problem->bodies_str( $body->parent->id );
                 $problem->whensent( undef );
@@ -712,7 +712,7 @@ sub admin_stats {
     my $c = $self->{c};
 
     my %date_params;
-    my $ym = $c->req->params->{ym};
+    my $ym = $c->get_param('ym');
     my ($m, $y) = $ym ? ($ym =~ /^(\d+)\.(\d+)$/) : ();
     $c->stash->{ym} = $ym;
     if ($y && $m) {
@@ -726,7 +726,7 @@ sub admin_stats {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
 
-    if ( $c->req->params->{export} ) {
+    if ( $c->get_param('export') ) {
         my $problems = $c->model('DB::Problem')->search(
             {%date_params},
             {

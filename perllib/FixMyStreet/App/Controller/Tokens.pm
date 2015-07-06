@@ -143,7 +143,7 @@ sub confirm_alert : Path('/A') {
     my ( $self, $c, $token_code ) = @_;
 
     if ($token_code eq '_test_') {
-        $c->stash->{confirm_type} = $c->req->params->{confirm_type};
+        $c->stash->{confirm_type} = $c->get_param('confirm_type');
         return;
     }
 

@@ -155,9 +155,9 @@ sub get_discovery : Private {
 sub get_services : Private {
     my ( $self, $c ) = @_;
 
-    my $jurisdiction_id = $c->req->param('jurisdiction_id') || '';
-    my $lat = $c->req->param('lat') || '';
-    my $lon = $c->req->param('long') || '';
+    my $jurisdiction_id = $c->get_param('jurisdiction_id') || '';
+    my $lat = $c->get_param('lat') || '';
+    my $lon = $c->get_param('long') || '';
 
     # Look up categories for this council or councils
     my $categories = $c->model('DB::Contact')->not_deleted;
@@ -309,7 +309,7 @@ sub get_requests : Private {
 
     $c->forward( 'is_jurisdiction_id_ok' );
 
-    my $max_requests = $c->req->param('max_requests') || 0;
+    my $max_requests = $c->get_param('max_requests') || 0;
 
     # Only provide access to the published reports
     my $states = FixMyStreet::DB::Result::Problem->visible_states();
@@ -327,7 +327,7 @@ sub get_requests : Private {
         has_photo          => [ '=', 'photo' ],
     );
     for my $param (keys %rules) {
-        my $value = $c->req->param($param);
+        my $value = $c->get_param($param);
         next unless $value;
         my $op  = $rules{$param}[0];
         my $key = $rules{$param}[1];
@@ -366,12 +366,12 @@ sub get_requests : Private {
         $criteria->{$key} = { $op, $value };
     }
 
-    if ( $c->req->param('start_date') and $c->req->param('end_date') ) {
-        $criteria->{confirmed} = [ '-and' => { '>=', $c->req->param('start_date') }, { '<', $c->req->param('end_date') } ];
-    } elsif ( $c->req->param('start_date') ) {
-        $criteria->{confirmed} = { '>=', $c->req->param('start_date') };
-    } elsif ( $c->req->param('end_date') ) {
-        $criteria->{confirmed} = { '<', $c->req->param('end_date') };
+    if ( $c->get_param('start_date') and $c->get_param('end_date') ) {
+        $criteria->{confirmed} = [ '-and' => { '>=', $c->get_param('start_date') }, { '<', $c->get_param('end_date') } ];
+    } elsif ( $c->get_param('start_date') ) {
+        $criteria->{confirmed} = { '>=', $c->get_param('start_date') };
+    } elsif ( $c->get_param('end_date') ) {
+        $criteria->{confirmed} = { '<', $c->get_param('end_date') };
     }
 
     if ('rss' eq $c->stash->{format}) {
@@ -441,7 +441,7 @@ sub format_output : Private {
 
 sub is_jurisdiction_id_ok : Private {
     my ( $self, $c ) = @_;
-    unless (my $jurisdiction_id = $c->req->param('jurisdiction_id')) {
+    unless (my $jurisdiction_id = $c->get_param('jurisdiction_id')) {
         $c->detach( 'error', [ _('Missing jurisdiction_id') ] );
     }
 }

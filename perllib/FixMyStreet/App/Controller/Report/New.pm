@@ -221,12 +221,13 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('setup_categories_and_bodies');
 
     my $category_extra = '';
-    if ( $c->stash->{category_extras}->{ $c->req->param('category') } && @{ $c->stash->{category_extras}->{ $c->req->param('category') } } >= 1  ) {
+    my $category = $c->get_param('category');
+    if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
         $c->stash->{report_meta} = {};
-        $c->stash->{report} = { category => $c->req->param('category') };
-        $c->stash->{category_extras} = { $c->req->param('category' ) => $c->stash->{category_extras}->{ $c->req->param('category') } };
+        $c->stash->{report} = { category => $category };
+        $c->stash->{category_extras} = { $category => $c->stash->{category_extras}->{$category} };
 
-        $category_extra= $c->render_fragment( 'report/new/category_extras.html');
+        $category_extra = $c->render_fragment( 'report/new/category_extras.html');
     }
 
     my $body = JSON->new->utf8(1)->encode(
@@ -256,7 +257,7 @@ sub report_import : Path('/import') {
     $c->res->content_type('text/plain; charset=utf-8');
 
     my %input =
-      map { $_ => $c->req->param($_) || '' } (
+      map { $_ => $c->get_param($_) || '' } (
         'service', 'subject',  'detail', 'name', 'email', 'phone',
         'easting', 'northing', 'lat',    'lon',  'id',    'phone_id',
       );
@@ -407,7 +408,7 @@ sub initialize_report : Private {
     # create a new one. Stick it on the stash.
     my $report = undef;
 
-    if ( my $partial = scalar $c->req->param('partial') ) {
+    if ( my $partial = $c->get_param('partial') ) {
 
         for (1) {    # use as pseudo flow control
 
@@ -461,15 +462,15 @@ sub initialize_report : Private {
 
     }
 
-    if ( $c->req->param('first_name') && $c->req->param('last_name') ) {
-        $c->stash->{first_name} = $c->req->param('first_name');
-        $c->stash->{last_name} = $c->req->param('last_name');
+    if ( $c->get_param('first_name') && $c->get_param('last_name') ) {
+        $c->stash->{first_name} = $c->get_param('first_name');
+        $c->stash->{last_name} = $c->get_param('last_name');
 
-        $c->req->param( 'name', sprintf( '%s %s', $c->req->param('first_name'), $c->req->param('last_name') ) );
+        $c->set_param('name', sprintf( '%s %s', $c->get_param('first_name'), $c->get_param('last_name') ));
     }
 
     # Capture whether the map was used
-    $report->used_map( $c->req->param('skipped') ? 0 : 1 );
+    $report->used_map( $c->get_param('skipped') ? 0 : 1 );
 
     $c->stash->{report} = $report;
 
@@ -523,8 +524,8 @@ sub determine_location_from_tile_click : Private {
 
     # Extract the data needed
     my ( $pin_tile_x, $pin_tile_y ) = $x_key =~ m{$param_key_regex};
-    my $pin_x = $c->req->param($x_key);
-    my $pin_y = $c->req->param($y_key);
+    my $pin_x = $c->get_param($x_key);
+    my $pin_y = $c->get_param($y_key);
 
     # return if they are both 0 - this happens when you submit the form by
     # hitting enter and not using the button. It also happens if you click
@@ -694,7 +695,7 @@ on the presence of the C<submit_problem> parameter.
 sub check_form_submitted : Private {
     my ( $self, $c ) = @_;
     return if $c->stash->{force_form_not_submitted};
-    return $c->req->param('submit_problem') || '';
+    return $c->get_param('submit_problem') || '';
 }
 
 =head2 process_user
@@ -709,7 +710,7 @@ sub process_user : Private {
     my $report = $c->stash->{report};
 
     # Extract all the params to a hash to make them easier to work with
-    my %params = map { $_ => scalar $c->req->param($_) }
+    my %params = map { $_ => $c->get_param($_) }
       ( 'email', 'name', 'phone', 'password_register', 'fms_extra_title' );
 
     my $user_title = Utils::trim_text( $params{fms_extra_title} );
@@ -741,7 +742,7 @@ sub process_user : Private {
         unless $report->user;
 
     # The user is trying to sign in. We only care about email from the params.
-    if ( $c->req->param('submit_sign_in') || $c->req->param('password_sign_in') ) {
+    if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
         unless ( $c->forward( '/auth/sign_in' ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.');
             return 1;
@@ -779,7 +780,7 @@ sub process_report : Private {
 
     # Extract all the params to a hash to make them easier to work with
     my %params =       #
-      map { $_ => scalar $c->req->param($_) }    #
+      map { $_ => $c->get_param($_) }
       (
         'title', 'detail', 'pc',                 #
         'detail_size', 'detail_depth',
@@ -877,14 +878,14 @@ sub process_report : Private {
 
         foreach my $field ( @$metas ) {
             if ( lc( $field->{required} ) eq 'true' ) {
-                unless ( $c->request->param( $field->{code} ) ) {
+                unless ( $c->get_param($field->{code}) ) {
                     $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
                 }
             }
             push @extra, {
                 name => $field->{code},
                 description => $field->{description},
-                value => $c->request->param( $field->{code} ) || '',
+                value => $c->get_param($field->{code}) || '',
             };
         }
 
@@ -947,7 +948,7 @@ sub check_for_errors : Private {
         # We only want to validate the phone number web requests (where the
         # service parameter is blank) because previous versions of the mobile
         # apps don't validate the presence of a phone number.
-        if ( ! $c->req->param('phone') and ! $c->req->param('service') ) {
+        if ( ! $c->get_param('phone') and ! $c->get_param('service') ) {
             $field_errors{phone} = _("This information is required");
         }
     }
@@ -957,7 +958,7 @@ sub check_for_errors : Private {
     # if they're got the login details wrong when signing in then
     # we don't care about the name field even though it's validated
     # by the user object
-    if ( $c->req->param('submit_sign_in') and $field_errors{password} ) {
+    if ( $c->get_param('submit_sign_in') and $field_errors{password} ) {
         delete $field_errors{name};
     }
 
@@ -1043,9 +1044,9 @@ sub save_user_and_report : Private {
     $report->bodies_str( undef ) if $report->bodies_str eq '-1';
 
     # if there is a Message Manager message ID, pass it back to the client view
-    if ($c->cobrand->moniker eq 'fixmybarangay' && $c->req->param('external_source_id')=~/^\d+$/) {
-        $c->stash->{external_source_id} = $c->req->param('external_source_id');
-        $report->external_source_id( $c->req->param('external_source_id') );
+    if ($c->cobrand->moniker eq 'fixmybarangay' && $c->get_param('external_source_id') =~ /^\d+$/) {
+        $c->stash->{external_source_id} = $c->get_param('external_source_id');
+        $report->external_source_id( $c->get_param('external_source_id') );
         $report->external_source( $c->config->{MESSAGE_MANAGER_URL} ) ;
     }
     
@@ -1095,7 +1096,7 @@ sub generate_map : Private {
 sub check_for_category : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{category} = $c->req->param('category');
+    $c->stash->{category} = $c->get_param('category');
 
     return 1;
 }
@@ -1165,7 +1166,7 @@ sub redirect_to_around : Private {
     my ( $self, $c ) = @_;
 
     my $params = {
-        pc => ( $c->stash->{pc} || $c->req->param('pc') || '' ),
+        pc => ( $c->stash->{pc} || $c->get_param('pc') || '' ),
         lat => $c->stash->{latitude},
         lon => $c->stash->{longitude},
     };

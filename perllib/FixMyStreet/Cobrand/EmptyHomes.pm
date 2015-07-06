@@ -138,7 +138,7 @@ sub process_extras {
     my $body_id = shift;
     my $extra   = shift;
 
-    my $value = $ctx->request->params->{address} || '';
+    my $value = $ctx->get_param('address') || '';
     $ctx->stash->{field_errors}->{address} = _('This information is required')
         unless $value;
     $extra->{address} = $value;

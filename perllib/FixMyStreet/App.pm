@@ -195,7 +195,7 @@ sub setup_request {
 
     Memcached::set_namespace( FixMyStreet->config('FMS_DB_NAME') . ":" );
 
-    FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->req->param('map_override') );
+    FixMyStreet::Map::set_map_class( $cobrand->map_type || $c->get_param('map_override') );
 
     unless ( FixMyStreet->config('MAPIT_URL') ) {
         my $port = $c->req->uri->port;
@@ -527,6 +527,53 @@ sub is_abuser {
     my ($c, $email) = @_;
     my ($domain) = $email =~ m{ @ (.*) \z }x;
     return $c->model('DB::Abuse')->search( { email => [ $email, $domain ] } )->first;
+}
+
+=head2 get_param
+
+    $param = $c->get_param('name');
+
+Return the parameter passed in the request, or undef if not present. Like
+req->param() in a scalar context, this will return the first parameter if
+multiple were provided; unlike req->param it will always return a scalar,
+never a list, in order to avoid possible security issues.
+
+=cut
+
+sub get_param {
+    my ($c, $param) = @_;
+    my $value = $c->req->params->{$param};
+    return $value->[0] if ref $value;
+    return $value;
+}
+
+=head2 get_param_list
+
+    @params = $c->get_param_list('name');
+
+Return the parameters passed in the request, as a list. This will always return
+a list, with an empty list if no parameter is present.
+
+=cut
+
+sub get_param_list {
+    my ($c, $param) = @_;
+    my $value = $c->req->params->{$param};
+    return @$value if ref $value;
+    return ($value);
+}
+
+=head2 set_param
+
+    $c->set_param('name', 'My Name');
+
+Sets the query parameter to the passed variable.
+
+=cut
+
+sub set_param {
+    my ($c, $param, $value) = @_;
+    $c->req->params->{$param} = $value;
 }
 
 =head1 SEE ALSO

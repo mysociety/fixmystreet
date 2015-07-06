@@ -128,7 +128,7 @@ sub ward : Path : Args(2) {
     } )->all;
     @categories = map { $_->category } @categories;
     $c->stash->{filter_categories} = \@categories;
-    $c->stash->{filter_category} = $c->req->param('filter_category');
+    $c->stash->{filter_category} = $c->get_param('filter_category');
 
     my $pins = $c->stash->{pins};
 
@@ -383,10 +383,10 @@ sub check_canonical_url : Private {
 sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
-    my $page = $c->req->params->{p} || 1;
+    my $page = $c->get_param('p') || 1;
     # NB: If 't' is specified, it will override 'status'.
-    my $type = $c->req->params->{t} || 'all';
-    my $category = $c->req->params->{c} || $c->req->params->{filter_category} || '';
+    my $type = $c->get_param('t') || 'all';
+    my $category = $c->get_param('c') || $c->get_param('filter_category') || '';
 
     my $states = $c->stash->{filter_problem_states};
     my $where = {
@@ -500,7 +500,7 @@ sub redirect_body : Private {
 sub stash_report_filter_status : Private {
     my ( $self, $c ) = @_;
 
-    my $status = $c->req->param('status') || $c->cobrand->on_map_default_status;
+    my $status = $c->get_param('status') || $c->cobrand->on_map_default_status;
     if ( $status eq 'all' ) {
         $c->stash->{filter_status} = 'all';
         $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->visible_states();

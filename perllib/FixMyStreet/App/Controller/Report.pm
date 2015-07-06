@@ -24,7 +24,7 @@ Redirect to homepage unless C<id> parameter in query, in which case redirect to
 sub index : Path('') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $id = $c->req->param('id');
+    my $id = $c->get_param('id');
 
     my $uri =
         $id
@@ -78,7 +78,7 @@ sub _display : Private {
 sub support : Path('support') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $id = $c->req->param('id');
+    my $id = $c->get_param('id');
 
     my $uri =
         $id
@@ -163,7 +163,7 @@ sub format_problem_for_display : Private {
       map { Utils::truncate_coordinate($_) }
       ( $problem->latitude, $problem->longitude );
 
-    unless ( $c->req->param('submit_update') ) {
+    unless ( $c->get_param('submit_update') ) {
         $c->stash->{add_alert} = 1;
     }
 

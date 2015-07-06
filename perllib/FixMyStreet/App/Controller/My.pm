@@ -25,8 +25,8 @@ sub my : Path : Args(0) {
 
     $c->detach( '/auth/redirect' ) unless $c->user;
 
-    my $p_page = $c->req->params->{p} || 1;
-    my $u_page = $c->req->params->{u} || 1;
+    my $p_page = $c->get_param('p') || 1;
+    my $u_page = $c->get_param('u') || 1;
 
     $c->forward( '/reports/stash_report_filter_status' );
 
@@ -42,7 +42,7 @@ sub my : Path : Args(0) {
         %$params
     } if $c->cobrand->problems_clause;
 
-    my $category = $c->req->param('filter_category');
+    my $category = $c->get_param('filter_category');
     if ( $category ) {
         $params->{category} = $category;
         $c->stash->{filter_category} = $category;

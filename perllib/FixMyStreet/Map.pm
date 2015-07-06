@@ -115,9 +115,9 @@ sub _map_features {
 sub map_pins {
     my ($c, $interval) = @_;
 
-    my $bbox = $c->req->param('bbox');
+    my $bbox = $c->get_param('bbox');
     my ( $min_lon, $min_lat, $max_lon, $max_lat ) = split /,/, $bbox;
-    my $category = $c->req->param('filter_category');
+    my $category = $c->get_param('filter_category');
 
     $c->forward( '/reports/stash_report_filter_status' );
     my $states = $c->stash->{filter_problem_states};

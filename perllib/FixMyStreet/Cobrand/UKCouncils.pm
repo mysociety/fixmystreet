@@ -85,11 +85,11 @@ sub area_check {
     } else {
         $url .= 'around';
     }
-    $url .= '?pc=' . URI::Escape::uri_escape( $self->{c}->req->param('pc') )
-      if $self->{c}->req->param('pc');
-    $url .= '?latitude=' . URI::Escape::uri_escape( $self->{c}->req->param('latitude') )
-         .  '&amp;longitude=' . URI::Escape::uri_escape( $self->{c}->req->param('longitude') )
-      if $self->{c}->req->param('latitude');
+    $url .= '?pc=' . URI::Escape::uri_escape( $self->{c}->get_param('pc') )
+      if $self->{c}->get_param('pc');
+    $url .= '?latitude=' . URI::Escape::uri_escape( $self->{c}->get_param('latitude') )
+         .  '&amp;longitude=' . URI::Escape::uri_escape( $self->{c}->get_param('longitude') )
+      if $self->{c}->get_param('latitude');
     my $error_msg = "That location is not covered by " . $self->council_name . ".
 Please visit <a href=\"$url\">the main FixMyStreet site</a>.";
     return ( 0, $error_msg );
