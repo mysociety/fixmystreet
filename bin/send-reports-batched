@@ -1,10 +1,16 @@
 #!/usr/bin/env perl
 
-# send-reports:
-# Send new problem reports to councils
+# send-reports-batched:
+# Send new problem reports to councils in batches
 #
-# Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
-# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+# Copyright (c) 2015 UK Citizens Online Democracy. All rights reserved.
+# WWW: http://www.mysociety.org
+
+# This should be run on the 1st of every month. Right now it will send
+# all unsent reports to the contacts in the DB, regardless of when they
+# were reported.
+# The underlying batch-sending code is focussed on the Collideoscope project
+# at the moment, and isn't yet general enough for regular FMS use.
 
 use strict;
 use warnings;
