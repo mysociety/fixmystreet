@@ -1,4 +1,4 @@
-Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
+Subject: Last [% period %]'s reports on Collideoscope in [% body.name %]
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -42,7 +42,7 @@ Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
           </tr>
           <tr>
             <td style="background:#ffffff;border:1px solid #A8B1B2;border-top:0;border-bottom:0;">
-              <h1 style="margin:0 0 30px 0;font-size:32px;line-height:1.1em;">New reports this [% period %] in [% body.name %]</h1>
+              <h1 style="margin:0 0 30px 0;font-size:32px;line-height:1.1em;">New reports last [% period %] in [% body.name %]</h1>
               <table cellspacing="0" cellpadding="0" border="0" width="100%" style="text-align:center;color:#6b9094;">
                 <tr>
                     <td>
@@ -55,7 +55,7 @@ Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
                   <td>
                     <strong style="display:block;font-size:48px;line-height:48px;color:#E5BB1C;">[% misses.count %]</strong>
                     Near [% misses.count != 1 ? 'misses' : 'miss' %]
-                    [% IF incidents_people_count %]
+                    [% IF misses_people_count %]
                     <small style="display:block;">By [% misses_people_count %] [% misses_people_count != 1 ? 'people' : 'person' %]</small>
                     [% END %]
                   </td>
@@ -85,7 +85,9 @@ Subject: Last [% period %]'s incidents on Collideoscope in [% body.name %]
             </td>
           </tr>
           <tr>
-            <td style="color:#8C9C9E;font-size:14px;line-height:1.4em;">We can put disclaimers or other bits of explanatory text here, if we need to.</td>
+            <td style="color:#8C9C9E;font-size:14px;line-height:1.4em;">
+                <a href="[% cobrand.base_url %]">Collideoscope</a> is a road safety project from <a href="http://www.mysociety.co.uk/">mySociety</a> and <a href="http://www.itpworld.net/">ITP</a>. <a href="[% cobrand.base_url %]/faq">More information</a>.
+            </td>
           </tr>
         </table>
       </td>

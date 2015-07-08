@@ -41,8 +41,14 @@ sub send_batch {
     # TODO, these should be extracted into Collideoscope specific sender
     my $incidents = $rs->search({ category => { -not_like => '%miss%'} });
     my $misses    = $rs->search({ category => { -like     => '%miss%'} });
-    my $incidents_people_count = $incidents->search({}, { group_by => 'user_id' })->count;
-    my $misses_people_count = $incidents->search({}, { group_by => 'user_id' })->count;
+    # When getting the counts for the number of people reporting incidents and
+    # near-misses, we must consider all anonymous reports to come from
+    # different users otherwise it's possible to associate multiple anonymous
+    # reports with a single person.
+    my $incidents_people_count = $incidents->search({ anonymous => 0 }, { group_by => 'user_id' })->count;
+    $incidents_people_count += $incidents->search({ anonymous => 1 })->count;
+    my $misses_people_count = $misses->search({ anonymous => 0 }, { group_by => 'user_id' })->count;
+    $misses_people_count += $misses->search({ anonymous => 1 })->count;
 
     my $period = 'month'; # XXX hardcoded for now
 

@@ -1,4 +1,4 @@
-New reports on Collideoscope this [% period %] in [% body.name %]
+New reports on Collideoscope last [% period %] in [% body.name %]
 ================================================================
 
 New incidents: [% incidents.count %] 
