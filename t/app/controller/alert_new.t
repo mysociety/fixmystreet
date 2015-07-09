@@ -461,19 +461,21 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     like $email->body, qr/Other User/, 'Update name given';
     unlike $email->body, qr/Anonymous User/, 'Update name not given';
 
-    # The update alert was to the problem reporter, so has a login update URL
+    # The update alert was to the problem reporter, so has a special update URL
+    $mech->log_out_ok;
     $mech->get_ok( "/report/$report_id" );
     $mech->content_lacks( 'has not been fixed' );
-    my ($url) = $email->body =~ m{(http://\S+/M/\S+)};
+    my ($url) = $email->body =~ m{(http://\S+/R/\S+)};
     ok $url, "extracted update url '$url'";
     $mech->get_ok( $url );
     is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
     $mech->content_contains( 'has not been fixed' );
-    $mech->logged_in_ok;
+    $mech->not_logged_in_ok;
 
     ($url) = $emails[0]->body =~ m{http://\S+(/A/\S+)};
     $mech->get_ok( $url );
     $mech->content_contains('alert deleted');
+    $mech->not_logged_in_ok;
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);

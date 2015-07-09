@@ -103,13 +103,12 @@ sub email_alerts ($) {
                     } );
                     $data{alert_email} = $user->email;
                     my $token_obj = FixMyStreet::App->model('DB::Token')->create( {
-                        scope => 'email_sign_in',
+                        scope => 'alert_to_reporter',
                         data  => {
-                            email => $user->email,
-                            r => 'report/' . $row->{id},
+                            id => $row->{id},
                         }
                     } );
-                    $data{problem_url} = $url . "/M/" . $token_obj->token;
+                    $data{problem_url} = $url . "/R/" . $token_obj->token;
                 } else {
                     $data{problem_url} = $url . "/report/" . $row->{id};
                 }

@@ -420,8 +420,8 @@ happen before calling this.
 sub signup_for_alerts : Private {
     my ( $self, $c ) = @_;
 
+    my $update = $c->stash->{update};
     if ( $c->stash->{add_alert} ) {
-        my $update = $c->stash->{update};
         my $options = {
             user => $update->user,
             alert_type => 'new_updates',
@@ -438,7 +438,7 @@ sub signup_for_alerts : Private {
         }
         $alert->confirm();
 
-    } elsif ( $c->user && ( my $alert = $c->user->alert_for_problem($c->stash->{update}->problem_id) ) ) {
+    } elsif ( my $alert = $update->user->alert_for_problem($update->problem_id) ) {
         $alert->disable();
     }
 

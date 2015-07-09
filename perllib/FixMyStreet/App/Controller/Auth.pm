@@ -155,6 +155,11 @@ sub token : Path('/M') : Args(1) {
         return;
     }
 
+    if ( $token_obj->created < DateTime->now->subtract( days => 1 ) ) {
+        $c->stash->{token_not_found} = 1;
+        return;
+    }
+
     # Sign out in case we are another user
     $c->logout();
 
