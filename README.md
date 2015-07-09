@@ -14,7 +14,7 @@ RSS alerts of problems in their area.
 
 It was created in 2007 by [mySociety](https://www.mysociety.org/) for reporting
 problems to UK councils and has been copied around the world. The FixMyStreet
-Platform is now at version 1.5.5.
+Platform is now at version 1.6.
 
 ## Installation
 
@@ -38,7 +38,7 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
-* v1.5.5 (10th July 2015)
+* v1.5.5 / v1.6 (10th July 2015)
     - Security:
         - Fix vulnerability in login email sending that could allow an account
           to be hijacked by a third party.
