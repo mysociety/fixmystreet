@@ -1,9 +1,9 @@
 $(function(){
     $('#map_layer_toggle').toggle(function(){
-        $(this).text(translation_strings.map_map);
+        $(this).text(translation_strings.map_satellite);
         fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
     }, function(){
-        $(this).text(translation_strings.map_satellite);
+        $(this).text(translation_strings.map_map);
         fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
     });
 });
@@ -26,8 +26,8 @@ function set_map_config(perm) {
         zoomDuration: 10
     };
     fixmystreet.layer_options = [
-        {},
-        { type: google.maps.MapTypeId.HYBRID }
+        { type: google.maps.MapTypeId.HYBRID },
+        {}
     ];
 }
 
