@@ -4,13 +4,13 @@ $(function(){
         var $t = $(this), text = $t.text();
         if (text == translation_strings.map_map) {
             $t.text(translation_strings.map_satellite);
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
+            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
         } else {
             $t.text(translation_strings.map_map);
-            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
         }
     });
-    if (typeof fixmystreet_google_default !== 'undefined' && fixmystreet_google_default == 'satellite') {
+    if (typeof fixmystreet_google_default !== 'undefined' && fixmystreet_google_default == 'map') {
         $('#map_layer_toggle').click();
     }
 });
@@ -34,8 +34,8 @@ function set_map_config(perm) {
     };
 
     fixmystreet.layer_options = [
-        {},
-        { type: google.maps.MapTypeId.HYBRID }
+        { type: google.maps.MapTypeId.HYBRID },
+        {}
     ];
 }
 
