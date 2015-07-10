@@ -332,7 +332,7 @@ msgstr "Alert %d disabled (created %s)"
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "Rhowch wybod i mi am ddiweddariadau yn y dyfodol"
 
 #: templates/web/base/reports/index.html:3

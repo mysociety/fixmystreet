@@ -285,7 +285,7 @@ msgstr "Alerta %d desativada (criado %s)"
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "Avise-me de atualizações futuras"
 
 #: templates/web/base/reports/index.html:3
@@ -3575,7 +3575,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "Percebemos este problema pode ser da responsabilidade do %s, no entanto, nós não possuímos nenhuma informação de contato deles. Se você souber de um endereço de contato apropriado, favor fornecer esse contacto. Obrigado."
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "Nós enviá-lo para o conselho em seu nome"
 
 #: templates/web/base/report/new/notes.html:4

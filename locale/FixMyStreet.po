@@ -232,7 +232,7 @@ msgid "Alert %d disabled (created %s)"
 msgstr ""
 
 #: templates/web/base/report/update-form.html:163 templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr ""
 
 #: templates/web/base/reports/index.html:3 templates/web/zurich/admin/stats.html:5 templates/web/zurich/reports/index.html:12
@@ -2807,7 +2807,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr ""
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr ""
 
 #: templates/web/base/report/new/notes.html:4 templates/web/zurich/report/new/notes.html:4

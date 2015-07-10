@@ -283,7 +283,7 @@ msgstr "Upozornění %d zrušeno (vytvořeno %s)"
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "Upozorněte mě na budoucí aktualizace"
 
 #: templates/web/base/reports/index.html:3
@@ -3600,7 +3600,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "Uvědomujeme si, že za tento  problém by mohl být odpovědný % s; Nicméně, nemáme na ně v současné době žádné kontaktní údaje. Pokud příslušné kontakty znáte, sem s nimi. "
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "Vaše upozornění pošleme kompetentním úřadům v dané lokalitě"
 
 #: templates/web/base/report/new/notes.html:4

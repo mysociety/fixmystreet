@@ -280,7 +280,7 @@ msgstr "Upozorenje %d onemogućeno (kreirano%s)"
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "Javi mi buduće promjene"
 
 #: templates/web/base/reports/index.html:3
@@ -3547,7 +3547,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "Shvaćamo da bi za ovaj problem moglo biti odgovorno% s, međutim, trenutno nemamo nikakve pojedinosti o njihovom kontaktu. Ako znate odgovarajuću kontakt adresu, molimo Vas da nam se javite."
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "Poslan je odgovornom tijelu u Vaše ime"
 
 #: templates/web/base/report/new/notes.html:4

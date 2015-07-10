@@ -282,7 +282,7 @@ msgstr "Сповіщення %d відключено (створено %s)"
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "Повідомляти мене про оновлення"
 
 #: templates/web/base/reports/index.html:3
@@ -3548,7 +3548,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "Ми розумієм, що проблема може лежати у відповідальності %s; нажаль, наразі у нас немає їх контактних даних. Якщо ви знаєте точну адресу, будь ласка залишайтесь на зв'язку."
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "Ми надіслали це відповідному департаменту від вашого імені"
 
 #: templates/web/base/report/new/notes.html:4
