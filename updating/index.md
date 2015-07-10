@@ -1,12 +1,12 @@
 ---
 layout: page
-title: Updating your code
+title: Updating your installation
 ---
 
-# Updating your code
+# Updating your installation
 
-<p class="lead">Keeping your code up to date means you get new features and bug
-fixes implemented by other users of the platform.</p>
+<p class="lead">Keeping your installation up to date means you get new features
+and bug fixes implemented by other users of the platform.</p>
 
 Please read the guidelines for [feeding back changes](/feeding-back/) -- if
 you follow those when working on your site it should be much easier for you to
@@ -44,9 +44,25 @@ top of the upstream master, or however else you wish to best go about the
 issue :-) Doing this frequently will help prevent you get in a situation where
 you are too worried to merge in case it breaks something.
 
-## Database
+## Subsequent dependency updates
 
-There is a `bin/update-schema` script that should look at the current state of
-your database and bring it up to date with any changes -- note if you have made
-changes to the schema yourself, then this may not work, discuss it first.
+After updating the code, you should run the following commands to update any
+needed dependencies and any schema changes to your database. It's a good idea
+to take a backup of your database first.
 
+{% highlight bash %}
+bin/install_perl_modules
+bin/update-schema
+{% endhighlight %}
+
+Of course, if you have made changes to the database schema yourself, this may
+not work, please feel free to [contact us](/community/) to discuss it first.
+
+## Restart the server
+
+Lastly, you should restart your application server, this may be restarting
+your webserver, or if it is running separately, something like:
+
+{% highlight bash %}
+sudo /etc/init.d/fixmystreet restart
+{% endhighlight %}
