@@ -194,7 +194,7 @@ $(function(){
   [% END %]
 
     <li><label for="status_update">[% loc('Public response:') %]</label>
-
+    [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
     <textarea name='status_update' id='status_update' cols=60 rows=5>
       [%- IF problem.extra.public_response -%]
         [%- problem.extra.public_response | html -%]
