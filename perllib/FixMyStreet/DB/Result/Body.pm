@@ -18,12 +18,6 @@ __PACKAGE__->add_columns(
     is_nullable       => 0,
     sequence          => "body_id_seq",
   },
-  "name",
-  { data_type => "text", is_nullable => 0 },
-  "external_url",
-  { data_type => "text", is_nullable => 1 },
-  "parent",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "endpoint",
   { data_type => "text", is_nullable => 1 },
   "jurisdiction",
@@ -42,8 +36,14 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "send_extended_statuses",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "name",
+  { data_type => "text", is_nullable => 0 },
+  "parent",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "deleted",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "external_url",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -87,6 +87,12 @@ __PACKAGE__->belongs_to(
   },
 );
 __PACKAGE__->has_many(
+  "response_templates",
+  "FixMyStreet::DB::Result::ResponseTemplate",
+  { "foreign.body_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "user_body_permissions",
   "FixMyStreet::DB::Result::UserBodyPermission",
   { "foreign.body_id" => "self.id" },
@@ -100,8 +106,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-29 13:54:07
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PhUeFDRLSQVMk7Sts5K6MQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-02-19 16:13:43
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d6GuQm8vrNmCc4NWw58srA
 
 sub url {
     my ( $self, $c, $args ) = @_;

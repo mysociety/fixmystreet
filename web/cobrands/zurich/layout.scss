@@ -269,6 +269,18 @@ body.mappage.admin .content {
         }
     }
 
+    button, input[type=submit], .btn {
+        &.delete {
+            font-size: 0.75em;
+            color: #933;
+            margin: 2em 0;
+
+            &:hover {
+                @include background(linear-gradient(#fcc, #daa 50%));
+            };
+        }
+    }
+
     #zurich-footer {
         margin: 2em auto 3em auto;
     }
