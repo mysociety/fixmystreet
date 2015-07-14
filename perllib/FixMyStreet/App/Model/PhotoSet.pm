@@ -71,7 +71,25 @@ sub _jpeg_magic {
     #     and \x{49}\x{49} (Tiff, 3 results in live DB) ?
 }
 
-has images => ( # jpeg data for actual image
+=head2 C<images>, C<num_images>, C<get_raw_image_data>, C<all_images>
+
+C<$photoset-E<GT>images> is an AoA containing the filed and the binary image data.
+
+    [
+        [ $fileid1, $binary_data ],
+        [ $fileid2, $binary_data ],
+        ...
+    ]
+
+Various accessors are provided onto it:
+
+    num_images: count
+    get_raw_image_data ($index): return the [$fileid, $binary_data] tuple
+    all_images: return AoA as an array (e.g. rather than arrayref)
+
+=cut
+
+has images => ( #  AoA of [$fileid, $binary_data] tuples
     isa => 'ArrayRef',
     is => 'rw',
     traits => ['Array'],
