@@ -53,6 +53,15 @@
 %],
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
+[% SET fields = problem.get_extra_fields; IF fields.size %]
+<li>
+    [% FOR f IN fields %]
+    <strong>[% f.description %]</strong> [% f.value %]
+    <br>
+    [% END %]
+</li>
+[% END %]
+
 <li><span class="mock-label">[% loc('Name:') %]</span> [% problem.name | html %] <input type='hidden' name='name' id='name' value='[% problem.name | html %]'></li>
 <li><span class="mock-label">[% loc('Email:') %]</span> [% problem.user.email | html %] <input type='hidden' id='email' name='email' value='[% problem.user.email | html %]'>
 [% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
