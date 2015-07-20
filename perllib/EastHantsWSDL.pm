@@ -5,7 +5,7 @@ package EastHantsWSDL;
 
 my %methods = (
   INPUTFEEDBACK => {
-    endpoint => 'http://www.easthants.gov.uk:80/forms.nsf/InputFeedback?OpenWebService',
+    endpoint => 'http://91.224.27.33/forms.nsf/InputFeedback?OpenWebService',
     soapaction => 'INPUTFEEDBACK',
     uri => 'urn:DefaultNamespace',
     parameters => [
