@@ -1,0 +1,45 @@
+<p id="unknown" class="alert">This council no longer exists.
+    [% IF body.name.match('Antrim|Newtownabbey') %]
+    Its area is now covered by <a href="/reports/Antrim+and+Newtownabbey">Antrim and Newtownabbey Borough Council</a>.
+    [% ELSIF body.name.match('Ards|North Down') %]
+    Its area is now covered by <a href="/reports/Ards+and+North+Down">Ards and North Down Borough Council</a>.
+    [% ELSIF body.name.match('Armagh|Banbridge|Craigavon') %]
+    Its area is now covered by <a href="/reports/Armagh+City%2C+Banbridge+and+Craigavon">Armagh City, Banbridge and Craigavon Borough Council</a>.
+    [% ELSIF body.name.match('Coleraine|Ballymoney|Moyle|Limavady') %]
+    Its area is now covered by <a href="/reports/Causeway+Coast+and+Glens">Causeway Coast and Glens District Council</a>.
+    [% ELSIF body.name.match('Derry|Strabane') %]
+    Its area is now covered by <a href="/reports/Derry+City+and+Strabane">Derry City and Strabane District Council</a>.
+    [% ELSIF body.name.match('Fermanagh|Omagh') %]
+    Its area is now covered by <a href="/reports/Fermanagh+and+Omagh">Fermanagh and Omagh District Council</a>.
+    [% ELSIF body.name.match('Lisburn|Castlereagh') %]
+    Its area is now covered by <a href="/reports/Lisburn+and+Castlereagh">Lisburn and Castlereagh City Council</a>.
+    [% ELSIF body.name.match('Carrickfergus|Larne|Ballymena') %]
+    Its area is now covered by <a href="/reports/Mid+and+East+Antrim">Mid and East Antrim Borough Council</a>.
+    [% ELSIF body.name.match('Dungannon|Cookstown|Magherafelt') %]
+    Its area is now covered by <a href="/reports/Mid+Ulster">Mid Ulster District Council</a>.
+    [% ELSIF body.name.match('Newry|Down') %]
+    Its area is now covered by <a href="/reports/Newry%2C+Mourne+and+Down">Newry, Mourne and Down District Council</a>.
+    [% ELSIF body.name.match('Penwith|Kerrier|Carrick|Restormel|Caradon|North Cornwall') %]
+    Its area is now covered by <a href="/reports/Cornwall">Cornwall Council</a>.
+    [% ELSIF body.name.match('Durham|Easington|Sedgefield|Teesdale|Wear Valley|Derwentside|Chester le Street') %]
+    Its area is now covered by <a href="/reports/Durham+County">Durham County Council</a>.
+    [% ELSIF body.name.match('Blyth Valley|Wansbeck|Castle Morpeth|Tynedale|Alnwick|Berwick upon Tweed') %]
+    Its area is now covered by <a href="/reports/Northumberland">Northumberland County Council</a>.
+    [% ELSIF body.name.match('North Shropshire|Oswestry|Shrewsbury and Atcham|South Shropshire|Bridgnorth') %]
+    Its area is now covered by <a href="/reports/Shropshire">Shropshire Council</a>.
+    [% ELSIF body.name.match('Salisbury|West Wiltshire|Kennet|North Wiltshire') %]
+    Its area is now covered by <a href="/reports/Wiltshire">Wiltshire Council</a>.
+    [% ELSIF body.name.match('Ellesmere Port and Neston|Vale Royal|Chester') %]
+    Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a>.
+    [% ELSIF body.name.match('Macclesfield|Congleton|Crewe and Nantwich') %]
+    Its area is now covered by <a href="/reports/Cheshire+East">Cheshire East Council</a>.
+    [% ELSIF body.name.match('Mid Bedfordshire|South Bedfordshire') %]
+    Its area is now covered by <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
+    [% ELSIF body.name.match('Cheshire') %]
+    Its area is now covered by <a href="/reports/Cheshire+West+and+Chester">Cheshire West and Chester Council</a> or
+    <a href="/reports/Cheshire+East">Cheshire East Council</a>.
+    [% ELSIF body.name.match('Bedfordshire') %]
+    Its area is now covered by <a href="/reports/Bedford">Bedford Borough Council</a> or
+    <a href="/reports/Central+Bedfordshire">Central Bedfordshire Council</a>.
+    [% END %]
+</p>
