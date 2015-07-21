@@ -18,9 +18,6 @@ sub build_recipient_list {
 
         my ($body_email, $confirmed, $note) = ( $contact->email, $contact->confirmed, $contact->note );
 
-        $body_email = essex_contact($row->latitude, $row->longitude) if $body->areas->{2225};
-        $body_email = oxfordshire_contact($row->latitude, $row->longitude) if $body->areas->{2237} && $body_email eq 'SPECIAL';
-
         unless ($confirmed) {
             $all_confirmed = 0;
             $note = 'Body ' . $row->bodies_str . ' deleted'
@@ -110,30 +107,6 @@ sub send {
     }
 
     return $result;
-}
-
-# Essex has different contact addresses depending upon the district
-# Might be easier if we start storing in the db all areas covered by a point
-# Will do for now :)
-sub essex_contact {
-    my $district = _get_district_for_contact(@_);
-    my $email;
-    $email = 'eastarea' if $district == 2315 || $district == 2312;
-    $email = 'midarea' if $district == 2317 || $district == 2314 || $district == 2316;
-    $email = 'southarea' if $district == 2319 || $district == 2320 || $district == 2310;
-    $email = 'westarea' if $district == 2309 || $district == 2311 || $district == 2318 || $district == 2313;
-    die "Returned district $district which is not in Essex!" unless $email;
-    return "highways.$email\@essexcc.gov.uk";
-}
-
-# Oxfordshire has different contact addresses depending upon the district
-sub oxfordshire_contact {
-    my $district = _get_district_for_contact(@_);
-    my $email;
-    $email = 'northernarea' if $district == 2419 || $district == 2420 || $district == 2421;
-    $email = 'southernarea' if $district == 2417 || $district == 2418;
-    die "Returned district $district which is not in Oxfordshire!" unless $email;
-    return "$email\@oxfordshire.gov.uk";
 }
 
 sub _get_district_for_contact {
