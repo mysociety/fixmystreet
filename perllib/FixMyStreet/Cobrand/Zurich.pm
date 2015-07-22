@@ -606,6 +606,11 @@ sub admin_report_edit {
 
         my $old_closure_state = $problem->get_extra_metadata('closure_status');
 
+        # update the public update from DM
+        if (my $update = $c->req->param('status_update')) {
+            $problem->set_extra_metadata(public_response => $update);
+        }
+
         if (
             ($state eq 'confirmed') 
             && $new_cat
@@ -727,11 +732,6 @@ sub admin_report_edit {
         $problem->detail( $c->get_param('detail') ) if $c->get_param('detail');
         $problem->latitude( $c->get_param('latitude') );
         $problem->longitude( $c->get_param('longitude') );
-
-        # update the public update from DM
-        if (my $update = $c->req->param('status_update')) {
-            $problem->set_extra_metadata(public_response => $update);
-        }
 
         # send external_message if provided and state is *now* Wish|Extern
         # e.g. was already, or was set in the Rueckmeldung ausstehend clause above.
