@@ -283,7 +283,7 @@ msgstr "အသိေပးခ်က္%dကိုပိတ္ထားသည္(
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "ေနာက္ထပ္အသစ္မ်ားအတြက္လည္းကၽြႏ္ုပ္ကိုအသိေပးမည္"
 
 #: templates/web/base/reports/index.html:3
@@ -3535,7 +3535,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "မိမိတို႔သည္ %s; ၏တာဝန္ျဖစ္ေၾကာင္း သတိျပဳမိေသာ္လည္း မိမိတို႔တြင္ ၎တို႔ကို ဆက္သြယ္ရန္ အေသးစိတ္ မရွိေသးပါ။ အကယ္၍ သင့္ေတာ္သည့္ လိပ္စာရွိပါက ေက်းဇူးျပဳၿပီး ဆက္သြယ္ေပးပါ။"
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "သင္၏ကိုယ္စား ေကာင္စီထံ ကၽြန္ေတာ္တို႔ ေပးပို႔ပါမည္"
 
 #: templates/web/base/report/new/notes.html:4

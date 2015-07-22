@@ -281,7 +281,7 @@ msgstr "Pemberitahuan %d dihenti (dibuat pada %s)"
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "Maklumkan aku sebarang kemas kini masa depan"
 
 #: templates/web/base/reports/index.html:3
@@ -3534,7 +3534,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "Kita sedar bahawa masalah ini mungkin tanggungjawab %s; tetapi, pada masa kini kita tiada maklumat hubungan mereka. Jika anda tahu hubungan sewajanya, sila menghubungi mereka"
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "Kita menghantar kepada majlis bagi pihak anda"
 
 #: templates/web/base/report/new/notes.html:4

@@ -287,7 +287,7 @@ msgstr "%d 關閉通知 "
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "通知我此事後續"
 
 #: templates/web/base/reports/index.html:3
@@ -3615,7 +3615,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "我們理解此問題可能是%s之責任，然而目前我們並無他們的聯絡資訊。如果您知道適當的聯絡人資訊，請告訴我們。"
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "我們將代表您將此呈報給地方政府"
 
 #: templates/web/base/report/new/notes.html:4

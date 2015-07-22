@@ -281,7 +281,7 @@ msgstr "Varsel %d kobla ut (oppretta %s)"
 
 #: templates/web/base/report/update-form.html:163
 #: templates/web/fixmystreet/report/update-form.html:150
-msgid "Alert me to future updates"
+msgid "Alert me of future updates"
 msgstr "Send meg varsel ved framtidige oppdateringar"
 
 #: templates/web/base/reports/index.html:3
@@ -3549,7 +3549,7 @@ msgid "We realise this problem might be the responsibility of %s; however, we do
 msgstr "Vi innser at %s kan vera ansvarleg for dette problemet, men vi manglar for tida kontaktinformasjon for dei. Viss du veit om ei eigna kontaktadresse, ta kontakt med oss."
 
 #: templates/web/base/index-steps.html:38
-msgid "We send it to the council on your behalf"
+msgid "We will send it to the council on your behalf"
 msgstr "Vi sender til administrasjon på dine vegner"
 
 #: templates/web/base/report/new/notes.html:4
