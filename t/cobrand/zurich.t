@@ -632,6 +632,39 @@ subtest "external report triggers email" => sub {
         like $email->body, qr/test\@example.com/, 'body contains email address';
         $mech->clear_emails_ok;
     };
+
+    subtest "Closure email includes public response" => sub {
+        my $PUBLIC_RESPONSE = "This is the public response to your report. Freundliche Gruesse.";
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ 'zurich' ],
+            MAP_TYPE => 'Zurich,OSM',
+        }, sub {
+            # set as extern
+            reset_report_state($report);
+            $report->state('planned');
+            $report->set_extra_metadata('closure_status' => 'closed');
+            $report->set_extra_metadata('email_confirmed' => 1);
+            $report->unset_extra_metadata('public_response');
+            $report->update;
+            is ($report->state, 'planned', 'Sanity check') or die;
+
+            $mech->get_ok( '/admin/report_edit/' . $report->id );
+
+            $mech->form_with_fields( 'publish_response' );
+            $mech->submit_form_ok( {
+                button => 'publish_response',
+                with_fields => {
+                    body_external => $external_body->id,
+                    external_message => $EXTERNAL_MESSAGE,
+                    status_update => $PUBLIC_RESPONSE,
+                } });
+        };
+        $email = $mech->get_email;
+        like $email->header('Subject'), qr/Meldung #$report->{id}/, 'subject looks okay';
+        like $email->header('To'), qr/test\@example.com/, 'to line looks correct';
+        like $email->body, qr/$PUBLIC_RESPONSE/, 'public_response was passed on' or die $email->body;
+        $mech->clear_emails_ok;
+    };
     $report->comments->delete; # delete the comments, as they confuse later tests
 };
 
@@ -821,8 +854,8 @@ subtest "test admin_log" => sub {
 
     # XXX: following is dependent on all of test up till now, rewrite to explicitly
     # test which things need to be logged!
-    is scalar @entries, 3, 'State changes logged'; 
-    is $entries[-1]->action, 'state change to investigating', 'State change logged as expected';
+    is scalar @entries, 4, 'State changes logged';
+    is $entries[-1]->action, 'state change to closed', 'State change logged as expected';
 };
 
 subtest 'email images to external partners' => sub {
