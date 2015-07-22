@@ -1,0 +1,98 @@
+[% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
+
+[% IF moderating %]
+[%# TODO: extract stylesheet! %]
+<style>
+    .moderate-edit label {
+        display: inline-block;
+        height: 1em;
+        margin-top: 0;
+    }
+
+    .moderate-edit input {
+        display: inline-block;
+    }
+
+    .moderate-edit { display: none }
+    .moderate-edit :disabled {
+        background: #ddd;
+    }
+    br {
+        line-height: 0.5em;
+    }
+</style>
+[% END %]
+
+<div class="problem-header cf" problem-id="[% problem.id %]">
+  [% IF moderating %]
+    [% original = problem.moderation_original_data %]
+    <form method="post" action="/moderate/report/[% problem.id %]">
+        <input type="button" class="btn moderate moderate-display" value="moderate">
+        <div class="moderate-edit">
+            <input type="checkbox" class="hide-document" name="problem_hide">
+            <label for="problem_hide">Hide report completely?</label>
+            <br />
+            <input type="checkbox" name="problem_show_name" [% problem.anonymous ? '' : 'checked' %]>
+            <label for="problem_show_name">Show name publicly?</label>
+            [% IF problem.photo or original.photo %]
+                <br />
+                <input type="checkbox" name="problem_show_photo" [% problem.photo ? 'checked' : '' %]>
+                <label for="problem_show_photo">Show Photo?</label>
+            [% END %]
+        </div>
+  [% END %]
+    <h1 class="moderate-display">[% problem.title | html %]</h1>
+    [% IF moderating %]
+    <div class="moderate-edit">
+        [% IF problem.title != original.title %]
+        <input type="checkbox" name="problem_revert_title" class="revert-title">
+        <label for="problem_revert_title">Revert to original title</label>
+        [% END %]
+    <h1><input type="text" name="problem_title" value="[% problem.title | html %]"></h1>
+    </div>
+    [% END %]
+
+    <p class="report_meta_info">
+        [% problem.meta_line(c) | html %]
+        [%- IF !problem.used_map AND c.cobrand.moniker != 'emptyhomes' %]; <strong>([% loc('there is no pin shown as the user did not use the map') %])</strong>[% END %]
+    </p>
+    [% IF problem.whensent %]
+        <p class="council_sent_info">[% problem.duration_string(c) %]</p>
+    [% END %]
+    [% mlog = problem.latest_moderation_log_entry(); IF mlog %]
+        <p>Moderated by [% mlog.user.from_body.name %] at [% prettify_dt(mlog.whenedited) %]</p>
+    [% END %]
+
+    [% INCLUDE 'report/_support.html' %]
+
+    [% INCLUDE 'report/photo.html' object=problem %]
+    <div class="moderate-display">
+        [% add_links( problem.detail ) | html_para %]
+    </div>
+
+    [% IF moderating %]
+        <div class="moderate-edit">
+        [% IF problem.detail != original.detail %]
+        <input type="checkbox" name="problem_revert_detail" class="revert-textarea">
+        <label for="problem_revert_detail">Revert to original text</label>
+        [% END %]
+        <textarea name="problem_detail">[% add_links( problem.detail ) %]</textarea>
+        </div>
+
+        <div class="moderate-edit">
+            <label for="moderation_reason">Moderation reason:</label>
+            <input type="text" name="moderation_reason" placeholder="Describe why you are moderating this">
+            <input type="submit" class="red-btn" value="Moderate it">
+            <input type="button" class="btn cancel" value="cancel">
+        </div>
+    </form>
+  [% END %]
+
+  [% IF problem.bodies_str %]
+      [% INCLUDE 'report/_council_sent_info.html' %]
+  [% ELSE %]
+      <div class="council_info_box">
+          <p>[% loc('Not reported to council') %]</p>
+      </div>
+  [% END %]
+</div>

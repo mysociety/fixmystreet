@@ -37,7 +37,7 @@ sub process_extras {
     if ( $body_id eq '2482' ) {
         my @fields = ( 'fms_extra_title', @$fields );
         for my $field ( @fields ) {
-            my $value = $ctx->request->param( $field );
+            my $value = $ctx->get_param($field);
 
             if ( !$value ) {
                 $ctx->stash->{field_errors}->{ $field } = _('This information is required');
@@ -49,8 +49,8 @@ sub process_extras {
             };
         }
 
-        if ( $ctx->request->param('fms_extra_title') ) {
-            $ctx->stash->{fms_extra_title} = $ctx->request->param('fms_extra_title');
+        if ( $ctx->get_param('fms_extra_title') ) {
+            $ctx->stash->{fms_extra_title} = $ctx->get_param('fms_extra_title');
             $ctx->stash->{extra_name_info} = 1;
         }
     }

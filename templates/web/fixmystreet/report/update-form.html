@@ -34,7 +34,7 @@
                 [% END %]
                 </select>
             [% ELSE %]
-                [% IF problem.is_fixed AND c.user_exists AND c.user.id == problem.user_id %]
+                [% IF problem.is_fixed AND ((c.user_exists AND c.user.id == problem.user_id) OR alert_to_reporter) %]
                 
                 <input type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF update.mark_open %]>
                 <label class="inline" for="form_reopen">[% loc('This problem has not been fixed') %]</label>

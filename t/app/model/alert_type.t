@@ -150,7 +150,7 @@ for my $test (
 
             like $body, qr/$msg/, 'email says problem is ' . $test->{state};
             if ($to eq $user->email) {
-                like $body, qr{/M/}, 'contains problem login url';
+                like $body, qr{/R/}, 'contains problem login url';
             } elsif ($to eq $user3->email) {
                 like $body, qr{/report/$report_id}, 'contains problem url';
             }

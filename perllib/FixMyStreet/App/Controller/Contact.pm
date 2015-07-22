@@ -41,8 +41,8 @@ Handle contact us form submission
 sub submit : Path('submit') : Args(0) {
     my ( $self, $c ) = @_;
 
-    if (my $testing = $c->req->params->{_test_}) {
-        $c->stash->{success} = $c->req->params->{success};
+    if (my $testing = $c->get_param('_test_')) {
+        $c->stash->{success} = $c->get_param('success');
         return;
     }
 
@@ -66,9 +66,9 @@ generic contact request and set up things accordingly
 sub determine_contact_type : Private {
     my ( $self, $c ) = @_;
 
-    my $id = $c->req->param('id');
-    my $update_id = $c->req->param('update_id');
-    my $token = $c->req->param('m');
+    my $id = $c->get_param('id');
+    my $update_id = $c->get_param('update_id');
+    my $token = $c->get_param('m');
     $id        = undef unless $id        && $id        =~ /^[1-9]\d*$/;
     $update_id = undef unless $update_id && $update_id =~ /^[1-9]\d*$/;
 
@@ -116,12 +116,12 @@ sub validate : Private {
 
     foreach my $field ( keys %required ) {
         $field_errors{$field} = $required{$field}
-          unless $c->req->param($field) =~ /\S/;
+          unless $c->get_param($field) =~ /\S/;
     }
 
     unless ( $field_errors{em} ) {
         $field_errors{em} = _('Please enter a valid email address')
-          if !mySociety::EmailUtil::is_valid_email( $c->req->param('em') );
+          if !mySociety::EmailUtil::is_valid_email( $c->get_param('em') );
     }
 
     %field_errors = (
@@ -130,11 +130,11 @@ sub validate : Private {
     );
 
     push @errors, _('Illegal ID')
-      if $c->req->param('id') && !$c->stash->{problem}
-          or $c->req->param('update_id') && !$c->stash->{update};
+      if $c->get_param('id') && !$c->stash->{problem}
+          or $c->get_param('update_id') && !$c->stash->{update};
 
     push @errors, _('There was a problem showing this page. Please try again later.')
-      if $c->req->params->{message} && $c->req->params->{message} =~ /\[url=|<a/;
+      if $c->get_param('message') && $c->get_param('message') =~ /\[url=|<a/;
 
     unshift @errors,
       _('There were problems with your report. Please see below.')
@@ -211,11 +211,11 @@ sub setup_request : Private {
     $c->stash->{contact_email} =~ s/\@/&#64;/;
 
     for my $param (qw/em subject message/) {
-        $c->stash->{$param} = $c->req->param($param);
+        $c->stash->{$param} = $c->get_param($param);
     }
 
     # name is already used in the stash for the app class name
-    $c->stash->{form_name} = $c->req->param('name');
+    $c->stash->{form_name} = $c->get_param('name');
 
     return 1;
 }

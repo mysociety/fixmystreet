@@ -65,7 +65,7 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
     });
     $c->stash->{problem} = $problem;
     $c->stash->{problem_original} = $original;
-    $c->stash->{moderation_reason} = $c->req->param('moderation_reason') // '';
+    $c->stash->{moderation_reason} = $c->get_param('moderation_reason') // '';
 }
 
 sub moderate_report : Chained('report') : PathPart('') : Args(0) {
@@ -127,7 +127,7 @@ sub report_moderate_hide : Private {
 
     my $problem = $c->stash->{problem} or die;
 
-    if ($c->req->param('problem_hide')) {
+    if ($c->get_param('problem_hide')) {
 
         $problem->update({ state => 'hidden' });
 
@@ -145,9 +145,9 @@ sub report_moderate_title : Private {
     my $old_title = $problem->title;
     my $original_title = $original->title;
 
-    my $title = $c->req->param('problem_revert_title') ?
+    my $title = $c->get_param('problem_revert_title') ?
         $original_title
-        : $self->diff($original_title, $c->req->param('problem_title'));
+        : $self->diff($original_title, $c->get_param('problem_title'));
 
     if ($title ne $old_title) {
         $original->insert unless $original->in_storage;
@@ -166,9 +166,9 @@ sub report_moderate_detail : Private {
 
     my $old_detail = $problem->detail;
     my $original_detail = $original->detail;
-    my $detail = $c->req->param('problem_revert_detail') ?
+    my $detail = $c->get_param('problem_revert_detail') ?
         $original_detail
-        : $self->diff($original_detail, $c->req->param('problem_detail'));
+        : $self->diff($original_detail, $c->get_param('problem_detail'));
 
     if ($detail ne $old_detail) {
         $original->insert unless $original->in_storage;
@@ -184,7 +184,7 @@ sub report_moderate_anon : Private {
     my $problem = $c->stash->{problem} or die;
     my $original = $c->stash->{problem_original};
 
-    my $show_user = $c->req->param('problem_show_name') ? 1 : 0;
+    my $show_user = $c->get_param('problem_show_name') ? 1 : 0;
     my $anonymous = $show_user ? 0 : 1;
     my $old_anonymous = $problem->anonymous ? 1 : 0;
 
@@ -205,7 +205,7 @@ sub report_moderate_photo : Private {
 
     return unless $original->photo;
 
-    my $show_photo = $c->req->param('problem_show_photo') ? 1 : 0;
+    my $show_photo = $c->get_param('problem_show_photo') ? 1 : 0;
     my $old_show_photo = $problem->photo ? 1 : 0;
 
     if ($show_photo != $old_show_photo) {
@@ -268,7 +268,7 @@ sub update_moderate_hide : Private {
     my $problem = $c->stash->{problem} or die;
     my $comment = $c->stash->{comment} or die;
 
-    if ($c->req->param('update_hide')) {
+    if ($c->get_param('update_hide')) {
         $comment->update({ state => 'hidden' });
         $c->detach( 'update_moderate_audit', ['hide'] ); # break chain here.
     }
@@ -284,9 +284,9 @@ sub update_moderate_detail : Private {
 
     my $old_detail = $comment->text;
     my $original_detail = $original->detail;
-    my $detail = $c->req->param('update_revert_detail') ?
+    my $detail = $c->get_param('update_revert_detail') ?
         $original_detail
-        : $self->diff($original_detail, $c->req->param('update_detail'));
+        : $self->diff($original_detail, $c->get_param('update_detail'));
 
     if ($detail ne $old_detail) {
         $original->insert unless $original->in_storage;
@@ -303,7 +303,7 @@ sub update_moderate_anon : Private {
     my $comment = $c->stash->{comment} or die;
     my $original = $c->stash->{comment_original};
 
-    my $show_user = $c->req->param('update_show_name') ? 1 : 0;
+    my $show_user = $c->get_param('update_show_name') ? 1 : 0;
     my $anonymous = $show_user ? 0 : 1;
     my $old_anonymous = $comment->anonymous ? 1 : 0;
 
@@ -324,7 +324,7 @@ sub update_moderate_photo : Private {
 
     return unless $original->photo;
 
-    my $show_photo = $c->req->param('update_show_photo') ? 1 : 0;
+    my $show_photo = $c->get_param('update_show_photo') ? 1 : 0;
     my $old_show_photo = $comment->photo ? 1 : 0;
 
     if ($show_photo != $old_show_photo) {

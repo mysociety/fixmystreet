@@ -226,7 +226,7 @@ sub process_photo_cache : Private {
     my ( $self, $c ) = @_;
 
     # get the fileid and make sure it is just a hex number
-    my $fileid = $c->req->param('upload_fileid') || '';
+    my $fileid = $c->get_param('upload_fileid') || '';
     $fileid =~ s{[^0-9a-f]}{}gi;
     return unless $fileid;
 

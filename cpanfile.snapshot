@@ -1165,10 +1165,10 @@ DISTRIBUTIONS
       Try::Tiny 0.07
       namespace::clean 0.24
       perl 5.008001
-  DBIx-Class-EncodedColumn-0.00011
-    pathname: W/WR/WREIS/DBIx-Class-EncodedColumn-0.00011.tar.gz
+  DBIx-Class-EncodedColumn-0.00013
+    pathname: W/WR/WREIS/DBIx-Class-EncodedColumn-0.00013.tar.gz
     provides:
-      DBIx::Class::EncodedColumn 0.00011
+      DBIx::Class::EncodedColumn 0.00013
       DBIx::Class::EncodedColumn::Crypt 0.01
       DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt 0.00001
       DBIx::Class::EncodedColumn::Crypt::OpenPGP 0.01
@@ -1177,7 +1177,8 @@ DISTRIBUTIONS
       DBD::SQLite 0
       DBIx::Class 0.06002
       Dir::Self 0
-      ExtUtils::MakeMaker 6.42
+      Encode 0
+      ExtUtils::MakeMaker 6.36
       File::Spec 0
       File::Temp 0
       Sub::Name 0.04

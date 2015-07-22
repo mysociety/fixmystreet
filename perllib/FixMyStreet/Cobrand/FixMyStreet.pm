@@ -40,12 +40,12 @@ sub extra_contact_validation {
 
     my %errors;
 
-    $c->stash->{dest} = $c->req->param('dest');
+    $c->stash->{dest} = $c->get_param('dest');
 
     $errors{dest} = "Please enter who your message is for"
-        unless $c->req->param('dest');
+        unless $c->get_param('dest');
 
-    if ( $c->req->param('dest') eq 'council' || $c->req->param('dest') eq 'update' ) {
+    if ( $c->get_param('dest') eq 'council' || $c->get_param('dest') eq 'update' ) {
         $errors{not_for_us} = 1;
     }
 

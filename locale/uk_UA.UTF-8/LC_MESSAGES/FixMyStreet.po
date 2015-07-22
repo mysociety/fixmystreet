@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2015-02-25 15:01+0000\n"
+"POT-Creation-Date: 2015-07-10 10:09+0100\n"
 "PO-Revision-Date: 2015-01-21 16:27+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Ukrainian (Ukraine) (http://www.transifex.com/projects/p/fixmystreet/language/uk_UA/)\n"
@@ -20,14 +20,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:610
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:373
+#: perllib/FixMyStreet/DB/Result/Problem.pm:643
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:392
 msgid " and "
 msgstr "і"
 
-#: templates/web/base/report/new/councils_text_all.html:11
-#: templates/web/base/report/new/councils_text_all.html:18
-#: templates/web/base/report/new/councils_text_all.html:4
+#: templates/web/base/report/new/councils_text_all.html:2
 #: templates/web/base/report/new/councils_text_none.html:11
 #: templates/web/base/report/new/councils_text_none.html:2
 #: templates/web/base/report/new/councils_text_some.html:19
@@ -66,19 +64,19 @@ msgstr "%d до %d з %d"
 msgid "%s - Summary reports"
 msgstr "%s - підсумкових звітів"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:659
+#: perllib/FixMyStreet/DB/Result/Problem.pm:692
 msgid "%s ref:&nbsp;%s"
 msgstr "%s посилання:&nbsp;%s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:265 perllib/FixMyStreet/Cobrand/UK.pm:277
+#: perllib/FixMyStreet/Cobrand/UK.pm:255 perllib/FixMyStreet/Cobrand/UK.pm:267
 msgid "%s ward, %s"
 msgstr "%s район, %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:546
+#: perllib/FixMyStreet/DB/Result/Problem.pm:579
 msgid "%s, reported at %s"
 msgstr "%s, сповіщено о %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:292 perllib/FixMyStreet/Cobrand/UK.pm:304
+#: perllib/FixMyStreet/Cobrand/UK.pm:282 perllib/FixMyStreet/Cobrand/UK.pm:294
 msgid "%s, within %s ward"
 msgstr "%s, в межах %s району"
 
@@ -159,14 +157,13 @@ msgstr "(ми не публікуєм вашу електронну адресу
 msgid "(we never show your email)"
 msgstr "(ми не публікуєм вашу поштову адресу)"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:635
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:662
-#: perllib/FixMyStreet/DB/Result/Problem.pm:385
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:651
+#: perllib/FixMyStreet/DB/Result/Problem.pm:418
 msgid "-- Pick a category --"
 msgstr "-- Оберіть категорію --"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:618
-#: perllib/FixMyStreet/DB/Result/Problem.pm:391
+#: perllib/FixMyStreet/DB/Result/Problem.pm:424
 msgid "-- Pick a property type --"
 msgstr "-- Оберіть тип майна --"
 
@@ -267,7 +264,7 @@ msgstr "Додати нову категорію"
 msgid "Add user"
 msgstr "Додати користувача"
 
-#: templates/web/base/my/my.html:64 templates/web/fixmystreet/my/my.html:70
+#: templates/web/base/my/my.html:64 templates/web/fixmystreet/my/my.html:52
 msgid "Added %s"
 msgstr "Додано %s"
 
@@ -311,18 +308,8 @@ msgstr "Всі звіти в проміжку з  %s по %s"
 msgid "All the information you provide here will be sent to"
 msgstr "Всю надану інформацію буде надіслано до"
 
-#: templates/web/base/report/new/councils_text_all.html:11
-#: templates/web/base/report/new/councils_text_all.html:13
-msgid "All the information you provide here will be sent to <strong>%s</strong> or <strong>Roads Service</strong>."
-msgstr "Всю надану вами інформацію буде надіслано до <strong>%s</strong> або <strong>дорожньої служби</strong>."
-
+#: templates/web/base/report/new/councils_text_all.html:2
 #: templates/web/base/report/new/councils_text_all.html:4
-#: templates/web/base/report/new/councils_text_all.html:6
-msgid "All the information you provide here will be sent to <strong>%s</strong> or a relevant local body such as <strong>TfL</strong>, via the London Report-It system."
-msgstr "Всю надану вами інформацію буде надіслано до <strong>%s</strong> або до релевантного <strong>відділу</strong>, через систему скарг"
-
-#: templates/web/base/report/new/councils_text_all.html:18
-#: templates/web/base/report/new/councils_text_all.html:20
 #: templates/web/base/report/new/fill_in_details_form.html:12
 #: templates/web/base/report/new/fill_in_details_form.html:14
 #: templates/web/fixmystreet/report/new/fill_in_details_form.html:10
@@ -377,7 +364,7 @@ msgstr "Назначити зовнішньому відділу:"
 msgid "Assign to subdivision:"
 msgstr "Назначити підрозділу:"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:163
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:165
 #: templates/web/zurich/report/updates.html:11
 msgid "Assigned to %s"
 msgstr "Назначити %s"
@@ -390,7 +377,7 @@ msgstr "At most %d requests are returned in each query.  The returned requests a
 msgid "At the moment only searching for and looking at reports work."
 msgstr "Наразі лише роздивляюсь як працюють звіти"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:340
+#: perllib/FixMyStreet/DB/Result/Problem.pm:373
 #: templates/web/zurich/report/_item.html:11
 msgid "Awaiting moderation"
 msgstr "Очікує перевірки модератором"
@@ -403,8 +390,8 @@ msgstr "Назад"
 msgid "Ban email address"
 msgstr "Забанити адресу"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1194
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:297
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1191
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:301
 #: templates/web/base/admin/bodies.html:1 templates/web/zurich/header.html:64
 msgid "Bodies"
 msgstr "Органи"
@@ -454,7 +441,7 @@ msgstr "В цій категорії проблеми не вирішуютьс�
 msgid "Category:"
 msgstr "Категорія:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:364
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:383
 msgid "Category: %s"
 msgstr "Категорія: %s"
 
@@ -506,7 +493,7 @@ msgstr "Натисніть тут або введіть в форматі дд/�
 msgid "Click map to report a problem"
 msgstr "Натисніть на точку на мапі щоб прозвітувати проблему"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:140
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:141
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/report_edit.html:45
 #: templates/web/base/admin/report_edit.html:47
@@ -523,11 +510,12 @@ msgstr "Натисніть на точку на мапі щоб прозвіту
 msgid "Closed"
 msgstr "Закрито"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:754
+#: perllib/FixMyStreet/DB/Result/Problem.pm:791
 msgid "Closed by council"
 msgstr "Закрито муніципалітетом"
 
-#: templates/web/base/my/my.html:40 templates/web/fixmystreet/my/my.html:46
+#: templates/web/base/my/my.html:40
+#: templates/web/fixmystreet/my/_problem-list.html:12
 msgid "Closed reports"
 msgstr "Закриті звіти"
 
@@ -560,7 +548,7 @@ msgstr "Cobrand data:"
 msgid "Cobrand:"
 msgstr "Cobrand:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1201
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1198
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
 msgstr "Конфігурація"
@@ -625,8 +613,8 @@ msgstr "Зворотній звязок"
 msgid "Contact the team"
 msgstr "Звернутись до команди"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1327
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1355
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1324
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1352
 msgid "Could not find user"
 msgstr "Не вдалось знайти користувача"
 
@@ -643,6 +631,10 @@ msgstr "Рада"
 #: templates/web/zurich/admin/body.html:1
 msgid "Council contacts for %s"
 msgstr "Контакти ради для %s"
+
+#: perllib/FixMyStreet/DB/Result/Problem.pm:690
+msgid "Council ref:&nbsp;%s"
+msgstr "рада ref:&nbsp;%s"
 
 #: templates/web/base/admin/stats.html:84
 msgid "Council:"
@@ -815,7 +807,7 @@ msgstr "Редактор"
 msgid "Email"
 msgstr "Е-пошта"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1303
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1300
 msgid "Email added to abuse list"
 msgstr "Пошта занесена в чорний список"
 
@@ -833,7 +825,7 @@ msgstr "Сповіщення створено"
 msgid "Email alert deleted"
 msgstr "Відмітьте як видалене"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1300
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1297
 msgid "Email already in abuse list"
 msgstr "Адреса вже в чорному списку"
 
@@ -857,7 +849,7 @@ msgstr "Надсилайте мені новини"
 msgid "Email:"
 msgstr "Е-пошта:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:309
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:314
 msgid "Email: %s"
 msgstr "Е-пошта: %s"
 
@@ -906,7 +898,7 @@ msgstr "Кінцева дата:"
 msgid "Endpoint"
 msgstr "Кінцева точка"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:72
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:73
 msgid "Enter a Z&uuml;rich street name"
 msgstr ""
 
@@ -1042,7 +1034,8 @@ msgstr "Вирішено - Рада"
 msgid "Fixed - User"
 msgstr "Вирішено - Користувач"
 
-#: templates/web/base/my/my.html:35 templates/web/fixmystreet/my/my.html:41
+#: templates/web/base/my/my.html:35
+#: templates/web/fixmystreet/my/_problem-list.html:7
 msgid "Fixed reports"
 msgstr "Звіти про вирішені проблеми"
 
@@ -1059,7 +1052,7 @@ msgstr "Відмітьте як видалене"
 msgid "Flag user"
 msgstr "Відмітьте користувача"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1199
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1196
 #: templates/web/base/admin/users.html:19
 msgid "Flagged"
 msgstr "Відмічено"
@@ -1216,7 +1209,7 @@ msgstr "Як сповістити про проблему"
 msgid "How to send successful reports"
 msgstr "Як надіслати якісне сповіщення"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:742
+#: perllib/FixMyStreet/App/Controller/Admin.pm:739
 msgid "I am afraid you cannot confirm unconfirmed reports."
 msgstr "Нажаль ви не можете підтвердити непідтверджені сповіщення"
 
@@ -1236,11 +1229,7 @@ msgstr "Нові місцеві проблеми"
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr "Нажаль ми не можем знайти вашу проблему в базі даних.\n"
 
-#: perllib/FixMyStreet/App/Controller/Tokens.pm:54
-msgid "I'm afraid we couldn't validate that token, as the report was made too long ago."
-msgstr "Нажаль ми не можем валідувати цей токен, сповіщення було зроблено дуже давно."
-
-#: perllib/FixMyStreet/App/Controller/Tokens.pm:284
+#: perllib/FixMyStreet/App/Controller/Tokens.pm:300
 msgid "I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n"
 msgstr "Нажаль ми не можем валідувати цей токен. Якщо ви зкопіювали посилання з е-пошти, перевірте чи воно скопійовано вірно.\n"
 
@@ -1358,7 +1347,7 @@ msgstr "В чорний список?"
 msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:143
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:144
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/report_edit.html:38
 #: templates/web/fixmystreet/report/banner.html:19
@@ -1381,7 +1370,7 @@ msgstr "Додати особисті дані автора сповіщення
 msgid "Include unconfirmed reports"
 msgstr "Включити непідтверджені сповіщення"
 
-#: perllib/FixMyStreet/App/Controller/Open311.pm:354
+#: perllib/FixMyStreet/App/Controller/Open311.pm:359
 msgid "Incorrect has_photo value \"%s\""
 msgstr "Невірне значення has_photo \"%s\""
 
@@ -1394,19 +1383,19 @@ msgstr "Внутрішні нотатки"
 msgid "Internal referral"
 msgstr "Внутрішнє посилання"
 
-#: perllib/FixMyStreet/App/Controller/Open311.pm:339
+#: perllib/FixMyStreet/App/Controller/Open311.pm:344
 msgid "Invalid agency_responsible value %s"
 msgstr "Невірне значення agency_responsible %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1114
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1111
 msgid "Invalid end date"
 msgstr "Невірна кінцева дата"
 
-#: perllib/FixMyStreet/App/Controller/Open311.pm:432
+#: perllib/FixMyStreet/App/Controller/Open311.pm:437
 msgid "Invalid format %s specified."
 msgstr "Невірний формат %s ."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1110
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1107
 msgid "Invalid start date"
 msgstr "Невірна початкова дата"
 
@@ -1509,7 +1498,7 @@ msgstr "Повідомлення"
 msgid "Message:"
 msgstr "Повідомлення:"
 
-#: perllib/FixMyStreet/App/Controller/Open311.pm:440
+#: perllib/FixMyStreet/App/Controller/Open311.pm:445
 msgid "Missing jurisdiction_id"
 msgstr "Бракує jurisdiction_id"
 
@@ -1552,7 +1541,7 @@ msgstr "Ім'я"
 msgid "Name:"
 msgstr "Ім'я:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:308
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:313
 msgid "Name: %s"
 msgstr "Ім'я: %s"
 
@@ -1561,16 +1550,16 @@ msgstr "Ім'я: %s"
 msgid "Nearest named road to the pin placed on the map (automatically generated using OpenStreetMap): %s%s"
 msgstr "Найближча дорога до шпильки на карті (автоматично згенеровано через OpenStreetMap): %s%s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:137
+#: perllib/FixMyStreet/Cobrand/UK.pm:127
 msgid "Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"
 msgstr "Найближчий поштовий індекс до шпильки на карті (автоматично згенеровано): %s (відстань: %sм)"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:424
-#: perllib/FixMyStreet/Cobrand/Default.pm:464
+#: perllib/FixMyStreet/Cobrand/Default.pm:442
+#: perllib/FixMyStreet/Cobrand/Default.pm:482
 msgid "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s"
 msgstr "Найближча дорога до шпильки на карті (автоматично згенеровано через Bing карти): %s%s"
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:278
+#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:279
 msgid ""
 "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s\n"
 "\n"
@@ -1590,7 +1579,7 @@ msgstr "Нові <br>проблеми"
 msgid "New body added"
 msgstr "Новий орган додано"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:385
+#: perllib/FixMyStreet/App/Controller/Admin.pm:382
 msgid "New category contact added"
 msgstr "Новий контакт категорії додано"
 
@@ -1689,7 +1678,7 @@ msgstr "Без органу"
 msgid "No council"
 msgstr "Без департаменту"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:368
+#: perllib/FixMyStreet/DB/Result/Problem.pm:401
 msgid "No council selected"
 msgstr "Не вибраний департамент"
 
@@ -1767,7 +1756,7 @@ msgstr "Не мій підрозділ"
 msgid "Not reported before"
 msgstr "Не прозвітовано раніше"
 
-#: templates/web/base/report/_main.html:61
+#: templates/web/base/report/_main.html:62
 msgid "Not reported to council"
 msgstr "Не прозвітовано департаменту"
 
@@ -1812,7 +1801,7 @@ msgid "OK"
 msgstr "Гаразд"
 
 #: templates/web/base/report/display.html:28
-#: templates/web/base/report/update.html:16
+#: templates/web/base/report/update.html:17
 msgid "Offensive? Unsuitable? Tell us"
 msgstr "Образливо? Недопустимо? Розкажіть нам"
 
@@ -1836,7 +1825,7 @@ msgstr "Старіші <br>проблеми"
 msgid "One-line summary"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:137
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:138
 #: templates/web/base/admin/report_edit.html:35
 #: templates/web/base/admin/report_edit.html:36
 #: templates/web/base/admin/report_edit.html:37
@@ -1853,7 +1842,8 @@ msgstr ""
 msgid "Open"
 msgstr "Відкрити"
 
-#: templates/web/base/my/my.html:30 templates/web/fixmystreet/my/my.html:36
+#: templates/web/base/my/my.html:30
+#: templates/web/fixmystreet/my/_problem-list.html:2
 msgid "Open reports"
 msgstr "Відкрити сповіщення"
 
@@ -1879,15 +1869,15 @@ msgstr "Або проблеми прозвітовані до:"
 msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
 msgstr "Або ви можете підписатись на алярми відносно вашого району чи департаменту:"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1057
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:662
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:663
-#: perllib/FixMyStreet/DB/Result/Problem.pm:552
-#: perllib/FixMyStreet/DB/Result/Problem.pm:562
-#: perllib/FixMyStreet/DB/Result/Problem.pm:572
-#: perllib/FixMyStreet/DB/Result/Problem.pm:584
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:359
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:374
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1041
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:651
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:652
+#: perllib/FixMyStreet/DB/Result/Problem.pm:585
+#: perllib/FixMyStreet/DB/Result/Problem.pm:595
+#: perllib/FixMyStreet/DB/Result/Problem.pm:605
+#: perllib/FixMyStreet/DB/Result/Problem.pm:617
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:378
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:393
 msgid "Other"
 msgstr "Інше"
 
@@ -1939,7 +1929,7 @@ msgstr "Номер телефону"
 msgid "Phone number (optional)"
 msgstr "Номер телефону (опціонально)"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:286
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:291
 #: templates/web/base/admin/report_edit.html:68
 #: templates/web/base/report/new/fill_in_details_form.html:216
 #: templates/web/zurich/admin/report_edit-sdm.html:46
@@ -2011,20 +2001,19 @@ msgstr "Будь ласка перевірте вашу пошту"
 msgid "Please check your email address is correct"
 msgstr "Будь ласка перевірте чи ваша адреса е-пошти вірна"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:349
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:859
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:878
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:921
-#: perllib/FixMyStreet/DB/Result/Problem.pm:387
+#: perllib/FixMyStreet/App/Controller/Admin.pm:346
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:861
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:905
+#: perllib/FixMyStreet/DB/Result/Problem.pm:420
 #: templates/web/base/js/translation_strings.html:9
 msgid "Please choose a category"
 msgstr "Будь ласка оберіть категорію"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:393
+#: perllib/FixMyStreet/DB/Result/Problem.pm:426
 msgid "Please choose a property type"
 msgstr "Будь ласка оберіть тип майна"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:376
+#: perllib/FixMyStreet/App/Controller/Admin.pm:373
 msgid "Please correct the errors below"
 msgstr ""
 
@@ -2040,7 +2029,7 @@ msgstr ""
 msgid "Please do not be abusive&nbsp;&mdash; abusing your council devalues the service for all users."
 msgstr "Будь ласка не використовуйте образи&nbsp;&mdash; ображаючи департамент ві підриваєте цінність сервісу для всіх користувачів"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:352
+#: perllib/FixMyStreet/App/Controller/Admin.pm:349
 #: perllib/FixMyStreet/DB/Result/Comment.pm:125
 #: templates/web/base/js/translation_strings.html:2
 msgid "Please enter a message"
@@ -2053,14 +2042,14 @@ msgid "Please enter a password"
 msgstr "Будь ласка введіть пароль"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:113
-#: perllib/FixMyStreet/DB/Result/Problem.pm:362
+#: perllib/FixMyStreet/DB/Result/Problem.pm:395
 #: templates/web/base/js/translation_strings.html:3
 msgid "Please enter a subject"
 msgstr "Будь ласка вкажіть тему"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1050
-#: perllib/FixMyStreet/App/Controller/Admin.pm:351
-#: perllib/FixMyStreet/App/Controller/Admin.pm:997
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1047
+#: perllib/FixMyStreet/App/Controller/Admin.pm:348
+#: perllib/FixMyStreet/App/Controller/Admin.pm:994
 #: perllib/FixMyStreet/DB/Result/User.pm:127
 #: templates/web/base/js/translation_strings.html:12
 #: templates/web/base/js/translation_strings.html:16
@@ -2072,7 +2061,7 @@ msgstr "Будь ласка введіть правильну адресу е-п
 msgid "Please enter a valid email address"
 msgstr "Будь ласка введіть правильну адресу е-пошти"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:365
+#: perllib/FixMyStreet/DB/Result/Problem.pm:398
 #: templates/web/base/js/translation_strings.html:4
 msgid "Please enter some details"
 msgstr "Будь ласка додайте трохи подробиць"
@@ -2099,14 +2088,14 @@ msgstr "Будь ласка вкажіть адресу е-пошти"
 msgid "Please enter your first name"
 msgstr "Будь ласка введіть ім'я"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:380
+#: perllib/FixMyStreet/DB/Result/Problem.pm:413
 #: templates/web/base/js/translation_strings.html:7
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "Будь ласка введіть ім'я та прізвище - департаментам потрібні ці дані. Якщо не хочете їх показувати - не ставте галочку внизу."
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:111
 #: perllib/FixMyStreet/DB/Result/Comment.pm:122
-#: perllib/FixMyStreet/DB/Result/Problem.pm:373
+#: perllib/FixMyStreet/DB/Result/Problem.pm:406
 #: perllib/FixMyStreet/DB/Result/User.pm:120
 #: templates/web/base/js/translation_strings.html:6
 msgid "Please enter your name"
@@ -2248,7 +2237,7 @@ msgstr ""
 msgid "Private"
 msgstr "Приватний"
 
-#: templates/web/base/maps/openlayers.html:86
+#: templates/web/base/maps/openlayers.html:89
 msgid "Problem"
 msgstr "Проблема"
 
@@ -2269,7 +2258,7 @@ msgstr "Проблему %s надіслано департаменту %s"
 msgid "Problem breakdown by state"
 msgstr "Розбивка проблем по стану"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:968
+#: perllib/FixMyStreet/App/Controller/Admin.pm:965
 msgid "Problem marked as open."
 msgstr "Проблема маркована відкритою."
 
@@ -2304,15 +2293,15 @@ msgstr "Нещодавно вирішені проблеми"
 msgid "Problems within %.1fkm of this location"
 msgstr "Проблеми в радіусі %.1fkm від цієї точки"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:632
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:114
+#: perllib/FixMyStreet/Cobrand/Default.pm:650
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:120
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:139
-#: perllib/FixMyStreet/Cobrand/UK.pm:217
+#: perllib/FixMyStreet/Cobrand/UK.pm:207
 msgid "Problems within %s"
 msgstr "Проблеми в межах %s"
 
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:122
-#: perllib/FixMyStreet/Cobrand/UK.pm:231
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:128
+#: perllib/FixMyStreet/Cobrand/UK.pm:221
 msgid "Problems within %s ward"
 msgstr "Проблеми в межах %s району"
 
@@ -2402,11 +2391,11 @@ msgstr "Анкета заповнена автором сповіщення"
 msgid "RSS feed"
 msgstr "RSS потік"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:260 perllib/FixMyStreet/Cobrand/UK.pm:272
+#: perllib/FixMyStreet/Cobrand/UK.pm:250 perllib/FixMyStreet/Cobrand/UK.pm:262
 msgid "RSS feed for %s"
 msgstr "RSS потік для %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:266 perllib/FixMyStreet/Cobrand/UK.pm:278
+#: perllib/FixMyStreet/Cobrand/UK.pm:256 perllib/FixMyStreet/Cobrand/UK.pm:268
 msgid "RSS feed for %s ward, %s"
 msgstr "RSS потік для %s району, %s"
 
@@ -2414,11 +2403,11 @@ msgstr "RSS потік для %s району, %s"
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:163
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:173
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:181
-#: perllib/FixMyStreet/Cobrand/UK.pm:286 perllib/FixMyStreet/Cobrand/UK.pm:298
+#: perllib/FixMyStreet/Cobrand/UK.pm:276 perllib/FixMyStreet/Cobrand/UK.pm:288
 msgid "RSS feed of %s"
 msgstr "RSS потік з %s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:291 perllib/FixMyStreet/Cobrand/UK.pm:303
+#: perllib/FixMyStreet/Cobrand/UK.pm:281 perllib/FixMyStreet/Cobrand/UK.pm:293
 msgid "RSS feed of %s, within %s ward"
 msgstr ""
 
@@ -2431,15 +2420,15 @@ msgstr ""
 msgid "RSS feed of problems in this %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:633
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:115
+#: perllib/FixMyStreet/Cobrand/Default.pm:651
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:121
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:138
-#: perllib/FixMyStreet/Cobrand/UK.pm:224
+#: perllib/FixMyStreet/Cobrand/UK.pm:214
 msgid "RSS feed of problems within %s"
 msgstr ""
 
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:121
-#: perllib/FixMyStreet/Cobrand/UK.pm:230
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:127
+#: perllib/FixMyStreet/Cobrand/UK.pm:220
 msgid "RSS feed of problems within %s ward"
 msgstr ""
 
@@ -2489,7 +2478,13 @@ msgstr "Зняти прапорець"
 msgid "Remove photo (can't be undone!)"
 msgstr "Видалити фото (це незворотня операція!)"
 
+#: templates/web/fixmystreet/header_logo.html:2
+#, fuzzy
+msgid "Report"
+msgstr "Сповіщення"
+
 #: templates/web/base/footer.html:7 templates/web/fixmystreet/footer.html:22
+#: templates/web/fixmystreet/header_logo.html:2
 #: templates/web/zurich/footer.html:17
 #: templates/web/zurich/nav_over_content.html:4
 msgid "Report a problem"
@@ -2522,7 +2517,7 @@ msgstr "Сповіщено %s"
 msgid "Reported %s, to %s"
 msgstr "Сповіщено %s, до %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:567
+#: perllib/FixMyStreet/DB/Result/Problem.pm:600
 #: templates/web/base/contact/index.html:50
 #: templates/web/fixmystreet/contact/index.html:65
 msgid "Reported anonymously at %s"
@@ -2534,7 +2529,7 @@ msgstr "Сповіщено анонімно по %s"
 msgid "Reported before"
 msgstr "Сповіщено раніше"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:590
+#: perllib/FixMyStreet/DB/Result/Problem.pm:623
 #: templates/web/base/contact/index.html:52
 #: templates/web/fixmystreet/contact/index.html:67
 msgid "Reported by %s at %s"
@@ -2544,27 +2539,27 @@ msgstr "Перевідкрито %s о %s"
 msgid "Reported in the %s category"
 msgstr "Сповіщено в категорії %s "
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:563
+#: perllib/FixMyStreet/DB/Result/Problem.pm:596
 msgid "Reported in the %s category anonymously at %s"
 msgstr "Сповіщено в категорії %s анонімно о %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:585
+#: perllib/FixMyStreet/DB/Result/Problem.pm:618
 msgid "Reported in the %s category by %s at %s"
 msgstr "Сповіщено в категорію %s %s о %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:559
+#: perllib/FixMyStreet/DB/Result/Problem.pm:592
 msgid "Reported via %s anonymously at %s"
 msgstr "Сповіщено %s анонімно о %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:581
+#: perllib/FixMyStreet/DB/Result/Problem.pm:614
 msgid "Reported via %s by %s at %s"
 msgstr "Сповіщено через %s %s о %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:555
+#: perllib/FixMyStreet/DB/Result/Problem.pm:588
 msgid "Reported via %s in the %s category anonymously at %s"
 msgstr "Сповіщено через %s в категорію %s анонімно о %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:575
+#: perllib/FixMyStreet/DB/Result/Problem.pm:608
 msgid "Reported via %s in the %s category by %s at %s"
 msgstr "Сповіщено через %s в категорію %s %s о %s"
 
@@ -2578,14 +2573,14 @@ msgstr "Сповіщено через %s в категорію %s %s о %s"
 msgid "Reporting a problem"
 msgstr "Сповістити про проблему"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1195
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:290
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1192
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:294
 #: templates/web/zurich/header.html:60
 msgid "Reports"
 msgstr "Сповіщення"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:401
-#: perllib/FixMyStreet/DB/Result/Problem.pm:405
+#: perllib/FixMyStreet/DB/Result/Problem.pm:434
+#: perllib/FixMyStreet/DB/Result/Problem.pm:438
 msgid "Reports are limited to %s characters in length. Please shorten your report"
 msgstr "Сповіщення обмежені %s символами. Буль ласка скоротіть сповіщення."
 
@@ -2619,14 +2614,14 @@ msgstr "Обслуговувач цієї дороги (отримано з до
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "Обслуговувач цієї дороги (з OpenStreetMap): %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1394
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1405
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1391
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1402
 #: templates/web/base/admin/report_edit.html:90
 #: templates/web/zurich/admin/report_edit.html:73
 msgid "Rotate Left"
 msgstr "Повернули вліво"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1394
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1391
 #: templates/web/base/admin/report_edit.html:91
 #: templates/web/zurich/admin/report_edit.html:74
 msgid "Rotate Right"
@@ -2689,7 +2684,7 @@ msgstr "Оберіть район"
 msgid "Select which type of alert you'd like and click the button for an RSS feed, or enter your email address to subscribe to an email alert."
 msgstr "Оберіть вподобаний тип алярму і натисніть кнопку для RSS фіду, або введіть поштову адресу щоб підписатись на алярми поштою."
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:672
+#: perllib/FixMyStreet/DB/Result/Problem.pm:705
 msgid "Sent to %s %s later"
 msgstr "Відправити %s %s пізніше"
 
@@ -2771,7 +2766,7 @@ msgstr "Деякі фото нещодавніх проблем"
 msgid "Some text to localize"
 msgstr "Певний текст для локалізації"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:88
+#: perllib/FixMyStreet/Cobrand/UK.pm:78
 msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr ""
 
@@ -2779,7 +2774,7 @@ msgstr ""
 msgid "Sorry, there has been an error confirming your problem."
 msgstr "Вибачте, сталася помилка"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:215
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:214
 #: perllib/FixMyStreet/Geocode.pm:37 perllib/FixMyStreet/Geocode/Bing.pm:37
 #: perllib/FixMyStreet/Geocode/FixaMinGata.pm:56
 #: perllib/FixMyStreet/Geocode/Google.pm:47
@@ -2814,8 +2809,8 @@ msgstr "Стан"
 msgid "State:"
 msgstr "Стан:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1200
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:304
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1197
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:308
 #: templates/web/base/admin/stats.html:1
 #: templates/web/zurich/admin/stats.html:1 templates/web/zurich/header.html:72
 msgid "Stats"
@@ -2831,7 +2826,7 @@ msgstr "Статус"
 msgid "Still open, via questionnaire, %s"
 msgstr "Все ще відкрито, через анкету, %s"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:368
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:387
 msgid "Subcategory: %s"
 msgstr "Підкатегорія: %s"
 
@@ -2875,7 +2870,7 @@ msgstr "Підтвердити зміни"
 msgid "Submit questionnaire"
 msgstr "Підтвердити анкету"
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:133
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:134
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:6
 #: templates/web/zurich/admin/index-dm.html:23
@@ -2900,8 +2895,8 @@ msgstr "Підписатись"
 msgid "Subscribe me to an email alert"
 msgstr "Підпишіть мене на поштові алярми"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1193
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:289
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1190
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:293
 #: templates/web/base/admin/bodies.html:25
 #: templates/web/base/admin/index.html:1
 #: templates/web/zurich/admin/index-dm.html:1
@@ -2917,7 +2912,7 @@ msgstr "Резюме"
 msgid "Summary reports"
 msgstr "Сумарні сповіщення"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1197
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1194
 msgid "Survey"
 msgstr "Опитування"
 
@@ -2979,11 +2974,11 @@ msgstr ""
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:47
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:63
-#: perllib/FixMyStreet/Cobrand/UK.pm:81
+#: perllib/FixMyStreet/Cobrand/UK.pm:71
 msgid "That postcode was not recognised, sorry."
 msgstr "Поштовий код не розпізнано, вибачте."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:713
+#: perllib/FixMyStreet/App/Controller/Admin.pm:710
 msgid "That problem will now be resent."
 msgstr "Цю проблему зараз перезвітують."
 
@@ -3144,7 +3139,7 @@ msgstr "Найпростіший алярм - географічний:"
 msgid "The summary and description will also be made public (see our <a href=\"/privacy\">privacy policy</a>)."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:295
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:300
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
 msgstr "Користувач не зміг позначити проблему на карті, тільки введену зону"
 
@@ -3157,6 +3152,10 @@ msgstr ""
 "Користувацьке <strong>ім'я</strong> відображаються публічно на сповіщеннях, які не відмічені <em>анонімними</em>.\n"
 "                Імена не обов'язково мають бути унікальними."
 
+#: templates/web/base/reports/_problem-list.html:15
+msgid "There are no reports to show."
+msgstr ""
+
 #: perllib/FixMyStreet/App/Controller/Reports.pm:75
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "Сталась проблема з відображенням сторінки всіх сповіщень. Спробуйте пізніше."
@@ -3166,7 +3165,7 @@ msgstr "Сталась проблема з відображенням сторі
 msgid "There was a problem showing this page. Please try again later."
 msgstr "Сталась помилка при спробі показати сторінку. Будь ласка спробуйте пізніше."
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:755
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:747
 #: perllib/FixMyStreet/App/Controller/Report/Update.pm:134
 #: templates/web/base/auth/general.html:23
 #: templates/web/fixmystreet/auth/general.html:25
@@ -3222,18 +3221,18 @@ msgid ""
 "          A body will not receive any reports unless it covers at least one area."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:375
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:394
 msgid "This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system."
 msgstr ""
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:378
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:397
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr ""
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:898
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:968
-#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:136
-#: perllib/FixMyStreet/Cobrand/UK.pm:53
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:882
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:952
+#: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:142
+#: perllib/FixMyStreet/Cobrand/UK.pm:43
 msgid "This information is required"
 msgstr "Ця інформація обов'язкова"
 
@@ -3272,8 +3271,8 @@ msgstr "Ця проблема в процесі"
 msgid "This problem is old and of unknown status."
 msgstr "Ця проблема застаріла і її статус невідомий."
 
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:130
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:131
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:132
 #: templates/web/zurich/report/_main.html:14
 msgid "This report is awaiting moderation."
 msgstr "Це сповіщення очікує модерації."
@@ -3290,15 +3289,15 @@ msgstr "Це сповіщення наразі відмічено вирішен
 msgid "This report is currently marked as open."
 msgstr "Це сповіщення відмічено відкритим."
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:306
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:311
 msgid "This report was submitted anonymously"
 msgstr "Це сповіщення надіслано анонімно"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:288
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:293
 msgid "This web page also contains a photo of the problem, provided by the user."
 msgstr "Ця веб-сторінка також містить фото проблеми, які надав користувач."
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1196
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1193
 #: templates/web/base/admin/timeline.html:1
 msgid "Timeline"
 msgstr "Хронологія"
@@ -3316,7 +3315,7 @@ msgstr "Щоб <strong>сповістити про проблему</strong>, н
 msgid "To find out what local alerts we have for you, please enter your postcode or street name and area"
 msgstr "Щоб дізнатись які локальні алярми ми маєм для вас, введіть ваш поштовий код, назву вулиці та район"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:294
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:299
 msgid "To view a map of the precise location of this issue"
 msgstr "До перегляду точного місцезнаходження проблеми на карті"
 
@@ -3428,12 +3427,12 @@ msgstr "Поновлення:"
 msgid "Updated"
 msgstr "Поновлено"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1016
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1060
-#: perllib/FixMyStreet/App/Controller/Admin.pm:810
-#: perllib/FixMyStreet/App/Controller/Admin.pm:958
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:549
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:618
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1013
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1057
+#: perllib/FixMyStreet/App/Controller/Admin.pm:807
+#: perllib/FixMyStreet/App/Controller/Admin.pm:955
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:556
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:625
 msgid "Updated!"
 msgstr "Поновлено!"
 
@@ -3469,11 +3468,11 @@ msgstr ""
 msgid "User"
 msgstr "Користувач"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1359
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1356
 msgid "User flag removed"
 msgstr "Користувацький прапорець видалено"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1331
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1328
 msgid "User flagged"
 msgstr "Користувач відмічений"
 
@@ -3481,16 +3480,16 @@ msgstr "Користувач відмічений"
 msgid "User search finds matches in users' names and email addresses."
 msgstr "Пошук користувачів знайшов співпадіння в іменах та поштових адресах"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1198
-#: perllib/FixMyStreet/Cobrand/Zurich.pm:303
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1195
+#: perllib/FixMyStreet/Cobrand/Zurich.pm:307
 #: templates/web/base/admin/flagged.html:29
 #: templates/web/zurich/header.html:69
 msgid "Users"
 msgstr "Користувачі"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:380
-#: perllib/FixMyStreet/App/Controller/Admin.pm:410
-#: perllib/FixMyStreet/App/Controller/Admin.pm:430
+#: perllib/FixMyStreet/App/Controller/Admin.pm:377
+#: perllib/FixMyStreet/App/Controller/Admin.pm:407
+#: perllib/FixMyStreet/App/Controller/Admin.pm:427
 msgid "Values updated"
 msgstr "Значення оновлено"
 
@@ -3544,7 +3543,7 @@ msgstr "Ми ніколи не публікуєм вашу поштову адр
 msgid "We never show your email address or phone number."
 msgstr "Ми ніколи не публікуємо вашу поштову адресу чи номер телефону."
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:384
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:403
 msgid "We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch."
 msgstr "Ми розумієм, що проблема може лежати у відповідальності %s; нажаль, наразі у нас немає їх контактних даних. Якщо ви знаєте точну адресу, будь ласка залишайтесь на зв'язку."
 
@@ -3839,7 +3838,7 @@ msgstr "Ваше сповіщення"
 msgid "Your reports"
 msgstr "Ваші сповіщення"
 
-#: templates/web/base/my/my.html:53 templates/web/fixmystreet/my/my.html:59
+#: templates/web/base/my/my.html:53 templates/web/fixmystreet/my/my.html:41
 msgid "Your updates"
 msgstr "Ваші поновлення"
 
@@ -3855,10 +3854,6 @@ msgstr "від %s"
 #: templates/web/base/reports/body.html:7
 msgid "council"
 msgstr "рада"
-
-#: perllib/FixMyStreet/DB/Result/Problem.pm:657
-msgid "council ref:&nbsp;%s"
-msgstr "рада ref:&nbsp;%s"
 
 #: templates/web/base/admin/report_edit.html:28
 #: templates/web/zurich/admin/report_edit-sdm.html:40
@@ -3885,7 +3880,7 @@ msgstr "від %d різних користувачів"
 msgid "last updated %s"
 msgstr "останнє поновлення %s"
 
-#: perllib/Utils.pm:264
+#: perllib/Utils.pm:235
 msgid "less than a minute"
 msgstr "менше хвилини"
 
@@ -3986,11 +3981,11 @@ msgstr "місцевий орган"
 msgid "there is no pin shown as the user did not use the map"
 msgstr "шпильки немає так як користувач не використав мапу"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:360
+#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:379
 msgid "this type of local problem"
 msgstr "цей тип локальної проблеми"
 
-#: perllib/Utils.pm:236
+#: perllib/Utils.pm:207
 msgid "today"
 msgstr "сьогодні"
 
@@ -4021,7 +4016,7 @@ msgstr[0] "<big>%s</big> звіт недавно"
 msgstr[1] "<big>%s</big> звітів недавно"
 msgstr[2] "<big>%s</big> звітів недавно"
 
-#: perllib/Utils.pm:283
+#: perllib/Utils.pm:254
 #, perl-format
 msgid "%d hour"
 msgid_plural "%d hours"
@@ -4037,7 +4032,7 @@ msgstr[0] "%d прибічник"
 msgstr[1] "%d прибічників"
 msgstr[2] "%d прибічників"
 
-#: perllib/Utils.pm:285
+#: perllib/Utils.pm:256
 #, perl-format
 msgid "%d minute"
 msgid_plural "%d minutes"
@@ -4061,7 +4056,7 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: perllib/Utils.pm:279
+#: perllib/Utils.pm:250
 #, perl-format
 msgid "%d week"
 msgid_plural "%d weeks"
@@ -4085,7 +4080,7 @@ msgstr[0] "<big>%s</big> полагоджено минувшого місяця"
 msgstr[1] "<big>%s</big> полагоджено минувшого місяця"
 msgstr[2] "<big>%s</big> полагоджено минувшого місяця"
 
-#: perllib/Utils.pm:281
+#: perllib/Utils.pm:252
 #, perl-format
 msgid "%d day"
 msgid_plural "%d days"
@@ -4100,6 +4095,15 @@ msgid_plural "We do <strong>not</strong> yet have details for the other councils
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+
+#~ msgid "All the information you provide here will be sent to <strong>%s</strong> or <strong>Roads Service</strong>."
+#~ msgstr "Всю надану вами інформацію буде надіслано до <strong>%s</strong> або <strong>дорожньої служби</strong>."
+
+#~ msgid "All the information you provide here will be sent to <strong>%s</strong> or a relevant local body such as <strong>TfL</strong>, via the London Report-It system."
+#~ msgstr "Всю надану вами інформацію буде надіслано до <strong>%s</strong> або до релевантного <strong>відділу</strong>, через систему скарг"
+
+#~ msgid "I'm afraid we couldn't validate that token, as the report was made too long ago."
+#~ msgstr "Нажаль ми не можем валідувати цей токен, сповіщення було зроблено дуже давно."
 
 #~ msgid "<p style=\"font-size:150%\">Thank you very much for filling in our questionnaire; glad to hear it&rsquo;s been fixed.</p>"
 #~ msgstr "<p style=\"font-size:150%\">Дякуємо, що заповнили опитувальник; раді дізнатись, що проблему вирішено.</p>"

@@ -20,12 +20,12 @@ Creates an update to a report
 sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward( '/report/load_problem_or_display_error', [ $c->req->param('id') ] );
+    $c->forward( '/report/load_problem_or_display_error', [ $c->get_param('id') ] );
     $c->forward('process_update');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
     $c->forward('check_for_errors')
-      or $c->go( '/report/display', [ $c->req->param('id') ] );
+      or $c->go( '/report/display', [ $c->get_param('id') ] );
 
     $c->forward('save_update');
     $c->forward('redirect_or_confirm_creation');
@@ -76,7 +76,7 @@ sub update_problem : Private {
         $problem->state('confirmed');
     }
 
-    if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_body && $c->req->param('external_source_id') ) {
+    if ( $c->cobrand->can_support_problems && $c->user && $c->user->from_body && $c->get_param('external_source_id') ) {
         $problem->interest_count( \'interest_count + 1' );
     }
 
@@ -106,9 +106,9 @@ sub process_user : Private {
 
     if ( $c->user_exists ) {
         my $user = $c->user->obj;
-        my $name = scalar $c->req->param('name');
+        my $name = $c->get_param('name');
         $user->name( Utils::trim_text( $name ) ) if $name;
-        my $title = scalar $c->req->param('fms_extra_title');
+        my $title = $c->get_param('fms_extra_title');
         if ( $title ) {
             $c->log->debug( 'user exists and title is ' . $title );
             $user->title( Utils::trim_text( $title ) );
@@ -118,7 +118,7 @@ sub process_user : Private {
     }
 
     # Extract all the params to a hash to make them easier to work with
-    my %params = map { $_ => scalar $c->req->param($_) }
+    my %params = map { $_ => $c->get_param($_) }
       ( 'rznvy', 'name', 'password_register', 'fms_extra_title' );
 
     # cleanup the email address
@@ -129,7 +129,7 @@ sub process_user : Private {
         unless $update->user;
 
     # The user is trying to sign in. We only care about email from the params.
-    if ( $c->req->param('submit_sign_in') || $c->req->param('password_sign_in') ) {
+    if ( $c->get_param('submit_sign_in') || $c->get_param('password_sign_in') ) {
         unless ( $c->forward( '/auth/sign_in', [ $email ] ) ) {
             $c->stash->{field_errors}->{password} = _('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.');
             return 1;
@@ -164,23 +164,23 @@ want to move adding these elsewhere
 sub process_update : Private {
     my ( $self, $c ) = @_;
 
-    if ( $c->req->param('first_name' ) && $c->req->param('last_name' ) ) {
-        my $first_name = $c->req->param('first_name');
-        my $last_name = $c->req->param('last_name');
-        $c->req->param('name', sprintf( '%s %s', $first_name, $last_name ) );
+    if ( $c->get_param('first_name') && $c->get_param('last_name') ) {
+        my $first_name = $c->get_param('first_name');
+        my $last_name = $c->get_param('last_name');
+        $c->set_param('name', sprintf( '%s %s', $first_name, $last_name ));
 
         $c->stash->{first_name} = $first_name;
         $c->stash->{last_name} = $last_name;
     }
 
     my %params =
-      map { $_ => scalar $c->req->param($_) } ( 'update', 'name', 'fixed', 'state', 'reopen' );
+      map { $_ => $c->get_param($_) } ( 'update', 'name', 'fixed', 'state', 'reopen' );
 
     $params{update} =
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
 
     my $name = Utils::trim_text( $params{name} );
-    my $anonymous = $c->req->param('may_show_name') ? 0 : 1;
+    my $anonymous = $c->get_param('may_show_name') ? 0 : 1;
 
     $params{reopen} = 0 unless $c->user && $c->user->id == $c->stash->{problem}->user->id;
 
@@ -225,10 +225,10 @@ sub process_update : Private {
     # TODO Use extra here as it is used on reports.
     $c->cobrand->process_extras( $c, $update->problem->bodies_str, \@extra );
 
-    if ( $c->req->param('fms_extra_title') ) {
+    if ( $c->get_param('fms_extra_title') ) {
         my %extras = ();
-        $extras{title} = $c->req->param('fms_extra_title');
-        $extras{email_alerts_requested} = $c->req->param('add_alert');
+        $extras{title} = $c->get_param('fms_extra_title');
+        $extras{email_alerts_requested} = $c->get_param('add_alert');
         $update->extra( \%extras );
     }
 
@@ -239,10 +239,10 @@ sub process_update : Private {
         $update->extra( $extra );
     }
 
-    $c->log->debug( 'name is ' . $c->req->param('name') );
+    $c->log->debug( 'name is ' . $c->get_param('name') );
 
-    $c->stash->{update}        = $update;
-    $c->stash->{add_alert}     = $c->req->param('add_alert');
+    $c->stash->{update} = $update;
+    $c->stash->{add_alert} = $c->get_param('add_alert');
 
     return 1;
 }
@@ -259,11 +259,11 @@ sub check_for_errors : Private {
     my ( $self, $c ) = @_;
 
     # they have to be an authority user to update the state
-    if ( $c->req->param('state') ) {
+    if ( $c->get_param('state') ) {
         my $error = 0;
         $error = 1 unless $c->user && $c->user->belongs_to_body( $c->stash->{update}->problem->bodies_str );
 
-        my $state = $c->req->param('state');
+        my $state = $c->get_param('state');
         $state = 'fixed - council' if $state eq 'fixed';
         $error = 1 unless ( grep { $state eq $_ } ( FixMyStreet::DB::Result::Problem->council_states() ) );
 
@@ -388,7 +388,7 @@ sub redirect_or_confirm_creation : Private {
             data  => {
                 %$data,
                 id        => $update->id,
-                add_alert => ( $c->req->param('add_alert') ? 1 : 0 ),
+                add_alert => ( $c->get_param('add_alert') ? 1 : 0 ),
             }
         }
     );
@@ -420,8 +420,8 @@ happen before calling this.
 sub signup_for_alerts : Private {
     my ( $self, $c ) = @_;
 
+    my $update = $c->stash->{update};
     if ( $c->stash->{add_alert} ) {
-        my $update = $c->stash->{update};
         my $options = {
             user => $update->user,
             alert_type => 'new_updates',
@@ -438,7 +438,7 @@ sub signup_for_alerts : Private {
         }
         $alert->confirm();
 
-    } elsif ( $c->user && ( my $alert = $c->user->alert_for_problem($c->stash->{update}->problem_id) ) ) {
+    } elsif ( my $alert = $update->user->alert_for_problem($update->problem_id) ) {
         $alert->disable();
     }
 

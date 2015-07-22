@@ -350,7 +350,7 @@ sub get_query_parameters : Private {
     $d = '' unless $d && $d =~ /^\d+$/;
     $c->stash->{distance} = $d;
 
-    my $state = $c->req->param('state') || 'all';
+    my $state = $c->get_param('state') || 'all';
     $state = 'all' unless $state =~ /^(all|open|fixed)$/;
     $c->stash->{state_qs} = "?state=$state" unless $state eq 'all';
 

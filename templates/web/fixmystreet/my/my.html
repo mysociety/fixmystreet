@@ -58,9 +58,3 @@
 </div>
 
 [% INCLUDE 'footer.html' %]
-
-[% BLOCK problem %]
-    [% "<ul class='issue-list-a full-width'>" IF loop.first %]
-    [% INCLUDE 'report/_item.html', problem = p, no_fixed =1 %]
-    [% "</ul>" IF loop.last %]
-[% END %]

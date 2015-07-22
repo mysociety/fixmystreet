@@ -28,22 +28,21 @@ Present the user with a sign in / create account page.
 
 sub general : Path : Args(0) {
     my ( $self, $c ) = @_;
-    my $req = $c->req;
 
-    $c->detach( 'redirect_on_signin', [ $req->param('r') ] )
-        if $c->user && $req->param('r');
+    $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] )
+        if $c->user && $c->get_param('r');
 
     # all done unless we have a form posted to us
-    return unless $req->method eq 'POST';
+    return unless $c->req->method eq 'POST';
 
     # decide which action to take
-    my $has_password = $req->param('sign_in') || $req->param('password_sign_in');
-    my $has_email = $req->param('email_sign_in') || $req->param('name') || $req->param('password_register');
+    my $has_password = $c->get_param('sign_in') || $c->get_param('password_sign_in');
+    my $has_email = $c->get_param('email_sign_in') || $c->get_param('name') || $c->get_param('password_register');
 
     $c->detach('email_sign_in') if $has_email && !$has_password;
 
        $c->forward( 'sign_in' )
-    && $c->detach( 'redirect_on_signin', [ $req->param('r') ] );
+    && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
 
 }
 
@@ -56,9 +55,9 @@ Allow the user to sign in with a username and a password.
 sub sign_in : Private {
     my ( $self, $c, $email ) = @_;
 
-    $email        ||= $c->req->param('email')            || '';
-    my $password    = $c->req->param('password_sign_in') || '';
-    my $remember_me = $c->req->param('remember_me')      || 0;
+    $email ||= $c->get_param('email') || '';
+    my $password = $c->get_param('password_sign_in') || '';
+    my $remember_me = $c->get_param('remember_me') || 0;
 
     # Sign out just in case
     $c->logout();
@@ -95,7 +94,7 @@ sub email_sign_in : Private {
     my ( $self, $c ) = @_;
 
     # check that the email is valid - otherwise flag an error
-    my $raw_email = lc( $c->req->param('email') || '' );
+    my $raw_email = lc( $c->get_param('email') || '' );
 
     my $email_checker = Email::Valid->new(
         -mxcheck  => 1,
@@ -112,8 +111,8 @@ sub email_sign_in : Private {
     }
 
     my $user_params = {};
-    $user_params->{password} = $c->req->param('password_register')
-        if $c->req->param('password_register');
+    $user_params->{password} = $c->get_param('password_register')
+        if $c->get_param('password_register');
     my $user = $c->model('DB::User')->new( $user_params );
 
     my $token_obj = $c->model('DB::Token')    #
@@ -122,8 +121,8 @@ sub email_sign_in : Private {
             scope => 'email_sign_in',
             data  => {
                 email => $good_email,
-                r => $c->req->param('r'),
-                name => $c->req->param('name'),
+                r => $c->get_param('r'),
+                name => $c->get_param('name'),
                 password => $user->password,
             }
         }
@@ -152,6 +151,11 @@ sub token : Path('/M') : Args(1) {
       : undef;
 
     if ( !$token_obj ) {
+        $c->stash->{token_not_found} = 1;
+        return;
+    }
+
+    if ( $token_obj->created < DateTime->now->subtract( days => 1 ) ) {
         $c->stash->{token_not_found} = 1;
         return;
     }
@@ -221,8 +225,8 @@ sub change_password : Local {
     return unless $c->req->method eq 'POST';
 
     # get the passwords
-    my $new     = $c->req->param('new_password') // '';
-    my $confirm = $c->req->param('confirm')      // '';
+    my $new = $c->get_param('new_password') // '';
+    my $confirm = $c->get_param('confirm') // '';
 
     # check for errors
     my $password_error =

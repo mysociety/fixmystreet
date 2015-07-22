@@ -35,6 +35,7 @@ requires 'DateTime::Format::W3CDTF';
 requires 'DateTime::TimeZone';
 requires 'DBD::Pg', '2.9.2';
 requires 'DBI';
+requires 'DBIx::Class::EncodedColumn', '0.00013';
 requires 'DBIx::Class::EncodedColumn::Crypt::Eksblowfish::Bcrypt';
 requires 'DBIx::Class::FilterColumn';
 requires 'DBIx::Class::InflateColumn::DateTime';

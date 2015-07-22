@@ -13,6 +13,7 @@ use Readonly;
 
 Readonly::Scalar my $COUNCIL_ID_OXFORDSHIRE => 2237;
 Readonly::Scalar my $COUNCIL_ID_WARWICKSHIRE => 2243;
+Readonly::Scalar my $COUNCIL_ID_GREENWICH => 2493;
 
 sub send {
     my $self = shift;
@@ -127,8 +128,8 @@ sub send {
             $revert = 1;
         }
 
-        if ($row->cobrand eq 'fixmybarangay') {
-            # FixMyBarangay endpoints expect external_id as an attribute, as do Oxfordshire
+        if ($row->cobrand eq 'fixmybarangay' || $row->bodies_str =~ /$COUNCIL_ID_GREENWICH/) {
+            # FixMyBarangay endpoints expect external_id as an attribute, as do Greenwich
             $row->set_extra_fields( { 'name' => 'external_id', 'value' => $row->id  } );
             $revert = 1;
         }

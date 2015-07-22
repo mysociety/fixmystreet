@@ -47,7 +47,7 @@ sub index : Path : Args(0) {
     my %old_params = ();
 
     foreach my $key (@old_param_keys) {
-        my $val = $c->req->param($key);
+        my $val = $c->get_param($key);
         next unless $val;
         $old_params{$key} = $val;
     }

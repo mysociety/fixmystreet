@@ -99,22 +99,22 @@ sub admin_stats {
         $c->detach( '/page_error_404_not_found' );
     }
 
-    if ( $c->req->param('category') ) {
-        $filters{category} = $c->req->param('category');
-        $c->stash->{category} = $c->req->param('category');
+    if ( $c->get_param('category') ) {
+        $filters{category} = $c->get_param('category');
+        $c->stash->{category} = $c->get_param('category');
     }
 
-    if ( $c->req->param('subcategory') ) {
-        $filters{subcategory} = $c->req->param('subcategory');
-        $c->stash->{subcategory} = $c->req->param('subcategory');
+    if ( $c->get_param('subcategory') ) {
+        $filters{subcategory} = $c->get_param('subcategory');
+        $c->stash->{subcategory} = $c->get_param('subcategory');
     }
 
-    if ( $c->req->param('service') ) {
-        $filters{service} = { -ilike => $c->req->param('service') };
-        $c->stash->{service} = $c->req->param('service');
+    if ( $c->get_param('service') ) {
+        $filters{service} = { -ilike => $c->get_param('service') };
+        $c->stash->{service} = $c->get_param('service');
     }
 
-    my $page = $c->req->params->{p} || 1;
+    my $page = $c->get_param('p') || 1;
 
     my $p = $c->model('DB::Problem')->search(
         {
