@@ -45,3 +45,29 @@ dd, p {
   line-height: 1.4em;
 }
 
+// TODO: Should this be applied to the base base stylesheet, to prevent possible similar issues in other cobrands?
+#sub_map_links {
+  line-height: 1em;
+}
+
+.council_info_box {
+  border-top: 1px solid #ccc;
+  padding: 1em;
+  margin: 0 -1em -1em -1em; // counteract 1em padding on sidebar without using .full-width which sets an explicit width
+
+  h3 {
+    font-weight: bold;
+    font-size: 1em;
+    margin: 0 0 0.5em 0;
+  }
+
+  p {
+    color: #666;
+    margin: 0 0 0.5em 0;
+    font-size: 0.9em;
+  }
+
+  & > :last-child {
+    margin-bottom: 0;
+  }
+}

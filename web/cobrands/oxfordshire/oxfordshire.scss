@@ -7,9 +7,9 @@
 
 
 body {
-  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif; 
-  line-height:18px; 
-  a {text-decoration:none; color:#0c62ba}
+  font-family:"Trebuchet MS",Arial, Helvetica, sans-serif;
+  line-height:18px;
+  a, a:visited {text-decoration:none; color:$oxfordshire_link_colour}
   a { font-size: 1em; } // mySociety
   a:hover {text-decoration:underline}
   margin:0;
@@ -27,15 +27,15 @@ body {
 }
 
 #oxford-header {
-  padding:0 16px 7px 16px; 
-  clear:both; 
-  overflow:hidden; 
-  position:relative; 
+  padding:0 16px 7px 16px;
+  clear:both;
+  overflow:hidden;
+  position:relative;
   width:958px;
 
   /* note================= */
   height: 133px;
-  height:auto !important; 
+  height:auto !important;
   min-height:133px;
   /* note================= */
 
@@ -47,7 +47,7 @@ body {
   a.logo,  a.logo span {width:173px; height:38px; background: url("/cobrands/oxfordshire/images/logo.jpg") no-repeat 0 0;}
 
   h1 {
-    float:left; padding:8px 0 0 10px; margin:0; font-size:1.25em; line-height:normal; 
+    float:left; padding:8px 0 0 10px; margin:0; font-size:1.25em; line-height:normal;
     font-weight:bold; color:#ffffff; white-space:nowrap;font-family:"Trebuchet MS",Tahoma,Arial,sans-serif;
   }
   span.header {
@@ -76,73 +76,71 @@ body {
   }
 }
 
-
-
 #oxford-main-menu {
   clear: both;
   margin: 0;
   padding: 0;
   font-size: 1em;
   position: relative;
-  ul { 
+  ul {
     margin: 0 0 0 330px;
     position: relative;
     li {
       margin: 0;
-      list-style-type: none; 
-      float:left; 
+      list-style-type: none;
+      float:left;
       width:126px;
       text-align:center;
       background: #e0e0e0;
       padding: 8px 0;
-      margin: 0 0 0 2px;  
+      margin: 0 0 0 2px;
     }
   }
   // from occ.css (client site): #main .view-features-for-homepage ul.tabs
   ul.tabs {
-    float:left; 
-    position:relative; 
-    padding:0; 
+    float:left;
+    position:relative;
+    padding:0;
     margin:0.5em 0 0 0;
-    z-index:10; 
+    z-index:10;
     width: 990px;
-    //width:635px; 
-    min-height:32px; 
-    overflow:hidden; 
-    clear:both; 
+    //width:635px;
+    min-height:32px;
+    overflow:hidden;
+    clear:both;
     background: #939393 url("/cobrands/oxfordshire/images/tabs-featured.png") repeat 0 0;
     li {
-      float:left; 
-      padding:0 0 0px 1px; 
-      margin:0; 
-      font:0.813em/27px "Trebuchet MS"; 
-      color:#ffffff; 
-      height:32px; 
+      float:left;
+      padding:0 0 0px 1px;
+      margin:0;
+      font:0.813em/27px "Trebuchet MS";
+      color:#ffffff;
+      height:32px;
       background: #666 url("/cobrands/oxfordshire/images/divider1x32.png") no-repeat 0 0;
     }
     li.first {padding:0; background:none}
     span, // mySociety
     a {
-      display:block; 
-      position:relative; 
-      padding:8px 0 0 0; 
-      font:bold 1em "Trebuchet MS"; 
-      height:24px; 
-      color:#ffffff; 
-      text-align:center; 
-      background: #939393 url("/cobrands/oxfordshire/images/tabs-featured.png") repeat-x 0 0; 
+      display:block;
+      position:relative;
+      padding:8px 0 0 0;
+      font:bold 1em "Trebuchet MS";
+      height:24px;
+      color:#ffffff;
+      text-align:center;
+      background: #939393 url("/cobrands/oxfordshire/images/tabs-featured.png") repeat-x 0 0;
       white-space:nowrap;
     }
     a:hover,
     a:focus {
-      background: none #EA6C18; 
-      background:-moz-linear-gradient(100% 100% 90deg, #ff4401, #EA6C18); 
-      background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#EA6C18), to(#ff4401)); 
+      background: none #EA6C18;
+      background:-moz-linear-gradient(100% 100% 90deg, #ff4401, #EA6C18);
+      background:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#EA6C18), to(#ff4401));
       color: #ffffff;
     }
     li span, // mySociety
     li.active a {
-      text-decoration:none; 
+      text-decoration:none;
       background: #4c4c4c url("/cobrands/oxfordshire/images/tabs-featured-on.png") repeat-x 0 0;
     }
     li.active a:hover,
@@ -154,13 +152,13 @@ body {
 }
 
 #oxford-footer {
-  float:left; 
-  display:inline; 
-  margin:0 -8px 0 -8px; 
-  padding:10px 25px 30px 21px; 
-  clear:both; 
-  overflow:hidden; 
-  width:960px; 
+  float:left;
+  display:inline;
+  margin:0 -8px 0 -8px;
+  padding:10px 25px 30px 21px;
+  clear:both;
+  overflow:hidden;
+  width:960px;
   background:#000000 url(/cobrands/oxfordshire/images/footer.jpg) no-repeat bottom left;
   address {float:left; padding:11px 0 0 0; margin:0; color:#989898; font:0.813em arial}
   a {font:1em arial; color:#ffffff; margin:0px 5px 0px 5px}
@@ -190,7 +188,7 @@ body {
 }
 
  /* ---------------------------------------------------------------------------------
-    oxfordshire nav menubar from e.g., 
+    oxfordshire nav menubar from e.g.,
     http://fisd.oxfordshire.gov.uk/kb5/oxfordshire/fsd/includes/css/wireframe/navbar.css
   ---------------------------------------------------------------------------------*/
 
