@@ -23,7 +23,7 @@ body.mappage #site-header,
     @include background(none);
     background-color: $blue;
 }
- 
+
 div#location-buttons {
   margin: 1.333em auto;
   .island-button {
@@ -38,5 +38,39 @@ div#location-buttons {
     &:visited, &:hover {
       color:white;
     }
-  }  
+  }
+}
+
+.share-report-on-facebook {
+    a {
+        display: block;
+        padding:0.7em 0.5em 0.5em 0.5em;
+        @include border-radius(4px);
+        background: #3b5998;
+        color: #fff;
+        text-align: center;
+
+        &:visited {
+            color: #fff;
+        }
+
+        &:hover,
+        &:focus {
+            background: darken(#3b5998, 5%);
+            text-decoration: none;
+        }
+
+        img {
+            margin-right: 0.5em;
+            vertical-align: -0.2em;
+            height: 1.3em;
+            width: auto;
+        }
+    }
+}
+
+.issue-list li,
+.form-box,
+h4.static-with-rule {
+    background-color: mix(#fff, desaturate($primary, 40%), 90%);
 }
