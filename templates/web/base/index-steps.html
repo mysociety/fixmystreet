@@ -21,15 +21,8 @@
     <li>Or visit the Barangay Center in person</li>
     <li>Staff? <a href="/auth">Sign in</a> and click on the map!
 [% ELSE %]
-    [% IF c.cobrand.moniker == 'makemyisland' %]
-      <li>
-        Locate the problem on the
-        <a href="/around?pc=Fonadhoo">map of the island</a>
-      </li>
-    [% ELSE %]
-      <li>[% question %]</li>
-      <li>[% loc('Locate the problem on a map of the area') %]</li>
-    [% END %]
+    <li>[% question %]</li>
+    <li>[% loc('Locate the problem on a map of the area') %]</li>
     <li>[% loc('Enter details of the problem') %]</li>
     [% IF c.cobrand.is_council %]
         <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
