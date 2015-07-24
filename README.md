@@ -1,5 +1,7 @@
 # Welcome to FixMyStreet Platform
 
+[![Join the chat at https://gitter.im/mysociety/fixmystreet](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mysociety/fixmystreet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 FixMyStreet Platform is an open source project to help people run websites for
 reporting common street problems such as potholes and broken street lights to
 the appropriate authority.
