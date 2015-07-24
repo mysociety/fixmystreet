@@ -1,0 +1,111 @@
+#!/usr/bin/env perl
+use strict; use warnings;
+use feature 'say';
+
+=head1 NAME
+
+bin/migrate -- script to run migrations
+
+=head1 SYNOPSIS (as user)
+
+NB: This script will use the DB connection details in conf/general.yml
+
+    bin/migrate status
+
+    # A) if you have an existing FixMyStreet installation
+    #   i) make sure it is up to date, by manually applying migrations in db/schema_00nn-*.sl
+    #   ii) run
+    bin/migrate install_version_storage -V1
+    bin/migrate upgrade
+
+    # B) starting from a fresh installation
+    bin/migrate install -V1
+    bin/migrate upgrade
+
+    # to upgrade after checking out new code
+    bin/migrate upgrade
+
+    # downgrade
+    bin/migrate downgrade -V1  # e.g. back to version 1
+
+=head1 DEVELOPERS - preparing a new migration
+
+    vim perllib/FixMyStreet/DB/... # make DB schema changes
+
+    vim perllib/FixMyStreet/DB.pm
+    # update version to next highest integer
+    
+    bin/migrate prepare
+
+    # where X = previous version, and Y = new version
+    #
+    # .gitignore deliberately ignores 001-auto.sql files, you will need to edit
+    # these and rename, to make sure that everything is happy.
+    #
+    # 1.  Remove BEGIN; and COMMIT;  (migrations are already run in a commit)
+    # 2.  Check that all constraints etc. are correct, and that no spurious SQL has been inferred
+    # 3.  Remove the deploy SQL entirely, as this won't handle CREATE FUNCTION and CHECK constraints
+    #     (this means you can't deploy directly to a later version, but have to deploy 1 and then upgrade.
+    #      This is considered a feature.)
+
+    vim db/migrations/migrations/PostgreSQL/upgrade/{X}-{Y}/001-auto.sql
+    vim db/migrations/migrations/PostgreSQL/downgrade/{Y}-{X}/001-auto.sql
+
+    # you can add additional migrations as .sql or .pl files here, as required
+
+    rm db/migrations/migrations/PostgreSQL/deploy/{Y}/001-auto.sl
+
+    git add ...; git commit
+
+    bin/migrate upgrade;
+    # test
+
+    bin/migrate downgrade  -V{Y}
+    # test
+
+=cut
+
+use lib 'perllib';
+use FixMyStreet;
+use FixMyStreet::App;
+
+local $ENV{DBIC_MIGRATION_SCHEMA_CLASS}='FixMyStreet::DB';
+
+{
+    # monkeypatch to prevent splitting of SQL on ; (which breaks functions)
+    # https://github.com/frioux/DBIx-Class-DeploymentHandler/issues/11
+
+    require DBIx::Class::DeploymentHandler::DeployMethod::SQL::Translator;
+    no warnings 'redefine';
+    *DBIx::Class::DeploymentHandler::DeployMethod::SQL::Translator::_split_sql_chunk = sub { @_ };
+}
+
+my ($dsn, $user, $password, $dbi_args, $dbic_args) = @{ FixMyStreet->dbic_connect_info };
+
+# TODO add these as options below instead of pushing to @ARGV
+push @ARGV, (
+    '--target_dir' => 'db/migrations',
+    '--database'   => 'PostgreSQL',
+    '--dsn'        => $dsn,
+    '--username'   => $user,
+    '--password'   => $password,
+    # '--dbi_connect_attrs' => $dbi_args,
+    # '--dbic_connect_attrs' => $dbic_args,
+);
+
+require DBIx::Class::Migration::Script;
+my $script = DBIx::Class::Migration::Script->new_with_options;
+
+# TODO: subclass DBIC::M::Script and add this logic there
+# OR possibly fix DBICM to honour to_version, e.g.
+# https://metacpan.org/source/JJNAPIORK/DBIx-Class-Migration-0.044/lib/DBIx/Class/Migration.pm#L519
+my $installing_version_storage = $ARGV[0] && $ARGV[0] eq 'install_version_storage';
+if ($installing_version_storage && $script->to_version) {
+    my $dh = $script->migration->dbic_dh;
+    $dh->version_storage->version_rs->delete;
+    $dh->add_database_version({ version => $script->to_version });
+    say 'Installed database storage (with overridden version)';
+    exit;
+}
+
+$script->run;

@@ -1,0 +1,2230 @@
+---
+schema:
+  procedures: {}
+  tables:
+    abuse:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - email
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        email:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: email
+          order: 1
+          size:
+            - 0
+      indices: []
+      name: abuse
+      options: []
+      order: 1
+    admin_log:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        action:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: action
+          order: 5
+          size:
+            - 0
+        admin_user:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: admin_user
+          order: 2
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        object_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: object_id
+          order: 4
+          size:
+            - 0
+        object_type:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: object_type
+          order: 3
+          size:
+            - 0
+        whenedited:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: ms_current_timestamp()
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: whenedited
+          order: 6
+          size:
+            - 0
+      indices: []
+      name: admin_log
+      options: []
+      order: 2
+    alert:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - alert_type
+          match_type: ''
+          name: alert_fk_alert_type
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - ref
+          reference_table: alert_type
+          type: FOREIGN KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: alert_fk_user_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        alert_type:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: alert_type
+          order: 2
+          size:
+            - 0
+        cobrand:
+          data_type: text
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: cobrand
+          order: 8
+          size:
+            - 0
+        cobrand_data:
+          data_type: text
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: cobrand_data
+          order: 9
+          size:
+            - 0
+        confirmed:
+          data_type: integer
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: confirmed
+          order: 6
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        lang:
+          data_type: text
+          default_value: en-gb
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: lang
+          order: 7
+          size:
+            - 0
+        parameter:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: parameter
+          order: 3
+          size:
+            - 0
+        parameter2:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: parameter2
+          order: 4
+          size:
+            - 0
+        user_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 5
+          size:
+            - 0
+        whendisabled:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: whendisabled
+          order: 11
+          size:
+            - 0
+        whensubscribed:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: ms_current_timestamp()
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: whensubscribed
+          order: 10
+          size:
+            - 0
+      indices:
+        - fields:
+            - alert_type
+          name: alert_idx_alert_type
+          options: []
+          type: NORMAL
+        - fields:
+            - user_id
+          name: alert_idx_user_id
+          options: []
+          type: NORMAL
+      name: alert
+      options: []
+      order: 14
+    alert_sent:
+      constraints:
+        - deferrable: 0
+          expression: ''
+          fields:
+            - alert_id
+          match_type: ''
+          name: alert_sent_fk_alert_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: alert
+          type: FOREIGN KEY
+      fields:
+        alert_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: alert_id
+          order: 1
+          size:
+            - 0
+        parameter:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: parameter
+          order: 2
+          size:
+            - 0
+        whenqueued:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: ms_current_timestamp()
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: whenqueued
+          order: 3
+          size:
+            - 0
+      indices:
+        - fields:
+            - alert_id
+          name: alert_sent_idx_alert_id
+          options: []
+          type: NORMAL
+      name: alert_sent
+      options: []
+      order: 17
+    alert_type:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - ref
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        head_description:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: head_description
+          order: 6
+          size:
+            - 0
+        head_link:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: head_link
+          order: 5
+          size:
+            - 0
+        head_sql_query:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: head_sql_query
+          order: 2
+          size:
+            - 0
+        head_table:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: head_table
+          order: 3
+          size:
+            - 0
+        head_title:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: head_title
+          order: 4
+          size:
+            - 0
+        item_description:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: item_description
+          order: 12
+          size:
+            - 0
+        item_link:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: item_link
+          order: 11
+          size:
+            - 0
+        item_order:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: item_order
+          order: 9
+          size:
+            - 0
+        item_table:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: item_table
+          order: 7
+          size:
+            - 0
+        item_title:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: item_title
+          order: 10
+          size:
+            - 0
+        item_where:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: item_where
+          order: 8
+          size:
+            - 0
+        ref:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: ref
+          order: 1
+          size:
+            - 0
+        template:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: template
+          order: 13
+          size:
+            - 0
+      indices: []
+      name: alert_type
+      options: []
+      order: 3
+    body:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - comment_user_id
+          match_type: ''
+          name: body_fk_comment_user_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - parent
+          match_type: ''
+          name: body_fk_parent
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: body
+          type: FOREIGN KEY
+      fields:
+        api_key:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: api_key
+          order: 6
+          size:
+            - 0
+        can_be_devolved:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: can_be_devolved
+          order: 11
+          size:
+            - 0
+        comment_user_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: comment_user_id
+          order: 9
+          size:
+            - 0
+        deleted:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: deleted
+          order: 13
+          size:
+            - 0
+        endpoint:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: endpoint
+          order: 4
+          size:
+            - 0
+        external_url:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: external_url
+          order: 14
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        jurisdiction:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: jurisdiction
+          order: 5
+          size:
+            - 0
+        name:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 0
+        parent:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: parent
+          order: 3
+          size:
+            - 0
+        send_comments:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: send_comments
+          order: 8
+          size:
+            - 0
+        send_extended_statuses:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: send_extended_statuses
+          order: 12
+          size:
+            - 0
+        send_method:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: send_method
+          order: 7
+          size:
+            - 0
+        suppress_alerts:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: suppress_alerts
+          order: 10
+          size:
+            - 0
+      indices:
+        - fields:
+            - comment_user_id
+          name: body_idx_comment_user_id
+          options: []
+          type: NORMAL
+        - fields:
+            - parent
+          name: body_idx_parent
+          options: []
+          type: NORMAL
+      name: body
+      options: []
+      order: 9
+    body_areas:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - body_id
+            - area_id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - body_id
+          match_type: ''
+          name: body_areas_fk_body_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: body
+          type: FOREIGN KEY
+      fields:
+        area_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: area_id
+          order: 2
+          size:
+            - 0
+        body_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: body_id
+          order: 1
+          size:
+            - 0
+      indices:
+        - fields:
+            - body_id
+          name: body_areas_idx_body_id
+          options: []
+          type: NORMAL
+      name: body_areas
+      options: []
+      order: 11
+    comment:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - problem_id
+          match_type: ''
+          name: comment_fk_problem_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: problem
+          type: FOREIGN KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: comment_fk_user_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        anonymous:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: anonymous
+          order: 4
+          size:
+            - 0
+        cobrand:
+          data_type: text
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: cobrand
+          order: 12
+          size:
+            - 0
+        cobrand_data:
+          data_type: text
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: cobrand_data
+          order: 14
+          size:
+            - 0
+        confirmed:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: confirmed
+          order: 8
+          size:
+            - 0
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: ms_current_timestamp()
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 7
+          size:
+            - 0
+        external_id:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: external_id
+          order: 18
+          size:
+            - 0
+        extra:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: extra
+          order: 19
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        lang:
+          data_type: text
+          default_value: en-gb
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: lang
+          order: 13
+          size:
+            - 0
+        mark_fixed:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: mark_fixed
+          order: 15
+          size:
+            - 0
+        mark_open:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: mark_open
+          order: 16
+          size:
+            - 0
+        name:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 5
+          size:
+            - 0
+        photo:
+          data_type: bytea
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: photo
+          order: 10
+          size:
+            - 0
+        problem_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: problem_id
+          order: 2
+          size:
+            - 0
+        problem_state:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: problem_state
+          order: 17
+          size:
+            - 0
+        send_fail_count:
+          data_type: integer
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: send_fail_count
+          order: 20
+          size:
+            - 0
+        send_fail_reason:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: send_fail_reason
+          order: 21
+          size:
+            - 0
+        send_fail_timestamp:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: send_fail_timestamp
+          order: 22
+          size:
+            - 0
+        state:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: state
+          order: 11
+          size:
+            - 0
+        text:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: text
+          order: 9
+          size:
+            - 0
+        user_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 3
+          size:
+            - 0
+        website:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: website
+          order: 6
+          size:
+            - 0
+        whensent:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: whensent
+          order: 23
+          size:
+            - 0
+      indices:
+        - fields:
+            - problem_id
+          name: comment_idx_problem_id
+          options: []
+          type: NORMAL
+        - fields:
+            - user_id
+          name: comment_idx_user_id
+          options: []
+          type: NORMAL
+      name: comment
+      options: []
+      order: 15
+    contacts:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - body_id
+            - category
+          match_type: ''
+          name: contacts_body_id_category_idx
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: UNIQUE
+        - deferrable: 0
+          expression: ''
+          fields:
+            - body_id
+          match_type: ''
+          name: contacts_fk_body_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: body
+          type: FOREIGN KEY
+      fields:
+        api_key:
+          data_type: text
+          default_value: ''
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: api_key
+          order: 14
+          size:
+            - 0
+        body_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: body_id
+          order: 2
+          size:
+            - 0
+        category:
+          data_type: text
+          default_value: Other
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: category
+          order: 3
+          size:
+            - 0
+        confirmed:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: confirmed
+          order: 5
+          size:
+            - 0
+        deleted:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: deleted
+          order: 6
+          size:
+            - 0
+        editor:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: editor
+          order: 7
+          size:
+            - 0
+        email:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: email
+          order: 4
+          size:
+            - 0
+        endpoint:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: endpoint
+          order: 12
+          size:
+            - 0
+        extra:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: extra
+          order: 10
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        jurisdiction:
+          data_type: text
+          default_value: ''
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: jurisdiction
+          order: 13
+          size:
+            - 0
+        non_public:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: non_public
+          order: 11
+          size:
+            - 0
+        note:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: note
+          order: 9
+          size:
+            - 0
+        send_method:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: send_method
+          order: 15
+          size:
+            - 0
+        whenedited:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: whenedited
+          order: 8
+          size:
+            - 0
+      indices:
+        - fields:
+            - body_id
+          name: contacts_idx_body_id
+          options: []
+          type: NORMAL
+      name: contacts
+      options: []
+      order: 12
+    contacts_history:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - contacts_history_id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        body_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: body_id
+          order: 3
+          size:
+            - 0
+        category:
+          data_type: text
+          default_value: Other
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: category
+          order: 4
+          size:
+            - 0
+        confirmed:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: confirmed
+          order: 6
+          size:
+            - 0
+        contact_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: contact_id
+          order: 2
+          size:
+            - 0
+        contacts_history_id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: contacts_history_id
+          order: 1
+          size:
+            - 0
+        deleted:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: deleted
+          order: 7
+          size:
+            - 0
+        editor:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: editor
+          order: 8
+          size:
+            - 0
+        email:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: email
+          order: 5
+          size:
+            - 0
+        note:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: note
+          order: 10
+          size:
+            - 0
+        whenedited:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: whenedited
+          order: 9
+          size:
+            - 0
+      indices: []
+      name: contacts_history
+      options: []
+      order: 4
+    problem:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - user_id
+          match_type: ''
+          name: problem_fk_user_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+      fields:
+        anonymous:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: anonymous
+          order: 14
+          size:
+            - 0
+        areas:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: areas
+          order: 6
+          size:
+            - 0
+        bodies_str:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: bodies_str
+          order: 5
+          size:
+            - 0
+        category:
+          data_type: text
+          default_value: Other
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: category
+          order: 7
+          size:
+            - 0
+        cobrand:
+          data_type: text
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: cobrand
+          order: 23
+          size:
+            - 0
+        cobrand_data:
+          data_type: text
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: cobrand_data
+          order: 24
+          size:
+            - 0
+        confirmed:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: confirmed
+          order: 19
+          size:
+            - 0
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: ms_current_timestamp()
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 18
+          size:
+            - 0
+        detail:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: detail
+          order: 9
+          size:
+            - 0
+        external_body:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: external_body
+          order: 16
+          size:
+            - 0
+        external_id:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: external_id
+          order: 15
+          size:
+            - 0
+        external_source:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: external_source
+          order: 36
+          size:
+            - 0
+        external_source_id:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: external_source_id
+          order: 37
+          size:
+            - 0
+        external_team:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: external_team
+          order: 17
+          size:
+            - 0
+        extra:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: extra
+          order: 28
+          size:
+            - 0
+        flagged:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: flagged
+          order: 29
+          size:
+            - 0
+        geocode:
+          data_type: bytea
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: geocode
+          order: 30
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        interest_count:
+          data_type: integer
+          default_value: 0
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: interest_count
+          order: 38
+          size:
+            - 0
+        lang:
+          data_type: text
+          default_value: en-gb
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: lang
+          order: 21
+          size:
+            - 0
+        lastupdate:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: ms_current_timestamp()
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: lastupdate
+          order: 25
+          size:
+            - 0
+        latitude:
+          data_type: double precision
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: latitude
+          order: 3
+          size:
+            - 0
+        longitude:
+          data_type: double precision
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: longitude
+          order: 4
+          size:
+            - 0
+        name:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 13
+          size:
+            - 0
+        non_public:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: non_public
+          order: 35
+          size:
+            - 0
+        photo:
+          data_type: bytea
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: photo
+          order: 10
+          size:
+            - 0
+        postcode:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: postcode
+          order: 2
+          size:
+            - 0
+        send_fail_count:
+          data_type: integer
+          default_value: 0
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: send_fail_count
+          order: 31
+          size:
+            - 0
+        send_fail_reason:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: send_fail_reason
+          order: 32
+          size:
+            - 0
+        send_fail_timestamp:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: send_fail_timestamp
+          order: 33
+          size:
+            - 0
+        send_method_used:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: send_method_used
+          order: 34
+          size:
+            - 0
+        send_questionnaire:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: true
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: send_questionnaire
+          order: 27
+          size:
+            - 0
+        service:
+          data_type: text
+          default_value: ''
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: service
+          order: 22
+          size:
+            - 0
+        state:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: state
+          order: 20
+          size:
+            - 0
+        subcategory:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: subcategory
+          order: 39
+          size:
+            - 0
+        title:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 8
+          size:
+            - 0
+        used_map:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: used_map
+          order: 11
+          size:
+            - 0
+        user_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: user_id
+          order: 12
+          size:
+            - 0
+        whensent:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: whensent
+          order: 26
+          size:
+            - 0
+      indices:
+        - fields:
+            - user_id
+          name: problem_idx_user_id
+          options: []
+          type: NORMAL
+      name: problem
+      options: []
+      order: 13
+    'problem_find_nearby(?,?,?)':
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - problem_id
+          match_type: ''
+          name: 'problem_find_nearby(?,?,?)_fk_problem_id'
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: problem
+          type: FOREIGN KEY
+      fields:
+        distance:
+          data_type: double precision
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: distance
+          order: 2
+          size:
+            - 0
+        problem_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: problem_id
+          order: 1
+          size:
+            - 0
+      indices:
+        - fields:
+            - problem_id
+          name: 'problem_find_nearby(?,?,?)_idx_problem_id'
+          options: []
+          type: NORMAL
+      name: 'problem_find_nearby(?,?,?)'
+      options: []
+      order: 5
+    questionnaire:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 0
+          expression: ''
+          fields:
+            - problem_id
+          match_type: ''
+          name: questionnaire_fk_problem_id
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: problem
+          type: FOREIGN KEY
+      fields:
+        ever_reported:
+          data_type: boolean
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: ever_reported
+          order: 5
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        new_state:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: new_state
+          order: 7
+          size:
+            - 0
+        old_state:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: old_state
+          order: 6
+          size:
+            - 0
+        problem_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: problem_id
+          order: 2
+          size:
+            - 0
+        whenanswered:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: whenanswered
+          order: 4
+          size:
+            - 0
+        whensent:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: whensent
+          order: 3
+          size:
+            - 0
+      indices:
+        - fields:
+            - problem_id
+          name: questionnaire_idx_problem_id
+          options: []
+          type: NORMAL
+      name: questionnaire
+      options: []
+      order: 16
+    secret:
+      constraints: []
+      fields:
+        secret:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: secret
+          order: 1
+          size:
+            - 0
+      indices: []
+      name: secret
+      options: []
+      order: 6
+    sessions:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        expires:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: expires
+          order: 3
+          size:
+            - 0
+        id:
+          data_type: char
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 72
+        session_data:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: session_data
+          order: 2
+          size:
+            - 0
+      indices: []
+      name: sessions
+      options: []
+      order: 7
+    token:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - scope
+            - token
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        created:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: ms_current_timestamp()
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: created
+          order: 4
+          size:
+            - 0
+        data:
+          data_type: bytea
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: data
+          order: 3
+          size:
+            - 0
+        scope:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: scope
+          order: 1
+          size:
+            - 0
+        token:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: token
+          order: 2
+          size:
+            - 0
+      indices: []
+      name: token
+      options: []
+      order: 8
+    users:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - email
+          match_type: ''
+          name: users_email_key
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: UNIQUE
+        - deferrable: 0
+          expression: ''
+          fields:
+            - from_body
+          match_type: ''
+          name: users_fk_from_body
+          on_delete: NO ACTION
+          on_update: NO ACTION
+          options: []
+          reference_fields:
+            - id
+          reference_table: body
+          type: FOREIGN KEY
+      fields:
+        email:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 1
+          name: email
+          order: 2
+          size:
+            - 0
+        flagged:
+          data_type: boolean
+          default_value: !!perl/ref
+            =: false
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: flagged
+          order: 7
+          size:
+            - 0
+        from_body:
+          data_type: integer
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: from_body
+          order: 6
+          size:
+            - 0
+        id:
+          data_type: integer
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 3
+          size:
+            - 0
+        password:
+          data_type: ''
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: password
+          order: 5
+          size:
+            - 0
+        phone:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: phone
+          order: 4
+          size:
+            - 0
+        title:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 8
+          size:
+            - 0
+      indices:
+        - fields:
+            - from_body
+          name: users_idx_from_body
+          options: []
+          type: NORMAL
+      name: users
+      options: []
+      order: 10
+  triggers: {}
+  views: {}
+translator:
+  add_drop_table: 0
+  filename: ~
+  no_comments: 0
+  parser_args:
+    sources:
+      - Abuse
+      - AdminLog
+      - Alert
+      - AlertSent
+      - AlertType
+      - Body
+      - BodyArea
+      - Comment
+      - Contact
+      - ContactsHistory
+      - Nearby
+      - Problem
+      - Questionnaire
+      - Secret
+      - Session
+      - Token
+      - User
+  parser_type: SQL::Translator::Parser::DBIx::Class
+  producer_args: {}
+  producer_type: SQL::Translator::Producer::YAML
+  show_warnings: 0
+  trace: 0
+  version: 0.11018

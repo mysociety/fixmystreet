@@ -1,0 +1,81 @@
+{
+   "sets" : [
+      {
+         "quantity" : "all",
+         "class" : "AlertType"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Contact"
+      },
+      {
+         "quantity" : "all",
+         "class" : "ContactsHistory"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Nearby"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Questionnaire"
+      },
+      {
+         "quantity" : "all",
+         "class" : "User"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Token"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Abuse"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Alert"
+      },
+      {
+         "quantity" : "all",
+         "class" : "AdminLog"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Body"
+      },
+      {
+         "quantity" : "all",
+         "class" : "BodyArea"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Comment"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Session"
+      },
+      {
+         "quantity" : "all",
+         "class" : "AlertSent"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Problem"
+      },
+      {
+         "quantity" : "all",
+         "class" : "Secret"
+      }
+   ],
+   "might_have" : {
+      "fetch" : 0
+   },
+   "belongs_to" : {
+      "fetch" : 0
+   },
+   "has_many" : {
+      "fetch" : 0
+   }
+}

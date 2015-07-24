@@ -41,6 +41,7 @@ requires 'DBIx::Class::FilterColumn';
 requires 'DBIx::Class::InflateColumn::DateTime';
 requires 'DBIx::Class::ResultSet';
 requires 'DBIx::Class::Schema::Loader';
+requires 'DBIx::Class::Migration';
 requires 'Digest::MD5';
 requires 'Digest::SHA';
 requires 'Email::Send';
