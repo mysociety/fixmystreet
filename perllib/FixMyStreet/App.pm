@@ -560,7 +560,8 @@ sub get_param_list {
     my ($c, $param) = @_;
     my $value = $c->req->params->{$param};
     return @$value if ref $value;
-    return ($value);
+    return ($value) if defined $value;
+    return ();
 }
 
 =head2 set_param
