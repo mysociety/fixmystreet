@@ -60,9 +60,9 @@ foreach my $test (
             type   => 'old',
         },
         errors  => [
+            'This information is required',
             'Please enter a subject',
             'Please enter some details',
-            'This information is required',
             'Please enter your email',
             'Please enter your name',
         ],

@@ -34,6 +34,14 @@
             <p class='form-error'>[% field_errors.bodies %]</p>
           [% END %]
 
+          [% TRY %]
+              [%# Useful for amending form contents based on category selection %]
+              [% PROCESS 'report/new/category_at_top.html' %]
+              [% need_to_show_category_selector = 0 %]
+          [% CATCH file %]
+              [% need_to_show_category_selector = 1 %]
+          [% END %]
+
             <label for="form_title">[% loc('One-line summary') %] [% INCLUDE 'report/public_label.html' %]</label>
           [% IF field_errors.title %]
             <p class='form-error'>[% field_errors.title %]</p>
@@ -48,23 +56,9 @@
 
           [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
 
-          [% IF js %]
-              <div id="form_category_row">
-                  <label for="form_category">[% loc('Category') %]</label>
-                  <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
-              </div>
-          [% ELSE %]
-              [% IF category_options.size %]
-                  [% IF field_errors.category %]
-                    <p class='form-error'>[% field_errors.category %]</p>
-                  [% END %]
-                  [% PROCESS "report/new/category.html" %]
-              [% END %]
+          [% IF need_to_show_category_selector %]
+              [% PROCESS "report/new/category_wrapper.html" %]
           [% END %]
-
-          [%- IF category_extras %]
-            [% PROCESS "report/new/category_extras.html" %]
-          [%- END %]
 
           [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 

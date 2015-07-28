@@ -1,5 +1,7 @@
 [% FILTER collapse %]
-[% IF bodies_to_list.size == 0 %]
+[% IF unresponsive.ALL %]
+    [% PROCESS 'report/new/unresponsive_body.html' body_id = unresponsive.ALL %]
+[% ELSIF bodies_to_list.size == 0 %]
     [% PROCESS 'report/new/councils_text_none.html' %]
 [% ELSIF bodies_to_list.size == bodies.size %]
     [% PROCESS 'report/new/councils_text_all.html' %]

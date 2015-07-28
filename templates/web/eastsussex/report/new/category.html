@@ -6,7 +6,7 @@
     <label for='form_category' id="form_category_label">
         Type
     </label>
-    <select name='category' id='form_category'[% ' onchange="form_category_onchange()"' IF category_extras.size %]>
+    <select name='category' id='form_category'>
         [% FOREACH cat_op IN category_options %]
         [% cat_op_lc = cat_op | lower %]
         [% IF loop.first; cat_op = '-- Pick a type --'; END %]

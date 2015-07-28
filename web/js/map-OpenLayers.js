@@ -9,8 +9,8 @@ function fixmystreet_update_pin(lonlat) {
     document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
 
     $.getJSON('/report/new/ajax', {
-            latitude: $('#fixmystreet\\.latitude').val(),
-            longitude: $('#fixmystreet\\.longitude').val()
+        latitude: $('#fixmystreet\\.latitude').val(),
+        longitude: $('#fixmystreet\\.longitude').val()
     }, function(data) {
         if (data.error) {
             if (!$('#side-form-error').length) {
@@ -29,12 +29,18 @@ function fixmystreet_update_pin(lonlat) {
             if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
             lb.before(data.extra_name_info);
         }
+
         // If the category filter appears on the map and the user has selected
         // something from it, then pre-fill the category field in the report,
         // if it's a value already present in the drop-down.
         var category = $("#filter_categories").val();
         if (category !== undefined && $("#form_category option[value="+category+"]").length) {
             $("#form_category").val(category);
+        }
+
+        var category_select = $("select#form_category");
+        if (category_select.val() != '-- Pick a category --') {
+            category_select.change();
         }
     });
 

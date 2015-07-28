@@ -1,0 +1,12 @@
+<div class="unresponsive-council-warning">
+    <h1>Important message</h1>
+    <p>
+        <span class="unresponsive-council">[% bodies.$body_id.name %]</span> doesn’t accept
+      [% IF category %]
+        <span class="refused-category">[% category | html %]</span>
+      [% END %]
+        reports.
+    </p>
+    <p>We can make your report public, but we can’t send it to the council.</p>
+    <a href="/unresponsive?body=[% body_id %][% IF category %];category=[% category | uri %][% END %]">What can I do instead?</a>
+</div>

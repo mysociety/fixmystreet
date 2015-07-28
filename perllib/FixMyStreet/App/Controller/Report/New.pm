@@ -219,14 +219,21 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         return 1;
     }
     $c->forward('setup_categories_and_bodies');
+    $c->forward('check_for_category');
 
+    my $category = $c->stash->{category};
     my $category_extra = '';
-    my $category = $c->get_param('category');
+    my $generate;
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
         $c->stash->{report_meta} = {};
-        $c->stash->{report} = { category => $category };
         $c->stash->{category_extras} = { $category => $c->stash->{category_extras}->{$category} };
-
+        $generate = 1;
+    }
+    if ($c->stash->{unresponsive}->{$category}) {
+        $generate = 1;
+    }
+    if ($generate) {
+        $c->stash->{report} = { category => $category };
         $category_extra = $c->render_fragment( 'report/new/category_extras.html');
     }
 
@@ -604,6 +611,11 @@ sub setup_categories_and_bodies : Private {
     my %category_extras  = ();       # extra fields to fill in for open311
     my %non_public_categories =
       ();    # categories for which the reports are not public
+    $c->stash->{unresponsive} = {};
+
+    if (keys %bodies == 1 && $first_body->send_method && $first_body->send_method eq 'Refused') {
+        $c->stash->{unresponsive}{ALL} = $first_body->id;
+    }
 
     # FIXME - implement in cobrand
     if ( $c->cobrand->moniker eq 'emptyhomes' ) {
@@ -640,6 +652,9 @@ sub setup_categories_and_bodies : Private {
                 my $metas = $contact->get_extra_fields;
                 $category_extras{ $contact->category } = $metas
                     if scalar @$metas;
+
+                $c->stash->{unresponsive}{$contact->category} = $contact->body_id
+                    if $contact->email =~ /^REFUSED$/i;
 
                 $non_public_categories{ $contact->category } = 1 if $contact->non_public;
             }
@@ -863,14 +878,19 @@ sub process_report : Private {
             return 1;
         }
 
-        # construct the bodies string:
-        #  'x,x' - x are body IDs that have this category
-        #  'x,x|y' - x are body IDs that have this category, y body IDs with *no* contact
-        my $body_string = join( ',', map { $_->body_id } @contacts );
-        $body_string .=
-          '|' . join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } )
-            if $body_string && @{ $c->stash->{missing_details_bodies} };
-        $report->bodies_str($body_string);
+        if ($c->stash->{unresponsive}{$report->category} || $c->stash->{unresponsive}{ALL}) {
+            # Unresponsive, don't try and send a report.
+            $report->bodies_str(-1);
+        } else {
+            # construct the bodies string:
+            #  'x,x' - x are body IDs that have this category
+            #  'x,x|y' - x are body IDs that have this category, y body IDs with *no* contact
+            my $body_string = join( ',', map { $_->body_id } @contacts );
+            $body_string .=
+              '|' . join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } )
+                if $body_string && @{ $c->stash->{missing_details_bodies} };
+            $report->bodies_str($body_string);
+        }
 
         my @extra;
         # NB: we are only checking extras for the *first* retrieved contact.

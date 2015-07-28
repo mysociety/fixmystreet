@@ -61,6 +61,25 @@ sub council : Global : Args(0) {
     my ( $self, $c ) = @_;
 }
 
+sub unresponsive : Global : Args(0) {
+    my ( $self, $c ) = @_;
+    my $body = $c->stash->{body} = $c->model('DB::Body')->find({ id => $c->get_param('body') })
+        or $c->detach( '/page_error_404_not_found' );
+
+    $c->stash->{category} = $c->get_param('category');
+
+    # If the whole body isn't set to refused, we need to check the contacts
+    if (!$body->send_method || $body->send_method ne 'Refused') {
+        my @contacts = $c->model('DB::Contact')->not_deleted->search( { body_id => $body->id } )->all;
+        my $any_unresponsive = 0;
+        foreach my $contact (@contacts) {
+            $any_unresponsive = 1 if $contact->email =~ /^REFUSED$/i;
+        }
+
+        $c->detach( '/page_error_404_not_found' ) unless $any_unresponsive;
+    }
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

@@ -163,15 +163,18 @@ select {
   width: 100%;
 }
 
-// links
-a,
-a:visited {
-  text-decoration:none;
-  color:#0BA7D1;
+a {
+  text-decoration: none;
+  color: #0BA7D1;
+
+  &:visited {
+    color: #0BA7D1;
+  }
+
   &:hover,
   &:active {
-    text-decoration:underline;
-    color:#0D7CCE;
+    text-decoration: underline;
+    color: #0D7CCE;
   }
 }
 

@@ -63,26 +63,7 @@
     <textarea name="detail" id="form_detail" rows="7" cols="26" required>[% report.detail | html %]</textarea>
 </div>
 
-[% IF js %]
-    <div class="form-field" id="form_category_row">
-        <label for="form_category">[% loc('Category:') %]</label>
-        <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
-    </div>
-[% ELSE %]
-    [% IF category_options.size %]
-        [% IF field_errors.category %]
-            <div class='form-error'>[% field_errors.category %]</div>
-        [% END %]
-
-        <div class="form-field">
-            [% PROCESS "report/new/category.html" %]
-        </div>
-    [% END %]
-[% END %]
-
-[%- IF category_extras %]
-[% PROCESS "report/new/category_extras.html" %]
-[%- END %]
+[% PROCESS "report/new/category_wrapper.html" %]
 
 [% IF c.cobrand.allow_photo_upload %]
     [% IF field_errors.photo %]
