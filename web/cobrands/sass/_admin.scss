@@ -70,83 +70,75 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         margin-top: 0;
       }
     }
-  .fms-admin-warning, .fms-admin-info, .admin-hint, .admin-offsite-link {
-    display: none; // don't display admin-notes unless .show-admin-notes class is present
+  .admin-offsite-link {
+    display: inline;
   }
-  &.show-admin-notes {
-    .fms-admin-warning, .fms-admin-info, .admin-hint {
-      display: block;
+  .fms-admin-warning, .fms-admin-info {
+    padding: 1em;
+    font-size: 90%;
+    border-style: solid;
+    border-width: 1px;
+    border-left-width: 1em;
+    margin-bottom: 1em;
+  }
+  .fms-admin-warning {
+      border-color: #f99;
+      background-color: #ffe1e1;
+  }
+  .fms-admin-info {
+      border-color: #9f9;
+      background-color: #e1ffe1;
+  }
+  .admin-open311-only {
+    border:1px solid #666;
+    padding:1em;
+    margin: 1em 0;
+  }
+  .admin-hint {
+    font-size: 80%; // little question marks are small
+    cursor: pointer;
+    display: block;
+    float:left;
+    overflow: hidden;
+    padding: 0.2em;
+    margin-right: 0.666em;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    background-color: #f93;
+    -moz-border-radius: 0.333em;
+    -webkit-border-radius: 0.333em;
+    border-radius: 0.333em;
+    p {
+      display:none;
     }
-    .admin-offsite-link {
-      display: inline;
-    }
-    .fms-admin-warning, .fms-admin-info {
-      padding: 1em;
+    &:before { content: "?" }
+    &.admin-hint-show {
       font-size: 90%;
-      border-style: solid;
-      border-width: 1px;
-      border-left-width: 1em;
-      margin-bottom: 1em;
-    }
-    .fms-admin-warning {
-        border-color: #f99;
-        background-color: #ffe1e1;
-    }
-    .fms-admin-info {
-        border-color: #9f9;
-        background-color: #e1ffe1;
-    }
-    .admin-open311-only {
-      border:1px solid #666;
-      padding:1em;
-      margin: 1em 0;
-    }
-    .admin-hint {
-      font-size: 80%; // little question marks are small
-      cursor: pointer;
+      text-align: left;
       display: block;
-      float:left;
-      overflow: hidden;
-      padding: 0.2em;
-      margin-right: 0.666em;
-      text-align: center;
-      color: #fff;
-      font-weight: bold;
-      background-color: #f93;
-      -moz-border-radius: 0.333em;
-      -webkit-border-radius: 0.333em;
-      border-radius: 0.333em;
+      float:none;
+      margin:1em 0;
+      &:before { content: "" }
+      background-color: inherit !important;
       p {
-        display:none;
-      }
-      &:before { content: "?" }
-      &.admin-hint-show {
-        font-size: 90%;
-        text-align: left;
+        font-weight: normal;
         display: block;
-        float:none;
-        margin:1em 0;
-        &:before { content: "" }
-        background-color: inherit !important;
-        p {
-          font-weight: normal;
-          display: block;
-          background-color: #ff9;
-          color: #000;
-          border-style: solid;
-          border-width: 1px;
-          border-left-width: 1em;
-          border-color: #f93;
-          padding:1em;
-          margin: 0;
-        }
+        background-color: #ff9;
+        color: #000;
+        border-style: solid;
+        border-width: 1px;
+        border-left-width: 1em;
+        border-color: #f93;
+        padding:1em;
+        margin: 0;
       }
     }
-    .admin-offsite-link {
-      padding-right: 12px;
-      background-image: url(../../i/external-link.png);
-      background-position: right top;
-      background-repeat: no-repeat;
-    }
+  }
+  .admin-offsite-link {
+    padding-right: 12px;
+    background-image: url(../../i/external-link.png);
+    background-position: right top;
+    background-repeat: no-repeat;
   }
 }
