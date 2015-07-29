@@ -9,6 +9,8 @@
 .clearfix { *zoom: 1; }
 
 #front-main {
+    // Undo the top margin added in base.scss
+    margin-top: 0;
     padding: 0
 }
 #front-main-container {
