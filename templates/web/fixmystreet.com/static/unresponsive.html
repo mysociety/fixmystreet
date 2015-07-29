@@ -14,7 +14,7 @@
   of only <strong>2%</strong> of councils that don’t accept reports from
   FixMyStreet. We’re sad about it too, but here’s some things you can do now:</p>
 
-  [% IF NOT body.external_url %]
+  [% IF body.external_url %]
   <a href="[% body.external_url %]" class="unresponsive-council-cta unresponsive-council-cta--primary">
     <strong>Report your issue directly</strong> to <span class="unresponsive-council-name">[% body.name %]</span> on their website
   </a>
