@@ -44,4 +44,9 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub contact_email {
+    my $self = shift;
+    return join( '@', 'fixmystreet', 'royalgreenwich.gov.uk' );
+}
+
 1;

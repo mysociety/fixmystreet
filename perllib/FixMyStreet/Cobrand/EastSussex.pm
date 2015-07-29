@@ -48,16 +48,16 @@ Can run with a script or command line like:
 =cut
 
 use constant POTHOLE_SIZES => [
-    {'key' => ['Blank'],    'name' => ['--']}, 
-    {'key' => ['golf'],     'name' => ['Golf ball sized']}, 
-    {'key' => ['tennis'],   'name' => ['Tennis ball sized']}, 
+    {'key' => ['Blank'],    'name' => ['--']},
+    {'key' => ['golf'],     'name' => ['Golf ball sized']},
+    {'key' => ['tennis'],   'name' => ['Tennis ball sized']},
     {'key' => ['football'], 'name' => ['Football sized']},
     {'key' => ['larger'],   'name' => ['Larger']}
 ];
 
 use constant POTHOLE_DICT => {
     map {
-        @{ $_->{key} }, 
+        @{ $_->{key} },
         @{ $_->{name} },
     } @{ POTHOLE_SIZES() },
 };
@@ -86,7 +86,7 @@ sub temp_update_potholes_contact {
             'description' => 'Size of the pothole?',
             'required' => 'true',
             'datatype' => 'singlevaluelist',
-            'datatype_description' => {}, 
+            'datatype_description' => {},
             'values' => {
                 'value' => $self->POTHOLE_SIZES,
             },
@@ -121,6 +121,11 @@ sub pin_colour {
 
 sub send_questionnaires {
     return 0;
+}
+
+sub contact_email {
+    my $self = shift;
+    return join( '@', 'highways', 'eastsussex.gov.uk' );
 }
 
 1;

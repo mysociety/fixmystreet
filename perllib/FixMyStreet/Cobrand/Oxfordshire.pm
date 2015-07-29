@@ -103,4 +103,9 @@ sub pin_colour {
 
 sub on_map_default_status { return 'open'; }
 
+sub contact_email {
+    my $self = shift;
+    return join( '@', 'highway.enquiries', 'oxfordshire.gov.uk' );
+}
+
 1;
