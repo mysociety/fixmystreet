@@ -221,7 +221,8 @@ button, input[type=submit], .btn {
 /* as per email from Matt Tooke, we are using ESCC's .button-nav
 styling, but this doesn't dtrt with span, so adding ourselves */
 
-.button-nav span {
+.button-nav span,
+.main-menu ul.button-nav li span {
     float: left;
     display: block;
     margin: 5px 2px 5px 0;
