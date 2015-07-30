@@ -249,14 +249,6 @@ body.twothirdswidthpage {
     }
 }
 
-/* hide the footer on the alert page as the interaction with the
- * photo sidebar is awkward to fix */
-body.alertindex {
-  #footer-nav {
-    display: none;
-  }
-}
-
 .next-steps {
   @include clearfix;
   margin-bottom: 2em; // add some space between this and the footer

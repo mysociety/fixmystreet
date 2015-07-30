@@ -27,7 +27,7 @@ FixMyBarangay has a RSS feeds and email alerts for local problems.
 <form id="alerts" name="alerts" method="post" action="/alert/subscribe">
 
 [% IF photos.size %]
-<div class="sticky-sidebar" id="alert_recent">
+<div id="alert_recent">
   <aside>
     <h2>[% loc('Some photos of recent reports') %]</h2>
     [% FOREACH p IN photos;
