@@ -1,4 +1,4 @@
-[% INCLUDE 'header.html', title = loc('Local RSS feeds and email alerts'), bodyclass = 'twothirdswidthpage alertindex' %]
+[% INCLUDE 'header.html', title = loc('Local RSS feeds and email alerts'), bodyclass = 'twothirdswidthpage' %]
 
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
@@ -37,7 +37,7 @@ To find out what local alerts we have for you, please enter your [% c.cobrand.co
 </form>
 
 [% IF photos.size %]
-<div class="sticky-sidebar" id="alert_recent">
+<div id="alert_recent">
   <aside>
     <h2>[% loc('Some photos of recent reports') %]</h2>
     [% FOREACH p IN photos;
