@@ -38,7 +38,4 @@ phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
 phonegap/Android/gen/
 
 /fixmystreet-international
-/perllib/FixMyStreet/Cobrand/MakeMyIsland.pm
-/templates/email/makemyisland
-/templates/web/makemyisland
-/web/cobrands/makemyisland
+*[Mm]ake[Mm]y[Ii]sland*
