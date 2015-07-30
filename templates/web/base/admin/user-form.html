@@ -34,8 +34,9 @@
         [% FOR body IN bodies %]
             <option value="[% body.id %]"[% ' selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
         [% END %]
-        </li>
         </select>
+        [% IF user.from_body AND user.has_permission_to('moderate', user.from_body.id) %]*[% END %]
+        </li>
       [% IF c.cobrand.moniker != 'zurich' %]
         <li>
           <div class="admin-hint">
