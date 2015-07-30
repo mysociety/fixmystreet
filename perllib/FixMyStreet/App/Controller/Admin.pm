@@ -705,6 +705,13 @@ sub report_edit : Path('report_edit') : Args(1) {
 
         $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
     }
+    elsif ( $c->get_param('mark_sent') ) {
+        $c->forward('check_token');
+        $problem->whensent(\'ms_current_timestamp()');
+        $problem->update();
+        $c->stash->{status_message} = '<p><em>' . _('That problem has been marked as sent.') . '</em></p>';
+        $c->forward( 'log_edit', [ $id, 'problem', 'marked sent' ] );
+    }
     elsif ( $c->get_param('flaguser') ) {
         $c->forward('flag_user');
         $c->stash->{problem}->discard_changes;

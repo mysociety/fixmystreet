@@ -68,7 +68,10 @@
 <li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 <li>[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
-<li>[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %] [% IF problem.state == 'confirmed' %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]</li>
+<li>[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %]
+[% IF problem.state == 'confirmed' AND problem.whensent %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]
+[% IF NOT problem.whensent %]<input type="submit" name="mark_sent" value="[% loc('Mark as sent') %]">[% END %]
+</li>
 <li>[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
 <li>[% loc('Service:') %] [% problem.service %]</li>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]</li>
