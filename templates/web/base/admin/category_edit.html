@@ -23,6 +23,11 @@
     <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
     <input type="hidden" name="token" value="[% token %]" >
+  [% IF contact.extra %]
+    <p><strong>[% loc('Extra data:') %] </strong>
+    [% USE Dumper %]
+    [% Dumper.dump(contact.extra) | html %]</p>
+  [% END %]
     <p><strong>[% loc('Email:') %] </strong>
     <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
 
