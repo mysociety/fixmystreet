@@ -253,3 +253,9 @@ styling, but this doesn't dtrt with span, so adding ourselves */
     padding: 2px;
     cursor: default;
 }
+
+// Stop the big green banner (it's not even green) at the top of map pages
+// overriding the header in the z-index
+.big-green-banner {
+    z-index: auto;
+}

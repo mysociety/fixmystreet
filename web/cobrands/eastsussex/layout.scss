@@ -70,12 +70,12 @@ body.mappage {
     }
 
     #fms_pan_zoom {
-        top: 16em!important;
+        top: 18em!important;
     }
 
     #mysociety {
         margin-top: 0;
-        padding-top: 0;
+        padding-top: 16em;
         padding-bottom: 0;
         width: auto;
         background: transparent;
@@ -100,6 +100,13 @@ body.mappage {
 
     #report-a-problem-sidebar {
         top: 1em;
+    }
+
+    // Keep the headers fixed at the top on the map page
+    #site-header {
+        position: fixed;
+        width: 100%;
+        z-index: 2;
     }
 }
 
