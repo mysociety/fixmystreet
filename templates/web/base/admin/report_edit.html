@@ -31,7 +31,16 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 %],
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
-<li>[% loc('For council(s):') %] [% IF problem.bodies_str %][% problem.bodies_str %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
+<li>[% loc('Body:') %]
+  [% IF problem.bodies_str %]
+    [% FOREACH body IN problem.bodies.values %]
+      <a href="[% c.uri_for('body', body.id) %]">[% body.name | html %]</a>
+      [%- ',' IF NOT loop.last %]
+    [% END %]
+  [% ELSE %]
+    <em>[% loc('None' ) %]</em>
+  [% END %]
+  ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
 [% IF problem.extra.address %]
 <li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
 [% END %]
