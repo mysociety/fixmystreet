@@ -65,7 +65,7 @@
     </tr>
     [% WHILE ( cat = contacts.next ) %]
       <tr [% IF cat.deleted %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category %]</a>
+        <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category | html %]</a>
             <br>[% cat.email | html %]</td>
         <td>
             [% loc('Confirmed') %]:&nbsp;
@@ -79,10 +79,10 @@
             <br>[% loc('Devolved') %]:&nbsp;
             [%- IF body.can_be_devolved AND cat.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
         </td>
-        <td>[% cat.editor %]
+        <td>[% cat.editor | html %]
             <br><small>[% PROCESS format_time time=cat.whenedited %]</small></td>
         <td>[% cat.note | html %]</td>
-        <td><input type="checkbox" name="confirmed" value="[% cat.category %]"></td>
+        <td><input type="checkbox" name="confirmed" value="[% cat.category | html %]"></td>
       </tr>
     [% END %]
   </table>
