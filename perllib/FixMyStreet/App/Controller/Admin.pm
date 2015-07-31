@@ -425,7 +425,7 @@ sub update_contacts : Private {
 sub body_params : Private {
     my ( $self, $c ) = @_;
 
-    my @fields = qw/name endpoint jurisdiction api_key send_method send_comments suppress_alerts send_extended_statuses comment_user_id can_be_devolved parent deleted/;
+    my @fields = qw/name endpoint jurisdiction api_key send_method external_url/;
     my %defaults = map { $_ => '' } @fields;
     %defaults = ( %defaults,
         send_comments => 0,
@@ -436,7 +436,7 @@ sub body_params : Private {
         parent => undef,
         deleted => 0,
     );
-    my %params = map { $_ => $c->get_param($_) || $defaults{$_} } @fields;
+    my %params = map { $_ => $c->get_param($_) || $defaults{$_} } keys %defaults;
     return \%params;
 }
 
@@ -704,6 +704,13 @@ sub report_edit : Path('report_edit') : Args(1) {
           '<p><em>' . _('That problem will now be resent.') . '</em></p>';
 
         $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
+    }
+    elsif ( $c->get_param('mark_sent') ) {
+        $c->forward('check_token');
+        $problem->whensent(\'ms_current_timestamp()');
+        $problem->update();
+        $c->stash->{status_message} = '<p><em>' . _('That problem has been marked as sent.') . '</em></p>';
+        $c->forward( 'log_edit', [ $id, 'problem', 'marked sent' ] );
     }
     elsif ( $c->get_param('flaguser') ) {
         $c->forward('flag_user');

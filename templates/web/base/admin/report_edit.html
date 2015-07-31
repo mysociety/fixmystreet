@@ -20,14 +20,27 @@
 <li><label for='detail'>[% loc('Details:') %]</label>
 <textarea name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
 
-<li>[% loc('Co-ordinates:') %] [% problem.latitude %], [% problem.longitude %]
+<li>[% loc('Co-ordinates:') %]
+<a href="[% c.config.MAPIT_URL %][%
+    '/' UNLESS c.config.MAPIT_URL.search('/$')
+%]point/4326/[% problem.longitude %],[% problem.latitude %].html"
+class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 ( [%
     SET postcode_safe = problem.postcode | html;
     tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
 %],
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
 
-<li>[% loc('For council(s):') %] [% IF problem.bodies_str %][% problem.bodies_str %][% ELSE %]<em>[% loc('None' ) %]</em>[% END %] ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
+<li>[% loc('Body:') %]
+  [% IF problem.bodies_str %]
+    [% FOREACH body IN problem.bodies.values %]
+      <a href="[% c.uri_for('body', body.id) %]">[% body.name | html %]</a>
+      [%- ',' IF NOT loop.last %]
+    [% END %]
+  [% ELSE %]
+    <em>[% loc('None' ) %]</em>
+  [% END %]
+  ([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) %])</li>
 [% IF problem.extra.address %]
 <li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
 [% END %]
@@ -68,7 +81,10 @@
 <li>[% loc('Phone:') %] [% problem.user.phone | html %]</li>
 <li>[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 <li>[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
-<li>[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %] [% IF problem.state == 'confirmed' %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]</li>
+<li>[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %]
+[% IF problem.state == 'confirmed' AND problem.whensent %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]
+[% IF NOT problem.whensent %]<input type="submit" name="mark_sent" value="[% loc('Mark as sent') %]">[% END %]
+</li>
 <li>[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
 <li>[% loc('Service:') %] [% problem.service %]</li>
 <li>[% loc('Cobrand:') %] [% problem.cobrand %]</li>

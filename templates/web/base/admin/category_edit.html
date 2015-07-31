@@ -23,6 +23,11 @@
     <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
     <input type="hidden" name="token" value="[% token %]" >
+  [% IF contact.extra %]
+    <p><strong>[% loc('Extra data:') %] </strong>
+    [% USE Dumper %]
+    [% Dumper.dump(contact.extra) | html %]</p>
+  [% END %]
     <p><strong>[% loc('Email:') %] </strong>
     <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
 
@@ -48,17 +53,17 @@
     <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p>
         <label for="endpoint">Endpoint</label>
-        <input type="text" name="endpoint" id="endpoint" value="[% contact.endpoint %]" size="50">
+        <input type="text" name="endpoint" id="endpoint" value="[% contact.endpoint | html %]" size="50">
     </p>
 
     <p>
         <label for="jurisdiction">Jurisdiction</label>
-        <input type="text" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction %]" size="50">
+        <input type="text" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction | html %]" size="50">
     </p>
 
     <p>
         <label for="api_key">Api Key</label>
-        <input type="text" name="api_key" id="api_key" value="[% contact.api_key %]" size="25">
+        <input type="text" name="api_key" id="api_key" value="[% contact.api_key | html %]" size="25">
     </p>
 
     <p>
@@ -93,7 +98,7 @@
         <td>[% PROCESS highlightchanged old=prev new=contact value='email' %]</td>
         <td>[% PROCESS highlightchanged_yesno old=prev new=contact value='confirmed' %]</td>
         <td>[% PROCESS highlightchanged_yesno old=prev new=contact value='deleted' %]</td>
-        <td>[% contact.editor %]</td>
+        <td>[% contact.editor | html %]</td>
         <td>[% contact.note | html %]</td>
     </tr>
         [%- prev = contact %]

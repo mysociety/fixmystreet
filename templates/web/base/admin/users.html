@@ -24,7 +24,9 @@
     <tr>
         <td>[% PROCESS value_or_nbsp value=user.name %]</td> 
         <td><a href="[% c.uri_for( 'reports', search => user.email ) %]">[% PROCESS value_or_nbsp value=user.email %]</a></td> 
-        <td>[% PROCESS value_or_nbsp value=user.from_body.name %]</td>
+        <td>[% PROCESS value_or_nbsp value=user.from_body.name %]
+            [% IF user.from_body AND user.has_permission_to('moderate', user.from_body.id) %] * [% END %]
+        </td>
       [% IF c.cobrand.moniker != 'zurich' %]
         <td>[% user.flagged == 2 ? loc('(Email in abuse table)') : user.flagged ? loc('Yes') : '&nbsp;' %]</td>
       [% END %]

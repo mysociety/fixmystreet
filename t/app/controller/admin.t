@@ -568,7 +568,7 @@ foreach my $test (
 
         $report->discard_changes;
 
-        if ( $report->state eq 'confirmed' ) {
+        if ($report->state eq 'confirmed' && $report->whensent) {
             $mech->content_contains( 'type="submit" name="resend"', 'resend button' );
         } else {
             $mech->content_lacks( 'type="submit" name="resend"', 'no resend button' );
@@ -1083,7 +1083,7 @@ subtest 'report search' => sub {
 
 subtest 'search abuse' => sub {
     $mech->get_ok( '/admin/users?search=example' );
-    $mech->content_like(qr{test4\@example.com.*</td>\s*<td>.*?</td>\s*<td>\(Email in abuse table});
+    $mech->content_like(qr{test4\@example.com.*</td>\s*<td>.*?</td>\s*<td>\(Email in abuse table}s);
 };
 
 subtest 'show flagged entries' => sub {

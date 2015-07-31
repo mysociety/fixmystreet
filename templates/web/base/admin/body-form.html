@@ -16,7 +16,7 @@
     </div>
     <p>
         <label for="name">[% loc('Name') %]</label>
-        <input type="text" name="name" id="name" value="[% body.name %]" size="50">
+        <input type="text" name="name" id="name" value="[% body.name | html %]" size="50">
     </p>
 
     <div class="admin-hint">
@@ -72,17 +72,21 @@
             [% SET body_areas = body.areas %]
             [% FOR area IN areas %]
             [% SET aid = area.id %]
-            <option value="[% area.id %]"[% ' selected' IF body_areas.$aid %]>[% area.name %]</option>
+            <option value="[% area.id %]"[% ' selected' IF body_areas.$aid %]>[% area.name | html %]</option>
             [% END %]
         </select>
     </p>
 
+    <p>
+        <label for="external_url">[% loc('External URL') %]</label>
+        <input type="text" name="external_url" id="external_url" value="[% body.external_url | html %]" size="50">
+    </p>
     <div class="admin-hint">
       <p>[% loc( "You can mark a body as deleted if you do not want it to be active on the site." ) %]</p>
     </div>
     <p>
-        <label for="deleted">[% loc('Flag as deleted') %]</label>
         <input type="checkbox" name="deleted" id="deleted" value="1"[% ' checked' IF body.deleted %]>
+        <label for="deleted" class="inline">[% loc('Flag as deleted') %]</label>
     </p>
 
     <div class="admin-hint">
@@ -124,7 +128,7 @@
       </div>
     <p>
         <label for="endpoint">[% loc('Endpoint') %]</label>
-        <input type="text" name="endpoint" id="endpoint" value="[% body.endpoint %]" size="50">
+        <input type="text" name="endpoint" id="endpoint" value="[% body.endpoint | html %]" size="50">
     </p>
 
     <div class="admin-hint">
@@ -137,7 +141,7 @@
     </div>
     <p>
         <label for="jurisdiction">Open311 Jurisdiction</label>
-        <input type="text" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction %]" size="50">
+        <input type="text" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction | html %]" size="50">
     </p>
 
     <div class="admin-hint">
@@ -150,7 +154,7 @@
     </div>
     <p>
         <label for="api_key">Open311 API Key</label>
-        <input type="text" name="api_key" id="api_key" value="[% body.api_key %]" size="25">
+        <input type="text" name="api_key" id="api_key" value="[% body.api_key | html %]" size="25">
     </p>
 
     <div class="admin-hint">
@@ -180,6 +184,9 @@
     <p>
         <label for"comment_user_id">User ID to attribute fetched comments to</label>
         <input type="text" name="comment_user_id" value="[% body.comment_user_id %]">
+        [% IF body.comment_user_id %]
+        <a href="[% c.uri_for('user_edit', body.comment_user_id) %]">[% loc('edit user') %]</a>
+        [% END %]
     </p>
 
     <div class="admin-hint">

@@ -13,13 +13,21 @@
   [% IF example_pc %]
     <a href="[% c.uri_for_email( '/around', { pc => example_pc } ) %]" class="admin-offsite-link">[% tprintf( loc('Example postcode %s'), example_pc ) | html %]</a> |
   [% END %]
-  [% IF c.cobrand.moniker == 'emptyhomes' %]
-    <a href="[% c.uri_for( 'reports', search => 'body:' _ body_id ) %]">[% loc('List all reported problems' ) %]</a> |
-  [% ELSE %]
+    [% loc('Area covered') %]:
+    [% SET body_areas = body.areas %]
+    [% FOR area IN areas %]
+      [% SET aid = area.id %]
+      [% IF body_areas.$aid %]
+        <a href="[% c.config.MAPIT_URL %][%
+        '/' UNLESS c.config.MAPIT_URL.search('/$')
+        %]area/[% aid %].html" class="admin-offsite-link">[% area.name | html %]</a>
+      [% END %]
+    [% END %]
+<br>
     <a href="[% c.uri_for_email( '/reports/' _ body_id ) %]" class="admin-offsite-link">[% loc('List all reported problems' ) %]</a> |
-  [% END %]
-  <a href="[% c.uri_for( 'body', body_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
+    <a href="[% c.uri_for( 'body', body_id, { text => 1 } ) %]">[% loc('Text only version') %]</a>
 </p>
+
 
 [% IF body.send_method == 'Open311' %]
   <h2>
@@ -65,7 +73,7 @@
     </tr>
     [% WHILE ( cat = contacts.next ) %]
       <tr [% IF cat.deleted %]class="is-deleted"[% END %]>
-        <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category %]</a>
+        <td class="contact-category"><a href="[% c.uri_for( 'body', body_id, cat.category ) %]">[% cat.category | html %]</a>
             <br>[% cat.email | html %]</td>
         <td>
             [% loc('Confirmed') %]:&nbsp;
@@ -79,10 +87,10 @@
             <br>[% loc('Devolved') %]:&nbsp;
             [%- IF body.can_be_devolved AND cat.send_method %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]
         </td>
-        <td>[% cat.editor %]
+        <td>[% cat.editor | html %]
             <br><small>[% PROCESS format_time time=cat.whenedited %]</small></td>
         <td>[% cat.note | html %]</td>
-        <td><input type="checkbox" name="confirmed" value="[% cat.category %]"></td>
+        <td><input type="checkbox" name="confirmed" value="[% cat.category | html %]"></td>
       </tr>
     [% END %]
   </table>
