@@ -276,24 +276,6 @@ body.twothirdswidthpage {
   }
 }
 
-#homepage-ab-test {
-  #cta-report {
-    font-size: 2em;
-  }
-
-  #cta-view {
-    line-height: 1.2em;
-    font-size: 1.2em;
-    color: #333;
-    border-bottom: 1px solid #917F00;
-    text-decoration: none;
-
-    &:hover, &:focus {
-      border-bottom-color: #BD942A;
-    }
-  }
-}
-
 body.unresponsive-council {
     .container .content {
         padding: 0;

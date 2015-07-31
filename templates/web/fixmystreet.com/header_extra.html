@@ -1,25 +1,6 @@
 <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/fixmystreet.com/favicon.ico">
 
-<script src="[% start %][% version('/js/jquery.cookie.min.js') %]" type="text/javascript" charset="utf-8"></script>
-
-[%# We are conducting an A/B experiment on the homepage %]
-[% IF c.req.uri.path == '/' %]
-<script src="//www.google-analytics.com/cx/api.js?experiment=cX9Tbz_VRl-cZDM5WVRgTQ"></script>
-<script>
-var variation = cxApi.chooseVariation(),
-    docElement = document.documentElement,
-    className = docElement.className;
-docElement.className = className + ' ' + 'variant' + variation;
-</script>
-<style>
-html.variant1 #homepage-ab-test {
-    display: block;
-}
-html.variant1 #postcodeForm,
-html.variant1 #front-main a#geolocate_link {
-    display: none;
-}
-</style>
-[% END %]
+<script src="[% start %][% version('/js/jquery.cookie.min.js') %]"></script>
+<script src="[% start %][% version('/cobrands/fixmystreet.com/js.js') %]"></script>
 
 [% INCLUDE 'tracking_code.html' %]

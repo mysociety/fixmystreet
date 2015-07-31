@@ -85,45 +85,6 @@
   }
 }
 
-#homepage-ab-test {
-  display: none; // header_extra.html will override this if Analytics tells it to
-
-  a {
-    display: inline-block;
-    cursor: pointer;
-  }
-
-  #cta-report {
-    padding: 0.4em 1em;
-    margin-top: 0.5em;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #333;
-    background-color: #ffd000;
-    border-radius: 0.3em;
-    box-shadow: 0 3px 5px 0 rgba(0,0,0,0.2);
-    background-image: linear-gradient(rgba(255,255,255,0.3), transparent);
-    text-shadow: 0 1px 0 rgba(255,255,255,0.6);
-    border: 2px solid #BB9900;
-    text-decoration: none;
-
-    &:hover,
-    &:focus {
-      background-color: #FFDB3E;
-    }
-
-    &:active {
-      position: relative;
-      top: 1px;
-      box-shadow: 0 2px 2px 0 rgba(0,0,0,0.3);
-    }
-  }
-
-  #cta-view {
-    margin: 0.5em 0 1em 0;
-  }
-}
-
 .unresponsive-council-warning {
     margin: 1em -1em;
     padding: 2em 2em;

@@ -302,5 +302,38 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
+sub report_check_for_errors {
+    my $self = shift;
+    my $c = shift;
+
+    my %errors = $self->next::method($c);
+
+    my $report = $c->stash->{report};
+
+    if (!$errors{name} && (length($report->name) < 5
+        || $report->name !~ m/\s/
+        || $report->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i))
+    {
+        $errors{name} = _(
+'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
+        );
+    }
+
+    # XXX Hardcoded body ID matching mapit area ID
+    if ( $report->bodies_str && $report->detail ) {
+        # Custom character limit:
+        # Bromley Council
+        if ( $report->bodies_str eq '2482' && length($report->detail) > 1750 ) {
+            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1750 );
+        }
+        # Oxfordshire
+        if ( $report->bodies_str eq '2237' && length($report->detail) > 1700 ) {
+            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1700 );
+        }
+    }
+
+    return %errors;
+}
+
 1;
 

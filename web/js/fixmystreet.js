@@ -49,10 +49,6 @@ $(function(){
     jQuery.validator.addMethod('validCategory', function(value, element) {
         return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
 
-    jQuery.validator.addMethod('validName', function(value, element) {
-        var validNamePat = /\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i;
-        return this.optional(element) || value.length > 5 && value.match( /\S/ ) && value.match( /\s/ ) && !value.match( validNamePat ); }, translation_strings.category );
-
     var form_submitted = 0;
     var submitted = false;
 

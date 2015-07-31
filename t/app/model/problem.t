@@ -67,30 +67,6 @@ for my $test (
         }
     },
     {
-        desc => 'name too short',
-        changed => {
-            name => 'xx',
-        },
-        errors => {
-            title => 'Please enter a subject',
-            detail => 'Please enter some details',
-            bodies => 'No council selected',
-            name => 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
-        }
-    },
-    {
-        desc => 'name is anonymous',
-        changed => {
-            name => 'anonymous',
-        },
-        errors => {
-            title => 'Please enter a subject',
-            detail => 'Please enter some details',
-            bodies => 'No council selected',
-            name => 'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below',
-        }
-    },
-    {
         desc => 'correct name',
         changed => {
             name => 'A User',

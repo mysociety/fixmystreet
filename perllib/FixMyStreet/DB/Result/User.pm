@@ -100,7 +100,7 @@ use mySociety::EmailUtil;
 
 =head2 check_for_errors
 
-    $error_hashref = $problem->check_for_errors();
+    $error_hashref = $user->check_for_errors();
 
 Look at all the fields and return a hashref with all errors found, keyed on the
 field name. This is intended to be passed back to the form to display the
