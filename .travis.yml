@@ -5,6 +5,9 @@ notifications:
       - "irc.mysociety.org#fixmystreet"
     use_notice: true
     skip_join: true
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/863c1892a6a51e5a3b3c
 
 language: perl
 perl:
