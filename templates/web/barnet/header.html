@@ -33,6 +33,8 @@
         [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js' %]
         <script src="[% version('/js/fancybox/jquery.fancybox-1.3.4.pack.js') %]" charset="utf-8"></script>
 
+        [% PROCESS 'header_extra.html' %]
+
     </head>
     <body class="[% bodyclass | html IF bodyclass %]">
         <div id="barnet-wrapper">

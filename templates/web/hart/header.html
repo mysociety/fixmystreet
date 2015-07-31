@@ -42,6 +42,8 @@
 
         <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/hart/favicon.ico">
 
+        [% PROCESS 'header_extra.html' %]
+
     </head>
     [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
     <body class="[% bodyclass | html IF bodyclass %]">

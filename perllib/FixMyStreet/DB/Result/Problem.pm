@@ -405,14 +405,6 @@ sub check_for_errors {
     if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
     }
-    elsif (length( $self->name ) < 5
-        || $self->name !~ m/\s/
-        || $self->name =~ m/\ba\s*n+on+((y|o)mo?u?s)?(ly)?\b/i )
-    {
-        $errors{name} = _(
-'Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below'
-        ) unless $self->cobrand eq 'emptyhomes';
-    }
 
     if (   $self->category
         && $self->category eq _('-- Pick a category --') )
@@ -425,18 +417,6 @@ sub check_for_errors {
     {
         $errors{category} = _('Please choose a property type');
         $self->category(undef);
-    }
-
-    if ( $self->bodies_str && $self->detail ) {
-        # Custom character limit:
-        # Bromley Council
-        if ( $self->bodies_str eq '2482' && length($self->detail) > 1750 ) {
-            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1750 );
-        }
-        # Oxfordshire
-        if ( $self->bodies_str eq '2237' && length($self->detail) > 1700 ) {
-            $errors{detail} = sprintf( _('Reports are limited to %s characters in length. Please shorten your report'), 1700 );
-        }
     }
 
     return \%errors;

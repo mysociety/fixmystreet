@@ -32,6 +32,7 @@
     [% INCLUDE 'common_header_tags.html', js_override = '/cobrands/fixmystreet/fixmystreet.js' %]
 
     [% extra_js %]
+    [% PROCESS 'header_extra.html' %]
 </head>
 
 [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
