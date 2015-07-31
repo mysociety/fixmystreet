@@ -1,0 +1,29 @@
+Subject: 請確認你在[% INCLUDE 'site-name.txt' | trim %]回報的問題
+
+Hello [% report.name %],
+
+請點選下方的連結來確認你的回報。你的回報將會寄給[% report.body %]. 
+請注意你的回報也會公開顯示在[% INCLUDE 'site-name.txt' | trim %]的網站。
+
+[% token_url %]
+
+如果你無法點擊上面的連結，你可以將連結複製到瀏覽器的網址列然後輸入Enter。
+
+你回報的問題如下:
+
+
+標題： [% report.title %]
+----------------------
+[% report.detail %]
+
+
+如果你不想寄出這個回報，請直接忽略這封信。
+
+
+感謝你使用[% INCLUDE 'site-name.txt' | trim %]來回報問題，讓我們一起努力讓你居住的城市更美好。
+
+
+
+[% INCLUDE 'signature.txt' %]
+
+--這是一封系統自動送出的信，請勿直接回覆--
