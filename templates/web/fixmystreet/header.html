@@ -12,14 +12,20 @@
         <meta name="mobileoptimized" content="0">
 
         [% INCLUDE 'header_opengraph.html' %]
+        [% SET start = c.config.ADMIN_BASE_URL IF admin;
 
-[% SET start = c.config.ADMIN_BASE_URL IF admin %]
-
-        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
-        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+           # For clarity, the 'fixmystreet' moniker (for fixmystreet.com) puts
+           # it stylesheets under fixmystreet.com
+           IF c.cobrand.moniker == 'fixmystreet';
+               SET css_dir = 'fixmystreet.com';
+           ELSE;
+               SET css_dir = c.cobrand.moniker;
+           END %]
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ css_dir _ '/base.css') %]">
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ css_dir _ '/layout.css') %]" media="(min-width:48em)">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
+            <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ css_dir _ '/layout.css') %]">
         <![endif]-->
 
         <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
