@@ -20,12 +20,16 @@ sub disambiguate_location {
 
     my $town = 'Bromley';
 
+    # Helpful regexes that are used often
+    my $road = 'r(?:oa)?d';
+    my $street = 'st(\.|reet)?';
+
     # Bing turns High St Bromley into Bromley High St which is in
     # Bromley by Bow.
-    $town .= ', BR1' if $string =~ /^high\s+st(reet)?$/i;
+    $town .= ', BR1' if $string =~ /^high\s+${street}$/i;
 
     # Disambiguations required for BR5
-    $town .= ', BR5' if $string =~ /^kelsey\s+r(?:oa)?d$/i;
+    $town .= ', BR5' if $string =~ /^kelsey\s+${road}$/i;
     $town = 'BR5 Bromley' if $string =~ /^leith\s+hill$/i; # doesn't like appended BR5 for some reason
 
     #  There has also been a road name change for a section of Ramsden Road
@@ -38,9 +42,17 @@ sub disambiguate_location {
         $town = ', BR6 0PL';
     }
     $town .= ', BR5' if $string =~ /^meadway/i;
+    $town .= ', BR5' if $string =~ /^mill\s+brook\s+${road}$/i;
+    $town .= ', BR5' if $string =~ /^kent\s+${road}$/i;
+    $town .= ', BR5' if $string =~ /^the\s+landway$/i;
+    $town .= ', BR5' if $string =~ /^mountfield\s+way$/i;
+    $town .= ', BR5 3' if $string =~ /^star\s+lane$/i;
+    $town .= ', BR5 4AX' if $string =~ /^high\s+${street}?(,)?\s?st\.?\s+mary\s+cray$/i;
 
     # and BR6
     $town .= ', BR6' if $string =~ /^berrylands/i;
+    $town .= ', BR6' if $string =~ /^crofton\s+${road}$/i;
+    $town .= ', BR6' if $string =~ /^crofton\s+lane$/i;
 
     # White Horse Hill is on boundary with Greenwich, so need a
     # specific postcode
