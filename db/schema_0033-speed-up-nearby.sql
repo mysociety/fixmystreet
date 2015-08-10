@@ -4,7 +4,7 @@ create index problem_radians_latitude_longitude_idx on problem(radians(latitude)
  
 drop function angle_between(double precision, double precision);
 
-create function problem_find_nearby(double precision, double precision, double precision)
+create or replace function problem_find_nearby(double precision, double precision, double precision)
     returns setof problem_nearby_match as
     -- Write as SQL function so that we don't have to construct a temporary
     -- table or results set in memory. That means we can't check the values of
