@@ -36,16 +36,4 @@ sub nearby {
     return \@problems;
 }
 
-# XXX Not currently used, so not migrating at present.
-#sub fixed_nearby {
-#    my ($dist, $mid_lat, $mid_lon) = @_;
-#    mySociety::Locale::in_gb_locale { select_all(
-#        "select id, title, latitude, longitude, distance
-#        from problem_find_nearby(?, ?, $dist) as nearby, problem
-#        where nearby.problem_id = problem.id and state='fixed'
-#        site_restriction
-#        order by lastupdate desc", $mid_lat, $mid_lon);
-#    }
-#}
-
 1;

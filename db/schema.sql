@@ -226,6 +226,7 @@ create table problem (
 create index problem_state_latitude_longitude_idx on problem(state, latitude, longitude);
 create index problem_user_id_idx on problem ( user_id );
 create index problem_external_body_idx on problem(lower(external_body));
+create index problem_radians_latitude_longitude_idx on problem(radians(latitude), radians(longitude));
 
 create table questionnaire (
     id serial not null primary key,
@@ -241,17 +242,6 @@ create table questionnaire (
 );
 
 create index questionnaire_problem_id_idx on questionnaire using btree (problem_id);
-
--- angle_between A1 A2
--- Given two angles A1 and A2 on a circle expressed in radians, return the
--- smallest angle between them.
-create function angle_between(double precision, double precision)
-    returns double precision as '
-select case
-    when abs($1 - $2) > pi() then 2 * pi() - abs($1 - $2)
-    else abs($1 - $2)
-    end;
-' language sql immutable;
 
 -- R_e
 -- Radius of the earth, in km. This is something like 6372.8 km:
@@ -274,11 +264,11 @@ create function problem_find_nearby(double precision, double precision, double p
     -- table or results set in memory. That means we can't check the values of
     -- the parameters, sadly.
     -- Through sheer laziness, just use great-circle distance; that'll be off
-    -- by ~0.1%:
-    --  http://www.ga.gov.au/nmd/geodesy/datums/distance.jsp
+    -- by ~0.1%.
     -- We index locations on lat/lon so that we can select the locations which lie
     -- within a wedge of side about 2 * DISTANCE. That cuts down substantially
     -- on the amount of work we have to do.
+    -- http://janmatuschek.de/LatitudeLongitudeBoundingCoordinates
 '
     -- trunc due to inaccuracies in floating point arithmetic
     select problem.id,
@@ -292,9 +282,13 @@ create function problem_find_nearby(double precision, double precision, double p
             longitude is not null and latitude is not null
             and radians(latitude) > radians($1) - ($3 / R_e())
             and radians(latitude) < radians($1) + ($3 / R_e())
-            and (abs(radians($1)) + ($3 / R_e()) > pi() / 2     -- case where search pt is near pole
-                    or angle_between(radians(longitude), radians($2))
-                            < $3 / (R_e() * cos(radians($1 + $3 / R_e()))))
+            and (
+                abs(radians($1)) + ($3 / R_e()) > pi() / 2     -- case where search pt is near pole
+                or (
+                        radians(longitude) > radians($2) - asin(sin($3 / R_e())/cos(radians($1)))
+                    and radians(longitude) < radians($2) + asin(sin($3 / R_e())/cos(radians($1)))
+                )
+            )
             -- ugly -- unable to use attribute name "distance" here, sadly
             and R_e() * acos(trunc(
                 (sin(radians($1)) * sin(radians(latitude))
@@ -302,7 +296,7 @@ create function problem_find_nearby(double precision, double precision, double p
                     * cos(radians($2 - longitude)))::numeric, 14)
                 ) < $3
         order by distance desc
-' language sql; -- should be "stable" rather than volatile per default?
+' language sql stable;
 
 
 -- Comments/q&a on problems.
