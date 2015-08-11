@@ -87,7 +87,7 @@ __PACKAGE__->add_unique_constraint( [ "accident_index" ]);
 __PACKAGE__->has_many(
   "casualties",
   "Dataset::UK::Stats19::Schema::Result::Casualty",
-  { accident_index => "accident_index" },
+  { 'foreign.accident_index' => "self.accident_index" },
 );
 
 __PACKAGE__->has_many(
