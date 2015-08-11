@@ -112,6 +112,8 @@ requires 'Text::CSV_XS';
 requires 'File::BOM';
 requires 'DBIx::Class::Helper::Row::SubClass';
 requires 'DBD::SQLite'; # NB: this seems to require upgrade of DBI
+requires 'SQL::Translator';
+requires 'DateTime::Format::SQLite';
 
 # Modules used by the test suite
 requires 'CGI::Simple';
