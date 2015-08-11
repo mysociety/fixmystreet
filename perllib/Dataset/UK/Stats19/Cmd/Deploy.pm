@@ -6,6 +6,7 @@ use Text::CSV_XS;
 use File::BOM;
 use List::MoreUtils 'zip';
 use DateTime::Format::Strptime;
+use DateTime::Format::SQLite;
 use feature 'say';
 
 has csv => (
