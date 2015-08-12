@@ -78,8 +78,8 @@ FixMyStreet::override_config {
                 media_url => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             },
         });
-        my $uri = $mech->uri;
-        ok ($mech->uri =~ m{/report/(\d+)$}, "Report posted and returned an ID $uri") or do {
+
+        ok ($mech->content =~ m{<h1><a href="http://collideosco.pe/report/(\d+)">Serious incident involving a bicycle and a vehicle</a></h1>}, "Report posted and showed confirmation page") or do {
             die;
             return; # abort if fail
         };
@@ -90,6 +90,7 @@ FixMyStreet::override_config {
         is $report->category, 'vehicle-serious', 'category set correctly in DB';
 
         # check that display is ok
+        $mech->get_ok('/report/' . $id);
         $mech->content_contains( '<h1>Serious incident involving a bicycle and a vehicle</h1>' );
         $mech->content_contains( 'Reported by Test Cyclist at' );
         $mech->content_contains( '(incident occurred: 14:50' );
