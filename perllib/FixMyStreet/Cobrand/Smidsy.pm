@@ -500,4 +500,33 @@ sub send_questionnaires {
     return 0;
 }
 
+=head2 display_location_extra_params
+
+Return additional Problem query parameters for use in showing problems on
+the /around page during the
+FixMyStreet::App::Controller::Around::display_location action.
+
+Specialised to return a flag to filter problems by the external_body field if
+the user would like to see Stats19 problems.
+
+=cut
+sub display_location_extra_params {
+    my ($self, $c) = @_;
+    if ($c->get_param('show_stats19')) {
+        # Stash this for later
+        $c->stash->{show_stats19} = $c->get_param('show_stats19');
+        return {
+            external_body => 'stats19',
+            # TODO - this is needed to override the default interval that's
+            # provided (1 Month). I'm not sure if there's an easier way to do
+            # it and actually unset this value perhaps?
+            'current_timestamp - lastupdate' => { '<', \"'100 years'::interval" }
+        }
+    } else {
+        return {
+            external_body => {'!=' => 'stats19'},
+        }
+    }
+}
+
 1;
