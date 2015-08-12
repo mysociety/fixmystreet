@@ -5,7 +5,7 @@ use strict;
 use warnings;
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $category, $states ) = @_;
+    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $category, $states, $extra_params ) = @_;
 
     unless ( $states ) {
         $states = FixMyStreet::DB::Result::Problem->visible_states();
@@ -24,6 +24,9 @@ sub nearby {
         %$params
     } if $c->cobrand->problems_clause;
     $params->{category} = $category if $category;
+
+    # Add in any optional extra query parameters
+    $params = { %$params, %$extra_params } if $extra_params;
 
     my $attrs = {
         prefetch => 'problem',

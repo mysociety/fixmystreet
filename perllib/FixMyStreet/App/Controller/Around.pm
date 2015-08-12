@@ -169,10 +169,13 @@ sub display_location : Private {
     # Check the category to filter by, if any, is valid
     $c->forward('check_and_stash_category');
 
+    # Allow the cobrand to add in any additional query parameters
+    my $extra_params = $c->cobrand->display_location_extra_params($c);
+
     # get the map features
     my ( $on_map_all, $on_map, $around_map, $distance ) =
       FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval, $c->stash->{filter_category}, $c->stash->{filter_problem_states} );
+        $interval, $c->stash->{filter_category}, $c->stash->{filter_problem_states}, $extra_params );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
@@ -290,12 +293,15 @@ sub ajax : Path('/ajax') {
     my $all_pins = $c->get_param('all_pins') ? 1 : undef;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
+    # Allow the cobrand to add in any additional query parameters
+    my $extra_params = $c->cobrand->display_location_extra_params($c);
+
     # Need to be the class that can handle it
     FixMyStreet::Map::set_map_class( 'OSM' );
 
     # extract the data from the map
     my ( $pins, $on_map, $around_map, $dist ) =
-      FixMyStreet::Map::map_pins( $c, $interval );
+      FixMyStreet::Map::map_pins( $c, $interval, $extra_params );
 
     # render templates to get the html
     my $on_map_list_html = $c->render_fragment(
