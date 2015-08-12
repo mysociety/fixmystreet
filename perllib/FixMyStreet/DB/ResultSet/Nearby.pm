@@ -10,7 +10,7 @@ sub to_body {
 }
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $categories, $states ) = @_;
+    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $categories, $states, $extra_params ) = @_;
 
     unless ( $states ) {
         $states = FixMyStreet::DB::Result::Problem->visible_states();
@@ -26,6 +26,9 @@ sub nearby {
     FixMyStreet::DB::ResultSet::Problem->non_public_if_possible($params, $c);
 
     $rs = $c->cobrand->problems_restriction($rs);
+
+    # Add in any optional extra query parameters
+    $params = { %$params, %$extra_params } if $extra_params;
 
     my $attrs = {
         prefetch => 'problem',

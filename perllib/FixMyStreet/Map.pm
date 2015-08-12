@@ -104,7 +104,7 @@ sub map_features {
         my $limit = 20;
         my @ids = map { $_->id } @$on_map;
         $nearby = $c->model('DB::Nearby')->nearby(
-            $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "categories", "states"}
+            $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "categories", "states", "extra"}
         );
     }
 

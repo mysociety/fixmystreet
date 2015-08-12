@@ -553,8 +553,10 @@ sub nearby_json : Private {
     # This is for the list template, this is a list on that page.
     $c->stash->{page} = 'report';
 
+    my $extra_params = $c->cobrand->call_hook('display_location_extra_params');
+
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, [ $p->category ], undef
+        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, [ $p->category ], undef, $extra_params
     );
     # Want to treat these as if they were on map
     $nearby = [ map { $_->problem } @$nearby ];
