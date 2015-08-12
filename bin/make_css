@@ -20,7 +20,7 @@ fi
 
 DIRECTORY=$(cd "$DIR"/../web && pwd)
 
-DIRS=${@:-`find $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq`}
+DIRS=${@:-`find -L $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq`}
 
 for dir in $DIRS; do
     if [ -e "$dir/config.rb" ]; then
