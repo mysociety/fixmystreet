@@ -85,7 +85,7 @@ FixMyStreet::override_config {
         };
         my $id = $1;
 
-        ok (my $report = $c->model('DB::Problem')->find($id), 
+        ok (my $report = $c->model('DB::Problem')->find($id),
             "Retrieved report $id from DB") or return;
         is $report->category, 'vehicle-serious', 'category set correctly in DB';
 
@@ -115,14 +115,14 @@ FixMyStreet::override_config {
                 em => 'wile@example.org',
             },
         });
-        $mech->content_contains('Thanks for your feedback.  We\'ll get back to you as soon as we can!');
+        $mech->content_contains('Thank you for your feedback');
         ok(my $email = $mech->get_email) or return;
 
         like $email->body, qr/Company: Acme Corp/, 'Company info sent';
         like $email->body, qr/Tel: 01234 567 890/, 'Tel sent';
         my $from = $email->header('from');
         is $from, '"Wile E Coyote" <wile@example.org>', 'Name/email sent correctly';
-        is $email->header('subject'), 'Collideoscope message: Contact from a potential sponsor', 
+        is $email->header('subject'), 'Collideoscope message: Contact from a potential sponsor',
             'Subject correct';
     };
 
