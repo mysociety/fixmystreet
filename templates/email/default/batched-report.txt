@@ -1,0 +1,16 @@
+New reports on Collideoscope last [% period %] in [% body.name %]
+================================================================
+
+New incidents: [% incidents.count %] 
+[%- IF incidents_people_count %](by [% incidents_people_count %] [% incidents_people_count != 1 ? 'people' : 'person' %])[% END%]
+Near misses: [% misses.count %] 
+[%- IF misses_people_count %](by [% misses_people_count %] [% misses_people_count != 1 ? 'people' : 'person' %])[% END%]
+
+[%- FOR report IN reports.all %]
+ * [% report.title %] ([% cobrand.prettify_dt( report.confirmed ) %])
+   <[% cobrand.base_url_for_report(report) %][% report.url %]>
+[% END %]
+
+Best regards,
+
+The [% INCLUDE 'site-name.txt' | trim %] team

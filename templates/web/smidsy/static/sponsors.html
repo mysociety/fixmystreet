@@ -1,0 +1,90 @@
+[% INCLUDE 'header.html', title = loc('Sponsors'), robots = 'noindex,nofollow', bodyclass = 'twothirdswidthpage' %]
+
+<div class="sticky-sidebar">
+    <aside>
+        <ul class="plain-list">
+            <li><a href="/faq">Frequently Asked Questions</a></li>
+            <li><a href="/faq#practical">Practical Questions</a></li>
+            <li><a href="/faq#organisation">Organisation Questions</a></li>
+            <li><strong>Sponsors</strong></li>
+            <li><a href="/privacy">Privacy and cookies</a></li>
+            <li><a href="/contact">Contact Collideoscope</a></li>
+        </ul>
+    </aside>
+</div>
+
+<h1>[% loc('Sponsors') %]</h1>
+
+<div class="sponsors__primary">
+    <div>
+        <a href="http://www.bespokestudy.co.uk">
+            <img src="/cobrands/smidsy/images/sponsor-bespoke.gif" width="350" height="250" alt="The Bespoke Study">
+        </a>
+        <h3><a href="http://www.bespokestudy.co.uk">The Bespoke Study</a></h3>
+        <p>Collideoscope is part of the Bespoke Study, the flagship project of the <a href="http://www.bartscharity.org.uk/Page/Safe-Cycling-Appeal">Barts Charity Safe Cycling Appeal</a> aiming to reduce cycle-related trauma</p>
+    </div>
+    <div>
+        <img src="/cobrands/smidsy/images/sponsor-blanco.gif" width="350" height="250" alt="">
+        <h3>This could be you!</h3>
+        <p>If you're interested in supporting this project apply below.</p>
+    </div>
+</div>
+
+<h2>[% loc('Partners') %]</h2>
+
+<div class="sponsors__secondary">
+    <div>
+        <a href="http://mysociety.org">
+            <img src="/cobrands/smidsy/images/sponsor-mysociety.gif" width="200" height="80" alt="mySociety">
+        </a>
+    </div>
+    <div>
+        <a href="http://www.itpworld.net">
+            <img src="/cobrands/smidsy/images/sponsor-itp.gif" width="200" height="80" alt="Integrated Transport Planning">
+        </a>
+    </div>
+    <div>
+        <img src="/cobrands/smidsy/images/sponsor-blanco-small.gif" width="200" height="80" alt="This could be you! Apply to become a sponsor, below.">
+    </div>
+</div>
+
+<h2>Support us</h2>
+
+<div class="sponsors__form">
+    <form action="contact/submit" method="post">
+        <p class="sponsors__form__question">
+            <label>Company name</label>
+            <input name="company" id="form_company" type="text" class="required"/>
+        </p>
+        <p class="sponsors__form__question">
+            <label>Your name</label>
+            <input name="name" id="form_name" type="text" class="required"/>
+        </p>
+        <p class="sponsors__form__question">
+            <label>Phone number</label>
+            <input name="tel" id="form_tel" type="text" class="required"/>
+        </p>
+        <p class="sponsors__form__question">
+            <label>Email address</label>
+            <input name="em" id="form_email" type="text" class="required email"/>
+        </p>
+        <p class="sponsors__form__question">
+            <input type="submit" class="green-btn" value="Call me back!">
+        </p>
+        <input type="hidden" name="subject" value="Contact from a potential sponsor">
+        <input type="hidden" name="message" value="Contact from a potential sponsor.">
+    </form>
+</div>
+
+<div class="sponsors__about">
+    <div class="sponsors__past">
+        <h2>[% loc('The journey so far') %]</h2>
+        <p>With support from our sponsors we have been able to complete this initial version of Collideoscope: a site that collects both incident and near miss data in order to present a clearer picture of cycle safety in the UK</p>
+    </div>
+    <div class="sponsors__roadmap">
+        <h2>[% loc('Our roadmap') %]</h2>
+        <p>We are currently focused on the launch of Collideoscope, but intend to add a number of additional features to the site if we can attract more sponsors. In the future we would like to add notifications to the relevant police department, add incident-aware route planning and create a mobile application to offer advice to someone involved in an incident.</p>
+    </div>
+</div>
+
+[% INCLUDE 'footer.html' %]

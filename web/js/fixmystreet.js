@@ -130,7 +130,11 @@ $(function(){
 
     // Geolocation
     if (geo_position_js.init()) {
-        var link = '<a href="#LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
+        var caption_format = '&hellip; #CAPTION';
+        if(fixmystreet && fixmystreet.geolocate_format){
+            caption_format = fixmystreet.geolocate_format;
+        }
+        var link = '<a href="#LINK" id="geolocate_link">' + caption_format.replace('#CAPTION', translation_strings.geolocate) + '</a>';
         $('form[action="/alert/list"]').append(link.replace('LINK','alert/list'));
         if ($('body.frontpage').length) {
             $('#postcodeForm').after(link.replace('LINK','around'));
@@ -142,10 +146,18 @@ $(function(){
             e.preventDefault();
             // Spinny thing!
             if($('.mobile').length){
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
+                var mobile_spinner_url = '/cobrands/fixmystreet/images/spinner-black.gif';
+                if(fixmystreet && fixmystreet.geolocate_spinner_mobile){
+                    mobile_spinner_url = fixmystreet.geolocate_spinner_mobile;
+                }
+                $link.append(' <img src="' + mobile_spinner_url + '" alt="" align="bottom">');
             }else{
                 var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color")? 'white' : 'yellow';
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
+                var desktop_spinner_url = '/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif';
+                if(fixmystreet && fixmystreet.geolocate_spinner_desktop){
+                    desktop_spinner_url = fixmystreet.geolocate_spinner_desktop;
+                }
+                $link.append('<img src="' + desktop_spinner_url + '" alt="" align="bottom">');
             }
             geo_position_js.getCurrentPosition(function(pos) {
                 $link.find('img').remove();

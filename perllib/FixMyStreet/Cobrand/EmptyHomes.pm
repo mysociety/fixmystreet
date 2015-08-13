@@ -25,6 +25,9 @@ Return the base url for this cobranded site
 
 =cut
 
+use constant extra_global_fields => 1;
+use constant uses_global_categories => 1;
+
 sub base_url {
     my $base_url = FixMyStreet->config('BASE_URL');
     if ( $base_url !~ /emptyhomes/ ) {
@@ -130,6 +133,18 @@ sub council_rss_alert_options {
     };
 
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
+}
+
+sub category_options {
+    (
+        _('-- Pick a property type --'),
+        _('Empty house or bungalow'),
+        _('Empty flat or maisonette'),
+        _('Whole block of empty flats'),
+        _('Empty office or other commercial'),
+        _('Empty pub or bar'),
+        _('Empty public building - school, hospital, etc.')
+    );
 }
 
 sub process_extras {
@@ -551,6 +566,22 @@ sub old_site_stats {
         21069 => 57,
         21070 => 20,
     };
+}
+
+sub munge_stats {
+    my ($self, $stats) = @_;
+    my $old_site_stats = $self->old_site_stats;
+    my $open = $stats->{open};
+    foreach (keys %$old_site_stats) {
+        $open->{$_}{unknown} += $old_site_stats->{$_};
+    }
+}
+
+sub report_meta_line {
+    my ($self, $problem, $date_time) = @_;
+    my $category = _($problem->category);
+    utf8::decode($category);
+    return sprintf(_('%s, reported at %s'), $category, $date_time);
 }
 
 1;

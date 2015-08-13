@@ -1,0 +1,79 @@
+[% map_js = BLOCK %]
+<script>
+yepnope.addPrefix( 'preload', function ( resource ) {
+    resource.noexec = true;
+    return resource;
+});
+Modernizr.load({
+    load: [
+        "preload![% version('/js/OpenLayers.fixmystreet.js') %]",
+        "preload![% version('/js/map-OpenLayers.js') %]",
+        "preload![% version('/js/map-bing-ol.js') %]",
+        "preload![% version('/js/jquery.ba-hashchange.min.js') %]"
+    ]
+});
+</script>
+[% END %]
+
+[% pre_container_extra = PROCESS 'around/postcode_form.html' %]
+[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
+
+[% IF error %]
+    <p class="form-error">[% error %]</p>
+[% END %]
+
+    </div><!-- close .content role=main -->
+  </div><!-- close .container -->
+
+  <div class="front__how-it-works">
+    <div class="container">
+      <h2>How Collideoscope works</h2>
+      <ul class="smidsy-four-column">
+        <li class="front__how-it-works__find">
+          <span class="circled-icon"><img src="/cobrands/smidsy/images/homepage-icon-find.png" srcset="/cobrands/smidsy/images/homepage-icon-find@2x.png 2x" alt="" width="50" height="50"></span>
+          Find a location by postcode, street, or landmark
+        </li>
+        <li class="front__how-it-works__report">
+          <span class="circled-icon"><img src="/cobrands/smidsy/images/homepage-icon-report.png" srcset="/cobrands/smidsy/images/homepage-icon-report@2x.png 2x" alt="" width="50" height="50"></span>
+          Tell us about your incident and upload a photo
+        </li>
+        <li class="front__how-it-works__notify">
+          <span class="circled-icon"><img src="/cobrands/smidsy/images/homepage-icon-notify.png" srcset="/cobrands/smidsy/images/homepage-icon-notify@2x.png 2x" alt="" width="50" height="50"></span>
+          We notify the highways department&hellip;
+        </li>
+        <li class="front__how-it-works__change">
+          <span class="circled-icon"><img src="/cobrands/smidsy/images/homepage-icon-change.png" srcset="/cobrands/smidsy/images/homepage-icon-change@2x.png 2x" alt="" width="50" height="50"></span>
+          &hellip;And use your data to make the streets safer
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="front__statistics">
+    <div class="container">
+      [% INCLUDE 'front/stats.html' %]
+    </div>
+  </div>
+
+  <div class="front__support">
+    <div class="container">
+      <div class="smidsy-two-column">
+        <div class="front__support__charity">
+          <h3>Interested in safer cycling?</h3>
+          <p>We’re looking for supporters to help us build Collideoscope to better provide information for the police, highways departments, planning departments, and campaign groups.</p>
+          <a href="/sponsors" class="front__support__cta">Support us</a>
+        </div>
+        <div class="front__support__council">
+          <h3>Are you from a highways department?</h3>
+          <p>Collideoscope is built on the rock-solid FixMyStreet Platform, already trusted by councils all over the UK. We can hook your systems up to Collideoscope, so you never miss an issue.</p>
+          <a href="/contact" class="front__support__cta">Contact us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- open a new .container and div for footer.html to close -->
+  <div class="container">
+    <div>
+
+[% INCLUDE 'footer.html' %]

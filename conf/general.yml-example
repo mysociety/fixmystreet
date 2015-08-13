@@ -186,3 +186,7 @@ TESTING_COUNCILS: ''
 
 # if you're using Message Manager, include the URL here (see https://github.com/mysociety/message-manager/)
 MESSAGE_MANAGER_URL: ''
+
+# -----------------------------------------------------------------------
+
+SECURE_PROXY_SSL_HEADER: ''

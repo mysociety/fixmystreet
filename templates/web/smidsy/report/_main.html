@@ -1,0 +1,43 @@
+<div class="problem-header cf">
+    <h1>[% problem.title | html %]</h1>
+
+    <em><p>
+    [% problem.meta_line(c) | html %]
+    [%- IF !problem.used_map %]; 
+        <strong>[% loc('there is no pin shown as the user did not use the map') %]</strong>
+    [% END %]
+    </p></em>
+    [% INCLUDE 'report/_support.html' %]
+
+    [% INCLUDE 'report/photo.html' object=problem %]
+    [% detail = add_links( problem.detail ) %]
+    [% IF c.cobrand.is_stats19(problem) %]
+        [% detail | html_line_break %]
+    [% ELSE %]
+        [% detail | html_para %]
+    [% END %]
+
+    <dl>
+        <dt> Severity </dt>
+        <dd> 
+        [% s = c.cobrand.get_severity(problem.extra.severity) %]
+        [% s.name %] ( [%- s.description -%] ) </dd>
+
+        <dt> Where did the incident take place?</dt>
+        <dd> 
+            [% problem.extra.road_type %] 
+        </dd>
+
+        [% IF problem.extra.media_url %]
+        <dt> Media URL </dt>
+        <dd> 
+            (Will open in a new window.  Collideoscope is not responsible for the
+            content of any external links!)
+            <p> <a href="[% problem.extra.media_url %]" target="_blank">
+                [% problem.extra.media_url %]
+            </a></p>
+            [% c.cobrand.get_embed_code(problem) %]
+        </dd>
+        [% END %]
+
+</div>

@@ -1,0 +1,97 @@
+Subject: Last [% period %]'s reports on Collideoscope in [% body.name %]
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+  /* Styles here will be applied by everything except Gmail.com */
+  a {
+    color: #42A7DB;
+  }
+  a:hover {
+    text-decoration: none;
+    color: #3A85AB;
+  }
+
+  /* Media query niceties for iOS and Apple Mail */
+  @media only screen and (max-width: 600px) {
+    #main-layout {
+      width: auto !important;
+      min-width: 0 !important;
+      margin-top: 0 !important;
+    }
+  }
+  </style>
+</head>
+<body style="margin:0;background:#DCE7E8;">
+  <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-family:Helvetica,Arial,sans-serif;font-size:18px;line-height:1.4em;">
+    <tr>
+      <td align="center" style="background:#DCE7E8;">
+        <table cellspacing="0" cellpadding="30" border="0" id="main-layout" width="620" style="font-size:inherit;max-width:620px;min-width:400px;margin-top:30px;">
+          <tr>
+            <td style="background:#5D696A;color:#ffffff;padding:20px 30px;">
+              <!--
+                <img src="logo.gif" width="236" height="44" alt="Collideoscope" style="font-family:'Gill Sans MT','Gill Sans',Helvetica,Arial,sans-serif;font-size:32px;line-height:40px;vertical-align:middle;"/>
+              -->
+                <h1 style="font-weight:normal;font-family:'Gill Sans MT','Gill Sans',Helvetica,Arial,sans-serif;font-size:32px;line-height:40px;margin:0;">
+                  <a href="[% cobrand.base_url %]" style="color:#fff;text-decoration:none;">Collideoscope</a>
+                </h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#ffffff;border:1px solid #A8B1B2;border-top:0;border-bottom:0;">
+              <h1 style="margin:0 0 30px 0;font-size:32px;line-height:1.1em;">New reports last [% period %] in [% body.name %]</h1>
+              <table cellspacing="0" cellpadding="0" border="0" width="100%" style="text-align:center;color:#6b9094;">
+                <tr>
+                    <td>
+                    <strong style="display:block;font-size:48px;line-height:48px;color:#E5BB1C;">[% incidents.count %]</strong>
+                    New [% incidents.count != 1 ? 'incidents' : 'incident' %]
+                    [% IF incidents_people_count %]
+                    <small style="display:block;">By [% incidents_people_count %] [% incidents_people_count != 1 ? 'people' : 'person' %]</small>
+                    [% END %]
+                  </td>
+                  <td>
+                    <strong style="display:block;font-size:48px;line-height:48px;color:#E5BB1C;">[% misses.count %]</strong>
+                    Near [% misses.count != 1 ? 'misses' : 'miss' %]
+                    [% IF misses_people_count %]
+                    <small style="display:block;">By [% misses_people_count %] [% misses_people_count != 1 ? 'people' : 'person' %]</small>
+                    [% END %]
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            [% IF has_map %]
+            <td style="background:#ffffff;padding:0;border:1px solid #A8B1B2;border-top:0;border-bottom:0;">
+              <img src="cid:[% map_cid %]" alt="Map of incidents" width="598" height"300" style="width:100%;height:auto;">
+            </td>
+            [% END %]
+          </tr>
+          <tr>
+            <td style="background:#ffffff;border:1px solid #A8B1B2;border-top:0;">
+              <table cellspacing="0" cellpadding="30" border="0" width="100%">
+                [% FOR report IN reports.all %]
+                  <tr>
+                    <td style="padding:1em 0;[% UNLESS loop.last %]border-bottom:1px solid #D4D9DA;[% END %]">
+                      <a href="[% cobrand.base_url_for_report(report) %][% report.url %]" style="display:block;">[% report.title %]</a>
+                      <a href="[% cobrand.base_url_for_report(report) %][% report.url %]" style="display:block;font-size:14px;color:#6b9094;text-decoration:none;">[% cobrand.prettify_dt( report.confirmed ) %] </a>
+                    </td>
+                  </tr>
+                [% END %]
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="color:#8C9C9E;font-size:14px;line-height:1.4em;">
+                <a href="[% cobrand.base_url %]">Collideoscope</a> is a road safety project from <a href="http://www.mysociety.co.uk/">mySociety</a> and <a href="http://www.itpworld.net/">ITP</a>. <a href="[% cobrand.base_url %]/faq">More information</a>.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
