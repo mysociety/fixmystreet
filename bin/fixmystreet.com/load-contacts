@@ -42,7 +42,7 @@ while (<FP>) {
     s/\r?\n//g;
     my ($id, $email) = split /,/;
     dbh()->do("INSERT INTO contacts (area_id, email, editor, whenedited, note)
-        VALUES (?, ?, 'import', ms_current_timestamp(), 'Initial import')",
+        VALUES (?, ?, 'import', current_timestamp, 'Initial import')",
         {}, $id, $email);
 }
 dbh()->commit();

@@ -55,7 +55,7 @@ subtest 'check non open311 contacts marked as deleted' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );
@@ -84,7 +84,7 @@ subtest 'check email changed if matching category' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );
@@ -117,7 +117,7 @@ subtest 'check category name changed if updated' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );
@@ -151,7 +151,7 @@ subtest 'check conflicting contacts not changed' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );
@@ -166,7 +166,7 @@ subtest 'check conflicting contacts not changed' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );
@@ -223,7 +223,7 @@ subtest 'check meta data population' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );
@@ -403,7 +403,7 @@ for my $test (
                 confirmed => 1,
                 deleted => 0,
                 editor => $0,
-                whenedited => \'ms_current_timestamp()',
+                whenedited => \'current_timestamp',
                 note => 'test contact',
             }
         );
@@ -478,7 +478,7 @@ subtest 'check attribute ordering' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );
@@ -580,7 +580,7 @@ subtest 'check bromely skip code' => sub {
             confirmed => 1,
             deleted => 0,
             editor => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'test contact',
         }
     );

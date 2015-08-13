@@ -15,7 +15,7 @@ sub timeline {
     return $rs->search(
         {
             state => 'confirmed',
-            created => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
+            created => { '>=', \"current_timestamp-'7 days'::interval" },
             %{ $restriction },
         },
         {

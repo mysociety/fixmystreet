@@ -22,7 +22,7 @@ sub send_questionnaires_period {
         whensent => [
             '-and',
             { '!=', undef },
-            { '<', \"ms_current_timestamp() - '$period'::interval" },
+            { '<', \"current_timestamp - '$period'::interval" },
         ],
         send_questionnaire => 1,
     };
@@ -34,7 +34,7 @@ sub send_questionnaires_period {
     } else {
         $q_params->{'-or'} = [
             '(select max(whensent) from questionnaire where me.id=problem_id)' => undef,
-            '(select max(whenanswered) from questionnaire where me.id=problem_id)' => { '<', \"ms_current_timestamp() - '$period'::interval" }
+            '(select max(whenanswered) from questionnaire where me.id=problem_id)' => { '<', \"current_timestamp - '$period'::interval" }
         ];
     }
 
@@ -70,7 +70,7 @@ sub send_questionnaires_period {
 
         my $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->create( {
             problem_id => $row->id,
-            whensent => \'ms_current_timestamp()',
+            whensent => \'current_timestamp',
         } );
 
         # We won't send another questionnaire unless they ask for it (or it was
@@ -120,8 +120,8 @@ sub timeline {
     return $rs->search(
         {
             -or => {
-                whenanswered => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
-                'me.whensent'  => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
+                whenanswered => { '>=', \"current_timestamp-'7 days'::interval" },
+                'me.whensent'  => { '>=', \"current_timestamp-'7 days'::interval" },
             },
             %{ $restriction },
         },

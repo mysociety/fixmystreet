@@ -359,7 +359,7 @@ sub update_contacts : Private {
         $contact->deleted( $c->get_param('deleted') ? 1 : 0 );
         $contact->non_public( $c->get_param('non_public') ? 1 : 0 );
         $contact->note( $c->get_param('note') );
-        $contact->whenedited( \'ms_current_timestamp()' );
+        $contact->whenedited( \'current_timestamp' );
         $contact->editor( $editor );
         $contact->endpoint( $c->get_param('endpoint') );
         $contact->jurisdiction( $c->get_param('jurisdiction') );
@@ -395,7 +395,7 @@ sub update_contacts : Private {
         $contacts->update(
             {
                 confirmed => 1,
-                whenedited => \'ms_current_timestamp()',
+                whenedited => \'current_timestamp',
                 note => 'Confirmed',
                 editor => $editor,
             }
@@ -707,7 +707,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
     elsif ( $c->get_param('mark_sent') ) {
         $c->forward('check_token');
-        $problem->whensent(\'ms_current_timestamp()');
+        $problem->whensent(\'current_timestamp');
         $problem->update();
         $c->stash->{status_message} = '<p><em>' . _('That problem has been marked as sent.') . '</em></p>';
         $c->forward( 'log_edit', [ $id, 'problem', 'marked sent' ] );
@@ -787,14 +787,14 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
-            $problem->confirmed( \'ms_current_timestamp()' );
+            $problem->confirmed( \'current_timestamp' );
         }
 
         if ($done) {
             $problem->discard_changes;
         }
         else {
-            $problem->lastupdate( \'ms_current_timestamp()' ) if $edited || $new_state ne $old_state;
+            $problem->lastupdate( \'current_timestamp' ) if $edited || $new_state ne $old_state;
             $problem->update;
 
             if ( $new_state ne $old_state ) {
@@ -943,10 +943,10 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
 
         if ( $new_state eq 'confirmed' and $old_state eq 'unconfirmed' ) {
-            $update->confirmed( \'ms_current_timestamp()' );
+            $update->confirmed( \'current_timestamp' );
             if ( $update->problem_state && $update->created > $update->problem->lastupdate ) {
                 $update->problem->state( $update->problem_state );
-                $update->problem->lastupdate( \'ms_current_timestamp()' );
+                $update->problem->lastupdate( \'current_timestamp' );
                 $update->problem->update;
             }
         }

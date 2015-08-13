@@ -130,12 +130,12 @@ while ( my $body = $bodies->next ) {
         if ( $id ) {
             $comment->update( {
                 external_id => $id,
-                whensent    => \'ms_current_timestamp()',
+                whensent    => \'current_timestamp',
             } );
         } else {
             $comment->update( {
                 send_fail_count => $comment->send_fail_count + 1,
-                send_fail_timestamp => \'ms_current_timestamp()',
+                send_fail_timestamp => \'current_timestamp',
                 send_fail_reason => 'Failed to post over Open311',
             } );
         }

@@ -1339,7 +1339,7 @@ foreach my $test (
                 {
                     problem_id    => $report_id,
                     ever_reported => 'y',
-                    whensent      => \'ms_current_timestamp()',
+                    whensent      => \'current_timestamp',
                 }
               );
 
@@ -1481,7 +1481,7 @@ for my $test (
                 {
                     problem_id    => $report_id,
                     ever_reported => 'y',
-                    whensent      => \'ms_current_timestamp()',
+                    whensent      => \'current_timestamp',
                 }
               );
 

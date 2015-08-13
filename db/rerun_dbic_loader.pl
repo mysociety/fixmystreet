@@ -13,7 +13,6 @@ use DBIx::Class::Schema::Loader qw/ make_schema_at /;
 # create a exclude statement that filters out the table that we are not
 # interested in
 my @tables_to_ignore = (
-    'debugdate',           #
     'flickr_imported',     #
     'partial_user',        #
     'textmystreet',        #

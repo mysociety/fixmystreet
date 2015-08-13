@@ -93,7 +93,7 @@ for my $test (
                     user        => $update_user,
                     state       => 'confirmed',
                     text        => $update_info->{text},
-                    confirmed   => \'ms_current_timestamp()',
+                    confirmed   => \'current_timestamp',
                     mark_fixed => 'f',
                     anonymous  => 'f',
                 }

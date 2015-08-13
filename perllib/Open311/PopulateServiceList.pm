@@ -143,7 +143,7 @@ sub _handle_existing_contact {
                     confirmed => 1,
                     deleted => 0,
                     editor => $0,
-                    whenedited => \'ms_current_timestamp()',
+                    whenedited => \'current_timestamp',
                     note => 'automatically undeleted by script',
                 }
             );
@@ -181,7 +181,7 @@ sub _create_contact {
                 confirmed => 1,
                 deleted => 0,
                 editor => $0,
-                whenedited => \'ms_current_timestamp()',
+                whenedited => \'current_timestamp',
                 note => 'created automatically by script',
             }
         );
@@ -309,7 +309,7 @@ sub _delete_contacts_not_in_service_list {
         {
             deleted => 1,
             editor  => $0,
-            whenedited => \'ms_current_timestamp()',
+            whenedited => \'current_timestamp',
             note => 'automatically marked as deleted by script'
         }
     );

@@ -41,7 +41,7 @@ sub email_alerts ($) {
         }
         $query .= "
             where alert_type='$ref' and whendisabled is null and $item_table.confirmed >= whensubscribed
-            and $item_table.confirmed >= ms_current_timestamp() - '7 days'::interval
+            and $item_table.confirmed >= current_timestamp - '7 days'::interval
              and (select whenqueued from alert_sent where alert_sent.alert_id = alert.id and alert_sent.parameter::integer = $item_table.id) is null
             and $item_table.user_id <> alert.user_id
             and " . $alert_type->item_where . "
@@ -184,7 +184,7 @@ sub email_alerts ($) {
             and problem.user_id = users.id
             and problem.state in ($states)
             and problem.non_public = 'f'
-            and problem.confirmed >= ? and problem.confirmed >= ms_current_timestamp() - '7 days'::interval
+            and problem.confirmed >= ? and problem.confirmed >= current_timestamp - '7 days'::interval
             and (select whenqueued from alert_sent where alert_sent.alert_id = ? and alert_sent.parameter::integer = problem.id) is null
             and users.email <> ?
             order by confirmed desc";

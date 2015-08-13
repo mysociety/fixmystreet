@@ -31,7 +31,7 @@ __PACKAGE__->add_columns(
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"ms_current_timestamp()",
+    default_value => \"current_timestamp",
     is_nullable   => 0,
   },
   "confirmed",
@@ -144,7 +144,7 @@ sub confirm {
     my $self = shift;
 
     $self->state( 'confirmed' );
-    $self->confirmed( \'ms_current_timestamp()' );
+    $self->confirmed( \'current_timestamp' );
 }
 
 =head2 get_photo_params

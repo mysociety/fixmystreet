@@ -142,8 +142,8 @@ sub submit_creator_fixed : Private {
 
         $questionnaire->ever_reported( $c->stash->{reported} eq 'Yes' ? 1 : 0 );
         $questionnaire->old_state( $old_state );
-        $questionnaire->whensent( \'ms_current_timestamp()' );
-        $questionnaire->whenanswered( \'ms_current_timestamp()' );
+        $questionnaire->whensent( \'current_timestamp' );
+        $questionnaire->whenanswered( \'current_timestamp' );
         $questionnaire->insert;
     }
 
@@ -173,13 +173,13 @@ sub submit_standard : Private {
     # Record state change, if there was one
     if ( $new_state ) {
         $problem->state( $new_state );
-        $problem->lastupdate( \'ms_current_timestamp()' );
+        $problem->lastupdate( \'current_timestamp' );
     }
 
     # If it's not fixed and they say it's still not been fixed, record time update
     if ( $c->stash->{been_fixed} eq 'No' &&
         FixMyStreet::DB::Result::Problem->open_states->{$old_state} ) {
-        $problem->lastupdate( \'ms_current_timestamp()' );
+        $problem->lastupdate( \'current_timestamp' );
     }
 
     # Record questionnaire response
@@ -189,7 +189,7 @@ sub submit_standard : Private {
 
     my $q = $c->stash->{questionnaire};
     $q->update( {
-        whenanswered  => \'ms_current_timestamp()',
+        whenanswered  => \'current_timestamp',
         ever_reported => $reported,
         old_state     => $old_state,
         new_state     => $c->stash->{been_fixed} eq 'Unknown' ? 'unknown' : ($new_state || $old_state),
@@ -210,7 +210,7 @@ sub submit_standard : Private {
                 lang         => $c->stash->{lang_code},
                 cobrand      => $c->cobrand->moniker,
                 cobrand_data => '',
-                confirmed    => \'ms_current_timestamp()',
+                confirmed    => \'current_timestamp',
                 anonymous    => $problem->anonymous,
             }
         );

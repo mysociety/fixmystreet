@@ -242,7 +242,7 @@ sub delete :Local :Args(1) {
     return $c->res->redirect($uri) unless $p->bodies->{$body->id};
 
     $p->state('hidden');
-    $p->lastupdate( \'ms_current_timestamp()' );
+    $p->lastupdate( \'current_timestamp' );
     $p->update;
 
     $c->model('DB::AdminLog')->create( {

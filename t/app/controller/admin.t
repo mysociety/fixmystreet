@@ -88,7 +88,7 @@ subtest 'check summary counts' => sub {
     FixMyStreet::App->model('DB::Problem')->search( { bodies_str => 2489 } )->update( { bodies_str => 1 } );
 
     my $q = FixMyStreet::App->model('DB::Questionnaire')->find_or_new( { problem => $report, });
-    $q->whensent( \'ms_current_timestamp()' );
+    $q->whensent( \'current_timestamp' );
     $q->in_storage ? $q->update : $q->insert;
 
     my $alerts =  FixMyStreet::App->model('DB::Alert')->search( { confirmed => { '>' => 0 } } );

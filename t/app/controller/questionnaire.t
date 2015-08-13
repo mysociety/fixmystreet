@@ -96,7 +96,7 @@ foreach my $test (
     },
     {
         desc => 'User goes to questionnaire URL for an already answered questionnaire',
-        answered => \'ms_current_timestamp()',
+        answered => \'current_timestamp',
         content => 'already answered this questionnaire',
     },
 ) {

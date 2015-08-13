@@ -70,7 +70,7 @@ sub add_categories {
         dbh()->do("insert into contacts
             (area_id, category, email, editor, whenedited, note, confirmed, deleted)
             values
-            (?, ?, ?, 'import', ms_current_timestamp(), 'Initial copy', ?, 'f')", {},
+            (?, ?, ?, 'import', current_timestamp, 'Initial copy', ?, 'f')", {},
             $id, $_, $email, ($confirmed ? 1 : 0)
         );
     }

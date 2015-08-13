@@ -25,8 +25,8 @@ my $problem = FixMyStreet::App->model('DB::Problem')->create(
         service      => '',
         cobrand      => 'default',
         cobrand_data => '',
-        confirmed    => \"ms_current_timestamp() - '5 weeks'::interval",
-        whensent     => \"ms_current_timestamp() - '5 weeks'::interval",
+        confirmed    => \"current_timestamp - '5 weeks'::interval",
+        whensent     => \"current_timestamp - '5 weeks'::interval",
         user         => $user,
         anonymous    => 0,
     }

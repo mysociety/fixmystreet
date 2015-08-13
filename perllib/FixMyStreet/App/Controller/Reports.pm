@@ -396,20 +396,20 @@ sub load_and_group_problems : Private {
 
     my $not_open = [ FixMyStreet::DB::Result::Problem::fixed_states(), FixMyStreet::DB::Result::Problem::closed_states() ];
     if ( $type eq 'new' ) {
-        $where->{confirmed} = { '>', \"ms_current_timestamp() - INTERVAL '4 week'" };
+        $where->{confirmed} = { '>', \"current_timestamp - INTERVAL '4 week'" };
         $where->{state} = { 'IN', [ FixMyStreet::DB::Result::Problem::open_states() ] };
     } elsif ( $type eq 'older' ) {
-        $where->{confirmed} = { '<', \"ms_current_timestamp() - INTERVAL '4 week'" };
-        $where->{lastupdate} = { '>', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{confirmed} = { '<', \"current_timestamp - INTERVAL '4 week'" };
+        $where->{lastupdate} = { '>', \"current_timestamp - INTERVAL '8 week'" };
         $where->{state} = { 'IN', [ FixMyStreet::DB::Result::Problem::open_states() ] };
     } elsif ( $type eq 'unknown' ) {
-        $where->{lastupdate} = { '<', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{lastupdate} = { '<', \"current_timestamp - INTERVAL '8 week'" };
         $where->{state} = { 'IN',  [ FixMyStreet::DB::Result::Problem::open_states() ] };
     } elsif ( $type eq 'fixed' ) {
-        $where->{lastupdate} = { '>', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{lastupdate} = { '>', \"current_timestamp - INTERVAL '8 week'" };
         $where->{state} = $not_open;
     } elsif ( $type eq 'older_fixed' ) {
-        $where->{lastupdate} = { '<', \"ms_current_timestamp() - INTERVAL '8 week'" };
+        $where->{lastupdate} = { '<', \"current_timestamp - INTERVAL '8 week'" };
         $where->{state} = $not_open;
     }
 

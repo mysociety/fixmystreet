@@ -549,7 +549,7 @@ sub admin_report_edit {
             }
         }
 
-        $problem->lastupdate( \'ms_current_timestamp()' );
+        $problem->lastupdate( \'current_timestamp' );
         $problem->update;
 
         $c->stash->{status_message} =
