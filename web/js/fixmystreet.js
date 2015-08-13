@@ -152,11 +152,10 @@ $(function(){
                 }
                 $link.append(' <img src="' + mobile_spinner_url + '" alt="" align="bottom">');
             }else{
+                var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color")? 'white' : 'yellow';
+                var desktop_spinner_url = '/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif';
                 if(fixmystreet && fixmystreet.geolocate_spinner_desktop){
-                    var desktop_spinner_url = fixmystreet.geolocate_spinner_desktop;
-                } else {
-                    var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color")? 'white' : 'yellow';
-                    var desktop_spinner_url = '/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif';
+                    desktop_spinner_url = fixmystreet.geolocate_spinner_desktop;
                 }
                 $link.append('<img src="' + desktop_spinner_url + '" alt="" align="bottom">');
             }
