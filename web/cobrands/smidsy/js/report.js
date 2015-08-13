@@ -50,4 +50,40 @@ $(function() {
         }
     });
 
+    // Deal with toggling stats19 data on and off on the /around page
+    var $stats19Link = $('#stats-19');
+    var showText = 'Show reports from the Department of Transport';
+    var hideText = 'Hide reports from the Department of Transport';
+    var toggleStats19Link = function toggleStats19Link($link){
+      if ($link.data('show-stats19')) {
+        $link.data({'show-stats19': 0});
+        $link.html(hideText);
+      } else {
+        $link.data({'show-stats19': 1});
+        $link.html(showText);
+      }
+    };
+    if (window.fixmystreet.show_stats19 === '1') {
+      // Force a load of the pins with the stats_19 param set up on first
+      // load because FMS' default _onload function won't know about it.
+      window.fixmystreet.markers.protocol.options.params.show_stats19 = '[% show_stats19 %]';
+      window.fixmystreet.markers.refresh( { force: true } );
+      // Initialise the data variable we use to keep track of whether
+      // stats19 data is being shown
+      toggleStats19Link();
+    } else {
+      // Initialise the data variable we use to keep track of whether
+      // stats19 data is being shown
+      $stats19Link.data({'show-stats19': 1});
+    }
+    // Handle future clicks on the stats19 link
+    $stats19Link.click(function(e) {
+      e.preventDefault();
+      window.fixmystreet.markers.setVisibility(true);
+      window.fixmystreet.markers.protocol.options.params.show_stats19 = $stats19Link.data('show-stats19');
+      window.fixmystreet.markers.refresh( { force: true } );
+      toggleStats19Link($stats19Link);
+      return false;
+    });
+
 });
