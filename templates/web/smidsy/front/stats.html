@@ -1,0 +1,64 @@
+[%
+    USE Comma;
+    # Note - if we want to i18n the commas we should try 
+    # 'Template::Plugin::Number::Format'
+%]
+
+[%
+    stats = c.cobrand.front_stats_data();
+
+    stats_period = stats.recency == '1 week' ? 'Week' : 
+        stats.recency == '12 months' ? 'Year' : stats.recency
+
+    new_text =
+        stats.recency == '1 week'
+        ? nget(
+            "<strong>%s</strong> New Report",
+            "<strong>%s</strong> New Reports",
+            stats.new
+          )
+        : nget(
+            "<strong>%s</strong> New Report",
+            "<strong>%s</strong> New Reports",
+            stats.new
+         );
+    
+    updates_text = nget(
+        "<strong>%s</strong> Update",
+        "<strong>%s</strong> Updates",
+        stats.updates
+    );
+
+    misses_text = nget(
+        "<strong>%s</strong> Near Miss",
+        "<strong>%s</strong> Near Misses",
+        stats.misses
+    );
+
+    accidents_text = nget(
+        "<strong>%s</strong> Incident",
+        "<strong>%s</strong> Incidents",
+        stats.accidents
+    );
+    
+%]
+
+      <h2>This [% stats_period %] on Collideoscope</h2>
+
+      <ul class="smidsy-four-column">
+        <li>
+          [% tprintf( new_text, stats.new ) | comma %]
+        </li>
+        <li>
+          [% tprintf( accidents_text, stats.accidents ) | comma %]
+        </li>
+        <li>
+          [% tprintf( misses_text, stats.misses ) | comma %]
+        </li>
+        <li>
+          [% tprintf( updates_text, stats.updates ) | comma %]
+        </li>
+      </ul>
+
+      <p class="front__stats19">Plus <strong>[% stats.stats19 | comma %] incidents</strong> from the Department of Transport <a href="/faq#stats19" title="What is this data?">(?)</a></p>
+

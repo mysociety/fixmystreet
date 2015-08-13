@@ -60,6 +60,10 @@
               [% PROCESS "report/new/category_wrapper.html" %]
           [% END %]
 
+          [%- IF c.cobrand.extra_global_fields %]
+              [% PROCESS "report/new/global_extras.html" %]
+          [%- END %]
+
           [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
           [% IF c.cobrand.allow_photo_upload %]

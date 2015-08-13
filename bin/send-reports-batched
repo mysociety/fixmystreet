@@ -1,0 +1,44 @@
+#!/usr/bin/env perl
+
+# send-reports-batched:
+# Send new problem reports to councils in batches
+#
+# Copyright (c) 2015 UK Citizens Online Democracy. All rights reserved.
+# WWW: http://www.mysociety.org
+
+# This should be run on the 1st of every month. Right now it will send
+# all unsent reports to the contacts in the DB, regardless of when they
+# were reported.
+# The underlying batch-sending code is focussed on the Collideoscope project
+# at the moment, and isn't yet general enough for regular FMS use.
+
+use strict;
+use warnings;
+require 5.8.0;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+use CGI; # XXX
+use CronFns;
+
+use mySociety::Config;
+use FixMyStreet::App;
+
+my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
+CronFns::language($site);
+my ($verbose, $nomail, $debug) = CronFns::options();
+
+my $c = FixMyStreet::App->new;
+
+$c->model('DB::Problem')->send_reports_batched({
+    c => $c,
+    site => $site,
+    verbose => $verbose,
+    nomail => $nomail,
+    debug => $debug,
+});

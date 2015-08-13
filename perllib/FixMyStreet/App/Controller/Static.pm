@@ -53,11 +53,10 @@ sub posters : Global : Args(0) {
     my ( $self, $c ) = @_;
 }
 
-sub iphone : Global : Args(0) {
-    my ( $self, $c ) = @_;
-}
-
-sub council : Global : Args(0) {
+# This route only applies to Smidsy cobrand,
+# but I (Zarino) don't know how to append to
+# this file in just the Smidsy cobrand.
+sub sponsors : Global : Args(0) {
     my ( $self, $c ) = @_;
 }
 

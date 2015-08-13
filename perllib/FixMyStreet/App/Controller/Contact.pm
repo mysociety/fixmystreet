@@ -162,6 +162,13 @@ sub prepare_params_for_email : Private {
     $c->stash->{message} =~ s/\r\n/\n/g;
     $c->stash->{subject} =~ s/\r|\n/ /g;
 
+    if (my $co = $c->req->param('company')) {
+        $c->stash->{message} .= "\n\nCompany: $co\n";
+    }
+    if (my $tel = $c->req->param('tel')) {
+        $c->stash->{message} .= "\n\nTel: $tel\n";
+    }
+
     my $base_url = $c->cobrand->base_url();
     my $admin_url = $c->cobrand->admin_base_url;
 
@@ -239,10 +246,12 @@ sub send_email : Private {
       ? ' ( forwarded from ' . $c->req->header('X-Forwarded-For') . ' )'
       : '';
 
+    my $subject = $c->cobrand->subject_line_for_contact_email($c->stash->{subject});
+
     $c->send_email( 'contact.txt', {
-        to      => [ [ $recipient, _($recipient_name) ] ],
+        to      => [ $recipient, _($recipient_name) ],
         from    => [ $c->stash->{em}, $c->stash->{form_name} ],
-        subject => 'FMS message: ' . $c->stash->{subject},
+        subject => $subject,
     });
 
     # above is always succesful :(

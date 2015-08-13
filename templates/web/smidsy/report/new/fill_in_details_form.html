@@ -1,0 +1,302 @@
+<div id="report-a-problem-main">
+    <h1>[% loc('Reporting a problem') %]</h1>
+
+    <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
+
+    [% PROCESS 'report/new/councils_text.html' %]
+
+    [% INCLUDE 'errors.html' %]
+
+    [% MACRO isChecked BLOCK %][% v == exp ? 'checked' : '' %][% END %]
+    [% MACRO isSelected BLOCK %][% v == exp ? 'selected' : '' %][% END %]
+
+    <fieldset>
+        <div id="problem_form">
+
+            [% INCLUDE 'report/new/form_heading.html' %]
+
+            [% IF field_errors.bodies %]
+                <p class='form-error'>[% field_errors.bodies %]</p>
+            [% END %]
+
+            <input type="hidden" value="DUMMY" name="title" id="form_title">
+
+            <div class="severity">
+                [% IF field_errors.severity %]
+                    <p class='form-error'>[% field_errors.severity %]</p>
+                [% END %]
+                <label>[% loc('How severe was the incident?') %]</label>
+                [% v = report.extra.severity || 10 %]
+                <p>
+                    <label><input type="radio" name="severity" value="10" [% isChecked(exp=10) %]>
+                    [% loc('No injuries – but it was close!') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="severity" value="30" [% isChecked(exp=30) %]>
+                        [% loc('Just bruises and scrapes') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="severity" value="60" [% isChecked(exp=60) %]>
+                        [% loc('Serious – broken bones, hospital trips') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="severity" value="100" [% isChecked(exp=100) %]>
+                        [% loc('There were one or more fatalities') %]</label>
+                </p>
+            </div>
+
+            <div class="describe-injury">
+                <label for="form_injury_detail">[% loc('If <em>you</em> were injured, can you tell us more about your injuries?') %]</label>
+                <textarea rows="4" cols="26" name="injury_detail" id="form_injury_detail">[% report.extra.injury_detail | html %]</textarea>
+            </div>
+
+            <div class="form_datetime">
+                <label for="form_incident_date">[% loc('When did it happen?') %]</label>
+                <div>
+                  [% IF field_errors.incident_date %]
+                    <p class='form-error'>[% field_errors.incident_date %]</p>
+                  [% END %]
+                    <input type="text" name="incident_date" id="form_incident_date"
+                    value="[% report.extra.incident_date_as_submitted || 'today' %]">
+                </div>
+                <div>
+                  [% IF field_errors.incident_time %]
+                    <p class='form-error'>[% field_errors.incident_time %]</p>
+                  [% END %]
+                    <input type="text" name="incident_time" id="form_incident_time" placeholder="hh:mm"
+                    [% IF report.extra.incident_time %]value="[% report.extra.incident_time %]"[% END %]>
+                </div>
+            </div>
+
+            <label for="form_road_type">[% loc('Where did it happen?') %]</label>
+          [% IF field_errors.road_type %]
+            <p class='form-error'>[% field_errors.road_type %]</p>
+          [% END %]
+          [% v = report.extra.road_type %]
+            <select id="form_road_type" name="road_type">
+                <option value="road" [% isSelected(exp='road') %]>
+                    [% loc('In the road') %]</option>
+                <option value="lane-onroad" [% isSelected(exp='lane-onroad') %]>
+                    [% loc('On-road bike lane') %]</option>
+                <option value="lane-separate" [% isSelected(exp='lane-separate') %]>
+                    [% loc('Segregated bike path') %]</option>
+                <option value="pavement" [% isSelected(exp='pavement') %]>
+                    [% loc('Pavement') %]</option>
+            </select>
+
+            <label for="form_participants">[% loc('The incident involved a bike and…?') %]</label>
+            [% IF field_errors.participants %]
+                <p class='form-error'>[% field_errors.participants %]</p>
+            [% END %]
+
+            [% v = report.extra.participants %]
+            <select id="form_participants" name="participants">
+                <option value="car" [% isSelected(exp='car') %]>
+                [% loc('A car') %]</option>
+                <option value="motorcycle" [% isSelected(exp='motorcycle') %]>
+                [% loc('A motorcycle') %]</option>
+                <option value="hgv" [% isSelected(exp='hgv') %]>
+                [% loc('A heavy goods vehicle (HGV)') %]</option>
+                <option value="other" [% isSelected(exp='other') %]>
+                [% loc('Some other vehicle') %]</option>
+                <option value="bicycle" [% isSelected(exp='bicycle') %]>
+                [% loc('Another bike') %]</option>
+                <option value="pedestrian" [% isSelected(exp='pedestrian') %]>
+                [% loc('A pedestrian') %]</option>
+                <option value="generic" [% isSelected(exp='generic') %]>
+                [% loc('Nothing (e.g. street furniture)') %]</option>
+            </select>
+
+            <div class="vehicle-registration-number">
+                <label for="form_registration">[% loc('What was the vehicle&#39;s registration number?') %]</label>
+              [% IF field_errors.registration %]
+                <p class='form-error'>[% field_errors.registration %]</p>
+              [% END %]
+              <input type="text" name="registration" id="form_registration" placeholder="MA51 ABC"
+              [% IF report.extra.registration%]value="[% report.extra.registration %]"[% END %]>
+            </div>
+
+            <div class="emergency-services">
+                [% IF field_errors.emergency_services %]
+                    <p class='form-error'>[% field_errors.emergency_services %]</p>
+                [% END %]
+                <label>[% loc('Did the emergency services attend?') %]</label>
+                [% v = report.extra.emergency_services %]
+                <p>
+                    <label><input type="radio" name="emergency_services" value="yes" [% isChecked(exp='yes') %]>
+                    [% loc('Yes') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="emergency_services" value="no" [% isChecked(exp='no') %]>
+                        [% loc('No') %]</label>
+                </p>
+                <p>
+                    <label><input type="radio" name="emergency_services" value="unsure" [% isChecked(exp='unsure') %]>
+                        [% loc('Unsure') %]</label>
+                </p>
+            </div>
+
+
+            <label for="form_detail">[% loc('Can you describe what happened?') %]</label>
+            [% IF field_errors.detail %]
+                <p class='form-error'>[% field_errors.detail %]</p>
+            [% END %]
+            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
+
+            <div class="description_tips">
+              <h4>[% loc('Tips for successful reports:') %]</h4>
+                <ul class="do">
+                    <li>[% loc('Be polite, and to the point') %]</li>
+                    <li>[% loc('Use exact locations') %]</li>
+                    <li>[% loc('Describe the events leading up to the incident') %]</li>
+                </ul>
+                <ul class="dont">
+                    <li>[% loc('Don’t leave abusive or libellous&nbsp;reports') %]</li>
+                    <li>[% loc('Don’t include private contact details in the&nbsp;description') %]</li>
+                </ul>
+            </div>
+
+            [% IF c.cobrand.allow_photo_upload %]
+                <label for="form_photo">[% loc('Upload a photo') %]</label>
+                [% IF upload_fileid || report.photo %]
+                    [% IF upload_fileid %]
+                        <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
+                        <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+                    [% END %]
+
+                    <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
+
+                    [% IF report.photo %]
+                        <img align="right" src="/photo/[% report.id %].jpeg">
+                    [% END %]
+                [% END %]
+
+                [% IF field_errors.photo %]
+                    <p class='form-error'>[% field_errors.photo %]</p>
+                [% END %]
+                <input type="file" name="photo" id="form_photo">
+            [% END %]
+
+            <label for="form_media_url">Or link to a video or webpage</label>
+          [% IF field_errors.media_url %]
+            <p class='form-error'>[% field_errors.media_url %]</p>
+          [% END %]
+          <input type="text" name="media_url" id="form_media_url" placeholder="http://..."
+          [% IF report.extra.media_url %]value="[% report.extra.media_url %]"[% END %]>
+
+          [%- IF category_extras %]
+              [% PROCESS "report/new/category_extras.html" %]
+          [%- END %]
+
+            [% IF c.user_exists %]
+                <div class="form-box">
+
+                    <label for="form_email">[% loc('Your email') %]</label>
+                    <input disabled type="text" value="[% c.user.email | html %]">
+
+                    [% INCLUDE 'report/new/extra_name.html' %]
+
+                    <label for="form_name">[% loc('Name') %]</label>
+                    [% IF field_errors.name %]
+                        <p class='form-error'>[% field_errors.name %]</p>
+                    [% END %]
+                    <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+
+                    [%# if there is nothing in the name field then set check box as default on form %]
+                    <div class="checkbox-group">
+                        <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]>
+                        <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %] </label>
+                    </div>
+
+                    [% IF c.cobrand.moniker != 'fixmybarangay' || c.user.from_body %]
+                    <div class="general-sidebar-notes">
+                        <p>[% loc('We never show your email.') %]</p>
+                    </div>
+                    [% END %]
+
+                    <div class="form-txt-submit-box">
+                        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                    </div>
+                </div>
+            [% ELSE %]
+
+                <label for="form_email">[% loc('Your email') %]</label>
+                [% IF field_errors.email %]
+                    <p class='form-error'>[% field_errors.email %]</p>
+                [% END %]
+                <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
+
+                <div id="form_sign_in">
+                    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
+                    <h2>[% loc("Do you have a Collideoscope password?") %]</h2>
+
+                    <div id="form_sign_in_yes" class="form-box">
+
+                        <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>
+
+                        <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
+                        <div class="form-txt-submit-box">
+                            [% IF field_errors.password %]
+                                <p class='form-error'>[% field_errors.password %]</p>
+                            [% END %]
+                            <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
+                            <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
+                        </div>
+
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                            <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                        </div>
+
+                        <div class="general-sidebar-notes" id="forgotten-pw">
+                            <p class="dark">[% loc('Forgotten your password?') %]</p>
+                            <p>[% loc('Confirm by email below, providing a new password at that point. When you confirm, your password will be updated.') %]</p>
+                        </div>
+
+                    </div>
+
+                    <div id="form_sign_in_no" class="form-box">
+                        <h5>[% loc('<strong>No</strong> Let me confirm my report by email') %]</h5>
+
+                        [% INCLUDE 'report/new/extra_name.html' %]
+
+                        <label for="form_name">[% loc('Name') %]</label>
+                        [% IF field_errors.name %]
+                            <p class='form-error'>[% field_errors.name %]</p>
+                        [% END %]
+
+                        <input type="text" class="form-focus-trigger validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+
+                        [%# if there is nothing in the name field then set check box as default on form %]
+                        <div class="checkbox-group">
+                            <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]>
+                            <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+                        </div>
+
+                        <div class="general-sidebar-notes form-focus-hidden">
+                            <p class="dark">[% loc('We never show your email.') %]</p>
+                            <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+                        </div>
+
+                        <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
+                        <input class="form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+
+                        <label class="form-focus-hidden" for="password_register">[% loc('Password (optional)') %]</label>
+
+                        <div class="form-txt-submit-box form-focus-hidden">
+                            <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+                            <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                        </div>
+                    </div>
+                </div>
+
+            [% END %]
+        </div>
+    </fieldset>
+
+    [% IF partial_token %]
+        <input type="hidden" name="partial" value="[% partial_token.token %]">
+    [% END %]
+
+    <input type="hidden" name="submit_problem" value="1">
+</div>

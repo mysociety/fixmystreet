@@ -281,6 +281,32 @@ sub get_override {
     return $c->session->{overrides}->{$key};
 }
 
+=head format_email_address
+
+    my $email = $c->format_email_address('test@example.org'); # 'test@example.org'
+    my $email = $c->format_email_address(['test@example.org', 'Test']); # 'Test <test@example.org>'
+    my $email = $c->format_email_address([['test@example.org', 'Test'], ...]); # 'Test <test@example.org>, ...'
+
+=cut
+
+sub format_email_address {
+    my ($c, $var) = @_;
+
+    # return string unchanged
+    return $var unless ref $var;
+
+    my @flattened = @$var;
+    if (ref $flattened[0]) {
+        # multiple addresses, as nested.  Join them together
+        return join ', ' => map $c->format_email_address($_), @flattened;
+    }
+
+    # format email/name pair
+    my ($email, $name) = @flattened;
+    return $email unless $name;
+    return mySociety::Email::format_email_address($name, $email);
+}
+
 =head2 send_email
 
     $email_sent = $c->send_email( 'email_template.txt', $extra_stash_values );
@@ -297,6 +323,7 @@ If a 'from' is not specified then the default from the config is used.
 
 =cut
 
+
 sub send_email {
     my $c                  = shift;
     my $template           = shift;
@@ -307,7 +334,6 @@ sub send_email {
 
     # create the vars to pass to the email template
     my $vars = {
-        from => [ $sender, _($sender_name) ],
         %{ $c->stash },
         %$extra_stash_values,
         additional_template_paths => [
@@ -315,6 +341,9 @@ sub send_email {
             FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker )->stringify,
         ]
     };
+
+    $vars->{to} = $c->format_email_address($vars->{to});
+    $vars->{from} = $c->format_email_address($vars->{from} || [ $sender, _($sender_name) ]);
 
     # render the template
     my $content = $c->view('Email')->render( $c, $template, $vars );
@@ -393,6 +422,12 @@ sub send_email_cron {
     $site_name = Utils::trim_text(Encode::decode('utf8', $site_name));
     $params->{_parameters_}->{site_name} = $site_name;
 
+    for my $field ( qw(To From Cc Bcc) ) {
+        if (my $val = $params->{$field}) {
+            $params->{$field} = $c->format_email_address($val);
+        }
+    }
+
     $params->{_line_indent} = '';
     my $email = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email($params) };
 
@@ -407,6 +442,26 @@ sub send_email_cron {
         my $result = $c->model('EmailSend', %model_args)->send($email);
         return $result ? 0 : 1;
     }
+}
+
+
+=head1 send_email_simple
+
+NB: we may later try to refactor send_email to point at this.  Accepts an
+L<Email::Simple> object (so you need to create that, and set To/From/Subject
+yourself), and just sets a common Message-ID and sends.
+
+=cut
+
+sub send_email_simple {
+    my ($self, $email) = @_;
+    $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
+        time(), unpack('h*', random_bytes(5, 1)), $self->config->{EMAIL_DOMAIN}
+    ) );
+
+    # send the email
+    return $self->model('EmailSend')->send($email) # Email::Send accepts ->as_string or Email::Simple objects
+        && $email; # return the email object on success, undef otherwise
 }
 
 =head2 uri_with
@@ -467,7 +522,7 @@ sub finalize {
     my $c = shift;
     $c->next::method(@_);
 
-    # cobrand holds on to a reference to $c so we want to 
+    # cobrand holds on to a reference to $c so we want to
     # get git rid of this to stop circular references and
     # memory leaks
     delete $c->stash->{cobrand};

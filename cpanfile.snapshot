@@ -2584,6 +2584,63 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::More 0.47
       Time::Local 0.000
+  Email-MIME-1.929
+    pathname: R/RJ/RJBS/Email-MIME-1.929.tar.gz
+    provides:
+      Email::MIME 1.929
+      Email::MIME::Creator 1.929
+      Email::MIME::Encode 1.929
+      Email::MIME::Header 1.929
+      Email::MIME::Modifier 1.929
+    requirements:
+      Carp 0
+      Email::Address 0
+      Email::MIME::ContentType 1.016
+      Email::MIME::Encodings 1.314
+      Email::MessageID 0
+      Email::Simple 2.102
+      Email::Simple::Creator 0
+      Email::Simple::Header 0
+      Encode 1.9801
+      ExtUtils::MakeMaker 0
+      MIME::Base64 0
+      MIME::Types 1.13
+      Scalar::Util 0
+      parent 0
+      perl 5.008001
+      strict 0
+      warnings 0
+  Email-MIME-ContentType-1.017
+    pathname: R/RJ/RJBS/Email-MIME-ContentType-1.017.tar.gz
+    provides:
+      Email::MIME::ContentType 1.017
+    requirements:
+      Carp 0
+      Exporter 5.57
+      ExtUtils::MakeMaker 6.30
+      strict 0
+      warnings 0
+  Email-MIME-Encodings-1.315
+    pathname: R/RJ/RJBS/Email-MIME-Encodings-1.315.tar.gz
+    provides:
+      Email::MIME::Encodings 1.315
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 6.30
+      MIME::Base64 3.05
+      MIME::QuotedPrint 3.05
+      strict 0
+      warnings 0
+  Email-MessageID-1.405
+    pathname: R/RJ/RJBS/Email-MessageID-1.405.tar.gz
+    provides:
+      Email::MessageID 1.405
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      Sys::Hostname 0
+      overload 0
+      strict 0
+      warnings 0
   Email-Send-2.198
     pathname: R/RJ/RJBS/Email-Send-2.198.tar.gz
     provides:
@@ -2603,16 +2660,19 @@ DISTRIBUTIONS
       Scalar::Util 1.02
       Symbol 0.00
       Test::More 0.47
-  Email-Simple-2.102
-    pathname: R/RJ/RJBS/Email-Simple-2.102.tar.gz
+  Email-Simple-2.206
+    pathname: R/RJ/RJBS/Email-Simple-2.206.tar.gz
     provides:
-      Email::Simple 2.102
-      Email::Simple::Creator 2.102
-      Email::Simple::Header 2.102
+      Email::Simple 2.206
+      Email::Simple::Creator 2.206
+      Email::Simple::Header 2.206
     requirements:
+      Carp 0
       Email::Date::Format 0
       ExtUtils::MakeMaker 0
-      Test::More 0.47
+      perl 5.006
+      strict 0
+      warnings 0
   Email-Valid-0.190
     pathname: R/RJ/RJBS/Email-Valid-0.190.tar.gz
     provides:

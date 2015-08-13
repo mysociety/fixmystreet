@@ -1,0 +1,18 @@
+[% all_incidents = on_map.merge(around_map) %]
+[% IF all_incidents.size %]
+    [% IF all_incidents.size > 10; all_incidents = all_incidents.slice(0,9); END %]
+    [% FOREACH p IN all_incidents %]
+        <li>
+            [% UNLESS p.title; p = p.problem; END %]
+            <a href="[% c.uri_for('/report', p.id ) %]" class="[% p.category %]">
+                <h3>[% p.title | html %]</h3>
+                <p>[%- prettify_dt( p.confirmed, 1 ) %]</p>
+            </a>
+        </li>
+    [% END %]
+[% ELSE %]
+    <li class="no-incidents">
+        <span class="circled-icon"><img src="/cobrands/smidsy/images/circle-icon-happy.png" srcset="/cobrands/smidsy/images/circle-icon-happy@2x.png 2x" alt="" width="50" height="50"></span>
+        [% loc('There are no incidents nearby!') %]
+    </li>
+[% END %]
