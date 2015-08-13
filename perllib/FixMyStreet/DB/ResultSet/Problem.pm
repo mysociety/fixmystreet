@@ -337,7 +337,7 @@ sub send_reports {
             my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
 
             if ( ! exists $senders->{ $sender } ) {
-                warn "No such sender [ $sender ] for body $body->name ( $body->id )";
+                warn sprintf "No such sender [ $sender ] for body %s ( %d )", $body->name, $body->id;
                 next;
             }
             $reporters{ $sender } ||= $sender->new();
