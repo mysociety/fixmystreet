@@ -58,7 +58,7 @@ sub confirm_problem : Path('/P') {
     # check that this email or domain are not the cause of abuse. If so hide it.
     if ( $problem->is_from_abuser ) {
         $problem->update(
-            { state => 'hidden', lastupdate => \'ms_current_timestamp()' } );
+            { state => 'hidden', lastupdate => \'current_timestamp' } );
         $c->stash->{template} = 'tokens/abuse.html';
         return;
     }
@@ -68,7 +68,7 @@ sub confirm_problem : Path('/P') {
     if ($c->cobrand->moniker eq 'zurich') {
         $problem->set_extra_metadata( email_confirmed => 1 );
         $problem->update( {
-            confirmed => \'ms_current_timestamp()',
+            confirmed => \'current_timestamp',
         } );
 
         if ( $data->{name} || $data->{password} ) {
@@ -90,8 +90,8 @@ sub confirm_problem : Path('/P') {
     $problem->update(
         {
             state      => 'confirmed',
-            confirmed  => \'ms_current_timestamp()',
-            lastupdate => \'ms_current_timestamp()',
+            confirmed  => \'current_timestamp',
+            lastupdate => \'current_timestamp',
         }
     );
 

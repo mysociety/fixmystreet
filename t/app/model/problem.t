@@ -524,14 +524,14 @@ foreach my $test ( {
             {
                 whensent => undef
             }
-        )->update( { whensent => \'ms_current_timestamp()' } );
+        )->update( { whensent => \'current_timestamp' } );
 
         $problem->discard_changes;
         $problem->update( {
             bodies_str => $test->{ body },
             state => 'confirmed',
-            confirmed => \'ms_current_timestamp()',
-            whensent => $test->{ unset_whendef } ? undef : \'ms_current_timestamp()',
+            confirmed => \'current_timestamp',
+            whensent => $test->{ unset_whendef } ? undef : \'current_timestamp',
             category => $test->{ category } || 'potholes',
             name => $test->{ name },
             cobrand => $test->{ cobrand } || 'fixmystreet',
@@ -598,13 +598,13 @@ subtest 'check can set mutiple emails as a single contact' => sub {
         {
             whensent => undef
         }
-    )->update( { whensent => \'ms_current_timestamp()' } );
+    )->update( { whensent => \'current_timestamp' } );
 
     $problem->discard_changes;
     $problem->update( {
         bodies_str => $contact->{ body_id },
         state => 'confirmed',
-        confirmed => \'ms_current_timestamp()',
+        confirmed => \'current_timestamp',
         whensent => undef,
         category => 'trees',
         name => 'Test User',
@@ -632,13 +632,13 @@ subtest 'check can turn on report sent email alerts' => sub {
         {
             whensent => undef
         }
-    )->update( { whensent => \'ms_current_timestamp()' } );
+    )->update( { whensent => \'current_timestamp' } );
 
     $problem->discard_changes;
     $problem->update( {
         bodies_str => $body_ids{2651},
         state => 'confirmed',
-        confirmed => \'ms_current_timestamp()',
+        confirmed => \'current_timestamp',
         whensent => undef,
         category => 'potholes',
         name => 'Test User',
@@ -677,14 +677,14 @@ subtest 'check iOS app store test reports not sent' => sub {
         {
             whensent => undef
         }
-    )->update( { whensent => \'ms_current_timestamp()' } );
+    )->update( { whensent => \'current_timestamp' } );
 
     $problem->discard_changes;
     $problem->update( {
         bodies_str => $body_ids{2651},
         title => 'App store test',
         state => 'confirmed',
-        confirmed => \'ms_current_timestamp()',
+        confirmed => \'current_timestamp',
         whensent => undef,
         category => 'potholes',
         send_fail_count => 0,
@@ -706,14 +706,14 @@ subtest 'check reports from abuser not sent' => sub {
         {
             whensent => undef
         }
-    )->update( { whensent => \'ms_current_timestamp()' } );
+    )->update( { whensent => \'current_timestamp' } );
 
     $problem->discard_changes;
     $problem->update( {
         bodies_str => $body_ids{2651},
         title => 'Report',
         state => 'confirmed',
-        confirmed => \'ms_current_timestamp()',
+        confirmed => \'current_timestamp',
         whensent => undef,
         category => 'potholes',
         send_fail_count => 0,
@@ -728,7 +728,7 @@ subtest 'check reports from abuser not sent' => sub {
 
     $problem->update( {
         state => 'confirmed',
-        confirmed => \'ms_current_timestamp()',
+        confirmed => \'current_timestamp',
         whensent => undef,
     } );
 

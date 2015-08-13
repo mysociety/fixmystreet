@@ -11,27 +11,6 @@ create table secret (
     secret text not null
 );
 
--- If a row is present, that is date which is "today".  Used for debugging
--- to advance time without having to wait.
-create table debugdate (
-    override_today date
-);
-
--- Returns the timestamp of current time, but with possibly overriden "today".
-create function ms_current_timestamp()
-    returns timestamp as '
-    declare
-        today date;
-    begin
-        today = (select override_today from debugdate);
-        if today is not null then
-           return today + current_time;
-        else
-           return current_timestamp;
-        end if;
-    end;
-' language 'plpgsql';
-
 -- table for sessions - needed by Catalyst::Plugin::Session::Store::DBIC
 create table sessions (
     id           char(72) primary key,
@@ -171,7 +150,7 @@ create table problem (
     external_team text,
 
     -- Metadata
-    created timestamp not null default ms_current_timestamp(),
+    created timestamp not null default current_timestamp,
     confirmed timestamp,
     state text not null check (
         state = 'unconfirmed'
@@ -195,7 +174,7 @@ create table problem (
     service text not null default '',
     cobrand text not null default '' check (cobrand ~* '^[a-z0-9]*$'), 
     cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
-    lastupdate timestamp not null default ms_current_timestamp(),
+    lastupdate timestamp not null default current_timestamp,
     whensent timestamp,
     send_questionnaire boolean not null default 't',
     extra text, -- extra fields required for open311
@@ -307,7 +286,7 @@ create table comment (
     anonymous bool not null,
     name text, -- null means anonymous
     website text,
-    created timestamp not null default ms_current_timestamp(),
+    created timestamp not null default current_timestamp,
     confirmed timestamp,
     text text not null,                     -- as entered by comment author
     photo bytea,
@@ -355,7 +334,7 @@ create table token (
     scope text not null,
     token text not null,
     data bytea not null,
-    created timestamp not null default ms_current_timestamp(),
+    created timestamp not null default current_timestamp,
     primary key (scope, token)
 );
 
@@ -387,7 +366,7 @@ create table alert (
     lang text not null default 'en-gb',
     cobrand text not null default '' check (cobrand ~* '^[a-z0-9]*$'), 
     cobrand_data text not null default '' check (cobrand_data ~* '^[a-z0-9]*$'), -- Extra data used in cobranded versions of the site
-    whensubscribed timestamp not null default ms_current_timestamp(),
+    whensubscribed timestamp not null default current_timestamp,
     whendisabled timestamp default null
 );
 create index alert_user_id_idx on alert ( user_id );
@@ -399,7 +378,7 @@ create index alert_whensubscribed_confirmed_cobrand_idx on alert(whensubscribed,
 create table alert_sent (
     alert_id integer not null references alert(id),
     parameter text, -- e.g. Update ID for new updates
-    whenqueued timestamp not null default ms_current_timestamp()
+    whenqueued timestamp not null default current_timestamp
 );
 create index alert_sent_alert_id_parameter_idx on alert_sent(alert_id, parameter);
 
@@ -444,7 +423,7 @@ create table admin_log (
     ),
     object_id integer not null,
     action text not null,
-    whenedited timestamp not null default ms_current_timestamp(),
+    whenedited timestamp not null default current_timestamp,
     user_id int references users(id) null,
     reason text not null default ''
 ); 
@@ -462,7 +441,7 @@ create table moderation_original_data (
     anonymous bool not null,
 
     -- Metadata
-    created timestamp not null default ms_current_timestamp()
+    created timestamp not null default current_timestamp
 );
 
 create table user_body_permissions (

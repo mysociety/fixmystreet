@@ -87,7 +87,7 @@ my $comment2 = FixMyStreet::App->model('DB::Comment')->find_or_create(
     }
 );
 
-$comment->confirmed( \"ms_current_timestamp() - '3 days'::interval" );
+$comment->confirmed( \"current_timestamp - '3 days'::interval" );
 $comment->update;
 
 my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(

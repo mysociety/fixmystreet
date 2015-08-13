@@ -80,7 +80,7 @@ sub update_problem : Private {
         $problem->interest_count( \'interest_count + 1' );
     }
 
-    $problem->lastupdate( \'ms_current_timestamp()' );
+    $problem->lastupdate( \'current_timestamp' );
     $problem->update;
 
     $c->stash->{problem_id} = $problem->id;

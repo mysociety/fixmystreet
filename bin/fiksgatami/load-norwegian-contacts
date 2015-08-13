@@ -54,13 +54,13 @@ while (<FP>) {
         $categories = $defcategories;
     }
 #    dbh()->do("INSERT INTO contacts (area_id, email, editor, whenedited, note, confirmed, deleted)
-#        VALUES (?, ?, 'import', ms_current_timestamp(), 'Initial import', 'false', 'false')",
+#        VALUES (?, ?, 'import', current_timestamp, 'Initial import', 'false', 'false')",
 #        {}, $id, $email);
 #    } else {
         for my $category (split(/,\s*/, $categories)) {
             print "  Category '$category'\n";
             dbh()->do("INSERT INTO contacts (area_id, email, category, editor, whenedited, note, confirmed, deleted)
-                        VALUES (?, ?, ?, 'import', ms_current_timestamp(), 'Initial import', 'true', 'false')",
+                        VALUES (?, ?, ?, 'import', current_timestamp, 'Initial import', 'true', 'false')",
                       {}, $id, $email, $category);
         }
 #    }

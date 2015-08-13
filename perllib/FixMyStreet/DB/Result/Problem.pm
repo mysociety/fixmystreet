@@ -53,7 +53,7 @@ __PACKAGE__->add_columns(
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"ms_current_timestamp()",
+    default_value => \"current_timestamp",
     is_nullable   => 0,
   },
   "confirmed",
@@ -71,7 +71,7 @@ __PACKAGE__->add_columns(
   "lastupdate",
   {
     data_type     => "timestamp",
-    default_value => \"ms_current_timestamp()",
+    default_value => \"current_timestamp",
     is_nullable   => 0,
   },
   "whensent",
@@ -441,7 +441,7 @@ sub confirm {
     return if $self->state eq 'confirmed';
 
     $self->state('confirmed');
-    $self->confirmed( \'ms_current_timestamp()' );
+    $self->confirmed( \'current_timestamp' );
     return 1;
 }
 
@@ -735,8 +735,8 @@ sub update_from_open311_service_request {
         {
             problem_id => $self->id,
             state      => 'confirmed',
-            created    => $updated || \'ms_current_timestamp()',
-            confirmed => \'ms_current_timestamp()',
+            created    => $updated || \'current_timestamp',
+            confirmed => \'current_timestamp',
             text      => $status_notes,
             mark_open => 0,
             mark_fixed => 0,
@@ -789,7 +789,7 @@ sub update_send_failed {
 
     $self->update( {
         send_fail_count => $self->send_fail_count + 1,
-        send_fail_timestamp => \'ms_current_timestamp()',
+        send_fail_timestamp => \'current_timestamp',
         send_fail_reason => $msg
     } );
 }

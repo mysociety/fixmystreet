@@ -14,7 +14,7 @@ sub timeline_created {
 
     return $rs->search(
         {
-            whensubscribed => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
+            whensubscribed => { '>=', \"current_timestamp-'7 days'::interval" },
             confirmed => 1,
             %{ $restriction },
         },
@@ -29,7 +29,7 @@ sub timeline_disabled {
 
     return $rs->search(
         {
-            whendisabled => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
+            whendisabled => { '>=', \"current_timestamp-'7 days'::interval" },
             %{ $restriction },
         },
     );

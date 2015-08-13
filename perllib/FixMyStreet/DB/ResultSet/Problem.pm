@@ -168,9 +168,9 @@ sub timeline {
     return $rs->search(
         {
             -or => {
-                created  => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
-                confirmed => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
-                whensent  => { '>=', \"ms_current_timestamp()-'7 days'::interval" },
+                created  => { '>=', \"current_timestamp-'7 days'::interval" },
+                confirmed => { '>=', \"current_timestamp-'7 days'::interval" },
+                whensent  => { '>=', \"current_timestamp-'7 days'::interval" },
             }
         },
         {
@@ -433,8 +433,8 @@ sub send_reports {
 
         unless ($result) {
             $row->update( {
-                whensent => \'ms_current_timestamp()',
-                lastupdate => \'ms_current_timestamp()',
+                whensent => \'current_timestamp',
+                lastupdate => \'current_timestamp',
             } );
             if ( $cobrand->report_sent_confirmation_email && !$h{anonymous_report}) {
                 _send_report_sent_email( $row, \%h, $nomail, $cobrand );

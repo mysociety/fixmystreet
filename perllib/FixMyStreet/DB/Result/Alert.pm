@@ -37,7 +37,7 @@ __PACKAGE__->add_columns(
   "whensubscribed",
   {
     data_type     => "timestamp",
-    default_value => \"ms_current_timestamp()",
+    default_value => \"current_timestamp",
     is_nullable   => 0,
   },
   "whendisabled",
@@ -106,7 +106,7 @@ sub confirm {
 sub disable {
     my $self = shift;
 
-    $self->whendisabled( \'ms_current_timestamp()' );
+    $self->whendisabled( \'current_timestamp' );
     $self->update;
 
     return 1;

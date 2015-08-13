@@ -20,7 +20,7 @@ __PACKAGE__->add_columns(
   "created",
   {
     data_type     => "timestamp",
-    default_value => \"ms_current_timestamp()",
+    default_value => \"current_timestamp",
     is_nullable   => 0,
   },
 );
@@ -42,8 +42,7 @@ Representation of mySociety::AuthToken in the DBIx::Class world.
 
 The 'data' value is automatically inflated and deflated in the same way that the
 AuthToken would do it. 'token' is set to a new random value by default and the
-'created' timestamp is achieved using the database function
-ms_current_timestamp.
+'created' timestamp is achieved using the database function current_timestamp.
 
 =cut
 
@@ -55,7 +54,7 @@ sub new {
     my ( $class, $attrs ) = @_;
 
     $attrs->{token}   ||= mySociety::AuthToken::random_token();
-    $attrs->{created} ||= \'ms_current_timestamp()';
+    $attrs->{created} ||= \'current_timestamp';
 
     my $new = $class->next::method($attrs);
     return $new;
