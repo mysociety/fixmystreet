@@ -18,7 +18,7 @@ $(function() {
                 // But it does call callback so hide when complete.
                 // (We hide on callback, to avoid the hide killing the slide
                 // animation entirely.)
-                function () { $(this).hide() }
+                function () { $(this).hide(); }
             );
         }
     }).change(); // and call on page load
