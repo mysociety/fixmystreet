@@ -110,8 +110,7 @@ SCSS files to CSS files. So let's install compass and run that:
 
 {% highlight bash %}
 $ gem install --user-install --no-ri --no-rdoc bundler
-$ $(ruby -rubygems -e 'puts Gem.user_dir')/bin/bundle install \
-> --deployment --path ../gems --binstubs ../gem-bin
+$ $(ruby -rubygems -e 'puts Gem.user_dir')/bin/bundle install --deployment --path ../gems --binstubs ../gem-bin
 $ bin/make_css
 {% endhighlight %}
 
@@ -178,7 +177,19 @@ If you are using Bing or Google maps you should also set one of
 [BING_MAPS_API_KEY]({{ site.baseurl }}customising/config/#bing_maps_api_key) or 
 [GOOGLE_MAPS_API_KEY]({{ site.baseurl }}customising/config/#google_maps_api_key).
 
-### 7. Run
+### 7. Set up some required data
+
+You need to generate the data used for the `/reports` page (this is run by the
+crontab, but to have it working from the start, we can run the script
+manually). Also, if you wish to use other languages, you will need to generate
+.mo files for them.
+
+{% highlight bash %}
+$ bin/update-all-reports
+$ commonlib/bin/gettext-makemo FixMyStreet
+{% endhighlight %}
+
+### 8. Run
 
 The development server can now hopefully be run with:
 
