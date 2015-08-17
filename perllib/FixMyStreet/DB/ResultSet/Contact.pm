@@ -4,6 +4,8 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
+sub me { join('.', shift->current_source_alias, shift || q{})  }
+
 =head2 not_deleted
 
     $rs = $rs->not_deleted();
@@ -14,7 +16,7 @@ Filter down to not deleted contacts - which have C<deleted> set to false;
 
 sub not_deleted {
     my $rs = shift;
-    return $rs->search( { deleted => 0 } );
+    return $rs->search( { $rs->me('deleted') => 0 } );
 }
 
 sub summary_count {
