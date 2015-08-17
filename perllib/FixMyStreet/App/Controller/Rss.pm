@@ -264,9 +264,9 @@ sub add_row : Private {
     (my $link = $alert_type->item_link) =~ s/{{(.*?)}}/$row->{$1}/g;
     (my $desc = _($alert_type->item_description)) =~ s/{{(.*?)}}/$row->{$1}/g;
 
-    my $hashref_restriction = $c->cobrand->site_restriction;
+    my $hashref_restriction = $c->cobrand->body_restriction;
     my $base_url = $c->cobrand->base_url;
-    if ( $hashref_restriction && $hashref_restriction->{bodies_str} && $row->{bodies_str} && $row->{bodies_str} ne $hashref_restriction->{bodies_str} ) {
+    if ( $hashref_restriction && $row->{bodies_str} && $row->{bodies_str} ne $hashref_restriction ) {
         $base_url = $c->config->{BASE_URL};
     }
     my $url = $base_url . $link;

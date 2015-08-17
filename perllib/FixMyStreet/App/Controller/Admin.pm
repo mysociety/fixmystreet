@@ -70,8 +70,6 @@ sub index : Path : Args(0) {
         return $c->cobrand->admin();
     }
 
-    my $site_restriction = $c->cobrand->site_restriction();
-
     my $problems = $c->cobrand->problems->summary_count;
 
     my %prob_counts =
@@ -85,7 +83,7 @@ sub index : Path : Args(0) {
         for ( FixMyStreet::DB::Result::Problem->visible_states() );
     $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
 
-    my $comments = $c->model('DB::Comment')->summary_count( $site_restriction );
+    my $comments = $c->model('DB::Comment')->summary_count( $c->cobrand->body_restriction );
 
     my %comment_counts =
       map { $_->state => $_->get_column('state_count') } $comments->all;
@@ -150,7 +148,6 @@ sub config_page : Path( 'config' ) : Args(0) {
 sub timeline : Path( 'timeline' ) : Args(0) {
     my ($self, $c) = @_;
 
-    my $site_restriction = $c->cobrand->site_restriction();
     my %time;
 
     $c->model('DB')->schema->storage->sql_maker->quote_char( '"' );
@@ -171,7 +168,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
         push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered, obj => $_ } if $_->whenanswered;
     }
 
-    my $updates = $c->model('DB::Comment')->timeline( $site_restriction );
+    my $updates = $c->model('DB::Comment')->timeline( $c->cobrand->body_restriction );
 
     foreach ($updates->all) {
         push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_} ;
@@ -538,8 +535,6 @@ sub reports : Path('reports') {
     if (my $search = $c->get_param('search')) {
         $c->stash->{searched} = $search;
 
-        my $site_restriction = $c->cobrand->site_restriction;
-
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
 
@@ -616,9 +611,10 @@ sub reports : Path('reports') {
         }
 
         if (@$query) {
-            my $updates = $c->model('DB::Comment')->search(
+            my $updates = $c->model('DB::Comment')
+                ->to_body($c->cobrand->body_restriction)
+                ->search(
                 {
-                    %{ $site_restriction },
                     -or => $query,
                 },
                 {
@@ -649,8 +645,6 @@ sub reports : Path('reports') {
 
 sub report_edit : Path('report_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
-
-    my $site_restriction = $c->cobrand->site_restriction;
 
     my $problem = $c->cobrand->problems->search( { id => $id } )->first;
 
@@ -874,13 +868,9 @@ sub users: Path('users') : Args(0) {
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my $site_restriction = $c->cobrand->site_restriction;
-    my $update = $c->model('DB::Comment')->search(
-        {
-            id => $id,
-            %{$site_restriction},
-        }
-    )->first;
+    my $update = $c->model('DB::Comment')
+        ->to_body($c->cobrand->body_restriction)
+        ->search({ id => $id })->first;
 
     $c->detach( '/page_error_404_not_found' )
       unless $update;
@@ -1121,9 +1111,6 @@ sub stats : Path('stats') : Args(0) {
 
         my $bymonth = $c->get_param('bymonth');
         $c->stash->{bymonth} = $bymonth;
-        my ( %body, %dates );
-        $body{bodies_str} = { like => $c->get_param('body') }
-            if $c->get_param('body');
 
         $c->stash->{selected_body} = $c->get_param('body');
 
@@ -1154,14 +1141,12 @@ sub stats : Path('stats') : Args(0) {
             );
         }
 
-        my $p = $c->cobrand->problems->search(
+        my $p = $c->cobrand->problems->to_body($c->get_param('body'))->search(
             {
                 -AND => [
                     $field => { '>=', $start_date},
                     $field => { '<=', $end_date + $one_day },
                 ],
-                %body,
-                %dates,
             },
             \%select,
         );

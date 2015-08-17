@@ -17,9 +17,8 @@ sub get_updates {
             api_key      => $body->api_key
         );
 
-        my $reports = FixMyStreet::App->model('DB::Problem')->search(
+        my $reports = FixMyStreet::App->model('DB::Problem')->to_body($body)->search(
             {
-                bodies_str => { like => "\%" . $body->id . "\%" },
                 state => { 'IN', [qw/confirmed fixed/] },
                 -and => [
                     external_id => { '!=', undef },

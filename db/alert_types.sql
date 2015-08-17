@@ -93,7 +93,7 @@ values ('postcode_local_problems_state', '', '',
     'problem_find_nearby(?, ?, ?) as nearby,problem', 'nearby.problem_id = problem.id and problem.non_public = ''f'' and problem.state in (?)', 'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-nearby');
 
--- New problems sent to a particular council
+-- New problems sent to a particular body
 insert into alert_type
 (ref, head_sql_query, head_table,
     head_title, head_link, head_description,
@@ -107,8 +107,7 @@ values ('council_problems', '', '',
       ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
      ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
      ''internal referral'' ) AND
-    (bodies_str like ''%''||?||''%'' or bodies_str is null) and
-    areas like ''%,''||?||'',%''',
+    regexp_split_to_array(bodies_str, '','') && ARRAY[?]',
     'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-council'
 );
@@ -128,7 +127,7 @@ values ('ward_problems', '', '',
      ''fixed'', ''fixed - council'', ''fixed - user'', ''closed'',
      ''action scheduled'', ''not responsible'', ''duplicate'', ''unable to fix'',
      ''internal referral'' ) AND
-    (bodies_str like ''%''||?||''%'' or bodies_str is null) and
+    (regexp_split_to_array(bodies_str, '','') && ARRAY[?] or bodies_str is null) and
     areas like ''%,''||?||'',%''',
     'created desc',
     '{{title}}, {{confirmed}}', '/report/{{id}}', '{{detail}}', 'alert-problem-ward'

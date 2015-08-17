@@ -45,15 +45,6 @@ sub country {
     return '';
 }
 
-=head1 problems_clause
-
-Returns a hash for a query to be used by problems (and elsewhere in joined
-queries) to restrict results for a cobrand.
-
-=cut
-
-sub problems_clause {}
-
 =head1 problems
 
 Returns a ResultSet of Problems, restricted to a subset if we're on a cobrand
@@ -66,20 +57,20 @@ sub problems {
     return $self->{c}->model('DB::Problem');
 }
 
-=head1 site_restriction
+=head1 body_restriction
 
-Return a site key and a hash of extra query parameters if the cobrand uses a
-subset of the FixMyStreet data. Parameter is any extra data the cobrand needs.
-Returns a site key of 0 and an empty hash if the cobrand uses all the data.
+Return an extra query parameter to restrict reports to those sent to a
+particular body.
 
 =cut
 
-sub site_restriction { return {}; }
+sub body_restriction {}
+
 sub site_key { return 0; }
 
 =head2 restriction
 
-Return a restriction to pull out data saved while using the cobrand site.
+Return a restriction to data saved while using this specific cobrand site.
 
 =cut
 

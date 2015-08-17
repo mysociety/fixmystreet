@@ -207,6 +207,7 @@ create index problem_state_latitude_longitude_idx on problem(state, latitude, lo
 create index problem_user_id_idx on problem ( user_id );
 create index problem_external_body_idx on problem(lower(external_body));
 create index problem_radians_latitude_longitude_idx on problem(radians(latitude), radians(longitude));
+create index problem_bodies_str_array_idx on problem USING gin(regexp_split_to_array(bodies_str, ','));
 
 create table questionnaire (
     id serial not null primary key,

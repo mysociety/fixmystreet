@@ -22,10 +22,11 @@ sub path_to_web_templates {
     ];
 }
 
-sub site_restriction {
+sub body_restriction {
     my $self = shift;
-    return { bodies_str => sprintf('%d', $self->council_id) };
+    return $self->council_id;
 }
+
 sub site_key {
     my $self = shift;
     return $self->council_url;
@@ -35,23 +36,9 @@ sub restriction {
     return { cobrand => shift->moniker };
 }
 
-# Different function to site_restriction due to two-tier use
-sub problems_clause {
-    my $self = shift;
-
-    if ($self->is_two_tier) {
-        return { bodies_str => {
-            like => ('%' . $self->council_id . '%')
-        }};
-    }
-    else {
-        return { bodies_str => sprintf('%d', $self->council_id) };
-    }
-}
-
 sub problems {
     my $self = shift;
-    return $self->{c}->model('DB::Problem')->search( $self->problems_clause );
+    return $self->{c}->model('DB::Problem')->to_body($self->council_id);
 }
 
 sub base_url {

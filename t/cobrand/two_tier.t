@@ -6,11 +6,11 @@ use FixMyStreet;
 use FixMyStreet::Cobrand;
 
 my @cobrands = (
-    [ hart => '%2333%' ],
-    [ oxfordshire  => '%2237%' ],
-    [ eastsussex   => '%2224%' ],
-    [ stevenage    => '%2347%' ],
-    [ warwickshire => '%2243%' ],
+    [ hart => 2333 ],
+    [ oxfordshire  => 2237 ],
+    [ eastsussex   => 2224 ],
+    [ stevenage    => 2347 ],
+    [ warwickshire => 2243 ],
 );
 
 FixMyStreet::override_config {
@@ -18,11 +18,10 @@ FixMyStreet::override_config {
 }, sub {
 
     for my $c (@cobrands) {
-        my ($m, $like) = @$c;
+        my ($m, $id) = @$c;
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($m);
-        my $problems_clause = $cobrand->problems_clause;
-        is_deeply $problems_clause,
-            { bodies_str => { like => $like } }, "problems_clause for $m";
+        my $body_restriction = $cobrand->body_restriction;
+        is $body_restriction, $id, "body_restriction for $m";
     }
 };
 

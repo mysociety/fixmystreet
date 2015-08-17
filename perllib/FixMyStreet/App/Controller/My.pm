@@ -37,10 +37,6 @@ sub my : Path : Args(0) {
     my $params = {
         state => [ keys %$states ],
     };
-    $params = {
-        %{ $c->cobrand->problems_clause },
-        %$params
-    } if $c->cobrand->problems_clause;
 
     my $category = $c->get_param('filter_category');
     if ( $category ) {
@@ -48,7 +44,9 @@ sub my : Path : Args(0) {
         $c->stash->{filter_category} = $category;
     }
 
-    my $rs = $c->user->problems->search( $params, {
+    my $rs = $c->user->problems
+        ->to_body($c->cobrand->body_restriction)
+        ->search( $params, {
         order_by => { -desc => 'confirmed' },
         rows => 50
     } )->page( $p_page );

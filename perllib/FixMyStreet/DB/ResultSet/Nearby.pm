@@ -19,11 +19,9 @@ sub nearby {
         if $interval;
     $params->{id} = { -not_in => $ids }
         if $ids;
-    $params = {
-        %{ $c->cobrand->problems_clause },
-        %$params
-    } if $c->cobrand->problems_clause;
     $params->{category} = $category if $category;
+
+    $rs = FixMyStreet::DB::ResultSet::Problem::to_body($rs, $c->cobrand->body_restriction);
 
     my $attrs = {
         prefetch => 'problem',

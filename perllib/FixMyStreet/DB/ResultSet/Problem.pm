@@ -20,6 +20,18 @@ sub set_restriction {
     $site_key = $key;
 }
 
+sub to_body {
+    my ($rs, $bodies) = @_;
+    return $rs unless $bodies;
+    unless (ref $bodies eq 'ARRAY') {
+        $bodies = [ map { ref $_ ? $_->id : $_ } $bodies ];
+    }
+    $rs = $rs->search(
+        \[ "regexp_split_to_array(bodies_str, ',') && ?", [ {} => $bodies ] ]
+    );
+    return $rs;
+}
+
 # Front page statistics
 
 sub recent_fixed {
@@ -320,9 +332,8 @@ sub send_reports {
             $cobrand->process_additional_metadata_for_email($row, \%h);
         }
 
-        my @bodies = split /,/, $row->bodies_str;
         my $bodies = FixMyStreet::App->model("DB::Body")->search(
-            { id => \@bodies },
+            { id => $row->bodies_str_ids },
             { order_by => 'name' },
         );
 
