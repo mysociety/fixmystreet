@@ -1064,7 +1064,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 sub flagged : Path('flagged') : Args(0) {
     my ( $self, $c ) = @_;
 
-    my $problems = $c->model('DB::Problem')->search( { flagged => 1 } );
+    my $problems = $c->cobrand->problems->search( { flagged => 1 } );
 
     # pass in as array ref as using same template as search_reports
     # which has to use an array ref for sql quoting reasons
@@ -1154,7 +1154,7 @@ sub stats : Path('stats') : Args(0) {
             );
         }
 
-        my $p = $c->model('DB::Problem')->search(
+        my $p = $c->cobrand->problems->search(
             {
                 -AND => [
                     $field => { '>=', $start_date},

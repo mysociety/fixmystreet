@@ -236,7 +236,7 @@ sub send_reports {
 
     my $states = [ 'confirmed', 'fixed' ];
     $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed' ] if $site eq 'zurich';
-    my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
+    my $unsent = $rs->search( {
         state => $states,
         whensent => undef,
         bodies_str => { '!=', undef },
@@ -473,7 +473,7 @@ sub send_reports {
             }
         }
         my $sending_errors = '';
-        my $unsent = FixMyStreet::App->model("DB::Problem")->search( {
+        my $unsent = $rs->search( {
             state => [ 'confirmed', 'fixed' ],
             whensent => undef,
             bodies_str => { '!=', undef },
