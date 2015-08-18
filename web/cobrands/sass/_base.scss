@@ -4,6 +4,7 @@ $body-font: MuseoSans, Helmet, Freesans, sans-serif !default;
 $meta-font: Helmet, Freesans, sans-serif !default;
 $heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !default;
 $image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
+$menu-image: 'menu-white' !default;
 
 body {
   font-family: $body-font;
@@ -456,8 +457,8 @@ p.label-valid {
 #nav-link {
   width: 3em;
   height: 3em; // same height as #site-header
-  background: transparent url(/cobrands/fixmystreet/images/menu-white.png) center center no-repeat;
-  background-image: url(/cobrands/fixmystreet/images/menu-white.svg), none;
+  background: transparent url(/cobrands/fixmystreet/images/#{$menu-image}.png) center center no-repeat;
+  background-image: url(/cobrands/fixmystreet/images/#{$menu-image}.svg), none;
   background-size: 22px 18px;
   display: block;
   text-indent: -999999px;
