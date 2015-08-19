@@ -31,16 +31,16 @@ $(function(){
 
     // Questionnaire hide/showings
     if (!$('#been_fixed_no').prop('checked') && !$('#been_fixed_unknown').prop('checked')) {
-        $('#another_qn').hide();
+        $('.js-another-questionnaire').hide();
     }
-    $('#been_fixed_no').click(function() {
-        $('#another_qn').show('fast');
+    $('#been_fixed_no').on('click', function() {
+        $('.js-another-questionnaire').show('fast');
     });
-    $('#been_fixed_unknown').click(function() {
-        $('#another_qn').show('fast');
+    $('#been_fixed_unknown').on('click', function() {
+        $('.js-another-questionnaire').show('fast');
     });
-    $('#been_fixed_yes').click(function() {
-        $('#another_qn').hide('fast');
+    $('#been_fixed_yes').on('click', function() {
+        $('.js-another-questionnaire').hide('fast');
     });
 
     // Form validation
