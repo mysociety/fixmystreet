@@ -102,9 +102,6 @@ sub report_moderate_audit : Private {
 
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($problem->cobrand)->new();
 
-    my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
-    my $sender_name = _($cobrand->contact_name);
-
     my $token = $c->model("DB::Token")->create({
         scope => 'moderation',
         data => { id => $problem->id }
@@ -113,7 +110,6 @@ sub report_moderate_audit : Private {
     $c->send_email( 'problem-moderated.txt', {
 
         to      => [ [ $user->email, $user->name ] ],
-        from    => [ $sender, $sender_name ],
         types => $types_csv,
         user => $user,
         problem => $problem,

@@ -350,6 +350,13 @@ sub send_email {
 sub send_email_cron {
     my ( $c, $params, $env_from, $nomail, $cobrand, $lang_code ) = @_;
 
+    my $sender = $c->config->{DO_NOT_REPLY_EMAIL};
+    $env_from ||= $sender;
+    if (!$params->{From}) {
+        my $sender_name = $cobrand->contact_name;
+        $params->{From} = [ $sender, _($sender_name) ];
+    }
+
     my $first_to;
     if (ref($params->{To}) eq 'ARRAY') {
         if (ref($params->{To}[0]) eq 'ARRAY') {
