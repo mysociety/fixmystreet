@@ -18,6 +18,11 @@ my $user = FixMyStreet::App->model('DB::User')->find_or_create(
     }
 );
 
+my %bodies = (
+    2482 => FixMyStreet::App->model("DB::Body")->new({ id => 2482 }),
+    2651 => FixMyStreet::App->model("DB::Body")->new({ id => 2651 }),
+);
+
 my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
 <service_requests_updates>
 <request_update>
@@ -342,9 +347,8 @@ for my $test (
         $problem->state( $test->{start_state} );
         $problem->update;
 
-        my $council_details = { areas => { 2482 => 1 } };
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
-        $update->update_comments( $o, $council_details );
+        $update->update_comments( $o, $bodies{2482} );
 
         is $problem->comments->count, 1, 'comment count';
         $problem->discard_changes;
@@ -382,9 +386,8 @@ foreach my $test (
 
         $problem->comments->delete;
 
-        my $council_details = { areas => { 2482 => 1 } };
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
-        $update->update_comments( $o, $council_details );
+        $update->update_comments( $o, $bodies{2482} );
 
         my $comment = $problem->comments->first;
         is $comment->created, $dt, 'created date set to date from XML';
@@ -451,9 +454,8 @@ for my $test (
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
 
 
-        my $council_details = { areas => { $test->{area_id} => 1 } };
         my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
-        $update->update_comments( $o, $council_details );
+        $update->update_comments( $o, $bodies{$test->{area_id}} );
 
         is $problem->comments->count, $test->{p1_comments}, 'comment count for first problem';
         is $problem2->comments->count, $test->{p2_comments}, 'comment count for second problem';
@@ -491,8 +493,7 @@ subtest 'using start and end date' => sub {
         end_date => $end_dt,
     );
 
-    my $council_details = { areas => { 2482 => 1 } };
-    $update->update_comments( $o, $council_details );
+    $update->update_comments( $o, $bodies{2482} );
 
     my $start = $start_dt . '';
     my $end = $end_dt . '';
@@ -551,18 +552,17 @@ subtest 'check that existing comments are not duplicated' => sub {
         system_user => $user,
     );
 
-    my $council_details = { areas => { 2482 => 1 } };
-    $update->update_comments( $o, $council_details );
+    $update->update_comments( $o, $bodies{2482} );
 
     $problem->discard_changes;
     is $problem->comments->count, 2, 'two comments after fetching updates';
 
-    $update->update_comments( $o, $council_details );
+    $update->update_comments( $o, $bodies{2482} );
     $problem->discard_changes;
     is $problem->comments->count, 2, 're-fetching updates does not add comments';
 
     $problem->comments->delete;
-    $update->update_comments( $o, $council_details );
+    $update->update_comments( $o, $bodies{2482} );
     $problem->discard_changes;
     is $problem->comments->count, 2, 'if comments are deleted then they are added';
 };
@@ -612,8 +612,7 @@ foreach my $test ( {
             system_user => $user,
         );
 
-        my $council_details = { areas => { 2482 => 1 } };
-        $update->update_comments( $o, $council_details );
+        $update->update_comments( $o, $bodies{2482} );
 
         $problem->discard_changes;
         is $problem->comments->count, 2, 'two comments after fetching updates';
@@ -678,8 +677,7 @@ foreach my $test ( {
             suppress_alerts => $test->{suppress_alerts},
         );
 
-        my $council_details = { areas => { 2482 => 1 } };
-        $update->update_comments( $o, $council_details );
+        $update->update_comments( $o, $bodies{2482} );
         $problem->discard_changes;
 
         my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->search(

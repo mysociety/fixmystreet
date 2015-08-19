@@ -89,6 +89,7 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     my $body = $c->forward('check_page_allowed');
+    $c->stash->{body} = $body;
 
     # Set up the data for the dropdowns
 
@@ -112,7 +113,6 @@ sub index : Path : Args(0) {
     $c->stash->{category} = $c->get_param('category');
 
     my %where = (
-        bodies_str => $body->id, # XXX Does this break in a two tier council? Restriction needs looking at...
         'problem.state' => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     );
     $where{areas} = { 'like', '%,' . $c->stash->{ward} . ',%' }
@@ -155,7 +155,7 @@ sub index : Path : Args(0) {
         %$prob_where,
         'me.confirmed' => { '>=', $dtf->format_datetime( $now->clone->subtract( days => 30 ) ) },
     };
-    my $problems_rs = $c->cobrand->problems->search( $params );
+    my $problems_rs = $c->cobrand->problems->to_body($body)->search( $params );
     my @problems = $problems_rs->all;
 
     my %problems;
@@ -270,12 +270,14 @@ sub export_as_csv {
 sub updates_search : Private {
     my ( $self, $c, $time ) = @_;
 
+    my $body = $c->stash->{body};
+
     my $params = {
         %{$c->stash->{where}},
         'me.confirmed' => { '>=', $time },
     };
 
-    my $comments = $c->model('DB::Comment')->search(
+    my $comments = $c->model('DB::Comment')->to_body($body)->search(
         $params,
         {
             group_by => [ 'problem_state' ],
@@ -302,7 +304,7 @@ sub updates_search : Private {
         my $col = shift @$vars;
         my $substmt = "select min(id) from comment where me.problem_id=comment.problem_id and problem_state in ('"
             . join("','", @$vars) . "')";
-        $comments = $c->model('DB::Comment')->search(
+        $comments = $c->model('DB::Comment')->to_body($body)->search(
             { %$params,
                 problem_state => $vars,
                 'me.id' => \"= ($substmt)",
@@ -319,7 +321,7 @@ sub updates_search : Private {
         $counts{$col} = int( ($comments->get_column('time')||0) / 60 / 60 / 24 + 0.5 );
     }
 
-    $counts{fixed_user} = $c->model('DB::Comment')->search(
+    $counts{fixed_user} = $c->model('DB::Comment')->to_body($body)->search(
         { %$params, mark_fixed => 1, problem_state => undef }, { join     => 'problem' }
     )->count;
 
@@ -327,7 +329,7 @@ sub updates_search : Private {
         %{$c->stash->{prob_where}},
         'me.confirmed' => { '>=', $time },
     };
-    $counts{total} = $c->cobrand->problems->search( $params )->count;
+    $counts{total} = $c->cobrand->problems->to_body($body)->search( $params )->count;
 
     $params = {
         %{$c->stash->{prob_where}},
@@ -335,7 +337,7 @@ sub updates_search : Private {
         state => 'confirmed',
         '(select min(id) from comment where me.id=problem_id and problem_state is not null)' => undef,
     };
-    $counts{not_marked} = $c->cobrand->problems->search( $params )->count;
+    $counts{not_marked} = $c->cobrand->problems->to_body($body)->search( $params )->count;
 
     return \%counts;
 }

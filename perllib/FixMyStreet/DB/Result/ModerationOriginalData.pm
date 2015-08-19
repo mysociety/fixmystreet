@@ -35,6 +35,7 @@ __PACKAGE__->add_columns(
     data_type     => "timestamp",
     default_value => \"current_timestamp",
     is_nullable   => 0,
+    original      => { default_value => \"now()" },
   },
 );
 __PACKAGE__->set_primary_key("id");
@@ -46,7 +47,7 @@ __PACKAGE__->belongs_to(
   {
     is_deferrable => 0,
     join_type     => "LEFT",
-    on_delete     => "NO ACTION",
+    on_delete     => "CASCADE,",
     on_update     => "NO ACTION",
   },
 );
@@ -54,12 +55,12 @@ __PACKAGE__->belongs_to(
   "problem",
   "FixMyStreet::DB::Result::Problem",
   { id => "problem_id" },
-  { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
+  { is_deferrable => 0, on_delete => "CASCADE,", on_update => "NO ACTION" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-31 15:59:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:yR1Vi7cJQrX67dFwAcJW6w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:DBtGjCJykDtLnGtkj638eA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -70,8 +70,6 @@ sub email_alerts ($) {
             # this is for the new_updates alerts
             next if $row->{non_public} and $row->{user_id} != $row->{alert_user_id};
 
-            my $hashref_restriction = $cobrand->site_restriction( $row->{cobrand_data} );
-
             FixMyStreet::App->model('DB::AlertSent')->create( {
                 alert_id  => $row->{alert_id},
                 parameter => $row->{item_id},
@@ -90,8 +88,9 @@ sub email_alerts ($) {
                 $data{state_message} = _("This report is currently marked as open.");
             }
 
+            my $hashref_restriction = $cobrand->body_restriction;
             my $url = $cobrand->base_url( $row->{alert_cobrand_data} );
-            if ( $hashref_restriction && $hashref_restriction->{bodies_str} && $row->{bodies_str} ne $hashref_restriction->{bodies_str} ) {
+            if ( $hashref_restriction && $row->{bodies_str} ne $hashref_restriction ) {
                 $url = mySociety::Config::get('BASE_URL');
             }
             # this is currently only for new_updates
@@ -172,7 +171,7 @@ sub email_alerts ($) {
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
-        my $hashref_restriction = $cobrand->site_restriction( $alert->cobrand_data );
+        my $hashref_restriction = $cobrand->body_restriction;
         my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         # Convert integer to GB locale string (with a ".")
         $d = mySociety::Locale::in_gb_locale {
@@ -197,7 +196,7 @@ sub email_alerts ($) {
                 parameter => $row->{id},
             } );
             my $url = $cobrand->base_url( $alert->cobrand_data );
-            if ( $hashref_restriction && $hashref_restriction->{bodies_str} && $row->{bodies_str} ne $hashref_restriction->{bodies_str} ) {
+            if ( $hashref_restriction && $row->{bodies_str} ne $hashref_restriction ) {
                 $url = mySociety::Config::get('BASE_URL');
             }
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";

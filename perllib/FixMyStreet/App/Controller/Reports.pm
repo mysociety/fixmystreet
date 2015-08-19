@@ -269,9 +269,7 @@ sub rss_ward : Path('/rss/reports') : Args(2) {
         # Problems sent to a council
         $c->stash->{type} = 'council_problems';
         $c->stash->{title_params} = { COUNCIL => $c->stash->{body}->name };
-        # XXX This looks up in both bodies_str and areas, but is only using body ID.
-        # This will not work properly in any install where body IDs are not === area IDs.
-        $c->stash->{db_params} = [ $c->stash->{body}->id, $c->stash->{body}->id ];
+        $c->stash->{db_params} = [ $c->stash->{body}->id ];
     }
 
     # Send on to the RSS generation
@@ -417,29 +415,16 @@ sub load_and_group_problems : Private {
         $where->{category} = $category;
     }
 
+    my $problems = $c->cobrand->problems;
+
     if ($c->stash->{ward}) {
         $where->{areas} = { 'like', '%,' . $c->stash->{ward}->{id} . ',%' };
-        $where->{bodies_str} = [
-            undef,
-            $c->stash->{body}->id,
-            { 'like', $c->stash->{body}->id . ',%' },
-            { 'like', '%,' . $c->stash->{body}->id },
-        ];
+        $problems = $problems->to_body($c->stash->{body});
     } elsif ($c->stash->{body}) {
-        # XXX FixMyStreet used to have the following line so that reports not
-        # currently sent anywhere could still be listed in the appropriate
-        # (body/area), as they were the same.  Now they're not, not sure if
-        # there's a way to do this easily.
-        #$where->{areas} = { 'like', '%,' . $c->stash->{body}->id . ',%' };
-        $where->{bodies_str} = [
-        #    undef,
-            $c->stash->{body}->id,
-            { 'like', $c->stash->{body}->id . ',%' },
-            { 'like', '%,' . $c->stash->{body}->id },
-        ];
+        $problems = $problems->to_body($c->stash->{body});
     }
 
-    my $problems = $c->cobrand->problems->search(
+    $problems = $problems->search(
         $where,
         {
             order_by => $c->cobrand->reports_ordering,
@@ -463,7 +448,6 @@ sub load_and_group_problems : Private {
             }
         } else {
             # Add to bodies it was sent to
-            # XXX Assumes body ID matches "council ID"
             my $bodies = $problem->bodies_str_ids;
             foreach ( @$bodies ) {
                 next if $_ != $c->stash->{body}->id;

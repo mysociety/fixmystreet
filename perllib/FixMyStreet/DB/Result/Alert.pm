@@ -39,6 +39,7 @@ __PACKAGE__->add_columns(
     data_type     => "timestamp",
     default_value => \"current_timestamp",
     is_nullable   => 0,
+    original      => { default_value => \"now()" },
   },
   "whendisabled",
   { data_type => "timestamp", is_nullable => 1 },
@@ -64,8 +65,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d9yIFiTGtbtFaULXZNKstQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:5RNyB430T8PqtFlmGV/MUg
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 

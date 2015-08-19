@@ -10,8 +10,7 @@ NB: this is moderately specific to producing cobrands for UK councils
 1: copy an exiting perllib/FixMyStreet/Cobrand/ file to perllib/FixMyStreet/Cobrand/ExampleCom.pm
     * Change package name at top of file
     * Change following functions accordingly:
-        site_restriction
-        problems_clause
+        body_restriction
         enter_postcode_text
         area_check
         base_url

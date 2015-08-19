@@ -31,6 +31,7 @@ __PACKAGE__->add_columns(
     data_type     => "timestamp",
     default_value => \"current_timestamp",
     is_nullable   => 0,
+    original      => { default_value => \"now()" },
   },
   "user_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
@@ -51,7 +52,7 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-31 15:58:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:okGiaKaVYaTrlz0LCV01vA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RCi1FEwb9T2MZ2X+QOTTUA
 
 1;
