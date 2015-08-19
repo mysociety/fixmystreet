@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use mySociety::EmailUtil;
+use FixMyStreet::Email;
 
 =head1 NAME
 
@@ -239,11 +240,19 @@ sub send_email : Private {
       ? ' ( forwarded from ' . $c->req->header('X-Forwarded-For') . ' )'
       : '';
 
-    $c->send_email( 'contact.txt', {
+    my $from = [ $c->stash->{em}, $c->stash->{form_name} ];
+    my $params = {
         to      => [ [ $recipient, _($recipient_name) ] ],
-        from    => [ $c->stash->{em}, $c->stash->{form_name} ],
         subject => 'FMS message: ' . $c->stash->{subject},
-    });
+    };
+    if (FixMyStreet::Email::test_dmarc($c->stash->{em})) {
+        $params->{'Reply-To'} = [ $from ];
+        $params->{from} = [ $recipient, $c->stash->{form_name} ];
+    } else {
+        $params->{from} = $from;
+    }
+
+    $c->send_email('contact.txt', $params);
 
     # above is always succesful :(
     $c->stash->{success} = 1;

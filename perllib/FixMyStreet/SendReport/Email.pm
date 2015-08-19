@@ -1,6 +1,7 @@
 package FixMyStreet::SendReport::Email;
 
 use Moose;
+use FixMyStreet::Email;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
@@ -93,6 +94,12 @@ sub send {
         From => $self->send_from( $row ),
     };
     $params->{Bcc} = $self->bcc if @{$self->bcc};
+
+    if (FixMyStreet::Email::test_dmarc($params->{From}[0])) {
+        $params->{'Reply-To'} = [ $params->{From} ];
+        $params->{From} = [ mySociety::Config::get('CONTACT_EMAIL'), $params->{From}[1] ];
+    }
+
     my $result = FixMyStreet::App->send_email_cron(
         $params,
         mySociety::Config::get('CONTACT_EMAIL'),
