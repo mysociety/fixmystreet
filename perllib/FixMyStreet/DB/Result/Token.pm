@@ -22,13 +22,14 @@ __PACKAGE__->add_columns(
     data_type     => "timestamp",
     default_value => \"current_timestamp",
     is_nullable   => 0,
+    original      => { default_value => \"now()" },
   },
 );
 __PACKAGE__->set_primary_key("scope", "token");
 
 
-# Created by DBIx::Class::Schema::Loader v0.07017 @ 2012-03-08 17:19:55
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+LLZ8P5GXqPetuGyrra2vw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:HkvzOY5STjOdXN64hxg5NA
 
 use mySociety::AuthToken;
 
