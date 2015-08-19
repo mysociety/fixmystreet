@@ -132,6 +132,7 @@ create table problem (
     latitude double precision not null,
     longitude double precision not null,
     bodies_str text, -- the body(s) we'll report this problem to
+    bodies_missing text, -- the body(s) we had no contact details for
     areas text not null, -- the mapit areas this location is in
     category text not null default 'Other',
     title text not null,

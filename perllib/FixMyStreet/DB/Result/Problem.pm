@@ -104,6 +104,8 @@ __PACKAGE__->add_columns(
   { data_type => "integer", default_value => 0, is_nullable => 1 },
   "subcategory",
   { data_type => "text", is_nullable => 1 },
+  "bodies_missing",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -132,8 +134,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-31 15:57:02
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EvD4sS1mdJJyI1muZ4TrCw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Go+T9oFRfwQ1Ag89qPpF/g
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -402,7 +404,7 @@ sub check_for_errors {
 
     $errors{bodies} = _('No council selected')
       unless $self->bodies_str
-          && $self->bodies_str =~ m/^(?:-1|[\d,]+(?:\|[\d,]+)?)$/;
+          && $self->bodies_str =~ m/^(?:-1|[\d,]+)$/;
 
     if ( !$self->name || $self->name !~ m/\S/ ) {
         $errors{name} = _('Please enter your name');
@@ -450,8 +452,7 @@ sub confirm {
 sub bodies_str_ids {
     my $self = shift;
     return unless $self->bodies_str;
-    (my $bodies = $self->bodies_str) =~ s/\|.*$//;
-    my @bodies = split( /,/, $bodies );
+    my @bodies = split( /,/, $self->bodies_str );
     return \@bodies;
 }
 

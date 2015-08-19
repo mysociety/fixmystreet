@@ -884,12 +884,13 @@ sub process_report : Private {
         } else {
             # construct the bodies string:
             #  'x,x' - x are body IDs that have this category
-            #  'x,x|y' - x are body IDs that have this category, y body IDs with *no* contact
             my $body_string = join( ',', map { $_->body_id } @contacts );
-            $body_string .=
-              '|' . join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } )
-                if $body_string && @{ $c->stash->{missing_details_bodies} };
             $report->bodies_str($body_string);
+            # Record any body IDs which might have meant to match, but had no contact
+            if ($body_string && @{ $c->stash->{missing_details_bodies} }) {
+                my $missing = join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } );
+                $report->bodies_missing($missing);
+            }
         }
 
         my @extra;

@@ -57,8 +57,7 @@ while ( my @problem = $problems->next ) {
         $problem{bodies} = 0;
     } else {
         # Add to bodies it was sent to
-        (my $bodies = $problem{bodies_str}) =~ s/\|.*$//;
-        @bodies = split( /,/, $bodies );
+        @bodies = split( /,/, $problem{bodies_str} );
         $problem{bodies} = scalar @bodies;
     }
     foreach my $body ( @bodies ) {

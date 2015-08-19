@@ -320,15 +320,20 @@ sub send_reports {
             $cobrand->process_additional_metadata_for_email($row, \%h);
         }
 
-        # XXX Needs locks!
-        # XXX Only copes with at most one missing body
-        my ($bodies, $missing) = $row->bodies_str =~ /^([\d,]+)(?:\|(\d+))?/;
-        my @bodies = split(/,/, $bodies);
-        $bodies = FixMyStreet::App->model("DB::Body")->search(
+        my @bodies = split /,/, $row->bodies_str;
+        my $bodies = FixMyStreet::App->model("DB::Body")->search(
             { id => \@bodies },
             { order_by => 'name' },
         );
-        $missing = FixMyStreet::App->model("DB::Body")->find($missing) if $missing;
+
+        my $missing;
+        if ($row->bodies_missing) {
+            my @missing = FixMyStreet::App->model("DB::Body")->search(
+                { id => [ split /,/, $row->bodies_missing ] },
+                { order_by => 'name' }
+            )->get_column('name')->all;
+            $missing = join(' / ', @missing) if @missing;
+        }
 
         my @dear;
         my %reporters = ();
@@ -400,7 +405,7 @@ sub send_reports {
         $h{missing} = '';
         if ($missing) {
             $h{missing} = '[ '
-              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $missing->name)
+              . sprintf(_('We realise this problem might be the responsibility of %s; however, we don\'t currently have any contact details for them. If you know of an appropriate contact address, please do get in touch.'), $missing)
               . " ]\n\n";
         }
 

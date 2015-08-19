@@ -457,7 +457,8 @@ foreach my $test ( {
         email_count   => 1,
         to            => qr'Gloucestershire County Council" <2226@example',
         dear          => qr'Dear Gloucestershire County Council,',
-        body          => $body_ids{2226}  . '|' . $body_ids{2649},
+        body          => $body_ids{2226},
+        body_missing  => $body_ids{2649},
         missing       => qr'problem might be the responsibility of Fife.*Council'ms,
     }, {
         %common,
@@ -529,6 +530,7 @@ foreach my $test ( {
         $problem->discard_changes;
         $problem->update( {
             bodies_str => $test->{ body },
+            bodies_missing => $test->{ body_missing },
             state => 'confirmed',
             confirmed => \'current_timestamp',
             whensent => $test->{ unset_whendef } ? undef : \'current_timestamp',
