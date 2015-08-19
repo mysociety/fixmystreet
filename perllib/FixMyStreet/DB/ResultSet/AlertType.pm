@@ -241,15 +241,13 @@ sub _send_aggregated_alert_email(%) {
 
     my $template = FixMyStreet->get_email_template($cobrand->moniker, $data{lang}, "$data{template}.txt");
 
-    my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
     my $result = FixMyStreet::App->send_email_cron(
         {
             _template_ => $template,
             _parameters_ => \%data,
-            From => [ $sender, _($cobrand->contact_name) ],
             To => $data{alert_email},
         },
-        $sender,
+        undef,
         0,
         $cobrand,
         $data{lang}

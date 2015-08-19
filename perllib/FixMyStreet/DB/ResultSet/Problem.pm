@@ -515,7 +515,7 @@ sub _send_report_sent_email {
             _template_ => $template,
             _parameters_ => $h,
             To => $row->user->email,
-            From => mySociety::Config::get('CONTACT_EMAIL'),
+            From => [ mySociety::Config::get('CONTACT_EMAIL'), $cobrand->contact_name ],
         },
         mySociety::Config::get('CONTACT_EMAIL'),
         $nomail,
