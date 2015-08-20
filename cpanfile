@@ -67,6 +67,7 @@ requires 'Math::Trig';
 requires 'Module::Pluggable';
 requires 'Moose';
 requires 'namespace::autoclean';
+requires 'Net::DNS::Resolver';
 requires 'Net::Domain::TLD';
 requires 'Net::SMTP::SSL';
 requires 'Net::SMTP::TLS';
