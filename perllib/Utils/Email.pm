@@ -11,12 +11,27 @@ sub test_dmarc {
     return unless $addr;
 
     my $domain = $addr->host;
-    my @answers = Net::DNS::Resolver->new->send("_dmarc.$domain", 'TXT')->answer;
+    my @answers = _send(Net::DNS::Resolver->new, "_dmarc.$domain", 'TXT');
     @answers = map { $_->txtdata } @answers;
     my $dmarc = join(' ', @answers);
     return unless $dmarc =~ /p *= *reject/;
 
     return 1;
+}
+
+# Same as send->answer, but follows one CNAME and returns only matching results
+sub _send {
+    my ($resolver, $domain, $type) = @_;
+    my $packet = $resolver->send($domain, $type);
+    my @answers;
+    foreach my $rr ($packet->answer) {
+        if ($rr->type eq 'CNAME') {
+            push @answers, $resolver->send($rr->cname, $type)->answer;
+        } else {
+            push @answers, $rr;
+        }
+    }
+    return grep { $_->type eq $type } @answers;
 }
 
 1;
