@@ -11,5 +11,8 @@
 
 [% map_html = BLOCK %]
 [% INCLUDE maps/openlayers.html %]
-<script type="text/javascript">fixmystreet.show_stats19 = '[% show_stats19 %]';</script>
+<script type="text/javascript">
+    var fixmystreet = fixmystreet || {};
+    fixmystreet.show_stats19 = '[% show_stats19 | escape_js | html %]';
+</script>
 [% END %]
