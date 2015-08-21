@@ -109,6 +109,13 @@
   }
 }
 
+// On the /my page, we use a .issue-list with an extra full-width modifier
+// which removes the left padding. However, our new reports list still needs
+// it:
+.issue-list-a.full-width {
+  margin-left: -1em;
+}
+
 .big-green-banner {
   display: none; // hide the empty banner by default
 

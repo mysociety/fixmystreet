@@ -288,9 +288,3 @@ body.fullwidthpage, body.twothirdswidthpage {
         }
     }
 }
-
-// Override the default issue (report) list styling on the /my page, so that
-// reports don't pop out the side of the sidebar
-.issue-list-a.full-width {
-    margin-left: -1em;
-}
