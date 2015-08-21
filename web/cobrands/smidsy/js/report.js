@@ -66,7 +66,7 @@ $(function() {
     if (window.fixmystreet.show_stats19 === '1') {
       // Force a load of the pins with the stats_19 param set up on first
       // load because FMS' default _onload function won't know about it.
-      window.fixmystreet.markers.protocol.options.params.show_stats19 = '[% show_stats19 %]';
+      window.fixmystreet.markers.protocol.options.params.show_stats19 = '1';
       window.fixmystreet.markers.refresh( { force: true } );
       // Initialise the data variable we use to keep track of whether
       // stats19 data is being shown
