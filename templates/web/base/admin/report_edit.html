@@ -45,28 +45,10 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
 [% END %]
 <li><label class="inline" for="state">[% loc('State:') %]</label> <select name="state"  id="state">
-[% FOREACH group IN [
-    [ loc('Open'), [
-        [ 'confirmed', loc('Open') ], [ 'investigating', loc('Investigating') ],
-        [ 'planned', loc('Planned') ], [ 'in progress', loc('In progress') ],
-        [ 'action scheduled', loc('Action Scheduled') ],
-    ] ],
-    [ loc('Fixed'), [
-        [ 'fixed', loc('Fixed') ], [ 'fixed - user', loc('Fixed - User') ],
-        [ 'fixed - council', loc('Fixed - Council') ]
-    ] ],
-    [ loc('Closed'), [
-        [ 'unable to fix', loc('Unable to fix') ], [ 'not responsible', loc('Not Responsible') ],
-        [ 'duplicate', loc('Duplicate') ], [ 'closed', loc('Closed') ],
-        [ 'internal referral', loc('Internal referral') ],
-    ] ],
-    [ loc('Hidden'), [
-        [ 'hidden', loc('Hidden') ], [ 'partial', loc('Partial') ], [ 'unconfirmed',loc('Unconfirmed') ]
-    ] ]
-] %]
+[% FOREACH group IN state_groups %]
     <optgroup label="[% group.0 %]">
     [% FOREACH state IN group.1 %]
-        <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
+        <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
     [% END %]
     </optgroup>
 [% END %]

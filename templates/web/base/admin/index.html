@@ -1,4 +1,5 @@
 [% INCLUDE 'admin/header.html' title=loc('Summary') -%]
+[% PROCESS 'admin/report_blocks.html' %]
 
 <div class="fms-admin-info fms-admin-floated">
 This is the administration interface for [% PROCESS 'site-name.html' -%]. If you
@@ -20,11 +21,9 @@ and to receive notices of updates.
 [% END %]
 
 [%- BLOCK states -%]
-<h2>[% title %]</h2>
-
-[%- FOREACH state IN object.keys.sort %]
+[%- FOREACH state IN list %]
 [%- '<ul>' IF loop.first %]
-    <li>[% object.$state %] [% state %]</li>
+    <li>[% object.$state %] [% state_pretty.$state %]</li>
 [%- "\n</ul>" IF loop.last %]
 [%- END %]
 [% END -%]
@@ -44,9 +43,17 @@ and to receive notices of updates.
     </p>
 [% END -%]
 
-[% PROCESS states title=loc('Problem breakdown by state') object=problems %]
+<h2>[% loc('Problem breakdown by state') %]</h2>
+[% FOREACH group IN state_groups %]
+[%- '<ul>' IF loop.first %]
+    <li><strong>[% group.0 %]</strong>
+        [% PROCESS states object=problems list=group.1 %]
+    </li>
+[%- "\n</ul>" IF loop.last %]
+[%- END %]
 
-[% PROCESS states title=loc('Update breakdown by state') object=comments %]
+<h2>[% loc('Update breakdown by state') %]</h2>
+[% PROCESS states object=comments list=comments.keys.sort %]
 
 [% FOREACH category IN categories %]
     [% IF loop.first %]
