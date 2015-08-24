@@ -20,19 +20,7 @@ sub disambiguate_location {
 
     my $town = 'Bromley';
 
-    # Helpful regexes that are used often
-    my $road = 'r(?:oa)?d';
-    my $street = 'st(\.|reet)?';
-
-    # Bing turns High St Bromley into Bromley High St which is in
-    # Bromley by Bow.
-    $town .= ', BR1' if $string =~ /^high\s+${street}$/i;
-
-    # Disambiguations required for BR5
-    $town .= ', BR5' if $string =~ /^kelsey\s+${road}$/i;
-    $town = 'BR5 Bromley' if $string =~ /^leith\s+hill$/i; # doesn't like appended BR5 for some reason
-
-    #  There has also been a road name change for a section of Ramsden Road
+    #  There has been a road name change for a section of Ramsden Road
     #  (BR5) between Church Hill and Court Road has changed to 'Old Priory
     #  Avenue' - presently entering Old Priory Avenue simply takes the user to
     #  a different Priory Avenue in Petts Wood
@@ -41,26 +29,10 @@ sub disambiguate_location {
         $string = 'Ramsden Road';
         $town = ', BR6 0PL';
     }
-    $town .= ', BR5' if $string =~ /^meadway/i;
-    $town .= ', BR5' if $string =~ /^mill\s+brook\s+${road}$/i;
-    $town .= ', BR5' if $string =~ /^kent\s+${road}$/i;
-    $town .= ', BR5' if $string =~ /^the\s+landway$/i;
-    $town .= ', BR5' if $string =~ /^mountfield\s+way$/i;
-    $town .= ', BR5 3' if $string =~ /^star\s+lane$/i;
-    $town .= ', BR5 4AX' if $string =~ /^high\s+${street}?(,)?\s?st\.?\s+mary\s+cray$/i;
-
-    # and BR6
-    $town .= ', BR6' if $string =~ /^berrylands/i;
-    $town .= ', BR6' if $string =~ /^crofton\s+${road}$/i;
-    $town .= ', BR6' if $string =~ /^crofton\s+lane$/i;
 
     # White Horse Hill is on boundary with Greenwich, so need a
     # specific postcode
-    $town = 'chislehurst, BR7 6DH' if $string =~ /^white\s+horse/i;
-
-    # Mottingham Lane is 90% inside Bromley, but goes outside too and Bing
-    # defaults to the top end of it.
-    $town = 'Mottingham Lane, SE9 4RW' if $string =~ /^mottingham\s+lane/i;
+    $string = 'BR7 6DH' if $string =~ /^white\s+horse/i;
 
     $town = '' if $string =~ /orpington/i;
 
@@ -71,6 +43,10 @@ sub disambiguate_location {
         span   => '0.154963,0.24347',
         bounds => [ 51.289355, -0.081112, 51.444318, 0.162358 ],
     };
+}
+
+sub get_geocoder {
+    return 'OSM'; # default of Bing gives poor results, let's try overriding.
 }
 
 sub example_places {
