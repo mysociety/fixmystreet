@@ -20,6 +20,15 @@ FixMyStreet::override_config {
 
     my $c = FixMyStreet::App->new();
 
+    # Create a body to report problems too
+    my $liverpool = $c->model("DB::Body")->find_or_create({
+        id => 2527,
+        name => 'Liverpool City Council',
+    });
+    $liverpool->body_areas->create({
+        area_id => 2527,
+    });
+
     ok $mech->host("collideosco.pe"), "change host to collideosco.pe";
     $mech->get_ok('/');
     $mech->content_contains( 'Find road collisions' );
@@ -38,6 +47,35 @@ FixMyStreet::override_config {
 
     $mech->content_contains( 'Section 170 of the Road Traffic' );
 
+    subtest 'stats19 report filtering' => sub {
+        # Create some stats19 reports
+        my $i;
+        for $i ( 1 .. 5 ) {
+            my %report_params = (
+                latitude => 53.3874014 + ($i / 1000000),
+                longitude=> -2.9439968  + ($i / 1000000),
+                name => "Stats19 Import",
+                title => "Stats19 Import $i",
+                external_body => 'stats19',
+            );
+            $mech->create_problems_for_body( 1, 2527, 'Around page', \%report_params );
+        }
+
+        # They shouldn't be shown by default
+        $mech->content_contains( 'Show reports from the Department of Transport' );
+        $mech->content_lacks( 'Stats19 Import 1' );
+
+        # Show them
+        $mech->get_ok('/around?latitude=53.387401499999996;longitude=-2.9439968&show_stats19=1');
+
+        $mech->content_contains( 'Hide reports from the Department of Transport' );
+        $mech->content_contains( 'Stats19 Import 1' );
+
+        # Delete the problems we've created because they cause problems for
+        # other cobrands (e.g. Zurich which also uses the external_body field)
+        $c->model('DB::Problem')->search({external_body => 'stats19'})->delete();
+    };
+
     subtest 'custom form fields' => sub {
         $mech->content_contains( 'How severe was the incident?' );
         $mech->content_contains( 'When did it happen?' );
@@ -49,14 +87,6 @@ FixMyStreet::override_config {
     };
 
     subtest 'post an incident' => sub {
-        my $liverpool = $c->model("DB::Body")->find_or_create({
-            id => 2527,
-            name => 'Liverpool City Council',
-        });
-        $liverpool->body_areas->create({
-            area_id => 2527,
-        });
-
         $mech->submit_form_ok({
             form_number => 1,
             button => 'submit_register',
