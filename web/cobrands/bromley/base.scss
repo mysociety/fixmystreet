@@ -47,13 +47,6 @@ body.mappage {
   }
 }
 
-// Change the colour of the menu icon to black because of the changes to
-// #site-header
-#nav-link {
-  background: transparent url(/cobrands/fixmystreet/images/menu-black.png) center center no-repeat;
-  background-image: url(/cobrands/fixmystreet/images/menu-black.svg), none;
-}
-
 // Hide the mysociety menu
 #mysoc-menu {
   display: none;
