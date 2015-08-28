@@ -28,34 +28,32 @@ sub string {
 
     $s = FixMyStreet::Geocode::escape($s);
 
-    my $url = 'http://maps.google.com/maps/geo?q=' . $s;
-    $url .=  '&ll=' . $params->{centre}  if $params->{centre};
-    $url .= '&spn=' . $params->{span}    if $params->{span};
+    my $url = 'https://maps.googleapis.com/maps/api/geocode/json?address=' . $s;
+    $url .= '&bounds=' . $params->{bounds}[0] . ',' . $params->{bounds}[1]
+        . '|' . $params->{bounds}[2] . ',' . $params->{bounds}[3]
+        if $params->{bounds};
     if ($params->{google_country}) {
-        $url .=  '&gl=' . $params->{google_country};
+        $url .=  '&region=' . $params->{google_country};
     } elsif ($params->{country}) {
-        $url .=  '&gl=' . $params->{country};
+        $url .=  '&region=' . $params->{country};
     }
-    $url .=  '&hl=' . $params->{lang}    if $params->{lang};
+    $url .=  '&language=' . $params->{lang} if $params->{lang};
 
-    my $args = 'sensor=false&key=' . FixMyStreet->config('GOOGLE_MAPS_API_KEY');
-    my $js = FixMyStreet::Geocode::cache('google', $url, $args, qr/"code":6[12]0/);
+    my $args = 'key=' . FixMyStreet->config('GOOGLE_MAPS_API_KEY');
+    my $js = FixMyStreet::Geocode::cache('google', $url, $args, qr/"status"\s*:\s*"(OVER_QUERY_LIMIT|REQUEST_DENIED|INVALID_REQUEST|UNKNOWN_ERROR)"/);
     if (!$js) {
         return { error => _('Sorry, we could not parse that location. Please try again.') };
     }
-    if ($js->{Status}->{code} ne '200') {
-        return { error => _('Sorry, we could not find that location.') };
-    }
+    return unless $js->{status} eq 'OK';
 
-    my $results = $js->{Placemark};
+    my $results = $js->{results};
     my ( $error, @valid_locations, $latitude, $longitude );
     foreach (@$results) {
-        next unless $_->{AddressDetails}->{Accuracy} >= 4;
-        my $address = $_->{address};
+        my $address = $_->{formatted_address};
         next unless $c->cobrand->geocoded_string_check( $address );
         ( $longitude, $latitude ) =
             map { Utils::truncate_coordinate($_) }
-            @{ $_->{Point}->{coordinates} };
+            ($_->{geometry}{location}{lat}, $_->{geometry}{location}{lng});
         push (@$error, {
             address => $address,
             latitude => $latitude,

@@ -120,9 +120,7 @@ BING_MAPS_API_KEY: ''
 #     bing_culture: <culture code, see http://msdn.microsoft.com/en-us/library/hh441729.aspx>
 #     bing_country: <country name, only accept results that match this>
 #
-# If using Google, you can use:
-#     centre: "<lat>,<lon>"
-#     span: "<lat span>,<lon span>"
+# If using Google, you can use bounds, plus:
 #     google_country: <.ccTLD to restrict results to>
 #     lang: <language for results>
 #
