@@ -127,11 +127,14 @@ $mech->content_contains( '18 North Bridge, Edinburgh' );
 
 $report->delete();
 
+my $council = $mech->create_body_ok(2333, 'Hart Council');
+my $county = $mech->create_body_ok(2227, 'Hampshire Council');
+
 my $now = DateTime->now();
 my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'GU51 4AE',
-        bodies_str         => '2333',
+        bodies_str         => $council->id,
         areas              => ',2333,2227,',
         category           => 'Other',
         title              => 'council report',
@@ -155,7 +158,7 @@ my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
     {
         postcode           => 'GU51 4AE',
-        bodies_str         => '2227',
+        bodies_str         => $county->id,
         areas              => ',2333,2227,',
         category           => 'Other',
         title              => 'county report',

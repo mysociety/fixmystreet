@@ -88,11 +88,7 @@ sub email_alerts ($) {
                 $data{state_message} = _("This report is currently marked as open.");
             }
 
-            my $hashref_restriction = $cobrand->body_restriction;
-            my $url = $cobrand->base_url( $row->{alert_cobrand_data} );
-            if ( $hashref_restriction && $row->{bodies_str} ne $hashref_restriction ) {
-                $url = mySociety::Config::get('BASE_URL');
-            }
+            my $url = $cobrand->base_url_for_report($row);
             # this is currently only for new_updates
             if ($row->{item_text}) {
                 if ( $cobrand->moniker ne 'zurich' && $row->{alert_user_id} == $row->{user_id} ) {
@@ -171,7 +167,6 @@ sub email_alerts ($) {
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
-        my $hashref_restriction = $cobrand->body_restriction;
         my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
         # Convert integer to GB locale string (with a ".")
         $d = mySociety::Locale::in_gb_locale {
@@ -195,10 +190,7 @@ sub email_alerts ($) {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
-            my $url = $cobrand->base_url( $alert->cobrand_data );
-            if ( $hashref_restriction && $row->{bodies_str} ne $hashref_restriction ) {
-                $url = mySociety::Config::get('BASE_URL');
-            }
+            my $url = $cobrand->base_url_for_report($row);
             $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
             if ( exists $row->{geocode} && $row->{geocode} ) {
                 my $nearest_st = _get_address_from_gecode( $row->{geocode} );

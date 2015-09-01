@@ -108,7 +108,8 @@ sub base_url { FixMyStreet->config('BASE_URL') }
 =head2 base_url_for_report
 
 Return the base url for a report (might be different in a two-tier county, but
-most of the time will be same as base_url).
+most of the time will be same as base_url). Report may be an object, or a
+hashref.
 
 =cut
 
