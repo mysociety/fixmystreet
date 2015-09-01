@@ -177,13 +177,8 @@ $(function(){
             category: $(this).val()
         };
 
-        if ( typeof fixmystreet !== 'undefined' ) {
-            args.latitude = fixmystreet.latitude;
-            args.longitude = fixmystreet.longitude;
-        } else {
-            args.latitude = $('input[name="latitude"]').val();
-            args.longitude = $('input[name="longitude"]').val();
-        }
+        args.latitude = $('input[name="latitude"]').val();
+        args.longitude = $('input[name="longitude"]').val();
 
         $.getJSON('/report/new/category_extras', args, function(data) {
             var $category_meta = $('#category_meta');
