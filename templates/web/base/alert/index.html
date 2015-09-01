@@ -4,9 +4,9 @@
 
 <p>
 [% IF c.cobrand.is_council %]
-FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
-alerts for all problems within a particular ward, or all problems
-within a certain distance of a particular location.
+[% loc('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
+alerts for all problems within a particular ward, or all problems within a certain
+distance of a particular location.') %]
 [% ELSE %]
 [% loc('FixMyStreet has a variety of RSS feeds and email alerts for local problems, including
 alerts for all problems within a particular ward or council, or all problems
@@ -22,7 +22,7 @@ within a certain distance of a particular location.') %]
 
 <p>
 [% IF c.cobrand.is_council %]
-To find out what local alerts we have for you, please enter your [% c.cobrand.council_area %] postcode or street name and area:
+[% tprintf(loc("To find out what local alerts we have for you, please enter your %s postcode or street name and area:"), c.cobrand.council_area) %]
 [% ELSE %]
 [% loc('To find out what local alerts we have for you, please enter your postcode or street name and area' ) %]
 [% END %]

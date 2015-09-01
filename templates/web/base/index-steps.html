@@ -25,7 +25,7 @@
     <li>[% loc('Locate the problem on a map of the area') %]</li>
     <li>[% loc('Enter details of the problem') %]</li>
     [% IF c.cobrand.is_council %]
-        <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
+        <li>[% tprintf(loc("Confirm the report and %s will investigate"), c.cobrand.council_name) %]</li>
     [% ELSIF c.cobrand.moniker == 'zurich' %]
     [% ELSE %]
         <li>[% loc('We send it to the council on your behalf') %]</li>

@@ -1,0 +1,172 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "./_fonts"; //from bromley
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+
+
+// FROM BROMLEY
+// Override the site logo
+#site-logo{
+  display: block;
+  width: 175px;
+  height: 40px;
+  top: 0.4em;
+  left: 0.5em;
+  background: url('/cobrands/alcala/ayto-alcala-logo.175x40.png') 0 0 no-repeat;
+  text-indent: -999999px;
+  position: absolute;
+  z-index:2;
+}
+// Override in IE too
+.ie6 #site-logo {
+  background: url('/cobrands/alcala/ayto-alcala-logo.175x40.png') 0 0 no-repeat;
+}
+
+// Change the colour and size of the site header to suit
+#site-header {
+  background: $base_bg;
+  // if the top border is not 4px wide, the javascript thinks we're not on a
+  // mobile and so we don't get the mobile experience. No, really.
+  border-top-width: 4px;
+}
+// We don't want a fixed height header on any page except the map page because
+// it includes lots of other stuff there, including a dynamic drop-down menu
+// that changes height
+//body.fullwidthpage,
+//body.twothirdswidthpage {
+//  #site-header {
+//    height: auto;
+//  }
+//}
+
+// On the map page, we need slightly more space for our logo
+//body.mappage {
+//  #site-header {
+//    height: 3.5em;
+//  }
+//}
+
+// Change the colour of the menu icon to black because of the changes to
+// #site-header
+#nav-link {
+  background: transparent url(/cobrands/fixmystreet/images/menu-black.png) center center no-repeat;
+  background-image: url(/cobrands/fixmystreet/images/menu-black.svg), none;
+}
+
+// Hide the mysociety menu
+#mysoc-menu {
+  display: none;
+}
+
+// Reset body line height on front page
+body.frontpage.fullwidthpage {
+  line-height: normal;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Bromley's Mobile-First styles
+//////////////////////////////////////////////////////////////////////////////
+
+body {
+  font-size: 15px;
+  font-weight: 300;
+}
+
+h1,h2,h3,h4,h5 {
+  font-family:$heading-font;
+}
+
+// Bromley's styles for the .top-links nav
+.top-links {
+  margin-top: 44px; // Needed to push it below FMS' mobile menu bar
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-bottom:13px;
+  li {
+    display: inline-block;
+    padding: 0 10px;
+    font-size: 0.9em;
+    list-style-type: none;
+    a {
+      font-family: "Helvetica", sans-serif;
+      color: #235e1c;
+      opacity: 1;
+      transition: opacity .25s ease-in-out;
+      -moz-transition: opacity .25s ease-in-out;
+      -webkit-transition: opacity .25s ease-in-out;
+    }
+  }
+  .fa {
+    color: #235e1c;
+    opacity: 0.5;
+  }
+}
+
+// Footer
+.site-footer {
+  width: 100%;
+  clear: both;
+  margin: 0;
+  min-height: 210px;
+  overflow: hidden;
+  // Add more margin to push this down from FMS's footer
+  margin-top: 2em;
+  .footer-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    .column {
+      width: 100% !important;
+      margin-right: 0;
+      margin-left: 0 !important;
+      float: none;
+      clear: both;
+      &:last-child {
+        margin-right:0;
+      }
+
+    }
+  }
+  .additional-links {
+    h5 {
+      background-color: #cecab7;
+      padding: 0.5em 1em;
+      margin: 0;
+      font-size: 1em;
+      font-weight: 400;
+      color: #505050;
+      -webkit-border-radius: 5px;
+      -moz-border-radius: 5px;
+      border-radius: 5px;
+    }
+    ul {
+      padding-left: 0px;
+      // Undo FMS' left margin for uls
+      margin-left: 0;
+      // Override top/bottom margins to match Bromley's default ul styling
+      margin-top: 1em;
+      margin-bottom: 1em;
+      li {
+        padding-left: 1em;
+        width: 80%;
+        display: inline-block;
+        // Remove the bottom margin FMS puts on
+        margin-bottom: 0;
+        a {
+          font-size: 0.9em;
+        }
+      }
+    }
+  }
+}
+
+
