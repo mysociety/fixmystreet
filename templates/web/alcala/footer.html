@@ -1,6 +1,6 @@
                     [% IF pagefooter %]
                     <footer role="contentinfo">
-                        [% INCLUDE 'front/footer-marketing.html' %]
+       <!--                  [% INCLUDE 'front/footer-marketing.html' %]   -->
                     </footer>
                     [% END %]
                 </div><!-- .content role=main -->
@@ -13,6 +13,20 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
+                    [% IF c.user_exists %]
+            <div id="user-meta">
+                <p>
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                </p>
+            </div>
+                    [% END %]
+<!--                      [% IF c.user_exists %]
+                        <p>
+                            [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                        </p><p><a href="/admin">[% loc('Summary') %]</a> | <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                        </p>
+                      [% END %] -->
                     <ul id="mysoc-menu">
                         <li><a id="mysoc-logo" href="https://www.mysociety.org/">mySociety</a></li>
                     </ul>
