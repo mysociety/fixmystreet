@@ -1,3 +1,33 @@
+[%
+
+SET state_pretty = {
+    'confirmed' = loc('Open')
+    'investigating' = loc('Investigating')
+    'planned' = loc('Planned')
+    'in progress' = loc('In progress')
+    'action scheduled' = loc('Action Scheduled')
+    'fixed' = loc('Fixed')
+    'fixed - user' = loc('Fixed - User')
+    'fixed - council' = loc('Fixed - Council')
+    'unable to fix' = loc('Unable to fix')
+    'not responsible' = loc('Not Responsible')
+    'duplicate' = loc('Duplicate')
+    'closed' = loc('Closed')
+    'internal referral' = loc('Internal referral')
+    'hidden' = loc('Hidden')
+    'partial' = loc('Partial')
+    'unconfirmed' = loc('Unconfirmed')
+};
+
+SET state_groups = [
+    [ loc('Open'), [ 'confirmed', 'investigating', 'planned', 'in progress', 'action scheduled' ] ],
+    [ loc('Fixed'), [ 'fixed', 'fixed - user', 'fixed - council' ] ],
+    [ loc('Closed'), [ 'unable to fix', 'not responsible', 'duplicate', 'closed', 'internal referral' ] ],
+    [ loc('Hidden'), [ 'hidden', 'partial', 'unconfirmed' ] ]
+];
+
+%]
+
 [% BLOCK value_or_nbsp -%]
     [%- IF value %][% value | html %][% ELSE %]&nbsp;[% END %]
 [%- END %]

@@ -30,7 +30,7 @@
             [%- END -%]
             <br>[% problem.cobrand %]<br>[% problem.cobrand_data | html %]
         </td>
-        <td>[% problem.state %]<br><small>
+        <td>[% state_pretty.${problem.state} %]<br><small>
             [% loc('Created') %]:&nbsp;[% PROCESS format_time time=problem.created %]
             <br>[% loc('When sent') %]:&nbsp;[% PROCESS format_time time=problem.whensent %]
             [%- IF problem.is_visible %]<br>[% loc('Confirmed:' ) %]&nbsp;[% PROCESS format_time time=problem.confirmed %][% END -%]
