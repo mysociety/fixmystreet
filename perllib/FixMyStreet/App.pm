@@ -322,7 +322,7 @@ sub send_email {
     # create an email - will parse headers out of content
     my $email = Email::Simple->new($content);
     $email->header_set( ucfirst($_), $vars->{$_} )
-      for grep { $vars->{$_} } qw( to from subject);
+      for grep { $vars->{$_} } qw( to from subject Reply-To);
 
     return if $c->is_abuser( $email->header('To') );
 
