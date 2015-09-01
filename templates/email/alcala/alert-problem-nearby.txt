@@ -1,22 +1,25 @@
-Subject: New reports on <?=$values['site_name']?>
+Subject: <?=$values['site_name']?> - Nuevas incidencias en el área especificada
 
-The following <?=$values['site_name']?> reports have been made within the area
-you specified:
+Las siguientes incidencias han sido notificadas en la web de <?=$values['site_name']?>,
+correspondientes al área que especificaste:
 
 <?=$values['data']?>
 
+
+Atentamente,
 <?=$values['signature']?>
 
+---
 
-Unsubscribe?
+¿Quieres cancelar tu suscripción?
 
-You asked us to send you an email when someone makes a new <?=$values['site_name']?>
-report within your chosen area. This is a free service from <?=$values['site_name']?>.
+Nos pediste que te enviásemos un email cuando alguien notificase una nueva incidencia en <?=$values['site_name']?>
+dentro del área que especificaste.
 
-If you no longer wish to receive an email whenever there are new reports within
-this area, please follow this link:
+Si ya no deseas recibir estos correos, por favor haz clic en el siguiente enlace:
 
 <?=$values['unsubscribe_url']?>
 
-This email was sent automatically, from an unmonitored email account - so please
-do not reply to it.
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

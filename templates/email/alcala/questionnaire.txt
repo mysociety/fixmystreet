@@ -1,20 +1,23 @@
-Subject: Questionnaire about '<?=$values['title']?>'
+Subject: Cuestionario sobre '<?=$values['title']?>'
 
-Hi <?=$values['name']?>,
+Hola <?=$values['name']?>,
 
-<?=$values['created']?> ago, you reported a problem. To keep the
-site up to date and relevant, please fill in a short questionnaire
-updating the status of your problem:
+El <?=$values['created']?> notificaste una incidencia en el espacio público.
+Para mantener la web actualizada y relevante, por favor rellena un breve cuestionario
+que nos permitirá actualizar el estado de tu incidencia:
 
     <?=$values['url']?>
 
-This email has been sent automatically from an unmonitored
-mailbox, please do not reply.
+Atentamente,
 
 [% INCLUDE 'signature.txt' %]
 
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.
 
-Your problem was as follows:
+----
+
+Tu notificación fue la siguiente:
 
 <?=$values['title']?>
 

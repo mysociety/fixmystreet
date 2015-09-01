@@ -1,31 +1,32 @@
-Subject: Confirm your report on [% INCLUDE 'site-name.txt' | trim %]
+Subject: Confirma tu notificación en [% INCLUDE 'site-name.txt' | trim %]
 
-Hello [% report.name %],
+Hola [% report.name %],
 
-Please click on the link below to confirm that you want to send your report to
-[% report.body %]. Note that your report will also appear on the [% INCLUDE 'site-name.txt' | trim %]
-website:
+Por favor haz clic en el siguiente enlace para confirmar que quieres enviar una
+notificación al [% report.body %]. Ten en cuenta que tu notificación se publicará
+también en la web de [% INCLUDE 'site-name.txt' | trim %] website:
 
 [% token_url %]
 
-If your email program does not let you click on this link, copy and paste it
-into your web browser and press return.
+Si no te es posible hacer clic en el enlace, puedes copiarlo en la barra de direcciones
+de tu navegador para visitarlo.
 
-Your problem had the title:
+Tu incidencia tiene por título:
 
 [% report.title %]
 
-And details:
+y su descripción detallada es:
 
 [% report.detail %]
 
-If you no longer wish to send this report, please take no further action.
 
-Thank you for submitting a report through [% INCLUDE 'site-name.txt' | trim %].
+Si no quieres enviar la notificación, simplemente ignora este correo.
 
+Muchas gracias por enviar tu notificación con [% INCLUDE 'site-name.txt' | trim %].
 
-
+Atentamente,
 [% INCLUDE 'signature.txt' %]
 
-This email was sent automatically, from an unmonitored email account - so
-please do not reply to it.
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

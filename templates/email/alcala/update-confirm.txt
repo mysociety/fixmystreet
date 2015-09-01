@@ -1,21 +1,24 @@
-Subject: Confirm your update on [% INCLUDE 'site-name.txt' | trim %]
+Subject: Confirma tu actualización de una incidencia en [% INCLUDE 'site-name.txt' | trim %]
 
-Hello [% update.name %],
+Hola [% update.name %],
 
-Please click on the link below to confirm your update on [% INCLUDE 'site-name.txt' | trim %]:
+Por favor haz clic en el siguiente enlace para confirmar tu actualización de una
+incidencia en [% INCLUDE 'site-name.txt' | trim %]:
 
 [% token_url %]
 
-If your email program does not let you click on this link, copy and paste it
-into your web browser and press return.
+Si no puedes hacer clic en este enlace, cópialo y pégalo en la barra de direcciones
+de tu navegador web.
 
-Your update reads:
+Tu actualización es:
 
 [% update.text %]
 
 [% INCLUDE 'update-confirm-donotsend.txt' %]
 
+Atentamente,
 [% INCLUDE 'signature.txt' %]
 
-This email was sent automatically, from an unmonitored email account - so
-please do not reply to it.
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

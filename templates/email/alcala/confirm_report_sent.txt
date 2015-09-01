@@ -1,25 +1,27 @@
-Subject: <?=$values['site_name']?> Report Sent: <?=$values['title']?>
+Subject: <?=$values['site_name']?> - Notificación enviada: <?=$values['title']?>
 
-Hello,
+Hola,
 
-Thank you for using <?=$values['site_name']?> to submit your report
+Muchas gracias por usar <?=$values['site_name']?> para notificar la incidencia
 "<?=$values['title']?>".
 
-This is to confirm that it has now been sent to <?=$values['bodies_name']?>,
-who should respond to you directly.
+Con este mensaje te confirmamos que se ha enviado al <?=$values['bodies_name']?>,
+que debería responderte a ti directamente.
 
-Your report is also on <?=$values['url']?>, where others may read, comment or
-offer advice.
+Tu notificación está también publicada en <?=$values['url']?>, donde otras personas
+la pueden leer y comentar.
 
-You should also feel free to add updates to that page, although note that they
-will not be sent to your council.
+Siéntete libre de actualizar la incidencia, aunque siendo consciente que dichas
+actualizaciones no serán enviadas automáticamente al ayuntamiento.
 
-If you'd like to update your council, please wait for their reply so that you
-can respond to them directly.
+Si quieres notificar algo al Ayuntamiento, aguarda a que te respondan para así poder
+responderles directamente. También puedes escribirles indicándoles el URL de la incidencia.
 
-Good luck in getting your problem fixed.
+Confiamos en que la incidencia que has notificado sea solucionada pronto.
 
+Atentamente,
 <?=$values['signature']?>
 
-This email was sent automatically, from an unmonitored email account - so
-please do not reply to it.
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

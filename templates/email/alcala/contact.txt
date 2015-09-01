@@ -1,4 +1,4 @@
-Subject: FMS message: [% subject %]
+Subject: Mensaje de <?=$values['site_name']?>: [% subject %]
 
 [% message %]
 

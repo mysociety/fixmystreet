@@ -1,3 +1,4 @@
-Note that we do not send updates to [% update.problem.body %] - they are
-intended as a place for [% INCLUDE 'site-name.txt' | trim %] users to
-discuss, support, and offer advice.
+Ten en cuenta, sin embargo, que las actualizaciones no se envían automáticamente
+al [% update.problem.body %] -su función es la de permitir a los residentes de
+[% INCLUDE 'site-name.txt' | trim %] discutir problemas locales y ofrecer
+consejos o apoyo.

@@ -1,27 +1,30 @@
-Subject: New <?=$values['site_name']?> updates on report: '<?=$values['title']?>'
+Subject: <?=$values['site_name']?> - Actualizaciones a la incidencia: '<?=$values['title']?>'
 
-You asked us to send you an email every time an update was made to the
-<?=$values['site_name']?> report: <?=$values['title']?>.
+Nos pediste que te enviásemos un email cada vez que alguien actualizase la incidencia 
+"<?=$values['title']?>" en la web de <?=$values['site_name']?>.
 
-The following updates have been left on this report:
+Se han hecho las siguientes actualizaciones para dicha incidencia:
 
 <?=$values['data']?>
 
 <?=$values['state_message']?>
 
-If you would like to view or reply to these updates, please visit the following URL:
+Si quisieras ver o responder las actualizaciones, por favor visita el siguiente enlace:
     <?=$values['problem_url']?>
 
-This email was sent automatically, from an unmonitored email account - so
-please do not reply to it.
-
+Atentamente,
 <?=$values['signature']?>
 
+---
 
-Unsubscribe?
+¿Quieres cancelar tu suscripción?
 
-We currently email you whenever someone leaves an update on the
-<?=$values['site_name']?> report: <?=$values['title']?>.
+Nos pediste que te enviásemos un email cuando alguien actualizase la incidencia <?=$values['title']?> en <?=$values['site_name']?>.
 
-If you no longer wish to receive an email whenever this report is updated,
-please follow this link: <?=$values['unsubscribe_url']?>
+Si ya no deseas recibir estos correos, por favor haz clic en el siguiente enlace:
+
+<?=$values['unsubscribe_url']?>
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

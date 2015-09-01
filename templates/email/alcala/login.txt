@@ -1,13 +1,16 @@
-Subject: Your [% INCLUDE 'site-name.txt' | trim %] account details
+Subject: Confirma tu cuenta en [% INCLUDE 'site-name.txt' | trim %]
 
-Please click on the link below to confirm your email address.
+Hola,
+Por favor haz clic en el siguiente link para confirmar tu dirección de correo.
 
 [% c.uri_for_action( 'auth/token', token ) %]
 
-Once you've done this, you'll be able to view and manage all reports and
-updates you've made on [% INCLUDE 'site-name.txt' | trim %].
+Una vez confirmada tu cuenta, podrás ver y administrar todos las notificaciones
+actualizaciones que has hecho en [% INCLUDE 'site-name.txt' | trim %].
 
+Atentamente,
 [% INCLUDE 'signature.txt' %]
 
-This email was sent automatically, from an unmonitored email account - so
-please do not reply to it.
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

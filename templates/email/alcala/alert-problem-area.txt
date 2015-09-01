@@ -1,22 +1,27 @@
-Subject: New <?=$values['site_name']?> reports in <?=$values['area_name']?>
+Subject: <?=$values['site_name']?> - Nuevas incidencias en <?=$values['area_name']?>
 
-The following new <?=$values['site_name']?> reports have been added in
-the <?=$values['area_name']?> area:
+Hola,
+
+Las siguientes incidencias han sido notificadas en la web de <?=$values['site_name']?>,
+correspondientes al área <?=$values['area_name']?>:
 
 <?=$values['data']?>
 
+
+Atentamente,
 <?=$values['signature']?>
 
+---
 
-Unsubscribe?
+¿Quieres cancelar tu suscripción?
 
-You asked us to send you an email when someone makes a new <?=$values['site_name']?>
-report in <?=$values['area_name']?>. This is a free service from <?=$values['site_name']?>.
+Nos pediste que te enviásemos un email cuando alguien notificase una nueva incidencia en <?=$values['site_name']?>
+dentro del área <?=$values['area_name']?>.
 
-If you no longer wish to receive an email whenever there are new reports in
-the <?=$values['area_name']?> area, please follow this link:
+Si ya no deseas recibir estos correos, por favor haz clic en el siguiente enlace:
 
 <?=$values['unsubscribe_url']?>
 
-This email was sent automatically, from an unmonitored email account - so please
-do not reply to it.
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.
