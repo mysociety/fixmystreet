@@ -1,0 +1,4 @@
+Ten en cuenta, sin embargo, que las actualizaciones no se envían automáticamente
+al [% update.problem.body %] -su función es la de permitir a los residentes de
+[% INCLUDE 'site-name.txt' | trim %] discutir problemas locales y ofrecer
+consejos o apoyo.

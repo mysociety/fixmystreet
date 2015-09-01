@@ -1,0 +1,23 @@
+Subject: Confirma tu alerta en [% INCLUDE 'site-name.txt' | trim %]
+
+Hola,
+
+Haz clic en el siguiente enlace para confirmar tu alerta en [% INCLUDE 'site-name.txt' | trim %].
+
+   [% token_url %]
+
+Si no puedes hacer clic en el enlace, cópialo y pégalo en la barra de
+direcciones de tu navegador web.
+
+Así confirmarás que quieres recibir un email cuando alguien realice una
+notificación en [% INCLUDE 'site-name.txt' | trim %] dentro del área que elegiste.
+
+Las alertas por email son un servicio gratuito de [% INCLUDE 'site-name.txt' | trim %].
+
+Atentamente,
+
+[% INCLUDE 'signature.txt' %]
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

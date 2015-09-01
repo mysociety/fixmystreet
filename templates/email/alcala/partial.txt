@@ -1,0 +1,17 @@
+Subject: Confirma tu notificación en [% INCLUDE 'site-name.txt' | trim %]
+
+Hola [% report.name || report.email %],
+
+Para confirmar la notificación que has hecho en [% INCLUDE 'site-name.txt' | trim %]
+via [% report.service %], y para comprobar o añadir detalles, por favor visita el
+siguiente URL:
+
+[% token_url %]
+
+¡Muchas gracias! 
+Atentamente,
+[% INCLUDE 'signature.txt' %]
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

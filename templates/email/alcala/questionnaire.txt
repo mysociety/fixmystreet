@@ -1,0 +1,25 @@
+Subject: Cuestionario sobre '<?=$values['title']?>'
+
+Hola <?=$values['name']?>,
+
+El <?=$values['created']?> notificaste una incidencia en el espacio público.
+Para mantener la web actualizada y relevante, por favor rellena un breve cuestionario
+que nos permitirá actualizar el estado de tu incidencia:
+
+    <?=$values['url']?>
+
+Atentamente,
+
+[% INCLUDE 'signature.txt' %]
+
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.
+
+----
+
+Tu notificación fue la siguiente:
+
+<?=$values['title']?>
+
+<?=$values['detail']?>
+

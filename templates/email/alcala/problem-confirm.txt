@@ -1,0 +1,32 @@
+Subject: Confirma tu notificación en [% INCLUDE 'site-name.txt' | trim %]
+
+Hola [% report.name %],
+
+Por favor haz clic en el siguiente enlace para confirmar que quieres enviar una
+notificación al [% report.body %]. Ten en cuenta que tu notificación se publicará
+también en la web de [% INCLUDE 'site-name.txt' | trim %] website:
+
+[% token_url %]
+
+Si no te es posible hacer clic en el enlace, puedes copiarlo en la barra de direcciones
+de tu navegador para visitarlo.
+
+Tu incidencia tiene por título:
+
+[% report.title %]
+
+y su descripción detallada es:
+
+[% report.detail %]
+
+
+Si no quieres enviar la notificación, simplemente ignora este correo.
+
+Muchas gracias por enviar tu notificación con [% INCLUDE 'site-name.txt' | trim %].
+
+Atentamente,
+[% INCLUDE 'signature.txt' %]
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

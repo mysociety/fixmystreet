@@ -1,0 +1,42 @@
+Subject: Respuesta automática para tu mensaje a [% INCLUDE 'site-name.txt' | trim %]
+
+
+Hola,
+
+Recibes este mensaje porque has intentado responder a un mensaje automático de
+[% INCLUDE 'site-name.txt' | trim %].
+
+Esto es una respuesta automática a tu correo.
+
+Si estás intentando contactar con el ayuntamiento en relación a una notificación,
+por favor busca en tu correo el último mensaje suyo (o auto-respuesta), y respóndelo.
+
+Alternativamente, si quisieras que tu comentario se publique en nuestra web, 
+puedes publicar una actualización a la notificación original. Ten en cuenta,
+sin embargo, que las actualizaciones no se envían automáticamente al ayuntamiento
+-su función es la de permitir a los residentes discutir problemas locales y ofrecer
+consejos o apoyo. Teniéndolo en cuenta, podrías querer actualizar tanto la 
+notificación original como escribir al ayuntamiento por email.
+
+Si lo que querías era responder a nuestra consulta de si tu problema ha sido ya
+resuelto, haz clic en el enlace incluido en el email que te enviamos.
+
+Si estás intentando responder a una actualización que alguien dejó en tu incidencia,
+por favor visita la página de tu incidencia e introduce tu respuesta como una
+nueva actualización.
+
+Si estás intentando confirmar una notificación de incidencia o una suscripción de
+alertas de notificación, por favor haz clic en el enlace incluido en el correo
+que te enviamos o, si no es posible hacer clic en el link, cópialo y pégalo en 
+la barra de direcciones de tu navegador web.
+
+Si estás intentando cancelar tu suscripción a una alerta por correo, puedes hacerlo
+haciendo clic en el enlace que se incluye al final de cada uno de los mensajes con
+alertas.
+
+Atentamente,
+[% INCLUDE 'signature.txt' %]
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

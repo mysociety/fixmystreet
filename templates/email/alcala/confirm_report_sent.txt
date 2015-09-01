@@ -1,0 +1,27 @@
+Subject: <?=$values['site_name']?> - Notificación enviada: <?=$values['title']?>
+
+Hola,
+
+Muchas gracias por usar <?=$values['site_name']?> para notificar la incidencia
+"<?=$values['title']?>".
+
+Con este mensaje te confirmamos que se ha enviado al <?=$values['bodies_name']?>,
+que debería responderte a ti directamente.
+
+Tu notificación está también publicada en <?=$values['url']?>, donde otras personas
+la pueden leer y comentar.
+
+Siéntete libre de actualizar la incidencia, aunque siendo consciente que dichas
+actualizaciones no serán enviadas automáticamente al ayuntamiento.
+
+Si quieres notificar algo al Ayuntamiento, aguarda a que te respondan para así poder
+responderles directamente. También puedes escribirles indicándoles el URL de la incidencia.
+
+Confiamos en que la incidencia que has notificado sea solucionada pronto.
+
+Atentamente,
+<?=$values['signature']?>
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

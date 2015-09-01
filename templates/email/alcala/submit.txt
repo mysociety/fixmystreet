@@ -1,0 +1,38 @@
+Subject: Notificación de una incidencia: <?=$values['title']?>
+
+Estimado <?=$values['bodies_name']?>,
+
+<?=$values['missing']?><?=$values['multiple']?>Un usuario de
+<?=$values['site_name']?> ha publicado la siguiente notificación de un problema
+local, que creen que requiere de vuestra atención.
+
+<?=$values['fuzzy']?>, o para proporcionar una actualización pública al problema
+por favor visita el siguiente enlace:
+
+    <?=$values['url']?>
+
+<?=$values['has_photo']?>----------
+
+Nnombre: <?=$values['name']?>
+
+Email: <?=$values['email']?>
+
+<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>
+
+Detalles: <?=$values['detail']?>
+
+<?=$values['easting_northing']?>Latitud: <?=$values['latitude']?>
+
+Longitud: <?=$values['longitude']?>
+
+<?=$values['closest_address']?>----------
+
+Si respondes a este correo, tu respuesta llegará directamente al usuario que 
+notificó el problema.
+
+Atentamente,
+<?=$values['signature']?>
+
+Si hubiera una dirección de email que fuese más adecuada para recibir los correos
+sobre "<?=$values['category_footer']?>", por favor háznoslo saber. Nos ayudarás 
+a mejorar el servicio para la ciudad.
