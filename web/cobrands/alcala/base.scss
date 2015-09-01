@@ -107,27 +107,6 @@ h1,h2,h3,h4,h5 {
   }
 }
 
-// Bromley's icons
-.fa {
-  padding-right: 5px;
-  display: inline-block;
-  font-family: FontAwesome;
-  font-style: normal;
-  font-weight: normal;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-.fa-sitemap:before {
-  content: "\f0e8";
-}
-.fa-user:before {
-  content: "\f007";
-}
-.fa-home:before {
-  content: "\f015";
-}
-
 // Footer
 .site-footer {
   width: 100%;
@@ -184,29 +163,6 @@ h1,h2,h3,h4,h5 {
         margin-bottom: 0;
         a {
           font-size: 0.9em;
-        }
-      }
-    }
-  }
-  .copyright {
-    font-size: 0.8em;
-    background: #dad7c9;
-    color: #505050;
-    padding: 0.3em 1em;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-  }
-  .social {
-    ul {
-      li {
-        width: auto;
-        padding: 0 0 0 1em;
-        img {
-          max-width: 36px;
         }
       }
     }
