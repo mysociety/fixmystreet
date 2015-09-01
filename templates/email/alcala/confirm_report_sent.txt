@@ -1,0 +1,25 @@
+Subject: <?=$values['site_name']?> Report Sent: <?=$values['title']?>
+
+Hello,
+
+Thank you for using <?=$values['site_name']?> to submit your report
+"<?=$values['title']?>".
+
+This is to confirm that it has now been sent to <?=$values['bodies_name']?>,
+who should respond to you directly.
+
+Your report is also on <?=$values['url']?>, where others may read, comment or
+offer advice.
+
+You should also feel free to add updates to that page, although note that they
+will not be sent to your council.
+
+If you'd like to update your council, please wait for their reply so that you
+can respond to them directly.
+
+Good luck in getting your problem fixed.
+
+<?=$values['signature']?>
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.
