@@ -90,9 +90,6 @@ requires 'YAML';
 feature 'uk', 'FixMyStreet.com specific requirements' => sub {
     # East Hampshire
     requires 'SOAP::Lite';
-    # Barnet
-    # TODO: This can perhaps be removed since Barnet switched to email for problem reports
-    requires 'SOAP::WSDL';
 };
 
 feature 'open311-endpoint', 'Open311::Endpoint specific requirements' => sub {
@@ -105,7 +102,7 @@ feature 'open311-endpoint', 'Open311::Endpoint specific requirements' => sub {
 };
 
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {
-#    # Geocoder
+    # Geocoder
     requires 'SOAP::Lite';
 };
 

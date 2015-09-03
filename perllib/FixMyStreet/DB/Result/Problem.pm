@@ -637,16 +637,13 @@ sub body {
     return $body;
 }
 
-# returns true if the external id is the council's ref, i.e., useful to publish it
-# (by way of an example, the barnet send method returns a useful reference when
-# it succeeds, so that is the ref we should show on the problem report page).
+# returns true if the external id is the council's ref, i.e., useful to publish it.
 #     Future: this is installation-dependent so maybe should be using the contact
 #             data to determine if the external id is public on a council-by-council basis.
 #     Note:   this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
     my $self = shift;
-    if ($self->external_id && $self->send_method_used && 
-        ($self->send_method_used eq 'barnet' || $self->bodies_str =~ /2237/)) {
+    if ($self->external_id && $self->send_method_used && $self->bodies_str =~ /2237/) {
         return 1;
     }
     return 0;    
