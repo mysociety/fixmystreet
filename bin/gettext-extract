@@ -9,6 +9,11 @@
 
 cd "$(dirname $(readlink -f $BASH_SOURCE))/.."
 
+# Install required code if needed
+vendor/bin/carton install --path local-gettext --cpanfile locale/cpanfile --deployment
+export PATH="local-gettext/bin:$PATH"
+export PERL5LIB="local-gettext/lib/perl5:local/lib/perl5"
+
 # File to write to, clear it to start with
 PO=locale/FixMyStreet.po
 rm -f $PO

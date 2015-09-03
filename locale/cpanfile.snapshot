@@ -1,0 +1,88 @@
+# carton snapshot format: version 1.0
+DISTRIBUTIONS
+  ExtUtils-MakeMaker-7.06
+    pathname: B/BI/BINGOS/ExtUtils-MakeMaker-7.06.tar.gz
+    provides:
+      ExtUtils::Command 7.06
+      ExtUtils::Command::MM 7.06
+      ExtUtils::Liblist 7.06
+      ExtUtils::Liblist::Kid 7.06
+      ExtUtils::MM 7.06
+      ExtUtils::MM_AIX 7.06
+      ExtUtils::MM_Any 7.06
+      ExtUtils::MM_BeOS 7.06
+      ExtUtils::MM_Cygwin 7.06
+      ExtUtils::MM_DOS 7.06
+      ExtUtils::MM_Darwin 7.06
+      ExtUtils::MM_MacOS 7.06
+      ExtUtils::MM_NW5 7.06
+      ExtUtils::MM_OS2 7.06
+      ExtUtils::MM_QNX 7.06
+      ExtUtils::MM_UWIN 7.06
+      ExtUtils::MM_Unix 7.06
+      ExtUtils::MM_VMS 7.06
+      ExtUtils::MM_VOS 7.06
+      ExtUtils::MM_Win32 7.06
+      ExtUtils::MM_Win95 7.06
+      ExtUtils::MY 7.06
+      ExtUtils::MakeMaker 7.06
+      ExtUtils::MakeMaker::Config 7.06
+      ExtUtils::MakeMaker::Locale 7.06
+      ExtUtils::MakeMaker::_version 7.06
+      ExtUtils::MakeMaker::charstar 7.06
+      ExtUtils::MakeMaker::version 7.06
+      ExtUtils::MakeMaker::version::regex 7.06
+      ExtUtils::MakeMaker::version::vpp 7.06
+      ExtUtils::Mkbootstrap 7.06
+      ExtUtils::Mksymlists 7.06
+      ExtUtils::testlib 7.06
+      MM 7.06
+      MY 7.06
+    requirements:
+      Data::Dumper 0
+      DirHandle 0
+      Encode 0
+      ExtUtils::MakeMaker 0
+      File::Basename 0
+      File::Spec 0.8
+      Pod::Man 0
+      perl 5.006
+  Locale-Maketext-1.26
+    pathname: T/TO/TODDR/Locale-Maketext-1.26.tar.gz
+    provides:
+      Locale::Maketext 1.26
+      Locale::Maketext::Guts 1.20
+      Locale::Maketext::GutsLoader 1.20
+    requirements:
+      ExtUtils::MakeMaker 0
+      I18N::LangTags 0.31
+      I18N::LangTags::Detect 0
+      Test::More 0
+  Locale-Maketext-Lexicon-1.00
+    pathname: D/DR/DRTECH/Locale-Maketext-Lexicon-1.00.tar.gz
+    provides:
+      Locale::Maketext::Extract 1.00
+      Locale::Maketext::Extract::Plugin::Base 1.00
+      Locale::Maketext::Extract::Plugin::FormFu 1.00
+      Locale::Maketext::Extract::Plugin::FormFu::Extractor 1.00
+      Locale::Maketext::Extract::Plugin::Generic 1.00
+      Locale::Maketext::Extract::Plugin::Haml 1.00
+      Locale::Maketext::Extract::Plugin::Mason 1.00
+      Locale::Maketext::Extract::Plugin::PPI 1.00
+      Locale::Maketext::Extract::Plugin::Perl 1.00
+      Locale::Maketext::Extract::Plugin::TT2 1.00
+      Locale::Maketext::Extract::Plugin::TT2::Directive 1.00
+      Locale::Maketext::Extract::Plugin::TT2::Parser 1.00
+      Locale::Maketext::Extract::Plugin::TextTemplate 1.00
+      Locale::Maketext::Extract::Plugin::TextTemplate::Parser 1.00
+      Locale::Maketext::Extract::Plugin::YAML 1.00
+      Locale::Maketext::Extract::Plugin::YAML::Extractor 1.00
+      Locale::Maketext::Extract::Run 1.00
+      Locale::Maketext::Lexicon 1.00
+      Locale::Maketext::Lexicon::Auto 1.00
+      Locale::Maketext::Lexicon::Gettext 1.00
+      Locale::Maketext::Lexicon::Msgcat 1.00
+      Locale::Maketext::Lexicon::Tie 1.00
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      Locale::Maketext 1.17
