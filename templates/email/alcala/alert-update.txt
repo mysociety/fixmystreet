@@ -1,0 +1,30 @@
+Subject: <?=$values['site_name']?> - Actualizaciones a la incidencia: '<?=$values['title']?>'
+
+Nos pediste que te enviásemos un email cada vez que alguien actualizase la incidencia 
+"<?=$values['title']?>" en la web de <?=$values['site_name']?>.
+
+Se han hecho las siguientes actualizaciones para dicha incidencia:
+
+<?=$values['data']?>
+
+<?=$values['state_message']?>
+
+Si quisieras ver o responder las actualizaciones, por favor visita el siguiente enlace:
+    <?=$values['problem_url']?>
+
+Atentamente,
+<?=$values['signature']?>
+
+---
+
+¿Quieres cancelar tu suscripción?
+
+Nos pediste que te enviásemos un email cuando alguien actualizase la incidencia <?=$values['title']?> en <?=$values['site_name']?>.
+
+Si ya no deseas recibir estos correos, por favor haz clic en el siguiente enlace:
+
+<?=$values['unsubscribe_url']?>
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

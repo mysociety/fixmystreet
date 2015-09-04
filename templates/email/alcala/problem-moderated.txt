@@ -1,0 +1,39 @@
+Subject: [% INCLUDE 'site-name.txt' | trim %] - Tu notificación de incidencia ha sido editada por un moderador
+
+Hola [% user.name %],
+
+Tu notificación en [% INCLUDE 'site-name.txt' | trim %] ha sido editada por un moderador.
+
+[% IF types == 'hide' -%]
+La notificación ya no está visible en la web.
+[% ELSE %]
+Las siguientes informaciones han sido cambiadas:
+
+	[% types %]
+
+[% END -%]
+
+Tu incidencia tenía por título:
+
+[% problem.moderation_original_data.title %]
+
+Y sus detalles eran:
+
+[% problem.moderation_original_data.detail %]
+
+[% UNLESS types == 'hide' %]
+Puedes ver la incidencia en [% report_uri %]
+[% END %]
+
+Si piensas que esta notificación no debería haber sido moderada, puedes contactarnos
+en el correo [% report_complain_uri %]
+
+Gracias por enviar notificaciones de incidencias usando [% INCLUDE 'site-name.txt' | trim %].
+
+
+Atentamente,
+[% INCLUDE 'signature.txt' %]
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

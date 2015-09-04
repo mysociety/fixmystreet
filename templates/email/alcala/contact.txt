@@ -1,0 +1,5 @@
+Subject: Mensaje de <?=$values['site_name']?>: [% subject %]
+
+[% message %]
+
+[ Sent by contact.cgi on [% host %]. IP address [% ip %] ]

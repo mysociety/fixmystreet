@@ -1,0 +1,25 @@
+Subject: <?=$values['site_name']?> - Nuevas incidencias en el área especificada
+
+Las siguientes incidencias han sido notificadas en la web de <?=$values['site_name']?>,
+correspondientes al área que especificaste:
+
+<?=$values['data']?>
+
+
+Atentamente,
+<?=$values['signature']?>
+
+---
+
+¿Quieres cancelar tu suscripción?
+
+Nos pediste que te enviásemos un email cuando alguien notificase una nueva incidencia en <?=$values['site_name']?>
+dentro del área que especificaste.
+
+Si ya no deseas recibir estos correos, por favor haz clic en el siguiente enlace:
+
+<?=$values['unsubscribe_url']?>
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

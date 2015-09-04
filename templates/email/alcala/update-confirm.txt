@@ -1,0 +1,24 @@
+Subject: Confirma tu actualización de una incidencia en [% INCLUDE 'site-name.txt' | trim %]
+
+Hola [% update.name %],
+
+Por favor haz clic en el siguiente enlace para confirmar tu actualización de una
+incidencia en [% INCLUDE 'site-name.txt' | trim %]:
+
+[% token_url %]
+
+Si no puedes hacer clic en este enlace, cópialo y pégalo en la barra de direcciones
+de tu navegador web.
+
+Tu actualización es:
+
+[% update.text %]
+
+[% INCLUDE 'update-confirm-donotsend.txt' %]
+
+Atentamente,
+[% INCLUDE 'signature.txt' %]
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.

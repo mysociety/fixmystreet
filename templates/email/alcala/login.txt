@@ -1,0 +1,16 @@
+Subject: Confirma tu cuenta en [% INCLUDE 'site-name.txt' | trim %]
+
+Hola,
+Por favor haz clic en el siguiente link para confirmar tu dirección de correo.
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+Una vez confirmada tu cuenta, podrás ver y administrar todos las notificaciones
+actualizaciones que has hecho en [% INCLUDE 'site-name.txt' | trim %].
+
+Atentamente,
+[% INCLUDE 'signature.txt' %]
+
+-
+Por favor no respondas a este mensaje, pues se te ha enviado automáticamente desde una
+dirección de correo que nadie lee.
