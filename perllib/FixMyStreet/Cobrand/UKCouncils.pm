@@ -109,8 +109,15 @@ sub recent_photos {
 # Returns true if the cobrand owns the problem.
 sub owns_problem {
     my ($self, $report) = @_;
-    my $bodies = $report->bodies;
-    my %areas = map { %{$_->areas} } values %$bodies;
+    my @bodies;
+    if (ref $report eq 'HASH') {
+        return unless $report->{bodies_str};
+        @bodies = split /,/, $report->{bodies_str};
+        @bodies = FixMyStreet::App->model('DB::Body')->search({ id => \@bodies })->all;
+    } else { # Object
+        @bodies = values %{$report->bodies};
+    }
+    my %areas = map { %{$_->areas} } @bodies;
     return $areas{$self->council_id} ? 1 : undef;
 }
 
