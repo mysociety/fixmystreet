@@ -4,18 +4,13 @@ set -e
 
 DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd | sed -e 's/\/bin$//' )"
 
-$DIR/bin/cpanm -l $DIR/local-carton Carton
-
-export PATH=$DIR/local-carton/bin:$PATH
-export PERL5LIB=$DIR/local-carton/lib/perl5
-
-carton install --deployment --without uk --without zurich --without open311-endpoint
+$DIR/vendor/bin/carton install --deployment --without uk --without zurich --without open311-endpoint
 
 if ! perl -MImage::Magick -e 'exit()' >/dev/null 2>&1
 then
     read -p "Image::Magick is not installed. Do you want to attempt to install it?" yn
     case $yn in 
-        [Yy]* ) $DIR/local-carton/bin/carton install Image::Magick;;
+        [Yy]* ) $DIR/vendor/bin/carton install Image::Magick;;
         * ) echo 'You will need to install it for FixMyStreet to work';;
     esac
 fi

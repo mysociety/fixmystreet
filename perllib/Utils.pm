@@ -91,37 +91,6 @@ sub truncate_coordinate {
     return $out;
 }
 
-sub barnet_categories {
-    # The values here are KBIDs from Barnet's system: see bin/send-reports for formatting.
-    # They are no longer used since Barnet switched to email for delivery of problem reports.
-    # and can be removed when SendReport/Barnet.pm is removed.
-    if (mySociety::Config::get('STAGING_SITE')) { # note staging site must use different KBIDs
-        return {
-             'Street scene misc'        => 14 # for test
-        }
-    } else {
-        return {
-            'Accumulated Litter'        => 349,
-            'Dog Bin'                   => 203,
-            'Dog Fouling'               => 288,
-            'Drain or Gully'            => 256,
-            'Fly Posting'               => 465,
-            'Fly Tipping'               => 449,
-            'Graffiti'                  => 292,
-            'Gritting'                  => 200,
-            'Highways'                  => 186,
-            'Litter Bin Overflowing'    => 205,
-            'Manhole Cover'             => 417,
-            'Overhanging Foliage'       => 421,
-            'Pavement Damaged/Cracked'  => 195,
-            'Pothole'                   => 204,
-            'Road Sign'                 => 80,
-            'Roadworks'                 => 246,
-            'Street Lighting'           => 251,
-        };
-    }
-}
-
 =head2 trim_text
 
     my $text = trim_text( $text_to_trim );

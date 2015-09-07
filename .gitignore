@@ -1,41 +1,40 @@
-*.ttc
+# General
 *.swp
 *~
 ._*
-.prove
-
-.vagrant
-.bundle
 .DS_Store
-.carton
-local-lib5
-META.yml
-Makefile
-blib/
-inc/
-.sass-cache
-_Inline/
-lib
-tags
 
+# Compiled templates
+*.ttc
+
+# Translations
 *.mo
 FixMyStreet-EmptyHomes.po
 FixMyBarangay.po
 
+# CSS
+.bundle
+.sass-cache
 /web/css/core.css
 /web/css/main.css
 /web/cobrands/*/*.css
 /web/cobrands/seesomething
+
+# Photo upload cache
 /web/photo
+
+# Installation
 /local
-/local-carton
+/local-*
+.prove
+.vagrant
+.carton
+META.yml
+Makefile
+blib/
+inc/
+_Inline/
 
-/web/cobrands/fixmystreet/compass_app_log.txt
-
-phonegap/www/js/config.js
-phonegap/Android/bin/
-phonegap/iPhone/FixMyStreet.xcodeproj/project.xcworkspace/xcuserdata
-phonegap/Android/gen/
-
+# International
 /fixmystreet-international
 *[Mm]ake[Mm]y[Ii]sland*
