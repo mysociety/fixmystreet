@@ -25,5 +25,4 @@ except IOError:
     os.remove(wanted_filename)
 
 print "No cached copy found, running carton install..."
-os.system('cpanm -q Carton')
-os.system('carton install --deployment')
+os.system('vendor/bin/carton install --deployment')
