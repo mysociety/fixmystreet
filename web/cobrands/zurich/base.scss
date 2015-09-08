@@ -267,7 +267,7 @@ h4.static-with-rule {
 }
 
 #map_box {
-    top: 6em; // the default, 3em, overlaps the header
+    top: 0em; // the default, 3em, overlaps the content below
 }
 
 @media screen {
