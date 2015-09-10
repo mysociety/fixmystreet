@@ -183,6 +183,7 @@ $(function(){
         e.preventDefault();
         var offset = $('#main-nav').offset().top;
         $('html, body').animate({scrollTop:offset}, 1000);
+        window.location.hash = 'main-nav';
     });
 
 
