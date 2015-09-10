@@ -26,9 +26,6 @@
 // Change the colour and size of the site header to suit
 #site-header {
   background: $base_bg;
-  // if the top border is not 4px wide, the javascript thinks we're not on a
-  // mobile and so we don't get the mobile experience. No, really.
-  border-top-width: 4px;
 }
 // We don't want a fixed height header on any page except the map page because
 // it includes lots of other stuff there, including a dynamic drop-down menu

@@ -58,10 +58,7 @@ $(function(){
     // Deal with switching between mobile and desktop versions on resize
     var last_type;
     $(window).resize(function(){
-        var type = $('#site-header').css('borderTopWidth');
-        if (type == '4px') { type = 'mobile'; }
-        else if (type == '0px') { type = 'desktop'; }
-        else { return; }
+        var type = Modernizr.mq('(min-width: 48em)') || $('html.ie6, html.ie7, html.ie8').length ? 'desktop' : 'mobile';
         if (last_type == type) { return; }
         if (type == 'mobile') {
             $html.addClass('mobile');
@@ -457,16 +454,3 @@ $.fn.drawer = function(id, ajax) {
     }
 
 });
-
-/*
-XXX Disabled because jerky on Android and makes map URL bar height too small on iPhone.
-// Hide URL bar
-$(window).load(function(){
-    window.setTimeout(function(){
-        var s = window.pageYOffset || document.compatMode === "CSS1Compat" && document.documentElement.scrollTop || document.body.scrollTop || 0;
-        if (s < 20 && !location.hash) {
-            window.scrollTo(0, 1);
-        }
-    }, 0);
-});
-*/
