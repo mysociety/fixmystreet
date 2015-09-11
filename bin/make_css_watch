@@ -45,8 +45,7 @@ if (-f "$gem_bin/compass") {
 
 sub title {
     my $what = shift;
-    # TODO, check if xtitle is installed and if so, run following command:
-    # system 'xtitle', $what;
+    print "\033]2;$what\007\n";
 }
 
 say sprintf "Watching [%s] for %s", (join ',' => @dirs), $filter;
@@ -92,6 +91,7 @@ while ( my @events = $watcher->wait_for_events() ) {
                 '--style' => 'compressed',
                 $dir;
         }
+        title "$dir updated";
     }
     title 'watching';
 }
