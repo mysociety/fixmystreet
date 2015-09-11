@@ -1,5 +1,7 @@
 [%
     SET html_att = ' lang="' _ lang_code _ '"';
+    # For a right-to-left language, use the following line in your own header:
+    # SET html_att = html_att _ ' dir="rtl"';
 -%]
 <!doctype html>
 <!--[if lt IE 7]><html class="no-js ie6 iel8"[% html_att %]><![endif]-->
