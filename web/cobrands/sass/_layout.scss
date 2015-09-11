@@ -78,7 +78,7 @@ h1 {
   .nav-wrapper {
     position: absolute;
     top:0;
-    left:0;
+    #{$left}: 0;
     width:100%;
     .nav-wrapper-2 {
       // position static as well so we fix lots of the z-index issues
@@ -100,7 +100,7 @@ h1 {
 }
 #site-logo {
   top: 0.9em;
-  left: auto;
+  #{$left}: auto;
   position: absolute;
   z-index: 3;
 }
@@ -120,8 +120,8 @@ h1 {
 }
 #nav-link,
 #report-cta {
-  right: auto;
-  left: -999999px;
+  #{$right}: auto;
+  #{$left}: -999999px;
 }
 #main-nav{
   margin: 0 auto;
@@ -131,13 +131,13 @@ h1 {
     list-style: none;
     padding: 0px;
     margin: 0px;
-    float:right;
+    float: $right;
     li{
       list-style: none;
       display: inline;
       margin: 0px;
       padding: 0px;
-      float:left;
+      float: $left;
       a,
       span {
         display: block;
@@ -175,7 +175,7 @@ h1 {
     }
     &#mysoc-menu{
       padding: 0em 0.5em;
-      margin-left: 0.25em;
+      margin-#{$left}: 0.25em;
       background: $primary;
       @include border-radius(0 0 0.375em 0.375em);
       li{
@@ -184,12 +184,12 @@ h1 {
           color: $primary_text;
           text-transform: uppercase;
           font-size: 0.6875em;
-          padding: 1.3em 0.7em 1em 0.7em;
+          padding: 1.3em 0.7em 1em;
           &#mysoc-logo {
             width:84px;
             height:16px;
             background-size: 100px auto;
-            background-position: 0px 10px;
+            background-position: -8px 0px;
             opacity: 0.8;
             &:hover {
               opacity: 1;
@@ -237,28 +237,28 @@ body.mappage {
   }
 
   .content {
-    float:left;
+    float: $left;
     padding: 1em 1em 10em;
     margin: 0;
   }
 
   #site-logo {
-    left: 12px;
+    #{$left}: 12px;
   }
 
   #main-nav {
     width: auto;
-    margin-right: 1em;
+    margin-#{$right}: 1em;
   }
 
   #main-nav ul#main-menu li a,
   #main-nav ul#main-menu li span {
-    padding: 1.4em 0.75em 1.35em 0.75em;
+    padding: 1.4em 0.75em 1.35em;
   }
 
   #main-nav ul#main-menu li a.report-a-problem-btn {
     padding: 0.5em;
-    margin:0.9em 0.25em 0.85em 0.25em;
+    margin: 0.9em 0.25em 0.85em;
   }
 
   .nav-wrapper{
@@ -278,9 +278,9 @@ body.mappage {
       display: block;
       height: auto;
       width: 22.2em; // 27em (.content width) - 2em (.content padding) - 6em - 0.8em
-      padding: 0.5em 6em 0.5em 0.8em;
+      padding: flip(0.5em 6em 0.5em 0.8em, 0.5em 0.8em 0.5em 6em);
       top: 0;
-      left: 0;
+      #{$left}: 0;
       z-index: 1;
       box-shadow: none;
       background: #FCEA9A;
@@ -289,7 +289,7 @@ body.mappage {
       a {
         // move the "Sign out" link in and down a bit, because of extra padding on parent
         top: 0.8em;
-        right: 0.8em;
+        #{$right}: 0.8em;
       }
     }
 
@@ -309,9 +309,9 @@ body.mappage {
   body.mappage {
     // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
     .container {
-      float: left;
+      float: $left;
       width: 27em;
-      margin-left: 0.7em;
+      margin-#{$left}: 0.7em;
     }
     .nav-wrapper{
       z-index:1;
@@ -323,7 +323,7 @@ body.mappage {
       position: absolute;
     }
     #user-meta {
-      margin-left: 2em;
+      margin-#{$left}: 2em;
     }
   }
 }
@@ -407,7 +407,7 @@ body.fullwidthpage {
                     }
                     #footer-mobileapps {
                         a {
-                            padding-left: 0.5em;
+                            padding-#{$left}: 0.5em;
                         }
                     }
                     h4 {
@@ -426,7 +426,7 @@ body.fullwidthpage {
                     text-indent: -1000%;
                     height: 1.7em;
                     width: 16em;
-                    padding-right: 0.25em;
+                    padding-#{$right}: 0.25em;
                 }
             }
         }
@@ -463,7 +463,7 @@ body.twothirdswidthpage {
     aside {
       background:#eee;
       position:absolute;
-      left:42em;
+      #{$left}: 42em;
       top:0;
       z-index: -1;
       width:13em;
@@ -478,12 +478,12 @@ body.twothirdswidthpage {
     }
     .sticky-sidebar {
       position: absolute;
-      left:42em;
+      #{$left}: 42em;
       z-index: -1;
       aside {
         position: fixed;
         top:7em;
-        left:auto;
+        #{$left}: auto;
       }
     }
   }
@@ -493,7 +493,7 @@ body.twothirdswidthpage {
   position:static;
   aside {
     position:absolute;
-    left:42em;
+    #{$left}: 42em;
     top:0;
   }
 }
@@ -504,7 +504,7 @@ body.twothirdswidthpage {
 .tablewrapper {
   display:table;
   width:100%;
-  padding:0 0 1em 0;
+  padding: 0 0 1em;
   >div {
     display:table-cell;
     width:50%;
@@ -522,7 +522,7 @@ body.twothirdswidthpage {
     div {//ie6 doesn't support '>div', so we'll go with the somewhat risker 'div'
       width:48%;
       display:block;
-      float: left;
+      float: $left;
       border:none !important;
     }
   }
@@ -538,7 +538,7 @@ body.twothirdswidthpage {
 
 //footer blocks
 #footer-mobileapps {
-  border-right:1em solid transparent;
+  border-#{$right}: 1em solid transparent;
   background:none;
   padding:0;
   @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
@@ -553,31 +553,31 @@ body.twothirdswidthpage {
 .ie6, .ie7 {
   #footer-mobileapps {
       margin:0 0.5em;
-      margin-right:2%;
+      margin-#{$right}: 2%;
   }
 }
 
 #footer-help {
-  border-left:1em solid transparent;
+  border-#{$left}: 1em solid transparent;
   ul {
     display:table;
     li {
       display:table-cell;
       border-bottom:none;
       &:last-child {
-        border-left:1.25em solid transparent;
+        border-#{$left}: 1.25em solid transparent;
       }
     }
   }
 }
 .ie6, .ie7 {
   #footer-help {
-    margin-left:2%;
+    margin-#{$left}: 2%;
     ul {
       width:100%;
       li {
-        float:left;
-        width:45%
+        float: $left;
+        width: 45%;
       }
     }
   }
@@ -589,7 +589,7 @@ body.twothirdswidthpage {
   position: absolute;
   height: 29em;
   width: 29em;
-  right: 1em;
+  #{$right}: 1em;
   top: 3em;
   z-index:1;
 }
@@ -609,50 +609,49 @@ body.twothirdswidthpage {
 
 // push zoom back over to right
 #fms_pan_zoom_zoomin {
-  left:auto !important;
-  right:30px;
+  #{$left}: auto !important;
+  #{$right}: 30px !important;
   top:130px !important;
 }
 #fms_pan_zoom_zoomout {
-  left:auto !important;
-  right:30px;
+  #{$left}: auto !important;
+  #{$right}: 30px !important;
   top:174px !important;
 }
 
 .olControlAttribution {
   bottom:0.5em !important;
-  left: auto !important;
+  #{$left}: auto !important;
 }
 
 #sub_map_links {
-  left:auto;
-  bottom:auto;
-  bottom:2em;
+  #{$left}: auto;
+  bottom: 2em;
   #map_links_toggle {
     display:block;
     cursor: pointer;
     position:absolute;
-    left: -0.97em; /* 1em leaves a tiny gap, font issue */
+    #{$left}: -0.97em; /* 1em leaves a tiny gap, font issue */
     width: 1em;
     height:100%;
-    background:#000 url($image-sprite) right -4119px no-repeat;
-    @include border-radius(0.25em 0 0 0.25em);
+    background:#000 inline-image("../fixmystreet/images/triangle-grey-#{$right}.svg") 50% 50% no-repeat;
+    @include border-radius(flip(0.25em 0 0 0.25em, 0 0.25em 0.25em 0));
     &:hover {
-      left:-1.5em;
+      #{$left}: -1.5em;
       //use border so we don't have to redefine the background-position
-      border-right:0.5em solid #000;
+      border-#{$right}: 0.5em solid #000;
     }
     &.closed {
-      background-position: right -4159px;
+      background-image: inline-image("../fixmystreet/images/triangle-grey-#{$left}.svg");
     }
   }
 }
-.ie6 #sub_map_links #map_links_toggle {
-  height:1.75em;
-  background:#000 url('images/ie_sub_map_links_sprite.gif') center -143px no-repeat;
-  &.closed {
-    background-position: center -183px;
-  }
+.iel8 #sub_map_links #map_links_toggle {
+    height: 1.75em;
+    background: #000 url('images/ie_sub_map_links_sprite.gif') center -143px no-repeat;
+    &.closed {
+      background-position: center -183px;
+    }
 }
 
 // log in bit, pokes above the .content div
@@ -665,13 +664,13 @@ body.twothirdswidthpage {
     @include inline-block;
     position: absolute;
     top: 1em;
-    left: 1em;
+    #{$left}: 1em;
     height:2em;
-    padding:0.25em 6em 0.5em 0.5em;
+    padding: flip(0.25em 6em 0.5em 0.5em, 0.25em 0.5em 0.5em 6em);
     @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
     a {
       top:0.5em;
-      right:0.5em;
+      #{$right}: 0.5em;
       font-size:0.6875em;
       padding:0.5em 0.75em;
       line-height:1em;
@@ -712,42 +711,44 @@ body.twothirdswidthpage {
       a, input[type=submit] {
         font-size: 0.75em;
         color:#666;
-        padding: 0.5em 1.5em 0.5em 0;
+        padding: flip(0.5em 1.5em 0.5em 0, 0.5em 0 0.5em 1.5em);
         text-transform:none;
         &.abuse {
           background-image:url($image-sprite);
-          background-position:right -2935px;
+          background-position: flip(right, -337px) -2935px;
         }
         &.feed {
           background-image:url($image-sprite);
-          background-position:right -3074px;
+          background-position: flip(right, -337px) -3074px;
         }
         &.share {
           min-width: 5em;
           background-image: url(/cobrands/fixmystreet/images/share.png);
-          background-position: 90% 50%;
+          background-position: flip(80%, 20%) 50%;
         }
         &.chevron {
-          background-image:url($image-sprite);
-          background-position:right -3225px;
+          border-#{$right}: solid 1em transparent;
+          padding-#{$right}: 0.5em;
+          background-position: $right 50%;
+          background-size: 12px 15px;
         }
         &.hover {
           background-image:url($image-sprite);
-          background-position:right -1876px;
+          background-position: flip(right, -337px) -1876px;
         }
       }
     }
     &.singleton {
       li {
-        text-align:right;
+        text-align: $right;
         a {
-          padding-right:3em;
+          padding-#{$right}: 3em;
         }
       }
     }
   }
   &.static {
-    padding:0 0 1em 0;
+    padding: 0 0 1em;
     position: static;
   }
 }
@@ -767,19 +768,20 @@ body.twothirdswidthpage {
 
 // pokes over the RHS with a little triangle
 .big-green-banner {
-  top:auto;
-  right:-1.25em;
-  margin-left:-2em;
-  font-size:1.375em;
-  padding:1em 3em 1em 1em;
-  background: $col_click_map url($image-sprite) right -2188px no-repeat;
+  top: auto;
+  #{$right}: -1.25em;
+  margin-#{$left}: -2em;
+  font-size: 1.375em;
+  padding: flip(1em 3em 1em 1em, 1em 1em 1em 3em);
+  background: $col_click_map inline-image("../fixmystreet/images/chevron-white-#{$right}.svg") $right center no-repeat;
+  background-size: 27px+36px 33px;
   &:before {
-    right:0;
-    left:auto;
-    top:-0.5em;
+    left: flip(auto, 0);
+    right: flip(0, auto);
+    top: -0.5em;
     position: absolute;
     border-top: 0.5em solid transparent;
-    border-left: 0.5em solid $col_click_map_dark;
+    border-#{$left}: 0.5em solid $col_click_map_dark;
     border-bottom:none;
   }
   span {
@@ -788,8 +790,10 @@ body.twothirdswidthpage {
     padding-top: 0.5em;
   }
 }
-.ie6 .big-green-banner {
-  background: $col_click_map url(/cobrands/fixmystreet/images/ie_green_chevron.gif) right center no-repeat;
+.iel8 {
+  .big-green-banner {
+    background-image: url(/cobrands/fixmystreet/images/chevron-white-#{$right}-on-green.gif);
+  }
 }
 
 .banner {
@@ -798,8 +802,8 @@ body.twothirdswidthpage {
     top:-2.25em;
     padding:1em;
     &:before {
-      left:-0.75em;
-      border-left: 0.75em solid transparent;
+      #{$left}: -0.75em;
+      border-#{$left}: 0.75em solid transparent;
       border-bottom: 0.75em solid #888;
     }
     &#fixed {
@@ -834,7 +838,7 @@ body.twothirdswidthpage {
 // for pulling elements fullwidth regardless
 // of .contents' padding
 .full-width{
-  margin: 0 0 0em -1em;
+  margin: flip(0 0 0em -1em, 0 -1em 0 0);
   width: 29em;
 }
 
@@ -859,7 +863,7 @@ textarea.form-error {
 
 #report-a-problem-sidebar {
     position: absolute;
-    left: 29em;
+    #{$left}: 29em;
     width: 15em;
     @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
 }
@@ -879,7 +883,7 @@ textarea.form-error {
 }
 .ie6, .ie7 {
   #report-a-problem-sidebar {
-    left: 28.5em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
+    #{$left}: 28.5em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
     z-index: 1;
   }
 }
@@ -923,8 +927,8 @@ body.frontpage {
     z-index:10;
     p {
       top: -4em;
-      left: auto;
-      right: 0;
+      #{$left}: auto;
+      #{$right}: 0;
       color:$primary;
       background:none;
       @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
@@ -982,7 +986,7 @@ body.frontpage {
     background:none;
     overflow:hidden;
     padding-bottom: 0;
-    margin-right:0.5em;
+    margin-#{$right}: 0.5em;
     label {
       margin:0.5em 0;
     }
@@ -993,14 +997,14 @@ body.frontpage {
       overflow:hidden;
       input#pc {
         display:block;
-        float:left;
+        float: $left;
         padding:0.25em 0.5em;
         height:2em;
         width:17em;
       }
       input#sub {
         display:block;
-        float:right;
+        float: $right;
         width:3em;
         height:2.3em;
         padding-top:0.2em;
@@ -1037,7 +1041,7 @@ body.frontpage {
 }
 
 #front-howto {
-  border-right:1em solid transparent;
+  border-#{$right}: 1em solid transparent;
   #front_stats {
     background:none;
     color: #222;
@@ -1055,13 +1059,13 @@ body.frontpage {
   #front_stats {
     div {
       width:8em;
-      float:left;
+      float: $left;
     }
   }
 }
 
 #front-recently {
-  border-left:1em solid transparent;
+  border-#{$left}: 1em solid transparent;
 }
 
 #front-howto h2,
@@ -1073,10 +1077,10 @@ body.frontpage {
 .ie6, .ie7 {
   .tablewrapper {
     #front-howto {
-      margin-right:2%;
+      margin-#{$right}: 2%;
     }
     #front-recently {
-      margin-left:2%;
+      margin-#{$left}: 2%;
     }
   }
 }
@@ -1084,15 +1088,15 @@ body.frontpage {
 .confirmation-header {
     width: 25em;
     margin: 0 auto 1em;
-    text-align: left;
-    padding: 3em 0 3em 132px; // for tick icon
-    background-position: 0 2em;
+    text-align: $left;
+    padding: flip(3em 0 3em 132px, 3em 132px 3em 0); // for tick icon
+    background-position: $left 2em;
 }
 
 /* Admin interface */
 
 .fms-admin-floated {
-    float: right;
+    float: $right;
     width: 25%;
 }
 
@@ -1108,8 +1112,8 @@ body.frontpage {
 
   #main-nav{
     width: auto;
-    float:right;
-    padding-left: 180px;
+    float: $right;
+    padding-#{$left}: 180px;
   }
 
   html #main-nav ul#mysoc-menu li a#mysoc-logo {
@@ -1122,14 +1126,14 @@ body.frontpage {
 
   //Map becomes percentage width
   #map_box{
-    left: 32em;
+    #{$left}: 32em;
     width:auto;
   }
 
   //Revert to mobile use of the .full-width class
   .full-width{
     width: auto;
-    margin: 0em -1em 0 -1em;
+    margin: 0em -1em;
   }
 
   //make twothirdswidthpage nearly as small as main
@@ -1138,7 +1142,7 @@ body.frontpage {
     .content {
       width:30em;
       .sticky-sidebar {
-        left:32em;
+        #{$left}: 32em;
       }
     }
   }

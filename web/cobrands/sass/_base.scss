@@ -6,6 +6,8 @@ $heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !defa
 $image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
 $menu-image: 'menu-white' !default;
 
+@import "_mixins";
+
 body {
   font-family: $body-font;
   margin:0;
@@ -19,7 +21,7 @@ body {
 p {
   font-size: 1em;
   font-weight: normal;
-  margin:0 0 1em 0;
+  margin: 0 0 1em;
 }
 
 small{
@@ -72,7 +74,7 @@ h4 {
 ul, ol {
   font-size: 1em;
   margin-bottom: 2em;
-  margin-left: 2em;
+  margin-#{$left}: 2em;
   padding:0;
 }
 
@@ -97,13 +99,13 @@ ol.big-numbers {
   > li {
     position: relative;
     list-style: none;
-    padding:0 0 0 2.5em;
+    padding: flip(0 0 0 2.5em, 0 2.5em 0 0);
     margin-bottom:2em;
     &:before {
       content: counter(li); // set the content to be whatever the 'li' var is
       counter-increment: li; // add to the counter var
       position: absolute;
-      left: 0;
+      #{$left}: 0;
       top:-0.2em;
       color:#ccc;
       line-height:1;
@@ -127,7 +129,7 @@ dl {
   dd {
     font-weight: 1em;
     line-height: 1.5em;
-    margin:0 0 1em 0;
+    margin: 0 0 1em;
   }
 }
 
@@ -296,14 +298,14 @@ label{
   font-weight: bold;
   &.inline{
     display: inline;
-    padding: 0 2em 0 1em;
+    padding: flip(0 2em 0 1em, 0 1em 0 2em);
     font-weight: normal;
   }
 }
 
 // grey background, full width box
 .form-box {
-  margin: 0 -1em 0.25em -1em;
+  margin: 0 -1em 0.25em;
   background: #eee;
   padding: 1em;
   > input[type=text], input[type=email] {
@@ -321,7 +323,7 @@ label{
     }
     strong {
       font-size:2em;
-      margin-right:0.25em;
+      margin-#{$right}: 0.25em;
     }
   }
 }
@@ -329,21 +331,22 @@ label{
 // the password box falls off screen for some reason. Just have boring margins,
 // it looks okay.
 .ie6 .form-box {
-    margin: 0 0 0.25em 0;
+    margin: 0 0 0.25em;
     padding: 1em;
 }
 // Prevent grey displaying oddly by giving it a width, and stop odd left margin issue
 .ie7 .form-box {
     width: 100%;
     > input[type=text], input[type=email] {
-        margin-left: 2em;
+        margin-#{$left}: 2em;
     }
 }
 
 .change_location {
     color: #666;
-    padding-left: 24px;
-    background: transparent url(/cobrands/fixmystreet/images/wrong-location.png) 4px 50% no-repeat;
+    padding-#{$left}: 20px;
+    background: transparent url(/cobrands/fixmystreet/images/wrong-location.png) $left 50% no-repeat;
+    border-#{$left}: solid 4px #fff;
     margin-top: -0.5em;
 }
 
@@ -353,12 +356,12 @@ label{
   input[type=text],
   input[type=email] {
     width: 65%;
-    float:left;
+    float: $left;
   }
   input[type=submit] {
-    float:right;
+    float: $right;
     width:28%;
-    margin-right:0.25em;
+    margin-#{$right}: 0.25em;
     padding-top:0.7em;
     padding-bottom:0.6em;
   }
@@ -443,7 +446,7 @@ p.label-valid {
   width: 175px;
   height: 40px;
   top: 0.4em;
-  left: 0.5em;
+  #{$left}: 0.5em;
   background: url($image-sprite) -3px -3px no-repeat;
   text-indent: -999999px;
   position: absolute;
@@ -458,12 +461,12 @@ p.label-valid {
   width: 3em;
   height: 3em; // same height as #site-header
   background: transparent url(/cobrands/fixmystreet/images/#{$menu-image}.png) center center no-repeat;
-  background-image: url(/cobrands/fixmystreet/images/#{$menu-image}.svg), none;
+  background-image: inline-image("../fixmystreet/images/#{$menu-image}.svg"), none;
   background-size: 22px 18px;
   display: block;
   text-indent: -999999px;
   position: absolute;
-  right: 0;
+  #{$right}: 0;
   top: 0.25em; // same as border-top on #site-header
 }
 
@@ -472,7 +475,7 @@ p.label-valid {
   display: block;
   position: absolute;
   top: (3em / 2); // half the height of #site-header
-  right: 3.5em;
+  #{$right}: 3.5em;
   margin-top: -0.5em;
 
   font-size: 0.9em;
@@ -516,7 +519,8 @@ p.label-valid {
           color: $primary_text;
           background: $primary;
           &#mysoc-logo {
-            background-position: 20px 13px;
+            background-origin: content-box;
+            background-position: $left 3px;
             background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAAYCAYAAAArrNkGAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABBtJREFUaN7tmT2u1DAQx/cIPgBCQUJCICH5BuQIPkIq6hzBB0AyiAP4ABQ5ghtEm54mEtVrICUNkpmsJjBvdvyR1S7hPa2lv1aJs5PEP894xjkc/tMWY+xADhRQA8iC9I7PtD6PP9xa9aC1oCnmm9lpgtHW3WiVB03HuqYeA9DlPZbJuXj8o5wgGM5os+ixLb74MeTt+Hz+kiGXva99jEDjJV7w+5Pn3aIHNoEvB/Tu7s6iejzuQAEUQRPIgxT2KTwesX+5rkvYs7yP2KDXLN7XXCKkAUgHiii3MaQuideI9x/x2GB/gxFjVZMIoY6AmtBGJ+QJluUKgdheI1LpfveuoQMciTw7XrUAbEFzot8Re4GcnwWghv23Ezx0PiejBYiBAA0/Pz7VoOV3AKnEup1LwhyBQFsr2Jkzdjy51hZyBIuwaOuFZ6fPPaaA5jQX+hvi4fS8YUC9BBzXqJOB4INXAGpAM8oAxBEUUbYSQiCD1ZWACnZGhDJIUacGaBbY34ghAxfAdHheCxBHAs6yvp7YpP/zDOgk9WHIGhMvOZ5TrjCgfUUSptigqQqg1M7A7kHhTVvWUAF8Q/r6ZObPQy4bfMf62wycoeSFOEmoPS2sQ74mdFUC1RhuHQ25QonkKurjE6CCpzTC+9CmNwBNeiHz/oGvabnweG+9E9ZDul6GDDiD53tybsoMYIMJhhQSjy/28YVzoAgKoGRt+uvHMwUaQRHkS7N/I1AjhGuuGs+2ifsOPOwKk6TLAeUe2J4DFPtG7vnsnK3MQPngTwg0ErUZoC3CPEqyWbmDJQG1cVvbCpRPmIadm6Wy5VpAeXKkpCRqQ1F/DwBAnAlQnQHaEKDzlYGGgvQWoEJy1LOx8P8SqOLJEU2uNhbhvQC0AVn76n3/9vWHpIe++/Km/fxVL17aL3ATSYU5E2h77rbkBqA2kYFHsbS7FlAhOTrJpIXwkirYRynMAEgDiignwHSgiGozCceUg5EBqs5N2hhQX8gnpDaldoquCVQn6lmV2foLbJdkSmWkANESoNPLT98UyKMUgbnIFsqWGRMxQ0JbW1G2eCHsdmQferWlMwlPxHuLnwiFa9NefU2gQiJ0UholBixm6lGV8lAEGVFDykMr6l5e5OeA1tg5ASB8wcmVMEa4rtkLqM3VnqQuDJnBmHnhT6A2oKPNBSIFuq6hoCbzCatY91Zs/ZXspED5Ws+rDu0IbZUSEps//YmQuvbrCg8NFd8I1zBl8bd66w8galBA6Q3rmWKb3YZlpIqE0Da13pLrVjtd6flxMtP7qorvse1hjyYkRfs8yMP/8E83WMIeII2wdrobnk0gG6HOnUu7WteAqRKf39QN0yagTlhf9/lwz9fNG8yzgBrmmWa3h8Ftv0HaQLi1TYlaSGX3UvsNzdBKw+waoEEAAAAASUVORK5CYII=');
             background-repeat:no-repeat;
             text-indent:-999999px;
@@ -545,10 +549,10 @@ p.label-valid {
     position: relative;
     color: $primary_text;
     background: $primary;
-    padding:1em 6em 1em 1em;
+    padding: flip(1em 6em 1em 1em, 1em 1em 1em 6em);
     a {
       position: absolute;
-      right:1em;
+      #{$right}: 1em;
       @include inline-block;
       text-transform:uppercase;
       font-size:0.75em;
@@ -573,9 +577,9 @@ p.label-valid {
       display: table-cell;
       vertical-align: bottom;
       text-align: center;
-      border-right:0.25em solid #fff;
+      border-#{$right}: 0.25em solid #fff;
       &:last-child {
-        border-right:none;
+        border-#{$right}: none;
       }
       input[type=submit] {
           width: 100%;
@@ -586,7 +590,7 @@ p.label-valid {
         background-color: #f5f5f5;
         background-repeat: no-repeat;
         color:#333;
-        padding:4em 2em 1em 2em;
+        padding:4em 2em 1em;
         text-transform:uppercase;
         font: {
           size:0.6875em;
@@ -610,8 +614,9 @@ p.label-valid {
           background-position: center 25%;
         }
         &.chevron {
-          background-image:url($image-sprite);
-          background-position:center -2716px;
+          background-image: inline-image("../fixmystreet/images/chevron-grey-#{$right}.svg");
+          background-position: center 25%;
+          background-size: 20px 25px;
         }
         &.hover {
           background-image:url($image-sprite);
@@ -628,10 +633,10 @@ p.label-valid {
     ul#key-tools{
       background:#f5f5f5;
       li{
-        float:left;
+        float: $left;
         a {
-          padding-left:1.5em;
-          padding-right:3em;
+          padding-#{$left}: 1.5em;
+          padding-#{$right}: 3em;
         }
       }
     }
@@ -640,23 +645,25 @@ p.label-valid {
 .ie6 .shadow-wrap ul#key-tools li a {
   &.abuse {
     background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
-    background-position: right 0px;
+    background-position: $right 0px;
   }
   &.feed {
     background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
-    background-position: right -58px;
-  }
-  &.chevron {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
-    background-position: right -116px;
+    background-position: $right -58px;
   }
   &:hover {
     background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite_dark.gif');
   }
 }
+.iel8 {
+  .shadow-wrap ul#key-tools li a.chevron {
+    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
+    background-position: $right -116px;
+  }
+}
 
 #report-updates-data img {
-    float: right;
+    float: $right;
 }
 
 #report-share iframe {
@@ -670,7 +677,7 @@ footer {
 
 #footer-mobileapps {
   @extend .full-width;
-  padding:1em 1em 0 1em;
+  padding: 1em 1em 0;
   h4 {
     margin:0;
   }
@@ -690,7 +697,7 @@ footer {
         border-bottom:none;
       }
       h4 {
-        margin:0.75em 0 0.25em 0;
+        margin:0.75em 0 0.25em;
       }
       p {
         font-size:0.75em;
@@ -723,14 +730,20 @@ input.red-btn{
 
 .final-submit,
 input.final-submit {
-  margin:1em 0.5em;
-  float:right;
+  margin: 1em 0.5em;
+  float: $right;
 }
 
-.button-right,
-.button-left,
-a.button-right,
-a.button-left {
+.button-fwd {
+  padding: flip(1em 3em 1em 1em, 1em 1em 1em 3em);
+  background: inline-image("../fixmystreet/images/chevron-grey-#{$right}.svg") $right 50% no-repeat;
+}
+.button-back {
+  padding: flip(1em 1em 1em 3em, 1em 3em 1em 1em);
+  background: inline-image("../fixmystreet/images/chevron-grey-#{$left}.svg") $left 50% no-repeat;
+}
+.button-fwd,
+.button-back {
   @include inline-block;
   cursor:pointer;
   font-size: 1em;
@@ -738,33 +751,27 @@ a.button-left {
   margin:0;
   border:1px solid #999;
   color:#333;
-  background: #eee;
+  background-color: #eee;
+  background-size: 20px+16px 25px;
   @include border-radius(4px);
   &:hover{
     color:#fff;
-    background:#777;
+    background-color: #777;
     text-decoration: none;
     border:1px solid #666;
   }
 }
-.button-right,
-a.button-right,
-:hover.button-right,
-a:hover.button-right {
-  padding:1em 3em 1em 1em;
-  background-image: url($image-sprite);
-  background-repeat:no-repeat;
-  background-position:right -686px;
-}
-
-.button-left,
-a.button-left,
-:hover.button-left,
-a:hover.button-left {
-  padding:1em 1em 1em 3em;
-  background-image: url($image-sprite);
-  background-repeat:no-repeat;
-  background-position:-18px -802px;
+.iel8 {
+  .button-fwd, .button-back {
+    background-image: url($image-sprite);
+    background-repeat: no-repeat;
+  }
+  .button-fwd {
+    background-position: right -686px;
+  }
+  .button-back {
+    background-position: -18px -802px;
+  }
 }
 
 .big-green-banner {
@@ -780,12 +787,12 @@ a:hover.button-left {
   font-size:0.875em;
   &:before {
     content: "";
-    left:-0.5em;
+    #{$left}: -0.5em;
     top:0;
     position: absolute;
     width: 0;
     height: 0;
-    border-left: 0.5em solid transparent;
+    border-#{$left}: 0.5em solid transparent;
     border-bottom: 0.5em solid $col_click_map_dark;
   }
 }
@@ -795,7 +802,7 @@ a:hover.button-left {
   p {
     position: absolute;
     top:-1.95em;
-    right:0;
+    #{$right}: 0;
     @include inline-block;
     font-size:0.6875em;//11px
     line-height:1em;
@@ -809,12 +816,12 @@ a:hover.button-left {
     }
     &:before {
       content: "";
-      left:-0.5em;
+      #{$left}: -0.5em;
       top:0;
       position: absolute;
       width: 0;
       height: 0;
-      border-left: 0.5em solid transparent;
+      border-#{$left}: 0.5em solid transparent;
       border-bottom: 0.5em solid #888;
     }
     &#fixed {
@@ -837,13 +844,13 @@ a:hover.button-left {
 }
 
 .issue-list{
-  margin: 0 0 1em 0;
+  margin: 0 0 1em;
   padding: 0;
   border-bottom: 0.25em solid $primary;
   li{
     list-style: none;
     background: #f6f6f6;
-    margin: 0.25em 0 0 0;
+    margin: 0.25em 0 0;
     padding: 0.5em 1em;
     display:block;
     .update-wrap {
@@ -853,21 +860,21 @@ a:hover.button-left {
       margin-bottom: 0.5em;
     }
     .update-img {
-      float: right;
-      margin: 0.5em 0 0.5em 1em; // gutter between text and floated image
+      float: $right;
+      margin: flip(0.5em 0 0.5em 1em, 0.5em 1em 0.5em 0); // gutter between text and floated image
     }
   }
 }
 
 .issue-list-a {
-  margin: 0 0 1em 0;
+  margin: 0 0 1em;
   padding: 0;
   border-bottom: 0.25em solid $primary;
   li {
     list-style: none;
     margin:0;
     padding:0;
-      margin: 0.25em 0 0 0;
+      margin: 0.25em 0 0;
       /* see note below about this */
       display:table;
       background: #f6f6f6;
@@ -892,27 +899,27 @@ a:hover.button-left {
         display: table-cell;
         width: 100%;
         vertical-align:top;
-        padding: 0px 0px 0px 1em;
+        padding: flip(0 0 0 1em, 0 1em 0 0);
         .img {
           width: 90px;
-          float: right;
+          float: $right;
           height:auto;
         }
         h4 {
-          padding-right: 1em;
+          padding-#{$right}: 1em;
           padding-top: 0.25em;
           margin:0;
         }
         small {
           color:#666;
           display: block;
-          padding-right: 1em;
+          padding-#{$right}: 1em;
           padding-top: 0.25em;
           padding-bottom: 0.25em;
         }
       }
     >p {
-      margin: 0.25em 0 0 0;
+      margin: 0.25em 0 0;
       padding: 0.5em 1em;
       background: #f6f6f6;
     }
@@ -935,7 +942,7 @@ a:hover.button-left {
       display:block;
       overflow:hidden;
       .text {
-        float:left;
+        float: $left;
       }
     }
   }
@@ -955,7 +962,7 @@ a:hover.button-left {
     span {
       position:absolute;
       top:0;
-      right:0;
+      #{$right}: 0;
       display:block;
       width:20px;
       height:20px;
@@ -975,8 +982,8 @@ a:hover.button-left {
   margin-bottom:1em;
 }
 .problem-header .update-img {
-    float: right;
-    margin-left: 0.5em;
+    float: $right;
+    margin-#{$left}: 0.5em;
     margin-bottom: 0.5em;
 }
 
@@ -1011,13 +1018,13 @@ a:hover.button-left {
 // OpenLayers fix for navigation being top right
 // Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
-  right: 0.5em !important;
   top: 0.5em;
-  left: 0.5em !important;
+  #{$left}: 0.5em !important;
+  #{$right}: 0.5em !important;
 }
 // The left and right of the above causes the navigation to move off-screen left in IE6.
 .ie6 #fms_pan_zoom {
-  left: auto !important;
+  #{$left}: auto !important;
 }
 
 // Openlayers map controls (overrides)
@@ -1029,7 +1036,7 @@ a:hover.button-left {
 #fms_pan_zoom_zoomout {
   width:36px !important;
   height:36px !important;
-  text-indent:-999999px;
+  text-indent: flip(-999999px, 999999px); // text-align from OL style makes this necessary
   background:url($image-sprite) no-repeat;
   filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
@@ -1041,48 +1048,48 @@ a:hover.button-left {
 
 #fms_pan_zoom_panup {
   background-position:-42px -222px;
-  right:30px !important;
-  left: auto !important;
+  #{$right}: 30px !important;
+  #{$left}: auto !important;
   top:0 !important;
 }
 #fms_pan_zoom_pandown {
   background-position:-42px -282px;
-  right:30px !important;
-  left: auto !important;
+  #{$right}: 30px !important;
+  #{$left}: auto !important;
   top:72px !important;
 }
 #fms_pan_zoom_panleft {
   background-position:-12px -252px;
   width:48px !important;
-  right:48px !important;
-  left: auto !important;
+  #{$right}: flip(48px, 0) !important;
+  #{$left}: auto !important;
   top:36px !important;
 }
 #fms_pan_zoom_panright {
   background-position:-60px -252px;
   width:48px !important;
-  right:0 !important;
-  left: auto !important;
+  #{$right}: flip(0, 48px) !important;
+  #{$left}: auto !important;
   top:36px !important;
 }
 #fms_pan_zoom_zoomin {
   background-position:-152px -223px;
   height:44px !important;
-  left:0 !important;
+  #{$left}: 0 !important;
   top:0 !important;
 }
 #fms_pan_zoom_zoomout {
   background-position:-152px -259px;
   height:44px !important;
-  left:0 !important;
+  #{$left}: 0 !important;
   top:44px !important;
 }
 
 //hide pins, show old reports etc
 #sub_map_links {
   position: absolute;
-  left: 0;
-  right:0;
+  #{$left}: 0;
+  #{$right}: 0;
   bottom: 0;
   background:#333;
   background:rgba(0, 0, 0, 0.7);
@@ -1091,23 +1098,23 @@ a:hover.button-left {
     @include inline-block;
     font-size:0.6875em;
     color:#fff;
-    padding:0.6em 3em 0.5em 1em;
+    padding: flip(0.6em 3em 0.5em 1em, 0.6em 1em 0.5em 3em);
     background-repeat:no-repeat;
     &#hide_pins_link {
       background-image:url($image-sprite);
-      background-position: right -3976px;
+      background-position: flip(right, -341px) -3976px;
     }
     &#all_pins_link {
       background-image:url($image-sprite);
-      background-position: right -4022px;
+      background-position: flip(right, -337px) -4022px;
     }
     &#map_permalink {
       background-image:url($image-sprite);
-      background-position: right -4070px;
+      background-position: flip(right, -341px) -4070px;
     }
     &.feed {
       background-image:url($image-sprite);
-      background-position: right -3936px;
+      background-position: flip(right, -341px) -3936px;
     }
     &:hover {
       background-color:#000;
@@ -1119,15 +1126,15 @@ a:hover.button-left {
 .ie6 #sub_map_links a {
   &#hide_pins_link {
     background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
-    background-position: right 1px;
+    background-position: $right 1px;
   }
   &#all_pins_link {
     background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
-    background-position: right -45px;
+    background-position: $right -45px;
   }
   &#map_permalink {
     background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
-    background-position: right -93px;
+    background-position: $right -93px;
   }
 }
 
@@ -1158,7 +1165,7 @@ a:hover.button-left {
     a#try_again {
       position: absolute;
       display: block;
-      left: 25%;
+      left: 25%; // along with width of 50%, centres it
       bottom: 0;
       margin-bottom: 6em;
       background: rgba(0, 0, 0, 0.8);
@@ -1167,7 +1174,7 @@ a:hover.button-left {
     a#mob_ok {
       position: absolute;
       display: block;
-      right: 1em;
+      #{$right}: 1em;
       bottom: 0;
       height: 20px;
       padding-top: 30px;
@@ -1182,8 +1189,8 @@ a:hover.button-left {
   margin:0;
   position: absolute;
   top:0;
-  left:0;
-  right:0;
+  #{$left}: 0;
+  #{$right}: 0;
   font-size:0.75em;
   background:rgba(0, 0, 0, 0.7);
   padding:0.75em 30px;
@@ -1196,15 +1203,15 @@ a:hover.button-left {
     line-height:1;
     padding:0.5em 0.75em;
     position:absolute;
-    left:0.3em;
+    #{$left}: 0.3em;
     top:0.3em;
   }
 }
 
 .olControlAttribution {
     bottom: 3.25em !important;
-    right: 0.25em !important;
-    left: 0.25em !important;
+    #{$right}: 0.25em !important;
+    #{$left}: 0.25em !important;
     color: #222222;
     font-size:0.75em !important;
 }
@@ -1213,7 +1220,7 @@ a:hover.button-left {
 }
 .olControlPermalink {
     bottom: 3px !important;
-    right: 3px;
+    #{$right}: 3px;
 }
 
 /* Drag is only present in noscript form. XXX Copy from core. */
@@ -1245,8 +1252,8 @@ a.rap-notes-trigger,
 a:hover.rap-notes-trigger {
   display:block;
   width:90%;
-  padding-left:5%;
-  padding-right:5%;
+  padding-#{$left}: 5%;
+  padding-#{$right}: 5%;
 }
 .rap-notes {
   margin:1em 0;
@@ -1263,9 +1270,9 @@ a:hover.rap-notes-trigger {
     width:100%;
     li {
       display:table-cell;
-      border-right:0.25em solid #fff;
+      border-#{$right}: 0.25em solid #fff;
       &:last-child {
-        border-right:none;
+        border-#{$right}: none;
       }
       a {
         display:block;
@@ -1296,7 +1303,7 @@ a:hover.rap-notes-trigger {
     margin:0;
     padding:0;
     ul li {
-      float:left;
+      float: $left;
     }
   }
 }
@@ -1319,16 +1326,17 @@ label .muted {
   ul {
     width: 49%;
     margin: 0;
-    float: left;
+    float: $left;
     font-size: 14px;
     line-height: 20px;
   }
 
   li {
     margin-bottom: 0;
-    padding-left: 20px;
+    padding-#{$left}: 16px;
     list-style: none;
-    background: transparent url(/cobrands/fixmystreet/images/tick-10px-8px.png) 4px 5px no-repeat;
+    background: transparent url(/cobrands/fixmystreet/images/tick-10px-8px.png) $left 5px no-repeat;
+    border-#{$left}: solid 4px #fff;
   }
 
   .do {
@@ -1336,12 +1344,14 @@ label .muted {
   }
 
   .dont {
-    float: right;
+    float: $right;
     color: #881111;
 
     li {
       background-image: url(/cobrands/fixmystreet/images/cross-7px-7px.png);
-      background-position: 6px 6px;
+      background-position: $left 6px;
+      padding-#{$left}: 14px;
+      border-#{$left}: solid 6px #fff;
     }
   }
 }
@@ -1382,7 +1392,7 @@ table.nicetable {
     }
   }
   .title {
-    text-align:left;
+    text-align: $left;
   }
   .data {
     width:12%;
@@ -1400,7 +1410,7 @@ table.nicetable {
   .close-promo {
     position:absolute;
     top:0.5em;
-    right:0.5em;
+    #{$right}: 0.5em;
     display:block;
     width:16px;
     height:16px;
@@ -1431,18 +1441,18 @@ table.nicetable {
   position:relative;
   .prev {
     position:absolute;
-    left:0.5em;
+    #{$left}: 0.5em;
   }
   .next {
     position:absolute;
-    right:0.5em;
+    #{$right}: 0.5em;
   }
   a {
     @include inline-block;
     color: $primary_text;
     background: $primary;
-    padding-left:0.5em;
-    padding-right:0.5em;
+    padding-#{$left}: 0.5em;
+    padding-#{$right}: 0.5em;
     &:hover {
       text-decoration:none;
       background:$primary/1.1;
@@ -1584,7 +1594,7 @@ table.nicetable {
         background: #f6f6f6;
     }
     img[width="16"] {
-        float: right;
+        float: $right;
     }
 }
 

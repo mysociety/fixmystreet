@@ -1,3 +1,5 @@
+$direction: 'left' !default;
+
 // Button reset
 @mixin button-reset($c1: #eee, $c2: #ccc, $c3: #999, $c4: #333, $c5: #777, $c6: #999, $c7: #666, $c8: #fff){
   cursor:pointer;
@@ -8,7 +10,7 @@
   }
   text-transform:uppercase;
   line-height: 1.375em;
-  padding:0.7em 0.5em 0.5em 0.5em;
+  padding: 0.7em 0.5em 0.5em;
   margin:0;
   width: auto;
   height: auto;
@@ -26,22 +28,7 @@
   }
 }
 
-
-
-// list resets
-@mixin list-reset-copy {
-  padding-left:30px;
-  margin-bottom:20px;
-  li {
-    font-size:14px;
-    line-height:20px;
-    list-style:disc;
-    margin-bottom:10px;
-    background:none;
-    padding:0;
-  }
-}
-
+// list reset
 @mixin list-reset-soft {
   list-style-type:none;
   padding: 0;
@@ -54,19 +41,21 @@
   }
 }
 
-@mixin list-reset {
-  list-style-type:none;
-  padding: 0;
-  margin: 0;
-  li{
-    list-style-type:none;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    float:left;
-    a {
-      float:left;
-      display:block;
+// LTR / RTL
+$left: left;
+@if $direction == right {
+  $left: right;
+}
+
+$right: right;
+@if $direction == right {
+  $right: left;
+}
+
+@function flip($ltr, $rtl) {
+    @if $direction == left {
+        @return $ltr;
+    } @else {
+        @return $rtl;
     }
-  }
 }

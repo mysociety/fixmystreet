@@ -1,4 +1,5 @@
 @import "_colours";
+@import "../sass/mixins";
 
 body.goodies {
   .content {
@@ -23,14 +24,14 @@ body.goodies {
   }
 
   .pack-preview {
-    float: right;
-    margin: 0 0 1em 1em;
+    float: $right;
+    margin: flip(0 0 1em 1em, 0 1em 1em 0);
     max-width: 33%;
   }
 
   .download-button {
     display: inline-block;
-    padding: 0.7em 1.2em 0.5em 1.2em;
+    padding: 0.7em 1.2em 0.5em;
     font-weight: bold;
     line-height: 1em;
     background-color: $primary;
@@ -43,19 +44,19 @@ body.goodies {
       width: 16px;
       height: 16px;
       background: transparent url(images/arrow-down-16px-16px.png) 0 0 no-repeat;
-      margin-right: 0.5em;
+      margin-#{$right}: 0.5em;
       vertical-align: -0.1em;
     }
   }
 
   .badge-preview {
-    float: right;
+    float: $right;
     margin-top: -3em;
-    margin-left: 1em;
+    margin-#{$left}: 1em;
   }
 
   .downloads {
-    margin-left: 0;
+    margin-#{$left}: 0;
 
     li {
       list-style: none;
@@ -89,7 +90,7 @@ body.goodies {
       overflow: auto;
 
       li {
-        float: left;
+        float: $left;
         width: 50%;
       }
 
@@ -100,7 +101,7 @@ body.goodies {
 
       li:nth-child(even) {
         width: 48%;
-        float: right;
+        float: $right;
       }
     }
   }
@@ -111,7 +112,7 @@ body.goodies {
       .container .content {
         // overloaded selector to match default .content styling
         width: auto;
-        padding: 1.5em 2em 1.5em 16em;
+        padding: flip(1.5em 2em 1.5em 16em, 1.5em 16em 1.5em 2em);
 
         & > :last-child {
           margin-bottom: 0;
@@ -120,7 +121,7 @@ body.goodies {
 
       .content {
         .sticky-sidebar {
-          left: 0;
+          #{$left}: 0;
           top: 0;
           bottom: 0;
           z-index: 1;

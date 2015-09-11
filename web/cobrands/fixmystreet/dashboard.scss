@@ -1,3 +1,5 @@
+@import "../sass/_mixins";
+
     select {
         width: auto;
     }
@@ -15,17 +17,18 @@
     }
 
     th {
-        text-align:left;
+        text-align: $left;
         &[scope=col] {
-            border-left:1px solid #ccc;
-            padding:10px 0 10px 10px;
-            font-weight:bold;
+            border-#{$left}: 1px solid #ccc;
+            padding: flip(10px 0 10px 10px, 10px 10px 10px 0);
+            font-weight: bold;
         }
 
         &[scope=row] {
-            font-weight: normal;text-align:left;
-            border-top:1px solid #ddd;
-            padding-left:10px;
+            font-weight: normal;
+            text-align: $left;
+            border-top: 1px solid #ddd;
+            padding-#{$left}: 10px;
         }
 
         abbr[title] {
@@ -35,9 +38,9 @@
 
     td {
         width:10%;
-        border-left:1px solid #ccc;
-        border-top:1px solid #ddd;
-        padding-left:10px;
+        border-#{$left}: 1px solid #ccc;
+        border-top: 1px solid #ddd;
+        padding-#{$left}: 10px;
     }
 
     tr.subtotal {
@@ -54,7 +57,7 @@
 
     #reports{
         th {
-            padding-left: 20px;
+            padding-#{$left}: 20px;
             border-bottom: none;
         }
         date {
@@ -70,7 +73,7 @@
         padding:0 1em;
 
         p {
-            float:left;
+            float: $left;
             padding:0 1em;
             width:25%;
             font-size:0.75em;

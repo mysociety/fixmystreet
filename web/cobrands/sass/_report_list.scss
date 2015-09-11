@@ -2,7 +2,7 @@
 // the new-style combined report list with category/status filters.
 
 .report-list-filters {
-  padding: 1em 1em 0 1em;
+  padding: 1em 1em 0;
   margin-bottom: 0.5em;
   color: #666;
   font-size: 0.85em;
@@ -17,7 +17,7 @@
     margin: 0;
 
     & + label {
-      margin-left: 0.2em;
+      margin-#{$left}: 0.2em;
     }
   }
 
@@ -29,13 +29,13 @@
     border: 1px solid #ced7c4;
     box-shadow: 0 1px 0 #fff;
     height: 2em;
-    margin-left: 0.2em;
+    margin-#{$left}: 0.2em;
     max-width: 13em;
   }
 }
 
 .report-list, .issue-list-a {
-  margin-left: 0;
+  margin-#{$left}: 0;
 
   li {
     list-style: none;
@@ -46,14 +46,11 @@
     a {
       display: block;
       padding: 1em;
-      padding-left: 4em;
-      background: transparent url(/i/pin-yellow-small.png) no-repeat 1em center;
+      padding-#{$left}: 4em;
+      border-#{$left}: solid 1em transparent;
+      background: transparent url(/i/pin-yellow-small.png) no-repeat $left center;
 
       &:hover, &:focus {
-        background-color: #fff;
-        background-repeat: no-repeat;
-        background-position: 1em center;
-        background: transparent url(/i/pin-yellow-small.png) no-repeat 1em center;
         text-decoration: none;
       }
     }
@@ -83,14 +80,14 @@
       display: block;
       height: 1px;
       position: absolute;
-      left: 4em;
-      right: 0;
+      #{$left}: 4em;
+      #{$right}: 0;
       bottom: 0;
       background-color: #e5e5e5;
     }
 
     &.empty:after {
-        left: 0;
+        #{$left}: 0;
     }
   }
 
@@ -113,7 +110,7 @@
 // which removes the left padding. However, our new reports list still needs
 // it:
 .issue-list-a.full-width {
-  margin-left: -1em;
+  margin-#{$left}: -1em;
 }
 
 .big-green-banner {
@@ -126,14 +123,15 @@
 
 .click-the-map {
   color: #000;
-  margin: -10px -1em 0 -1em; // overlap padding on parents
+  margin: -10px -1em 0; // overlap padding on parents
   padding: 18px;
   border-bottom: 1px solid #e5e5e5;
+  // TODO This is not right-to-left enabled yet
   background: #fff url('/i/click-map-chevron-big.gif') 90% 12px no-repeat;
 
   h2 {
     font-family: inherit;
-    margin: 0 0 5px 0;
+    margin: 0 0 5px;
   }
 
   p {
@@ -141,22 +139,23 @@
     font-size: 18px;
     line-height: 20px;
     color: $primary;
-    padding-right: 20px;
-    background: transparent url('/i/click-map-chevron-small.gif') 100% center no-repeat;
+    padding-#{$right}: 20px;
+    // TODO This is not right-to-left enabled yet, image wise
+    background: transparent url('/i/click-map-chevron-small.gif') $right center no-repeat;
     display: inline-block;
   }
 
   img {
     // the little chevron icon
     vertical-align: -1px;
-    margin-left: 0.2em;
+    margin-#{$left}: 0.2em;
   }
 }
 
 body.frontpage {
     .issue-list-a, .list-a {
         li .text {
-            padding-left: 3em;
+            padding-#{$left}: 3em;
         }
     }
 }

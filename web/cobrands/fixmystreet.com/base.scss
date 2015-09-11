@@ -6,7 +6,6 @@
 
 @import "../sass/h5bp";
 @import "_colours";
-@import "../sass/mixins";
 @import "compass";
 @import "../sass/base";
 
@@ -16,9 +15,17 @@
 
 #country_banner {
     display: none;
-    color: $primary_text; background: $primary;
-    p#international_message { margin: auto; padding: 0.5em 2em; max-width: 40em; text-align: center; }
-    #message_close { float: right; }
+    color: $primary_text;
+    background: $primary;
+    p#international_message {
+        margin: auto;
+        padding: 0.5em 2em;
+        max-width: 40em;
+        text-align: center;
+    }
+    #message_close {
+        float: $right;
+    }
 }
 
 #site-logo {
@@ -56,11 +63,11 @@
   padding-top: 0.4em; // extra padding between buttons and previous paragraph
 
   a {
-    float: left;
-    margin: 1em 0.6em 0 0;
+    float: $left;
+    margin: flip(1em 0.6em 0 0, 1em 0 0 0.6em);
 
     &:last-child {
-      margin-right: 0;
+      margin-#{$right}: 0;
     }
   }
 
@@ -79,9 +86,9 @@
   @include pie-clearfix;
 
   .goodies-preview {
-    float: right;
-    margin-left: 1em;
-    margin-right: -0.5em;
+    float: $right;
+    margin-#{$left}: 1em;
+    margin-#{$right}: -0.5em;
   }
 }
 

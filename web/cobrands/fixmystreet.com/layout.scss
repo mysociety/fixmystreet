@@ -98,11 +98,6 @@ body.mappage {
     ul#mysoc-menu {
         background: #515151;
         margin-top: -4px;
-        li a {
-            &#mysoc-logo {
-                background-position: 0px 15px;
-            }
-        }
     }
 }
 
@@ -147,13 +142,13 @@ body.fullwidthpage {
         }
         a#geolocate_link {
             font-family: MuseoSans,Helmet,Freesans,sans-serif;
-            background: url(images/locate-me.png) no-repeat;
+            background: url(images/locate-me.png) $left 0 no-repeat;
             height: 34px;
-            padding-left: 24px;
+            padding-#{$left}: 24px;
             margin-top: 0.25em;
             @media only screen and (min-resolution: 320dpi),
             only screen and (-webkit-min-device-pixel-ratio: 2) {
-                background: url(images/locate-me@2.png) no-repeat;
+                background-image: url(images/locate-me@2.png);
             }
         }
     }
@@ -222,13 +217,13 @@ body.twothirdswidthpage {
         list-style: none;
         padding: 0px;
         margin: 0px;
-        float:left;
+        float: $left;
         li {
           list-style: none;
           display: inline;
           margin: 0px;
           padding: 0px;
-          float:left;
+          float: $left;
           a,
           span {
             display: block;
@@ -244,7 +239,7 @@ body.twothirdswidthpage {
         display: block;
       }
       #footer-help-nav {
-        float: right;
+        float: $right;
       }
     }
 }
@@ -256,13 +251,13 @@ body.twothirdswidthpage {
 
 .next-steps__step {
   font-family: MuseoSans,Helmet,Freesans,sans-serif;
-  float: left;
+  float: $left;
   width: 33%;
   padding: 1.8em;
 
   & + .next-steps__step {
     border-top: none;
-    border-left: 1px solid #ede8c9;
+    border-#{$left}: 1px solid #ede8c9;
   }
 
   h2 {
@@ -316,9 +311,9 @@ body.unresponsive-council {
 .unresponsive-council-cta {
     margin: 1.5em 0;
     max-width: 20em;
-    padding-right: 6em;
+    padding-#{$right}: 6em;
     background-image: url(images/unresponsive-council-cta-arrow.png);
-    background-position: right center;
+    background-position: $right center;
     background-repeat: no-repeat;
 
     @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {

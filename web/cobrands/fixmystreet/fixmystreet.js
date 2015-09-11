@@ -127,7 +127,7 @@ $(function(){
     }
 
     //show/hide notes on mobile
-    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-right">' + translation_strings.how_to_send + '</a>').hide();
+    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-fwd">' + translation_strings.how_to_send + '</a>').hide();
     $('.rap-notes-trigger').click(function(e){
         e.preventDefault();
         //check if we've already moved the notes
@@ -138,7 +138,7 @@ $(function(){
         }else{
             //if not, move them and show, hiding .content
             $('.content').after('<div class="content rap-notes"></div>').hide();
-            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-left">' + translation_strings.back + '</a>');
+            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-back">' + translation_strings.back + '</a>');
         }
         $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
         location.hash = 'rap-notes';

@@ -23,8 +23,8 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
             color: white;
             background-color: $table_heading_bg_col;
             border-bottom: 2px solid $table_heading_underline_col;
-            border-left: 1px solid $table_heading_border_col;
-            border-right: 1px solid $table_heading_border_col;
+            border-#{$left}: 1px solid $table_heading_border_col;
+            border-#{$right}: 1px solid $table_heading_border_col;
             a:link, a:visited {
                 color: white;
             }
@@ -35,10 +35,10 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         }
         tr.filter-row td {
             display: none; /* TODO: reveal when filtering is implemented */
-            padding: 4px 4px 4px 40px;
+            padding: flip(4px 4px 4px 40px, 4px 40px 4px 4px);
             background-color: $button_bg_col;
             background-image: url('search-icon-white.png');
-            background-position: 14px center;
+            background-position: flip(14px, right) center;
             background-repeat: no-repeat;
             border-bottom: 2px solid $table_border_color;
         }
@@ -57,7 +57,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         }
     }
     .no-bullets {
-      margin-left: 0;
+      margin-#{$left}: 0;
       > li {
         list-style: none;
       }
@@ -78,7 +78,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     font-size: 90%;
     border-style: solid;
     border-width: 1px;
-    border-left-width: 1em;
+    border-#{$left}-width: 1em;
     margin-bottom: 1em;
   }
   .fms-admin-warning {
@@ -98,10 +98,10 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     font-size: 80%; // little question marks are small
     cursor: pointer;
     display: block;
-    float:left;
+    float: $left;
     overflow: hidden;
     padding: 0.2em;
-    margin-right: 0.666em;
+    margin-#{$right}: 0.666em;
     text-align: center;
     color: #fff;
     font-weight: bold;
@@ -115,7 +115,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     &:before { content: "?" }
     &.admin-hint-show {
       font-size: 90%;
-      text-align: left;
+      text-align: $left;
       display: block;
       float:none;
       margin:1em 0;
@@ -128,7 +128,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
         color: #000;
         border-style: solid;
         border-width: 1px;
-        border-left-width: 1em;
+        border-#{$left}-width: 1em;
         border-color: #f93;
         padding:1em;
         margin: 0;
@@ -136,9 +136,9 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     }
   }
   .admin-offsite-link {
-    padding-right: 12px;
+    padding-#{$right}: 12px;
     background-image: url(../../i/external-link.png);
-    background-position: right top;
+    background-position: $right top;
     background-repeat: no-repeat;
   }
 }
