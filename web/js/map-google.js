@@ -192,10 +192,8 @@ function fms_map_initialize() {
 
     if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
         // TODO Work better with window resizing, this is pretty 'set up' only at present
-        var $content = $('.content'), mb = $('#map_box'),
-            q = ( $content.offset().left - mb.offset().left + $content.width() ) / 2;
-        if (q < 0) { q = 0; }
-        // Need to try and fake the 'centre' being 75% from the left
+        var q = fixmystreet_midpoint();
+        // Need to try and fake the 'centre' being 75% from the edge
         fixmystreet.map.panBy(-q, -25);
     }
 

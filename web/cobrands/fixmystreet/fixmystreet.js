@@ -4,6 +4,13 @@
  */
 
 /*
+ * Find directionality of content
+ */
+function isR2L() {
+    return !!$('html[dir=rtl]').length;
+}
+
+/*
  * general height fixing function
  *
  * elem1: element to check against
@@ -43,10 +50,28 @@ function tabs(elem, indirect) {
         $('.tab-nav .active').removeClass('active');
         elem.addClass('active');
 
-        //hide / show the right tab
+        //hide / show the correct tab
         $('.tab.open').hide().removeClass('open');
         $(target).show().addClass('open');
     }
+}
+
+/* Geographic functions for faking map centre, as it appears to be offset from
+   where it actually is */
+
+function midpoint_box_excluding_column(col_offset, col_width, box_offset, box_width) {
+    var r2l = isR2L(),
+        diff = r2l ? box_width : (box_offset.left - col_width),
+        q = (col_offset.left - diff) / 2;
+    if ((r2l && q > 0) || (!r2l && q < 0)) {
+        return 0;
+    }
+    return q;
+}
+
+function fixmystreet_midpoint() {
+    var $content = $('.content'), mb = $('#map_box');
+    return midpoint_box_excluding_column($content.offset(), $content.width(), mb.offset(), mb.width());
 }
 
 
@@ -286,21 +311,24 @@ $.fn.drawer = function(id, ajax) {
             // if ajax, load it with a spinner
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
-                $this.prepend(' <img class="spinner" src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="margin-right:2em;">');
+                var margin = isR2L() ? 'margin-left' : 'margin-right';
+                $this.prepend(' <img class="spinner" src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="' + margin + ':2em;">');
                 innerDiv.load(href, function(){
                     $('.spinner').remove();
                 });
             }
 
             // Tall drawer - put after .content for scrolling to work okay.
-            // position over the top of the main .content in precisely the right location
-            d.insertAfter($content).addClass('content').css({
+            // position over the top of the main .content in precisely the correct location
+            var drawer_css = {
                 position: 'absolute',
                 zIndex: '1100',
                 marginTop: $('html.ie6, html.ie7').length ? '-3em' : 0, // IE6/7 otherwise include the 3em padding and stay too low
-                left: 0,
                 top: $(window).height() - $content.offset().top
-            }).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
+            };
+            drawer_css[isR2L() ? 'right' : 'left'] = 0;
+            d.insertAfter($content).addClass('content').css(drawer_css)
+                .removeClass('hidden-js').find('h2').css({ marginTop: 0 });
             $this.data('setup', true);
         }
 
@@ -374,15 +402,16 @@ $.fn.drawer = function(id, ajax) {
 
     //set up map_links_toggle click event
     $('#map_links_toggle').on('click', function(){
-        var maplinks_width = $('#sub_map_links').width();
-
-        if($(this).hasClass('closed')){
+        var sub_map_links_css = {},
+            left_right = isR2L() ? 'left' : 'right';
+        if ($(this).hasClass('closed')) {
             $(this).removeClass('closed');
-            $('#sub_map_links').animate({'right':'0'}, 1200);
-        }else{
+            sub_map_links_css[left_right] = '0';
+        } else {
             $(this).addClass('closed');
-            $('#sub_map_links').animate({'right':-maplinks_width}, 1200);
+            sub_map_links_css[left_right] = -$('#sub_map_links').width();
         }
+        $('#sub_map_links').animate(sub_map_links_css, 1200);
     });
 
 

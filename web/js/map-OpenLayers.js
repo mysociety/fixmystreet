@@ -59,14 +59,6 @@ function fixmystreet_activate_drag() {
     fixmystreet.drag.activate();
 }
 
-// Need to try and fake the 'centre' being 75% from the left
-function fixmystreet_midpoint() {
-    var $content = $('.content'), mb = $('#map_box'),
-        q = ( $content.offset().left - mb.offset().left + $content.width() ) / 2,
-        mid_point = q < 0 ? 0 : q;
-    return mid_point;
-}
-
 function fixmystreet_zoomToBounds(bounds) {
     if (!bounds) { return; }
     var center = bounds.getCenterLonLat();
@@ -659,7 +651,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
                     fixmystreet.map.getProjectionObject()
                 );
                 var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= ( o.left - bo.left + w ) / 2;
+                p.x -= midpoint_box_excluding_column(o, w, bo, $map_boxx.width());
                 lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
                 fixmystreet.map.panTo(lonlat);
             }
