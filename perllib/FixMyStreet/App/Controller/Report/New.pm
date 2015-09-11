@@ -106,6 +106,12 @@ sub report_new : Path : Args(0) {
 # report_new but there's a few workflow differences as we only ever want
 # to sent JSON back here
 
+sub report_new_test : Path('_test_') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{template}   = 'email_sent.html';
+    $c->stash->{email_type} = $c->get_param('email_type');
+}
+
 sub report_new_ajax : Path('mobile') : Args(0) {
     my ( $self, $c ) = @_;
 

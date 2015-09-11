@@ -46,6 +46,11 @@ sub general : Path : Args(0) {
 
 }
 
+sub general_test : Path('_test_') : Args(0) {
+    my ( $self, $c ) = @_;
+    $c->stash->{template} = 'auth/token.html';
+}
+
 =head2 sign_in
 
 Allow the user to sign in with a username and a password.
