@@ -221,7 +221,7 @@ h1 {
   color: #222;
   @include box-shadow(0 0 10px rgba(0,0,0,0.5));
 }
-.ie6, .ie7, .ie8  {
+.iel8 {
   .content {
     // If no box-shadow, just want a boring black border to stand it out from the map.
     border: 1px solid #666;
@@ -433,17 +433,13 @@ body.fullwidthpage {
     }
 
 }
-.ie6, .ie7, .ie8  {
+.iel8 {
   body.twothirdswidthpage,
   body.fullwidthpage {
     .content {
       border: 0px;
     }
-  }
-}
-.ie6, .ie7, .ie8 {
-  body.twothirdswidthpage,
-  body.fullwidthpage {
+
     .container .content footer a.platform-logo {
       color: #ffffff;
       background: none;
@@ -943,7 +939,7 @@ body.frontpage {
   }
 }
 //logo fix
-.ie6, .ie7, .ie8 {
+.iel8 {
   body.frontpage {
     #site-logo {
       position:relative;

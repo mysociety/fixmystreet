@@ -9,7 +9,7 @@
     color: #3c3c3c;
     @include box-shadow(none);
 }
-.ie6, .ie7, .ie8  {
+.iel8 {
     .content {
         border: none;
     }
@@ -18,7 +18,7 @@
 body.mappage .content, body.frontpage .content {
     @include box-shadow(0 0 6px 1px #000);
 }
-.ie6, .ie7, .ie8  {
+.iel8 {
     body.mappage .content, body.frontpage .content {
         border: 1px solid #666;
     }

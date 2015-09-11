@@ -72,7 +72,7 @@
 
 // 452ce6a0 - "Added IE6/7 position change to front page header too" -
 // turned off border for ie6-8 .content - why, as box-shadow still on?
-.ie6, .ie7, .ie8  {
+.iel8 {
     .content {
         border: none;
     }

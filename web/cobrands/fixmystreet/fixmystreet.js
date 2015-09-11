@@ -58,7 +58,7 @@ $(function(){
     // Deal with switching between mobile and desktop versions on resize
     var last_type;
     $(window).resize(function(){
-        var type = Modernizr.mq('(min-width: 48em)') || $('html.ie6, html.ie7, html.ie8').length ? 'desktop' : 'mobile';
+        var type = Modernizr.mq('(min-width: 48em)') || $('html.iel8').length ? 'desktop' : 'mobile';
         if (last_type == type) { return; }
         if (type == 'mobile') {
             $html.addClass('mobile');
