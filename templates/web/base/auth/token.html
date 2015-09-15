@@ -1,25 +1,28 @@
-[% INCLUDE 'header.html', title => loc('Confirm account') %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirm account') %]
 
 [% IF token_not_found %]
 
-<h1>[% loc('Error') %]</h1>
+  <div class="confirmation-header confirmation-header--failure">
 
-<p>
-    [% loc('We have not been able to confirm your account - sorry.') %]
-    [% loc('This may be because the link is too old or already used, or the address was not copied correctly.') %]
-</p>
+    <h1>[% loc('We have not been able to confirm your account - sorry.') %]</h1>
+    <p>[% loc('This may be because the link is too old or already used, or the address was not copied correctly.') %]</p>
+
+  </div>
 
 [% ELSE %]
 
-<h1>[% loc('Please check your email') %]</h1>
+  <div class="confirmation-header confirmation-header--inbox">
 
-<p>[% loc("We have sent you an email containing a link to confirm your account.") %]</p>
+    <h1>[% loc('Please check your email') %]</h1>
+    <p>[% loc("We have sent you an email containing a link to confirm your account.") %]</p>
 
-[% IF c.cobrand.moniker != 'zurich' %]
-<p>[% loc("The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.") %]</p>
-[% END %]
+  [% IF c.cobrand.moniker != 'zurich' %]
+    <p>[% loc("The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.") %]</p>
+  [% END %]
 
-<p>[% loc("If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.") %]</p>
+    <p>[% loc("If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.") %]</p>
+
+  </div>
 
 [% END %]
 

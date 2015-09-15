@@ -1603,8 +1603,13 @@ table.nicetable {
   text-align: center;
 
   background: transparent url(/cobrands/fixmystreet/images/tick-in-circle-100px.png) center 1em no-repeat;
+
   &.confirmation-header--failure {
     background-image: url(/cobrands/fixmystreet/images/sad-face-in-circle-100px.png);
+  }
+
+  &.confirmation-header--inbox {
+    background-image: url(/cobrands/fixmystreet/images/inbox-in-circle-100px.png);
   }
 
   h1, h2 {
