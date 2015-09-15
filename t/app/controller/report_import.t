@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 use Test::More;
+use LWP::Protocol::PSGI;
 
+use t::MapIt;
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 use Web::Scraper;
@@ -17,7 +19,7 @@ ok -e $sample_file, "sample file $sample_file exists";
 FixMyStreet::App->log->disable('info');
 END { FixMyStreet::App->log->enable('info'); }
 
-my $body = $mech->create_body_ok(2504, 'Westminster City Council');
+my $body = $mech->create_body_ok(2245, 'Wiltshire Council');
 $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Street lighting',
@@ -90,6 +92,7 @@ subtest "Test creating bad partial entries" => sub {
 };
 
 subtest "Submit a correct entry" => sub {
+    LWP::Protocol::PSGI->register(t::MapIt->run_if_script, host => 'mapit.uk');
 
     $mech->get_ok('/import');
 
@@ -120,7 +123,7 @@ subtest "Submit a correct entry" => sub {
 
     # go to the token url
     FixMyStreet::override_config {
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->get_ok($token_url);
     };
@@ -134,10 +137,10 @@ subtest "Submit a correct entry" => sub {
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok(
-            { with_fields => { pc => 'SW1A 1AA' } },
+            { with_fields => { pc => 'SN15 5NG' } },
             "fill in postcode"
         );
     };
@@ -159,15 +162,15 @@ subtest "Submit a correct entry" => sub {
 
     # Check photo present, and still there after map submission (testing bug #18)
     $mech->content_contains( '<img align="right" src="/photo/' );
-    $mech->content_contains('latitude" value="51.501009"', 'Check latitude');
-    $mech->content_contains('longitude" value="-0.141588"', 'Check longitude');
+    $mech->content_contains('latitude" value="51.5"', 'Check latitude');
+    $mech->content_contains('longitude" value="-2.1"', 'Check longitude');
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok(
             {
-                button => 'tile_32742.21793',
+                button => 'tile_16192.10896',
                 x => 10,
                 y => 10,
             },
@@ -175,8 +178,8 @@ subtest "Submit a correct entry" => sub {
         );
     };
     $mech->content_contains( '<img align="right" src="/photo/' );
-    $mech->content_contains('latitude" value="51.50519"', 'Check latitude');
-    $mech->content_contains('longitude" value="-0.142608"', 'Check longitude');
+    $mech->content_contains('latitude" value="51.508475"', 'Check latitude');
+    $mech->content_contains('longitude" value="-2.108946"', 'Check longitude');
 
     # check that fields haven't changed at all
     is_deeply $mech->visible_form_values,
@@ -194,7 +197,7 @@ subtest "Submit a correct entry" => sub {
     # change the details
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-        MAPIT_URL => 'http://mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.uk/',
     }, sub {
         $mech->submit_form_ok(
             {
@@ -232,8 +235,8 @@ subtest "Submit a correct entry (with location)" => sub {
         {
             with_fields => {
                 service => 'test-script',
-                lat     => '51.5010096115539',           # SW1A 1AA
-                lon     => '-0.141587067110009',
+                lat     => '51.5',
+                lon     => '-2.1',
                 name    => 'Test User ll',
                 email   => 'test-ll@example.com',
                 subject => 'Test report ll',

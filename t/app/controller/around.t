@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 use Test::More;
+use LWP::Protocol::PSGI;
 
+use t::MapIt;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
@@ -71,8 +73,8 @@ foreach my $test (
 foreach my $test (
     {
         pc        => 'SW1A 1AA',
-        latitude  => '51.501009',
-        longitude => '-0.141588',
+        latitude  => '51.5',
+        longitude => '-2.1',
     },
     {
         pc        => 'TQ 388 773',
@@ -82,10 +84,12 @@ foreach my $test (
   )
 {
     subtest "check lat/lng for '$test->{pc}'" => sub {
+        LWP::Protocol::PSGI->register(t::MapIt->run_if_script, host => 'mapit.uk');
+
         $mech->get_ok('/');
         FixMyStreet::override_config {
             ALLOWED_COBRANDS => [ { 'fixmystreet' => '.' } ],
-            MAPIT_URL => 'http://mapit.mysociety.org/',
+            MAPIT_URL => 'http://mapit.uk/',
         }, sub {
             $mech->submit_form_ok( { with_fields => { pc => $test->{pc} } },
                 "good location" );
