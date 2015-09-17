@@ -1641,5 +1641,100 @@ table.nicetable {
   }
 }
 
+/* Questionnaire page */
+
+.questionnaire-report-header {
+  font-family: inherit;
+  font-size: 1.2em;
+  font-weight: 600;
+}
+
+.questionnaire-report-reminder {
+  @include clearfix(); // clear the floated image, in case there is no update-header to do it
+  background: #f3f3f3;
+  border-radius: 3px;
+  padding: 1em 1em 1px 1em; // basically no padding-bottom, as children have their own margin-bottom instead
+  margin-bottom: 2em;
+
+  .update-img {
+    width: 120px;
+    float: left;
+    margin: 0.1em 1em 1em 0;
+  }
+}
+
+.questionnaire-report-reminder__report-title {
+  margin: 0 0 0.3em 0;
+}
+
+.questionnaire-report-reminder__report-meta {
+  color: #666;
+  line-height: 1.4em;
+}
+
+.questionnaire-report-reminder__last-update-header {
+  border-top: 1px solid #ddd;
+  margin: 0;
+  padding: 0.8em 0 0.5em 0;
+  clear: left; // clear the floated image above
+
+  a {
+    float: right;
+  }
+}
+
+.questionnaire-errors {
+  margin-left: 0;
+}
+
+.radio-segmented-control {
+  overflow: auto; // clear floats (if browser doesn't support flexbox)
+  display: flex; // fancy full-width buttons for browsers that support flexbox
+
+  input {
+    display: none;
+  }
+
+  label {
+    display: block;
+    margin: 0;
+    padding: 0.75em 1.5em;
+    text-align: center;
+    background: #fff linear-gradient(to bottom, #fff 0%, #eee 100%) 0 0 no-repeat;
+    border: 1px solid #ddd;
+    border-right-width: 0; // avoid double border between items
+    font-weight: bold;
+    float: left; // float fallback for browsers that don't support flexbox
+    flex: 1 0 auto;
+
+    &:hover, &:focus {
+      background: #f3f3f3 linear-gradient(to bottom, #f9f9f9 0%, #e9e9e9 100%) 0 0 no-repeat;
+    }
+  }
+
+  input:checked + label {
+    color: $primary_text;
+    background: $primary;
+    border-color: darken($primary, 5%);
+    background-image: none; // remove gradient
+    box-shadow: inset 0 0.1em 0.2em rgba(0,0,0,0.2);
+    border-right-width: 1px; // add a realistic coloured border to all sides
+  }
+
+  input:checked + label + input + label {
+    border-left-width: none; // in favour of the realistic coloured border on the selected item
+  }
+
+  input:first-child + label {
+    border-radius: 0.25em 0 0 0.25em;
+  }
+
+  label:last-child {
+    border-radius: 0 0.25em 0.25em 0;
+    border-right-width: 1px; // reinstate border on last item
+  }
+}
+
+
 @import "_admin";
 @import "_fixedthead";

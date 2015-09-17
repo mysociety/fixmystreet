@@ -1,17 +1,31 @@
 [%
-    pre_map = INCLUDE 'report/_main.html';
+    SET bodyclass = 'mappage';
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
-    INCLUDE 'header.html', title = loc('Questionnaire')
+    INCLUDE 'header.html', title = loc('Questionnaire');
 %]
 
 [% map_html %]
 
-[% INCLUDE 'report/updates.html' %]
-
 </div>
-<div id="side">
 
 <h1>[% loc('Questionnaire') %]</h1>
+
+<h2 class="questionnaire-report-header">Your report</h2>
+<div class="questionnaire-report-reminder">
+    [% INCLUDE 'report/photo.html' object=problem %]
+    <h3 class="questionnaire-report-reminder__report-title">
+        <a href="/report/[% problem.id %]">[% problem.title | html %]</a>
+    </h3>
+    <p class="questionnaire-report-reminder__report-meta">[% problem.meta_line(c) | html %]</p>
+  [% IF updates.size %]
+    <p class="questionnaire-report-reminder__last-update-header">
+        <strong>Last update</strong>
+        <a href="/report/[% problem.id %]">Show all updates</a>
+    </p>
+    <p class="questionnaire-report-reminder__last-update">&ldquo;[% add_links( updates.last.text ) %]&rdquo;</p>
+  [% END %]
+</div>
 
 <form method="post" action="/questionnaire/submit" id="questionnaire"
 [%- IF c.cobrand.allow_photo_upload -%]
@@ -21,13 +35,8 @@
 
 <input type="hidden" name="token" value="[% token | html %]">
 
-<p>
-[% loc('The details of your problem are available on the right hand side of this page.') %]
-[% loc('Please take a look at the updates that have been left.') IF updates %]
-</p>
-
 [% IF errors %]
-<ul class="error">
+<ul class="error questionnaire-errors">
 <li>[% errors.join("</li>\n<li>") %]</li>
 </ul>
 [% END %]
@@ -37,50 +46,50 @@
 [% loc('Has this problem been fixed?') %]
 </p>
 
-<p>
-<input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"[% ' checked' IF been_fixed == 'Yes' %]>
-<label for="been_fixed_yes">[% loc('Yes') %]</label>
-<input type="radio" name="been_fixed" id="been_fixed_no" value="No"[% ' checked' IF been_fixed == 'No' %]>
-<label for="been_fixed_no">[% loc('No') %]</label>
-<input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"[% ' checked' IF been_fixed == 'Unknown' %]>
-<label for="been_fixed_unknown">[% loc('Don&rsquo;t know') %]</label>
+<p class="radio-segmented-control">
+    <input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"[% ' checked' IF been_fixed == 'Yes' %]>
+    <label class="inline" for="been_fixed_yes">[% loc('Yes') %]</label>
+    <input type="radio" name="been_fixed" id="been_fixed_no" value="No"[% ' checked' IF been_fixed == 'No' %]>
+    <label class="inline" for="been_fixed_no">[% loc('No') %]</label>
+    <input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"[% ' checked' IF been_fixed == 'Unknown' %]>
+    <label class="inline" for="been_fixed_unknown">[% loc('Don&rsquo;t know') %]</label>
 </p>
 
 [% UNLESS answered_ever_reported %]
 <p>[% loc('Have you ever reported a problem to a council before, or is this your first time?') %]</p>
-<p>
-<input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
-<label for="reported_yes">[% loc('Reported before') %]</label>
-<input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
-<label for="reported_no">[% loc('First time') %]</label>
+<p class="radio-segmented-control">
+    <input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
+    <label class="inline" for="reported_yes">[% loc('Reported before') %]</label>
+    <input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
+    <label class="inline" for="reported_no">[% loc('First time') %]</label>
 </p>
 [% END %]
 
 <p>[% loc('If you wish to leave a public update on the problem, please enter it here
-(please note it will not be sent to the council). For example, what was
-your experience of getting the problem fixed?') %]</p>
+(please note it will not be sent to the council).') %]</p>
 
-<p><textarea name="update" style="max-width:90%" rows="7" cols="30">[% update | html %]</textarea></p>
+<p><textarea name="update" rows="7" cols="30" placeholder="[% loc('What was your experience of getting the problem fixed?') %]">[% update | html %]</textarea></p>
 
 [% IF c.cobrand.allow_photo_upload %]
-<div id="fileupload_normalUI">
+<p id="fileupload_normalUI">
     [% IF upload_fileid %]
+        <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
         <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
         <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
     [% END %]
     <label for="form_photo">[% loc('Photo:') %]</label>
     <input type="file" name="photo" id="form_photo">
-</div>
+</p>
 [% END %]
 
 [% IF c.cobrand.moniker != 'emptyhomes' %]
-<div id="another_qn">
+<div class="js-another-questionnaire">
     <p>[% loc('Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?') %]</p>
-    <p>
+    <p class="radio-segmented-control">
         <input type="radio" name="another" id="another_yes" value="Yes"[% ' checked' IF another == 'Yes' %]>
-        <label for="another_yes">[% loc('Yes') %]</label>
+        <label class="inline" for="another_yes">[% loc('Yes') %]</label>
         <input type="radio" name="another" id="another_no" value="No"[% ' checked' IF another == 'No' %]>
-        <label for="another_no">[% loc('No') %]</label>
+        <label class="inline" for="another_no">[% loc('No') %]</label>
     </p>
 </div>
 [% END %]
@@ -89,7 +98,4 @@ your experience of getting the problem fixed?') %]</p>
 
 </form>
 
-</div>
-
 [% INCLUDE 'footer.html' %]
-

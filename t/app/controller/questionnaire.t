@@ -315,7 +315,7 @@ my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
 );
 subtest 'Check updates are shown correctly on questionnaire page' => sub {
     $mech->get_ok("/Q/" . $token->token);
-    $mech->content_contains( 'updates that have been left' );
+    $mech->content_contains( 'Show all updates' );
     $mech->content_contains( 'This is some update text' );
 };
 
