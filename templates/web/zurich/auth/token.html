@@ -1,0 +1,25 @@
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Confirm account') %]
+
+[% IF token_not_found %]
+
+  <div class="confirmation-header confirmation-header--failure">
+
+    <h1>[% loc('We have not been able to confirm your account - sorry.') %]</h1>
+    <p>[% loc('This may be because the link is too old or already used, or the address was not copied correctly.') %]</p>
+
+  </div>
+
+[% ELSE %]
+
+  <div class="confirmation-header confirmation-header--inbox">
+
+    <h1>[% loc('Please check your email') %]</h1>
+    <p>[% loc("We have sent you an email containing a link to confirm your account.") %]</p>
+
+    <p>[% loc("If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.") %]</p>
+
+  </div>
+
+[% END %]
+
+[% INCLUDE 'footer.html' %]

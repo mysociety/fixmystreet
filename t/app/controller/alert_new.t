@@ -11,7 +11,7 @@ foreach my $test (
     {
         email      => 'test@example.com',
         type       => 'area_problems',
-        content    => 'your alert will not be activated',
+        content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
 '/alert/subscribe?type=local&rznvy=test@example.com&feed=area:1000:A_Location',
@@ -20,7 +20,7 @@ foreach my $test (
     {
         email      => 'test@example.com',
         type       => 'council_problems',
-        content    => 'your alert will not be activated',
+        content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
 '/alert/subscribe?type=local&rznvy=test@example.com&feed=council:1000:A_Location',
@@ -30,7 +30,7 @@ foreach my $test (
     {
         email      => 'test@example.com',
         type       => 'ward_problems',
-        content    => 'your alert will not be activated',
+        content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
 '/alert/subscribe?type=local&rznvy=test@example.com&feed=ward:1000:1001:A_Location:Diff_Location',
@@ -40,7 +40,7 @@ foreach my $test (
     {
         email      => 'test@example.com',
         type       => 'local_problems',
-        content    => 'your alert will not be activated',
+        content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri =>
 '/alert/subscribe?type=local&rznvy=test@example.com&feed=local:10.2:20.1',
@@ -50,7 +50,7 @@ foreach my $test (
     {
         email      => 'test@example.com',
         type       => 'new_updates',
-        content    => 'your alert will not be activated',
+        content    => 'Click the link in our confirmation email to activate your alert',
         email_text => "confirms that you'd like to receive an email",
         uri    => '/alert/subscribe?type=updates&rznvy=test@example.com&id=1',
         param1 => 1,
@@ -236,7 +236,7 @@ for my $test (
     {
         email      => 'test@example.com',
         type       => 'new_updates',
-        content    => 'your alert will not be activated',
+        content    => 'Click the link in our confirmation email to activate your alert',
         email_text => 'confirm the alert',
         uri    => '/alert/subscribe?type=updates&rznvy=test@example.com&id=1',
         param1 => 1,
