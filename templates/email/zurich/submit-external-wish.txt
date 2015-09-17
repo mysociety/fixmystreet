@@ -5,13 +5,16 @@ Grüezi <?=$values['bodies_name']?>,
 <?=$values['external_message']?>
 
 
-Öffentliche URL: <?=$values['url']?>
-
 Name des Meldenden: <?=$values['name']?>
 
 Email des Meldenden: <?=$values['email']?>
 
 Telefonnummer des Meldenden: <?=$values['phone']?>
+
+Meldung: <?=$values['detail']?>
+
+Standort in AV-Online anzeigen:
+http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=<?=$values['west']?>&Nord=<?=$values['nord']?>&B=300
 
 
 Bei Fragen zu "Züri wie neu" wenden Sie sich bitte an gis-zentrum@zuerich.ch.

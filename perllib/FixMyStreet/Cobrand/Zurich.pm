@@ -135,16 +135,35 @@ sub problem_as_hashref {
         $hashref->{title} = _('This report is awaiting moderation.');
         $hashref->{state} = 'submitted';
         $hashref->{state_t} = _('Submitted');
+        $hashref->{banner_id} = 'closed';
     } else {
         if ( $problem->state eq 'confirmed' ) {
             $hashref->{state} = 'open';
             $hashref->{state_t} = _('Open');
+            $hashref->{banner_id} = 'closed';
+        } elsif ( $problem->state eq 'closed' ) {
+            $hashref->{state} = 'extern'; # is this correct?
+            $hashref->{banner_id} = 'closed';
+            $hashref->{state_t} = _('Extern');
+        } elsif ( $problem->state eq 'unable to fix' ) {
+            $hashref->{state} = 'jurisdiction unknown'; # is this correct?
+            $hashref->{state_t} = _('Jurisdiction Unknown');
+            $hashref->{banner_id} = 'fixed'; # green
+        } elsif ( $problem->state eq 'partial' ) {
+            $hashref->{state} = 'not contactable'; # is this correct?
+            $hashref->{state_t} = _('Not contactable');
+            # no banner_id as hidden
+        } elsif ( $problem->state eq 'investigating' ) {
+            $hashref->{state} = 'wish'; # is this correct?
+            $hashref->{state_t} = _('Wish');
         } elsif ( $problem->is_fixed ) {
             $hashref->{state} = 'closed';
+            $hashref->{banner_id} = 'fixed';
             $hashref->{state_t} = _('Closed');
         } elsif ( $problem->state eq 'in progress' || $problem->state eq 'planned' ) {
             $hashref->{state} = 'in progress';
             $hashref->{state_t} = _('In progress');
+            $hashref->{banner_id} = 'progress';
         }
     }
 
@@ -526,10 +545,32 @@ sub admin_report_edit {
         my $internal_note_text = "";
 
         # Workflow things
+        #
+        #   Note that 2 types of email may be sent
+        #    1) _admin_send_email()  sends an email to the *user*, if their email is confirmed
+        #
+        #    2) setting $problem->whensent(undef) may make it eligible for generating an email
+        #   to the body (internal or external).  See DBRS::Problem->send_reports for Zurich-
+        #   specific categories which are eligible for this.
+        #
+        #   It looks like both of these will do:
+        #       a) TT processing of [% ... %] directives, in FMS::App->send_email(_cron)
+        #       b) pseudo-PHP substitution of <?=$values['name']?> which is done as
+        #       naive substitution
+        #       commonlib mySociety::Email
+        #
+        #   So it makes sense to add new parameters as the more powerful TT (a).
+
         my $redirect = 0;
-        my $new_cat = $c->req->params->{category};
-        if ( $new_cat && $new_cat ne $problem->category ) {
-            my $cat = $c->model('DB::Contact')->search( { category => $c->req->params->{category} } )->first;
+        my $new_cat = $c->req->params->{category} || '';
+        my $state = $c->req->params->{state} || '';
+
+        if (
+            ($state eq 'confirmed') 
+            && $new_cat
+            && $new_cat ne $problem->category
+        ) {
+            my $cat = $c->model('DB::Contact')->search({ category => $c->req->params->{category} } )->first;
             my $old_cat = $problem->category;
             $problem->category( $new_cat );
             $problem->external_body( undef );
@@ -546,16 +587,40 @@ sub admin_report_edit {
             $problem->bodies_str( $subdiv );
             $problem->whensent( undef );
             $redirect = 1;
-        } elsif ( my $external = $c->req->params->{body_external} ) {
+        } elsif ( my $external = $c->req->params->{body_external} and $state =~/^(closed|investigating)$/) {
+            # Extern | Wish
+            my $external_body = $c->model('DB::Body')->find($external)
+                or die "Body $external not found";
             $problem->set_extra_metadata_if_undefined( moderated_overdue => $self->overdue( $problem ) );
-            $self->set_problem_state($c, $problem, 'closed');
             $problem->set_extra_metadata_if_undefined( closed_overdue => $self->overdue( $problem ) );
             $problem->external_body( $external );
             $problem->whensent( undef );
-            _admin_send_email( $c, 'problem-external.txt', $problem );
+            $self->set_problem_state($c, $problem, $state);
+            if ( my $external_message = $c->req->params->{external_message} ) {
+                $problem->add_to_comments( {
+                    text => (
+                        sprintf '(%s %s) %s',
+                        $state eq 'closed' ?
+                            _('Forwarded to external body') :
+                            _('Forwarded wish to external body'),
+                        $external_body->name,
+                        $external_message,
+                    ),
+                    user => $c->user->obj,
+                    state => 'hidden', # seems best fit, should not be shown publicly
+                    mark_fixed => 0,
+                    anonymous => 1,
+                    extra => { is_internal_note => 1, is_external_message => 1 },
+                } );
+                # set the external_message in extra, so that it will be picked up
+                # later by send-reports
+                $problem->set_extra_metadata( external_message => $external_message );
+            }
+            my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
+            _admin_send_email( $c, $template, $problem );
             $redirect = 1;
         } else {
-            if (my $state = $c->req->params->{state}) {
+            if ($state) {
 
                 if ($problem->state eq 'unconfirmed' and $state ne 'unconfirmed') {
                     # only set this for the first state change
@@ -587,6 +652,7 @@ sub admin_report_edit {
                 _admin_send_email( $c, 'problem-closed.txt', $problem );
             }
         }
+        $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";
 
         $problem->lastupdate( \'ms_current_timestamp()' );
         $problem->update;
@@ -623,6 +689,7 @@ sub admin_report_edit {
           ->search( { problem_id => $problem->id }, { order_by => 'created' } )
           ->all ];
 
+        $self->stash_states($problem);
         return 1;
     }
 
@@ -631,15 +698,26 @@ sub admin_report_edit {
         # Has cut-down edit template for adding update and sending back up only
         $c->stash->{template} = 'admin/report_edit-sdm.html';
 
-        if ($c->req->param('send_back')) {
+        if ($c->req->param('send_back') or $c->req->param('not_contactable')) {
+            # SDM can send back a report either to be assigned to a different
+            # subdivision, or because the customer was not contactable.
+            # We handle these in the same way but with different statuses.
+
             $c->forward('check_token');
 
-            $problem->bodies_str( $body->parent->id );
-            $self->set_problem_state($c, $problem, 'confirmed');
-            $problem->update;
-            # log here
-            $c->res->redirect( '/admin/summary' );
+            my $not_contactable = $c->req->param('not_contactable');
 
+            $problem->bodies_str( $body->parent->id );
+            my $new_state = $not_contactable ? 'partial' : 'confirmed';
+            $self->set_problem_state($c, $problem, $new_state);
+            $problem->update;
+            $c->forward( 'log_edit', [ $problem->id, 'problem', 
+                $not_contactable ?
+                    _('Customer not contactable')
+                    : _('Sent report back') ] );
+            # Make sure the problem's time_spent is updated
+            $self->update_admin_log($c, $problem);
+            $c->res->redirect( '/admin/summary' );
         } elsif ($c->req->param('submit')) {
             $c->forward('check_token');
 
@@ -664,6 +742,8 @@ sub admin_report_edit {
                     anonymous => 1,
                 } );
             }
+            # Make sure the problem's time_spent is updated
+            $self->update_admin_log($c, $problem);
 
             $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
 
@@ -682,13 +762,92 @@ sub admin_report_edit {
             ->search( { problem_id => $problem->id }, { order_by => 'created' } )
             ->all ];
 
+        $self->stash_states($problem);
         return 1;
 
     }
 
+    $self->stash_states($problem);
     return 0;
 
 }
+
+sub stash_states {
+    my ($self, $problem) = @_;
+    my $c = $self->{c};
+
+    # current problem state affects which states are visible in dropdowns
+    my @states = (
+        {
+            # Erfasst
+            state => 'unconfirmed',
+            trans => _('Submitted'),
+            unconfirmed => 1,
+            hidden => 1,
+        },
+        {
+            # Aufgenommen
+            state => 'confirmed',
+            trans => _('Open'),
+            unconfirmed => 1,
+        },
+        {
+            # Rueckmeldung ausstehend
+            state => 'planned',
+            trans => _('Planned'),
+        },
+        {
+            # Unsichtbar (hidden)
+            state => 'hidden',
+            trans => _('Hidden'),
+            unconfirmed => 1,
+            hidden => 1,
+        },
+        {
+            # Extern
+            state => 'closed',
+            trans => _('Extern'),
+        },
+        {
+            # Zustaendigkeit unbekannt
+            state => 'unable to fix',
+            trans => _('Jurisdiction unknown'),
+        },
+        {
+            # Wunsch (hidden)
+            state => 'investigating',
+            trans => _('Wish'),
+        },
+        {
+            # Nicht kontaktierbar (hidden)
+            state => 'partial',
+            trans => _('Not contactable'),
+        },
+    );
+    my $state = $problem->state;
+    if ($state eq 'in progress') {
+        push @states, {
+            state => 'in progress',
+            trans => _('In progress'),
+        };
+    }
+    elsif ($state eq 'fixed - council') {
+        push @states, {
+            state => 'fixed - council',
+            trans => _('Closed'),
+        };
+    }
+    elsif ($state =~/^(hidden|unconfirmed)$/) {
+        @states = grep { $_->{$state} } @states;
+    }
+    $c->stash->{states} = \@states;
+}
+
+=head2 _admin_send_email
+
+Send an email to the B<user> who logged the problem, if their email address is confirmed.
+
+=cut
 
 sub _admin_send_email {
     my ( $c, $template, $problem ) = @_;
@@ -708,6 +867,7 @@ sub _admin_send_email {
         to => [ $to ],
         url => $c->uri_for_email( $problem->url ),
         from => [ $sender, $sender_name ],
+        problem => $problem,
     } );
 }
 

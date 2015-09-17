@@ -7,4 +7,5 @@ Dies ist eine automatische Antwort auf Ihr E-Mail. Ihr E-Mail wurde nicht überm
 Falls Sie eine Meldung erfassen möchten, tun Sie das bitte über die Hauptseite:
 [%# link to FMZ %]
 
+
 Falls Sie Fragen zu <<Züri wie neu>> haben, senden Sie ein E-Mail an gis-zentrum@zuerich.ch

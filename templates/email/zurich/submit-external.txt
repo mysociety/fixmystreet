@@ -2,19 +2,10 @@ Subject: Züri wie neu: Weitergeleitete Meldung #<?=$values['id']?>
 
 Grüezi <?=$values['bodies_name']?>,
 
-Die folgende Meldung wurde auf http://www.stadt-zuerich.ch/zueriwieneu erfasst:
+<?=$values['external_message']?>
+
 
 Öffentliche URL: <?=$values['url']?>
 
-"Züri wie neu" ist eine Dienstleistung der Stadt Zürich zum Thema
-Bürgerbeteiligung. Auf dieser Plattform kann die Bevölkerung auf Schäden und
-Mängel an der städtischen Infrastruktur hinweisen.
-Diese Meldung wurde Ihnen von der Stadt Zürich gesendet, da es Ihr
-Zuständigkeitsgebiet betreffen könnte.
 
 Bei Fragen zu "Züri wie neu" wenden Sie sich bitte an gis-zentrum@zuerich.ch.
-
-
-Freundliche Grüsse
-
-Ihre Stadt Zürich

@@ -9,10 +9,21 @@ sub build_recipient_list {
 
     # Only one body ever, most of the time with an email endpoint
     my $body = @{ $self->bodies }[0];
+
+    # we set external_message (but default to '' in case of race condition e.g.
+    # Wunsch set, but external_message hasn't yet been filled in.  TODO should
+    # we instead be holding off sending?)
     if ( $row->external_body ) {
         $body = FixMyStreet::App->model("DB::Body")->find( { id => $row->external_body } );
         $h->{bodies_name} = $body->name;
+        $h->{external_message} = $row->get_extra_metadata('external_message') || '';
     }
+    $h->{external_message} //= '';
+
+    my ($west, $nord) = $row->local_coords;
+    $h->{west} = $west;
+    $h->{nord} = $nord;
+
     my $body_email = $body->endpoint;
 
     my $parent = $body->parent;
@@ -39,6 +50,8 @@ sub get_template {
         $template = 'submit-in-progress.txt';
     } elsif ( $row->state eq 'planned' ) {
         $template = 'submit-feedback-pending.txt';
+    } elsif ( $row->state eq 'investigating' ) {
+        $template = 'submit-external-wish.txt';
     } elsif ( $row->state eq 'closed' ) {
         $template = 'submit-external.txt';
         if ( $row->extra->{third_personal} ) {
