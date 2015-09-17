@@ -1,34 +1,23 @@
-[% INCLUDE 'header.html', bodyclass = 'twothirdswidthpage', title = loc('Create a report') %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Create a report') %]
 
-<h1>[% loc("Nearly Done! Now check your email...") %]</h1>
+<div class="confirmation-header confirmation-header--inbox">
 
-[% IF c.cobrand.moniker != 'zurich' %]
-    <p>[% loc("The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient.") %]</p>
-[% END %]
+    <h1>[% loc("Nearly done! Now check your email&hellip;") %]</h1>
 
-<p>[% loc("If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way.") %]</p>
-
-[% IF c.cobrand.moniker != 'zurich' %]
     <p>
-    [% loc("You must now click the link in the email we've just sent you.") %]
     [% IF email_type == 'problem' %]
-        [% loc("If you do not, your problem will not be posted.") %]
+        [% loc("Click the link in our confirmation email to publish your problem.") %]
     [% ELSIF email_type == 'update' %]
-        [% loc("If you do not, your update will not be posted.") %]
+        [% loc("Click the link in our confirmation email to publish your update.") %]
     [% ELSIF email_type == 'alert' %]
-        [% loc("If you do not, your alert will not be activated.") %]
+        [% loc("Click the link in our confirmation email to activate your alert.") %]
     [% END %]
     </p>
 
     <p>
-    [% IF email_type == 'problem' %]
-        [% loc("(Don't worry &mdash; we'll hang on to your problem report while you're checking your email.)") %]
-    [% ELSIF email_type == 'update' %]
-        [% loc("(Don't worry &mdash; we'll hang on to your update while you're checking your email.)") %]
-    [% ELSIF email_type == 'alert' %]
-        [% loc("(Don't worry &mdash; we'll hang on to your alert while you're checking your email.)") %]
-    [% END %]
+        [% loc("Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time.") %]
     </p>
-[% END %]
+
+</div>
 
 [% INCLUDE 'footer.html' %]

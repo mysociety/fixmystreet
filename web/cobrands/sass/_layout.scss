@@ -498,6 +498,18 @@ body.twothirdswidthpage {
   }
 }
 
+// Centre the login and password change pages,
+// but keep them narrow to match the report sidebar
+body.authpage {
+  .content {
+    margin-#{$left}: auto;
+    margin-#{$right}: auto;
+    margin-bottom: 0;
+    box-shadow: none;
+    padding: 1em; // same as .twothirdswidthpage .content
+  }
+}
+
 
 // table wrapper - this enables anything to become a
 // table with div children as table cells

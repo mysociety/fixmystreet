@@ -8,9 +8,6 @@
     body.frontpage #site-logo,
     .ie6 body.frontpage #site-logo,
     
-    body.authpage #site-logo,
-    .ie6 body.authpage #site-logo,
-
     body.twothirdswidthpage #site-logo,
     .ie6 body.twothirdswidthpage #site-logo
     {
@@ -28,9 +25,6 @@
 
     body.twothirdswidthpage #site-header,
     .ie6 body.twothirdswidthpage #site-header,
-
-    body.authpage #site-header,
-    .ie6 body.authpage #site-header,
 
     body.mappage #site-header,
     .ie6 body.mappage #site-header,
@@ -58,11 +52,7 @@
     }
 }
 
-body.fullwidthpage #main-nav,
-body.frontpage #main-nav,
-body.twothirdswidthpage #main-nav,
-body.authpage #main-nav
-{
+#main-nav {
     margin-top: 3.2em;
 }
 
