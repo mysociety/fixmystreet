@@ -16,10 +16,12 @@
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
-<ul class="no-bullets">
-<li class="report-edit-action"><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
+<div class="admin-report-edit admin-report-edit--details">
 
-<li class="report-edit-action"><a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
+<ul class="no-bullets">
+<li class="report-edit-action">&raquo; <a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
+
+<li class="report-edit-action">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
 
 [% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
     <li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
@@ -33,7 +35,7 @@
 [% ELSE %]
     <li><label for='title'>[% loc('Subject:') %]</label> <input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></li>
     <li><label for='detail'>[% loc('Details:') %]</label>
-    <textarea name='detail' id='detail' cols=60 rows=5>[% problem.detail | html %]</textarea>
+    <textarea name='detail' id='detail' cols=60 rows=4>[% problem.detail | html %]</textarea>
     [% IF problem.extra.original_detail %]
     [%
         SET detail_safe = problem.extra.original_detail | html;
@@ -43,15 +45,27 @@
     </li>
 [% END %]
 
-<li><span class="mock-label">[% loc('Co-ordinates:') %]</span> [% problem.local_coords.join(',') %]
-	<input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
-	<input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
+[%# repeated as static in this column %]
+<li><span class="mock-label">[% loc('Category:') %]</span> [% problem.category | html %] </li>
 
-([%
-    SET safe = problem.postcode | html;
-    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
-%],
-[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+<li>
+    <strong>[% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</strong>
+    <br>
+    [% problem.local_coords.join(',') %]
+    <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
+    <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
+    <br>
+    [% IF problem.used_map %]
+      [% loc('Used map') %]
+    [% ELSE %]
+      [% loc("Didn't use map") %]
+    [% END %]
+    <br>
+    [%
+        SET safe = problem.postcode | html;
+        tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
+    %]
+</li>
 
 [% SET fields = problem.get_extra_fields; IF fields.size %]
 <li>
@@ -62,12 +76,16 @@
 </li>
 [% END %]
 
-<li><span class="mock-label">[% loc('Name:') %]</span> [% problem.name | html %] <input type='hidden' name='name' id='name' value='[% problem.name | html %]'></li>
-<li><span class="mock-label">[% loc('Email:') %]</span> [% problem.user.email | html %] <input type='hidden' id='email' name='email' value='[% problem.user.email | html %]'>
-[% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
+<li>
+    <strong>[% IF problem.name %][% problem.name | html %][% ELSE %][% loc('(No name)') %][% END %]</strong>
+    <input type='hidden' name='name' id='name' value='[% problem.name | html %]'>
+    <br>
+    [% problem.user.email | html %]
+    [% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
+    <input type='hidden' id='email' name='email' value='[% problem.user.email | html %]'>
+    <br>
+    [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('(No phone number)') %]</em>[% END %]
 </li>
-<li><span class="mock-label">[% loc('Phone:') %]</span> [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
-<li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
 
 <li>
     <label>[% loc('Time spent (in minutes):') %]</label> [% problem.get_time_spent %]
@@ -81,15 +99,37 @@
         <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
     <span>zoom</span></a>
 </div>
-<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
-<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]" class="report-edit-action">
+<input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]" class="report-edit-action">
 [% END %]
 <br>
-<br>
-<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]>
-<label class="inline" for="publish_photo">[% loc("Publish photo") %]</label></li>
+<input type="checkbox" id="publish_photo" name="publish_photo" value="1"[% ' checked' IF problem.extra.publish_photo %]  class="report-edit-action">
+<label class="inline report-edit-action" for="publish_photo">[% loc("Publish photo") %]</label></li>
 [% END %]
 </ul>
+
+</div>
+
+<div class="admin-report-edit admin-report-edit--interact">
+
+<p class="report-edit-action">
+    <label for="new_internal_note">[% loc('New internal note:') %]</label>
+    <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea>
+</p>
+
+<p class="report-edit-action">
+<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+<input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+<script>
+    $(function () {
+        $('#form_time_spent').spinner({
+            spin: function (e, ui) {
+                if (ui.value < 0) { return false }
+            }
+        });
+    });
+</script>
+</p>
 
 <p><span class="mock-label">[% loc('State:') %]</span> <select name="state"  id="state">
     <option value="">--</option>
@@ -98,7 +138,7 @@
   [% END %]
 </select></p>
 
-<p id="automatic-reply">
+<p id="automatic-reply" class="report-edit-action">
     <span class="mock-label">Automatische Antwort</span>
     <input type="checkbox" name="send_rejected_email" id="send_rejected_email" value="1" />
 </p>
@@ -170,7 +210,7 @@ $(function(){
     <option value="[% body.id %]"[% IF body.id == problem.bodies_str %] selected[% END %]>[% body.name %]</option>
 [% END %]
   [% IF admin_type != 'super' AND list %]
-    <li class="assignation" id="assignation__subdivision">
+    <li class="assignation report-edit-action" id="assignation__subdivision">
         <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
         <select name="body_subdivision" id="body_subdivision">
             <option value="">--</option>
@@ -185,7 +225,7 @@ $(function(){
 [% SWITCH problem.state %]
     [% CASE ['closed','investigating'] %]
     <ul class="no-bullets">
-    <li class="assignation" id="assignation__external">
+    <li class="assignation report-edit-action" id="assignation__external">
     <label for="body_external">
         [% IF problem.state == 'closed' %]
             [% loc('Assign to external body:') %]
@@ -215,7 +255,7 @@ $(function(){
   # Zustandigkeit unbekannt/Wunsch/Nicht kontaktierbar/Unsichtbar %]
 [% SWITCH problem.state %]
     [% CASE ['planned','closed','unable to fix','investigating','partial','hidden'] %]
-        <ul class="no-bullets">
+        <ul class="no-bullets report-edit-action">
             <li><label for="status_update">[% loc('Public response:') %]</label>
             [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
             <textarea name='status_update' id='status_update' cols=60 rows=5>
@@ -223,38 +263,26 @@ $(function(){
             </textarea>
             </li>
         </ul>
-    [% CASE 'fixed - council' %]
-    <p><span class="mock-label">[% loc('Public response:') %]</span>
-    [% problem.extra.public_response | html %]
-    </p>
 [% END %]
 
-<p><label for="new_internal_note">[% loc('New internal note:') %]</label>
-<textarea name='new_internal_note' id='new_internal_note' cols=60 rows=5>[% new_internal_note | html %]</textarea></p>
-
-<p>
-<label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
-<input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
-<script>
-    $(function () {
-        $('#form_time_spent').spinner({
-            spin: function (e, ui) {
-                if (ui.value < 0) { return false }
-            }
-        });
-    });
-</script>
-</p>
-
-<p align="right">
+<p align="right" class="report-edit-action">
 [% IF problem.state == 'planned' %]
 <input type="submit" name="publish_response" value="[% loc('Publish the response') %]">
 [% END %]
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
 
-</form>
+[% IF problem.state == 'fixed - council' %]
+    <h2>[% loc('Public response:') %]</h2>
+    <div class="admin-official-answer">
+        [% problem.extra.public_response | html_para %]
+    </div>
+[% END %]
 
 [% INCLUDE 'admin/list_updates.html' %]
+
+</div>
+
+</form>
 
 [% INCLUDE 'admin/footer.html' %]
