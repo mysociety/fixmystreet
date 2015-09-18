@@ -178,8 +178,7 @@ $(function(){
     });
 
     //move 'skip this step' link on mobile
-    $('.mobile #skip-this-step').hide();
-    $('.mobile #skip-this-step a').addClass('chevron').wrap('<li>').appendTo('#key-tools');
+    $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
 
     /*
      * Tabs
@@ -369,12 +368,12 @@ $.fn.drawer = function(id, ajax) {
 
     // Go directly to RSS feed if RSS button clicked on alert page
     // (due to not wanting around form to submit, though good thing anyway)
-    $('.container').on('click', '#alert_rss_button', function(e){
+    $('body').on('click', '#alert_rss_button', function(e){
         e.preventDefault();
         var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
         window.location.href = feed;
     });
-    $('.container').on('click', '#alert_email_button', function(e){
+    $('body').on('click', '#alert_email_button', function(e){
         e.preventDefault();
         var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
         form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));

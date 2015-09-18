@@ -118,11 +118,16 @@ h1 {
     top:-3.25em;
   }
 }
-#nav-link,
-#report-cta {
+
+#nav-link {
   #{$right}: auto;
   #{$left}: -999999px;
 }
+
+#report-cta {
+    display: none;
+}
+
 #main-nav{
   margin: 0 auto;
   padding: 0em;
