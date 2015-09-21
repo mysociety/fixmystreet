@@ -50,6 +50,9 @@ sub update_session_cookie {
 sub cookie_is_rejecting {
     my ( $c, $cookie ) = @_;
 
+    # Prevent infinite loop in request->path. mySociety addition
+    return 0 if $c->request->has_uri && !$c->request->_has_path;
+
     # Don't output cookie for JS or JPEG files. mySociety addition
     return 1 if substr($c->request->path, -3) eq '.js'
         || substr($c->request->path, -5) eq '.jpeg';
