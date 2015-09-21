@@ -29,6 +29,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision :shell, :inline => <<-EOS
     # To prevent "dpkg-preconfigure: unable to re-open stdin: No such file or directory" warnings
     export DEBIAN_FRONTEND=noninteractive
+    # Make sure git submodules are checked out!
+    if [ ! -e fixmystreet/commonlib/.git ]; then
+      echo "Checking out submodules"
+      apt-get -qq install -y git >/dev/null
+      cd fixmystreet
+      git submodule --quiet update --init --recursive
+      cd commonlib
+      git config core.worktree "../../../commonlib"
+      echo "gitdir: ../.git/modules/commonlib" > .git
+      cd ../..
+    fi
     # Fetch and run install script
     wget -O install-site.sh --no-verbose https://github.com/mysociety/commonlib/raw/master/bin/install-site.sh
     sh install-site.sh --dev fixmystreet vagrant 127.0.0.1.xip.io
