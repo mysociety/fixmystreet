@@ -36,10 +36,12 @@ sub general : Path : Args(0) {
     return unless $c->req->method eq 'POST';
 
     # decide which action to take
-    my $has_password = $c->get_param('sign_in') || $c->get_param('password_sign_in');
-    my $has_email = $c->get_param('email_sign_in') || $c->get_param('name') || $c->get_param('password_register');
+    my $clicked_password = $c->get_param('sign_in');
+    my $clicked_email = $c->get_param('email_sign_in');
+    my $data_password = $c->get_param('password_sign_in');
+    my $data_email = $c->get_param('name') || $c->get_param('password_register');
 
-    $c->detach('email_sign_in') if $has_email && !$has_password;
+    $c->detach('email_sign_in') if $clicked_email || ($data_email && !$data_password);
 
        $c->forward( 'sign_in' )
     && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
