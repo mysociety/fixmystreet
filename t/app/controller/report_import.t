@@ -321,6 +321,7 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
     MAPIT_URL => 'http://global.mapit.mysociety.org/',
     MAPIT_TYPES => [ 'O08' ],
     MAPIT_ID_WHITELIST => [],
+    MAP_TYPE => 'Zurich,OSM',
   }, sub {
     ok $mech->host("zurich.example.org"), 'change host to zurich';
 
