@@ -225,11 +225,55 @@ h4.static-with-rule {
     }
 }
 
+.admin {
+  label.inline {
+    padding: 0;
+  }
+
+  input[type="checkbox"] + label.inline {
+    margin-right: 0.2em;
+  }
+}
+
+.admin-label--inline {
+  display: inline; // rather than block
+  margin-right: 0.333em; // bit of space between this and the following input
+}
+
 .ui-spinner input {
     // stop jQuery UI spinner inputs from inheriting FMS input styles
     padding: 1px;
     border: none;
     border-radius: 0;
+}
+
+.square-map__outer {
+    width: 100%;
+    height: 0;
+    padding-bottom: 100%; // 100% of parent WIDTH!! Makes a square element.
+    position: relative;
+}
+
+.square-map__inner {
+    position: absolute; // Parent must keep its 0 height, so we need to create a new container for tiles.
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    #drag .square-map__tile {
+        position: static; // override position:absolute
+    }
+}
+
+#map_box {
+    top: 6em; // the default, 3em, overlaps the header
+}
+
+@media screen {
+    dd.screen-no-space-after {
+      margin-bottom: 0;
+    }
 }
 
 @media print {
@@ -238,5 +282,72 @@ h4.static-with-rule {
     }
     #site-logo {
         top: 0;
+    }
+
+    .mappage.admin {
+      .container {
+          padding: 0;
+          position: relative;
+      }
+
+      .content {
+          overflow: auto;
+          font-size: 0.8em;
+          background: transparent url(/cobrands/zurich/admin-print-columns.gif) top center repeat-y;
+          min-height: 0 !important; // override hard-coded inline min-height style
+
+          form {
+              @include clearfix; // because .admin-report-edit children are floated
+          }
+      }
+
+      #map_box {
+          display: none; // Zurich has its own clone of the map, inside admin-report-edit--interact
+      }
+    }
+
+    .admin-report-edit {
+        margin-top: 1em;
+        width: 47%;
+
+        input[type=text],
+        textarea {
+            border: none;
+            padding: 0;
+        }
+
+        dd {
+            padding-left: 1em;
+        }
+
+        h2 {
+            font-family: inherit;
+            font-size: inherit;
+            font-weight: bold;
+        }
+    }
+
+    .admin-report-edit--details {
+        float: left;
+        border-right: 1px solid #ddd;
+        padding-right: 3%;
+    }
+
+    .admin-report-edit--interact {
+        float: right;
+    }
+
+    .map_clone {
+        -webkit-transform: none;
+        -ms-transform: none;
+        transform: none;
+    }
+
+    dd.print-no-space-after {
+        margin-bottom: 0;
+    }
+
+    #print_report_map {
+      page-break-before: always;
     }
 }

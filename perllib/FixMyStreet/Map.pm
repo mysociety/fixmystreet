@@ -35,6 +35,16 @@ sub allowed_maps {
     return grep { $avail{$_} } @allowed;
 }
 
+=head2 reload_allowed_maps
+
+Allows tests to override MAP_TYPE at run time.
+
+=cut
+
+sub reload_allowed_maps {
+    @ALL_MAP_CLASSES = allowed_maps();
+}
+
 =head2 map_class
 
 Set and return the appropriate class given a query parameter string.

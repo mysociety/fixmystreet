@@ -751,8 +751,7 @@ sub admin_report_edit {
         $problem->lastupdate( \'ms_current_timestamp()' );
         $problem->update;
 
-        $c->stash->{status_message} =
-          '<p><em>' . _('Updated!') . '</em></p>';
+        $c->stash->{status_message} = '<p class="message-updated">' . _('Updated!') . '</p>';
 
         # do this here otherwise lastupdate and confirmed times
         # do not display correctly (reloads problem from database, including
@@ -777,7 +776,7 @@ sub admin_report_edit {
 
         if ( $redirect and $type eq 'dm' ) {
             # only redirect for DM
-            $c->stash->{status_message} ||= '<p><em>' . _('Updated!') . '</em></p>';
+            $c->stash->{status_message} ||= '<p class="message-updated">' . _('Updated!') . '</p>';
             $c->go('index');
         }
 
@@ -847,7 +846,7 @@ sub admin_report_edit {
             # Make sure the problem's time_spent is updated
             $self->update_admin_log($c, $problem);
 
-            $c->stash->{status_message} = '<p><em>' . _('Updated!') . '</em></p>';
+            $c->stash->{status_message} = '<p class="message-updated">' . _('Updated!') . '</p>';
 
             # If they clicked the no more updates button, we're done.
             if ($c->req->param('no_more_updates')) {
@@ -957,6 +956,7 @@ sub stash_states {
         @states = grep { $_->{$state} } @states;
     }
     $c->stash->{states} = \@states;
+    $c->stash->{states_trans} = { map { $_->{state} => $_->{trans} } @states }; # [% states_trans.${problem.state} %]
 
     # stash details about the public response
     $c->stash->{default_public_response} = "\nFreundliche Grüsse\n\nIhre Stadt Zürich\n";

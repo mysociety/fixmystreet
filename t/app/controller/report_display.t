@@ -438,6 +438,7 @@ for my $test (
 subtest "Zurich unconfirmeds are 200" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->host( 'zurich.example.com' );
         ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
@@ -451,6 +452,7 @@ subtest "Zurich unconfirmeds are 200" => sub {
 subtest "Zurich banners are displayed correctly" => sub {
   FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
   }, sub {
     $mech->host( 'zurich.example.com' );
 

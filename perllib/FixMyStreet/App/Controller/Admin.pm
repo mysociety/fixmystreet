@@ -690,6 +690,7 @@ sub report_edit : Path('report_edit') : Args(1) {
                 type      => 'big',
               } ]
             : [],
+            print_report => 1,
         );
     }
 
