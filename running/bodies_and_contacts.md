@@ -141,4 +141,48 @@ This does not remove the contact from the FixMyStreet database (because doing
 so might break any existing problem reports that used it), but it prevents the
 contact from being used for new reports.
 
+## Deleting bodies
+
+It's unusual to need to delete a body, but it sometimes happens &mdash; for example, if a council ceases to exist because it has merged with an existing one.
+If this happens, remember that you may also need to create a new body, or
+change the 
+<a href="/glossary/#area" class="glossary__link">admin boundary</a>
+of an existing one.
+
+To delete a body, go to the body's admin page to edit it. Tick the checkbox
+marked **Flag as deleted**, and then click **Update body**.
+
+This does not remove the body from the FixMyStreet database (because doing
+so would remove all existing problem reports that used it). The reports,
+and the "deleted" body, remain as historic data.  Users cannot submit reports
+to a deleted body.
+
+<div class="attention-box warning">
+  If you're testing FixMyStreet and you're sure you want to <em>really</em> 
+  delete a body, because you just created it as test, you need to delete it
+  directly within the database (or, if we're hosting it for you, ask us to).
+  You cannot do destructive deletion like this through the admin interface.
+  <p>
+    We recommend you do your testing on a 
+    <a href="/glossary/#staging" class="glossary__link">staging site</a>
+    rather than
+    <a href="/glossary/#production" class="glossary__link">production</a>.
+  </p>
+</div>
+
+In the UK, where FixMyStreet has been running for a long time, there have
+been several changes to the councils that we cover. You can see deleted councils
+marked in grey on [the list of councils](https://www.fixmystreet.com/reports).
+We handle deleted councils as a special case because we want to direct the user
+to the appropriate extant body instead. For example, see the page for
+[Alnwick Council's reports](https://www.fixmystreet.com/reports/Alnwick); that
+council ceased to exist in 2009. If you want to replicate behaviour like this
+on your site, copy the `reports/_body_gone.html` template from the
+`fixmystreet.com` cobrand into your own
+<a href="/glossary/#cobrand" class="glossary__link">cobrand</a>, and
+<a href="/customising/templates/">customise it</a>.
+
+
+
+
 
