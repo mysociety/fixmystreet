@@ -70,12 +70,12 @@ title="[% option.rss_text %]" alt="RSS feed" border="0"></a>
       [% END %]
     </ul>
     <p><small>
-      [% loc( 'FixMyStreet sends different categories of problem
+      [% tprintf(loc('%s sends different categories of problem
 to the appropriate council, so problems within the boundary of a particular council
 might not match the problems sent to that council. For example, a graffiti report
 will be sent to the district council, so will appear in both of the district
 council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-for the county council.' ) %]
+for the county council.', "%s is the site name"), site_name) %]
     </small></p>
     [% END %]
 

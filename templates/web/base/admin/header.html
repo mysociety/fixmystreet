@@ -7,7 +7,7 @@ dd { margin-left: 8em; }
 select { width: auto; }
 </style>
 
-    <p><strong>[% loc('FixMyStreet admin:') %]</strong>
+    <p><strong>[% tprintf(loc('%s admin:', "%s here is the site name"), site_name) %]</strong>
     [%- FOREACH link IN allowed_links %]
     <a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a>
     [% IF NOT loop.last %]|[% END %]

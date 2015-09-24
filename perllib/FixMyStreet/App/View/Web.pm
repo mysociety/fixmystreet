@@ -40,15 +40,15 @@ TT View for FixMyStreet::App.
 
 =head2 loc
 
-    [% loc('Some text to localize') %]
+    [% loc('Some text to localize', 'Optional comment for translator') %]
 
 Passes the text to the localisation engine for translations.
 
 =cut
 
 sub loc {
-    my ( $self, $c, @args ) = @_;
-    return _(@args);
+    my ( $self, $c, $msgid ) = @_;
+    return _($msgid);
 }
 
 =head2 nget

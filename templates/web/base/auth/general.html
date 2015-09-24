@@ -28,11 +28,7 @@
         <input type="email" class="required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]">
 
         <div id="form_sign_in">
-          [% IF c.cobrand.moniker == 'fixmybarangay' %]
-            <h3>[% loc("Do you have a FixMyBarangay password?") %]</h3>
-          [% ELSE %]
-            <h3>[% loc("Do you have a FixMyStreet password?") %]</h3>
-          [% END %]
+            <h3>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name)  %]</h3>
 
             <div id="form_sign_in_yes" class="form-box">
                 <h5>[% loc('<strong>Yes</strong> I have a password') %]</h5>

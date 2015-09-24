@@ -42,7 +42,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 [% INCLUDE subsection heading="Display" %]
 <tr>
     <td>Site title</td>
-    <td colspan=2>[% PROCESS 'site-name.html' -%]</td>
+    <td colspan=2>[% site_name %]</td>
 </tr>
 [% allowed_conf = FOR k IN c.config.ALLOWED_COBRANDS %]
     [% IF k.keys %][% k.items.join(':') %][% ELSE %][% k %][% END %]

@@ -30,7 +30,7 @@
     PROCESS "maps/${map.type}.html" around_page = 1;
 
     SET bodyclass = 'mappage';
-    SET rss = [ loc('Recent local problems, FixMyStreet'), rss_url ] IF c.cobrand.moniker != 'emptyhomes';
+    SET rss = [ tprintf(loc('Recent local problems, %s', "%s is the site name"), site_name), rss_url ] IF c.cobrand.moniker != 'emptyhomes';
     INCLUDE 'header.html',
         title  => loc('Viewing a location')
         robots => 'noindex,nofollow';

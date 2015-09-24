@@ -112,10 +112,9 @@ sub load_problem_or_display_error : Private {
         );
     } elsif ( $problem->non_public ) {
         if ( !$c->user || $c->user->id != $problem->user->id ) {
-            my $site_name = Utils::trim_text($c->render_fragment('site-name.html'));
             $c->detach(
                 '/page_error_403_access_denied',
-                [ sprintf(_('That report cannot be viewed on %s.'), $site_name) ]    #
+                [ sprintf(_('That report cannot be viewed on %s.'), $c->stash->{site_name}) ]
             );
         }
     }
