@@ -96,8 +96,8 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
-use Image::Size;
 use Moose;
+use Utils::Photo;
 use namespace::clean -except => [ 'meta' ];
 
 with 'FixMyStreet::Roles::Abuser';
@@ -156,7 +156,7 @@ Returns a hashref of details of any attached photo for use in templates.
 
 sub get_photo_params {
     my $self = shift;
-    return FixMyStreet::App::get_photo_params($self, 'c');
+    return Utils::Photo::get_photo_params($self, 'c');
 }
 
 =head2 meta_problem_state

@@ -157,10 +157,10 @@ __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 __PACKAGE__->rabx_column('geocode');
 
-use Image::Size;
 use Moose;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
+use Utils::Photo;
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra';
@@ -491,7 +491,7 @@ sub get_photo_params {
     # use Carp 'cluck';
     # cluck "get_photo_params called"; # TEMPORARY die to make sure I've done right thing with Zurich templates
     my $self = shift;
-    return FixMyStreet::App::get_photo_params($self, 'id');
+    return Utils::Photo::get_photo_params($self, 'id');
 }
 
 =head2 is_open
