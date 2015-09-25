@@ -11,6 +11,7 @@ use mySociety::Config;
 use mySociety::MaPit;
 
 use FixMyStreet::App;
+use FixMyStreet::Email;
 use FixMyStreet::SendReport;
 
 my $site_key;
@@ -513,7 +514,8 @@ sub _send_report_sent_email {
 
     my $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, 'confirm_report_sent.txt');
 
-    FixMyStreet::App->send_email_cron(
+    FixMyStreet::Email::send_cron(
+        $row->result_source->schema,
         {
             _template_ => $template,
             _parameters_ => $h,

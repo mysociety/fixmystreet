@@ -20,6 +20,7 @@ BEGIN {
 use DateTime;
 use CronFns;
 use FixMyStreet::App;
+use FixMyStreet::Email;
 
 my ($verbose, $nomail) = CronFns::options();
 
@@ -76,7 +77,8 @@ sub send_alert {
         push @$to, [ $parent_email, $parent->name ];
     }
 
-    FixMyStreet::App->send_email_cron(
+    FixMyStreet::Email::send_cron(
+        $schema,
         {
             _template_ => $template,
             _parameters_ => $h,

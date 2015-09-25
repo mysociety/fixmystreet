@@ -6,6 +6,8 @@ use warnings;
 use Encode;
 use Utils;
 
+use FixMyStreet::Email;
+
 sub send_questionnaires {
     my ( $rs, $params ) = @_;
     $rs->send_questionnaires_period( '4 weeks', $params );
@@ -89,7 +91,8 @@ sub send_questionnaires_period {
             . $row->user->email . "\n"
             if $params->{verbose};
 
-        my $result = FixMyStreet::App->send_email_cron(
+        my $result = FixMyStreet::Email::send_cron(
+            $rs->result_source->schema,
             {
                 _template_ => $template,
                 _parameters_ => \%h,

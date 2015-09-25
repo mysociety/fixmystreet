@@ -105,7 +105,8 @@ sub send {
         $params->{From} = [ mySociety::Config::get('CONTACT_EMAIL'), $params->{From}[1] ];
     }
 
-    my $result = $app->send_email_cron(
+    my $result = FixMyStreet::Email::send_cron(
+        $row->result_source->schema,
         $params,
         mySociety::Config::get('CONTACT_EMAIL'),
         $nomail,

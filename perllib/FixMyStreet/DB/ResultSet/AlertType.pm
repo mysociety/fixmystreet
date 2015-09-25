@@ -11,11 +11,14 @@ use mySociety::MaPit;
 use IO::String;
 use RABX;
 
+use FixMyStreet::Email;
+
 # Child must have confirmed, id, email, state(!) columns
 # If parent/child, child table must also have name and text
 #   and foreign key to parent must be PARENT_id
 sub email_alerts ($) {
     my ( $rs ) = @_;
+    my $schema = $rs->result_source->schema;
 
     my $q = $rs->search( { ref => { -not_like => '%local_problems%' } } );
     while (my $alert_type = $q->next) {
@@ -55,7 +58,7 @@ sub email_alerts ($) {
         $query = dbh()->prepare($query);
         $query->execute();
         my $last_alert_id;
-        my %data = ( template => $alert_type->template, data => '' );
+        my %data = ( template => $alert_type->template, data => '', schema => $schema );
         while (my $row = $query->fetchrow_hashref) {
 
             my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->{alert_cobrand})->new();
@@ -76,7 +79,7 @@ sub email_alerts ($) {
             } );
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 _send_aggregated_alert_email(%data);
-                %data = ( template => $alert_type->template, data => '' );
+                %data = ( template => $alert_type->template, data => '', schema => $schema );
             }
 
             # create problem status message for the templates
@@ -173,7 +176,16 @@ sub email_alerts ($) {
             sprintf("%f", int($d*10+0.5)/10);
         };
         my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
-        my %data = ( template => $template, data => '', alert_id => $alert->id, alert_email => $alert->user->email, lang => $alert->lang, cobrand => $alert->cobrand, cobrand_data => $alert->cobrand_data );
+        my %data = (
+            template => $template,
+            data => '',
+            alert_id => $alert->id,
+            alert_email => $alert->user->email,
+            lang => $alert->lang,
+            cobrand => $alert->cobrand,
+            cobrand_data => $alert->cobrand_data,
+            schema => $schema,
+        );
         my $q = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
@@ -233,7 +245,8 @@ sub _send_aggregated_alert_email(%) {
 
     my $template = FixMyStreet->get_email_template($cobrand->moniker, $data{lang}, "$data{template}.txt");
 
-    my $result = FixMyStreet::App->send_email_cron(
+    my $result = FixMyStreet::Email::send_cron(
+        $data{schema},
         {
             _template_ => $template,
             _parameters_ => \%data,
