@@ -113,7 +113,7 @@ sub owns_problem {
     if (ref $report eq 'HASH') {
         return unless $report->{bodies_str};
         @bodies = split /,/, $report->{bodies_str};
-        @bodies = FixMyStreet::App->model('DB::Body')->search({ id => \@bodies })->all;
+        @bodies = FixMyStreet::DB->resultset('Body')->search({ id => \@bodies })->all;
     } else { # Object
         @bodies = values %{$report->bodies};
     }

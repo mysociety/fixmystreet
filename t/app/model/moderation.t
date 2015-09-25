@@ -4,17 +4,17 @@ use Test::More;
 use Test::Exception;
 use utf8;
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use Data::Dumper;
 use DateTime;
 
 my $dt = DateTime->now;
-my $user = FixMyStreet::App->model('DB::User')->find_or_create({
+my $user = FixMyStreet::DB->resultset('User')->find_or_create({
         name => 'Bob', email => 'bob@example.com',
 });
 
 sub get_report_and_original_data {
-    my $report = FixMyStreet::App->model('DB::Problem')->create(
+    my $report = FixMyStreet::DB->resultset('Problem')->create(
         {
             postcode           => 'BR1 3SB',
             bodies_str         => '',

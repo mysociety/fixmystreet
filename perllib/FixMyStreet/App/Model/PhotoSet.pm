@@ -56,7 +56,7 @@ has upload_dir => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        my $cache_dir = path( $self->c->config->{UPLOAD_DIR} );
+        my $cache_dir = path( FixMyStreet->config('UPLOAD_DIR') );
         $cache_dir->mkpath;
         unless ( -d $cache_dir && -w $cache_dir ) {
             warn "Can't find/write to photo cache directory '$cache_dir'";

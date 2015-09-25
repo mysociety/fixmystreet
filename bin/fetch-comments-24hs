@@ -19,11 +19,9 @@ BEGIN {
 use DateTime;
 use DateTime::Format::W3CDTF;
 
-use FixMyStreet::App;
 use CronFns;
 my ($verbose, $nomail) = CronFns::options();
 
-use Open311;
 use Open311::GetServiceRequestUpdates;
 
 my $dt = DateTime->now();

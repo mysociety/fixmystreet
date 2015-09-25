@@ -5,17 +5,18 @@ use warnings;
 use Test::More;
 
 use FixMyStreet;
+use FixMyStreet::DB;
 
 use_ok( 'Open311::GetUpdates' );
 use_ok( 'Open311' );
 
-my $user = FixMyStreet::App->model('DB::User')->find_or_create(
+my $user = FixMyStreet::DB->resultset('User')->find_or_create(
     {
         email => 'system_user@example.com'
     }
 );
 
-my $body = FixMyStreet::App->model('DB::Body')->new( {
+my $body = FixMyStreet::DB->resultset('Body')->new( {
     name => 'Test Body',
 } );
 
@@ -42,7 +43,7 @@ UPDATED_DATETIME
 </service_requests>
 };
 
-my $problem_rs = FixMyStreet::App->model('DB::Problem');
+my $problem_rs = FixMyStreet::DB->resultset('Problem');
 my $problem = $problem_rs->new(
     {
         postcode     => 'EH99 1SP',

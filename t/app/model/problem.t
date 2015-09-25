@@ -7,13 +7,13 @@ use Test::More;
 
 use FixMyStreet::TestMech;
 use FixMyStreet;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use mySociety::Locale;
 use Sub::Override;
 
 mySociety::Locale::gettext_domain('FixMyStreet');
 
-my $problem_rs = FixMyStreet::App->model('DB::Problem');
+my $problem_rs = FixMyStreet::DB->resultset('Problem');
 
 my $problem = $problem_rs->new(
     {
@@ -147,7 +147,7 @@ for my $test (
     };
 }
 
-my $user = FixMyStreet::App->model('DB::User')->find_or_create(
+my $user = FixMyStreet::DB->resultset('User')->find_or_create(
     {
         email => 'system_user@example.com'
     }
@@ -161,7 +161,7 @@ $problem->insert;
 
 my $tz_local = DateTime::TimeZone->new( name => 'local' );
 
-my $body = FixMyStreet::App->model('DB::Body')->new({
+my $body = FixMyStreet::DB->resultset('Body')->new({
     name => 'Edinburgh City Council'
 });
 
@@ -521,7 +521,7 @@ foreach my $test ( {
 
         $mech->clear_emails_ok;
 
-        FixMyStreet::App->model('DB::Problem')->search(
+        $problem_rs->search(
             {
                 whensent => undef
             }
@@ -541,7 +541,7 @@ foreach my $test ( {
         } );
 
         FixMyStreet::override_config $override, sub {
-            FixMyStreet::App->model('DB::Problem')->send_reports();
+            $problem_rs->send_reports();
         };
 
         $mech->email_count_is( $test->{ email_count } );
@@ -596,7 +596,7 @@ subtest 'check can set mutiple emails as a single contact' => sub {
 
     $mech->clear_emails_ok;
 
-    FixMyStreet::App->model('DB::Problem')->search(
+    $problem_rs->search(
         {
             whensent => undef
         }
@@ -615,7 +615,7 @@ subtest 'check can set mutiple emails as a single contact' => sub {
     } );
 
     FixMyStreet::override_config $override, sub {
-        FixMyStreet::App->model('DB::Problem')->send_reports();
+        $problem_rs->send_reports();
     };
 
     $mech->email_count_is(1);
@@ -630,7 +630,7 @@ subtest 'check can turn on report sent email alerts' => sub {
     );
     $mech->clear_emails_ok;
 
-    FixMyStreet::App->model('DB::Problem')->search(
+    $problem_rs->search(
         {
             whensent => undef
         }
@@ -648,7 +648,7 @@ subtest 'check can turn on report sent email alerts' => sub {
         send_fail_count => 0,
     } );
 
-    FixMyStreet::App->model('DB::Problem')->send_reports();
+    $problem_rs->send_reports();
 
     $mech->email_count_is( 2 );
     my @emails = $mech->get_email;
@@ -675,7 +675,7 @@ subtest 'check can turn on report sent email alerts' => sub {
 subtest 'check iOS app store test reports not sent' => sub {
     $mech->clear_emails_ok;
 
-    FixMyStreet::App->model('DB::Problem')->search(
+    $problem_rs->search(
         {
             whensent => undef
         }
@@ -692,7 +692,7 @@ subtest 'check iOS app store test reports not sent' => sub {
         send_fail_count => 0,
     } );
 
-    FixMyStreet::App->model('DB::Problem')->send_reports();
+    $problem_rs->send_reports();
 
     $mech->email_count_is( 0 );
 
@@ -704,7 +704,7 @@ subtest 'check iOS app store test reports not sent' => sub {
 subtest 'check reports from abuser not sent' => sub {
     $mech->clear_emails_ok;
 
-    FixMyStreet::App->model('DB::Problem')->search(
+    $problem_rs->search(
         {
             whensent => undef
         }
@@ -721,7 +721,7 @@ subtest 'check reports from abuser not sent' => sub {
         send_fail_count => 0,
     } );
 
-    FixMyStreet::App->model('DB::Problem')->send_reports();
+    $problem_rs->send_reports();
 
     $mech->email_count_is( 1 );
 
@@ -734,10 +734,10 @@ subtest 'check reports from abuser not sent' => sub {
         whensent => undef,
     } );
 
-    my $abuse = FixMyStreet::App->model('DB::Abuse')->create( { email => $problem->user->email } );
+    my $abuse = FixMyStreet::DB->resultset('Abuse')->create( { email => $problem->user->email } );
 
     $mech->clear_emails_ok;
-    FixMyStreet::App->model('DB::Problem')->send_reports();
+    $problem_rs->send_reports();
 
     $mech->email_count_is( 0 );
 

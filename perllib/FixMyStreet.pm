@@ -136,7 +136,7 @@ sub override_config($&) {
 
 =head2 dbic_connect_info
 
-    $connect_info = FixMyStreet->dbic_connect_info();
+    $connect_info = FixMyStreet->dbic_connect_info;
 
 Returns the array that DBIx::Class::Schema needs to connect to the database.
 Most of the values are read from the config file and others are hordcoded here.
@@ -172,7 +172,7 @@ sub dbic_connect_info {
     };
     my $dbic_args = {};
 
-    return [ $dsn, $user, $password, $dbi_args, $dbic_args ];
+    return ( $dsn, $user, $password, $dbi_args, $dbic_args );
 }
 
 =head2 configure_mysociety_dbhandle

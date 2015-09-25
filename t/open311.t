@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use Test::More;
 use Test::Warn;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use CGI::Simple;
 use HTTP::Response;
 use DateTime;
@@ -26,9 +26,9 @@ is $o->_process_error( '503 - service unavailable' ), 'unknown error', 'error te
 
 my $o2 = Open311->new( endpoint => 'http://192.168.50.1/open311/', jurisdiction => 'example.org' );
 
-my $u = FixMyStreet::App->model('DB::User')->new( { email => 'test@example.org', name => 'A User' } );
+my $u = FixMyStreet::DB->resultset('User')->new( { email => 'test@example.org', name => 'A User' } );
 
-my $p = FixMyStreet::App->model('DB::Problem')->new( {
+my $p = FixMyStreet::DB->resultset('Problem')->new( {
     latitude => 1,
     longitude => 1,
     title => 'title',
@@ -45,12 +45,12 @@ warning_like {$o2->send_service_request( $p, { url => 'http://example.com/' }, 1
 
 my $dt = DateTime->now();
 
-my $user = FixMyStreet::App->model('DB::User')->new( {
+my $user = FixMyStreet::DB->resultset('User')->new( {
     name => 'Test User',
     email => 'test@example.com',
 } );
 
-my $problem = FixMyStreet::App->model('DB::Problem')->new( {
+my $problem = FixMyStreet::DB->resultset('Problem')->new( {
     id => 80,
     external_id => 81,
     state => 'confirmed',
@@ -207,7 +207,7 @@ for my $test (
 }
 
 
-my $comment = FixMyStreet::App->model('DB::Comment')->new( {
+my $comment = FixMyStreet::DB->resultset('Comment')->new( {
     id => 38362,
     user => $user,
     problem => $problem,
@@ -394,7 +394,7 @@ for my $test (
 my $dt2 = $dt->clone;
 $dt2->add( 'minutes' => 1 );
 
-my $comment2 = FixMyStreet::App->model('DB::Comment')->new( {
+my $comment2 = FixMyStreet::DB->resultset('Comment')->new( {
     id => 38363,
     user => $user,
     problem => $problem,

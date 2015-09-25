@@ -7,6 +7,7 @@ use Encode;
 use Utils;
 
 use FixMyStreet::Email;
+use FixMyStreet::Cobrand;
 
 sub send_questionnaires {
     my ( $rs, $params ) = @_;
@@ -40,7 +41,7 @@ sub send_questionnaires_period {
         ];
     }
 
-    my $unsent = FixMyStreet::App->model('DB::Problem')->search( $q_params, {
+    my $unsent = $rs->result_source->schema->resultset('Problem')->search( $q_params, {
         order_by => { -desc => 'confirmed' }
     } );
 
@@ -70,7 +71,7 @@ sub send_questionnaires_period {
         my %h = map { $_ => $row->$_ } qw/name title detail category/;
         $h{created} = Utils::prettify_duration( time() - $row->confirmed->epoch, 'week' );
 
-        my $questionnaire = FixMyStreet::App->model('DB::Questionnaire')->create( {
+        my $questionnaire = $rs->create( {
             problem_id => $row->id,
             whensent => \'current_timestamp',
         } );
@@ -80,7 +81,7 @@ sub send_questionnaires_period {
         $row->send_questionnaire( 0 )
             if $params->{site} ne 'emptyhomes' || $period eq '26 weeks';
 
-        my $token = FixMyStreet::App->model("DB::Token")->new_result( {
+        my $token = $rs->result_source->schema->resultset("Token")->new_result( {
             scope => 'questionnaire',
             data  => $questionnaire->id,
         } );

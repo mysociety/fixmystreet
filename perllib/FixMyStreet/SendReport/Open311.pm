@@ -5,7 +5,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
-use FixMyStreet::App;
 use mySociety::Config;
 use DateTime::Format::W3CDTF;
 use Open311;
@@ -85,7 +84,7 @@ sub send {
         }
 
         # FIXME: we've already looked this up before
-        my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+        my $contact = $row->result_source->schema->resultset("Contact")->find( {
             deleted => 0,
             body_id => $body->id,
             category => $row->category

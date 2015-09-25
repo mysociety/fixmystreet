@@ -7,7 +7,7 @@ use Test::MockTime ':all';
 use Data::Dumper;
 use JSON;
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 
 use Module::Loaded;
 BEGIN { mark_as_loaded('DBD::Oracle') }
@@ -141,16 +141,16 @@ subtest "End to end" => sub {
 
     my $WARWICKSHIRE_MAPIT_ID = 2243;
 
-    my $db = FixMyStreet::App->model('DB')->schema;
+    my $db = FixMyStreet::DB->connect;
 
     $db->txn_begin;
 
-    my $body = FixMyStreet::App->model('DB::Body')->find_or_create( {
+    my $body = FixMyStreet::DB->resultset('Body')->find_or_create( {
         id => $WARWICKSHIRE_MAPIT_ID,
         name => 'Warwickshire County Council',
     });
 
-    my $user = FixMyStreet::App->model('DB::User')
+    my $user = FixMyStreet::DB->resultset('User')
         ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 
     $body->update({
@@ -175,7 +175,7 @@ subtest "End to end" => sub {
 
         my $bodies = self_rs($body);
 
-        my $p = Open311::PopulateServiceList->new( bodies => $bodies, verbose => 0 );
+        my $p = Open311::PopulateServiceList->new( bodies => $bodies, verbose => 0, schema => $db );
         $p->process_bodies;
 
         is $body->contacts->count, 1, 'Categories imported from Open311';
@@ -183,7 +183,7 @@ subtest "End to end" => sub {
 
     set_fixed_time('2014-07-20T15:05:00Z');
 
-    my $problem = FixMyStreet::App->model('DB::Problem')->create({
+    my $problem = FixMyStreet::DB->resultset('Problem')->create({
         postcode           => 'WC1 1AA',
         bodies_str         => $WARWICKSHIRE_MAPIT_ID,
         areas              => ",$WARWICKSHIRE_MAPIT_ID,",
@@ -219,7 +219,7 @@ subtest "End to end" => sub {
             # self_rs($problem)->send_reports;
 
             ## instead, as we are in a transaction, we'll just delete everything else.
-            my $rs = FixMyStreet::App->model('DB::Problem');
+            my $rs = FixMyStreet::DB->resultset('Problem');
             $rs->search({ id => { '!=', $problem->id } })->delete;
             $rs->send_reports;
         };
@@ -242,7 +242,7 @@ subtest "End to end" => sub {
         is $problem->state, 'confirmed', 'sanity check status';
 
 
-        my $updates = Open311::GetServiceRequestUpdates->new( verbose => 1 );
+        my $updates = Open311::GetServiceRequestUpdates->new( verbose => 1, schema => $db );
         $updates->fetch;
 
         $problem->discard_changes;

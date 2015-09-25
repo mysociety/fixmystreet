@@ -17,15 +17,13 @@ the superuser, or one created just for this purpose?
 use strict;
 use warnings;
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 
 # Because it is not possible to determine the user that last edited the
 # internal_notes we need require a user to assign all the comments to.
 my $comment_user_id = $ARGV[0]
   || die "Usage: $0 id_of_user_for_comments";
-my $comment_user = FixMyStreet::App    #
-  ->model('DB::User')                  #
-  ->find($comment_user_id)
+my $comment_user = FixMyStreet::DB->resultset('User')->find($comment_user_id)
   || die "Could not find user with id '$comment_user_id'";
 
 # We use now as the time for the internal note. This is not the time it was
@@ -39,7 +37,7 @@ my $comment_state = 'hidden';
 
 # Load all the comments, more reliable than trying to search on the contents of
 # the extra field.
-my $problems = FixMyStreet::App->model('DB::Problem')->search();
+my $problems = FixMyStreet::DB->resultset('Problem')->search();
 
 while ( my $problem = $problems->next() ) {
 

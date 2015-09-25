@@ -8,7 +8,7 @@ use FixMyStreet;
 
 __PACKAGE__->config(
     schema_class => 'FixMyStreet::DB',
-    connect_info => FixMyStreet->dbic_connect_info,
+    connect_info => sub { FixMyStreet::DB->storage->dbh },
 );
 
 =head1 NAME

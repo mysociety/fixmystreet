@@ -12,7 +12,7 @@ sub build_recipient_list {
 
     my $all_confirmed = 1;
     foreach my $body ( @{ $self->bodies } ) {
-        my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+        my $contact = $row->result_source->schema->resultset("Contact")->find( {
             deleted => 0,
             body_id => $body->id,
             category => 'Empty property',

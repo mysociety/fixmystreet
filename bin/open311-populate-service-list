@@ -10,7 +10,7 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use Open311::PopulateServiceList;
 use Getopt::Long::Descriptive;
 
@@ -22,7 +22,7 @@ my ($opt, $usage) = describe_options(
 );
 print($usage->text), exit if $opt->help;
 
-my $bodies = FixMyStreet::App->model('DB::Body')->search( {
+my $bodies = FixMyStreet::DB->resultset('Body')->search( {
     id => { '!=', 2237 }, # XXX Until Oxfordshire does do so
     send_method => 'Open311'
 } );

@@ -11,6 +11,7 @@ use mySociety::MaPit;
 use IO::String;
 use RABX;
 
+use FixMyStreet::Cobrand;
 use FixMyStreet::Email;
 
 # Child must have confirmed, id, email, state(!) columns
@@ -73,7 +74,7 @@ sub email_alerts ($) {
             # this is for the new_updates alerts
             next if $row->{non_public} and $row->{user_id} != $row->{alert_user_id};
 
-            FixMyStreet::App->model('DB::AlertSent')->create( {
+            $schema->resultset('AlertSent')->create( {
                 alert_id  => $row->{alert_id},
                 parameter => $row->{item_id},
             } );
@@ -97,11 +98,11 @@ sub email_alerts ($) {
                 if ( $cobrand->moniker ne 'zurich' && $row->{alert_user_id} == $row->{user_id} ) {
                     # This is an alert to the same user who made the report - make this a login link
                     # Don't bother with Zurich which has no accounts
-                    my $user = FixMyStreet::App->model('DB::User')->find( {
+                    my $user = $schema->resultset('User')->find( {
                         id => $row->{alert_user_id}
                     } );
                     $data{alert_email} = $user->email;
-                    my $token_obj = FixMyStreet::App->model('DB::Token')->create( {
+                    my $token_obj = $schema->resultset('Token')->create( {
                         scope => 'alert_to_reporter',
                         data  => {
                             id => $row->{id},
@@ -156,7 +157,7 @@ sub email_alerts ($) {
 
     # Nearby done separately as the table contains the parameters
     my $template = $rs->find( { ref => 'local_problems' } )->template;
-    my $query = FixMyStreet::App->model('DB::Alert')->search( {
+    my $query = $schema->resultset('Alert')->search( {
         alert_type   => 'local_problems',
         whendisabled => undef,
         confirmed    => 1
@@ -198,7 +199,7 @@ sub email_alerts ($) {
         $q = dbh()->prepare($q);
         $q->execute($latitude, $longitude, $d, $alert->whensubscribed, $alert->id, $alert->user->email);
         while (my $row = $q->fetchrow_hashref) {
-            FixMyStreet::App->model('DB::AlertSent')->create( {
+            $schema->resultset('AlertSent')->create( {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
@@ -222,18 +223,18 @@ sub _send_aggregated_alert_email(%) {
     $cobrand->set_lang_and_domain( $data{lang}, 1, FixMyStreet->path_to('locale')->stringify );
 
     if (!$data{alert_email}) {
-        my $user = FixMyStreet::App->model('DB::User')->find( {
+        my $user = $data{schema}->resultset('User')->find( {
             id => $data{alert_user_id}
         } );
         $data{alert_email} = $user->email;
     }
 
     my ($domain) = $data{alert_email} =~ m{ @ (.*) \z }x;
-    return if FixMyStreet::App->model('DB::Abuse')->search( {
+    return if $data{schema}->resultset('Abuse')->search( {
         email => [ $data{alert_email}, $domain ]
     } )->first;
 
-    my $token = FixMyStreet::App->model("DB::Token")->new_result( {
+    my $token = $data{schema}->resultset("Token")->new_result( {
         scope => 'alert',
         data  => {
             id => $data{alert_id},

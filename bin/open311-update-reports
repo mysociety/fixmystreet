@@ -17,17 +17,18 @@ BEGIN {
 }
 
 use Open311::GetUpdates;
-use FixMyStreet::App;
+use FixMyStreet;
+use FixMyStreet::DB;
 
 # FIXME - make this configurable and/or better
-my $system_user = FixMyStreet::App->model('DB::User')->find_or_create(
+my $system_user = FixMyStreet::DB->resultset('User')->find_or_create(
     {
-        email => FixMyStreet::App->config->{'CONTACT_EMAIL'},
+        email => FixMyStreet->config('CONTACT_EMAIL'),
         name => 'System User',
     }
 );
 
-my $body_list = FixMyStreet::App->model('DB::Body');
+my $body_list = FixMyStreet::DB->resultset('Body');
 
 my $update = Open311::GetUpdates->new(
     body_list => $body_list,

@@ -10,7 +10,8 @@ reports in cobrands that don't send questionnaires at all.
 use strict;
 use warnings;
 
-use FixMyStreet::App;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
 
 my @cobrands;
 foreach my $cobrand ( FixMyStreet::Cobrand->available_cobrand_classes() ) {
@@ -19,7 +20,7 @@ foreach my $cobrand ( FixMyStreet::Cobrand->available_cobrand_classes() ) {
     push @cobrands, $cls->moniker if !$cls->send_questionnaires();
 }
 
-my $problems = FixMyStreet::App->model('DB::Problem')->search({
+my $problems = FixMyStreet::DB->resultset('Problem')->search({
     cobrand => \@cobrands,
     send_questionnaire => 1,
 });

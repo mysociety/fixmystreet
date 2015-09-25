@@ -32,6 +32,6 @@ make_schema_at(
         components => [ 'FilterColumn', 'InflateColumn::DateTime', 'EncodedColumn' ],
 
     },
-    FixMyStreet->dbic_connect_info(),
+    [ FixMyStreet->dbic_connect_info ],
 );
 

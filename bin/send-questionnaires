@@ -18,10 +18,8 @@ BEGIN {
 }
 
 use CGI; # XXX Awkward kludge
-use Encode;
 use CronFns;
-
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use mySociety::Config;
 
 my %params;
@@ -29,5 +27,5 @@ my %params;
 $params{site} = CronFns::site(mySociety::Config::get('BASE_URL'));
 CronFns::language($params{site});
 
-FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( \%params );
+FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires( \%params );
 

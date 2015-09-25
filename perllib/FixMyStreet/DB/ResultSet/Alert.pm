@@ -8,7 +8,7 @@ sub timeline_created {
     my ( $rs, $restriction ) = @_;
 
     my $prefetch = 
-        FixMyStreet::App->model('DB')->schema->storage->sql_maker->quote_char ?
+        $rs->result_source->storage->sql_maker->quote_char ?
         [ qw/alert_type user/ ] :
         [ qw/alert_type/ ];
 

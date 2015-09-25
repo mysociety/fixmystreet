@@ -20,7 +20,7 @@ BEGIN {
 
 use File::Temp qw(tempfile);
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 
 my %config = (
     gplot_output => "set terminal png font 'Vera.ttf' 9 size 1200,600",
@@ -29,7 +29,7 @@ my %config = (
 
 my ($fh, $source) = tempfile("fms-report-rate-graph-data-nonwmc-XXXXXXXXXX", UNLINK => 1);
 
-my @entries = FixMyStreet::App->model('DB::Problem')->search({
+my @entries = FixMyStreet::DB->resultset('Problem')->search({
         state => { -not_in => [ 'unconfirmed', 'hidden', 'partial' ] },
     }, {
         columns => [

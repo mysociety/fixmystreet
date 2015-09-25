@@ -3,13 +3,11 @@ use warnings;
 use Test::More;
 use utf8;
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use Data::Dumper;
 use DateTime;
 
-my $c = FixMyStreet::App->new;
-
-my $db = FixMyStreet::App->model('DB')->schema;
+my $db = FixMyStreet::DB->connect;
 $db->txn_begin;
 
 my $body = $db->resultset('Body')->create({ name => 'ExtraTestingBody' });

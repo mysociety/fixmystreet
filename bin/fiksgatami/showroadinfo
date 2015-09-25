@@ -3,11 +3,12 @@
 use strict;
 use warnings;
 
-use FixMyStreet::App;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
 use FixMyStreet::Geocode::OSM;
 use Data::Dumper;
 
-FixMyStreet::App->model('DB::Problem')->send_reports();
+FixMyStreet::DB->resultset('Problem')->send_reports();
 
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('fiksgatami')->new();
 

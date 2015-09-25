@@ -2,7 +2,7 @@ package Open311::GetServiceRequestUpdates;
 
 use Moose;
 use Open311;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use DateTime::Format::W3CDTF;
 
 has system_user => ( is => 'rw' );
@@ -10,6 +10,7 @@ has start_date => ( is => 'ro', default => undef );
 has end_date => ( is => 'ro', default => undef );
 has suppress_alerts => ( is => 'rw', default => 0 );
 has verbose => ( is => 'ro', default => 0 );
+has schema => ( is =>'ro', lazy => 1, default => sub { FixMyStreet::DB->connect } );
 
 Readonly::Scalar my $AREA_ID_BROMLEY     => 2482;
 Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
@@ -17,7 +18,7 @@ Readonly::Scalar my $AREA_ID_OXFORDSHIRE => 2237;
 sub fetch {
     my $self = shift;
 
-    my $bodies = FixMyStreet::App->model('DB::Body')->search(
+    my $bodies = $self->schema->resultset('Body')->search(
         {
             send_method     => 'Open311',
             send_comments   => 1,
@@ -91,7 +92,7 @@ sub update_comments {
         my $criteria = {
             external_id => $request_id,
         };
-        $problem = FixMyStreet::App->model('DB::Problem')->to_body($body)->search( $criteria );
+        $problem = $self->schema->resultset('Problem')->to_body($body)->search( $criteria );
 
         if (my $p = $problem->first) {
             my $c = $p->comments->search( { external_id => $request->{update_id} } );
@@ -99,7 +100,7 @@ sub update_comments {
             if ( !$c->first ) {
                 my $comment_time = DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} );
 
-                my $comment = FixMyStreet::App->model('DB::Comment')->new(
+                my $comment = $self->schema->resultset('Comment')->new(
                     {
                         problem => $p,
                         user => $self->system_user,
@@ -137,7 +138,7 @@ sub update_comments {
                 $comment->insert();
 
                 if ( $self->suppress_alerts ) {
-                    my @alerts = FixMyStreet::App->model('DB::Alert')->search( {
+                    my @alerts = $self->schema->resultset('Alert')->search( {
                         alert_type => 'new_updates',
                         parameter  => $p->id,
                         confirmed  => 1,
@@ -145,7 +146,7 @@ sub update_comments {
                     } );
 
                     for my $alert (@alerts) {
-                        my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->find_or_create( {
+                        my $alerts_sent = $self->schema->resultset('AlertSent')->find_or_create( {
                             alert_id  => $alert->id,
                             parameter => $comment->id,
                         } );

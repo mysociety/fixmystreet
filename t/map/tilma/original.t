@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use FixMyStreet::Map;
 use FixMyStreet::TestMech;
 use DateTime;
@@ -20,14 +20,14 @@ my $c = ctx_request('http://fixmystreet.com/test?bbox=-7.6,49.7,-7.5,49.8');
 
 $mech->delete_user('test@example.com');
 my $user =
-  FixMyStreet::App->model('DB::User')
+  FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
 my $dt = DateTime->now();
 
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
         bodies_str         => '2504',

@@ -30,8 +30,8 @@ $bsn->update( { send_method => 'Email' } );
 
 my $dps = $mech->create_body_ok( 3, 'DPS', id => 3 );
 $dps->update( { send_method => 'Open311', endpoint => 'http://dps.endpoint.example.com', jurisdiction => 'FMB', api_key => 'test' } );
-FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 1, body_id => $dps->id });
-FixMyStreet::App->model('DB::BodyArea')->find_or_create({ area_id => 2, body_id => $dps->id });
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 1, body_id => $dps->id });
+FixMyStreet::DB->resultset('BodyArea')->find_or_create({ area_id => 2, body_id => $dps->id });
 
 # Create contacts for these bodies
 # TODO: log in as a Bgy user, and create a report using the front end,
@@ -72,7 +72,7 @@ $mech->email_count_is(0);
 FixMyStreet::override_config {
     SEND_REPORTS_ON_STAGING => 1,
 }, sub {
-    FixMyStreet::App->model('DB::Problem')->send_reports('fixmybarangay');
+    FixMyStreet::DB->resultset('Problem')->send_reports('fixmybarangay');
 };
 
 # Check BGY one sent by email
@@ -89,10 +89,10 @@ is $dps_report->send_method_used, 'Open311', 'DPS report sent via Open311';
 is $dps_report->external_id, 248, 'DPS report has right external ID';
 
 my $fmb_test_email = 'luz_test_user@example.com';
-my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $fmb_test_email, from_body => $luz->id, password => 'fmbsecret' } );
+my $user = FixMyStreet::DB->resultset('User')->find_or_create( { email => $fmb_test_email, from_body => $luz->id, password => 'fmbsecret' } );
 ok $user, "test user does exist";
 
-my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create({
+my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create({
     user => $user,
     parameter => '-0.142497580865087',
     parameter2 => '51.5016605453401',
@@ -105,7 +105,7 @@ my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create({
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixmybarangay' ],
 }, sub {
-    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    FixMyStreet::DB->resultset('AlertType')->email_alerts();
 };
 
 $mech->email_count_is(1);

@@ -10,7 +10,7 @@ use Utils;
 use mySociety::Config;
 use mySociety::MaPit;
 
-use FixMyStreet::App;
+use FixMyStreet::Cobrand;
 use FixMyStreet::Email;
 use FixMyStreet::SendReport;
 
@@ -174,7 +174,7 @@ sub timeline {
     my ( $rs ) = @_;
 
     my $prefetch =
-        FixMyStreet::App->model('DB')->schema->storage->sql_maker->quote_char ?
+        $rs->result_source->storage->sql_maker->quote_char ?
         [ qw/user/ ] :
         [];
 
@@ -336,14 +336,14 @@ sub send_reports {
             $cobrand->process_additional_metadata_for_email($row, \%h);
         }
 
-        my $bodies = FixMyStreet::App->model("DB::Body")->search(
+        my $bodies = $rs->result_source->schema->resultset('Body')->search(
             { id => $row->bodies_str_ids },
             { order_by => 'name' },
         );
 
         my $missing;
         if ($row->bodies_missing) {
-            my @missing = FixMyStreet::App->model("DB::Body")->search(
+            my @missing = $rs->result_source->schema->resultset("Body")->search(
                 { id => [ split /,/, $row->bodies_missing ] },
                 { order_by => 'name' }
             )->get_column('name')->all;

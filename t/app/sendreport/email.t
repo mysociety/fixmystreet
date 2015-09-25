@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 
 use FixMyStreet;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use FixMyStreet::SendReport::Email;
 use FixMyStreet::TestMech;
 use mySociety::Locale;
@@ -17,7 +17,7 @@ my $e = FixMyStreet::SendReport::Email->new();
 
 # area id 1000
 my $params = { id => 1000, name => 'Council of the Thousand' };
-my $body = FixMyStreet::App->model('DB::Body')->find_or_create($params);
+my $body = FixMyStreet::DB->resultset('Body')->find_or_create($params);
 ok $body, "found/created body";
 
 my $contact = $mech->create_contact_ok(
@@ -27,7 +27,7 @@ my $contact = $mech->create_contact_ok(
     note => '',
 );
 
-my $row = FixMyStreet::App->model('DB::Problem')->new( {
+my $row = FixMyStreet::DB->resultset('Problem')->new( {
     bodies_str => '1000',
     category => 'category',
     cobrand => '',

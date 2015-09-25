@@ -4,7 +4,7 @@ use warnings;
 use Test::More;
 
 use mySociety::Locale;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -16,7 +16,7 @@ mySociety::Locale::gettext_domain( 'FixMyStreet' );
 my $c = FixMyStreet::Cobrand::UK->new();
 
 my $user =
-  FixMyStreet::App->model('DB::User')
+  FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
@@ -29,7 +29,7 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
         bodies_str         => '2504',

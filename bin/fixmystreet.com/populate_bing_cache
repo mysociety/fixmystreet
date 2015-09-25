@@ -6,12 +6,12 @@ require 5.8.0;
 
 use Data::Dumper;
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use FixMyStreet::Geocode::Bing;
 
 my $bing_culture = 'en-GB';
 
-my $reports = FixMyStreet::App->model('DB::Problem')->search(
+my $reports = FixMyStreet::DB->resultset('Problem')->search(
     {
         geocode   => undef,
         confirmed => { '!=', undef },

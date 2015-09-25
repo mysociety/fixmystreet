@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 use Text::CSV;
 use Getopt::Long::Descriptive;
 
@@ -23,7 +23,7 @@ my $csv = Text::CSV->new ( { binary => 1 } )  # should set binary attribute.
                 or die "Cannot use CSV: ".Text::CSV->error_diag ();
 open my $fh, "<:encoding(utf8)", $opt->file or die "Failed to open " . $opt->file . ": $!";
 
-my $clinic_user = FixMyStreet::App->model('DB::User')->find_or_create({
+my $clinic_user = FixMyStreet::DB->resultset('User')->find_or_create({
     email => $opt->email
 });
 if ( not $clinic_user->in_storage ) {
@@ -34,7 +34,7 @@ if ( not $clinic_user->in_storage ) {
 my $title_row = $csv->getline( $fh );
 
 while ( my $row = $csv->getline( $fh ) ) {
-    my $clinics = FixMyStreet::App->model('DB::Problem')->search({
+    my $clinics = FixMyStreet::DB->resultset('Problem')->search({
         title => $row->[TITLE]
     });
 
@@ -42,7 +42,7 @@ while ( my $row = $csv->getline( $fh ) ) {
     my $p;
     my $count = $clinics->count;
     if ( $count == 0 ) {
-        $p = FixMyStreet::App->model('DB::Problem')->create({
+        $p = FixMyStreet::DB->resultset('Problem')->create({
             title => $row->[TITLE],
             latitude => $lat,
             longitude => $long,
@@ -76,14 +76,14 @@ while ( my $row = $csv->getline( $fh ) ) {
     $p->discard_changes;
 
     # disabling existing alerts in case email addresses have changed
-    my $existing = FixMyStreet::App->model('DB::Alert')->search({
+    my $existing = FixMyStreet::DB->resultset('Alert')->search({
         alert_type => 'new_updates',
         parameter => $p->id
     });
     $existing->update( { confirmed => 0 } );
 
     if ( $row->[EMAIL] ) {
-        my $u = FixMyStreet::App->model('DB::User')->find_or_new({
+        my $u = FixMyStreet::DB->resultset('User')->find_or_new({
             email => $row->[EMAIL]
         });
         $u->insert unless $u->in_storage;
@@ -95,7 +95,7 @@ while ( my $row = $csv->getline( $fh ) ) {
 
 sub create_update_alert {
     my ( $user, $p, $verbose ) = @_;
-    my $a = FixMyStreet::App->model('DB::Alert')->find_or_new({
+    my $a = FixMyStreet::DB->resultset('Alert')->find_or_new({
         alert_type => 'new_updates',
         user => $user,
         parameter => $p->id,

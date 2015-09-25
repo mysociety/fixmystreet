@@ -462,7 +462,7 @@ sub bodies($) {
     my $self = shift;
     return {} unless $self->bodies_str;
     my $bodies = $self->bodies_str_ids;
-    my @bodies = FixMyStreet::App->model('DB::Body')->search({ id => $bodies })->all;
+    my @bodies = $self->result_source->schema->resultset('Body')->search({ id => $bodies })->all;
     return { map { $_->id => $_ } @bodies };
 }
 
@@ -648,7 +648,7 @@ order of title.
 
 sub response_templates {
     my $problem = shift;
-    return FixMyStreet::App->model('DB::ResponseTemplate')->search(
+    return $problem->result_source->schema->resultset('ResponseTemplate')->search(
         {
             body_id => $problem->bodies_str_ids
         },
@@ -754,20 +754,17 @@ sub update_from_open311_service_request {
         $status_notes = $request->{status_notes};
     }
 
-    my $update = FixMyStreet::App->model('DB::Comment')->new(
-        {
-            problem_id => $self->id,
-            state      => 'confirmed',
-            created    => $updated || \'current_timestamp',
-            confirmed => \'current_timestamp',
-            text      => $status_notes,
-            mark_open => 0,
-            mark_fixed => 0,
-            user => $system_user,
-            anonymous => 0,
-            name => $body->name,
-        }
-    );
+    my $update = $self->new_related(comments => {
+        state => 'confirmed',
+        created => $updated || \'current_timestamp',
+        confirmed => \'current_timestamp',
+        text => $status_notes,
+        mark_open => 0,
+        mark_fixed => 0,
+        user => $system_user,
+        anonymous => 0,
+        name => $body->name,
+    });
 
     my $w3c = DateTime::Format::W3CDTF->new;
     my $req_time = $w3c->parse_datetime( $request->{updated_datetime} );
