@@ -1,0 +1,32 @@
+Subject: Confirm your report on [% INCLUDE 'site-name.txt' | trim %]
+
+Hello [% report.name %],
+
+Please click on the link below to confirm that you want your report to appear
+on [% INCLUDE 'site-name.txt' | trim %], despite not being sent to the
+council:
+
+[% token_url %]
+
+If your email program does not let you click on this link, copy and paste it
+into your web browser and press return.
+
+Your problem had the title:
+
+[% report.title %]
+
+And details:
+
+[% report.detail %]
+
+If you no longer wish your report to be displayed on the site, please take no
+further action.
+
+Thank you for supporting [% INCLUDE 'site-name.txt' | trim %].
+
+
+
+[% INCLUDE 'signature.txt' %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

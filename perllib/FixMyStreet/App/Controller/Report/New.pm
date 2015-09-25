@@ -1149,6 +1149,9 @@ sub redirect_or_confirm_creation : Private {
         return 1;
     }
 
+    my $template = 'problem-confirm.txt';
+    $template = 'problem-confirm-not-sending.txt' unless $report->bodies_str;
+
     # otherwise create a confirm token and email it to them.
     my $data = $c->stash->{token_data} || {};
     my $token = $c->model("DB::Token")->create( {
@@ -1159,7 +1162,7 @@ sub redirect_or_confirm_creation : Private {
         }
     } );
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
-    $c->send_email( 'problem-confirm.txt', {
+    $c->send_email( $template, {
         to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
     } );
 

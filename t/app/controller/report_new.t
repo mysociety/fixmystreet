@@ -1475,7 +1475,7 @@ subtest "unresponsive body handling works" => sub {
         ok $mech->content_like( qr{Edinburgh.*accept reports.*/unresponsive\?body=$body_id} );
 
         my $test_email = 'test-2@example.com';
-        my $user = $mech->log_in_ok($test_email);
+        $mech->log_out_ok;
         $mech->get_ok('/around');
         $mech->submit_form_ok( { with_fields => { pc => 'EH1 1BB', } }, "submit location" );
         $mech->follow_link_ok( { text_regex => qr/skip this step/i, }, "follow 'skip this step' link" );
@@ -1486,6 +1486,7 @@ subtest "unresponsive body handling works" => sub {
                     detail        => 'Test report details.',
                     photo         => '',
                     name          => 'Joe Bloggs',
+                    email         => $test_email,
                     may_show_name => '1',
                     phone         => '07903 123 456',
                     category      => 'Trees',
@@ -1494,9 +1495,16 @@ subtest "unresponsive body handling works" => sub {
             "submit good details"
         );
 
+        my $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        ok $user, "test user does exist";
+
         my $report = $user->problems->first;
         ok $report, "Found the report";
         is $report->bodies_str, undef, "Report not going anywhere";
+
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/despite not being sent/i, "correct email sent";
 
         $user->problems->delete;
         $contact1->body->update( { send_method => $old_send } );
@@ -1517,6 +1525,7 @@ subtest "unresponsive body handling works" => sub {
                     detail        => 'Test report details.',
                     photo         => '',
                     name          => 'Joe Bloggs',
+                    email         => $test_email,
                     may_show_name => '1',
                     phone         => '07903 123 456',
                     category      => 'Trees',
