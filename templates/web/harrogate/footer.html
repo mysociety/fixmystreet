@@ -14,34 +14,33 @@
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
 
-                    <ul id="main-menu">
+                    <ul class="nav-menu nav-menu--main">
                         [% selected = c.req.uri.path == '/' %]
-                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
-                            <[% IF selected %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn">
+                        <li><[% IF selected %]span[% ELSE %]a href="/"[% END %]>
                             [% loc("Report a problem") %]</[% selected == '/' ? 'span' : 'a' %]></li>
 
                         [% selected = c.req.uri.path == '/my' %]
-                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                        <li>
                             <[% IF selected %]span[% ELSE %]a href="/my"[% END %]>
                             [% loc("Your reports") %]</[% selected ? 'span' : 'a' %]></li>
 
                         [% selected = c.req.uri.path == '/reports/Harrogate' %]
-                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                        <li>
                             <[% IF selected %]span[% ELSE %]a href="/reports"[% END %]>
                             [% loc("All reports") %]</[% selected ? 'span' : 'a' %]></li>
 
                         [% selected = c.req.uri.path == '/alert' %]
-                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                        <li>
                             <[% IF selected %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END %]>
                             [% loc("Local alerts") %]</[% selected ? 'span' : 'a' %]></li>
 
                         [% selected = c.req.uri.path == '/faq' %]
-                        <li [% selected ? 'class="menu-item-selected"' : '' %]>
+                        <li>
                             <[% IF selected %]span[% ELSE %]a href="/faq"[% END %]>
                             [% loc("Help") %]</[% selected ? 'span' : 'a' %]></li>
 
                         [% selected = c.req.uri.path == '/privacy' %]
-                        <li id="top-nav-privacy" [% selected ? 'class="menu-item-selected"' : '' %]>
+                        <li class="nav-menu__item--privacy">
                             <[% IF selected %]span[% ELSE %]a href="/privacy"[% END %]>
                             [% loc("Privacy") %]</[% selected ? 'span' : 'a' %]></li>
                     </ul>

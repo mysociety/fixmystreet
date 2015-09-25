@@ -15,16 +15,8 @@ body {
   }
 }
 
-#main-nav {
-    ul {
-        &#main-menu {
-            li {
-                a.report-a-problem-btn {
-                  color: #fff;
-                }
-            }
-        }
-    }
+.nav-menu--main a.report-a-problem-btn {
+  color: #fff;
 }
 
 body.frontpage {
@@ -64,7 +56,7 @@ body.admin {
 	}
 }
 
-#main-nav ul#mysoc-menu li a#mysoc-logo {
+#mysoc-logo {
   background-position: 6px 10px;
 }
 

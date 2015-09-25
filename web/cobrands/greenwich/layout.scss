@@ -92,7 +92,7 @@ body.twothirdswidthpage #user-meta p {
     border-top: none;
 }
 
-#main-menu {
+.nav-menu--main {
     display: none;
 }
 
@@ -178,7 +178,7 @@ body.mappage {
         display: none;
     }
 
-    #main-menu {
+    .nav-menu--main {
         display: block;
     }
 
@@ -198,20 +198,15 @@ body.mappage {
         border-bottom: solid 4px $primary;
     }
 
-    #main-nav {
-        ul#main-menu {
-            li a.report-a-problem-btn {
-                color: $nav_fg;
-            }
+    .nav-menu--main a.report-a-problem-btn {
+        color: $nav_fg;
+    }
+    .nav-menu {
+        a, span {
+            color: $primary_text;
         }
-
-        ul li {
-            a, span {
-                color: $primary_text;
-            }
-            a:hover {
-                text-decoration: underline;
-            }
+        a:hover {
+            text-decoration: underline;
         }
     }
 }

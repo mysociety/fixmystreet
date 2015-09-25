@@ -44,7 +44,7 @@ body.mappage .nav-wrapper div.nav-wrapper-2 {
   border-bottom: 2px solid #333;
 }
 
-#main-nav ul#mysoc-menu li a#mysoc-logo {
+#mysoc-logo {
   background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIkAAAAyCAMAAABf9whNAAAA0lBMVEUAAABAQEBAQEBAQEBNTU1NTU1AQEBNTU1AQEBAQEBAQEBAQEBAQEBAQEBAQEBNTU1NTU1AQEBNTU1AQEBNTU1AQEBAQEBNTU2Mxj9NTU33kx5NTU1NTU1NTU3tHCRmLZEpq+JNTU2TJ4/tHCSTJ4/87iEpq+L3kx5NTU387iH87iHtHCSTJ4/3kx51K5CTJ49mLZGMxj/tHCSx0zVmLZH6wSBmLZFmLZFDdb/zYCFbuZGMxj/3kx5AQEBNTU0pq+LtHCSMxj/3kx787iFmLZGTJ49ns3BGAAAAPXRSTlMAQL+AQIAQECBwMGBQj98gn5/Pr+/vzzC/r79wYI9wv69QcK+vcICfv68QQBAwj0AwMBBggIBQr3BwgEBgSmaQCwAAAflJREFUeF7t1Ndy2zAQhtGfAAX2IpFUseSSOLGd3nt27bT3f6UsQHusRFcKmVxkcGa4wvCG34AQ8V/wPM/zPM8zSaOaxGBHtFpF+IfikqwYO0LmELfiHH/XlLokSBrsiurtPdGkMJJFWFWTSQUZC0RhWMFNRQWuvTw9RS/VOolNEBgAudYpkE5pHqRpEACIZQ4x4RkztxMWd6KWa2DDvFDUBeg9urr6cPAZMIqEDogCmDmJKdwtlbjXOCc1sIRnhyxj0vIMNbeQMUNun5DBOTo6/3oASMhUF6krka3IM1lkikqdGaICMVE2sKSNICkR1sxYyMag5TWQd7bFPH4G8eT8zcOUKIGwJUYuSE7hzoldlZAwM7Dkwg4GQjtmXMtvBZHNiZJ7P+5C3P/2oH9SXyKXo1yJq0sbmmLMkg23h7xCryR1W5L8WqKsmz1BSbqjfNSSiMUGMEB/Bp8ePwdeLF/ZAn1TEssFR1MJIZmyGLUENXNrI8pCK6IMx99fn50tvyyBcuvEKuqKXDcuocgAQ/I7conMGgA5BfD23fvLy4/LT0Ba/v4vphRxR9dnlmIMU4ULO0IgsgPr/rya3H7F4JycoCf3sq0vW5ICiLXO3YtsMC4JqbG3uCFKMSb3nYuwNyLKMK6Q6wj7a7oMY4vwJwwG8TzP8zzP834CEcRJKkEhVogAAAAASUVORK5CYII=");
 }
 #front-main {
@@ -65,21 +65,17 @@ body.mappage .nav-wrapper div.nav-wrapper-2 {
 	}
 }
 
-#main-nav {
-    ul {
-        &#mysoc-menu {
-            padding: 1px 0.5em;
-        }
-        &#main-menu{
-          padding: 3px 0;
-        }
-        
-    }
+.nav-menu--mysoc {
+    padding: 1px 0.5em;
 }
-body.mappage #main-nav ul#main-menu li a, 
-body.mappage #main-nav ul#main-menu li span,
-body #main-nav ul#main-menu li a, 
-body #main-nav ul#main-menu li span
+.nav-menu--main {
+    padding: 3px 0;
+}
+
+body.mappage .nav-menu--main a,
+body.mappage .nav-menu--main span,
+.nav-menu--main a,
+.nav-menu--main span
 {
   color: #fff;
   padding: 0.7em;
@@ -88,7 +84,7 @@ body #main-nav ul#main-menu li span
   @include box_round(0.35em);
   margin-left: 3px;
   
-  &.report-a-problem-btn{
+  &.report-a-problem-btn {
     color: #fff;
     padding: 0.7em;
     background-color: rgba(0,0,0,0);
@@ -99,13 +95,11 @@ body #main-nav ul#main-menu li span
   &.fmb-bgy-btn {
     color: #fcc921;
   }
-  
 
-  &:hover{
+  &:hover {
     background-color: rgba(0,0,0,0.75);
     background-image: none;
   }
-  
 }
 
 

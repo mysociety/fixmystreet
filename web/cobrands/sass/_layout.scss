@@ -128,90 +128,80 @@ h1 {
     display: none;
 }
 
-#main-nav{
+#main-nav {
   margin: 0 auto;
-  padding: 0em;
+  padding: 0;
   width: 60em;
-  ul{
-    list-style: none;
-    padding: 0px;
-    margin: 0px;
-    float: $right;
-    li{
-      list-style: none;
-      display: inline;
-      margin: 0px;
-      padding: 0px;
-      float: $left;
-      a,
-      span {
-        display: block;
-        color: $nav_fg;
-        background: none;
-        border-bottom: none;
-      }
-      &#top-nav-privacy {
-        display: none;
-      }
+}
+.nav-menu {
+  float: $right;
+  li {
+    display: inline;
+    float: $left;
+  }
+  li.nav-menu__item--privacy {
+    display: none;
+  }
+  a, span {
+    display: block;
+    color: $nav_fg;
+    background: none;
+    border-bottom: none;
+  }
+}
+.nav-menu--main {
+  a, span {
+    padding: 0.75em;
+    font-size: 0.9em;
+  }
+  a:hover {
+    background: $nav_fg_hover;
+  }
+  a.report-a-problem-btn {
+    color: $primary_text;
+    background: $primary;
+    padding:0.25em;
+    margin:0.5em;
+    @include border-radius(0.25em);
+    &:hover {
+      background:$primary/1.1;
     }
-    &#main-menu{
-      li{
-        a, span{
-          padding: 0.75em;
-          font-size: 0.9em;
-        }
-        a:hover{
-          background: $nav_fg_hover;
-        }
-        a.report-a-problem-btn {
-          color: $primary_text;
-          background: $primary;
-          padding:0.25em;
-          margin:0.5em;
-          @include border-radius(0.25em);
-          &:hover {
-            background:$primary/1.1;
-          }
-        }
-        span {
-          color:$primary;
-        }
-      }
-    }
-    &#mysoc-menu{
-      padding: 0em 0.5em;
-      margin-#{$left}: 0.25em;
-      background: $primary;
-      @include border-radius(0 0 0.375em 0.375em);
-      li{
-        a{
-          background:none;
-          color: $primary_text;
-          text-transform: uppercase;
-          font-size: 0.6875em;
-          padding: 1.3em 0.7em 1em;
-          &#mysoc-logo {
-            width:84px;
-            height:16px;
-            background-size: 100px auto;
-            background-position: -8px 0px;
-            opacity: 0.8;
-            &:hover {
-              opacity: 1;
-            }
-          }
-          &:hover{
-            color:#fff;
-          }
-        }
-      }
+  }
+  span {
+    color:$primary;
+  }
+}
+.nav-menu--mysoc {
+  padding: 0em 0.5em;
+  margin-#{$left}: 0.25em;
+  background: $primary;
+  @include border-radius(0 0 0.375em 0.375em);
+  a {
+    background:none;
+    color: $primary_text;
+    text-transform: uppercase;
+    font-size: 0.6875em;
+    padding: 1.3em 0.7em 1em;
+    &:hover {
+      color: #fff;
+      background: none;
     }
   }
 }
-.ie8 #main-nav ul#mysoc-menu li a#mysoc-logo {
+#mysoc-logo {
+  width:84px;
+  height:16px;
+  background-size: 100px auto;
+  background-position: -8px 0px;
+  opacity: 0.8;
+  &:hover {
+    opacity: 1;
+  }
+}
+.ie8 #mysoc-logo {
   width: 100px;
 }
-.ie7 #main-nav ul#mysoc-menu li a#mysoc-logo {
+.ie7 #mysoc-logo {
     background-position: -260px -43px;
 }
 
@@ -256,12 +246,11 @@ body.mappage {
     margin-#{$right}: 1em;
   }
 
-  #main-nav ul#main-menu li a,
-  #main-nav ul#main-menu li span {
+  .nav-menu--main a, .nav-menu--main span {
     padding: 1.4em 0.75em 1.35em;
   }
 
-  #main-nav ul#main-menu li a.report-a-problem-btn {
+  .nav-menu--main a.report-a-problem-btn {
     padding: 0.5em;
     margin: 0.9em 0.25em 0.85em;
   }
@@ -1133,7 +1122,7 @@ body.frontpage {
     padding-#{$left}: 180px;
   }
 
-  html #main-nav ul#mysoc-menu li a#mysoc-logo {
+  #mysoc-logo {
     width: 16px;
     // Just the mySociety circle logo
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABJ9JREFUeNqsVXlMHFUYf/Pe7O7M7E2Xw6UFWg5LQ1GTosa0IT00wYbGaKoltWnaRGNrjIptiUalXqlJU9RU0fSPHtqCR20pliBpQpAmxQgoLDeLQIEuh2WBndmDnZn3fMvRsqEGVv0mv3lzvPd97/u97wBgmXLUbHvOFZ/cJK1KbTtmiX4F/J+ySzBuDiakeSdWphA3RSAhTX3NaN2znLVwyQkMA/YbzAcwAAIFIBSYELjPYH6Zpf9CwrEMeGS1zhalh2zEBkIq2NCdkDvfyOxCRqHfnnpIWN9caK+5URDX2VJob8zfZsqJyIBKlVzweU7pIMIC3TFHIUAISkSx2GKE2uK8qNK0ODZbVsgKuwllnthp/S4rUZs0vx4th0dHcLp3FCv1VogEL8G9Jz2THx4Tx79+Yh23/oVs4zuBwKx3CuWQ5aHO5VYba7oDDjDj/TJEpSgWJytD0FAP5Dm6PD4ySZmSIUM0+C6DoGdUdkXkwULBC56HJtRJuxFpsu7nsll60CwHQY3D/8PRq1NFQZXg+TP8TwKphhc3GXPS4zWP9tySm07XSZe9MgkLEpCuX5uZZdqQBwEM1nsaStq87V3/xtjGTVzKB29bj0RZkK2s3PvTJ59PnWG2Rm3esTP2mW80gDUByq+CFffJoS+2tkrtTZEoz80R1pVfjrsBEGMGCvWAQ+DsV5MFcLstp0jFqsmH/cCn+qjLMGqLdcvrcOkIDpO9eYY9QMuYVRED1U8A8Sjg6Vz9AahH+mi84OhCzwISbAwT8fFoFr6EjlgvMAh2eDtP85AP7XwGHORAi9R6USVqRNrPlUqlIEgCSM8ApGMAtCBw/nvpLGqR2qoFxIMYbUwCJvh2tbv6oyt/lX8Z6fa7e+Thdsd0bdpa7QqvF49UlPmKXz0y/vEdHqyshaeDH2lNNoPGmhlUfQMuydmzHOX2VENMTKKQ0OMQu6Qxv8hqaLDMhWoY0VlxuXkPx24vZhhooa/elts1hddvfXsCE/yPyrftTdj15ME1n3J6FOsTlbFrZwbeqDrVdz4sD0Ji41fan019q1MF2Ego/wy9NIjDl5zHM1xeZ8e9lMenGuIPl2zoIIAxqjIGiO4cIeg/vrs+fbBDvBlWi3RISKF5YCQYz5XkGRchx+rT6djBpzyYaM3Zl0ftaqd++fGSt7m2NTqBT9dwyOgXldmaRWnRcgyflGnKWGTAr0hOTFQPjSQTHWciihCCJd9IM/fAxuTV712shTreHppreXz3of739+dMDFW1E0wUBjIsHQGt4gDT8BtsF52L+oE74BquH7l6kFIzoYE6agBJv49V5o/JI39G5750mNFydlWaAiHQOca45/Pfvdk17bp2ur+AM6CAYGKBlkdyQ+Xom4OdYve83rBy3Tj284U+T/N1njUmBVTf0Lh/qBdABDQ2+31Elu8mkaoAyAsxgHbIK5/1FnX9NlmVmGFa0/vHVL+zYaJloc5F/cAdGB4AIIT51FaBWFdRps94bIciB2ZaJ+T1wNf2azmYS8bOOndbCPcKhGX1g0BfqwPpzUS3Ki0ZanVeT13FuZHiQ4UkOK0stfZvAQYA/wr53nPx8cUAAAAASUVORK5CYII=);

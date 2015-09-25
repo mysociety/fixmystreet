@@ -5,13 +5,11 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
-                    <ul id="mysoc-menu">
-                        <li><a id="mysoc-logo" href="http://www.mysociety.org/">mySociety</a></li>[%
-                        %]<!--<li><a href="http://mysociety.org/donate/">Donate</a></li>[%
-                        %]<li><a href="http://www.mysociety.org/projects/">Our Sites</a></li>-->
+                    <ul class="nav-menu nav-menu--mysoc">
+                        <li><a id="mysoc-logo" href="http://www.mysociety.org/">mySociety</a></li>
                     </ul>
 
-                    <ul id="main-menu">
+                    <ul class="nav-menu nav-menu--main">
                         <li><a href="/around?latitude=10.322;longitude=123.907" class="fmb-bgy-btn">Luz</a></li>
                         <li><a href="/around?latitude=10.288;longitude=123.870" class="fmb-bgy-btn">BSN</a></li>
                         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"

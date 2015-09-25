@@ -31,16 +31,10 @@ body {
         }
     }
     &.mappage {
-        #main-nav {
-            ul#main-menu {
-                li {
-                    a,
-                    a.report-a-problem-btn,
-                    span {
-                        padding: 0.25em;
-                        margin: 0.5em;
-                    }
-                }
+        .nav-menu--main {
+            a, a.report-a-problem-btn, span {
+                padding: 0.25em;
+                margin: 0.5em;
             }
         }
         .nav-wrapper-2 {
@@ -56,21 +50,11 @@ body {
     }
 }
 
-#main-nav {
-    ul#mysoc-menu {
-        li {
-            a {
-                color: $primary_text;
-            }
-        }
-    }
-    ul#main-menu {
-        li {
-            span {
-                color: $primary_text;
-            }
-        }
-    }
+.nav-menu--mysoc a {
+    color: $primary_text;
+}
+.nav-menu--main span {
+    color: $primary_text;
 }
 
 #site-header {

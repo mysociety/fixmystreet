@@ -53,19 +53,12 @@ body.mappage {
 }
 
 // Override the FMS main menu to give it a background colour
-#main-menu {
+.nav-menu--main {
   background-color: $bromley_blue;
 }
-// Override the selected element to match. We need to do this separately
-// because of FMS's selectors being quite specific
-#main-nav ul#main-menu li span {
+.nav-menu--main span {
   color: $nav_fg;
   background-color: $nav_fg_hover;
-}
-
-// Override the "report a problem" button because it's not really a button
-#main-nav ul#main-menu li a.report-a-problem-btn {
-  color: $nav_fg;
 }
 
 // Fix bad margin on local alerts form

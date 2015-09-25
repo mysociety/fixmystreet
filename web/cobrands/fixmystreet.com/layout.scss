@@ -70,15 +70,13 @@ h3, h4 {
 #front-main {
     background: $primary url(images/tile-y.jpg);
 }
-#main-nav {
-    ul#main-menu {
-        li {
-            a:hover {
-                @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
-            }
-        }
+
+.nav-menu--main {
+    a:hover {
+        @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
     }
 }
+
 .nav-wrapper {
     .nav-wrapper-2 {
         border-image-source: url(images/tile-y-border.jpg);
@@ -94,11 +92,9 @@ body.mappage {
     }
 }
 
-#main-nav {
-    ul#mysoc-menu {
-        background: #515151;
-        margin-top: -4px;
-    }
+.nav-menu--mysoc {
+    background: #515151;
+    margin-top: -4px;
 }
 
 body.twothirdswidthpage,
@@ -215,18 +211,12 @@ body.twothirdswidthpage {
       margin: 0 auto;
       background: $base_bg;
       ul {
-        list-style: none;
-        padding: 0px;
-        margin: 0px;
+        @include list-reset-soft;
         float: $left;
         li {
-          list-style: none;
           display: inline;
-          margin: 0px;
-          padding: 0px;
           float: $left;
-          a,
-          span {
+          a, span {
             display: block;
             color: $nav_fg;
             background: none;

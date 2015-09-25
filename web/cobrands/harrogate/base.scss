@@ -28,31 +28,15 @@ body.frontpage #site-logo,
     }
 }
 
-#main-nav ul#main-menu li {
-
+.nav-menu--main {
     // blue button background, darker if selected
-    background: #ededed;
-    &.menu-item-selected {
-        background: $primary;
-        span {
-            color: #fff;
-        }
+    a {
+        background: #ededed;
     }
-
     span {
-        color: $nav_fg;
+        color: #fff;
+        background: $primary;
     }
-}
-
-#main-nav ul#main-menu li,
-body.mappage #main-nav ul#main-menu li,
-{
-    padding-left: 0.25em;
-    padding-right: 0.25em;
-    padding-top: 0;
-    padding-bottom: 0;
-
-    a { padding: 0 }
 }
 
 label[for=form_INFO_TEXT] {

@@ -10,13 +10,13 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
-                    <ul id="mysoc-menu">
+                    <ul class="nav-menu nav-menu--mysoc">
                         <li><a id="mysoc-logo" href="http://www.mysociety.org/">mySociety</a></li>[%
                         %]<li><a href="http://mysociety.org/donate/">Donate</a></li>[%
                         %]<li><a href="http://www.mysociety.org/projects/">Our Sites</a></li>
                     </ul>
 
-                    <ul id="main-menu">
+                    <ul class="nav-menu nav-menu--main">
                         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END

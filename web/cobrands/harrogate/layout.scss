@@ -85,38 +85,23 @@ body.twothirdswidthpage form.full-width {
     margin: 0;
 }
 
-body.mappage #main-nav {
-    ul#main-menu {
-        padding: 1em 0;
-    }
+
+.nav-menu--main {
+    background: #ededed;
 }
 
-body.mappage #main-nav ul#main-menu li a, body.mappage #main-nav ul#main-menu li span {
-    padding: 0.75em;
+.nav-menu--main span {
+    color: #fff;
+    background: $primary;
 }
 
-body.mappage #main-nav ul#main-menu li a.report-a-problem-btn,
-#main-nav ul#main-menu li a.report-a-problem-btn {
-    margin: 0;
-    padding: 0.75em;
-}
-#main-nav ul#main-menu li a.report-a-problem-btn {
-    &:hover {
-        background: #444;
-        color: #fff;
-        @include border-radius(0em);
-    }
+.nav-menu--main a, .nav-menu--main span,
+body.mappage .nav-menu--main a, body.mappage .nav-menu--main span {
+    padding: 0.75em 1.02em;
 }
 
-#main-nav {
-    ul#main-menu {
-        li {
-            a.report-a-problem-btn {
-                color: #000;
-                background: #ededed;
-            }
-        }
-    }
+body.mappage .nav-menu--main {
+    margin-top: 1em;
 }
 
 body.mappage .nav-wrapper .nav-wrapper-2 {
