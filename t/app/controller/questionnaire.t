@@ -191,6 +191,16 @@ foreach my $test (
         },
     },
     {
+        desc => 'Fixed report, reopened, reported before, blank update, no further questionnaire',
+        problem_state => 'fixed',
+        fields => {
+            been_fixed => 'No',
+            reported => 'Yes',
+            another => 'No',
+            update => '   ',
+        },
+    },
+    {
         desc => 'Closed report, said fixed, reported before, no update, no further questionnaire',
         problem_state => 'closed',
         fields => {

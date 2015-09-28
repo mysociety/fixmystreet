@@ -234,6 +234,8 @@ sub process_questionnaire : Private {
 
     map { $c->stash->{$_} = $c->get_param($_) || '' } qw(been_fixed reported another update);
 
+    $c->stash->{update} = Utils::cleanup_text($c->stash->{update}, { allow_multiline => 1 });
+
     # EHA questionnaires done for you
     if ($c->cobrand->moniker eq 'emptyhomes') {
         $c->stash->{another} = $c->stash->{num_questionnaire}==1 ? 'Yes' : 'No';
