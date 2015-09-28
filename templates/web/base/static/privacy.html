@@ -1,13 +1,13 @@
 [% INCLUDE 'header.html',
-    title = loc('Frequently Asked Questions'),
+    title = loc('Privacy and cookies'),
     bodyclass = 'twothirdswidthpage' %]
 
 <div class="sticky-sidebar">
     <aside>
         <ul class="plain-list">
-            <li><a href="/faq">Frequently Asked Questions</a></li>
-            <li><strong>Privacy and cookies</strong></li>
-            <li><a href="/contact">Contact [% PROCESS 'site-name.html' -%]</a></li>
+            <li><a href="/faq">[% loc('Frequently Asked Questions') %]</a></li>
+            <li><a href="/privacy">[% loc('Privacy and cookies') %]</a></li>
+            <li><a href="/contact">[% tprintf(loc("Contact %s", "%s is the site name"), site_name) %]</a></li>
         </ul>
     </aside>
 </div>

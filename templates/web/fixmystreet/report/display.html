@@ -6,7 +6,7 @@
     problem_title = problem.title_safe _ ' - ' _ loc('Viewing a problem');
     INCLUDE 'header.html'
         title = problem_title
-        rss = [ loc('Updates to this problem, FixMyStreet'), "/rss/$problem.id" ]
+        rss = [ tprintf(loc('Updates to this problem, %s', "%s is the site name"), site_name), "/rss/$problem.id" ]
         robots = 'index, nofollow';
 %]
 

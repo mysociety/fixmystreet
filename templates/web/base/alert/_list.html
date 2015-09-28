@@ -1,11 +1,13 @@
   <input type="hidden" name="type" value="local">
   <input type="hidden" name="pc" value="[% pc | html %]">
+  <input type="hidden" name="latitude" value="[% latitude | html %]">
+  <input type="hidden" name="longitude" value="[% longitude | html %]">
 
   <p>
   [% IF pretty_pc %]
     [% tprintf( loc('Here are the types of local problem alerts for &lsquo;%s&rsquo;.'), pretty_pc ) %]
   [% END %]
-  [% loc('Select which type of alert you\'d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert.') %]
+  [% loc('Select which type of alert you’d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert.') %]
   </p>
 
   [% INCLUDE 'errors.html' %]
@@ -16,14 +18,15 @@
 
   <p id="rss_local">
     <input type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
-    <label for="[% rss_feed_id %]">[% tprintf( loc('Problems within %.1fkm of this location'), population_radius ) %]</label>
-    [% loc('(a default distance which covers roughly 200,000 people)') %] <a href='[% rss_feed_uri %]'>
-      <img src='/i/feed.png' width='16' height='16' title='[% loc('RSS feed of nearby problems') %]' alt='[% loc('RSS feed') %]' border='0'></a>
+    <label class="inline" for="[% rss_feed_id %]">[% tprintf( loc('Problems within %.1fkm of this location'), population_radius ) %]</label>
+    <a href='[% rss_feed_uri %]'><img src='/i/feed.png' width='16' height='16' title='[% loc('RSS feed of nearby problems') %]' alt='[% loc('RSS feed') %]' border='0'></a>
+    <br />
+    [% loc('(a default distance which covers roughly 200,000 people)') %]
   </p>
 
   <p id="rss_local_alt">
-  [% loc('(alternatively the RSS feed can be customised, within') %]
-    <a href="[% rss_feed_2k %]">2km</a> / <a href="[% rss_feed_5k %]">5km</a> / <a href="[% rss_feed_10k %]">10km</a> / <a href="[% rss_feed_20k %]">20km</a>)
+  [% SET distance_options = '<a href="' _ rss_feed_2k _ ' ">2km</a> / <a href="' _ rss_feed_5k _ ' ">5km</a> / <a href="' _ rss_feed_10k _ '">10km</a> / <a href="' _ rss_feed_20k _ '">20km</a>' %]
+  [% tprintf(loc('(alternatively the RSS feed can be customised, within %s)', "%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]"), distance_options) %]
   </p>
 
   <p>
@@ -35,21 +38,20 @@
   </p>
 
     [% IF reported_to_options %]
-      <div id="rss_list">
         <p><strong>
           [% loc('Problems within the boundary of:') %]
         </strong></p>
         <ul class="plain-list">
     [% ELSE %]
-      <div><ul id="rss_feed">
+      <ul id="rss_feed" class="plain-list">
     [% END %]
 
   [% FOREACH option IN options %]
   <li[% IF ! (loop.count % 2) %] class="a"[% END %]>
     <input type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
-    <label class="inline" for="[% option.id %]">[% option.text %]</label>
     <a href="[% option.uri %]"><img src="/i/feed.png" width="16" height="16"
 title="[% option.rss_text %]" alt="RSS feed" border="0"></a>
+    <label class="inline" for="[% option.id %]">[% option.text %]</label>
   </li>
   [% END %]
 </ul>
@@ -61,40 +63,31 @@ title="[% option.rss_text %]" alt="RSS feed" border="0"></a>
       [% FOREACH option IN reported_to_options %]
       <li[% IF ! (loop.count % 2) %] class="a"[% END %]>
         <input type="radio" name="feed" id="[% option.id %]" value="[% option.id %]"[% IF option.id == selected_feed %] checked[% END %]>
-        <label class="inline" for="[% option.id %]">[% option.text %]</label>
         <a href="[% option.uri %]"><img src="/i/feed.png" width="16" height="16"
     title="[% option.rss_text %]" alt="RSS feed" border="0"></a>
+        <label class="inline" for="[% option.id %]">[% option.text %]</label>
       </li>
       [% END %]
     </ul>
     <p><small>
-      [% loc( 'FixMyStreet sends different categories of problem
+      [% tprintf(loc('%s sends different categories of problem
 to the appropriate council, so problems within the boundary of a particular council
 might not match the problems sent to that council. For example, a graffiti report
 will be sent to the district council, so will appear in both of the district
 council&rsquo;s alerts, but will only appear in the "Within the boundary" alert
-for the county council.' ) %]
+for the county council.', "%s is the site name"), site_name) %]
     </small></p>
-</div>
-<div id="rss_buttons">
     [% END %]
 
-  <p>
-    <input type="submit" name="rss" value="[% loc('Give me an RSS feed') %]">
-  <p>
+  <input id="alert_rss_button" class="green-btn" type="submit" name="rss" value="[% loc('Give me an RSS feed') %]">
 
   <p id="alert_or">
     [% loc('or') %]
   </p>
 
   [% UNLESS c.user_exists %]
-  <p>
-  [% loc('Your email:') %] <input type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]" size="30">
-  </p>
+    <label for="rznvy">[% loc('Your email') %]</label>
+    <input type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]">
   [% END %]
-
-  <p>
-    <input type="submit" name="alert" value="[% loc('Subscribe me to an email alert') %]">
-  </p>
-  </div> <!-- ???? -->
+    <input id="alert_email_button" style="margin-top:1em;" class="green-btn" type="submit" name="alert" value="[% loc('Subscribe me to an email alert') %]">
 
