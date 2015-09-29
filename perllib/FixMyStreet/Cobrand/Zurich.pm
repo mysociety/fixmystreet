@@ -360,8 +360,8 @@ Returns either undef or the AdminLog entry created.
 sub update_admin_log {
     my ($self, $c, $problem, $text) = @_;
 
-    my $time_spent = ( ($c->req->param('time_spent') // 0) + 0 );
-    $c->req->param('time_spent' => 0); # explicitly zero this to avoid duplicates
+    my $time_spent = ( ($c->get_param('time_spent') // 0) + 0 );
+    $c->set_param('time_spent' => 0); # explicitly zero this to avoid duplicates
 
     if (!$text) {
         return unless $time_spent;
@@ -607,7 +607,7 @@ sub admin_report_edit {
         my $old_closure_state = $problem->get_extra_metadata('closure_status');
 
         # update the public update from DM
-        if (my $update = $c->req->param('status_update')) {
+        if (my $update = $c->get_param('status_update')) {
             $problem->set_extra_metadata(public_response => $update);
         }
 
@@ -670,7 +670,7 @@ sub admin_report_edit {
             $state = $problem->get_extra_metadata('closure_status') || '';
             my ($moderated, $closed) = (0, 0);
 
-            if ($state eq 'hidden' && $c->req->params->{publish_response} ) {
+            if ($state eq 'hidden' && $c->get_param('publish_response') ) {
                 _admin_send_email( $c, 'problem-rejected.txt', $problem );
 
                 $self->set_problem_state($c, $problem, $state);
@@ -682,12 +682,12 @@ sub admin_report_edit {
                 # Nested if instead of `and` because in these cases, we *don't*
                 # want to close unless we have body_external (so we don't want
                 # the final elsif clause below to kick in on publish_response)
-                if (my $external = $c->req->params->{body_external}) {
+                if (my $external = $c->get_param('body_external')) {
                     my $external_body = $c->model('DB::Body')->find($external)
                         or die "Body $external not found";
                     $problem->external_body( $external );
                 }
-                if ($problem->external_body && $c->req->params->{publish_response}) {
+                if ($problem->external_body && $c->get_param('publish_response')) {
                     $problem->whensent( undef );
                     $self->set_problem_state($c, $problem, $state);
                     my $template = ($state eq 'investigating') ? 'problem-wish.txt' : 'problem-external.txt';
@@ -696,12 +696,12 @@ sub admin_report_edit {
                     $closed++;
                 }
                 # set the external_message in extra, so that it can be edited again
-                if ( my $external_message = $c->req->params->{external_message} ) {
+                if ( my $external_message = $c->get_param('external_message') ) {
                     $problem->set_extra_metadata( external_message => $external_message );
                 }
                 # else should really return a message here
             }
-            elsif ($c->req->params->{publish_response}) {
+            elsif ($c->get_param('publish_response')) {
                 # otherwise we only set the state if publish_response is set
                 #
 
@@ -735,7 +735,7 @@ sub admin_report_edit {
 
         # send external_message if provided and state is *now* Wish|Extern
         # e.g. was already, or was set in the Rueckmeldung ausstehend clause above.
-        if ( my $external_message = $c->req->params->{external_message}
+        if ( my $external_message = $c->get_param('external_message')
              and $problem->state =~ /^(closed|investigating)$/)
         {
             my $external = $problem->external_body;
@@ -817,7 +817,7 @@ sub admin_report_edit {
 
             $c->forward('check_token');
 
-            my $not_contactable = $c->req->param('not_contactable');
+            my $not_contactable = $c->get_param('not_contactable');
 
             $problem->bodies_str( $body->parent->id );
             if ($not_contactable) {

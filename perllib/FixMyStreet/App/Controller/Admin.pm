@@ -365,7 +365,7 @@ sub update_contacts : Private {
         $contact->send_method( $c->get_param('send_method') );
 
         # Set the photo_required flag in extra to the appropriate value
-        if ( $c->req->param('photo_required') ) {
+        if ( $c->get_param('photo_required') ) {
             $contact->set_extra_metadata_if_undefined(  photo_required => 1 );
         }
         else {
@@ -873,11 +873,11 @@ sub template_edit : Path('templates') : Args(2) {
     }
 
     if ($c->req->method eq 'POST') {
-        if ($c->req->param('delete_template') eq _("Delete template")) {
+        if ($c->get_param('delete_template') eq _("Delete template")) {
             $template->delete;
         } else {
-            $template->title( $c->req->param('title') );
-            $template->text ( $c->req->param('text') );
+            $template->title( $c->get_param('title') );
+            $template->text ( $c->get_param('text') );
             $template->update_or_insert;
         }
 
@@ -1481,10 +1481,9 @@ Rotate a photo 90 degrees left or right
 # returns index of photo to rotate, if any
 sub _get_rotate_photo_param {
     my ($self, $c) = @_;
-    my $params = $c->req->parameters;
-    my $key = first { /^rotate_photo/ } $c->req->param or return;
+    my $key = first { /^rotate_photo/ } keys %{ $c->req->params } or return;
     my ($index) = $key =~ /(\d+)$/;
-    my $direction = $c->req->param($key);
+    my $direction = $c->get_param($key);
     return [ $index || 0, $key, $direction ];
 }
 
