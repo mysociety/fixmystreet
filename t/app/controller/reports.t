@@ -216,5 +216,28 @@ subtest "test fiksgatami all reports page" => sub {
     }
 };
 
+subtest "test greenwich all reports page" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'greenwich' ],
+        MAPIT_URL => 'http://mapit.mysociety.org/'
+    }, sub {
+        my $body = $mech->create_body_ok(2493, 'Royal Borough of Greenwich');
+        my $deleted_contact = $mech->create_contact_ok(
+            body_id => $body->id,
+            category => 'Deleted',
+            email => 'deleted@example.com',
+            deleted => 1
+        );
+        ok $mech->host("greenwich.fixmystreet.com"), 'change host to greenwich';
+        $mech->get_ok('/reports/Royal+Borough+of+Greenwich');
+        # There should not be deleted categories in the list
+        my $category_select = $mech->forms()->[0]->find_input('filter_category');
+        is $category_select->possible_values, 1, 'deleted categories are not shown';
+
+        # Clean up after the test
+        $deleted_contact->delete;
+    }
+};
+
 done_testing();
 
