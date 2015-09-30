@@ -843,7 +843,7 @@ input.final-submit {
   border-bottom: 0.25em solid $primary;
   li{
     list-style: none;
-    background: #f6f6f6;
+    background-color: #f6f6f6;
     margin: 0.25em 0 0;
     padding: 0.5em 1em;
     display:block;
@@ -871,20 +871,20 @@ input.final-submit {
       margin: 0.25em 0 0;
       /* see note below about this */
       display:table;
-      background: #f6f6f6;
+      background-color: #f6f6f6;
       color:#222222;
       width:100%;
       &:hover {
         text-decoration:none;
         color:#222222;
-        background:#e6e6e6;
+        background-color:#e6e6e6;
       }
       a {
           color:#222222;
       }
       a:hover {
           color:#222222;
-          background:#e6e6e6;
+          background-color:#e6e6e6;
           text-decoration: none;
       }
       .text {
@@ -915,7 +915,7 @@ input.final-submit {
     >p {
       margin: 0.25em 0 0;
       padding: 0.5em 1em;
-      background: #f6f6f6;
+      background-color: #f6f6f6;
     }
   }
 }
