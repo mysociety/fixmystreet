@@ -919,13 +919,7 @@ input.final-submit {
     }
   }
 }
-.list-a {
-  @extend .issue-list-a;
-  a {
-    padding:0.5em 1em;
-    font-weight:bold;
-  }
-}
+
 //display:table fixes
 .ie6, .ie7 {
   .issue-list-a {

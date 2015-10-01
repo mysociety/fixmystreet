@@ -266,7 +266,7 @@ body.mappage {
   }
 }
 
-.report-list, .issue-list-a {
+.issue-list-a {
     li:after {
         background-color: $oxfordshire_mid_grey_green;
     }
@@ -287,7 +287,7 @@ h4.static-with-rule {
   background: transparent;
   margin-top: 0; // no space between list items
 
-  // Replicate .report-list styling, a bit
+  // Replicate .issue-list-a styling, a bit
   border-top: 1px solid $oxfordshire_mid_grey_green;
   padding: 1em 1em 1em 0;
   margin-left: 1em;
