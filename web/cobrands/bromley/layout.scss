@@ -71,11 +71,10 @@ body.alertindex form.full-width {
 body.mappage #user-meta p {
   background-color: $bromley_blue;
   border-bottom: 1px solid #444;
-  left: 2.65em;
 }
 
 // And also override the banner on other pages so that it lines up properly
-#user-meta {
+#user-meta, body.mappage #user-meta {
   max-width: 1200px;
 }
 #user-meta p,
