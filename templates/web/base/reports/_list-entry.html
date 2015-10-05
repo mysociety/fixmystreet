@@ -1,6 +1,1 @@
-<li><a href="[% c.uri_for('/report/' _ problem.id) %]">[% problem.title | html %]</a>
-    [% IF problem.bodies_str_ids.size > 1 %] <small>[% loc('(sent to both)') %]</small> [% END %]
-    [% IF c.cobrand.moniker != 'emptyhomes' %]
-        [% IF problem.bodies_str_ids.size == 0 %] <small>[% loc('(not sent to council)') %]</small> [% END %]
-    [% END %]
-</li>
+[% INCLUDE 'report/_item.html' include_sentinfo = 1 %]

@@ -11,6 +11,8 @@
         <meta name="HandHeldFriendly" content="true">
         <meta name="mobileoptimized" content="0">
 
+        [% INCLUDE 'header_opengraph.html' %]
+
         <link rel="stylesheet" href="[% version('/css/core.css') %]">
 
         [% INCLUDE 'common_header_tags.html' %]
@@ -24,14 +26,16 @@
             %][% loc('FixMyStreet') %]
         [%- IF NOT title AND NOT c.req.path %]</h1>[% ELSE %]</a></div>[% END %]
 
-        <ul id="meta">
-            [% IF c.user_exists %]
-                <li>[% tprintf(loc('Signed in as %s'), c.user.name || c.user.email) %]
-                <li class="last"><a href="/auth/sign_out">[% loc('Sign out') %]</a></li>
-            [% ELSE %]
-                <li>&nbsp;</li>
-            [% END %]
-        </ul>
+          [% IF c.user_exists %]
+            <div id="user-meta">
+                <p>
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
+                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
+                </p>
+            </div>
+          [% END %]
+
+            [% pre_container_extra %]
 
     <div id="mysociety" class="container" role="main">
 

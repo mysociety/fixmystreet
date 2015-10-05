@@ -1,23 +1,14 @@
-<div id="nearby_lists">
-
-    <h2>[% loc('Reports on and around the map') %]</h2>
-    
-    <ul id="current">
-        [% INCLUDE "around/on_map_list_items.html" %]
+<menu id="problems-nav" class="tab-nav">
+    <ul>
+        <li><a href="#current">[% loc('Problems on the map') %]</a></li>
+        <li><a href="#current_near">[% loc( 'Problems nearby' ) %]</a></li>
     </ul>
-    
-    <h2>
-        [%
-            tprintf(
-                loc( 'Closest nearby problems <small>(within&nbsp;%skm)</small>' ),
-                distance
-            )
-        %]
-    </h2>
-    
-    <ul id="current_near">
-        [% INCLUDE "around/around_map_list_items.html" %]
-    </ul>
+</menu>
 
-</div>
+<ul id="current" class="issue-list-a tab">
+    [% INCLUDE "around/on_map_list_items.html" %]
+</ul>
 
+<ul id="current_near" class="issue-list-a tab">
+    [% INCLUDE "around/around_map_list_items.html" %]
+</ul>
