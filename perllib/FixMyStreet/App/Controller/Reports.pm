@@ -492,6 +492,9 @@ sub stash_report_filter_status : Private {
     } elsif ( $status eq 'open' ) {
         $c->stash->{filter_status} = 'open';
         $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->open_states();
+    } elsif ( $status eq 'closed' ) {
+        $c->stash->{filter_status} = 'closed';
+        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->closed_states();
     } elsif ( $status eq 'fixed' ) {
         $c->stash->{filter_status} = 'fixed';
         $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->fixed_states();

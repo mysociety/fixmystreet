@@ -1,0 +1,111 @@
+.issue-list-a {
+  li {
+    position: relative;
+    margin: 0;
+    background: none;
+
+    a {
+      display: block;
+      padding: 1em;
+      padding-#{$left}: 4em;
+      border-#{$left}: solid 1em transparent;
+      background: transparent url(/i/pin-yellow-small.png) no-repeat $left center;
+    }
+
+    &.yellow a {
+        background-image: url(/i/pin-yellow-small.png);
+    }
+    &.green a {
+        background-image: url(/i/pin-green-small.png);
+    }
+    &.red a {
+        background-image: url(/i/pin-red-small.png);
+    }
+    &.grey a {
+        background-image: url(/i/pin-grey-small.png);
+    }
+
+    &.empty p {
+        display: block;
+        padding: 1em;
+        font-size: 1em;
+        text-align: center;
+    }
+
+    &:after {
+      content: "";
+      display: block;
+      height: 1px;
+      position: absolute;
+      #{$left}: 4em;
+      #{$right}: 0;
+      bottom: 0;
+      background-color: #e5e5e5;
+    }
+
+    &.empty:after {
+        #{$left}: 0;
+    }
+  }
+
+  h3, p {
+    margin: 0;
+  }
+
+  h3 {
+    color: $primary;
+    margin-bottom: 0.2em;
+  }
+
+  p {
+    font-size: 0.8em;
+    color: #777;
+  }
+}
+
+.big-green-banner {
+  display: none; // hide the empty banner by default
+
+  &.mobile-map-banner {
+    display: block; // show it again once the mobile javascript adds this class
+  }
+}
+
+.click-the-map {
+  color: #000;
+  margin: -10px -1em 0; // overlap padding on parents
+  padding: 18px;
+  border-bottom: 1px solid #e5e5e5;
+  // TODO This is not right-to-left enabled yet
+  background: #fff url('/i/click-map-chevron-big.gif') 90% 12px no-repeat;
+
+  h2 {
+    font-family: inherit;
+    margin: 0 0 5px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 18px;
+    line-height: 20px;
+    color: $primary;
+    padding-#{$right}: 20px;
+    // TODO This is not right-to-left enabled yet, image wise
+    background: transparent url('/i/click-map-chevron-small.gif') $right center no-repeat;
+    display: inline-block;
+  }
+
+  img {
+    // the little chevron icon
+    vertical-align: -1px;
+    margin-#{$left}: 0.2em;
+  }
+}
+
+body.frontpage {
+    .issue-list-a {
+        li .text {
+            padding-#{$left}: 3em;
+        }
+    }
+}

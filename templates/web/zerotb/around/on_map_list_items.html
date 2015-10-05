@@ -1,7 +1,14 @@
-[% IF on_map.size %]
-    [% FOREACH problem IN on_map %]
+[% all_reports = on_map.merge(around_map) %]
+[% IF all_reports.size %]
+    [% FOREACH problem IN all_reports %]
+        [% UNLESS problem.title;
+            dist = tprintf("%.1f", (problem.distance || 0) );
+            problem = problem.problem;
+        END %]
         [% INCLUDE 'report/_item.html' %]
     [% END %]
 [% ELSE %]
-    <li><p>[% loc('No clinics found.') %]</p></li>
+    <li class="empty">
+        <p>[% loc('No clinics found.') %]</p>
+    </li>
 [% END %]

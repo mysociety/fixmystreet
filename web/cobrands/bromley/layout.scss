@@ -1,8 +1,6 @@
 @import "_colours";
 @import "../sass/layout";
-
-// Import the new filters/list styling
-@import "../sass/_report_list.scss";
+@import "../sass/report_list_pins";
 
 // Alter the logo and the header on every page *but* the map page. On the map
 // page it stays small like in base.css

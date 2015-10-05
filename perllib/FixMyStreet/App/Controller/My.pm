@@ -31,7 +31,7 @@ sub my : Path : Args(0) {
     $c->forward( '/reports/stash_report_filter_status' );
 
     my $pins = [];
-    my $problems = {};
+    my $problems = [];
 
     my $states = $c->stash->{filter_problem_states};
     my $params = {
@@ -60,9 +60,7 @@ sub my : Path : Args(0) {
             id        => $problem->id,
             title     => $problem->title,
         };
-        my $state = $problem->is_fixed ? 'fixed' : $problem->is_closed ? 'closed' : 'confirmed';
-        push @{ $problems->{$state} }, $problem;
-        push @{ $problems->{all} }, $problem;
+        push @$problems, $problem;
     }
     $c->stash->{problems_pager} = $rs->pager;
     $c->stash->{problems} = $problems;

@@ -1,0 +1,34 @@
+[% select_status = BLOCK %]
+    <select name="status" id="statuses">
+        <option value="all"[% ' selected' IF filter_status == 'all' %]>[% loc('all reports') %]</option>
+        <option value="open"[% ' selected' IF filter_status == 'open' %]>[% loc('unfixed reports') %]</option>
+        <option value="closed"[% ' selected' IF filter_status == 'closed' %]>[% loc('closed reports') %]</option>
+        <option value="fixed"[% ' selected' IF filter_status == 'fixed' %]>[% loc('fixed reports') %]</option>
+    </select>
+[% END %]
+
+[% select_category = BLOCK %]
+    <select name="filter_category" id="filter_categories">
+        <option value="">[% loc('Everything') %]</option>
+        [% FOR category IN filter_categories %]
+            <option value="[% category | html %]"[% ' selected' IF filter_category == category %]>
+                [% category | html %]
+            </option>
+        [% END %]
+    </select>
+[% END %]
+
+[% IF use_section_wrapper %]
+<section class="full-width">
+    <form method="get" action="">
+[% END %]
+
+        <p class="report-list-filters">
+            [% tprintf(loc('<label>Show %s</label> <label>about %s</label>', 'The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories'), select_status, select_category) %]
+            <input type="submit" value="[% loc('Go') %]">
+        </p>
+
+[% IF use_section_wrapper %]
+    </form>
+</section>
+[% END %]

@@ -7,6 +7,7 @@ $image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
 $menu-image: 'menu-white' !default;
 
 @import "_mixins";
+@import "_report_list";
 
 body {
   font-family: $body-font;
@@ -865,9 +866,8 @@ input.final-submit {
   padding: 0;
   border-bottom: 0.25em solid $primary;
   li {
-    list-style: none;
-    margin:0;
-    padding:0;
+      list-style: none;
+      padding: 0;
       margin: 0.25em 0 0;
       /* see note below about this */
       display:table;
@@ -882,7 +882,7 @@ input.final-submit {
       a {
           color:#222222;
       }
-      a:hover {
+      a:hover, a:focus {
           color:#222222;
           background-color:#e6e6e6;
           text-decoration: none;
