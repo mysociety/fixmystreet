@@ -15,7 +15,7 @@
     <section class="full-width">
         <ul class="issue-list-a">
           [% FOREACH problem IN recent_photos %]
-            [% INCLUDE 'report/_item.html', no_fixed = 1 %]
+            [% INCLUDE 'front/_list-entry.html' %]
           [% END %]
         </ul>
     </section>

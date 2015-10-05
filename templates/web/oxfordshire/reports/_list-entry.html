@@ -1,6 +1,1 @@
-<li class="[% c.cobrand.pin_colour(problem) %]">
-    <a href="[% c.uri_for('/report', problem.id ) %]" class="[% problem.category %]">
-        <h3>[% problem.title | html %]</h3>
-        <p>Reported [%- prettify_dt( problem.confirmed, 1 ) %]</p>
-    </a>
-</li>
+[% INCLUDE 'report/_item-with-pin.html' %]

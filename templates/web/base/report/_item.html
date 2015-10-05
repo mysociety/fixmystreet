@@ -13,7 +13,7 @@
                 [%- prettify_dt( problem.confirmed) %]
             [%- END %]
             [%- IF dist %], [% dist %]km[% END %]
-            [%- IF NOT exclude_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
+            [%- IF problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
                 [% tprintf(loc('last updated %s'), prettify_dt( problem.lastupdate, 1 ) ) %]
             [%- END %]
         [% IF include_sentinfo %]

@@ -5,7 +5,7 @@
             dist = tprintf("%.1f", (problem.distance || 0) );
             problem = problem.problem;
         END %]
-        [% INCLUDE 'report/_item.html' %]
+        [% INCLUDE 'reports/_list-entry.html' %]
     [% END %]
 [% ELSE %]
     <li class="empty">

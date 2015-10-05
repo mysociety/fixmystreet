@@ -1,7 +1,7 @@
 <ul class='issue-list-a full-width'>
     [% IF problems.size %]
-        [% FOREACH p = problems %]
-            [% INCLUDE 'report/_item.html', problem = p, no_fixed = 1 %]
+        [% FOREACH problem = problems %]
+            [% INCLUDE 'reports/_list-entry.html' no_fixed = 1 %]
         [% END %]
     [% ELSE %]
         <li class="empty">
