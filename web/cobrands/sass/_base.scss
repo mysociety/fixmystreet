@@ -951,8 +951,8 @@ input.final-submit {
 // fancybox gallery images have a magnifying glass in the corner
 .update-img {
   a {
-    @include inline-block;
-    position:relative;
+    display: block;
+    position: relative;
     span {
       position:absolute;
       top:0;
