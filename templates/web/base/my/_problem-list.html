@@ -1,10 +1,10 @@
-<ul class='issue-list-a full-width'>
+<ul class='item-list item-list--reports full-width'>
     [% IF problems.size %]
         [% FOREACH problem = problems %]
             [% INCLUDE 'reports/_list-entry.html' no_fixed = 1 %]
         [% END %]
     [% ELSE %]
-        <li class="empty">
+        <li class="item-list__item item-list__item--empty">
             <p>[% loc('There are no reports to show.') %]</p>
         </li>
     [% END %]

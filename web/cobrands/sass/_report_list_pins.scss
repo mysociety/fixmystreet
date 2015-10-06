@@ -1,51 +1,39 @@
-.issue-list-a {
-  li {
-    position: relative;
-    margin: 0;
-    background: none;
+.item-list__item--with-pin {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  background: none;
 
-    a {
-      display: block;
-      padding: 1em;
-      padding-#{$left}: 4em;
-      border-#{$left}: solid 1em transparent;
-      background: transparent url(/i/pin-yellow-small.png) no-repeat $left center;
-    }
+  a {
+    display: block;
+    padding: 1em;
+    padding-#{$left}: 4em;
+    border-#{$left}: solid 1em transparent;
+    background: transparent url(/i/pin-yellow-small.png) no-repeat $left center;
+  }
 
-    &.yellow a {
-        background-image: url(/i/pin-yellow-small.png);
-    }
-    &.green a {
-        background-image: url(/i/pin-green-small.png);
-    }
-    &.red a {
-        background-image: url(/i/pin-red-small.png);
-    }
-    &.grey a {
-        background-image: url(/i/pin-grey-small.png);
-    }
+  &.yellow a {
+      background-image: url(/i/pin-yellow-small.png);
+  }
+  &.green a {
+      background-image: url(/i/pin-green-small.png);
+  }
+  &.red a {
+      background-image: url(/i/pin-red-small.png);
+  }
+  &.grey a {
+      background-image: url(/i/pin-grey-small.png);
+  }
 
-    &.empty p {
-        display: block;
-        padding: 1em;
-        font-size: 1em;
-        text-align: center;
-    }
-
-    &:after {
-      content: "";
-      display: block;
-      height: 1px;
-      position: absolute;
-      #{$left}: 4em;
-      #{$right}: 0;
-      bottom: 0;
-      background-color: #e5e5e5;
-    }
-
-    &.empty:after {
-        #{$left}: 0;
-    }
+  &:after {
+    content: "";
+    display: block;
+    height: 1px;
+    position: absolute;
+    #{$left}: 4em;
+    #{$right}: 0;
+    bottom: 0;
+    background-color: #e5e5e5;
   }
 
   h3, p {
@@ -62,6 +50,24 @@
     color: #777;
   }
 }
+
+.item-list__item--empty {
+  background: none;
+  color: #777;
+  p {
+    padding: 1em;
+    text-align: center;
+  }
+}
+
+/* The front page is using the parent _item.html template */
+body.frontpage {
+    .item-list__item--with-pin a {
+        padding: 0;
+        padding-#{$left}: 3em;
+    }
+}
+
 
 .big-green-banner {
   display: none; // hide the empty banner by default
@@ -100,12 +106,4 @@
     vertical-align: -1px;
     margin-#{$left}: 0.2em;
   }
-}
-
-body.frontpage {
-    .issue-list-a {
-        li .text {
-            padding-#{$left}: 3em;
-        }
-    }
 }

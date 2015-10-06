@@ -1,5 +1,5 @@
-<li>
-<a class="text" href="[% c.uri_for('/report', problem.id ) %]">
+<li class="item-list__item item-list--reports__item [% item_extra_class %]">
+<a href="[% c.uri_for('/report', problem.id ) %]">
     [% IF problem.photo;
         photo = problem.get_photo_params
     %]

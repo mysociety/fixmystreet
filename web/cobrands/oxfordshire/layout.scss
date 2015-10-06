@@ -266,7 +266,7 @@ body.mappage {
   }
 }
 
-.issue-list-a {
+.item-list--reports {
     li:after {
         background-color: $oxfordshire_mid_grey_green;
     }
@@ -278,21 +278,21 @@ body.mappage {
 
 h4.static-with-rule {
   margin-top: 1em; // down from default 2em, avoid extra space between heading and .council_info_box
-  margin-bottom: 0; // no space between this and the .issue-list items
+  margin-bottom: 0; // no space between this and the .item-list items
   background: transparent; // rather than light grey
   padding: 0.75em 1em * (1/0.875); // compensate for 0.875 font-size
 }
 
-.issue-list li {
+.item-list--updates li {
   background: transparent;
   margin-top: 0; // no space between list items
 
-  // Replicate .issue-list-a styling, a bit
+  // Replicate .item-list--reports styling, a bit
   border-top: 1px solid $oxfordshire_mid_grey_green;
   padding: 1em 1em 1em 0;
   margin-left: 1em;
 
-  .update-wrap .update-text > :last-child {
+  .item-list__update-text > :last-child {
     margin-bottom: 0;
   }
 

@@ -1,5 +1,5 @@
-<li>
-<a class="text" href="[% c.uri_for('/report', problem.id ) %]">
+<li class="item-list__item item-list--reports__item">
+<a href="[% c.uri_for('/report', problem.id ) %]">
     [% IF problem.state != 'unconfirmed' AND problem.photo AND c.cobrand.allow_photo_display(problem);
         photo = problem.get_photo_params
     %]

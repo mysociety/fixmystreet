@@ -38,5 +38,5 @@ function setup_moderation (elem, word) {
 
 $(function () {
     setup_moderation( $('.problem-header'), 'problem' );
-    setup_moderation( $('.issue-list .issue'), 'update' );
+    setup_moderation( $('.item-list__item--updates'), 'update' );
 });
