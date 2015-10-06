@@ -70,3 +70,13 @@ have a body that only covered the state council administrative area.
     This is used to turn the full authority name returned by MapIt into a short
 name.
 
+* send_questionnaires
+
+    By default, FixMyStreet [sends questionnaires]({{site.baseurl}}running/surveys)
+    (sometimes called _surveys_) four weeks after a user submitted a report. The
+    questionnaire encourages them to update the 
+    <a href="{{ site.baseurl }}glossary/#state" class="glossary__link">state</a>
+    of the report. Return 0 to disable this feature so that surveys are never
+    sent.
+    
+

@@ -975,7 +975,7 @@ technical information, see
     <a name="state">state</a>
   </dt>
   <dd>
-    A <a href="#report">problem report</a> can go through several
+    A <a href="#report" class="glossary__link">problem report</a> can go through several
     <strong>states</strong> in its lifetime. Problems typically start as
     <em>unconfirmed</em>, then <em>open</em>, then <em>fixed</em>. There are
     other states, including those that can only be allocated by a <a
@@ -1092,6 +1092,9 @@ technical information, see
     <div class="more-info">
       <p>More information:</p>
       <ul>
+        <li>
+          <a href="{{ site.baseurl }}running/surveys">more about surveys</a>
+        </li>
         <li>
           Survey data is available to <a href="#administrator"
           class="glossary__link">administrators</a> on the Survey page of the admin
