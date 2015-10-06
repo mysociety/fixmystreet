@@ -1,0 +1,38 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Response Templates for %s'), body.name) -%]
+[% rt = response_template %]
+
+<h2> [% tprintf(loc('Response Templates for %s'), body.name) %] </h2>
+
+<h3> [% IF rt.id %]
+    [% tprintf(loc('Template &laquo;%s&raquo;'), rt.title) %]
+    [% ELSE %]
+    [% loc('New template') %]
+    [% END %]
+</h3>
+
+<form method="post"
+    action="[% c.uri_for('templates', body.id, rt.id || 'new' ) %]"
+    enctype="application/x-www-form-urlencoded"
+    accept-charset="utf-8"
+    class="validate">
+
+    <p>
+        <strong>[% loc('Title:') %] </strong>
+        <input type="text" name="title" class="required" size="30" value="[% rt.title| html %]">
+    </p>
+    <p>
+        <strong>[% loc('Text:') %] </strong>
+        <textarea name="text" class="required">[% rt.text |html %]</textarea> 
+    </p>
+    <p>
+    <input type="hidden" name="token" value="[% token %]" >
+    <input type="submit" name="Edit templates" value="[% rt.id ? loc('Save changes') : loc('Create template') %]" >
+    </p>
+    [% IF rt.id %]
+        <p>
+            <input class="delete" type="submit" name="delete_template" value="[% loc('Delete template') %]">
+        </p>
+    [% END %]
+</form>
+
+[% INCLUDE 'admin/footer.html' %]

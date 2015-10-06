@@ -14,7 +14,7 @@
 [% SET start = c.config.ADMIN_BASE_URL IF admin %]
 
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
-        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="screen and (min-width:48em)">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
             <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
@@ -68,8 +68,13 @@
             <li [% IF pagename == 'users' OR pagename == 'user_edit' %]class="current"[% END %]>
                 <a href="/admin/users">[% loc('Users') %]</a>
             </li>
+            [% END %]
             <li [% IF pagename == 'stats' %]class="current"[% END %]>
                 <a href="/admin/stats">[% loc('Stats') %]</a>
+            </li>
+            [% IF admin_type == 'dm' %]
+            <li [% IF pagename == 'templates' OR pagename == 'template' %]class="current"[% END %]>
+                <a href="/admin/templates">[% loc('Templates') %]</a>
             </li>
             [% END %]
             <li class="search-box">

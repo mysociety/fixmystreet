@@ -93,6 +93,7 @@ sub report_new : Path : Args(0) {
     $c->forward('check_for_category');
 
     # deal with the user and report and check both are happy
+
     return unless $c->forward('check_form_submitted');
     $c->forward('process_user');
     $c->forward('process_report');
@@ -290,7 +291,7 @@ sub report_import : Path('/import') {
     }
 
     # handle the photo upload
-    $c->forward( '/photo/process_photo_upload' );
+    $c->forward( '/photo/process_photo' );
     my $fileid = $c->stash->{upload_fileid};
     if ( my $error = $c->stash->{photo_error} ) {
         push @errors, $error;
@@ -889,8 +890,23 @@ sub process_report : Private {
             $report->bodies_str(-1);
         } else {
             # construct the bodies string:
-            #  'x,x' - x are body IDs that have this category
-            my $body_string = join( ',', map { $_->body_id } @contacts );
+            my $body_string = do {
+                if ( $c->cobrand->can('singleton_bodies_str') && $c->cobrand->singleton_bodies_str ) {
+                    # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
+                    # relies on string comparison against bodies_str.
+                    if (@contacts) {
+                        $contacts[0]->body_id;
+                    }
+                    else {
+                        '';
+                    }
+                }
+                else {
+                    #  'x,x' - x are body IDs that have this category
+                    my $bs = join( ',', map { $_->body_id } @contacts );
+                    $bs;
+                };
+            };
             $report->bodies_str($body_string);
             # Record any body IDs which might have meant to match, but had no contact
             if ($body_string && @{ $c->stash->{missing_details_bodies} }) {
@@ -1162,6 +1178,9 @@ sub redirect_or_confirm_creation : Private {
         }
     } );
     $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
+    if ($c->cobrand->can('problem_confirm_email_extras')) {
+        $c->cobrand->problem_confirm_email_extras($report);
+    }
     $c->send_email( $template, {
         to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
     } );

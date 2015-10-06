@@ -5,10 +5,10 @@
             <div class="update-wrap">
                 <div class="update-text">
                     <p class="meta-2">[% prettify_dt( problem.lastupdate, 'zurich' ) %]</p>
-                  [% IF problem.state == 'fixed - council' %]
+                    [%# XXX following should honour zurich_closed_states instead? %]
+                    [% IF problem.state == 'fixed - council'
+                    || ( problem.external_body AND problem.state == 'closed' ) %]
                     [% add_links( problem.extra.public_response ) | html_para %]
-                  [% ELSIF problem.state == 'closed' AND problem.external_body %]
-                    <p>[% tprintf( loc('Assigned to %s'), problem.body(c).name ) %]</p>
                   [% END %]
                 </div>
             </div>

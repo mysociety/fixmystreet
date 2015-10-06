@@ -321,6 +321,7 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
     MAPIT_URL => 'http://global.mapit.mysociety.org/',
     MAPIT_TYPES => [ 'O08' ],
     MAPIT_ID_WHITELIST => [],
+    MAP_TYPE => 'Zurich,OSM',
   }, sub {
     ok $mech->host("zurich.example.org"), 'change host to zurich';
 
@@ -364,11 +365,14 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
       {
         name          => 'Test User ll',
         detail        => 'This is a test report ll',
-        photo         => '',
+        photo1         => '',
+        photo2         => '',
+        photo3         => '',
         phone         => '',
         email => 'test-ll@example.com',
       },
-      "check imported fields are shown";
+      "check imported fields are shown"
+          or diag Dumper( $mech->visible_form_values ); use Data::Dumper;
 
     my $user =
       FixMyStreet::App->model('DB::User')

@@ -1,17 +1,6 @@
 [% USE date %]
-[% BLOCK banner %]
-    <div class="banner">
-        <p id="[% id %]">[% text %]</p>
-    </div>
-[% END %]
-
-[% IF problem.state == 'unconfirmed' %]
-    [% INCLUDE banner, id = 'closed', text = loc('Submitted') %]
-[% ELSIF problem.state == 'confirmed' %]
-    [% INCLUDE banner, id = 'closed', text = loc('Open') %]
-[% ELSIF problem.is_fixed OR problem.is_closed %]
-    [% INCLUDE banner, id = 'fixed', text = loc('Closed') %]
-[% ELSIF problem.state == 'in progress' OR problem.state == 'planned' %]
-    [% INCLUDE banner, id = 'progress', text = loc('In progress') %]
-[% END %]
+[% problem_hashref = c.cobrand.problem_as_hashref(problem, c) %]
+<div class="banner">
+    <p id="[% problem_hashref.banner_id %]">[% problem_hashref.state_t %]</p>
+</div>
 

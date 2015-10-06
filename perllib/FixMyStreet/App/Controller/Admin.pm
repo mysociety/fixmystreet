@@ -10,6 +10,7 @@ use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email);
 use if !$ENV{TRAVIS}, 'Image::Magick';
 use DateTime::Format::Strptime;
+use List::Util 'first';
 
 
 use FixMyStreet::SendReport;
@@ -363,6 +364,14 @@ sub update_contacts : Private {
         $contact->api_key( $c->get_param('api_key') );
         $contact->send_method( $c->get_param('send_method') );
 
+        # Set the photo_required flag in extra to the appropriate value
+        if ( $c->get_param('photo_required') ) {
+            $contact->set_extra_metadata_if_undefined(  photo_required => 1 );
+        }
+        else {
+            $contact->unset_extra_metadata( 'photo_required' );
+        }
+
         if ( %errors ) {
             $c->stash->{updated} = _('Please correct the errors below');
             $c->stash->{contact} = $contact;
@@ -669,12 +678,21 @@ sub report_edit : Path('report_edit') : Args(1) {
                 type      => 'big',
               } ]
             : [],
+            print_report => 1,
         );
     }
 
-    if ( $c->get_param('rotate_photo') ) {
-        $c->forward('rotate_photo');
-        return 1;
+    if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
+        $self->rotate_photo($c,  @$rotate_photo_param);
+        if ( $c->cobrand->moniker eq 'zurich' ) {
+            # Clicking the photo rotation buttons should do nothing
+            # except for rotating the photo, so return the user
+            # to the report screen now.
+            $c->res->redirect( $c->uri_for( 'report_edit', $problem->id ) );
+            return;
+        } else {
+            return 1;
+        }
     }
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
@@ -808,6 +826,85 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
 
     return 1;
+}
+
+sub templates : Path('templates') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->detach( '/page_error_404_not_found' )
+        unless $c->cobrand->moniker eq 'zurich';
+
+    my $user = $c->user;
+
+    $self->templates_for_body($c, $user->from_body );
+}
+
+sub templates_view : Path('templates') : Args(1) {
+    my ($self, $c, $body_id) = @_;
+
+    $c->detach( '/page_error_404_not_found' )
+        unless $c->cobrand->moniker eq 'zurich';
+
+    # e.g. for admin
+
+    my $body = $c->model('DB::Body')->find($body_id)
+        or $c->detach( '/page_error_404_not_found' );
+
+    $self->templates_for_body($c, $body);
+}
+
+sub template_edit : Path('templates') : Args(2) {
+    my ( $self, $c, $body_id, $template_id ) = @_;
+
+    $c->detach( '/page_error_404_not_found' )
+        unless $c->cobrand->moniker eq 'zurich';
+
+    my $body = $c->model('DB::Body')->find($body_id)
+        or $c->detach( '/page_error_404_not_found' );
+    $c->stash->{body} = $body;
+
+    my $template;
+    if ($template_id eq 'new') {
+        $template = $body->response_templates->new({});
+    }
+    else {
+        $template = $body->response_templates->find( $template_id )
+            or $c->detach( '/page_error_404_not_found' );
+    }
+
+    if ($c->req->method eq 'POST') {
+        if ($c->get_param('delete_template') eq _("Delete template")) {
+            $template->delete;
+        } else {
+            $template->title( $c->get_param('title') );
+            $template->text ( $c->get_param('text') );
+            $template->update_or_insert;
+        }
+
+        $c->res->redirect( $c->uri_for( 'templates', $body->id ) );
+    }
+
+    $c->stash->{response_template} = $template;
+
+    $c->stash->{template} = 'admin/template_edit.html';
+}
+
+
+sub templates_for_body {
+    my ( $self, $c, $body ) = @_;
+
+    $c->stash->{body} = $body;
+
+    my @templates = $body->response_templates->search(
+        undef,
+        {
+            order_by => 'title'
+        }
+    );
+
+    $c->stash->{response_templates} = \@templates;
+
+    $c->stash->{template} = 'admin/templates.html';
 }
 
 sub users: Path('users') : Args(0) {
@@ -1251,13 +1348,24 @@ Adds an entry into the admin_log table using the current user.
 =cut
 
 sub log_edit : Private {
-    my ( $self, $c, $id, $object_type, $action ) = @_;
+    my ( $self, $c, $id, $object_type, $action, $time_spent ) = @_;
+
+    $time_spent //= 0;
+    $time_spent = 0 if $time_spent < 0;
+
+    my $user_object = do {
+        my $auth_user = $c->user;
+        $auth_user ? $auth_user->get_object : undef;
+    };
+
     $c->model('DB::AdminLog')->create(
         {
             admin_user => $c->forward('get_user'),
+            $user_object ? ( user => $user_object ) : (), # as (rel => undef) doesn't work
             object_type => $object_type,
             action => $action,
             object_id => $id,
+            time_spent => $time_spent,
         }
     )->insert();
 }
@@ -1370,36 +1478,27 @@ Rotate a photo 90 degrees left or right
 
 =cut
 
-sub rotate_photo : Private {
-    my ( $self, $c ) =@_;
+# returns index of photo to rotate, if any
+sub _get_rotate_photo_param {
+    my ($self, $c) = @_;
+    my $key = first { /^rotate_photo/ } keys %{ $c->req->params } or return;
+    my ($index) = $key =~ /(\d+)$/;
+    my $direction = $c->get_param($key);
+    return [ $index || 0, $key, $direction ];
+}
 
-    my $direction = $c->get_param('rotate_photo');
+sub rotate_photo : Private {
+    my ( $self, $c, $index, $key, $direction ) = @_;
+
     return unless $direction eq _('Rotate Left') or $direction eq _('Rotate Right');
 
-    my $photo = $c->stash->{problem}->photo;
-    my $file;
+    my $problem = $c->stash->{problem};
+    my $fileid = $problem->get_photoset($c)->rotate_image(
+        $index,
+        $direction eq _('Rotate Left') ? -90 : 90
+    ) or return;
 
-    # If photo field contains a hash
-    if ( length($photo) == 40 ) {
-        $file = file( $c->config->{UPLOAD_DIR}, "$photo.jpeg" );
-        $photo = $file->slurp;
-    }
-
-    $photo = _rotate_image( $photo, $direction eq _('Rotate Left') ? -90 : 90 );
-    return unless $photo;
-
-    # Write out to new location
-    my $fileid = sha1_hex($photo);
-    $file = file( $c->config->{UPLOAD_DIR}, "$fileid.jpeg" );
-
-    my $fh = $file->open('w');
-    print $fh $photo;
-    close $fh;
-
-    unlink glob FixMyStreet->path_to( 'web', 'photo', $c->stash->{problem}->id . '.*' );
-
-    $c->stash->{problem}->photo( $fileid );
-    $c->stash->{problem}->update();
+    $problem->update({ photo => $fileid });
 
     return 1;
 }
@@ -1448,18 +1547,6 @@ sub trim {
     $e =~ s/\s+$//;
     return $e;
 }
-
-sub _rotate_image {
-    my ($photo, $direction) = @_;
-    my $image = Image::Magick->new;
-    $image->BlobToImage($photo);
-    my $err = $image->Rotate($direction);
-    return 0 if $err;
-    my @blobs = $image->ImageToBlob();
-    undef $image;
-    return $blobs[0];
-}
-
 
 =head1 AUTHOR
 

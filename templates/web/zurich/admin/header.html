@@ -9,16 +9,20 @@
         'planned' = loc('Planned'),
         'fixed - council' = loc('Closed'),
         'hidden' = loc('Hidden'),
-        'closed' = loc('Closed'),
+        'closed' = loc('Extern'),
+        'partial' = loc('Not contactable'),
+        'investigating' = loc('Wish'),
+        'unable to fix' = loc('Jurisdiction unknown'),
+        'fixed - council' = loc('Closed'),
     }
 %]
 <style type="text/css">
     .adminhidden { color: #666666; }
-    .admininternal { background-color: #eeeeff; }
     .active { background-color: #ffffee; cursor: pointer; }
     .error { color: red; }
     .overdue { background-color: #ffcccc; }
     select { width: auto; }
+    .admin-report-edit select { max-width: 100%; }
     #fms_pan_zoom { top: 13em !important; }
 </style>
 <script>

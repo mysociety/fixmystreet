@@ -1,3 +1,4 @@
+[% USE date %]
                 </div><!-- .content role=main -->
             </div><!-- .container -->
         </div><!-- .table-cell -->
@@ -30,7 +31,7 @@
 
     <div id="zurich-footer-wrapper" class="desk-only">
     <div id="zurich-footer">
-        &copy; 2013 Stadt Z&uuml;rich
+        &copy; [% date.format(date.now, '%Y') %] Stadt Z&uuml;rich
         <span class="hidden">|</span> <a href="http://www.stadt-zuerich.ch/content/portal/de/index/footer/rechtliche_hinweise.html">Rechtliche Hinweise</a>
         <span class="hidden">|</span> <a href="http://www.stadt-zuerich.ch/content/portal/de/index/footer/impressum.html">Impressum</a>
     </div>

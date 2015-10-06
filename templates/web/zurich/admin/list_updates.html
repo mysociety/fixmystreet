@@ -1,45 +1,49 @@
 [% IF updates.size %]
 
-<h2>[% loc('Internal notes') %]</h3>
+[%# We assume internal notes are lowest priority, and thus displayed last.
+    All other updates (eg: "I've done this work, here's what you should tell
+    the citizen") are displayed first. %]
 
-<table cellspacing="0" cellpadding="2" border="1">
-    <tr>
-        <th>[% loc('ID') %]</th>
-        <th>[% loc('Created') %]</th>
-        <th>[% loc('User') %]</th>
-        <th>[% loc('Text') %]</th>
-    </tr>
-[% FOREACH update IN updates -%]
-    [% IF update.extra.is_internal_note %]
-    <tr class="[% 'admininternal' IF update.extra.is_internal_note %]">
-        <td>[% update.id %]</td>
-        <td>[% PROCESS format_date this_date=update.created %] [% update.created.hms %]</td>
-        <td><a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a></td>
-        <td>[% update.text | html %]</td>
-    </tr>
-    [% END %]
-[% END -%]
-</table>
+[%  internal_updates=[];
+    sdm_notes=[];
+    FOREACH update IN updates;
+        IF NOT update.extra.is_external_message;
+            IF update.extra.is_internal_note;
+                internal_updates.unshift(update);
+            ELSE;
+                sdm_notes.unshift(update);
+            END;
+        END;
+    END
+%]
 
-<h2>[% loc('Updates') %]</h2>
+[% IF sdm_notes.size %]
+    <h2>[% loc('Notes from SDM to DM') %]</h2>
 
-<table cellspacing="0" cellpadding="2" border="1">
-    <tr>
-        <th>[% loc('ID') %]</th>
-        <th>[% loc('Created') %]</th>
-        <th>[% loc('User') %]</th>
-        <th>[% loc('Text') %]</th>
-    </tr>
-[% FOREACH update IN updates -%]
-    [% IF ! update.extra.is_internal_note %]
-    <tr class="[% 'adminhidden' IF update.state == 'hidden' || update.problem.state == 'hidden' %]">
-        <td>[% update.id %]</td>
-        <td>[% PROCESS format_date this_date=update.created %] [% update.created.hms %]</td>
-        <td><a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a></td>
-        <td>[% update.text | html %]</td>
-    </tr>
-    [% END %]
-[% END -%]
-</table>
+    [% FOREACH update IN sdm_notes -%]
+        <div class="admin-note [% 'adminhidden' IF update.state == 'hidden' || update.problem.state == 'hidden' %]" title="[% loc('ID') %]: [% update.id %]">
+          <p class="admin-note__text">[% update.text | html %]</p>
+          <p class="admin-note__creator">
+            <a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a>
+            &middot; [% PROCESS format_date this_date=update.created %] [% update.created.hms %]
+          </p>
+        </div>
+    [% END -%]
+[% END %]
+
+[% IF internal_updates.size %]
+    <h2>[% loc('Internal notes') %]</h2>
+
+    [% FOREACH update IN internal_updates -%]
+        <div class="admin-note admininternal" title="[% loc('ID') %]: [% update.id %]">
+          <p class="admin-note__text">[% update.text | html %]</p>
+          <p class="admin-note__creator">
+            <a href="mailto:[% update.user.email %]">[% update.user.name || update.user.email %]</a>
+            &middot; [% PROCESS format_date this_date=update.created %] [% update.created.hms %]
+          </p>
+        </div>
+    [% END -%]
+
+[% END %]
 
 [% END %]

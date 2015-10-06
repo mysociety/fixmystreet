@@ -1,4 +1,5 @@
 [%
+    PROCESS "report/photo-js.html";
     PROCESS "maps/zurich.html";
     PROCESS 'admin/header.html'
         title = tprintf(loc('Editing problem %d'), problem.id ),
@@ -9,63 +10,141 @@
 [% map_html %]
 </div>
 
-[% status_message %]
-
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
 
-<p align="right"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+<div class="admin-report-edit admin-report-edit--details">
 
-<ul class="no-bullets">
-<li><a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></li>
+<dl>
 
-<li><a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% problem.local_coords.0 %]&Nord=[% problem.local_coords.1 %]&B=300" target="_blank">Standort in AV-Online anzeigen</a></li>
+    <dd class="screen-only">&raquo; <a href="[% c.uri_for_email( '/report', problem.id ) %]">[% loc('View report on site' )%]</a></dd>
 
-<li><span class="mock-label">[% loc('Details:') %]</span> [% problem.detail | html %]
-[% IF problem.extra.original_detail %]
-<br>[%
-    SET safe = problem.extra.original_detail | html;
-    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
-%]
-[% END %]
-</li>
-<li><span class="mock-label">[% loc('Co-ordinates:') %]</span> [% problem.local_coords.join(',') %]
-	<input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
-	<input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
-([%
-    SET safe = problem.postcode | html;
-    tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
-%],
-[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+    <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&amp;Search=Koord&amp;West=[% problem.local_coords.0 %]&amp;Nord=[% problem.local_coords.1 %]&amp;B=300" target="_blank">Standort in AV-Online anzeigen</a></dd>
 
-<li><span class="mock-label">[% loc('Category:') %]</span> [% problem.category | html %] </li>
-<li><span class="mock-label">[% loc('Name:') %]</span> [% problem.name | html %]
-<li><span class="mock-label">[% loc('Email:') %]</span> [% problem.user.email | html %]
-[% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
-<li><span class="mock-label">[% loc('Phone:') %]</span> [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('None') %]</em>[% END %]</li>
-<li><span class="mock-label">[% loc('Created:') %]</span> [% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</li>
+    <dd class="screen-only">&raquo; <a href="http://webgis.intra.stzh.ch/stapo/GoogleStreetView.asp?lat=[% problem.latitude %]&amp;lon=[% problem.longitude %]" target="_blank">[% loc('Street View') %]</a></dd>
 
-[% IF problem.photo %]
-<li><img alt="" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg"></li>
-[% END %]
+    <dt><span class="mock-label">[% loc('Details:') %]</span></dt>
+    <dd>[% problem.detail | html %]</dd>
+  [% IF problem.extra.original_detail %]
+    <dd>[%
+      SET safe = problem.extra.original_detail | html;
+      tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
+    %]</dd>
+  [% END %]
 
-<li><span class="mock-label">[% loc('State:') %]</span> [% states.${problem.state} %]</li>
+    <dt class="print-only">[% loc('Reported:') %] <!-- Meldedatum --></dt>
+    <dd class="screen-no-space-after">
+        <strong>[% PROCESS format_date this_date=problem.created %] [% problem.created.hms %]</strong>
+    </dd>
+    <dt class="print-only">[% loc('Coordinates:') %] <!-- Koordinaten --></dt>
+    <dd class="screen-no-space-after print-no-space-after">
+        [% problem.local_coords.join(',') %]
+        <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% problem.latitude %]">
+        <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% problem.longitude %]">
+    </dd>
+    <dd class="screen-no-space-after print-no-space-after">
+      [% IF problem.used_map %]
+        [% loc('Used map') %]
+      [% ELSE %]
+        [% loc("Didn't use map") %]
+      [% END %]
+    </dd>
+    <dd>[%
+        SET safe = problem.postcode | html;
+        tprintf( loc('originally entered: &ldquo;%s&rdquo;'), safe )
+    %]</dd>
 
-<li><label for="new_internal_note">[% loc('New internal note:') %]</label>
-<textarea name='new_internal_note' id='new_internal_note' cols=60 rows=5></textarea></li>
+    <dt class="print-only">[% loc('Reported by:') %] <!-- Meldende Person --></dt>
+    <dd>
+        <strong>[% IF problem.name %][% problem.name | html %][% ELSE %][% loc('(No name)') %][% END %]</strong>
+        <input type='hidden' name='name' id='name' value='[% problem.name | html %]'>
+        <br>
+        [% problem.user.email | html %]
+        [% IF NOT problem.extra.email_confirmed %]<span class="error">[% loc('Unconfirmed') %]</span>[% END %]
+        <input type='hidden' id='email' name='email' value='[% problem.user.email | html %]'>
+        <br>
+        [% IF problem.user.phone %][% problem.user.phone | html %][% ELSE %]<em>[% loc('(No phone number)') %]</em>[% END %]
+    </dd>
 
-<li><label for="status_update">[% loc('New update:') %]</label>
-<textarea name='status_update' id='status_update' cols=60 rows=5></textarea></li>
+    <dt>[% loc('Category:') %] <!-- Kategorie --></dt>
+    <dd>[% problem.category | html %]</dd>
 
+    <dt class="print-only">[% loc('State:') %] <!-- Status --></dt>
+    <dd class="print-only">[% states.${problem.state} %]</dd>
+
+    <dt>[% loc('Time spent (in minutes):') %]</dt>
+    <dd>[% problem.get_time_spent %]</dd>
+
+    <dd>
+    [% status_message %]
+    </dd>
+
+  [% IF problem.photo %]
+    <dd>
+      [% FOR photo IN problem.get_photoset(c).images %]
+        <div class="update-img">
+            <a href="[% c.cobrand.base_url %]/photo/[% photo.0 %].fulltemp.jpeg" rel="fancy">
+                <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
+                <span>zoom</span>
+            </a>
+        </div>
+      [% END %]
+     </dd>
+  [% END %]
+
+</dl>
+
+</div>
+
+<div class="admin-report-edit admin-report-edit--interact">
+
+<script type="text/javascript">
+    $(function(){
+        $('#map_box .noscript').clone().removeClass('noscript').addClass('map_clone print-only').prependTo('.admin-report-edit--interact');
+    });
+</script>
+
+<p align="right" class="screen-only"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
+<p align="right" class="screen-only"><input type="submit" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
+
+<ul class="no-bullets screen-only">
+    <li>
+        <label for="new_internal_note">[% loc('New internal note:') %]</label>
+        <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4></textarea>
+    </li>
+    <li>
+        <label for="status_update">[% loc('New note to DM:') %]</label>
+        <textarea name='status_update' id='status_update' cols=60 rows=4></textarea>
+    </li>
 </ul>
 
-<p class="cf">
+<p class="screen-only">
+    <label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
+    <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+    <script>
+        $(function () {
+            $('#form_time_spent').spinner({
+                spin: function (e, ui) {
+                    if (ui.value < 0) { return false }
+                }
+            });
+        });
+    </script>
+</p>
+
+<p class="cf screen-only">
     <input style="float:left" type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
     <input style="float:right" type="submit" name="no_more_updates" value="[% loc('No further updates') %]">
 </p>
-</form>
 
 [% INCLUDE 'admin/list_updates.html' %]
+
+</div>
+</form>
+
+<div id="print_report_map" class="print-only">
+[% INCLUDE 'maps/noscript_map.html' map=print_report_map nsm_prefix="large_" %]
+</div>
 
 [% INCLUDE 'admin/footer.html' %]

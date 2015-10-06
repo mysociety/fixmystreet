@@ -323,10 +323,6 @@ sub visible_states_remove {
     }
 }
 
-sub visible_states_add_unconfirmed {
-    $_[0]->visible_states_add('unconfirmed')
-}
-
 =head2
 
     @states = FixMyStreet::DB::Problem::council_states();
@@ -483,11 +479,17 @@ sub url {
 
 =head2 get_photo_params
 
-Returns a hashref of details of any attached photo for use in templates.
+Returns a hashref of details of the attached photo, if any, for use in templates.
+
+NB: this method doesn't currently support multiple photos gracefully.  
+
+Use get_photoset($c) instead to do the right thing with reports with 0, 1, or more photos.
 
 =cut
 
 sub get_photo_params {
+    # use Carp 'cluck';
+    # cluck "get_photo_params called"; # TEMPORARY die to make sure I've done right thing with Zurich templates
     my $self = shift;
     return FixMyStreet::App::get_photo_params($self, 'id');
 }
@@ -637,7 +639,28 @@ sub body {
     return $body;
 }
 
-# returns true if the external id is the council's ref, i.e., useful to publish it.
+=head2 response_templates
+
+Returns all ResponseTemplates attached to this problem's bodies, in alphabetical
+order of title.
+
+=cut
+
+sub response_templates {
+    my $problem = shift;
+    return FixMyStreet::App->model('DB::ResponseTemplate')->search(
+        {
+            body_id => $problem->bodies_str_ids
+        },
+        {
+            order_by => 'title'
+        }
+    );
+}
+
+# returns true if the external id is the council's ref, i.e., useful to publish it
+# (by way of an example, the barnet send method returns a useful reference when
+# it succeeds, so that is the ref we should show on the problem report page).
 #     Future: this is installation-dependent so maybe should be using the contact
 #             data to determine if the external id is public on a council-by-council basis.
 #     Note:   this only makes sense when called on a problem that has been sent!
@@ -828,6 +851,27 @@ sub latest_moderation_log_entry {
     return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
 }
 
+=head2 get_photoset
+
+Return a PhotoSet object for all photos attached to this field
+
+    my $photoset = $obj->get_photoset( $c );
+    print $photoset->num_images;
+    return $photoset->get_image_data(num => 0, size => 'full');
+
+=cut
+
+sub get_photoset {
+    my ($self, $c) = @_;
+    my $class = 'FixMyStreet::App::Model::PhotoSet';
+    eval "use $class";
+    return $class->new({
+        c => $c,
+        data => $self->photo,
+        object => $self,
+    });
+}
+
 __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",
@@ -837,6 +881,18 @@ __PACKAGE__->has_many(
       where => { 'object_type' => 'problem' },
   }
 );
+
+sub get_time_spent {
+    my $self = shift;
+    my $admin_logs = $self->admin_log_entries->search({},
+        {
+            group_by => 'object_id',
+            columns => [
+                { sum_time_spent => { sum => 'time_spent' } },
+            ]
+        })->single;
+    return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
+}
 
 # we need the inline_constructor bit as we don't inherit from Moose
 __PACKAGE__->meta->make_immutable( inline_constructor => 0 );

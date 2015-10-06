@@ -111,9 +111,6 @@ body.mappage {
         padding-top: 18px;
         background: #fff url(logo_portal.x.jpg) top left repeat-x;
     }
-    #site-logo {
-        margin-left: 10px;
-    }
     .content {
       margin-top: 1em;
     }
@@ -242,10 +239,52 @@ body.fullwidthpage.admin .content {
     width: 100%;
 }
 
-body.mappage.admin .content {
-    margin-top: 6em;
-    margin-left: 0.5em;
+body.mappage.admin {
+    .content {
+        margin-top: 5em;
+        margin-left: 0;
+        padding: 0px;
+        width: 40em;
+        background: #fff url(/cobrands/zurich/admin-faux-columns.gif) top center repeat-y;
+        @include box-shadow(0 0 5px rgba(0,0,0,0.5));
+    }
 }
+
+.admin-report-edit {
+    padding: 1em;
+    width: 50%;
+    float: right;
+    font-size: 0.8em;
+    box-sizing: border-box;
+
+    button, input[type="submit"], .btn {
+        padding: 0.5em 0.5em 0.3em 0.5em;
+        text-transform: none;
+    }
+
+    h2 {
+        font-family: inherit;
+        font-size: inherit;
+        font-weight: bold;
+    }
+}
+
+.admin-report-edit--details {
+    label[for="title"],
+    label[for="detail"] {
+        display: none;
+    }
+
+    #title {
+        margin-top: 1em;
+        font-weight: bold;
+    }
+
+    #detail {
+        margin-bottom: 1em;
+    }
+}
+
 .admin {
     .content {
         margin: 2em 0 1em;
@@ -263,10 +302,35 @@ body.mappage.admin .content {
           font-weight: bold;
           padding-right: 0.333em;
         }
+        :first-child > label {
+            // avoid empty space above first label in a container
+            margin-top: 0;
+        }
+        textarea {
+            min-height: 0;
+        }
+    }
+
+    button, input[type=submit], .btn {
+        &.delete {
+            font-size: 0.75em;
+            color: #933;
+            margin: 2em 0;
+
+            &:hover {
+                @include background(linear-gradient(#fcc, #daa 50%));
+            };
+        }
     }
 
     #zurich-footer {
         margin: 2em auto 3em auto;
+    }
+
+    .message-updated {
+      color: #060;
+      font-weight: bold;
+      position: absolute;
     }
 }
 
@@ -274,11 +338,12 @@ body.mappage.admin .content {
     background-color: white;
     padding: 1.5em 0 1em;
 }
+
 body.mappage .admin-nav-wrapper {
     box-sizing: border-box;
     padding-left: 10px;
     padding-right: 10px;
     position: fixed;
     width: 100%;
-    @include box-shadow(0 0 6px 1px #000);
+    @include box-shadow(0 0 5px rgba(0,0,0,0.5));
 }

@@ -18,7 +18,9 @@
         <td>[% PROCESS value_or_nbsp value=problem.category %]</td>
         <td>[% PROCESS format_date this_date=problem.created %]</td>
         <td>[% PROCESS format_date this_date=problem.lastupdate %]</td>
-        <td>[% states.${problem.state} %]</td>
+        <td> [% states.${problem.state} %][% IF problem.state == 'planned';
+            SET cs=problem.get_extra_metadata('closure_status');
+            IF cs %] ([% states.$cs %]) [% END; END %]</td>
 
         [% IF include_subdiv %]
             <td>
@@ -34,7 +36,11 @@
 
         <td>
         [% IF problem.photo %]
-            <img class="img" height="60" width="90" src="[% c.cobrand.base_url %]/photo/[% problem.photo %].temp.jpeg" alt="">
+            [% FOR photo IN problem.get_photoset(c).images %]
+            <div class="update-img">
+                <img height="60" width="90" alt="" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
+            </div>
+            [% END %]
         [% END %]
         </td>
 

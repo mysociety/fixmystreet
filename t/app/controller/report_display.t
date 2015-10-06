@@ -96,19 +96,6 @@ subtest "change report to unconfirmed and check for 404 status" => sub {
 };
 
 
-subtest "Zurich unconfirmeds are 200" => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'zurich' ],
-    }, sub {
-        $mech->host( 'zurich.example.com' );
-        ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
-        $mech->get_ok("/report/$report_id");
-        $mech->content_contains( '&Uuml;berpr&uuml;fung ausstehend' );
-        ok $report->update( { state => 'confirmed' } ), 'confirm report again';
-        $mech->host( 'www.fixmystreet.com' );
-    };
-};
-
 subtest "change report to hidden and check for 410 status" => sub {
     ok $report->update( { state => 'hidden' } ), 'hide report';
     ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
@@ -400,76 +387,6 @@ for my $test (
     };
 }
 
-subtest "Zurich banners are displayed correctly" => sub {
-  FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'zurich' ],
-  }, sub {
-    $mech->host( 'zurich.example.com' );
-
-    for my $test (
-        {
-            description => 'new report',
-            state => 'unconfirmed',
-            banner_id => 'closed',
-            banner_text => 'Erfasst'
-        },
-        {
-            description => 'confirmed report',
-            state => 'confirmed',
-            banner_id => 'closed',
-            banner_text => 'Aufgenommen',
-        },
-        {
-            description => 'fixed report',
-            state => 'fixed - council',
-            banner_id => 'fixed',
-            banner_text => 'Beantwortet',
-        },
-        {
-            description => 'closed report',
-            state => 'closed',
-            banner_id => 'fixed',
-            banner_text => 'Beantwortet',
-        },
-        {
-            description => 'in progress report',
-            state => 'in progress',
-            banner_id => 'progress',
-            banner_text => 'In Bearbeitung',
-        },
-        {
-            description => 'planned report',
-            state => 'planned',
-            banner_id => 'progress',
-            banner_text => 'In Bearbeitung',
-        },
-    ) {
-        subtest "banner for $test->{description}" => sub {
-            $report->state( $test->{state} );
-            $report->update;
-
-            $mech->get_ok("/report/$report_id");
-            is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
-            my $banner = $mech->extract_problem_banner;
-            if ( $banner->{text} ) {
-                $banner->{text} =~ s/^ //g;
-                $banner->{text} =~ s/ $//g;
-            }
-
-            is $banner->{id}, $test->{banner_id}, 'banner id';
-            if ($test->{banner_text}) {
-                like_string( $banner->{text}, qr/$test->{banner_text}/i, 'banner text is ' . $test->{banner_text} );
-            } else {
-                is $banner->{text}, $test->{banner_text}, 'banner text';
-            }
-
-        };
-    }
-
-    $mech->host( 'www.fixmystreet.com' );
-  };
-};
-
 my $body_westminster = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body_camden = $mech->create_body_ok(2505, 'Camden Borough Council');
 
@@ -517,6 +434,107 @@ for my $test (
         }
     };
 }
+
+subtest "Zurich unconfirmeds are 200" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'zurich' ],
+        MAP_TYPE => 'Zurich,OSM',
+    }, sub {
+        $mech->host( 'zurich.example.com' );
+        ok $report->update( { state => 'unconfirmed' } ), 'unconfirm report';
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains( '&Uuml;berpr&uuml;fung ausstehend' );
+        ok $report->update( { state => 'confirmed' } ), 'confirm report again';
+        $mech->host( 'www.fixmystreet.com' );
+    };
+};
+
+subtest "Zurich banners are displayed correctly" => sub {
+  FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+    MAP_TYPE => 'Zurich,OSM',
+  }, sub {
+    $mech->host( 'zurich.example.com' );
+
+    for my $test (
+        {
+            description => 'new report',
+            state => 'unconfirmed',
+            banner_id => 'closed',
+            banner_text => 'Erfasst'
+        },
+        {
+            description => 'confirmed report',
+            state => 'confirmed',
+            banner_id => 'closed',
+            banner_text => 'Aufgenommen',
+        },
+        {
+            description => 'fixed report',
+            state => 'fixed - council',
+            banner_id => 'fixed',
+            banner_text => 'Beantwortet',
+        },
+        {
+            description => 'closed report',
+            state => 'closed',
+            banner_id => 'closed',
+            banner_text => _('Extern'),
+        },
+        {
+            description => 'in progress report',
+            state => 'in progress',
+            banner_id => 'progress',
+            banner_text => 'In Bearbeitung',
+        },
+        {
+            description => 'planned report',
+            state => 'planned',
+            banner_id => 'progress',
+            banner_text => 'In Bearbeitung',
+        },
+        {
+            description => 'planned report',
+            state => 'planned',
+            banner_id => 'progress',
+            banner_text => 'In Bearbeitung',
+        },
+        {
+            description => 'jurisdiction unknown',
+            state => 'unable to fix',
+            banner_id => 'fixed',
+            # We can't use _('Jurisdiction Unknown') here because
+            # TestMech::extract_problem_banner decodes the HTML entities before
+            # the string is passed back.
+            banner_text => 'Zust\x{e4}ndigkeit unbekannt',
+        },
+    ) {
+        subtest "banner for $test->{description}" => sub {
+            $report->state( $test->{state} );
+            $report->update;
+
+            $mech->get_ok("/report/$report_id");
+            is $mech->uri->path, "/report/$report_id", "at /report/$report_id";
+            my $banner = $mech->extract_problem_banner;
+            if ( $banner->{text} ) {
+                $banner->{text} =~ s/^ //g;
+                $banner->{text} =~ s/ $//g;
+            }
+
+            is $banner->{id}, $test->{banner_id}, 'banner id';
+            if ($test->{banner_text}) {
+                like_string( $banner->{text}, qr/$test->{banner_text}/i, 'banner text is ' . $test->{banner_text} );
+            } else {
+                is $banner->{text}, $test->{banner_text}, 'banner text';
+            }
+
+        };
+    }
+
+    $mech->host( 'www.fixmystreet.com' );
+  };
+};
+
 
 END {
     $mech->delete_user('test@example.com');

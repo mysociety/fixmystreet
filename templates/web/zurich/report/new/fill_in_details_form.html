@@ -48,14 +48,17 @@
             [% PROCESS "report/new/category_wrapper.html" %]
 
             [% IF c.cobrand.allow_photo_upload %]
-                <label for="form_photo">[% loc('Photo') %]</label>
+                <label for="form_photo">
+                    [% loc('Photo') %]
+                    [% loc('(Defect &amp; location of defect)') %]
+                </label>
                 [% IF upload_fileid || report.photo %]
                     [% IF upload_fileid %]
                         <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
                         <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
                     [% END %]
 
-                    <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
+                    <p>[% loc('You have already attached photos to this report.  Note that you can attach a maximum of 3 to this report (if you try to upload more, the oldest will be removed).') %]</p>
 
                     [% IF report.photo %]
                         <img align="right" src="/photo/[% report.id %].jpeg">
@@ -65,7 +68,9 @@
                 [% IF field_errors.photo %]
                     <p class='form-error'>[% field_errors.photo %]</p>
                 [% END %]
-                <input type="file" name="photo" id="form_photo">
+                <input type="file" name="photo1" id="form_photo">
+                <input type="file" name="photo2" id="form_photo2">
+                <input type="file" name="photo3" id="form_photo3">
             [% END %]
 
                 <label for="form_email">[% loc('Your email') %]</label>
@@ -84,7 +89,7 @@
                 [% IF field_errors.phone %]
                     <p class='form-error'>[% field_errors.phone %]</p>
                 [% END %]
-                <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+                <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]" required>
 
                 <div class="form-txt-submit-box">
                     [%# ID of submit_sign_in so name can be option, name of submit_register so it doesn't try and sign us in %]

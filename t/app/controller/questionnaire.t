@@ -276,7 +276,7 @@ foreach my $test (
         $questionnaire->discard_changes;
         is $report->state, $result eq 'unknown' ? $test->{problem_state} : $result;
         is $report->send_questionnaire, $another;
-        ok DateTime::Format::Pg->format_datetime( $report->lastupdate) gt $report_time, 'lastupdate changed'
+        ok (DateTime::Format::Pg->format_datetime( $report->lastupdate) gt $report_time, 'lastupdate changed')
             unless $test->{fields}{been_fixed} eq 'Unknown' || $test->{lastupdate_static};
         is $questionnaire->old_state, $test->{problem_state};
         is $questionnaire->new_state, $result;

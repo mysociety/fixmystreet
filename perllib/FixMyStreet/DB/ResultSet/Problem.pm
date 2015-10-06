@@ -247,7 +247,7 @@ sub send_reports {
     my $site = $site_override || CronFns::site($base_url);
 
     my $states = [ 'confirmed', 'fixed' ];
-    $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed' ] if $site eq 'zurich';
+    $states = [ 'unconfirmed', 'confirmed', 'in progress', 'planned', 'closed', 'investigating' ] if $site eq 'zurich';
     my $unsent = $rs->search( {
         state => $states,
         whensent => undef,

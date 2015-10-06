@@ -1,0 +1,25 @@
+[% template_name="templates_for_${for}" %]
+
+[% response_templates = problem.response_templates %]
+<div class="response_templates_select">
+<select id="[% template_name %]">
+    <option value="">[% loc('Choose a template') %]</option>
+[% FOR t IN response_templates %]
+    <option value="[% t.id %]"> [% t.title | html %] </option>
+[% END %]
+</select>
+</div>
+<script>
+    $(function () {
+        var response_template_texts = {
+            [% FOR t IN response_templates %]
+                [% t.id %]: '[% t.text | escape_js %]' [% loop.last ? '' : ',' %]
+            [% END %]
+        };
+        $('#[% template_name %]').change(function () {
+            var val = $(this).val();
+            var text = response_template_texts[val];
+            $('#[% for %]').val( text );
+        });
+    });
+</script>

@@ -1009,6 +1009,13 @@ input.final-submit {
   }
 }
 
+// The map's static image fallback is visible by default.
+// Hide it if javascript has loaded. (We show it again when
+// the page is printed.)
+html.js #map .noscript {
+  display: none;
+}
+
 // OpenLayers fix for navigation being top right
 // Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
@@ -1734,6 +1741,50 @@ table.nicetable {
   }
 }
 
+
+@media screen {
+  .print-only {
+    display: none !important;
+  }
+}
+
+@media print {
+  @page {
+    margin: 3em;
+  }
+
+  #main-nav,
+  #nav-link,
+  .admin-nav,
+  .olControlAttribution,
+  .olControlPanZoom,
+  #sub_map_links,
+  #fms_pan_zoom,
+  .screen-only,
+  .olMapViewport {
+    display: none !important;
+  }
+
+  #map_box {
+    position: static !important;
+    height: 256px !important;
+    width: auto !important;
+    background: #f1eee9 !important; // cream colour to match OSM image
+  }
+
+  #map {
+    -webkit-transform: scale(0.5);
+    -ms-transform: scale(0.5);
+    transform: scale(0.5);
+    -webkit-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    transform-origin: 0 0;
+  }
+
+  html.js #map .noscript {
+    display: block;
+  }
+}
 
 @import "_admin";
 @import "_fixedthead";
