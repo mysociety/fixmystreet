@@ -1,12 +1,7 @@
-$(function () {
-    setup_moderation( $('.problem-header'), 'problem' );
-    setup_moderation( $('.issue-list .issue'), 'update' );
-});
-
 function setup_moderation (elem, word) {
 
     elem.each( function () {
-        var $elem = $(this)
+        var $elem = $(this);
         $elem.find('.moderate').click( function () {
             $elem.find('.moderate-display').hide();
             $elem.find('.moderate-edit').show();
@@ -40,3 +35,8 @@ function setup_moderation (elem, word) {
         });
     });
 }
+
+$(function () {
+    setup_moderation( $('.problem-header'), 'problem' );
+    setup_moderation( $('.issue-list .issue'), 'update' );
+});
