@@ -78,10 +78,30 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.jpeg$') {
 
     $c->detach( 'no_photo' ) unless $c->cobrand->allow_photo_display($item); # Should only be for reports, not updates
 
-    my $photo = $item->get_photoset( $c )
-        ->get_image_data( num => $photo_number, size => $size )
-        
-    or $c->detach( 'no_photo' );
+    my $photo;
+    if ($item->can('get_photoset')) {
+        $photo = $item->get_photoset( $c )
+            ->get_image_data( num => $photo_number, size => $size )
+        or $c->detach( 'no_photo' );
+    } else {
+        $photo = $item->photo;
+        # If photo field contains a hash
+        if (length($photo) == 40) {
+            my $file = file( $c->config->{UPLOAD_DIR}, "$photo.jpeg" );
+            $photo = $file->slurp;
+        }
+
+        if ( $size eq 'tn' ) {
+            $photo = _shrink( $photo, 'x100' );
+        } elsif ( $size eq 'fp' ) {
+            $photo = _crop( $photo );
+        } elsif ( $size eq 'full' ) {
+        } elsif ( $c->cobrand->default_photo_resize ) {
+            $photo = _shrink( $photo, $c->cobrand->default_photo_resize );
+        } else {
+            $photo = _shrink( $photo, '250x250' );
+        }
+    }
 
     $c->forward( 'output', [ $photo ] );
 }
