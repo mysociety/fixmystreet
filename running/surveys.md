@@ -101,7 +101,7 @@ to the problem report:
 
 It also asks:
 
-   * have you ever reported a problem to the council before?
+   * have you ever reported a problem to the body before?
    * (if the problem has not been marked as fixed) do you want to receive
      another survey email in four weeks' time?
 
