@@ -33,6 +33,7 @@ sub index : Path : Args(0) {
 
     # Zurich goes straight to map page, with all reports
     if ( $c->cobrand->moniker eq 'zurich' ) {
+        $c->forward( 'stash_report_filter_status' );
         $c->forward( 'load_and_group_problems' );
         my $pins = $c->stash->{pins};
         $c->stash->{page} = 'reports';
