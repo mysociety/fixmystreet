@@ -1,5 +1,5 @@
-<li>
-<a class="text" href="[% c.uri_for('/report', problem.id ) %]">
+<li class="[% c.cobrand.pin_colour(problem) %]">
+<a class="[% problem.category %] text" href="[% c.uri_for('/report', problem.id ) %]">
     [% IF problem.photo;
         photo = problem.get_photo_params
     %]
@@ -8,10 +8,10 @@
         <span>[% problem.title | html %]</span><br />
         <small>[% prettify_dt( problem.confirmed, 1 ) %]
             [%- IF dist %], [% dist %]km[% END %]
-            [%- IF include_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
+            [%- IF NOT exclude_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
                 [% tprintf(loc('last updated %s'), prettify_dt( problem.lastupdate, 1 ) ) %]
             [%- END %]
-        [% IF include_lastupdate %]
+        [% IF include_sentinfo %]
             [% IF problem.bodies_str_ids.size > 1 %] [% loc('(sent to both)') %]
             [% ELSIF problem.bodies_str_ids.size == 0 %] [% loc('(not sent to council)') %]
             [% END %]

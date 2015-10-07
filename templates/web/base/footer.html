@@ -23,9 +23,7 @@
 
     <p><a href="/contact">[% tprintf(loc("Contact %s", "%s is the site name"), site_name) | replace(' ', '&nbsp;') %]</a></p>
       
-    <p>[% loc('Are you a <strong>developer</strong>? Would you like to contribute to FixMyStreet?') %]
-    [% loc('Our code is open source and <a href="http://github.com/mysociety/fixmystreet">available on GitHub</a>.') %]
-    </p>
+    [% INCLUDE 'front/footer-marketing.html' %]
 
 </div>
 

@@ -1,55 +1,20 @@
-[% INCLUDE 'header.html', title = '' %]
+[% map_js = PROCESS 'front/javascript.html' %]
+
+[% pre_container_extra = PROCESS 'around/postcode_form.html' %]
+[% INCLUDE 'header.html', title = '', bodyclass = 'frontpage fullwidthpage' %]
 
 [% IF error %]
-    <p class="error">[% error %]</p>
+    <p class="form-error">[% error %]</p>
 [% END %]
 
-<p id="expl">        
-    [% 
-        subhead = loc('(like graffiti, fly tipping, broken paving slabs, or street lighting)');
-    %]
-    <strong>[% loc('Report, view, or discuss local problems') %]</strong>
-    [% IF subhead != ' ' %]
-        <small>[% subhead %]</small>
-    [% END %]
-</p>
+[% TRY %][% PROCESS 'front/pre-steps.html' %][% CATCH file %][% END %]
 
-[% PROCESS 'around/postcode_form.html' %]
+<div class="tablewrapper">
+    <div id="front-howto">
+        [% INCLUDE 'index-steps.html' %]
+    </div>
 
-<div id="front_intro">
-    [% INCLUDE 'index-steps.html' %]
+    [% INCLUDE 'front/recent.html' %]
 </div>
 
-[% 
-    recent_photos = c.cobrand.recent_photos('front', 3);
-    probs         = c.cobrand.recent();
-%]
-
-[% IF probs.size || recent_photos.size %]
-<div id="front_recent">
-    <h2>[% loc('Recently reported problems') %]</h2>
-    [% IF recent_photos.size %]
-        <p id="front_photos">
-        [% FOREACH p IN recent_photos;
-            photo = p.get_photo_params;
-        %]
-            <a href="/report/[% p.id %]"><img border="0" height="100"
-                src="[% photo.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
-        [% END %]
-        </p>
-    [% END %]
-
-    [% IF probs.size %]
-        <ul id="nearby_lists">
-        [% FOREACH p IN probs %]
-            <li>
-                <a href="/report/[% p.id %]">[% p.title | html %]</a>
-                <small>[% prettify_dt( p.confirmed, 1 ) %]</small>
-            </li>    
-        [% END %]
-        </ul>
-    [% END %]
-</div>
-[% END %]
-
-[% INCLUDE 'footer.html' %]
+[% INCLUDE 'footer.html' pagefooter = 'yes' %]

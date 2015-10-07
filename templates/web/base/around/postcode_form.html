@@ -1,13 +1,26 @@
-[%
-    question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
-%]
+<div id="front-main">
+    <div id="front-main-container">
+        [% INCLUDE 'around/intro.html' %]
 
-<form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
-    <label for="pc">[% question %]:</label>
-    <span><input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200">
-    <input type="submit" value="[% loc('Go') %]" id="sub">
-    </span>
-    [% IF partial_token %]
-        <input type="hidden" name="partial" value="[% partial_token.token %]">
-    [% END %]
-</form>
+        [%
+            question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
+        %]
+
+        [% IF c.cobrand.moniker == 'fixmybarangay' %]
+            [% INCLUDE '_barangay_buttons.html' %]
+        [% ELSE %]
+        <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
+            <label for="pc">[% question %]:</label>
+            <div>
+                <input type="text" name="pc" value="[% pc | html %]" id="pc" size="10" maxlength="200" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
+                <input type="submit" value="[% loc('Go') %]" id="sub">
+            </div>
+
+            [% IF partial_token %]
+                <input type="hidden" name="partial" value="[% partial_token.token %]">
+            [% END %]
+
+        </form>
+        [% END %]
+    </div>
+</div>

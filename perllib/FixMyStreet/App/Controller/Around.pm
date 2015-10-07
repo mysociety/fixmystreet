@@ -28,7 +28,7 @@ If no search redirect back to the homepage.
 
 =cut
 
-sub around_index : Path : Args(0) {
+sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     # handle old coord systems

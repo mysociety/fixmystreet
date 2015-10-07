@@ -34,7 +34,7 @@
   }
 }
 
-.report-list, .issue-list-a {
+.issue-list-a {
   margin-#{$left}: 0;
 
   li {
@@ -153,7 +153,7 @@
 }
 
 body.frontpage {
-    .issue-list-a, .list-a {
+    .issue-list-a {
         li .text {
             padding-#{$left}: 3em;
         }

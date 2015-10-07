@@ -1,15 +1,7 @@
 [% IF on_map.size %]
-    [% FOREACH p IN on_map %]
-        <li>
-            <a href="[% c.uri_for('/report', p.id ) %]">[% p.title | html %]</a>
-            <small>[% prettify_dt( p.confirmed, 1 ) %]</small>
-            [% IF p.is_fixed %]
-                <small>[% loc('(fixed)') %]</small>
-            [% ELSIF p.is_closed %]
-                <small>[% loc('(closed)') %]</small>
-            [% END %]
-        </li>
+    [% FOREACH problem IN on_map %]
+        [% INCLUDE 'report/_item.html' %]
     [% END %]
 [% ELSE %]
-    <li>[% loc('No problems have been reported yet.') %]</li>
+    <li><p>[% loc('No problems have been reported yet.') %]</p></li>
 [% END %]

@@ -1,0 +1,13 @@
+[% pre_container_extra = INCLUDE 'around/postcode_form.html' %]
+[% INCLUDE 'header.html', title = loc('Reporting a problem'), bodyclass = 'frontpage fullwidthpage' %]
+
+[%
+    # NOTE ON PARTIAL REPORTS:
+    #
+    # partial reports get a bit of extra text added, the form goes to
+    # '/report/new' and the partial hidden field is added to the form.
+%]
+
+[% INCLUDE 'around/_main.html' %]
+
+[% INCLUDE 'footer.html' %]

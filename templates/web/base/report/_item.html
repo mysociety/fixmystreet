@@ -7,16 +7,16 @@
     [% END %]
         <h4>[% problem.title | html %]</h4>
         <small>
-            [% IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]
+            [%- IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]
                 [%- prettify_dt( problem.confirmed, 1 ) %]
-            [% ELSE %] [%# Swedish cobrand fixamingata: %]
+            [%- ELSE %] [%# Swedish cobrand fixamingata: %]
                 [%- prettify_dt( problem.confirmed) %]
-            [% END %]
+            [%- END %]
             [%- IF dist %], [% dist %]km[% END %]
-            [%- IF include_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
+            [%- IF NOT exclude_lastupdate AND problem.confirmed != problem.lastupdate AND problem.whensent != problem.lastupdate %],
                 [% tprintf(loc('last updated %s'), prettify_dt( problem.lastupdate, 1 ) ) %]
             [%- END %]
-        [% IF include_lastupdate %]
+        [% IF include_sentinfo %]
             [% IF problem.bodies_str_ids.size > 1 %] [% loc('(sent to both)') %]
             [% ELSIF problem.bodies_str_ids.size == 0 %] [% loc('(not sent to council)') %]
             [% END %]
