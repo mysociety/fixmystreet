@@ -11,14 +11,14 @@
 
 COMPASS=compass
 SASS=sass
-DIR=$(cd "$(dirname "$0")" && pwd -P)
-PARENT=$(cd "$DIR"/../.. && pwd)
+DIR=$(cd "$(dirname "$0")" >/dev/null && pwd -P)
+PARENT=$(cd "$DIR"/../.. >/dev/null && pwd)
 if [ -f "$PARENT/gem-bin/compass" ]; then
     COMPASS=$PARENT/gem-bin/compass
     SASS=$PARENT/gem-bin/sass
 fi
 
-DIRECTORY=$(cd "$DIR"/../web && pwd)
+DIRECTORY=$(cd "$DIR"/../web >/dev/null && pwd)
 
 DIRS=${@:-`find -L $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq`}
 
