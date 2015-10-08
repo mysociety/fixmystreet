@@ -1,14 +1,15 @@
 ---
 layout: page
-title: Customising the CSS
+title: Customising the design
 author: dave
 ---
 
-# Customising the CSS
+# Customising the design
 
 <p class="lead">
-  This page describes how to change the colour scheme of your installation &mdash;
-  which is a good starting point for further customisations.
+  This page describes how to change the directionality and colour scheme of
+  your installation &mdash; which is a good starting point for further
+  customisations.
 </p>
 
 ## Background
@@ -26,9 +27,9 @@ into these main files:
 * `layout.css` --
   all the styling for the content of the pages in a desktop sized browser.
 * `\_colours.css` --
-  basic colour information, so you can easily make a site that
+  basic settings information, so you can easily make a site that
   looks different simply by copying these files to your own cobrand CSS
-  directory, and changing the colours, as we will describe below.
+  directory, and changing the contents, as we will describe below.
 * `config.rb` --
   the config script used by compass
 
@@ -56,7 +57,7 @@ class="glossary__link">cobrand</a>, and can start changing other stylesheets and
 templates in the same way.
 
 
-##Why you should create a cobrand
+## Why you should create a cobrand
 
 A cobrand is just FixMyStreet's way of separating your customisation from
 everybody else's. To start with, this is almost as simple as putting what you
@@ -263,7 +264,24 @@ overridden (by overriding CSS files and overriding the bits of HTML that you
 want to change in the <a href="{{ site.baseurl }}glossary/#template"
 class="glossary__link">templates</a>) but this is just so you can get going.
 
-## Next steps...
+# Directionality
+
+If you wish to use FixMyStreet in a right-to-left layout, this is very
+straightforward and involves two steps:
+
+* First, uncomment the line in your cobrand’s `_colours.scss` file as explained,
+  so that the `$direction` variable is set to `right`.
+* Secondly, create a copy of the `templates/web/fixmystreet/header.html` in
+  your own cobrand if you haven’t already (see
+  [template customising]({{ site.baseurl }}customising/templates/) for more
+  details) and uncomment the `SET` line that sets `dir="rtl"`.
+
+That’s it; recompile your CSS, reload your site and you will find that
+FixMyStreet has switched to a right-to-left layout. Your next step will
+probably be to [change the language]({{ site.baseurl }}customising/language/)
+used by your site.
+
+# Next steps...
 
 If you want to customise the logo, [we have a tutorial for that](../logo/).
 
