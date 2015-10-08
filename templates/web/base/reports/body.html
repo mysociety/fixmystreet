@@ -43,8 +43,8 @@
     [% INCLUDE '_hart_hants_note.html' %]
 [% END %]
 
-[% IF NOT body.areas.size AND c.cobrand.moniker == 'fixmystreet' %]
-    [% INCLUDE 'reports/_body_gone.html' %]
+[% IF NOT body.areas.size %]
+    [% TRY %][% INCLUDE 'reports/_body_gone.html' %][% CATCH file %][% END %]
 [% ELSE %]
     [% INCLUDE 'reports/_rss.html' %]
 [% END %]
