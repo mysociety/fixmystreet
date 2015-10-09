@@ -113,6 +113,13 @@ sub send_questionnaires_period {
 sub timeline {
     my ( $rs, $restriction ) = @_;
 
+    my $attrs;
+    if (%$restriction) {
+        $attrs = {
+            -select => [qw/me.*/],
+            prefetch => [qw/problem/],
+        }
+    }
     return $rs->search(
         {
             -or => {
@@ -121,24 +128,21 @@ sub timeline {
             },
             %{ $restriction },
         },
-        {
-            -select => [qw/me.*/],
-            prefetch => [qw/problem/],
-        }
+        $attrs
     );
 }
 
 sub summary_count {
     my ( $rs, $restriction ) = @_;
 
-    return $rs->search(
-        $restriction,
-        {
-            group_by => [ \'whenanswered is not null' ],
-            select   => [ \'(whenanswered is not null)', { count => 'me.id' } ],
-            as       => [qw/answered questionnaire_count/],
-            join     => 'problem'
-        }
-    );
+    my $params = {
+        group_by => [ \'whenanswered is not null' ],
+        select => [ \'(whenanswered is not null)', { count => 'me.id' } ],
+        as => [qw/answered questionnaire_count/],
+    };
+    if (%$restriction) {
+        $params->{join} = 'problem';
+    }
+    return $rs->search($restriction, $params);
 }
 1;
