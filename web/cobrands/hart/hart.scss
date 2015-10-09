@@ -76,14 +76,13 @@ body.frontpage .nav-wrapper-2 {
 
 	#main-nav {
 	  margin-top: 106px;
-	  
-	  ul {
-        margin-left: 157px;
-	    float: none;
-	  }
+    }
+    .nav-menu {
+      margin-left: 157px;
+	  float: none;
 	}
 
-	#main-nav ul li {
+	.nav-menu li {
 	  text-align: center;
 	  text-transform: uppercase;
 	  padding: 0 15px;
@@ -91,21 +90,16 @@ body.frontpage .nav-wrapper-2 {
 	  border-right: solid 1px white;
 	  line-height: 1.5em;
 	}
+	.nav-menu li:last-child {
+	    border-right: none;
+	}
 
-	#main-nav ul li a {
+	.nav-menu a {
 	    padding: 0;
 	    font-size: inherit;
 	}
 
-	#main-nav ul li:last-child {
-	    border-right: none;
-	}
-
-	#main-nav ul li a:link, #main-nav ul li a:visited {
-	  color: #fff;
-	}
-
-	#main-nav ul li:hover, #main-nav ul li:hover a, {
+	.nav-menu li:hover, .nav-menu li:hover a, {
 	  background-color: white;
 	  color: black;
 	  text-decoration: none;

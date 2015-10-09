@@ -37,10 +37,8 @@
 }
 
 // d523b431
-#main-nav {
-    ul {
-        float: none;
-    }
+.nav-menu {
+    float: none;
 }
 .nav-menu a, .nav-menu span {
     margin: 0;
@@ -224,7 +222,9 @@ body.frontpage {
     // d523b431
     #main-nav {
         float: left;
+        padding-left: 0;
     }
+
     .nav-wrapper {
         .nav-wrapper-2 {
             @include background(linear-gradient(#222, #555 30%, #555 60%, #222));
