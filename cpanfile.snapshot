@@ -3858,6 +3858,18 @@ DISTRIBUTIONS
       vars 0
       version 0.87
       warnings 0
+  Module-Pluggable-4.7
+    pathname: S/SI/SIMONW/Module-Pluggable-4.7.tar.gz
+    provides:
+      Devel::InnerPackage 0.4
+      Module::Pluggable 4.7
+      Module::Pluggable::Object 4.6
+    requirements:
+      File::Basename 0
+      File::Spec 3.00
+      Module::Build 0.38
+      Test::More 0.62
+      if 0
   Module-Runtime-0.013
     pathname: Z/ZE/ZEFRAM/Module-Runtime-0.013.tar.gz
     provides:
