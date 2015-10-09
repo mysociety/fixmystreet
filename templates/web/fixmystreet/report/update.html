@@ -3,9 +3,9 @@
 [% IF loop.first %]
 <section class="full-width">
     <h4 class="static-with-rule">[% loc('Updates') %]</h4>
-    <ul class="issue-list">
+    <ul class="item-list item-list--updates">
 [% END %]
-        <li class="issue">
+        <li class="item-list__item item-list__item--updates">
           [% IF moderating; original_update = update.moderation_original_data %]
             <form method="post" action="/moderate/report/[% problem.id %]/update/[% update.id %]">
                 <input type="button" class="btn moderate moderate-display" value="moderate">
@@ -22,14 +22,14 @@
                     [% END %]
                 </div>
           [% END %]
-            <div class="update-wrap">
+            <div class="item-list__update-wrap">
             [% IF update.whenanswered %]
-                <div class="update-text">
+                <div class="item-list__update-text">
                     <p class="meta-2"> [% INCLUDE meta_line %] </p>
                 </div>
             [% ELSE %]
                 [% INCLUDE 'report/photo.html' object=update %]
-                <div class="update-text">
+                <div class="item-list__update-text">
                     <div class="moderate-display">
                         [% add_links( update.text ) | html_para %]
                     </div>

@@ -402,7 +402,7 @@ sub extract_update_metas {
 
     my $result = scraper {
         process 'div#updates div.problem-update p em', 'meta[]', 'TEXT';
-        process '.update-text .meta-2', 'meta[]', 'TEXT';
+        process '.item-list__update-text .meta-2', 'meta[]', 'TEXT';
     }
     ->scrape( $mech->response );
 
@@ -423,7 +423,7 @@ sub extract_problem_list {
     my $mech = shift;
 
     my $result = scraper {
-        process 'ul.issue-list-a li a h4', 'problems[]', 'TEXT';
+        process 'ul.item-list--reports li a h4', 'problems[]', 'TEXT';
     }->scrape( $mech->response );
 
     return $result->{ problems } || [];

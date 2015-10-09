@@ -98,24 +98,18 @@ h4.static-with-rule {
     padding-right: 0;
     border-top: 0.25em solid #e5e5e5;
 }
-.issue-list {
+.item-list {
     border-bottom: none;
-    li {
-        padding-left: 0;
-        padding-right: 0;
-        background: none;
-    }
+}
+.item-list__item {
+    padding-left: 0;
+    padding-right: 0;
+    background: none;
 }
 
-.issue-list-a {
-    border-bottom: none;
-    li {
-        background: none;
-        .text {
-            .img {
-                padding-right: 1em;
-            }
-        }
+.item-list--reports__item {
+    .img {
+        padding-right: 1em;
     }
 }
 

@@ -2,10 +2,12 @@
 <section id="council_wards" class="hidden-js">
 <h2>[% ward_text %]</h2>
     <p>[% loc('Follow a ward link to view only reports within that ward.') %]</p>
-    <ul class="issue-list-a full-width">
-        [% FOR child IN children.values.sort('name') %]
-        <li><a href="[% child.url %]"><span class="text">[% child.name %]</span></a></li>
-        [% END %]
+    <ul class="item-list item-list--wards full-width">
+      [% FOR child IN children.values.sort('name') %]
+        <li class="item-list__item item-list--wards__item">
+            <a href="[% child.url %]">[% child.name %]</a>
+        </li>
+      [% END %]
     </ul>
 </section>
 [% END %]

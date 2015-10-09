@@ -1,9 +1,9 @@
 [% IF problem.state == 'fixed - council' OR problem.state == 'closed' %]
     <h4 class="static-with-rule">[% loc('Updates') %]</h4>
-    <ul class="issue-list">
+    <ul class="item-list item-list--updates">
         <li>
-            <div class="update-wrap">
-                <div class="update-text">
+            <div class="item-list__update-wrap">
+                <div class="item-list__update-text">
                     <p class="meta-2">[% prettify_dt( problem.lastupdate, 'zurich' ) %]</p>
                     [%# XXX following should honour zurich_closed_states instead? %]
                     [% IF problem.state == 'fixed - council'
