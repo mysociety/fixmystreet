@@ -11,7 +11,7 @@ use Utils;
 
 __PACKAGE__->config(
     TEMPLATE_EXTENSION => '.html',
-    INCLUDE_PATH       => [          #
+    INCLUDE_PATH       => [
         FixMyStreet->path_to( 'templates', 'web', 'base' ),
     ],
     ENCODING       => 'utf8',
@@ -37,6 +37,15 @@ FixMyStreet::App::View::Web - TT View for FixMyStreet::App
 TT View for FixMyStreet::App.
 
 =cut
+
+# Override parent function so that errors are only logged once.
+sub _rendering_error {
+    my ($self, $c, $err) = @_;
+    my $error = qq/Couldn't render template "$err"/;
+    # $c->log->error($error);
+    $c->error($error);
+    return 0;
+}
 
 =head2 loc
 
