@@ -26,10 +26,12 @@ for help and documentation in installing the FixMyStreet Platform.
 
 Whilst many contributions come as part of people setting up their own
 installation for their area, we of course welcome stand-alone contributions as
-well. The *Suitable for Volunteers* label in our GitHub issues hopefully labels
-some potential tasks that might be suitable for that situation, though please
-do search through the other issues to see if what you're after has been
-suggested or discussed - or feel free to add your own issue if not.
+well. The [*Suitable for
+Volunteers*](https://github.com/mysociety/fixmystreet/labels/Suitable%20for%20Volunteers)
+label in our GitHub issues hopefully labels some potential tasks that might be
+suitable for that situation, though please do search through the other issues
+to see if what you're after has been suggested or discussed - or feel free to
+add your own issue if not.
 
 ## Mobile apps
 
