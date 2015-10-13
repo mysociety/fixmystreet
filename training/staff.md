@@ -38,15 +38,15 @@ look and behave differently, depending on how it has been
 
 ## If you're a staff user... you work for a "body"
 
-That means FixMyStreet is sending problem reports to you (or
+That means MakeMyIsland is sending problem reports to you (or
 the body you represent).
 Normally this means by email.
 
-* **citizens interact with the FixMyStreet website**
+* **citizens interact with the MakeMyIsland website**
   <br>
   (because it's easy)
 
-* **FixMyStreet sends emails to the body you represent**
+* **MakeMyIsland sends emails to the body you represent**
   <br>
   with the details of the problem from them
 
@@ -54,14 +54,14 @@ Normally this means by email.
   <br>
   so if you **reply**, your email goes to the citizen
 
-* **you can _sign in_ to the FixMyStreet website to mark problems as _fixed_**
+* **you can _sign in_ to the MakeMyIsland website to mark problems as _fixed_**
   <br>
   ...or add updates, or set them to states other than _fixed_
 
 ## Problems reported _on behalf_ of someone else
 
 Be careful: in some places, citizens send their problems to the
-FixMyStreet staff (for example, by SMS) who submit the problem
+MakeMyIsland staff (for example, by SMS) who submit the problem
 on their behalf.
 
 <div class="attention-box warning">
@@ -75,7 +75,7 @@ keep going to the same person.
 
 ## What is a staff user?
 
-A staff user is the same as a normal FixMyStreet user except
+A staff user is the same as a normal MakeMyIsland user except
 
 * **your account is linked with a _body_**
   <br>
@@ -91,7 +91,7 @@ A staff user is the same as a normal FixMyStreet user except
 
 ## How to create an account
 
-You can sign up to FixMyStreet just using your email, but you'll
+You can sign up to MakeMyIsland just using your email, but you'll
 need an administrator to convert your account to a *staff account*.
 
 * **create an account the usual way**
@@ -119,7 +119,7 @@ need an administrator to convert your account to a *staff account*.
 * **you'll need your _email address_ and your _password_**
 
 Because your email address (and hence your account) is linked with
-the body you represent, FixMyStreet knows you're a staff user.
+the body you represent, MakeMyIsland knows you're a staff user.
 
 ## Basic problem report process
 
@@ -127,7 +127,7 @@ Here's a reminder of the normal lifecycle of a problem report:
 
 1. citizen submits problem
 2. ...and then confirms it
-3. FixMyStreet sends problem to body
+3. MakeMyIsland sends problem to body
 4. people update the report
 5. the body responsible (**you?**) marks it as fixed
 

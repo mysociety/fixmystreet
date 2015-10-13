@@ -34,17 +34,17 @@ look and behave differently, depending on how it has been
 
 ---
 
-## Why use FixMyStreet?
+## Why use MakeMyIsland?
 
 You have a problem in the street (for example, a streetlight is broken).
-Here's why you should report it on FixMyStreet.
+Here's why you should report it on MakeMyIsland.
 
 * **it's helpful**
   <br>
   problems can't be fixed until someone knows about them!
 * **even if you don't know who to tell**
   <br>
-  because FixMyStreet will pass it on to the right people  
+  because MakeMyIsland will pass it on to the right people  
 * **it's quick**
   <br>
   click on the map, describe the problem, send it
@@ -72,7 +72,7 @@ click on "Report a problem" anywhere on the site to get started.
 
 * **enter a nearby street name or area**
   <br>
-  If FixMyStreet isn't sure where you meant, it will offer choices
+  If MakeMyIsland isn't sure where you meant, it will offer choices
 
 * or **use your current location**
   <br>
@@ -120,14 +120,14 @@ click on "Report a problem" anywhere on the site to get started.
 
 * **enter your email address**
   <br>
-  Because that's what FixMyStreet uses to identify you
+  Because that's what MakeMyIsland uses to identify you
 
 Some versions of FixMyStreet use other ways to identify you too,
 so you might be able to login with Facebook, for example.
 
 ## Got a password?
 
-If you've signed into FixMyStreet before, and you've got a
+If you've signed into MakeMyIsland before, and you've got a
 password:
 
 * **enter your password**
@@ -150,8 +150,8 @@ If you haven't signed in before and set a password;
 
 * **look in your email inbox**
   <br>
-  FixMyStreet has sent you an email: click on the "confirmation
-  link" in it, so FixMyStreet knows you really are the
+  MakeMyIsland has sent you an email: click on the "confirmation
+  link" in it, so MakeMyIsland knows you really are the
   person who uses that email address
 
 
@@ -231,7 +231,7 @@ If you're looking at a problem report...
 
 ## Get email updates
 
-You can ask FixMyStreet to email you whenever:
+You can ask MakeMyIsland to email you whenever:
 
 * **problem reports are submitted near a place you're interested in**
 
@@ -241,7 +241,7 @@ You can ask FixMyStreet to email you whenever:
   
 Click on **Get updates** or **Local alerts** to set this up.
 
-FixMyStreet also makes alerts available with RSS, which is useful
+MakeMyIsland also makes alerts available with RSS, which is useful
 for programmers/other apps.
 
 ## Getting updates...
@@ -251,7 +251,7 @@ for programmers/other apps.
 
 ## Use your account
 
-If you set a password, you can login when you use FixMyStreet.
+If you set a password, you can login when you use MakeMyIsland.
 When you are logged in:
 
 * **you don't keep getting confirmation email links**
