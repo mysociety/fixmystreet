@@ -1,6 +1,7 @@
 @import '../../theme/sass/variables';
 @import '../../theme/sass/mixins';
 @import 'owl_carousel';
+@import 'training_slideshow';
 @import 'config';
 
 .site-title {
@@ -288,4 +289,14 @@
     .column {
         @include grid-column--one-of-two;
     }
+}
+
+.admin-help {
+    padding: 0.2em;
+    text-align: center;
+    color: #fff;
+    background-color: #f93;
+    -moz-border-radius: 0.333em;
+    -webkit-border-radius: 0.333em;
+    border-radius: 0.333em;
 }
