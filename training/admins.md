@@ -5,7 +5,7 @@ author: dave
 ---
 
 
-Training notes for new admininstrators
+Training notes for new administrators
 =============================
 
 <p class="lead">
@@ -152,7 +152,7 @@ The key things you need to provide:
 ![example showing many categories]({{ site.baseurl }}assets/img/training/admin-add-a-body.png)
 
 
-### You must specifiy an area
+### You must specify an area
 
 You must indicate the body's admin boundary because if a problem is
 not within the body's area, it won't be reported to it.
@@ -268,7 +268,7 @@ access to your site's database, ask us for help!
 ## Administering reports
 
 You can access all the report data from the admin. 
-For example, as an administator, you can:
+For example, as an administrator, you can:
 
 * search for reports on keyword or id
 * find all reports submitted by a particular user
@@ -297,7 +297,7 @@ Click on **Reports** -- there's a search box at the top.
 ## What the different timestamps mean
 
 There are four date stamps listed when you edit a report.
-You can't change them beause they are recorded by the system
+You can't change them because they are recorded by the system
 but it can be helpful to understand them.
 
 * **Created** -- when the problem report was entered on the website
@@ -319,7 +319,7 @@ but it can be helpful to understand them.
 
 ## Editing reports
 
-Remember, to edit a report, normaly you click on **Reports** and then
+Remember, to edit a report, normally you click on **Reports** and then
 find the report you want by searching, and then clicking on **Edit**
 in list of results.
 
@@ -430,7 +430,7 @@ to search across email or name.
 
 ### Change a user's name or email address
 
-* edit a user by finding them in the **Users** and clicking _Edit_**
+* **edit a user by finding them in the list of users and clicking _Edit_**
 
 * (if you click on their email address in the list of search results, you
   get a list of all the reports and updates they've made)
@@ -480,7 +480,7 @@ when you click **Users**.
 
 ### Flagged reports and users
 
-![falgged things]({{ site.baseurl }}assets/img/training/admin-flagged-reports-users.png)
+![flagged things]({{ site.baseurl }}assets/img/training/admin-flagged-reports-users.png)
 
 ## Banning a user: the abuse list
 
