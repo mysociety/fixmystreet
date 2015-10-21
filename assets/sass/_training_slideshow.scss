@@ -11,7 +11,6 @@
     -webkit-transition: opacity 400ms ease-in;
     -moz-transition: opacity 400ms ease-in;
     transition: opacity 400ms ease-in;
-    pointer-events: none;
 }
 .modal-slide:target {
     opacity:1;
@@ -43,12 +42,6 @@
     }
 }
 .modal-slide-close {
-    display: none;
-    /* 
-      hidden this pending better understanding of the
-      stacking context which is preventing clicks on
-      this modal being handled
-    */
     background: #606061;
     color: #FFFFFF;
     line-height: 25px;
