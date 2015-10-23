@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Set this to the version we want to check out
-VERSION=${VERSION_OVERRIDE:-v1.6.1}
+VERSION=${VERSION_OVERRIDE:-v1.7}
 
 PARENT_SCRIPT_URL=https://github.com/mysociety/commonlib/blob/master/bin/install-site.sh
 
