@@ -40,10 +40,65 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.7 (23rd October 2015)
+    - Front end improvements:
+        - Add right-to-left design option. #1209
+        - Add state/category filters to list pages. #1141
+        - Include last update time in around/my page lists. #1245
+        - Show report details more nicely on a questionnaire page. #1104
+        - Improve email confirmation page (now matches success pages). #577
+        - Update URL hash when mobile menu navigation clicked. #1211
+        - Add public status page showing stats and version. #1251
+        - Accessibility improvements to map pages. #1217
+        - New default OpenGraph image. #1184
+    - Performance improvements:
+        - A number of database speed improvements. #1017
+    - Bugfixes:
+        - Translate report states in admin index. #1179
+        - Improve translation string on alert page. #348
+        - Fix location bug fetching category extras.
+        - Workaround DMARC problems. #1070
+        - Fix padding of alert form box. #1211
+        - Pin Google Maps API version to keep it working. #1215
+        - Upgrade Google geocoder to version 3. #1194
+        - Fix script running when CDPATH is set. #1250
+        - Fix retina image size on front page. #838
+        - Process update left as part of questionnaire, to catch empty ones. #1234
+        - Make sure explicit sign in button clicks are honoured. #1091
+        - Adjust email confirmation text when report not being sent. #1210
+        - Fix footer links in admin if behind a proxy. #1206
+        - Use base URL in a cobrand alert for a report without a body. #1198
+        - Fix potential graph script failure in perl 5.16+. #1262
+    - Development improvements:
+        - Error logging should now work consistently. #404
+        - CSS
+            - Streamline navigation menu CSS. #1191
+            - Streamline list item CSS. #1141
+            - make_css now follows symlinks. #1181
+            - Use a sass variable for hamburger menu. #1186
+            - Write progress of make_css_watch to terminal title. #1211
+        - Templates:
+            - Remove final hardcoded "FixMyStreet" from templates. #1205
+            - Combine a number of base/fixmystreet templates. #1245
+        - Installation:
+            - Make sure submodules are checked out by Vagrant. #1197
+            - Remove Module::Pluggable warning in newer perls. #1254
+            - Bundle carton to ease installation step. #1208
+        - Translation:
+            - Improve ease of running gettext-extract. #1202
+        - Add standard app.psgi file.
+        - Add link to volunteer tickets in README. #1259
+        - Use Modernizr to decide whether to show mobile map. #1192
+        - Prevent potential session cookie recursion. #1077
+        - Allow underscore in cobrand name/data. #1236
+        - Add a development URL to see check email pages. #1211
+
 * v1.6.1 (31st July 2015)
     - Bugfixes:
         - Fix bug introduced in last release when setting multiple areas
           for a body in the admin. #1158
+        - Don't have default "name >= 5 characters"/"must have space" checks,
+          as Latin-centric #805
     - New features:
         - Danish translation.
     - Front end improvements:
