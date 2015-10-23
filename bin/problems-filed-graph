@@ -62,6 +62,6 @@ my $gp = <<END;
     plot "$source" using 1:2 with lines axes x1y2 lt 3 title "FixMyStreet problem reports"
 END
 
-open(my $gnuplot, '|-', "GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera gnuplot > $DIR/web/fms-live-line$config{extension} 2> /dev/null");
+open(my $gnuplot, '|-', "GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera gnuplot > $DIR/web/fms-live-line$config{extension} 2> /dev/null") or die $!;
 $gnuplot->print($gp);
 close $gnuplot;

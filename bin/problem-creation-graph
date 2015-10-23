@@ -113,6 +113,6 @@ $gp .= <<END;
     "< awk 'BEGIN { n = 0 } { n += \$2; print \$1, \$2, n; }' $sources{unconfirmed}" using 1:3 axes x1y2 with lines lt 0 title "cumulative total number of problems"
 END
 
-open(my $gnuplot, '|-', "GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera gnuplot > $DIR/web/fms-live-creation$config{extension} 2> /dev/null");
+open(my $gnuplot, '|-', "GDFONTPATH=/usr/share/fonts/truetype/ttf-bitstream-vera gnuplot > $DIR/web/fms-live-creation$config{extension} 2> /dev/null") or die $!;
 $gnuplot->print($gp);
 close $gnuplot;
