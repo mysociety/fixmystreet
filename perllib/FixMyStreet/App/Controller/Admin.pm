@@ -129,7 +129,9 @@ sub index : Path : Args(0) {
       : _('n/a');
     $c->stash->{questionnaires} = \%questionnaire_counts;
 
-    $c->stash->{categories} = $c->cobrand->problems->categories_summary();
+    if ($c->get_param('show_categories')) {
+        $c->stash->{categories} = $c->cobrand->problems->categories_summary();
+    }
 
     $c->stash->{total_bodies} = $c->model('DB::Body')->count();
 

@@ -32,15 +32,16 @@ sub timeline {
 sub summary_count {
     my ( $rs, $body_restriction ) = @_;
 
-    return $rs->to_body($body_restriction)->search(
-        undef,
-        {
-            group_by => ['me.state'],
-            select   => [ 'me.state', { count => 'me.id' } ],
-            as       => [qw/state state_count/],
-            join     => 'problem'
-        }
-    );
+    my $params = {
+        group_by => ['me.state'],
+        select   => [ 'me.state', { count => 'me.id' } ],
+        as       => [qw/state state_count/],
+    };
+    if ($body_restriction) {
+        $rs = $rs->to_body($body_restriction);
+        $params->{join} = 'problem';
+    }
+    return $rs->search(undef, $params);
 }
 
 1;

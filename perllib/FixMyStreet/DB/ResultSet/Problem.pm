@@ -210,7 +210,10 @@ sub unique_users {
     return $rs->search( {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     }, {
-        select => [ { count => { distinct => 'user_id' } } ],
+        select => [ { distinct => 'user_id' } ],
+        as     => [ 'user_id' ]
+    } )->as_subselect_rs->search( undef, {
+        select => [ { count => 'user_id' } ],
         as     => [ 'count' ]
     } )->first->get_column('count');
 }
