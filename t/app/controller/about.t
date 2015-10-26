@@ -11,6 +11,15 @@ $mech->get_ok('/about');
 $mech->content_like(qr{About us ::\s+FixMyStreet});
 $mech->content_contains('html class="no-js" lang="en-gb"');
 
+$mech->get_ok('/privacy');
+is $mech->res->code, 200, "got 200 for final destination";
+is $mech->res->previous->code, 302, "got 302 for redirect";
+is $mech->uri->path, '/about/privacy';
+
+$mech->get('/about/page-that-does-not-exist');
+ok !$mech->res->is_success(), "want a bad response";
+is $mech->res->code, 404, "got 404";
+
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'emptyhomes' ],
 }, sub {
