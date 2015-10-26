@@ -30,7 +30,7 @@ you're doing is [customising your installation](/customising).
     <p>
       For example, scripts used for installation or set-up, such as <code>make_css</code>,
       and cron jobs (that is, those tasks that must be run at regular intervals,
-      such as <code>send_reports</code>).
+      such as <code>send-reports</code>).
     </p>
   </dd>
   <dt>

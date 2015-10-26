@@ -13,13 +13,13 @@ are sent by email. It's possible to override the content of the report (the emai
 
 ## Check and send every few minutes
 
-FixMyStreet runs a task called `send_reports` at regular intervals (by default this is every 5 minutes) that finds all new reports and sends them on to the bodies responsible.
+FixMyStreet runs a task called `send-reports` at regular intervals (by default this is every 5 minutes) that finds all new reports and sends them on to the bodies responsible.
 
 To change the frequency of this job, change the `crontab` settings. Suggested values are in `conf/crontab.example`. You'll need to understand the Unix crontab syntax to make sense of that file. Be careful editing it if you are not familiar with crontab, because the syntax is very precise.
 
 ## Which reports are sent?
 
-The `send_reports` task finds all *confirmed* reports that have not yet been sent, and runs through each one, determines which body (or bodies) it needs to go to, and sends them.
+The `send-reports` task finds all *confirmed* reports that have not yet been sent, and runs through each one, determines which body (or bodies) it needs to go to, and sends them.
 
 Reports are usually confirmed by the user clicking on the confirmation link in the email that was sent to them.
 
@@ -44,7 +44,7 @@ If you want to change this (which is a good idea) add your own `submit.txt` to `
 The public view of the report shows this: it says how long after creation the
 report was sent (for example, "Sent to South Borsetshire District Council two
 minutes later"). Alternatively, find the report in `admin/reports` -- the
-report will show a "when sent" date if the `send_reports` task has processed
+report will show a "when sent" date if the `send-reports` task has processed
 it successfully.
 
 ## Alternatives to email
