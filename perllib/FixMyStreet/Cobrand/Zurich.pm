@@ -1134,7 +1134,11 @@ sub admin_stats {
             'Detail',
             'Media URL',
             'Interface Used',
-            'Council Response'
+            'Council Response',
+            'Strasse',
+            'Mast-Nr.',
+            'Haus-Nr.',
+            'Hydranten-Nr.',
         );
 
         my $body = "";
@@ -1157,6 +1161,11 @@ sub admin_stats {
 
             my $detail = $report->detail;
             my $public_response = $report->get_extra_metadata('public_response') || '';
+            my $metas = $report->get_extra_fields();
+            my %extras;
+            foreach my $field (@$metas) {
+                $extras{$field->{name}} = $field->{value};
+            }
 
             # replace newlines with HTML <br/> element
             $detail =~ s{\r?\n}{ <br/> }g;
@@ -1181,6 +1190,10 @@ sub admin_stats {
                 $media_url,
                 $report->service || 'Web interface',
                 $public_response,
+                $extras{'strasse'} || '',
+                $extras{'mast_nr'} || '',
+                $extras{'haus_nr'} || '',
+                $extras{'hydranten_nr'} || ''
             );
             if ($csv->combine(@columns)) {
                 $body .= $csv->string . "\n";
