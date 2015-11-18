@@ -1117,7 +1117,7 @@ sub admin_stats {
                 ]
             }
         );
-        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
+        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,Closure Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
         require Text::CSV;
         my $csv = Text::CSV->new({ binary => 1 });
         while ( my $report = $problems->next ) {
@@ -1143,7 +1143,9 @@ sub admin_stats {
                 $report->whensent,
                 $report->lastupdate,
                 $report->local_coords, $report->category,
-                $report->state,        $report->user_id,
+                $report->state,
+                $report->get_extra_metadata('closure_status') || '',
+                $report->user_id,
                 $body_name,
                 $report->get_column('sum_time_spent') || 0,
                 $report->title,
