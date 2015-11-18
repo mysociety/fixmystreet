@@ -1117,9 +1117,37 @@ sub admin_stats {
                 ]
             }
         );
-        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,Closure Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
+        my @fields = (
+            'Report ID',
+            'Created',
+            'Sent to Agency',
+            'Last Updated',
+            'E',
+            'N',
+            'Category',
+            'Status',
+            'Closure Status',
+            'UserID',
+            'External Body',
+            'Time Spent',
+            'Title',
+            'Detail',
+            'Media URL',
+            'Interface Used',
+            'Council Response'
+        );
+
+        my $body = "";
         require Text::CSV;
         my $csv = Text::CSV->new({ binary => 1 });
+
+        if ($csv->combine(@fields)) {
+            $body .= $csv->string . "\n";
+        }
+        else {
+            $body .= sprintf "{{error emitting CSV line: %s}}\n", $csv->error_diag;
+        }
+
         while ( my $report = $problems->next ) {
             my $external_body;
             my $body_name = "";
