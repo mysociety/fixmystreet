@@ -1,6 +1,6 @@
 package FixMyStreet::SendReport::EmptyHomes;
 
-use Moose;
+use Moo;
 use namespace::autoclean;
 
 use mySociety::MaPit;

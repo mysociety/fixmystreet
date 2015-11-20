@@ -1,6 +1,6 @@
 package FixMyStreet::SendReport::Open311;
 
-use Moose;
+use Moo;
 use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }

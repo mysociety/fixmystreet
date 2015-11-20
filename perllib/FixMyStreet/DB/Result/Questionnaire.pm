@@ -43,7 +43,7 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07035 @ 2013-09-10 17:11:54
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:oL1Hk4/bNG14CY74GA75SA
 
-use Moose;
+use Moo;
 use namespace::clean -except => [ 'meta' ];
 
 my $stz = sub {

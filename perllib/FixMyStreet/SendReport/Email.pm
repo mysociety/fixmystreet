@@ -1,6 +1,6 @@
 package FixMyStreet::SendReport::Email;
 
-use Moose;
+use Moo;
 use FixMyStreet::Email;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }

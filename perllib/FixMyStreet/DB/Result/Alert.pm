@@ -70,7 +70,7 @@ __PACKAGE__->belongs_to(
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 
-use Moose;
+use Moo;
 use namespace::clean -except => [ 'meta' ];
 
 with 'FixMyStreet::Roles::Abuser';
@@ -112,8 +112,5 @@ sub disable {
 
     return 1;
 }
-
-# need the inline_constuctor bit as we don't inherit from Moose
-__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;

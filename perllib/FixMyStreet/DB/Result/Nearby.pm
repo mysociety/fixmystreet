@@ -6,7 +6,7 @@ use strict;
 use warnings;
 
 use base 'DBIx::Class::Core';
-use Moose;
+use Moo;
 use namespace::clean -except => [ 'meta' ];
 
 __PACKAGE__->table( 'NONE' );
@@ -26,8 +26,5 @@ __PACKAGE__->belongs_to(
 # Make a new ResultSource based on the User class
 __PACKAGE__->result_source_instance
     ->name( \'problem_find_nearby(?,?,?)' );
-
-# we need the inline_constructor bit as we don't inherit from Moose
-__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;

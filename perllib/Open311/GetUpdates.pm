@@ -1,6 +1,6 @@
 package Open311::GetUpdates;
 
-use Moose;
+use Moo;
 use Open311;
 use FixMyStreet::Cobrand;
 

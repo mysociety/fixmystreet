@@ -96,7 +96,7 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
-use Moose;
+use Moo;
 use Utils::Photo;
 use namespace::clean -except => [ 'meta' ];
 
@@ -213,8 +213,5 @@ __PACKAGE__->might_have(
   },
   { cascade_copy => 0, cascade_delete => 1 },
 );
-
-# we need the inline_constructor bit as we don't inherit from Moose
-__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;

@@ -67,6 +67,7 @@ requires 'LWP::UserAgent';
 requires 'Math::Trig';
 requires 'Module::Pluggable';
 requires 'Moose';
+requires 'MooX::Types::MooseLike';
 requires 'namespace::autoclean';
 requires 'Net::DNS::Resolver';
 requires 'Net::Domain::TLD';

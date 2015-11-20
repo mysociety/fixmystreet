@@ -1,6 +1,6 @@
 package Open311::PopulateServiceList;
 
-use Moose;
+use Moo;
 use Open311;
 
 has bodies => ( is => 'ro' );

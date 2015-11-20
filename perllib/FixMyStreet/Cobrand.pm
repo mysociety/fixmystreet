@@ -8,7 +8,7 @@ use warnings;
 
 use FixMyStreet;
 use Carp;
-use Moose;
+use Package::Stash;
 
 use Module::Pluggable
   sub_name    => '_cobrands',
@@ -77,11 +77,12 @@ sub available_cobrand_classes {
 sub class {
     my $avail = shift;
     return $avail->{class} if $avail->{class};
-    my $moniker = $avail->{moniker};
-    Class::MOP::Class->create("FixMyStreet::Cobrand::$moniker" => (
-        superclasses => [ 'FixMyStreet::Cobrand::Default' ],
-    ));
-    return "FixMyStreet::Cobrand::$moniker";
+    my $moniker = "FixMyStreet::Cobrand::$avail->{moniker}";
+    my $class = bless {}, $moniker;
+    my $stash = Package::Stash->new($moniker);
+    my $isa = $stash->get_or_add_symbol('@ISA');
+    @{$isa} = ('FixMyStreet::Cobrand::Default');
+    return $moniker;
 }
 
 =head2 get_class_for_host

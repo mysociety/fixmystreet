@@ -1,6 +1,6 @@
 package FixMyStreet::Roles::Abuser;
 
-use Moose::Role;
+use Moo::Role;
 
 =head2 is_from_abuser
 

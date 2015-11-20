@@ -1,6 +1,6 @@
 package FixMyStreet::SendReport::Refused;
 
-use Moose;
+use Moo;
 
 BEGIN { extends 'FixMyStreet::SendReport::Noop'; }
 

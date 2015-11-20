@@ -63,12 +63,9 @@ __PACKAGE__->belongs_to(
 __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 
-use Moose;
+use Moo;
 use namespace::clean -except => [ 'meta' ];
 
 with 'FixMyStreet::Roles::Extra';
-
-# we need the inline_constructor bit as we don't inherit from Moose
-__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;

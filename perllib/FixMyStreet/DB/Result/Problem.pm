@@ -157,7 +157,7 @@ __PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
 __PACKAGE__->rabx_column('extra');
 __PACKAGE__->rabx_column('geocode');
 
-use Moose;
+use Moo;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
 use Utils::Photo;
@@ -890,8 +890,5 @@ sub get_time_spent {
         })->single;
     return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
 }
-
-# we need the inline_constructor bit as we don't inherit from Moose
-__PACKAGE__->meta->make_immutable( inline_constructor => 0 );
 
 1;
