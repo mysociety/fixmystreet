@@ -22,8 +22,8 @@ BEGIN {
 
 use CronFns;
 
-use mySociety::Config;
 use DateTime;
+use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use Open311;
@@ -36,7 +36,7 @@ use constant COUNCIL_ID_OXFORDSHIRE => 2237;
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
-my $base_url = mySociety::Config::get('BASE_URL');
+my $base_url = FixMyStreet->config('BASE_URL');
 my $site = CronFns::site($base_url);
 
 my $bodies = FixMyStreet::DB->resultset('Body')->search( {

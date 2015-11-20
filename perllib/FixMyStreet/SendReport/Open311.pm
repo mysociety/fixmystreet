@@ -5,7 +5,6 @@ use namespace::autoclean;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
-use mySociety::Config;
 use DateTime::Format::W3CDTF;
 use Open311;
 use Readonly;

@@ -19,12 +19,12 @@ BEGIN {
 
 use CGI; # XXX Awkward kludge
 use CronFns;
+use FixMyStreet;
 use FixMyStreet::DB;
-use mySociety::Config;
 
 my %params;
 ( $params{verbose}, $params{nomail} ) = CronFns::options();
-$params{site} = CronFns::site(mySociety::Config::get('BASE_URL'));
+$params{site} = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($params{site});
 
 FixMyStreet::DB->resultset('Questionnaire')->send_questionnaires( \%params );

@@ -7,9 +7,9 @@ use warnings;
 use CronFns;
 
 use Utils;
-use mySociety::Config;
 use mySociety::MaPit;
 
+use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::Email;
 use FixMyStreet::SendReport;
@@ -247,7 +247,7 @@ sub send_reports {
     # Set up site, language etc.
     my ($verbose, $nomail, $debug_mode) = CronFns::options();
 
-    my $base_url = mySociety::Config::get('BASE_URL');
+    my $base_url = FixMyStreet->config('BASE_URL');
     my $site = $site_override || CronFns::site($base_url);
 
     my $states = [ 'confirmed', 'fixed' ];
@@ -424,7 +424,7 @@ sub send_reports {
               . " ]\n\n";
         }
 
-        if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING')) {
+        if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->config('SEND_REPORTS_ON_STAGING')) {
             # on a staging server send emails to ourselves rather than the bodies
             %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::(Email|EmptyHomes)/ } keys %reporters;
             unless (%reporters) {
@@ -495,7 +495,7 @@ sub send_reports {
             send_fail_count => { '>', 0 }
         } );
         while (my $row = $unsent->next) {
-            my $base_url = mySociety::Config::get('BASE_URL');
+            my $base_url = FixMyStreet->config('BASE_URL');
             $sending_errors .= "* " . $base_url . "/report/" . $row->id . ", failed "
                 . $row->send_fail_count . " times, last at " . $row->send_fail_timestamp
                 . ", reason " . $row->send_fail_reason . "\n";
@@ -520,9 +520,9 @@ sub _send_report_sent_email {
             _template_ => $template,
             _parameters_ => $h,
             To => $row->user->email,
-            From => [ mySociety::Config::get('CONTACT_EMAIL'), $cobrand->contact_name ],
+            From => [ FixMyStreet->config('CONTACT_EMAIL'), $cobrand->contact_name ],
         },
-        mySociety::Config::get('CONTACT_EMAIL'),
+        FixMyStreet->config('CONTACT_EMAIL'),
         $nomail,
         $cobrand
     );

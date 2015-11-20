@@ -628,7 +628,7 @@ sub body {
         $body = join( _(' and '),
             map {
                 my $name = $_->name;
-                if ($c and mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS')) {
+                if ($c and FixMyStreet->config('AREA_LINKS_FROM_PROBLEMS')) {
                     '<a href="' . $_->url($c) . '">' . $name . '</a>';
                 } else {
                     $name;

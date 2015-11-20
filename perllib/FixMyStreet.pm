@@ -95,15 +95,12 @@ sub override_config($&) {
 
     mySociety::MaPit::configure($config->{MAPIT_URL}) if $config->{MAPIT_URL};
 
-    # For historical reasons, we have two ways of asking for config variables.
-    # Override them both, I'm sure we'll find time to get rid of one eventually.
-    # 
-    # NB: though we have these two functions, templates tend to use [% c.config %]
+    # NB: though we have this, templates tend to use [% c.config %].
     # This overriding happens after $c->config is set, so note that
     # FixMyStreet::App->setup_request rewrites $c->config if we are in
     # test_mode, so tests should Just Work there too.
 
-    my $override_guard1 = Sub::Override->new(
+    my $override_guard = Sub::Override->new(
         "FixMyStreet::config",
         sub {
             my ($class, $key) = @_;
@@ -113,23 +110,12 @@ sub override_config($&) {
             return $orig_config->{$key} if exists $orig_config->{$key};
         }
     );
-    my $override_guard2 = Sub::Override->new(
-        "mySociety::Config::get",
-        sub ($;$) {
-            my ($key, $default) = @_;
-            return $config->{$key} if exists $config->{$key};
-            my $orig_config = mySociety::Config::load_default();
-            return $orig_config->{$key} if exists $orig_config->{$key};
-            return $default if @_ == 2;
-        }
-    );
 
     FixMyStreet::Map::reload_allowed_maps() if $config->{MAP_TYPE};
 
     $code->();
 
-    $override_guard1->restore();
-    $override_guard2->restore();
+    $override_guard->restore();
     mySociety::MaPit::configure() if $config->{MAPIT_URL};
     FixMyStreet::Map::reload_allowed_maps() if $config->{MAP_TYPE};
 }

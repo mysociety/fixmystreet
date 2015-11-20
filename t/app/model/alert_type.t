@@ -442,8 +442,8 @@ subtest "check alerts from cobrand send main site url for alerts for different c
     my $email = $mech->get_email;
     my $body = $email->body;
 
-    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
-    my $expected3 = mySociety::Config::get('BASE_URL') . '/report/' . $report_outside_district->id;
+    my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $expected3 = FixMyStreet->config('BASE_URL') . '/report/' . $report_outside_district->id;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
     my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 
@@ -479,7 +479,7 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
     my $email = $mech->get_email;
     my $body = $email->body;
 
-    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
     my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 

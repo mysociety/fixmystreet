@@ -43,7 +43,7 @@ sub problems {
 
 sub base_url {
     my $self = shift;
-    my $base_url = mySociety::Config::get('BASE_URL');
+    my $base_url = FixMyStreet->config('BASE_URL');
     my $u = $self->council_url;
     if ( $base_url !~ /$u/ ) {
         # council cobrands are not https so transform to http as well

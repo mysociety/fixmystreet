@@ -28,7 +28,7 @@ EOF
 }
 
 sub send {
-    return if mySociety::Config::get('STAGING_SITE');
+    return if FixMyStreet->config('STAGING_SITE');
 
     my ( $self, $row, $h ) = @_;
 

@@ -20,10 +20,10 @@ BEGIN {
 use CGI; # XXX
 use CronFns;
 
-use mySociety::Config;
+use FixMyStreet;
 use FixMyStreet::DB;
 
-my $site = CronFns::site(mySociety::Config::get('BASE_URL'));
+my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($site);
 
 FixMyStreet::DB->resultset('AlertType')->email_alerts();

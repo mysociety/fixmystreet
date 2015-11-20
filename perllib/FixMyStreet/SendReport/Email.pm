@@ -75,7 +75,7 @@ sub send {
     my $recips = $self->build_recipient_list( $row, $h );
 
     # on a staging server send emails to ourselves rather than the bodies
-    if (mySociety::Config::get('STAGING_SITE') && !mySociety::Config::get('SEND_REPORTS_ON_STAGING') && !FixMyStreet->test_mode) {
+    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->config('SEND_REPORTS_ON_STAGING') && !FixMyStreet->test_mode) {
         $recips = 1;
         @{$self->to} = [ $row->user->email, $self->to->[0][1] || $row->name ];
     }
@@ -100,13 +100,13 @@ sub send {
 
     if (FixMyStreet::Email::test_dmarc($params->{From}[0])) {
         $params->{'Reply-To'} = [ $params->{From} ];
-        $params->{From} = [ mySociety::Config::get('CONTACT_EMAIL'), $params->{From}[1] ];
+        $params->{From} = [ FixMyStreet->config('CONTACT_EMAIL'), $params->{From}[1] ];
     }
 
     my $result = FixMyStreet::Email::send_cron(
         $row->result_source->schema,
         $params,
-        mySociety::Config::get('CONTACT_EMAIL'),
+        FixMyStreet->config('CONTACT_EMAIL'),
         $nomail,
         $cobrand
     );

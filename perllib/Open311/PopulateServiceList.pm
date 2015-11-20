@@ -39,7 +39,7 @@ sub process_body {
     unless ( $list && $list->{service} ) {
         if ($self->verbose >= 1) {
             my $id = $self->_current_body->id;
-            my $mapit_url = mySociety::Config::get('MAPIT_URL');
+            my $mapit_url = FixMyStreet->config('MAPIT_URL');
             my $areas = join( ",", keys %{$self->_current_body->areas} );
             warn "Body $id for areas $areas - $mapit_url/areas/$areas.html - did not return a service list\n";
             warn $open311->error;

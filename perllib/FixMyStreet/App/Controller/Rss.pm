@@ -218,7 +218,7 @@ sub query_main : Private {
         . ($alert_type->head_table ? $alert_type->head_table . '_id=? and ' : '')
         . $alert_type->item_where . ' order by '
         . $alert_type->item_order;
-    my $rss_limit = mySociety::Config::get('RSS_LIMIT');
+    my $rss_limit = FixMyStreet->config('RSS_LIMIT');
     $query .= " limit $rss_limit" unless $c->stash->{type} =~ /^all/;
 
     my $q = $c->model('DB::Alert')->result_source->storage->dbh->prepare($query);
