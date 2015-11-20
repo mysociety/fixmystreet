@@ -221,21 +221,24 @@ sub get_email_template {
     return $template;
 }
 
-my $tz = DateTime::TimeZone->new( name => "local" );
+my $tz;
 my $tz_f;
-$tz_f = DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
-    if FixMyStreet->config('TIME_ZONE');
 
 sub local_time_zone {
+    $tz //= DateTime::TimeZone->new( name => "local" );
     return $tz;
 }
 
 sub time_zone {
+    $tz_f //= DateTime::TimeZone->new( name => FixMyStreet->config('TIME_ZONE') )
+        if FixMyStreet->config('TIME_ZONE');
     return $tz_f;
 }
 
 sub set_time_zone {
     my ($class, $dt)  = @_;
+    my $tz = local_time_zone();
+    my $tz_f = time_zone();
     $dt->set_time_zone($tz);
     $dt->set_time_zone($tz_f) if $tz_f;
 }
