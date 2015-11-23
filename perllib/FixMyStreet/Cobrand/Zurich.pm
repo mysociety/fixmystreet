@@ -1117,9 +1117,41 @@ sub admin_stats {
                 ]
             }
         );
-        my $body = "Report ID,Created,Sent to Agency,Last Updated,E,N,Category,Status,UserID,External Body,Time Spent,Title,Detail,Media URL,Interface Used,Council Response\n";
+        my @fields = (
+            'Report ID',
+            'Created',
+            'Sent to Agency',
+            'Last Updated',
+            'E',
+            'N',
+            'Category',
+            'Status',
+            'Closure Status',
+            'UserID',
+            'External Body',
+            'Time Spent',
+            'Title',
+            'Detail',
+            'Media URL',
+            'Interface Used',
+            'Council Response',
+            'Strasse',
+            'Mast-Nr.',
+            'Haus-Nr.',
+            'Hydranten-Nr.',
+        );
+
+        my $body = "";
         require Text::CSV;
         my $csv = Text::CSV->new({ binary => 1 });
+
+        if ($csv->combine(@fields)) {
+            $body .= $csv->string . "\n";
+        }
+        else {
+            $body .= sprintf "{{error emitting CSV line: %s}}\n", $csv->error_diag;
+        }
+
         while ( my $report = $problems->next ) {
             my $external_body;
             my $body_name = "";
@@ -1129,6 +1161,11 @@ sub admin_stats {
 
             my $detail = $report->detail;
             my $public_response = $report->get_extra_metadata('public_response') || '';
+            my $metas = $report->get_extra_fields();
+            my %extras;
+            foreach my $field (@$metas) {
+                $extras{$field->{name}} = $field->{value};
+            }
 
             # replace newlines with HTML <br/> element
             $detail =~ s{\r?\n}{ <br/> }g;
@@ -1143,7 +1180,9 @@ sub admin_stats {
                 $report->whensent,
                 $report->lastupdate,
                 $report->local_coords, $report->category,
-                $report->state,        $report->user_id,
+                $report->state,
+                $report->get_extra_metadata('closure_status') || '',
+                $report->user_id,
                 $body_name,
                 $report->get_column('sum_time_spent') || 0,
                 $report->title,
@@ -1151,6 +1190,10 @@ sub admin_stats {
                 $media_url,
                 $report->service || 'Web interface',
                 $public_response,
+                $extras{'strasse'} || '',
+                $extras{'mast_nr'} || '',
+                $extras{'haus_nr'} || '',
+                $extras{'hydranten_nr'} || ''
             );
             if ($csv->combine(@columns)) {
                 $body .= $csv->string . "\n";
