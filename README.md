@@ -41,6 +41,8 @@ We've extracted all of the mobile apps from this repository into the
 ## Releases
 
 * master (development)
+    - Front end improvements:
+        - Add multiple photo upload support, with new UI. #190
     - Performance improvements:
         - Reduce memory usage. #1285
     - Bugfixes:
@@ -48,6 +50,7 @@ We've extracted all of the mobile apps from this repository into the
         - Prevent SVG chevron being stretched in Firefox. #1256
         - Better display/internationalisation of numbers. #1297
         - Fix cobrand restriction of My/Nearby. #1289
+        - Don't have hover state on disabled buttons.
     - Development improvements:
         - Add generic static route handler. #1235
         - Store reports summary data by cobrand. #1290

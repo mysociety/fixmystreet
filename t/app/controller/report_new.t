@@ -103,7 +103,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => '',
             may_show_name => '1',
             email         => '',
@@ -127,7 +129,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => '',
             may_show_name => '1',
             email         => '',
@@ -154,7 +158,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => '',
             may_show_name => '1',
             email         => '',
@@ -178,7 +184,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => '',
             may_show_name => undef,
             email         => '',
@@ -202,7 +210,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => 'Bob Jones',
             may_show_name => undef,
             email         => '',
@@ -225,7 +235,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => 'Bob Jones',
             may_show_name => '1',
             email         => '',
@@ -248,7 +260,9 @@ foreach my $test (
         fields => {
             title         => "DOG SHIT\r\nON WALLS",
             detail        => "on this portakabin -\r\n\r\nmore of a portaloo HEH!!",
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => 'Bob Jones',
             may_show_name => '1',
             email         => '',
@@ -271,7 +285,9 @@ foreach my $test (
         fields => {
             title         => 'Test title',
             detail        => 'Test detail',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => 'DUDE',
             may_show_name => '1',
             email         => '',
@@ -293,7 +309,9 @@ foreach my $test (
         fields => {
             title         => 'Test title',
             detail        => 'Test detail',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => 'anonymous',
             may_show_name => '1',
             email         => '',
@@ -315,7 +333,9 @@ foreach my $test (
         fields => {
             title         => 'Test title',
             detail        => 'Test detail',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => 'Joe Smith',
             may_show_name => '1',
             email         => 'not an email',
@@ -334,7 +354,9 @@ foreach my $test (
         fields => {
             title         => "   Test   title   ",
             detail        => "   first line   \n\n second\nline\n\n   ",
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => '',
             may_show_name => '1',
             email         => '',
@@ -359,7 +381,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => '  Bob    Jones   ',
             may_show_name => '1',
             email         => '   BOB @ExAmplE.COM   ',
@@ -381,7 +405,9 @@ foreach my $test (
         fields => {
             title         => 'Title',
             detail        => 'Detail',
-            photo         => [ [ undef, 'bad.txt', Content => 'This is not a JPEG', Content_Type => 'text/plain' ], 1 ],
+            photo1        => [ [ undef, 'bad.txt', Content => 'This is not a JPEG', Content_Type => 'text/plain' ], 1 ],
+            photo2        => '',
+            photo3        => '',
             name          => 'Bob Jones',
             may_show_name => '1',
             email         => 'bob@example.com',
@@ -392,7 +418,7 @@ foreach my $test (
             remember_me => undef,
         },
         changes => {
-            photo => '',
+            photo1 => '',
         },
         errors => [ "Please upload a JPEG image only" ],
     },
@@ -402,7 +428,9 @@ foreach my $test (
         fields => {
             title         => 'Title',
             detail        => 'Detail',
-            photo         => [ [ undef, 'fake.jpeg', Content => 'This is not a JPEG', Content_Type => 'image/jpeg' ], 1 ],
+            photo1        => [ [ undef, 'fake.jpeg', Content => 'This is not a JPEG', Content_Type => 'image/jpeg' ], 1 ],
+            photo2        => '',
+            photo3        => '',
             name          => 'Bob Jones',
             may_show_name => '1',
             email         => 'bob@example.com',
@@ -413,7 +441,7 @@ foreach my $test (
             remember_me => undef,
         },
         changes => {
-            photo => '',
+            photo1 => '',
         },
         errors => [ "That image doesn't appear to have uploaded correctly (Please upload a JPEG image only ), please try again." ],
     },
@@ -423,7 +451,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => 'Detail',
-            photo         => [ [ $sample_file, undef, Content_Type => 'application/octet-stream' ], 1 ],
+            photo1        => [ [ $sample_file, undef, Content_Type => 'application/octet-stream' ], 1 ],
+            photo2        => '',
+            photo3        => '',
             name          => 'Bob Jones',
             may_show_name => '1',
             email         => 'bob@example.com',
@@ -434,7 +464,7 @@ foreach my $test (
             remember_me => undef,
         },
         changes => {
-            photo => '',
+            photo1 => '',
         },
         errors => [ "Please enter a subject" ],
     },
@@ -534,7 +564,7 @@ foreach my $test (
                 with_fields => {
                     title         => 'Test Report',
                     detail        => 'Test report details.',
-                    photo         => '',
+                    photo1        => '',
                     name          => 'Joe Bloggs',
                     may_show_name => '1',
                     email         => 'test-1@example.com',
@@ -652,7 +682,7 @@ subtest "test password errors for a user who is signing in as they report" => su
                 with_fields => {
                     title         => 'Test Report',
                     detail        => 'Test report details.',
-                    photo         => '',
+                    photo1        => '',
                     email         => 'test-2@example.com',
                     password_sign_in => 'secret1',
                     category      => 'Street lighting',
@@ -704,7 +734,7 @@ subtest "test report creation for a user who is signing in as they report" => su
                 with_fields => {
                     title         => 'Test Report',
                     detail        => 'Test report details.',
-                    photo         => '',
+                    photo1        => '',
                     email         => 'test-2@example.com',
                     password_sign_in => 'secret2',
                     category      => 'Street lighting',
@@ -803,7 +833,9 @@ foreach my $test (
                     may_show_name => '1',
                     name          => 'Test User',
                     phone         => '01234 567 890',
-                    photo         => '',
+                    photo1        => '',
+                    photo2        => '',
+                    photo3        => '',
                     category      => '-- Pick a category --',
                 },
                 "user's details prefilled"
@@ -814,7 +846,7 @@ foreach my $test (
                     with_fields => {
                         title         => "Test Report at café",
                         detail        => 'Test report details.',
-                        photo         => '',
+                        photo1        => '',
                         name          => 'Joe Bloggs',
                         may_show_name => '1',
                         phone         => '07903 123 456',
@@ -898,7 +930,7 @@ subtest "test report creation for a category that is non public" => sub {
                 with_fields => {
                     title         => 'Test Report',
                     detail        => 'Test report details.',
-                    photo         => '',
+                    photo1        => '',
                     email         => 'test-2@example.com',
                     name          => 'Joe Bloggs',
                     category      => 'Street lighting',
@@ -1087,7 +1119,7 @@ for my $test (
         my $submission_fields = {
             title             => "Test Report",
             detail            => 'Test report details.',
-            photo             => '',
+            photo1            => '',
             email             => 'firstlast@example.com',
             may_show_name     => '1',
             phone             => '07903 123 456',
@@ -1156,7 +1188,7 @@ subtest 'user title not reset if no user title in submission' => sub {
         my $submission_fields = {
             title             => "Test Report",
             detail            => 'Test report details.',
-            photo             => '',
+            photo1            => '',
             name              => 'Has Title',
             may_show_name     => '1',
             phone             => '07903 123 456',
@@ -1250,7 +1282,7 @@ subtest "test Hart" => sub {
                         with_fields => {
                             title         => 'Test Report',
                             detail        => 'Test report details.',
-                            photo         => '',
+                            photo1        => '',
                             name          => 'Joe Bloggs',
                             may_show_name => '1',
                             category      => $test->{category},
@@ -1484,7 +1516,7 @@ subtest "unresponsive body handling works" => sub {
                 with_fields => {
                     title         => "Test Report at café",
                     detail        => 'Test report details.',
-                    photo         => '',
+                    photo1        => '',
                     name          => 'Joe Bloggs',
                     email         => $test_email,
                     may_show_name => '1',
@@ -1523,7 +1555,7 @@ subtest "unresponsive body handling works" => sub {
                 with_fields => {
                     title         => "Test Report at café",
                     detail        => 'Test report details.',
-                    photo         => '',
+                    photo1        => '',
                     name          => 'Joe Bloggs',
                     email         => $test_email,
                     may_show_name => '1',
@@ -1604,7 +1636,7 @@ subtest "extra google analytics code displayed on logged in problem creation" =>
                 with_fields => {
                     title         => "Test Report at café", 
                     detail        => 'Test report details.',
-                    photo         => '',
+                    photo1        => '',
                     name          => 'Joe Bloggs',
                     may_show_name => '1',
                     phone         => '07903 123 456',
@@ -1646,7 +1678,7 @@ subtest "extra google analytics code displayed on email confirmation problem cre
         my $submission_fields = {
             title             => "Test Report",
             detail            => 'Test report details.',
-            photo             => '',
+            photo1            => '',
             email             => 'firstlast@example.com',
             name              => 'Test User',
             may_show_name     => '1',

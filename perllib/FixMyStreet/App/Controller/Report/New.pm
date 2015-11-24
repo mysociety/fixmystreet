@@ -426,26 +426,21 @@ sub initialize_report : Private {
 
         for (1) {    # use as pseudo flow control
 
-            # did we find a token
-            last unless $partial;
-
             # is it in the database
             my $token =
               $c->model("DB::Token")
-              ->find( { scope => 'partial', token => $partial } )    #
+              ->find( { scope => 'partial', token => $partial } )
               || last;
 
             # can we get an id from it?
-            my $id = $token->data                                    #
-              || last;
+            my $id = $token->data || last;
 
             # load the related problem
-            $report = $c->cobrand->problems                          #
-              ->search( { id => $id, state => 'partial' } )          #
+            $report = $c->cobrand->problems
+              ->search( { id => $id, state => 'partial' } )
               ->first;
 
             if ($report) {
-
                 # log the problem creation user in to the site
                 $c->authenticate( { email => $report->user->email },
                     'no_password' );
@@ -453,9 +448,10 @@ sub initialize_report : Private {
                 # save the token to delete at the end
                 $c->stash->{partial_token} = $token if $report;
 
-            }
-            else {
+                # Stash the photo IDs for "already got" display
+                $c->stash->{upload_fileid} = $report->get_photoset($c)->data;
 
+            } else {
                 # no point keeping it if it is done.
                 $token->delete;
             }

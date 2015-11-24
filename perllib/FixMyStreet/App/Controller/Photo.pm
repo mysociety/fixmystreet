@@ -69,7 +69,7 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.jpeg$') {
         $c->detach( 'no_photo' ) if $id =~ /\D/;
         ($item) = $c->cobrand->problems->search( {
             id => $id,
-            state => [ FixMyStreet::DB::Result::Problem->visible_states(), 'partial' ],
+            state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
             photo => { '!=', undef },
         } );
     }
@@ -148,6 +148,33 @@ sub _crop {
     my @blobs = $image->ImageToBlob();
     undef $image;
     return $blobs[0];
+}
+
+sub upload : Local {
+    my ( $self, $c ) = @_;
+    my @items = (
+        ( map {
+            /^photo/ ? # photo, photo1, photo2 etc.
+                ($c->req->upload($_)) : ()
+        } sort $c->req->upload),
+    );
+    my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+        c => $c,
+        data_items => \@items,
+    });
+
+    my $fileid = $photoset->data;
+    my $out;
+    if ($c->stash->{photo_error} || !$fileid) {
+        $c->res->status(500);
+        $out = { error => $c->stash->{photo_error} || _('Unknown error') };
+    } else {
+        $out = { id => $fileid };
+    }
+
+    my $body = JSON->new->utf8(1)->encode($out);
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
 }
 
 =head2 process_photo

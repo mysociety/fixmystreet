@@ -45,7 +45,9 @@ foreach my $test (
         fields => {
             title         => '',
             detail        => '',
-            photo         => '',
+            photo1        => '',
+            photo2        => '',
+            photo3        => '',
             name          => '',
             may_show_name => '1',
             email         => '',

@@ -1,0 +1,198 @@
+$dropzone-link-color: #0BA7D1; // match default `a` styling
+$dropzone-link-color--awakened: #0D7CCE; // match default `a:hover` styling
+$dropzone-border-color: #888; // match default form inputs
+$dropzone-border-color--awakened: $dropzone-link-color--awakened;
+$dropzone-border-color--full: #bf002a;
+$dropzone-border-radius: 0.25em; // match default form inputs
+$dropzone-background-color: #fff;
+$dropzone-background-color--awakened: mix($dropzone-link-color, $dropzone-background-color, 10%);
+$dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%);
+
+.dropzone {
+  @include clearfix();
+  border: 0.125em solid $dropzone-border-color;
+  background-color: $dropzone-background-color;
+  border-radius: $dropzone-border-radius;
+  padding: 1.5em;
+  text-align: center;
+}
+
+.dz-clickable {
+  cursor: pointer;
+
+  * {
+    cursor: auto;
+  }
+
+  .dz-message,
+  .dz-message *,
+  .dz-remove,
+  .dz-cancel {
+    cursor: pointer;
+  }
+
+  .dz-message u {
+    color: $dropzone-link-color;
+  }
+}
+
+.dz-clickable:hover,
+.dz-drag-hover {
+  border-color: $dropzone-link-color--awakened;
+  background-color: $dropzone-background-color--awakened;
+
+  .dz-remove,
+  .dz-cancel {
+    border-color: $dropzone-background-color--awakened;
+  }
+
+  .dz-message u {
+    color: $dropzone-link-color--awakened;
+  }
+}
+
+.dz-max-files-reached {
+  cursor: auto;
+
+  &:hover {
+    border-color: $dropzone-border-color;
+    background-color: $dropzone-background-color;
+
+    .dz-remove,
+    .dz-cancel {
+      border-color: $dropzone-background-color;
+    }
+  }
+
+  &.dz-drag-hover {
+    border-color: $dropzone-border-color--full;
+    background-color: $dropzone-background-color--full;
+
+    .dz-remove,
+    .dz-cancel {
+      border-color: $dropzone-background-color--full;
+    }
+  }
+
+  .dz-message.dz-default {
+    display: none;
+  }
+
+  .dz-preview {
+    margin-top: 0;
+  }
+}
+
+.dz-message {
+  margin-bottom: 1.5em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.dz-preview {
+  position: relative;
+  float: left;
+  width: 30%;
+  height: 0;
+  padding-bottom: 30%; // makes a square element
+  margin-right: 5%;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.dz-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  border-radius: $dropzone-border-radius;
+  overflow: hidden; // crop child image to border radius, even before img src has loaded
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.dz-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  // http://loading.io/loader/?use=eyJzaXplIjo1MCwic3BlZWQiOjEsImNiayI6IiNlZWVlZWUiLCJjMSI6IiM5OTk5OTkiLCJjMiI6IjEyIiwiYzMiOiI0IiwiYzQiOiIxNSIsImM1IjoiMiIsImM2IjoiMjAiLCJ0eXBlIjoiZGVmYXVsdCJ9
+  background: #eee url(/cobrands/fixmystreet/images/spinner-grey-eee.gif) no-repeat center center;
+  background-image: url(/cobrands/fixmystreet/images/spinner-grey-eee.svg), none;
+  background-size: 100px;
+  border-radius: 0.3em;
+
+  .dz-complete & {
+    display: none;
+  }
+
+  .dz-upload {
+    background: rgba(0,0,0,0.2);
+    border-radius: $dropzone-border-radius;
+    height: 100%;
+    width: 0;
+    display: block;
+  }
+}
+
+.dz-error-message {
+  color: #881111;
+}
+
+.dz-remove,
+.dz-cancel {
+  display: block;
+  width: 1.5em;
+  height: 0;
+
+  padding-top: 1.5em;
+  overflow: hidden;
+
+  position: absolute;
+  top: -0.5em;
+  right: -0.5em;
+
+  border: 4px solid #fff;
+  border-radius: 100%;
+  background: #888 url(/cobrands/fixmystreet/images/cross-14px.png) no-repeat center center;
+  background-image: url(/cobrands/fixmystreet/images/cross-14px.svg), none;
+  background-size: 14px;
+
+  &:hover,
+  &:focus {
+    background-color: red;
+  }
+}
+
+// Deviously use pseudo-elements to preload a few images so they appear as soon as a file is picked
+.dz-message {
+  &:before {
+    content: "";
+    position: absolute;
+    background: transparent url(/cobrands/fixmystreet/images/spinner-grey-eee.gif) no-repeat 0 0;
+    background-image: url(/cobrands/fixmystreet/images/spinner-grey-eee.svg), none;
+  }
+
+  &:after {
+    content: "";
+    position: absolute;
+    background: transparent url(/cobrands/fixmystreet/images/cross-14px.png) no-repeat 0 0;
+    background-image: url(/cobrands/fixmystreet/images/cross-14px.svg), none;
+  }
+}
+
+// Don't really need these
+.dz-details, .dz-success-mark, .dz-error-mark {
+  display: none;
+}

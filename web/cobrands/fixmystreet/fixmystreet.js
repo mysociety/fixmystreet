@@ -180,6 +180,81 @@ $(function(){
     //move 'skip this step' link on mobile
     $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
 
+    // Set up the Dropzone image uploader
+    if('Dropzone' in window){
+      Dropzone.autoDiscover = false;
+    }
+    if('Dropzone' in window && $('#form_photo').length){
+      var $originalLabel = $('[for="form_photo"]');
+      var $originalInput = $('#form_photos');
+      var $dropzone = $('<div>').addClass('dropzone');
+
+      $originalLabel.removeAttr('for');
+      $originalInput.hide();
+
+      $dropzone.insertAfter($originalInput);
+      var photodrop = new Dropzone($dropzone[0], {
+        url: '/photo/upload',
+        paramName: 'photo',
+        maxFiles: 3,
+        addRemoveLinks: true,
+        thumbnailHeight: 150,
+        thumbnailWidth: 150,
+        acceptedFiles: 'image/jpeg,image/pjpeg',
+        dictDefaultMessage: translation_strings.upload_default_message,
+        dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,
+        dictInvalidFileType: translation_strings.upload_invalid_file_type,
+        dictMaxFilesExceeded: translation_strings.upload_max_files_exceeded,
+
+        fallback: function(){
+          $dropzone.remove();
+          $originalLabel.attr('for', 'form_photo');
+          $originalInput.show();
+        },
+        init: function(){
+          this.on("addedfile", function(file){
+            $('input[type=submit]').prop("disabled", true).removeClass('green-btn');
+          });
+          this.on("queuecomplete", function(){
+            $('input[type=submit]').removeAttr('disabled').addClass('green-btn');
+          });
+          this.on("success", function(file, xhrResponse) {
+            var ids = $('input[name=upload_fileid]').val().split(','),
+                id = (file.server_id = xhrResponse.id),
+                l = ids.push(id),
+                newstr = ids.join(',');
+            $('input[name=upload_fileid]').val(newstr);
+          });
+          this.on("error", function(file, errorMessage, xhrResponse){
+          });
+          this.on("removedfile", function(file){
+            var ids = $('input[name=upload_fileid]').val().split(','),
+                newstr = $.grep(ids, function(n){ return (n!=file.server_id); }).join(',');
+            $('input[name=upload_fileid]').val(newstr);
+          });
+          this.on("maxfilesexceeded", function(file){
+            this.removeFile(file);
+            var $message = $('<div class="dz-message dz-error-message">');
+            $message.text(translation_strings.upload_max_files_exceeded);
+            $message.prependTo(this.element);
+            setTimeout(function(){
+              $message.slideUp(250, function(){
+                $message.remove();
+              });
+            }, 2000);
+          });
+        }
+      });
+
+      $.each(fixmystreet.uploaded_files || [], function(i, f) {
+        var mockFile = { name: f, server_id: f };
+        photodrop.emit("addedfile", mockFile);
+        photodrop.createThumbnailFromUrl(mockFile, '/photo/' + f + '.temp.jpeg');
+        photodrop.emit("complete", mockFile);
+        photodrop.options.maxFiles -= 1;
+      });
+    }
+
     /*
      * Tabs
      */
