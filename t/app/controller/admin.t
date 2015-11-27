@@ -1240,9 +1240,7 @@ subtest "Check admin_base_url" => sub {
     my $rs = FixMyStreet::App->model('DB::Problem');
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($report->cobrand)->new();
 
-    is (FixMyStreet::App->model('DB::Problem')->get_admin_url(
-            $cobrand,
-            $report),
+    is ($report->admin_url($cobrand),
         (sprintf 'https://secure.mysociety.org/admin/bci/report_edit/%d', $report_id),
         'get_admin_url OK');
 };

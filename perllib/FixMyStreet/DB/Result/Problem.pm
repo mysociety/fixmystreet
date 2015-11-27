@@ -477,6 +477,11 @@ sub url {
     return "/report/" . $self->id;
 }
 
+sub admin_url {
+    my ($self, $cobrand) = @_;
+    return $cobrand->admin_base_url . '/report_edit/' . $self->id;
+}
+
 =head2 get_photo_params
 
 Returns a hashref of details of the attached photo, if any, for use in templates.

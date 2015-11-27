@@ -17,13 +17,12 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
-use CGI; # XXX
 use CronFns;
 
 use FixMyStreet;
-use FixMyStreet::DB;
+use FixMyStreet::Script::Reports;
 
 my $site = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($site);
 
-FixMyStreet::DB->resultset('Problem')->send_reports();
+FixMyStreet::Script::Reports::send();

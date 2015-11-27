@@ -8,6 +8,7 @@ package FixMyStreet::Geocode::Bing;
 
 use strict;
 
+use FixMyStreet::Geocode;
 use Utils;
 
 # string STRING CONTEXT
