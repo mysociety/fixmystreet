@@ -14,25 +14,30 @@ has c => (
     is => 'ro',
 );
 
+# The attached report, for using its ID
 has object => (
     is => 'ro',
 );
 
-has data => ( # generic data from DB field
+# If a PhotoSet is generated from a database row, db_data is set, which then
+# fills data_items -> images -> data. If it is generated during creation,
+# data_items is set, which then similarly fills images -> data.
+
+has db_data => ( # generic data from DB field
+    is => 'ro',
+);
+
+has data => ( # List of photo hashes
     is => 'ro',
     lazy => 1,
     default => sub {
-        # yes, this is a little circular: data -> data_items -> items -> data
-        # e.g. if not provided, then we're presumably uploading/etc., so calculate from
-        # the stored cached fileids
-        # (obviously if you provide none of these, then you'll get an infinite loop)
         my $self = shift;
         my $data = join ',', map { $_->[0] } $self->all_images;
         return $data;
     }
 );
 
-has data_items => ( # either a) split from data or b) provided by photo upload
+has data_items => ( # either a) split from db_data or b) provided by photo upload
     isa => 'ArrayRef',
     is => 'rw',
     traits => ['Array'],
@@ -42,8 +47,7 @@ has data_items => ( # either a) split from data or b) provided by photo upload
     },
     default => sub {
         my $self = shift;
-        my $data = $self->data
-            or return [];
+        my $data = $self->db_data or return [];
 
         return [$data] if (_jpeg_magic($data));
 

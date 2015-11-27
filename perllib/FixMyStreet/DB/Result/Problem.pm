@@ -869,7 +869,7 @@ sub get_photoset {
     eval "use $class";
     return $class->new({
         c => $c,
-        data => $self->photo,
+        db_data => $self->photo,
         object => $self,
     });
 }

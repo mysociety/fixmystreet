@@ -5,7 +5,6 @@ use Test::Exception;
 use utf8;
 
 use FixMyStreet::DB;
-use Data::Dumper;
 use DateTime;
 use Path::Tiny 'path';
 use File::Temp 'tempdir';
@@ -59,6 +58,7 @@ subtest 'Photoset with photo inline in DB' => sub {
     my $report = make_report( $image_path->slurp );
     my $photoset = $report->get_photoset();
     is $photoset->num_images, 1, 'Found just 1 image';
+    is $photoset->data, '1cdd4329ceee2234bd4e89cb33b42061a0724687';
 };
 
 $image_path->copy( path( $UPLOAD_DIR, '0123456789012345678901234567890123456789.jpeg' ) );
@@ -68,7 +68,7 @@ subtest 'Photoset with 1 referenced photo' => sub {
     is $photoset->num_images, 1, 'Found just 1 image';
 };
 
-subtest 'Photoset with 1 referenced photo' => sub {
+subtest 'Photoset with 3 referenced photo' => sub {
     my $report = make_report( '0123456789012345678901234567890123456789,0123456789012345678901234567890123456789,0123456789012345678901234567890123456789' );
     my $photoset = $report->get_photoset();
     is $photoset->num_images, 3, 'Found 3 images';
