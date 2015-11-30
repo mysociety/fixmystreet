@@ -28,6 +28,12 @@ Launched: 2013
 Run by: <a href="http://www.openlocal.org.au/">Open Local</a>
 
 <h2>Europe</h2>
+
+<h3>France</h3>
+Site: <a href="http://www.fixmystreet.fr/">FixMyStreet.fr</a>
+Launched: 2015
+Run by: <a href="http://www.fixmystreet-france.fr/">FixMyStreet-France</a>
+
 <h3>Ireland</h3>
 Site: <a href="http://fixmystreet.ie/">FixMyStreet.ie</a>
 Launched: 2012
