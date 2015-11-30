@@ -8,6 +8,14 @@ title: Sites running on the FixMyStreet platform
 FixMyStreet works everywhere! Take a look at how FixmyStreet is being
 used in cities and countries across the world.
 
+<h2>Africa</h2>
+<h3>Uganda</h3>
+Site: <a href="http://fixmycommunity.ug/">FixMyCommunity</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://cewit.or.ug">CEW-IT</a>
+
 <h2>Asia</h2>
 <h3>Malaysia</h3>
 Site: <a href="http://aduanku.my/">Aduanku</a>
@@ -88,6 +96,12 @@ Launched: 2014
 <br>
 Run by: <a href="http://www.ciudadviva.cl/">Ciudad Viva</a>
 
+<h3>Uruguay</h3>
+Site: <a href="http://www.pormibarrio.uy/">PorMiBarrio</a>
+<br>
+Launched: 2014
+<br>
+Run by: <a href="http://www.datauy.org/">DATA</a>
 
 <h2>And you?</h2>
 
