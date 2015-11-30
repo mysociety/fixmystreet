@@ -72,9 +72,9 @@ Launched: 2013
 Run by: <a href="http://sambruk.se/">Sambruk</a>
 
 <h3>Switzerland</h3>
-Site: <a href="https://www.zueriwieneu.ch/">ZueriWieNeu</a>in Zurich
+Site: <a href="https://www.zueriwieneu.ch/">ZueriWieNeu</a> in Zurich
 <br>
-Launched: 2013 (beta site, closed 2014)
+Launched: 2013
 <br>
 Run by: <a href="https://www.stadt-zuerich.ch/portal">Zurich City
 Council</a>
