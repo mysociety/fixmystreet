@@ -27,6 +27,9 @@ sub index_json : Path('/status.json') : Args(0) {
 sub index : Path : Args(0) {
     my ($self, $c, $format) = @_;
 
+    # Workaround that the admin summary page is only displayed to Zurich
+    # superusers. It doesn't have anything sensitive
+    $c->stash->{admin_type} = 'super';
     # Fetch summary stats from admin front page
     $c->forward('/admin/index');
 
