@@ -47,6 +47,7 @@ We've extracted all of the mobile apps from this repository into the
         - Default the Google map view to hybrid. #1293
         - Prevent SVG chevron being stretched in Firefox. #1256
         - Better display/internationalisation of numbers. #1297
+        - Fix cobrand restriction of My/Nearby. #1289
     - Development improvements:
         - Add generic static route handler. #1235
         - Store reports summary data by cobrand. #1290

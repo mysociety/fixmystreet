@@ -20,8 +20,8 @@ FixMyStreet::override_config {
     for my $c (@cobrands) {
         my ($m, $id) = @$c;
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($m);
-        my $body_restriction = $cobrand->body_restriction;
-        is $body_restriction, $id, "body_restriction for $m";
+        my $council_id = $cobrand->council_id;
+        is $council_id, $id, "council_id for $m";
     }
 };
 

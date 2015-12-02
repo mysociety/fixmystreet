@@ -10,11 +10,6 @@ sub council_name { return 'See Something Say Something'; }
 sub council_url { return 'seesomething'; }
 sub area_types  { [ 'MTD' ] }
 
-sub body_restriction {
-    my $self = shift;
-    return $self->council_id;
-}
-
 sub area_check {
     my ( $self, $params, $context ) = @_;
 

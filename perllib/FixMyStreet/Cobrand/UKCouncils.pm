@@ -22,11 +22,6 @@ sub path_to_web_templates {
     ];
 }
 
-sub body_restriction {
-    my $self = shift;
-    return $self->council_id;
-}
-
 sub site_key {
     my $self = shift;
     return $self->council_url;
@@ -36,9 +31,14 @@ sub restriction {
     return { cobrand => shift->moniker };
 }
 
-sub problems {
-    my $self = shift;
-    return $self->{c}->model('DB::Problem')->to_body($self->council_id);
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs->to_body($self->council_id);
+}
+
+sub updates_restriction {
+    my ($self, $rs) = @_;
+    return $rs->to_body($self->council_id);
 }
 
 sub base_url {

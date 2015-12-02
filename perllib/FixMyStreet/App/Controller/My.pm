@@ -36,6 +36,7 @@ sub my : Path : Args(0) {
     my $states = $c->stash->{filter_problem_states};
     my $params = {
         state => [ keys %$states ],
+        user => $c->user->id,
     };
 
     my $category = $c->get_param('filter_category');
@@ -44,9 +45,7 @@ sub my : Path : Args(0) {
         $c->stash->{filter_category} = $category;
     }
 
-    my $rs = $c->user->problems
-        ->to_body($c->cobrand->body_restriction)
-        ->search( $params, {
+    my $rs = $c->cobrand->problems->search( $params, {
         order_by => { -desc => 'confirmed' },
         rows => 50
     } )->page( $p_page );
@@ -77,7 +76,7 @@ sub my : Path : Args(0) {
     $c->stash->{updates} = \@updates;
     $c->stash->{updates_pager} = $rs->pager;
 
-    my @categories = $c->user->problems->search( undef, {
+    my @categories = $c->cobrand->problems->search( { user => $c->user->id }, {
         columns => [ 'category' ],
         distinct => 1,
         order_by => [ 'category' ],

@@ -47,24 +47,45 @@ sub country {
 
 =head1 problems
 
-Returns a ResultSet of Problems, restricted to a subset if we're on a cobrand
-that only wants some of the data.
+Returns a ResultSet of Problems, potentially restricted to a subset if we're on
+a cobrand that only wants some of the data.
 
 =cut
 
 sub problems {
     my $self = shift;
-    return $self->{c}->model('DB::Problem');
+    return $self->problems_restriction($self->{c}->model('DB::Problem'));
 }
 
-=head1 body_restriction
+=head1 updates
 
-Return an extra query parameter to restrict reports to those sent to a
-particular body.
+Returns a ResultSet of Comments, potentially restricted to a subset if we're on
+a cobrand that only wants some of the data.
 
 =cut
 
-sub body_restriction {}
+sub updates {
+    my $self = shift;
+    return $self->updates_restriction($self->{c}->model('DB::Comment'));
+}
+
+=head1 problems_restriction/updates_restriction
+
+Used to restricts reports and updates in a cobrand in a particular way. Do
+nothing by default.
+
+=cut
+
+sub problems_restriction {
+    my ($self, $rs) = @_;
+    return $rs;
+}
+
+sub updates_restriction {
+    my ($self, $rs) = @_;
+    return $rs;
+}
+
 
 sub site_key { return 0; }
 

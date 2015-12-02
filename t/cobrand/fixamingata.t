@@ -115,7 +115,7 @@ subtest "Test ajax decimal points" => sub {
 };
 
 END {
-    $mech->delete_problems_for_body(1);
+    $mech->delete_body($body);
     ok $mech->host("www.fixmystreet.com"), "change host back";
     done_testing();
 }

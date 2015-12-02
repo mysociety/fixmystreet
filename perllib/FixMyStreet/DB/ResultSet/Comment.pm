@@ -5,20 +5,20 @@ use strict;
 use warnings;
 
 sub to_body {
-    my ($rs, $body_restriction) = @_;
-    return FixMyStreet::DB::ResultSet::Problem::to_body($rs, $body_restriction);
+    my ($rs, $bodies) = @_;
+    return FixMyStreet::DB::ResultSet::Problem::to_body($rs, $bodies, 1);
 }
 
 
 sub timeline {
-    my ( $rs, $body_restriction ) = @_;
+    my ( $rs ) = @_;
 
     my $prefetch = 
         $rs->result_source->storage->sql_maker->quote_char ?
         [ qw/user/ ] :
         [];
 
-    return $rs->to_body($body_restriction)->search(
+    return $rs->search(
         {
             state => 'confirmed',
             created => { '>=', \"current_timestamp-'7 days'::interval" },
@@ -30,17 +30,13 @@ sub timeline {
 }
 
 sub summary_count {
-    my ( $rs, $body_restriction ) = @_;
+    my ( $rs ) = @_;
 
     my $params = {
         group_by => ['me.state'],
         select   => [ 'me.state', { count => 'me.id' } ],
         as       => [qw/state state_count/],
     };
-    if ($body_restriction) {
-        $rs = $rs->to_body($body_restriction);
-        $params->{join} = 'problem';
-    }
     return $rs->search(undef, $params);
 }
 

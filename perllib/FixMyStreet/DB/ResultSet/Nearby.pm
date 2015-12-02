@@ -4,6 +4,11 @@ use base 'DBIx::Class::ResultSet';
 use strict;
 use warnings;
 
+sub to_body {
+    my ($rs, $bodies) = @_;
+    return FixMyStreet::DB::ResultSet::Problem::to_body($rs, $bodies, 1);
+}
+
 sub nearby {
     my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $category, $states ) = @_;
 
@@ -21,7 +26,7 @@ sub nearby {
         if $ids;
     $params->{category} = $category if $category;
 
-    $rs = FixMyStreet::DB::ResultSet::Problem::to_body($rs, $c->cobrand->body_restriction);
+    $rs = $c->cobrand->problems_restriction($rs);
 
     my $attrs = {
         prefetch => 'problem',

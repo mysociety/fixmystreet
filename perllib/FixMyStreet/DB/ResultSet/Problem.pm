@@ -16,13 +16,15 @@ sub set_restriction {
 }
 
 sub to_body {
-    my ($rs, $bodies) = @_;
+    my ($rs, $bodies, $join) = @_;
     return $rs unless $bodies;
     unless (ref $bodies eq 'ARRAY') {
         $bodies = [ map { ref $_ ? $_->id : $_ } $bodies ];
     }
+    $join = { join => 'problem' } if $join;
     $rs = $rs->search(
-        \[ "regexp_split_to_array(bodies_str, ',') && ?", [ {} => $bodies ] ]
+        \[ "regexp_split_to_array(bodies_str, ',') && ?", [ {} => $bodies ] ],
+        $join
     );
     return $rs;
 }

@@ -84,7 +84,7 @@ sub index : Path : Args(0) {
         for ( FixMyStreet::DB::Result::Problem->visible_states() );
     $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
 
-    my $comments = $c->model('DB::Comment')->summary_count( $c->cobrand->body_restriction );
+    my $comments = $c->cobrand->updates->summary_count;
 
     my %comment_counts =
       map { $_->state => $_->get_column('state_count') } $comments->all;
@@ -171,7 +171,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
         push @{$time{$_->whenanswered->epoch}}, { type => 'quesAnswered', date => $_->whenanswered, obj => $_ } if $_->whenanswered;
     }
 
-    my $updates = $c->model('DB::Comment')->timeline( $c->cobrand->body_restriction );
+    my $updates = $c->cobrand->updates->timeline;
 
     foreach ($updates->all) {
         push @{$time{$_->created->epoch}}, { type => 'update', date => $_->created, obj => $_} ;
@@ -622,9 +622,7 @@ sub reports : Path('reports') {
         }
 
         if (@$query) {
-            my $updates = $c->model('DB::Comment')
-                ->to_body($c->cobrand->body_restriction)
-                ->search(
+            my $updates = $c->cobrand->updates->search(
                 {
                     -or => $query,
                 },
@@ -967,9 +965,7 @@ sub users: Path('users') : Args(0) {
 sub update_edit : Path('update_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    my $update = $c->model('DB::Comment')
-        ->to_body($c->cobrand->body_restriction)
-        ->search({ id => $id })->first;
+    my $update = $c->cobrand->updates->search({ id => $id })->first;
 
     $c->detach( '/page_error_404_not_found' )
       unless $update;

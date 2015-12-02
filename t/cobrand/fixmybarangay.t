@@ -141,8 +141,9 @@ is $luz_report->state, 'hidden', 'should be hidden';
 
 $mech->delete_user($fmb_test_email);
 
-$mech->delete_problems_for_body( $luz->id );
-$mech->delete_problems_for_body( $dps->id );
+$mech->delete_body($luz);
+$mech->delete_body($bsn);
+$mech->delete_body($dps);
 
 ok $mech->host("www.fixmystreet.com"), "change host back";
 

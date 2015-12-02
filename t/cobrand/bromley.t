@@ -58,5 +58,5 @@ subtest 'testing special Open311 behaviour', sub {
 
 # Clean up
 $mech->delete_user($user);
-$mech->delete_problems_for_body( $body->id );
+$mech->delete_body($body);
 done_testing();
