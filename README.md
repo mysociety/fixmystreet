@@ -49,6 +49,8 @@ We've extracted all of the mobile apps from this repository into the
     - Development improvements:
         - Add generic static route handler. #1235
         - Store reports summary data by cobrand. #1290
+    - Admin improvements:
+         - Don't allow blank email/name to be submitted.
 
 * v1.7 (23rd October 2015)
     - Front end improvements:
