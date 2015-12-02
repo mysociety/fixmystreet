@@ -10,7 +10,7 @@ use FixMyStreet::TestMech;
 my $EMAIL = 'seesomething@example.com';
 
 my $mech = FixMyStreet::TestMech->new;
-my $db = FixMyStreet::App->model('DB')->schema;
+my $db = FixMyStreet::DB->storage->schema;
 my $dt_parser = $db->storage->datetime_parser;
 
 $db->txn_begin;
@@ -32,7 +32,7 @@ $user->update({ from_body => $body });
 
 my $date = $dt_parser->format_datetime(DateTime->now);
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create( {
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create( {
     postcode           => 'EH1 1BB',
     bodies_str         => '2520',
     areas              => ',2520,',

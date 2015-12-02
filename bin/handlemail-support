@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 #
 # handlemail-support:
 # Handle an individual incoming mail message.
@@ -11,17 +11,17 @@
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
 use strict;
+use warnings;
 require 5.8.0;
 
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
-
-use mySociety::Config;
 BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
 }
+
+use FixMyStreet;
 use mySociety::EmailUtil;
 use mySociety::HandleMail;
 
@@ -32,7 +32,7 @@ forward_on();
 # ---
 
 sub forward_on {
-    my ($l, $d) = split /\@/, mySociety::Config::get('CONTACT_EMAIL');
+    my ($l, $d) = split /\@/, FixMyStreet->config('CONTACT_EMAIL');
     if (mySociety::EmailUtil::EMAIL_SUCCESS
             != mySociety::EmailUtil::send_email(
                 join("\n", @{$data{lines}}) . "\n",
@@ -50,7 +50,7 @@ sub is_ignorable {
     my ($from, $subject, $body) = ($head->get('From'), $head->get('Subject'), $m->body);
     $body = join("\n", @$body);
 
-    open my $fp, "$FindBin::Bin/../../data/ignored-emails.csv" or exit 75;
+    my $fp = FixMyStreet->path_to("..", "data", "ignored-emails.csv")->open or exit 75;
     while (<$fp>) {
         chomp;
         my ($f, $s, $b) = split /,/;

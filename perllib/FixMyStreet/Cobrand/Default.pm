@@ -682,7 +682,7 @@ sub get_body_sender {
 
     if ( $body->can_be_devolved ) {
         # look up via category
-        my $config = FixMyStreet::App->model("DB::Contact")->search( { body_id => $body->id, category => $category } )->first;
+        my $config = $body->result_source->schema->resultset("Contact")->search( { body_id => $body->id, category => $category } )->first;
         if ( $config->send_method ) {
             return { method => $config->send_method, config => $config };
         } else {

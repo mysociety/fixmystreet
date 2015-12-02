@@ -8,6 +8,7 @@ package FixMyStreet::Geocode::Bing;
 
 use strict;
 
+use FixMyStreet::Geocode;
 use Utils;
 
 # string STRING CONTEXT
@@ -71,7 +72,7 @@ sub reverse {
     my ( $latitude, $longitude, $bing_culture ) = @_;
 
     # Get nearest road-type thing from Bing
-    my $key = mySociety::Config::get('BING_MAPS_API_KEY', '');
+    my $key = FixMyStreet->config('BING_MAPS_API_KEY', '');
     if ($key) {
         my $url = "http://dev.virtualearth.net/REST/v1/Locations/$latitude,$longitude?key=$key";
         $url .= '&c=' . $bing_culture if $bing_culture;

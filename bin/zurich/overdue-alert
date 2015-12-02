@@ -19,7 +19,9 @@ BEGIN {
 
 use DateTime;
 use CronFns;
-use FixMyStreet::App;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
+use FixMyStreet::Email;
 
 my ($verbose, $nomail) = CronFns::options();
 
@@ -28,7 +30,7 @@ my $now = DateTime->now();
 exit if FixMyStreet::Cobrand::Zurich::is_public_holiday($now) or FixMyStreet::Cobrand::Zurich::is_weekend($now);
 
 my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('zurich')->new();
-my %bodies = map { $_->id => $_ } FixMyStreet::App->model("DB::Body")->all;
+my %bodies = map { $_->id => $_ } FixMyStreet::DB->resultset("Body")->all;
 
 loop_through( 'alert-moderation-overdue.txt', 0, 1, [ 'unconfirmed' ] );
 loop_through( 'alert-overdue.txt', 1, 6, 'in progress' );
@@ -36,10 +38,10 @@ loop_through( 'alert-overdue.txt', 0, 6, ['confirmed', 'planned'] );
 
 sub loop_through {
     my ( $template, $include_parent, $days, $states ) = @_;
-    my $dtf = FixMyStreet::App->model("DB")->storage->datetime_parser;
+    my $dtf = FixMyStreet::DB->storage->datetime_parser;
     my $date_threshold = $dtf->format_datetime(FixMyStreet::Cobrand::Zurich::sub_days( $now, $days ));
 
-    my $reports = FixMyStreet::App->model("DB::Problem")->search( {
+    my $reports = FixMyStreet::DB->resultset("Problem")->search( {
         state => $states,
         created => { '<',  $date_threshold },
         bodies_str => { '!=', undef },
@@ -76,7 +78,8 @@ sub send_alert {
         push @$to, [ $parent_email, $parent->name ];
     }
 
-    FixMyStreet::App->send_email_cron(
+    FixMyStreet::Email::send_cron(
+        FixMyStreet::DB->storage->schema,
         {
             _template_ => $template,
             _parameters_ => $h,

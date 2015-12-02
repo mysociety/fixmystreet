@@ -1,5 +1,5 @@
 package FixMyStreet::Roles::Extra;
-use Moose::Role;
+use Moo::Role;
 
 =head1 NAME
 
@@ -9,11 +9,8 @@ FixMyStreet::Roles::Extra - role for accessing {extra} field
 
 This is to applied to a DB class like Problem or Contacts that has a rich {extra} field:
 
-    use Moose;
+    use Moo;
     with 'FixMyStreet::Roles::Extra';
-
-(NB: there is actually a little more boilerplate, because DBIC doesn't actually
-inherit from Moose, see ::Problem for an example.)
 
 Then:
 

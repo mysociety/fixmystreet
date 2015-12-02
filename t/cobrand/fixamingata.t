@@ -43,7 +43,7 @@ $mech->email_count_is(0);
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixamingata' ],
 }, sub {
-    FixMyStreet::App->model('DB::Problem')->send_reports();
+    FixMyStreet::DB->resultset('Problem')->send_reports();
 };
 my $email = $mech->get_email;
 like $email->header('Content-Type'), qr/iso-8859-1/, 'encoding looks okay';
@@ -53,16 +53,16 @@ like $email->body, qr/V=E4nligen,/, 'signature looks correct';
 $mech->clear_emails_ok;
 
 my $user =
-  FixMyStreet::App->model('DB::User')
+  FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
 my $user2 =
-  FixMyStreet::App->model('DB::User')
+  FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'commenter@example.com', name => 'Commenter' } );
 ok $user2, "created comment user";
 
-my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create({
+my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create({
     problem_id => $report->id,
     user_id    => $user2->id,
     name       => 'Other User',
@@ -74,7 +74,7 @@ my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create({
 $comment->confirmed( \"current_timestamp - '3 days'::interval" );
 $comment->update;
 
-my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create({
+my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create({
     user => $user,
     parameter => $report->id,
     alert_type => 'new_updates',
@@ -86,7 +86,7 @@ my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create({
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fixamingata' ],
 }, sub {
-    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    FixMyStreet::DB->resultset('AlertType')->email_alerts();
 };
 
 $mech->email_count_is(1);

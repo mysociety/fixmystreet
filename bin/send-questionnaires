@@ -17,17 +17,14 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
-use CGI; # XXX Awkward kludge
-use Encode;
 use CronFns;
-
-use FixMyStreet::App;
-use mySociety::Config;
+use FixMyStreet;
+use FixMyStreet::Script::Questionnaires;
 
 my %params;
 ( $params{verbose}, $params{nomail} ) = CronFns::options();
-$params{site} = CronFns::site(mySociety::Config::get('BASE_URL'));
+$params{site} = CronFns::site(FixMyStreet->config('BASE_URL'));
 CronFns::language($params{site});
 
-FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( \%params );
+FixMyStreet::Script::Questionnaires::send( \%params );
 

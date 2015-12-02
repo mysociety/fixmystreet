@@ -1,20 +1,16 @@
 package Open311::PopulateServiceList;
 
-use Moose;
-use LWP::Simple;
-use XML::Simple;
-use FixMyStreet::App;
+use Moo;
 use Open311;
 
 has bodies => ( is => 'ro' );
 has found_contacts => ( is => 'rw', default => sub { [] } );
 has verbose => ( is => 'ro', default => 0 );
+has schema => ( is => 'ro', lazy => 1, default => sub { FixMyStreet::DB->connect } );
 
 has _current_body => ( is => 'rw' );
 has _current_open311 => ( is => 'rw' );
 has _current_service => ( is => 'rw' );
-
-my $bodies = FixMyStreet::App->model('DB::Body');
 
 sub process_bodies {
     my $self = shift;
@@ -43,7 +39,7 @@ sub process_body {
     unless ( $list && $list->{service} ) {
         if ($self->verbose >= 1) {
             my $id = $self->_current_body->id;
-            my $mapit_url = mySociety::Config::get('MAPIT_URL');
+            my $mapit_url = FixMyStreet->config('MAPIT_URL');
             my $areas = join( ",", keys %{$self->_current_body->areas} );
             warn "Body $id for areas $areas - $mapit_url/areas/$areas.html - did not return a service list\n";
             warn $open311->error;
@@ -93,7 +89,7 @@ sub process_service {
                     $self->_current_service->{service_name};
 
     print $self->_current_service->{service_code} . ': ' . $category .  "\n" if $self->verbose >= 2;
-    my $contacts = FixMyStreet::App->model( 'DB::Contact')->search(
+    my $contacts = $self->schema->resultset('Contact')->search(
         {
             body_id => $self->_current_body->id,
             -OR => [
@@ -173,7 +169,7 @@ sub _create_contact {
 
     my $contact;
     eval {
-        $contact = FixMyStreet::App->model( 'DB::Contact')->create(
+        $contact = $self->schema->resultset('Contact')->create(
             {
                 email => $self->_current_service->{service_code},
                 body_id => $self->_current_body->id,
@@ -287,7 +283,7 @@ sub _normalize_service_name {
 sub _delete_contacts_not_in_service_list {
     my $self = shift;
 
-    my $found_contacts = FixMyStreet::App->model( 'DB::Contact')->search(
+    my $found_contacts = $self->schema->resultset('Contact')->search(
         {
             email => { -not_in => $self->found_contacts },
             body_id => $self->_current_body->id,

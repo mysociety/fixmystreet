@@ -10,17 +10,17 @@ use_ok( 'Open311' );
 use_ok( 'Open311::GetServiceRequestUpdates' );
 use DateTime;
 use DateTime::Format::W3CDTF;
-use FixMyStreet::App;
+use FixMyStreet::DB;
 
-my $user = FixMyStreet::App->model('DB::User')->find_or_create(
+my $user = FixMyStreet::DB->resultset('User')->find_or_create(
     {
         email => 'system_user@example.com'
     }
 );
 
 my %bodies = (
-    2482 => FixMyStreet::App->model("DB::Body")->new({ id => 2482 }),
-    2651 => FixMyStreet::App->model("DB::Body")->new({ id => 2651 }),
+    2482 => FixMyStreet::DB->resultset("Body")->new({ id => 2482 }),
+    2651 => FixMyStreet::DB->resultset("Body")->new({ id => 2651 }),
 );
 
 my $requests_xml = qq{<?xml version="1.0" encoding="utf-8"?>
@@ -104,7 +104,7 @@ subtest 'check extended request parsed correctly' => sub {
 
 };
 
-my $problem_rs = FixMyStreet::App->model('DB::Problem');
+my $problem_rs = FixMyStreet::DB->resultset('Problem');
 my $problem = $problem_rs->new(
     {
         postcode     => 'EH99 1SP',
@@ -353,7 +353,7 @@ for my $test (
         is $problem->comments->count, 1, 'comment count';
         $problem->discard_changes;
 
-        my $c = FixMyStreet::App->model('DB::Comment')->search( { external_id => $test->{external_id} } )->first;
+        my $c = FixMyStreet::DB->resultset('Comment')->search( { external_id => $test->{external_id} } )->first;
         ok $c, 'comment exists';
         is $c->text, $test->{description}, 'text correct';
         is $c->mark_fixed, $test->{mark_fixed}, 'mark_closed correct';
@@ -527,7 +527,7 @@ subtest 'check that existing comments are not duplicated' => sub {
 
     $problem->comments->delete;
 
-    my $comment = FixMyStreet::App->model('DB::Comment')->new(
+    my $comment = FixMyStreet::DB->resultset('Comment')->new(
         {
             problem => $problem,
             external_id => 638344,
@@ -660,7 +660,7 @@ foreach my $test ( {
         $problem->update;
 
         my @alerts = map {
-            my $alert = FixMyStreet::App->model('DB::Alert')->create( {
+            my $alert = FixMyStreet::DB->resultset('Alert')->create( {
                 alert_type => 'new_updates',
                 parameter  => $problem->id,
                 confirmed  => 1,
@@ -680,7 +680,7 @@ foreach my $test ( {
         $update->update_comments( $o, $bodies{2482} );
         $problem->discard_changes;
 
-        my $alerts_sent = FixMyStreet::App->model('DB::AlertSent')->search(
+        my $alerts_sent = FixMyStreet::DB->resultset('AlertSent')->search(
             {
                 alert_id => [ map $_->id, @alerts ],
                 parameter => $problem->comments->first->id,

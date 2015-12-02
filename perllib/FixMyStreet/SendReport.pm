@@ -1,20 +1,21 @@
 package FixMyStreet::SendReport;
 
-use Moose;
+use Moo;
+use MooX::Types::MooseLike::Base qw(:all);
 
 use Module::Pluggable
     sub_name    => 'senders',
     search_path => __PACKAGE__,
     require     => 1;
 
-has 'body_config' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'bodies' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
-has 'to' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
-has 'bcc' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
-has 'success' => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'error' => ( is => 'rw', isa => 'Str', default => '' );
-has 'unconfirmed_counts' => ( 'is' => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'unconfirmed_notes' => ( 'is' => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'body_config' => ( is => 'rw', isa => HashRef, default => sub { {} } );
+has 'bodies' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
+has 'to' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
+has 'bcc' => ( is => 'rw', isa => ArrayRef, default => sub { [] } );
+has 'success' => ( is => 'rw', isa => Bool, default => 0 );
+has 'error' => ( is => 'rw', isa => Str, default => '' );
+has 'unconfirmed_counts' => ( 'is' => 'rw', isa => HashRef, default => sub { {} } );
+has 'unconfirmed_notes' => ( 'is' => 'rw', isa => HashRef, default => sub { {} } );
 
 
 sub should_skip {

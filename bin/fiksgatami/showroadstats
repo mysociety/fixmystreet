@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 
-use FixMyStreet::App;
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
 use FixMyStreet::Geocode::OSM;
 
-my @reports = FixMyStreet::App->model('DB::Problem')->search({
+my @reports = FixMyStreet::DB->resultset('Problem')->search({
     state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
 }, {
     rows => 40,

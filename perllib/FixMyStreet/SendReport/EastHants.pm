@@ -1,6 +1,6 @@
 package FixMyStreet::SendReport::EastHants;
 
-use Moose;
+use Moo;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 
@@ -28,7 +28,7 @@ EOF
 }
 
 sub send {
-    return if mySociety::Config::get('STAGING_SITE');
+    return if FixMyStreet->config('STAGING_SITE');
 
     my ( $self, $row, $h ) = @_;
 

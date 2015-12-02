@@ -181,7 +181,7 @@ my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_c
 
 subtest "check RSS feeds on cobrand have correct URLs for non-cobrand reports" => sub {
     $mech->host('hart.fixmystreet.com');
-    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $expected2;
 
     FixMyStreet::override_config {

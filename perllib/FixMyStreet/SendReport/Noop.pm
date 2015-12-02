@@ -1,6 +1,6 @@
 package FixMyStreet::SendReport::Noop;
 
-use Moose;
+use Moo;
 
 BEGIN { extends 'FixMyStreet::SendReport'; }
 

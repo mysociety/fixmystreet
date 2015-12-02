@@ -17,7 +17,9 @@ BEGIN {
     require "$d/../setenv.pl";
 }
 
-use FixMyStreet::App;
+use FixMyStreet;
+use FixMyStreet::DB;
+
 use File::Path ();
 use File::Slurp;
 use JSON;
@@ -32,7 +34,7 @@ if ( FixMyStreet->config('BASE_URL') =~ /zurich|zueri/ ) {
     $age_column = 'created';
 }
 
-my $problems = FixMyStreet::App->model("DB::Problem")->search(
+my $problems = FixMyStreet::DB->resultset('Problem')->search(
     {
         state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
     },

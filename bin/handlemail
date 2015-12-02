@@ -17,15 +17,14 @@ use strict;
 use warnings;
 require 5.8.0;
 
-# Horrible boilerplate to set up appropriate library paths.
-use FindBin;
-use lib "$FindBin::Bin/../perllib";
-use lib "$FindBin::Bin/../commonlib/perllib";
-
-use mySociety::Config;
 BEGIN {
-    mySociety::Config::set_file("$FindBin::Bin/../conf/general");
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
 }
+
+use FixMyStreet;
 use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::HandleMail;
@@ -40,7 +39,7 @@ my %data = mySociety::HandleMail::get_message();
 if ($data{is_bounce_message}) {
     #my $a = mySociety::HandleMail::get_bounce_recipient($data{message});
     #my $token = mySociety::HandleMail::get_token($a,
-    #    'fms-', mySociety::Config::get('EMAILDOMAIN')
+    #    'fms-', FixMyStreet->config('EMAILDOMAIN')
     #);
     #exit(0) if $token eq 'DO-NOT-REPLY'; # A bounce we don't care about
     exit(0); # drop all other bounces currently
@@ -48,13 +47,13 @@ if ($data{is_bounce_message}) {
 
 # Not a bounce, send an automatic response
 my $template = 'reply-autoresponse';
-open FP, "$FindBin::Bin/../templates/email/default/$template" or exit 75;
-$template = join('', <FP>);
-close FP;
+my $fp = FixMyStreet->path_to("templates", "email", "default", $template)->open or exit 75;
+$template = join('', <$fp>);
+$fp->close;
 
 # We generate this as a bounce.
 my $mail = mySociety::Email::construct_email({
-    From => [ mySociety::Config::get('CONTACT_EMAIL'), 'FixMyStreet' ],
+    From => [ FixMyStreet->config('CONTACT_EMAIL'), 'FixMyStreet' ],
     To => $data{return_path},
     _template_ => $template,
     _parameters_ => { },

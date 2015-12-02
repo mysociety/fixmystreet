@@ -20,7 +20,7 @@ BEGIN {
 
 use File::Temp qw(tempfile);
 
-use FixMyStreet::App;
+use FixMyStreet::DB;
 
 my %config = (
     gplot_output => "set terminal png font 'Vera.ttf' 9 size 1200,400",
@@ -43,7 +43,7 @@ sub grab_data {
     my ($fh, $filename) = tempfile("fms-creation-rate-graph-data-XXXXXXXXXX", UNLINK => 1);
     $sources{$type} = $filename;
 
-    my @entries = FixMyStreet::App->model('DB::Problem')->search(
+    my @entries = FixMyStreet::DB->resultset('Problem')->search(
         $selection, {
             columns => [
                 { 'date' => { date => 'created' } },

@@ -1,6 +1,6 @@
 package FixMyStreet::SendReport::EmptyHomes;
 
-use Moose;
+use Moo;
 use namespace::autoclean;
 
 use mySociety::MaPit;
@@ -12,7 +12,7 @@ sub build_recipient_list {
 
     my $all_confirmed = 1;
     foreach my $body ( @{ $self->bodies } ) {
-        my $contact = FixMyStreet::App->model("DB::Contact")->find( {
+        my $contact = $row->result_source->schema->resultset("Contact")->find( {
             deleted => 0,
             body_id => $body->id,
             category => 'Empty property',
@@ -34,11 +34,11 @@ sub build_recipient_list {
         my $area_info = mySociety::MaPit::call('area', $body->body_areas->first->area_id);
         my $country = $area_info->{country};
         if ($country eq 'W') {
-            push @{$self->bcc}, 'wales@' . mySociety::Config::get('EMAIL_DOMAIN');
+            push @{$self->bcc}, 'wales@' . FixMyStreet->config('EMAIL_DOMAIN');
         } elsif ($country eq 'S') {
-            push @{$self->bcc}, 'scotland@' . mySociety::Config::get('EMAIL_DOMAIN');
+            push @{$self->bcc}, 'scotland@' . FixMyStreet->config('EMAIL_DOMAIN');
         } else {
-            push @{$self->bcc}, 'eha@' . mySociety::Config::get('EMAIL_DOMAIN');
+            push @{$self->bcc}, 'eha@' . FixMyStreet->config('EMAIL_DOMAIN');
         }
     }
 

@@ -2,31 +2,34 @@ package Open311;
 
 use utf8;
 use URI;
-use Moose;
+use Moo;
+use MooX::Types::MooseLike::Base qw(:all);
 use XML::Simple;
 use LWP::Simple;
 use LWP::UserAgent;
 use DateTime::Format::W3CDTF;
 use HTTP::Request::Common qw(POST);
+use FixMyStreet::Cobrand;
+use FixMyStreet::DB;
 
-has jurisdiction => ( is => 'ro', isa => 'Str' );;
-has api_key => ( is => 'ro', isa => 'Str' );
-has endpoint => ( is => 'ro', isa => 'Str' );
-has test_mode => ( is => 'ro', isa => 'Bool' );
-has test_uri_used => ( is => 'rw', 'isa' => 'Str' );
+has jurisdiction => ( is => 'ro', isa => Str );;
+has api_key => ( is => 'ro', isa => Str );
+has endpoint => ( is => 'ro', isa => Str );
+has test_mode => ( is => 'ro', isa => Bool );
+has test_uri_used => ( is => 'rw', 'isa' => Str );
 has test_req_used => ( is => 'rw' );
 has test_get_returns => ( is => 'rw' );
 has endpoints => ( is => 'rw', default => sub { { services => 'services.xml', requests => 'requests.xml', service_request_updates => 'servicerequestupdates.xml', update => 'servicerequestupdates.xml' } } );
-has debug => ( is => 'ro', isa => 'Bool', default => 0 );
-has debug_details => ( is => 'rw', 'isa' => 'Str', default => '' );
-has success => ( is => 'rw', 'isa' => 'Bool', default => 0 );
-has error => ( is => 'rw', 'isa' => 'Str', default => '' );
-has always_send_latlong => ( is => 'ro', isa => 'Bool', default => 1 );
-has send_notpinpointed => ( is => 'ro', isa => 'Bool', default => 0 );
-has extended_description => ( is => 'ro', isa => 'Str', default => 1 );
-has use_service_as_deviceid => ( is => 'ro', isa => 'Bool', default => 0 );
-has use_extended_updates => ( is => 'ro', isa => 'Bool', default => 0 );
-has extended_statuses => ( is => 'ro', isa => 'Bool', default => 0 );
+has debug => ( is => 'ro', isa => Bool, default => 0 );
+has debug_details => ( is => 'rw', 'isa' => Str, default => '' );
+has success => ( is => 'rw', 'isa' => Bool, default => 0 );
+has error => ( is => 'rw', 'isa' => Str, default => '' );
+has always_send_latlong => ( is => 'ro', isa => Bool, default => 1 );
+has send_notpinpointed => ( is => 'ro', isa => Bool, default => 0 );
+has extended_description => ( is => 'ro', isa => Str, default => 1 );
+has use_service_as_deviceid => ( is => 'ro', isa => Bool, default => 0 );
+has use_extended_updates => ( is => 'ro', isa => Bool, default => 0 );
+has extended_statuses => ( is => 'ro', isa => Bool, default => 0 );
 
 before [
     qw/get_service_list get_service_meta_info get_service_requests get_service_request_updates

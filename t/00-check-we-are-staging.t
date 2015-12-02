@@ -5,21 +5,12 @@ use Test::More;
 
 use FixMyStreet;
 
-# check that all the fields listed in general-example are also present in
-# general - helps prevent later test failures due to un-noticed additions to the
-# config file.
-
-# This code will bail_out to prevent the test suite proceeding to save time if
-# issues are found.
-
-# load the config file and store the contents in a readonly hash
-
-my $CONF_FILE = $ENV{FMS_OVERRIDE_CONFIG} || 'general';
-mySociety::Config::set_file( FixMyStreet->path_to("conf/${CONF_FILE}") );
+# check that we are running on staging
 
 BAIL_OUT( "Test suite modifies databases so should not be run on live servers" )
-    unless mySociety::Config::get('STAGING_SITE', undef);
+    unless FixMyStreet->config('STAGING_SITE');
 
-ok mySociety::Config::get('STAGING_SITE', undef), 'staging server';
+my $staging = FixMyStreet->config('STAGING_SITE');
+ok $staging, 'staging server';
 
 done_testing();

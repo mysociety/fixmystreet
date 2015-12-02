@@ -9,21 +9,21 @@ my $mech = FixMyStreet::TestMech->new();
 
 # this is the easiest way to make sure we're not going
 # to get any emails sent by data kicking about in the database
-FixMyStreet::App->model('DB::AlertType')->email_alerts();
+FixMyStreet::DB->resultset('AlertType')->email_alerts();
 $mech->clear_emails_ok;
 
 my $user =
-  FixMyStreet::App->model('DB::User')
+  FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 ok $user, "created test user";
 
 my $user2 =
-  FixMyStreet::App->model('DB::User')
+  FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'commenter@example.com', name => 'Commenter' } );
 ok $user2, "created comment user";
 
 my $user3 =
-  FixMyStreet::App->model('DB::User')
+  FixMyStreet::DB->resultset('User')
   ->find_or_create( { email => 'bystander@example.com', name => 'Bystander' } );
 ok $user3, "created bystander";
 
@@ -36,7 +36,7 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'SW1A 1AA',
         bodies_str         => '2504',
@@ -62,7 +62,7 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
-my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
+my $comment = FixMyStreet::DB->resultset('Comment')->find_or_create(
     {
         problem_id => $report_id,
         user_id    => $user2->id,
@@ -74,7 +74,7 @@ my $comment = FixMyStreet::App->model('DB::Comment')->find_or_create(
         anonymous  => 'f',
     }
 );
-my $comment2 = FixMyStreet::App->model('DB::Comment')->find_or_create(
+my $comment2 = FixMyStreet::DB->resultset('Comment')->find_or_create(
     {
         problem_id => $report_id,
         user_id    => $user2->id,
@@ -90,7 +90,7 @@ my $comment2 = FixMyStreet::App->model('DB::Comment')->find_or_create(
 $comment->confirmed( \"current_timestamp - '3 days'::interval" );
 $comment->update;
 
-my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+my $alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {
         user => $user,
         parameter => $report_id,
@@ -101,7 +101,7 @@ my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
     }
 );
 
-my $alert3 = FixMyStreet::App->model('DB::Alert')->find_or_create(
+my $alert3 = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {
         user => $user3,
         parameter => $report_id,
@@ -129,7 +129,7 @@ for my $test (
     subtest "correct summary for state of $test->{state}" => sub {
         $mech->clear_emails_ok;
 
-        my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+        my $sent = FixMyStreet::DB->resultset('AlertSent')->search(
             {
                 alert_id => [ $alert->id, $alert3->id ],
                 parameter => $comment->id,
@@ -139,7 +139,7 @@ for my $test (
         $report->state( $test->{state} );
         $report->update;
 
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::DB->resultset('AlertType')->email_alerts();
 
         $mech->email_count_is( 2 );
         my @emails = $mech->get_email;
@@ -167,7 +167,7 @@ my $now = DateTime->now();
 $report->confirmed( $now->ymd . ' ' . $now->hms );
 $report->update();
 
-my $council_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+my $council_alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {
         user => $user2,
         parameter => 2504,
@@ -181,7 +181,7 @@ my $council_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
 subtest "correct text for title after URL" => sub {
     $mech->clear_emails_ok;
 
-    my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+    my $sent = FixMyStreet::DB->resultset('AlertSent')->search(
         {
             alert_id => $council_alert->id,
             parameter => $report->id,
@@ -190,7 +190,7 @@ subtest "correct text for title after URL" => sub {
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
 
     my $email = $mech->get_email;
@@ -304,7 +304,7 @@ foreach my $test (
     subtest "correct Nearest Road text with $test->{desc}" => sub {
         $mech->clear_emails_ok;
 
-        my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+        my $sent = FixMyStreet::DB->resultset('AlertSent')->search(
             {
                 alert_id => $council_alert->id,
                 parameter => $report->id,
@@ -327,7 +327,7 @@ foreach my $test (
         FixMyStreet::override_config {
             MAPIT_URL => 'http://mapit.mysociety.org/',
         }, sub {
-            FixMyStreet::App->model('DB::AlertType')->email_alerts();
+            FixMyStreet::DB->resultset('AlertType')->email_alerts();
         };
 
         my $email = $mech->get_email;
@@ -341,7 +341,7 @@ foreach my $test (
     };
 }
 
-my $ward_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+my $ward_alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {
         user => $user,
         parameter => 7117,
@@ -352,7 +352,7 @@ my $ward_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
     }
 );
 
-my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report_to_council = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
         bodies_str         => '2434',
@@ -376,7 +376,7 @@ my $report_to_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
     }
 );
 
-my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report_to_county_council = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
         bodies_str         => '2240',
@@ -400,7 +400,7 @@ my $report_to_county_council = FixMyStreet::App->model('DB::Problem')->find_or_c
     }
 );
 
-my $report_outside_district = FixMyStreet::App->model('DB::Problem')->find_or_create(
+my $report_outside_district = FixMyStreet::DB->resultset('Problem')->find_or_create(
     {
         postcode           => 'WS13 6YY',
         bodies_str         => '2221',
@@ -427,7 +427,7 @@ my $report_outside_district = FixMyStreet::App->model('DB::Problem')->find_or_cr
 subtest "check alerts from cobrand send main site url for alerts for different council" => sub {
     $mech->clear_emails_ok;
 
-    my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+    my $sent = FixMyStreet::DB->resultset('AlertSent')->search(
         {
             alert_id => $ward_alert->id,
         }
@@ -436,14 +436,14 @@ subtest "check alerts from cobrand send main site url for alerts for different c
     FixMyStreet::override_config {
         MAPIT_URL => 'http://mapit.mysociety.org/',
     }, sub {
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
 
     my $email = $mech->get_email;
     my $body = $email->body;
 
-    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
-    my $expected3 = mySociety::Config::get('BASE_URL') . '/report/' . $report_outside_district->id;
+    my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $expected3 = FixMyStreet->config('BASE_URL') . '/report/' . $report_outside_district->id;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
     my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 
@@ -453,7 +453,7 @@ subtest "check alerts from cobrand send main site url for alerts for different c
 };
 
 
-my $local_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
+my $local_alert = FixMyStreet::DB->resultset('Alert')->find_or_create(
     {
         user => $user,
         parameter => -1.731322,
@@ -468,18 +468,18 @@ my $local_alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
 subtest "check local alerts from cobrand send main site url for alerts for different council" => sub {
     $mech->clear_emails_ok;
 
-    my $sent = FixMyStreet::App->model('DB::AlertSent')->search(
+    my $sent = FixMyStreet::DB->resultset('AlertSent')->search(
         {
             alert_id => $local_alert->id,
         }
     )->delete;
 
-    FixMyStreet::App->model('DB::AlertType')->email_alerts();
+    FixMyStreet::DB->resultset('AlertType')->email_alerts();
 
     my $email = $mech->get_email;
     my $body = $email->body;
 
-    my $expected1 = mySociety::Config::get('BASE_URL') . '/report/' . $report_to_county_council->id;
+    my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
     my $expected2 = $cobrand->base_url . '/report/' . $report_to_council->id;
 
@@ -494,7 +494,7 @@ subtest "correct i18n-ed summary for state of closed" => sub {
     $report->update( { state => 'closed' } );
     $alert->update( { lang => 'nb', cobrand => 'fiksgatami' } );
 
-    FixMyStreet::App->model('DB::AlertSent')->search( {
+    FixMyStreet::DB->resultset('AlertSent')->search( {
         alert_id => $alert->id,
         parameter => $comment->id,
     } )->delete;
@@ -502,7 +502,7 @@ subtest "correct i18n-ed summary for state of closed" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fiksgatami' ],
     }, sub {
-        FixMyStreet::App->model('DB::AlertType')->email_alerts();
+        FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
 
     $mech->email_count_is( 1 );

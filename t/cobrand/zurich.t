@@ -19,9 +19,7 @@ use Path::Tiny;
 #     commonlib/bin/gettext-makemo FixMyStreet
 
 use FixMyStreet;
-my $c = FixMyStreet::App->new();
-my $cobrand = FixMyStreet::Cobrand::Zurich->new({ c => $c });
-$c->stash->{cobrand} = $cobrand;
+my $cobrand = FixMyStreet::Cobrand::Zurich->new();
 
 my $sample_file = path(__FILE__)->parent->parent->child("app/controller/sample.jpg");
 ok $sample_file->exists, "sample file $sample_file exists";
@@ -37,7 +35,7 @@ sub send_reports_for_zurich {
         ALLOWED_COBRANDS => ['zurich']
     }, sub {
         # Actually send the report
-        $c->model('DB::Problem')->send_reports('zurich');
+        FixMyStreet::DB->resultset('Problem')->send_reports('zurich');
     };
 }
 sub reset_report_state {
@@ -195,7 +193,7 @@ subtest "changing of categories" => sub {
 
 sub get_moderated_count {
     # my %date_params = ( );
-    # my $moderated = FixMyStreet::App->model('DB::Problem')->search({
+    # my $moderated = FixMyStreet::DB->resultset('Problem')->search({
     #     extra => { like => '%moderated_overdue,I1:0%' }, %date_params } )->count;
     # return $moderated;
 
@@ -848,7 +846,7 @@ subtest "test stats" => sub {
 
 subtest "test admin_log" => sub {
     diag $report->id;
-    my @entries = FixMyStreet::App->model('DB::AdminLog')->search({
+    my @entries = FixMyStreet::DB->resultset('AdminLog')->search({
         object_type => 'problem',
         object_id   => $report->id,
     });
@@ -868,7 +866,6 @@ subtest 'email images to external partners' => sub {
 
         my $photo = path(__FILE__)->parent->child('zurich-logo_portal.x.jpg')->slurp_raw;
         my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-            c => $c,
             data_items => [ $photo ],
         });
         my $fileid = $photoset->data;

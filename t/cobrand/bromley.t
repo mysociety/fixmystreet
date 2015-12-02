@@ -21,7 +21,7 @@ my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
 my $report = $reports[0];
 
 for my $update ('in progress', 'unable to fix') {
-    FixMyStreet::App->model('DB::Comment')->find_or_create( {
+    FixMyStreet::DB->resultset('Comment')->find_or_create( {
         problem_state => $update,
         problem_id => $report->id,
         user_id    => $user->id,
@@ -48,7 +48,7 @@ subtest 'testing special Open311 behaviour', sub {
     FixMyStreet::override_config {
         SEND_REPORTS_ON_STAGING => 1,
     }, sub {
-        FixMyStreet::App->model('DB::Problem')->send_reports();
+        FixMyStreet::DB->resultset('Problem')->send_reports();
     };
     $report->discard_changes;
     ok $report->whensent, 'Report marked as sent';

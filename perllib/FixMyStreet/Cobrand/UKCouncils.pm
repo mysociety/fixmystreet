@@ -43,7 +43,7 @@ sub problems {
 
 sub base_url {
     my $self = shift;
-    my $base_url = mySociety::Config::get('BASE_URL');
+    my $base_url = FixMyStreet->config('BASE_URL');
     my $u = $self->council_url;
     if ( $base_url !~ /$u/ ) {
         # council cobrands are not https so transform to http as well
@@ -113,7 +113,7 @@ sub owns_problem {
     if (ref $report eq 'HASH') {
         return unless $report->{bodies_str};
         @bodies = split /,/, $report->{bodies_str};
-        @bodies = FixMyStreet::App->model('DB::Body')->search({ id => \@bodies })->all;
+        @bodies = FixMyStreet::DB->resultset('Body')->search({ id => \@bodies })->all;
     } else { # Object
         @bodies = values %{$report->bodies};
     }

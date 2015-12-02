@@ -66,7 +66,7 @@ sub create_user_ok {
     my ($email) = @_;
 
     my $user =
-      FixMyStreet::App->model('DB::User')
+      FixMyStreet::DB->resultset('User')
       ->find_or_create( { email => $email } );
     ok $user, "found/created user for $email";
 
@@ -147,7 +147,7 @@ sub delete_user {
     my $user =
       ref $email_or_user
       ? $email_or_user
-      : FixMyStreet::App->model('DB::User')
+      : FixMyStreet::DB->resultset('User')
       ->find( { email => $email_or_user } );
 
     # If no user found we can't delete them
@@ -567,7 +567,7 @@ sub delete_problems_for_body {
     my $mech = shift;
     my $body = shift;
 
-    my $reports = FixMyStreet::App->model('DB::Problem')->search( { bodies_str => $body } );
+    my $reports = FixMyStreet::DB->resultset('Problem')->search( { bodies_str => $body } );
     if ( $reports ) {
         for my $r ( $reports->all ) {
             $r->comments->delete;
@@ -587,7 +587,7 @@ sub create_contact_ok {
         note => 'Created for test',
         @_
     );
-    my $contact = FixMyStreet::App->model('DB::Contact')->find_or_create( \%contact_params );
+    my $contact = FixMyStreet::DB->resultset('Contact')->find_or_create( \%contact_params );
     ok $contact, 'found/created contact ' . $contact->category;;
     return $contact;
 }
@@ -596,7 +596,7 @@ sub create_body_ok {
     my $self = shift;
     my ( $area_id, $name, %extra ) = @_;
 
-    my $body = FixMyStreet::App->model('DB::Body');
+    my $body = FixMyStreet::DB->resultset('Body');
     my $params = { name => $name };
     if ($extra{id}) {
         $body = $body->update_or_create({ %$params, id => $extra{id} }, { key => 'primary' });
@@ -606,7 +606,7 @@ sub create_body_ok {
     ok $body, "found/created body $name";
 
     $body->body_areas->delete;
-    FixMyStreet::App->model('DB::BodyArea')->find_or_create({
+    FixMyStreet::DB->resultset('BodyArea')->find_or_create({
         area_id => $area_id,
         body_id => $body->id,
     });
@@ -621,7 +621,7 @@ sub create_problems_for_body {
     my $dt = $params->{dt} || DateTime->now();
 
     my $user = $params->{user} ||
-      FixMyStreet::App->model('DB::User')
+      FixMyStreet::DB->resultset('User')
       ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
 
     delete $params->{user};
@@ -656,7 +656,7 @@ sub create_problems_for_body {
         my %report_params = ( %$default_params, %$params );
 
         my $problem =
-          FixMyStreet::App->model('DB::Problem')->create( \%report_params );
+          FixMyStreet::DB->resultset('Problem')->create( \%report_params );
 
         push @problems, $problem;
         $count--;

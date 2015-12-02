@@ -39,20 +39,19 @@ BEGIN {
     require "$bin_dir/../setenv.pl";
 }
 
-use mySociety::Config;
+use FixMyStreet;
 use mySociety::DBHandle qw(dbh);
 use mySociety::MaPit;
 use Getopt::Long;
 use Pod::Usage;
 
-mySociety::Config::set_file("$bin_dir/../conf/general");
 my %args = (
-    Name => mySociety::Config::get('FMS_DB_NAME'),
-    User => mySociety::Config::get('FMS_DB_USER'),
-    Password => mySociety::Config::get('FMS_DB_PASS'),
+    Name => FixMyStreet->config('FMS_DB_NAME'),
+    User => FixMyStreet->config('FMS_DB_USER'),
+    Password => FixMyStreet->config('FMS_DB_PASS'),
 );
-$args{Host} = mySociety::Config::get('FMS_DB_HOST', undef) if mySociety::Config::get('FMS_DB_HOST');
-$args{Port} = mySociety::Config::get('FMS_DB_PORT', undef) if mySociety::Config::get('FMS_DB_PORT');
+$args{Host} = FixMyStreet->config('FMS_DB_HOST', undef) if FixMyStreet->config('FMS_DB_HOST');
+$args{Port} = FixMyStreet->config('FMS_DB_PORT', undef) if FixMyStreet->config('FMS_DB_PORT');
 mySociety::DBHandle::configure( %args );
 
 my ($commit, $version, $downgrade, $help);

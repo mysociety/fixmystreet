@@ -14,7 +14,7 @@ sub timeline {
     my ( $rs, $body_restriction ) = @_;
 
     my $prefetch = 
-        FixMyStreet::App->model('DB')->schema->storage->sql_maker->quote_char ?
+        $rs->result_source->storage->sql_maker->quote_char ?
         [ qw/user/ ] :
         [];
 
