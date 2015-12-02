@@ -6,14 +6,6 @@ use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $secret = FixMyStreet::App->model('DB::Secret')->search();
-
-# don't explode if there's nothing in the secret table
-if ( $secret == 0 ) {
-    diag "You need to put an entry in the secret table for the admin tests to run";
-    plan skip_all => 'No entry in secret table';
-}
-
 my $user =
   FixMyStreet::App->model('DB::User')
   ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
