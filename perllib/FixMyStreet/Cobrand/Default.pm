@@ -733,6 +733,13 @@ If set to an arrayref, will plot those area ID(s) from mapit on all the /around 
 
 sub areas_on_around { []; }
 
+=head2
+A list extra fields we wish to save to the database in the 'extra' column of problems based on name attribues in the form
+Return an array of values we wish to save
+=cut
+
+sub form_extras {}
+
 sub process_extras {}
 
 =head 2 pin_colour
