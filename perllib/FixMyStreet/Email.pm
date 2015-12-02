@@ -91,7 +91,7 @@ sub send_cron {
         if (!FixMyStreet->test_mode && $env_from eq FixMyStreet->config('CONTACT_EMAIL')) {
             $model_args{mailer} = 'FixMyStreet::EmailSend::ContactEmail';
         }
-        my $result = FixMyStreet::EmailSend->new(%model_args)->send($email);
+        my $result = FixMyStreet::EmailSend->new(\%model_args)->send($email);
         return $result ? 0 : 1;
     }
 }

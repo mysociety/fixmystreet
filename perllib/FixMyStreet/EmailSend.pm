@@ -64,7 +64,8 @@ if ( FixMyStreet->test_mode ) {
 }
 
 sub new {
-    my ($cls, %hash) = @_;
-    my %args = ( %$args, %hash );
+    my ($cls, $hash) = @_;
+    $hash ||= {};
+    my %args = ( %$args, %$hash );
     return Email::Send->new(\%args);
 }
