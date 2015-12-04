@@ -2483,6 +2483,14 @@ DISTRIBUTIONS
       Digest::SHA 1
       ExtUtils::MakeMaker 0
       perl 5.004
+  Digest-SHA1-2.13
+    pathname: G/GA/GAAS/Digest-SHA1-2.13.tar.gz
+    provides:
+      Digest::SHA1 2.13
+    requirements:
+      Digest::base 1.00
+      ExtUtils::MakeMaker 0
+      perl 5.004
   Dir-Self-0.11
     pathname: M/MA/MAUKE/Dir-Self-0.11.tar.gz
     provides:
@@ -3300,6 +3308,19 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+  JSON-MaybeXS-1.003005
+    pathname: E/ET/ETHER/JSON-MaybeXS-1.003005.tar.gz
+    provides:
+      JSON::MaybeXS 1.003005
+    requirements:
+      Carp 0
+      ExtUtils::CBuilder 0.27
+      ExtUtils::MakeMaker 0
+      File::Spec 0
+      File::Temp 0
+      JSON::PP 2.27202
+      Scalar::Util 0
+      perl 5.006
   JSON-PP-2.27202
     pathname: M/MA/MAKAMAKA/JSON-PP-2.27202.tar.gz
     provides:
@@ -4298,6 +4319,22 @@ DISTRIBUTIONS
       Carp 0
       ExtUtils::MakeMaker 0
       Storable 0
+  Net-Facebook-Oauth2-0.09
+    pathname: M/MA/MAMOD/Net-Facebook-Oauth2-0.09.tar.gz
+    provides:
+      MyApp::Controller::Facebook undef
+      Net::Facebook::Oauth2 0.09
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 0
+      JSON::MaybeXS 0
+      LWP::UserAgent 0
+      Test::Exception 0
+      Test::MockModule 0
+      Test::MockObject 0
+      Test::More 0.88
+      URI 0
+      URI::Escape 0
   Net-HTTP-6.06
     pathname: G/GA/GAAS/Net-HTTP-6.06.tar.gz
     provides:
@@ -4312,6 +4349,45 @@ DISTRIBUTIONS
       IO::Select 0
       IO::Socket::INET 0
       perl 5.006002
+  Net-OAuth-0.28
+    pathname: K/KG/KGRENNAN/Net-OAuth-0.28.tar.gz
+    provides:
+      Net::OAuth 0.28
+      Net::OAuth::AccessToken undef
+      Net::OAuth::AccessTokenRequest undef
+      Net::OAuth::AccessTokenResponse undef
+      Net::OAuth::Client undef
+      Net::OAuth::ConsumerRequest undef
+      Net::OAuth::Message undef
+      Net::OAuth::ProtectedResourceRequest undef
+      Net::OAuth::Request 0.28
+      Net::OAuth::RequestTokenRequest undef
+      Net::OAuth::RequestTokenResponse undef
+      Net::OAuth::Response undef
+      Net::OAuth::SignatureMethod::HMAC_SHA1 undef
+      Net::OAuth::SignatureMethod::HMAC_SHA256 undef
+      Net::OAuth::SignatureMethod::PLAINTEXT undef
+      Net::OAuth::SignatureMethod::RSA_SHA1 undef
+      Net::OAuth::UserAuthRequest undef
+      Net::OAuth::UserAuthResponse undef
+      Net::OAuth::V1_0A::AccessTokenRequest undef
+      Net::OAuth::V1_0A::RequestTokenRequest undef
+      Net::OAuth::V1_0A::RequestTokenResponse undef
+      Net::OAuth::V1_0A::UserAuthResponse undef
+      Net::OAuth::XauthAccessTokenRequest undef
+      Net::OAuth::YahooAccessTokenRefreshRequest undef
+    requirements:
+      Class::Accessor 0.31
+      Class::Data::Inheritable 0.06
+      Digest::HMAC_SHA1 1.01
+      Digest::SHA 5.47
+      Digest::SHA1 2.12
+      Encode 2.35
+      LWP::UserAgent 1
+      Module::Build 0.36
+      Test::More 0.66
+      Test::Warn 0.21
+      URI::Escape 3.28
   Net-SMTP-SSL-1.01
     pathname: C/CW/CWEST/Net-SMTP-SSL-1.01.tar.gz
     provides:
@@ -4375,6 +4451,32 @@ DISTRIBUTIONS
       IO::Socket 0
       POSIX 0
       Socket 0
+  Net-Twitter-Lite-0.12006
+    pathname: M/MM/MMIMS/Net-Twitter-Lite-0.12006.tar.gz
+    provides:
+      Net::Twitter::Lite 0.12006
+      Net::Twitter::Lite::API::V1 0.12006
+      Net::Twitter::Lite::API::V1_1 0.12006
+      Net::Twitter::Lite::Error 0.12006
+      Net::Twitter::Lite::WithAPIv1_1 0.12006
+      Net::Twitter::Lite::WrapResult 0.12006
+    requirements:
+      Carp 0
+      Crypt::SSLeay 0.5
+      Encode 0
+      HTTP::Request::Common 0
+      JSON 2.02
+      LWP::UserAgent 2.032
+      Module::Build 0.3601
+      Net::HTTP >= 0, != 6.04, != 6.05
+      Net::Netrc 0
+      URI 1.40
+      URI::Escape 0
+      overload 0
+      parent 0
+      perl 5.005
+      strict 0
+      warnings 0
   Number-Compare-0.03
     pathname: R/RC/RCLAMP/Number-Compare-0.03.tar.gz
     provides:
@@ -4976,6 +5078,16 @@ DISTRIBUTIONS
       Test::More 0.92
       Test::Warn 0
       perl 5.006002
+  SUPER-1.20141117
+    pathname: C/CH/CHROMATIC/SUPER-1.20141117.tar.gz
+    provides:
+      SUPER 1.20141117
+    requirements:
+      ExtUtils::MakeMaker 0
+      Scalar::Util 1.20
+      Sub::Identify 0.03
+      Test::Simple 0.61
+      perl v5.6.2
   Safe-Isa-1.000002
     pathname: M/MS/MSTROUT/Safe-Isa-1.000002.tar.gz
     provides:
@@ -5456,6 +5568,33 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 6.03
       Test::More 0
+  Test-MockModule-0.11
+    pathname: G/GF/GFRANKS/Test-MockModule-0.11.tar.gz
+    provides:
+      Test::MockModule 0.11
+    requirements:
+      Carp 0
+      Module::Build 0.38
+      SUPER 0
+      Scalar::Util 0
+      Test::More 0.45
+      perl 5.006
+  Test-MockObject-1.20150527
+    pathname: C/CH/CHROMATIC/Test-MockObject-1.20150527.tar.gz
+    provides:
+      Test::MockObject 1.20150527
+      Test::MockObject::Extends 1.20150527
+    requirements:
+      Carp 0
+      Devel::Peek 0
+      ExtUtils::MakeMaker 0
+      Scalar::Util 0
+      Test::Builder 0
+      UNIVERSAL::can 1.20110617
+      UNIVERSAL::isa 1.20110614
+      constant 0
+      strict 0
+      warnings 0
   Test-MockTime-0.12
     pathname: D/DD/DDICK/Test-MockTime-0.12.tar.gz
     provides:
@@ -5879,6 +6018,28 @@ DISTRIBUTIONS
       Exporter::Tiny 0.026
       ExtUtils::MakeMaker 6.17
       perl 5.006001
+  UNIVERSAL-can-1.20140328
+    pathname: C/CH/CHROMATIC/UNIVERSAL-can-1.20140328.tar.gz
+    provides:
+      UNIVERSAL::can 1.20140328
+    requirements:
+      ExtUtils::MakeMaker 6.30
+      Scalar::Util 0
+      strict 0
+      vars 0
+      warnings 0
+      warnings::register 0
+  UNIVERSAL-isa-1.20150614
+    pathname: E/ET/ETHER/UNIVERSAL-isa-1.20150614.tar.gz
+    provides:
+      UNIVERSAL::isa 1.20150614
+    requirements:
+      ExtUtils::MakeMaker 0
+      Scalar::Util 0
+      perl 5.006002
+      strict 0
+      warnings 0
+      warnings::register 0
   UNIVERSAL-require-0.13
     pathname: M/MS/MSCHWERN/UNIVERSAL-require-0.13.tar.gz
     provides:

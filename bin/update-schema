@@ -194,6 +194,7 @@ else {
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0039' if column_exists('users', 'facebook_id');
     return '0038' if column_exists('admin_log', 'time_spent');
     return '0037' if table_exists('response_templates');
     return '0036' if constraint_contains('problem_cobrand_check', 'a-z0-9_');

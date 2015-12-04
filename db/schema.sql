@@ -27,7 +27,9 @@ create table users (
     password        text    not null default '',
     from_body       integer,
     flagged         boolean not null default 'f',
-    title           text
+    title           text,
+    twitter_id      bigint  unique,
+    facebook_id     bigint  unique
 );
 
 -- Record details of reporting bodies, including open311 configuration details
