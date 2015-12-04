@@ -508,7 +508,7 @@ DISTRIBUTIONS
       Catalyst::ScriptRole undef
       Catalyst::ScriptRunner undef
       Catalyst::Stats undef
-      Catalyst::Test 3.4
+      Catalyst::Test undef
       Catalyst::Utils undef
       Catalyst::View undef
     requirements:
@@ -640,13 +640,6 @@ DISTRIBUTIONS
   Class-C3-Adopt-NEXT-0.13
     pathname: F/FL/FLORA/Class-C3-Adopt-NEXT-0.13.tar.gz
     provides:
-      C3NT undef
-      C3NT::Bar undef
-      C3NT::Baz undef
-      C3NT::Child undef
-      C3NT::Foo undef
-      C3NT::Quux undef
-      C3NT_nowarn undef
       Class::C3::Adopt::NEXT 0.13
     requirements:
       ExtUtils::MakeMaker 6.31
@@ -696,16 +689,7 @@ DISTRIBUTIONS
     pathname: D/DR/DROLSKY/Class-Load-0.20.tar.gz
     provides:
       Class::Load 0.20
-      Class::Load::Error::DieAfterBeginIsa undef
-      Class::Load::Error::DieAfterIsa undef
-      Class::Load::Error::SyntaxErrorAfterIsa undef
-      Class::Load::OK undef
       Class::Load::PP 0.20
-      Class::Load::Stash undef
-      Class::Load::Stash::Sub undef
-      Class::Load::SyntaxError undef
-      Class::Load::VersionCheck 42
-      Class::Load::VersionCheck2 42
     requirements:
       Carp 0
       Data::OptList 0
@@ -727,15 +711,6 @@ DISTRIBUTIONS
   Class-Load-XS-0.06
     pathname: D/DR/DROLSKY/Class-Load-XS-0.06.tar.gz
     provides:
-      Class::Load::Error::DieAfterBeginIsa undef
-      Class::Load::Error::DieAfterIsa undef
-      Class::Load::Error::SyntaxErrorAfterIsa undef
-      Class::Load::OK undef
-      Class::Load::Stash undef
-      Class::Load::Stash::Sub undef
-      Class::Load::SyntaxError undef
-      Class::Load::VersionCheck 42
-      Class::Load::VersionCheck2 42
       Class::Load::XS 0.06
     requirements:
       Class::Load 0.20
@@ -923,8 +898,8 @@ DISTRIBUTIONS
   DBD-Pg-2.19.3
     pathname: T/TU/TURNSTEP/DBD-Pg-2.19.3.tar.gz
     provides:
-      Bundle::DBD::Pg 2.019003
-      DBD::Pg 2.019003
+      Bundle::DBD::Pg v2.19.3
+      DBD::Pg v2.19.3
     requirements:
       DBI 1.52
       ExtUtils::MakeMaker 6.11
@@ -1375,7 +1350,6 @@ DISTRIBUTIONS
       Data::Rx::TypeBundle 0.200005
       Data::Rx::TypeBundle::Core 0.200005
       Data::Rx::Util 0.200005
-      Test::RxTester undef
     requirements:
       Carp 0
       ExtUtils::MakeMaker 6.30
@@ -1414,7 +1388,6 @@ DISTRIBUTIONS
       DateTime::Infinite::Future 0.78
       DateTime::Infinite::Past 0.78
       DateTime::LeapSecond 0.78
-      inc::MyModuleBuild undef
     requirements:
       Carp 0
       DateTime::Locale 0.41
@@ -2521,45 +2494,7 @@ DISTRIBUTIONS
   Dist-CheckConflicts-0.09
     pathname: D/DO/DOY/Dist-CheckConflicts-0.09.tar.gz
     provides:
-      Bar 0.02
-      Bar::Bar 0.01
-      Bar::Bar::Bad 0.01
-      Bar::Bar::Good 0.02
-      Bar::Baz 0.02
-      Bar::Baz::Bad 0.01
-      Bar::Baz::Good 0.02
-      Bar::Conflicts undef
-      Bar::Conflicts2 undef
-      Bar::Conflicts3 undef
-      Bar::Conflicts::Bad undef
-      Bar::Conflicts::Bad2 undef
-      Bar::Conflicts::Bad3 undef
-      Bar::Conflicts::Good undef
-      Bar::Conflicts::Good2 undef
-      Bar::Conflicts::Good3 undef
-      Bar::Foo 0.01
-      Bar::Foo::Bad 0.01
-      Bar::Foo::Good 0.02
-      Bar::Quux 0.02
-      Bar::Quux::Bad 0.01
-      Bar::Quux::Good 0.02
-      Bar::Three 0.02
-      Bar::Two 0.02
-      Broken undef
       Dist::CheckConflicts 0.09
-      Foo undef
-      Foo::Bar 0.01
-      Foo::Baz 0.02
-      Foo::Conflicts undef
-      Foo::Conflicts2 undef
-      Foo::Conflicts::Bad undef
-      Foo::Conflicts::Broken undef
-      Foo::Conflicts::Good undef
-      Foo::Foo 0.01
-      Foo::Quux 0.02
-      Foo::Thing 0.02
-      Foo::Three 0.02
-      Foo::Two 0.02
     requirements:
       Carp 0
       Exporter 0
@@ -2583,7 +2518,7 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0.47
-      Time::Local 0.000
+      Time::Local 0
   Email-MIME-1.929
     pathname: R/RJ/RJBS/Email-MIME-1.929.tar.gz
     provides:
@@ -2658,7 +2593,7 @@ DISTRIBUTIONS
       Module::Pluggable 2.97
       Return::Value 1.28
       Scalar::Util 1.02
-      Symbol 0.00
+      Symbol 0
       Test::More 0.47
   Email-Simple-2.102
     pathname: R/RJ/RJBS/Email-Simple-2.102.tar.gz
@@ -2711,6 +2646,7 @@ DISTRIBUTIONS
       Encode::Unicode 2.07
       Encode::Unicode::UTF7 2.06
       Encode::utf8 2.49
+      encoding 2.6_01
     requirements:
       ExtUtils::MakeMaker 0
   Encode-Locale-1.03
@@ -2823,7 +2759,6 @@ DISTRIBUTIONS
   ExtUtils-MakeMaker-6.72
     pathname: B/BI/BINGOS/ExtUtils-MakeMaker-6.72.tar.gz
     provides:
-      DynaLoader 6.72
       ExtUtils::Command::MM 6.72
       ExtUtils::Liblist 6.72
       ExtUtils::Liblist::Kid 6.72
@@ -2853,7 +2788,6 @@ DISTRIBUTIONS
       ExtUtils::testlib 6.72
       MM 6.72
       MY 6.72
-      in 6.72
     requirements:
       Data::Dumper 0
       DirHandle 0
@@ -2896,12 +2830,10 @@ DISTRIBUTIONS
     provides:
       File::ChangeNotify 0.23
       File::ChangeNotify::Event 0.23
-      File::ChangeNotify::TestHelper undef
       File::ChangeNotify::Watcher 0.23
       File::ChangeNotify::Watcher::Default 0.23
       File::ChangeNotify::Watcher::Inotify 0.23
       File::ChangeNotify::Watcher::KQueue 0.23
-      inc::MyModuleBuild undef
     requirements:
       Carp 0
       Class::Load 0
@@ -3132,7 +3064,6 @@ DISTRIBUTIONS
       HTTP::Body::UrlEncoded 1.17
       HTTP::Body::XForms 1.17
       HTTP::Body::XFormsMultipart 1.17
-      PAML undef
     requirements:
       Carp 0
       Digest::MD5 0
@@ -3337,8 +3268,6 @@ DISTRIBUTIONS
   IO-stringy-2.110
     pathname: D/DS/DSKOLL/IO-stringy-2.110.tar.gz
     provides:
-      Common undef
-      ExtUtils::TBone 1.1
       IO::AtomicFile 2.110
       IO::Clever 1.01
       IO::InnerFile 2.110
@@ -3772,10 +3701,6 @@ DISTRIBUTIONS
     pathname: D/DR/DROLSKY/Module-Implementation-0.06.tar.gz
     provides:
       Module::Implementation 0.06
-      T::Impl1 undef
-      T::Impl2 undef
-      T::ImplFails1 undef
-      T::ImplFails2 undef
     requirements:
       Carp 0
       ExtUtils::MakeMaker 6.30
@@ -3949,15 +3874,9 @@ DISTRIBUTIONS
   Moose-2.0604
     pathname: D/DO/DOY/Moose-2.0604.tar.gz
     provides:
-      Bar undef
-      Bar7::Meta::Trait undef
-      Bar7::Meta::Trait2 undef
-      BinaryTree 0.02
       Class::MOP 2.0604
       Class::MOP::Attribute 2.0604
       Class::MOP::Class 2.0604
-      Class::MOP::Class::Immutable::Trait 2.0604
-      Class::MOP::Deprecated 2.0604
       Class::MOP::Instance 2.0604
       Class::MOP::Method 2.0604
       Class::MOP::Method::Accessor 2.0604
@@ -3967,33 +3886,19 @@ DISTRIBUTIONS
       Class::MOP::Method::Meta 2.0604
       Class::MOP::Method::Overload 2.0604
       Class::MOP::Method::Wrapped 2.0604
-      Class::MOP::MiniTrait 2.0604
-      Class::MOP::Mixin 2.0604
-      Class::MOP::Mixin::AttributeCore 2.0604
-      Class::MOP::Mixin::HasAttributes 2.0604
-      Class::MOP::Mixin::HasMethods 2.0604
       Class::MOP::Module 2.0604
       Class::MOP::Object 2.0604
       Class::MOP::Package 2.0604
-      Foo undef
-      MMHelper undef
-      MY undef
       Moose 2.0604
       Moose::Cookbook::Legacy::Debugging_BaseClassReplacement 2.0604
       Moose::Cookbook::Meta::Labeled_AttributeMetaclass 2.0604
-      Moose::Deprecated 2.0604
       Moose::Error::Confess 2.0604
       Moose::Error::Croak 2.0604
       Moose::Error::Default 2.0604
       Moose::Exporter 2.0604
       Moose::Meta::Attribute 2.0604
-      Moose::Meta::Attribute::Custom::Bar undef
-      Moose::Meta::Attribute::Custom::Foo undef
       Moose::Meta::Attribute::Custom::Moose 2.0604
-      Moose::Meta::Attribute::Custom::Trait::Bar undef
-      Moose::Meta::Attribute::Custom::Trait::Foo undef
       Moose::Meta::Attribute::Native 2.0604
-      Moose::Meta::Attribute::Native::Trait 2.0604
       Moose::Meta::Attribute::Native::Trait::Array 2.0604
       Moose::Meta::Attribute::Native::Trait::Bool 2.0604
       Moose::Meta::Attribute::Native::Trait::Code 2.0604
@@ -4002,94 +3907,15 @@ DISTRIBUTIONS
       Moose::Meta::Attribute::Native::Trait::Number 2.0604
       Moose::Meta::Attribute::Native::Trait::String 2.0604
       Moose::Meta::Class 2.0604
-      Moose::Meta::Class::Immutable::Trait 2.0604
       Moose::Meta::Instance 2.0604
       Moose::Meta::Method 2.0604
       Moose::Meta::Method::Accessor 2.0604
-      Moose::Meta::Method::Accessor::Native 2.0604
-      Moose::Meta::Method::Accessor::Native::Array 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::Writer 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::accessor 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::clear 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::count 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::delete 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::elements 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::first 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::first_index 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::get 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::grep 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::insert 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::is_empty 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::join 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::map 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::natatime 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::pop 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::push 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::reduce 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::set 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::shallow_clone 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::shift 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::shuffle 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::sort 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::sort_in_place 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::splice 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::uniq 2.0604
-      Moose::Meta::Method::Accessor::Native::Array::unshift 2.0604
-      Moose::Meta::Method::Accessor::Native::Bool::not 2.0604
-      Moose::Meta::Method::Accessor::Native::Bool::set 2.0604
-      Moose::Meta::Method::Accessor::Native::Bool::toggle 2.0604
-      Moose::Meta::Method::Accessor::Native::Bool::unset 2.0604
-      Moose::Meta::Method::Accessor::Native::Code::execute 2.0604
-      Moose::Meta::Method::Accessor::Native::Code::execute_method 2.0604
-      Moose::Meta::Method::Accessor::Native::Collection 2.0604
-      Moose::Meta::Method::Accessor::Native::Counter::Writer 2.0604
-      Moose::Meta::Method::Accessor::Native::Counter::dec 2.0604
-      Moose::Meta::Method::Accessor::Native::Counter::inc 2.0604
-      Moose::Meta::Method::Accessor::Native::Counter::reset 2.0604
-      Moose::Meta::Method::Accessor::Native::Counter::set 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::Writer 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::accessor 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::clear 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::count 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::defined 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::delete 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::elements 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::exists 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::get 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::is_empty 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::keys 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::kv 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::set 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::shallow_clone 2.0604
-      Moose::Meta::Method::Accessor::Native::Hash::values 2.0604
-      Moose::Meta::Method::Accessor::Native::Number::abs 2.0604
-      Moose::Meta::Method::Accessor::Native::Number::add 2.0604
-      Moose::Meta::Method::Accessor::Native::Number::div 2.0604
-      Moose::Meta::Method::Accessor::Native::Number::mod 2.0604
-      Moose::Meta::Method::Accessor::Native::Number::mul 2.0604
-      Moose::Meta::Method::Accessor::Native::Number::set 2.0604
-      Moose::Meta::Method::Accessor::Native::Number::sub 2.0604
-      Moose::Meta::Method::Accessor::Native::Reader 2.0604
-      Moose::Meta::Method::Accessor::Native::String::append 2.0604
-      Moose::Meta::Method::Accessor::Native::String::chomp 2.0604
-      Moose::Meta::Method::Accessor::Native::String::chop 2.0604
-      Moose::Meta::Method::Accessor::Native::String::clear 2.0604
-      Moose::Meta::Method::Accessor::Native::String::inc 2.0604
-      Moose::Meta::Method::Accessor::Native::String::length 2.0604
-      Moose::Meta::Method::Accessor::Native::String::match 2.0604
-      Moose::Meta::Method::Accessor::Native::String::prepend 2.0604
-      Moose::Meta::Method::Accessor::Native::String::replace 2.0604
-      Moose::Meta::Method::Accessor::Native::String::substr 2.0604
-      Moose::Meta::Method::Accessor::Native::Writer 2.0604
       Moose::Meta::Method::Augmented 2.0604
       Moose::Meta::Method::Constructor 2.0604
       Moose::Meta::Method::Delegation 2.0604
       Moose::Meta::Method::Destructor 2.0604
       Moose::Meta::Method::Meta 2.0604
       Moose::Meta::Method::Overridden 2.0604
-      Moose::Meta::Mixin::AttributeCore 2.0604
-      Moose::Meta::Object::Trait 2.0604
       Moose::Meta::Role 2.0604
       Moose::Meta::Role::Application 2.0604
       Moose::Meta::Role::Application::RoleSummation 2.0604
@@ -4117,38 +3943,7 @@ DISTRIBUTIONS
       Moose::Util 2.0604
       Moose::Util::MetaRole 2.0604
       Moose::Util::TypeConstraints 2.0604
-      Moose::Util::TypeConstraints::Builtins 2.0604
-      My::Bar undef
-      My::Content undef
-      My::Extract undef
-      My::Output undef
-      My::Trait::Bar undef
-      MyExporter undef
-      MyInline undef
-      MyMetaClass undef
-      MyMetaClass::Attribute undef
-      MyMetaClass::Instance undef
-      MyMetaClass::Method undef
-      MyMetaClass::Random undef
-      MyMetaclassRole undef
-      MyMooseA undef
-      MyMooseB undef
-      MyMooseObject undef
-      NoInlineAccessor undef
-      NoInlineAttribute undef
-      Role::Child undef
-      Role::Interface undef
-      Role::Parent undef
-      SyntaxError undef
       Test::Moose 2.0604
-      inc::CheckDelta undef
-      inc::Clean undef
-      inc::ExtractInlineTests undef
-      inc::GatherDir undef
-      inc::GitUpToDate undef
-      inc::MakeMaker undef
-      inc::RequireAuthorDeps undef
-      inc::TestRelease undef
       metaclass 2.0604
       oose 2.0604
     requirements:
@@ -4372,10 +4167,6 @@ DISTRIBUTIONS
   MooseX-Types-0.35
     pathname: D/DR/DROLSKY/MooseX-Types-0.35.tar.gz
     provides:
-      Combined undef
-      DecoratorLibrary undef
-      Empty undef
-      IntrospectTypeExports undef
       MooseX::Types 0.35
       MooseX::Types::Base 0.35
       MooseX::Types::CheckedUtilExports 0.35
@@ -4385,11 +4176,6 @@ DISTRIBUTIONS
       MooseX::Types::UndefinedType 0.35
       MooseX::Types::Util 0.35
       MooseX::Types::Wrapper 0.35
-      SubExporterCompatibility undef
-      TestLibrary undef
-      TestLibrary2 undef
-      TestNamespaceSep undef
-      TestWrapper undef
     requirements:
       Carp 0
       Carp::Clan 6.00
@@ -4656,11 +4442,8 @@ DISTRIBUTIONS
   Package-Stash-0.34
     pathname: D/DO/DOY/Package-Stash-0.34.tar.gz
     provides:
-      CompileTime undef
       Package::Stash 0.34
       Package::Stash::PP 0.34
-      inc::DistMeta undef
-      inc::MMPackageStash undef
     requirements:
       B 0
       Carp 0
@@ -4683,7 +4466,6 @@ DISTRIBUTIONS
   Package-Stash-XS-0.26
     pathname: D/DO/DOY/Package-Stash-XS-0.26.tar.gz
     provides:
-      CompileTime undef
       Package::Stash::XS 0.26
     requirements:
       B 0
@@ -4736,23 +4518,10 @@ DISTRIBUTIONS
     pathname: D/DR/DROLSKY/Params-Validate-1.07.tar.gz
     provides:
       Attribute::Params::Validate 1.07
-      Bar undef
-      Baz undef
-      Foo undef
-      PVTests undef
-      PVTests::Callbacks undef
-      PVTests::Defaults undef
-      PVTests::Regex undef
-      PVTests::Standard undef
-      PVTests::With undef
       Params::Validate 1.07
       Params::Validate::Constants 1.07
       Params::Validate::PP 1.07
       Params::Validate::XS 1.07
-      Quux undef
-      Testing::X undef
-      Yadda undef
-      inc::MyModuleBuild undef
     requirements:
       Attribute::Handlers 0.79
       Carp 0
@@ -5320,13 +5089,6 @@ DISTRIBUTIONS
     provides:
       Sub::Exporter 0.985
       Sub::Exporter::Util 0.985
-      Test::SubExporter::DashSetup undef
-      Test::SubExporter::Faux undef
-      Test::SubExporter::GroupGen undef
-      Test::SubExporter::GroupGenSubclass undef
-      Test::SubExporter::ObjGen undef
-      Test::SubExporter::ObjGen::Obj undef
-      Test::SubExporter::s_e undef
     requirements:
       Carp 0
       Data::OptList 0.100
@@ -5792,11 +5554,11 @@ DISTRIBUTIONS
   Test-Trap-v0.2.2
     pathname: E/EB/EBHANSSEN/Test-Trap-v0.2.2.tar.gz
     provides:
-      Test::Trap 0.002002
-      Test::Trap::Builder 0.002002
-      Test::Trap::Builder::PerlIO 0.002002
-      Test::Trap::Builder::SystemSafe 0.002002
-      Test::Trap::Builder::TempFile 0.002002
+      Test::Trap v0.2.2
+      Test::Trap::Builder v0.2.2
+      Test::Trap::Builder::PerlIO v0.2.2
+      Test::Trap::Builder::SystemSafe v0.2.2
+      Test::Trap::Builder::TempFile v0.2.2
     requirements:
       Carp 0
       Data::Dump 0
@@ -6112,7 +5874,6 @@ DISTRIBUTIONS
   UNIVERSAL-require-0.13
     pathname: M/MS/MSCHWERN/UNIVERSAL-require-0.13.tar.gz
     provides:
-      UNIVERSAL 0.13
       UNIVERSAL::require 0.13
     requirements:
       ExtUtils::MakeMaker 0
@@ -6390,7 +6151,6 @@ DISTRIBUTIONS
   XML-Simple-2.20
     pathname: G/GR/GRANTM/XML-Simple-2.20.tar.gz
     provides:
-      TagsToUpper undef
       XML::Simple 2.20
     requirements:
       ExtUtils::MakeMaker 6.31
@@ -6464,33 +6224,13 @@ DISTRIBUTIONS
   autodie-2.20
     pathname: P/PJ/PJF/autodie-2.20.tar.gz
     provides:
-      Caller_helper undef
       Fatal 2.20
-      Hints_pod_examples undef
-      Hints_provider_does undef
-      Hints_provider_easy_does_it undef
-      Hints_provider_isa undef
-      Hints_test undef
-      OtherTypes undef
-      Some::Module undef
       autodie 2.20
       autodie::Scope::Guard 2.20
       autodie::exception 2.20
       autodie::exception::system 2.20
       autodie::hints 2.20
-      autodie::hints::provider undef
       autodie::skip 2.20
-      autodie::test::au undef
-      autodie::test::au::exception undef
-      autodie::test::badname undef
-      autodie::test::missing undef
-      autodie_skippy undef
-      autodie_test_module undef
-      autodie_unskippy undef
-      lethal undef
-      my::autodie undef
-      pujHa::ghach undef
-      pujHa::ghach::Dotlh undef
     requirements:
       B 0
       Carp 0
@@ -6510,7 +6250,7 @@ DISTRIBUTIONS
   common-sense-3.6
     pathname: M/ML/MLEHMANN/common-sense-3.6.tar.gz
     provides:
-      common::sense 3.6
+      common::sense undef
     requirements:
       ExtUtils::MakeMaker 0
   gettext-1.05
@@ -6607,8 +6347,6 @@ DISTRIBUTIONS
       B::Hooks::EndOfScope 0.12
       ExtUtils::CBuilder 0.27
       Package::Stash 0.23
-      Sub::Identify 0.04
-      Sub::Name 0.04
       Test::More 0.88
   strictures-1.004004
     pathname: E/ET/ETHER/strictures-1.004004.tar.gz
