@@ -25,4 +25,8 @@ except IOError:
     os.remove(wanted_filename)
 
 print "No cached copy found, running carton install..."
-os.system('vendor/bin/carton install --deployment')
+ret = os.system('vendor/bin/carton install --deployment')
+if ret:
+    os.system('cat ~/.cpanm/build.log')
+
+sys.exit(ret)
