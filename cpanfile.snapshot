@@ -4382,6 +4382,14 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+  Number-Format-1.75
+    pathname: W/WR/WRW/Number-Format-1.75.tar.gz
+    provides:
+      Number::Format 1.75
+    requirements:
+      Carp 0
+      ExtUtils::MakeMaker 0
+      POSIX 0
   Number-Tolerant-1.703
     pathname: R/RJ/RJBS/Number-Tolerant-1.703.tar.gz
     provides:
@@ -5172,14 +5180,14 @@ DISTRIBUTIONS
       Scalar::Util 1.14
       Test::More 0.42
       perl 5.005
-  Template-Plugin-Comma-0.04
-    pathname: M/MI/MIYAGAWA/Template-Plugin-Comma-0.04.tar.gz
+  Template-Plugin-Number-Format-1.06
+    pathname: D/DA/DARREN/Template-Plugin-Number-Format-1.06.tar.gz
     provides:
-      Template::Plugin::Comma 0.04
+      Template::Plugin::Number::Format 1.06
     requirements:
       ExtUtils::MakeMaker 0
+      Number::Format 0
       Template 2.07
-      Test::More 0.32
   Template-Timer-1.00
     pathname: P/PE/PETDANCE/Template-Timer-1.00.tar.gz
     provides:
