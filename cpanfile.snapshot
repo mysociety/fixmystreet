@@ -857,6 +857,14 @@ DISTRIBUTIONS
       Convert::NLS_DATE_FORMAT 0.05
     requirements:
       ExtUtils::MakeMaker 0
+  Cpanel-JSON-XS-3.0210
+    pathname: R/RU/RURBAN/Cpanel-JSON-XS-3.0210.tar.gz
+    provides:
+      Cpanel::JSON::XS 3.0210
+    requirements:
+      ExtUtils::MakeMaker 0
+      Pod::Text 2.08
+      Pod::Usage 1.33
   Crypt-Eksblowfish-0.009
     pathname: Z/ZE/ZEFRAM/Crypt-Eksblowfish-0.009.tar.gz
     provides:
@@ -3314,6 +3322,7 @@ DISTRIBUTIONS
       JSON::MaybeXS 1.003005
     requirements:
       Carp 0
+      Cpanel::JSON::XS 2.3310
       ExtUtils::CBuilder 0.27
       ExtUtils::MakeMaker 0
       File::Spec 0
@@ -3330,14 +3339,6 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
-  JSON-XS-2.33
-    pathname: M/ML/MLEHMANN/JSON-XS-2.33.tar.gz
-    provides:
-      JSON::XS 2.33
-      JSON::XS::Boolean 2.33
-    requirements:
-      ExtUtils::MakeMaker 0
-      common::sense 0
   LWP-MediaTypes-6.02
     pathname: G/GA/GAAS/LWP-MediaTypes-6.02.tar.gz
     provides:
@@ -6416,12 +6417,6 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  common-sense-3.6
-    pathname: M/ML/MLEHMANN/common-sense-3.6.tar.gz
-    provides:
-      common::sense undef
-    requirements:
-      ExtUtils::MakeMaker 0
   gettext-1.05
     pathname: P/PV/PVANDRY/gettext-1.05.tar.gz
     provides:

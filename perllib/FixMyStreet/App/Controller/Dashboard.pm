@@ -4,6 +4,7 @@ use namespace::autoclean;
 
 use DateTime;
 use File::Slurp;
+use JSON::MaybeXS;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -40,7 +41,7 @@ sub example : Local : Args(0) {
         my $data = File::Slurp::read_file(
             FixMyStreet->path_to( 'data/dashboard.json' )->stringify
         );
-        my $j = JSON->new->utf8->decode($data);
+        my $j = decode_json($data);
         if ( !$c->stash->{ward} && !$c->stash->{category} ) {
             $c->stash->{problems} = $j->{counts_all};
         } else {

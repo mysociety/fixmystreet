@@ -6,6 +6,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use FixMyStreet::Map;
 use Encode;
+use JSON::MaybeXS;
 use Utils;
 
 =head1 NAME
@@ -306,7 +307,7 @@ sub ajax : Path('/ajax') {
     # JSON encode the response
     my $json = { pins => $pins };
     $json->{current} = $on_map_list_html if $on_map_list_html;
-    my $body = JSON->new->utf8(1)->encode($json);
+    my $body = encode_json($json);
     $c->res->body($body);
 }
 
@@ -363,9 +364,7 @@ sub _geocode : Private {
         $response = \@addresses;
     }
 
-    my $body = JSON->new->utf8(1)->encode(
-        $response
-    );
+    my $body = encode_json($response);
     $c->res->body($body);
 
 }

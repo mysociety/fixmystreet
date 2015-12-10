@@ -14,7 +14,7 @@ use Test::More;
 use Web::Scraper;
 use Carp;
 use Email::Send::Test;
-use JSON;
+use JSON::MaybeXS;
 
 =head1 NAME
 

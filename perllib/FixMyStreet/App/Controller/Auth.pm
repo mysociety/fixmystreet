@@ -7,7 +7,7 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Email::Valid;
 use Net::Domain::TLD;
 use mySociety::AuthToken;
-use JSON;
+use JSON::MaybeXS;
 
 =head1 NAME
 
@@ -275,7 +275,7 @@ sub ajax_sign_in : Path('ajax/sign_in') {
         $return->{error} = 1;
     }
 
-    my $body = JSON->new->utf8(1)->encode( $return );
+    my $body = encode_json($return);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
 
@@ -287,7 +287,7 @@ sub ajax_sign_out : Path('ajax/sign_out') {
 
     $c->logout();
 
-    my $body = JSON->new->utf8(1)->encode( { signed_out => 1 } );
+    my $body = encode_json( { signed_out => 1 } );
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
 
@@ -305,7 +305,7 @@ sub ajax_check_auth : Path('ajax/check_auth') {
         $code = 200;
     }
 
-    my $body = JSON->new->utf8(1)->encode( $data );
+    my $body = encode_json($data);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->code($code);
     $c->res->body($body);

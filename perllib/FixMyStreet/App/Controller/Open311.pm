@@ -4,7 +4,7 @@ use utf8;
 use Moose;
 use namespace::autoclean;
 
-use JSON;
+use JSON::MaybeXS;
 use XML::Simple;
 use DateTime::Format::W3CDTF;
 

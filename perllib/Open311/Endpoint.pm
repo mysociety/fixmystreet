@@ -8,7 +8,7 @@ Open311::Endpoint - a generic Open311 endpoint implementation
 
 use Web::Simple;
 
-use JSON;
+use JSON::MaybeXS;
 use XML::Simple;
 
 use Open311::Endpoint::Result;

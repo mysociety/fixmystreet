@@ -12,7 +12,7 @@ use mySociety::MaPit;
 use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
-use JSON;
+use JSON::MaybeXS;
 
 =head1 NAME
 
@@ -164,9 +164,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 sub send_json_response : Private {
     my ( $self, $c ) = @_;
 
-    my $body = JSON->new->utf8(1)->encode(
-        $c->stash->{json_response},
-    );
+    my $body = encode_json($c->stash->{json_response});
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
 }
@@ -178,9 +176,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     # work out the location for this report and do some checks
     if ( ! $c->forward('determine_location') ) {
-        my $body = JSON->new->utf8(1)->encode( {
-            error => $c->stash->{location_error},
-        } );
+        my $body = encode_json({ error => $c->stash->{location_error} });
         $c->res->content_type('application/json; charset=utf-8');
         $c->res->body($body);
         return;
@@ -197,7 +193,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $extra_titles_list = $c->cobrand->title_list($c->stash->{all_areas});
 
-    my $body = JSON->new->utf8(1)->encode(
+    my $body = encode_json(
         {
             councils_text   => $councils_text,
             category        => $category,
@@ -216,11 +212,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
 
     $c->forward('initialize_report');
     if ( ! $c->forward('determine_location') ) {
-        my $body = JSON->new->utf8(1)->encode(
-            {
-                error => _("Sorry, we could not find that location."),
-            }
-        );
+        my $body = encode_json({ error => _("Sorry, we could not find that location.") });
         $c->res->content_type('application/json; charset=utf-8');
         $c->res->body($body);
         return 1;
@@ -244,11 +236,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $category_extra = $c->render_fragment( 'report/new/category_extras.html');
     }
 
-    my $body = JSON->new->utf8(1)->encode(
-        {
-            category_extra => $category_extra,
-        }
-    );
+    my $body = encode_json({ category_extra => $category_extra });
 
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
