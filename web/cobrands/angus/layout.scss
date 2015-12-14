@@ -1,0 +1,451 @@
+@import "_colours";
+@import "_fonts";
+@import "../sass/layout";
+@import "../sass/report_list_pins";
+
+$max_page_width: 1200px;
+
+#site-logo,
+.ie6 #site-logo,
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+body.twothirdswidthpage #site-logo,
+.ie6 body.twothirdswidthpage #site-logo
+{
+        position: relative;
+        top: 13px;
+        left: 20px;
+        margin: 0;
+        padding: 0;
+        background: url("/cobrands/angus/third_party/css_img/angus-logo-header.png") 0 0 no-repeat;
+        background-size: contain;
+        width: 165px;
+        height: 66px;
+        display: inline-block;
+}
+
+#site-header {
+  background-color: $angus_green;
+  border-bottom: solid 8px $angus_dark_green;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, .075);
+
+  .container {
+    position: relative;
+  }
+
+  form.form__search {
+    display: block;
+    clear: right;
+    margin: .65em 0 .25em;
+    padding: 0;
+    text-align: right;
+    width: 75%;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    .field {
+      min-width: 13em;
+      position: relative;
+      z-index: 100;
+      width: 41.66667%;
+      display: inline;
+
+      border: 1px solid rgba(0,0,0,.6);
+      box-shadow: inset 0 3px 5px rgba(0,0,0,0.15);
+      font-family: $body-font;
+      font-size: .9em;
+      height: 2.5em;
+      margin: 0;
+      padding: .55em .5em;
+      vertical-align: top;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      line-height: 1.5em;
+      border-radius: 0;
+
+    }
+
+    // input placeholders, these need to be on separate lines as if the browser
+    // can't understand a selector it will invalidate the whole line.
+    ::-webkit-input-placeholder {
+      color: $angus_grey;
+      font: {
+        style: normal;
+        size: 1em;
+      }
+    }
+    :-moz-placeholder {
+      color: $angus_grey;
+      font: {
+        style: normal;
+        size: 1em;
+      }
+    }
+    :-ms-placeholder {
+      color: $angus_grey;
+      font: {
+        style: normal;
+        size: 1em;
+      }
+    }
+
+    .button {
+      padding-left: 20px;
+      padding-right: 20px;
+      margin: 0;
+      position: relative;
+      z-index: 100;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+      display: inline;
+      background: #114a97;
+      border-bottom-color: #0c3469!important;
+      -webkit-appearance: none;
+      border: 0 none;
+      border-bottom: 2px solid;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      font-family: Sintony,sans-serif;
+      font-size: .9em;
+      font-weight: 400;
+      min-height: 2.5em;
+      line-height: 1.6;
+      padding: .55em 1em .45em;
+      text-align: center;
+      text-decoration: none;
+      text-shadow: 0 -1px 0 rgba(0,0,0,.5);
+      text-transform: lowercase;
+      vertical-align: top;
+    }
+  }
+}
+
+body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
+  #site-header {
+    height: 91px;
+  }
+}
+
+#front-main {
+  background: transparent;
+
+  #front-main-container {
+    background-color: $angus_light_grey;
+    width: 100%;
+    max-width: $max_page_width;
+    padding-top: 1em;
+    padding-bottom: 1em;
+  }
+}
+
+body.fullwidthpage, body.twothirdswidthpage, body.authpage {
+  .container {
+    max-width: $max_page_width;
+    width: 100%;
+
+    .content {
+      background: $angus_light_grey;
+      background-color: $angus_light_grey;
+
+    }
+  }
+}
+
+body.frontpage {
+  .container {
+    .content {
+      background: $base_bg;
+      background-color: $base_bg;
+    }
+  }
+  #user-meta p {
+    right: -124px;
+    top: -104px;
+  }
+}
+
+body.twothirdswidthpage .content .sticky-sidebar {
+    z-index: 0;
+    left: 43em;
+
+    aside {
+        top: 15em;
+    }
+}
+
+
+label[for=pc] {
+    color: $primary_b;
+}
+
+[class*=" icon-"]:before,[class^=icon-]:before
+{
+  -moz-osx-font-smoothing:grayscale;
+  -webkit-font-smoothing:antialiased;
+  font-family:angusgov;
+  font-style:normal;
+  font-variant:normal;
+  font-weight:400;
+  line-height:1;
+  speak:none;
+  text-transform:none;
+}
+
+.icon-facebook:before
+{
+  content:"\e61c";
+}
+
+.icon-twitter:before
+{
+  content:"\e61d";
+}
+
+.icon-youtube:before
+{
+  content:"\e61e";
+}
+
+footer p.social
+{
+  overflow:hidden;
+}
+
+footer p.social a
+{
+  -moz-transition:.15s color ease-in,.15s background-color ease-in;
+  -webkit-transition:.15s color ease-in,.15s background-color ease-in;
+  background-color:#3c3c3c;
+  border-radius:1em;
+  float:left;
+  font-size:2.25rem;
+  height:1em;
+  margin:0 .25em 0 0;
+  text-indent:-20000px;
+  transition:.15s color ease-in,.15s background-color ease-in;
+  width:1em;
+}
+
+footer p.social a:before
+{
+  float:left;
+  font-size:1.25rem;
+  line-height:1.8;
+  text-align:center;
+  text-indent:0;
+  width:100%;
+}
+
+.lt-ie9 footer p.social a:before
+{
+  font-size:1.25em;
+}
+
+footer p.social a:active,footer p.social a:focus,footer p.social a:hover
+{
+  background-color:#353535;
+  text-decoration:none;
+}
+
+.ie6, .ie7, .ie8 {
+  footer p.social a {
+    font-size:2.25em;
+  }
+}
+
+.ie6, .ie7 {
+  footer p.social a {
+    font-size:1.2em!important;
+    height:1.5em;
+    text-indent:0;
+    width:auto;
+  }
+}
+
+.angus_nav {
+  display: block;
+  border-bottom: 1px solid $angus_grey_link;
+
+  .container {
+    display: block;
+    font-size: 0.9em;
+    padding: 1em 20px .75em 20px;
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+
+      li {
+        display: inline;
+
+        &::before {
+          content: ">";
+          padding: 0 10px;
+        }
+        &:first-child::before {
+          content: "";
+        }
+
+        a {
+          color: $angus_dark_blue;
+        }
+      }
+    }
+  }
+}
+
+.nav-menu--main {
+  display: none;
+}
+
+
+.nav-menu--breadcrumb {
+  display: block;
+  font-size: 0.75em;
+  float: left;
+
+  a {
+    color: $angus_dark_blue;
+  }
+  span {
+    color: $angus_green;
+  }
+}
+
+.nav-menu--main {
+  a {
+    color: $angus_light_grey;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  a.report-a-problem-btn {
+    color: $angus_light_grey;
+    background-color: $angus_light_green;
+  }
+
+  span {
+    color: white;
+  }
+}
+
+body.mappage {
+  .nav-menu--main {
+    display: block;
+  }
+  .nav-menu--breadcrumb {
+    display: none;
+  }
+
+  .angus_nav {
+    display: none;
+  }
+
+  #site-logo {
+    height: 54px;
+    width: 111px;
+    top: 7px;
+    left: 7px;
+  }
+
+  #site-header {
+    border-bottom: 0;
+    box-shadow: none;
+
+    form.form__search {
+      display: none;
+    }
+  }
+
+  #user-meta {
+    p {
+      color: $primary_text;
+    }
+
+    & ~ .container .content {
+      padding-top: 3.5em; // make room for user menu!
+    }
+  }
+
+  #category_meta h4 {
+    display: none;
+  }
+
+  #category_meta_message {
+    padding-top: 0.5em;
+    font-size: 0.9em;
+    text-align: center;
+  }
+}
+
+#user-meta p {
+  top: 6em;
+  left: -6em;
+  color: $angus_light_grey;
+}
+
+.angus_footer {
+  border-top: solid 8px $angus_grey;
+  background: $angus_dark_grey;
+
+  footer {
+    font-size: 0.8em;
+    max-width: $max_page_width;
+    margin: 0 auto;
+    padding-top: 3em;
+    padding-left: 3em;
+
+    .tablewrapper, .tablewrapper.bordered {
+      border-top: none;
+      width: 100%;
+      color: white;
+      padding-bottom: 1em;
+
+      a {
+        color: $angus_grey_link;
+      }
+
+      ul {
+        margin: 0;
+        padding: 1em 0;
+
+        li {
+          display: inline-block;
+          margin: 0 .75em .25em 0;
+          padding: 0;
+          position: relative;
+          list-style: none;
+
+          &::after {
+            margin-left: -2px;
+            content: ",";
+          }
+          &:last-child::after {
+            content: ".";
+          }
+
+          a {
+            color: $angus_grey_link;
+            &:hover {
+              color: $angus_light_grey;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.big-green-banner {
+  display: block;
+}
