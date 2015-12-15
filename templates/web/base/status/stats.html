@@ -1,0 +1,28 @@
+[% USE Number.Format %]
+
+[%-
+    total_problems_live = total_problems_live | format_number;
+    total_problems_users = total_problems_users | format_number;
+    comments_confirmed = (comments.confirmed || 0) | format_number;
+    alerts_1 = alerts.1 | format_number;
+    alerts_0 = alerts.1 | format_number;
+    questionnaires_total = questionnaires.total | format_number;
+    questionnaires_1 = questionnaires.1 | format_number;
+    total_bodies = total_bodies | format_number;
+    contacts_total = contacts.total | format_number;
+    contacts_1 = contacts.1 | format_number;
+    contacts_0 = contacts.0 | format_number;
+-%]
+
+<ul>
+    <li>[% tprintf( loc('<strong>%d</strong> live problems'), decode(total_problems_live) ) %]
+    [% IF admin_include_users %]
+        [% tprintf( loc('from %d different users'), decode(total_problems_users) ) %]
+    [% END %]
+    </li>
+    <li>[% tprintf( loc('%d live updates'), decode(comments_confirmed) ) %]</li>
+    <li>[% tprintf( loc('%d confirmed alerts, %d unconfirmed'), decode(alerts_1), decode(alerts_0)) %]</li>
+    <li>[% tprintf( loc('%d questionnaires sent &ndash; %d answered (%s%%)'), decode(questionnaires_total), decode(questionnaires_1), questionnaires_pc) %]</li>
+    <li>[% tprintf( '%d bodies', decode(total_bodies)) %],
+        [% tprintf( loc('%d council contacts &ndash; %d confirmed, %d unconfirmed'), decode(contacts_total), decode(contacts_1), decode(contacts_0)) %]</li>
+</ul>

@@ -28,14 +28,7 @@ and to receive notices of updates.
 [%- END %]
 [% END -%]
 
-    <ul>
-        <li>[% tprintf( loc('<strong>%d</strong> live problems'), total_problems_live ) %];
-        [% tprintf( loc('from %d different users'), total_problems_users ) %]</li>
-        <li>[% tprintf( loc('%d live updates'), comments.confirmed || 0 ) %]</li>
-        <li>[% tprintf( loc('%d confirmed alerts, %d unconfirmed'), alerts.1, alerts.0) %]</li>
-        <li>[% tprintf( loc('%d questionnaires sent &ndash; %d answered (%s%%)'), questionnaires.total, questionnaires.1, questionnaires_pc) %]</li>
-        <li>[% tprintf( loc('%d council contacts &ndash; %d confirmed, %d unconfirmed'), contacts.total, contacts.1, contacts.0) %]</li>
-    </ul>
+[% INCLUDE 'status/stats.html' admin_include_users=1 %]
 
 [% IF c.cobrand.admin_show_creation_graph -%]
     <p>

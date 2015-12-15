@@ -80,7 +80,7 @@ requires 'Regexp::Common';
 requires 'Scalar::Util';
 requires 'Statistics::Distributions';
 requires 'Storable';
-requires 'Template::Plugin::Comma';
+requires 'Template::Plugin::Number::Format';
 requires 'Text::CSV';
 requires 'URI';
 requires 'URI::Escape';

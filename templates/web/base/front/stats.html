@@ -1,8 +1,4 @@
-[%
-    USE Comma;
-    # Note - if we want to i18n the commas we should try 
-    # 'Template::Plugin::Number::Format'
-%]
+[% USE Number.Format %]
 
 [%
     stats = c.cobrand.front_stats_data();
@@ -31,13 +27,16 @@
         "<big>%s</big> updates on reports",
         stats.updates
     );
-    
+
+    new_n = stats.new | format_number;
+    fixed_n = stats.fixed | format_number;
+    updates_n = stats.updates | format_number;
 %]
 
 <div id="front_stats">
-    <div>[% tprintf( new_text,     stats.new     ) | comma %]</div>
-    <div>[% tprintf( fixed_text,   stats.fixed   ) | comma %]</div>
+    <div>[% tprintf( new_text, decode(new_n) ) %]</div>
+    <div>[% tprintf( fixed_text, decode(fixed_n) ) %]</div>
     [% IF c.cobrand.moniker != 'zurich' %]
-    <div>[% tprintf( updates_text, stats.updates ) | comma %]</div>
+    <div>[% tprintf( updates_text, decode(updates_n) ) %]</div>
     [% END %]
 </div>
