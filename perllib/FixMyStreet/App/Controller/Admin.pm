@@ -1076,16 +1076,18 @@ sub user_add : Path('user_edit') : Args(0) {
     $c->forward('get_token');
     $c->forward('fetch_all_bodies');
 
-    return 1 unless $c->get_param('submit');
+    return unless $c->get_param('submit');
 
     $c->forward('check_token');
 
-    if ( $c->cobrand->moniker eq 'zurich' and $c->get_param('email') eq '' ) {
+    unless ($c->get_param('email')) {
         $c->stash->{field_errors}->{email} = _('Please enter a valid email');
-        return 1;
+        return;
     }
-
-    return unless $c->get_param('name') && $c->get_param('email');
+    unless ($c->get_param('name')) {
+        $c->stash->{field_errors}->{name} = _('Please enter a name');
+        return;
+    }
 
     my $user = $c->model('DB::User')->find_or_create( {
         name => $c->get_param('name'),
@@ -1133,12 +1135,16 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->from_body( $c->get_param('body') || undef );
         $user->flagged( $c->get_param('flagged') || 0 );
 
-        if ( $c->cobrand->moniker eq 'zurich' and $user->email eq '' ) {
+        unless ($user->email) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');
-            return 1;
+            return;
         }
-        $user->update;
+        unless ($user->name) {
+            $c->stash->{field_errors}->{name} = _('Please enter a name');
+            return;
+        }
 
+        $user->update;
         if ($edited) {
             $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
         }
