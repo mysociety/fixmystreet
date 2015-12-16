@@ -19,7 +19,7 @@ $direction: 'left' !default;
   @include background (linear-gradient($c1, $c2)) ;
   border:1px solid $c3;  
   color:$c4;
-  &:hover{
+  &:hover:enabled {
     background:$c5;
     @include background (linear-gradient($c6, $c5)); 
     text-decoration: none;
