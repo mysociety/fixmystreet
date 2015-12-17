@@ -36,7 +36,7 @@ sub my : Path : Args(0) {
     my $states = $c->stash->{filter_problem_states};
     my $params = {
         state => [ keys %$states ],
-        user => $c->user->id,
+        user_id => $c->user->id,
     };
 
     my $category = $c->get_param('filter_category');
@@ -76,7 +76,7 @@ sub my : Path : Args(0) {
     $c->stash->{updates} = \@updates;
     $c->stash->{updates_pager} = $rs->pager;
 
-    my @categories = $c->cobrand->problems->search( { user => $c->user->id }, {
+    my @categories = $c->cobrand->problems->search( { user_id => $c->user->id }, {
         columns => [ 'category' ],
         distinct => 1,
         order_by => [ 'category' ],
