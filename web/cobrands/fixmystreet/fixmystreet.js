@@ -520,7 +520,6 @@ $.fn.drawer = function(id, ajax) {
                 url: '/country_message',
                 success: function(data) {
                     if ( data ) {
-                        $('#site-header').css('position', 'relative');
                         $('body').prepend(data);
                         $('#country_banner').slideDown('slow');
                     }
