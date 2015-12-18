@@ -37,7 +37,7 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
             display: none; /* TODO: reveal when filtering is implemented */
             padding: flip(4px 4px 4px 40px, 4px 40px 4px 4px);
             background-color: $button_bg_col;
-            background-image: url('search-icon-white.png');
+            background-image: url('/cobrands/zurich/search-icon-white.png');
             background-position: flip(14px, right) center;
             background-repeat: no-repeat;
             border-bottom: 2px solid $table_border_color;
