@@ -1,13 +1,11 @@
 [% country = c.cobrand.get_country_for_ip_address(c.req.address) -%]
 [%- IF country AND country != 'GB' -%]
-<div id="country_banner">
-    <a href="#" id="message_close">Close</a>
-    <p id="international_message">
-    <span id="message">
+<div class="top_banner top_banner--country">
+    <a href="#" class="top_banner__close">Close</a>
+    <p>
     This site is for reporting <strong>problems in the UK</strong>. There are FixMyStreet sites
     <a href="http://www.fixmystreet.org/sites/">all over the world</a>, or you
     could set up your own using the <a href="http://www.fixmystreet.org/">FixMyStreet Platform</a>.
-    </span>
     </p>
 </div>
 [%- END -%]
