@@ -35,13 +35,13 @@ msgstr "或"
 
 #: templates/web/base/admin/index.html:35
 #: templates/web/base/status/index.html:13
-msgid "%d confirmed alerts, %d unconfirmed"
+msgid "%s confirmed alerts, %s unconfirmed"
 msgstr "%d 已確認通知, %d 未確認　"
 
 #: templates/web/base/admin/index.html:37
 #: templates/web/base/status/index.html:16
 #: templates/web/zurich/admin/index.html:6
-msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
+msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
 msgstr "%d 地方政府承辦人員 &ndash; %d 確認 %d 尚未確認"
 
 #: templates/web/base/admin/edit-league.html:12
@@ -50,12 +50,12 @@ msgstr " 由 %d 編輯 %d"
 
 #: templates/web/base/admin/index.html:34
 #: templates/web/base/status/index.html:12
-msgid "%d live updates"
+msgid "%s live updates"
 msgstr "%d 現場更新"
 
 #: templates/web/base/admin/index.html:36
 #: templates/web/base/status/index.html:14
-msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
+msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
 msgstr "%d 問卷送出 &ndash; % 回覆(%s%%)"
 
 #: templates/web/base/pagination.html:10
@@ -235,7 +235,7 @@ msgstr ""
 #: templates/web/base/admin/index.html:32
 #: templates/web/base/status/index.html:11
 #: templates/web/zurich/admin/index.html:4
-msgid "<strong>%d</strong> live problems"
+msgid "<strong>%s</strong> live problems"
 msgstr "<strong>%d</strong> 現場問題"
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:39
@@ -4033,7 +4033,7 @@ msgstr "已處理之申報　"
 
 #: templates/web/base/admin/index.html:33
 #: templates/web/zurich/admin/index.html:5
-msgid "from %d different users"
+msgid "from %s different users"
 msgstr "從不同的用戶%d  "
 
 #: templates/web/base/report/_item.html:17

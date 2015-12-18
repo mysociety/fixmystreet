@@ -36,13 +36,13 @@ msgstr "або"
 
 #: templates/web/base/admin/index.html:35
 #: templates/web/base/status/index.html:13
-msgid "%d confirmed alerts, %d unconfirmed"
+msgid "%s confirmed alerts, %s unconfirmed"
 msgstr "%d підтверджених сповіщень, %d непідтверджених"
 
 #: templates/web/base/admin/index.html:37
 #: templates/web/base/status/index.html:16
 #: templates/web/zurich/admin/index.html:6
-msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
+msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
 msgstr "%d контактів рад &ndash; %d підтверджених, %d непідтверджених"
 
 #: templates/web/base/admin/edit-league.html:12
@@ -51,12 +51,12 @@ msgstr "%d редагувань від %s"
 
 #: templates/web/base/admin/index.html:34
 #: templates/web/base/status/index.html:12
-msgid "%d live updates"
+msgid "%s live updates"
 msgstr "%d оперативних сповіщень"
 
 #: templates/web/base/admin/index.html:36
 #: templates/web/base/status/index.html:14
-msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
+msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
 msgstr "%d опитувань надіслано &ndash; на %d відповіли (%s%%)"
 
 #: templates/web/base/pagination.html:10
@@ -220,7 +220,7 @@ msgstr ""
 #: templates/web/base/admin/index.html:32
 #: templates/web/base/status/index.html:11
 #: templates/web/zurich/admin/index.html:4
-msgid "<strong>%d</strong> live problems"
+msgid "<strong>%s</strong> live problems"
 msgstr "<strong>%d</strong> актуальні проблеми"
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:39
@@ -3951,7 +3951,7 @@ msgstr "Звіти про вирішені проблеми"
 
 #: templates/web/base/admin/index.html:33
 #: templates/web/zurich/admin/index.html:5
-msgid "from %d different users"
+msgid "from %s different users"
 msgstr "від %d різних користувачів"
 
 #: templates/web/base/report/_item.html:17

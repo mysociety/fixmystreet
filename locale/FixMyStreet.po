@@ -26,11 +26,11 @@ msgid " or "
 msgstr ""
 
 #: templates/web/base/admin/index.html:35 templates/web/base/status/index.html:13
-msgid "%d confirmed alerts, %d unconfirmed"
+msgid "%s confirmed alerts, %s unconfirmed"
 msgstr ""
 
 #: templates/web/base/admin/index.html:37 templates/web/base/status/index.html:16 templates/web/zurich/admin/index.html:6
-msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
+msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
 msgstr ""
 
 #: templates/web/base/admin/edit-league.html:12
@@ -38,11 +38,11 @@ msgid "%d edits by %s"
 msgstr ""
 
 #: templates/web/base/admin/index.html:34 templates/web/base/status/index.html:12
-msgid "%d live updates"
+msgid "%s live updates"
 msgstr ""
 
 #: templates/web/base/admin/index.html:36 templates/web/base/status/index.html:14
-msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
+msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
 msgstr ""
 
 #: templates/web/base/pagination.html:10
@@ -188,7 +188,7 @@ msgid "<label>Show %s</label> <label>about %s</label>"
 msgstr ""
 
 #: templates/web/base/admin/index.html:32 templates/web/base/status/index.html:11 templates/web/zurich/admin/index.html:4
-msgid "<strong>%d</strong> live problems"
+msgid "<strong>%s</strong> live problems"
 msgstr ""
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:39
@@ -3140,7 +3140,7 @@ msgid "fixed reports"
 msgstr ""
 
 #: templates/web/base/admin/index.html:33 templates/web/zurich/admin/index.html:5
-msgid "from %d different users"
+msgid "from %s different users"
 msgstr ""
 
 #: templates/web/base/report/_item.html:17 templates/web/zurich/report/_item.html:16

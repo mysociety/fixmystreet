@@ -34,13 +34,13 @@ msgstr " nebo "
 
 #: templates/web/base/admin/index.html:35
 #: templates/web/base/status/index.html:13
-msgid "%d confirmed alerts, %d unconfirmed"
+msgid "%s confirmed alerts, %s unconfirmed"
 msgstr "%d potvrzených upozornění, %d nepotvrzených"
 
 #: templates/web/base/admin/index.html:37
 #: templates/web/base/status/index.html:16
 #: templates/web/zurich/admin/index.html:6
-msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
+msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
 msgstr "%d úředních kontaktů -%d potvrzených, %d nepotvrzených"
 
 #: templates/web/base/admin/edit-league.html:12
@@ -49,12 +49,12 @@ msgstr "%d úprav od  %s"
 
 #: templates/web/base/admin/index.html:34
 #: templates/web/base/status/index.html:12
-msgid "%d live updates"
+msgid "%s live updates"
 msgstr "%d online aktualizace"
 
 #: templates/web/base/admin/index.html:36
 #: templates/web/base/status/index.html:14
-msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
+msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
 msgstr "%d dotazníky zaslány -%d odpovědělo (%s %%)"
 
 #: templates/web/base/pagination.html:10
@@ -233,7 +233,7 @@ msgstr ""
 #: templates/web/base/admin/index.html:32
 #: templates/web/base/status/index.html:11
 #: templates/web/zurich/admin/index.html:4
-msgid "<strong>%d</strong> live problems"
+msgid "<strong>%s</strong> live problems"
 msgstr "<strong>%d</strong>Nevyřešená hlášení"
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:39
@@ -4007,7 +4007,7 @@ msgstr "Hlášení - Vyřešené"
 
 #: templates/web/base/admin/index.html:33
 #: templates/web/zurich/admin/index.html:5
-msgid "from %d different users"
+msgid "from %s different users"
 msgstr "od %d různých uživatelů"
 
 #: templates/web/base/report/_item.html:17

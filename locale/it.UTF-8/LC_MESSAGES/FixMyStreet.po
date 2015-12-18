@@ -37,13 +37,13 @@ msgstr "o"
 
 #: templates/web/base/admin/index.html:35
 #: templates/web/base/status/index.html:13
-msgid "%d confirmed alerts, %d unconfirmed"
+msgid "%s confirmed alerts, %s unconfirmed"
 msgstr "%d segnalazioni confermate, %d non confermate"
 
 #: templates/web/base/admin/index.html:37
 #: templates/web/base/status/index.html:16
 #: templates/web/zurich/admin/index.html:6
-msgid "%d council contacts &ndash; %d confirmed, %d unconfirmed"
+msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
 msgstr "%d contatti del Comune &ndash; %d confermati, %d non confermati"
 
 #: templates/web/base/admin/edit-league.html:12
@@ -52,12 +52,12 @@ msgstr "%d modificato da %s"
 
 #: templates/web/base/admin/index.html:34
 #: templates/web/base/status/index.html:12
-msgid "%d live updates"
+msgid "%s live updates"
 msgstr "%d aggiornamenti in tempo reale"
 
 #: templates/web/base/admin/index.html:36
 #: templates/web/base/status/index.html:14
-msgid "%d questionnaires sent &ndash; %d answered (%s%%)"
+msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
 msgstr "%d questionari inviati &ndash; %d compilati (%s%%)"
 
 #: templates/web/base/pagination.html:10
@@ -226,7 +226,7 @@ msgstr ""
 #: templates/web/base/admin/index.html:32
 #: templates/web/base/status/index.html:11
 #: templates/web/zurich/admin/index.html:4
-msgid "<strong>%d</strong> live problems"
+msgid "<strong>%s</strong> live problems"
 msgstr "<strong>%d</strong> problemi in tempo reale"
 
 #: templates/web/fixmystreet/report/new/form_user_loggedout.html:39
@@ -3945,7 +3945,7 @@ msgstr "Problemi risolti"
 
 #: templates/web/base/admin/index.html:33
 #: templates/web/zurich/admin/index.html:5
-msgid "from %d different users"
+msgid "from %s different users"
 msgstr "da %d utenti differenti"
 
 #: templates/web/base/report/_item.html:17
