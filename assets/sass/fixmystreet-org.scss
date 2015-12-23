@@ -300,3 +300,22 @@
     -webkit-border-radius: 0.333em;
     border-radius: 0.333em;
 }
+
+/* Site search */
+
+// Otherwise it's the default's c. 28px
+.site-search {
+    line-height: 15px;
+}
+
+// It expects things not to be changed from old-browser defaults
+.site-search * {
+    box-sizing: content-box;
+    border-collapse: separate;
+}
+
+// So there's no unsightly move of content down for empty gap
+.gsc-control-cse {
+    padding: 0 !important;
+    border: none !important;
+}

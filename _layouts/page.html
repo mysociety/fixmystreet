@@ -2,6 +2,18 @@
 layout: default
 ---
 
+<script>
+  (function() {
+    var cx = '018335012393813682733:yb97auudu-a';
+    var gcse = document.createElement('script');
+    gcse.type = 'text/javascript';
+    gcse.async = true;
+    gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+    var s = document.getElementsByTagName('script')[0];
+    s.parentNode.insertBefore(gcse, s);
+  })();
+</script>
+
 <div class="page-wrapper">
   <div class="page">
 
@@ -24,6 +36,10 @@ layout: default
       {% endif %}
       </ul>
 
+      <div class="site-search">
+        <gcse:searchresults></gcse:searchresults>
+      </div>
+
       <div class="main-content-column">
         <main role="main" class="main-content">
           {{ content }}
@@ -32,6 +48,11 @@ layout: default
 
     <div class="secondary-content-column">
       <nav class="sidebar">
+
+        <div class="site-search">
+          <gcse:searchbox></gcse:searchbox>
+        </div>
+
         <ul>
           <li><a href="{{ site.baseurl }}">Home</a></li>
           <li><a href="{{ site.baseurl }}how-it-works/">How it works</a></li>
