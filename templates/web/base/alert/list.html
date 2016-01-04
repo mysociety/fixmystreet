@@ -6,7 +6,7 @@
     END;
 %]
 
-[% INCLUDE 'header.html', title = title, bodyclass = 'twothirdswidthpage' %]
+[% INCLUDE 'header.html', title = title, bodyclass = 'fullwidthpage' %]
 
 [% IF pretty_pc %]
     [%
@@ -18,21 +18,23 @@
 
 <h1>[% title %]</h1>
 
-<form id="alerts" name="alerts" method="post" action="/alert/subscribe">
-
-  [% IF photos.size %]
-    <div id="alert_photos">
-      <aside>
-        <h2>[% loc('Photos of recent nearby reports') %]</h2>
-        [% FOREACH p IN photos;
-            photo = p.get_photo_params;
-        %]
-            <a href="/report/[% p.id %]"><img border="0" height="100"
-                src="[% photo.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
-        [% END %]
-      </aside>
+[% IF photos.size %]
+<div class="alerts__nearby-activity">
+    <h2>[% loc('Photos of recent nearby reports') %]</h2>
+    <div class="alerts__nearby-activity__photos">
+      [% FOREACH p IN photos;
+        photo = p.get_photo_params;
+      %]
+        <a href="/report/[% p.id %]">
+            <img border="0" height="100" src="[% photo.url_tn %]"
+            alt="[% p.title | html %]" title="[% p.title | html %]">
+        </a>
+      [% END %]
     </div>
-  [% END %]
+</div>
+[% END %]
+
+<form id="alerts" name="alerts" method="post" action="/alert/subscribe">
 
   [% INCLUDE 'alert/_list.html' %]
 

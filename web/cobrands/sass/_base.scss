@@ -1566,6 +1566,26 @@ table.nicetable {
     }
 }
 
+.alerts__nearby-activity {
+    background-color: #f6f6f6;
+    margin: 1em -1em;
+    padding: 1em;
+
+    & > :first-child {
+        margin-top: 0;
+    }
+}
+
+.alerts__nearby-activity__photos {
+    white-space: nowrap;
+    overflow: hidden;
+
+    a {
+        margin-right: 0.5em;
+        text-decoration: none; // avoid underline showing between images
+    }
+}
+
 .confirmation-header {
   padding: 140px 0 2em;
   text-align: center;

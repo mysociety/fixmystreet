@@ -1,4 +1,4 @@
-[% INCLUDE 'header.html', title = loc('Local RSS feeds and email alerts'), bodyclass = 'twothirdswidthpage' %]
+[% INCLUDE 'header.html', title = loc('Local RSS feeds and email alerts'), bodyclass = 'fullwidthpage' %]
 
 <h1>[% loc('Local RSS feeds and email alerts') %]</h1>
 
@@ -37,16 +37,16 @@ within a certain distance of a particular location.', "%s is the site name"), si
 </form>
 
 [% IF photos.size %]
-<div id="alert_recent">
-  <aside>
-    <h2>[% loc('Some photos of recent reports') %]</h2>
-    [% FOREACH p IN photos;
-        photo = p.get_photo_params;
-    %]
-        <a href="/report/[% p.id %]"><img border="0" height="100"
-            src="[% photo.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
-    [% END %]
-  </aside>
+<h2>[% loc('Some photos of recent reports') %]</h2>
+<div class="alerts__nearby-activity__photos">
+  [% FOREACH p IN photos;
+    photo = p.get_photo_params;
+  %]
+    <a href="/report/[% p.id %]">
+        <img border="0" height="100" src="[% photo.url_tn %]"
+        alt="[% p.title | html %]" title="[% p.title | html %]">
+    </a>
+  [% END %]
 </div>
 [% END %]
 
