@@ -34,6 +34,7 @@ sub confirm_problem : Path('/P') {
             title => 'Title of Report',
             bodies_str => 'True',
             url => '/report/123',
+            service => $c->get_param('service'),
         };
         return;
     }

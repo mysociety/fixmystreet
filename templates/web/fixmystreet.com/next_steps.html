@@ -2,8 +2,10 @@
 
 [% DEFAULT share_url = c.cobrand.base_url %]
 [% DEFAULT twitter_comment = 'I just used @fixmystreet, you should try it!' %]
+[% SET app_step = 1 IF NOT report OR NOT report.service %]
 
-<div class="next-steps">
+<div class="next-steps[% ' next-steps--two' IF NOT app_step %]">
+  [% IF app_step %]
   <div class="next-steps__step next-steps__step--apps">
     [% IF just_interacted %]
       <h2>[% loc('Next time, try our mobile app!') %]</h2>
@@ -16,6 +18,7 @@
       <a href="https://play.google.com/store/apps/details?id=org.mysociety.FixMyStreet"><img src="/cobrands/fixmystreet.com/images/next-step-google.png" alt="Android app on Google Play" width="120" height="37"></a>
     </p>
   </div>
+  [% END %]
   <div class="next-steps__step next-steps__step--social">
     [% IF just_interacted %]
       <h2>[% loc('Great work. Now spread the word!') %]</h2>

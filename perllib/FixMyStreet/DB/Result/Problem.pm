@@ -363,7 +363,8 @@ around lastupdate => $stz;
 
 around service => sub {
     my ( $orig, $self ) = ( shift, shift );
-    my $s = $self->$orig(@_);
+    # service might be undef if e.g. unsaved code report
+    my $s = $self->$orig(@_) || "";
     $s =~ s/_/ /g;
     return $s;
 };
