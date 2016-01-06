@@ -536,8 +536,17 @@ p.label-valid {
 .wrapper {
   width:100%;
   display:table;
-  caption-side:bottom;
+  // The 'caption' at large widths will be top, moving the menu up magically
+  caption-side: bottom;
+  // This is so absolutely positioned header stuff doesn't overlap banner...
+  position: relative;
 }
+// ...however position: relative stops the map being clickable (?), so better
+// revert it there
+body.mappage .wrapper {
+  position: static;
+}
+
 // this is the user's logged in details or the login link etc
 #user-meta {
   p {

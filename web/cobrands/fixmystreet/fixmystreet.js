@@ -509,8 +509,8 @@ $.fn.drawer = function(id, ajax) {
         }).fadeOut(500);
     });
 
-    $('#message_close').live('click', function() {
-        $('#country_banner').hide();
+    $('.top_banner__close').live('click', function() {
+        $('.top_banner--country').hide();
         $.cookie('has_seen_country_message', 1, {expires: 365, path: '/'});
     });
 
@@ -520,9 +520,8 @@ $.fn.drawer = function(id, ajax) {
                 url: '/country_message',
                 success: function(data) {
                     if ( data ) {
-                        $('#site-header').css('position', 'relative');
                         $('body').prepend(data);
-                        $('#country_banner').slideDown('slow');
+                        $('.top_banner--country').slideDown('slow');
                     }
                 }
             });
