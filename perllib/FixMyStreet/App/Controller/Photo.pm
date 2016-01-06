@@ -61,12 +61,6 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.jpeg$') {
             photo => { '!=', undef },
         } );
     } else {
-        # GoogleBot-Image is doing this for some reason?
-        if ( $id =~ m{ ^(\d+) \D .* $ }x ) {
-            return $c->res->redirect( $c->uri_with( { id => $1 } ), 301 );
-        }
-
-        $c->detach( 'no_photo' ) if $id =~ /\D/;
         ($item) = $c->cobrand->problems->search( {
             id => $id,
             state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
