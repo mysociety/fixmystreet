@@ -239,6 +239,28 @@ sub delete_cached {
     );
 }
 
+sub remove_images {
+    my ($self, $ids) = @_;
+
+    my @images = $self->all_images;
+    my $dec = 0;
+    for (sort { $a <=> $b } @$ids) {
+        splice(@images, $_ + $dec, 1);
+        --$dec;
+    }
+    my @items = map $_->[0], @images;
+
+    my $new_set = (ref $self)->new({
+        data_items => \@items,
+        c => $self->c,
+        object => $self->object,
+    });
+
+    $self->delete_cached();
+
+    return $new_set->data; # e.g. new comma-separated fileid
+}
+
 sub rotate_image {
     my ($self, $index, $direction) = @_;
 

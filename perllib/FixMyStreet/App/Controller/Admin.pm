@@ -790,11 +790,12 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         # Deal with photos
-        if ( $c->get_param('remove_photo') ) {
-            $problem->photo(undef);
+        my $remove_photo_param = $self->_get_remove_photo_param($c);
+        if ($remove_photo_param) {
+            $self->remove_photo($c, $problem, $remove_photo_param);
         }
 
-        if ( $c->get_param('remove_photo') || $new_state eq 'hidden' ) {
+        if ( $remove_photo_param || $new_state eq 'hidden' ) {
             unlink glob FixMyStreet->path_to( 'web', 'photo', $problem->id . '.*' );
         }
 
@@ -1504,6 +1505,33 @@ sub rotate_photo : Private {
 
     $problem->update({ photo => $fileid });
 
+    return 1;
+}
+
+=head2 remove_photo
+
+Remove a photo from a report
+
+=cut
+
+# Returns index of photo(s) to remove, if any
+sub _get_remove_photo_param {
+    my ($self, $c) = @_;
+
+    return 'ALL' if $c->get_param('remove_photo');
+
+    my @keys = map { /(\d+)$/ } grep { /^remove_photo_/ } keys %{ $c->req->params } or return;
+    return \@keys;
+}
+
+sub remove_photo : Private {
+    my ($self, $c, $object, $keys) = @_;
+    if ($keys eq 'ALL') {
+        $object->photo(undef);
+    } else {
+        my $fileids = $object->get_photoset($c)->remove_images($keys);
+        $object->photo($fileids);
+    }
     return 1;
 }
 
