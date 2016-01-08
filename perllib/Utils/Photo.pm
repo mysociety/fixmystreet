@@ -4,8 +4,8 @@ use Image::Size;
 
 =head2 get_photo_params
 
-Returns a hashref of details of any attached photo for use in templates.
-Hashref contains height, width and url keys.
+Returns a hashref of details of any attached photo (the first, if multiple
+ones) for use in templates. Hashref contains height, width and url keys.
 
 =cut
 
@@ -20,7 +20,12 @@ sub get_photo_params {
     my $post = '.jpeg';
     my $photo = {};
 
-    if (length($self->photo) == 40) {
+    if ($self->can('get_photoset')) {
+        my $data = $self->get_photoset()->get_raw_image_data(0);
+        my $fileid = $data->[0];
+        $post .= '?' . $fileid;
+        $photo->{url_full} = "$pre.full$post";
+    } elsif (length($self->photo) == 40) {
         $post .= '?' . $self->photo;
         $photo->{url_full} = "$pre.full$post";
         # XXX Can't use size here because {url} (currently 250px height) may be
