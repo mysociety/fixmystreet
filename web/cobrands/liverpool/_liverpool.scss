@@ -59,6 +59,9 @@ body.liverpool {
         margin: 1em 0 0;
         ul {
             float: none;
+            li {
+              display: inline-block;
+            }
         }
     }
 
