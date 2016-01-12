@@ -222,7 +222,7 @@ sub get_image_data {
     } elsif ( $size eq 'full' ) {
         # do nothing
     } else {
-        $photo = _shrink( $photo, $self->c->cobrand->default_photo_resize || '250x250' );
+        $photo = _shrink( $photo, $args{default} || '250x250' );
     }
 
     return $photo;
@@ -252,7 +252,6 @@ sub remove_images {
 
     my $new_set = (ref $self)->new({
         data_items => \@items,
-        c => $self->c,
         object => $self->object,
     });
 
@@ -272,7 +271,6 @@ sub rotate_image {
 
     my $new_set = (ref $self)->new({
         data_items => \@items,
-        c => $self->c,
         object => $self->object,
     });
 

@@ -1,6 +1,6 @@
 [% IF c.cobrand.allow_photo_display(object) && object.photo %]
     [% IF object.can('get_photoset') %]
-    [% FOR photo IN object.get_photoset(c).images %]
+    [% FOR photo IN object.get_photoset.images %]
     <div class="update-img">
         <a href="[% c.cobrand.base_url %]/photo/[% object.id %].[% loop.index %].full.jpeg?[% photo.0 %]" rel="fancy">
             <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% object.id %].[% loop.index %].jpeg?[% photo.0 %]">

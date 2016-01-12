@@ -1498,7 +1498,7 @@ sub rotate_photo : Private {
     return unless $direction eq _('Rotate Left') or $direction eq _('Rotate Right');
 
     my $problem = $c->stash->{problem};
-    my $fileid = $problem->get_photoset($c)->rotate_image(
+    my $fileid = $problem->get_photoset->rotate_image(
         $index,
         $direction eq _('Rotate Left') ? -90 : 90
     ) or return;
@@ -1529,7 +1529,7 @@ sub remove_photo : Private {
     if ($keys eq 'ALL') {
         $object->photo(undef);
     } else {
-        my $fileids = $object->get_photoset($c)->remove_images($keys);
+        my $fileids = $object->get_photoset->remove_images($keys);
         $object->photo($fileids);
     }
     return 1;

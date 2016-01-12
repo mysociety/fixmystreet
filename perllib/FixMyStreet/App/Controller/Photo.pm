@@ -74,8 +74,8 @@ sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.jpeg$') {
 
     my $photo;
     if ($item->can('get_photoset')) {
-        $photo = $item->get_photoset( $c )
-            ->get_image_data( num => $photo_number, size => $size )
+        $photo = $item->get_photoset
+            ->get_image_data( num => $photo_number, size => $size, default => $c->cobrand->default_photo_resize )
         or $c->detach( 'no_photo' );
     } else {
         $photo = $item->photo;

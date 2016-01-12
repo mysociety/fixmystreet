@@ -79,7 +79,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 [% IF problem.photo %]
 <li>
 <ul>
-  [% FOR photo IN problem.get_photoset(c).images %]
+  [% FOR photo IN problem.get_photoset.images %]
     <li>
         <div class="update-img">
             <a href="[% c.cobrand.base_url %]/photo/[% photo.0 %].fulltemp.jpeg" rel="fancy">

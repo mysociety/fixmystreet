@@ -449,7 +449,7 @@ sub initialize_report : Private {
                 $c->stash->{partial_token} = $token if $report;
 
                 # Stash the photo IDs for "already got" display
-                $c->stash->{upload_fileid} = $report->get_photoset($c)->data;
+                $c->stash->{upload_fileid} = $report->get_photoset->data;
 
             } else {
                 # no point keeping it if it is done.

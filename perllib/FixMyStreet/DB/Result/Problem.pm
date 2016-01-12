@@ -487,9 +487,8 @@ sub admin_url {
 
 Returns a hashref of details of the attached photo, if any, for use in templates.
 
-NB: this method doesn't currently support multiple photos gracefully.  
-
-Use get_photoset($c) instead to do the right thing with reports with 0, 1, or more photos.
+NB: this method only returns the first if there are multiple photos. Use
+get_photoset if you wish to access multiple photos.
 
 =cut
 
@@ -858,18 +857,17 @@ sub latest_moderation_log_entry {
 
 Return a PhotoSet object for all photos attached to this field
 
-    my $photoset = $obj->get_photoset( $c );
+    my $photoset = $obj->get_photoset;
     print $photoset->num_images;
     return $photoset->get_image_data(num => 0, size => 'full');
 
 =cut
 
 sub get_photoset {
-    my ($self, $c) = @_;
+    my ($self) = @_;
     my $class = 'FixMyStreet::App::Model::PhotoSet';
     eval "use $class";
     return $class->new({
-        c => $c,
         db_data => $self->photo,
         object => $self,
     });
