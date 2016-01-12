@@ -1,9 +1,7 @@
 <li class="item-list__item item-list--reports__item [% item_extra_class %]">
 <a href="[% c.uri_for('/report', problem.id ) %]">
-    [% IF problem.photo;
-        photo = problem.get_photo_params
-    %]
-        <img class="img" height="60" width="90" src="[% photo.url_fp %]" alt="">
+    [% IF problem.photo %]
+        <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
         <h4>[% problem.title | html %]</h4>
         <small>

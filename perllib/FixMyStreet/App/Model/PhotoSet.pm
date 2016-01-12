@@ -292,11 +292,6 @@ sub _rotate_image {
 }
 
 
-
-
-
-# NB: These 2 subs stolen from A::C::Photo, should be purged from there!
-#
 # Shrinks a picture to the specified size, but keeping in proportion.
 sub _shrink {
     my ($photo, $size) = @_;

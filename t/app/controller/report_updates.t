@@ -1049,6 +1049,9 @@ subtest 'submit an update for a registered user, creating update by email' => su
     $mech->delete_user( $user );
 };
 
+my $sample_file = file(__FILE__)->parent->file("sample.jpg")->stringify;
+ok -e $sample_file, "sample file $sample_file exists";
+
 for my $test (
     {
         desc => 'submit update for registered user',
@@ -1066,6 +1069,7 @@ for my $test (
             update => 'update from a registered user',
             add_alert => undef,
             fixed => undef,
+            photo => [ [ $sample_file, undef, Content_Type => 'image/jpeg' ], 1 ],
         },
         changed => {
             update => 'Update from a registered user'
@@ -1210,6 +1214,11 @@ for my $test (
         $mech->content_contains("/report/" . $report_id);
         $mech->get_ok("/report/" . $report_id);
 
+        my $update = $report->comments->first;
+        ok $update, 'found update';
+
+        $mech->content_contains("/photo/c/" . $update->id . ".0.jpeg") if $test->{fields}->{photo};
+
         if ( !defined( $test->{endstate_banner} ) ) {
             is $mech->extract_problem_banner->{text}, undef, 'endstate banner';
         } else {
@@ -1223,8 +1232,6 @@ for my $test (
             %{ $test->{changed} },
         };
 
-        my $update = $report->comments->first;
-        ok $update, 'found update';
         is $update->text, $results->{update}, 'update text';
         is $update->user->email, $test->{email}, 'update user';
         is $update->state, 'confirmed', 'update confirmed';

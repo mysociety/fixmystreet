@@ -1,9 +1,7 @@
 <li class="item-list__item item-list--reports__item">
 <a href="[% c.uri_for('/report', problem.id ) %]">
-    [% IF problem.state != 'unconfirmed' AND problem.photo AND c.cobrand.allow_photo_display(problem);
-        photo = problem.get_photo_params
-    %]
-        <img class="img" height="60" width="90" src="[% photo.url_fp %]" alt="">
+    [% IF problem.state != 'unconfirmed' AND problem.photo AND c.cobrand.allow_photo_display(problem) %]
+        <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
       [% IF problem.state != 'unconfirmed' %]
         <h4>[% problem.title | html %]</h4>

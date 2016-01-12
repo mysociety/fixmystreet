@@ -51,13 +51,8 @@
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
 
 [% IF update.photo %]
-[% photo = update.get_photo_params %]
-<li><img alt="Photo of this update" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %]
-    [%~ IF update.photo.length == 40 ~%]
-        /photo/[% update.photo %].temp.jpeg
-    [%~ ELSE ~%]
-        [% photo.url %]
-    [%~ END ~%]">
+[% photo = update.photos.first %]
+<li><img alt="Photo of this update" src="[% c.cobrand.base_url %][% photo.url_temp %]">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo" class="inline">[% loc("Remove photo (can't be undone!)") %]</label></li>
 [% END %]
