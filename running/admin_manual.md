@@ -69,7 +69,7 @@ developer** and **one administrator** who can work on the site.
 At the beginning you'll be quite busy. You'll be doing a lot of things, like
 customising your site, collecting the email addresses your users' <a
 href="{{ site.baseurl }}glossary/#report" class="glossary__link">problem reports</a> will be sent to,
-and perhaps promoting your project.
+and perhaps [promoting your project]({{ site.baseurl }}running/promotion/).
 
 **Once your site is up and running**, you can manage with just **one
 administrator**.
