@@ -3868,6 +3868,10 @@ msgstr "Ihr Passwort wurde ge&auml;ndert"
 msgid "Your phone number"
 msgstr "Ihre Telefonnummer"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Ihre Meldung"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Ihre Meldungen"
@@ -4179,6 +4183,3 @@ msgstr[1] ""
 
 #~ msgid "Your email address:"
 #~ msgstr "Ihre eMail-Adresse:"
-
-#~ msgid "Your report"
-#~ msgstr "Ihre Meldung"

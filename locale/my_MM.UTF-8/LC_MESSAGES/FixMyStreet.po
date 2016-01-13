@@ -3886,6 +3886,10 @@ msgstr "သင္၏ စကားဝွက္ကို ေျပာင္းလ�
 msgid "Your phone number"
 msgstr "သင္၏ ဖုန္းနံပါတ္"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "သင္၏ အစီရင္ခံစာ"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "သင္၏ အစီရင္ခံစာမ်ား"
@@ -4207,6 +4211,3 @@ msgstr[0] "ကၽြႏု္ပ္တို႔တြင္ ဒီတည္ေ�
 
 #~ msgid "Your email address:"
 #~ msgstr "သင္၏ အီးေမးလ္လိပ္စာ"
-
-#~ msgid "Your report"
-#~ msgstr "သင္၏ အစီရင္ခံစာ"

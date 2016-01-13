@@ -3873,6 +3873,10 @@ msgstr "Je wachtwoord is gewijzigd"
 msgid "Your phone number"
 msgstr "Je telefoonnummer"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Jouw melding"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Jouw meldingen"
@@ -4244,6 +4248,3 @@ msgstr[1] ""
 
 #~ msgid "Your email address:"
 #~ msgstr "Jouw e-mailadres:"
-
-#~ msgid "Your report"
-#~ msgstr "Jouw melding"

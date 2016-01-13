@@ -3869,6 +3869,10 @@ msgstr "Fjalekalimi juaj eshte ndryshuar"
 msgid "Your phone number"
 msgstr "Numri juaj i telefonit"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Raporti juaj"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Raportet tuaja"
@@ -4192,6 +4196,3 @@ msgstr[1] ""
 
 #~ msgid "Your email address:"
 #~ msgstr "Email adresa juaj:"
-
-#~ msgid "Your report"
-#~ msgstr "Raporti juaj"
