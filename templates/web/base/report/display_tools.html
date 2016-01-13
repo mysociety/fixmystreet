@@ -1,0 +1,49 @@
+<div class="shadow-wrap">
+    <ul id="key-tools">
+        [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_body( c.cobrand.council_id ) %]
+        <li><form method="post" action="/report/delete/[% problem.id %]" id="remove-from-site-form">
+            <input type="submit" id="key-tool-report-abuse" class="abuse" value="Remove from site">
+        </form></li>
+        [% ELSIF c.cobrand.moniker != 'zurich' %]
+        <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse' ) %]</a></li>
+        [% END %]
+        [% IF c.cobrand.moniker != 'zurich' %]
+        <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
+        [% END %]
+        [% IF c.cobrand.moniker == 'fixmystreet' %]
+        <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>
+        [% END %]
+      [% IF c.cobrand.moniker == 'zurich' %]
+        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems on the map' ) %]</a></li>
+      [% ELSE %]
+        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
+      [% END %]
+    </ul>
+
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+    <div id="report-share" class="hidden-js" align="center">
+        <a href="https://twitter.com/share" class="twitter-share-button" data-text="I just reported &lsquo;[% problem.title_safe | html %]&rsquo;" data-via="fixmystreet" data-related="mysociety" data-count="none" data-dnt="true">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        <iframe src="//www.facebook.com/plugins/like.php?href=[% c.req.uri | uri %]&amp;send=false&amp;layout=button_count&amp;width=90&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:90px; height:21px;" allowTransparency="true"></iframe>
+    </div>
+[% END %]
+
+<div id="report-updates-data" class="hidden-js">
+    <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post">
+        <a href="[% c.uri_for( '/rss', problem.id ) %]">
+            <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0">
+        </a>
+        <p>[% loc('Receive email when updates are left on this problem.' ) %]</p>
+        <fieldset>
+        <label class="hidden n" for="alert_rznvy">[% loc('Your email') %]</label>
+        <div class="form-txt-submit-box">
+            <input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30" placeholder="[% loc('Your email') %]">
+            <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
+        </div>
+        <input type="hidden" name="id" value="[% problem.id %]">
+        <input type="hidden" name="type" value="updates">
+        </fieldset>
+    </form>
+</div>
+
+</div>

@@ -1,0 +1,8 @@
+[% INCLUDE 'report/update/form_user_loggedout_email.html' %]
+<h3>[% loc("Now to submit your update&hellip;") %]</h3>
+
+<div id="form_sign_in">
+    <h2>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
+    [% INCLUDE 'report/update/form_user_loggedout_password.html' %]
+    [% INCLUDE 'report/update/form_user_loggedout_by_email.html' %]
+</div>
