@@ -319,3 +319,19 @@
     padding: 0 !important;
     border: none !important;
 }
+
+/* mock spreadsheets in running/promotion/ */
+table.promo-spreadsheet {
+    width: 100%;
+    table-layout: fixed;
+    font-size: 90%;
+    line-height: 1;
+    tr {
+        th { text-align: left; } 
+        &.sheet-header th { background-color:#a7cf97; }
+        td {
+            width: 2%;
+            word-wrap: break-word;
+        }
+    }
+}
