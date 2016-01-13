@@ -1,8 +1,25 @@
-[% PROCESS 'report/new/form_user_loggedout_email.html' %]
+[% IF c.config.FACEBOOK_APP_ID %]
+    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
+
+    <div class="form-box">
+    <button name="facebook_sign_in" id="facebook_sign_in" value="facebook_sign_in" class="btn btn--block btn--social btn--facebook">
+        <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
+        Log in with Facebook
+    </button>
+    </div>
+    <div id="js-social-email-hide">
+    [% PROCESS 'report/new/form_user_loggedout_email.html' required = 0 %]
+[% ELSE %]
+    [% PROCESS 'report/new/form_user_loggedout_email.html' required = 1 %]
+    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
+[% END %]
 
 <div id="form_sign_in">
-    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
     <h2>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
     [% PROCESS 'report/new/form_user_loggedout_password.html' %]
     [% PROCESS 'report/new/form_user_loggedout_by_email.html' %]
 </div>
+
+[% IF c.config.FACEBOOK_APP_ID %]
+    </div>
+[% END %]

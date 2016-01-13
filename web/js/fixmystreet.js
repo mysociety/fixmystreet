@@ -128,6 +128,10 @@ $(function(){
         $('#form_name').addClass('required').removeClass('valid');
     } );
 
+    $('#facebook_sign_in').click(function(e){
+        $('#form_email').removeClass();
+    });
+
     // Geolocation
     if (geo_position_js.init()) {
         var link = '<a href="#LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';

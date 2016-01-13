@@ -299,6 +299,20 @@ $(function(){
         });
     }
 
+    /* Log in with email button */
+    var email_form = $('#js-social-email-hide'),
+        button = $('<button class="btn btn--social btn--social-email">Log in with email</button>'),
+        form_box = $('<div class="form-box"></div>');
+    button.click(function(e){
+        e.preventDefault();
+        email_form.fadeIn(500);
+        form_box.hide();
+    });
+    form_box.append(button).insertBefore(email_form);
+    if ($('.form-error').length) {
+        button.click();
+    }
+
     /*
      * Show on click - pretty generic
      */

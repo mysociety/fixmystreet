@@ -19,6 +19,9 @@
 [% IF report.used_map && partial_token %]
     <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>
 [% END %]
+[% IF oauth_failure %]
+    <p class="form-error">[% loc('Sorry, we could not log you in. Please fill in the form below.') %]</p>
+[% END %]
 
 [% TRY %][% PROCESS 'report/new/sidebar.html' %][% CATCH file %][% END %]
 
