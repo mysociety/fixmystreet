@@ -3,6 +3,14 @@
 
 $image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
 
+.internal-link-fixed-header {
+    display: block;
+    /* 5em is roughly the height of .nav-wrapper-2 (4em) plus the border-top on
+    .nav-wrapper-2 (4px), plus the padding-top on .item-list__item (0.5em). */
+    padding-top: 5em;
+    margin-top: -5em;
+}
+
 //hacks for desk/mob only stuff
 .desk-only {
     display: block;

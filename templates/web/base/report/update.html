@@ -28,6 +28,7 @@
                     <p class="meta-2"> [% INCLUDE meta_line %] </p>
                 </div>
             [% ELSE %]
+                <a name="update_[% update.id %]" class="internal-link-fixed-header"></a>
                 [% INCLUDE 'report/photo.html' object=update %]
                 <div class="item-list__update-text">
                     <div class="moderate-display">
@@ -44,7 +45,6 @@
                     [% END %]
 
                     <p class="meta-2">
-                        <a name="update_[% update.id %]"></a>
                         [% INCLUDE meta_line %]
                         [% mlog = update.latest_moderation_log_entry(); IF mlog %]
                             <br /> Moderated by [% mlog.user.from_body.name %] at [% prettify_dt(mlog.whenedited) %]
