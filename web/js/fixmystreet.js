@@ -130,6 +130,7 @@ $(function(){
 
     $('#facebook_sign_in').click(function(e){
         $('#form_email').removeClass();
+        $('#form_rznvy').removeClass();
     });
 
     // Geolocation

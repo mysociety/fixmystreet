@@ -231,6 +231,7 @@ sub confirm_update : Path('/C') {
     if ( $data->{name} || $data->{password} ) {
         $comment->user->name( $data->{name} ) if $data->{name};
         $comment->user->password( $data->{password}, 1 ) if $data->{password};
+        $comment->user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
         $comment->user->update;
     }
 

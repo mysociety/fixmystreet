@@ -20,12 +20,16 @@ Creates an update to a report
 sub report_update : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward( '/report/load_problem_or_display_error', [ $c->get_param('id') ] );
+    $c->forward('initialize_update');
+    $c->forward('load_problem');
+    $c->forward('check_form_submitted')
+      or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
+
     $c->forward('process_update');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');
     $c->forward('check_for_errors')
-      or $c->go( '/report/display', [ $c->get_param('id') ] );
+      or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
 
     $c->forward('save_update');
     $c->forward('redirect_or_confirm_creation');
@@ -151,18 +155,45 @@ sub process_user : Private {
     return 1;
 }
 
-=head2 process_update
+=head2 oauth_callback
 
-Take the submitted params and create a new update item. Does not save
-anything to the database.
-
-NB: relies on their being a problem and update_user in the stash. May
-want to move adding these elsewhere
+Called when we successfully login via OAuth. Stores the token so we can look up
+what we have so far.
 
 =cut
 
-sub process_update : Private {
+sub oauth_callback : Private {
+    my ( $self, $c, $token_code ) = @_;
+    $c->stash->{oauth_update} = $token_code;
+    $c->detach('report_update');
+}
+
+=head2 initialize_update
+
+Create an initial update object, either empty or from stored OAuth data.
+
+=cut
+
+sub initialize_update : Private {
     my ( $self, $c ) = @_;
+
+    my $update;
+    if ($c->stash->{oauth_update}) {
+        my $auth_token = $c->forward( '/tokens/load_auth_token',
+            [ $c->stash->{oauth_update}, 'update/social' ] );
+        $update = $c->model("DB::Comment")->new($auth_token->data);
+    }
+
+    if ($update) {
+        $c->stash->{upload_fileid} = $update->get_photoset->data;
+    } else {
+        $update = $c->model('DB::Comment')->new({
+            state => 'unconfirmed',
+            cobrand => $c->cobrand->moniker,
+            cobrand_data => '',
+            lang => $c->stash->{lang_code},
+        });
+    }
 
     if ( $c->get_param('first_name') && $c->get_param('last_name') ) {
         my $first_name = $c->get_param('first_name');
@@ -172,6 +203,48 @@ sub process_update : Private {
         $c->stash->{first_name} = $first_name;
         $c->stash->{last_name} = $last_name;
     }
+
+    $c->stash->{update} = $update;
+}
+
+=head2 load_problem
+
+Our update could be prefilled, or we could be submitting a form containing an
+ID. Look up the relevant report either way.
+
+=cut
+
+sub load_problem : Private {
+    my ( $self, $c ) = @_;
+
+    my $update = $c->stash->{update};
+    # Problem ID could come from existing update in token, or from query parameter
+    my $problem_id = $update->problem_id || $c->get_param('id');
+    $c->forward( '/report/load_problem_or_display_error', [ $problem_id ] );
+    $update->problem($c->stash->{problem});
+}
+
+=head2 check_form_submitted
+
+This makes sure we only proceed to processing if we've had the form submitted
+(we may have come here via an OAuth login, for example).
+
+=cut
+
+sub check_form_submitted : Private {
+    my ( $self, $c ) = @_;
+    return $c->get_param('submit_update') || '';
+}
+
+=head2 process_update
+
+Take the submitted params and updates our update item. Does not save
+anything to the database.
+
+=cut
+
+sub process_update : Private {
+    my ( $self, $c ) = @_;
 
     my %params =
       map { $_ => $c->get_param($_) } ( 'update', 'name', 'fixed', 'state', 'reopen' );
@@ -184,20 +257,12 @@ sub process_update : Private {
 
     $params{reopen} = 0 unless $c->user && $c->user->id == $c->stash->{problem}->user->id;
 
-    my $update = $c->model('DB::Comment')->new(
-        {
-            text         => $params{update},
-            name         => $name,
-            problem      => $c->stash->{problem},
-            state        => 'unconfirmed',
-            mark_fixed   => $params{fixed} ? 1 : 0,
-            mark_open    => $params{reopen} ? 1 : 0,
-            cobrand      => $c->cobrand->moniker,
-            cobrand_data => '',
-            lang         => $c->stash->{lang_code},
-            anonymous    => $anonymous,
-        }
-    );
+    my $update = $c->stash->{update};
+    $update->text($params{update});
+    $update->name($name);
+    $update->mark_fixed($params{fixed} ? 1 : 0);
+    $update->mark_open($params{reopen} ? 1 : 0);
+    $update->anonymous($anonymous);
 
     if ( $params{state} ) {
         $params{state} = 'fixed - council' 
@@ -241,7 +306,6 @@ sub process_update : Private {
 
     $c->log->debug( 'name is ' . $c->get_param('name') );
 
-    $c->stash->{update} = $update;
     $c->stash->{add_alert} = $c->get_param('add_alert');
 
     return 1;
@@ -283,6 +347,13 @@ sub check_for_errors : Private {
         %{ $c->stash->{update}->check_for_errors },
     );
 
+    # if using social login then we don't care about name and email errors
+    $c->stash->{is_social_user} = $c->get_param('facebook_sign_in') || $c->get_param('twitter_sign_in');
+    if ( $c->stash->{is_social_user} ) {
+        delete $field_errors{name};
+        delete $field_errors{email};
+    }
+
     if ( my $photo_error  = delete $c->stash->{photo_error} ) {
         $field_errors{photo} = $photo_error;
     }
@@ -302,6 +373,17 @@ sub check_for_errors : Private {
     return;
 }
 
+# Store changes in token for when token is validated.
+sub tokenize_user : Private {
+    my ($self, $c, $update) = @_;
+    $c->stash->{token_data} = {
+        name => $update->user->name,
+        password => $update->user->password,
+    };
+    $c->stash->{token_data}{facebook_id} = $c->session->{oauth}{facebook_id}
+        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
+}
+
 =head2 save_update
 
 Save the update and the user as appropriate.
@@ -313,6 +395,27 @@ sub save_update : Private {
 
     my $update = $c->stash->{update};
 
+    # If there was a photo add that too
+    if ( my $fileid = $c->stash->{upload_fileid} ) {
+        $update->photo($fileid);
+    }
+
+    if ( $c->stash->{is_social_user} ) {
+        my $token = $c->model("DB::Token")->create( {
+            scope => 'update/social',
+            data => { $update->get_inflated_columns },
+        } );
+
+        $c->stash->{detach_to} = '/report/update/oauth_callback';
+        $c->stash->{detach_args} = [$token->token];
+
+        if ( $c->get_param('facebook_sign_in') ) {
+            $c->detach('/auth/facebook_sign_in');
+        } elsif ( $c->get_param('twitter_sign_in') ) {
+            $c->detach('/auth/twitter_sign_in');
+        }
+    }
+
     if ( $c->cobrand->never_confirm_updates ) {
         if ( $update->user->in_storage() ) {
             $update->user->update();
@@ -322,11 +425,7 @@ sub save_update : Private {
         $update->confirm();
     } elsif ( !$update->user->in_storage ) {
         # User does not exist.
-        # Store changes in token for when token is validated.
-        $c->stash->{token_data} = {
-            name => $update->user->name,
-            password => $update->user->password,
-        };
+        $c->forward('tokenize_user', [ $update ]);
         $update->user->name( undef );
         $update->user->password( '', 1 );
         $update->user->insert;
@@ -338,17 +437,8 @@ sub save_update : Private {
         $update->confirm;
     } else {
         # User exists and we are not logged in as them.
-        # Store changes in token for when token is validated.
-        $c->stash->{token_data} = {
-            name => $update->user->name,
-            password => $update->user->password,
-        };
+        $c->forward('tokenize_user', [ $update ]);
         $update->user->discard_changes();
-    }
-
-    # If there was a photo add that too
-    if ( my $fileid = $c->stash->{upload_fileid} ) {
-        $update->photo($fileid);
     }
 
     if ( $update->in_storage ) {
