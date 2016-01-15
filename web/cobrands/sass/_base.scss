@@ -6,6 +6,9 @@ $heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !defa
 $image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
 $menu-image: 'menu-white' !default;
 
+$itemlist_item_background: #f6f6f6 !default;
+$itemlist_item_background_hover: #e6e6e6 !default;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -889,7 +892,7 @@ input.final-submit {
 
 .item-list__item {
   list-style: none;
-  background-color: #f6f6f6;
+  background-color: $itemlist_item_background;
   margin: 0.25em 0 0;
   padding: 0.5em 1em;
   display: block;
@@ -910,8 +913,8 @@ input.final-submit {
     display: block;
     padding: 0.5em 1em;
   }
-  a:hover, a:focus {
-    background-color: #e6e6e6;
+  a:hover, a:focus, &.hovered a {
+    background-color: $itemlist_item_background_hover;
     text-decoration: none;
   }
 }
