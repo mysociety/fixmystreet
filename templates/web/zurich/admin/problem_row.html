@@ -36,9 +36,9 @@
 
         <td>
         [% IF problem.photo %]
-            [% FOR photo IN problem.get_photoset(c).images %]
+            [% FOR photo IN problem.photos %]
             <div class="update-img">
-                <img height="60" width="90" alt="" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
+                <img height="60" width="90" alt="" src="[% c.cobrand.base_url %][% photo.url_temp %]">
             </div>
             [% END %]
         [% END %]

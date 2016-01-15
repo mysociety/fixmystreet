@@ -82,10 +82,10 @@
 
   [% IF problem.photo %]
     <dd>
-      [% FOR photo IN problem.get_photoset(c).images %]
+      [% FOR photo IN problem.photos %]
         <div class="update-img">
-            <a href="[% c.cobrand.base_url %]/photo/[% photo.0 %].fulltemp.jpeg" rel="fancy">
-                <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% photo.0 %].temp.jpeg">
+            <a href="[% c.cobrand.base_url %][% photo.url_temp_full %]" rel="fancy">
+                <img alt="Photo of this report" src="[% c.cobrand.base_url %][% photo.url_temp %]">
                 <span>zoom</span>
             </a>
         </div>

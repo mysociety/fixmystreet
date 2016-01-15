@@ -1,0 +1,28 @@
+[% USE date %]
+
+[% BLOCK banner %]
+    <div class="banner">
+        <p id="[% id %]">[% text %]</p>
+    </div>
+[% END %]
+
+[% IF problem.is_fixed %]
+    [% INCLUDE banner, id = 'fixed', text = loc('Fixed') %]
+[% END %]
+
+[% IF problem.is_closed %]
+    [% INCLUDE banner, id = 'closed', text = loc('Closed') %]
+[% END %]
+
+[% IF NOT problem.bodies_str == '2482' %]
+
+    [% IF problem.is_open AND date.now - problem.lastupdate.epoch > 8 * 7 * 24 * 60 * 60 %]
+        [% INCLUDE banner, id = 'unknown', text = loc('Unknown') %]
+    [% END %]
+
+    [% states = [ 'investigating', 'in progress', 'planned', 'action scheduled' ];
+       IF states.grep(problem.state).size %]
+        [% INCLUDE banner, id = 'progress', text = loc('In progress') %]
+    [% END %]
+
+[% END %]

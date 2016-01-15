@@ -29,8 +29,8 @@
 <li>[% loc('Created:') %] [% PROCESS format_date this_date=update.created %] [% update.created.hms %]</li>
 
 [% IF update.photo %]
-[% photo = update.get_photo_params %]
-<li><img alt="" height="[% photo.height %]" width="[% photo.width %]" src="[% photo.url %]">
+[% photo = update.photos.first %]
+<li><img alt="" src="[% photo.url %]">
 <input type="checkbox" id="remove_photo" name="remove_photo" value="1">
 <label for="remove_photo" class="inline">[% loc("Remove photo (can't be undone!)") %]</label></li>
 [% END %]

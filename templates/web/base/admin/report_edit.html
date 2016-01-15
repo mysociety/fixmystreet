@@ -77,20 +77,26 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label class="inline" for="non_public">[% loc('Private') %]:</label> <input type="checkbox" name="non_public"[% ' checked' IF problem.non_public %]></li>
 
 [% IF problem.photo %]
-[% photo = problem.get_photo_params %]
-<li><img alt="Photo of this report" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %]
-    [%~ IF problem.photo.length == 40 ~%]
-        /photo/[% problem.photo %].temp.jpeg
-    [%~ ELSE ~%]
-        [% photo.url %]
-    [%~ END %]">
-<br>
-<input type="submit" name="rotate_photo" value="[% loc('Rotate Left') %]">
-<input type="submit" name="rotate_photo" value="[% loc('Rotate Right') %]">
-<br>
-<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-<label class="inline" for="remove_photo">[% loc("Remove photo (can't be undone!)") %]</label></li>
+<li>
+<ul>
+  [% FOR photo IN problem.photos %]
+    <li>
+        <div class="update-img">
+            <a href="[% c.cobrand.base_url %][% photo.url_temp_full %]" rel="fancy">
+                <img alt="Photo of this report" src="[% c.cobrand.base_url %][% photo.url_temp %]">
+                <span>zoom</span>
+            </a>
+        </div>
+        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
+        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+        <input type="checkbox" id="remove_photo_[% loop.index %]" name="remove_photo_[% loop.index %]" value="1">
+        <label class="inline" for="remove_photo_[% loop.index %]">[% loc("Remove photo (can't be undone!)") %]</label></li>
+    </li>
+  [% END %]
+</ul>
+</li>
 [% END %]
+
 </ul>
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
 

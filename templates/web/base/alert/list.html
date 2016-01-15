@@ -22,11 +22,9 @@
 <div class="alerts__nearby-activity">
     <h2>[% loc('Photos of recent nearby reports') %]</h2>
     <div class="alerts__nearby-activity__photos">
-      [% FOREACH p IN photos;
-        photo = p.get_photo_params;
-      %]
+      [% FOREACH p IN photos %]
         <a href="/report/[% p.id %]">
-            <img border="0" height="100" src="[% photo.url_tn %]"
+            <img border="0" height="100" src="[% p.photos.first.url_tn %]"
             alt="[% p.title | html %]" title="[% p.title | html %]">
         </a>
       [% END %]

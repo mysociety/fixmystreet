@@ -683,7 +683,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
 
     if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
-        $self->rotate_photo($c,  @$rotate_photo_param);
+        $self->rotate_photo($c, $problem, @$rotate_photo_param);
         if ( $c->cobrand->moniker eq 'zurich' ) {
             # Clicking the photo rotation buttons should do nothing
             # except for rotating the photo, so return the user
@@ -790,11 +790,12 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         # Deal with photos
-        if ( $c->get_param('remove_photo') ) {
-            $problem->photo(undef);
+        my $remove_photo_param = $self->_get_remove_photo_param($c);
+        if ($remove_photo_param) {
+            $self->remove_photo($c, $problem, $remove_photo_param);
         }
 
-        if ( $c->get_param('remove_photo') || $new_state eq 'hidden' ) {
+        if ( $remove_photo_param || $new_state eq 'hidden' ) {
             unlink glob FixMyStreet->path_to( 'web', 'photo', $problem->id . '.*' );
         }
 
@@ -974,6 +975,11 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     $c->stash->{update} = $update;
 
+    if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
+        $self->rotate_photo($c, $update, @$rotate_photo_param);
+        return 1;
+    }
+
     $c->forward('check_email_for_abuse', [ $update->user->email ] );
 
     if ( $c->get_param('banuser') ) {
@@ -1003,13 +1009,14 @@ sub update_edit : Path('update_edit') : Args(1) {
           || $c->get_param('anonymous') ne $update->anonymous
           || $c->get_param('text') ne $update->text ) {
               $edited = 1;
-          }
-
-        if ( $c->get_param('remove_photo') ) {
-            $update->photo(undef);
         }
 
-        if ( $c->get_param('remove_photo') || $new_state eq 'hidden' ) {
+        my $remove_photo_param = $self->_get_remove_photo_param($c);
+        if ($remove_photo_param) {
+            $self->remove_photo($c, $update, $remove_photo_param);
+        }
+
+        if ( $remove_photo_param || $new_state eq 'hidden' ) {
             unlink glob FixMyStreet->path_to( 'web', 'photo', 'c', $update->id . '.*' );
         }
 
@@ -1488,22 +1495,48 @@ sub _get_rotate_photo_param {
     my $key = first { /^rotate_photo/ } keys %{ $c->req->params } or return;
     my ($index) = $key =~ /(\d+)$/;
     my $direction = $c->get_param($key);
-    return [ $index || 0, $key, $direction ];
+    return [ $index || 0, $direction ];
 }
 
 sub rotate_photo : Private {
-    my ( $self, $c, $index, $key, $direction ) = @_;
+    my ( $self, $c, $object, $index, $direction ) = @_;
 
     return unless $direction eq _('Rotate Left') or $direction eq _('Rotate Right');
 
-    my $problem = $c->stash->{problem};
-    my $fileid = $problem->get_photoset($c)->rotate_image(
+    my $fileid = $object->get_photoset->rotate_image(
         $index,
         $direction eq _('Rotate Left') ? -90 : 90
     ) or return;
 
-    $problem->update({ photo => $fileid });
+    $object->update({ photo => $fileid });
 
+    return 1;
+}
+
+=head2 remove_photo
+
+Remove a photo from a report
+
+=cut
+
+# Returns index of photo(s) to remove, if any
+sub _get_remove_photo_param {
+    my ($self, $c) = @_;
+
+    return 'ALL' if $c->get_param('remove_photo');
+
+    my @keys = map { /(\d+)$/ } grep { /^remove_photo_/ } keys %{ $c->req->params } or return;
+    return \@keys;
+}
+
+sub remove_photo : Private {
+    my ($self, $c, $object, $keys) = @_;
+    if ($keys eq 'ALL') {
+        $object->photo(undef);
+    } else {
+        my $fileids = $object->get_photoset->remove_images($keys);
+        $object->photo($fileids);
+    }
     return 1;
 }
 

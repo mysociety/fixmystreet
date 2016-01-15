@@ -160,7 +160,6 @@ __PACKAGE__->rabx_column('geocode');
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
-use Utils::Photo;
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra';
@@ -481,23 +480,6 @@ sub url {
 sub admin_url {
     my ($self, $cobrand) = @_;
     return $cobrand->admin_base_url . '/report_edit/' . $self->id;
-}
-
-=head2 get_photo_params
-
-Returns a hashref of details of the attached photo, if any, for use in templates.
-
-NB: this method doesn't currently support multiple photos gracefully.  
-
-Use get_photoset($c) instead to do the right thing with reports with 0, 1, or more photos.
-
-=cut
-
-sub get_photo_params {
-    # use Carp 'cluck';
-    # cluck "get_photo_params called"; # TEMPORARY die to make sure I've done right thing with Zurich templates
-    my $self = shift;
-    return Utils::Photo::get_photo_params($self, 'id');
 }
 
 =head2 is_open
@@ -836,7 +818,7 @@ sub as_hashref {
         state_t   => _( $self->state ),
         used_map  => $self->used_map,
         is_fixed  => $self->fixed_states->{ $self->state } ? 1 : 0,
-        photo     => $self->get_photo_params,
+        photos    => [ map { $_->{url} } @{$self->photos} ],
         meta      => $self->confirmed ? $self->meta_line( $c ) : '',
         confirmed_pp => $self->confirmed ? $c->cobrand->prettify_dt( $self->confirmed ): '',
         created_pp => $c->cobrand->prettify_dt( $self->created ),
@@ -858,21 +840,42 @@ sub latest_moderation_log_entry {
 
 Return a PhotoSet object for all photos attached to this field
 
-    my $photoset = $obj->get_photoset( $c );
+    my $photoset = $obj->get_photoset;
     print $photoset->num_images;
     return $photoset->get_image_data(num => 0, size => 'full');
 
 =cut
 
 sub get_photoset {
-    my ($self, $c) = @_;
+    my ($self) = @_;
     my $class = 'FixMyStreet::App::Model::PhotoSet';
     eval "use $class";
     return $class->new({
-        c => $c,
         db_data => $self->photo,
         object => $self,
     });
+}
+
+sub photos {
+    my $self = shift;
+    my $photoset = $self->get_photoset;
+    my $i = 0;
+    my $id = $self->id;
+    my @photos = map {
+        my $format = 'jpeg';
+        my $cachebust = substr($_, 0, 8);
+        {
+            id => $_,
+            url_temp => "/photo/$_.temp.$format",
+            url_temp_full => "/photo/$_.fulltemp.$format",
+            url => "/photo/$id.$i.$format?$cachebust",
+            url_full => "/photo/$id.$i.full.$format?$cachebust",
+            url_tn => "/photo/$id.$i.tn.$format?$cachebust",
+            url_fp => "/photo/$id.$i.fp.$format?$cachebust",
+            idx => $i++,
+        }
+    } map { $_->[0] } $photoset->all_images;
+    return \@photos;
 }
 
 __PACKAGE__->has_many(

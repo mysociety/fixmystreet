@@ -45,11 +45,9 @@
 
     [% IF recent_photos.size %]
         <p id="front_photos">
-        [% FOREACH p IN recent_photos;
-            photo = p.get_photo_params;
-        %]
+        [% FOREACH p IN recent_photos %]
             <a href="/report/[% p.id %]"><img border="0" height="100"
-                src="[% photo.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
+                src="[% p.photos.first.url_tn %]" alt="[% p.title | html %]" title="[% p.title | html %]"></a>
         [% END %]
         </p>
     [% END %]

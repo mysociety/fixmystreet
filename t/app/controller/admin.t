@@ -8,8 +8,9 @@ my $mech = FixMyStreet::TestMech->new;
 
 my $user =
   FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
+  ->find_or_create( { email => 'test@example.com' } );
 ok $user, "created test user";
+$user->update({ name => 'Test User' });
 
 my $user2 =
   FixMyStreet::App->model('DB::User')

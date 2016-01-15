@@ -60,6 +60,30 @@
             <input type="hidden" name="submit_update" value="1">
             <input type="hidden" name="id" value="[% problem.id | html %]">
 
+        [% IF c.cobrand.allow_photo_upload %]
+            <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+            <label for="form_photo">[% loc('Photo') %]</label>
+
+              [% IF field_errors.photo %]
+                <p class='form-error'>[% field_errors.photo %]</p>
+              [% END %]
+
+            <div id="form_photos">
+              [% IF upload_fileid %]
+                <script>
+                    fixmystreet.uploaded_files = "[% upload_fileid %]".split(',');
+                </script>
+                <p>[% loc('You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed).') %]</p>
+                [% FOREACH id IN upload_fileid.split(',') %]
+                <img align="right" src="/photo/[% id %].temp.jpeg" alt="">
+                [% END %]
+            [% END %]
+                <input type="file" name="photo1" id="form_photo">
+                <input type="file" name="photo2" id="form_photo2">
+                <input type="file" name="photo3" id="form_photo3">
+            </div>
+        [% END %]
+
             <label for="form_update">[% loc( 'Update:' ) %]
                 <span class="label-warning public-warning">
                     [% loc('public') %]
@@ -96,21 +120,6 @@
 
                 [% END %]
             [% END %]
-
-        [% IF c.cobrand.allow_photo_upload %]
-            <div id="fileupload_normalUI">
-            [% IF upload_fileid %]
-                <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
-                <p>[% loc('You have already attached a photo to this update, attaching another one will replace it.') %]</p>
-                <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
-            [% END %]
-                <label for="form_photo">[% loc('Photo') %]</label>
-                [% IF field_errors.photo %]
-                    <p class='form-error'>[% field_errors.photo %]</p>
-                [% END %]
-                <input type="file" name="photo" id="form_photo">
-            </div>
-        [% END %]
 
         [% IF c.user_exists %]
 

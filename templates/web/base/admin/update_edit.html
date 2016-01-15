@@ -51,16 +51,26 @@
 <li>[% loc('Created:') %] [% PROCESS format_time time=update.created %]</li>
 
 [% IF update.photo %]
-[% photo = update.get_photo_params %]
-<li><img alt="Photo of this update" height="[% photo.height %]" width="[% photo.width %]" src="[% c.cobrand.base_url %]
-    [%~ IF update.photo.length == 40 ~%]
-        /photo/[% update.photo %].temp.jpeg
-    [%~ ELSE ~%]
-        [% photo.url %]
-    [%~ END ~%]">
-<input type="checkbox" id="remove_photo" name="remove_photo" value="1">
-<label for="remove_photo" class="inline">[% loc("Remove photo (can't be undone!)") %]</label></li>
+<li>
+<ul>
+  [% FOR photo IN update.photos %]
+    <li>
+        <div class="update-img">
+            <a href="[% c.cobrand.base_url %][% photo.url_temp_full %]" rel="fancy">
+                <img alt="Photo of this update" src="[% c.cobrand.base_url %][% photo.url_temp %]">
+                <span>zoom</span>
+            </a>
+        </div>
+        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Left') %]">
+        <input type="submit" name="rotate_photo_[% loop.index %]" value="[% loc('Rotate Right') %]">
+        <input type="checkbox" id="remove_photo_[% loop.index %]" name="remove_photo_[% loop.index %]" value="1">
+        <label class="inline" for="remove_photo_[% loop.index %]">[% loc("Remove photo (can't be undone!)") %]</label></li>
+    </li>
+  [% END %]
+</ul>
+</li>
 [% END %]
+
 </ul>
 <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
 

@@ -1,21 +1,9 @@
 [% IF c.cobrand.allow_photo_display(object) && object.photo %]
-    [% IF object.can('get_photoset') %]
-    [% FOR photo IN object.get_photoset(c).images %]
+    [% FOR photo IN object.photos %]
     <div class="update-img">
-        <a href="[% c.cobrand.base_url %]/photo/[% object.id %].[% loop.index %].full.jpeg?[% photo.0 %]" rel="fancy">
-            <img alt="Photo of this report" src="[% c.cobrand.base_url %]/photo/[% object.id %].[% loop.index %].jpeg?[% photo.0 %]">
+        <a href="[% c.cobrand.base_url %][% photo.url_full %]" rel="fancy">
+            <img alt="Photo of this report" src="[% c.cobrand.base_url %][% photo.url %]">
         <span>zoom</span></a>
-    </div>
-    [% END %]
-    [% ELSE %]
-    [%# e.g. comments %]
-    [% photo = object.get_photo_params %]
-    <div class="update-img">
-        [% IF photo.url_full %]<a href="[% photo.url_full %]" rel="fancy">[% END %]
-        <img alt="Photo of this report"
-        [%- IF photo.height %]height="[% photo.height %]" width="[% photo.width %]"[% END -%]
-        src="[% photo.url %]">
-        [%- IF photo.url_full %]<span>zoom</span></a>[% END %]
     </div>
     [% END %]
 [% END %]
