@@ -42,7 +42,7 @@ Then you will want to run:
 to make sure any new Perl modules needed are installed. Take a backup of
 your database, and then run:
 
-    fms@ip-10-58-191-98:~/fixmystreet$ bin/update-schema
+    fms@ip-10-58-191-98:~/fixmystreet$ bin/update-schema --commit
 
 to look at the state of your database and bring it up to date with any changes.
 Of course, if you have made changes to the schema yourself, this may not work,

@@ -52,7 +52,7 @@ to take a backup of your database first.
 
 {% highlight bash %}
 bin/install_perl_modules
-bin/update-schema
+bin/update-schema --commit
 {% endhighlight %}
 
 Of course, if you have made changes to the database schema yourself, this may
