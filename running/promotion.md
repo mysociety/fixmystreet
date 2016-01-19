@@ -319,7 +319,7 @@ Of course, you don’t want to irritate your press contacts with over-frequent p
 
 What makes a good story after launch?
 
-* **Statistics**. Use the FixMyStreet dashboard [g][h]or
+* **Statistics**. Use the FixMyStreet dashboard or
   your Analytics programme to find out things like:
    * how many reports have been made? (Check `/stats` in
      your site’s admin dashboard for the overall count, or
@@ -409,7 +409,7 @@ to a newsletter.
 
 #### Set up your own events
 
-Your local library, hall or co-working space[j] may be glad to let you have a
+Your local library, hall or co-working space may be glad to let you have a
 room and internet access so that you can show residents how to use FixMyStreet.
 Put up some posters and invite people to drop by for a fifteen-minute demo.
 
@@ -505,7 +505,7 @@ got the grant.
 
 ### Share your experiences
 
-If you’ve tried any of these ideas, let us know how it went[l]. What did you
+If you’ve tried any of these ideas, let us know how it went. What did you
 learn? Any tips for others who are about to launch their own FixMyStreet sites?
 
 Maybe you have some more ideas, or can tell us how you promoted your own site.
