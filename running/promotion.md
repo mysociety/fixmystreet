@@ -168,7 +168,7 @@ Send details of your launch to any outlet you think will cover it. Be clear and
 concise: explain what the site is for and how it benefits users.
 
 Not sure how to write a press release?
-[We’ve provided a template here](https://docs.google.com/document/d/1PYg8czttRqc7ohLuVscW_qH02_YTsTzMA_TtlTR2Le8/edit).
+[We’ve provided a template here]({{ site.baseurl }}running/example_press_releases).
 
 You may wish to send out two types of press release:
 

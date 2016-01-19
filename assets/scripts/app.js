@@ -42,6 +42,14 @@ $(function(){
   });
   $('.reveal-all').trigger('click');
 
+  // hide the attention-box breakouts within mock-documents so 
+  // the use can copy-and-paste the templates
+  // this is used in: running/example_press_releases
+  $('.toggle-button').on('click', function(){
+      var target = $(this).data("target");
+      $('#' + target +'.mock-document .attention-box').slideToggle();
+  });
+  $('.toggle-button').show(); // reveal the show/hide buttons
 
   /**
    * Owl Slider

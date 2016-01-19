@@ -335,3 +335,20 @@ table.promo-spreadsheet {
         }
     }
 }
+/* mock document for example_press_releases */
+.mock-document {
+    border:1px solid #666;
+    padding:1em;  
+    h2 {
+        border-top: none;
+        padding-top: 0em;
+        line-height: 1.2;
+    }
+    .replace-text {
+        background-color: #ddd;
+        color:#555;
+    }
+}
+.toggle-button {
+    display: none; /* show() by JavaScript */
+}
