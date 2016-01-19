@@ -125,18 +125,19 @@ sub email_sign_in : Private {
         if $c->get_param('password_register');
     my $user = $c->model('DB::User')->new( $user_params );
 
-    my $token_obj = $c->model('DB::Token')    #
-      ->create(
-        {
-            scope => 'email_sign_in',
-            data  => {
-                email => $good_email,
-                r => $c->get_param('r'),
-                name => $c->get_param('name'),
-                password => $user->password,
-            }
-        }
-      );
+    my $token_data = {
+        email => $good_email,
+        r => $c->get_param('r'),
+        name => $c->get_param('name'),
+        password => $user->password,
+    };
+    $token_data->{facebook_id} = $c->session->{oauth}{facebook_id}
+        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
+
+    my $token_obj = $c->model('DB::Token')->create({
+        scope => 'email_sign_in',
+        data  => $token_data,
+    });
 
     $c->stash->{token} = $token_obj->token;
     $c->send_email( 'login.txt', { to => $good_email } );
@@ -178,6 +179,7 @@ sub token : Path('/M') : Args(1) {
     my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
     $user->name( $data->{name} ) if $data->{name};
     $user->password( $data->{password}, 1 ) if $data->{password};
+    $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->update;
     $c->authenticate( { email => $user->email }, 'no_password' );
 
@@ -285,6 +287,8 @@ sub facebook_callback: Path('/auth/Facebook') : Args(0) {
 
     if ($c->session->{oauth}{detach_to}) {
         $c->detach($c->session->{oauth}{detach_to}, $c->session->{oauth}{detach_args});
+    } elsif ($c->stash->{oauth_need_email}) {
+        $c->stash->{template} = 'auth/general.html';
     } else {
         $c->detach( 'redirect_on_signin', [ $c->session->{oauth}{return_url} ] );
     }
