@@ -59,6 +59,7 @@
             <div id="form_photos">
               [% IF upload_fileid %]
                 <script>
+                    var fixmystreet = fixmystreet || {};
                     fixmystreet.uploaded_files = "[% upload_fileid %]".split(',');
                 </script>
                 <p>[% loc('You have already attached photos to this report.  Note that you can attach a maximum of 3 to this report (if you try to upload more, the oldest will be removed).') %]</p>
