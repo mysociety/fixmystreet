@@ -1,0 +1,13 @@
+[% map_js = BLOCK %]
+<!-- <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0&mkt=en-GB"></script> -->
+<script type="text/javascript" src="[% version('/js/OpenLayers.angus.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-bing-ol.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-fms.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/jquery.ba-hashchange.min.js') %]"></script>
+<!--[if lte IE 6]>
+  <link rel="stylesheet" href="/js/OpenLayers-2.13.1/theme/default/ie6-style.css" type="text/css">
+<![endif]-->
+[% END %]
+
+[% map_html = INCLUDE maps/openlayers.html include_key = 1 %]

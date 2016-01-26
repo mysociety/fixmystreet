@@ -114,7 +114,7 @@ sub temp_update_contacts {
 
     $_update->( 'Street lighting', {
             code => 'column_id',
-            description => 'Column number',
+            description => 'Lamp post number',
         });
 
 }

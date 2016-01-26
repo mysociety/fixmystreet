@@ -31,6 +31,7 @@ body.twothirdswidthpage #site-logo,
 
   .container {
     position: relative;
+    min-height: 5em;
   }
 
   form.form__search {
@@ -166,8 +167,15 @@ body.frontpage {
     }
   }
   #user-meta p {
-    right: -124px;
-    top: -104px;
+    right: -119px;
+    top: -93px;
+    margin: 0;
+    padding: 0;
+    color: $base_bg;
+
+    a {
+      position: static;
+    }
   }
 }
 
@@ -364,6 +372,10 @@ body.mappage {
 
     form.form__search {
       display: none;
+    }
+
+    .container {
+      min-height: 4em;
     }
   }
 
