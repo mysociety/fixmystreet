@@ -87,7 +87,7 @@ foreach my $test (
     {
         desc => 'User goes to questionnaire URL with a bad token',
         token_extra => 'BAD',
-        content => "we couldn't validate that token",
+        content => "Sorry, that wasn&rsquo;t a valid link",
     },
     {
         desc => 'User goes to questionnaire URL for a now-hidden problem',

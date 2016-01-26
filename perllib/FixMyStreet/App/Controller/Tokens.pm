@@ -324,11 +324,7 @@ sub load_auth_token : Private {
         }
     );
 
-    unless ( $token ) {
-        $c->stash->{template} = 'errors/generic.html';
-        $c->stash->{message} = _("I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n");
-        $c->detach;
-    }
+    $c->detach('token_too_old') unless $token;
 
     return $token;
 }

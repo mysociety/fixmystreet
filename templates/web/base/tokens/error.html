@@ -1,9 +1,9 @@
-[% INCLUDE 'header.html', title => loc('Error') %]
+[% INCLUDE 'header.html', bodyclass = 'fullwidthpage', title = loc('Error') %]
+[% contact_url = c.uri_for('/contact') %]
 
-<h1>[% loc('Error') %]</h1>
-
-[% contact_url = c.uri_for('/contact'); %]
-
-<p>[% tprintf( loc('Thank you for trying to confirm your update or problem. We seem to have an error ourselves though, so <a href="%s">please let us know what went on</a> and we\'ll look into it.'), contact_url ) %]</p>
+<div class="confirmation-header confirmation-header--failure">
+    <h1>[% loc('Error') %]</h1>
+    <p>[% tprintf( loc('Thank you for trying to confirm your update or problem. We seem to have an error ourselves though, so <a href="%s">please let us know what went on</a> and we\'ll look into it.'), contact_url ) %]</p>
+</div>
 
 [% INCLUDE 'footer.html' %]
