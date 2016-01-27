@@ -12,7 +12,7 @@ use mySociety::MaPit;
 use Path::Class;
 use Utils;
 use mySociety::EmailUtil;
-use JSON;
+use JSON::MaybeXS;
 
 =head1 NAME
 
@@ -164,9 +164,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
 sub send_json_response : Private {
     my ( $self, $c ) = @_;
 
-    my $body = JSON->new->utf8(1)->encode(
-        $c->stash->{json_response},
-    );
+    my $body = encode_json($c->stash->{json_response});
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
 }
@@ -178,9 +176,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     # work out the location for this report and do some checks
     if ( ! $c->forward('determine_location') ) {
-        my $body = JSON->new->utf8(1)->encode( {
-            error => $c->stash->{location_error},
-        } );
+        my $body = encode_json({ error => $c->stash->{location_error} });
         $c->res->content_type('application/json; charset=utf-8');
         $c->res->body($body);
         return;
@@ -197,7 +193,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $extra_titles_list = $c->cobrand->title_list($c->stash->{all_areas});
 
-    my $body = JSON->new->utf8(1)->encode(
+    my $body = encode_json(
         {
             councils_text   => $councils_text,
             category        => $category,
@@ -216,11 +212,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
 
     $c->forward('initialize_report');
     if ( ! $c->forward('determine_location') ) {
-        my $body = JSON->new->utf8(1)->encode(
-            {
-                error => _("Sorry, we could not find that location."),
-            }
-        );
+        my $body = encode_json({ error => _("Sorry, we could not find that location.") });
         $c->res->content_type('application/json; charset=utf-8');
         $c->res->body($body);
         return 1;
@@ -244,11 +236,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $category_extra = $c->render_fragment( 'report/new/category_extras.html');
     }
 
-    my $body = JSON->new->utf8(1)->encode(
-        {
-            category_extra => $category_extra,
-        }
-    );
+    my $body = encode_json({ category_extra => $category_extra });
 
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
@@ -403,6 +391,12 @@ sub report_import : Path('/import') {
     return 1;
 }
 
+sub oauth_callback : Private {
+    my ( $self, $c, $token_code ) = @_;
+    $c->stash->{oauth_report} = $token_code;
+    $c->detach('report_new');
+}
+
 =head2 initialize_report
 
 Create the report and set up some basics in it. If there is a partial report
@@ -448,9 +442,6 @@ sub initialize_report : Private {
                 # save the token to delete at the end
                 $c->stash->{partial_token} = $token if $report;
 
-                # Stash the photo IDs for "already got" display
-                $c->stash->{upload_fileid} = $report->get_photoset->data;
-
             } else {
                 # no point keeping it if it is done.
                 $token->delete;
@@ -458,18 +449,25 @@ sub initialize_report : Private {
         }
     }
 
-    if ( !$report ) {
+    if (!$report && $c->stash->{oauth_report}) {
+        my $auth_token = $c->forward( '/tokens/load_auth_token',
+            [ $c->stash->{oauth_report}, 'problem/social' ] );
+        $report = $c->model("DB::Problem")->new($auth_token->data);
+    }
 
-        # If we didn't find a partial then create a new one
+    if ($report) {
+        # Stash the photo IDs for "already got" display
+        $c->stash->{upload_fileid} = $report->get_photoset->data;
+    } else {
+        # If we didn't find one otherwise, start with a blank report
         $report = $c->model('DB::Problem')->new( {} );
+    }
 
-        # If we have a user logged in let's prefill some values for them.
-        if ( $c->user ) {
-            my $user = $c->user->obj;
-            $report->user($user);
-            $report->name( $user->name );
-        }
-
+    # If we have a user logged in let's prefill some values for them.
+    if (!$report->user && $c->user) {
+        my $user = $c->user->obj;
+        $report->user($user);
+        $report->name( $user->name );
     }
 
     if ( $c->get_param('first_name') && $c->get_param('last_name') ) {
@@ -1001,6 +999,13 @@ sub check_for_errors : Private {
         delete $field_errors{name};
     }
 
+    # if using social login then we don't care about name and email errors
+    $c->stash->{is_social_user} = $c->get_param('facebook_sign_in') || $c->get_param('twitter_sign_in');
+    if ( $c->stash->{is_social_user} ) {
+        delete $field_errors{name};
+        delete $field_errors{email};
+    }
+
     # add the photo error if there is one.
     if ( my $photo_error = delete $c->stash->{photo_error} ) {
         $field_errors{photo} = $photo_error;
@@ -1014,6 +1019,19 @@ sub check_for_errors : Private {
     return;
 }
 
+# Store changes in token for when token is validated.
+sub tokenize_user : Private {
+    my ($self, $c, $report) = @_;
+    $c->stash->{token_data} = {
+        name => $report->user->name,
+        phone => $report->user->phone,
+        password => $report->user->password,
+        title => $report->user->title,
+    };
+    $c->stash->{token_data}{facebook_id} = $c->session->{oauth}{facebook_id}
+        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
+}
+
 =head2 save_user_and_report
 
 Save the user and the report.
@@ -1025,53 +1043,9 @@ before or they are currently logged in. Otherwise discard any changes.
 
 sub save_user_and_report : Private {
     my ( $self, $c ) = @_;
-    my $report      = $c->stash->{report};
+    my $report = $c->stash->{report};
 
-    # Save or update the user if appropriate
-    if ( $c->cobrand->never_confirm_reports ) {
-        if ( $report->user->in_storage() ) {
-            $report->user->update();
-        } else {
-            $report->user->insert();
-        }
-        $report->confirm();
-    } elsif ( !$report->user->in_storage ) {
-        # User does not exist.
-        # Store changes in token for when token is validated.
-        $c->stash->{token_data} = {
-            name => $report->user->name,
-            phone => $report->user->phone,
-            password => $report->user->password,
-            title   => $report->user->title,
-        };
-        $report->user->name( undef );
-        $report->user->phone( undef );
-        $report->user->password( '', 1 );
-        $report->user->title( undef );
-        $report->user->insert();
-        $c->log->info($report->user->id . ' created for this report');
-    }
-    elsif ( $c->user && $report->user->id == $c->user->id ) {
-        # Logged in and matches, so instantly confirm (except Zurich, with no confirmation)
-        $report->user->update();
-        $report->confirm
-            unless $c->cobrand->moniker eq 'zurich';
-        $c->log->info($report->user->id . ' is logged in for this report');
-    }
-    else {
-        # User exists and we are not logged in as them.
-        # Store changes in token for when token is validated.
-        $c->stash->{token_data} = {
-            name => $report->user->name,
-            phone => $report->user->phone,
-            password => $report->user->password,
-            title   => $report->user->title,
-        };
-        $report->user->discard_changes();
-        $c->log->info($report->user->id . ' exists, but is not logged in for this report');
-    }
-
-    # If there was a photo add that too
+    # If there was a photo add that
     if ( my $fileid = $c->stash->{upload_fileid} ) {
         $report->photo($fileid);
     }
@@ -1088,7 +1062,56 @@ sub save_user_and_report : Private {
         $report->external_source_id( $c->get_param('external_source_id') );
         $report->external_source( $c->config->{MESSAGE_MANAGER_URL} ) ;
     }
-    
+
+    if ( $c->stash->{is_social_user} ) {
+        my $token = $c->model("DB::Token")->create( {
+            scope => 'problem/social',
+            data => { $report->get_inflated_columns },
+        } );
+
+        $c->stash->{detach_to} = '/report/new/oauth_callback';
+        $c->stash->{detach_args} = [$token->token];
+
+        if ( $c->get_param('facebook_sign_in') ) {
+            $c->detach('/auth/facebook_sign_in');
+        } elsif ( $c->get_param('twitter_sign_in') ) {
+            $c->detach('/auth/twitter_sign_in');
+        }
+    }
+
+    # Save or update the user if appropriate
+    if ( $c->cobrand->never_confirm_reports ) {
+        if ( $report->user->in_storage() ) {
+            $report->user->update();
+        } else {
+            $report->user->insert();
+        }
+        $report->confirm();
+
+    } elsif ( !$report->user->in_storage ) {
+        # User does not exist.
+        $c->forward('tokenize_user', [ $report ]);
+        $report->user->name( undef );
+        $report->user->phone( undef );
+        $report->user->password( '', 1 );
+        $report->user->title( undef );
+        $report->user->insert();
+        $c->log->info($report->user->id . ' created for this report');
+    }
+    elsif ( $c->user && $report->user->id == $c->user->id ) {
+        # Logged in and matches, so instantly confirm (except Zurich, with no confirmation)
+        $report->user->update();
+        $report->confirm
+            unless $c->cobrand->moniker eq 'zurich';
+        $c->log->info($report->user->id . ' is logged in for this report');
+    }
+    else {
+        # User exists and we are not logged in as them.
+        $c->forward('tokenize_user', [ $report ]);
+        $report->user->discard_changes();
+        $c->log->info($report->user->id . ' exists, but is not logged in for this report');
+    }
+
     # save the report;
     $report->in_storage ? $report->update : $report->insert();
 

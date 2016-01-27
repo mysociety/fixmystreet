@@ -3980,6 +3980,10 @@ msgstr "Su contraseña ha cambiado"
 msgid "Your phone number"
 msgstr "Su número de teléfono"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Su notificación"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Sus notificaciones"
@@ -4384,6 +4388,3 @@ msgstr[1] "Todavía <strong>no</strong> tenemos información sobre el ayuntamien
 
 #~ msgid "Your email address:"
 #~ msgstr "Su dirección de email:"
-
-#~ msgid "Your report"
-#~ msgstr "Su notificación"

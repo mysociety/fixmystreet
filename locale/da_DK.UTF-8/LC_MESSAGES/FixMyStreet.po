@@ -3966,6 +3966,10 @@ msgstr "Din adgangskode er blevet ændret"
 msgid "Your phone number"
 msgstr "Dit telefonnummer"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Dine rapporter"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Dine opdateringer"
@@ -4370,6 +4374,3 @@ msgstr[1] "Vi har endnu <strong>ikke</strong> detaljerne for de andre myndighede
 
 #~ msgid "Your email address:"
 #~ msgstr "Din e-postadresse:"
-
-#~ msgid "Your report"
-#~ msgstr "Dine rapporter"

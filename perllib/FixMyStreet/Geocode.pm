@@ -11,6 +11,7 @@ use Digest::MD5 qw(md5_hex);
 use Encode;
 use File::Slurp;
 use File::Path ();
+use JSON::MaybeXS;
 use LWP::Simple qw($ua);
 use URI::Escape;
 use FixMyStreet::Geocode::Bing;

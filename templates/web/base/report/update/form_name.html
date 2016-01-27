@@ -1,0 +1,21 @@
+[% INCLUDE 'report/new/extra_name.html' %]
+
+[% name_public = update.anonymous==0 OR (c.cobrand.default_show_name AND update.anonymous=='') %]
+<label for="form_name">[% loc('Name') %]</label>
+[% IF field_errors.name %]
+    <p class='form-error'>[% field_errors.name %]</p>
+[% END %]
+
+<input type="text"
+    [%- IF c.cobrand.moniker.match('fixmystreet|bromley') AND problem.bodies_str == '2482' %]class="validName" [% END -%]
+    name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
+
+<div class="checkbox-group">
+    <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF name_public %]>
+    <label class="inline" for="form_may_show_name">[% loc('Show my name publicly') %]</label>
+</div>
+
+<div class="checkbox-group">
+    <input type="checkbox" name="add_alert" id="form_add_alert" value="1"[% ' checked' IF add_alert %]>
+    <label class="inline" for="form_add_alert">[% loc( 'Alert me to future updates' ) %]</label>
+</div>

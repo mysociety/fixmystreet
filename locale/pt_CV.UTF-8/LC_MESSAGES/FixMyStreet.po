@@ -3911,6 +3911,10 @@ msgstr "Sua password foi alterada"
 msgid "Your phone number"
 msgstr "Telefone "
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Seu relatório"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Seus relatórios"
@@ -4316,6 +4320,3 @@ msgstr[1] "Fazemos <strong> não </strong> ainda tem detalhes para os outros con
 
 #~ msgid "Your email address:"
 #~ msgstr "O seu endereço de email:"
-
-#~ msgid "Your report"
-#~ msgstr "Seu relatório"

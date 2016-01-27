@@ -3899,6 +3899,10 @@ msgstr "Ваш пароль було змінено"
 msgid "Your phone number"
 msgstr "Ваш телефон"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Ваше сповіщення"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Ваші сповіщення"
@@ -4281,6 +4285,3 @@ msgstr[2] ""
 
 #~ msgid "Your email address:"
 #~ msgstr "Ваша адреса е-пошти:"
-
-#~ msgid "Your report"
-#~ msgstr "Ваше сповіщення"

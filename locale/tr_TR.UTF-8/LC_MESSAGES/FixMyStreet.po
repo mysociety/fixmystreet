@@ -3888,6 +3888,10 @@ msgstr "Şifren değiştirildi"
 msgid "Your phone number"
 msgstr "Telefon numaran"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Bildirimin"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Bildirimlerin"
@@ -4205,6 +4209,3 @@ msgstr[0] "Bahsettiğiniz alanı kapsayan ilgili diğer kurullar hakkında henü
 
 #~ msgid "Your email address:"
 #~ msgstr "E-posta adresin:"
-
-#~ msgid "Your report"
-#~ msgstr "Bildirimin"

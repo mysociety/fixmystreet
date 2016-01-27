@@ -3873,6 +3873,10 @@ msgstr "Newidiwyd eich cyfrinair"
 msgid "Your phone number"
 msgstr "Eich rhif ffôn"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Eich adroddiad"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Eich adroddiadau"
@@ -4269,6 +4273,3 @@ msgstr[3] ""
 
 #~ msgid "Your email address:"
 #~ msgstr "Eich cyfeiriad e-bost:"
-
-#~ msgid "Your report"
-#~ msgstr "Eich adroddiad"

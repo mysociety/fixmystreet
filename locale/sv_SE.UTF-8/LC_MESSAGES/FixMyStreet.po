@@ -3897,6 +3897,10 @@ msgstr "Ditt lösenord har ändrats"
 msgid "Your phone number"
 msgstr "Ditt telefonnummer"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Din rapport"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Dina rapporter"
@@ -4301,6 +4305,3 @@ msgstr[1] "Kommunen på platsen har valt att inte ta emot rapporter från FixaMi
 
 #~ msgid "Your email address:"
 #~ msgstr "Din epostadress:"
-
-#~ msgid "Your report"
-#~ msgstr "Din rapport"

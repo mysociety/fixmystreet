@@ -3,7 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use HTTP::Negotiate;
-use JSON;
+use JSON::MaybeXS;
 
 BEGIN { extends 'Catalyst::Controller'; }
 

@@ -3981,6 +3981,10 @@ msgstr "密碼已更新"
 msgid "Your phone number"
 msgstr "電話號碼"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "申報"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "你作的申報"
@@ -4374,6 +4378,3 @@ msgstr[0] "我們<strong>尚未<strong>有該區域其它單位之細節　"
 
 #~ msgid "Your email address:"
 #~ msgstr "您的電子郵件"
-
-#~ msgid "Your report"
-#~ msgstr "申報"

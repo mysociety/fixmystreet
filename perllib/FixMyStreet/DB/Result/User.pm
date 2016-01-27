@@ -32,9 +32,15 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "title",
   { data_type => "text", is_nullable => 1 },
+  "twitter_id",
+  { data_type => "bigint", is_nullable => 1 },
+  "facebook_id",
+  { data_type => "bigint", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
+__PACKAGE__->add_unique_constraint("users_facebook_id_key", ["facebook_id"]);
+__PACKAGE__->add_unique_constraint("users_twitter_id_key", ["twitter_id"]);
 __PACKAGE__->has_many(
   "admin_logs",
   "FixMyStreet::DB::Result::AdminLog",
@@ -84,8 +90,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2014-07-29 13:54:07
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Y41/jGp93IxSpyJ/o6Q1gQ
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-12-09 16:02:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hCq6ZDZfV/6iiu3HFhPPOg
 
 __PACKAGE__->add_columns(
     "password" => {

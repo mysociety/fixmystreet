@@ -1,5 +1,3 @@
-#!/usr/bin/perl
-#
 # FixMyStreet:Map::OSM::TonerLite
 # OSM TonerLite maps on FixMyStreet.
 #

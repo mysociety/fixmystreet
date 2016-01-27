@@ -3892,6 +3892,10 @@ msgstr "Vaša lozinka je promijenjena"
 msgid "Your phone number"
 msgstr "Vaš broj telefona"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Vaša prijava"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Vaše prijave"
@@ -4277,6 +4281,3 @@ msgstr[2] "Još <strong>nemamo</strong> podatke za ostala odgovorna tijela koja 
 
 #~ msgid "Your email address:"
 #~ msgstr "Vaša e-mail adresa:"
-
-#~ msgid "Your report"
-#~ msgstr "Vaša prijava"

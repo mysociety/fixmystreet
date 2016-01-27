@@ -3910,6 +3910,10 @@ msgstr "Паролата Ви беше променена успешно"
 msgid "Your phone number"
 msgstr "Телефонен номер"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Вашият сигнал"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Вашите сигнали"
@@ -4275,6 +4279,3 @@ msgstr[1] "Все още <strong>нямаме</strong> информация за
 
 #~ msgid "Your email address:"
 #~ msgstr "Имейл адрес:"
-
-#~ msgid "Your report"
-#~ msgstr "Вашият сигнал"

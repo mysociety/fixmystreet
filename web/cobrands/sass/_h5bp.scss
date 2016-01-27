@@ -42,6 +42,9 @@ body, button, input, select, textarea {
     color: #222;
     background-color: #fff
 }
+input[disabled] {
+    color: #888;
+}
 
 /*
  * Remove text-shadow in selection highlight: h5bp.com/i

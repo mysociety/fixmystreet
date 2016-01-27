@@ -28,5 +28,5 @@ before_script:
   - ./bin/emptyhomes/make_welsh_po
   - commonlib/bin/gettext-makemo FixMyStreet
 script: "bin/run-tests t"
-after_script:
+after_success:
   - .travis/after_script

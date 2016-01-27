@@ -1,0 +1,26 @@
+<h1>[% loc('Report your problem') %]</h1>
+
+<p class="form-error">
+    [% loc('Please note your report has <strong>not yet been sent</strong>.') %]
+    [% loc('We need your email address, please give it below.') %]
+</p>
+
+[% TRY %][% PROCESS 'report/new/sidebar.html' %][% CATCH file %][% END %]
+
+[% INCLUDE 'errors.html' %]
+
+<fieldset>
+    <div id="problem_form">
+        [% PROCESS 'report/new/form_user_loggedout_email.html' required=1 %]
+
+        <div id="form_sign_in">
+            <h3>[% loc("Now to submit your report&hellip;") %]</h3>
+            <h2>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name) %]</h2>
+            [% PROCESS 'report/new/form_user_loggedout_by_email.html' %]
+            [% PROCESS 'report/new/form_user_loggedout_password.html' %]
+        </div>
+
+        <input type="hidden" name="oauth_need_email" value="1">
+        [% PROCESS 'report/new/form_report.html' %]
+    </div>
+</fieldset>

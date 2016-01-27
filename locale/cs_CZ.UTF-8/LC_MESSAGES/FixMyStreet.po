@@ -3955,6 +3955,10 @@ msgstr "Vaše heslo bylo změněno"
 msgid "Your phone number"
 msgstr "Vaše telefonní číslo:"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Vaše hlášení"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Vaše hlášení"
@@ -4367,6 +4371,3 @@ msgstr[2] "Doposud <strong>nemáme</strong> podrobnosti  o dalších úřadech, 
 
 #~ msgid "Your email address:"
 #~ msgstr "Vaše e-mailová adresa:"
-
-#~ msgid "Your report"
-#~ msgstr "Vaše hlášení"

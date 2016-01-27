@@ -7,7 +7,8 @@ BEGIN { extends 'Catalyst::Controller'; }
 use Email::Valid;
 use Net::Domain::TLD;
 use mySociety::AuthToken;
-use JSON;
+use JSON::MaybeXS;
+use Net::Facebook::Oauth2;
 
 =head1 NAME
 
@@ -36,6 +37,8 @@ sub general : Path : Args(0) {
     return unless $c->req->method eq 'POST';
 
     # decide which action to take
+    $c->detach('facebook_sign_in') if $c->get_param('facebook_sign_in');
+
     my $clicked_password = $c->get_param('sign_in');
     my $clicked_email = $c->get_param('email_sign_in');
     my $data_password = $c->get_param('password_sign_in');
@@ -122,18 +125,19 @@ sub email_sign_in : Private {
         if $c->get_param('password_register');
     my $user = $c->model('DB::User')->new( $user_params );
 
-    my $token_obj = $c->model('DB::Token')    #
-      ->create(
-        {
-            scope => 'email_sign_in',
-            data  => {
-                email => $good_email,
-                r => $c->get_param('r'),
-                name => $c->get_param('name'),
-                password => $user->password,
-            }
-        }
-      );
+    my $token_data = {
+        email => $good_email,
+        r => $c->get_param('r'),
+        name => $c->get_param('name'),
+        password => $user->password,
+    };
+    $token_data->{facebook_id} = $c->session->{oauth}{facebook_id}
+        if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
+
+    my $token_obj = $c->model('DB::Token')->create({
+        scope => 'email_sign_in',
+        data  => $token_data,
+    });
 
     $c->stash->{token} = $token_obj->token;
     $c->send_email( 'login.txt', { to => $good_email } );
@@ -175,11 +179,119 @@ sub token : Path('/M') : Args(1) {
     my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
     $user->name( $data->{name} ) if $data->{name};
     $user->password( $data->{password}, 1 ) if $data->{password};
+    $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->update;
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page
     $c->detach( 'redirect_on_signin', [ $data->{r} ] );
+}
+
+=head2 facebook_sign_in
+
+Starts the Facebook authentication sequence.
+
+=cut
+
+sub fb : Private {
+    my ($self, $c) = @_;
+    Net::Facebook::Oauth2->new(
+        application_id => $c->config->{FACEBOOK_APP_ID},
+        application_secret => $c->config->{FACEBOOK_APP_SECRET},
+        callback => $c->uri_for('/auth/Facebook'),
+    );
+}
+
+sub facebook_sign_in : Private {
+    my( $self, $c ) = @_;
+
+    my $fb = $c->forward('/auth/fb');
+    my $url = $fb->get_authorization_url(scope => ['email']);
+
+    my %oauth;
+    $oauth{return_url} = $c->get_param('r');
+    $oauth{detach_to} = $c->stash->{detach_to};
+    $oauth{detach_args} = $c->stash->{detach_args};
+    $c->session->{oauth} = \%oauth;
+    $c->res->redirect($url);
+}
+
+=head2 facebook_callback
+
+Handles the Facebook callback request and completes the authentication sequence.
+
+=cut
+
+sub facebook_callback: Path('/auth/Facebook') : Args(0) {
+    my( $self, $c ) = @_;
+
+    if ( $c->get_param('error_code') ) {
+        $c->stash->{oauth_failure} = 1;
+        if ($c->session->{oauth}{detach_to}) {
+            $c->detach($c->session->{oauth}{detach_to}, $c->session->{oauth}{detach_args});
+        } else {
+            $c->stash->{template} = 'auth/general.html';
+            $c->detach;
+        }
+    }
+
+    my $fb = $c->forward('/auth/fb');
+    my $access_token;
+    eval {
+        $access_token = $fb->get_access_token(code => $c->get_param('code'));
+    };
+    if ($@) {
+        ($c->stash->{message} = $@) =~ s/at [^ ]*Auth.pm.*//;
+        $c->stash->{template} = 'errors/generic.html';
+        $c->detach;
+    }
+
+    # save this token in session
+    $c->session->{oauth}{token} = $access_token;
+
+    my $info = $fb->get('https://graph.facebook.com/me?fields=name,email')->as_hash();
+    my $name = $info->{name};
+    my $email = lc ($info->{email} || "");
+    my $uid = $info->{id};
+
+    my $user;
+    if ($email) {
+        # We've got an ID and an email address
+        # Remove any existing mention of this ID
+        my $existing = $c->model('DB::User')->find( { facebook_id => $uid } );
+        $existing->update( { facebook_id => undef } ) if $existing;
+        # Get or create a user, give it this Facebook ID
+        $user = $c->model('DB::User')->find_or_new( { email => $email } );
+        $user->facebook_id($uid);
+        $user->name($name);
+        $user->in_storage() ? $user->update : $user->insert;
+    } else {
+        # We've got an ID, but no email
+        $user = $c->model('DB::User')->find( { facebook_id => $uid } );
+        if ($user) {
+            # Matching Facebook ID in our database
+            $user->name($name);
+            $user->update;
+        } else {
+            # No matching ID, store ID for use later
+            $c->session->{oauth}{facebook_id} = $uid;
+            $c->stash->{oauth_need_email} = 1;
+        }
+    }
+
+    # If we've got here with a full user, log in
+    if ($user) {
+        $c->authenticate( { email => $user->email }, 'no_password' );
+        $c->stash->{login_success} = 1;
+    }
+
+    if ($c->session->{oauth}{detach_to}) {
+        $c->detach($c->session->{oauth}{detach_to}, $c->session->{oauth}{detach_args});
+    } elsif ($c->stash->{oauth_need_email}) {
+        $c->stash->{template} = 'auth/general.html';
+    } else {
+        $c->detach( 'redirect_on_signin', [ $c->session->{oauth}{return_url} ] );
+    }
 }
 
 =head2 redirect_on_signin
@@ -275,7 +387,7 @@ sub ajax_sign_in : Path('ajax/sign_in') {
         $return->{error} = 1;
     }
 
-    my $body = JSON->new->utf8(1)->encode( $return );
+    my $body = encode_json($return);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
 
@@ -287,7 +399,7 @@ sub ajax_sign_out : Path('ajax/sign_out') {
 
     $c->logout();
 
-    my $body = JSON->new->utf8(1)->encode( { signed_out => 1 } );
+    my $body = encode_json( { signed_out => 1 } );
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);
 
@@ -305,7 +417,7 @@ sub ajax_check_auth : Path('ajax/check_auth') {
         $code = 200;
     }
 
-    my $body = JSON->new->utf8(1)->encode( $data );
+    my $body = encode_json($data);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->code($code);
     $c->res->body($body);

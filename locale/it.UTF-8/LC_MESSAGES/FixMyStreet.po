@@ -3893,6 +3893,10 @@ msgstr "La tua password è stata cambiata"
 msgid "Your phone number"
 msgstr "Il tuo numero di telefono"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "La tua segnalazione"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Tue segnalazioni"
@@ -4264,6 +4268,3 @@ msgstr[1] "<strong>Non</strong>abbiamo ancora dettagli sugli altri comuni che co
 
 #~ msgid "Your email address:"
 #~ msgstr "Tuo indirizzo email:"
-
-#~ msgid "Your report"
-#~ msgstr "La tua segnalazione"

@@ -316,6 +316,9 @@ label{
     font-size:1.25em;
     margin:0.5em 0;
   }
+  h2 {
+    margin: 0 0 0.5em;
+  }
   h5 {
     margin:0 0 1em;
     font: {
@@ -736,6 +739,33 @@ input.red-btn{
 input.final-submit {
   margin: 1em 0.5em;
   float: $right;
+}
+
+.btn--facebook {
+    @include button-reset(#3b5998, darken(#3b5998, 10%), #3b5998, #fff, darken(#3b5998, 5%), darken(#3b5998, 10%), #3b5998, #fff);
+
+    &:visited {
+        color: #fff;
+    }
+
+    img {
+        margin-right: 0.5em;
+        vertical-align: -0.2em;
+        height: 1.3em;
+        width: auto;
+    }
+}
+
+// Under the button to override its text transform and width
+.btn--social {
+    display: block;
+    width: 100%;
+    text-transform: none;
+    text-align: center;
+}
+
+.js #js-social-email-hide {
+    display: none;
 }
 
 .button-fwd {

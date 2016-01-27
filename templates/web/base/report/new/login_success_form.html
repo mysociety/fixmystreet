@@ -1,0 +1,18 @@
+<h1>[% loc('Report your problem') %]</h1>
+
+<p class='form-success'>[% loc('You have successfully signed in; please check and confirm your details are accurate:') %]</p>
+
+[% TRY %][% PROCESS 'report/new/sidebar.html' %][% CATCH file %][% END %]
+
+[% INCLUDE 'errors.html' %]
+
+<fieldset>
+    <div id="problem_form">
+      [% IF c.user_exists %]
+        [% PROCESS "report/new/form_user_loggedin.html" %]
+      [% ELSE %]
+        [% PROCESS "report/new/form_user_loggedout.html" %]
+      [% END %]
+        [% PROCESS 'report/new/form_report.html' %]
+    </div>
+</fieldset>

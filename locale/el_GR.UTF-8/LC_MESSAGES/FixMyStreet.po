@@ -3945,6 +3945,10 @@ msgstr "Ο κωδικός σου έχει αλλάξει"
 msgid "Your phone number"
 msgstr "Ο αριθμός τηλεφώνου σου"
 
+#: templates/web/base/questionnaire/index.html:14
+msgid "Your report"
+msgstr "Η αναφορά σου"
+
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
 msgstr "Οι αναφορές σου"
@@ -4349,6 +4353,3 @@ msgstr[1] "<strong>Δεν</strong> έχουμε ακόμη λεπτομέρει�
 
 #~ msgid "Your email address:"
 #~ msgstr "Η διεύθυνση του e-mail σου:"
-
-#~ msgid "Your report"
-#~ msgstr "Η αναφορά σου"

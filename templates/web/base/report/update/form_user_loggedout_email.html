@@ -1,0 +1,9 @@
+<label for="form_rznvy">[% loc('Your email' ) %]
+<span class="muted">([% loc('We never show your email') %])</span>
+</label>
+[% IF field_errors.email %]
+    <p class='form-error'>[% field_errors.email %]</p>
+[% END %]
+<input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]"
+    [% IF required %]required[% END %]
+    class="required">

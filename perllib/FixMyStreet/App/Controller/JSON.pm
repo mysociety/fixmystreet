@@ -4,7 +4,7 @@ use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
-use JSON;
+use JSON::MaybeXS;
 use DateTime;
 use DateTime::Format::ISO8601;
 use List::MoreUtils 'uniq';

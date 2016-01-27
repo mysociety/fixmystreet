@@ -1,6 +1,7 @@
 package FixMyStreet::App::Controller::FakeMapit;
 use Moose;
 use namespace::autoclean;
+use JSON::MaybeXS;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -22,7 +23,7 @@ my $area = { "name" => "Everywhere", "type" => "ZZZ", "id" => 161 };
 
 sub output : Private {
     my ( $self, $c, $data ) = @_;
-    my $body = JSON->new->utf8(1)->encode( $data );
+    my $body = encode_json($data);
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body( $body );
 }

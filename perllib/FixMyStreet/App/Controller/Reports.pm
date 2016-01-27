@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use File::Slurp;
+use JSON::MaybeXS;
 use List::MoreUtils qw(any);
 use POSIX qw(strcoll);
 use RABX;
@@ -68,7 +69,7 @@ sub index : Path : Args(0) {
         my $data = File::Slurp::read_file(
             FixMyStreet->path_to( '../data/all-reports.json' )->stringify
         );
-        my $j = JSON->new->utf8->decode($data);
+        my $j = decode_json($data);
         $c->stash->{fixed} = $j->{fixed};
         $c->stash->{open} = $j->{open};
     };
