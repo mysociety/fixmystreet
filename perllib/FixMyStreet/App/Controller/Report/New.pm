@@ -149,6 +149,7 @@ sub report_new_ajax : Path('mobile') : Args(0) {
         }
     } );
     if ( $report->confirmed ) {
+        $c->forward( 'create_reporter_alert' );
         $c->stash->{ json_response } = { success => 1, report => $report->id };
     } else {
         $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
