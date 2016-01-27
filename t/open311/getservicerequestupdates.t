@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use Test::More;
 use CGI::Simple;
+use LWP::Protocol::PSGI;
+use t::Mock::Static;
 
 use_ok( 'Open311' );
 
@@ -363,6 +365,31 @@ for my $test (
     };
 }
 
+subtest 'Update with media_url includes image in update' => sub {
+    my $guard = LWP::Protocol::PSGI->register(t::Mock::Static->to_psgi_app, host => 'example.com');
+
+    my $local_requests_xml = $requests_xml;
+    my $updated_datetime = sprintf( '<updated_datetime>%s</updated_datetime>', $dt );
+    $local_requests_xml =~ s/UPDATED_DATETIME/$updated_datetime/;
+    $local_requests_xml =~ s#<service_request_id>\d+</service_request_id>#
+        <service_request_id>@{[$problem->external_id]}</service_request_id>
+        <media_url>http://example.com/image.jpeg</media_url>#;
+
+    my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $local_requests_xml } );
+
+    $problem->comments->delete;
+    $problem->lastupdate( DateTime->now()->subtract( days => 1 ) );
+    $problem->state('confirmed');
+    $problem->update;
+
+    my $update = Open311::GetServiceRequestUpdates->new( system_user => $user );
+    $update->update_comments( $o, $bodies{2482} );
+
+    is $problem->comments->count, 1, 'comment count';
+    my $c = $problem->comments->first;
+    is $c->external_id, 638344;
+    is $c->photo, '1cdd4329ceee2234bd4e89cb33b42061a0724687', 'photo exists';
+};
 
 foreach my $test (
     {
