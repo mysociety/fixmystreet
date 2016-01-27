@@ -8,7 +8,7 @@ BEGIN {
     FixMyStreet->test_mode(1);
 }
 
-use t::MapIt;
+use t::Mock::MapIt;
 use mySociety::Locale;
 
 use FixMyStreet::TestMech;
@@ -102,7 +102,7 @@ subtest "Test ajax decimal points" => sub {
 
     # A note to the future - the run_if_script line must be within a subtest
     # otherwise it fails to work
-    LWP::Protocol::PSGI->register(t::MapIt->run_if_script, host => 'mapit.sweden');
+    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.sweden');
 
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],

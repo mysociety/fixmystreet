@@ -5,8 +5,8 @@ use LWP::Protocol::PSGI;
 use LWP::Simple;
 use JSON::MaybeXS;
 
-use t::Facebook;
-use t::MapIt;
+use t::Mock::Facebook;
+use t::Mock::MapIt;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -17,7 +17,7 @@ END { FixMyStreet::App->log->enable('info'); }
 
 my ($report) = $mech->create_problems_for_body(1, '2345', 'Test');
 
-LWP::Protocol::PSGI->register(t::MapIt->to_psgi_app, host => 'mapit.uk');
+LWP::Protocol::PSGI->register(t::Mock::MapIt->to_psgi_app, host => 'mapit.uk');
 
 FixMyStreet::override_config {
     FACEBOOK_APP_ID => 'facebook-app-id',
@@ -40,7 +40,7 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
             }
 
             # Set up a mock to catch (most, see below) requests to Facebook
-            my $fb = t::Facebook->new;
+            my $fb = t::Mock::Facebook->new;
             $fb->returns_email(0) if $fb_state eq 'no email' || $fb_state eq 'existing UID';
             LWP::Protocol::PSGI->register($fb->to_psgi_app, host => 'www.facebook.com');
             LWP::Protocol::PSGI->register($fb->to_psgi_app, host => 'graph.facebook.com');

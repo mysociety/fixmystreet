@@ -1,4 +1,4 @@
-package t::MapIt;
+package t::Mock::MapIt;
 
 use JSON;
 use Web::Simple;

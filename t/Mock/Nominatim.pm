@@ -1,4 +1,4 @@
-package t::Nominatim;
+package t::Mock::Nominatim;
 
 use JSON;
 use Web::Simple;
