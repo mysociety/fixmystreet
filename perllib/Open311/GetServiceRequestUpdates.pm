@@ -3,6 +3,7 @@ package Open311::GetServiceRequestUpdates;
 use Moo;
 use Open311;
 use FixMyStreet::DB;
+use FixMyStreet::App::Model::PhotoSet;
 use DateTime::Format::W3CDTF;
 
 has system_user => ( is => 'rw' );
@@ -115,6 +116,19 @@ sub update_comments {
                         state => 'confirmed',
                     }
                 );
+
+                # ref test as XML::Simple will have returned an empty hashref for empty element
+                if ($request->{media_url} && !ref $request->{media_url}) {
+                    my $ua = LWP::UserAgent->new;
+                    my $res = $ua->get($request->{media_url});
+                    if ( $res->is_success && $res->content_type eq 'image/jpeg' ) {
+                        my $photoset = FixMyStreet::App::Model::PhotoSet->new({
+                            data_items => [ $res->decoded_content ],
+                        });
+                        my $data = $photoset->get_raw_image_data(0);
+                        $comment->photo($data->[0]);
+                    }
+                }
 
                 # if the comment is older than the last update
                 # do not change the status of the problem as it's

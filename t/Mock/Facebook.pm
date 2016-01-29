@@ -1,4 +1,4 @@
-package t::Facebook;
+package t::Mock::Facebook;
 
 use JSON;
 use Web::Simple;
