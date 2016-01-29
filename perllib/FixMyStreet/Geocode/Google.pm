@@ -53,7 +53,7 @@ sub string {
         next unless $c->cobrand->geocoded_string_check( $address );
         ( $longitude, $latitude ) =
             map { Utils::truncate_coordinate($_) }
-            ($_->{geometry}{location}{lat}, $_->{geometry}{location}{lng});
+            ($_->{geometry}{location}{lng}, $_->{geometry}{location}{lat});
         push (@$error, {
             address => $address,
             latitude => $latitude,
