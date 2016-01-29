@@ -64,6 +64,13 @@ Launched: 2011
 <br>
 Run by: <a href="http://www.nuug.no/">NUUG</a>
 
+<h3>Spain</h3>
+Site: <a href="http://cuida.alcala.org/">Cuida Alcalá</a>
+<br>
+Launched: 2015
+<br>
+Run by: <a href="http://www.kyopol.net">La Asociación KYOPOL</a>
+
 <h3>Sweden</h3>
 Site: <a href="http://www.fixamingata.se/">FixaMinGata</a>
 <br>
