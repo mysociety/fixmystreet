@@ -1325,9 +1325,9 @@ Generate a token based on user and secret
 sub get_token : Private {
     my ( $self, $c ) = @_;
 
-    my $secret = $c->model('DB::Secret')->search()->first;
+    my $secret = $c->model('DB::Secret')->get;
     my $user = $c->forward('get_user');
-    my $token = sha1_hex($user . $secret->secret);
+    my $token = sha1_hex($user . $secret);
     $c->stash->{token} = $token;
 
     return 1;
