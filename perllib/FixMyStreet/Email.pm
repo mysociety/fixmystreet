@@ -2,17 +2,46 @@ package FixMyStreet::Email;
 
 use Encode;
 use Template;
+use Digest::HMAC_SHA1 qw(hmac_sha1_hex);
 use mySociety::Email;
 use mySociety::Locale;
 use mySociety::Random qw(random_bytes);
 use Utils::Email;
 use FixMyStreet;
+use FixMyStreet::DB;
 use FixMyStreet::EmailSend;
 
 sub test_dmarc {
     my $email = shift;
     return if FixMyStreet->test_mode;
     return Utils::Email::test_dmarc($email);
+}
+
+sub hash_from_id {
+    my ($type, $id) = @_;
+    my $secret = FixMyStreet::DB->resultset('Secret')->get;
+    # Make sure the ID is stringified, a number is treated differently
+    return substr(hmac_sha1_hex("$type-$id", $secret), 0, 8);
+}
+
+sub generate_verp_token {
+    my ($type, $id) = @_;
+    my $hash = hash_from_id($type, $id);
+    return "$type-$id-$hash";
+}
+
+sub check_verp_token {
+    my ($token) = @_;
+    $token = lc($token);
+    $token =~ s#[./_]##g;
+
+    my ($type, $id, $hash) = $token =~ /(report|alert)-([a-z0-9]+)-([a-z0-9]+)/;
+    return unless $type;
+
+    $hash =~ tr/lo/10/;
+    return unless hash_from_id($type, $id) eq $hash;
+
+    return ($type, $id);
 }
 
 sub is_abuser {
@@ -87,11 +116,7 @@ sub send_cron {
         print $email;
         return 1; # Failure
     } else {
-        my %model_args;
-        if (!FixMyStreet->test_mode && $env_from eq FixMyStreet->config('CONTACT_EMAIL')) {
-            $model_args{mailer} = 'FixMyStreet::EmailSend::ContactEmail';
-        }
-        my $result = FixMyStreet::EmailSend->new(\%model_args)->send($email);
+        my $result = FixMyStreet::EmailSend->new({ env_from => $env_from })->send($email);
         return $result ? 0 : 1;
     }
 }

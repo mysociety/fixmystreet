@@ -55,7 +55,7 @@ if ( FixMyStreet->test_mode ) {
     push @$mailer_args, username => $username, password => $password
         if $username && $password;
     $args = {
-        mailer      => 'FixMyStreet::EmailSend::DoNotReply',
+        mailer      => 'FixMyStreet::EmailSend::Variable',
         mailer_args => $mailer_args,
     };
 } else {
@@ -67,5 +67,12 @@ sub new {
     my ($cls, $hash) = @_;
     $hash ||= {};
     my %args = ( %$args, %$hash );
+
+    my $sender = delete($args{env_from});
+    if ($sender) {
+        $args{mailer_args} = [ @{$args{mailer_args}} ] if $args{mailer_args};
+        push @{$args{mailer_args}}, env_from => $sender;
+    }
+
     return Email::Send->new(\%args);
 }

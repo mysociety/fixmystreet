@@ -250,6 +250,11 @@ sub _send_aggregated_alert_email(%) {
 
     my $template = FixMyStreet->get_email_template($cobrand->moniker, $data{lang}, "$data{template}.txt");
 
+    my $sender = sprintf('<fms-%s@%s>',
+        FixMyStreet::Email::generate_verp_token('alert', $data{alert_id}),
+        FixMyStreet->config('EMAIL_DOMAIN')
+    );
+
     my $result = FixMyStreet::Email::send_cron(
         $data{schema},
         {
@@ -257,7 +262,7 @@ sub _send_aggregated_alert_email(%) {
             _parameters_ => \%data,
             To => $data{alert_email},
         },
-        undef,
+        $sender,
         0,
         $cobrand,
         $data{lang}

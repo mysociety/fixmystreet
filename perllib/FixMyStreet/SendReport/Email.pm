@@ -98,18 +98,17 @@ sub send {
 
     $params->{Bcc} = $self->bcc if @{$self->bcc};
 
+    my $sender = sprintf('<fms-%s@%s>',
+        FixMyStreet::Email::generate_verp_token('report', $row->id),
+        FixMyStreet->config('EMAIL_DOMAIN')
+    );
+
     if (FixMyStreet::Email::test_dmarc($params->{From}[0])) {
         $params->{'Reply-To'} = [ $params->{From} ];
-        $params->{From} = [ FixMyStreet->config('CONTACT_EMAIL'), $params->{From}[1] ];
+        $params->{From} = [ $sender, $params->{From}[1] ];
     }
 
-    my $result = FixMyStreet::Email::send_cron(
-        $row->result_source->schema,
-        $params,
-        FixMyStreet->config('CONTACT_EMAIL'),
-        $nomail,
-        $cobrand
-    );
+    my $result = FixMyStreet::Email::send_cron($row->result_source->schema, $params, $sender, $nomail, $cobrand);
 
     unless ($result) {
         $self->success(1);
