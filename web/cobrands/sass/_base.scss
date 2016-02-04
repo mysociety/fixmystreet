@@ -884,10 +884,6 @@ input.final-submit {
   margin: 0 0 1em;
   padding: 0;
   border-bottom: 0.25em solid $primary;
-  .update-img {
-    float: $right;
-    margin: flip(0.5em 0 0.5em 1em, 0.5em 1em 0.5em 0); // gutter between text and floated image
-  }
 }
 
 .item-list__item {
@@ -963,6 +959,13 @@ input.final-submit {
   }
 }
 
+.problem-header .update-img,
+.item-list .update-img {
+    float: $right;
+    margin: flip(0.3em 0 0.5em 1em, 0.3em 1em 0.5em 0); // gutter between text and floated image
+    width: 33%;
+}
+
 // fancybox gallery images have a magnifying glass in the corner
 .update-img {
   a {
@@ -988,12 +991,7 @@ input.final-submit {
 }
 
 .problem-header {
-  margin-bottom:1em;
-}
-.problem-header .update-img {
-    float: $right;
-    margin-#{$left}: 0.5em;
-    margin-bottom: 0.5em;
+  margin-bottom: 1em;
 }
 
 .report_meta_info,
