@@ -619,6 +619,18 @@ OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
             bounds = new OpenLayers.Bounds(bounds.toArray());
         }
         return bounds;
+    },
+    // The above isn't enough, however, because Strategy.BBOX's getMapBounds
+    // and calculateBounds work out the bounds in different ways, the former by
+    // transforming the map's extent to the layer projection, the latter by
+    // adding or subtracting from the centre. As we have a ratio of 1, rounding
+    // errors can still occur. This override makes calculateBounds always equal
+    // getMapBounds (so no movement means no update).
+    calculateBounds: function(mapBounds) {
+        if (!mapBounds) {
+            mapBounds = this.getMapBounds();
+        }
+        this.bounds = mapBounds;
     }
 });
 
