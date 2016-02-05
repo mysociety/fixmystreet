@@ -1,6 +1,6 @@
 package t::Mock::MapIt;
 
-use JSON;
+use JSON::MaybeXS;
 use Web::Simple;
 
 use mySociety::Locale;

@@ -1,6 +1,6 @@
 package t::Mock::Facebook;
 
-use JSON;
+use JSON::MaybeXS;
 use Web::Simple;
 use MooX::Types::MooseLike::Base qw(:all);
 

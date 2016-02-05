@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use DateTime;
 use Test::More;
-use JSON;
 
 use FixMyStreet;
 use FixMyStreet::TestMech;

@@ -1,6 +1,6 @@
 package t::Mock::Nominatim;
 
-use JSON;
+use JSON::MaybeXS;
 use Web::Simple;
 
 has json => (

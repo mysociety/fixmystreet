@@ -22,7 +22,7 @@ use FixMyStreet::DB;
 
 use File::Path ();
 use File::Slurp;
-use JSON;
+use JSON::MaybeXS;
 use List::MoreUtils qw(zip);
 
 my $fourweeks = 4*7*24*60*60;
@@ -89,7 +89,7 @@ if ( FixMyStreet->config('BASE_URL') =~ /emptyhomes/ ) {
     }
 }
 
-my $body = JSON->new->utf8(1)->encode( {
+my $body = encode_json( {
     fixed => \%fixed,
     open  => \%open,
 } );
