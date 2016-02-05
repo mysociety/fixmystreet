@@ -276,7 +276,7 @@ function fixmystreet_onload() {
         styleMap: pin_layer_style_map
     };
     if (fixmystreet.page == 'around') {
-        fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
+        fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.FixMyStreet();
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
             url: '/ajax',
@@ -604,6 +604,21 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
 OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.PermalinkFMS, {
     updateLink: function() {
         this._updateLink(1);
+    }
+});
+
+OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
+    ratio: 1,
+    // The transform in Strategy.BBOX's getMapBounds could mean you end up with
+    // co-ordinates too precise, which could then cause the Strategy to think
+    // it needs to update when it doesn't. So create a new bounds out of the
+    // provided one to make sure it's passed through toFloat().
+    getMapBounds: function() {
+        var bounds = OpenLayers.Strategy.BBOX.prototype.getMapBounds.apply(this);
+        if (bounds) {
+            bounds = new OpenLayers.Bounds(bounds.toArray());
+        }
+        return bounds;
     }
 });
 
