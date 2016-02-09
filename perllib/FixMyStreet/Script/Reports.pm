@@ -7,6 +7,7 @@ use CronFns;
 use DateTime::Format::Pg;
 
 use Utils;
+use Utils::OpenStreetMap;
 use mySociety::MaPit;
 
 use FixMyStreet;
@@ -91,8 +92,10 @@ sub send(;$) {
             : _('The user could not locate the problem on a map, but to see the area around the location they entered');
         $h{closest_address} = '';
 
+        $h{osm_url} = Utils::OpenStreetMap::short_url($h{latitude}, $h{longitude});
         if ( $row->used_map ) {
             $h{closest_address} = $cobrand->find_closest( $h{latitude}, $h{longitude}, $row );
+            $h{osm_url} .= '?m';
         }
 
         if ( $cobrand->allow_anonymous_reports &&
