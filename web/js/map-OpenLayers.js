@@ -88,6 +88,7 @@ function fms_markers_list(pins, transform) {
         var marker = new OpenLayers.Feature.Vector(loc, {
             colour: pin[2],
             size: pin[5] || size,
+            faded: 0,
             id: pin[3],
             title: pin[4] || ''
         });
@@ -112,6 +113,69 @@ function fms_markers_resize() {
         fixmystreet.markers.features[i].attributes.size = size;
     }
     fixmystreet.markers.redraw();
+}
+
+// `markers.redraw()` in fms_markers_highlight will trigger an
+// `overFeature` event if the mouse cursor is still over the same
+// marker on the map, which would then run fms_markers_highlight
+// again, causing an infinite flicker while the cursor remains over
+// the same marker. We really only want to redraw the markers when
+// the cursor moves from one marker to another (ie: when there is an
+// overFeature followed by an outFeature followed by an overFeature).
+// Therefore, we keep track of the previous event in
+// fixmystreet.latest_map_hover_event and only call fms_markers_highlight
+// if we know the previous event was different to the current one.
+// (See the `overFeature` and `outFeature` callbacks inside of
+// fixmystreet.select_feature).
+
+function fms_markers_highlight(problem_id) {
+    for (var i = 0; i < fixmystreet.markers.features.length; i++) {
+        if (typeof problem_id == 'undefined') {
+            // There is no highlighted marker, so unfade this marker
+            fixmystreet.markers.features[i].attributes.faded = 0;
+        } else if (problem_id == fixmystreet.markers.features[i].attributes.id) {
+            // This is the highlighted marker, unfade it
+            fixmystreet.markers.features[i].attributes.faded = 0;
+        } else {
+            // This is not the hightlighted marker, fade it
+            fixmystreet.markers.features[i].attributes.faded = 1;
+        }
+    }
+    fixmystreet.markers.redraw();
+}
+
+function fms_sidebar_highlight(problem_id) {
+    if (typeof problem_id !== 'undefined') {
+        var $a = $('.item-list--reports a[href$="' + problem_id + '"]');
+        $a.parent().addClass('hovered');
+
+        var a_top = $a.offset().top;
+        var a_height = $a.outerHeight();
+        var viewport_top = $(window).scrollTop();
+        var viewport_height = $(window).height();
+        var header_height = $('.nav-wrapper-2').outerHeight();
+        var shadow_height = $('.shadow-wrap').outerHeight();
+        var shadow_top = $('.shadow-wrap').offset().top;
+
+        if (a_top < viewport_top + header_height) {
+            // Top of item (at least) is above the bottom edge of the header
+            $('html, body').animate({
+                scrollTop: a_top - header_height - 20 // little bit extra below header
+            }, 100);
+        } else if (a_top + a_height > shadow_top) {
+            // Bottom of item (at least) is below the top edge of the shadow
+            $('html, body').animate({
+                scrollTop: a_top + a_height - viewport_height + shadow_height
+            }, 100);
+        }
+    } else {
+        $('.item-list--reports .hovered').removeClass('hovered');
+    }
+}
+
+function fms_marker_click(problem_id) {
+    var $a = $('.item-list--reports a[href$="' + problem_id + '"]');
+    $a[0] && $a[0].click();
 }
 
 function fms_categories_or_status_changed() {
@@ -197,6 +261,14 @@ function fixmystreet_onload() {
             popupYOffset: -10
         }
     });
+    pin_layer_style_map.addUniqueValueRules('default', 'faded', {
+        0: {
+            graphicOpacity: 1
+        },
+        1: {
+            graphicOpacity: 0.15
+        }
+    });
     var pin_layer_options = {
         rendererOptions: {
             yOrdering: true
@@ -204,7 +276,7 @@ function fixmystreet_onload() {
         styleMap: pin_layer_style_map
     };
     if (fixmystreet.page == 'around') {
-        fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.BBOX({ ratio: 1 });
+        fixmystreet.bbox_strategy = fixmystreet.bbox_strategy || new OpenLayers.Strategy.FixMyStreet();
         pin_layer_options.strategies = [ fixmystreet.bbox_strategy ];
         pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
             url: '/ajax',
@@ -221,32 +293,35 @@ function fixmystreet_onload() {
 
     var markers = fms_markers_list( fixmystreet.pins, true );
     fixmystreet.markers.addFeatures( markers );
-    function onPopupClose(evt) {
-        fixmystreet.select_feature.unselect(selectedFeature);
-        OpenLayers.Event.stop(evt);
-    }
+
     if (fixmystreet.page == 'around' || fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
-        fixmystreet.select_feature = new OpenLayers.Control.SelectFeature( fixmystreet.markers );
-        var selectedFeature;
-        fixmystreet.markers.events.register( 'featureunselected', fixmystreet.markers, function(evt) {
-            var feature = evt.feature, popup = feature.popup;
-            fixmystreet.map.removePopup(popup);
-            popup.destroy();
-            feature.popup = null;
-        });
-        fixmystreet.markers.events.register( 'featureselected', fixmystreet.markers, function(evt) {
-            var feature = evt.feature;
-            selectedFeature = feature;
-            var popupYOffset = feature.layer.styleMap.createSymbolizer(feature).popupYOffset || -40;
-            var popup = new OpenLayers.Popup.FramedCloud("popup",
-                feature.geometry.getBounds().getCenterLonLat(),
-                null,
-                feature.attributes.title + "<br><a href=/report/" + feature.attributes.id + ">" + translation_strings.more_details + "</a>",
-                { size: new OpenLayers.Size(0, 0), offset: new OpenLayers.Pixel(0, popupYOffset) },
-                true, onPopupClose);
-            feature.popup = popup;
-            fixmystreet.map.addPopup(popup);
-        });
+        fixmystreet.select_feature = new OpenLayers.Control.SelectFeature(
+            fixmystreet.markers,
+            {
+                hover: true,
+                // Override clickFeature so that we can use it even though
+                // hover is true. http://gis.stackexchange.com/a/155675
+                clickFeature: function (feature) {
+                    fms_marker_click(feature.attributes.id);
+                },
+                overFeature: function (feature) {
+                    if (fixmystreet.latest_map_hover_event != 'overFeature') {
+                        document.getElementById('map').style.cursor = 'pointer';
+                        fms_markers_highlight(feature.attributes.id);
+                        fms_sidebar_highlight(feature.attributes.id);
+                        fixmystreet.latest_map_hover_event = 'overFeature';
+                    }
+                },
+                outFeature: function (feature) {
+                    if (fixmystreet.latest_map_hover_event != 'outFeature') {
+                        document.getElementById('map').style.cursor = '';
+                        fms_markers_highlight();
+                        fms_sidebar_highlight();
+                        fixmystreet.latest_map_hover_event = 'outFeature';
+                    }
+                }
+            }
+        );
         fixmystreet.map.addControl( fixmystreet.select_feature );
         fixmystreet.select_feature.activate();
         fixmystreet.map.events.register( 'zoomend', null, fms_markers_resize );
@@ -326,7 +401,7 @@ $(function(){
 
     // Set specific map config - some other JS included in the
     // template should define this
-    set_map_config(); 
+    set_map_config();
 
     // Create the basics of the map
     fixmystreet.map = new OpenLayers.Map(
@@ -433,6 +508,18 @@ $(function(){
     } else {
         fixmystreet_onload();
     }
+
+    (function() {
+        var timeout;
+        $('.item-list--reports').on('mouseenter', '.item-list--reports__item', function(){
+            var href = $('a', this).attr('href');
+            var id = parseInt(href.replace(/^.*[/]([0-9]+)$/, '$1'));
+            clearTimeout(timeout);
+            fms_markers_highlight(id);
+        }).on('mouseleave', '.item-list--reports__item', function(){
+            timeout = setTimeout(fms_markers_highlight, 50);
+        });
+    })();
 });
 
 /* Overridding the buttonDown function of PanZoom so that it does
@@ -520,6 +607,21 @@ OpenLayers.Control.PermalinkFMSz = OpenLayers.Class(OpenLayers.Control.Permalink
     }
 });
 
+OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
+    ratio: 1,
+    // The transform in Strategy.BBOX's getMapBounds could mean you end up with
+    // co-ordinates too precise, which could then cause the Strategy to think
+    // it needs to update when it doesn't. So create a new bounds out of the
+    // provided one to make sure it's passed through toFloat().
+    getMapBounds: function() {
+        var bounds = OpenLayers.Strategy.BBOX.prototype.getMapBounds.apply(this);
+        if (bounds) {
+            bounds = new OpenLayers.Bounds(bounds.toArray());
+        }
+        return bounds;
+    }
+});
+
 /* Pan data request handler */
 // This class is used to get a JSON object from /ajax that contains
 // pins for the map and HTML for the sidebar. It does a fetch whenever the map
@@ -562,7 +664,7 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
 });
 
 /* Click handler */
-OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {                
+OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     defaultHandlerOptions: {
         'single': true,
         'double': false,
@@ -576,12 +678,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             {}, this.defaultHandlerOptions);
         OpenLayers.Control.prototype.initialize.apply(
             this, arguments
-        ); 
+        );
         this.handler = new OpenLayers.Handler.Click(
             this, {
                 'click': this.trigger
             }, this.handlerOptions);
-    }, 
+    },
 
     trigger: function(e) {
         var cobrand = $('meta[name="cobrand"]').attr('content');
