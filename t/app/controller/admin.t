@@ -63,8 +63,8 @@ my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
 
 my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
     {
-        alert_type => 'new_updates',
-        parameter => $report->id,
+        alert_type => 'area_problems',
+        parameter => 2482,
         confirmed => 1,
         user => $user,
     },

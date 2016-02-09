@@ -91,7 +91,7 @@ sub index : Path : Args(0) {
 
     $c->stash->{comments} = \%comment_counts;
 
-    my $alerts = $c->model('DB::Alert')->summary_count( $c->cobrand->restriction );
+    my $alerts = $c->model('DB::Alert')->summary_report_alerts( $c->cobrand->restriction );
 
     my %alert_counts =
       map { $_->confirmed => $_->get_column('confirmed_count') } $alerts->all;

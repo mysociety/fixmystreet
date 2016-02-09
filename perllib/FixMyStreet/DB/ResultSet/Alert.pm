@@ -35,6 +35,13 @@ sub timeline_disabled {
     );
 }
 
+# Return summary for alerts on reports (so excluding alerts on updates)
+sub summary_report_alerts {
+    my ( $rs, $restriction ) = @_;
+    $rs = $rs->search({ alert_type => { '!=', 'new_updates' } });
+    return $rs->summary_count($restriction);
+}
+
 sub summary_count {
     my ( $rs, $restriction ) = @_;
 
@@ -47,4 +54,5 @@ sub summary_count {
         }
     );
 }
+
 1;
