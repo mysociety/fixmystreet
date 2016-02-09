@@ -4,7 +4,7 @@ use namespace::autoclean;
 
 BEGIN {extends 'Catalyst::Controller'; }
 
-use JSON;
+use JSON::MaybeXS;
 use File::Path;
 use File::Slurp;
 use FixMyStreet::App::Model::PhotoSet;
@@ -112,9 +112,8 @@ sub upload : Local {
         $out = { id => $fileid };
     }
 
-    my $body = JSON->new->utf8(1)->encode($out);
     $c->res->content_type('application/json; charset=utf-8');
-    $c->res->body($body);
+    $c->res->body(encode_json($out));
 }
 
 =head2 process_photo

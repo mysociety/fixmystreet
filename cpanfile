@@ -101,7 +101,6 @@ feature 'open311-endpoint', 'Open311::Endpoint specific requirements' => sub {
     requires 'Data::Rx';
     requires 'MooX::HandlesVia';
     requires 'Types::Standard';
-    requires 'LWP::Protocol::PSGI'; # for testing end-to-end
     requires 'DateTime::Format::Oracle'; # for EXOR
 };
 
@@ -118,14 +117,12 @@ requires 'File::ChangeNotify';
 requires 'Path::Tiny';
 requires 'File::Find::Rule';
 
-feature 'run-tests', 'Spin up a test database and config to run tests' => sub {
-    requires 'Test::PostgreSQL';
-};
-
 # Modules used by the test suite
+requires 'Test::PostgreSQL';
 requires 'CGI::Simple';
 requires 'HTTP::Headers';
 requires 'HTTP::Response';
+requires 'LWP::Protocol::PSGI';
 requires 'Sort::Key';
 requires 'Sub::Override';
 requires 'Test::Exception';
@@ -135,6 +132,7 @@ requires 'Test::More', '0.88';
 requires 'Test::Warn';
 requires 'Test::WWW::Mechanize::Catalyst';
 requires 'Web::Scraper';
+requires 'Web::Simple';
 
 #################################################################
 #

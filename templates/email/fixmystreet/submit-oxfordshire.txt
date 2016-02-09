@@ -25,6 +25,8 @@ Details: <?=$values['detail']?>
 
 Longitude: <?=$values['longitude']?>
 
+View OpenStreetMap of this location: <?=$values['osm_url']?>
+
 <?=$values['closest_address']?>----------
 
 Replies to this email will go to the user who submitted the problem.

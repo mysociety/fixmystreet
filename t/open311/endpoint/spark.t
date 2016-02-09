@@ -4,10 +4,8 @@ use Test::More;
 
 use Open311::Endpoint;
 use Data::Dumper;
-use JSON;
 
 my $endpoint = Open311::Endpoint->new;
-my $json = JSON->new;
 
 subtest "Spark test" => sub {
     my $spark = $endpoint->spark;

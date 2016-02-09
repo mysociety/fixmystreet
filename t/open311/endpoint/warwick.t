@@ -5,7 +5,7 @@ use Test::LongString;
 use Test::MockTime ':all';
 
 use Data::Dumper;
-use JSON;
+use JSON::MaybeXS;
 
 use FixMyStreet::DB;
 
@@ -19,7 +19,6 @@ use Open311::PopulateServiceList;
 use Open311::GetServiceRequestUpdates;
 
 my $endpoint = t::open311::endpoint::Endpoint_Warwick->new;
-my $json = JSON->new;
 
 subtest "GET Service List" => sub {
     my $res = $endpoint->run_test_request( GET => '/services.xml' );
@@ -59,7 +58,7 @@ subtest "POST OK" => sub {
     ok $res->is_success, 'valid request'
         or diag $res->content;
 
-    is_deeply $json->decode($res->content),
+    is_deeply decode_json($res->content),
         [ {
             "service_notice" => "Warwickshire Open311 Endpoint",
             "service_request_id" => 1001

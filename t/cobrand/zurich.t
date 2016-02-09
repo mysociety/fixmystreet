@@ -6,7 +6,6 @@ use warnings;
 use DateTime;
 use Test::More;
 use Test::LongString;
-use JSON;
 use Path::Tiny;
 
 # Check that you have the required locale installed - the following
