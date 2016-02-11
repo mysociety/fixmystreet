@@ -130,6 +130,7 @@ sub send(;$) {
 
         my @dear;
         my %reporters = ();
+        my $skip = 0;
         while (my $body = $bodies->next) {
             my $sender_info = $cobrand->get_body_sender( $body, $row->category );
             my $sender = "FixMyStreet::SendReport::" . $sender_info->{method};
@@ -141,6 +142,7 @@ sub send(;$) {
             $reporters{ $sender } ||= $sender->new();
 
             if ( $reporters{ $sender }->should_skip( $row ) ) {
+                $skip = 1;
                 debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;
             } else {
                 debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $body->send_method, $row->id) if $debug_mode;
@@ -168,10 +170,7 @@ sub send(;$) {
             die 'Report not going anywhere for ID ' . $row->id . '!';
         }
 
-        unless (@dear) {
-            debug_print("can't send because sender count is zero", $row->id) if $debug_mode;
-            next;
-        }
+        next if $skip;
 
         if ($h{category} eq _('Other')) {
             $h{category_footer} = _('this type of local problem');
