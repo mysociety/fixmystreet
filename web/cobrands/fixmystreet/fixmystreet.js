@@ -246,15 +246,16 @@ $(function(){
         }
       });
 
-      if (typeof fixmystreet !== 'undefined') {
-        $.each(fixmystreet.uploaded_files || [], function(i, f) {
-          var mockFile = { name: f, server_id: f };
-          photodrop.emit("addedfile", mockFile);
-          photodrop.createThumbnailFromUrl(mockFile, '/photo/' + f + '.temp.jpeg');
-          photodrop.emit("complete", mockFile);
-          photodrop.options.maxFiles -= 1;
-        });
-      }
+      $.each($('input[name=upload_fileid]').val().split(','), function(i, f) {
+        if (!f) {
+            return;
+        }
+        var mockFile = { name: f, server_id: f };
+        photodrop.emit("addedfile", mockFile);
+        photodrop.createThumbnailFromUrl(mockFile, '/photo/' + f + '.temp.jpeg');
+        photodrop.emit("complete", mockFile);
+        photodrop.options.maxFiles -= 1;
+      });
     }
 
     /*
