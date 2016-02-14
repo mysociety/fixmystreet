@@ -936,8 +936,8 @@ sub process_report : Private {
             $report->non_public( 1 );
         }
 
-        #Get a list of custom form fields we set and add them into @extra
-        if ($c->cobrand->form_extras){
+        # Get a list of custom form fields we set and add them into @extra
+        if ($c->cobrand->form_extras) {
             foreach my $form_value ($c->cobrand->form_extras){
                 push @extra, { $form_value => $c->get_param_list($form_value)};
             }
