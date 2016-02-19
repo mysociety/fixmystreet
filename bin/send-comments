@@ -33,11 +33,14 @@ use constant SEND_METHOD_EMAIL      => 'email';
 use constant SEND_METHOD_OPEN311    => 'Open311';
 
 use constant COUNCIL_ID_OXFORDSHIRE => 2237;
+use constant COUNCIL_ID_BROMLEY => 2482;
+use constant COUNCIL_ID_LEWISHAM => 2492;
 
 # Set up site, language etc.
 my ($verbose, $nomail) = CronFns::options();
 my $base_url = FixMyStreet->config('BASE_URL');
-my $site = CronFns::site($base_url);
+my $site = '';
+$site = 'fixmystreet.com' if $base_url eq "https://www.fixmystreet.com";
 
 my $bodies = FixMyStreet::DB->resultset('Body')->search( {
     send_method => SEND_METHOD_OPEN311,
@@ -46,9 +49,14 @@ my $bodies = FixMyStreet::DB->resultset('Body')->search( {
 
 while ( my $body = $bodies->next ) {
 
-    # Oxfordshire (OCC) is special:
-    # we do *receive* service_request_updates (aka comments) for OCC, but we never *send* them, so skip this pass
-    next if $body->areas->{+COUNCIL_ID_OXFORDSHIRE};
+    # XXX Cobrand specific
+    if ($site eq 'fixmystreet.com') {
+        # Oxfordshire (OCC) is special:
+        # we do *receive* service_request_updates (aka comments) for OCC, but we never *send* them, so skip this pass
+        next if $body->areas->{+COUNCIL_ID_OXFORDSHIRE};
+        # Lewisham does not yet accept updates
+        next if $body->areas->{+COUNCIL_ID_LEWISHAM};
+    }
 
     my $use_extended = 0;
     my $comments = FixMyStreet::DB->resultset('Comment')->search( {
@@ -66,7 +74,7 @@ while ( my $body = $bodies->next ) {
         }
     );
 
-    if ( $body->areas->{2482} ) {
+    if ( $site eq 'fixmystreet.com' && $body->areas->{+COUNCIL_ID_BROMLEY} ) {
         $use_extended = 1;
     }
 
@@ -84,7 +92,7 @@ while ( my $body = $bodies->next ) {
 
     my $o = Open311->new( %open311_conf );
 
-    if ( $body->areas->{2482} ) {
+    if ( $site eq 'fixmystreet.com' && $body->areas->{+COUNCIL_ID_BROMLEY} ) {
         my $endpoints = $o->endpoints;
         $endpoints->{update} = 'update.xml';
         $endpoints->{service_request_updates} = 'update.xml';
@@ -107,10 +115,10 @@ while ( my $body = $bodies->next ) {
         }
 
         if ( $comment->send_fail_count ) {
-            next if bromley_retry_timeout( $comment );
+            next if retry_timeout( $comment );
         }
 
-        if ( $body->areas->{2482} ) {
+        if ( $site eq 'fixmystreet.com' && $body->areas->{+COUNCIL_ID_BROMLEY} ) {
             my $extra = $comment->extra;
             if ( !$extra ) {
                 $extra = {};
@@ -139,7 +147,7 @@ while ( my $body = $bodies->next ) {
     }
 }
 
-sub bromley_retry_timeout {
+sub retry_timeout {
     my $row = shift;
 
     my $tz = FixMyStreet->local_time_zone;
