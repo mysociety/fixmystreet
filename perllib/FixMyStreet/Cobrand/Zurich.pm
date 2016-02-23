@@ -1014,23 +1014,21 @@ sub munge_sendreport_params {
     if ($row->state =~ /^(closed|investigating)$/ && $row->get_extra_metadata('publish_photo')) {
         # we attach images to reports sent to external bodies
         my $photoset = $row->get_photoset();
-        my @images = $photoset->all_images
+        my $num = $photoset->num_images
             or return;
-        my $index = 0;
         my $id = $row->id;
         my @attachments = map {
-            my $i = $index++;
             {
-                body => $_->[1],
+                body => $photoset->get_raw_image_data($_),
                 attributes => {
-                    filename => "$id.$i.jpeg",
+                    filename => "$id.$_.jpeg",
                     content_type => 'image/jpeg',
                     encoding => 'base64',
                         # quoted-printable ends up with newlines corrupting binary data
-                    name => "$id.$i.jpeg",
+                    name => "$id.$_.jpeg",
                 },
             }
-        } @images;
+        } (0..$num-1);
         $params->{attachments} = \@attachments;
     }
 }

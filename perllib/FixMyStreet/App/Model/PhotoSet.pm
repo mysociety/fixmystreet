@@ -20,26 +20,26 @@ has object => (
 );
 
 # If a PhotoSet is generated from a database row, db_data is set, which then
-# fills data_items -> images -> data. If it is generated during creation,
-# data_items is set, which then similarly fills images -> data.
+# fills data_items -> ids -> data. If it is generated during creation,
+# data_items is set, which then similarly fills ids -> data.
 
 has db_data => ( # generic data from DB field
     is => 'ro',
 );
 
-has data => ( # List of photo hashes
+has data => ( # String of photo hashes
     is => 'ro',
     lazy => 1,
     default => sub {
         my $self = shift;
-        my $data = join ',', map { $_->[0] } $self->all_images;
+        my $data = join ',', $self->all_ids;
         return $data;
     }
 );
 
 has data_items => ( # either a) split from db_data or b) provided by photo upload
     isa => 'ArrayRef',
-    is => 'rw',
+    is => 'ro',
     traits => ['Array'],
     lazy => 1,
     handles => {
@@ -76,33 +76,29 @@ sub _jpeg_magic {
     #     and \x{49}\x{49} (Tiff, 3 results in live DB) ?
 }
 
-=head2 C<images>, C<num_images>, C<get_raw_image_data>, C<all_images>
+=head2 C<ids>, C<num_images>, C<get_id>, C<all_ids>
 
-C<$photoset-E<GT>images> is an AoA containing the filed and the binary image data.
+C<$photoset-E<GT>ids> is an arrayref containing the fileid data.
 
-    [
-        [ $fileid1, $binary_data ],
-        [ $fileid2, $binary_data ],
-        ...
-    ]
+    [ $fileid1, $fileid2, ... ]
 
 Various accessors are provided onto it:
 
     num_images: count
-    get_raw_image_data ($index): return the [$fileid, $binary_data] tuple
-    all_images: return AoA as an array (e.g. rather than arrayref)
+    get_id ($index): return the correct id
+    all_ids: array of elements, rather than arrayref
 
 =cut
 
-has images => ( #  AoA of [$fileid, $binary_data] tuples
+has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data processing)
     isa => 'ArrayRef',
-    is => 'rw',
+    is => 'ro',
     traits => ['Array'],
     lazy => 1,
     handles => {
         num_images => 'count',
-        get_raw_image_data => 'get',
-        all_images => 'elements',
+        get_id => 'get',
+        all_ids => 'elements',
     },
     default => sub {
         my $self = shift;
@@ -163,7 +159,7 @@ has images => ( #  AoA of [$fileid, $binary_data] tuples
                 my $fileid = $self->get_fileid($photo_blob);
                 my $file = $self->get_file($fileid);
                 $upload->copy_to( $file );
-                return [$fileid, $photo_blob];
+                return $fileid;
 
             }
             if (_jpeg_magic($part)) {
@@ -171,21 +167,18 @@ has images => ( #  AoA of [$fileid, $binary_data] tuples
                 my $fileid = $self->get_fileid($photo_blob);
                 my $file = $self->get_file($fileid);
                 $file->spew_raw($photo_blob);
-                return [$fileid, $photo_blob];
+                return $fileid;
             }
             if (length($part) == 40) {
                 my $fileid = $part;
                 my $file = $self->get_file($fileid);
                 if ($file->exists) {
-                    my $photo = $file->slurp_raw;
-                    [$fileid, $photo];
-                }
-                else {
+                    $fileid;
+                } else {
                     warn "File $fileid doesn't exist";
                     ();
                 }
-            }
-            else {
+            } else {
                 warn sprintf "Received bad photo hash of length %d", length($part);
                 ();
             }
@@ -205,14 +198,22 @@ sub get_file {
     return path( $cache_dir, "$fileid.jpeg" );
 }
 
+sub get_raw_image_data {
+    my ($self, $index) = @_;
+    my $fileid = $self->get_id($index);
+    my $file = $self->get_file($fileid);
+    if ($file->exists) {
+        my $photo = $file->slurp_raw;
+        return $photo;
+    }
+}
+
 sub get_image_data {
     my ($self, %args) = @_;
     my $num = $args{num} || 0;
 
-    my $data = $self->get_raw_image_data( $num )
+    my $photo = $self->get_raw_image_data( $num )
         or return;
-
-    my ($fileid, $photo) = @$data;
 
     my $size = $args{size};
     if ( $size eq 'tn' ) {
@@ -242,16 +243,15 @@ sub delete_cached {
 sub remove_images {
     my ($self, $ids) = @_;
 
-    my @images = $self->all_images;
+    my @images = $self->all_ids;
     my $dec = 0;
     for (sort { $a <=> $b } @$ids) {
         splice(@images, $_ + $dec, 1);
         --$dec;
     }
-    my @items = map $_->[0], @images;
 
     my $new_set = (ref $self)->new({
-        data_items => \@items,
+        data_items => \@images,
         object => $self->object,
     });
 
@@ -263,14 +263,14 @@ sub remove_images {
 sub rotate_image {
     my ($self, $index, $direction) = @_;
 
-    my @images = $self->all_images;
+    my @images = $self->all_ids;
     return if $index > $#images;
 
-    my @items = map $_->[0], @images;
-    $items[$index] = _rotate_image( $images[$index][1], $direction );
+    my $image_data = $self->get_raw_image_data($index);
+    $images[$index] = _rotate_image( $image_data, $direction );
 
     my $new_set = (ref $self)->new({
-        data_items => \@items,
+        data_items => \@images,
         object => $self->object,
     });
 

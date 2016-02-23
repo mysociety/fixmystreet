@@ -874,7 +874,7 @@ sub photos {
             url_fp => "/photo/$id.$i.fp.$format?$cachebust",
             idx => $i++,
         }
-    } map { $_->[0] } $photoset->all_images;
+    } $photoset->all_ids;
     return \@photos;
 }
 

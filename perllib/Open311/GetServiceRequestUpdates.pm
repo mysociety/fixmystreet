@@ -125,8 +125,7 @@ sub update_comments {
                         my $photoset = FixMyStreet::App::Model::PhotoSet->new({
                             data_items => [ $res->decoded_content ],
                         });
-                        my $data = $photoset->get_raw_image_data(0);
-                        $comment->photo($data->[0]);
+                        $comment->photo($photoset->data);
                     }
                 }
 

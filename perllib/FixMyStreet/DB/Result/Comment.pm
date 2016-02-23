@@ -183,7 +183,7 @@ sub photos {
             url_full => "/photo/c/$id.$i.full.$format?$cachebust",
             idx => $i++,
         }
-    } map { $_->[0] } $photoset->all_images;
+    } $photoset->all_ids;
     return \@photos;
 }
 
