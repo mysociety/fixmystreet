@@ -21,25 +21,31 @@ title: Welcome
       <div class="monitor">
         <div id="owl-slide" class="owl-carousel">
           <div>
+           <a href="https://www.zueriwieneu.ch/">
             <img src="/assets/img/tn1.png">
             <div class='owl__gap'>
               <h3>Züri wie neu</h3>
               <p>Run by Stadt Z&uuml;rich, Switzerland</p>
             </div>
+           </a>
           </div>
           <div>
+           <a href="http://www.fixamingata.se/">
             <img src="/assets/img/tn2.png">
             <div class='owl__gap'>
               <h3>Fixa min gata</h3>
               <p>Run by KIVOS, Sweden</p>
             </div>
+           </a>
           </div>
           <div>
+           <a href="https://aduanku.my/">
             <img src="/assets/img/tn3.png">
             <div class='owl__gap'>
               <h3>AduanKu.my</h3>
               <p>Run by Sinar Project, Malaysia</p>
             </div>
+           </a>
           </div>
         </div>
       </div>
