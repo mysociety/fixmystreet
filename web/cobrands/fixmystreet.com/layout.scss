@@ -175,6 +175,12 @@ body.frontpage {
                 background-color: white;
                 width: auto;
             }
+            > .form-error {
+                margin-top: -4em;
+            }
+            > .form-error + .tablewrapper {
+                margin-top: 0;
+            }
         }
         footer {
             .bordered {
