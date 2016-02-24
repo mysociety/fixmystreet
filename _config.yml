@@ -1,8 +1,6 @@
 safe: true
-highlighter: pygments
 baseurl: /
 permalink: pretty
-markdown: kramdown
 exclude: [ node_modules, bower_components ]
 
 authors:
