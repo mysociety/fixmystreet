@@ -106,10 +106,10 @@ $(function(){
                     margin: 0
                 });
                 $('#fms_pan_zoom').css({ top: '2.75em' });
-                $('.big-green-banner')
-                    .addClass('mobile-map-banner')
-                    .appendTo('#map_box')
-                    .html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
+                // $('.big-green-banner')
+                //     .addClass('mobile-map-banner')
+                //     .appendTo('#map_box')
+                //     .html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
             } else {
                 $('#fms_pan_zoom').css({ top: '0.5em' });
             }
@@ -132,10 +132,10 @@ $(function(){
                     $('#site-header').show();
                     banner_text = translation_strings.report_problem_heading;
                 }
-                $('.big-green-banner')
-                    .removeClass('mobile-map-banner')
-                    .prependTo('#side')
-                    .html(banner_text);
+                // $('.big-green-banner')
+                //     .removeClass('mobile-map-banner')
+                //     .prependTo('#side')
+                //     .html(banner_text);
             }
             $('#fms_pan_zoom').css({ top: '4.75em' });
             $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');

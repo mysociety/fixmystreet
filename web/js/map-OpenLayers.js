@@ -189,7 +189,7 @@ function fixmystreet_onload() {
             var area = new OpenLayers.Layer.Vector("KML", {
                 strategies: [ new OpenLayers.Strategy.Fixed() ],
                 protocol: new OpenLayers.Protocol.HTTP({
-                    url: "/mapit/area/" + fixmystreet.area[i] + ".kml?simplify_tolerance=0.0001",
+                    url: "/mapit/area/" + fixmystreet.area[i] + ".kml",
                     format: new OpenLayers.Format.KML()
                 })
             });
@@ -215,8 +215,8 @@ function fixmystreet_onload() {
             greenspaces.events.register('loadend', null, function(a,b,c) {
                 greenspaces.styleMap.styles['default'].defaultStyle = {
                     fillColor: '#badd69',
-                    strokeWidth: 2,
-                    strokeColor: '#809848',
+                    strokeWidth: 3,
+                    strokeColor: '#2be740',
                     fillOpacity: 0.4
                 };
             });
