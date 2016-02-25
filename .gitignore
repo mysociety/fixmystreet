@@ -40,3 +40,9 @@ _Inline/
 *[Mm]ake[Mm]y[Ii]sland*
 ug_fixmycommunity
 UG_FixMyCommunity.pm
+
+# NIU
+niu
+NIU.pm
+/web/greenspaces
+/web/mapit

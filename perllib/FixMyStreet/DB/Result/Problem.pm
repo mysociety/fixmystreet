@@ -550,7 +550,8 @@ sub meta_line {
         my $category = _($problem->category);
         utf8::decode($category);
         $meta = sprintf(_('%s, reported at %s'), $category, $date_time);
-
+    } elsif ($c->cobrand->moniker eq 'niu') {
+        $meta = sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
     } else {
 
         if ( $problem->anonymous ) {

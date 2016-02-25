@@ -196,12 +196,30 @@ function fixmystreet_onload() {
             fixmystreet.map.addLayer(area);
             if ( fixmystreet.area.length == 1 ) {
                 area.events.register('loadend', null, function(a,b,c) {
-                    if ( fixmystreet.area_format ) {
-                        area.styleMap.styles['default'].defaultStyle = fixmystreet.area_format;
-                    }
+                    area.styleMap.styles['default'].defaultStyle = {
+                        fillColor: 'none',
+                        strokeWidth: 6,
+                        strokeColor: '#094cff'
+                    };
                     fixmystreet_zoomToBounds( area.getDataExtent() );
                 });
             }
+            var greenspaces = new OpenLayers.Layer.Vector("Greenspaces", {
+                strategies: [ new OpenLayers.Strategy.Fixed() ],
+                protocol: new OpenLayers.Protocol.HTTP({
+                    url: "/greenspaces/" + fixmystreet.area[i] + ".geojson.kml",
+                    format: new OpenLayers.Format.KML()
+                })
+            });
+            fixmystreet.map.addLayer(greenspaces);
+            greenspaces.events.register('loadend', null, function(a,b,c) {
+                greenspaces.styleMap.styles['default'].defaultStyle = {
+                    fillColor: '#badd69',
+                    strokeWidth: 2,
+                    strokeColor: '#809848',
+                    fillOpacity: 0.4
+                };
+            });
         }
     }
 
