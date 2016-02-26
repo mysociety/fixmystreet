@@ -1,14 +1,6 @@
 [% INCLUDE 'header.html', title = loc('Frequently Asked Questions'), bodyclass = 'twothirdswidthpage' %]
 
-<div class="sticky-sidebar">
-    <aside>
-        <ul class="plain-list">
-            <li><strong>[% loc('Frequently Asked Questions') %]</strong></li>
-            <li><a href="/privacy">[% loc('Privacy and cookies') %]</a></li>
-            <li><a href="/contact">[% tprintf(loc("Contact %s", "%s is the site name"), site_name) %]</a></li>
-        </ul>
-    </aside>
-</div>
+[% INCLUDE 'about/_sidebar.html' %]
 
 <h1><a name="faq"></a>[% loc('Frequently Asked Questions') %]</h1>
 

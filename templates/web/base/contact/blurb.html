@@ -1,9 +1,15 @@
+[% IF c.cobrand.moniker == 'fixmystreet' %]
+<h3>Send a message to FixMyStreet's technical support team</h3>
+
+<h4>If you have questions about FixMyStreet</h4>
+[% END %]
+
+<p>
+[% tprintf( loc("It's often quickest to <a href=\"%s\">check our FAQs</a> and see if the answer is there."), c.uri_for('/faq') ) %]
+</p>
+
 <p>
 [% loc('Please do <strong>not</strong> report problems through this form; messages go to
 the team behind this site, not a council. To report a problem,
 please <a href="/">go to the front page</a> and follow the instructions.') %]
 </p>
-
-<p>
-[% tprintf( loc("We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"), contact_email, contact_email) %]
-</p> 
