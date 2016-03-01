@@ -4389,10 +4389,10 @@ DISTRIBUTIONS
       Test::More 0.66
       Test::Warn 0.21
       URI::Escape 3.28
-  Net-SMTP-SSL-1.01
-    pathname: C/CW/CWEST/Net-SMTP-SSL-1.01.tar.gz
+  Net-SMTP-SSL-1.03
+    pathname: R/RJ/RJBS/Net-SMTP-SSL-1.03.tar.gz
     provides:
-      Net::SMTP::SSL 1.01
+      Net::SMTP::SSL 1.03
     requirements:
       ExtUtils::MakeMaker 0
       IO::Socket::SSL 0

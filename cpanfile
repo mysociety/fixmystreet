@@ -72,7 +72,7 @@ requires 'Net::DNS::Resolver';
 requires 'Net::Domain::TLD';
 requires 'Net::Facebook::Oauth2';
 requires 'Net::OAuth';
-requires 'Net::SMTP::SSL';
+requires 'Net::SMTP::SSL', '1.03';
 requires 'Net::SMTP::TLS';
 requires 'Net::Twitter::Lite::WithAPIv1_1';
 requires 'Path::Class';
