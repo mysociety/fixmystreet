@@ -159,6 +159,7 @@ subtest "Submit a correct entry" => sub {
         phone         => '',
         may_show_name => '1',
         category      => '-- Pick a category --',
+        gender => undef,
       },
       "check imported fields are shown";
 
@@ -195,6 +196,7 @@ subtest "Submit a correct entry" => sub {
         phone         => '',
         may_show_name => '1',
         category      => '-- Pick a category --',
+        gender => undef,
       },
       "check imported fields are shown";
 
@@ -285,6 +287,7 @@ subtest "Submit a correct entry (with location)" => sub {
         phone         => '',
         may_show_name => '1',
         category      => '-- Pick a category --',
+        gender => undef,
       },
       "check imported fields are shown";
 
