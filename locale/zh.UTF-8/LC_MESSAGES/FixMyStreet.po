@@ -4,14 +4,14 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
-# Chi-Hsun Tsai <chihsun.tsai@gmail.com>, 2015
+# Chi-Hsun Tsai <chihsun.tsai@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
-"POT-Creation-Date: 2015-10-23 16:51+0100\n"
-"PO-Revision-Date: 2015-07-31 16:31+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"POT-Creation-Date: 2016-03-02 13:09+0000\n"
+"PO-Revision-Date: 2016-01-29 02:52+0000\n"
+"Last-Translator: Chi-Hsun Tsai <chihsun.tsai@gmail.com>\n"
 "Language-Team: Chinese (http://www.transifex.com/mysociety/fixmystreet/language/zh/)\n"
 "Language: zh\n"
 "MIME-Version: 1.0\n"
@@ -19,44 +19,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:628
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:411
+#: perllib/FixMyStreet/DB/Result/Problem.pm:616
+#: perllib/FixMyStreet/Script/Reports.pm:189
 msgid " and "
 msgstr "與"
 
 #: templates/web/base/report/new/councils_text_all.html:2
-#: templates/web/base/report/new/councils_text_none.html:11
-#: templates/web/base/report/new/councils_text_none.html:2
+#: templates/web/base/report/new/councils_text_none.html:12
+#: templates/web/base/report/new/councils_text_none.html:15
 #: templates/web/base/report/new/councils_text_some.html:19
 #: templates/web/base/report/new/councils_text_some.html:22
 #: templates/web/base/report/new/councils_text_some.html:5
 msgid " or "
 msgstr "或"
 
-#: templates/web/base/admin/index.html:35
-#: templates/web/base/status/index.html:13
-msgid "%s confirmed alerts, %s unconfirmed"
-msgstr "%d 已確認通知, %d 未確認　"
-
-#: templates/web/base/admin/index.html:37
-#: templates/web/base/status/index.html:16
-#: templates/web/zurich/admin/index.html:6
-msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
-msgstr "%d 地方政府承辦人員 &ndash; %d 確認 %d 尚未確認"
-
 #: templates/web/base/admin/edit-league.html:12
 msgid "%d edits by %s"
 msgstr " 由 %d 編輯 %d"
-
-#: templates/web/base/admin/index.html:34
-#: templates/web/base/status/index.html:12
-msgid "%s live updates"
-msgstr "%d 現場更新"
-
-#: templates/web/base/admin/index.html:36
-#: templates/web/base/status/index.html:14
-msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
-msgstr "%d 問卷送出 &ndash; % 回覆(%s%%)"
 
 #: templates/web/base/pagination.html:10
 msgid "%d to %d of %d"
@@ -70,39 +49,58 @@ msgstr "%s -申報總結"
 #. ("%s here is the site name")
 #: templates/web/base/admin/header.html:10
 msgid "%s admin:"
-msgstr ""
+msgstr "%s 管理:"
+
+#: templates/web/base/status/stats.html:26
+#, fuzzy
+msgid "%s bodies"
+msgstr "有關單位"
+
+#: templates/web/base/status/stats.html:24
+msgid "%s confirmed alerts, %s unconfirmed"
+msgstr "%s 已確認通知, %s 未確認　"
+
+#: templates/web/base/status/stats.html:27
+#: templates/web/zurich/admin/index.html:6
+msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
+msgstr "%s 地方政府承辦人員 &ndash; %s 確認 %s 尚未確認"
 
 #. ("%s is the site name")
 #: templates/web/base/alert/index.html:7
-#, fuzzy
 msgid ""
 "%s has a variety of RSS feeds and email alerts for local\n"
 "problems, including alerts for all problems within a particular ward, or all\n"
 "problems within a certain distance of a particular location."
 msgstr ""
-"FixMyStree針對在地問題，提供各種 RSS 訂閱與電子郵件通知信，包括\n"
+"%s針對在地問題，提供各種 RSS 訂閱與電子郵件通知信，包括\n"
 "某指定區域或政府部門內各類問題的通知\n"
 "或是某一範圍內各類問題的通知"
 
 #. ("%s is the site name")
 #: templates/web/base/alert/index.html:11
-#, fuzzy
 msgid ""
 "%s has a variety of RSS feeds and email alerts for local problems, including\n"
 "alerts for all problems within a particular ward or council, or all problems\n"
 "within a certain distance of a particular location."
 msgstr ""
-"FixMyStree針對在地問題，提供各種 RSS 訂閱與電子郵件通知信，包括\n"
+"%s針對在地問題，提供各種 RSS 訂閱與電子郵件通知信，包括\n"
 "某指定區域或政府部門內各類問題的通知\n"
 "或是某一範圍內各類問題的通知"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:695
+#: templates/web/base/status/stats.html:23
+msgid "%s live updates"
+msgstr "%s 現場更新"
+
+#: templates/web/base/status/stats.html:25
+msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
+msgstr "%s 問卷送出 &ndash; % 回覆(%s%%)"
+
+#: perllib/FixMyStreet/DB/Result/Problem.pm:683
 msgid "%s ref:&nbsp;%s"
 msgstr "%s 流水號:&nbsp;%s "
 
 #. ("%s is the site name")
 #: templates/web/base/alert/_list.html:73
-#, fuzzy
 msgid ""
 "%s sends different categories of problem\n"
 "to the appropriate council, so problems within the boundary of a particular council\n"
@@ -111,21 +109,21 @@ msgid ""
 "council&rsquo;s alerts, but will only appear in the \"Within the boundary\" alert\n"
 "for the county council."
 msgstr ""
-"FixMyStreet 送出不同類別的問題申報給\n"
+"%s送出不同類別的問題申報給\n"
 "適宜的地方政府機關，如果問題發生在某政府的轄區內\n"
 "這樣處理或許的確適當。例如，塗鴉問題將\n"
 "申報給里/區機構，所以會在里/區機關的通告上\n"
 "而在地方政府的公告版上只會出現在轄內通知上"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:255 perllib/FixMyStreet/Cobrand/UK.pm:267
+#: perllib/FixMyStreet/Cobrand/UK.pm:256 perllib/FixMyStreet/Cobrand/UK.pm:268
 msgid "%s ward, %s"
 msgstr "%s 里/區, %s "
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:564
+#: perllib/FixMyStreet/DB/Result/Problem.pm:552
 msgid "%s, reported at %s"
 msgstr "%s 在 %s 處之申報  "
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:282 perllib/FixMyStreet/Cobrand/UK.pm:294
+#: perllib/FixMyStreet/Cobrand/UK.pm:283 perllib/FixMyStreet/Cobrand/UK.pm:295
 msgid "%s, within %s ward"
 msgstr "%s, 在%s 里/區"
 
@@ -133,9 +131,9 @@ msgstr "%s, 在%s 里/區"
 msgid "&copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors"
 msgstr "版本; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap開放街道地圖</a> 貢獻者"
 
-#: templates/web/zurich/report/new/fill_in_details_form.html:53
+#: templates/web/zurich/report/new/fill_in_details_form.html:46
 msgid "(Defect &amp; location of defect)"
-msgstr ""
+msgstr "(缺陷 &amp; 缺陷地點)"
 
 #: templates/web/base/admin/report_blocks.html:41
 #: templates/web/base/admin/users.html:31
@@ -144,15 +142,13 @@ msgstr "電郵為濫發信件"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:60
 #: templates/web/zurich/admin/report_edit.html:88
-#, fuzzy
 msgid "(No name)"
-msgstr "姓名"
+msgstr "(沒有姓名)"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:67
 #: templates/web/zurich/admin/report_edit.html:95
-#, fuzzy
 msgid "(No phone number)"
-msgstr "電話號碼"
+msgstr "(沒有電話號碼)"
 
 #: templates/web/base/alert/_list.html:24
 msgid "(a default distance which covers roughly 200,000 people)"
@@ -160,17 +156,16 @@ msgstr "預設距離約涵蓋20萬人口"
 
 #. ("%s is a list of distance links, e.g. [2km] / [5km] / [10km] / [20km]")
 #: templates/web/base/alert/_list.html:29
-#, fuzzy
 msgid "(alternatively the RSS feed can be customised, within %s)"
-msgstr "或可修改RSS訂閱"
-
-#: templates/web/base/report/_item.html:27
-#: templates/web/zurich/report/_item.html:21
-msgid "(closed)"
-msgstr "(結束)"
+msgstr "或可在 %s另外修改自定RSS訂閱"
 
 #: templates/web/base/report/_item.html:25
 #: templates/web/zurich/report/_item.html:19
+msgid "(closed)"
+msgstr "(結束)"
+
+#: templates/web/base/report/_item.html:23
+#: templates/web/zurich/report/_item.html:17
 msgid "(fixed)"
 msgstr "(己處理)"
 
@@ -178,37 +173,28 @@ msgstr "(己處理)"
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
 msgstr "(例如塗鴉, 文宣張貼, 人行道鋪板或街燈損壤, )"
 
-#: templates/web/base/report/_item.html:21
+#: templates/web/base/report/_item.html:19
 msgid "(not sent to council)"
 msgstr "不要向地方政府送出"
 
-#: templates/web/base/report/new/fill_in_details_form.html:200
 #: templates/web/zurich/report/new/fill_in_details_form.html:82
 msgid "(optional)"
 msgstr "(任選)"
 
-#: templates/web/fixmystreet/report/public_label.html:1
+#: templates/web/base/report/public_label.html:1
 msgid "(public)"
 msgstr "(公開)"
 
-#: templates/web/base/report/_item.html:20
+#: templates/web/base/report/_item.html:18
 msgid "(sent to both)"
 msgstr "兩個都送出"
 
-#: templates/web/base/report/new/fill_in_details_form.html:194
-msgid "(we never show your email address or phone number)"
-msgstr "(我們不會透露您的電話或電郵)"
-
-#: templates/web/base/report/update-form.html:159
-msgid "(we never show your email)"
-msgstr "(我們不會公開您的電子郵件)"
-
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:673
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:668
 #: perllib/FixMyStreet/DB/Result/Problem.pm:410
 msgid "-- Pick a category --"
 msgstr "選擇分類"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:637
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:632
 #: perllib/FixMyStreet/DB/Result/Problem.pm:416
 msgid "-- Pick a property type --"
 msgstr "選擇公物種類"
@@ -230,54 +216,41 @@ msgstr ""
 #. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:27
 msgid "<label>Show %s</label> <label>about %s</label>"
-msgstr ""
+msgstr "<label>颢示 %s</label> <label>關於 %s</label>"
 
-#: templates/web/base/admin/index.html:32
-#: templates/web/base/status/index.html:11
+#: templates/web/base/status/stats.html:18
 #: templates/web/zurich/admin/index.html:4
 msgid "<strong>%s</strong> live problems"
-msgstr "<strong>%d</strong> 現場問題"
+msgstr "<strong>%s</strong> 現場問題"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:39
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:2
 msgid "<strong>No</strong> Let me confirm my report by email"
 msgstr "<strong>不</strong> 我要利用電子郵件確認我的申報 "
 
-#: templates/web/fixmystreet/report/update-form.html:112
+#: templates/web/base/report/update/form_user_loggedout_by_email.html:2
 msgid "<strong>No</strong> Let me confirm my update by email"
 msgstr "<strong>不</strong> 我要用電子郵件收到更新通知"
 
-#: templates/web/base/auth/general.html:48
+#: templates/web/base/auth/general.html:87
 #: templates/web/zurich/auth/general.html:51
 msgid "<strong>No</strong> let me sign in by email"
 msgstr "<strong>不</strong> 我要用電子郵件登入"
 
-#: templates/web/base/report/new/fill_in_details_form.html:145
-msgid "<strong>No</strong>, let me confirm my report by email:"
-msgstr "<strong>不</strong>, 我想用電子郵件確認我的申報l:"
-
-#: templates/web/base/report/update-form.html:118
-msgid "<strong>No</strong>, let me confirm my update by email:"
-msgstr "<strong>不</strong>, 我要利用電子郵件收取更新通知:"
-
-#: templates/web/base/auth/general.html:34
-#: templates/web/base/report/new/fill_in_details_form.html:123
-#: templates/web/base/report/update-form.html:96
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:15
-#: templates/web/fixmystreet/report/update-form.html:89
+#: templates/web/base/auth/general.html:70
+#: templates/web/base/report/new/form_user_loggedout_password.html:3
+#: templates/web/base/report/update/form_user_loggedout_password.html:2
 msgid "<strong>Yes</strong> I have a password"
 msgstr "<strong>是</strong> 我有密碼"
 
-#: templates/web/base/static/about-en-gb.html:1
-#: templates/web/base/static/about-en-gb.html:3
+#: templates/web/base/about/about-en-gb.html:1
+#: templates/web/base/about/about-en-gb.html:3
 msgid "About us"
 msgstr "關於我們"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:8
-#: templates/web/base/report/update-form.html:30
-#: templates/web/base/report/update-form.html:31
-#: templates/web/fixmystreet/report/update-form.html:28
-#: templates/web/fixmystreet/report/update-form.html:29
+#: templates/web/base/report/update/form_update.html:34
+#: templates/web/base/report/update/form_update.html:35
 msgid "Action Scheduled"
 msgstr "行動排程 "
 
@@ -312,14 +285,13 @@ msgstr "新增種類"
 msgid "Add user"
 msgstr "新增使用者"
 
-#: templates/web/base/my/my.html:52
+#: templates/web/base/my/my.html:56
 msgid "Added %s"
 msgstr "新增 %s"
 
 #: templates/web/base/report/new/category_extras.html:9
-#, fuzzy
 msgid "Additional Information"
-msgstr "待核可"
+msgstr "其餘資訊"
 
 #: templates/web/base/auth/change_password.html:29
 msgid "Again:"
@@ -333,8 +305,7 @@ msgstr "%s創建之 %d通知,　種類 %s, 參數 %s / %s"
 msgid "Alert %d disabled (created %s)"
 msgstr "%d 關閉通知 "
 
-#: templates/web/base/report/update-form.html:164
-#: templates/web/fixmystreet/report/update-form.html:150
+#: templates/web/base/report/update/form_name.html:20
 msgid "Alert me to future updates"
 msgstr "通知我此事後續"
 
@@ -344,9 +315,8 @@ msgid "All Reports"
 msgstr "所有事件申報"
 
 #: templates/web/zurich/admin/stats.html:5
-#, fuzzy
 msgid "All Reports as CSV"
-msgstr "所有事件申報"
+msgstr "所有事件申報存成CSV格式"
 
 #: templates/web/base/footer.html:11 templates/web/fixmystreet/footer.html:32
 #: templates/web/zurich/admin/index-dm.html:12
@@ -367,10 +337,8 @@ msgstr "你所提供的資訊即將送出"
 
 #: templates/web/base/report/new/councils_text_all.html:2
 #: templates/web/base/report/new/councils_text_all.html:4
-#: templates/web/base/report/new/fill_in_details_form.html:12
-#: templates/web/base/report/new/fill_in_details_form.html:14
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:10
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:11
+#: templates/web/base/report/new/fill_in_details_form.html:10
+#: templates/web/base/report/new/fill_in_details_form.html:9
 msgid "All the information you provide here will be sent to <strong>%s</strong>."
 msgstr "所有您提供的资訊將送出給<strong>%s</strong>."
 
@@ -392,6 +360,10 @@ msgstr "匿名:"
 msgid "Are you a developer?"
 msgstr "你是程式開發者嗎?"
 
+#: templates/web/base/js/translation_strings.html:52
+msgid "Are you sure you want to cancel this upload?"
+msgstr ""
+
 #: templates/web/base/admin/body-form.html:69
 #: templates/web/base/admin/body.html:16
 #: templates/web/zurich/admin/body-form.html:24
@@ -404,9 +376,8 @@ msgid "As this is a staging site and %s is false, reports made on this site will
 msgstr "作為一個支援平台　%s出錯，本站所作的申報將送達給申報者，而不是申報類別下提供的承辦人員。　　"
 
 #: templates/web/zurich/admin/report_edit.html:213
-#, fuzzy
 msgid "Assign to competent body:"
-msgstr "分派給外部機："
+msgstr "分派給適任的機關　"
 
 #: templates/web/zurich/admin/report_edit.html:173
 #: templates/web/zurich/admin/stats.html:36
@@ -425,16 +396,16 @@ msgstr "交派給下級單位："
 msgid "Assigned to %s"
 msgstr "派給　%s"
 
-#: templates/web/base/open311/index.html:84
+#: templates/web/base/open311/index.html:76
 msgid "At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date."
 msgstr "每一則詢問的申報幾乎達 %d地回覆了。所有的要求，依其時間排列，故搜尋時請設定啟始與結束日期。"
 
-#: templates/web/base/open311/index.html:76
+#: templates/web/base/open311/index.html:68
 msgid "At the moment only searching for and looking at reports work."
 msgstr "目前僅提供部份查詢與查閱"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:373
-#: templates/web/zurich/report/_item.html:11
+#: templates/web/zurich/report/_item.html:9
 msgid "Awaiting moderation"
 msgstr "待核可"
 
@@ -446,7 +417,7 @@ msgstr "回上層"
 msgid "Ban email address"
 msgstr "禁止之電子郵件"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1276
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1285
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:392
 #: templates/web/base/admin/bodies.html:1 templates/web/zurich/header.html:64
 msgid "Bodies"
@@ -469,14 +440,14 @@ msgstr "日期"
 
 #: templates/web/base/auth/token.html:21 templates/web/base/email_sent.html:18
 msgid "Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time."
-msgstr ""
+msgstr "你的信箱中找不到我們的來信嗎？先檢查看看垃圾回收桶，通常99%的問題可獲解決"
 
 #: templates/web/base/around/_report_banner.html:5
 msgid "Can't see the map? <em>Skip this step</em>"
 msgstr "無法顯示地圖？ <em>略過本步驟</em>"
 
 #: templates/web/base/admin/body.html:68
-#: templates/web/base/admin/index.html:61
+#: templates/web/base/admin/index.html:54
 #: templates/web/base/report/new/category.html:10
 #: templates/web/base/report/new/category_wrapper.html:3
 #: templates/web/zurich/admin/body.html:14
@@ -487,8 +458,8 @@ msgstr "無法顯示地圖？ <em>略過本步驟</em>"
 msgid "Category"
 msgstr "類別"
 
-#: templates/web/base/admin/index.html:59
-#: templates/web/base/admin/index.html:67
+#: templates/web/base/admin/index.html:52
+#: templates/web/base/admin/index.html:60
 msgid "Category fix rate for problems > 4 weeks old"
 msgstr "4週前己修復問題之類別"
 
@@ -501,7 +472,7 @@ msgstr "4週前己修復問題之類別"
 msgid "Category:"
 msgstr "類別:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:402
+#: perllib/FixMyStreet/Script/Reports.pm:180
 msgid "Category: %s"
 msgstr "類別: %s"
 
@@ -553,7 +524,7 @@ msgstr "選擇民眾可理解的<strong>類別</strong>  (例如., \"路面坑�
 
 #: templates/web/zurich/admin/response_templates_select.html:6
 msgid "Choose a template"
-msgstr ""
+msgstr "選擇模版"
 
 #: templates/web/base/admin/stats.html:65
 #: templates/web/base/admin/stats.html:71
@@ -561,25 +532,25 @@ msgid "Click here or enter as dd/mm/yyyy"
 msgstr "點選此處或輸入日期/月份/年份"
 
 #: templates/web/base/around/_report_banner.html:2
-#: templates/web/base/js/translation_strings.html:50
+#: templates/web/base/js/translation_strings.html:55
 msgid "Click map to report a problem"
 msgstr "點擊地圖以申報問題  "
 
 #: templates/web/base/email_sent.html:13
 msgid "Click the link in our confirmation email to activate your alert."
-msgstr ""
+msgstr "選擇確認電子郵件上的連結以啟動你的通知"
 
 #: templates/web/base/email_sent.html:9
 msgid "Click the link in our confirmation email to publish your problem."
-msgstr ""
+msgstr "選擇確認電子郵件上的連結以發佈你的問題　"
 
 #: templates/web/base/email_sent.html:11
 msgid "Click the link in our confirmation email to publish your update."
-msgstr ""
+msgstr "選擇確認電子郵件上的連結以發佈你的更新"
 
 #: templates/web/base/auth/token.html:18
 msgid "Click the link in our confirmation email to sign in."
-msgstr ""
+msgstr "選擇確認電子郵件上的連結以作登入"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:196
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:969
@@ -588,7 +559,7 @@ msgstr ""
 #: templates/web/base/admin/report_blocks.html:25
 #: templates/web/base/dashboard/index.html:142
 #: templates/web/base/dashboard/index.html:144
-#: templates/web/fixmystreet/report/banner.html:15
+#: templates/web/base/report/banner.html:15
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:10
 #: templates/web/zurich/admin/header.html:16
@@ -596,7 +567,7 @@ msgstr ""
 msgid "Closed"
 msgstr "關閉"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:794
+#: perllib/FixMyStreet/DB/Result/Problem.pm:779
 msgid "Closed by council"
 msgstr "由地方政府關閉"
 
@@ -622,7 +593,7 @@ msgstr "聯合品牌資料:"
 msgid "Cobrand:"
 msgstr "聯合品牌:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1283
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1292
 #: templates/web/base/admin/config_page.html:1
 msgid "Configuration"
 msgstr "設定"
@@ -635,13 +606,14 @@ msgstr "組態端 點"
 msgid "Confirm"
 msgstr "確認"
 
-#: templates/web/base/auth/token.html:1 templates/web/zurich/auth/token.html:1
+#: templates/web/base/auth/token.html:1
 msgid "Confirm account"
 msgstr "確認帳戶"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:33
-#: templates/web/fixmystreet/report/update-form.html:107
-msgid "Confirm by email below, providing a new password at that point. When you confirm, your password will be updated."
+#: templates/web/base/report/new/form_user_loggedout_password.html:21
+#: templates/web/base/report/update/form_user_loggedout_password.html:20
+#, fuzzy
+msgid "Confirm by email instead, providing a new password at that point. When you confirm, your password will be updated."
 msgstr "確認下方電子郵件，輸入新密碼，按確認鍵後，您的密碼即刻更新。"
 
 #: templates/web/base/questionnaire/creator_fixed.html:1
@@ -671,35 +643,27 @@ msgid "Confirmed:"
 msgstr "已確認："
 
 #. ("%s is the site name")
-#: templates/web/base/faq/faq-en-gb.html:8 templates/web/base/footer.html:24
-#: templates/web/base/open311/index.html:8
-#: templates/web/base/static/privacy.html:10
-#: templates/web/fixmystreet/contact/index.html:12
-#, fuzzy
+#: templates/web/base/about/_sidebar.html:6 templates/web/base/footer.html:24
 msgid "Contact %s"
-msgstr "連絡我們"
+msgstr "聯絡 %s"
 
 #: templates/web/base/contact/index.html:1
 #: templates/web/base/contact/index.html:2
 #: templates/web/base/contact/submit.html:1
-#: templates/web/fixmystreet/contact/index.html:1
-#: templates/web/fixmystreet/contact/index.html:2
 msgid "Contact Us"
 msgstr "連絡我們"
 
-#: templates/web/base/contact/index.html:6
-#: templates/web/fixmystreet/contact/index.html:20
+#: templates/web/base/contact/index.html:12
 msgid "Contact the team"
 msgstr "連結本團隊"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:40
 #: templates/web/zurich/admin/report_edit.html:59
-#, fuzzy
 msgid "Coordinates:"
 msgstr "協同單位:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1420
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1448
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1429
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1457
 msgid "Could not find user"
 msgstr "找不到該戶用"
 
@@ -717,7 +681,7 @@ msgstr "地方政府"
 msgid "Council contacts for %s"
 msgstr "聯繋地方政府 %s"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:693
+#: perllib/FixMyStreet/DB/Result/Problem.pm:681
 msgid "Council ref:&nbsp;%s"
 msgstr "地方政府流水號　ref:&nbsp;%s"
 
@@ -732,7 +696,7 @@ msgstr "地方政府"
 msgid "Count"
 msgstr "數量"
 
-#: templates/web/base/email_sent.html:1 templates/web/zurich/email_sent.html:1
+#: templates/web/base/email_sent.html:1
 msgid "Create a report"
 msgstr "創建申報"
 
@@ -742,9 +706,8 @@ msgid "Create category"
 msgstr "創建類別"
 
 #: templates/web/zurich/admin/template_edit.html:29
-#, fuzzy
 msgid "Create template"
-msgstr "創建申報"
+msgstr "創建模版"
 
 #: templates/web/base/admin/problem_row.html:34
 #: templates/web/zurich/admin/templates.html:10
@@ -770,7 +733,7 @@ msgstr "目前未創建內文"
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:834
 #: templates/web/zurich/admin/report_edit-sdm.html:109
 msgid "Customer not contactable"
-msgstr ""
+msgstr "無法聨絡上的客戶"
 
 #: templates/web/base/dashboard/index.html:5
 #: templates/web/base/dashboard/index.html:7
@@ -781,10 +744,10 @@ msgstr "控制台"
 msgid "Dealt with by subdivision within 5 working days"
 msgstr "下屬單位5個工作天內處理。"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:878
+#: perllib/FixMyStreet/App/Controller/Admin.pm:877
 #: templates/web/zurich/admin/template_edit.html:33
 msgid "Delete template"
-msgstr ""
+msgstr "刪除模版"
 
 #: templates/web/base/admin/bodies.html:27
 #: templates/web/base/admin/body.html:177
@@ -794,7 +757,7 @@ msgstr ""
 msgid "Deleted"
 msgstr "刪除"
 
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:51
+#: templates/web/base/report/new/form_report.html:45
 #: templates/web/zurich/admin/index-dm.html:22
 #: templates/web/zurich/admin/index-sdm.html:20
 #: templates/web/zurich/admin/reports.html:12
@@ -802,12 +765,11 @@ msgid "Description"
 msgstr "描述"
 
 #: templates/web/base/js/translation_strings.html:34
-#: templates/web/zurich/report/new/fill_in_details_form.html:42
+#: templates/web/zurich/report/new/fill_in_details_form.html:68
 msgid "Details"
 msgstr "細節"
 
 #: templates/web/base/admin/report_edit.html:20
-#: templates/web/base/report/new/fill_in_details_form.html:62
 #: templates/web/zurich/admin/report_edit-sdm.html:27
 #: templates/web/zurich/admin/report_edit.html:29
 #: templates/web/zurich/admin/report_edit.html:43
@@ -820,7 +782,6 @@ msgstr "下放"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:50
 #: templates/web/zurich/admin/report_edit.html:69
-#, fuzzy
 msgid "Didn't use map"
 msgstr "不使用地圖"
 
@@ -829,29 +790,30 @@ msgid "Diligency prize league table"
 msgstr "勤奮表現名單"
 
 #. ("%s is the site name")
-#: templates/web/base/auth/general.html:31
-#: templates/web/base/report/new/fill_in_details_form.html:114
-#: templates/web/base/report/update-form.html:87
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:11
-#: templates/web/fixmystreet/report/update-form.html:86
-#, fuzzy
+#: templates/web/base/auth/general.html:48
+#: templates/web/base/report/new/form_user_loggedout.html:18
+#: templates/web/base/report/new/oauth_email_form.html:18
+#: templates/web/base/report/update-form.html:29
+#: templates/web/base/report/update/form_user_loggedout.html:17
 msgid "Do you have a %s password?"
-msgstr "您是否有 FixMyStreet 密碼？ "
+msgstr "您是否有 %s密碼？ "
 
 #: templates/web/base/questionnaire/index.html:55
 msgid "Don&rsquo;t know"
 msgstr "不知道"
 
-#: templates/web/fixmystreet/contact/index.html:118
+#: templates/web/base/contact/index.html:110
 msgid "Don't like forms?"
 msgstr "不喜歡此表單？"
 
+#: templates/web/base/js/translation_strings.html:51
+msgid "Drag and drop photos here or <u>click to upload</u>"
+msgstr ""
+
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:14
-#: templates/web/base/report/update-form.html:30
-#: templates/web/base/report/update-form.html:32
-#: templates/web/fixmystreet/report/update-form.html:28
-#: templates/web/fixmystreet/report/update-form.html:30
+#: templates/web/base/report/update/form_update.html:34
+#: templates/web/base/report/update/form_update.html:36
 msgid "Duplicate"
 msgstr "複製 "
 
@@ -904,7 +866,7 @@ msgstr "編輯器"
 #: templates/web/base/admin/category_edit.html:91
 #: templates/web/base/admin/flagged.html:38
 #: templates/web/base/admin/users.html:16
-#: templates/web/base/auth/general.html:22
+#: templates/web/base/auth/general.html:39
 #: templates/web/zurich/admin/body-form.html:9
 #: templates/web/zurich/admin/body.html:15
 #: templates/web/zurich/auth/general.html:24
@@ -912,7 +874,7 @@ msgstr "編輯器"
 msgid "Email"
 msgstr "電子郵件"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1396
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1405
 msgid "Email added to abuse list"
 msgstr "電子郵件列入濫發名單"
 
@@ -928,7 +890,7 @@ msgstr "建立電郵通知"
 msgid "Email alert deleted"
 msgstr "取消電郵通知"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1393
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1402
 msgid "Email already in abuse list"
 msgstr "電子郵件己在濫發名單"
 
@@ -936,41 +898,36 @@ msgstr "電子郵件己在濫發名單"
 msgid "Email me new local problems"
 msgstr "以電郵通知其它問題"
 
-#: templates/web/base/report/display.html:38
-msgid "Email me updates"
-msgstr "以電郵通知更新"
-
 #: templates/web/base/admin/category_edit.html:31
 #: templates/web/base/admin/report_edit.html:62
 #: templates/web/base/admin/update_edit.html:33
 #: templates/web/base/admin/user-form.html:20
 #: templates/web/base/alert/updates.html:13
-#: templates/web/base/report/display.html:42
 #: templates/web/zurich/admin/body.html:47
 msgid "Email:"
 msgstr "電子郵件:"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:329
+#: perllib/FixMyStreet/Script/Reports.pm:108
 msgid "Email: %s"
 msgstr "電子郵件: %s"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:639
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:634
 msgid "Empty flat or maisonette"
 msgstr "閒置的公寓或大樓"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:638
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:633
 msgid "Empty house or bungalow"
 msgstr "閒置的房舍"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:641
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:636
 msgid "Empty office or other commercial"
 msgstr "閒置的辦公室或其它商業空間"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:642
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:637
 msgid "Empty pub or bar"
 msgstr "閒置的酒館或咖啡廳"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:643
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:638
 msgid "Empty public building - school, hospital, etc."
 msgstr "閒置的公共建築物，如學校,醫院等"
 
@@ -1008,7 +965,7 @@ msgstr "結束點"
 msgid "Enter a Z&uuml;rich street name"
 msgstr "輸入街道名稱　"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:13
+#: perllib/FixMyStreet/Cobrand/UK.pm:14
 msgid "Enter a nearby UK postcode, or street name and area"
 msgstr "輸入本區的郵編，街名或區域。"
 
@@ -1026,14 +983,9 @@ msgstr "輸入最近的街名或地區"
 msgid "Enter a nearby street name and area, postal code or district in Delhi"
 msgstr "輸入最近的街名，地區或郵編號碼"
 
-#: templates/web/base/report/new/fill_in_details_form.html:152
-#: templates/web/base/report/update-form.html:125
-msgid "Enter a new password:"
-msgstr "請輸入新密碼"
-
-#: templates/web/base/auth/general.html:60
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:75
-#: templates/web/fixmystreet/report/update-form.html:123
+#: templates/web/base/auth/general.html:99
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:38
+#: templates/web/base/report/update/form_user_loggedout_by_email.html:13
 #: templates/web/zurich/auth/general.html:65
 msgid "Enter a password"
 msgstr "請輸入密碼"
@@ -1043,28 +995,28 @@ msgid "Enter details of the problem"
 msgstr "請在此填寫問題的細節"
 
 #: templates/web/base/errors/generic.html:1
-#: templates/web/base/errors/generic.html:3
+#: templates/web/base/errors/generic.html:4
 #: templates/web/base/tokens/abuse.html:1
 #: templates/web/base/tokens/abuse.html:3
 #: templates/web/base/tokens/error.html:1
-#: templates/web/base/tokens/error.html:3
+#: templates/web/base/tokens/error.html:5
 msgid "Error"
 msgstr "錯誤"
 
 #: templates/web/base/reports/_list-filters.html:12
 msgid "Everything"
-msgstr ""
+msgstr "一切"
 
 #: templates/web/base/admin/body.html:14
 #: templates/web/base/admin/category_edit.html:18
 msgid "Example postcode %s"
 msgstr "郵遞區號範例 %s"
 
-#: templates/web/base/open311/index.html:94
+#: templates/web/base/open311/index.html:86
 msgid "Examples:"
 msgstr "範例："
 
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:55
+#: templates/web/base/report/new/form_report.html:49
 msgid "Explain what’s wrong, exactly where it is, and how long it’s been there…"
 msgstr "說明什麼壞掉故障了，確切的地點以及它置於此處有多久了"
 
@@ -1073,11 +1025,11 @@ msgstr "說明什麼壞掉故障了，確切的地點以及它置於此處有多
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:12
 msgid "Extern"
-msgstr ""
+msgstr "外圍"
 
 #: templates/web/base/admin/body-form.html:81
 msgid "External URL"
-msgstr ""
+msgstr "外部網址"
 
 #: templates/web/base/admin/category_edit.html:27
 #: templates/web/base/admin/report_edit.html:74
@@ -1105,17 +1057,15 @@ msgstr "選擇<strong>涵蓋的區域</strong> <em>編輯有關單位</em> 表�
 msgid "FixMyStreet"
 msgstr "FixMyStreet"
 
-#: templates/web/base/admin/index.html:61
+#: templates/web/base/admin/index.html:54
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:24
 #: templates/web/base/admin/report_blocks.html:9
 #: templates/web/base/dashboard/index.html:142
 #: templates/web/base/dashboard/index.html:144
-#: templates/web/base/report/update-form.html:30
-#: templates/web/base/report/update-form.html:34
-#: templates/web/fixmystreet/report/banner.html:12
-#: templates/web/fixmystreet/report/update-form.html:28
-#: templates/web/fixmystreet/report/update-form.html:32
+#: templates/web/base/report/banner.html:12
+#: templates/web/base/report/update/form_update.html:34
+#: templates/web/base/report/update/form_update.html:38
 msgid "Fixed"
 msgstr "已處理"
 
@@ -1142,7 +1092,7 @@ msgstr "標記警告為刪除　"
 msgid "Flag user"
 msgstr "標記警告用戶"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1281
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1290
 #: templates/web/base/admin/users.html:19
 msgid "Flagged"
 msgstr "標記警告"
@@ -1173,36 +1123,31 @@ msgstr "追踪里/區連結，以檢視該區內之申報"
 msgid "For more information, see <a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>How FixMyStreet uses Mapit</a>."
 msgstr "更多資訊，請詳見<a href='http://fixmystreet.org/customising/fms_and_mapit' class='admin-offsite-link'>如何使用 FixMyStreet 地圖標記</a>（英文）"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:32
-#: templates/web/fixmystreet/report/update-form.html:106
+#: templates/web/base/report/new/form_user_loggedout_password.html:20
+#: templates/web/base/report/update/form_user_loggedout_password.html:19
 msgid "Forgotten your password?"
 msgstr "忘記您的密碼?"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:752
-#, fuzzy
 msgid "Forwarded to external body"
-msgstr "分派給外部機："
+msgstr "轉寄給外部機構"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:753
-#, fuzzy
 msgid "Forwarded wish to external body"
-msgstr "分派給外部機："
+msgstr "轉寄願望給外部機構"
 
-#: templates/web/base/faq/faq-en-gb.html:1
-#: templates/web/base/faq/faq-en-gb.html:13
-#: templates/web/base/faq/faq-en-gb.html:6
-#: templates/web/base/open311/index.html:6
-#: templates/web/base/static/privacy.html:8
-#: templates/web/fixmystreet/contact/index.html:10
+#: templates/web/base/about/_sidebar.html:4
+#: templates/web/base/about/faq-en-gb.html:1
+#: templates/web/base/about/faq-en-gb.html:5
 msgid "Frequently Asked Questions"
 msgstr "常見問題回覆　"
 
-#: templates/web/base/open311/index.html:136
+#: templates/web/base/open311/index.html:128
 msgid "GeoRSS on Google Maps"
 msgstr "google 地圖上的地理RSS"
 
+#: templates/web/base/report/display_tools.html:11
 #: templates/web/fixmystreet/around/_updates.html:3
-#: templates/web/fixmystreet/report/display.html:35
 msgid "Get updates"
 msgstr "取得更新"
 
@@ -1235,7 +1180,7 @@ msgstr "走"
 msgid "Going to send questionnaire?"
 msgstr "即將送出問卷？"
 
-#: templates/web/base/admin/index.html:42
+#: templates/web/base/admin/index.html:35
 msgid "Graph of problem creation by status over time"
 msgstr "隨時間産生的問題圖片"
 
@@ -1252,7 +1197,7 @@ msgid "Have you ever reported a problem to a council before, or is this your fir
 msgstr "您之前是否曾向地方政府申報過問題？或者此為您的首次申報？　"
 
 #: templates/web/base/footer.html:15 templates/web/fixmystreet/footer.html:38
-#: templates/web/zurich/faq/faq-de-ch.html:1
+#: templates/web/zurich/about/faq-de-ch.html:1
 #: templates/web/zurich/footer.html:22
 #: templates/web/zurich/nav_over_content.html:8
 msgid "Help"
@@ -1303,7 +1248,7 @@ msgstr "如何申報問題 "
 msgid "How to send successful reports"
 msgstr "如何成功地送出申報"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:754
+#: perllib/FixMyStreet/App/Controller/Admin.pm:752
 msgid "I am afraid you cannot confirm unconfirmed reports."
 msgstr "您不能確認此尚未確認之申報　"
 
@@ -1320,10 +1265,6 @@ msgstr "我利用@fixmystreet 申報了一個問題 "
 #: perllib/FixMyStreet/App/Controller/Questionnaire.pm:96
 msgid "I'm afraid we couldn't locate your problem in the database.\n"
 msgstr " 我們無法在資料庫中找到您的問題。\n"
-
-#: perllib/FixMyStreet/App/Controller/Tokens.pm:327
-msgid "I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n"
-msgstr "們無法驗證此代號，如果您從電子郵件中複製了超連結網址，請檢查您複製是否正確。\n"
 
 #: templates/web/base/admin/flagged.html:14
 #: templates/web/base/admin/list_updates.html:6
@@ -1358,25 +1299,18 @@ msgstr ""
 msgid "If you get some more information about the status of your problem, please come back to the site and leave an update."
 msgstr "如果你對申報之問題有進一步狀況，歡迎回到本站留言更新"
 
-#: templates/web/base/report/new/councils_text_none.html:2
-#: templates/web/base/report/new/councils_text_none.html:8
+#: templates/web/base/report/new/councils_text_none.html:10
+#: templates/web/base/report/new/councils_text_none.html:9
 msgid "If you submit a problem here the subject and details of the problem will be public, but the problem will <strong>not</strong> be reported to the council."
 msgstr "您在此交付投訴問題的主旨與細節都將在此公開, 但此問題 <strong>n並不會</strong> 被呈遞給地方政府。"
 
-#: templates/web/zurich/auth/token.html:19
-#: templates/web/zurich/email_sent.html:7
-msgid "If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way."
-msgstr "如果您使用網頁電子郵件或開啟垃圾信件過濾，您最好檢查一下您的垃圾信匧，本站郵件可能被歸到該分類下。"
-
 #: templates/web/base/questionnaire/index.html:68
-#, fuzzy
 msgid ""
 "If you wish to leave a public update on the problem, please enter it here\n"
 "(please note it will not be sent to the council)."
 msgstr ""
 "如果您希望公開留言該問題之更新，請在此輸入\n"
-"(請注意它不會自動送到地方政府)例如\n"
-"您對於原問題已獲解決的體驗　"
+"(請注意它不會自動送到地方政府)"
 
 #: templates/web/base/admin/body.html:149
 msgid "If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here."
@@ -1426,10 +1360,8 @@ msgstr "無效的訂閱選項"
 
 #: templates/web/base/dashboard/index.html:142
 #: templates/web/base/dashboard/index.html:144
-#: templates/web/base/report/update-form.html:30
-#: templates/web/base/report/update-form.html:32
-#: templates/web/fixmystreet/report/update-form.html:28
-#: templates/web/fixmystreet/report/update-form.html:30
+#: templates/web/base/report/update/form_update.html:34
+#: templates/web/base/report/update/form_update.html:36
 msgid "In Progress"
 msgstr "處理中"
 
@@ -1437,7 +1369,7 @@ msgstr "處理中"
 msgid "In abuse table?"
 msgstr "濫用表格？"
 
-#: templates/web/base/open311/index.html:88
+#: templates/web/base/open311/index.html:80
 msgid "In addition, the following attributes that are not part of the Open311 v2 specification are returned: agency_sent_datetime, title (also returned as part of description), interface_used, comment_count, requestor_name (only present if requestor allowed the name to be shown on this site)."
 msgstr "此外，下列理由並非為Open311 v2更新特定部份回覆傳送:  agency_sent_datetime, 主旨(部份回覆之敍述), interface_used, comment_count, requestor_name (只有在同意姓名公開下才會呈現)."
 
@@ -1445,7 +1377,7 @@ msgstr "此外，下列理由並非為Open311 v2更新特定部份回覆傳送: 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:963
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:7
-#: templates/web/fixmystreet/report/banner.html:19
+#: templates/web/base/report/banner.html:19
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:8
 msgid "In progress"
@@ -1480,7 +1412,7 @@ msgstr "內部推薦"
 msgid "Invalid agency_responsible value %s"
 msgstr "無效的權責單位數值 %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1201
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1210
 msgid "Invalid end date"
 msgstr "無效的結束日期"
 
@@ -1488,7 +1420,7 @@ msgstr "無效的結束日期"
 msgid "Invalid format %s specified."
 msgstr "無效的%s 特定格式"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1197
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1206
 msgid "Invalid start date"
 msgstr "無效的開始日期"
 
@@ -1496,14 +1428,12 @@ msgstr "無效的開始日期"
 #: templates/web/base/admin/report_blocks.html:5
 #: templates/web/base/dashboard/index.html:142
 #: templates/web/base/dashboard/index.html:143
-#: templates/web/base/report/update-form.html:30
-#: templates/web/base/report/update-form.html:31
-#: templates/web/fixmystreet/report/update-form.html:28
-#: templates/web/fixmystreet/report/update-form.html:29
+#: templates/web/base/report/update/form_update.html:34
+#: templates/web/base/report/update/form_update.html:35
 msgid "Investigating"
 msgstr "調查中"
 
-#: templates/web/fixmystreet/contact/blurb.html:8
+#: templates/web/base/contact/blurb.html:8
 msgid "It's often quickest to <a href=\"%s\">check our FAQs</a> and see if the answer is there."
 msgstr "最快方式是 <a href=\"%s\">先查看問答集</a> ，看看答案是否在此"
 
@@ -1513,19 +1443,17 @@ msgstr "正呈送給地方政府中"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:184
 msgid "Jurisdiction Unknown"
-msgstr ""
+msgstr "未知的管轄機關"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:927
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:15
 msgid "Jurisdiction unknown"
-msgstr ""
+msgstr "未知的管轄機關"
 
-#: templates/web/base/auth/general.html:44
-#: templates/web/base/report/new/fill_in_details_form.html:132
-#: templates/web/base/report/update-form.html:105
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:28
-#: templates/web/fixmystreet/report/update-form.html:102
+#: templates/web/base/auth/general.html:80
+#: templates/web/base/report/new/form_user_loggedout_password.html:16
+#: templates/web/base/report/update/form_user_loggedout_password.html:15
 #: templates/web/zurich/auth/general.html:40
 msgid "Keep me signed in on this computer"
 msgstr "新增類別承辦人"
@@ -1583,12 +1511,13 @@ msgid "MAP"
 msgstr "地圖"
 
 #: templates/web/base/js/translation_strings.html:45
+#: templates/web/base/maps/google-ol.html:13
 msgid "Map"
 msgstr "地圖"
 
 #: templates/web/base/admin/report_edit.html:68
 msgid "Mark as sent"
-msgstr ""
+msgstr "標註為關閉"
 
 #: templates/web/base/admin/user-form.html:44
 msgid "Mark users whose behaviour you want to keep a check on as <strong>flagged</strong>."
@@ -1596,29 +1525,23 @@ msgstr "標註用戶哪些行為您將要給予<strong>警告標記</strong>."
 
 #: templates/web/base/reports/index.html:24
 msgid "Marked fixed/closed in the past eight weeks"
-msgstr ""
+msgstr "過去八週內標記為已修復/結案情況"
 
 #: templates/web/base/reports/index.html:25
 msgid "Marked fixed/closed more than eight weeks ago"
-msgstr ""
+msgstr "八週前曾經標記為已修復/結案"
 
-#: templates/web/fixmystreet/contact/index.html:106
+#: templates/web/base/contact/index.html:98
 msgid "Message"
 msgstr "留言"
 
 #: templates/web/zurich/admin/report_edit.html:284
-#, fuzzy
 msgid "Message to competent body:"
-msgstr "分派給外部機："
+msgstr "給適任單位的訊息"
 
 #: templates/web/zurich/admin/report_edit.html:282
-#, fuzzy
 msgid "Message to external body:"
-msgstr "分派給外部機："
-
-#: templates/web/base/contact/index.html:97
-msgid "Message:"
-msgstr "留言"
+msgstr "給外部機構的訊息"
 
 #: perllib/FixMyStreet/App/Controller/Open311.pm:445
 msgid "Missing jurisdiction_id"
@@ -1632,10 +1555,6 @@ msgstr "一個工作天內協調出部門"
 msgid "Month"
 msgstr "月份"
 
-#: templates/web/base/report/display.html:34
-msgid "More problems nearby"
-msgstr "更多鄰近的問題　"
-
 #: templates/web/base/admin/bodies.html:21
 #: templates/web/base/admin/body-form.html:18
 #: templates/web/base/admin/flagged.html:16
@@ -1643,11 +1562,11 @@ msgstr "更多鄰近的問題　"
 #: templates/web/base/admin/list_updates.html:7
 #: templates/web/base/admin/reports.html:13
 #: templates/web/base/admin/users.html:15
-#: templates/web/base/auth/general.html:50
+#: templates/web/base/auth/general.html:89
+#: templates/web/base/report/new/form_user_loggedin.html:9
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:7
+#: templates/web/base/report/update/form_name.html:4
 #: templates/web/base/reports/index.html:20
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:9
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:44
-#: templates/web/fixmystreet/report/update-form.html:138
 #: templates/web/zurich/admin/body-form.html:4
 #: templates/web/zurich/auth/general.html:60
 #: templates/web/zurich/report/new/fill_in_details_form.html:82
@@ -1661,7 +1580,7 @@ msgstr "名字"
 msgid "Name:"
 msgstr "名字："
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:328
+#: perllib/FixMyStreet/Script/Reports.pm:107
 msgid "Name: %s"
 msgstr "名字： %s"
 
@@ -1670,16 +1589,16 @@ msgstr "名字： %s"
 msgid "Nearest named road to the pin placed on the map (automatically generated using OpenStreetMap): %s%s"
 msgstr "找出地圖標記上最近的街道名稱(利用 OpenStreetMap自動産生): %s%s"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:127
+#: perllib/FixMyStreet/Cobrand/UK.pm:128
 msgid "Nearest postcode to the pin placed on the map (automatically generated): %s (%sm away)"
 msgstr "找出地圖標記上最近的郵遞區號(自動産生): %s(%sm away)"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:434
-#: perllib/FixMyStreet/Cobrand/Default.pm:474
+#: perllib/FixMyStreet/Cobrand/Default.pm:455
+#: perllib/FixMyStreet/Cobrand/Default.pm:495
 msgid "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s"
 msgstr "找出地圖標記上最近的街道(利用 Bing Maps自動産生): %s"
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:267
+#: perllib/FixMyStreet/Script/Alerts.pm:290
 msgid ""
 "Nearest road to the pin placed on the map (automatically generated by Bing Maps): %s\n"
 "\n"
@@ -1687,12 +1606,7 @@ msgstr ""
 "找出地圖標記上最近的街道(利用 Bing Maps自動産生): %s\n"
 "\n"
 
-#: templates/web/zurich/email_sent.html:5
-msgid "Nearly Done! Now check your email..."
-msgstr "差不多快完成了，現在檢查您的電子信箱"
-
 #: templates/web/base/auth/token.html:17 templates/web/base/email_sent.html:5
-#, fuzzy
 msgid "Nearly done! Now check your email&hellip;"
 msgstr "差不多快完成了，現在檢查您的電子信箱"
 
@@ -1718,9 +1632,8 @@ msgid "New local problems on FixMyStreet"
 msgstr "FixMyStreet之新近當地問題　"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:117
-#, fuzzy
 msgid "New note to DM:"
-msgstr "新內部筆記"
+msgstr ""
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
@@ -1752,9 +1665,8 @@ msgstr "新陳述"
 
 #: templates/web/zurich/admin/template_edit.html:9
 #: templates/web/zurich/admin/templates.html:26
-#, fuzzy
 msgid "New template"
-msgstr "新陳述"
+msgstr "新模版"
 
 #: templates/web/base/pagination.html:13
 msgid "Next"
@@ -1771,8 +1683,8 @@ msgstr "下一步"
 #: templates/web/base/admin/report_edit.html:75
 #: templates/web/base/admin/update_edit.html:25
 #: templates/web/base/questionnaire/creator_fixed.html:16
+#: templates/web/base/questionnaire/index.html:101
 #: templates/web/base/questionnaire/index.html:53
-#: templates/web/base/questionnaire/index.html:92
 msgid "No"
 msgstr "無"
 
@@ -1842,10 +1754,8 @@ msgstr ""
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:13
-#: templates/web/base/report/update-form.html:30
-#: templates/web/base/report/update-form.html:33
-#: templates/web/fixmystreet/report/update-form.html:28
-#: templates/web/fixmystreet/report/update-form.html:31
+#: templates/web/base/report/update/form_update.html:34
+#: templates/web/base/report/update/form_update.html:37
 msgid "Not Responsible"
 msgstr "無責任歸屬"
 
@@ -1853,9 +1763,8 @@ msgstr "無責任歸屬"
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:937
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:13
-#, fuzzy
 msgid "Not contactable"
-msgstr "無責任歸屬"
+msgstr "無法聨絡"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:108
 msgid "Not for my subdivision"
@@ -1885,7 +1794,7 @@ msgstr "請注意這裏包括了本月份總結撰寫前，尚未確認的申報
 msgid "Note:"
 msgstr "註記:"
 
-#: templates/web/base/open311/index.html:73
+#: templates/web/base/open311/index.html:65
 msgid "Note: <strong>%s</strong>"
 msgstr "筆記: <strong>%s</strong>"
 
@@ -1893,24 +1802,21 @@ msgstr "筆記: <strong>%s</strong>"
 msgid "Notes from SDM to DM"
 msgstr ""
 
-#: templates/web/base/report/new/fill_in_details_form.html:113
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:10
+#: templates/web/base/report/new/form_user_loggedout.html:14
+#: templates/web/base/report/new/form_user_loggedout.html:2
+#: templates/web/base/report/new/oauth_email_form.html:17
 msgid "Now to submit your report&hellip;"
 msgstr "現在送出您的申報 &hellip;"
 
-#: templates/web/base/report/update-form.html:86
-#: templates/web/fixmystreet/report/update-form.html:85
+#: templates/web/base/report/update-form.html:28
+#: templates/web/base/report/update/form_user_loggedout.html:13
+#: templates/web/base/report/update/form_user_loggedout.html:2
 msgid "Now to submit your update&hellip;"
 msgstr "現在送出您更新的申報 &hellip; 您是否有本站帳密？"
 
 #: templates/web/base/js/translation_strings.html:42
 msgid "OK"
 msgstr "好了"
-
-#: templates/web/base/report/display.html:28
-#: templates/web/base/report/update.html:17
-msgid "Offensive? Unsuitable? Tell us"
-msgstr "受到羞辱？不適當？請 告訴我們"
 
 #: templates/web/base/reports/index.html:23
 msgid "Old / unknown <br>problems"
@@ -1928,7 +1834,7 @@ msgstr "己解決之舊問題　"
 msgid "Older <br>problems"
 msgstr "舊問題　"
 
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:45
+#: templates/web/base/report/new/form_report.html:15
 msgid "One-line summary"
 msgstr "一句總結"
 
@@ -1939,8 +1845,7 @@ msgstr "一句總結"
 #: templates/web/base/admin/report_blocks.html:4
 #: templates/web/base/admin/update_edit.html:28
 #: templates/web/base/dashboard/index.html:142
-#: templates/web/base/report/update-form.html:30
-#: templates/web/fixmystreet/report/update-form.html:28
+#: templates/web/base/report/update/form_update.html:34
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:7
 #: templates/web/zurich/admin/update_edit.html:18
@@ -1949,21 +1854,21 @@ msgstr "開放"
 
 #: templates/web/base/reports/index.html:22
 msgid "Open for more than four weeks, with an update within the past eight weeks"
-msgstr ""
+msgstr "開放已超過四週，最近八週內有更新過。"
 
 #: templates/web/base/reports/index.html:23
 msgid "Open, but not had any update in eight weeks"
-msgstr ""
+msgstr "開放，但過去八週內未有任何更新"
 
-#: templates/web/base/open311/index.html:70
+#: templates/web/base/open311/index.html:62
 msgid "Open311 API for the mySociety FixMyStreet server"
 msgstr "Open311 API for the mySociety FixMyStreet server"
 
-#: templates/web/base/open311/index.html:80
+#: templates/web/base/open311/index.html:72
 msgid "Open311 initiative web page"
 msgstr "Open311 啟動網頁"
 
-#: templates/web/base/open311/index.html:81
+#: templates/web/base/open311/index.html:73
 msgid "Open311 specification"
 msgstr "Open311 規範　"
 
@@ -1975,15 +1880,15 @@ msgstr "或將此問題 申報給:"
 msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
 msgstr "您可以訂閱　里/區內的更新通知"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:1084
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:673
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:674
-#: perllib/FixMyStreet/DB/Result/Problem.pm:570
-#: perllib/FixMyStreet/DB/Result/Problem.pm:580
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:1055
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:668
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:669
+#: perllib/FixMyStreet/DB/Result/Problem.pm:558
+#: perllib/FixMyStreet/DB/Result/Problem.pm:568
+#: perllib/FixMyStreet/DB/Result/Problem.pm:578
 #: perllib/FixMyStreet/DB/Result/Problem.pm:590
-#: perllib/FixMyStreet/DB/Result/Problem.pm:602
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:397
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:412
+#: perllib/FixMyStreet/Script/Reports.pm:175
+#: perllib/FixMyStreet/Script/Reports.pm:190
 msgid "Other"
 msgstr "其它"
 
@@ -1992,7 +1897,7 @@ msgid "Owner"
 msgstr "物主"
 
 #: templates/web/base/errors/page_error_404_not_found.html:1
-#: templates/web/base/errors/page_error_404_not_found.html:3
+#: templates/web/base/errors/page_error_404_not_found.html:4
 msgid "Page Not Found"
 msgstr "找無此頁"
 
@@ -2006,16 +1911,16 @@ msgstr "上級 "
 msgid "Partial"
 msgstr "部份"
 
-#: templates/web/base/auth/general.html:53
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:68
-#: templates/web/fixmystreet/report/update-form.html:116
+#: templates/web/base/auth/general.html:92
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:31
+#: templates/web/base/report/update/form_user_loggedout_by_email.html:6
 #: templates/web/zurich/auth/general.html:32
 #: templates/web/zurich/auth/general.html:63
 msgid "Password (optional)"
 msgstr "密碼(任選):"
 
 #: templates/web/base/auth/change_password.html:25
-#: templates/web/base/auth/general.html:36
+#: templates/web/base/auth/general.html:72
 msgid "Password:"
 msgstr "密碼:"
 
@@ -2027,45 +1932,37 @@ msgstr "永久連結"
 msgid "Phone number"
 msgstr "電話號碼"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:26
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:62
+#: templates/web/base/report/new/form_user_loggedin.html:26
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:25
 msgid "Phone number (optional)"
 msgstr "電話號碼(非必填)"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:306
+#: perllib/FixMyStreet/Script/Reports.pm:83
 #: templates/web/base/admin/report_edit.html:63
-#: templates/web/base/report/new/fill_in_details_form.html:198
 #: templates/web/zurich/admin/stats.html:39
 msgid "Phone:"
 msgstr "電話"
 
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:66
-#: templates/web/fixmystreet/report/update-form.html:59
+#: templates/web/base/questionnaire/index.html:75
+#: templates/web/base/report/new/form_report.html:23
+#: templates/web/base/report/update/form_update.html:6
 #: templates/web/zurich/admin/index-dm.html:29
 #: templates/web/zurich/admin/index-sdm.html:24
 #: templates/web/zurich/admin/reports.html:16
 #: templates/web/zurich/admin/stats.html:37
-#: templates/web/zurich/report/new/fill_in_details_form.html:52
+#: templates/web/zurich/report/new/fill_in_details_form.html:45
 msgid "Photo"
 msgstr "照片"
 
-#: perllib/FixMyStreet/App/Controller/Photo.pm:221
-#, fuzzy
+#: perllib/FixMyStreet/App/Controller/Photo.pm:187
 msgid "Photo is required."
-msgstr "本項資訊必填"
+msgstr "要求提供照片"
 
 #: templates/web/base/admin/category_edit.html:48
-#, fuzzy
 msgid "Photo required"
-msgstr "本項資訊必填"
+msgstr "要求提供照片"
 
-#: templates/web/base/questionnaire/index.html:80
-#: templates/web/base/report/new/fill_in_details_form.html:84
-#: templates/web/base/report/update-form.html:62
-msgid "Photo:"
-msgstr "照片:"
-
-#: templates/web/base/alert/list.html:26
+#: templates/web/base/alert/list.html:23
 msgid "Photos of recent nearby reports"
 msgstr "最近申報之照片"
 
@@ -2094,20 +1991,16 @@ msgstr "用語請遵守禮節，明確解釋問題 "
 msgid "Please check the passwords and try again"
 msgstr "請再次確認您的密碼"
 
-#: templates/web/zurich/auth/token.html:16
-msgid "Please check your email"
-msgstr "請檢查您的電子郵件"
-
-#: templates/web/base/auth/general.html:10
-#: templates/web/base/auth/general.html:16
+#: templates/web/base/auth/general.html:27
+#: templates/web/base/auth/general.html:33
 #: templates/web/zurich/auth/general.html:3
 #: templates/web/zurich/auth/general.html:9
 msgid "Please check your email address is correct"
 msgstr "請確認您電郵地址無誤"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:343
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:883
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:948
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:878
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:943
 #: perllib/FixMyStreet/DB/Result/Problem.pm:412
 #: templates/web/base/js/translation_strings.html:9
 msgid "Please choose a category"
@@ -2121,9 +2014,7 @@ msgstr "選擇公物種類"
 msgid "Please correct the errors below"
 msgstr "請更正下方之錯誤"
 
-#: templates/web/base/contact/blurb.html:2
-#: templates/web/fixmystreet/contact/blurb.html:12
-#, fuzzy
+#: templates/web/base/contact/blurb.html:12
 msgid ""
 "Please do <strong>not</strong> report problems through this form; messages go to\n"
 "the team behind this site, not a council. To report a problem,\n"
@@ -2138,10 +2029,16 @@ msgid "Please do not be abusive&nbsp;&mdash; abusing your council devalues the s
 msgstr "請勿濫用本服務，濫用將造成您的政府輕視其它使用者之意見　"
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:346
-#: perllib/FixMyStreet/DB/Result/Comment.pm:126
+#: perllib/FixMyStreet/DB/Result/Comment.pm:125
 #: templates/web/base/js/translation_strings.html:2
 msgid "Please enter a message"
 msgstr "請寫下您的留言"
+
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1091
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1146
+#, fuzzy
+msgid "Please enter a name"
+msgstr "請輸入您的姓氐"
 
 #: templates/web/base/auth/change_password.html:12
 #: templates/web/base/auth/change_password.html:15
@@ -2155,10 +2052,10 @@ msgstr "請輸入密碼"
 msgid "Please enter a subject"
 msgstr "請填下主旨"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1084
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1137
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1087
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1142
 #: perllib/FixMyStreet/App/Controller/Admin.pm:345
-#: perllib/FixMyStreet/DB/Result/User.pm:127
+#: perllib/FixMyStreet/DB/Result/User.pm:133
 #: templates/web/base/js/translation_strings.html:12
 #: templates/web/base/js/translation_strings.html:16
 msgid "Please enter a valid email"
@@ -2175,9 +2072,9 @@ msgid "Please enter some details"
 msgstr "請填寫進一步細節"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:113
-#: perllib/FixMyStreet/DB/Result/User.pm:124
-#: templates/web/base/auth/general.html:10
-#: templates/web/base/auth/general.html:15
+#: perllib/FixMyStreet/DB/Result/User.pm:130
+#: templates/web/base/auth/general.html:27
+#: templates/web/base/auth/general.html:32
 #: templates/web/base/js/translation_strings.html:11
 #: templates/web/base/js/translation_strings.html:15
 #: templates/web/zurich/auth/general.html:3
@@ -2185,7 +2082,7 @@ msgstr "請填寫進一步細節"
 msgid "Please enter your email"
 msgstr "請輸入您的電子郵件"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:7
+#: templates/web/base/report/new/form_user_loggedout_email.html:7
 #: templates/web/zurich/report/new/fill_in_details_form.html:80
 msgid "Please enter your email address"
 msgstr "請輸入您的電子郵件"
@@ -2194,15 +2091,15 @@ msgstr "請輸入您的電子郵件"
 msgid "Please enter your first name"
 msgstr "請輸入您的大名"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:318
+#: perllib/FixMyStreet/Cobrand/UK.pm:319
 #: templates/web/base/js/translation_strings.html:7
 msgid "Please enter your full name, councils need this information – if you do not wish your name to be shown on the site, untick the box below"
 msgstr "請輸入您的全名，地方政府需要此資料 – 如果您不希望名字公開在網站上，請在下面方格中劃掉勾選。"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:112
-#: perllib/FixMyStreet/DB/Result/Comment.pm:123
+#: perllib/FixMyStreet/DB/Result/Comment.pm:122
 #: perllib/FixMyStreet/DB/Result/Problem.pm:406
-#: perllib/FixMyStreet/DB/Result/User.pm:120
+#: perllib/FixMyStreet/DB/Result/User.pm:126
 #: templates/web/base/js/translation_strings.html:6
 msgid "Please enter your name"
 msgstr "請輸入您的姓氐"
@@ -2229,12 +2126,11 @@ msgstr "歡迎<a href=\"%s\">再次登入</a>, 或是再次光臨 <a href=\"/\">
 msgid "Please fill in details of the problem below."
 msgstr "請在下方輸入問題的細節"
 
-#: templates/web/zurich/report/new/fill_in_details_form.html:46
+#: templates/web/zurich/report/new/fill_in_details_form.html:72
 msgid "Please fill in details of the problem."
 msgstr "請在此填寫問題的細節"
 
-#: templates/web/base/report/new/fill_in_details_form.html:28
-#: templates/web/fixmystreet/report/new/sidebar.html:7
+#: templates/web/base/report/new/sidebar.html:7
 #: templates/web/zurich/report/new/fill_in_details_form.html:20
 msgid "Please fill in the form below with details of the problem, and describe the location as precisely as possible in the details box."
 msgstr "請利用下方表單填寫問題細節，在細節項請儘量述明準確的位置。　"
@@ -2243,19 +2139,23 @@ msgstr "請利用下方表單填寫問題細節，在細節項請儘量述明準
 msgid "Please indicate whether you'd like to receive another questionnaire"
 msgstr "請選擇您是否願意收到其它問卷"
 
-#: templates/web/fixmystreet/report/updates-sidebar-notes.html:4
+#: templates/web/base/report/updates-sidebar-notes.html:2
 msgid "Please note that updates are not sent to the council."
 msgstr "請注意這個更新不會送到地方政府"
 
-#: templates/web/base/report/update-form.html:7
-msgid "Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
-msgstr "請留意這個問題的更新不會送達給地方政府，如果您留下姓名，它將會依照本網站的隱私權政策作處理使用"
+#: templates/web/base/report/new/oauth_email_form.html:4
+#, fuzzy
+msgid "Please note your report has <strong>not yet been sent</strong>."
+msgstr "請注意您的申報還<strong>未送出</strong>. 選擇合適類別及進一步資訊，再予送出。"
 
-#: templates/web/base/report/new/fill_in_details_form.html:8
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:21
+#: templates/web/base/report/new/fill_in_details_form.html:20
 #: templates/web/zurich/report/new/fill_in_details_form.html:11
 msgid "Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit."
 msgstr "請注意您的申報還<strong>未送出</strong>. 選擇合適類別及進一步資訊，再予送出。"
+
+#: templates/web/base/report/display.html:26
+msgid "Please note your update has <strong>not yet been posted</strong>."
+msgstr ""
 
 #: templates/web/base/report/new/notes.html:1
 #: templates/web/zurich/report/new/notes.html:1
@@ -2276,9 +2176,8 @@ msgid "Please say whether you've ever reported a problem to your council before"
 msgstr "請敍明您是否曾向地方政府申報過問題？　"
 
 #: templates/web/zurich/admin/report_edit.html:208
-#, fuzzy
 msgid "Please select a body."
-msgstr "選擇單位"
+msgstr "請選擇單位"
 
 #: perllib/FixMyStreet/App/Controller/Alert.pm:80
 msgid "Please select the feed you want"
@@ -2295,6 +2194,7 @@ msgstr "請敍明該問題是否已解決"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:117
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:145
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:147
+#: templates/web/base/js/translation_strings.html:53
 msgid "Please upload a JPEG image only"
 msgstr "請上傳JPEG格式照片"
 
@@ -2302,18 +2202,14 @@ msgstr "請上傳JPEG格式照片"
 msgid "Please write a message"
 msgstr "諘寫下您的留言"
 
-#: templates/web/fixmystreet/report/update-form.html:23
+#: templates/web/base/report/update/form_update.html:29
 msgid "Please write your update here"
 msgstr "請寫下您的更新"
 
-#: templates/web/base/contact/index.html:100
-#: templates/web/base/report/update-form.html:110
-#: templates/web/base/report/update-form.html:132
-#: templates/web/base/report/update-form.html:72
-#: templates/web/fixmystreet/contact/index.html:113
-#: templates/web/fixmystreet/report/update-form.html:124
-#: templates/web/fixmystreet/report/update-form.html:71
-#: templates/web/fixmystreet/report/update-form.html:97
+#: templates/web/base/contact/index.html:105
+#: templates/web/base/report/update-form.html:24
+#: templates/web/base/report/update/form_user_loggedout_by_email.html:14
+#: templates/web/base/report/update/form_user_loggedout_password.html:10
 msgid "Post"
 msgstr "張貼"
 
@@ -2331,7 +2227,7 @@ msgstr "由 %s 在 %s 張貼"
 
 #: templates/web/base/front/footer-marketing.html:12
 msgid "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
-msgstr ""
+msgstr "Powered by <a class=\"platform-logo\" href=\"http://fixmystreet.org/\">FixMyStreet Platform</a>"
 
 #: templates/web/base/pagination.html:7
 msgid "Previous"
@@ -2341,14 +2237,11 @@ msgstr "之前"
 msgid "Privacy"
 msgstr "隱私"
 
-#: templates/web/base/faq/faq-en-gb.html:7
-#: templates/web/base/open311/index.html:7
-#: templates/web/base/static/privacy.html:1
-#: templates/web/base/static/privacy.html:2
-#: templates/web/base/static/privacy.html:9
-#: templates/web/fixmystreet/contact/index.html:11
+#: templates/web/base/about/_sidebar.html:5
+#: templates/web/base/about/privacy.html:1
+#: templates/web/base/about/privacy.html:2
 msgid "Privacy and cookies"
-msgstr ""
+msgstr "隱私與cookies"
 
 #: templates/web/base/admin/body.html:202
 #: templates/web/base/admin/body.html:85
@@ -2374,12 +2267,12 @@ msgstr "%s　問題已被確認　"
 msgid "Problem %s sent to council %s"
 msgstr "%s　問題已送達到地方政府　%s　"
 
-#: templates/web/base/admin/index.html:46
+#: templates/web/base/admin/index.html:39
 #: templates/web/zurich/admin/index.html:9
 msgid "Problem breakdown by state"
 msgstr "本站出現故障問題　"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1055
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1058
 msgid "Problem marked as open."
 msgstr "問題標註為開放"
 
@@ -2395,11 +2288,11 @@ msgstr "問題"
 msgid "Problems in this area"
 msgstr "本區域內的問題"
 
-#: templates/web/fixmystreet/report/display.html:43
+#: templates/web/base/report/display_tools.html:19
 msgid "Problems nearby"
 msgstr "鄰近的問題"
 
-#: templates/web/fixmystreet/report/display.html:41
+#: templates/web/base/report/display_tools.html:17
 msgid "Problems on the map"
 msgstr "地圖上的問題"
 
@@ -2411,24 +2304,23 @@ msgstr "FixMyStreet　最近回報的已修復問題　"
 msgid "Problems within %.1fkm of this location"
 msgstr "該地點　%.1f公里內的問題　"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:642
+#: perllib/FixMyStreet/Cobrand/Default.pm:663
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:120
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:139
-#: perllib/FixMyStreet/Cobrand/UK.pm:207
+#: perllib/FixMyStreet/Cobrand/UK.pm:208
 msgid "Problems within %s"
 msgstr "在 %s 內的問題"
 
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:128
-#: perllib/FixMyStreet/Cobrand/UK.pm:221
+#: perllib/FixMyStreet/Cobrand/UK.pm:222
 msgid "Problems within %s ward"
 msgstr "在 %s 里/區的問題"
 
 #. ("First %s is the body name, second %s the site name")
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
-#, fuzzy
 msgid "Problems within %s, %s"
-msgstr "在 %s 內的問題"
+msgstr "在 %s, %s的問題　"
 
 #: templates/web/base/alert/_list.html:42
 msgid "Problems within the boundary of:"
@@ -2442,19 +2334,16 @@ msgstr "公物地址："
 msgid "Property type:"
 msgstr "公物種類"
 
-#: templates/web/base/report/update-form.html:3
-#: templates/web/fixmystreet/report/update-form.html:4
+#: templates/web/base/report/update-form.html:6
 msgid "Provide an update"
 msgstr "提供更新資訊"
 
-#: templates/web/base/auth/general.html:56
+#: templates/web/base/auth/general.html:95
 msgid "Providing a name and password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
 msgstr "提供名稱與密碼非為必要，但其可以讓您更便於申報問題，提供更新與管理您的申報。　　"
 
-#: templates/web/base/report/new/fill_in_details_form.html:156
-#: templates/web/base/report/update-form.html:129
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:71
-#: templates/web/fixmystreet/report/update-form.html:119
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:34
+#: templates/web/base/report/update/form_user_loggedout_by_email.html:9
 msgid "Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
 msgstr "提供名稱與密碼非為必要，但其可以讓您更便於申報問題，提供更新與管理您的申報。"
 
@@ -2490,18 +2379,17 @@ msgstr "由問題申報者所填之問卷"
 #: templates/web/base/alert/_list.html:22
 #: templates/web/base/around/display_location.html:1
 #: templates/web/base/around/display_location.html:3
-#: templates/web/base/report/display.html:50
+#: templates/web/base/report/display_tools.html:34
 #: templates/web/base/reports/_rss.html:1
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:58
 msgid "RSS feed"
 msgstr "RSS訂閱"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:250 perllib/FixMyStreet/Cobrand/UK.pm:262
+#: perllib/FixMyStreet/Cobrand/UK.pm:251 perllib/FixMyStreet/Cobrand/UK.pm:263
 msgid "RSS feed for %s"
 msgstr "%s RSS訂閱"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:256 perllib/FixMyStreet/Cobrand/UK.pm:268
+#: perllib/FixMyStreet/Cobrand/UK.pm:257 perllib/FixMyStreet/Cobrand/UK.pm:269
 msgid "RSS feed for %s ward, %s"
 msgstr "%s里/區 RSS訂閱"
 
@@ -2509,11 +2397,11 @@ msgstr "%s里/區 RSS訂閱"
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:163
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:173
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:181
-#: perllib/FixMyStreet/Cobrand/UK.pm:276 perllib/FixMyStreet/Cobrand/UK.pm:288
+#: perllib/FixMyStreet/Cobrand/UK.pm:277 perllib/FixMyStreet/Cobrand/UK.pm:289
 msgid "RSS feed of %s"
 msgstr "%s RSS訂閱"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:281 perllib/FixMyStreet/Cobrand/UK.pm:293
+#: perllib/FixMyStreet/Cobrand/UK.pm:282 perllib/FixMyStreet/Cobrand/UK.pm:294
 msgid "RSS feed of %s, within %s ward"
 msgstr "%s, 在%s 里/區"
 
@@ -2525,15 +2413,15 @@ msgstr " RSS訂閱 %s區域問題"
 msgid "RSS feed of problems in this %s"
 msgstr "此 %s 問題之RSS 訂閱"
 
-#: perllib/FixMyStreet/Cobrand/Default.pm:643
+#: perllib/FixMyStreet/Cobrand/Default.pm:664
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:121
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:138
-#: perllib/FixMyStreet/Cobrand/UK.pm:214
+#: perllib/FixMyStreet/Cobrand/UK.pm:215
 msgid "RSS feed of problems within %s"
 msgstr "在 %s 內之問題RSS 訂閱"
 
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:127
-#: perllib/FixMyStreet/Cobrand/UK.pm:220
+#: perllib/FixMyStreet/Cobrand/UK.pm:221
 msgid "RSS feed of problems within %s ward"
 msgstr "在 %s 里/區問題的RSS 訂閱"
 
@@ -2542,25 +2430,22 @@ msgstr "在 %s 里/區問題的RSS 訂閱"
 msgid "RSS feed of recent local problems"
 msgstr "最近當地問題的RSS訂閱"
 
-#: templates/web/base/report/display.html:50
+#: templates/web/base/report/display_tools.html:34
 #: templates/web/fixmystreet/alert/updates.html:9
-#: templates/web/fixmystreet/report/display.html:58
 msgid "RSS feed of updates to this problem"
 msgstr "最近當地問題更新的RSS訂閱"
 
 #: templates/web/base/alert/updates.html:9
-#: templates/web/base/report/display.html:41
+#: templates/web/base/report/display_tools.html:36
 #: templates/web/fixmystreet/alert/updates.html:14
-#: templates/web/fixmystreet/report/display.html:60
 msgid "Receive email when updates are left on this problem."
 msgstr "透過電子郵件收取該問題之更新消息"
 
 #. ("%s is the site name")
 #: templates/web/base/around/display_location.html:0
 #: templates/web/base/around/display_location.html:33
-#, fuzzy
 msgid "Recent local problems, %s"
-msgstr "FixMyStreet　近期的當地問題　"
+msgstr "近期的當地問題%s　"
 
 #: templates/web/base/reports/index.html:24
 msgid "Recently <br>fixed"
@@ -2578,20 +2463,19 @@ msgstr "記住 FixMyStreet主要為申報可修復之物理性問題。如果您
 msgid "Remove flag"
 msgstr "移除標記"
 
-#: templates/web/base/admin/report_edit.html:92
-#: templates/web/base/admin/update_edit.html:62
+#: templates/web/base/admin/report_edit.html:93
+#: templates/web/base/admin/update_edit.html:67
 #: templates/web/zurich/admin/update_edit.html:35
 msgid "Remove photo (can't be undone!)"
 msgstr "移陯照片(無法回復)"
 
 #: templates/web/zurich/admin/report_edit.html:243
-#, fuzzy
 msgid "Reply to user:"
-msgstr "用戶編輯"
+msgstr "給用戶的回應"
 
 #: templates/web/fixmystreet/header_logo.html:2
 msgid "Report"
-msgstr ""
+msgstr "提報　"
 
 #: templates/web/base/footer.html:7 templates/web/fixmystreet/footer.html:26
 #: templates/web/fixmystreet/header_logo.html:2
@@ -2600,7 +2484,7 @@ msgstr ""
 msgid "Report a problem"
 msgstr "申報問題"
 
-#: templates/web/fixmystreet/report/display.html:32
+#: templates/web/base/report/display_tools.html:8
 msgid "Report abuse"
 msgstr "申報濫用"
 
@@ -2609,7 +2493,8 @@ msgid "Report on %s"
 msgstr "在%s　申報　"
 
 #: templates/web/base/report/new/fill_in_details_form.html:1
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:2
+#: templates/web/base/report/new/login_success_form.html:1
+#: templates/web/base/report/new/oauth_email_form.html:1
 msgid "Report your problem"
 msgstr "申報你的問題"
 
@@ -2618,9 +2503,8 @@ msgstr "申報你的問題"
 msgid "Report, view, or discuss local problems"
 msgstr "申報，檢視，或討論在地問題"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:585
-#: templates/web/base/contact/index.html:50
-#: templates/web/fixmystreet/contact/index.html:65
+#: perllib/FixMyStreet/DB/Result/Problem.pm:573
+#: templates/web/base/contact/index.html:57
 msgid "Reported anonymously at %s"
 msgstr "在%s 匿名申報 "
 
@@ -2629,53 +2513,50 @@ msgstr "在%s 匿名申報 "
 msgid "Reported before"
 msgstr "之前的申報"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:608
-#: templates/web/base/contact/index.html:52
-#: templates/web/fixmystreet/contact/index.html:67
+#: perllib/FixMyStreet/DB/Result/Problem.pm:596
+#: templates/web/base/contact/index.html:59
 msgid "Reported by %s at %s"
 msgstr "由%s 的 %s 申報"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:58
 #: templates/web/zurich/admin/report_edit.html:86
-#, fuzzy
 msgid "Reported by:"
-msgstr "已申報 %s"
+msgstr "由　　申報"
 
 #: templates/web/zurich/report/_main.html:2
 msgid "Reported in the %s category"
 msgstr "%s 種類之申報"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:581
+#: perllib/FixMyStreet/DB/Result/Problem.pm:569
 msgid "Reported in the %s category anonymously at %s"
 msgstr "%s 種類下的匿名申報"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:603
+#: perllib/FixMyStreet/DB/Result/Problem.pm:591
 msgid "Reported in the %s category by %s at %s"
 msgstr "%s 在 %s　%s類別的申報　"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:577
+#: perllib/FixMyStreet/DB/Result/Problem.pm:565
 msgid "Reported via %s anonymously at %s"
 msgstr "在%s 匿名申報 "
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:599
+#: perllib/FixMyStreet/DB/Result/Problem.pm:587
 msgid "Reported via %s by %s at %s"
 msgstr "%s　透過 %s　在　%s類別的申報"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:573
+#: perllib/FixMyStreet/DB/Result/Problem.pm:561
 msgid "Reported via %s in the %s category anonymously at %s"
 msgstr "透過 %s　在　%s類別的匿名申報"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:593
+#: perllib/FixMyStreet/DB/Result/Problem.pm:581
 msgid "Reported via %s in the %s category by %s at %s"
 msgstr "%s 在 %s　%s類別的申報　"
 
 #: templates/web/base/reports/index.html:21
 msgid "Reported within the last four weeks"
-msgstr ""
+msgstr "最近四週內的申報"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:36
 #: templates/web/zurich/admin/report_edit.html:55
-#, fuzzy
 msgid "Reported:"
 msgstr "已申報 %s"
 
@@ -2687,13 +2568,13 @@ msgstr "已申報 %s"
 msgid "Reporting a problem"
 msgstr "申報問題"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1277
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1286
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:384
 #: templates/web/zurich/header.html:60
 msgid "Reports"
 msgstr "申報"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:327 perllib/FixMyStreet/Cobrand/UK.pm:331
+#: perllib/FixMyStreet/Cobrand/UK.pm:328 perllib/FixMyStreet/Cobrand/UK.pm:332
 msgid "Reports are limited to %s characters in length. Please shorten your report"
 msgstr "申請內容有　%s 字數限制，請簡化您的申報。"
 
@@ -2714,7 +2595,7 @@ msgstr "重新送出申報"
 #: templates/web/zurich/admin/templates.html:1
 #: templates/web/zurich/admin/templates.html:3
 msgid "Response Templates for %s"
-msgstr ""
+msgstr "%s的回應模版"
 
 #: templates/web/base/js/translation_strings.html:28
 msgid "Right place?"
@@ -2730,25 +2611,26 @@ msgstr "此指定街道之道路營運者(取自道路參照碼與種類): %s"
 msgid "Road operator for this named road (from OpenStreetMap): %s"
 msgstr "此指定街道之道路營運者(來自OpenStreetMap): %s"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1495
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1500
-#: templates/web/base/admin/report_edit.html:88
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1504
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1508
+#: templates/web/base/admin/report_edit.html:90
+#: templates/web/base/admin/update_edit.html:64
 #: templates/web/zurich/admin/report_edit.html:116
 msgid "Rotate Left"
 msgstr "左轉　"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1495
-#: templates/web/base/admin/report_edit.html:89
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1504
+#: templates/web/base/admin/report_edit.html:91
+#: templates/web/base/admin/update_edit.html:65
 #: templates/web/zurich/admin/report_edit.html:117
 msgid "Rotate Right"
 msgstr "右轉　"
 
 #: templates/web/zurich/admin/report_edit.html:388
 msgid "Rotating this photo will discard unsaved changes to the report."
-msgstr ""
+msgstr "旋轉這張照片將會導致申報中未存檔的照片更動消失"
 
 #: templates/web/base/js/translation_strings.html:46
-#: templates/web/base/maps/google-ol.html:13
 msgid "Satellite"
 msgstr "衛星"
 
@@ -2801,16 +2683,14 @@ msgid "Select an area"
 msgstr "選擇區域"
 
 #: templates/web/base/alert/_list.html:10
-#, fuzzy
 msgid "Select which type of alert you’d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert."
 msgstr "選擇您要想的通知方式或點選RSS訂閱按鈕，或者輸入您的電子郵件以收受通知。"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:835
-#, fuzzy
 msgid "Sent report back"
-msgstr "開啟申報　"
+msgstr "送回申報"
 
-#: perllib/FixMyStreet/DB/Result/Problem.pm:708
+#: perllib/FixMyStreet/DB/Result/Problem.pm:696
 msgid "Sent to %s %s later"
 msgstr "%s 稍後送給%s"
 
@@ -2823,15 +2703,13 @@ msgstr "送出"
 msgid "Service:"
 msgstr "服務"
 
-#: templates/web/fixmystreet/report/display.html:38
+#: templates/web/base/report/display_tools.html:14
 msgid "Share"
 msgstr "分享"
 
-#: templates/web/base/report/new/fill_in_details_form.html:193
-#: templates/web/base/report/update-form.html:158
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:23
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:59
-#: templates/web/fixmystreet/report/update-form.html:146
+#: templates/web/base/report/new/form_user_loggedin.html:23
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:22
+#: templates/web/base/report/update/form_name.html:15
 msgid "Show my name publicly"
 msgstr "公開我的姓名"
 
@@ -2843,9 +2721,9 @@ msgstr "顯示舊文"
 msgid "Show pins"
 msgstr "顯示地圖標示"
 
+#: templates/web/base/auth/general.html:100
 #: templates/web/base/auth/general.html:3
-#: templates/web/base/auth/general.html:40
-#: templates/web/base/auth/general.html:61
+#: templates/web/base/auth/general.html:76
 #: templates/web/zurich/auth/general.html:18
 #: templates/web/zurich/auth/general.html:35
 msgid "Sign in"
@@ -2875,7 +2753,7 @@ msgstr ""
 "被送出至地方政府\n"
 "."
 
-#: templates/web/base/alert/index.html:42
+#: templates/web/base/alert/index.html:40
 msgid "Some photos of recent reports"
 msgstr "最近申報之照片"
 
@@ -2885,35 +2763,46 @@ msgstr "最近申報之照片"
 msgid "Some text to localize"
 msgstr "有些文字需在地化"
 
-#: perllib/FixMyStreet/Cobrand/UK.pm:78
+#: perllib/FixMyStreet/Cobrand/UK.pm:79
 msgid "Sorry, that appears to be a Crown dependency postcode, which we don't cover."
 msgstr "抱歉，該郵區號碼我們尚未支援"
 
 #: templates/web/base/auth/token.html:8
 msgid "Sorry, that wasn&rsquo;t a valid link"
-msgstr ""
+msgstr "抱歉這個wasn&rsquo;t 為有效的網址連結"
 
 #: templates/web/base/tokens/abuse.html:5
 msgid "Sorry, there has been an error confirming your problem."
 msgstr "抱歉無法確認你的問題"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:221
-#: perllib/FixMyStreet/Geocode.pm:37 perllib/FixMyStreet/Geocode/Bing.pm:37
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:216
+#: perllib/FixMyStreet/Geocode.pm:38 perllib/FixMyStreet/Geocode/Bing.pm:38
 #: perllib/FixMyStreet/Geocode/FixaMinGata.pm:56
 #: perllib/FixMyStreet/Geocode/OSM.pm:48
 msgid "Sorry, we could not find that location."
 msgstr "抱歉，我們無法找到此位置"
 
-#: perllib/FixMyStreet/Geocode/Bing.pm:34
+#: templates/web/base/auth/general.html:9
+#: templates/web/base/report/display.html:21
+#: templates/web/base/report/new/fill_in_details_form.html:23
+#, fuzzy
+msgid "Sorry, we could not log you in. Please fill in the form below."
+msgstr "抱歉，我們無法解析此地點，請重試一次"
+
+#: perllib/FixMyStreet/Geocode/Bing.pm:35
 #: perllib/FixMyStreet/Geocode/Google.pm:45
 #: perllib/FixMyStreet/Geocode/Zurich.pm:88
 msgid "Sorry, we could not parse that location. Please try again."
 msgstr "抱歉，我們無法解析此地點，請重試一次"
 
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:134
-#, fuzzy
 msgid "Sorry, we couldn't save your image(s), please try again."
-msgstr "抱歉，我們無法解析此地點，請重試一次"
+msgstr "抱歉，我們無法儲存你的照片，請重試一次"
+
+#: perllib/FixMyStreet/App/Controller/AuthSS.pm:301
+#, fuzzy
+msgid "Sorry, you can not log in with Facebook. Please try again later."
+msgstr "本頁出現錯誤，請再試一次"
 
 #: templates/web/base/admin/stats.html:64
 msgid "Start Date:"
@@ -2923,13 +2812,12 @@ msgstr "問始日："
 #: templates/web/base/admin/flagged.html:18
 #: templates/web/base/admin/list_updates.html:11
 #: templates/web/base/admin/reports.html:15
-#: templates/web/fixmystreet/report/update-form.html:26
+#: templates/web/base/report/update/form_update.html:32
 msgid "State"
 msgstr "陳述"
 
 #: templates/web/base/admin/report_edit.html:47
 #: templates/web/base/admin/update_edit.html:27
-#: templates/web/base/report/update-form.html:28
 #: templates/web/zurich/admin/report_edit-sdm.html:73
 #: templates/web/zurich/admin/report_edit.html:101
 #: templates/web/zurich/admin/report_edit.html:155
@@ -2937,7 +2825,7 @@ msgstr "陳述"
 msgid "State:"
 msgstr "陳述:"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1282
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1291
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:387
 #: templates/web/base/admin/stats.html:1
 #: templates/web/zurich/admin/stats.html:1 templates/web/zurich/header.html:73
@@ -2957,9 +2845,9 @@ msgstr " %s問卷仍開放中"
 #: templates/web/zurich/admin/report_edit-sdm.html:25
 #: templates/web/zurich/admin/report_edit.html:26
 msgid "Street View"
-msgstr ""
+msgstr "街景圖"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:406
+#: perllib/FixMyStreet/Script/Reports.pm:184
 msgid "Subcategory: %s"
 msgstr "子類別：%s"
 
@@ -2967,30 +2855,25 @@ msgstr "子類別：%s"
 msgid "Subdivision/Body"
 msgstr "下屬單位/機關"
 
-#: templates/web/fixmystreet/contact/index.html:98
+#: templates/web/base/contact/index.html:90
 msgid "Subject"
 msgstr "主旨"
 
 #: templates/web/base/admin/report_edit.html:19
-#: templates/web/base/contact/index.html:88
-#: templates/web/base/report/new/fill_in_details_form.html:53
 #: templates/web/zurich/admin/report_edit.html:39
 msgid "Subject:"
 msgstr "主旨:"
 
 #: templates/web/base/questionnaire/creator_fixed.html:19
-#: templates/web/base/report/new/fill_in_details_form.html:137
-#: templates/web/base/report/new/fill_in_details_form.html:159
-#: templates/web/base/report/new/fill_in_details_form.html:96
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:36
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:23
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:76
+#: templates/web/base/report/new/form_user_loggedin.html:36
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:39
+#: templates/web/base/report/new/form_user_loggedout_password.html:11
 #: templates/web/zurich/report/new/fill_in_details_form.html:96
 msgid "Submit"
 msgstr "送出"
 
-#: templates/web/base/admin/report_edit.html:95
-#: templates/web/base/admin/update_edit.html:65
+#: templates/web/base/admin/report_edit.html:101
+#: templates/web/base/admin/update_edit.html:75
 #: templates/web/base/admin/user-form.html:56
 #: templates/web/zurich/admin/report_edit-sdm.html:137
 #: templates/web/zurich/admin/report_edit.html:268
@@ -2998,7 +2881,7 @@ msgstr "送出"
 msgid "Submit changes"
 msgstr "送出更新"
 
-#: templates/web/base/questionnaire/index.html:97
+#: templates/web/base/questionnaire/index.html:106
 msgid "Submit questionnaire"
 msgstr "送出問卷"
 
@@ -3014,9 +2897,8 @@ msgid "Submitted"
 msgstr "已送出"
 
 #: templates/web/base/alert/updates.html:17
-#: templates/web/base/report/display.html:46
+#: templates/web/base/report/display_tools.html:41
 #: templates/web/fixmystreet/alert/updates.html:23
-#: templates/web/fixmystreet/report/display.html:65
 msgid "Subscribe"
 msgstr "訂閱"
 
@@ -3024,7 +2906,7 @@ msgstr "訂閱"
 msgid "Subscribe me to an email alert"
 msgstr "加入通知信件"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1275
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1284
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:383
 #: templates/web/base/admin/bodies.html:25
 #: templates/web/base/admin/index.html:1
@@ -3043,7 +2925,7 @@ msgstr "摘要"
 msgid "Summary reports"
 msgstr "申報摘要"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1279
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1288
 msgid "Survey"
 msgstr "調查"
 
@@ -3053,13 +2935,12 @@ msgstr "調查結果"
 
 #: templates/web/zurich/admin/template_edit.html:7
 msgid "Template &laquo;%s&raquo;"
-msgstr ""
+msgstr "模版 &laquo;%s&raquo;"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:394
 #: templates/web/zurich/header.html:77
-#, fuzzy
 msgid "Templates"
-msgstr "更新"
+msgstr "模版"
 
 #: templates/web/base/admin/list_updates.html:12
 #: templates/web/zurich/admin/templates.html:9
@@ -3080,7 +2961,7 @@ msgstr "內文:"
 msgid "Thank you for reporting this issue!"
 msgstr "感謝您申報此問題"
 
-#: templates/web/base/tokens/error.html:7
+#: templates/web/base/tokens/error.html:6
 msgid "Thank you for trying to confirm your update or problem. We seem to have an error ourselves though, so <a href=\"%s\">please let us know what went on</a> and we'll look into it."
 msgstr "感謝您試著確 認本問題的更新。目前網站似乎遇上一點問題，<a href=\"%s\">請回報給我們</a> 以通知工程人員查看狀況。  "
 
@@ -3115,23 +2996,23 @@ msgstr "這地點似乎不在台灣; 請再試 一次。"
 
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:47
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:63
-#: perllib/FixMyStreet/Cobrand/UK.pm:71
+#: perllib/FixMyStreet/Cobrand/UK.pm:72
 msgid "That postcode was not recognised, sorry."
 msgstr "抱歉此郵遞區號無法辨識"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:726
+#: perllib/FixMyStreet/App/Controller/Admin.pm:724
 msgid "That problem has been marked as sent."
-msgstr ""
+msgstr "問題被標註為送出"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:718
+#: perllib/FixMyStreet/App/Controller/Admin.pm:716
 msgid "That problem will now be resent."
 msgstr "此問題將重新送出"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:125
+#: perllib/FixMyStreet/App/Controller/Report.pm:127
 msgid "That report cannot be viewed on %s."
 msgstr "此申報無法在 %s上檢視　"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:119
+#: perllib/FixMyStreet/App/Controller/Report.pm:121
 msgid "That report has been removed from FixMyStreet."
 msgstr "該申報已遭FixMyStreet 移除　"
 
@@ -3170,7 +3051,7 @@ msgstr ""
 "<strong>送出方式</strong> 決定了問題申報如何送給相關單位\n"
 "如果此處未作選擇<strong>系統預設的送出方式為電子郵件</strong>."
 
-#: templates/web/base/open311/index.html:90
+#: templates/web/base/open311/index.html:82
 msgid "The Open311 v2 attribute agency_responsible is used to list the administrations that received the problem report, which is not quite the way the attribute is defined in the Open311 v2 specification."
 msgstr " Open311 v2 的權責單位適用於對接收問題申報機關，但不受限於Open311 v2 規範定義。"
 
@@ -3193,12 +3074,12 @@ msgstr "地方政府可能無法協助，除非您留下問題的詳細細節。
 msgid "The diligency prize league table shows editors' activity (who's been editing the most records)."
 msgstr "這個勤奮表單顯示用戶的活動(誰做了做多的修改編輯活動)"
 
-#: perllib/FixMyStreet/App/Controller/Dashboard.pm:60
-#: perllib/FixMyStreet/App/Controller/Reports.pm:79
+#: perllib/FixMyStreet/App/Controller/Dashboard.pm:61
+#: perllib/FixMyStreet/App/Controller/Reports.pm:80
 msgid "The error was: %s"
 msgstr "顯示錯誤為: %s"
 
-#: templates/web/base/open311/index.html:86
+#: templates/web/base/open311/index.html:78
 msgid "The following Open311 v2 attributes are returned for each request: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name."
 msgstr "下列 Open311 v2 屬性視要求之回覆而定: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name."
 
@@ -3234,7 +3115,7 @@ msgstr "用戶申報{{NAME}}地區內地的最新問題"
 
 #: templates/web/base/auth/token.html:9
 msgid "The link might have expired, or maybe you didn&rsquo;t quite copy and paste it correctly."
-msgstr ""
+msgstr "這連結可能失效了或者你並未正確地複制貼上它"
 
 #: templates/web/base/admin/body-form.html:58
 msgid "The list of available areas is being provided by the MapIt service at %s."
@@ -3245,8 +3126,7 @@ msgstr "%s 區域中，MapIt服務涵蓋的範圍清單"
 msgid "The passwords do not match"
 msgstr "密碼不符"
 
-#: templates/web/base/errors/page_error_404_not_found.html:10
-#: templates/web/base/errors/page_error_404_not_found.html:12
+#: templates/web/base/errors/page_error_404_not_found.html:9
 msgid "The requested URL '%s' was not found on this server"
 msgstr "找不到您所要求的網頁連結。"
 
@@ -3256,12 +3136,11 @@ msgstr "您的更新出錯，請再試一次。"
 
 #: templates/web/base/report/new/councils_extra_text.html:1
 #: templates/web/base/report/new/councils_text_some.html:10
-#: templates/web/base/report/new/fill_in_details_form.html:18
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:14
+#: templates/web/base/report/new/fill_in_details_form.html:13
 msgid "The summary and description will also be made public (see our <a href=\"/privacy\">privacy policy</a>)."
 msgstr "總結與描述將會公開(請見我們的 <a href=\"/privacy\">隱私權政策</a>)."
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:315
+#: perllib/FixMyStreet/Script/Reports.pm:92
 msgid "The user could not locate the problem on a map, but to see the area around the location they entered"
 msgstr "用戶無法在地點上標示問題，但可以看到他們輸入的地點"
 
@@ -3278,20 +3157,20 @@ msgstr ""
 #: templates/web/base/my/_problem-list.html:8
 #: templates/web/base/reports/_problem-list.html:15
 msgid "There are no reports to show."
-msgstr ""
+msgstr "沒有申報可顯示"
 
-#: perllib/FixMyStreet/App/Controller/Reports.pm:76
+#: perllib/FixMyStreet/App/Controller/Reports.pm:77
 msgid "There was a problem showing the All Reports page. Please try again later."
 msgstr "本頁現在無法願現所要求的申報資料，請稍候再試。"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:137
-#: perllib/FixMyStreet/App/Controller/Dashboard.pm:59
+#: perllib/FixMyStreet/App/Controller/Dashboard.pm:60
 msgid "There was a problem showing this page. Please try again later."
 msgstr "本頁出現錯誤，請再試一次"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:769
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:134
-#: templates/web/base/auth/general.html:26
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:764
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:138
+#: templates/web/base/auth/general.html:43
 #: templates/web/zurich/auth/general.html:28
 msgid "There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form."
 msgstr "您的電子郵件與密碼不相符，如果您遺忘密碼或尚未註冊，請在申請表單上填入電子郵件"
@@ -3300,7 +3179,7 @@ msgstr "您的電子郵件與密碼不相符，如果您遺忘密碼或尚未註
 msgid "There was a problem with your email/password combination. Please try again."
 msgstr "您的電子郵件/密碼不符，請重試一次"
 
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:272
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:336
 msgid "There was a problem with your update. Please try again."
 msgstr "您的申報有問題，請重試一次"
 
@@ -3308,7 +3187,7 @@ msgstr "您的申報有問題，請重試一次"
 msgid "There were problems with your report. Please see below."
 msgstr "您的申報有問題，請見下方說明"
 
-#: perllib/FixMyStreet/App/Controller/Report/Update.pm:300
+#: perllib/FixMyStreet/App/Controller/Report/Update.pm:371
 msgid "There were problems with your update. Please see below."
 msgstr "您的更新有問題，請見下方說明"
 
@@ -3326,7 +3205,7 @@ msgstr ""
 "有關Open311的更多資訊請見\n"
 "<a href='https://www.mysociety.org/2013/01/17/open311-explained/' class='admin-offsite-link'>本文</a>"
 
-#: templates/web/base/open311/index.html:77
+#: templates/web/base/open311/index.html:69
 msgid "This API implementation is work in progress and not yet stabilized.  It will change without warnings in the future."
 msgstr "此API執行正在安裝中尚未完全，未來將作無預警的更動"
 
@@ -3354,18 +3233,18 @@ msgstr ""
 "此單位只涵蓋 <strong>負責區域</strong>的申報問題處理。　\n"
 "除非其涵蓋至少一個區域，否則政府單位不會接收到問題申報　"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:413
+#: perllib/FixMyStreet/Script/Reports.pm:191
 msgid "This email has been sent to both councils covering the location of the problem, as the user did not categorise it; please ignore it if you're not the correct council to deal with the issue, or let us know what category of problem this is so we can add it to our system."
 msgstr "當用戶沒有選擇類別時，電子郵件將送到負責該區域的各地方政府。如果您不是該問題的受理機關，請略過，或讓我們知道該問題的類別以在系統作修正。"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:416
+#: perllib/FixMyStreet/Script/Reports.pm:194
 msgid "This email has been sent to several councils covering the location of the problem, as the category selected is provided for all of them; please ignore it if you're not the correct council to deal with the issue."
 msgstr "電子郵件將送到負責該區域的多個地方政府，因選擇的類別提供這些對象。如果您不是負責受理機關，請略過。"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:925
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:995
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:920
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:990
 #: perllib/FixMyStreet/Cobrand/EmptyHomes.pm:142
-#: perllib/FixMyStreet/Cobrand/UK.pm:43
+#: perllib/FixMyStreet/Cobrand/UK.pm:44
 msgid "This information is required"
 msgstr "本項資訊必填"
 
@@ -3377,32 +3256,13 @@ msgstr "本站為開發試用，可能隨時故障，資料庫也會定期刪除
 msgid "This is a summary of all reports on this site."
 msgstr "本站所有申報總結"
 
-#: templates/web/zurich/auth/token.html:8
-msgid "This may be because the link is too old or already used, or the address was not copied correctly."
-msgstr "可能為連結失效或已被使用過，或是連結網址未正確複製。"
-
-#: templates/web/base/report/banner.html:15
-msgid "This problem has been closed"
-msgstr "此問題己結案"
-
-#: templates/web/base/report/banner.html:12
-#: templates/web/base/report/update-form.html:48
-#: templates/web/fixmystreet/report/update-form.html:46
+#: templates/web/base/report/update/form_update.html:52
 msgid "This problem has been fixed"
 msgstr "問題己處理完畢"
 
-#: templates/web/base/report/update-form.html:43
-#: templates/web/fixmystreet/report/update-form.html:40
+#: templates/web/base/report/update/form_update.html:46
 msgid "This problem has not been fixed"
 msgstr "問題尚未解決"
-
-#: templates/web/base/report/banner.html:19
-msgid "This problem is in progress"
-msgstr "問題正在處理中"
-
-#: templates/web/base/report/banner.html:9
-msgid "This problem is old and of unknown status."
-msgstr "此問題已失時效，目前狀況不明"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:168
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:169
@@ -3410,23 +3270,23 @@ msgstr "此問題已失時效，目前狀況不明"
 msgid "This report is awaiting moderation."
 msgstr "此問題尚待審核"
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:86
+#: perllib/FixMyStreet/Script/Alerts.pm:94
 msgid "This report is currently marked as closed."
 msgstr "該申報目前注記為結案狀態"
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:84
+#: perllib/FixMyStreet/Script/Alerts.pm:92
 msgid "This report is currently marked as fixed."
 msgstr "該申報目前注記為解決狀態"
 
-#: perllib/FixMyStreet/DB/ResultSet/AlertType.pm:88
+#: perllib/FixMyStreet/Script/Alerts.pm:96
 msgid "This report is currently marked as open."
 msgstr "該申報目前注記為開放狀態"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:326
+#: perllib/FixMyStreet/Script/Reports.pm:105
 msgid "This report was submitted anonymously"
 msgstr "此為匿名申報"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:308
+#: perllib/FixMyStreet/Script/Reports.pm:85
 msgid "This web page also contains a photo of the problem, provided by the user."
 msgstr "本頁包括由用戶提供反應問題的照片　"
 
@@ -3435,9 +3295,9 @@ msgstr "本頁包括由用戶提供反應問題的照片　"
 #: templates/web/zurich/admin/report_edit.html:104
 #: templates/web/zurich/admin/report_edit.html:148
 msgid "Time spent (in minutes):"
-msgstr ""
+msgstr "花費時間(以分鐘計):"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1278
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1287
 #: templates/web/base/admin/timeline.html:1
 msgid "Timeline"
 msgstr "時間軸"
@@ -3449,12 +3309,10 @@ msgid "Title"
 msgstr "標題"
 
 #: templates/web/zurich/admin/template_edit.html:20
-#, fuzzy
 msgid "Title:"
 msgstr "標題"
 
 #: templates/web/base/alert/index.html:25
-#, fuzzy
 msgid "To find out what local alerts we have for you, please enter your %s postcode or street name and area:"
 msgstr "找出適合您的在地通知，請輸入您的郵編或街名區域"
 
@@ -3462,11 +3320,11 @@ msgstr "找出適合您的在地通知，請輸入您的郵編或街名區域"
 msgid "To find out what local alerts we have for you, please enter your postcode or street name and area"
 msgstr "找出適合您的在地通知，請輸入您的郵編或街名區域"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:314
+#: perllib/FixMyStreet/Script/Reports.pm:91
 msgid "To view a map of the precise location of this issue"
 msgstr "檢視地圖上問題之確切位置"
 
-#: templates/web/base/admin/index.html:61
+#: templates/web/base/admin/index.html:54
 #: templates/web/base/admin/questionnaire.html:24
 #: templates/web/base/admin/stats.html:24
 #: templates/web/base/admin/stats.html:43
@@ -3484,10 +3342,8 @@ msgstr "何不直接發信給我們:"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:12
-#: templates/web/base/report/update-form.html:30
-#: templates/web/base/report/update-form.html:33
-#: templates/web/fixmystreet/report/update-form.html:28
-#: templates/web/fixmystreet/report/update-form.html:31
+#: templates/web/base/report/update/form_update.html:34
+#: templates/web/base/report/update/form_update.html:37
 msgid "Unable to fix"
 msgstr "無法修復"
 
@@ -3500,7 +3356,7 @@ msgstr "無法修復"
 msgid "Unconfirmed"
 msgstr "未確認的"
 
-#: templates/web/fixmystreet/report/banner.html:9
+#: templates/web/base/report/banner.html:9
 msgid "Unknown"
 msgstr "未知的"
 
@@ -3508,17 +3364,18 @@ msgstr "未知的"
 msgid "Unknown alert type"
 msgstr "未知的通知類別"
 
+#: perllib/FixMyStreet/App/Controller/Photo.pm:110
 #: templates/web/base/js/translation_strings.html:39
 msgid "Unknown error"
 msgstr "未知的錯誤"
 
-#: perllib/FixMyStreet/App/Controller/Report.pm:103
-#: perllib/FixMyStreet/App/Controller/Report.pm:109
-#: perllib/FixMyStreet/App/Controller/Report.pm:112
+#: perllib/FixMyStreet/App/Controller/Report.pm:105
+#: perllib/FixMyStreet/App/Controller/Report.pm:111
+#: perllib/FixMyStreet/App/Controller/Report.pm:114
 msgid "Unknown problem ID"
 msgstr "未知的問題編號　　"
 
-#: templates/web/fixmystreet/report/update-form.html:19
+#: templates/web/base/report/update/form_update.html:25
 msgid "Update"
 msgstr "更新"
 
@@ -3526,13 +3383,11 @@ msgstr "更新"
 msgid "Update %s created for problem %d; by %s"
 msgstr "由%s 更新%s 申報之問題%s 　"
 
-#: templates/web/base/contact/index.html:21
-#: templates/web/fixmystreet/contact/index.html:36
+#: templates/web/base/contact/index.html:28
 msgid "Update below added anonymously at %s"
 msgstr "下方更新 為匿名提供%s"
 
-#: templates/web/base/contact/index.html:23
-#: templates/web/fixmystreet/contact/index.html:38
+#: templates/web/base/contact/index.html:30
 msgid "Update below added by %s at %s"
 msgstr "由%d 在 %s　所提供的更新"
 
@@ -3541,7 +3396,7 @@ msgstr "由%d 在 %s　所提供的更新"
 msgid "Update body"
 msgstr "更新內文"
 
-#: templates/web/base/admin/index.html:55
+#: templates/web/base/admin/index.html:48
 msgid "Update breakdown by state"
 msgstr "陳述目前的故障　"
 
@@ -3566,20 +3421,16 @@ msgstr "更新重申報之問題　"
 msgid "Update statuses"
 msgstr "更新之狀態"
 
-#: templates/web/base/report/update-form.html:22
-msgid "Update:"
-msgstr "更新:"
-
 #: templates/web/zurich/admin/index-dm.html:23
 #: templates/web/zurich/admin/index-sdm.html:21
 #: templates/web/zurich/admin/reports.html:13
 msgid "Updated"
 msgstr "已更新"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1045
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1103
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1147
-#: perllib/FixMyStreet/App/Controller/Admin.pm:822
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1048
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1108
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1156
+#: perllib/FixMyStreet/App/Controller/Admin.pm:821
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:771
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:796
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:866
@@ -3587,13 +3438,12 @@ msgid "Updated!"
 msgstr "已更新！"
 
 #: templates/web/base/admin/list_updates.html:2
-#: templates/web/base/report/update.html:3
-#: templates/web/fixmystreet/report/update.html:5
+#: templates/web/base/report/update.html:5
 #: templates/web/zurich/report/updates.html:2
 msgid "Updates"
 msgstr "更新"
 
-#: perllib/FixMyStreet/DB/Result/Comment.pm:132
+#: perllib/FixMyStreet/DB/Result/Comment.pm:131
 msgid "Updates are limited to %s characters in length. Please shorten your update"
 msgstr "更新內容有　%s 字數限制，請簡化您的更新。"
 
@@ -3603,12 +3453,9 @@ msgstr "由{{title}}更新"
 
 #. ("%s is the site name")
 #: templates/web/base/report/display.html:0
-#: templates/web/base/report/display.html:5
-#: templates/web/fixmystreet/report/display.html:0
-#: templates/web/fixmystreet/report/display.html:9
-#, fuzzy
+#: templates/web/base/report/display.html:9
 msgid "Updates to this problem, %s"
-msgstr "向FixMyStreet回報此問題　"
+msgstr "更新問題, %s"
 
 #: templates/web/base/admin/body.html:182
 msgid "Use the <strong>note</strong> to record details that are only displayed in the admin. Notes are not shown publicly, and are not sent to the body."
@@ -3616,15 +3463,14 @@ msgstr "使用<strong>記事本</strong> 來記錄給管理員可看到的細節
 
 #: templates/web/zurich/admin/report_edit-sdm.html:48
 #: templates/web/zurich/admin/report_edit.html:67
-#, fuzzy
 msgid "Used map"
 msgstr "已用過之地圖"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1452
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1461
 msgid "User flag removed"
 msgstr "移除用戶的標記警告"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1424
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1433
 msgid "User flagged"
 msgstr "給用戶標記警告"
 
@@ -3632,7 +3478,7 @@ msgstr "給用戶標記警告"
 msgid "User search finds matches in users' names and email addresses."
 msgstr "用戶找到相符的名稱與電子郵件"
 
-#: perllib/FixMyStreet/App/Controller/Admin.pm:1280
+#: perllib/FixMyStreet/App/Controller/Admin.pm:1289
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:399
 #: templates/web/base/admin/flagged.html:29
 #: templates/web/zurich/header.html:69
@@ -3663,7 +3509,6 @@ msgid "Viewing a location"
 msgstr "檢視地區"
 
 #: templates/web/base/report/display.html:0
-#: templates/web/fixmystreet/report/display.html:0
 msgid "Viewing a problem"
 msgstr "檢視問題　"
 
@@ -3676,25 +3521,24 @@ msgstr "地方政府轄下的里/區"
 msgid "We found more than one match for that location. We show up to ten matches, please try a different search if yours is not here."
 msgstr "本區域我們找到更多符合的資料，我們最多顯示十筆資料。如果你無法在其中找到所要的資訊，請嘗試其它搜尋方式。"
 
-#: templates/web/zurich/auth/token.html:7
-msgid "We have not been able to confirm your account - sorry."
-msgstr "抱歉，我們無法確認您的帳戶。"
+#: templates/web/base/auth/general.html:6
+#: templates/web/base/report/display.html:27
+#: templates/web/base/report/new/oauth_email_form.html:5
+#, fuzzy
+msgid "We need your email address, please give it below."
+msgstr "我們不會公開您的電子郵件或是電話號碼"
 
-#: templates/web/zurich/auth/token.html:17
-msgid "We have sent you an email containing a link to confirm your account."
-msgstr "我們剛寄給您一封內有連結確認的電子郵件。"
-
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:2
-#: templates/web/fixmystreet/report/update-form.html:77
+#: templates/web/base/report/new/form_user_loggedout_email.html:2
+#: templates/web/base/report/update/form_user_loggedout_email.html:2
 msgid "We never show your email"
 msgstr "我們不會公開您的電子郵件"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:31
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:65
+#: templates/web/base/report/new/form_user_loggedin.html:31
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:28
 msgid "We never show your email address or phone number."
 msgstr "我們不會公開您的電子郵件或是電話號碼"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:422
+#: perllib/FixMyStreet/Script/Reports.pm:200
 msgid "We realise this problem might be the responsibility of %s; however, we don't currently have any contact details for them. If you know of an appropriate contact address, please do get in touch."
 msgstr "我們理解此問題可能是%s之責任，然而目前我們並無他們的聯絡資訊。如果您知道適當的聯絡人資訊，請告訴我們。"
 
@@ -3711,19 +3555,15 @@ msgstr "您的個人資料，將會依照<a href=\"/privacy\">本站隱私權政
 msgid "We&rsquo;re sorry to hear the problem’s not fixed. Why not try writing to your local representatives?"
 msgstr "很遺憾該問題仍未修復。何不試試聯絡當地議員民代反應此狀況？"
 
-#: templates/web/base/contact/blurb.html:8
-msgid "We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"
-msgstr "我們想知道您對本站的建議。請填此表單，或發送電子郵件到<a href='mailto:%s'>%s</a>:"
-
 #: templates/web/base/contact/submit.html:7
 msgid "We’ll get back to you as soon as we can."
 msgstr "我們會儘快回覆您"
 
 #: templates/web/base/questionnaire/index.html:71
 msgid "What was your experience of getting the problem fixed?"
-msgstr ""
+msgstr "你的申報使用體驗感想為？　"
 
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:49
+#: templates/web/base/report/new/form_report.html:19
 msgid "What’s the issue, and where is it?"
 msgstr "什麼樣的問題，地點是在?"
 
@@ -3736,7 +3576,11 @@ msgstr "何時編輯　"
 msgid "When sent"
 msgstr "何時送出"
 
-#: perllib/FixMyStreet/App/Controller/Report/New.pm:640
+#: templates/web/base/js/translation_strings.html:50
+msgid "Whoa there Testino! Three photos are enough."
+msgstr ""
+
+#: perllib/FixMyStreet/App/Controller/Report/New.pm:635
 msgid "Whole block of empty flats"
 msgstr "整區為閒置廢棄空間"
 
@@ -3749,9 +3593,9 @@ msgstr "為何在此卡住？免費<a href=\"/alert\">設定更多訊息通知</
 #: templates/web/zurich/admin/header.html:1
 #: templates/web/zurich/admin/header.html:14
 msgid "Wish"
-msgstr ""
+msgstr "願望"
 
-#: templates/web/base/open311/index.html:92
+#: templates/web/base/open311/index.html:84
 msgid "With request searches, it is also possible to search for agency_responsible to limit the requests to those sent to a single administration.  The search term is the administration ID provided by <a href=\"%s\">MaPit</a>."
 msgstr "搜尋要求，也可能限制單一機構中搜尋相關權責單位。其搜尋字眼為 <a href=\"%s\">MaPit</a>提供的主管ID."
 
@@ -3759,7 +3603,7 @@ msgstr "搜尋要求，也可能限制單一機構中搜尋相關權責單位。
 msgid "Would you like to contribute to FixMyStreet? Our code is open source and <a href=\"http://fixmystreet.org\">available at fixmystreet.org</a>."
 msgstr "您願為FixMyStreet貢獻嗎?這個一個開放原始碼，可從  <a href=\"http://fixmystreet.org\">fixmystreet.org</a>官網進一步了解　"
 
-#: templates/web/base/questionnaire/index.html:87
+#: templates/web/base/questionnaire/index.html:96
 msgid "Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?"
 msgstr "您是否願意4週後再收到另一份問卷？以提醒您確認最新的狀況"
 
@@ -3768,7 +3612,6 @@ msgid "Writing your message entirely in block capitals makes it hard to read, as
 msgstr "請注意留言內容，勿用注音文並應加上標點符號以利閱讀。"
 
 #: templates/web/base/report/new/fill_in_details_form.html:4
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:5
 msgid "Wrong location? Just click again on the map."
 msgstr "錯誤的地? 請再次點擊此地圖"
 
@@ -3791,27 +3634,24 @@ msgstr "年份"
 #: templates/web/base/admin/users.html:31
 #: templates/web/base/questionnaire/creator_fixed.html:14
 #: templates/web/base/questionnaire/index.html:51
-#: templates/web/base/questionnaire/index.html:90
+#: templates/web/base/questionnaire/index.html:99
 msgid "Yes"
 msgstr "是"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:17
-#: templates/web/fixmystreet/report/update-form.html:91
+#: templates/web/base/report/new/form_user_loggedout_password.html:5
+#: templates/web/base/report/update/form_user_loggedout_password.html:4
 msgid "Yes I have a password"
 msgstr "我有密碼"
 
-#: templates/web/base/contact/index.html:39
-#: templates/web/fixmystreet/contact/index.html:54
+#: templates/web/base/contact/index.html:46
 msgid "You are complaining that this problem report was unnecessarily moderated:"
 msgstr "你申訴此問題遭不必要之和諧　"
 
-#: templates/web/base/contact/index.html:41
-#: templates/web/fixmystreet/contact/index.html:56
+#: templates/web/base/contact/index.html:48
 msgid "You are reporting the following problem report for being abusive, containing personal information, or similar:"
 msgstr "您檢舉下列問題的申報遭到濫用，包含個人資料或相關問題　"
 
-#: templates/web/base/contact/index.html:15
-#: templates/web/fixmystreet/contact/index.html:30
+#: templates/web/base/contact/index.html:22
 msgid "You are reporting the following update for being abusive, containing personal information, or similar:"
 msgstr "您檢舉下列問題之更為濫用，包括個人資料或相似"
 
@@ -3824,7 +3664,7 @@ msgstr "您可<a href=\"%s%s\">在本站上檢視問題</a>."
 msgid "You can add an abusive user's email to the abuse list, which automatically hides (and never sends) reports they create."
 msgstr "您可以新增某位用戶到濫用者名單，它會自動隱藏(不會送出)該名用戶所提交的申報　"
 
-#: templates/web/fixmystreet/contact/index.html:121
+#: templates/web/base/contact/index.html:113
 msgid "You can contact technical support on <a href='mailto:%s'>%s</a>"
 msgstr "您可寫信給<a href='mailto:%s'>%s</a>詢求技術支援。"
 
@@ -3838,8 +3678,8 @@ msgstr ""
 "如果某一用戶過往有不當使用記錄，您想特別留意它的活動\n"
 "這會很有用。"
 
-#: templates/web/base/report/new/councils_text_none.html:10
-#: templates/web/base/report/new/councils_text_none.html:2
+#: templates/web/base/report/new/councils_text_none.html:12
+#: templates/web/base/report/new/councils_text_none.html:14
 #: templates/web/base/report/new/councils_text_some.html:19
 #: templates/web/base/report/new/councils_text_some.html:21
 msgid "You can help us by finding a contact email address for local problems for %s and emailing it to us at <a href='mailto:%s'>%s</a>."
@@ -3857,20 +3697,16 @@ msgstr "您受到拒絕，請填寫上方表格。"
 msgid "You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"
 msgstr "您已回覆過本問卷。如果您有問題，請<href='%s'>保持聯絡</a>, 或是<a href='%s'>檢視　您作的申報</a>\n"
 
-#: templates/web/base/questionnaire/index.html:77
-#: templates/web/base/report/new/fill_in_details_form.html:75
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:73
-msgid "You have already attached a photo to this report, attaching another one will replace it."
-msgstr "您已在本申報中附加一張照片，用另一張照片將取代原照片。"
-
-#: templates/web/base/report/update-form.html:59
-#: templates/web/fixmystreet/report/update-form.html:56
-msgid "You have already attached a photo to this update, attaching another one will replace it."
-msgstr "您已在本申報更新中附加一張照片，用另一張照片將取代原照片。"
-
-#: templates/web/zurich/report/new/fill_in_details_form.html:61
+#: templates/web/base/report/new/form_report.html:32
+#: templates/web/zurich/report/new/fill_in_details_form.html:55
 msgid "You have already attached photos to this report.  Note that you can attach a maximum of 3 to this report (if you try to upload more, the oldest will be removed)."
-msgstr ""
+msgstr "在此申報中你已經附加了照片(注意你最多可附3張照片,如果你還想上傳更多張,原先的照片會被移除)"
+
+#: templates/web/base/questionnaire/index.html:83
+#: templates/web/base/report/update/form_update.html:14
+#, fuzzy
+msgid "You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed)."
+msgstr "在此申報中你已經附加了照片(注意你最多可附3張照片,如果你還想上傳更多張,原先的照片會被移除)"
 
 #: templates/web/base/auth/sign_out.html:4
 #: templates/web/zurich/auth/sign_out.html:3
@@ -3886,9 +3722,8 @@ msgstr "您在地圖上用綠色標註問題之地點。如果此不是正確地
 msgid "You have successfully confirmed your email address."
 msgstr "您已成功地確認電子郵件"
 
-#: templates/web/base/report/display.html:20
-#: templates/web/base/report/new/fill_in_details.html:37
-#: templates/web/fixmystreet/report/display.html:17
+#: templates/web/base/report/display.html:17
+#: templates/web/base/report/new/login_success_form.html:3
 msgid "You have successfully signed in; please check and confirm your details are accurate:"
 msgstr "您已成功登入，請檢查您的個人資訊是否正確:"
 
@@ -3920,53 +3755,42 @@ msgid "Your Reports"
 msgstr "您的申報　"
 
 #: templates/web/base/alert/_list.html:89
+#: templates/web/base/contact/index.html:83
+#: templates/web/base/report/display_tools.html:38
+#: templates/web/base/report/display_tools.html:40
+#: templates/web/base/report/new/form_user_loggedin.html:3
+#: templates/web/base/report/new/form_user_loggedout_email.html:1
+#: templates/web/base/report/update/form_user_loggedout_email.html:1
 #: templates/web/fixmystreet/alert/updates.html:19
 #: templates/web/fixmystreet/alert/updates.html:22
-#: templates/web/fixmystreet/contact/index.html:91
-#: templates/web/fixmystreet/report/display.html:62
-#: templates/web/fixmystreet/report/display.html:64
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:3
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:1
-#: templates/web/fixmystreet/report/update-form.html:76
 #: templates/web/zurich/report/new/fill_in_details_form.html:76
 msgid "Your email"
 msgstr "您的電子郵件"
 
-#: templates/web/base/auth/general.html:28
-#: templates/web/fixmystreet/report/update-form.html:82
+#: templates/web/base/auth/general.html:45
+#: templates/web/base/report/update/form_user_loggedout_email.html:7
 #: templates/web/zurich/auth/general.html:30
 #: templates/web/zurich/auth/general.html:58
 msgid "Your email address"
 msgstr "您的電子郵件"
 
-#: templates/web/base/report/new/fill_in_details_form.html:106
-#: templates/web/base/report/update-form.html:81
-msgid "Your email:"
-msgstr "你的電子郵件:"
-
-#: templates/web/fixmystreet/report/updates-sidebar-notes.html:7
+#: templates/web/base/report/updates-sidebar-notes.html:3
 msgid "Your information will only be used in accordance with our <a href=\"/privacy\">privacy policy</a>"
 msgstr "您的個人資料，將會依照<a href=\"/privacy\">本站隱私權政策</a>作處理使用"
 
-#: templates/web/base/auth/general.html:51
-#: templates/web/fixmystreet/contact/index.html:84
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:18
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:54
-#: templates/web/fixmystreet/report/update-form.html:142
+#: templates/web/base/auth/general.html:90
+#: templates/web/base/contact/index.html:76
+#: templates/web/base/report/new/form_user_loggedin.html:18
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:17
+#: templates/web/base/report/update/form_name.html:11
 #: templates/web/zurich/auth/general.html:61
 #: templates/web/zurich/report/new/fill_in_details_form.html:86
 msgid "Your name"
 msgstr "姓名"
 
-#: templates/web/base/contact/index.html:73
-#: templates/web/base/report/new/fill_in_details_form.html:186
-#: templates/web/base/report/update-form.html:152
-msgid "Your name:"
-msgstr "姓名:"
-
-#: templates/web/base/auth/general.html:39
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:22
-#: templates/web/fixmystreet/report/update-form.html:96
+#: templates/web/base/auth/general.html:75
+#: templates/web/base/report/new/form_user_loggedout_password.html:10
+#: templates/web/base/report/update/form_user_loggedout_password.html:9
 #: templates/web/zurich/auth/general.html:34
 msgid "Your password"
 msgstr "密碼"
@@ -3975,15 +3799,16 @@ msgstr "密碼"
 msgid "Your password has been changed"
 msgstr "密碼已更新"
 
-#: templates/web/fixmystreet/report/new/form_user_loggedin.html:27
-#: templates/web/fixmystreet/report/new/form_user_loggedout.html:63
+#: templates/web/base/report/new/form_user_loggedin.html:27
+#: templates/web/base/report/new/form_user_loggedout_by_email.html:26
 #: templates/web/zurich/report/new/fill_in_details_form.html:92
 msgid "Your phone number"
 msgstr "電話號碼"
 
 #: templates/web/base/questionnaire/index.html:14
+#, fuzzy
 msgid "Your report"
-msgstr "申報"
+msgstr "你作的申報"
 
 #: templates/web/base/footer.html:9 templates/web/fixmystreet/footer.html:29
 msgid "Your reports"
@@ -3993,12 +3818,7 @@ msgstr "你作的申報"
 msgid "Your updates"
 msgstr "更新"
 
-#: templates/web/base/contact/index.html:81
-msgid "Your&nbsp;email:"
-msgstr "您的電子郵件:"
-
 #: templates/web/base/reports/_list-filters.html:3
-#, fuzzy
 msgid "all reports"
 msgstr "所有事件申報"
 
@@ -4007,7 +3827,6 @@ msgid "by %s"
 msgstr "由 %s"
 
 #: templates/web/base/reports/_list-filters.html:5
-#, fuzzy
 msgid "closed reports"
 msgstr "完結之申報 "
 
@@ -4031,17 +3850,16 @@ msgid "edit user"
 msgstr "用戶編輯"
 
 #: templates/web/base/reports/_list-filters.html:6
-#, fuzzy
 msgid "fixed reports"
 msgstr "已處理之申報　"
 
-#: templates/web/base/admin/index.html:33
+#: templates/web/base/status/stats.html:20
 #: templates/web/zurich/admin/index.html:5
 msgid "from %s different users"
-msgstr "從不同的用戶%d  "
+msgstr "從不同的用戶%s  "
 
-#: templates/web/base/report/_item.html:17
-#: templates/web/zurich/report/_item.html:16
+#: templates/web/base/report/_item.html:15
+#: templates/web/zurich/report/_item.html:14
 msgid "last updated %s"
 msgstr "%s上回更新:"
 
@@ -4133,10 +3951,8 @@ msgstr "重啟申報"
 msgid "sign out"
 msgstr "登出"
 
-#: templates/web/base/report/new/fill_in_details_form.html:12
-#: templates/web/base/report/new/fill_in_details_form.html:15
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:10
-#: templates/web/fixmystreet/report/new/fill_in_details_form.html:12
+#: templates/web/base/report/new/fill_in_details_form.html:11
+#: templates/web/base/report/new/fill_in_details_form.html:9
 msgid "the local council"
 msgstr "當地地府"
 
@@ -4145,7 +3961,7 @@ msgstr "當地地府"
 msgid "there is no pin shown as the user did not use the map"
 msgstr "地圖上無標記，用戶未使用地圖"
 
-#: perllib/FixMyStreet/DB/ResultSet/Problem.pm:398
+#: perllib/FixMyStreet/Script/Reports.pm:176
 msgid "this type of local problem"
 msgstr "此類在地問題"
 
@@ -4154,9 +3970,8 @@ msgid "today"
 msgstr "今天"
 
 #: templates/web/base/reports/_list-filters.html:4
-#, fuzzy
 msgid "unfixed reports"
-msgstr "已處理之申報　"
+msgstr "未處理之申報　"
 
 #: templates/web/base/admin/report_edit.html:32
 msgid "used map"
@@ -4175,7 +3990,7 @@ msgstr "%d 天數"
 msgid "ward"
 msgstr "路檔"
 
-#: templates/web/base/front/stats.html:17
+#: templates/web/base/front/stats.html:13
 #, perl-format
 msgid "<big>%s</big> report recently"
 msgid_plural "<big>%s</big> reports recently"
@@ -4199,7 +4014,7 @@ msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d 分鐘數"
 
-#: templates/web/base/front/stats.html:29
+#: templates/web/base/front/stats.html:25
 #, perl-format
 msgid "<big>%s</big> update on reports"
 msgid_plural "<big>%s</big> updates on reports"
@@ -4217,13 +4032,13 @@ msgid "%d week"
 msgid_plural "%d weeks"
 msgstr[0] "%d 週數"
 
-#: templates/web/base/front/stats.html:12
+#: templates/web/base/front/stats.html:8
 #, perl-format
 msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] "<big>%s</big>  上一週的申報 "
 
-#: templates/web/base/front/stats.html:23
+#: templates/web/base/front/stats.html:19
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
@@ -4241,140 +4056,86 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "我們<strong>尚未<strong>有該區域其它單位之細節　"
 
-#~ msgid "(Don't worry &mdash; we'll hang on to your alert while you're checking your email.)"
-#~ msgstr "(別擔心 &mdash; 在您檢查email這段時間，我們會保留你的通知。)"
+#~ msgid "(we never show your email address or phone number)"
+#~ msgstr "(我們不會透露您的電話或電郵)"
 
-#~ msgid "(Don't worry &mdash; we'll hang on to your problem report while you're checking your email.)"
-#~ msgstr "(別擔心 &mdash; 在您檢查email這段時間，我們會保留你的申報。)"
+#~ msgid "(we never show your email)"
+#~ msgstr "(我們不會公開您的電子郵件)"
 
-#~ msgid "(Don't worry &mdash; we'll hang on to your update while you're checking your email.)"
-#~ msgstr "(別擔心 &mdash; 在您檢查email這段時間，我們會保留你的更新。)"
+#~ msgid "<strong>No</strong>, let me confirm my report by email:"
+#~ msgstr "<strong>不</strong>, 我想用電子郵件確認我的申報l:"
 
-#~ msgid "<small>If you cannot see the map, <a href='%s' rel='nofollow'>skip this step</a>.</small>"
-#~ msgstr "<small>如果無法檢視此地圖, <a href='%s' rel='nofollow'>略過此步驟</a>.</small>"
+#~ msgid "<strong>No</strong>, let me confirm my update by email:"
+#~ msgstr "<strong>不</strong>, 我要利用電子郵件收取更新通知:"
 
-#~ msgid "<strong>No</strong>, I do not, let me sign in by email:"
-#~ msgstr "<strong>不</strong>, 不用, 我要用電子郵件登入:"
+#~ msgid "Email me updates"
+#~ msgstr "以電郵通知更新"
 
-#~ msgid "Are you a <strong>developer</strong>? Would you like to contribute to FixMyStreet?"
-#~ msgstr "您是否為<strong>程式開發員</strong>?您願意為一起本軟體開發作貢獻嗎　 "
+#~ msgid "Enter a new password:"
+#~ msgstr "請輸入新密碼"
 
-#~ msgid "Closest nearby problems <small>(within&nbsp;%skm)</small>"
-#~ msgstr "最鄰近問題<small>(&nbsp;%s公里之內)</small>"
+#~ msgid "I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n"
+#~ msgstr "們無法驗證此代號，如果您從電子郵件中複製了超連結網址，請檢查您複製是否正確。\n"
 
-#~ msgid "Contact FixMyStreet"
-#~ msgstr "連絡「FixMyStreet」"
+#~ msgid "If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way."
+#~ msgstr "如果您使用網頁電子郵件或開啟垃圾信件過濾，您最好檢查一下您的垃圾信匧，本站郵件可能被歸到該分類下。"
 
-#~ msgid "Do you have a FixMyBarangay password?"
-#~ msgstr "您是否有FixMyBarangay 之密碼？"
+#~ msgid "Message:"
+#~ msgstr "留言"
 
-#~ msgid "FixMyStreet admin:"
-#~ msgstr "FixMyStreet 管理員:"
+#~ msgid "More problems nearby"
+#~ msgstr "更多鄰近的問題　"
 
-#~ msgid "If you do not, your alert will not be activated."
-#~ msgstr "如果您選不，您的通知將不會生效"
+#~ msgid "Nearly Done! Now check your email..."
+#~ msgstr "差不多快完成了，現在檢查您的電子信箱"
 
-#~ msgid "If you do not, your problem will not be posted."
-#~ msgstr "如果您選擇不，您的問題將不會被貼出"
+#~ msgid "Offensive? Unsuitable? Tell us"
+#~ msgstr "受到羞辱？不適當？請 告訴我們"
 
-#~ msgid "If you do not, your update will not be posted."
-#~ msgstr "如果您選擇不，您的更新將不會顯示"
+#~ msgid "Photo:"
+#~ msgstr "照片:"
 
-#~ msgid "New local reports on reportemptyhomes.com"
-#~ msgstr "reportemptyhomes.com　上之新近申報　"
+#~ msgid "Please check your email"
+#~ msgstr "請檢查您的電子郵件"
 
-#~ msgid "New reports for {{COUNCIL}} within {{WARD}} ward on reportemptyhomes.com"
-#~ msgstr "reportemptyhomes.com{{里/區}}{{地方政府}} 之新近問題"
+#~ msgid "Please note that updates are not sent to the council. If you leave your name it will be public. Your information will only be used in accordance with our <a href=\"/faq#privacy\">privacy policy</a>"
+#~ msgstr "請留意這個問題的更新不會送達給地方政府，如果您留下姓名，它將會依照本網站的隱私權政策作處理使用"
 
-#~ msgid "New reports on reportemptyhomes.com"
-#~ msgstr "reportemptyhomes.com新近問題　"
+#~ msgid "This may be because the link is too old or already used, or the address was not copied correctly."
+#~ msgstr "可能為連結失效或已被使用過，或是連結網址未正確複製。"
 
-#~ msgid "New reports on reportemptyhomes.com near {{POSTCODE}}"
-#~ msgstr "reportemptyhomes.com上{{郵遞區號}}  之新近問題　"
+#~ msgid "This problem has been closed"
+#~ msgstr "此問題己結案"
 
-#~ msgid "New reports to {{COUNCIL}} on reportemptyhomes.com"
-#~ msgstr "reportemptyhomes.com上給{{地方政府}}  之新近問題　"
+#~ msgid "This problem is in progress"
+#~ msgstr "問題正在處理中"
 
-#~ msgid "New reports within {{NAME}}'s boundary on reportemptyhomes.com"
-#~ msgstr "reportemptyhomes.com{{Name}} 範圍 之新近問題　"
+#~ msgid "This problem is old and of unknown status."
+#~ msgstr "此問題已失時效，目前狀況不明"
 
-#~ msgid "New update:"
-#~ msgstr "好"
+#~ msgid "Update:"
+#~ msgstr "更新:"
 
-#~ msgid "No problems found."
-#~ msgstr "找無問題"
+#~ msgid "We have not been able to confirm your account - sorry."
+#~ msgstr "抱歉，我們無法確認您的帳戶。"
 
-#~ msgid "No problems have been reported yet."
-#~ msgstr "尚無問題申報"
+#~ msgid "We have sent you an email containing a link to confirm your account."
+#~ msgstr "我們剛寄給您一封內有連結確認的電子郵件。"
 
-#~ msgid "Now to submit your report&hellip; do you have a FixMyStreet password?"
-#~ msgstr "現在送出您的申報 &hellip; 您是否有本站帳密？"
+#~ msgid "We'd love to hear what you think about this site. Just fill in the form, or send an email to <a href='mailto:%s'>%s</a>:"
+#~ msgstr "我們想知道您對本站的建議。請填此表單，或發送電子郵件到<a href='mailto:%s'>%s</a>:"
 
-#~ msgid "Now to submit your update&hellip; do you have a FixMyStreet password?"
-#~ msgstr "現在送出您更新的申報 &hellip;"
+#~ msgid "You have already attached a photo to this report, attaching another one will replace it."
+#~ msgstr "您已在本申報中附加一張照片，用另一張照片將取代原照片。"
 
-#~ msgid "Our code is open source and <a href=\"http://github.com/mysociety/fixmystreet\">available on GitHub</a>."
-#~ msgstr "我們的原始碼可在 <a href=\"http://github.com/mysociety/fixmystreet\">GitHub</a>取得"
+#~ msgid "You have already attached a photo to this update, attaching another one will replace it."
+#~ msgstr "您已在本申報更新中附加一張照片，用另一張照片將取代原照片。"
 
-#~ msgid "Please <a class=\"tab_link\" href=\"#report\">take a look</a> at the updates that have been left."
-#~ msgstr "請<a class=\"tab_link\" href=\"#report\">按此查看</a> 最近更新"
+#~ msgid "Your email:"
+#~ msgstr "你的電子郵件:"
 
-#~ msgid "Please take a look at the updates that have been left."
-#~ msgstr "請看看目前的最新狀況"
+#~ msgid "Your name:"
+#~ msgstr "姓名:"
 
-#~ msgid "Problems within %s, FixMyStreet"
-#~ msgstr "在 %s 的問題, FixMyStreet"
-
-#~ msgid "Properties recently reported as put back to use on reportemptyhomes.com"
-#~ msgstr "reportemptyhomes.com近期送回處理之公物　"
-
-#~ msgid "Publish the response"
-#~ msgstr "公開此回應"
-
-#~ msgid "Reported %s, to %s"
-#~ msgstr "申報 %s 給 %s"
-
-#~ msgid "Reports on and around the map"
-#~ msgstr "地圖附近的申報"
-
-#~ msgid "Sign in by email"
-#~ msgstr "透過電子郵件登入"
-
-#~ msgid "Signed in as %s"
-#~ msgstr "以　%s身份登入"
-
-#~ msgid "The confirmation email <strong>may</strong> take a few minutes to arrive &mdash; <em>please</em> be patient."
-#~ msgstr "確認的電子郵件<strong>可能會</strong> 晚幾分鐘收到<em>請</em>耐心等待。"
-
-#~ msgid "The details of your problem are available from the other tab above."
-#~ msgstr "您問題的細節可以其它分頁中找到"
-
-#~ msgid "The details of your problem are available on the right hand side of this page."
-#~ msgstr "您問題的細節可以在本頁右邊欄找到"
-
-#~ msgid "The latest local reports reported by users"
-#~ msgstr "用戶提供的本地最新申報　"
-
-#~ msgid "The latest properties reported back to use by users"
-#~ msgstr "用戶回報的本地公物的最新使用狀況　"
-
-#~ msgid "The latest reports for {{COUNCIL}} reported by users"
-#~ msgstr "用戶申報給{{COUNCIL}} 的本地最新問題　"
-
-#~ msgid "The latest reports for {{COUNCIL}} within {{WARD}} ward reported by users"
-#~ msgstr "用戶申報給{{COUNCIL}} 在{{WARD}} 里/區的最新問題"
-
-#~ msgid "The latest reports within {{NAME}}'s boundary reported by users"
-#~ msgstr "用戶申報{{NAME}}地區內地的最新問題"
-
-#~ msgid "To <strong>report a problem</strong>, click on the map at the correct location."
-#~ msgstr "要<strong>申報問題</strong>, 點擊下方地圖中正確之位置。"
-
-#~ msgid "User"
-#~ msgstr "用戶"
-
-#~ msgid "You must now click the link in the email we've just sent you."
-#~ msgstr "您必須打開我們送出的電子確認信件上的連結網址　"
-
-#~ msgid "Your email address:"
-#~ msgstr "您的電子郵件"
+#~ msgid "Your&nbsp;email:"
+#~ msgstr "您的電子郵件:"

@@ -1,9 +1,9 @@
 [% PROCESS 'admin/header.html' title=loc('Summary') -%]
 
 <ul>
-    <li>[% tprintf( loc('<strong>%d</strong> live problems'), total_problems_live ) %];
-    [% tprintf( loc('from %d different users'), total_problems_users ) %]</li>
-    <li>[% tprintf( loc('%d council contacts &ndash; %d confirmed, %d unconfirmed'), contacts.total, contacts.1, contacts.0) %]</li>
+    <li>[% tprintf( loc('<strong>%s</strong> live problems'), total_problems_live ) %];
+    [% tprintf( loc('from %s different users'), total_problems_users ) %]</li>
+    <li>[% tprintf( loc('%s council contacts &ndash; %s confirmed, %s unconfirmed'), contacts.total, contacts.1, contacts.0) %]</li>
 </ul>
 
 <h2>[% loc('Problem breakdown by state') %]</h2>
