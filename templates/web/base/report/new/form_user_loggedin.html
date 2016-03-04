@@ -4,8 +4,8 @@
     <input disabled type="text" value="[% c.user.email | html %]">
 
     [% INCLUDE 'report/new/extra_name.html' %]
+    [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
 
-    [% name_public = report.anonymous==0 OR (c.cobrand.default_show_name AND report.anonymous=='') %]
     <label for="form_name">[% loc('Name') %]
     [% TRY %]
         [% INCLUDE 'report/new/after_name.html' %]

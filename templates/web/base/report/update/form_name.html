@@ -1,6 +1,7 @@
 [% INCLUDE 'report/new/extra_name.html' %]
 
-[% name_public = update.anonymous==0 OR (c.cobrand.default_show_name AND update.anonymous=='') %]
+[% PROCESS 'user/_anonymity.html' anonymous = update.anonymous %]
+
 <label for="form_name">[% loc('Name') %]</label>
 [% IF field_errors.name %]
     <p class='form-error'>[% field_errors.name %]</p>

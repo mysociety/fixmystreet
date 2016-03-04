@@ -104,6 +104,16 @@ __PACKAGE__->add_columns(
 
 use mySociety::EmailUtil;
 
+sub latest_anonymity {
+    my $self = shift;
+    my $p = $self->problems->search(undef, { order_by => { -desc => 'id' } } )->first;
+    my $c = $self->comments->search(undef, { order_by => { -desc => 'id' } } )->first;
+    my $p_created = $p ? $p->created->epoch : 0;
+    my $c_created = $c ? $c->created->epoch : 0;
+    my $obj = $p_created >= $c_created ? $p : $c;
+    return $obj ? $obj->anonymous : 0;
+}
+
 =head2 check_for_errors
 
     $error_hashref = $user->check_for_errors();

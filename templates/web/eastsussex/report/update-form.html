@@ -193,9 +193,7 @@
 
     [% name_public = update.anonymous==0 OR (c.cobrand.default_show_name AND update.anonymous=='') %]
     <label for="form_name">[% loc('Name') %]
-        <span id="name-public-warning" class="label-warning public-warning name-warning"
-            [% 'style="display:none"' UNLESS name_public %]
-        >
+        <span id="name-public-warning" class="label-warning public-warning name-warning">
             [% loc('public') %]
         </span>
     </label>
