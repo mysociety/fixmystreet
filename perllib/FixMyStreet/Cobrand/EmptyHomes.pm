@@ -132,7 +132,7 @@ sub council_rss_alert_options {
     return ( \@options, @reported_to_options ? \@reported_to_options : undef );
 }
 
-sub process_extras {
+sub process_open311_extras {
     my $self    = shift;
     my $ctx     = shift;
     my $body_id = shift;

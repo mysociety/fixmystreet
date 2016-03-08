@@ -855,7 +855,7 @@ sub process_report : Private {
         $report->bodies_str( $bodies );
 
         my %extra;
-        $c->cobrand->process_extras( $c, undef, \%extra );
+        $c->cobrand->process_open311_extras( $c, undef, \%extra );
         if ( %extra ) {
             $report->extra( \%extra );
         }
@@ -931,7 +931,7 @@ sub process_report : Private {
             $report->non_public( 1 );
         }
 
-        $c->cobrand->process_extras( $c, $contacts[0]->body_id, \@extra );
+        $c->cobrand->process_open311_extras( $c, $contacts[0]->body_id, \@extra );
 
         if ( @extra ) {
             $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };

@@ -286,9 +286,9 @@ sub process_update : Private {
 
 
     my @extra; # Next function fills this, but we don't need it here.
-    # This is just so that the error checkign for these extra fields runs.
+    # This is just so that the error checking for these extra fields runs.
     # TODO Use extra here as it is used on reports.
-    $c->cobrand->process_extras( $c, $update->problem->bodies_str, \@extra );
+    $c->cobrand->process_open311_extras( $c, $update->problem->bodies_str, \@extra );
 
     if ( $c->get_param('fms_extra_title') ) {
         my %extras = ();

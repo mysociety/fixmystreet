@@ -754,7 +754,7 @@ If set to an arrayref, will plot those area ID(s) from mapit on all the /around 
 
 sub areas_on_around { []; }
 
-sub process_extras {}
+sub process_open311_extras {}
 
 =head 2 pin_colour
 
