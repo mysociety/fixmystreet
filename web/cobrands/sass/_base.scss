@@ -884,10 +884,6 @@ input.final-submit {
   margin: 0 0 1em;
   padding: 0;
   border-bottom: 0.25em solid $primary;
-  .update-img {
-    float: $right;
-    margin: flip(0.5em 0 0.5em 1em, 0.5em 1em 0.5em 0); // gutter between text and floated image
-  }
 }
 
 .item-list__item {
@@ -963,6 +959,35 @@ input.final-submit {
   }
 }
 
+.problem-header .update-img,
+.item-list .update-img {
+    float: $right;
+    margin: flip(0.3em 0 0.5em 1em, 0.3em 1em 0.5em 0); // gutter between text and floated image
+    width: 33%;
+}
+.questionnaire-report-reminder .update-img {
+    float: $left;
+    margin: flip(0.1em 1em 1em 0, 0.1em 0 1em 1em);
+    width: 120px;
+}
+
+// A wrapper that's put around .update-imgs if there are more than 1 in a row
+.update-img-set {
+    text-align: center;
+    margin: 0 0 1em;
+
+    .update-img {
+        float: none;
+        display: inline-block;
+        margin: 0;
+        width: 31%;
+    }
+
+    .update-img + .update-img {
+        margin: flip(0 0 0 0.5em, 0 0.5em 0 0);
+    }
+}
+
 // fancybox gallery images have a magnifying glass in the corner
 .update-img {
   a {
@@ -988,12 +1013,7 @@ input.final-submit {
 }
 
 .problem-header {
-  margin-bottom:1em;
-}
-.problem-header .update-img {
-    float: $right;
-    margin-#{$left}: 0.5em;
-    margin-bottom: 0.5em;
+  margin-bottom: 1em;
 }
 
 .report_meta_info,
@@ -1690,12 +1710,6 @@ table.nicetable {
   border-radius: 3px;
   padding: 1em 1em 1px 1em; // basically no padding-bottom, as children have their own margin-bottom instead
   margin-bottom: 2em;
-
-  .update-img {
-    width: 120px;
-    float: left;
-    margin: 0.1em 1em 1em 0;
-  }
 }
 
 .questionnaire-report-reminder__report-title {
