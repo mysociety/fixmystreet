@@ -754,6 +754,17 @@ If set to an arrayref, will plot those area ID(s) from mapit on all the /around 
 
 sub areas_on_around { []; }
 
+=head2
+
+A list of extra fields we wish to save to the database in the 'extra' column of
+problems based on variables passed in by the form. Return a list of hashrefs
+of values we wish to save, e.g.
+( { name => 'address', required => 1 }, { name => 'passport', required => 0 } )
+
+=cut
+
+sub report_form_extras {}
+
 sub process_open311_extras {}
 
 =head 2 pin_colour
