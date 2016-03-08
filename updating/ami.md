@@ -35,17 +35,16 @@ make sure they are all committed to your local branch and fork first, see
 to try checking out your repository elsewhere and trying the merge there first,
 to see if it there are any problems.
 
-Then you will want to run:
+After updating the code, you should run the following commands to update any
+needed dependencies and any schema changes to your database. It's a good idea
+to take a backup of your database first.
 
     fms@ip-10-58-191-98:~/fixmystreet$ bin/install_perl_modules
-
-to make sure any new Perl modules needed are installed. Take a backup of
-your database, and then run:
-
     fms@ip-10-58-191-98:~/fixmystreet$ bin/update-schema --commit
+    fms@ip-10-58-191-98:~/fixmystreet$ bin/make-css
+    fms@ip-10-58-191-98:~/fixmystreet$ commonlib/bin/gettext-makemo
 
-to look at the state of your database and bring it up to date with any changes.
-Of course, if you have made changes to the schema yourself, this may not work,
+If you have made changes to the schema yourself, this may not work,
 please feel free to [contact us](/community/) to discuss it first.
 
 Lastly, you should restart the Catalyst FastCGI server with:
