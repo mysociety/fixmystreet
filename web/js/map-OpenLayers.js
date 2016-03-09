@@ -148,26 +148,6 @@ function fms_sidebar_highlight(problem_id) {
     if (typeof problem_id !== 'undefined') {
         var $a = $('.item-list--reports a[href$="' + problem_id + '"]');
         $a.parent().addClass('hovered');
-
-        var a_top = $a.offset().top;
-        var a_height = $a.outerHeight();
-        var viewport_top = $(window).scrollTop();
-        var viewport_height = $(window).height();
-        var header_height = $('.nav-wrapper-2').outerHeight();
-        var shadow_height = $('.shadow-wrap').outerHeight();
-        var shadow_top = $('.shadow-wrap').offset().top;
-
-        if (a_top < viewport_top + header_height) {
-            // Top of item (at least) is above the bottom edge of the header
-            $('html, body').animate({
-                scrollTop: a_top - header_height - 20 // little bit extra below header
-            }, 100);
-        } else if (a_top + a_height > shadow_top) {
-            // Bottom of item (at least) is below the top edge of the shadow
-            $('html, body').animate({
-                scrollTop: a_top + a_height - viewport_height + shadow_height
-            }, 100);
-        }
     } else {
         $('.item-list--reports .hovered').removeClass('hovered');
     }
