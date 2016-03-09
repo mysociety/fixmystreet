@@ -81,9 +81,9 @@ sub ask_ever_reported {
     return 0;
 }
 
-sub process_extras {
+sub process_open311_extras {
     my $self = shift;
-    $self->SUPER::process_extras( @_, [ 'first_name', 'last_name' ] );
+    $self->SUPER::process_open311_extras( @_, [ 'first_name', 'last_name' ] );
 }
 
 sub contact_email {

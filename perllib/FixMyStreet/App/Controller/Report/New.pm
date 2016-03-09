@@ -854,12 +854,6 @@ sub process_report : Private {
         $bodies = join( ',', @{ $c->stash->{bodies_to_list} } ) || -1;
         $report->bodies_str( $bodies );
 
-        my %extra;
-        $c->cobrand->process_extras( $c, undef, \%extra );
-        if ( %extra ) {
-            $report->extra( \%extra );
-        }
-
     } elsif ( $report->category ) {
 
         # FIXME All contacts were fetched in setup_categories_and_bodies,
@@ -931,7 +925,7 @@ sub process_report : Private {
             $report->non_public( 1 );
         }
 
-        $c->cobrand->process_extras( $c, $contacts[0]->body_id, \@extra );
+        $c->cobrand->process_open311_extras( $c, $contacts[0]->body_id, \@extra );
 
         if ( @extra ) {
             $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
@@ -948,6 +942,15 @@ sub process_report : Private {
         # where we have no contact information at all.
         $report->bodies_str( -1 );
 
+    }
+
+    # Get a list of custom form fields we want and store them in extra metadata
+    foreach my $field ($c->cobrand->report_form_extras) {
+        my $form_name = $field->{name};
+        my $value = $c->get_param($form_name) || '';
+        $c->stash->{field_errors}->{$form_name} = _('This information is required')
+            if $field->{required} && !$value;
+        $report->set_extra_metadata( $form_name => $value );
     }
 
     # set defaults that make sense
