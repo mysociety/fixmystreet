@@ -46,6 +46,7 @@ function fixmystreet_update_pin(lonlat) {
 
     if (!$('#side-form-error').is(':visible')) {
         $('#side-form, #site-logo').show();
+        window.scrollTo(0, 0);
     }
 }
 
