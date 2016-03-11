@@ -1141,8 +1141,8 @@ sub generate_map : Private {
     my $longitude = $c->stash->{longitude};
 
     # Don't do anything if the user skipped the map
+    $c->stash->{page} = 'new';
     if ( $c->stash->{report}->used_map ) {
-        $c->stash->{page} = 'new';
         FixMyStreet::Map::display_map(
             $c,
             latitude  => $latitude,
