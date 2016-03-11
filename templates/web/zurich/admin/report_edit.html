@@ -10,6 +10,8 @@
 [% map_html %]
 </div>
 
+<div id="map_sidebar">
+
 [% pstate = problem.get_extra_metadata('closure_status') || problem.state %]
 
 <form id="report_edit" method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
@@ -295,6 +297,8 @@
 </div>
 
 </form>
+
+</div>
 
 <script type="text/javascript">
 $(function(){

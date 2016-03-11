@@ -5,7 +5,7 @@
     [% loc('We need your email address, please give it below.') %]
 </p>
 
-[% TRY %][% PROCESS 'report/new/sidebar.html' %][% CATCH file %][% END %]
+[% sidebar_html %]
 
 [% INCLUDE 'errors.html' %]
 

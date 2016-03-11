@@ -1,3 +1,6 @@
+// Super tall map page header to accommodate the big logo
+$mappage-header-height: 10em;
+
 @import "_colours";
 @import "../sass/layout";
 
@@ -7,7 +10,7 @@
 
     body.frontpage #site-logo,
     .ie6 body.frontpage #site-logo,
-    
+
     body.twothirdswidthpage #site-logo,
     .ie6 body.twothirdswidthpage #site-logo
     {
@@ -22,20 +25,10 @@
 
     body.frontpage #site-header,
     .ie6 body.frontpage #site-header,
-
     body.twothirdswidthpage #site-header,
-    .ie6 body.twothirdswidthpage #site-header,
-
-    body.mappage #site-header,
-    .ie6 body.mappage #site-header,
-    body.mappage .nav-wrapper-2,
-    .ie6 body.mappage .nav-wrapper-2
+    .ie6 body.twothirdswidthpage #site-header
     {
         height: 10em;
-    }
-
-    #fms_pan_zoom {
-        top: 10.75em!important;
     }
 }
 

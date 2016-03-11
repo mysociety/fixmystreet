@@ -7,7 +7,7 @@
         = pc
         ? c.uri_for( "/rss/pc", pc )
         : c.uri_for( "/rss/l/$latitude,$longitude" );
-            
+
     email_url = c.uri_for(
         '/alert/list',
         {
@@ -28,6 +28,7 @@
     );
 
     PROCESS "maps/${map.type}.html" around_page = 1;
+    sidebar_html = PROCESS 'report/new/sidebar.html' js = 1 report.used_map = 1;
 
     SET bodyclass = 'mappage';
     SET rss = [ tprintf(loc('Recent local problems, %s', "%s is the site name"), site_name), rss_url ];
@@ -71,31 +72,31 @@
     </div>
 
 
+    <div id="map_sidebar">
 
-
-    <div id="side">
-
-        [% IF allow_creation %]
+        <div id="side">
+          [% IF allow_creation %]
             [% INCLUDE 'around/_report_banner.html' %]
             [% TRY %][% INCLUDE 'around/extra_text.html' %][% CATCH file %][% END %]
-        [% END %]
+          [% END %]
 
-        [% INCLUDE 'around/_updates.html' %]
+          [% INCLUDE 'around/_updates.html' %]
+          <section class="full-width">
+              [% INCLUDE "around/tabbed_lists.html" %]
+          </section>
+        </div>
 
-        <section class="full-width">
-            [% INCLUDE "around/tabbed_lists.html" %]
-        </section>
+      [% IF allow_creation %]
+        <div style="display:none" id="side-form">
+        [% INCLUDE "report/new/fill_in_details_form.html"
+            js = 1,
+            report.used_map = 1
+            report.name = c.user.name
+        %]
+        </div>
+      [% END %]
+
     </div>
-
-    [% IF allow_creation %]
-    <div style="display:none" id="side-form">
-    [% INCLUDE "report/new/fill_in_details_form.html"
-        js = 1,
-        report.used_map = 1
-        report.name = c.user.name
-    %]
-    </div>
-    [% END %]
 
 [% IF allow_creation %]
 </form>

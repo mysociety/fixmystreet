@@ -1,3 +1,6 @@
+// Zurich has a taller map page header than most cobrands.
+$mappage-header-height: 7em;
+
 @import "colours";
 @import "../sass/layout";
 @import "zurich";
@@ -24,8 +27,9 @@ body.mappage .content, body.frontpage .content {
     }
 }
 /* The header on a map page needs a shadow too */
-body.mappage .nav-wrapper-2 {
+body.mappage .nav-wrapper .nav-wrapper-2 {
     @include box-shadow(0 0 6px 1px #000);
+    z-index: 2; // One more than #zurich-main-nav so it's on top
 }
 /* Except on admin pages where there's an admin nav directly underneath it */
 body.mappage.admin .nav-wrapper-2 {
@@ -90,7 +94,7 @@ body.mappage #site-logo-text {
         border-top: none;
     }
     .nav-wrapper-3 {
-        height: 99px;
+        height: 6em; // rough figure, enough to show the blue band, but less than .nav-wrapper-2 height
         padding-top: 18px;
     }
 }
@@ -99,7 +103,6 @@ body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
             border-top: none;
-            height: 117px; // 99px+18px for padding
             padding: 0 10px;
             box-sizing: border-box;
         }
@@ -107,8 +110,6 @@ body.mappage {
     /* Ugh :( But first wrapper is the caption, second is the fixed (so first we
        can do padding on) so a third seems necessary for the background then. */
     .nav-wrapper-3 {
-        height: 99px;
-        padding-top: 18px;
         background: #fff url(logo_portal.x.jpg) top left repeat-x;
     }
     .content {
@@ -187,6 +188,19 @@ body.mappage {
     #zurich-footer {
         display: none;
     }
+
+    #map_sidebar {
+        padding-top: 3em; // make space for the #zurich-main-nav
+    }
+
+    #zurich-main-nav {
+      margin: 0;
+      position: absolute;
+      top: 7em;
+      left: 0;
+      width: 29em; // width of #map_sidebar (including padding)
+      z-index: 1;
+    }
 }
 
 body.twothirdswidthpage {
@@ -224,7 +238,7 @@ body.twothirdswidthpage {
 }
 
 #fms_pan_zoom {
-    top: 9em !important;
+    top: 2em;
 }
 #fms_pan_zoom_zoomin {
     top: 0;

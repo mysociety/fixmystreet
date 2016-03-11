@@ -10,7 +10,6 @@
         <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
     <![endif]-->
 
-    <script src="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/position_map.js') %]" charset="utf-8"></script>
     [% INCLUDE 'common_header_tags.html' %]
     [% extra_js %]
     <script src="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/report-form.js') %]"></script>

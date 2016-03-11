@@ -1,11 +1,12 @@
-@import "_colours";;
+$mappage-header-height: 16em;
+
+@import "_colours";
 @import "../sass/layout";
 
-/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
+// from http://nicolasgallagher.com/micro-clearfix-hack/
 .clearfix:before,
 .clearfix:after { content: " "; display: table; }
 .clearfix:after { clear: both; }
-/* For IE 6/7 only */
 .clearfix { *zoom: 1; }
 
 #front-main {
@@ -13,6 +14,7 @@
     margin-top: 0;
     padding: 0
 }
+
 #front-main-container {
     background-color: $eastsussex_primary;
     padding: 1em;
@@ -71,44 +73,30 @@ body.mappage {
         display: none;
     }
 
-    #fms_pan_zoom {
-        top: 18em!important;
-    }
-
     #mysociety {
         margin-top: 0;
         padding-top: 16em;
         padding-bottom: 0;
         width: auto;
         background: transparent;
+        float: none;
     }
-
-    .content {
-        div {
-            max-width: 27em;
-        }
-
-        // required for non-js placement
-        #map_box {
-            left: 30em;
-        }
-    }
-
 
     #wrapper {
         display: block;
         width: auto;
     }
 
-    #report-a-problem-sidebar {
-        top: 1em;
-    }
-
-    // Keep the headers fixed at the top on the map page
     #site-header {
-        position: fixed;
+        position: fixed; // Keep the headers fixed at the top on the map page
         width: 100%;
         z-index: 2;
+        background: #dae1e5; // the same colour that the .application-nav normally is
+    }
+
+    .application-nav {
+        background: transparent;
+        padding: 0.2em 0 0 0;
     }
 }
 

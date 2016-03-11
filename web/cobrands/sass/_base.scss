@@ -829,25 +829,13 @@ input.final-submit {
 
 .big-green-banner {
   position: relative;
-  top:-1.75em;
+  top: -1.75em;
   background: $col_click_map;
   color: #fff;
-  padding:1em;
-  text: {
-    transform:uppercase;
-    align:center;
-  }
-  font-size:0.875em;
-  &:before {
-    content: "";
-    #{$left}: -0.5em;
-    top:0;
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-#{$left}: 0.5em solid transparent;
-    border-bottom: 0.5em solid $col_click_map_dark;
-  }
+  padding: 1em;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 0.875em;
 }
 
 .banner {
@@ -1061,17 +1049,27 @@ input.final-submit {
 }
 
 // map stuff
-#map_box{
+#map_box {
   @extend .full-width;
   background: #333;
   height: 29em;
   margin-bottom: 1em;
   overflow: hidden;
   position: relative;
+
   #map {
     width: 100%;
     height: 100%;
-    position: relative;
+
+    // IE7 doesn't understand 100% height when the parent height is "auto",
+    // so we have to explicitly tell it to pin the element to the top and
+    // bottom of the parent. No need for an ie7-specific condition, because
+    // this makes no difference in other browsers.
+    // We keep the "height: 100%" in there to give IE7 context for the 100%
+    // height on #map's child, div.olMapViewport.
+    position: absolute;
+    top: 0;
+    bottom: 0;
   }
 }
 
@@ -1085,7 +1083,7 @@ html.js #map .noscript {
 // OpenLayers fix for navigation being top right
 // Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
-  top: 0.5em;
+  top: 0.5em; // This will be overridden in JS if there's a full screen map with banner
   #{$left}: 0.5em;
   #{$right}: 0.5em;
 }

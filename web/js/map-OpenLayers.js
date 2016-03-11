@@ -18,6 +18,7 @@ function fixmystreet_update_pin(lonlat) {
             }
             $('#side-form-error').html('<h1>' + translation_strings.reporting_a_problem + '</h1><p>' + data.error + '</p>').show();
             $('#side-form').hide();
+            $('body').removeClass('with-notes');
             return;
         }
         $('#side-form, #site-logo').show();
@@ -72,9 +73,6 @@ function fixmystreet_zoomToBounds(bounds) {
         z = 13;
     }
     fixmystreet.map.setCenter(center, z);
-    if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
-        fixmystreet.map.pan(-fixmystreet_midpoint(), -25, { animate: false });
-    }
 }
 
 function fms_markers_list(pins, transform) {
@@ -396,13 +394,10 @@ $(function(){
         }, fixmystreet.map_options)
     );
 
-    // Need to do this here, after the map is created
-    if ($('html').hasClass('mobile')) {
-        if (fixmystreet.page == 'around') {
-            $('#fms_pan_zoom').css({ top: '2.75em' });
-        }
-    } else {
-        $('#fms_pan_zoom').css({ top: '4.75em' });
+    // Need to do this here, after the map is created (might not have been when
+    // resize() called)
+    if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
+        $('#fms_pan_zoom').css({ top: '2.75em' });
     }
 
     // Set it up our way
@@ -440,10 +435,6 @@ $(function(){
         fixmystreet.map.setCenter(centre, fixmystreet.zoom || 3);
     }
 
-    if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
-        fixmystreet.map.pan(-fixmystreet_midpoint(), -25, { animate: false });
-    }
-
     if (document.getElementById('mapForm')) {
         var click = new OpenLayers.Control.Click();
         fixmystreet.map.addControl(click);
@@ -470,6 +461,8 @@ $(function(){
         fixmystreet.drag.deactivate();
         $('#side-form').hide();
         $('#side').show();
+        $('body').removeClass('with-notes');
+        fixmystreet.map.updateSize(); // required after changing the size of the map element
         $('#sub_map_links').show();
         //only on mobile
         $('#mob_sub_map_links').remove();
@@ -529,12 +522,8 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
             case "zoomin":
             case "zoomout":
             case "zoomworld":
-                var mid_point = 0;
-                if (fixmystreet.state_map && fixmystreet.state_map == 'full') {
-                    mid_point = fixmystreet_midpoint();
-                }
                 var size = this.map.getSize(),
-                    xy = { x: size.w / 2 + mid_point, y: size.h / 2 };
+                    xy = { x: size.w / 2, y: size.h / 2 };
                 switch (btn.action) {
                     case "zoomin":
                         this.map.zoomTo(this.map.getZoom() + 1, xy);
@@ -576,14 +565,6 @@ OpenLayers.Control.PermalinkFMS = OpenLayers.Class(OpenLayers.Control.Permalink,
         }
 
         var center = this.map.getCenter();
-        if ( center && fixmystreet.state_map && fixmystreet.state_map == 'full' ) {
-            // Translate the permalink co-ords so that 'centre' is accurate
-            var mid_point = fixmystreet_midpoint();
-            var p = this.map.getViewPortPxFromLonLat(center);
-            p.x += mid_point;
-            p.y += 25;
-            center = this.map.getLonLatFromViewPortPx(p);
-        }
 
         var zoom = this.map.getZoom();
         if ( alter_zoom ) {
@@ -738,6 +719,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             return;
         }
 
+        // If there are notes to be displayed, add the .with-notes class
+        // to make the sidebar wider.
+        if ($('#report-a-problem-sidebar').length) {
+            $('body').addClass('with-notes');
+        }
+
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
          * or you cause a screen redraw by changing the phone orientation.
@@ -746,11 +733,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             document.getElementById('side-form').style.display = 'block';
         }
         $('#side').hide();
-        if (typeof heightFix !== 'undefined') {
-            heightFix('#report-a-problem-sidebar', '.content', 26);
-        }
 
-        fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
+        fixmystreet.map.updateSize(); // required after changing the size of the map element
 
         fixmystreet.map.panDuration = 100;
         fixmystreet.map.panTo(lonlat);

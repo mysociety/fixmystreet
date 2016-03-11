@@ -11,6 +11,7 @@
     );
 
     PROCESS "maps/${map.type}.html";
+    sidebar_html = PROCESS 'report/new/sidebar.html', js = 1, report.used_map = 1;
 
     INCLUDE 'header.html',
         title  => loc('Viewing a location')
@@ -29,19 +30,20 @@
     <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
 
     [% map_html %]
-
     </div>
 
-    <div id="side">
+    <div id="map_sidebar">
+        <div id="side">
             [% INCLUDE 'around/_report_banner.html' %]
-    </div>
+        </div>
 
-    <div style="display:none" id="side-form">
-    [% INCLUDE "report/new/fill_in_details_form.html"
-        js = 1,
-        report.used_map = 1
-        report.name = c.user.name
-    %]
+        <div style="display:none" id="side-form">
+        [% INCLUDE "report/new/fill_in_details_form.html"
+            js = 1,
+            report.used_map = 1
+            report.name = c.user.name
+        %]
+        </div>
     </div>
 
 </form>
