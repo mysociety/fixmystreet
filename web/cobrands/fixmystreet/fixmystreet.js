@@ -130,7 +130,6 @@ $(function(){
                 var banner_text = translation_strings.report_problem_heading;
                 if (cobrand !== 'oxfordshire') {
                     $('#site-header').show();
-                    banner_text = translation_strings.report_problem_heading;
                 }
                 $('.big-green-banner')
                     .removeClass('mobile-map-banner')
