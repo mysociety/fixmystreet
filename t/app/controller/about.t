@@ -7,8 +7,8 @@ use Test::WWW::Mechanize::Catalyst 'FixMyStreet::App';
 ok( my $mech = Test::WWW::Mechanize::Catalyst->new, 'Created mech object' );
 
 # check that we can get the page
-$mech->get_ok('/about');
-$mech->content_like(qr{About us ::\s+FixMyStreet});
+$mech->get_ok('/faq');
+$mech->content_like(qr{Frequently Asked Questions ::\s+FixMyStreet});
 $mech->content_contains('html class="no-js" lang="en-gb"');
 
 $mech->get_ok('/privacy');
