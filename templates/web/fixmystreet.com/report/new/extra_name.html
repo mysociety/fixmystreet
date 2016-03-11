@@ -1,0 +1,42 @@
+[%# Same as parent, with added gender question %]
+
+[% IF (page == 'around' OR page == 'new') AND c.cobrand.ask_gender_question %]
+<p>
+We’re conducting research to make sure our site is good for everyone;
+please help us out by providing your gender. <em>This will not be
+shared with the council or displayed publicly.</em>
+</p>
+
+[% SET gender = report.get_extra_metadata('gender') %]
+<p class="radio-segmented-control" style="font-size: 80%">
+    <input type="radio" name="gender" id="gender_female" value="female"[% ' checked' IF gender == 'female' %]>
+    <label class="inline" for="gender_female">Female</label>
+    <input type="radio" name="gender" id="gender_male" value="male"[% ' checked' IF gender == 'male' %]>
+    <label class="inline" for="gender_male">Male</label>
+    <input type="radio" name="gender" id="gender_other" value="other"[% ' checked' IF gender == 'other' %]>
+    <label class="inline" for="gender_other">Other</label>
+    <input type="radio" name="gender" id="gender_unknown" value="unknown"[% ' checked' IF gender == 'unknown' %]>
+    <label class="inline" for="gender_unknown">Prefer not to say</label>
+</p>
+[% END %]
+
+<input type="hidden" name="variant" value="0">
+
+[% IF extra_name_info %]
+<label for="form_fms_extra_title">Title</label>
+[% IF field_errors.fms_extra_title %]
+    <p class='form-error'>[% field_errors.fms_extra_title %]</p>
+[% END %]
+[% title = '' %]
+[% IF fms_extra_title %][% title = fms_extra_title | upper %]
+[% ELSIF c.user && c.user.title %][% title = c.user.title | upper %][% END %]
+<select class="form-focus-trigger required" id="form_fms_extra_title"
+    name="fms_extra_title">
+    <option></option>
+    <option value="MR"[% ' selected' IF title == 'MR' %]>Mr</option>
+    <option value="MISS"[% ' selected' IF title == 'MISS' %]>Miss</option>
+    <option value="MRS"[% ' selected' IF title == 'MRS' %]>Mrs</option>
+    <option value="MS"[% ' selected' IF title == 'MS' %]>Ms</option>
+    <option value="DR"[% ' selected' IF title == 'DR' %]>Dr</option>
+</select>
+[% END %]

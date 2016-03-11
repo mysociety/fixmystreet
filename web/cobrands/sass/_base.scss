@@ -1741,7 +1741,8 @@ table.nicetable {
   display: flex; // fancy full-width buttons for browsers that support flexbox
 
   input {
-    display: none;
+    position: absolute;
+    left: -999px;
   }
 
   label {

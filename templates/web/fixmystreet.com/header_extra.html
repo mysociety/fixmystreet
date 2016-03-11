@@ -3,4 +3,18 @@
 <script src="[% start %][% version('/js/jquery.cookie.min.js') %]"></script>
 <script src="[% start %][% version('/cobrands/fixmystreet.com/js.js') %]"></script>
 
+[%# We are conducting an A/B experiment %]
+<script src="//www.google-analytics.com/cx/api.js?experiment=ZwMlZkAhSbK_tP_QG64QrQ"></script>
+<script>
+var variation = cxApi.chooseVariation(),
+    docElement = document.documentElement,
+    className = docElement.className;
+docElement.className = className + ' variant' + variation;
+</script>
+<style>
+html .variant1 { display: none !important; }
+html.variant1 .variant0 { display: none !important; }
+html.variant1 .variant1 { display: block !important; }
+</style>
+
 [% INCLUDE 'tracking_code.html' %]
