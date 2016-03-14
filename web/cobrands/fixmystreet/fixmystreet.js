@@ -80,7 +80,7 @@ $(function(){
 
     var cobrand = $('meta[name="cobrand"]').attr('content');
 
-    if (typeof variation !== undefined && variation === 1) {
+    if (typeof variation !== 'undefined' && variation === 1) {
         $('input[name=variant]').val(1);
     }
 
@@ -135,7 +135,7 @@ $(function(){
                 if (cobrand !== 'oxfordshire') {
                     $('#site-header').show();
                 }
-                if (typeof variation !== undefined && variation === 1) {
+                if (typeof variation !== 'undefined' && variation === 1) {
                     banner_text = 'Click map to request a fix';
                 }
                 $('.big-green-banner')
