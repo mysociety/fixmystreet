@@ -95,7 +95,8 @@ sub determine_location_from_pc : Private {
     # $error doubles up to return multiple choices by being an array
     if ( ref($error) eq 'ARRAY' ) {
         foreach (@$error) {
-            my $a = decode_utf8($_->{address});
+            my $a = $_->{address};
+            $a = decode_utf8($a) if !utf8::is_utf8($a);
             $a =~ s/, United Kingdom//;
             $a =~ s/, UK//;
             $_->{address} = $a;
