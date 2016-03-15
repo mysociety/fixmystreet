@@ -7,6 +7,7 @@ BEGIN {
     FixMyStreet->test_mode(1);
 }
 
+use Email::MIME;
 use Test::More;
 use Test::LongString;
 
@@ -36,14 +37,17 @@ is scalar(@emails), 1, "caught one email";
 
 # Get the email, check it has a date and then strip it out
 my $email_as_string = $mech->get_first_email(@emails);
+my $email = Email::MIME->new($email_as_string);
 
 my $expected_email_content =   path(__FILE__)->parent->child('send_email_sample.txt')->slurp;
 my $name = FixMyStreet->config('CONTACT_NAME');
 $name = "\"$name\"" if $name =~ / /;
 my $sender = $name . ' <' . FixMyStreet->config('DO_NOT_REPLY_EMAIL') . '>';
 $expected_email_content =~ s{CONTACT_EMAIL}{$sender};
+my $expected_email = Email::MIME->new($expected_email_content);
 
-is_string $email_as_string, $expected_email_content, "email is as expected";
+is_deeply { $email->header_pairs }, { $expected_email->header_pairs }, 'MIME email headers ok';
+is_string $email->body, $expected_email->body, 'email is as expected';
 
 subtest 'MIME attachments' => sub {
     my $data = path(__FILE__)->parent->child('grey.gif')->slurp_raw;
@@ -80,15 +84,25 @@ subtest 'MIME attachments' => sub {
     is scalar(@emails), 1, "caught one email";
 
     my $email_as_string = $mech->get_first_email(@emails);
-
     my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
-    my $changes = $email_as_string =~ s{$boundary}{}g;
-    is $changes, 5, '5 boundaries'; # header + 4 around the 3x parts (text + 2 images)
+    my $email = Email::MIME->new($email_as_string);
 
     my $expected_email_content = path(__FILE__)->parent->child('send_email_sample_mime.txt')->slurp;
     $expected_email_content =~ s{CONTACT_EMAIL}{$sender}g;
+    $expected_email_content =~ s{BOUNDARY}{$boundary}g;
+    my $expected_email = Email::MIME->new($expected_email_content);
 
-    is_string $email_as_string, $expected_email_content, 'MIME email text ok'
+    my @email_parts;
+    $email->walk_parts(sub {
+        my ($part) = @_;
+        push @email_parts, [ { $part->header_pairs }, $part->body ];
+    });
+    my @expected_email_parts;
+    $expected_email->walk_parts(sub {
+        my ($part) = @_;
+        push @expected_email_parts, [ { $part->header_pairs }, $part->body ];
+    });
+    is_deeply \@email_parts, \@expected_email_parts, 'MIME email text ok'
         or do {
             (my $test_name = $0) =~ s{/}{_}g;
             my $path = path("test-output-$test_name.tmp");

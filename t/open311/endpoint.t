@@ -89,16 +89,16 @@ subtest "GET Service Definition" => sub {
       <required>false</required>
       <values>
         <value>
-          <name>Triangle</name>
-          <key>triangle</key>
-        </value>
-        <value>
           <name>Circle</name>
           <key>circle</key>
         </value>
         <value>
           <name>Square</name>
           <key>square</key>
+        </value>
+        <value>
+          <name>Triangle</name>
+          <key>triangle</key>
         </value>
       </values>
       <variable>true</variable>
@@ -133,17 +133,17 @@ CONTENT
                     "datatype" => "singlevaluelist",
                     "values" => [
                         {
-                            "name" => "Triangle",
-                            "key" => "triangle"
-                        },
-                        {
                             "name" => "Circle",
                             "key" => "circle"
                         },
                         {
                             "name" => "Square",
                             "key" => "square"
-                        }
+                        },
+                        {
+                            "name" => "Triangle",
+                            "key" => "triangle"
+                        },
                     ],
                }
             ],

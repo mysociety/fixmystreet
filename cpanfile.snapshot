@@ -63,6 +63,36 @@ DISTRIBUTIONS
       Sub::Exporter::Progressive 0.001006
       Test::More 0.88
       Variable::Magic 0.48
+  CGI-4.28
+    pathname: L/LE/LEEJO/CGI-4.28.tar.gz
+    provides:
+      CGI 4.28
+      CGI::Carp 4.28
+      CGI::Cookie 4.28
+      CGI::File::Temp 4.28
+      CGI::HTML::Functions undef
+      CGI::Pretty 4.28
+      CGI::Push 4.28
+      CGI::Util 4.28
+      Fh 4.28
+      MultipartBuffer 4.28
+    requirements:
+      Carp 0
+      Config 0
+      Encode 0
+      Exporter 0
+      ExtUtils::MakeMaker 0
+      File::Spec 0.82
+      File::Temp 0
+      HTML::Entities 3.69
+      base 0
+      if 0
+      overload 0
+      parent 0.225
+      perl 5.008001
+      strict 0
+      utf8 0
+      warnings 0
   CGI-Simple-1.113
     pathname: A/AN/ANDYA/CGI-Simple-1.113.tar.gz
     provides:
@@ -851,12 +881,13 @@ DISTRIBUTIONS
       Test::Exception 0
       Test::More 0
       ok 0
-  Convert-NLS_DATE_FORMAT-0.05
-    pathname: K/KO/KOLIBRIE/Convert-NLS_DATE_FORMAT-0.05.tar.gz
+  Convert-NLS_DATE_FORMAT-0.06
+    pathname: K/KO/KOLIBRIE/Convert-NLS_DATE_FORMAT-0.06.tar.gz
     provides:
-      Convert::NLS_DATE_FORMAT 0.05
+      Convert::NLS_DATE_FORMAT 0.06
     requirements:
-      ExtUtils::MakeMaker 0
+      Module::Build::Tiny 0.035
+      perl 5.006001
   Cpanel-JSON-XS-3.0210
     pathname: R/RU/RURBAN/Cpanel-JSON-XS-3.0210.tar.gz
     provides:
@@ -2699,11 +2730,11 @@ DISTRIBUTIONS
       Test::More 0.88
       Test::Requires 0
       Try::Tiny 0
-  Exporter-Tiny-0.036
-    pathname: T/TO/TOBYINK/Exporter-Tiny-0.036.tar.gz
+  Exporter-Tiny-0.042
+    pathname: T/TO/TOBYINK/Exporter-Tiny-0.042.tar.gz
     provides:
-      Exporter::Shiny 0.036
-      Exporter::Tiny 0.036
+      Exporter::Shiny 0.042
+      Exporter::Tiny 0.042
     requirements:
       ExtUtils::MakeMaker 6.17
       perl 5.006001
@@ -2978,10 +3009,10 @@ DISTRIBUTIONS
       overload 0
       strict 0
       warnings 0
-  Guard-1.022
-    pathname: M/ML/MLEHMANN/Guard-1.022.tar.gz
+  Guard-1.023
+    pathname: M/ML/MLEHMANN/Guard-1.023.tar.gz
     provides:
-      Guard 1.022
+      Guard 1.023
     requirements:
       ExtUtils::MakeMaker 0
   HTML-Form-6.03
@@ -3500,15 +3531,23 @@ DISTRIBUTIONS
       Lingua::Stem::Snowball::Da 1.01
     requirements:
       ExtUtils::MakeMaker 0
-  List-MoreUtils-0.33
-    pathname: A/AD/ADAMK/List-MoreUtils-0.33.tar.gz
+  List-MoreUtils-0.413
+    pathname: R/RE/REHSACK/List-MoreUtils-0.413.tar.gz
     provides:
-      List::MoreUtils 0.33
+      List::MoreUtils 0.413
+      List::MoreUtils::PP 0.413
+      List::MoreUtils::XS 0.413
     requirements:
-      ExtUtils::CBuilder 0.27
-      ExtUtils::MakeMaker 6.52
-      Test::More 0.82
-      perl 5.00503
+      Carp 0
+      Exporter::Tiny 0.038
+      ExtUtils::MakeMaker 0
+      File::Basename 0
+      File::Copy 0
+      File::Path 0
+      File::Spec 0
+      IPC::Cmd 0
+      XSLoader 0
+      base 0
   MIME-Lite-3.030
     pathname: R/RJ/RJBS/MIME-Lite-3.030.tar.gz
     provides:
@@ -3681,10 +3720,10 @@ DISTRIBUTIONS
       Text::ParseWords 0
       perl 5.006001
       version 0.87
-  Module-Build-Tiny-0.037
-    pathname: L/LE/LEONT/Module-Build-Tiny-0.037.tar.gz
+  Module-Build-Tiny-0.039
+    pathname: L/LE/LEONT/Module-Build-Tiny-0.039.tar.gz
     provides:
-      Module::Build::Tiny 0.037
+      Module::Build::Tiny 0.039
     requirements:
       CPAN::Meta 0
       DynaLoader 0
@@ -4593,10 +4632,10 @@ DISTRIBUTIONS
       constant 0
       strict 0
       warnings 0
-  PadWalker-1.96
-    pathname: R/RO/ROBIN/PadWalker-1.96.tar.gz
+  PadWalker-2.2
+    pathname: R/RO/ROBIN/PadWalker-2.2.tar.gz
     provides:
-      PadWalker 1.96
+      PadWalker 2.2
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001
@@ -6048,67 +6087,70 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0.47
-  URI-1.60
-    pathname: G/GA/GAAS/URI-1.60.tar.gz
+  URI-1.71
+    pathname: E/ET/ETHER/URI-1.71.tar.gz
     provides:
-      URI 1.60
+      URI 1.71
       URI::Escape 3.31
       URI::Heuristic 4.20
-      URI::IRI undef
-      URI::QueryParam undef
-      URI::Split undef
+      URI::IRI 1.71
+      URI::QueryParam 1.71
+      URI::Split 1.71
       URI::URL 5.04
       URI::WithBase 2.20
-      URI::_foreign undef
-      URI::_generic undef
-      URI::_idna undef
-      URI::_ldap 1.12
-      URI::_login undef
-      URI::_punycode 0.04
-      URI::_query undef
-      URI::_segment undef
-      URI::_server undef
-      URI::_userpass undef
-      URI::data undef
+      URI::_foreign 1.71
+      URI::_generic 1.71
+      URI::_idna 1.71
+      URI::_ldap 1.71
+      URI::_login 1.71
+      URI::_punycode 1.71
+      URI::_query 1.71
+      URI::_segment 1.71
+      URI::_server 1.71
+      URI::_userpass 1.71
+      URI::data 1.71
       URI::file 4.21
-      URI::file::Base undef
-      URI::file::FAT undef
-      URI::file::Mac undef
-      URI::file::OS2 undef
-      URI::file::QNX undef
-      URI::file::Unix undef
-      URI::file::Win32 undef
-      URI::ftp undef
-      URI::gopher undef
-      URI::http undef
-      URI::https undef
-      URI::ldap 1.12
-      URI::ldapi undef
-      URI::ldaps undef
-      URI::mailto undef
-      URI::mms undef
-      URI::news undef
-      URI::nntp undef
-      URI::pop undef
-      URI::rlogin undef
-      URI::rsync undef
-      URI::rtsp undef
-      URI::rtspu undef
-      URI::sip 0.11
-      URI::sips undef
-      URI::snews undef
-      URI::ssh undef
-      URI::telnet undef
-      URI::tn3270 undef
-      URI::urn undef
+      URI::file::Base 1.71
+      URI::file::FAT 1.71
+      URI::file::Mac 1.71
+      URI::file::OS2 1.71
+      URI::file::QNX 1.71
+      URI::file::Unix 1.71
+      URI::file::Win32 1.71
+      URI::ftp 1.71
+      URI::gopher 1.71
+      URI::http 1.71
+      URI::https 1.71
+      URI::ldap 1.71
+      URI::ldapi 1.71
+      URI::ldaps 1.71
+      URI::mailto 1.71
+      URI::mms 1.71
+      URI::news 1.71
+      URI::nntp 1.71
+      URI::pop 1.71
+      URI::rlogin 1.71
+      URI::rsync 1.71
+      URI::rtsp 1.71
+      URI::rtspu 1.71
+      URI::sftp 1.71
+      URI::sip 1.71
+      URI::sips 1.71
+      URI::snews 1.71
+      URI::ssh 1.71
+      URI::telnet 1.71
+      URI::tn3270 1.71
+      URI::urn 1.71
       URI::urn::isbn undef
-      URI::urn::oid undef
+      URI::urn::oid 1.71
     requirements:
+      Exporter 5.57
       ExtUtils::MakeMaker 0
       MIME::Base64 2
-      Test 0
-      Test::More 0
+      Scalar::Util 0
+      parent 0
       perl 5.008001
+      utf8 0
   URI-SmartURI-0.032
     pathname: R/RK/RKITOVER/URI-SmartURI-0.032.tar.gz
     provides:
@@ -6384,13 +6426,17 @@ DISTRIBUTIONS
       File::Spec 0.80
       Test::More 0.47
       perl 5.004
-  aliased-0.31
-    pathname: O/OV/OVID/aliased-0.31.tar.gz
+  aliased-0.34
+    pathname: E/ET/ETHER/aliased-0.34.tar.gz
     provides:
-      aliased 0.31
+      aliased 0.34
     requirements:
-      Module::Build 0.40
-      Test::More 0
+      Carp 0
+      Exporter 0
+      Module::Build::Tiny 0.039
+      perl 5.006
+      strict 0
+      warnings 0
   autodie-2.20
     pathname: P/PJ/PJF/autodie-2.20.tar.gz
     provides:

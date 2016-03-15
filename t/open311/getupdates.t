@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 use Test::More;
+use URI::Split qw(uri_split);
 
 use FixMyStreet;
 use FixMyStreet::DB;
@@ -103,8 +104,11 @@ for my $test (
 
         my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
 
-        ok $updates->update_reports( [ 638344 ], $o, $body );
-        is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638344', 'get url';
+        ok $updates->update_reports( [ 638344 ], $o, $body ), 'Updated reports';
+        my @parts = uri_split($o->test_uri_used);
+        is $parts[2], '/requests.xml', 'path matches';
+        my @qs = sort split '&', $parts[3];
+        is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638344' ], 'query string matches');
 
         is $problem->comments->count, $test->{comment_count}, 'added a comment';
     };
@@ -178,8 +182,11 @@ subtest 'update with two requests' => sub {
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'requests.xml' => $local_requests_xml } );
 
-    ok $updates->update_reports( [ 638344,638345 ], $o, $body );
-    is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638344%2C638345', 'get url';
+    ok $updates->update_reports( [ 638344,638345 ], $o, $body ), 'Updated reports';
+    my @parts = uri_split($o->test_uri_used);
+    is $parts[2], '/requests.xml', 'path matches';
+    my @qs = sort split '&', $parts[3];
+    is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638344%2C638345' ], 'query string matches');
 
     is $problem->comments->count, 1, 'added a comment to first problem';
     is $problem2->comments->count, 1, 'added a comment to second problem';
@@ -232,9 +239,12 @@ subtest 'test translation of auto-added comment from old-style Open311 update' =
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fixamingata' ],
     }, sub {
-        ok $updates->update_reports( [ 638346 ], $o, $body );
+        ok $updates->update_reports( [ 638346 ], $o, $body ), 'Updated reports';
     };
-    is $o->test_uri_used, 'http://example.com/requests.xml?jurisdiction_id=mysociety&service_request_id=638346', 'get url';
+    my @parts = uri_split($o->test_uri_used);
+    is $parts[2], '/requests.xml', 'path matches';
+    my @qs = sort split '&', $parts[3];
+    is_deeply(\@qs, [ 'jurisdiction_id=mysociety', 'service_request_id=638346' ], 'query string matches');
 
     is $problem3->comments->count, 1, 'added a comment';
     is $problem3->comments->first->text, "St\xe4ngd av kommunen", 'correct comment text';

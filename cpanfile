@@ -1,11 +1,16 @@
 # setenv script
-requires 'List::MoreUtils';
+requires 'List::MoreUtils', '0.402';
 requires 'local::lib';
 requires 'Class::Unload';
 
 # Interesting installation issues, see end of this file
 requires 'ExtUtils::MakeMaker', '6.72'; # [1]
 # requires 'MooseX::NonMoose'; # [2]
+
+# Minimum versions of dependencies to upgrade for bugfixes
+requires 'Guard', '1.023';
+requires 'PadWalker', '2.2';
+requires 'aliased', '0.34';
 
 # Catalyst itself, and modules/plugins used
 requires 'Catalyst', '5.80031';
@@ -84,7 +89,7 @@ requires 'Statistics::Distributions';
 requires 'Storable';
 requires 'Template::Plugin::Number::Format';
 requires 'Text::CSV';
-requires 'URI';
+requires 'URI', '1.71';
 requires 'URI::Escape';
 requires 'URI::QueryParam';
 requires 'XML::RSS';
@@ -102,6 +107,7 @@ feature 'open311-endpoint', 'Open311::Endpoint specific requirements' => sub {
     requires 'MooX::HandlesVia';
     requires 'Types::Standard';
     requires 'DateTime::Format::Oracle'; # for EXOR
+    requires 'Convert::NLS_DATE_FORMAT', '0.06'; # Perl 5.22 upgrade
 };
 
 feature 'zurich', 'Zueri wie neu specific requirements' => sub {

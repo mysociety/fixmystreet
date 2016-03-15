@@ -4,6 +4,7 @@
 use strict;
 use warnings;
 use DateTime;
+use Email::MIME;
 use Test::More;
 use Test::LongString;
 use Path::Tiny;
@@ -884,15 +885,26 @@ subtest 'email images to external partners' => sub {
         my @emails = $mech->get_email;
         my $email_as_string = $mech->get_first_email(@emails);
         my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
-        my $changes = $email_as_string =~ s{$boundary}{}g;
-        is $changes, 4, '4 boundaries'; # header + 3 around the 2x parts (text + 1 image)
+        my $email = Email::MIME->new($email_as_string);
 
         my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
 
         my $REPORT_ID = $report->id;
         $expected_email_content =~ s{REPORT_ID}{$REPORT_ID}g;
+        $expected_email_content =~ s{BOUNDARY}{$boundary}g;
+        my $expected_email = Email::MIME->new($expected_email_content);
 
-        is_string $email_as_string, $expected_email_content, 'MIME email text ok'
+        my @email_parts;
+        $email->walk_parts(sub {
+            my ($part) = @_;
+            push @email_parts, [ { $part->header_pairs }, $part->body ];
+        });
+        my @expected_email_parts;
+        $expected_email->walk_parts(sub {
+            my ($part) = @_;
+            push @expected_email_parts, [ { $part->header_pairs }, $part->body ];
+        });
+        is_deeply \@email_parts, \@expected_email_parts, 'MIME email text ok'
             or do {
                 (my $test_name = $0) =~ s{/}{_}g;
                 my $path = path("test-output-$test_name.tmp");
