@@ -351,8 +351,10 @@ sub _geocode : Private {
     } else {
         if ( ref($suggestions) eq 'ARRAY' ) {
             foreach (@$suggestions) {
-                push @addresses, decode_utf8($_->{address});
-                push @locations, { address => decode_utf8($_->{address}), lat => $_->{latitude}, long => $_->{longitude} };
+                my $address = $_->{address};
+                $address = decode_utf8($address) if !utf8::is_utf8($address);
+                push @addresses, $address;
+                push @locations, { address => $address, lat => $_->{latitude}, long => $_->{longitude} };
             }
             $response = { suggestions => \@addresses, locations => \@locations };
         } else {
