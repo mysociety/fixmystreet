@@ -9,7 +9,9 @@
 var variation = cxApi.chooseVariation(),
     docElement = document.documentElement,
     className = docElement.className;
-docElement.className = className + ' variant' + variation;
+if (!/about\/council/.test(location.pathname)) {
+    docElement.className = className + ' variant' + variation;
+}
 </script>
 <style>
 html .variant1 { display: none !important; }

@@ -383,11 +383,13 @@ body.unresponsive-council {
         background: transparent;
     }
 
-    #main-nav {
-        text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+    .nav-menu a,
+    .nav-menu span {
+        color: #222;
     }
 
     .nav-menu--main {
+        font-weight: bold;
         span {
             color: inherit;
         }
@@ -403,7 +405,6 @@ body.unresponsive-council {
             background-color: #fff;
             color: mix(#fad52a, #000, 50%);
             padding: 0.25em 0.5em;
-            text-shadow: none;
         }
     }
 
@@ -416,10 +417,19 @@ body.unresponsive-council {
         background: darken(#fad52a, 5%);
     }
 
-    body.twothirdswidthpage .container .content footer .tablewrapper,
+    body.twothirdswidthpage .container .content footer .tablewrapper {
+        color: #222;
+        background: #fad52a;
+    }
     body.fullwidthpage .container .content footer .tablewrapper,
     #footer-nav .tablewrapper {
-        background: #fad52a;
+        color: #222;
+        background: transparent;
+    }
+
+    #footer-nav .tablewrapper ul li a,
+    #footer-nav .tablewrapper ul li span {
+        color: #222;
     }
 
     .nav-menu--mysoc {
