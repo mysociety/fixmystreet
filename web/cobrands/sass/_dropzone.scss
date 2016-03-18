@@ -120,6 +120,11 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   }
 }
 
+// If there was an error, we don't want to display the preview image on top of it.
+.dz-error .dz-image {
+  display: none;
+}
+
 .dz-progress {
   position: absolute;
   top: 0;
@@ -148,6 +153,7 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
 
 .dz-error-message {
   color: #881111;
+  padding-top: 1.5em;
 }
 
 .dz-remove,
