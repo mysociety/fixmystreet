@@ -29,6 +29,25 @@ ga('ecommerce:send');
 ga('send', 'pageview');
 
 </script>
+
+[% IF created_report %]
+<script type="text/javascript">
+var google_conversion_id = 1067468161;
+var google_conversion_language = "en";
+var google_conversion_format = "3";
+var google_conversion_color = "ffffff";
+var google_conversion_label = "1nWDCP3t6GQQgYuB_QM";
+var google_remarketing_only = false;
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+</script>
+<noscript>
+<div style="display:inline;">
+<img height="1" width="1" style="border-style:none;" alt="" src="//www.googleadservices.com/pagead/conversion/1067468161/?label=1nWDCP3t6GQQgYuB_QM&amp;guid=ON&amp;script=0"/>
+</div>
+</noscript>
+[% END %]
+
 [% ELSE %]
 <!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
 [% END %]
