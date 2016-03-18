@@ -286,9 +286,10 @@ sub _delete_contacts_not_in_service_list {
         }
     );
 
-    # for Warwickshire, which is mixed Open311 and email, don't delete the email
-    # addresses
-    if ($self->_current_body->name eq 'Warwickshire County Council') {
+    # for Warwickshire/Bristol, which are mixed Open311 and email, don't delete
+    # the email addresses
+    if ($self->_current_body->name eq 'Warwickshire County Council' ||
+        $self->_current_body->name eq 'Bristol City Council') {
         $found_contacts = $found_contacts->search(
             {
                 email => { -not_like => '%@%' }

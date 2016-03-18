@@ -1,0 +1,229 @@
+@import "_colours";
+@import "_fonts";
+@import "../sass/layout";
+@import "../sass/report_list_pins";
+
+#site-header {
+  background-color: $g1;
+  background: $g1;
+  border-bottom: none;
+}
+
+// Don't display a border atop the page
+.nav-wrapper .nav-wrapper-2 {
+  border-top: none;
+}
+
+body.frontpage, body.twothirdswidthpage, body.fullwidthpage, body.authpage {
+  // Display the BCC logo and header correctly
+  #site-logo {
+    background: url(/cobrands/bristol/img/bcclogo.png) 0 14px no-repeat;
+    background-size: 81px 81px;
+    text-indent: 122px;
+    height: 111px;
+    line-height: 111px;
+    font-size: 30px;
+    // Getting rid of absolute positioning allows us to style the BCC nav below nicely
+    position: static;
+  }
+
+  // Make sure the header is only as tall as it needs to be
+  #site-header {
+    height: auto;
+
+    .container {
+      min-height: 0;
+    }
+
+    &:after {
+      content: " ";
+      height: 3.5em;
+      display: block;
+      border-bottom: solid 5px $g6;
+      border-top: solid 5px $bcc_red;
+      background-color: white;
+    }
+  }
+
+  #front-main {
+    background-color: white;
+    text-align: left;
+    padding-top: 40px;
+
+    #postcodeForm {
+      margin-top: 0;
+
+      div {
+        margin: 0;
+      }
+    }
+
+    a#geolocate_link {
+      color: $b3;
+    }
+
+    h1 {
+      font-size: 3em;
+    }
+
+    h1 + p {
+      font-size: 1.75em;
+      line-height: 1.25em;
+      max-width: 640px;
+    }
+  }
+
+  .nav-menu {
+    // Put the main FMS navigation below the Bristol header
+    float: left;
+    width: 100%;
+    margin-top: 7.25em;
+
+    a, span {
+      display: inline-block; // So the chevrons appear correctly
+      font-size: 1.2em;
+    }
+    a {
+      text-decoration: underline;
+      color: $b3;
+
+      &:hover {
+        background: transparent;
+        color: $g1;
+      }
+    }
+    span {
+      color: $g1;
+    }
+  }
+
+  // Stop the 'report a problem' button being red on non-map pages
+  .nav-menu--main a.report-a-problem-btn {
+    background-color: transparent;
+  }
+
+  // Stop .nav-wrapper from preventing the logo being clicked
+  .nav-wrapper .nav-wrapper-2 {
+    height: 0;
+    min-height: 0;
+  }
+
+  // Put FAQ side nav at correct vertical position
+  .content .sticky-sidebar aside {
+    top: 14.5em;
+    box-shadow: none;
+  }
+}
+
+body.mappage {
+  // Stop the header being too tall
+  #site-header {
+    min-height: 79px;
+
+    .container {
+      min-height: 0;
+
+      #site-logo {
+        top: 0.5em;
+        line-height: 44px;
+      }
+    }
+  }
+
+  .nav-menu {
+    a, span {
+      text-decoration: none;
+      color: white;
+      font-size: 1.1em;
+      padding: 1em 0.75em 0.95em;
+    }
+    a:hover {
+      background: transparent;
+      text-decoration: underline;
+    }
+    a.report-a-problem-btn {
+      color: white;
+      margin: 0.5em 0.25em 0.45em;
+      &:hover {
+        background-color: lighten($bcc_red, 5%);
+      };
+    }
+  }
+
+  // Haven't quite figured out why this can't go on #site-header
+  .nav-wrapper {
+    .nav-wrapper-2 {
+      border-bottom: solid 5px $bcc_red;
+    }
+  }
+
+  .big-green-banner {
+    display: block;
+    background-color: $bcc_red;
+    text-transform: none;
+  }
+}
+
+.bristol_footer footer {
+  position: relative;
+
+  .footer-title {
+    display: block;
+    color: white;
+    font-family: $heading-font;
+    font-size: 1.2em;
+    margin-top: 0.5em;
+  }
+
+  .footer-social-links {
+    margin-bottom: 2.7em;
+  }
+
+  #footer-logo {
+    display: block;
+
+    a {
+      text-indent: -999em;
+      background-image: url(/cobrands/bristol/img/bcc_footer_logo_2.png);
+      background-repeat: no-repeat;
+      height: 52px;
+      width: 203px;
+      display: inline-block;
+      margin: 2em 0;
+    }
+  }
+
+  .span8, .span4 {
+    text-align: left;
+
+    ul {
+      text-align: left;
+      margin: 0;
+    }
+  }
+
+  .span8 {
+    width: 66%;
+    float: left;
+  }
+
+  .span4 {
+    width: 33%;
+    float: right;
+  }
+
+  .legal-nav li {
+    border-left: solid 1px $g2;
+    padding: 0 0.5em;
+  }
+
+  .legal-nav li:first-child {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+// Set the default font colour everywhere
+body, .content {
+  color: $g1;
+}
