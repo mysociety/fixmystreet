@@ -1391,6 +1391,9 @@ label .muted {
     }
   }
 }
+.description_tips__heading--inline {
+  display: inline-block;
+}
 
 #problem_form > label:first-child {
   margin-top: 0;
