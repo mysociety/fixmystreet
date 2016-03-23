@@ -40,6 +40,20 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.8.1 (23rd March 2016)
+    - Front end improvements:
+          - Remember user's last anonymous state. #150
+          - Remove auto-scrolling of sidebar on pin hover. #1344
+          - Better multiple image display for reports/updates. #1325
+          - Improve accessibility of pretty radio buttons and photo inputs.
+    - Bugfixes:
+          - Make sure preview image doesn't hide error. #1361
+          - Don't double-decode geocoded addresses. #1359
+          - Ensure top of reporting form is shown. #787
+          - Other updates for Perl 5.20/5.22. #1358
+    - Development improvements:
+          - Add cobrand-specific custom reporting fields. #1352
+
 * v1.8 (2nd March 2016)
     - New features:
         - Facebook login. #1146

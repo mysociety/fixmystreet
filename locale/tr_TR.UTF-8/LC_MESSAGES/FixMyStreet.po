@@ -6,14 +6,14 @@
 # Translators:
 # Eda Karaman <edakaraman_92@hotmail.de>, 2015
 # Muradiye <Muradiye.ates@gmail.com>, 2015
-# Seyithan Ates <seyithan.ahmet@gmail.com>, 2015
+# Seyithan Ates <seyithan.ahmet@gmail.com>, 2015-2016
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-03-02 13:09+0000\n"
-"PO-Revision-Date: 2015-12-28 08:30+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2016-03-08 10:24+0000\n"
+"Last-Translator: Seyithan Ates <seyithan.ahmet@gmail.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/mysociety/fixmystreet/language/tr_TR/)\n"
 "Language: tr_TR\n"
 "MIME-Version: 1.0\n"
@@ -51,7 +51,7 @@ msgstr "%s - Özet raporlar"
 #. ("%s here is the site name")
 #: templates/web/base/admin/header.html:10
 msgid "%s admin:"
-msgstr ""
+msgstr "%s Yönetici:"
 
 #: templates/web/base/status/stats.html:26
 #, fuzzy
@@ -134,12 +134,12 @@ msgstr "(E-posta kara listede)"
 #: templates/web/zurich/admin/report_edit-sdm.html:60
 #: templates/web/zurich/admin/report_edit.html:88
 msgid "(No name)"
-msgstr ""
+msgstr "(İsim Yok)"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:67
 #: templates/web/zurich/admin/report_edit.html:95
 msgid "(No phone number)"
-msgstr ""
+msgstr "(Telefon Numarası Yok)"
 
 #: templates/web/base/alert/_list.html:24
 msgid "(a default distance which covers roughly 200,000 people)"
@@ -280,7 +280,7 @@ msgstr "Eklenmiş %s"
 
 #: templates/web/base/report/new/category_extras.html:9
 msgid "Additional Information"
-msgstr ""
+msgstr "Ek Bilgi"
 
 #: templates/web/base/auth/change_password.html:29
 msgid "Again:"
@@ -305,7 +305,7 @@ msgstr "Tüm Bildirimler"
 
 #: templates/web/zurich/admin/stats.html:5
 msgid "All Reports as CSV"
-msgstr ""
+msgstr "Tüm raporlar CSV olarak"
 
 #: templates/web/base/footer.html:11 templates/web/fixmystreet/footer.html:32
 #: templates/web/zurich/admin/index-dm.html:12
@@ -515,7 +515,7 @@ msgstr ""
 
 #: templates/web/zurich/admin/response_templates_select.html:6
 msgid "Choose a template"
-msgstr ""
+msgstr "Bir Taslak Seç"
 
 #: templates/web/base/admin/stats.html:65
 #: templates/web/base/admin/stats.html:71
