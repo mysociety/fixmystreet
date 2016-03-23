@@ -1,12 +1,12 @@
 MIME-Version: 1.0
 Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #REPORT_ID
-Content-Type: multipart/mixed; boundary=""
+Content-Type: multipart/mixed; boundary="BOUNDARY"
 To: "External Body" <external_body@example.org>
 Content-Transfer-Encoding: 7bit
 From: FixMyStreet <division@example.org>
 
 
---
+--BOUNDARY
 MIME-Version: 1.0
 Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #REPORT_ID
 Content-Type: text/plain; charset="iso-8859-1"
@@ -23,7 +23,7 @@ gis-zentrum@zuerich.ch.=
 
 
 
---
+--BOUNDARY
 MIME-Version: 1.0
 Content-Type: image/jpeg; name="REPORT_ID.0.jpeg"
 Content-Disposition: inline; filename="REPORT_ID.0.jpeg"
@@ -37,4 +37,4 @@ BxcYVVaUpf/EABcBAQEBAQAAAAAAAAAAAAAAAAAFBgT/xAAgEQEAAAQHAQAAAAAAAAAAAAAAAwQV
 UgECFlNhodGx/9oADAMBAAIRAxEAPwCywAIozyxS5R58tbbujSW33j6zFRj3fGbKbjAGAgAACs9N
 FCbtUfYg2mO1BM25e/V+lQeW3ISo/9k=
 
-----
+--BOUNDARY--

@@ -4,9 +4,12 @@
 use strict;
 use warnings;
 use DateTime;
+use Email::MIME;
+use LWP::Protocol::PSGI;
 use Test::More;
 use Test::LongString;
 use Path::Tiny;
+use t::Mock::MapItZurich;
 
 # Check that you have the required locale installed - the following
 # should return a line with de_CH.utf8 in. If not install that locale.
@@ -71,7 +74,7 @@ $division->parent( $zurich->id );
 $division->send_method( 'Zurich' );
 $division->endpoint( 'division@example.org' );
 $division->update;
-$division->body_areas->find_or_create({ area_id => 274456 });
+$division->body_areas->find_or_create({ area_id => 423017 });
 my $subdivision = $mech->create_body_ok( 3, 'Subdivision A' );
 $subdivision->parent( $division->id );
 $subdivision->send_method( 'Zurich' );
@@ -700,10 +703,11 @@ subtest "only superuser can edit bodies" => sub {
 };
 
 subtest "only superuser can see 'Add body' form" => sub {
+    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     $user = $mech->log_in_ok( 'dm1@example.org' );
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
-        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.zurich/',
         MAPIT_TYPES  => [ 'O08' ],
         MAPIT_ID_WHITELIST => [ 423017 ],
     }, sub {
@@ -714,12 +718,12 @@ subtest "only superuser can see 'Add body' form" => sub {
 };
 
 subtest "phone number is mandatory" => sub {
+    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     FixMyStreet::override_config {
         MAPIT_TYPES => [ 'O08' ],
-        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.zurich/',
         ALLOWED_COBRANDS => [ 'zurich' ],
-        MAPIT_ID_WHITELIST => [ 274456 ],
-        MAPIT_GENERATION => 2,
+        MAPIT_ID_WHITELIST => [ 423017 ],
         MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $user = $mech->log_in_ok( 'dm1@example.org' );
@@ -731,12 +735,12 @@ subtest "phone number is mandatory" => sub {
 };
 
 subtest "phone number is not mandatory for reports from mobile apps" => sub {
+    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     FixMyStreet::override_config {
         MAPIT_TYPES => [ 'O08' ],
-        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.zurich/',
         ALLOWED_COBRANDS => [ 'zurich' ],
         MAPIT_ID_WHITELIST => [ 423017 ],
-        MAPIT_GENERATION => 4,
         MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->post_ok( '/report/new/mobile?lat=47.381817&lon=8.529156' , {
@@ -758,6 +762,7 @@ subtest "phone number is not mandatory for reports from mobile apps" => sub {
 };
 
 subtest "problems can't be assigned to deleted bodies" => sub {
+    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     $user = $mech->log_in_ok( 'dm1@example.org' );
     $user->from_body( $zurich->id );
     $user->update;
@@ -765,7 +770,7 @@ subtest "problems can't be assigned to deleted bodies" => sub {
     $report->update;
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
-        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.zurich/',
         MAPIT_TYPES => [ 'O08' ],
         MAPIT_ID_WHITELIST => [ 423017 ],
         MAP_TYPE => 'Zurich,OSM',
@@ -786,6 +791,7 @@ subtest "problems can't be assigned to deleted bodies" => sub {
 };
 
 subtest "photo must be supplied for categories that require it" => sub {
+    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
     FixMyStreet::App->model('DB::Contact')->find_or_create({
         body => $division,
         category => "Graffiti - photo required",
@@ -799,10 +805,9 @@ subtest "photo must be supplied for categories that require it" => sub {
     });
     FixMyStreet::override_config {
         MAPIT_TYPES => [ 'O08' ],
-        MAPIT_URL => 'http://global.mapit.mysociety.org/',
+        MAPIT_URL => 'http://mapit.zurich/',
         ALLOWED_COBRANDS => [ 'zurich' ],
-        MAPIT_ID_WHITELIST => [ 274456 ],
-        MAPIT_GENERATION => 2,
+        MAPIT_ID_WHITELIST => [ 423017 ],
         MAP_TYPE => 'Zurich,OSM',
     }, sub {
         $mech->post_ok( '/report/new', {
@@ -884,15 +889,26 @@ subtest 'email images to external partners' => sub {
         my @emails = $mech->get_email;
         my $email_as_string = $mech->get_first_email(@emails);
         my ($boundary) = $email_as_string =~ /boundary="([A-Za-z0-9.]*)"/ms;
-        my $changes = $email_as_string =~ s{$boundary}{}g;
-        is $changes, 4, '4 boundaries'; # header + 3 around the 2x parts (text + 1 image)
+        my $email = Email::MIME->new($email_as_string);
 
         my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
 
         my $REPORT_ID = $report->id;
         $expected_email_content =~ s{REPORT_ID}{$REPORT_ID}g;
+        $expected_email_content =~ s{BOUNDARY}{$boundary}g;
+        my $expected_email = Email::MIME->new($expected_email_content);
 
-        is_string $email_as_string, $expected_email_content, 'MIME email text ok'
+        my @email_parts;
+        $email->walk_parts(sub {
+            my ($part) = @_;
+            push @email_parts, [ { $part->header_pairs }, $part->body ];
+        });
+        my @expected_email_parts;
+        $expected_email->walk_parts(sub {
+            my ($part) = @_;
+            push @expected_email_parts, [ { $part->header_pairs }, $part->body ];
+        });
+        is_deeply \@email_parts, \@expected_email_parts, 'MIME email text ok'
             or do {
                 (my $test_name = $0) =~ s{/}{_}g;
                 my $path = path("test-output-$test_name.tmp");

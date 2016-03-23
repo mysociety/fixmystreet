@@ -387,7 +387,7 @@ sub GET_Service_Definition {
                                         key => $key, 
                                         name => $name,
                                     }
-                                } $attribute->values_kv
+                                } sort { $a->[0] cmp $b->[0] } $attribute->values_kv
                             ]) : (),
                         map { $_ => $attribute->$_ } 
                             qw/ code datatype datatype_description description /,

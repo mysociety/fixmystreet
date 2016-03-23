@@ -103,8 +103,7 @@ sub get_service_requests {
     my ($self, $args) = @_;
 
     my $service_code = $args->{service_code} or return $self->get_requests;
-    # we use ~~ as the service_code arg will be an arrayref like ['POT']
-    return $self->filter_requests( sub { shift->service->service_code ~~ $service_code });
+    return $self->filter_requests( sub { my $c = shift->service->service_code; grep { $_ eq $c } @$service_code });
 }
 
 sub get_service_request {

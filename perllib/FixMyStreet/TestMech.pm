@@ -234,8 +234,8 @@ sub get_first_email {
     my $mech = shift;
     my $email = shift or do { fail 'No email retrieved'; return };
     my $email_as_string = $email->as_string;
-    ok $email_as_string =~ s{\s+Date:\s+\S.*?$}{}xmsg, "Found and stripped out date";
-    ok $email_as_string =~ s{\s+Message-ID:\s+\S.*?$}{}xmsg, "Found and stripped out message ID (contains epoch)";
+    ok $email_as_string =~ s{^Date:\s+\S.*?\r?\n}{}xmsg, "Found and stripped out date";
+    ok $email_as_string =~ s{^Message-ID:\s+\S.*?\r?\n}{}xmsg, "Found and stripped out message ID (contains epoch)";
     return $email_as_string;
 }
 

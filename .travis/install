@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
-import hashlib
 import os
 import sys
 import tarfile
 import urllib
+from utils import get_bundle_filename
 
-root = os.path.join(os.path.dirname(__file__), '..')
-with open(os.path.join(root, 'cpanfile.snapshot')) as cpanfile:
-    hash = hashlib.md5(cpanfile.read()).hexdigest()
-wanted_filename = 'fixmystreet-local-%s.tgz' % hash
+wanted_filename = get_bundle_filename()
 
 url = 'https://fixmystreet-bundle-cache.s3.amazonaws.com/%s' % wanted_filename
 try:
