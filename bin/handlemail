@@ -22,7 +22,6 @@ BEGIN {
 use FixMyStreet;
 use FixMyStreet::DB;
 use FixMyStreet::Email;
-use mySociety::Email;
 use mySociety::EmailUtil;
 use mySociety::HandleMail;
 use mySociety::SystemMisc qw(print_log);
@@ -168,14 +167,13 @@ sub handle_non_bounce_to_null_address {
     $fp->close;
 
     # We generate this as a bounce.
-    my $mail = mySociety::Email::construct_email({
+    my $mail = FixMyStreet::Email::construct_email({
         From => [ FixMyStreet->config('CONTACT_EMAIL'), 'FixMyStreet' ],
         To => $data{return_path},
         _template_ => $template,
         _parameters_ => { },
-        _line_indent => '',
     });
-    send_mail($mail, '<>', $data{return_path});
+    send_mail($mail->as_string, '<>', $data{return_path});
 }
 
 sub forward_on_to {

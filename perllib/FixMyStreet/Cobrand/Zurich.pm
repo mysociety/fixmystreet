@@ -1029,7 +1029,7 @@ sub munge_sendreport_params {
                 },
             }
         } (0..$num-1);
-        $params->{attachments} = \@attachments;
+        $params->{_attachments_} = \@attachments;
     }
 }
 

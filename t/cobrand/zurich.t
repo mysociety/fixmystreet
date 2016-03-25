@@ -661,7 +661,7 @@ subtest "external report triggers email" => sub {
         };
         $email = $mech->get_email;
         my $report_id = $report->id;
-        like $email->header('Subject'), qr/Meldung #$report_id/, 'subject looks okay';
+        like Encode::decode('MIME-Header', $email->header('Subject')), qr/Meldung #$report_id/, 'subject looks okay';
         like $email->header('To'), qr/test\@example.com/, 'to line looks correct';
         like $email->body, qr/$PUBLIC_RESPONSE/, 'public_response was passed on' or die $email->body;
         $mech->clear_emails_ok;
@@ -894,6 +894,11 @@ subtest 'email images to external partners' => sub {
         my $expected_email_content = path(__FILE__)->parent->child('zurich_attachments.txt')->slurp;
 
         my $REPORT_ID = $report->id;
+        $expected_email_content =~ s{Subject: (.*?)\r?\n}{
+            my $subj = Encode::decode('MIME-Header', $1);
+            $subj =~ s{REPORT_ID}{$REPORT_ID}g;
+            'Subject: ' . Email::MIME::Encode::mime_encode($subj, "utf-8") . "\n";
+        }eg;
         $expected_email_content =~ s{REPORT_ID}{$REPORT_ID}g;
         $expected_email_content =~ s{BOUNDARY}{$boundary}g;
         my $expected_email = Email::MIME->new($expected_email_content);

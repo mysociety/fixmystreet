@@ -3,28 +3,21 @@ Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #REPORT_ID
 Content-Type: multipart/mixed; boundary="BOUNDARY"
 To: "External Body" <external_body@example.org>
 Content-Transfer-Encoding: 7bit
-From: FixMyStreet <division@example.org>
+From: "FixMyStreet" <division@example.org>
 
 
 --BOUNDARY
-MIME-Version: 1.0
-Subject: =?iso-8859-1?Q?Z=FCri?= wie neu: Weitergeleitete Meldung #REPORT_ID
-Content-Type: text/plain; charset="iso-8859-1"
-To: "External Body" <external_body@example.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-From: FixMyStreet <division@example.org>
 
-Gr=FCezi External Body,
+Gr=C3=BCezi External Body,
 
-=D6ffentliche URL: http://www.example.org/report/REPORT_ID
+=C3=96ffentliche URL: http://www.example.org/report/REPORT_ID
 
-Bei Fragen zu "Z=FCri wie neu" wenden Sie sich bitte an
+Bei Fragen zu "Z=C3=BCri wie neu" wenden Sie sich bitte an
 gis-zentrum@zuerich.ch.=
 
-
-
 --BOUNDARY
-MIME-Version: 1.0
 Content-Type: image/jpeg; name="REPORT_ID.0.jpeg"
 Content-Disposition: inline; filename="REPORT_ID.0.jpeg"
 Content-Transfer-Encoding: base64

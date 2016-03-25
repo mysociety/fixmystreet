@@ -287,7 +287,7 @@ foreach my $test (
         desc        => 'address only',
         addressLine => '18 North Bridge',
         locality    => undef,
-        nearest     => qr/: 18 North Bridge\n/,
+        nearest     => qr/: 18 North Bridge\r?\n/,
     },
     {
         desc        => 'no fields',
