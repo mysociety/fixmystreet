@@ -171,6 +171,7 @@ subtest 'check contact creation' => sub {
         email      => 'test@example.com',
         note       => 'test note',
         non_public => undef,
+        confirmed  => 0,
     } } );
 
     $mech->content_contains( 'test category' );

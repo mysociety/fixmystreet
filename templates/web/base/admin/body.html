@@ -162,7 +162,7 @@
       </p>
     </div>
     <p>
-      <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
+      <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed OR contact.confirmed == "" %]>
       <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
     </p>
 
