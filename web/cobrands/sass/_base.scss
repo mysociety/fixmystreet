@@ -903,7 +903,7 @@ input.final-submit {
   margin-bottom: 0.5em;
 }
 
-.item-list__item--link {
+%item-list__item--link {
   padding: 0;
   a {
     color: #222222;
@@ -917,11 +917,11 @@ input.final-submit {
 }
 
 .item-list--wards__item {
-  @extend .item-list__item--link;
+  @extend %item-list__item--link;
 }
 
 .item-list--reports__item {
-  @extend .item-list__item--link;
+  @extend %item-list__item--link;
   a {
     @include clearfix;
     padding: flip(0 0 0 1em, 0 1em 0 0);
@@ -932,15 +932,18 @@ input.final-submit {
     height: auto;
     margin-#{$left}: 1em;
   }
-  h4 {
-    padding-top: 0.25em;
-    margin: 0;
-  }
   small {
     color: #666;
     display: block;
     padding: 0.25em 0;
   }
+}
+.item-list__heading {
+  font-size: 1em;
+  font-weight: normal;
+  line-height: 1.5;
+  padding-top: 0.25em;
+  margin: 0;
 }
 
 .item-list__item--empty p {

@@ -4,9 +4,9 @@
         <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
       [% IF problem.state != 'unconfirmed' %]
-        <h4>[% problem.title | html %]</h4>
+        <h3 class="item-list__heading">[% problem.title | html %]</h3>
       [% ELSE %]
-        <h4><em>[% loc('Awaiting moderation') %]</em></h4>
+        <h3 class="item-list__heading"><em>[% loc('Awaiting moderation') %]</em></h3>
       [% END %]
         <small>[% prettify_dt( problem.created, 'zurich' ) %]
             [%- IF dist %], [% dist %]km[% END %]
