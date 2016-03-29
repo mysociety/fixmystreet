@@ -148,8 +148,6 @@ sub send {
         my $authresult = $angus_service->AuthenticateJADU();
         my $authtoken = $self->get_auth_token( $authresult );
         # authenticationtoken, CallerId, CallerAddressId, DeliveryId, DeliveryAddressId, CRMRequestType, JADUXFormRef, PaymentRef, JADUFormFields
-        my $message = ent(encode_utf8($h->{message}));
-        my $name = ent(encode_utf8($h->{name}));
         my $result = $angus_service->CreateServiceRequest(
             $authtoken, '1', '1', '1', '1', $self->crm_request_type($row, $h),
             'FMS', '', $self->jadu_form_fields($row, $h)
