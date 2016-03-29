@@ -1,0 +1,64 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "./_fonts";
+@import "../sass/mixins";
+@import "compass";
+
+@import "../sass/base";
+
+body.frontpage #site-logo,
+.ie6 body.frontpage #site-logo,
+#site-logo
+{
+    background: url("/cobrands/angus/third_party/css_img/angus-logo-header.png") 0 0 no-repeat;
+    background-size: contain;
+    width: 82px;
+    height: 40px;
+    top: 8px;
+    left: 4px;
+}
+
+#site-header {
+    background: $angus_green;
+
+    form.form__search {
+      display: none;
+    }
+}
+
+.item-list--reports__item, #user-meta p, #front-main #postcodeForm {
+//    background-color: $greenwich_light_grey;
+}
+
+label[for=pc] {
+    color: $nav_fg;
+}
+
+#front-howto #front_stats {
+    color: $nav_fg;
+}
+
+
+.nav-menu--mysoc {
+  display: none;
+}
+
+.angus_nav, .wrapper__main_menu {
+  display: none;
+}
+
+.nav-menu--breadcrumb {
+  display: none;
+}
+
+.streetlight-spot:before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #000;
+    background-color: #ffff00;
+    margin: 0 0.3em 0 0.2em;
+    border-radius: 100%;
+    vertical-align: -2px;
+}

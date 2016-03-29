@@ -8,6 +8,7 @@ $menu-image: 'menu-white' !default;
 
 $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
+$col_big_numbers: #ccc !default;
 
 @import "_mixins";
 @import "_report_list";
@@ -111,7 +112,7 @@ ol.big-numbers {
       position: absolute;
       #{$left}: 0;
       top:-0.2em;
-      color:#ccc;
+      color:$col_big_numbers;
       line-height:1;
       font: {
         family: $meta-font;

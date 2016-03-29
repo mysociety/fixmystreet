@@ -97,7 +97,7 @@ requires 'XML::Simple';
 requires 'YAML';
 
 feature 'uk', 'FixMyStreet.com specific requirements' => sub {
-    # East Hampshire
+    # East Hampshire & Angus
     requires 'SOAP::Lite';
 };
 

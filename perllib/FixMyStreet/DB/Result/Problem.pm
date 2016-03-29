@@ -654,7 +654,7 @@ sub response_templates {
 #     Note:   this only makes sense when called on a problem that has been sent!
 sub can_display_external_id {
     my $self = shift;
-    if ($self->external_id && $self->send_method_used && $self->bodies_str =~ /2237/) {
+    if ($self->external_id && $self->send_method_used && $self->bodies_str =~ /(2237|2550)/) {
         return 1;
     }
     return 0;    

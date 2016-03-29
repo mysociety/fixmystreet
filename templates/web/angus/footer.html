@@ -1,0 +1,27 @@
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+        </div><!-- .table-cell -->
+
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    [% INCLUDE 'main_menu.html' extra_class = 'nav-menu--main' %]
+                </div>
+            </div>
+        </div>
+
+<!-- [% INCLUDE 'debug_footer.html' %] -->
+    </div> <!-- .wrapper -->
+
+    [% IF pagefooter %]
+      <div class="angus_footer">
+        <footer role="contentinfo">
+            [% INCLUDE 'front/footer-marketing.html' %]
+        </footer>
+      </div>
+    [% END %]
+
+    [% TRY %][% PROCESS 'footer_extra.html' %][% CATCH file %][% END %]
+
+</body>
+</html>
