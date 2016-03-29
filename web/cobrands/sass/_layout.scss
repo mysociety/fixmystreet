@@ -2,6 +2,7 @@
 @import "_mixins";
 
 $image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
+$layout_front_stats_color: $primary !default;
 
 .internal-link-fixed-header {
     display: block;
@@ -1063,8 +1064,8 @@ body.frontpage {
     padding-top:1em;
     div {
       big {
-        color:$primary;
-        font-size:3.2308em;
+        color: $layout_front_stats_color;
+        font-size: 3.2308em;
       }
     }
   }
