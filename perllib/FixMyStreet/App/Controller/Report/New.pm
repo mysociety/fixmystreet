@@ -655,8 +655,10 @@ sub setup_categories_and_bodies : Private {
                 $category_extras{ $contact->category } = $metas
                     if scalar @$metas;
 
+                my $body_send_method = $bodies{$contact->body_id}->send_method || '';
                 $c->stash->{unresponsive}{$contact->category} = $contact->body_id
-                    if $contact->email =~ /^REFUSED$/i;
+                    if !$c->stash->{unresponsive}{ALL} &&
+                        ($contact->email =~ /^REFUSED$/i || $body_send_method eq 'Refused');
 
                 $non_public_categories{ $contact->category } = 1 if $contact->non_public;
             }
