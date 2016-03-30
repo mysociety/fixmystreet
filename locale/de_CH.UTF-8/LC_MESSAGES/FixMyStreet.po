@@ -122,7 +122,7 @@ msgstr ""
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:46
 msgid "(Defect &amp; location of defect)"
-msgstr ""
+msgstr "(Schaden &amp; Ort des Schadens)"
 
 #: templates/web/base/admin/report_blocks.html:41
 #: templates/web/base/admin/users.html:31
@@ -200,7 +200,7 @@ msgstr ""
 #. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:27
 msgid "<label>Show %s</label> <label>about %s</label>"
-msgstr ""
+msgstr "<label>Zeige %s</label> <label>&uuml;ber %s</label>"
 
 #: templates/web/base/status/stats.html:18
 #: templates/web/zurich/admin/index.html:4
@@ -420,7 +420,7 @@ msgstr ""
 
 #: templates/web/base/auth/token.html:21 templates/web/base/email_sent.html:18
 msgid "Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time."
-msgstr ""
+msgstr "Falls Sie kein E-Mail erhalten haben, &uuml;berpr&uuml;fen Sie bitte Ihren Spamordner."
 
 #: templates/web/base/around/_report_banner.html:5
 msgid "Can't see the map? <em>Skip this step</em>"
@@ -508,19 +508,19 @@ msgstr "Schaden lokalisieren"
 
 #: templates/web/base/email_sent.html:13
 msgid "Click the link in our confirmation email to activate your alert."
-msgstr ""
+msgstr "Klicken Sie auf den Link im Best&auml;tigungsmail um diese Benachrichtigung zu aktivieren."
 
 #: templates/web/base/email_sent.html:9
 msgid "Click the link in our confirmation email to publish your problem."
-msgstr ""
+msgstr "Klicken Sie auf den Link im Best&auml;tigungsmail um &uuml;ber den Bearbeitungsstand Ihrer Meldung informiert zu bleiben."
 
 #: templates/web/base/email_sent.html:11
 msgid "Click the link in our confirmation email to publish your update."
-msgstr ""
+msgstr "Klicken Sie auf den Link im Best&auml;tigungsmail um diese &Uuml;berarbeitung zu ver&ouml;ffentlichen."
 
 #: templates/web/base/auth/token.html:18
 msgid "Click the link in our confirmation email to sign in."
-msgstr ""
+msgstr "Klicken Sie auf den Link im Best&auml;tigungsemail um sich anzumelden."
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:196
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:969
@@ -578,7 +578,7 @@ msgstr "Best&auml;tigen"
 
 #: templates/web/base/auth/token.html:1
 msgid "Confirm account"
-msgstr ""
+msgstr "Account best&auml;tigen"
 
 #: templates/web/base/report/new/form_user_loggedout_password.html:21
 #: templates/web/base/report/update/form_user_loggedout_password.html:20
@@ -614,7 +614,7 @@ msgstr "Best&auml;tigt:"
 #. ("%s is the site name")
 #: templates/web/base/about/_sidebar.html:6 templates/web/base/footer.html:24
 msgid "Contact %s"
-msgstr ""
+msgstr "%s kontaktieren"
 
 #: templates/web/base/contact/index.html:1
 #: templates/web/base/contact/index.html:2
@@ -765,7 +765,7 @@ msgstr "Weiss ich nicht"
 #: templates/web/base/report/update-form.html:29
 #: templates/web/base/report/update/form_user_loggedout.html:17
 msgid "Do you have a %s password?"
-msgstr ""
+msgstr "Haben Sie ein %s Passwort?"
 
 #: templates/web/base/questionnaire/index.html:55
 msgid "Don&rsquo;t know"
@@ -966,7 +966,7 @@ msgstr "Fehler"
 
 #: templates/web/base/reports/_list-filters.html:12
 msgid "Everything"
-msgstr ""
+msgstr "Alles"
 
 #: templates/web/base/admin/body.html:14
 #: templates/web/base/admin/category_edit.html:18
@@ -1549,7 +1549,7 @@ msgstr ""
 
 #: templates/web/base/auth/token.html:17 templates/web/base/email_sent.html:5
 msgid "Nearly done! Now check your email&hellip;"
-msgstr ""
+msgstr "Fast Fertig! Bitte checken Sie Ihre Mailbox&hellip;"
 
 #: templates/web/base/reports/index.html:21
 msgid "New <br>problems"
@@ -2251,7 +2251,7 @@ msgstr ""
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:24
 msgid "Problems within %s, %s"
-msgstr ""
+msgstr "Meldungen innerhalb %s, %s"
 
 #: templates/web/base/alert/_list.html:42
 msgid "Problems within the boundary of:"
@@ -2376,7 +2376,7 @@ msgstr "Erhalten Sie Aktualisierungen dieser Meldung."
 #: templates/web/base/around/display_location.html:0
 #: templates/web/base/around/display_location.html:33
 msgid "Recent local problems, %s"
-msgstr ""
+msgstr "K&uuml;rzlich erfasste Meldungen, %s"
 
 #: templates/web/base/reports/index.html:24
 msgid "Recently <br>fixed"
@@ -2484,7 +2484,7 @@ msgstr ""
 
 #: templates/web/base/reports/index.html:21
 msgid "Reported within the last four weeks"
-msgstr ""
+msgstr "In den letzten 4 Wochen gemeldet"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:36
 #: templates/web/zurich/admin/report_edit.html:55
@@ -2672,7 +2672,7 @@ msgstr "Ausloggen"
 
 #: templates/web/base/report/new/fill_in_details_text.html:1
 msgid "Some categories may require additional information."
-msgstr ""
+msgstr "Einige Kategorien ben&ouml;tigen eventuell zus&auml;tzliche Informationen."
 
 #: templates/web/base/admin/body-form.html:149
 #: templates/web/base/admin/body-form.html:150
@@ -2697,7 +2697,7 @@ msgstr ""
 
 #: templates/web/base/auth/token.html:8
 msgid "Sorry, that wasn&rsquo;t a valid link"
-msgstr ""
+msgstr "Entschuldigung, dieser Link ist ung&uuml;ltig"
 
 #: templates/web/base/tokens/abuse.html:5
 msgid "Sorry, there has been an error confirming your problem."
@@ -2725,7 +2725,7 @@ msgstr "Diese Adresse wurde nicht gefunden."
 
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:134
 msgid "Sorry, we couldn't save your image(s), please try again."
-msgstr ""
+msgstr "Ihre Bilder konnten nicht gespeichert werden. Bitte versuchen Sie es nochmals."
 
 #: perllib/FixMyStreet/App/Controller/AuthSS.pm:301
 #, fuzzy
@@ -2930,7 +2930,7 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:724
 msgid "That problem has been marked as sent."
-msgstr ""
+msgstr "Die Meldung wurde als gesendet markiert."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:716
 msgid "That problem will now be resent."
@@ -3033,7 +3033,7 @@ msgstr ""
 
 #: templates/web/base/auth/token.html:9
 msgid "The link might have expired, or maybe you didn&rsquo;t quite copy and paste it correctly."
-msgstr ""
+msgstr "Der Link ist entweder abgelaufen, oder er wurde nicht korrekt kopiert."
 
 #: templates/web/base/admin/body-form.html:58
 msgid "The list of available areas is being provided by the MapIt service at %s."
@@ -3224,7 +3224,7 @@ msgstr ""
 
 #: templates/web/base/alert/index.html:27
 msgid "To find out what local alerts we have for you, please enter your postcode or street name and area"
-msgstr "Geben Sie eine Adresse an"
+msgstr "Geben Sie Ihre Adresse an, um &uuml;ber Meldungen in Ihrer N&auml;he  informiert zu werden"
 
 #: perllib/FixMyStreet/Script/Reports.pm:91
 msgid "To view a map of the precise location of this issue"
@@ -3361,7 +3361,7 @@ msgstr ""
 #: templates/web/base/report/display.html:0
 #: templates/web/base/report/display.html:9
 msgid "Updates to this problem, %s"
-msgstr ""
+msgstr "&Auml;nderungen an dieser Meldung, %s"
 
 #: templates/web/base/admin/body.html:182
 msgid "Use the <strong>note</strong> to record details that are only displayed in the admin. Notes are not shown publicly, and are not sent to the body."
@@ -3416,7 +3416,7 @@ msgstr "Meldung erfassen"
 
 #: templates/web/base/report/display.html:0
 msgid "Viewing a problem"
-msgstr ""
+msgstr "Meldung anschauen"
 
 #: templates/web/base/reports/body.html:16
 msgid "Wards of this council"
@@ -3720,7 +3720,7 @@ msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:3
 msgid "all reports"
-msgstr ""
+msgstr "Alle Meldungen"
 
 #: templates/web/base/admin/timeline.html:4
 msgid "by %s"
@@ -3728,7 +3728,7 @@ msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:5
 msgid "closed reports"
-msgstr ""
+msgstr "Abgeschlossene Meldungen"
 
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
@@ -3751,7 +3751,7 @@ msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:6
 msgid "fixed reports"
-msgstr ""
+msgstr "Beantwortete Meldungen"
 
 #: templates/web/base/status/stats.html:20
 #: templates/web/zurich/admin/index.html:5
@@ -3871,7 +3871,7 @@ msgstr "heute"
 
 #: templates/web/base/reports/_list-filters.html:4
 msgid "unfixed reports"
-msgstr ""
+msgstr "Offene Meldungen"
 
 #: templates/web/base/admin/report_edit.html:32
 msgid "used map"
@@ -3883,7 +3883,7 @@ msgstr ""
 
 #: templates/web/base/admin/update_edit.html:38
 msgid "user is problem owner"
-msgstr ""
+msgstr "Der User ist der Eigner der Meldung"
 
 #: templates/web/base/reports/body.html:0
 #: templates/web/base/reports/body.html:3
