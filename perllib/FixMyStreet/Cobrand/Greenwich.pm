@@ -9,6 +9,11 @@ sub council_area { return 'Greenwich'; }
 sub council_name { return 'Royal Borough of Greenwich'; }
 sub council_url { return 'greenwich'; }
 
+sub base_url {
+    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    return 'https://fix.royalgreenwich.gov.uk';
+}
+
 sub example_places {
     return ( 'SE18 6HQ', "Woolwich Road" );
 }

@@ -9,6 +9,11 @@ sub council_area { return 'Angus'; }
 sub council_name { return 'Angus Council'; }
 sub council_url { return 'angus'; }
 
+sub base_url {
+    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    return 'https://fix.angus.gov.uk';
+}
+
 sub enter_postcode_text {
     my ($self) = @_;
     return 'Enter an Angus postcode, or street name and area';
