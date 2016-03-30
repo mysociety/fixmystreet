@@ -57,7 +57,7 @@ sub map_tiles {
 
 sub base_tile_url {
     # use the new 512px maps as used by Javascript
-    return 'http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled/LuftbildHybrid/MapServer/WMTS/tile/1.0.0/tiled_LuftbildHybrid/default/default028mm';
+    return '//www.gis.stadt-zuerich.ch/maps/rest/services/tiled/LuftbildHybrid/MapServer/WMTS/tile/1.0.0/tiled_LuftbildHybrid/default/default028mm';
 }
 
 sub copyright {

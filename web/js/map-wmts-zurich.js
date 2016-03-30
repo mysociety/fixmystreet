@@ -92,7 +92,7 @@ $(function(){
         layer: "tiled_LuftbildHybrid",
         matrixSet: "default028mm",
         requestEncoding: "REST",
-        url: "http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled/LuftbildHybrid/MapServer/WMTS/tile/",
+        url: "//www.gis.stadt-zuerich.ch/maps/rest/services/tiled/LuftbildHybrid/MapServer/WMTS/tile/",
         style: "default",
         matrixIds: [
             // {
@@ -244,7 +244,7 @@ $(function(){
         layer_options, OpenLayers.Util.applyDefaults({
             name: "Stadtplan3D",
             layer: "Stadtplan3D",
-            url:  "http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled/Stadtplan3D/MapServer/WMTS/tile/"
+            url:  "//www.gis.stadt-zuerich.ch/maps/rest/services/tiled/Stadtplan3D/MapServer/WMTS/tile/"
         }, layer_options)
     ];
 
