@@ -52,6 +52,8 @@ sub default_show_name { 0 }
 Returns the number of working days that are expected to elapse
 between the problem being reported and it being responded to by
 the council/body.
+If the value 'emergency' is returned, a different template block
+is triggered that has custom wording.
 
 =cut
 
@@ -79,7 +81,7 @@ sub problem_response_days {
     return 10 if $p->category eq 'Road traffic signs';
     return 10 if $p->category eq 'Roads/highways';
     return 10 if $p->category eq 'Skips and scaffolding';
-    return 10 if $p->category eq 'Street lighting';
+    return 'emergency' if $p->category eq 'Street lighting';
     return 10 if $p->category eq 'Traffic lights'; # phone if urgent
     return 10 if $p->category eq 'Traffic';
     return 10 if $p->category eq 'Trees';
