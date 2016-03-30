@@ -1,1 +1,4 @@
-[% INCLUDE 'report/_item-with-pin.html' %]
+[% INCLUDE 'report/_item.html'
+    no_fixed = 1
+    item_extra_class = 'item-list__item--with-pin ' _ c.cobrand.pin_colour(problem)
+%]

@@ -423,7 +423,7 @@ sub extract_problem_list {
     my $mech = shift;
 
     my $result = scraper {
-        process 'ul.item-list--reports li a h4', 'problems[]', 'TEXT';
+        process 'ul.item-list--reports li a h3', 'problems[]', 'TEXT';
     }->scrape( $mech->response );
 
     return $result->{ problems } || [];

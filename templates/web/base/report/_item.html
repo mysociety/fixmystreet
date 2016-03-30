@@ -3,7 +3,7 @@
     [% IF problem.photo %]
         <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
-        <h4>[% problem.title | html %]</h4>
+        <h3 class="item-list__heading">[% problem.title | html %]</h3>
         <small>
             [%- IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]
                 [%- prettify_dt( problem.confirmed, 1 ) %]

@@ -61,7 +61,8 @@ noindex:-o-prefocus, #site-header {
   font-family: sans-serif;
 }
 
-h3, h4 {
+h3, h4,
+.item-list__heading {
     font-weight: bold;
 }
 

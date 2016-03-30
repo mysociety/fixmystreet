@@ -136,12 +136,12 @@ $(function(){
 
     // Geolocation
     if (geo_position_js.init()) {
-        var link = '<a href="#LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
-        $('form[action="/alert/list"]').append(link.replace('LINK','alert/list'));
+        var link = '<a href="LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
+        $('form[action="/alert/list"]').append(link.replace('LINK','/alert/list'));
         if ($('body.frontpage').length) {
-            $('#postcodeForm').after(link.replace('LINK','around'));
+            $('#postcodeForm').after(link.replace('LINK','/around'));
         } else{
-            $('#postcodeForm').append(link.replace('LINK','around'));
+            $('#postcodeForm').append(link.replace('LINK','/around'));
         }
         $('#geolocate_link').click(function(e) {
             var $link = $(this);
@@ -157,8 +157,8 @@ $(function(){
                 $link.find('img').remove();
                 var latitude = pos.coords.latitude;
                 var longitude = pos.coords.longitude;
-                var page = $link.attr('href').substr(1);
-                location.href = '/' + page + '?latitude=' + latitude + ';longitude=' + longitude;
+                var page = $link.attr('href');
+                location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
             }, function(err) {
                 $link.find('img').remove();
                 if (err.code == 1) { // User said no
