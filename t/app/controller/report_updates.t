@@ -760,7 +760,8 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
             user          => $user,
             problem_id    => $report->id,
             text          => 'update text',
-            confirmed     => DateTime->now( time_zone => 'local' ),
+            # Subtract a day to deal with any code/db timezone difference
+            confirmed     => DateTime->now( time_zone => 'local' ) - DateTime::Duration->new( days => 1 ),
             problem_state => 'confirmed',
             anonymous     => 0,
             mark_open     => 0,
