@@ -936,10 +936,6 @@ sub updates_as_hashref {
     return {};
 }
 
-sub get_country_for_ip_address {
-    return 0;
-}
-
 sub jurisdiction_id_example {
     my $self = shift;
     return $self->moniker;

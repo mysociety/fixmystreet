@@ -1,6 +1,5 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
-use mySociety::Gaze;
 
 use constant COUNCIL_ID_BROMLEY => 2482;
 
@@ -50,13 +49,6 @@ sub extra_contact_validation {
     }
 
     return %errors;
-}
-
-sub get_country_for_ip_address {
-    my $self = shift;
-    my $ip = shift;
-
-    return mySociety::Gaze::get_country_from_ip($ip);
 }
 
 sub report_form_extras {

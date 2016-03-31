@@ -532,25 +532,6 @@ $.fn.drawer = function(id, ajax) {
         }).fadeOut(500);
     });
 
-    $('.top_banner__close').live('click', function() {
-        $('.top_banner--country').hide();
-        $.cookie('has_seen_country_message', 1, {expires: 365, path: '/'});
-    });
-
-    if ( cobrand == 'fixmystreet' && $('body.frontpage').length ) {
-        if (!$.cookie('has_seen_country_message')) {
-            $.ajax({
-                url: '/country_message',
-                success: function(data) {
-                    if ( data ) {
-                        $('body').prepend(data);
-                        $('.top_banner--country').slideDown('slow');
-                    }
-                }
-            });
-        }
-    }
-
     /*
      * Fancybox fullscreen images
      */
