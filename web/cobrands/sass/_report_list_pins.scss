@@ -7,7 +7,7 @@
   a {
     display: block;
     padding: 1em;
-    padding-#{$left}: 4em;
+    padding-#{$left}: 3em;
     border-#{$left}: solid 1em transparent;
     background: transparent url(/i/pin-yellow-small.png) no-repeat $left center;
   }
@@ -30,7 +30,7 @@
     display: block;
     height: 1px;
     position: absolute;
-    #{$left}: 4em;
+    #{$left}: 3em;
     #{$right}: 0;
     bottom: 0;
     background-color: #e5e5e5;
@@ -60,7 +60,7 @@
   }
 }
 
-/* The front page is using the parent _item.html template */
+/* We have no padding on the front page */
 body.frontpage {
     .item-list__item--with-pin a {
         padding: 0;
