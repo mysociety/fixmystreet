@@ -38,7 +38,7 @@
     ['in progress', loc('In Progress')], ['duplicate', loc('Duplicate')],
     ['unable to fix', loc('Unable to fix')], ['not responsible', loc('Not Responsible')],
     ['fixed', loc('Fixed')] ] %]
-        <option [% 'selected ' IF state.0 == problem.state %] value="[% state.0 %]">[% state.1 %]</option>
+        <option [% 'selected ' IF state.0 == problem.state_display %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
     </select>
 [% ELSE %]

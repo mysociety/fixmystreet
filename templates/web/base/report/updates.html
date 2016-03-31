@@ -28,7 +28,7 @@
     [%- IF update.mark_fixed %][% update_state = loc( 'marked as fixed' ) %][% END %]
     [%- IF update.mark_open %][% update_state = loc( 'reopened' ) %][% END %]
     [%- IF !update_state && update.problem_state %]
-        [%- state = update.meta_problem_state %]
+        [%- state = update.problem_state_display %]
         [%- IF c.cobrand.moniker == 'bromley' OR problem.bodies_str == '2482' %]
             [%- SET update_state = 'marked as no further action' IF state == 'unable to fix' %]
             [%- SET update_state = 'marked as third party responsibility' IF state == 'not responsible' %]

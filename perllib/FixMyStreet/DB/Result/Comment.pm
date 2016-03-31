@@ -187,14 +187,14 @@ sub photos {
     return \@photos;
 }
 
-=head2 meta_problem_state
+=head2 problem_state_display
 
 Returns a string suitable for display lookup in the update meta section.
 Removes the '- council/user' bit from fixed states.
 
 =cut
 
-sub meta_problem_state {
+sub problem_state_display {
     my $self = shift;
 
     my $state = $self->problem_state;
