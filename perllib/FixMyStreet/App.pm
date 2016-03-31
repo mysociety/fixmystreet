@@ -6,7 +6,6 @@ use Catalyst::Runtime 5.80;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use Memcached;
-use mySociety::Email;
 use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
 use FixMyStreet::Email;
@@ -319,37 +318,23 @@ sub send_email {
 
     return if FixMyStreet::Email::is_abuser($c->model('DB')->schema, $vars->{to});
 
-    # render the template
-    my $content = $c->view('Email')->render( $c, $template, $vars );
-
-    # create an email - will parse headers out of content
-    my $email = Email::Simple->new($content);
-    $email->header_set( 'Subject', $vars->{subject} ) if $vars->{subject};
-    $email->header_set( 'Reply-To', $vars->{'Reply-To'} ) if $vars->{'Reply-To'};
-
-    $email->header_set( 'Message-ID', sprintf('<fms-%s-%s@%s>',
-        time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
-    ) );
-
-    # pass the email into mySociety::Email to construct the on the wire 7bit
-    # format - this should probably happen in the transport instead but hohum.
-    my $email_text = mySociety::Locale::in_gb_locale { mySociety::Email::construct_email(
+    my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email(
         {
-            _template_ => $email->body,    # will get line wrapped
+            _template_ => $c->view('Email')->render( $c, $template, $vars ),
             _parameters_ => {},
-            _line_indent => '',
+            _attachments_ => $extra_stash_values->{attachments},
             From => $vars->{from},
             To => $vars->{to},
-            $email->header_pairs
+            'Message-ID' => sprintf('<fms-%s-%s@%s>',
+                time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
+            ),
+            $vars->{subject} ? (Subject => $vars->{subject}) : (),
+            $vars->{'Reply-To'} ? ('Reply-To' => $vars->{'Reply-To'}) : (),
         }
     ) };
 
-    if (my $attachments = $extra_stash_values->{attachments}) {
-        $email_text = FixMyStreet::Email::munge_attachments($email_text, $attachments);
-    }
-
     # send the email
-    $c->model('EmailSend')->send($email_text);
+    $c->model('EmailSend')->send($email);
 
     return $email;
 }

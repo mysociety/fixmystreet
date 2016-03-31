@@ -41,8 +41,7 @@ my $email = Email::MIME->new($email_as_string);
 
 my $expected_email_content =   path(__FILE__)->parent->child('send_email_sample.txt')->slurp;
 my $name = FixMyStreet->config('CONTACT_NAME');
-$name = "\"$name\"" if $name =~ / /;
-my $sender = $name . ' <' . FixMyStreet->config('DO_NOT_REPLY_EMAIL') . '>';
+my $sender = '"' . $name . '" <' . FixMyStreet->config('DO_NOT_REPLY_EMAIL') . '>';
 $expected_email_content =~ s{CONTACT_EMAIL}{$sender};
 my $expected_email = Email::MIME->new($expected_email_content);
 

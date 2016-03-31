@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-Subject: test email =?utf-8?Q?=E2=98=BA?=
+Subject: =?UTF-8?B?dGVzdCBlbWFpbCDimLo=?=
 Content-Type: text/plain; charset="utf-8"
 To: test@recipient.com
 Content-Transfer-Encoding: quoted-printable
@@ -24,5 +24,3 @@ culpa qui officia deserunt mollit anim id est laborum.
 
 Yours,=20=20
 FixMyStreet.=20=
-
-

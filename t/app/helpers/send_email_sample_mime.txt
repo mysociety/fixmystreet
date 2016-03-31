@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-Subject: test email =?utf-8?Q?=E2=98=BA?=
+Subject: =?UTF-8?B?dGVzdCBlbWFpbCDimLo=?=
 Content-Type: multipart/mixed; boundary="BOUNDARY"
 To: test@recipient.com
 Content-Transfer-Encoding: 7bit
@@ -7,12 +7,8 @@ From: CONTACT_EMAIL
 
 
 --BOUNDARY
-MIME-Version: 1.0
-Subject: test email =?utf-8?Q?=E2=98=BA?=
 Content-Type: text/plain; charset="utf-8"
-To: test@recipient.com
 Content-Transfer-Encoding: quoted-printable
-From: CONTACT_EMAIL
 
 Hello,
 
@@ -34,10 +30,7 @@ culpa qui officia deserunt mollit anim id est laborum.
 Yours,=20=20
 FixMyStreet.=20=
 
-
-
 --BOUNDARY
-MIME-Version: 1.0
 Content-Type: image/gif; name="foo.gif"
 Content-Disposition: inline; filename="foo.gif"
 Content-Transfer-Encoding: quoted-printable
@@ -46,7 +39,6 @@ GIF89a=01=00=01=00=80=00=00=00=00=00=CC=CC=CC,=00=00=00=00=01=00=01=00=00=
 =02=01L=00;=
 
 --BOUNDARY
-MIME-Version: 1.0
 Content-Type: image/gif; name="bar.gif"
 Content-Disposition: inline; filename="bar.gif"
 Content-Transfer-Encoding: quoted-printable

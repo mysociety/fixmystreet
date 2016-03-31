@@ -51,7 +51,6 @@ requires 'Digest::SHA';
 requires 'Email::MIME';
 requires 'Email::Send';
 requires 'Email::Send::SMTP';
-requires 'Email::Simple';
 requires 'Email::Valid';
 requires 'Error';
 requires 'FCGI';

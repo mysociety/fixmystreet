@@ -16,12 +16,16 @@ use Encode qw(encode);
 
 ok( request('/')->is_success, 'Request should succeed' );
 
+SKIP: {
 FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'tester' ],
 }, sub {
+    skip 'Test will not pass on Mac OS', 1 if $^O eq 'darwin';
+
     my $page = get('/');
     my $num = encode('UTF-8', "12\N{NO-BREAK SPACE}345");
     like $page, qr/$num/;
 };
+}
 
 done_testing();
