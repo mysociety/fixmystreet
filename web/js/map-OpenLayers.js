@@ -547,6 +547,22 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
                         break;
                 }
         }
+    },
+    moveTo: function(){},
+    draw: function(px) {
+        // A customised version of .draw() that doesn't specify
+        // and dimensions/positions for the buttons, since we
+        // size and position them all using CSS.
+        OpenLayers.Control.prototype.draw.apply(this, arguments);
+        this.buttons = [];
+        this._addButton("panup", "north-mini.png");
+        this._addButton("panleft", "west-mini.png");
+        this._addButton("panright", "east-mini.png");
+        this._addButton("pandown", "south-mini.png");
+        this._addButton("zoomin", "zoom-plus-mini.png");
+        this._addButton("zoomworld", "zoom-world-mini.png");
+        this._addButton("zoomout", "zoom-minus-mini.png");
+        return this.div;
     }
 });
 

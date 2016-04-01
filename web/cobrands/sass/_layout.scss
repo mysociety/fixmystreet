@@ -624,14 +624,14 @@ body.authpage {
 
 // push zoom back over to right
 #fms_pan_zoom_zoomin {
-  #{$left}: auto !important;
-  #{$right}: 30px !important;
-  top:130px !important;
+  #{$left}: auto;
+  #{$right}: 30px;
+  top: 130px;
 }
 #fms_pan_zoom_zoomout {
-  #{$left}: auto !important;
-  #{$right}: 30px !important;
-  top:174px !important;
+  #{$left}: auto;
+  #{$right}: 30px;
+  top: 174px;
 }
 
 .olControlAttribution {
