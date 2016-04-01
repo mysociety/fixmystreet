@@ -10,6 +10,8 @@ use CGI;
 use Encode qw(from_to);
 use DBI;
 use Time::Piece;
+use Time::Local qw(timelocal);
+use POSIX qw(strftime);
 
 
 ###################################################################
@@ -145,6 +147,20 @@ sub get_date_or_nothing {
     return $d;
 }
 
+#------------------------------------------------------------------
+# get_utc_iso8601_string
+# Takes a local date/time string and converts it to UTC, returning
+# a ISO8601-format string.
+# expected format: YYYY-MM-DD HH:MM:SS
+# e.g.: 2016-04-01 13:37:42 -> 2016-04-01T12:37:42Z
+#------------------------------------------------------------------
+sub get_utc_iso8601_string {
+    my $datetime = shift;
+    $datetime =~ s{(\d{4})-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)}{
+        strftime "%Y-%m-%dT%H:%M:%SZ", gmtime(timelocal($6, $5, $4, $3, int($2)-1, int($1)-1900));
+    }e;
+    return $datetime;
+}
 
 
 1;
