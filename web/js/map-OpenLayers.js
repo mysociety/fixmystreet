@@ -700,9 +700,6 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
     trigger: function(e) {
         var cobrand = $('meta[name="cobrand"]').attr('content');
-        if (typeof fixmystreet.nav_control != 'undefined') {
-            fixmystreet.nav_control.disableZoomWheel();
-        }
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
         if (fixmystreet.page == 'new') {
             /* Already have a pin */
