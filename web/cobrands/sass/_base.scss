@@ -554,27 +554,6 @@ body.mappage .wrapper {
   position: static;
 }
 
-// this is the user's logged in details or the login link etc
-#user-meta {
-  p {
-    position: relative;
-    color: $primary_text;
-    background: $primary;
-    padding: flip(1em 6em 1em 1em, 1em 1em 1em 6em);
-    a {
-      position: absolute;
-      #{$right}: 1em;
-      @include inline-block;
-      text-transform:uppercase;
-      font-size:0.75em;
-      background:#333;
-      padding:0.25em 0.75em;
-      color:#fff;
-      @include border-radius(0.25em);
-    }
-  }
-}
-
 
 // #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
 .shadow-wrap {
@@ -1815,6 +1794,13 @@ table.nicetable {
     border-radius: 0 0.25em 0.25em 0;
     border-right-width: 1px; // reinstate border on last item
   }
+}
+
+.my-account-buttons a {
+  display: inline-block;
+  background: #f6f6f6;
+  padding: 0.5em 1em;
+  border-radius: 0.2em;
 }
 
 

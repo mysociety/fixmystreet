@@ -39,10 +39,6 @@ $mappage-header-height: 10em;
     body.fullwidthpage .container .content footer .tablewrapper a:visited {
         color: white;
     }
-
-    body.mappage #user-meta+.container .content {
-        padding-top: 1.5em;
-    }
 }
 
 #main-nav {
@@ -121,18 +117,6 @@ body.mappage .nav-wrapper .nav-wrapper-2 {
         }
     }
 
-}
-
-body.frontpage #user-meta p {
-    top: -2.4em;
-}
-
-body.mappage #user-meta {
-    top: 2em;
-    p {
-        background: $primary;
-        border-color: $primary_dark;
-    }
 }
 
 body.mappage .content {

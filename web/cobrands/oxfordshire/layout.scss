@@ -28,8 +28,7 @@ body, body a {
 }
 
 // Currently hide the nav-wrapper, because it's in going into Oxfordshire's own nav
-// likewise with user-meta
-.nav-wrapper, #user-meta {
+.nav-wrapper {
     display: none;
 }
 
@@ -156,25 +155,6 @@ body.mappage {
           padding-top: ($mappage-header-height - 20px) / 2;
           padding-bottom: ($mappage-header-height - 20px) / 2;
         }
-      }
-    }
-
-    .oxford-user {
-      display: block;
-      font-size: 13px;
-      margin: 0;
-      color: mix(#ddd, #069b01, 80%);
-
-      p {
-          margin: 0;
-          padding-top: ($mappage-header-height - 20px) / 2;
-          padding-bottom: ($mappage-header-height - 20px) / 2;
-          line-height: 20px;
-      }
-
-      a {
-        padding: 0 10px;
-        text-decoration: none;
       }
     }
   }

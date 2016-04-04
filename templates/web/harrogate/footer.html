@@ -19,7 +19,7 @@
                         [% selected = c.req.uri.path == '/my' %]
                         <li>
                             <[% IF selected %]span[% ELSE %]a href="/my"[% END %]>
-                            [% loc("Your reports") %]</[% selected ? 'span' : 'a' %]></li>
+                            [% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% selected ? 'span' : 'a' %]></li>
 
                         [% selected = c.req.uri.path == '/reports/Harrogate' %]
                         <li>

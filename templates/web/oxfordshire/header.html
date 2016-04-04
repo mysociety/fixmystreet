@@ -38,15 +38,6 @@
         <div style="clear:both"></div>
         <span class="header"><a href="/">Report a road or street problem</a></span>
 
-      [% IF c.user_exists %]
-        <div class="oxford-user">
-            <p>
-                [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
-                <a href="/auth/sign_out">[% loc('Sign out') %]</a>
-            </p>
-        </div>
-      [% END %]
-
         <div id="navigation">
             <div class="menubar">
                 <div class="menu-inner">
@@ -56,7 +47,7 @@
                         </li>
                         <li>
                             <[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
-                             %]>[% loc("Your reports") %]</[% ( c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) ) ? 'span' : 'a' %]>
+                             %]>[% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% ( c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) ) ? 'span' : 'a' %]>
                         </li>
                         <li>
                             <[% IF c.req.uri.path == '/reports/Oxfordshire' %]span[% ELSE %]a href="/reports/Oxfordshire"[% END
@@ -86,15 +77,6 @@
                     <a href="#main-nav" id="nav-link">Main Navigation</a>
                 </div>
             </header>
-
-          [% IF c.user_exists %]
-            <div id="user-meta">
-                <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                </p>
-            </div>
-          [% END %]
 
             [% pre_container_extra %]
 

@@ -296,32 +296,6 @@ body.mappage {
     margin: 0.9em 0.25em 0.85em;
   }
 
-  #user-meta {
-    max-width: none;
-    p {
-      display: block;
-      height: auto;
-      width: 22.2em; // 27em (.content width) - 2em (.content padding) - 6em - 0.8em
-      padding: flip(0.5em 6em 0.5em 0.8em, 0.5em 0.8em 0.5em 6em);
-      top: 0;
-      #{$left}: 0;
-      z-index: 1;
-      box-shadow: none;
-      background: #FCEA9A;
-      border-bottom: 1px solid #ffd000;
-
-      a {
-        // move the "Sign out" link in and down a bit, because of extra padding on parent
-        top: 0.8em;
-        #{$right}: 0.8em;
-      }
-    }
-
-    & + .container .content {
-      padding-top: 3.5em; // make room for user menu!
-    }
-  }
-
   .banner {
     p {
       top: -2.1em; // a few pixels lower than default
@@ -345,9 +319,6 @@ body.mappage {
     }
     #site-logo {
       position: absolute;
-    }
-    #user-meta {
-      margin-#{$left}: 2em;
     }
   }
 }
@@ -715,45 +686,6 @@ body.authpage {
     }
 }
 
-// log in bit, pokes above the .content div
-#user-meta{
-  display:block;
-  position: relative;
-  max-width: 60em;
-  margin: 0 auto;
-  p {
-    @include inline-block;
-    position: absolute;
-    top: 1em;
-    #{$left}: 1em;
-    height:2em;
-    padding: flip(0.25em 6em 0.5em 0.5em, 0.25em 0.5em 0.5em 6em);
-    @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
-    a {
-      top:0.5em;
-      #{$right}: 0.5em;
-      font-size:0.6875em;
-      padding:0.5em 0.75em;
-      line-height:1em;
-      &:hover {
-        text-decoration:none;
-        background:#444;
-      }
-    }
-  }
-}
-.ie6, .ie7 {
-  #user-meta {
-    z-index:1;
-    p {
-      top:-2em;
-    }
-  }
-}
-.ie6 #user-meta {
-  width: 60em; //ie6 doesn't like max-width
-}
-
 
 // Wraps around #key-tools box - sticks to the bottom of the screen on desktop
 .shadow-wrap {
@@ -966,24 +898,6 @@ body.frontpage {
     width: 300px;
     height: 60px;
     background: url($image-sprite) -2px -108px no-repeat;
-  }
-  #user-meta {
-    z-index:10;
-    p {
-      top: -4em;
-      #{$left}: auto;
-      #{$right}: 0;
-      color:$primary;
-      background:none;
-      @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
-      a {
-        background:#fff;
-        color:#1a1a1a;
-        &:hover {
-          background:#ddd;
-        }
-      }
-    }
   }
 }
 //logo fix

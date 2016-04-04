@@ -165,17 +165,6 @@ body.frontpage {
       background-color: $base_bg;
     }
   }
-  #user-meta p {
-    right: -119px;
-    top: -93px;
-    margin: 0;
-    padding: 0;
-    color: $base_bg;
-
-    a {
-      position: static;
-    }
-  }
 }
 
 body.twothirdswidthpage .content .sticky-sidebar {
@@ -378,16 +367,6 @@ body.mappage {
     }
   }
 
-  #user-meta {
-    p {
-      color: $primary_text;
-    }
-
-    & ~ .container .content {
-      padding-top: 3.5em; // make room for user menu!
-    }
-  }
-
   #category_meta h4 {
     display: none;
   }
@@ -397,12 +376,6 @@ body.mappage {
     font-size: 0.9em;
     text-align: center;
   }
-}
-
-#user-meta p {
-  top: 6em;
-  left: -6em;
-  color: $angus_light_grey;
 }
 
 .angus_footer {
