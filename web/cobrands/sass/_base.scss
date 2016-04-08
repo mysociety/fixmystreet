@@ -760,6 +760,21 @@ input.final-submit {
     }
 }
 
+.btn--twitter {
+    @include button-reset(#55acee, darken(#55acee, 10%), #55acee, #fff, darken(#55acee, 5%), darken(#55acee, 10%), #55acee, #fff);
+
+    &:visited {
+        color: #fff;
+    }
+
+    img {
+        margin-right: 0.5em;
+        vertical-align: -0.2em;
+        height: 1.3em;
+        width: auto;
+    }
+}
+
 // Under the button to override its text transform and width
 .btn--social {
     display: block;

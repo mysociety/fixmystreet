@@ -14,13 +14,23 @@
 
         <input type="hidden" name="r" value="[% c.req.params.r | html %]">
 
-[% IF NOT oauth_need_email AND c.config.FACEBOOK_APP_ID %]
+[% IF NOT oauth_need_email AND (c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY) %]
+    [% IF c.config.FACEBOOK_APP_ID %]
       <div class="form-box">
         <button name="facebook_sign_in" id="facebook_sign_in" value="facebook_sign_in" class="btn btn--block btn--social btn--facebook">
             <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
             Log in with Facebook
         </button>
       </div>
+    [% END %]
+    [% IF c.config.TWITTER_KEY %]
+      <div class="form-box">
+        <button name="twitter_sign_in" id="twitter_sign_in" value="twitter_sign_in" class="btn btn--block btn--social btn--twitter">
+            <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
+            Log in with Twitter
+        </button>
+      </div>
+    [% END %]
       <div id="js-social-email-hide">
 [% END %]
 
@@ -56,7 +66,7 @@
           [% END %]
         </div>
 
-[% IF NOT oauth_need_email AND c.config.FACEBOOK_APP_ID %]
+[% IF NOT oauth_need_email AND (c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY) %]
       </div>
 [% END %]
 

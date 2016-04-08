@@ -382,6 +382,8 @@ sub tokenize_user : Private {
     };
     $c->stash->{token_data}{facebook_id} = $c->session->{oauth}{facebook_id}
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
+    $c->stash->{token_data}{twitter_id} = $c->session->{oauth}{twitter_id}
+        if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
 }
 
 =head2 save_update
