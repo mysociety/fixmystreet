@@ -875,12 +875,12 @@ sub photos {
     my $i = 0;
     my $id = $self->id;
     my @photos = map {
-        my $format = 'jpeg';
         my $cachebust = substr($_, 0, 8);
+        my ($hash, $format) = split /\./, $_;
         {
-            id => $_,
-            url_temp => "/photo/$_.temp.$format",
-            url_temp_full => "/photo/$_.fulltemp.$format",
+            id => $hash,
+            url_temp => "/photo/temp.$hash.$format",
+            url_temp_full => "/photo/fulltemp.$hash.$format",
             url => "/photo/$id.$i.$format?$cachebust",
             url_full => "/photo/$id.$i.full.$format?$cachebust",
             url_tn => "/photo/$id.$i.tn.$format?$cachebust",

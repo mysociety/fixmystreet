@@ -29,12 +29,12 @@ Display a photo
 
 =cut
 
-sub during :LocalRegex('^([0-9a-f]{40})\.(temp|fulltemp)\.jpeg$') {
+sub during :LocalRegex('^(temp|fulltemp)\.([0-9a-f]{40}\.(?:jpeg|png|gif|tiff))$') {
     my ( $self, $c ) = @_;
-    my ( $hash, $size ) = @{ $c->req->captures };
+    my ( $size, $filename ) = @{ $c->req->captures };
 
     my $photoset = FixMyStreet::App::Model::PhotoSet->new({
-        data_items => [ $hash ]
+        data_items => [ $filename ]
     });
 
     $size = $size eq 'temp' ? 'default' : 'full';
@@ -43,7 +43,7 @@ sub during :LocalRegex('^([0-9a-f]{40})\.(temp|fulltemp)\.jpeg$') {
     $c->forward( 'output', [ $photo ] );
 }
 
-sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.jpeg$') {
+sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.(?:jpeg|png|gif|tiff)$') {
     my ( $self, $c ) = @_;
     my ( $is_update, $id, $photo_number, $size ) = @{ $c->req->captures };
 
@@ -79,10 +79,10 @@ sub output : Private {
 
     # Save to file
     File::Path::make_path( FixMyStreet->path_to( 'web', 'photo', 'c' )->stringify );
-    File::Slurp::write_file( FixMyStreet->path_to( 'web', $c->req->path )->stringify, \$photo );
+    File::Slurp::write_file( FixMyStreet->path_to( 'web', $c->req->path )->stringify, \$photo->{data} );
 
-    $c->res->content_type( 'image/jpeg' );
-    $c->res->body( $photo );
+    $c->res->content_type( $photo->{content_type} );
+    $c->res->body( $photo->{data} );
 }
 
 sub no_photo : Private {

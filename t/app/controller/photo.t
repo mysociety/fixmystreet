@@ -65,10 +65,10 @@ subtest "Check multiple upload worked" => sub {
         ok $mech->success, 'Made request with multiple photo upload';
         $mech->base_is('http://localhost/report/new');
         $mech->content_like(
-            qr[(<img align="right" src="/photo/1cdd4329ceee2234bd4e89cb33b42061a0724687.temp.jpeg" alt="">\s*){3}],
+            qr[(<img align="right" src="/photo/temp.1cdd4329ceee2234bd4e89cb33b42061a0724687.jpeg" alt="">\s*){3}],
             'Three uploaded pictures are all shown, safe');
         $mech->content_contains(
-            'name="upload_fileid" value="1cdd4329ceee2234bd4e89cb33b42061a0724687,1cdd4329ceee2234bd4e89cb33b42061a0724687,1cdd4329ceee2234bd4e89cb33b42061a0724687"',
+            'name="upload_fileid" value="1cdd4329ceee2234bd4e89cb33b42061a0724687.jpeg,1cdd4329ceee2234bd4e89cb33b42061a0724687.jpeg,1cdd4329ceee2234bd4e89cb33b42061a0724687.jpeg"',
             'Returned upload_fileid contains expected hash, 3 times');
         my $image_file = path($UPLOAD_DIR, '1cdd4329ceee2234bd4e89cb33b42061a0724687.jpeg');
         ok $image_file->exists, 'File uploaded to temp';

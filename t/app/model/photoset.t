@@ -58,7 +58,7 @@ subtest 'Photoset with photo inline in DB' => sub {
     my $report = make_report( $image_path->slurp );
     my $photoset = $report->get_photoset();
     is $photoset->num_images, 1, 'Found just 1 image';
-    is $photoset->data, '1cdd4329ceee2234bd4e89cb33b42061a0724687';
+    is $photoset->data, '1cdd4329ceee2234bd4e89cb33b42061a0724687.jpeg';
 };
 
 $image_path->copy( path( $UPLOAD_DIR, '0123456789012345678901234567890123456789.jpeg' ) );
