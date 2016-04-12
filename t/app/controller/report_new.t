@@ -1542,6 +1542,44 @@ subtest "unresponsive body handling works" => sub {
         like $email->body, qr/despite not being sent/i, "correct email sent";
 
         $user->problems->delete;
+        $mech->clear_emails_ok;
+
+        # Make sure the same behaviour occurs for reports from the mobile app
+        $mech->log_out_ok;
+        $mech->post_ok( '/report/new/mobile', {
+            title               => "Test Report at café",
+            detail              => 'Test report details.',
+            photo1              => '',
+            name                => 'Joe Bloggs',
+            email               => $test_email,
+            may_show_name       => '1',
+            phone               => '07903 123 456',
+            category            => 'Trees',
+            service             => 'iOS',
+            lat                 => 55.9,
+            lon                 => -3.2,
+            pc                  => '',
+            used_map            => '1',
+            submit_register     => '1',
+            password_register   => '',
+        });
+        my $res = $mech->response;
+        ok $res->header('Content-Type') =~ m{^application/json\b}, 'response should be json';
+
+        $user = FixMyStreet::App->model('DB::User')->find( { email => $test_email } );
+        ok $user, "test user does exist";
+
+        $report = $user->problems->first;
+        ok $report, "Found the report";
+        is $report->bodies_str, undef, "Report not going anywhere";
+
+        $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/despite not being sent/i, "correct email sent";
+
+        $user->problems->delete;
+        $mech->clear_emails_ok;
+
         $contact1->body->update( { send_method => $old_send } );
 
         # And test per-category refusing
