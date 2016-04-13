@@ -868,4 +868,24 @@ sub get_time_spent {
     return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
 }
 
+=head2 get_cobrand_logged
+
+Get a cobrand object for the cobrand the problem was logged for.
+
+e.g. if a problem was logged at www.fixmystreet.com, this will be a
+FixMyStreet::Cobrand::FixMyStreet object.
+
+=cut
+
+has get_cobrand_logged => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $self->cobrand );
+        return $cobrand_class->new;
+    },
+);
+
+
 1;
