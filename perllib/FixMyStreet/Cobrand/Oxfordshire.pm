@@ -98,6 +98,7 @@ sub reports_ordering {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
+    return 'grey' unless $self->owns_problem( $p );
     return 'grey' if $p->state eq 'not responsible';
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';

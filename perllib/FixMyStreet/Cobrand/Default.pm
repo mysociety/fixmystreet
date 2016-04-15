@@ -74,6 +74,18 @@ sub problems {
     return $self->problems_restriction($self->{c}->model('DB::Problem'));
 }
 
+=head1 problems_on_map
+
+Returns a ResultSet of Problems to be shown on the /around map, potentially
+restricted to a subset if we're on a cobrand that only wants some of the data.
+
+=cut
+
+sub problems_on_map {
+    my $self = shift;
+    return $self->problems_on_map_restriction($self->{c}->model('DB::Problem'));
+}
+
 =head1 updates
 
 Returns a ResultSet of Comments, potentially restricted to a subset if we're on
@@ -111,6 +123,19 @@ particular way. Do nothing by default.
 =cut
 
 sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs;
+}
+
+
+=head1 problems_on_map_restriction
+
+Used to restricts reports shown on the /around map in a cobrand in a particular way. Do
+nothing by default.
+
+=cut
+
+sub problems_on_map_restriction {
     my ($self, $rs) = @_;
     return $rs;
 }

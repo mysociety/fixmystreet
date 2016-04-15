@@ -129,6 +129,13 @@ sub owns_problem {
     return $areas{$self->council_id} ? 1 : undef;
 }
 
+# If the council is two-tier then show pins for the other council as grey
+sub pin_colour {
+    my ( $self, $p, $context ) = @_;
+    return 'grey' if $self->is_two_tier && !$self->owns_problem( $p );
+    return $self->next::method($p, $context);
+}
+
 # If we ever link to a county problem report, needs to be to main FixMyStreet
 sub base_url_for_report {
     my ( $self, $report ) = @_;
