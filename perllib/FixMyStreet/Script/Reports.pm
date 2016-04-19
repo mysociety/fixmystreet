@@ -145,7 +145,7 @@ sub send(;$) {
                 $skip = 1;
                 debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;
             } else {
-                debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $body->send_method, $row->id) if $debug_mode;
+                debug_print("OK, adding recipient body " . $body->id . ":" . $body->name . ", " . $sender_info->{method}, $row->id) if $debug_mode;
                 push @dear, $body->name;
                 $reporters{ $sender }->add_body( $body, $sender_info->{config} );
             }
