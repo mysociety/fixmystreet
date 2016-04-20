@@ -6,6 +6,8 @@ use POSIX qw(strftime);
 use URI::Escape;
 use XML::RSS;
 
+use FixMyStreet::App::Model::PhotoSet;
+
 use mySociety::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
@@ -277,8 +279,13 @@ sub add_row : Private {
     $item{category} = ent($row->{category}) if $row->{category};
 
     if ($c->cobrand->allow_photo_display($row) && $row->{photo}) {
+        # Bit yucky as we don't have full objects here
+        my $photoset = FixMyStreet::App::Model::PhotoSet->new({ db_data => $row->{photo} });
+        my $first_fn = $photoset->get_id(0);
+        my ($hash, $format) = split /\./, $first_fn;
+        my $cachebust = substr($hash, 0, 8);
         my $key = $alert_type->item_table eq 'comment' ? 'c/' : '';
-        $item{description} .= ent("\n<br><img src=\"". $base_url . "/photo/$key$row->{id}.jpeg\">");
+        $item{description} .= ent("\n<br><img src=\"". $base_url . "/photo/$key$row->{id}.0.$format?$cachebust\">");
     }
 
     if ( $row->{used_map} ) {

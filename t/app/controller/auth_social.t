@@ -31,7 +31,10 @@ my $fb_uid = 123456789;
 for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
     for my $page ( 'my', 'report', 'update' ) {
         subtest "test FB '$fb_state' login for page '$page'" => sub {
+            # Lots of user changes happening here, make sure we don't confuse
+            # Catalyst with a cookie session user that no longer exists
             $mech->log_out_ok;
+            $mech->cookie_jar({});
             if ($fb_state eq 'existing UID') {
                 my $user = $mech->create_user_ok($fb_email);
                 $user->update({ facebook_id => $fb_uid });

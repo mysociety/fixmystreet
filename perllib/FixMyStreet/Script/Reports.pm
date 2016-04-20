@@ -83,7 +83,7 @@ sub send(;$) {
         $h{phone_line} = $h{phone} ? _('Phone:') . " $h{phone}\n\n" : '';
         if ($row->photo) {
             $h{has_photo} = _("This web page also contains a photo of the problem, provided by the user.") . "\n\n";
-            $h{image_url} = $email_base_url . '/photo/' . $row->id . '.full.jpeg';
+            $h{image_url} = $email_base_url . $row->photos->[0]->{url_full};
         } else {
             $h{has_photo} = '';
             $h{image_url} = '';

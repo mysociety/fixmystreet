@@ -13,7 +13,7 @@
 
 [% IF partial_token %]
     <p style="margin-top: 0; color: #cc0000;">
-        <img align="right" src="/photo/[% partial_report.id %].jpeg" hspace="5">
+        <img align="right" src="[% partial_report.photos.first.url_temp %]" hspace="5">
         [% loc("Thanks for uploading your photo. We now need to locate your problem, so please enter a nearby street name or postcode in the box above&nbsp;:") %]
     </p>
 [% END %]

@@ -49,7 +49,7 @@ has data_items => ( # either a) split from db_data or b) provided by photo uploa
         my $self = shift;
         my $data = $self->db_data or return [];
 
-        return [$data] if (_jpeg_magic($data));
+        return [$data] if (detect_type($data));
 
         return [ split ',' => $data ];
     },
@@ -70,10 +70,12 @@ has upload_dir => (
     },
 );
 
-sub _jpeg_magic {
-    $_[0] =~ /^\x{ff}\x{d8}/; # JPEG
-    # NB: should we also handle \x{89}\x{50} (PNG, 15 results in live DB) ?
-    #     and \x{49}\x{49} (Tiff, 3 results in live DB) ?
+sub detect_type {
+    return 'jpeg' if $_[0] =~ /^\x{ff}\x{d8}/;
+    return 'png' if $_[0] =~ /^\x{89}\x{50}/;
+    return 'tiff' if $_[0] =~ /^II/;
+    return 'gif' if $_[0] =~ /^GIF/;
+    return '';
 }
 
 =head2 C<ids>, C<num_images>, C<get_id>, C<all_ids>
@@ -106,15 +108,17 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
             my $part = $_;
 
             if (blessed $part and $part->isa('Catalyst::Request::Upload')) {
-                # check that the photo is a jpeg
                 my $upload = $part;
                 my $ct = $upload->type;
                 $ct =~ s/x-citrix-//; # Thanks, Citrix
+                my ($type) = $ct =~ m{image/(jpeg|pjpeg|gif|tiff|png)};
+                $type = 'jpeg' if $type && $type eq 'pjpeg';
                 # Had a report of a JPEG from an Android 2.1 coming through as a byte stream
-                unless ( $ct eq 'image/jpeg' || $ct eq 'image/pjpeg' || $ct eq 'application/octet-stream' ) {
+                $type = 'jpeg' if !$type && $ct eq 'application/octet-stream';
+                unless ( $type ) {
                     my $c = $self->c;
                     $c->log->info('Bad photo tried to upload, type=' . $ct);
-                    $c->stash->{photo_error} = _('Please upload a JPEG image only');
+                    $c->stash->{photo_error} = _('Please upload an image only');
                     return ();
                 }
 
@@ -139,12 +143,13 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 # get the photo into a variable
                 my $photo_blob = eval {
                     my $filename = $upload->tempname;
-                    my $out = `jhead -se -autorot $filename 2>&1`;
+                    my $out;
+                    $out = `jhead -se -autorot $filename 2>&1` if $type eq 'jpeg';
                     unless (defined $out) {
                         my ($w, $h, $err) = Image::Size::imgsize($filename);
-                        die _("Please upload a JPEG image only") . "\n" if !defined $w || $err ne 'JPG';
+                        die _("Please upload an image only") . "\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF/;
                     }
-                    die _("Please upload a JPEG image only") . "\n" if $out && $out =~ /Not JPEG:/;
+                    die _("Please upload an image only") . "\n" if $out && $out =~ /Not JPEG:/;
                     my $photo = $upload->slurp;
                 };
                 if ( my $error = $@ ) {
@@ -157,29 +162,30 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
 
                 # we have an image we can use - save it to the upload dir for storage
                 my $fileid = $self->get_fileid($photo_blob);
-                my $file = $self->get_file($fileid);
+                my $file = $self->get_file($fileid, $type);
                 $upload->copy_to( $file );
-                return $fileid;
+                return $file->basename;
 
             }
-            if (_jpeg_magic($part)) {
+            if (my $type = detect_type($part)) {
                 my $photo_blob = $part;
                 my $fileid = $self->get_fileid($photo_blob);
-                my $file = $self->get_file($fileid);
+                my $file = $self->get_file($fileid, $type);
                 $file->spew_raw($photo_blob);
-                return $fileid;
+                return $file->basename;
             }
-            if (length($part) == 40) {
-                my $fileid = $part;
-                my $file = $self->get_file($fileid);
+            my ($fileid, $type) = split /\./, $part;
+            $type ||= 'jpeg';
+            if (length($fileid) == 40) {
+                my $file = $self->get_file($fileid, $type);
                 if ($file->exists) {
-                    $fileid;
+                    $file->basename;
                 } else {
-                    warn "File $fileid doesn't exist";
+                    warn "File $part doesn't exist";
                     ();
                 }
             } else {
-                warn sprintf "Received bad photo hash of length %d", length($part);
+                warn sprintf "Received bad photo hash of length %d", length($fileid);
                 ();
             }
         });
@@ -193,18 +199,23 @@ sub get_fileid {
 }
 
 sub get_file {
-    my ($self, $fileid) = @_;
+    my ($self, $fileid, $type) = @_;
     my $cache_dir = $self->upload_dir;
-    return path( $cache_dir, "$fileid.jpeg" );
+    return path( $cache_dir, "$fileid.$type" );
 }
 
-sub get_raw_image_data {
+sub get_raw_image {
     my ($self, $index) = @_;
-    my $fileid = $self->get_id($index);
-    my $file = $self->get_file($fileid);
+    my $filename = $self->get_id($index);
+    my ($fileid, $type) = split /\./, $filename;
+    my $file = $self->get_file($fileid, $type);
     if ($file->exists) {
         my $photo = $file->slurp_raw;
-        return $photo;
+        return {
+            data => $photo,
+            content_type => "image/$type",
+            extension => $type,
+        };
     }
 }
 
@@ -212,8 +223,9 @@ sub get_image_data {
     my ($self, %args) = @_;
     my $num = $args{num} || 0;
 
-    my $photo = $self->get_raw_image_data( $num )
+    my $image = $self->get_raw_image( $num )
         or return;
+    my $photo = $image->{data};
 
     my $size = $args{size};
     if ( $size eq 'tn' ) {
@@ -226,7 +238,10 @@ sub get_image_data {
         $photo = _shrink( $photo, $args{default} || '250x250' );
     }
 
-    return $photo;
+    return {
+        data => $photo,
+        content_type => $image->{content_type},
+    };
 }
 
 sub delete_cached {
@@ -266,8 +281,8 @@ sub rotate_image {
     my @images = $self->all_ids;
     return if $index > $#images;
 
-    my $image_data = $self->get_raw_image_data($index);
-    $images[$index] = _rotate_image( $image_data, $direction );
+    my $image = $self->get_raw_image($index);
+    $images[$index] = _rotate_image( $image->{data}, $direction );
 
     my $new_set = (ref $self)->new({
         data_items => \@images,

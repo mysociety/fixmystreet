@@ -420,7 +420,7 @@ foreach my $test (
         changes => {
             photo1 => '',
         },
-        errors => [ "Please upload a JPEG image only" ],
+        errors => [ "Please upload an image only" ],
     },
     {
         msg    => 'bad photo upload gives error',
@@ -443,7 +443,7 @@ foreach my $test (
         changes => {
             photo1 => '',
         },
-        errors => [ "That image doesn't appear to have uploaded correctly (Please upload a JPEG image only ), please try again." ],
+        errors => [ "That image doesn't appear to have uploaded correctly (Please upload an image only ), please try again." ],
     },
     {
         msg    => 'photo with octet-stream gets through okay',

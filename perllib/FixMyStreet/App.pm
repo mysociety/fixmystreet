@@ -246,7 +246,7 @@ sub setup_dev_overrides {
     delete $params{$_} for grep { !m{^_override_} } keys %params;
 
     # stop if there is nothing to add
-    return 1 unless scalar keys %params;
+    return unless scalar keys %params;
 
     # Check to see if we should clear all
     if ( $params{_override_clear_all} ) {
@@ -270,14 +270,14 @@ sub setup_dev_overrides {
 
 Checks the overrides for the value given and returns it if found, undef if not.
 
-Always returns undef unless on a staging site (avoids autovivifying overrides
-hash in session and so creating a session for all users).
+Always returns undef unless on a staging site and we already have a session
+(avoids autovivifying overrides hash and so creating a session for all users).
 
 =cut
 
 sub get_override {
     my ( $c, $key ) = @_;
-    return unless $c->config->{STAGING_SITE};
+    return unless $c->config->{STAGING_SITE} && $c->sessionid;
     return $c->session->{overrides}->{$key};
 }
 

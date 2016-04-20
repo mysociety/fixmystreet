@@ -206,7 +206,7 @@ $(function(){
         addRemoveLinks: true,
         thumbnailHeight: 150,
         thumbnailWidth: 150,
-        acceptedFiles: 'image/jpeg,image/pjpeg',
+        acceptedFiles: 'image/jpeg,image/pjpeg,image/gif,image/tiff,image/png',
         dictDefaultMessage: translation_strings.upload_default_message,
         dictCancelUploadConfirmation: translation_strings.upload_cancel_confirmation,
         dictInvalidFileType: translation_strings.upload_invalid_file_type,
@@ -258,7 +258,7 @@ $(function(){
         }
         var mockFile = { name: f, server_id: f };
         photodrop.emit("addedfile", mockFile);
-        photodrop.createThumbnailFromUrl(mockFile, '/photo/' + f + '.temp.jpeg');
+        photodrop.createThumbnailFromUrl(mockFile, '/photo/temp.' + f);
         photodrop.emit("complete", mockFile);
         photodrop.options.maxFiles -= 1;
       });

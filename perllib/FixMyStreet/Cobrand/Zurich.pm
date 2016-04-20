@@ -1018,14 +1018,15 @@ sub munge_sendreport_params {
             or return;
         my $id = $row->id;
         my @attachments = map {
+            my $image = $photoset->get_raw_image($_);
             {
-                body => $photoset->get_raw_image_data($_),
+                body => $image->{data},
                 attributes => {
-                    filename => "$id.$_.jpeg",
-                    content_type => 'image/jpeg',
+                    filename => "$id.$_." . $image->{extension},
+                    content_type => $image->{content_type},
                     encoding => 'base64',
                         # quoted-printable ends up with newlines corrupting binary data
-                    name => "$id.$_.jpeg",
+                    name => "$id.$_." . $image->{extension},
                 },
             }
         } (0..$num-1);

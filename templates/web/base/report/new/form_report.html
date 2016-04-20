@@ -31,7 +31,7 @@
       [% IF upload_fileid %]
         <p>[% loc('You have already attached photos to this report.  Note that you can attach a maximum of 3 to this report (if you try to upload more, the oldest will be removed).') %]</p>
         [% FOREACH id IN upload_fileid.split(',') %]
-        <img align="right" src="/photo/[% id %].temp.jpeg" alt="">
+        <img align="right" src="/photo/temp.[% id %]" alt="">
         [% END %]
       [% END %]
         <input type="file" name="photo1" id="form_photo">

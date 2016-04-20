@@ -49,24 +49,24 @@
             </div>
 
             [% IF c.cobrand.allow_photo_upload %]
+                <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
                 <label for="form_photo">[% loc('Photo') %]</label>
-                [% IF upload_fileid || report.photo %]
-                    [% IF upload_fileid %]
-                        <img align="right" src="/photo/[% upload_fileid %].temp.jpeg" alt="">
-                        <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
-                    [% END %]
-
-                    <p>[% loc('You have already attached a photo to this report, attaching another one will replace it.') %]</p>
-
-                    [% IF report.photo %]
-                        <img align="right" src="/photo/[% report.id %].jpeg">
-                    [% END %]
-                [% END %]
-
                 [% IF field_errors.photo %]
                     <p class='form-error'>[% field_errors.photo %]</p>
                 [% END %]
-                <input type="file" name="photo" id="form_photo">
+                <div id="form_photos">
+                  [% IF upload_fileid %]
+                    <p>[% loc('You have already attached photos to this report.  Note that you can attach a maximum of 3 to this report (if you try to upload more, the oldest will be removed).') %]</p>
+                    [% FOREACH id IN upload_fileid.split(',') %]
+                    <img align="right" src="/photo/temp.[% id %]" alt="">
+                    [% END %]
+                  [% END %]
+                    <input type="file" name="photo1" id="form_photo">
+                    <label for="form_photo2">[% loc('Photo') %]</label>
+                    <input type="file" name="photo2" id="form_photo2">
+                    <label for="form_photo3">[% loc('Photo') %]</label>
+                    <input type="file" name="photo3" id="form_photo3">
+                </div>
             [% END %]
 
             <h2>Personal Details:</h2>
