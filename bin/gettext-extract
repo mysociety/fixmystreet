@@ -34,6 +34,3 @@ bin/update_po_header.bash $PO
 
 echo "$( bin/gettext-nget-patch )" >> $PO
 
-#bin/make_po FixMyStreet-EmptyHomes
-#bin/make_po FixMyBarangay
-

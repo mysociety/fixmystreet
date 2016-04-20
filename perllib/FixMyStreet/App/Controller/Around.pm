@@ -47,7 +47,7 @@ sub index : Path : Args(0) {
     }
 
     # Check to see if the spot is covered by a area - if not show an error.
-    return unless $c->cobrand->moniker eq 'fixmybarangay' || $c->forward('check_location_is_acceptable');
+    return unless $c->forward('check_location_is_acceptable');
 
     # If we have a partial - redirect to /report/new so that it can be
     # completed.
@@ -182,7 +182,7 @@ sub display_location : Private {
 
     # create a list of all the pins
     my @pins;
-    unless ($c->get_param('no_pins') || $c->cobrand->moniker eq 'emptyhomes') {
+    unless ($c->get_param('no_pins')) {
         @pins = map {
             # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
             my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;

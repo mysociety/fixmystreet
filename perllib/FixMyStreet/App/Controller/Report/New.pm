@@ -619,57 +619,35 @@ sub setup_categories_and_bodies : Private {
         $c->stash->{unresponsive}{ALL} = $first_body->id;
     }
 
-    # FIXME - implement in cobrand
-    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
+    # keysort does not appear to obey locale so use strcoll (see i18n.t)
+    @contacts = sort { strcoll( $a->category, $b->category ) } @contacts;
 
-        # add all bodies found to the list
-        foreach (@contacts) {
-            $bodies_to_list{ $_->body_id } = 1;
+    my %seen;
+    foreach my $contact (@contacts) {
+
+        $bodies_to_list{ $contact->body_id } = 1;
+
+        unless ( $seen{$contact->category} ) {
+            push @category_options, $contact->category;
+
+            my $metas = $contact->get_extra_fields;
+            $category_extras{ $contact->category } = $metas
+                if scalar @$metas;
+
+            my $body_send_method = $bodies{$contact->body_id}->send_method || '';
+            $c->stash->{unresponsive}{$contact->category} = $contact->body_id
+                if !$c->stash->{unresponsive}{ALL} &&
+                    ($contact->email =~ /^REFUSED$/i || $body_send_method eq 'Refused');
+
+            $non_public_categories{ $contact->category } = 1 if $contact->non_public;
         }
+        $seen{$contact->category} = 1;
+    }
 
-        # set our own categories
-        @category_options = (
-            _('-- Pick a property type --'),
-            _('Empty house or bungalow'),
-            _('Empty flat or maisonette'),
-            _('Whole block of empty flats'),
-            _('Empty office or other commercial'),
-            _('Empty pub or bar'),
-            _('Empty public building - school, hospital, etc.')
-        );
-
-    } else {
-
-        # keysort does not appear to obey locale so use strcoll (see i18n.t)
-        @contacts = sort { strcoll( $a->category, $b->category ) } @contacts;
-
-        my %seen;
-        foreach my $contact (@contacts) {
-
-            $bodies_to_list{ $contact->body_id } = 1;
-
-            unless ( $seen{$contact->category} ) {
-                push @category_options, $contact->category;
-
-                my $metas = $contact->get_extra_fields;
-                $category_extras{ $contact->category } = $metas
-                    if scalar @$metas;
-
-                my $body_send_method = $bodies{$contact->body_id}->send_method || '';
-                $c->stash->{unresponsive}{$contact->category} = $contact->body_id
-                    if !$c->stash->{unresponsive}{ALL} &&
-                        ($contact->email =~ /^REFUSED$/i || $body_send_method eq 'Refused');
-
-                $non_public_categories{ $contact->category } = 1 if $contact->non_public;
-            }
-            $seen{$contact->category} = 1;
-        }
-
-        if (@category_options) {
-            # If there's an Other category present, put it at the bottom
-            @category_options = ( _('-- Pick a category --'), grep { $_ ne _('Other') } @category_options );
-            push @category_options, _('Other') if $seen{_('Other')};
-        }
+    if (@category_options) {
+        # If there's an Other category present, put it at the bottom
+        @category_options = ( _('-- Pick a category --'), grep { $_ ne _('Other') } @category_options );
+        push @category_options, _('Other') if $seen{_('Other')};
     }
 
     $c->cobrand->munge_category_list(\@category_options, \@contacts, \%category_extras)
@@ -851,12 +829,7 @@ sub process_report : Private {
     my $first_area = ( values %$areas )[0];
     my $first_body = ( values %$bodies )[0];
 
-    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
-
-        $bodies = join( ',', @{ $c->stash->{bodies_to_list} } ) || -1;
-        $report->bodies_str( $bodies );
-
-    } elsif ( $report->category ) {
+    if ( $report->category ) {
 
         # FIXME All contacts were fetched in setup_categories_and_bodies,
         # so can this DB call also be avoided?
@@ -1063,7 +1036,7 @@ sub save_user_and_report : Private {
     $report->bodies_str( undef ) if $report->bodies_str eq '-1';
 
     # if there is a Message Manager message ID, pass it back to the client view
-    if ($c->cobrand->moniker eq 'fixmybarangay' && $c->get_param('external_source_id') =~ /^\d+$/) {
+    if (($c->get_param('external_source_id') || "") =~ /^\d+$/) {
         $c->stash->{external_source_id} = $c->get_param('external_source_id');
         $report->external_source_id( $c->get_param('external_source_id') );
         $report->external_source( $c->config->{MESSAGE_MANAGER_URL} ) ;

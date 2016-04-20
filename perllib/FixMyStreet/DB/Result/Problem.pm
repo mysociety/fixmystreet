@@ -557,59 +557,48 @@ sub meta_line {
     my $date_time = Utils::prettify_dt( $problem->confirmed );
     my $meta = '';
 
-    # FIXME Should be in cobrand
-    if ($c->cobrand->moniker eq 'emptyhomes') {
-
-        my $category = _($problem->category);
-        utf8::decode($category);
-        $meta = sprintf(_('%s, reported at %s'), $category, $date_time);
-
-    } else {
-
-        if ( $problem->anonymous ) {
-            if (    $problem->service
-                and $problem->category && $problem->category ne _('Other') )
-            {
-                $meta =
-                sprintf( _('Reported via %s in the %s category anonymously at %s'),
-                    $problem->service, $problem->category, $date_time );
-            }
-            elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported via %s anonymously at %s'),
-                    $problem->service, $date_time );
-            }
-            elsif ( $problem->category and $problem->category ne _('Other') ) {
-                $meta = sprintf( _('Reported in the %s category anonymously at %s'),
-                    $problem->category, $date_time );
-            }
-            else {
-                $meta = sprintf( _('Reported anonymously at %s'), $date_time );
-            }
+    if ( $problem->anonymous ) {
+        if (    $problem->service
+            and $problem->category && $problem->category ne _('Other') )
+        {
+            $meta =
+            sprintf( _('Reported via %s in the %s category anonymously at %s'),
+                $problem->service, $problem->category, $date_time );
+        }
+        elsif ( $problem->service ) {
+            $meta = sprintf( _('Reported via %s anonymously at %s'),
+                $problem->service, $date_time );
+        }
+        elsif ( $problem->category and $problem->category ne _('Other') ) {
+            $meta = sprintf( _('Reported in the %s category anonymously at %s'),
+                $problem->category, $date_time );
         }
         else {
-            if (    $problem->service
-                and $problem->category && $problem->category ne _('Other') )
-            {
-                $meta = sprintf(
-                    _('Reported via %s in the %s category by %s at %s'),
-                    $problem->service, $problem->category,
-                    $problem->name,    $date_time
-                );
-            }
-            elsif ( $problem->service ) {
-                $meta = sprintf( _('Reported via %s by %s at %s'),
-                    $problem->service, $problem->name, $date_time );
-            }
-            elsif ( $problem->category and $problem->category ne _('Other') ) {
-                $meta = sprintf( _('Reported in the %s category by %s at %s'),
-                    $problem->category, $problem->name, $date_time );
-            }
-            else {
-                $meta =
-                sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
-            }
+            $meta = sprintf( _('Reported anonymously at %s'), $date_time );
         }
-
+    }
+    else {
+        if (    $problem->service
+            and $problem->category && $problem->category ne _('Other') )
+        {
+            $meta = sprintf(
+                _('Reported via %s in the %s category by %s at %s'),
+                $problem->service, $problem->category,
+                $problem->name,    $date_time
+            );
+        }
+        elsif ( $problem->service ) {
+            $meta = sprintf( _('Reported via %s by %s at %s'),
+                $problem->service, $problem->name, $date_time );
+        }
+        elsif ( $problem->category and $problem->category ne _('Other') ) {
+            $meta = sprintf( _('Reported in the %s category by %s at %s'),
+                $problem->category, $problem->name, $date_time );
+        }
+        else {
+            $meta =
+            sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
+        }
     }
 
     return $meta;
@@ -660,7 +649,7 @@ sub response_templates {
 }
 
 # returns true if the external id is the council's ref, i.e., useful to publish it
-# (by way of an example, the barnet send method returns a useful reference when
+# (by way of an example, the Oxfordshire send method returns a useful reference when
 # it succeeds, so that is the ref we should show on the problem report page).
 #     Future: this is installation-dependent so maybe should be using the contact
 #             data to determine if the external id is public on a council-by-council basis.

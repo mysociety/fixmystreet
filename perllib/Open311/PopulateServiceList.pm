@@ -18,7 +18,6 @@ sub process_bodies {
     while ( my $body = $self->bodies->next ) {
         next unless $body->endpoint;
         next unless lc($body->send_method) eq 'open311';
-        next if $body->jurisdiction =~ /^fixmybarangay_\w+$/; # FMB depts. not using service discovery yet
         $self->_current_body( $body );
         $self->process_body;
     }

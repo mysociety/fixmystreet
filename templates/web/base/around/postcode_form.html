@@ -6,9 +6,6 @@
             question = c.cobrand.enter_postcode_text || loc('Enter a nearby street name and area');
         %]
 
-        [% IF c.cobrand.moniker == 'fixmybarangay' %]
-            [% INCLUDE '_barangay_buttons.html' %]
-        [% ELSE %]
         <form action="[% c.uri_for('/around') %]" method="get" name="postcodeForm" id="postcodeForm">
             <label for="pc">[% question %]:</label>
             <div>
@@ -21,6 +18,5 @@
             [% END %]
 
         </form>
-        [% END %]
     </div>
 </div>

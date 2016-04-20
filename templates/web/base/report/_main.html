@@ -54,7 +54,7 @@
 
     <p class="report_meta_info">
         [% problem.meta_line(c) | html %]
-        [%- IF !problem.used_map AND c.cobrand.moniker != 'emptyhomes' %]; <strong>([% loc('there is no pin shown as the user did not use the map') %])</strong>[% END %]
+        [%- IF !problem.used_map %]; <strong>([% loc('there is no pin shown as the user did not use the map') %])</strong>[% END %]
     </p>
     [% IF problem.bodies_str %]
         [% INCLUDE 'report/_council_sent_info.html' %]

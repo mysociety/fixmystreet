@@ -93,7 +93,6 @@
     </div>
 [% END %]
 
-[% IF c.cobrand.moniker != 'emptyhomes' %]
 <div class="js-another-questionnaire">
     <p>[% loc('Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?') %]</p>
     <p class="radio-segmented-control">
@@ -103,7 +102,6 @@
         <label class="inline" for="another_no">[% loc('No') %]</label>
     </p>
 </div>
-[% END %]
 
 <p><input type="submit" name="submit" value="[% loc('Submit questionnaire') %]"></p>
 

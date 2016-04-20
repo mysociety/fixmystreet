@@ -30,7 +30,7 @@
     PROCESS "maps/${map.type}.html" around_page = 1;
 
     SET bodyclass = 'mappage';
-    SET rss = [ tprintf(loc('Recent local problems, %s', "%s is the site name"), site_name), rss_url ] IF c.cobrand.moniker != 'emptyhomes';
+    SET rss = [ tprintf(loc('Recent local problems, %s', "%s is the site name"), site_name), rss_url ];
     INCLUDE 'header.html',
         title  => loc('Viewing a location')
         robots => 'noindex,nofollow';
@@ -51,7 +51,6 @@
 
     [% map_html %]
 
-      [% IF c.cobrand.moniker != 'emptyhomes' %]
         <p id='sub_map_links'>
             [% map_sub_links %]
             [% IF c.req.params.no_pins %]
@@ -68,7 +67,6 @@
                 [% END %]
             [% END %]
         </p>
-      [% END %]
 
     </div>
 
@@ -82,13 +80,11 @@
             [% TRY %][% INCLUDE 'around/extra_text.html' %][% CATCH file %][% END %]
         [% END %]
 
-      [% IF c.cobrand.moniker != 'emptyhomes' %]
         [% INCLUDE 'around/_updates.html' %]
 
         <section class="full-width">
             [% INCLUDE "around/tabbed_lists.html" %]
         </section>
-      [% END %]
     </div>
 
     [% IF allow_creation %]

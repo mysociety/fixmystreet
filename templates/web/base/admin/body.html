@@ -124,7 +124,6 @@
 
   <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
 
-    [% IF c.cobrand.moniker != 'emptyhomes' %]
       <div class="admin-hint">
         <p>
           [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
@@ -137,7 +136,6 @@
       <p>
         <strong>[% loc('Category:') %] </strong><input type="text" name="category" size="30" value="[% contact.category | html %]">
       </p>
-    [% END %]
 
     <div class="admin-hint">
       <p>
