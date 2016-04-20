@@ -14,11 +14,11 @@ use mySociety::Locale;
 die "You need to run 'commonlib/bin/gettext-makemo --quiet FixMyStreet' "
   . "to generate the *.mo files needed."
   unless -e FixMyStreet->path_to(
-    'locale/cy_GB.UTF-8/LC_MESSAGES/FixMyStreet-EmptyHomes.mo');
+    'locale/nb_NO.UTF-8/LC_MESSAGES/FixMyStreet.mo');
 
 # Test the language negotiation works
 my $lang = mySociety::Locale::negotiate_language(
-    'en-gb,English,en_GB|cy,Cymraeg,cy_GB|es,Spanish,es_ES',
+    'en-gb,English,en_GB|es,Spanish,es_ES',
     undef,
     HTTP::Headers->new(
         Accept_Language => 'es,en-gb;q=0.6,en;q=0.4'
@@ -28,27 +28,26 @@ is $lang, 'es', 'Language negotiation works okay';
 
 # Example strings
 my $english = "Please enter a valid email";
-my $welsh   = "Cofnodwch gyfeiriad e-bost dilys";
+my $norwegian = "Legg til en gyldig e-post";
 
 # set english as the language
 mySociety::Locale::negotiate_language(    #
-    'en-gb,English,en_GB|cy,Cymraeg,cy_GB', 'en_GB'
+    'en-gb,English,en_GB|nb,Norwegian,nb_NO', 'en_GB'
 );
 
-mySociety::Locale::gettext_domain( 'FixMyStreet-EmptyHomes', 1 );
+mySociety::Locale::gettext_domain( 'FixMyStreet', 1 );
 mySociety::Locale::change();
 is _($english), $english, "english to english";
 
-# set to welsh and check for translation
-mySociety::Locale::change('cy');
-is _($english), $welsh, "english to welsh";
+mySociety::Locale::change('nb');
+is _($english), $norwegian, "english to norwegian";
 
 # check that being in a deep directory does not confuse the code
 chdir FixMyStreet->path_to('t/app/controller') . '';
-mySociety::Locale::gettext_domain( 'FixMyStreet-EmptyHomes', 1,
+mySociety::Locale::gettext_domain( 'FixMyStreet', 1,
     FixMyStreet->path_to('locale')->stringify );
-mySociety::Locale::change('cy');
-is _($english), $welsh, "english to welsh (deep directory)";
+mySociety::Locale::change('nb');
+is _($english), $norwegian, "english to norwegian (deep directory)";
 
 # test that sorting works as expected in the right circumstances...
 my @random_sorted  = qw( Å Z Ø A );
@@ -59,7 +58,7 @@ my @default_sorted = qw( A Z Å Ø );
 SKIP: {
 
     mySociety::Locale::negotiate_language(    #
-        'en-gb,English,en_GB|cy,Cymraeg,cy_GB', 'en_GB'
+        'en-gb,English,en_GB', 'en_GB'
     );
     mySociety::Locale::change();
 
@@ -82,7 +81,7 @@ SKIP: {
     skip 'Will not pass on Mac', 2 if $^O eq 'darwin';
 
     mySociety::Locale::negotiate_language(    #
-        'en-gb,English,en_GB|cy,Cymraeg,cy_GB', 'en_GB'
+        'en-gb,English,en_GB', 'en_GB'
     );
     mySociety::Locale::change();
     use locale;

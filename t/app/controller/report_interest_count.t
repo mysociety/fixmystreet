@@ -1,5 +1,16 @@
 use strict;
 use warnings;
+
+package FixMyStreet::Cobrand::Tester;
+
+use parent 'FixMyStreet::Cobrand::Default';
+
+sub can_support_problems {
+    return 1;
+}
+
+package main;
+
 use Test::More;
 
 use FixMyStreet::TestMech;
@@ -52,7 +63,7 @@ my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'fixmybarangay' ],
+    ALLOWED_COBRANDS => [ 'tester' ],
 }, sub {
     my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 
@@ -76,7 +87,6 @@ FixMyStreet::override_config {
         },
     ) {
         subtest $test->{desc} => sub {
-            ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
             $mech->log_in_ok( $user->email );
             $user->from_body( $test->{from_body} );
             $user->update;
@@ -92,7 +102,7 @@ FixMyStreet::override_config {
                 $mech->content_contains('Add support');
                 $mech->submit_form_ok( { form_number => 1 } );
 
-                is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';
+                is $mech->uri->path, "/report/$report_id", 'add support redirects to report page';
 
                 $mech->content_contains($test->{updated_support});
             } else {
@@ -102,26 +112,22 @@ FixMyStreet::override_config {
     }
 
     subtest 'check non body user cannot increment support count' => sub {
-        ok $mech->host('fixmybarangay.com'), 'changed to fixmybarangay';
-
         ok $report->update({ interest_count => 1 }), 'updated interest count';
         is $report->interest_count, 1, 'correct interest count';
 
         $mech->get_ok("/report/$report_id");
         $mech->content_contains( '1 supporter' );
 
-        # This doesn't send cookie, so is logged out
+        $mech->log_out_ok( $user->email );
         $mech->post_ok("/report/support", { id => $report_id } );
 
-        is $mech->uri, "http://fixmybarangay.com/report/$report_id", 'add support redirects to report page';
+        is $mech->uri->path, "/report/$report_id", 'add support redirects to report page';
 
         $mech->content_contains( '1 supporter' );
     };
 };
 
 subtest 'check support details not shown if not enabled in cobrand' => sub {
-    ok $mech->host('www.fixmystreet.com'), 'changed to fixmystreet';
-
     $report->interest_count(1);
     ok $report->update, 'updated interest count';
 
