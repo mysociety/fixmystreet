@@ -265,12 +265,14 @@ sub remove_images {
         --$dec;
     }
 
+    $self->delete_cached();
+
+    return undef if !@images;
+
     my $new_set = (ref $self)->new({
         data_items => \@images,
         object => $self->object,
     });
-
-    $self->delete_cached();
 
     return $new_set->data; # e.g. new comma-separated fileid
 }
