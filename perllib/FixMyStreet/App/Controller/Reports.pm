@@ -188,15 +188,6 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
     # We're checking an area here, but this function is currently doing that.
     return if $c->cobrand->reports_body_check( $c, $area );
 
-    # If we're passed an ID number (don't think this is used anywhere, it
-    # certainly shouldn't be), just look that up on mapit and redirect
-    if ($area =~ /^\d+$/) {
-        my $council = mySociety::MaPit::call('area', $area);
-        $c->detach( 'redirect_index') if $council->{error};
-        $c->stash->{body} = $council;
-        $c->detach( 'redirect_body' );
-    }
-
     # We must now have a string to check on mapit
     my $areas = mySociety::MaPit::call( 'areas', $area,
         type => $c->cobrand->area_types,
@@ -295,15 +286,6 @@ sub body_check : Private {
     # Check cobrand specific incantations - e.g. ONS codes for UK,
     # Oslo/ kommunes sharing a name in Norway
     return if $c->cobrand->reports_body_check( $c, $q_body );
-
-    # If we're passed an ID number (don't think this is used anywhere, it
-    # certainly shouldn't be), just look that up on MaPit and redirect
-    if ($q_body =~ /^\d+$/) {
-        my $area = mySociety::MaPit::call('area', $q_body);
-        $c->detach( 'redirect_index') if $area->{error};
-        $c->stash->{body} = $area;
-        $c->detach( 'redirect_body' );
-    }
 
     # We must now have a string to check
     my @bodies = $c->model('DB::Body')->search( { name => { -like => "$q_body%" } } )->all;

@@ -625,6 +625,7 @@ sub short_name {
     my ($area) = @_;
 
     my $name = $area->{name} || $area->name;
+    $name =~ tr{/}{_};
     $name = URI::Escape::uri_escape_utf8($name);
     $name =~ s/%20/+/g;
     return $name;

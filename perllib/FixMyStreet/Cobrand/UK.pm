@@ -109,7 +109,7 @@ sub short_name {
     $name =~ s/ (Borough|City|District|County) Council$//;
     $name =~ s/ Council$//;
     $name =~ s/ & / and /;
-    $name =~ s{/}{_}g;
+    $name =~ tr{/}{_};
     $name = URI::Escape::uri_escape_utf8($name);
     $name =~ s/%20/+/g;
     return $name;
