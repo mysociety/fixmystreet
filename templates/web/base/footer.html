@@ -1,33 +1,53 @@
-    </div><!-- #mysociety .container -->
+                    [% IF pagefooter %]
+                    <footer role="contentinfo">
+                        [% INCLUDE 'front/footer-marketing.html' %]
+                    </footer>
+                    [% END %]
+                </div><!-- .content role=main -->
+            </div><!-- .container -->
+            [% IF c.cobrand.moniker == 'fixmystreet' AND bodyclass != 'mappage' %]
+                [% INCLUDE 'footer-nav.html' %]
+            [% END %]
+        </div><!-- .table-cell -->
 
-    <div id="navigation" class="container" role="navigation">
-        <div class="spacer"></div>
-        <ul id="site-nav" class="nav">
-            <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END
-                %]>[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
-                %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
-                %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
-                %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
-            %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
-                %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>
-        </ul>
+        <div class="nav-wrapper">
+            <div class="nav-wrapper-2">
+                <div id="main-nav" role="navigation">
+                    <ul class="nav-menu nav-menu--mysoc">
+                        <li><a id="mysoc-logo" href="https://www.mysociety.org/">mySociety</a></li>
+                    </ul>
+[%
+    SET base = "";
+    SET base = c.cobrand.base_url IF admin;
+%]
+                    <ul class="nav-menu nav-menu--main">
+                        <li><[% IF c.req.uri.path == '/'
+                            %]span[% ELSE %]a href="[% base %]/"[% END %] class="report-a-problem-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/my'
+                            %]span[% ELSE %]a href="[% base %]/my"[% END
+                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/reports'
+                            %]span[% ELSE %]a href="[% base %]/reports"[% END
+                            %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/alert'
+                            %]span[% ELSE %]a href="[% base %]/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
+                            %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
+                        %]<li><[% IF c.req.uri.path == '/faq'
+                            %]span[% ELSE %]a href="[% base %]/faq"[% END
+                            %]>[% loc("Help") %]</[% c.req.uri.path == '/faq' ? 'span' : 'a' %]></li>[%
+                        %]<li class="nav-menu__item--privacy"><[% IF c.req.uri.path == '/privacy'
+                            %]span[% ELSE %]a href="[% base %]/privacy"[% END
+                            %]>[% loc("Privacy") %]</[% c.req.uri.path == '/privacy' ? 'span' : 'a' %]></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-    </div>
+<!-- [% INCLUDE 'debug_footer.html' %] -->
+    </div> <!-- .wrapper -->
 
-</div></div></div><!-- wrappers -->
-
-<div id="footer">
-
-    <p><a href="/contact">[% tprintf(loc("Contact %s", "%s is the site name"), site_name) | replace(' ', '&nbsp;') %]</a></p>
-      
-    [% INCLUDE 'front/footer-marketing.html' %]
-
-</div>
-
-[% INCLUDE 'debug_footer.html' %]
+    [% TRY %][% PROCESS 'footer_extra.html' %][% CATCH file %][% END %]
 
 </body>
 </html>

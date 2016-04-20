@@ -5,16 +5,27 @@
 
 [% INCLUDE 'errors.html' %]
 
+<p><a href="[% c.uri_for( '/rss', problem_id ) %]">
+        <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float:right">
+    </a>
+</p>
+
 <p>
 [% loc('Receive email when updates are left on this problem.') %]
 </p>
 
 <form action="/alert/subscribe" method="post">
-<label class="n" for="alert_rznvy">[% loc('Email:') %]</label>
-<input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30">
-<input type="hidden" name="id" value="[% problem_id | html %]">
-<input type="hidden" name="type" value="updates">
-<input type="submit" value="[% loc('Subscribe') %]">
+    <fieldset>
+        <label class="hidden n" for="alert_rznvy">[% loc('Your email') %]</label>
+
+        <div class="form-txt-submit-box">
+            <input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" placeholder="[% loc('Your email') %]">
+            <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
+        </div>
+
+        <input type="hidden" name="id" value="[% problem_id | html %]">
+        <input type="hidden" name="type" value="updates">
+    </fieldset>
 </form>
 
 

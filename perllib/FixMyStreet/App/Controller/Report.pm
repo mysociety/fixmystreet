@@ -230,7 +230,7 @@ to moderation, however we'd need to inform all the other
 users too about this change, at which point we can delete:
 
  - this method
- - the call to it in templates/web/fixmystreet/report/display.html
+ - the call to it in templates/web/base/report/display_tools.html
  - the users_can_hide cobrand method, in favour of user->has_permission_to
 
 =cut
