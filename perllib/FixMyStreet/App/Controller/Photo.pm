@@ -140,7 +140,7 @@ sub process_photo_upload_or_cache : Private {
             /^photo/ ? # photo, photo1, photo2 etc.
                 ($c->req->upload($_)) : ()
         } sort $c->req->upload),
-        split /,/, ($c->get_param('upload_fileid') || '')
+        grep { $_ } split /,/, ($c->get_param('upload_fileid') || '')
     );
 
     my $photoset = FixMyStreet::App::Model::PhotoSet->new({
