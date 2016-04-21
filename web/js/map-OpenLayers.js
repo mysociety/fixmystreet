@@ -1,7 +1,7 @@
 // This function might be passed either an OpenLayers.LonLat (so has
 // lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
 function fixmystreet_update_pin(lonlat) {
-    lonlat.transform(
+    lonlat = lonlat.clone().transform(
         fixmystreet.map.getProjectionObject(),
         new OpenLayers.Projection("EPSG:4326")
     );
@@ -57,7 +57,7 @@ function fixmystreet_update_pin(lonlat) {
 function fixmystreet_activate_drag() {
     fixmystreet.drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
         onComplete: function(feature, e) {
-            fixmystreet_update_pin( feature.geometry.clone() );
+            fixmystreet_update_pin( feature.geometry );
         }
     } );
     fixmystreet.map.addControl( fixmystreet.drag );
@@ -723,16 +723,25 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         // Store pin location in form fields, and check coverage of point
         fixmystreet_update_pin(lonlat);
 
-        // Already did this first time map was clicked, so no need to do it again.
+        // It's possible to invoke the OpenLayers.Control `trigger` callback
+        // multiple times in a row (eg: by clicking on the map multiple times,
+        // to reposition your report).
+        // But there is some stuff we only want to happen the first time you
+        // switch from the "around" view to the "new" report view.
+        // So, here we check whether we've already transitioned into the "new"
+        // report view, and if so, we return from the callback early,
+        // skipping the remainder of the setup stuff.
         if (fixmystreet.page == 'new') {
+            fixmystreet.map.panDuration = 100;
+            fixmystreet.map.panTo(lonlat);
+            fixmystreet.map.panDuration = 50;
             return;
         }
 
-        fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
         /* For some reason on IOS5 if you use the jQuery show method it
          * doesn't display the JS validation error messages unless you do this
          * or you cause a screen redraw by changing the phone orientation.
-         * NB: This has to happen after the call to show() */
+         * NB: This has to happen after the call to show() in fixmystreet_update_pin */
         if ( navigator.userAgent.match(/like Mac OS X/i)) {
             document.getElementById('side-form').style.display = 'block';
         }
@@ -741,30 +750,11 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
             heightFix('#report-a-problem-sidebar', '.content', 26);
         }
 
-        // If we clicked the map somewhere inconvenient
-        var sidebar = $('#report-a-problem-sidebar');
-        if (sidebar.css('position') == 'absolute') {
-            var w = sidebar.width(), h = sidebar.height(),
-                o = sidebar.offset(),
-                $map_boxx = $('#map_box'), bo = $map_boxx.offset();
-            // e.xy is relative to top left of map, which might not be top left of page
-            e.xy.x += bo.left;
-            e.xy.y += bo.top;
+        fixmystreet.map.updateSize(); // might have done, and otherwise Firefox gets confused.
 
-            // 24 and 64 is the width and height of the marker pin
-            if (e.xy.y <= o.top || (e.xy.x >= o.left && e.xy.x <= o.left + w + 24 && e.xy.y >= o.top && e.xy.y <= o.top + h + 64)) {
-                // top of the page, pin hidden by header;
-                // or underneath where the new sidebar will appear
-                lonlat.transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    fixmystreet.map.getProjectionObject()
-                );
-                var p = fixmystreet.map.getViewPortPxFromLonLat(lonlat);
-                p.x -= midpoint_box_excluding_column(o, w, bo, $map_boxx.width());
-                lonlat = fixmystreet.map.getLonLatFromViewPortPx(p);
-                fixmystreet.map.panTo(lonlat);
-            }
-        }
+        fixmystreet.map.panDuration = 100;
+        fixmystreet.map.panTo(lonlat);
+        fixmystreet.map.panDuration = 50;
 
         $('#sub_map_links').hide();
         if ($('html').hasClass('mobile')) {

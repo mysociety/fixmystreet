@@ -56,22 +56,18 @@ function tabs(elem, indirect) {
     }
 }
 
-/* Geographic functions for faking map centre, as it appears to be offset from
+/* Geographic function for faking map centre, as it appears to be offset from
    where it actually is */
 
-function midpoint_box_excluding_column(col_offset, col_width, box_offset, box_width) {
-    var r2l = isR2L(),
-        diff = r2l ? box_width : (box_offset.left - col_width),
-        q = (col_offset.left - diff) / 2;
+function fixmystreet_midpoint() {
+    var $content = $('.content'), mb = $('#map_box');
+        r2l = isR2L(),
+        diff = r2l ? mb.width() : (mb.offset().left - $content.width()),
+        q = ($content.offset().left - diff) / 2;
     if ((r2l && q > 0) || (!r2l && q < 0)) {
         return 0;
     }
     return q;
-}
-
-function fixmystreet_midpoint() {
-    var $content = $('.content'), mb = $('#map_box');
-    return midpoint_box_excluding_column($content.offset(), $content.width(), mb.offset(), mb.width());
 }
 
 
