@@ -130,6 +130,17 @@ sub load_problem_or_display_error : Private {
     }
 
     $c->stash->{problem} = $problem;
+    if ( $c->user_exists && $c->user->has_permission_to(moderate => $problem->bodies_str) ) {
+        $c->stash->{problem_original} = $problem->find_or_new_related(
+            moderation_original_data => {
+                title => $problem->title,
+                detail => $problem->detail,
+                photo => $problem->photo,
+                anonymous => $problem->anonymous,
+            }
+        );
+    }
+
     return 1;
 }
 

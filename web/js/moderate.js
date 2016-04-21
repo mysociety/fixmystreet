@@ -1,3 +1,11 @@
+function toggle_original ($input, revert) {
+    $input.prop('disabled', revert);
+    if (revert) {
+        $input.data('currentValue', $input.val());
+    }
+    $input.val($input.data(revert ? 'originalValue' : 'currentValue'));
+}
+
 function setup_moderation (elem, word) {
 
     elem.each( function () {
@@ -8,10 +16,11 @@ function setup_moderation (elem, word) {
         });
 
         $elem.find('.revert-title').change( function () {
-            $elem.find('input[name=problem_title]').prop('disabled', $(this).prop('checked'));
+            toggle_original($elem.find('input[name=problem_title]'), $(this).prop('checked'));
         });
+
         $elem.find('.revert-textarea').change( function () {
-            $elem.find('textarea').prop('disabled', $(this).prop('checked'));
+            toggle_original($elem.find('textarea'), $(this).prop('checked'));
         });
 
         var hide_document = $elem.find('.hide-document');

@@ -1048,6 +1048,18 @@ input.final-submit {
   }
 }
 
+.moderate-edit {
+  display: none; // gets shown by javascript
+
+  :disabled {
+    background: #ddd;
+  }
+
+  h1 input {
+    border-width: (0.125em/2); // compensate for 2em font-size on h1s
+  }
+}
+
 // map stuff
 #map_box{
   @extend .full-width;
