@@ -26,8 +26,6 @@
 
 [% map_html %]
 
-[% INCLUDE 'reports/_ward-list.html', location = 'before' %]
-
 </div>
 <div id="side">
 
@@ -51,7 +49,7 @@
 
 [% TRY %][% INCLUDE 'reports/cobrand_stats.html' %][% CATCH file %][% END %]
 
-[% INCLUDE 'reports/_ward-list.html', location = 'after' %]
+[% INCLUDE 'reports/_ward-list.html' %]
 
 [% IF c.cobrand.moniker == 'fixmystreet' %]
 <p class="promo">
