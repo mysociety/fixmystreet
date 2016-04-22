@@ -128,7 +128,7 @@ $(function(){
         $('#form_name').addClass('required').removeClass('valid');
     } );
 
-    $('#facebook_sign_in').click(function(e){
+    $('#facebook_sign_in, #twitter_sign_in').click(function(e){
         $('#form_email').removeClass();
         $('#form_rznvy').removeClass();
         $('#email').removeClass();

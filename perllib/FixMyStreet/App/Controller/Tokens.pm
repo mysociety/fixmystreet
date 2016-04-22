@@ -106,6 +106,7 @@ sub confirm_problem : Path('/P') {
         $problem->user->password( $data->{password}, 1 ) if $data->{password};
         $problem->user->title( $data->{title} ) if $data->{title};
         $problem->user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
+        $problem->user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
         $problem->user->update;
     }
     $c->authenticate( { email => $problem->user->email }, 'no_password' );
@@ -232,6 +233,7 @@ sub confirm_update : Path('/C') {
         $comment->user->name( $data->{name} ) if $data->{name};
         $comment->user->password( $data->{password}, 1 ) if $data->{password};
         $comment->user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
+        $comment->user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
         $comment->user->update;
     }
 
