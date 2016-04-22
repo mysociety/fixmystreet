@@ -176,7 +176,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
             }
             my ($fileid, $type) = split /\./, $part;
             $type ||= 'jpeg';
-            if (length($fileid) == 40) {
+            if ($fileid && length($fileid) == 40) {
                 my $file = $self->get_file($fileid, $type);
                 if ($file->exists) {
                     $file->basename;
@@ -185,7 +185,7 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                     ();
                 }
             } else {
-                warn sprintf "Received bad photo hash of length %d", length($fileid);
+                # A bad hash, probably a bot spamming with bad data.
                 ();
             }
         });
