@@ -147,7 +147,10 @@ my $tw_uid = 987654321;
 for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
     for my $page ( 'my', 'report', 'update' ) {
         subtest "test Twitter '$tw_state' login for page '$page'" => sub {
+            # Lots of user changes happening here, make sure we don't confuse
+            # Catalyst with a cookie session user that no longer exists
             $mech->log_out_ok;
+            $mech->cookie_jar({});
             if ($tw_state eq 'existing UID') {
                 my $user = $mech->create_user_ok($tw_email);
                 $user->update({ twitter_id => $tw_uid });
@@ -155,12 +158,12 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->delete_user($tw_email);
             }
 
-            # Set up a mock to catch (most, see below) requests to Facebook
+            # Set up a mock to catch (most, see below) requests to Twitter
             my $tw = t::Mock::Twitter->new;
             LWP::Protocol::PSGI->register($tw->to_psgi_app, host => 'api.twitter.com');
 
             # Due to https://metacpan.org/pod/Test::WWW::Mechanize::Catalyst#External-Redirects-and-allow_external
-            # the redirect to Facebook's OAuth page can mess up the session
+            # the redirect to Twitter's OAuth page can mess up the session
             # cookie. So let's pretend we always on api.twitter.com, which
             # sorts that out.
             $mech->host('api.twitter.com');
