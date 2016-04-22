@@ -221,7 +221,7 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('setup_categories_and_bodies');
     $c->forward('check_for_category');
 
-    my $category = $c->stash->{category};
+    my $category = $c->stash->{category} || "";
     my $category_extra = '';
     my $generate;
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
@@ -616,7 +616,16 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{unresponsive} = {};
 
     if (keys %bodies == 1 && $first_body->send_method && $first_body->send_method eq 'Refused') {
-        $c->stash->{unresponsive}{ALL} = $first_body->id;
+        # If there's only one body, and it's set to refused, we can show the
+        # message immediately, before they select a category.
+        if ($c->action->name eq 'category_extras_ajax' && $c->req->method eq 'POST') {
+            # The mobile app doesn't currently use this, in which case make
+            # sure the message is output, either below with a category, or when
+            # a blank category call is made.
+            $c->stash->{unresponsive}{""} = $first_body->id;
+        } else {
+            $c->stash->{unresponsive}{ALL} = $first_body->id;
+        }
     }
 
     # FIXME - implement in cobrand
