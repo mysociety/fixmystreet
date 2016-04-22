@@ -5,6 +5,7 @@ use namespace::autoclean;
 BEGIN { extends 'Catalyst::Controller'; }
 
 use mySociety::EmailUtil qw(is_valid_email);
+use FixMyStreet::Gaze;
 
 =head1 NAME
 
@@ -441,11 +442,7 @@ sub determine_location : Private {
         $c->go('index');
     }
 
-    my $dist =
-      mySociety::Gaze::get_radius_containing_population( $c->stash->{latitude},
-        $c->stash->{longitude}, 200000 );
-    $dist                          = int( $dist * 10 + 0.5 );
-    $dist                          = $dist / 10.0;
+    my $dist = FixMyStreet::Gaze::get_radius_containing_population($c->stash->{latitude}, $c->stash->{longitude});
     $c->stash->{population_radius} = $dist;
 
     return 1;

@@ -8,7 +8,7 @@ use XML::RSS;
 
 use FixMyStreet::App::Model::PhotoSet;
 
-use mySociety::Gaze;
+use FixMyStreet::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
 use mySociety::Sundries qw(ordinal);
@@ -143,10 +143,10 @@ sub local_problems_ll : Private {
         $c->stash->{qs} .= ";d=$d";
         $d = 100 if $d > 100;
     } else {
-        $d = mySociety::Gaze::get_radius_containing_population( $lat, $lon, 200000 );
-        $d = int( $d * 10 + 0.5 ) / 10;
-        mySociety::Locale::in_gb_locale {
-            $d = sprintf("%f", $d);
+        $d = FixMyStreet::Gaze::get_radius_containing_population($lat, $lon);
+        # Needs to be with a '.' for db passing
+        $d = mySociety::Locale::in_gb_locale {
+            sprintf("%f", $d);
         }
     }
 
