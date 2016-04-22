@@ -354,7 +354,7 @@ label{
     color: #666;
     padding-#{$left}: 20px;
     background: transparent url(/cobrands/fixmystreet/images/wrong-location.png) $left 50% no-repeat;
-    border-#{$left}: solid 4px #fff;
+    border-#{$left}: solid 4px transparent;
     margin-top: -0.5em;
 }
 
@@ -1391,7 +1391,7 @@ label .muted {
     padding-#{$left}: 16px;
     list-style: none;
     background: transparent url(/cobrands/fixmystreet/images/tick-10px-8px.png) $left 5px no-repeat;
-    border-#{$left}: solid 4px #fff;
+    border-#{$left}: solid 4px transparent;
   }
 
   .do {
@@ -1406,7 +1406,7 @@ label .muted {
       background-image: url(/cobrands/fixmystreet/images/cross-7px-7px.png);
       background-position: $left 6px;
       padding-#{$left}: 14px;
-      border-#{$left}: solid 6px #fff;
+      border-#{$left}: solid 6px transparent;
     }
   }
 }
