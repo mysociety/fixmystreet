@@ -394,30 +394,22 @@ for my $test (
 }
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'emptyhomes', 'fixmystreet' ],
+    ALLOWED_COBRANDS => [ 'fixmystreet' ],
 }, sub {
-    # EHA extra checking
-    ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
-
-    # Reset, and all the questionaire sending function - FIXME should it detect site itself somehow?
+    $report->discard_changes;
     $report->send_questionnaire( 1 );
     $report->update;
     $questionnaire->delete;
 
-    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
-        site => 'emptyhomes'
-    } );
+    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires();
     $email = $mech->get_email;
     ok $email, "got an email";
     $mech->clear_emails_ok;
 
     (my $body = $email->body) =~ s/\s+/ /g;
-    like $body, qr/fill in this short questionnaire/i, "got questionnaire email";
+    like $body, qr/fill in our short questionnaire/i, "got questionnaire email";
     ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
     ok $token, "extracted questionnaire token '$token'";
-
-    $mech->get_ok("/Q/" . $token);
-    $mech->content_lacks( 'Would you like to receive another questionnaire' );
 
     # Test already answered the ever reported question, so not shown again
     $dt = $dt->add( weeks => 4 );
@@ -429,16 +421,10 @@ FixMyStreet::override_config {
         }
     );
     ok $questionnaire2, 'added another questionnaire';
-    ok $mech->host("www.fixmystreet.com"), 'change host to fixmystreet';
     $mech->get_ok("/Q/" . $token);
     $mech->title_like( qr/Questionnaire/ );
     $mech->content_contains( 'Has this problem been fixed?' );
     $mech->content_lacks( 'ever reported' );
-
-    # EHA extra checking
-    ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
-    $mech->get_ok("/Q/" . $token);
-    $mech->content_lacks( 'Would you like to receive another questionnaire' );
 
     $token = FixMyStreet::App->model("DB::Token")->find( { scope => 'questionnaire', token => $token } );
     ok $token, 'found token for questionnaire';
@@ -452,11 +438,12 @@ FixMyStreet::override_config {
     ALLOWED_COBRANDS => [ 'fiksgatami' ],
 }, sub {
     # I18N Unicode extra testing using FiksGataMi
+    $report->discard_changes;
     $report->send_questionnaire( 1 );
     $report->cobrand( 'fiksgatami' );
     $report->update;
     $questionnaire->delete;
-    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( { site => 'fixmystreet' } ); # It's either fixmystreet or emptyhomes
+    FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires();
     $email = $mech->get_email;
     ok $email, "got an email";
     $mech->clear_emails_ok;

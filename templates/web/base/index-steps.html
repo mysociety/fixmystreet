@@ -1,26 +1,6 @@
 <h2>[% loc('How to report a problem') %]</h2>
 
 <ol class="big-numbers">
-[% IF c.cobrand.moniker == 'fixmybarangay' %]
-    <li>Text <span class="promo-big">FMB LUZ</span> or <span class="promo-big">FMB BSN</span> followed by your report to
-        <ul id="promo-list">
-            <li>
-                <span class="promo-bigger">391-FMB</span> (391362) SMART short code
-            </li>
-            <li>
-                <span class="promo-bigger">0908&nbsp;896&nbsp;8278</span> for all networks
-            </li>
-        </ul>
-        <div class="promo-example">
-            For example:<br/>
-            <div>
-            FMB   LUZ   Busted streetlamp, P. Cabantan St., Pole # 12345, near Sto. Antonio Chapel
-            </div>
-        </div>
-    </li>
-    <li>Or visit the Barangay Center in person</li>
-    <li>Staff? <a href="/auth">Sign in</a> and click on the map!
-[% ELSE %]
     <li>[% question %]</li>
     <li>[% loc('Locate the problem on a map of the area') %]</li>
     <li>[% loc('Enter details of the problem') %]</li>
@@ -30,13 +10,10 @@
     [% ELSE %]
         <li>[% loc('We send it to the council on your behalf') %]</li>
     [% END %]
-[% END %]
 </ol>
 
-[% IF c.cobrand.moniker != 'emptyhomes' %]
 <section class="full-width">
 [% INCLUDE "front/stats.html" %]
 [% TRY %][% INCLUDE "front/tips.html" %][% CATCH file %][% END %]
 </section>
-[% END %]
 

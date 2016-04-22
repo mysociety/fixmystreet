@@ -1,9 +1,0 @@
-Subject: New stockout report for Clinic - '<?=$values['title']?>'
-
-The following stockouts have been reported for this clinic:
-
-<?=$values['data']?>
-
-You cannot contact anyone by replying to this email.
-
-<?=$values['signature']?>

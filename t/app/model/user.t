@@ -46,7 +46,7 @@ END {
 
 sub create_update {
     my ($problem, %params) = @_;
-    my $dt = DateTime->now()->add(hours => 1);
+    my $dt = DateTime->now()->add(days => 1);
     return FixMyStreet::App->model('DB::Comment')->find_or_create({
         problem_id => $problem->id,
         user_id => $problem->user_id,

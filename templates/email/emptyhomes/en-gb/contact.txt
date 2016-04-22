@@ -1,5 +1,0 @@
-Subject: reportemptyhomes.com message: [% subject %]
-
-[% message %]
-
-[ Sent by contact.cgi on [% host %]. IP address [% ip %] ]

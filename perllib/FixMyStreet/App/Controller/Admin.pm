@@ -345,8 +345,6 @@ sub update_contacts : Private {
         $errors{email} = _('Please enter a valid email') unless is_valid_email($email) || $email eq 'REFUSED';
         $errors{note} = _('Please enter a message') unless $c->get_param('note');
 
-        $category = 'Empty property' if $c->cobrand->moniker eq 'emptyhomes';
-
         my $contact = $c->model('DB::Contact')->find_or_new(
             {
                 body_id => $c->stash->{body_id},
@@ -743,16 +741,6 @@ sub report_edit : Path('report_edit') : Args(1) {
 
         my $new_state = $c->get_param('state');
         my $old_state = $problem->state;
-        if (   $new_state eq 'confirmed'
-            && $problem->state eq 'unconfirmed'
-            && $c->cobrand->moniker eq 'emptyhomes' )
-        {
-            $c->stash->{status_message} =
-                '<p><em>'
-              . _('I am afraid you cannot confirm unconfirmed reports.')
-              . '</em></p>';
-            $done = 1;
-        }
 
         my $flagged = $c->get_param('flagged') ? 1 : 0;
         my $non_public = $c->get_param('non_public') ? 1 : 0;

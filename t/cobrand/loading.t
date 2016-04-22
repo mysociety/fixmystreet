@@ -44,8 +44,8 @@ FixMyStreet::override_config {
 }, sub {
     run_host_tests(
         'www.fixmystreet.com'    => 'FixMyStreet',
-        'reportemptyhomes.com'   => 'FixMyStreet',
-        'barnet.fixmystreet.com' => 'FixMyStreet',
+        'fiksgatami.example.org' => 'FixMyStreet',
+        'oxfordshire.fixmystreet.com' => 'FixMyStreet',
         'some.odd.site.com'      => 'FixMyStreet',
     );
 };
@@ -62,49 +62,49 @@ FixMyStreet::override_config {
 
 # Couple of cobrands, hostname checking and default fallback
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'emptyhomes', 'fixmystreet' ],
+    ALLOWED_COBRANDS => [ 'fiksgatami', 'fixmystreet' ],
 }, sub {
     run_host_tests(
         'www.fixmystreet.com'    => 'FixMyStreet',
-        'reportemptyhomes.com'   => 'EmptyHomes',
-        'barnet.fixmystreet.com' => 'FixMyStreet',    # not in the allowed_cobrands list
+        'fiksgatami.example.org' => 'FiksGataMi',
+        'oxfordshire.fixmystreet.com' => 'FixMyStreet',    # not in the allowed_cobrands list
         'some.odd.site.com'      => 'Default',
     );
 };
 
-# now enable barnet too and check that it works
+# now enable oxfordshire too and check that it works
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'emptyhomes', 'barnet', 'fixmystreet' ],
+    ALLOWED_COBRANDS => [ 'fiksgatami', 'oxfordshire', 'fixmystreet' ],
 }, sub {
     run_host_tests(
         'www.fixmystreet.com'  => 'FixMyStreet',
-        'reportemptyhomes.com' => 'EmptyHomes',
-        'barnet.fixmystreet.com' => 'Barnet',  # found now it is in allowed_cobrands
+        'fiksgatami.example.org' => 'FiksGataMi',
+        'oxfordshire.fixmystreet.com' => 'Oxfordshire',  # found now it is in allowed_cobrands
         'some.odd.site.com'      => 'Default',
     );
 };
 
 # And a check with some regex matching
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ { 'fixmystreet' => 'empty' }, 'barnet', { 'testing' => 'fixmystreet' } ],
+    ALLOWED_COBRANDS => [ { 'fixmystreet' => 'example' }, 'oxfordshire', { 'testing' => 'fixmystreet' } ],
 }, sub {
     run_host_tests(
         'www.fixmystreet.com'  => 'testing',
-        'reportemptyhomes.com' => 'FixMyStreet',
-        'barnet.fixmystreet.com' => 'Barnet',
+        'fiksgatami.example.org' => 'FixMyStreet',
+        'oxfordshire.fixmystreet.com' => 'Oxfordshire',
         'some.odd.site.com'      => 'Default',
     );
 };
 
 # check that the moniker works as expected both on class and object.
-is FixMyStreet::Cobrand::EmptyHomes->moniker, 'emptyhomes',
+is FixMyStreet::Cobrand::FiksGataMi->moniker, 'fiksgatami',
   'class->moniker works';
-is FixMyStreet::Cobrand::EmptyHomes->new->moniker, 'emptyhomes',
+is FixMyStreet::Cobrand::FiksGataMi->new->moniker, 'fiksgatami',
   'object->moniker works';
 
 # check is_default works
 ok FixMyStreet::Cobrand::Default->is_default,     '::Default is default';
-ok !FixMyStreet::Cobrand::EmptyHomes->is_default, '::Emptyhomes is not default';
+ok !FixMyStreet::Cobrand::FiksGataMi->is_default, '::FiksGataMi is not default';
 
 # all done
 done_testing();

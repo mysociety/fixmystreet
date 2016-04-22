@@ -196,17 +196,6 @@ $mech->get_ok('/reports');
 $stats = $mech->extract_report_stats;
 is $stats->{'Westminster City Council'}->[1], 5, 'non public reports included in stats';
 
-subtest "test emptyhomes all reports page" => sub {
-    FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'emptyhomes' ],
-    }, sub {
-        ok $mech->host("reportemptyhomes.com"), 'change host to reportemptyhomes';
-        $mech->get_ok('/reports');
-        # EHA lacks one column the others have
-        $mech->content_lacks('state unknown');
-    };
-};
-
 subtest "test fiksgatami all reports page" => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'fiksgatami' ],

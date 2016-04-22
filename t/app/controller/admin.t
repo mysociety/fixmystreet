@@ -104,9 +104,9 @@ subtest 'check summary counts' => sub {
     $mech->content_contains( "$q_count questionnaires sent" );
 
     FixMyStreet::override_config {
-        ALLOWED_COBRANDS => [ 'barnet' ],
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
     }, sub {
-        ok $mech->host('barnet.fixmystreet.com');
+        ok $mech->host('oxfordshire.fixmystreet.com');
 
         $mech->get_ok('/admin');
         $mech->title_like(qr/Summary/);
@@ -115,11 +115,11 @@ subtest 'check summary counts' => sub {
         my ($num_alerts) = $mech->content =~ /(\d+) confirmed alerts/;
         my ($num_qs) = $mech->content =~ /(\d+) questionnaires sent/;
 
-        $report->bodies_str(2489);
-        $report->cobrand('barnet');
+        $report->bodies_str(2237);
+        $report->cobrand('oxfordshire');
         $report->update;
 
-        $alert->cobrand('barnet');
+        $alert->cobrand('oxfordshire');
         $alert->update;
 
         $mech->get_ok('/admin');

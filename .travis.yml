@@ -27,8 +27,6 @@ before_install:
 install:
   - .travis/install
 before_script:
-  - ./bin/make_po FixMyStreet-EmptyHomes
-  - ./bin/emptyhomes/make_welsh_po
   - commonlib/bin/gettext-makemo FixMyStreet
 script: "bin/run-tests t"
 after_success:

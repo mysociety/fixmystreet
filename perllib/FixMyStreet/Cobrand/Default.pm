@@ -20,7 +20,7 @@ use mySociety::PostcodeUtil;
     $path = $cobrand->path_to_web_templates(  );
 
 Returns the path to the templates for this cobrand - by default
-"templates/web/$moniker" and "templates/web/fixmystreet"
+"templates/web/$moniker" (and then base in Web.pm).
 
 =cut
 
@@ -28,7 +28,6 @@ sub path_to_web_templates {
     my $self = shift;
     my $paths = [
         FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify,
     ];
     return $paths;
 }

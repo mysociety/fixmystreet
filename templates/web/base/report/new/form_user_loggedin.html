@@ -26,11 +26,9 @@
     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
     <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
 
-        [% IF c.cobrand.moniker != 'fixmybarangay' || c.user.from_body %]
-        <div class="general-notes">
-            <p>[% loc('We never show your email address or phone number.') %]</p>
-        </div>
-        [% END %]
+    <div class="general-notes">
+        <p>[% loc('We never show your email address or phone number.') %]</p>
+    </div>
 
     <div class="form-txt-submit-box">
         <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">

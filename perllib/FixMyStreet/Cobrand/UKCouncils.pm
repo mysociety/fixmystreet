@@ -18,7 +18,6 @@ sub path_to_web_templates {
     return [
         FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
         FixMyStreet->path_to( 'templates/web/fixmystreet-uk-councils' )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
     ];
 }
 

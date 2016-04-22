@@ -17,7 +17,6 @@ use_ok('FixMyStreet::App');
 
 my $fms_c = ctx_request('http://www.fixmystreet.com/');
 my $fgm_c = ctx_request('http://www.fiksgatami.no/');
-my $reh_en_c = ctx_request('http://reportemptyhomes.com/');
 
 is(
     $fms_c->uri_for('/bar/baz') . "",
@@ -43,30 +42,5 @@ is(
     'http://www.fiksgatami.no/foo?lat=1.23&zoom=3',
     'FiksGataMi url with lat not zoom'
 );
-
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'emptyhomes' ],
-}, sub {
-    like(
-        $reh_en_c->uri_for_email( '/foo' ),
-        qr{^http://en.},
-        'adds en to retain language'
-    );
-};
-
-# instantiate this here otherwise sets locale to cy and breaks test
-# above
-my $reh_cy_c;
-FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'emptyhomes' ],
-}, sub {
-    $reh_cy_c = ctx_request('http://cy.reportemptyhomes.com/');
-
-    like(
-        $reh_cy_c->uri_for_email( '/foo' ),
-        qr{^http://cy.},
-        'retains language'
-    );
-};
 
 done_testing();

@@ -1,3 +1,4 @@
+use utf8;
 use strict;
 use warnings;
 
@@ -21,19 +22,12 @@ ok !$mech->res->is_success(), "want a bad response";
 is $mech->res->code, 404, "got 404";
 
 FixMyStreet::override_config {
-    ALLOWED_COBRANDS => [ 'emptyhomes' ],
+    ALLOWED_COBRANDS => [ 'fiksgatami' ],
 }, sub {
-    # check that geting the page as EHA produces a different page
-    ok $mech->host("reportemptyhomes.co.uk"), 'change host to reportemptyhomes';
-    $mech->get_ok('/about');
-    $mech->content_like(qr{About us ::});
-    $mech->content_contains('html lang="en-gb"');
-
-    # check that geting the page as EHA in welsh produces a different page
-    ok $mech->host("cy.reportemptyhomes.co.uk"), 'host to cy.reportemptyhomes';
-    $mech->get_ok('/about');
-    $mech->content_like(qr{Amdanom ni ::});
-    $mech->content_contains('html lang="cy"');
+    ok $mech->host("www.fiksgatami.no"), 'host to fiksgatami';
+    $mech->get_ok('/faq');
+    $mech->content_like(qr{Ofte spurte spørsmål ::});
+    $mech->content_contains('html class="no-js" lang="nb"');
 };
 
 done_testing();

@@ -141,15 +141,9 @@ sub ward : Path : Args(2) {
         area      => $c->stash->{ward} ? $c->stash->{ward}->{id} : [ keys %{$c->stash->{body}->areas} ],
         any_zoom  => 1,
     );
-    if ( $c->cobrand->moniker eq 'emptyhomes' ) {
-        FixMyStreet::Map::display_map(
-            $c, %map_params, latitude => 0, longitude => 0,
-        );
-    } else {
-        FixMyStreet::Map::display_map(
-            $c, %map_params, pins => $pins,
-        );
-    }
+    FixMyStreet::Map::display_map(
+        $c, %map_params, pins => $pins,
+    );
 
     $c->cobrand->tweak_all_reports_map( $c );
 

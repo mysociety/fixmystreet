@@ -13,7 +13,6 @@ sub path_to_web_templates {
     my $self = shift;
     return [
         FixMyStreet->path_to( 't/cobrand/form_extras/templates' )->stringify,
-        FixMyStreet->path_to( 'templates/web/fixmystreet' )->stringify
     ];
 }
 

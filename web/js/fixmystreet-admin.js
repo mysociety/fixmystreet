@@ -9,7 +9,7 @@ $(function(){
         var show_open311 = false;
         if ($('#endpoint').val()) {
             show_open311 = true; // always show the form if there is an endpoint value
-        } else if (send_method && !send_method.match(/^(email|emptyhomes|noop|refused)$/i)) {
+        } else if (send_method && !send_method.match(/^(email|noop|refused)$/i)) {
             show_open311 = true;
         }
         if (show_open311) {

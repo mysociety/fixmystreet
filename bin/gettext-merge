@@ -14,11 +14,6 @@ do
     then
         cd $X/LC_MESSAGES
         echo $X
-        if [ -e EmptyHomes.po ]
-        then
-            msgmerge --no-wrap -o New.po EmptyHomes.po ../../FixMyStreet-EmptyHomes.po
-            mv New.po EmptyHomes.po
-        fi
         if [ -e FixMyStreet.po ]
         then
             msgmerge --no-wrap -o New.po FixMyStreet.po ../../FixMyStreet.po

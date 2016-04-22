@@ -81,14 +81,6 @@ while ( my @problem = $problems->next ) {
     }
 }
 
-if ( FixMyStreet->config('BASE_URL') =~ /emptyhomes/ ) {
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('emptyhomes')->new();
-    my $stats = $cobrand->old_site_stats;
-    foreach (keys %$stats) {
-        $open{$_}{unknown} += $stats->{$_};
-    }
-}
-
 my $body = encode_json( {
     fixed => \%fixed,
     open  => \%open,

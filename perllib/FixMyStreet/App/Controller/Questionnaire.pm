@@ -47,14 +47,6 @@ sub check_questionnaire : Private {
 
     $c->stash->{problem} = $problem;
     $c->stash->{answered_ever_reported} = $problem->user->answered_ever_reported;
-
-    # EHA needs to know how many to alter display, and whether to send another or not
-    if ($c->cobrand->moniker eq 'emptyhomes') {
-        $c->stash->{num_questionnaire} = $c->model('DB::Questionnaire')->count(
-            { problem_id => $problem->id }
-        );
-    }
-
 }
 
 =head2 submit
@@ -235,11 +227,6 @@ sub process_questionnaire : Private {
     map { $c->stash->{$_} = $c->get_param($_) || '' } qw(been_fixed reported another update);
 
     $c->stash->{update} = Utils::cleanup_text($c->stash->{update}, { allow_multiline => 1 });
-
-    # EHA questionnaires done for you
-    if ($c->cobrand->moniker eq 'emptyhomes') {
-        $c->stash->{another} = $c->stash->{num_questionnaire}==1 ? 'Yes' : 'No';
-    }
 
     my @errors;
     push @errors, _('Please state whether or not the problem has been fixed')

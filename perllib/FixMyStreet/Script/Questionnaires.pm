@@ -10,8 +10,6 @@ use FixMyStreet::Cobrand;
 sub send {
     my ( $params ) = @_;
     send_questionnaires_period( '4 weeks', $params );
-    send_questionnaires_period( '26 weeks', $params )
-        if $params->{site} eq 'emptyhomes';
 }
 
 sub send_questionnaires_period {
@@ -29,17 +27,11 @@ sub send_questionnaires_period {
         ],
         send_questionnaire => 1,
     };
-    # FIXME Do these a bit better...
-    if ($params->{site} eq 'emptyhomes' && $period eq '4 weeks') {
-        $q_params->{'(select max(whensent) from questionnaire where me.id=problem_id)'} = undef;
-    } elsif ($params->{site} eq 'emptyhomes' && $period eq '26 weeks') {
-        $q_params->{'(select max(whensent) from questionnaire where me.id=problem_id)'} = { '!=', undef };
-    } else {
-        $q_params->{'-or'} = [
-            '(select max(whensent) from questionnaire where me.id=problem_id)' => undef,
-            '(select max(whenanswered) from questionnaire where me.id=problem_id)' => { '<', \"current_timestamp - '$period'::interval" }
-        ];
-    }
+
+    $q_params->{'-or'} = [
+        '(select max(whensent) from questionnaire where me.id=problem_id)' => undef,
+        '(select max(whenanswered) from questionnaire where me.id=problem_id)' => { '<', \"current_timestamp - '$period'::interval" }
+    ];
 
     my $unsent = FixMyStreet::DB->resultset('Problem')->search( $q_params, {
         order_by => { -desc => 'confirmed' }
@@ -60,13 +52,7 @@ sub send_questionnaires_period {
         # call checks if this is the host that sends mail for this cobrand.
         next unless $cobrand->email_host;
 
-        my $template;
-        if ($params->{site} eq 'emptyhomes') {
-            ($template = $period) =~ s/ //;
-            $template = Utils::read_file( FixMyStreet->path_to( "templates/email/emptyhomes/" . $row->lang . "/questionnaire-$template.txt" )->stringify );
-        } else {
-            $template = FixMyStreet->get_email_template($cobrand->moniker, $row->lang, 'questionnaire.txt');
-        }
+        my $template = FixMyStreet->get_email_template($cobrand->moniker, $row->lang, 'questionnaire.txt');
 
         my %h = map { $_ => $row->$_ } qw/name title detail category/;
         $h{created} = Utils::prettify_duration( time() - $row->confirmed->epoch, 'week' );
@@ -76,10 +62,8 @@ sub send_questionnaires_period {
             whensent => \'current_timestamp',
         } );
 
-        # We won't send another questionnaire unless they ask for it (or it was
-        # the first EHA questionnaire.
-        $row->send_questionnaire( 0 )
-            if $params->{site} ne 'emptyhomes' || $period eq '26 weeks';
+        # We won't send another questionnaire unless they ask for it
+        $row->send_questionnaire( 0 );
 
         my $token = FixMyStreet::DB->resultset("Token")->new_result( {
             scope => 'questionnaire',
