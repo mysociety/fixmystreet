@@ -38,7 +38,7 @@ UPDATED_DATETIME
 };
 
 
-my $dt = DateTime->now;
+my $dt = DateTime->now(formatter => DateTime::Format::W3CDTF->new);
 
 # basic xml -> perl object tests
 for my $test (
@@ -571,7 +571,8 @@ subtest 'check that existing comments are not duplicated' => sub {
     is $problem->comments->count, 1, 'one comment before fetching updates';
 
     $requests_xml =~ s/UPDATED_DATETIME2/$dt/;
-    $requests_xml =~ s/UPDATED_DATETIME/@{[ $comment->confirmed ]}/;
+    my $confirmed = DateTime::Format::W3CDTF->format_datetime($comment->confirmed);
+    $requests_xml =~ s/UPDATED_DATETIME/$confirmed/;
 
     my $o = Open311->new( jurisdiction => 'mysociety', endpoint => 'http://example.com', test_mode => 1, test_get_returns => { 'servicerequestupdates.xml' => $requests_xml } );
 
@@ -596,12 +597,12 @@ subtest 'check that existing comments are not duplicated' => sub {
 
 foreach my $test ( {
         desc => 'check that closed and then open comment results in correct state',
-        dt1  => $dt->subtract( hours => 1 ),
+        dt1  => $dt->clone->subtract( hours => 1 ),
         dt2  => $dt,
     },
     {
         desc => 'check that old comments do not change problem status',
-        dt1  => $dt->subtract( hours => 2 ),
+        dt1  => $dt->clone->subtract( minutes => 90 ),
         dt2  => $dt,
     }
 ) {
@@ -627,7 +628,7 @@ foreach my $test ( {
 
         $problem->comments->delete;
         $problem->state( 'confirmed' );
-        $problem->lastupdate( $dt->subtract( hours => 3 ) );
+        $problem->lastupdate( $dt->clone->subtract( hours => 3 ) );
         $problem->update;
 
         $requests_xml =~ s/UPDATED_DATETIME/$test->{dt1}/;
@@ -683,7 +684,7 @@ foreach my $test ( {
 
         $problem->comments->delete;
         $problem->state( 'confirmed' );
-        $problem->lastupdate( $dt->subtract( hours => 3 ) );
+        $problem->lastupdate( $dt->clone->subtract( hours => 3 ) );
         $problem->update;
 
         my @alerts = map {
