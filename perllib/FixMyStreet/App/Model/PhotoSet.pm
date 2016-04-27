@@ -8,6 +8,8 @@ use if !$ENV{TRAVIS}, 'Image::Magick';
 use Scalar::Util 'openhandle', 'blessed';
 use Digest::SHA qw(sha1_hex);
 use Image::Size;
+use IPC::Cmd qw(can_run);
+use IPC::Open3;
 use MIME::Base64;
 
 has c => (
@@ -144,7 +146,12 @@ has ids => ( #  Arrayref of $fileid tuples (always, so post upload/raw data proc
                 my $photo_blob = eval {
                     my $filename = $upload->tempname;
                     my $out;
-                    $out = `jhead -se -autorot $filename 2>&1` if $type eq 'jpeg';
+                    if ($type eq 'jpeg' && can_run('jhead')) {
+                        my $pid = open3(undef, my $stdout, undef, 'jhead', '-se', '-autorot', $filename);
+                        $out = join('', <$stdout>);
+                        waitpid($pid, 0);
+                        close $stdout;
+                    }
                     unless (defined $out) {
                         my ($w, $h, $err) = Image::Size::imgsize($filename);
                         die _("Please upload an image only") . "\n" if !defined $w || $err !~ /JPG|GIF|PNG|TIF/;
