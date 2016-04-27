@@ -5,6 +5,7 @@
        END; %]
     <label for='form_category' id="form_category_label">
         [%- loc('Category') %]
+    </label>
     <select name='category' id='form_category'>
         [% FOREACH cat_op IN category_options %]
         [% cat_op_lc = cat_op | lower %]
