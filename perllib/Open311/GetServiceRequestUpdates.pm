@@ -89,6 +89,13 @@ sub update_comments {
         # what problem it belongs to so just skip
         next unless $request_id;
 
+        my $comment_time = eval {
+            DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} || "" );
+        };
+        next if $@;
+        my $updated = DateTime::Format::W3CDTF->format_datetime($comment_time->clone->set_time_zone('UTC'));
+        next if @args && ($updated lt $args[0] || $updated gt $args[1]);
+
         my $problem;
         my $criteria = {
             external_id => $request_id,
@@ -99,8 +106,6 @@ sub update_comments {
             my $c = $p->comments->search( { external_id => $request->{update_id} } );
 
             if ( !$c->first ) {
-                my $comment_time = DateTime::Format::W3CDTF->parse_datetime( $request->{updated_datetime} );
-
                 my $comment = $self->schema->resultset('Comment')->new(
                     {
                         problem => $p,
