@@ -40,6 +40,11 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.7.1 (3rd May 2016)
+    - Security:
+        - Fix vulnerability in image upload that allowed external
+          command execution.
+
 * v1.7 (23rd October 2015)
     - Front end improvements:
         - Add right-to-left design option. #1209
