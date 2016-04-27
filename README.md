@@ -38,6 +38,11 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.6.2 (3rd May 2016)
+    - Security:
+        - Fix vulnerability in image upload that allowed external
+          command execution.
+
 * v1.6.1 (31st July 2015)
     - Bugfixes:
         - Fix bug introduced in last release when setting multiple areas
