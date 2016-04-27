@@ -8,6 +8,8 @@ use if !$ENV{TRAVIS}, 'Image::Magick';
 use Scalar::Util 'openhandle', 'blessed';
 use Digest::SHA qw(sha1_hex);
 use Image::Size;
+use IPC::Cmd qw(can_run);
+use IPC::Open3;
 use MIME::Base64;
 
 has c => (
@@ -143,7 +145,13 @@ has images => ( #  AoA of [$fileid, $binary_data] tuples
                 # get the photo into a variable
                 my $photo_blob = eval {
                     my $filename = $upload->tempname;
-                    my $out = `jhead -se -autorot $filename 2>&1`;
+                    my $out;
+                    if (can_run('jhead')) {
+                        my $pid = open3(undef, my $stdout, undef, 'jhead', '-se', '-autorot', $filename);
+                        $out = join('', <$stdout>);
+                        waitpid($pid, 0);
+                        close $stdout;
+                    }
                     unless (defined $out) {
                         my ($w, $h, $err) = Image::Size::imgsize($filename);
                         die _("Please upload a JPEG image only") . "\n" if !defined $w || $err ne 'JPG';
