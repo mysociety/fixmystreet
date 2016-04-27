@@ -144,10 +144,6 @@ sub send {
             $self->success( 1 );
         } else {
             $result *= 1;
-            # temporary fix to resolve some issues with west berks
-            if ( $row->bodies_str =~ /2619/ ) {
-                $result *= 0;
-            }
         }
     }
 
