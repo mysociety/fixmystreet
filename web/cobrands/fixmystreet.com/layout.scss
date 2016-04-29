@@ -207,41 +207,6 @@ body.twothirdswidthpage {
     }
 }
 
-#footer-nav {
-    display: block;
-    border: 0px;
-    border-top: 0.25em solid #ffd000;
-    border-image: url(images/tile-y.jpg) 30 0 repeat;
-
-    .tablewrapper {
-      max-width: 60em;
-      margin: 0 auto;
-      background: $base_bg;
-      ul {
-        @include list-reset-soft;
-        float: $left;
-        li {
-          display: inline;
-          float: $left;
-          a, span {
-            display: block;
-            color: $nav_fg;
-            background: none;
-            border-bottom: none;
-            padding: 0.75em;
-            font-size: 0.9em;
-          }
-        }
-      }
-      #footer-main-nav {
-        display: block;
-      }
-      #footer-help-nav {
-        float: $right;
-      }
-    }
-}
-
 .next-steps {
   @include clearfix;
   margin-bottom: 2em; // add some space between this and the footer
@@ -322,6 +287,33 @@ body.unresponsive-council {
         background-image: url(images/unresponsive-council-cta-arrow@2.png);
         background-size: 60px;
     }
+}
+
+// FMS.com has a slightly different version of the
+// footer-help / footer-marketing widgets that appear
+// at the bottom of pages with `pagefooter` set.
+#footer-help {
+  border: none;
+
+  ul {
+    margin: 0 auto;
+
+    li {
+      max-width: 19em;
+
+      &:last-child {
+        border: none;
+        padding-left: 3em;
+      }
+    }
+  }
+}
+
+.mysoc-footer {
+  margin-top: 3em;
+}
+body.mappage .mysoc-footer {
+    display: none;
 }
 
 .variant1 {
@@ -422,19 +414,18 @@ body.unresponsive-council {
         color: #222;
         background: #fad52a;
     }
-    body.fullwidthpage .container .content footer .tablewrapper,
-    #footer-nav .tablewrapper {
+    body.fullwidthpage .container .content footer .tablewrapper {
         color: #222;
         background: transparent;
     }
 
-    #footer-nav .tablewrapper ul li a,
-    #footer-nav .tablewrapper ul li span {
-        color: #222;
-    }
-
     .nav-menu--mysoc {
         background: #fff;
+    }
+
+    #footer-help a {
+        color: inherit;
+        text-decoration: underline;
     }
 
     #mysoc-logo {
