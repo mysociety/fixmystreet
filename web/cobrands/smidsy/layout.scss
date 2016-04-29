@@ -66,86 +66,8 @@ body {
   margin-right: 15px; // to match nav items
 }
 
-.footer {
-  display: block;
-  color: #fff;
-  margin: 45px 15px;
-  overflow: auto;
-
-  body.mappage & {
+body.mappage .mysoc-footer {
     display: none;
-  }
-
-  h2 {
-    margin: 0 0 10px 0;
-  }
-
-  ul {
-    margin: 0;
-    overflow: auto;
-
-    li {
-      list-style: none;
-      float: left;
-      margin: 0;
-
-      & + li {
-        margin-left: 15px;
-      }
-    }
-
-    a {
-      color: inherit;
-
-      &:hover {
-        color: inherit;
-      }
-
-      &.secondary {
-        color: mix(#fff, $color-neutral-slategrey, 50%);
-      }
-    }
-  }
-
-  .creators {
-    float: right;
-    position: relative; // so we can absolutely position the links
-    background: transparent url("/cobrands/smidsy/images/creators.gif") 0 35px no-repeat;
-    width: 277px;
-    padding: 5px 0 40px 0;
-
-    p {
-      margin: 0;
-      color: mix(#fff, $color-neutral-slategrey, 50%);
-    }
-
-    a {
-      position: absolute;
-      display: block;
-      text-indent: -9999px;
-    }
-
-    .mysociety {
-      top: 38px;
-      left: 0;
-      width: 110px;
-      height: 25px;
-    }
-
-    .itp {
-      top: 32px;
-      left: 124px;
-      width: 46px;
-      height: 37px;
-    }
-
-    .bespoke {
-      top: 38px;
-      left: 184px;
-      width: 93px;
-      height: 27px;
-    }
-  }
 }
 
 body.mappage {
