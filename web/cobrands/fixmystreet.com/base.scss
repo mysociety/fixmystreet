@@ -9,10 +9,6 @@
 @import "compass";
 @import "../sass/base";
 
-#footer-nav {
-    display: none;
-}
-
 .top_banner {
     color: $primary_text;
     background: $primary;
@@ -238,4 +234,108 @@
     #front-main + .container {
         background: transparent;
     }
+}
+
+// Avoid double border between mobile nav and footer
+.nav-menu--main > :last-child a {
+  border-bottom: none;
+}
+
+
+$mysoc-footer-background-color: #222;
+$mysoc-footer-text-color: #acacac;
+$mysoc-footer-site-name-text-color: #fff;
+
+$mysoc-footer-link-text-color: #fff;
+$mysoc-footer-link-hover-text-color: #fff;
+
+$mysoc-footer-border-top: 0.25em solid $primary;
+
+$mysoc-footer-divider-color: #4b4b4b;
+
+$mysoc-footer-donate-background-color: #333;
+$mysoc-footer-donate-text-color: #fff;
+$mysoc-footer-donate-button-background-color: $primary;
+$mysoc-footer-donate-button-text-color: #000;
+
+$mysoc-footer-legal-text-color: #9a9a9a;
+
+$mysoc-footer-image-path: '/cobrands/fixmystreet.com/images/mysoc-footer/';
+$mysoc-footer-breakpoint-sm: 48em;
+
+$grid-max-width: 60em;
+$grid-gutter: 2em;
+$grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
+
+@import "mysoc_footer";
+
+.mysoc-footer {
+  li {
+    list-style: none;
+  }
+
+  .container {
+    margin: 0 auto;
+  }
+
+  .container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: $grid-gutter / 2;
+    padding-right: $grid-gutter / 2;
+    max-width: $grid-max-width;
+  }
+
+  .row {
+    @include clearfix();
+    margin-left: $grid-gutter / -2;
+    margin-right: $grid-gutter / -2;
+  }
+
+  %col {
+    padding-left: $grid-gutter / 2;
+    padding-right: $grid-gutter / 2;
+  }
+
+  @for $i from 1 through 12 {
+    .col-sm-#{$i} {
+      @extend %col;
+    }
+  }
+
+  @media(min-width: $grid-breakpoint-sm) {
+    %col-float {
+      float: left;
+    }
+
+    @for $i from 1 through 12 {
+      .col-sm-#{$i} {
+        @extend %col-float;
+        width: 100% / 12 * $i;
+      }
+    }
+  }
+}
+
+.mysoc-footer__org__logo--fms-platform {
+  width: 205px;
+  background: transparent url('#{$mysoc-footer-image-path}logo-fms-platform.png') 0 0 no-repeat;
+  background-size: 205px 32px;
+  @media ($high-dpi-screen) {
+    background-image: url('#{$mysoc-footer-image-path}logo-fms-platform@2x.png');
+  }
+  background-image: url('#{$mysoc-footer-image-path}logo-fms-platform.svg'), none;
+}
+
+.fms-app-badges {
+  margin: 1em 0;
+
+  a {
+    text-decoration: none;
+  }
+
+  img {
+    border: none;
+    margin-right: 0.5em;
+  }
 }
