@@ -52,7 +52,6 @@ sub send {
         $return = 0 if $result eq 'Report received';
     } catch {
         my $e = $_;
-        print "Caught an error: $e\n";
         $self->error( "Error sending to East Hants: $e" );
     };
     $self->success( !$return );

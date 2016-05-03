@@ -160,7 +160,6 @@ sub send {
         }
     } catch {
         my $e = $_;
-        print "Caught an error: $e\n";
         $self->error( "Error sending to Angus: $e" );
     };
     $self->success( !$return );

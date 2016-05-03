@@ -144,14 +144,11 @@ sub send {
             $self->success( 1 );
         } else {
             $result *= 1;
-            # temporary fix to resolve some issues with west berks
-            if ( $row->bodies_str =~ /2619/ ) {
-                $result *= 0;
-            }
+            $self->error( "Failed to send over Open311\n" ) unless $self->error;
+            $self->error( $self->error . "\n" . $open311->error );
         }
     }
 
-    $self->error( 'Failed to send over Open311' ) unless $self->success;
 
     return $result;
 }
