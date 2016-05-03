@@ -40,6 +40,37 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.8.2 (3rd May 2016)
+    - Security:
+        - Fix vulnerability in image upload that allowed external
+          command execution.
+    - New features
+        - Twitter social login. #1377
+        - PNG image upload support. #1302 #1361
+    - Front end improvements:
+        - Switch list item heading from h4 to h3. #1348
+        - Preserve category when clicking elsewhere on map.
+        - Optimize store logo PNGs.
+    - Admin improvements
+        - Default new category creation to confirmed. #1266
+        - Use better link to reports on admin body page.
+    - Bugfixes:
+        - Show right body user form value for fixed reports. #1369
+        - Cope with a '/' in body name slug. #574
+        - Ignore empty entries in the image upload IDs.
+        - Use transparent border in tips/change_location. #1380
+    - Development improvements:
+        - Allow cobrands to control front page number colours.
+        - Refactor email handling to use Email::MIME alone. #1366
+        - Improve testing on Mac OS X.
+        - Prevent dev sites auto-creating session.
+        - Display used send method in debug line.
+        - Remove unused cobrands. #1383
+        - Finally combine remaining base/fixmystreet templates.
+        - Don't warn on bad photo hashes.
+        - Skip fetched updates if they're out of date range. #1390
+        - Store Open311 error in report on failure. #1391
+
 * v1.8.1 (23rd March 2016)
     - Front end improvements:
           - Remember user's last anonymous state. #150
