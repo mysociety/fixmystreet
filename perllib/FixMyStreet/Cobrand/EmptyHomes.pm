@@ -83,7 +83,7 @@ sub short_name {
 
 sub change_category_text {
     my ($self, $category) = @_;
-    my $category = _($category);
+    $category = _($category);
     utf8::decode($category);
     return $category;
 }
