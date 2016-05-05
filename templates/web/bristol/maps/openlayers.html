@@ -1,0 +1,49 @@
+[% IF map.clickable %]
+    [% map.img_type = 'input type="image"' %]
+[% ELSE %]
+    [% map.img_type = 'img' %]
+[% END %]
+
+<input type="hidden" name="zoom" value="[% map.zoom %]">
+<script type="text/javascript">
+var fixmystreet = {
+    'page': '[% page %]',
+    'area': [ [% map.area.join(',') %] ],
+    'all_pins': '[% all_pins %]',
+    'latitude': [% map.latitude %],
+    'longitude': [% map.longitude %],
+[% IF map.any_zoom -%]
+    'zoomToBounds': 1,
+[%- END %]
+[% IF map.zoom -%]
+    'zoom': [% map.zoom %],
+[%- END %]
+    'pin_prefix': '[% c.cobrand.path_to_pin_icons %]',
+    'numZoomLevels': [% map.numZoomLevels %],
+    'zoomOffset': [% map.zoomOffset %],
+    'map_type': [% map.map_type %],
+    'pins': [% INCLUDE maps/pins_js.html %],
+
+    'wmts_config': {
+        'map_projection': '[% map.map_projection %]',
+        'tile_dpi': [% map.tile_dpi %],
+        'tile_url': '[% map.tile_url %]',
+        'tile_suffix': '[% map.tile_suffix %]',
+        'layer_name': '[% map.layer_name %]',
+        'layer_style': '[% map.layer_style %]',
+        'matrix_set': '[% map.matrix_set %]',
+        'scales': [% map.scales %],
+        'origin_x': [% map.origin_x %],
+        'origin_y': [% map.origin_y %]
+    }
+}
+</script>
+<div id="map_box" aria-hidden="true">
+    [% pre_map %]
+    <div id="map">
+      [% INCLUDE 'maps/noscript_map.html' %]
+    </div>
+    [% IF map.copyright %]
+    <div class="olControlAttribution" style="position: absolute;">[% map.copyright %]</div>
+    [% END %]
+

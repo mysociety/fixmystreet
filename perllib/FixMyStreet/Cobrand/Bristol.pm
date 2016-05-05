@@ -19,6 +19,10 @@ sub example_places {
     return ( 'BS1 5TR', "Broad Quay" );
 }
 
+sub map_type {
+    'Bristol';
+}
+
 sub disambiguate_location {
     my $self    = shift;
     my $string  = shift;
