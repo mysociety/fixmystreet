@@ -1135,9 +1135,21 @@ sub user_edit : Path('user_edit') : Args(1) {
             return;
         }
 
-        $user->update;
-        if ($edited) {
-            $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
+        my $existing_user = $c->model('DB::User')->search({ email => $user->email, id => { '!=', $user->id } })->first;
+        if ($existing_user) {
+            foreach (qw(Problem Comment Alert)) {
+                $c->model("DB::$_")
+                    ->search({ user_id => $user->id })
+                    ->update({ user_id => $existing_user->id });
+            }
+            $user->delete;
+            $c->forward( 'log_edit', [ $id, 'user', 'merge' ] );
+            $c->res->redirect( $c->uri_for( 'user_edit', $existing_user->id ) );
+        } else {
+            $user->update;
+            if ($edited) {
+                $c->forward( 'log_edit', [ $id, 'user', 'edit' ] );
+            }
         }
 
         $c->stash->{status_message} =
