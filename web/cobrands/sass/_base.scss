@@ -1819,7 +1819,11 @@ table.nicetable {
     margin: 3em;
   }
 
-  #main-nav,
+  // Firefox leaves a big blanking gap if the content is floated...
+  .content { float: none !important; }
+
+  .shadow-wrap,
+  .nav-wrapper,
   #nav-link,
   .admin-nav,
   .olControlAttribution,
