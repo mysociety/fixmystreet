@@ -1,50 +1,63 @@
 @import "colours";
 @import "../sass/layout";
 
-// d523b431 - "Stevenage Home page styles"
-// 2a23e09f - Moved menu on map page and reverted to full header.
-
 // d523b431
 .nav-wrapper{
   .nav-wrapper-2{
+    position: static;
     min-height: 0;
     // e7c122a4 / 0b0a619b / - "Removed mySociety menu and positioned menu"
-    top: 9.5em;
     border-top: none;
-    padding-top: 0.75em;
+    padding-top: 0.5em;
     padding-bottom: 0.25em;
     background-color: #6b6969;
     @include background(linear-gradient(#6b6969, #555454));
+
+    .iel8 & {
+      background-color: #6b6969;
+    }
   }
 }
 
+// We use absolute positioning for the header on IE7,
+// because IE7 doesn't support the table-caption styles.
+// This means, we need to make sure page content doesn't
+// disappear behind the header.
 .ie6, .ie7 {
-    // 452ce6a0 - Added IE6/7 position change to front page header too
-    #stevenage_cc_header {
-        position:absolute;
-        top:0;
-    }
-    // 39ec0005 - Removed position static from nav in IE6/7
-    .nav-wrapper {
-        .nav-wrapper-2 {
-            position: absolute;
-        }
+    .content {
+        margin-top: 10em;
     }
 
-    .content {
-        margin-top: 7em;
+    .frontpage {
+        #front-main {
+            margin-top: 15em;
+        }
+
+        .content {
+            margin-top: 0;
+        }
     }
 }
 
-// d523b431
+#main-nav {
+    @include clearfix();
+    width: auto;
+    max-width: 984px; // match the Stevenage header width
+    float: none;
+    padding-left: 0;
+}
+
+
 .nav-menu {
     float: none;
 }
+
 .nav-menu a, .nav-menu span {
     margin: 0;
     margin-right: 2px;
     font-family: 'PTSansRegular', "PT Sans", Verdana, Arial, sans-serif;
 }
+
 .nav-menu--main {
     a, span {
         padding: 0.5em 0.75em;
@@ -61,81 +74,6 @@
     span {
         color: #fff;
         background-color: #066539;
-    }
-}
-
-// 452ce6a0 - "Added IE6/7 position change to front page header too" -
-// turned off border for ie6-8 .content - why, as box-shadow still on?
-.iel8 {
-    .content {
-        border: none;
-    }
-}
-
-body.mappage {
-    // 15591af7 - Stevenage Map page changes
-    #stevenage_cc_header {
-        position: fixed;
-    }
-    // 2a23e09f - Moved menu on map page and reverted to full header.
-    .content {
-        margin-top: 9em;
-    }
-    // 15591af7 - Stevenage Map page changes
-    .nav-menu--main a, .nav-menu--main span {
-        padding: 0.5em 0.75em;
-    }
-    .nav-menu--main a.report-a-problem-btn {
-        padding: 0.5em 0.75em;
-        margin: 0 0 0 0.25em;
-    }
-    // 2a23e09f - Moved menu on map page and reverted to full header.
-    .nav-wrapper {
-        .nav-wrapper-2 {
-            position: absolute;
-            top: 11em;
-            bottom: auto;
-            left: 0;
-            width: 29em;
-            padding-top: 0.15em;
-            z-index: 0;
-            @include background(linear-gradient(#6b6969, #555454));
-        }
-    }
-}
-
-.ie6, .ie7 {
-    // 82d34958 - IE6/7 Positioning Tweaks on Council header
-    body.mappage {
-        // a7a564af - Stevenage IE8 position tweak
-        #stevenage_cc_header {
-            position:absolute;
-            top:0;
-        }
-        // ab958bc5 - IE6/7 Tweaks
-        .content {
-            margin-top:6em;
-        }
-        .nav-wrapper {
-            .nav-wrapper-2 {
-                position: absolute;
-            }
-        }
-    }
-}
-// a7a564a - Stevenage IE8 position tweak
-// 15591af7 - Stevenage Map page changes
-.ie8 {
-    body.mappage {
-        #stevenage_cc_header{
-            position:absolute;
-            top:0;
-        }
-        .nav-wrapper {
-            .nav-wrapper-2 {
-                position: absolute;
-            }
-        }
     }
 }
 
@@ -176,15 +114,16 @@ body.frontpage {
     .nav-wrapper-2 {
         height: auto;
     }
-    #site-header {
-        height: auto;
-    }
     // 1162d5c8 - Changed the colour of the user text when you're logged in to be more readable
     #user-meta {
         p {
             color: #fff;
         }
     }
+}
+
+#site-header {
+    display: none;
 }
 
 // d523b431
@@ -211,25 +150,7 @@ body.frontpage {
   }
 }
 
-// 0c5d50bc - Added margin to front page report box to push below nav in IE6/7
-.ie6, .ie7 {
-    #front-main {
-        margin-top: 5.5em;
-    }
-}
-
 @media only screen and (min-width: 48em) and (max-width: 61em) {
-    // d523b431
-    #main-nav {
-        float: left;
-        padding-left: 0;
-    }
-
-    .nav-wrapper {
-        .nav-wrapper-2 {
-            @include background(linear-gradient(#222, #555 30%, #555 60%, #222));
-        }
-    }
     // f432a72d - moved sticky sidebars down a bit to account for the larger header
     body.twothirdswidthpage {
         .content {
@@ -240,4 +161,76 @@ body.frontpage {
             }
         }
     }
+}
+
+body.mappage {
+    #site-header {
+        // We use the obscured #site-header to push the
+        // content sidebar down beyond .nav-wrapper-2
+        height: 3em;
+        display: block;
+
+        // For reasons beyond my comprehension, the 3em
+        // height results in a 3em gap in IE8. I assume
+        // some bug with table-cell / table-caption?
+        .ie8 & {
+            height: 0;
+        }
+    }
+
+    // Over-specific selector required to trump _layout.scss
+    .nav-wrapper .nav-wrapper-2 {
+        position: absolute;
+        top: 0;
+        padding: 0;
+        height: 4em;
+        background: #fff url("http://www.stevenage.gov.uk/Images/headerBG.jpg") repeat-x bottom left;
+    }
+
+    #site-logo {
+        position: absolute;
+        top: 0.5em;
+    }
+
+    #main-nav {
+        float: right;
+        margin-right: 1em;
+        margin-top: 1em;
+    }
+
+    // again, !important to override _layout.scss
+    .nav-menu--main a,
+    .nav-menu--main span,
+    .report-a-problem-btn {
+        padding: 0.5em 0.75em 0.4em 0.75em !important;
+        margin: 0 !important;
+    }
+
+    .nav-menu a {
+        color: #000;
+    }
+
+    .nav-menu a:hover,
+    .nav-menu a:focus,
+    a.report-a-problem-btn {
+        color: #fff;
+    }
+
+    // _layout.scss adds 4em of padding to leave space for
+    // an absolutely positioned menu, but I can't tell what
+    // that means. Stevenage, at least, doesn't need it.
+    .wrapper {
+        .ie7 & {
+            padding-top: 0;
+        }
+    }
+
+    // Not sure why IE7 has the old style of "inset" or "floating"
+    // sidebar on the map page, but this makes it stop!
+    .container {
+        .ie7 & {
+            margin-left: 0;
+        }
+    }
+
 }

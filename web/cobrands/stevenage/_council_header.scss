@@ -3,14 +3,14 @@
 
     /*    1.stv- =FontFace Declarations
     --------------------------------------------------*/
-    @font-face { font-family: 'PTSansNarrowRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.svg#stv-webfontpTBqgUZV') format('svg'); font-weight: normal; font-style: normal; } 
-    @font-face { font-family: 'PTSansCaptionBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.svg#stv-webfont8zHvniZB') format('svg'); font-weight: normal; font-style: normal; } 
-    @font-face { font-family: 'PTSansCaptionRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.svg#stv-webfont7qk7wodx') format('svg'); font-weight: normal; font-style: normal; } 
-    @font-face { font-family: 'PTSansBoldItalic'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.svg#stv-webfont2oPncueb') format('svg'); font-weight: normal; font-style: normal; } 
-    @font-face { font-family: 'PTSansBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.svg#stv-webfontaW07W6NV') format('svg'); font-weight: normal; font-style: normal; } 
-    @font-face { font-family: 'PTSansItalic'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.svg#stv-webfontV5YcF68V') format('svg'); font-weight: normal; font-style: normal; } 
-    @font-face { font-family: 'PTSansRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.svg#stv-webfontakBUUg6U') format('svg'); font-weight: normal; font-style: normal; } 
-    @font-face { font-family: 'PTSansNarrowBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.svg#stv-webfontSTdD4QCq') format('svg'); font-weight: normal; font-style: normal; } 
+    @font-face { font-family: 'PTSansNarrowRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN57F-webfont.svg#stv-webfontpTBqgUZV') format('svg'); font-weight: normal; font-style: normal; }
+    @font-face { font-family: 'PTSansCaptionBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC75F-webfont.svg#stv-webfont8zHvniZB') format('svg'); font-weight: normal; font-style: normal; }
+    @font-face { font-family: 'PTSansCaptionRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTC55F-webfont.svg#stv-webfont7qk7wodx') format('svg'); font-weight: normal; font-style: normal; }
+    @font-face { font-family: 'PTSansBoldItalic'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS76F-webfont.svg#stv-webfont2oPncueb') format('svg'); font-weight: normal; font-style: normal; }
+    @font-face { font-family: 'PTSansBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS75F-webfont.svg#stv-webfontaW07W6NV') format('svg'); font-weight: normal; font-style: normal; }
+    @font-face { font-family: 'PTSansItalic'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS56F-webfont.svg#stv-webfontV5YcF68V') format('svg'); font-weight: normal; font-style: normal; }
+    @font-face { font-family: 'PTSansRegular'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTS55F-webfont.svg#stv-webfontakBUUg6U') format('svg'); font-weight: normal; font-style: normal; }
+    @font-face { font-family: 'PTSansNarrowBold'; src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.eot'); src: url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.eot?iefix') format('eot'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.woff') format('woff'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.ttf') format('truetype'), url('http://www.stevenage.gov.uk/Fonts/PT-Sans-fontfacekit/PTN77F-webfont.svg#stv-webfontSTdD4QCq') format('svg'); font-weight: normal; font-style: normal; }
 
     /*    2.stv- =BasicSetup and general styles
     --------------------------------------------------*/
@@ -23,7 +23,7 @@
     max-width: 100%;
     width: 100%;
     background-color: #fff;
-    
+
         #stv-everything {
       /*font-size: 125%;*/
       min-width: 984px;
@@ -45,7 +45,7 @@
     /*    2.stv-1.stv- =Text Elements
     --------------------------------------------------*/
     h1, h2, h3, h4, h5, h6, legend {
-      font-family: 'PTSansCaptionRegular', PT Sans Caption, Verdana, Arial, Sans-Serif; 
+      font-family: 'PTSansCaptionRegular', PT Sans Caption, Verdana, Arial, Sans-Serif;
       color: #656867;
       font-weight: normal;
       margin-top: 0;
@@ -179,7 +179,7 @@
 
     /*    2.stv-2.stv- =Table
     --------------------------------------------------*/
-    table { 
+    table {
       border: 1px solid #c0c0be;
       border-collapse: collapse;
       margin: 1em 0;
@@ -489,7 +489,7 @@
       word-spacing: 3px;
       }
 
-    /*    3.stv-3 =Pay, Apply, Report, Find links 
+    /*    3.stv-3 =Pay, Apply, Report, Find links
     --------------------------------------------------*/
     #stv-header .stv-parf {
         padding-left: 496px;
@@ -647,7 +647,7 @@
       }
 
     #stv-main.stv-home .stv-infoPanel .stv-inner,
-    #stv-main.stv-landing .stv-infoPanel .stv-inner { 
+    #stv-main.stv-landing .stv-infoPanel .stv-inner {
         position: relative;
       }
 
@@ -686,11 +686,11 @@
 
     #stv-main.stv-home .stv-infoPanel .stv-inner .stv-hidden {
       display: none;
-      } 
+      }
 
     #stv-main.stv-home .stv-infoPanel .stv-inner .stv-selected {
       display: block;
-      } 
+      }
 
     #stv-main.stv-home .stv-infoPanel .stv-inner .stv-fade,
     #stv-main.stv-landing .stv-infoPanel .stv-inner .stv-fade {
@@ -712,8 +712,8 @@
 
 
     /*    9.stv- =Layout Fixes
-      FloatHolder can be used on any div which 
-      has floated item within as oppposed to 
+      FloatHolder can be used on any div which
+      has floated item within as oppposed to
       floating the wrapper div aswell.stv-
     --------------------------------------------------*/
     .stv-floatHolder {
@@ -729,34 +729,10 @@
         visibility:hidden;
         display:block;
       }
-    
+
 }
 .ie8{
   #stv-header #stv-pageTools #stv-searchStatic{
     width: 50%;
   }
 }
-
-/*
-// Small council Header 
-body.mappage{
-  #stevenage_cc_header{
-    #stv-header .stv-parf {
-      display: none;
-    }
-    #stv-header #stv-logo{
-      position: static;
-      float: left;
-      height: auto;
-      img{
-        height:50px;
-        width: auto;
-      }
-    }
-    #stv-pageTools.stv-floatHolder{
-      position: static;
-      z-index: auto;
-    }
-  }
-}
-*/

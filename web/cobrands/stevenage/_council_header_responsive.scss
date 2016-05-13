@@ -1,0 +1,93 @@
+// Overrides that make the Stevenage council header
+// responsive to small screens.
+
+// Apologies in advance for the super-specific selectors.
+// They're required to override the Stevenage styles!
+
+#stevenage_cc_header {
+
+  // Make the header flexible up to 984px width.
+  .stv-inner,
+  #stv-menu #stv-primaryNavigation {
+    width: auto;
+    max-width: 984px;
+  }
+
+  // Float the search and "PARF" nav links to the right,
+  // rather than using rigid padding-left.
+  #stv-header #stv-pageTools,
+  #stv-header .stv-parf {
+    padding-left: 0;
+    float: right;
+    margin-right: 10px;
+  }
+
+  // The "PARF" links should break onto a new line after
+  // the search box, rather than floating beside it.
+  #stv-header .stv-parf {
+    clear: right;
+  }
+
+  // Clear the floated search and "PARF" elements.
+  .stv-inner {
+    @include clearfix();
+  }
+
+  // Menu items should be one sixth of menu width.
+  #stv-menu #stv-primaryNavigation {
+    background-color: #3f3f3f;
+
+    ul {
+      display: table;
+      width: 100%;
+
+      // Disable the clearfix which breaks the table layout!!
+      &:after {
+        display: none;
+      }
+    }
+
+    li {
+      display: inline;
+      display: table-cell;
+      float: none;
+      height: auto;
+
+      // IE7 doesn't support table-cell
+      .ie7 & {
+        display: inline;
+        float: left;
+        width: 16.65%;
+      }
+
+      a {
+        width: auto;
+        padding: 6px 12px;
+      }
+    }
+  }
+
+  @media (max-width: 767px) {
+    border-top: 1px solid #ccc;
+
+    .stv-inner {
+      height: 7em;
+    }
+
+    #stv-header #stv-logo {
+      width: 82px;
+      height: 45px;
+    }
+
+    #stv-header .stv-mapLogo {
+      left: 25%;
+    }
+
+    #stv-menu,
+    #stv-header #stv-pageTools,
+    #stv-header .stv-parf {
+      display: none;
+    }
+  }
+
+}

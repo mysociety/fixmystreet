@@ -22,7 +22,7 @@
         <script src="[% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html' %]
         [% extra_js %]
-                
+
         [% INCLUDE 'tracking_code.html' %]
         [% PROCESS 'header_extra.html' %]
     </head>
@@ -30,59 +30,9 @@
 
     <div class="wrapper">
         <div class="table-cell">
-            <header id="stevenage_cc_header" role="banner">
-    <div id="stv-headerWrapper">
-      <div id="stv-header">
-        <div class="stv-inner">
-          
-          <div id="stv-logo">
-            <h1><a href="/"><img src="http://www.stevenage.gov.uk/Images/logo.gif" alt="Stevenage Borough Council"></a></h1>
-          </div>
-          
-          <div class="stv-mapLogo">
-            <img src="http://www.stevenage.gov.uk/Images/mapLogo.gif" alt="">
-          </div>
-          
-          <div id="stv-pageTools" class="stv-floatHolder">
-            <div id="stv-searchStatic">
-              <label for="search">Search</label> <input type="hidden" name="view" value="Search results"> <input name="search" type="text" value="" placeholder="Search for..." id="stv-search" class="stv-searchInput"> <input type="submit" value="GO">
-            </div>
-          </div>
-          
-          <div class="stv-parf stv-floatHolder">
-            <a href="http://www.stevenage.gov.uk/pay/"><span class="stv-title">Pay</span> your Council Tax bill and more</a> <a href="http://www.stevenage.gov.uk/apply/"><span class="stv-title">Apply</span> for planning permission and more</a> <a href="http://www.stevenage.gov.uk/report/"><span class="stv-title">Report</span> a missed bin and more</a> <a href="http://www.stevenage.gov.uk/find/" class="stv-find"><span class="stv-title">Find</span> your local councillor and more</a>
-          </div>
-          
-        </div>
-      </div>
-      <div id="stv-menu">
-        <div id="stv-primaryNavigation">
-          <ul id="stv-ctl00_ctl00_PrimaryNavigationLinks" class="stv-floatHolder">
-            <li>
-              <a href="http://www.stevenage.gov.uk/council-services/">Council Services</a>
-            </li>
-            <li>
-              <a href="http://www.stevenage.gov.uk/about-the-council/">About the Council</a>
-            </li>
-            <li>
-              <a href="http://www.stevenage.gov.uk/about-stevenage/">About Stevenage</a>
-            </li>
-            <li>
-              <a href="http://www.stevenage.gov.uk/news-and-events/">News and Events</a>
-            </li>
-            <li>
-              <a href="http://www.stevenage.gov.uk/links/">Popular Links</a>
-            </li>
-            <li>
-              <a href="http://www.stevenage.gov.uk/have-your-say/">Have Your Say</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    </header>
             <header id="site-header">
                 <div class="container">
+                    [% INCLUDE 'header_logo.html' %]
                     <a href="#main-nav" id="nav-link">Main Navigation</a>
                 </div>
             </header>
@@ -90,7 +40,7 @@
           [% IF c.user_exists %]
             <div id="user-meta">
                 <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %] 
+                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
                     <a href="/auth/sign_out">[% loc('sign out') %]</a>
                 </p>
             </div>
