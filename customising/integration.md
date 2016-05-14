@@ -107,10 +107,12 @@ access -- for example, they may only open a port to your server's single IP
 address.
 
 If you want to have the problem reports for some categories to be integrated
-into their body's back-end, but continue to send others by email, set the 
-body's send method as above, but also enable **contacts can be devolved**.
-Now you can set specific contacts' *send methods* to `email`, which will
-override the body's send method.
+into their body's back-end, but continue to send others by email, you can
+<a href="{{site.baseurl }}glossary/#devolve"
+class="glossary__link">devolve</a>
+choosing the send method to the contacts. Set the body's send method as above,
+but also enable **contacts can be devolved**. Now you can set specific
+contacts' *send methods* to `email`, which will override the body's send method.
 
 ### Passing external IDs between the two systems
 

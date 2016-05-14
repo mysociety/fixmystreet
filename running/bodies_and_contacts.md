@@ -127,11 +127,14 @@ it](https://www.mysociety.org/blog/open311-explained).
 In fact, if you're working on an installation that can connect to bodies using
 a method other than email, not *all* of a body's contacts need to be sent the
 same way. It's possible to specify a different
-<a href="{{ site.baseurl }}glossary/#send-method" class="glossary__link">send method</a> for an
-individual contact. You'll need to edit the body (in `/admin`) and check the
-box marked "Contacts can be devolved". Then mark each of the contacts that are
-not using the body's send method (which by default is email) as "devolved",
-and specify their own send method and details.
+<a href="{{ site.baseurl }}glossary/#send-method" class="glossary__link">send method</a>
+for an individual contact. To do this you need to tell FixMyStreet that, for
+this body, the decision of which send method to use can be
+<a href="{{site.baseurl }}glossary/#devolve" class="glossary__link">devolved</a>
+to the contacts. You'll need to edit the body (in `/admin`) and check the box
+marked "Contacts can be devolved". Then mark each of the contacts that are not
+using the body's send method (which by default is email) as "devolved", and
+specify their own send method and details.
 
 ## Deleting contacts
 

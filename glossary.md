@@ -34,6 +34,7 @@ technical information, see
   <li><a href="#council">council</a></li>
   <li><a href="#dashboard">dashboard</a></li>
   <li><a href="#development">development site</a></li>
+  <li><a href="#devolve">devolved contacts</a></li>
   <li><a href="#flagged">flagged</a></li>
   <li><a href="#geocoder">geocoder</a></li>
   <li><a href="#gettext">gettext</a></li>
@@ -439,6 +440,31 @@ technical information, see
       <code><a href="{{site.baseurl}}customising/config/#staging_site">STAGING_SITE</a></code>
       to <code>1</code>.
     </p>
+  </dd>
+
+  <dt>
+    <a name="devolve">devolved contacts</a>
+  </dt>
+  <dd>
+    Normally, you specifiy the
+    <a href="#administrator" class="glossary__link">send method</a>
+    for a whole <a href="#body" class="glossary__link">body</a>, so all
+    its <a href="#report" class="glossary__link">problem reports</a>
+    will be sent in that way. But you can <strong>devolve</strong>
+    the decision of which send method to use to the body's
+    <a href="#contact" class="glossary__link">contacts</a>
+    instead. For example, this lets you mix both email addresses and
+    <a href="#open311" class="glossary__link">Open311</a>
+    service codes within the same body.
+    <div class="more-info">
+      <p>More information:</p>
+      <ul>
+        <li>
+          See <a href="{{ site.baseurl }}running/bodies_and_contacts/">Managing
+          bodies and contacts</a> for how to set these up.
+        </li>
+      </ul>
+    </div>
   </dd>
 
   <dt>
