@@ -784,7 +784,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
 
         if ( $remove_photo_param || $new_state eq 'hidden' ) {
-            unlink glob FixMyStreet->path_to( 'web', 'photo', $problem->id . '.*' );
+            $problem->get_photoset->delete_cached;
         }
 
         if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
@@ -1005,7 +1005,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         }
 
         if ( $remove_photo_param || $new_state eq 'hidden' ) {
-            unlink glob FixMyStreet->path_to( 'web', 'photo', 'c', $update->id . '.*' );
+            $update->get_photoset->delete_cached;
         }
 
         $update->name( $c->get_param('name') || '' );

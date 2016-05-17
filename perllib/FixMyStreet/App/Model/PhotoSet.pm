@@ -255,9 +255,11 @@ sub delete_cached {
     my ($self) = @_;
     my $object = $self->object or return;
 
+    my @dirs = ('web', 'photo');
+    push @dirs, 'c' if ref $object eq 'FixMyStreet::DB::Result::Comment';
+
     unlink glob FixMyStreet->path_to(
-        'web',
-        'photo',
+        @dirs,
         $object->id . '.*'
     );
 }
