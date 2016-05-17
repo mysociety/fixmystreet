@@ -1,5 +1,5 @@
 [% map_js = BLOCK %]
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.21"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3"></script>
 <script type="text/javascript" src="[% version('/js/OpenLayers.fixmystreet.google.js') %]"></script>
 <script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
 <script type="text/javascript" src="[% version('/js/map-google-ol.js') %]"></script>
@@ -10,7 +10,7 @@
 [% END %]
 
 [% map_sub_links = BLOCK %]
-<a class="hidden-nojs" id="map_layer_toggle" href="">[% loc('Map') %]</a>
+<a class="hidden-nojs" id="map_layer_toggle" href="">[% loc('Satellite') %]</a>
 [% END %]
 
 [% map_html = BLOCK %]
