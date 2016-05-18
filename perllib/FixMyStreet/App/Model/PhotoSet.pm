@@ -254,12 +254,25 @@ sub get_image_data {
 sub delete_cached {
     my ($self) = @_;
     my $object = $self->object or return;
+    my $id = $object->id or return;
 
-    unlink glob FixMyStreet->path_to(
-        'web',
-        'photo',
-        $object->id . '.*'
-    );
+    my @dirs = ('web', 'photo');
+    push @dirs, 'c' if ref $object eq 'FixMyStreet::DB::Result::Comment';
+
+    # Old files without an index number; will always be .jpeg
+    foreach my $size ("", ".fp", ".tn", ".full") {
+        unlink FixMyStreet->path_to(@dirs, "$id$size.jpeg");
+    }
+
+    # New files with index number
+    my @images = $self->all_ids;
+    foreach (map [ $_, $images[$_] ], 0 .. $#images) {
+        my ($i, $file) = @$_;
+        my ($fileid, $type) = split /\./, $file;
+        foreach my $size ("", ".fp", ".tn", ".full") {
+            unlink FixMyStreet->path_to(@dirs, "$id.$i$size.$type");
+        }
+    }
 }
 
 sub remove_images {
