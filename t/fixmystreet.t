@@ -18,17 +18,17 @@ is "$path_to_path", $file_path, "got $file_path";
 # check that the config gets loaded and is immutable
 my $config = FixMyStreet->config;
 isa_ok $config, 'HASH';
-is $config->{GAZE_URL}, 'http://gaze.mysociety.org/gaze',
+is $config->{GAZE_URL}, 'https://gaze.mysociety.org/gaze',
   "got GAZE_URL correctly";
 throws_ok(
     sub { $config->{GAZE_URL} = 'some other value'; },
     qr/Modification of a read-only value attempted/,
     'attempt to change config caught'
 );
-is $config->{GAZE_URL}, 'http://gaze.mysociety.org/gaze', "GAZE_URL unchanged";
+is $config->{GAZE_URL}, 'https://gaze.mysociety.org/gaze', "GAZE_URL unchanged";
 
 # check that we can get the value by key as well
-is FixMyStreet->config('GAZE_URL'), 'http://gaze.mysociety.org/gaze',
+is FixMyStreet->config('GAZE_URL'), 'https://gaze.mysociety.org/gaze',
   "GAZE_URL correct when got by key";
 is FixMyStreet->config('BAD_KEY_DOES_NOT_EXIST'), undef, "config miss is undef";
 

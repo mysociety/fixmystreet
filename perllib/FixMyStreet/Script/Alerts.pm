@@ -7,7 +7,7 @@ use DateTime::Format::Pg;
 use IO::String;
 
 use mySociety::DBHandle qw(dbh);
-use mySociety::Gaze;
+use FixMyStreet::Gaze;
 use mySociety::Locale;
 use mySociety::MaPit;
 use RABX;
@@ -175,10 +175,10 @@ sub send() {
 
         my $longitude = $alert->parameter;
         my $latitude  = $alert->parameter2;
-        my $d = mySociety::Gaze::get_radius_containing_population($latitude, $longitude, 200000);
+        my $d = FixMyStreet::Gaze::get_radius_containing_population($latitude, $longitude);
         # Convert integer to GB locale string (with a ".")
         $d = mySociety::Locale::in_gb_locale {
-            sprintf("%f", int($d*10+0.5)/10);
+            sprintf("%f", $d);
         };
         my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
         my %data = (

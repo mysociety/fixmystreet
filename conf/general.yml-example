@@ -180,7 +180,7 @@ SMTP_PASSWORD: ''
 
 # Gaze is a world-wide service for population density lookups. You can leave
 # this as is.
-GAZE_URL: 'http://gaze.mysociety.org/gaze'
+GAZE_URL: 'https://gaze.mysociety.org/gaze'
 
 # Should problem reports link to the council summary pages?
 AREA_LINKS_FROM_PROBLEMS: '0'

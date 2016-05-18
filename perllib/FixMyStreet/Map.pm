@@ -16,7 +16,7 @@ use Module::Pluggable
 # Get the list of maps we want and load map classes at compile time
 my @ALL_MAP_CLASSES = allowed_maps();
 
-use mySociety::Gaze;
+use FixMyStreet::Gaze;
 use mySociety::Locale;
 use Utils;
 
@@ -105,13 +105,7 @@ sub _map_features {
         ? $c->cobrand->problems->around_map( @around_args, $around_limit, $category, $states )
         : $around_map;
 
-    my $dist;
-    mySociety::Locale::in_gb_locale {
-        $dist =
-          mySociety::Gaze::get_radius_containing_population( $lat, $lon,
-            200000 );
-    };
-    $dist = int( $dist * 10 + 0.5 ) / 10;
+    my $dist = FixMyStreet::Gaze::get_radius_containing_population( $lat, $lon );
 
     my $limit  = 20;
     my @ids    = map { $_->id } @$around_map_list;
