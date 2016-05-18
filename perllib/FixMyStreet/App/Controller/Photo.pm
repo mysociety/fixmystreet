@@ -43,7 +43,7 @@ sub during :LocalRegex('^(temp|fulltemp)\.([0-9a-f]{40}\.(?:jpeg|png|gif|tiff))$
     $c->forward( 'output', [ $photo ] );
 }
 
-sub index :LocalRegex('^(c/)?(\d+)(?:\.(\d+))?(?:\.(full|tn|fp))?\.(?:jpeg|png|gif|tiff)$') {
+sub index :LocalRegex('^(c/)?([1-9]\d*)(?:\.(\d+))?(?:\.(full|tn|fp))?\.(?:jpeg|png|gif|tiff)$') {
     my ( $self, $c ) = @_;
     my ( $is_update, $id, $photo_number, $size ) = @{ $c->req->captures };
 
