@@ -32,28 +32,6 @@
                     </footer>
                     [% END %]
                 </div><!-- .content role=main -->
-                <div class="footer">
-                  <div class="creators">
-                    <p>Created by</p>
-                    <a class="mysociety" href="https://mysociety.org">mySociety</a>
-                    <a class="itp" href="http://www.itpworld.net">Integrated Transport Planning</a>
-                    <a class="bespoke" href="http://bespokestudy.co.uk">The Bespoke Study</a>
-                  </div>
-                  <h2>[% c.cobrand.site_title | html %]</h2>
-                  <ul>
-                    <li><a href="/">[% loc("Find &amp; report") %]</a></li>
-                    <li><a href="/reports">[% loc("Statistics") %]</a></li>
-                    <li><a href="/faq">[% loc("FAQs") %]</a></li>
-                    <li><a href="/sponsors">[% loc("Sponsors") %]</a></li>
-                    [% IF c.user_exists %]
-                    <li>
-                        <a href="/auth/sign_out">[% loc('Sign out') %]</a>
-                    </li>
-                    [% END %]
-                    <li><a href="/privacy" class="secondary">[% loc("Privacy") %]</a></li>
-                    <li><a href="/contact" class="secondary">[% loc("Contact") %]</a></li>
-                  </ul>
-                </div>
             </div><!-- .container -->
         </div><!-- .table-cell -->
 
@@ -81,5 +59,8 @@
 
 <!-- [% INCLUDE 'debug_footer.html' %] -->
     </div> <!-- .wrapper -->
+
+    [% TRY %][% PROCESS 'footer_extra.html' %][% CATCH file %][% END %]
+
 </body>
 </html>

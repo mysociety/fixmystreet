@@ -453,3 +453,98 @@ dt:target {
 // for expediency, we are relabelling this functionality in Collideoscope for
 // Stats19 data, so hide the link to avoid confusing interactions
 #sub_map_links a#all_pins_link { display: none }
+
+
+// mySociety standard footer bits
+$mysoc-footer-background-color: $color-neutral-slategrey;
+$mysoc-footer-text-color: mix(#fff, $color-neutral-slategrey, 50%);
+$mysoc-footer-site-name-text-color: #fff;
+
+$mysoc-footer-link-text-color: #fff;
+$mysoc-footer-link-hover-text-color: #fff;
+
+$mysoc-footer-border-top: none;
+
+$mysoc-footer-divider-color: mix(#fff, $color-neutral-slategrey, 50%);
+
+$mysoc-footer-donate-background-color: darken($color-neutral-slategrey, 10%);
+$mysoc-footer-donate-text-color: #fff;
+$mysoc-footer-donate-button-background-color: $primary;
+$mysoc-footer-donate-button-text-color: #000;
+
+$mysoc-footer-legal-text-color: mix(#fff, $color-neutral-slategrey, 50%);
+
+$mysoc-footer-image-path: '/cobrands/smidsy/images/mysoc-footer-dark/';
+$mysoc-footer-breakpoint-sm: 48em;
+
+$grid-max-width: 60em;
+$grid-gutter: 2em;
+$grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
+
+@import "mysoc-footer";
+
+.mysoc-footer {
+  li {
+    list-style: none;
+  }
+
+  .container {
+    margin: 0 auto;
+  }
+
+  .container {
+    margin-right: auto;
+    margin-left: auto;
+    padding-left: $grid-gutter / 2;
+    padding-right: $grid-gutter / 2;
+    max-width: $grid-max-width;
+  }
+
+  .row {
+    @include clearfix();
+    margin-left: $grid-gutter / -2;
+    margin-right: $grid-gutter / -2;
+  }
+
+  %col {
+    padding-left: $grid-gutter / 2;
+    padding-right: $grid-gutter / 2;
+  }
+
+  @for $i from 1 through 12 {
+    .col-sm-#{$i} {
+      @extend %col;
+    }
+  }
+
+  @media(min-width: $grid-breakpoint-sm) {
+    %col-float {
+      float: left;
+    }
+
+    @for $i from 1 through 12 {
+      .col-sm-#{$i} {
+        @extend %col-float;
+        width: 100% / 12 * $i;
+      }
+    }
+  }
+
+  .mysoc-footer__created_by {
+    padding: 0 1em;
+    margin: 0;
+  }
+
+  .mysoc-footer__org__logo--itp {
+    width: 46px;
+    height: 33px;
+    background: transparent url('/cobrands/smidsy/images/creators.gif') -124px 0 no-repeat;
+    background-size: 277px 33px;
+  }
+  .mysoc-footer__org__logo--bespoke {
+    width: 93px;
+    height: 33px;
+    background: transparent url('/cobrands/smidsy/images/creators.gif') -185px 0 no-repeat;
+    background-size: 277px 33px;
+  }
+}

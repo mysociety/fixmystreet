@@ -1,0 +1,230 @@
+// Standard mySociety Footer v1.0.4
+// https://github.com/mysociety/standard-footer
+
+$mysoc-footer-background-color: #fff !default;
+$mysoc-footer-text-color: #333 !default;
+$mysoc-footer-site-name-text-color: $mysoc-footer-text-color !default;
+
+$mysoc-footer-link-text-color: #4FADED !default;
+$mysoc-footer-link-hover-text-color: darken($mysoc-footer-link-text-color, 10%) !default;
+
+$mysoc-footer-site-name-font-size: 1.5em !default;
+$mysoc-footer-site-name-margin-bottom: 0.5em !default;
+$mysoc-footer-site-name-line-height: 1em !default;
+
+$mysoc-footer-border-top: none !default;
+$mysoc-footer-divider-color: #E2DFD9 !default;
+
+$mysoc-footer-donate-background-color: #F3F1EB !default;
+$mysoc-footer-donate-text-color: $mysoc-footer-text-color !default;
+$mysoc-footer-donate-button-background-color: #999 !default;
+$mysoc-footer-donate-button-text-color: #fff !default;
+$mysoc-footer-donate-button-hover-background-color: darken($mysoc-footer-donate-button-background-color, 5%) !default;
+$mysoc-footer-donate-button-hover-text-color: $mysoc-footer-donate-button-text-color !default;
+
+$mysoc-footer-legal-text-color: #6C6B68 !default;
+
+$mysoc-footer-image-path: '../img/mysoc-footer/' !default;
+$mysoc-footer-breakpoint-sm: 768px !default;
+
+$high-dpi-screen: '-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi' !default;
+
+.mysoc-footer {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: $mysoc-footer-background-color;
+  color: $mysoc-footer-text-color;
+  padding: 2em 0;
+  font-size: 1em;
+  line-height: 1.5em;
+  border-top: $mysoc-footer-border-top;
+
+  @media (min-height: 700px) {
+    padding: 3em 0;
+  }
+
+  @media (min-height: 900px) {
+    padding: 4em 0;
+  }
+
+  *, *:before, *:after {
+    -webkit-box-sizing: inherit;
+    -moz-box-sizing: inherit;
+    box-sizing: inherit;
+  }
+
+  a {
+    color: $mysoc-footer-link-text-color;
+
+    &:hover,
+    &:focus {
+      color: $mysoc-footer-link-hover-text-color;
+    }
+  }
+}
+
+.mysoc-footer__divider {
+  border-top: 1px solid $mysoc-footer-divider-color;
+  margin: 2em 0;
+
+  @media (min-height: 900px) {
+    margin: 3em 0;
+  }
+}
+
+.mysoc-footer__site-name {
+  font-size: $mysoc-footer-site-name-font-size;
+  line-height: $mysoc-footer-site-name-line-height;
+  font-weight: bold;
+  margin: 0 0 $mysoc-footer-site-name-margin-bottom 0;
+  color: $mysoc-footer-site-name-text-color;
+}
+
+.mysoc-footer__links {
+  font-size: 1em;
+  line-height: 1.2em;
+
+  @media (min-width: $mysoc-footer-breakpoint-sm){
+    overflow: auto;
+    margin: 0 -1em;
+
+    // Line up top of .mysoc-footer__links with top of .mysoc-footer__site-description
+    $factor: $mysoc-footer-site-name-font-size / 1em;
+    padding-top: ( $mysoc-footer-site-name-line-height*$factor + $mysoc-footer-site-name-margin-bottom*$factor );
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @media (min-width: $mysoc-footer-breakpoint-sm){
+      float: left;
+      width: 50%;
+      padding: 0 1em;
+    }
+  }
+
+  li {
+    margin: 0 0 0.5em 0;
+  }
+
+  a {
+    display: block;
+  }
+}
+
+.mysoc-footer__donate {
+  background-color: $mysoc-footer-donate-background-color;
+  color: $mysoc-footer-donate-text-color;
+  padding: 1.5em;
+  border-radius: 0.3em;
+  margin-top: 1em;
+
+  @media (min-width: $mysoc-footer-breakpoint-sm){
+    margin-top: 0;
+  }
+}
+
+.mysoc-footer__donate__button {
+  display: inline-block;
+  background-color: $mysoc-footer-donate-button-background-color;
+  color: $mysoc-footer-donate-button-text-color !important;
+  padding: 0.5em 1em;
+  border-radius: 0.3em;
+  font-weight: bold;
+  text-decoration: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+    background-color: $mysoc-footer-donate-button-hover-background-color;
+    color: $mysoc-footer-donate-button-hover-text-color !important;
+  }
+}
+
+.mysoc-footer__orgs {
+  overflow: auto;
+  margin: 0 -1em;
+}
+
+.mysoc-footer__org {
+  float: left;
+  padding: 0 1em;
+}
+
+.mysoc-footer__org__logo {
+  display: block;
+  margin-top: 0.5em;
+  height: 0;
+  overflow: hidden;
+  padding-top: 32px;
+}
+
+.mysoc-footer__org__logo--mysociety {
+  width: 152px;
+  background: transparent url('#{$mysoc-footer-image-path}logo-mysociety.png') 0 0 no-repeat;
+  background-size: 152px 32px;
+  @media ($high-dpi-screen) {
+    background-image: url('#{$mysoc-footer-image-path}logo-mysociety@2x.png');
+  }
+  background-image: url('#{$mysoc-footer-image-path}logo-mysociety.svg'), none;
+}
+
+.mysoc-footer__legal {
+  font-size: 0.8em;
+  line-height: 1.5em;
+  color: $mysoc-footer-legal-text-color;
+}
+
+.mysoc-footer__badges {
+  margin: 0 -4px;
+  padding: 0;
+  list-style: none;
+
+  @media (min-width: $mysoc-footer-breakpoint-sm){
+    text-align: right;
+  }
+
+  li {
+    margin: 0 4px;
+    display: inline-block;
+  }
+}
+
+.mysoc-footer__badge {
+  display: inline-block;
+  width: 32px;
+  height: 0;
+  padding-top: 32px;
+  overflow: hidden;
+  border-radius: 100%;
+}
+
+.mysoc-footer__badge--github {
+  background: transparent url('#{$mysoc-footer-image-path}icon-github.png') 0 0 no-repeat;
+  background-size: 32px 32px;
+  @media ($high-dpi-screen) {
+    background-image: url('#{$mysoc-footer-image-path}icon-github@2x.png');
+  }
+  background-image: url('#{$mysoc-footer-image-path}icon-github.svg'), none;
+}
+
+.mysoc-footer__badge--twitter {
+  background: transparent url('#{$mysoc-footer-image-path}icon-twitter.png') 0 0 no-repeat;
+  background-size: 32px 32px;
+  @media ($high-dpi-screen) {
+    background-image: url('#{$mysoc-footer-image-path}icon-twitter@2x.png');
+  }
+  background-image: url('#{$mysoc-footer-image-path}icon-twitter.svg'), none;
+}
+
+.mysoc-footer__badge--facebook {
+  background: transparent url('#{$mysoc-footer-image-path}icon-facebook.png') 0 0 no-repeat;
+  background-size: 32px 32px;
+  @media ($high-dpi-screen) {
+    background-image: url('#{$mysoc-footer-image-path}icon-facebook@2x.png');
+  }
+  background-image: url('#{$mysoc-footer-image-path}icon-facebook.svg'), none;
+}

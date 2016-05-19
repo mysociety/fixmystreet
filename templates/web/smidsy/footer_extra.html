@@ -1,0 +1,74 @@
+<div class="mysoc-footer" role="contentinfo">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-sm-5">
+                <h2 class="mysoc-footer__site-name">[% c.cobrand.site_title | html %]</h2>
+                <div class="mysoc-footer__site-description">
+                    <p>Mapping, reporting and collating data on cycling accidents, incidents and near misses.</p>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <nav class="mysoc-footer__links">
+                    <ul>
+                        <li><a href="/">[% loc("Find &amp; report") %]</a></li>
+                        <li><a href="/reports">[% loc("Statistics") %]</a></li>
+                        <li><a href="/sponsors">[% loc("Sponsors") %]</a></li>
+                    </ul>
+                    <ul>
+                        <li><a href="/faq">[% loc("FAQs") %]</a></li>
+                        <li><a href="/privacy">[% loc("Privacy") %]</a></li>
+                        <li><a href="/contact">[% loc("Contact") %]</a></li>
+                        [% IF c.user_exists %]
+                            <li>
+                                <a href="/auth/sign_out">[% loc('Sign out') %]</a>
+                            </li>
+                        [% END %]
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="mysoc-footer__donate">
+                    <p>Your support keeps this site and others like it running</p>
+                    <a href="/sponsors" class="mysoc-footer__donate__button">Sponsor us</a>
+                </div>
+            </div>
+
+        </div>
+        <hr class="mysoc-footer__divider" role="presentation">
+        <div class="row">
+
+            <div class="col-sm-6">
+                <div class="mysoc-footer__orgs">
+                    <p class="mysoc-footer__created_by">Created by</p>
+                    <p class="mysoc-footer__org">
+                        <a href="https://www.mysociety.org" class="mysoc-footer__org__logo mysoc-footer__org__logo--mysociety">mySociety</a>
+                    </p>
+                    <p class="mysoc-footer__org">
+                        <a class="mysoc-footer__org__logo mysoc-footer__org__logo--itp" href="http://www.itpworld.net">Integrated Transport Planning</a>
+                    </p>
+                    <p class="mysoc-footer__org">
+                        <a class="mysoc-footer__org__logo mysoc-footer__org__logo--bespoke" href="http://bespokestudy.co.uk">The Bespoke Study</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="mysoc-footer__legal">
+                    <p>mySociety Limited is a project of UK Citizens Online Democracy, a registered charity in England and Wales. For full details visit <a href="https://www.mysociety.org">mysociety.org</a>.</p>
+                </div>
+            </div>
+
+            <div class="col-sm-2">
+                <ul class="mysoc-footer__badges">
+                    <li role="presentation"><a href="https://github.com/mysociety/collideoscope" class="mysoc-footer__badge mysoc-footer__badge--github">Github</a></li>
+                    <li role="presentation"><a href="https://twitter.com/collideoscp" class="mysoc-footer__badge mysoc-footer__badge--twitter">Twitter</a></li>
+                    <li role="presentation"><a href="https://www.facebook.com/mysociety" class="mysoc-footer__badge mysoc-footer__badge--facebook">Facebook</a></li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+</div>
