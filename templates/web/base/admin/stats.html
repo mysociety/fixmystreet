@@ -51,6 +51,13 @@
     <small>[% loc( 'Note that when including unconfirmed reports we use the date the report was created which may not be in the same month the report was confirmed so the numbers may jump about a little' ) %]</small>
     </p>
 [% END %]
+[% ELSE %]
+<ul>
+<li><a href="stats/questionnaire">[% loc('Survey Results') %]</a></li>
+<li><a href="stats/state">[% loc('Problem breakdown by state') %]</a></li>
+<li><a href="stats/fix-rate">[% loc('Category fix rate for problems > 4 weeks old') %]</a></li>
+</ul>
+
 [% END %]
 
 [% IF errors %]

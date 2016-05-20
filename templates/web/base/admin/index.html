@@ -12,7 +12,7 @@ or get in touch</a> to let us know about your use of the FixMyStreet Platform,
 and to receive notices of updates.
 </div>
 
-[% IF total_bodies == 0 %]
+[% IF bodies.size == 0 %]
   <p class="fms-admin-info">
     [% loc('Currently no bodies have been created.') %]
     <br>
@@ -20,14 +20,31 @@ and to receive notices of updates.
   </p>
 [% END %]
 
-[%- BLOCK states -%]
-[%- FOREACH state IN list %]
-[%- '<ul>' IF loop.first %]
-    <li>[% object.$state %] [% state_pretty.$state %]</li>
-[%- "\n</ul>" IF loop.last %]
-[%- END %]
-[% END -%]
+<form method="get" action="[% c.uri_for('reports') %]" accept-charset="utf-8">
+    <p><label for="search_reports">[% loc('Search Reports') %]</label>
+        <input type="text" name="search"  size="30" id="search_reports" value="[% searched | html %]">
+</form>
 
+<form method="get" action="[% c.uri_for('users') %]" accept-charset="utf-8">
+    <p><label for="search_users">[% loc('Search Users') %]</label>
+        <input type="text" name="search"  size="30" id="search_users" value="[% searched | html %]">
+</form>
+
+<form method="get" action="[% c.uri_for('bodies') %]">
+<label for="search_body">[% loc('Edit body details') %]</label>
+<select id="search_body" name="body">
+[% FOREACH body IN bodies %]
+  [%- SET id = body.id %]
+    <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
+        [% body.name | html %]
+        [%- IF body.parent %], [% body.parent.name | html %][% END -%]
+    </option>
+[% END %]
+</select>
+<input type="submit" value="[% loc('Go') %]">
+</form>
+
+<h2>[% loc('Stats') %]</h2>
 [% INCLUDE 'status/stats.html' admin_include_users=1 %]
 
 [% IF c.cobrand.admin_show_creation_graph -%]
@@ -35,29 +52,5 @@ and to receive notices of updates.
         <a href="[% c.config.BASE_URL %]/fms-live-creation.png" class="admin-offsite-link">[% loc('Graph of problem creation by status over time') %]</a>
     </p>
 [% END -%]
-
-<h2>[% loc('Problem breakdown by state') %]</h2>
-[% FOREACH group IN state_groups %]
-[%- '<ul>' IF loop.first %]
-    <li><strong>[% group.0 %]</strong>
-        [% PROCESS states object=problems list=group.1 %]
-    </li>
-[%- "\n</ul>" IF loop.last %]
-[%- END %]
-
-<h2>[% loc('Update breakdown by state') %]</h2>
-[% PROCESS states object=comments list=comments.keys.sort %]
-
-[% IF categories.size %]
-    <h2 id="category-fix-rate">[% loc('Category fix rate for problems > 4 weeks old') %]</h2>
-    <table>
-        <tr><th>[% loc('Category') %]</th><th>[% loc('Total') %]</th><th>[% loc('Fixed') %]</th></tr>
-[% FOREACH category IN categories %]
-        <tr><td>[% category.key %]</td><td>[% category.value.total %]</td><td>[% category.value.fixed / category.value.total * 100 | format('%.1f') %]%</td></tr>
-[% END %]
-    </table>
-[% ELSE %]
-<p><a href="?show_categories=1#category-fix-rate">[% loc('Category fix rate for problems > 4 weeks old') %]</a></p>
-[% END %]
 
 [% INCLUDE 'admin/footer.html' %]

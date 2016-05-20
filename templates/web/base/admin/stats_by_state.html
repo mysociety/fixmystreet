@@ -1,0 +1,24 @@
+[% INCLUDE 'admin/header.html' title=loc('Stats') -%]
+[% PROCESS 'admin/report_blocks.html' %]
+ 
+[%- BLOCK states -%]
+[%- FOREACH state IN list %]
+[%- '<ul>' IF loop.first %]
+    <li>[% object.$state %] [% state_pretty.$state %]</li>
+[%- "\n</ul>" IF loop.last %]
+[%- END %]
+[% END -%]
+
+<h2>[% loc('Problem breakdown by state') %]</h2>
+[% FOREACH group IN state_groups %]
+[%- '<ul>' IF loop.first %]
+    <li><strong>[% group.0 %]</strong>
+        [% PROCESS states object=problems list=group.1 %]
+    </li>
+[%- "\n</ul>" IF loop.last %]
+[%- END %]
+
+<h2>[% loc('Update breakdown by state') %]</h2>
+[% PROCESS states object=comments list=comments.keys.sort %]
+
+[% INCLUDE 'admin/footer.html' %]

@@ -1,0 +1,10 @@
+[% INCLUDE 'admin/header.html' title=loc('Category fix rate for problems > 4 weeks old') -%]
+ 
+<table>
+    <tr><th>[% loc('Category') %]</th><th>[% loc('Total') %]</th><th>[% loc('Fixed') %]</th></tr>
+[% FOREACH category IN categories %]
+    <tr><td>[% category.key %]</td><td>[% category.value.total %]</td><td>[% category.value.fixed / category.value.total * 100 | format('%.1f') %]%</td></tr>
+[% END %]
+</table>
+
+[% INCLUDE 'admin/footer.html' %]

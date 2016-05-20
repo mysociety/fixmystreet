@@ -71,25 +71,7 @@ sub index : Path : Args(0) {
         return $c->cobrand->admin();
     }
 
-    my $problems = $c->cobrand->problems->summary_count;
-
-    my %prob_counts =
-      map { $_->state => $_->get_column('state_count') } $problems->all;
-
-    %prob_counts =
-      map { $_ => $prob_counts{$_} || 0 }
-        ( FixMyStreet::DB::Result::Problem->all_states() );
-    $c->stash->{problems} = \%prob_counts;
-    $c->stash->{total_problems_live} += $prob_counts{$_} ? $prob_counts{$_} : 0
-        for ( FixMyStreet::DB::Result::Problem->visible_states() );
-    $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
-
-    my $comments = $c->cobrand->updates->summary_count;
-
-    my %comment_counts =
-      map { $_->state => $_->get_column('state_count') } $comments->all;
-
-    $c->stash->{comments} = \%comment_counts;
+    $c->forward('stats_by_state');
 
     my $alerts = $c->model('DB::Alert')->summary_report_alerts( $c->cobrand->restriction );
 
@@ -129,11 +111,7 @@ sub index : Path : Args(0) {
       : _('n/a');
     $c->stash->{questionnaires} = \%questionnaire_counts;
 
-    if ($c->get_param('show_categories')) {
-        $c->stash->{categories} = $c->cobrand->problems->categories_summary();
-    }
-
-    $c->stash->{total_bodies} = $c->model('DB::Body')->count();
+    $c->forward('fetch_all_bodies');
 
     return 1;
 }
@@ -196,7 +174,7 @@ sub timeline : Path( 'timeline' ) : Args(0) {
     return 1;
 }
 
-sub questionnaire : Path('questionnaire') : Args(0) {
+sub questionnaire : Path('stats/questionnaire') : Args(0) {
     my ( $self, $c ) = @_;
 
     my $questionnaires = $c->model('DB::Questionnaire')->search(
@@ -231,6 +209,11 @@ sub questionnaire : Path('questionnaire') : Args(0) {
 
 sub bodies : Path('bodies') : Args(0) {
     my ( $self, $c ) = @_;
+
+    if (my $body_id = $c->get_param('body')) {
+        $c->res->redirect( $c->uri_for( 'body', $body_id ) );
+        return;
+    }
 
     $c->forward( 'get_token' );
 
@@ -1187,6 +1170,36 @@ sub flagged : Path('flagged') : Args(0) {
     return 1;
 }
 
+sub stats_by_state : Path('stats/state') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    my $problems = $c->cobrand->problems->summary_count;
+
+    my %prob_counts =
+      map { $_->state => $_->get_column('state_count') } $problems->all;
+
+    %prob_counts =
+      map { $_ => $prob_counts{$_} || 0 }
+        ( FixMyStreet::DB::Result::Problem->all_states() );
+    $c->stash->{problems} = \%prob_counts;
+    $c->stash->{total_problems_live} += $prob_counts{$_} ? $prob_counts{$_} : 0
+        for ( FixMyStreet::DB::Result::Problem->visible_states() );
+    $c->stash->{total_problems_users} = $c->cobrand->problems->unique_users;
+
+    my $comments = $c->cobrand->updates->summary_count;
+
+    my %comment_counts =
+      map { $_->state => $_->get_column('state_count') } $comments->all;
+
+    $c->stash->{comments} = \%comment_counts;
+}
+
+sub stats_fix_rate : Path('stats/fix-rate') : Args(0) {
+    my ( $self, $c ) = @_;
+
+    $c->stash->{categories} = $c->cobrand->problems->categories_summary();
+}
+
 sub stats : Path('stats') : Args(0) {
     my ( $self, $c ) = @_;
 
@@ -1285,7 +1298,6 @@ sub set_allowed_pages : Private {
              'bodies' => [_('Bodies'), 1],
              'reports' => [_('Reports'), 2],
              'timeline' => [_('Timeline'), 3],
-             'questionnaire' => [_('Survey'), 4],
              'users' => [_('Users'), 5],
              'flagged'  => [_('Flagged'), 6],
              'stats'  => [_('Stats'), 7],
@@ -1552,7 +1564,8 @@ sub check_page_allowed : Private {
 
     $c->forward('set_allowed_pages');
 
-    (my $page = $c->req->action) =~ s#admin/?##;
+    (my $page = $c->req->path) =~ s#admin/?##;
+    $page =~ s#/.*##;
 
     $page ||= 'summary';
 
