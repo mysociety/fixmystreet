@@ -1,0 +1,7 @@
+[% IF problem.bodies_str %]
+    [% INCLUDE 'report/_council_sent_info.html' %]
+[% ELSE %]
+    <div class="council_info_box">
+        <p>[% loc('Not reported to council') %]</p>
+    </div>
+[% END %]

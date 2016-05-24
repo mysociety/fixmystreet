@@ -35,11 +35,7 @@
         [%- IF !problem.used_map %]; <strong>([% loc('there is no pin shown as the user did not use the map') %])</strong>[% END %]
     </p>
 
-    [% IF problem.bodies_str %]
-        [% INCLUDE 'report/_council_sent_info.html' %]
-    [% ELSE %]
-        <p class="council_sent_info">[% loc('Not reported to council') %]</p>
-    [% END %]
+    [% INCLUDE 'report/_main_sent_info.html' %]
     [% mlog = problem.latest_moderation_log_entry(); IF mlog %]
         <p>Moderated by [% mlog.user.from_body.name %] at [% prettify_dt(mlog.whenedited) %]</p>
     [% END %]
@@ -92,4 +88,6 @@
 
     </form>
   [% END %]
+
+  [% TRY %][% PROCESS 'report/_main_after.html' %][% CATCH file %][% END %]
 </div>
