@@ -201,10 +201,11 @@ sub belongs_to_body {
     my $self = shift;
     my $bodies = shift;
 
+    return 0 unless $bodies && $self->from_body;
+
     my %bodies = map { $_ => 1 } split ',', $bodies;
 
-    return 1 if $self->from_body && $bodies{ $self->from_body->id };
-
+    return 1 if $bodies{ $self->from_body->id };
     return 0;
 }
 
