@@ -1,10 +1,10 @@
-Subject: Züri wie neu: Neue Meldung #<?=$values['id']?>
+Subject: Züri wie neu: Neue Meldung #[% id %]
 
-Guten Tag <?=$values['bodies_name']?>,
+Guten Tag [% bodies_name %],
 
 Eine neue Meldung wurde erfasst:
 
-Öffentliche URL: <?=$values['url']?>
+Öffentliche URL: [% url %]
 
-Admin URL: <?=$values['admin_url']?>
+Admin URL: [% admin_url %]
 

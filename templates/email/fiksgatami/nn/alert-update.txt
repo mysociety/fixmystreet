@@ -1,13 +1,13 @@
-Subject: Nye oppdateringar for problem – '<?=$values['title']?>'
+Subject: Nye oppdateringar for problem – '[% title %]'
 
 Følgjande oppdateringar har vorte lagt inn for dette problemet:
 
-<?=$values['data']?>
+[% data %]
 
-<?=$values['state_message']?>
+[% state_message %]
 
 For å sjå på eller svara på desse oppdateringane, besøk denne lenkja:
-    <?=$values['problem_url']?>
+    [% problem_url %]
 
 Du kan ikkje kontakta nokon ved å svara på denne e-posten.
 
@@ -15,4 +15,4 @@ Venleg helsing,
 Fiksgata-gruppa
 
 For å slutta å motta e-post ved nye oppdateringar om dette
-problemet, følg denne lenkja: <?=$values['unsubscribe_url']?>
+problemet, følg denne lenkja: [% unsubscribe_url %]

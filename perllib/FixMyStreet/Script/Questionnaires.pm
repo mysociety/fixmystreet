@@ -52,8 +52,6 @@ sub send_questionnaires_period {
         # call checks if this is the host that sends mail for this cobrand.
         next unless $cobrand->email_host;
 
-        my $template = FixMyStreet->get_email_template($cobrand->moniker, $row->lang, 'questionnaire.txt');
-
         my %h = map { $_ => $row->$_ } qw/name title detail category/;
         $h{created} = Utils::prettify_duration( time() - $row->confirmed->epoch, 'week' );
 
@@ -78,14 +76,15 @@ sub send_questionnaires_period {
 
         my $result = FixMyStreet::Email::send_cron(
             $rs->result_source->schema,
+            'questionnaire.txt',
+            \%h,
             {
-                _template_ => $template,
-                _parameters_ => \%h,
                 To => [ [ $row->user->email, $row->name ] ],
             },
             undef,
             $params->{nomail},
-            $cobrand
+            $cobrand,
+            $row->lang,
         );
         unless ($result) {
             print "  ...success\n" if $params->{verbose};

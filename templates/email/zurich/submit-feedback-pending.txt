@@ -1,10 +1,10 @@
-Subject: Züri wie neu: Meldung #<?=$values['id']?> bereit für Feedback
+Subject: Züri wie neu: Meldung #[% id %] bereit für Feedback
 
-Guten Tag <?=$values['bodies_name']?>,
+Guten Tag [% bodies_name %],
 
 Diese Meldung wurde vom Fachbereich abschliessend beantwortet und kann nun auf <<Züri wie neu>> beantwortet und abgeschlossen werden.
 
-Öffentliche URL: <?=$values['url']?>
+Öffentliche URL: [% url %]
 
-Admin URL: <?=$values['admin_url']?>
+Admin URL: [% admin_url %]
 

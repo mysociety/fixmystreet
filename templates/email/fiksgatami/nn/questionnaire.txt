@@ -1,13 +1,13 @@
 Subject: Spørjeskjema for saka di på FiksGataMi
 
-Hei <?=$values['name']?>,
+Hei [% name %],
 
-for <?=$values['created']?> sidan, la du til ei sak på FiksGataMi.no
+for [% created %] sidan, la du til ei sak på FiksGataMi.no
 med detaljane som vist i denne e-posten. For å halda nettsida vår
 oppdatert og relevant, vil vi setja pris på om du kunne fylla ut
 følgjande skjema for å oppdatera saka:
 
-    <?=$values['url']?>
+    [% url %]
 
 Ver venleg og ikkje svar på denne e-posten; det er mogleg å kommentera
 i skjemaet.
@@ -17,8 +17,8 @@ FiksGataMi-gruppa
 
 Saka du la til var som følgjer:
 
-<?=$values['title']?>
+[% title %]
 
-<?=$values['detail']?>
+[% detail %]
 
 

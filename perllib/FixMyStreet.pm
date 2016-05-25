@@ -190,23 +190,6 @@ sub configure_mysociety_dbhandle {
 
 }
 
-=head2 get_email_template
-
-=cut
-
-sub get_email_template {
-    # TODO further refactor this by just using Template path
-    my ($class, $cobrand, $lang, $template) = @_;
-
-    my $template_path = FixMyStreet->path_to( "templates", "email", $cobrand, $lang, $template )->stringify;
-    $template_path = FixMyStreet->path_to( "templates", "email", $cobrand, $template )->stringify
-        unless -e $template_path;
-    $template_path = FixMyStreet->path_to( "templates", "email", "default", $template )->stringify
-        unless -e $template_path;
-    $template = Utils::read_file( $template_path );
-    return $template;
-}
-
 my $tz;
 my $tz_f;
 

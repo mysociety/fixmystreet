@@ -1,40 +1,40 @@
-Subject: Ny rapport: <?=$values['title']?>
+Subject: Ny rapport: [% title %]
 
-Till <?=$values['bodies_name']?>,
+Till [% bodies_name %],
 
 Det här meddelandet rör en rapport om ett problem i gatumiljön som en
 medborgare lämnat via tjänsten FixaMinGata.
 
-<?=$values['missing']?><?=$values['multiple']?>Följande rapport
+[% missing %][% multiple %]Följande rapport
 tror medborgaren behöver er uppmärksamhet.
 
-<?=$values['fuzzy']?> eller uppdatera problemet, klicka på följande länk:
+[% fuzzy %] eller uppdatera problemet, klicka på följande länk:
 
-    <?=$values['url']?>
+    [% url %]
 
-<?=$values['has_photo']?>
+[% has_photo %]
 
 ** Uppgiftslämnare
 
-Namn: <?=$values['name']?>
+Namn: [% name %]
 
-Epost: <?=$values['email']?>
+Epost: [% email %]
 
-<?=$values['phone_line']?>
+[% phone_line %]
 
 ** Information om ärendet
 
-<?=$values['category_line']?>Ärende: <?=$values['title']?>
+[% category_line %]Ärende: [% title %]
 
-<?=$values['detail']?>
+[% detail %]
 
 ** Geografisk position
 
-<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
+[% easting_northing %]Latitude: [% latitude %]
 
-Longitude: <?=$values['longitude']?>
+Longitude: [% longitude %]
 
-<?=$values['closest_address']?>----------
+[% closest_address %]----------
 
 Svar på det här brevet kommer att skickas till den person som lämnade
 rapporten.
@@ -57,5 +57,5 @@ Kontakta Föreningen Sambruk via:
 
   <http://fixamingata.se/contact>
 
-<?=$values['signature']?>
+[% signature %]
 

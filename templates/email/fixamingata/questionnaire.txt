@@ -1,13 +1,13 @@
-Subject: Frågeformulär om '<?=$values['title']?>'
+Subject: Frågeformulär om '[% title %]'
 
-Hej <?=$values['name']?>,
+Hej [% name %],
 
 OBS! Du kan inte svara på detta brev. För att se eller svara på dessa
 uppdateringar, klicka på följande länk:
 
-<?=$values['url']?>
+[% url %]
 
-<?=$values['created']?> sedan lämnade du en rapport på FixaMinGata. För
+[% created %] sedan lämnade du en rapport på FixaMinGata. För
 att hålla alla rapporter uppdaterade skulle vi uppskatta om du kunde
 klicka på länken nedan och svara på ett par korta frågor om det problem
 du rapporterade.
@@ -15,10 +15,10 @@ du rapporterade.
 Var snäll och svara inte på det här brevet. Använd istället
 kommentarsfältet i frågeformuläret.
 
-<?=$values['signature']?>
+[% signature %]
 
 Ditt rapporterade problem var enligt nedan:
 
-<?=$values['title']?>
+[% title %]
 
-<?=$values['detail']?>
+[% detail %]

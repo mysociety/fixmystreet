@@ -1,39 +1,41 @@
-Subject: FMS Problem Report: <?=$values['title']?>
+Subject: FMS Problem Report: [% title %]
 
-Dear <?=$values['bodies_name']?>,
+Dear [% bodies_name %],
 
-<?=$values['missing']?><?=$values['multiple']?>A user of
+[% missing %][% multiple %]A user of
 FixMyStreet has submitted the following report
 of a local problem that they believe might require your attention.
 
-<?=$values['fuzzy']?>, or to provide an update on the problem,
+[% fuzzy %], or to provide an update on the problem,
 please visit the following link:
 
-    <?=$values['url']?>
+    [% url %]
 
-<?=$values['has_photo']?>----------
+[% has_photo %]----------
 
-Name: <?=$values['name']?>
+Name: [% name %]
 
-Email: <?=$values['email']?>
+Email: [% email %]
 
-<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>
+[% phone_line %][% category_line %]Subject: [% title %]
 
-Details: <?=$values['detail']?>
+Details: [% detail %]
 
-<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
+[% easting_northing %]Latitude: [% latitude %]
 
-Longitude: <?=$values['longitude']?>
+Longitude: [% longitude %]
 
-<?=$values['closest_address']?>----------
+View OpenStreetMap of this location: [% osm_url %]
+
+[% closest_address %]----------
 
 Replies to this email will go to the user who submitted the problem.
 
-<?=$values['signature']?>
+[% signature %]
 
 This message was sent via FixMyStreet, a project of UKCOD, registered charity
 number 1076346. If there is a more appropriate email address for messages about
-<?=$values['category_footer']?>, please let us know by visiting <https://www.fixmystreet.com/contact>.
+[% category_footer %], please let us know by visiting <https://www.fixmystreet.com/contact>.
 This will help improve the service for local people. We
 also welcome any other feedback you may have.
 

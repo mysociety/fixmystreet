@@ -1,24 +1,24 @@
-Subject: New <?=$values['site_name']?> reports to <?=$values['area_name']?> within <?=$values['ward_name']?>
+Subject: New [% site_name %] reports to [% area_name %] within [% ward_name %]
 
-The following new <?=$values['site_name']?> reports have been sent to <?=$values['area_name']?>
-within <?=$values['ward_name']?>:
+The following new [% site_name %] reports have been sent to [% area_name %]
+within [% ward_name %]:
 
-<?=$values['data']?>
+[% data %]
 
-<?=$values['signature']?>
+[% signature %]
 
 
 Unsubscribe?
 
-You subscribed to receive an email every time someone makes a new <?=$values['site_name']?>
-report to <?=$values['area_name']?> within <?=$values['ward_name']?>.This is a
-free service from <?=$values['site_name']?>.
+You subscribed to receive an email every time someone makes a new [% site_name %]
+report to [% area_name %] within [% ward_name %]. This is a
+free service from [% site_name %].
 
 If you no longer wish to receive an email whenever there are new reports to
-<?=$values['area_name']?> within <?=$values['ward_name']?>, please follow
+[% area_name %] within [% ward_name %], please follow
 this link:
 
-<?=$values['unsubscribe_url']?>
+[% unsubscribe_url %]
 
 This email was sent automatically, from an unmonitored email account - so please
 do not reply to it.

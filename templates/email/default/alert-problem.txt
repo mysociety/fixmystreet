@@ -1,21 +1,21 @@
-Subject: New reports on <?=$values['site_name']?>
+Subject: New reports on [% site_name %]
 
-The following new reports have been added to <?=$values['site_name']?>:
+The following new reports have been added to [% site_name %]:
 
-<?=$values['data']?>
+[% data %]
 
-<?=$values['signature']?>
+[% signature %]
 
 
 Unsubscribe?
 
-You subscribed to receive an email when someone makes a new <?=$values['site_name']?>
-report. This is a free service from <?=$values['site_name']?>.
+You subscribed to receive an email when someone makes a new [% site_name %]
+report. This is a free service from [% site_name %].
 
-If you no longer wish to receive an email whenever there are new <?=$values['site_name']?>
+If you no longer wish to receive an email whenever there are new [% site_name %]
 reports please follow this link:
 
-<?=$values['unsubscribe_url']?>
+[% unsubscribe_url %]
 
 This email was sent automatically, from an unmonitored email account - so please
 do not reply to it.

@@ -1,13 +1,13 @@
-Subject: Nye saker sendt til <?=$values['area_name']?> innenfor <?=$values['ward_name']?> via FiksGataMi.no
+Subject: Nye saker sendt til [% area_name %] innenfor [% ward_name %] via FiksGataMi.no
 
-Følgende saker er sendt til <?=$values['area_name']?>
-innenfor <?=$values['ward_name']?>:
+Følgende saker er sendt til [% area_name %]
+innenfor [% ward_name %]:
 
-<?=$values['data']?>
+[% data %]
 
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
 Hvis du ikke ønsker å motta e-post om saker som er sendt til
-<?=$values['area_name']?> innenfor <?=$values['ward_name']?>,
-klikk på denne linken: <?=$values['unsubscribe_url']?>
+[% area_name %] innenfor [% ward_name %],
+klikk på denne linken: [% unsubscribe_url %]

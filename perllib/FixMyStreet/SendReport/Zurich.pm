@@ -59,8 +59,6 @@ sub get_template {
         }
     }
 
-    my $template_path = FixMyStreet->path_to( "templates", "email", "zurich", $template )->stringify;
-    $template = Utils::read_file( $template_path );
     return $template;
 }
 

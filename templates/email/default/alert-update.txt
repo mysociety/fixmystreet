@@ -1,27 +1,27 @@
-Subject: New <?=$values['site_name']?> updates on report: '<?=$values['title']?>'
+Subject: New [% site_name %] updates on report: '[% title %]'
 
 You asked us to send you an email every time an update was made to the
-<?=$values['site_name']?> report: <?=$values['title']?>.
+[% site_name %] report: [% title %].
 
 The following updates have been left on this report:
 
-<?=$values['data']?>
+[% data %]
 
-<?=$values['state_message']?>
+[% state_message %]
 
 If you would like to view or reply to these updates, please visit the following URL:
-    <?=$values['problem_url']?>
+    [% problem_url %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.
 
-<?=$values['signature']?>
+[% signature %]
 
 
 Unsubscribe?
 
 We currently email you whenever someone leaves an update on the
-<?=$values['site_name']?> report: <?=$values['title']?>.
+[% site_name %] report: [% title %].
 
 If you no longer wish to receive an email whenever this report is updated,
-please follow this link: <?=$values['unsubscribe_url']?>
+please follow this link: [% unsubscribe_url %]

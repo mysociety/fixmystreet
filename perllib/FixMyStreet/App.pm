@@ -320,8 +320,7 @@ sub send_email {
 
     my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email(
         {
-            _template_ => $c->view('Email')->render( $c, $template, $vars ),
-            _parameters_ => {},
+            _body_ => $c->view('Email')->render( $c, $template, $vars ),
             _attachments_ => $extra_stash_values->{attachments},
             From => $vars->{from},
             To => $vars->{to},
