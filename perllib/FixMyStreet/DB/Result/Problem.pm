@@ -662,36 +662,6 @@ sub can_display_external_id {
     return 0;    
 }
 
-# TODO Some/much of this could be moved to the template
-
-# either: 
-#   "sent to council 3 mins later"
-#   "[Council name] ref: XYZ"
-# or
-#   "sent to council 3 mins later, their ref: XYZ"
-#
-# Note: some silliness with pronouns and the adjacent comma mean this is
-#       being presented as a single string rather than two
-sub processed_summary_string {
-    my ( $problem, $c ) = @_;
-    my ($duration_clause, $external_ref_clause);
-    if ($problem->whensent) {
-        $duration_clause = $problem->duration_string($c);
-    }
-    if ($problem->can_display_external_id) {
-        if ($duration_clause) {
-            $external_ref_clause = '<strong>' . sprintf(_('Council ref:&nbsp;%s'), $problem->external_id) . '.</strong>';
-        } else {
-            $external_ref_clause = '<strong>' . sprintf(_('%s ref:&nbsp;%s'), $problem->external_body, $problem->external_id) . '.</strong>';
-        }
-    }
-    if ($duration_clause and $external_ref_clause) {
-        return "$duration_clause. $external_ref_clause"
-    } else {
-        return $duration_clause || $external_ref_clause
-    }
-}
-
 sub duration_string {
     my ( $problem, $c ) = @_;
     my $body = $problem->body( $c );

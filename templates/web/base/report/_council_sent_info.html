@@ -1,5 +1,17 @@
 [% IF problem.whensent || problem.can_display_external_id %]
     <p class="council_sent_info">
-        [% problem.processed_summary_string(c) %]
+    [% SET duration_clause = problem.duration_string(c) IF problem.whensent %]
+    [%- IF problem.can_display_external_id %]
+        [%- IF duration_clause %]
+            [%- external_ref_clause = tprintf(loc('Council ref:&nbsp;%s'), problem.external_id) %]
+        [%- ELSE %]
+            [%- external_ref_clause = tprintf(loc('%s ref:&nbsp;%s'), problem.external_body, problem.external_id) %]
+        [%- END %]
+    [%- END -%]
+    [% duration_clause %]
+    [%- IF external_ref_clause %]
+        [%- IF duration_clause %]. [% END %]
+        <strong>[% external_ref_clause %].</strong>
+    [%- END %]
     </p>
 [% END %]
