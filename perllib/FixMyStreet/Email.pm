@@ -1,3 +1,9 @@
+package FixMyStreet::Email::Error;
+
+use Error qw(:try);
+
+@FixMyStreet::Email::Error::ISA = qw(Error::Simple);
+
 package FixMyStreet::Email;
 
 use Email::MIME;
@@ -5,7 +11,7 @@ use Encode;
 use POSIX qw();
 use Template;
 use Digest::HMAC_SHA1 qw(hmac_sha1_hex);
-use mySociety::Email;
+use Text::Wrap;
 use mySociety::Locale;
 use mySociety::Random qw(random_bytes);
 use Utils::Email;
@@ -64,50 +70,42 @@ sub is_abuser {
     return $schema->resultset('Abuse')->search( { email => [ $email, $domain ] } )->first;
 }
 
+sub _render_template {
+    my ($tt, $template, $vars, %options) = @_;
+    my $var;
+    $tt->process($template, $vars, \$var);
+    return $var;
+}
+
 sub send_cron {
-    my ( $schema, $params, $env_from, $nomail, $cobrand, $lang_code ) = @_;
+    my ( $schema, $template, $vars, $hdrs, $env_from, $nomail, $cobrand, $lang_code ) = @_;
 
     my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
     $env_from ||= $sender;
-    if (!$params->{From}) {
+    if (!$hdrs->{From}) {
         my $sender_name = $cobrand->contact_name;
-        $params->{From} = [ $sender, _($sender_name) ];
+        $hdrs->{From} = [ $sender, _($sender_name) ];
     }
 
-    return 1 if is_abuser($schema, $params->{To});
+    return 1 if is_abuser($schema, $hdrs->{To});
 
-    $params->{'Message-ID'} = sprintf('<fms-cron-%s-%s@%s>', time(),
+    $hdrs->{'Message-ID'} = sprintf('<fms-cron-%s-%s@%s>', time(),
         unpack('h*', random_bytes(5, 1)), FixMyStreet->config('EMAIL_DOMAIN')
     );
 
-    # This is all to set the path for the templates processor so we can override
-    # signature and site names in emails using templates in the old style emails.
-    # It's a bit involved as not everywhere we use it knows about the cobrand so
-    # we can't assume there will be one.
-    my $include_path = FixMyStreet->path_to( 'templates', 'email', 'default' )->stringify;
-    if ( $cobrand ) {
-        $include_path =
-            FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker )->stringify . ':'
-            . $include_path;
-        if ( $lang_code ) {
-            $include_path =
-                FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker, $lang_code )->stringify . ':'
-                . $include_path;
-        }
-    }
     my $tt = Template->new({
-        INCLUDE_PATH => $include_path
+        ENCODING => 'utf8',
+        INCLUDE_PATH => [
+            FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker, $lang_code )->stringify,
+            FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker )->stringify,
+            FixMyStreet->path_to( 'templates', 'email', 'default' )->stringify,
+        ],
     });
-    my ($sig, $site_name);
-    $tt->process( 'signature.txt', $params, \$sig );
-    $sig = Encode::decode('utf8', $sig);
-    $params->{_parameters_}->{signature} = $sig;
+    $vars->{signature} = _render_template($tt, 'signature.txt', $vars);
+    $vars->{site_name} = Utils::trim_text(_render_template($tt, 'site-name.txt', $vars));
+    $hdrs->{_body_} = _render_template($tt, $template, $vars);
 
-    $tt->process( 'site-name.txt', $params, \$site_name );
-    $site_name = Utils::trim_text(Encode::decode('utf8', $site_name));
-    $params->{_parameters_}->{site_name} = $site_name;
-
-    my $email = mySociety::Locale::in_gb_locale { construct_email($params) };
+    my $email = mySociety::Locale::in_gb_locale { construct_email($hdrs) };
 
     if ($nomail) {
         print $email->as_string;
@@ -125,16 +123,12 @@ containing elements as given below. Returns an Email::MIME email.
 
 =over 4
 
-=item _template_, _parameters_
+=item _body_
 
-Templated body text and an associative array of template parameters. _template
-contains optional substititutions <?=$values['name']?>, each of which is
-replaced by the value of the corresponding named value in _parameters_. It is
-an error to use a substitution when the corresponding parameter is not present
-or undefined. The first line of the template will be interpreted as contents of
+Body text. The first line of the template will be interpreted as contents of
 the Subject: header of the mail if it begins with the literal string 'Subject:
-' followed by a blank line. The templated text will be word-wrapped to produce
-lines of appropriate length.
+' followed by a blank line. The text will be word-wrapped to produce lines of
+appropriate length.
 
 =item _attachments_
 
@@ -175,21 +169,42 @@ templated body, From or Subject (perhaps from the template).
 sub construct_email ($) {
     my $p = shift;
 
-    throw mySociety::Email::Error("Must specify both '_template_' and '_parameters_'")
-        if !exists($p->{_template_}) || !exists($p->{_parameters_});
-    throw mySociety::Email::Error("Template parameters '_parameters_' must be an associative array")
-        if (ref($p->{_parameters_}) ne 'HASH');
+    throw FixMyStreet::Email::Error("Must specify '_body_'") if !exists($p->{_body_});
 
-    (my $subject, $body) = mySociety::Email::do_template_substitution($p->{_template_}, $p->{_parameters_}, '');
+    my $body = $p->{_body_};
+    my $subject;
+    if ($body =~ m#^Subject: ([^\n]*)\n\n#s) {
+        $subject = $1;
+        $body =~ s#^Subject: ([^\n]*)\n\n##s;
+    }
+
+    $body =~ s/\r\n/\n/gs;
+    $body =~ s/^\s+$//mg; # Note this also reduces any gap between paragraphs of >1 blank line to 1
+    $body =~ s/\s+$//;
+
+    # Merge paragraphs into their own line.  Two blank lines separate a
+    # paragraph. End a line with two spaces to force a linebreak.
+
+    # regex means, "replace any line ending that is neither preceded (?<!\n)
+    # nor followed (?!\n) by a blank line with a single space".
+    $body =~ s#(?<!\n)(?<!  )\n(?!\n)# #gs;
+
+    # Wrap text to 72-column lines.
+    local($Text::Wrap::columns) = 69;
+    local($Text::Wrap::huge) = 'overflow';
+    local($Text::Wrap::unexpand) = 0;
+    $body = Text::Wrap::wrap('', '', $body);
+    $body =~ s/^\s+$//mg; # Do it again because of wordwrapping indented lines
+
     $p->{Subject} = $subject if defined($subject);
 
     if (!exists($p->{Subject})) {
         # XXX Try to find out what's causing this very occasionally
         (my $error = $body) =~ s/\n/ | /g;
         $error = "missing field 'Subject' in MESSAGE - $error";
-        throw mySociety::Email::Error($error);
+        throw FixMyStreet::Email::Error($error);
     }
-    throw mySociety::Email::Error("missing field 'From' in MESSAGE") unless exists($p->{From});
+    throw FixMyStreet::Email::Error("missing field 'From' in MESSAGE") unless exists($p->{From});
 
     # Construct email headers
     my %hdr;
@@ -203,7 +218,7 @@ sub construct_email ($) {
             # Array of addresses or [address, name] pairs.
             $hdr{$h} = join(', ', map { mailbox($_, $h) } @{$p->{$h}});
         } else {
-            throw mySociety::Email::Error("Field '$h' in MESSAGE should be single value or an array");
+            throw FixMyStreet::Email::Error("Field '$h' in MESSAGE should be single value or an array");
         }
     }
 
@@ -251,7 +266,7 @@ sub mailbox {
     if (ref($e) eq '') {
         return $e;
     } elsif (ref($e) ne 'ARRAY' || @$e != 2) {
-        throw mySociety::Email::Error("'$header' field should be string or 2-element array");
+        throw FixMyStreet::Email::Error("'$header' field should be string or 2-element array");
     } else {
         return Email::Address->new($e->[1], $e->[0]);
     }

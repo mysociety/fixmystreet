@@ -1,20 +1,20 @@
-Subject: Züri wie neu: Weitergeleitete Meldung #<?=$values['id']?>
+Subject: Züri wie neu: Weitergeleitete Meldung #[% id %]
 
-Grüezi <?=$values['bodies_name']?>,
+Grüezi [% bodies_name %],
 
-<?=$values['external_message']?>
+[% external_message %]
 
 
-Name des Meldenden: <?=$values['name']?>
+Name des Meldenden: [% name %]
 
-Email des Meldenden: <?=$values['email']?>
+Email des Meldenden: [% email %]
 
-Telefonnummer des Meldenden: <?=$values['phone']?>
+Telefonnummer des Meldenden: [% phone %]
 
-Meldung: <?=$values['detail']?>
+Meldung: [% detail %]
 
 Standort in AV-Online anzeigen:
-http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=<?=$values['west']?>&Nord=<?=$values['nord']?>&B=300
+http://webgis.intra.stzh.ch/AV_Online/Direct.asp?Map=AV&Search=Koord&West=[% west %]&Nord=[% nord %]&B=300
 
 
 Bei Fragen zu "Züri wie neu" wenden Sie sich bitte an gis-zentrum@zuerich.ch.

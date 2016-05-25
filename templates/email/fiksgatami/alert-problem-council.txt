@@ -1,12 +1,12 @@
-Subject: Nye saker sendt til <?=$values['area_name']?> via FiksGataMi.no
+Subject: Nye saker sendt til [% area_name %] via FiksGataMi.no
 
-Følgende saker er sendt til <?=$values['area_name']?>:
+Følgende saker er sendt til [% area_name %]:
 
-<?=$values['data']?>
+[% data %]
 
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
 Hvis du ikke ønsker å motta e-post om saker som er sendt til
-<?=$values['area_name']?> i fremtiden, klikk på følgende lenke: 
-<?=$values['unsubscribe_url']?>
+[% area_name %] i fremtiden, klikk på følgende lenke: 
+[% unsubscribe_url %]

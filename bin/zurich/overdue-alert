@@ -52,9 +52,6 @@ sub loop_through {
         $to_send{$row->bodies_str} .= '* ' . $row->id . ": '" . $row->title . "'\n\n";
     }
 
-    my $template_path = FixMyStreet->path_to( "templates", "email", "zurich", $template )->stringify;
-    $template = Utils::read_file( $template_path );
-
     foreach my $body_id (keys %to_send) {
         send_alert( $template, $body_id, $to_send{$body_id}, $include_parent );
     }
@@ -80,14 +77,15 @@ sub send_alert {
 
     FixMyStreet::Email::send_cron(
         FixMyStreet::DB->storage->schema,
+        $template,
+        $h,
         {
-            _template_ => $template,
-            _parameters_ => $h,
             To => $to,
             From => [ FixMyStreet->config('CONTACT_EMAIL'), FixMyStreet->config('CONTACT_NAME') ],
         },
         FixMyStreet->config('CONTACT_EMAIL'),
-        $nomail
+        $nomail,
+        $cobrand, 'de-ch',
     );
 }
 

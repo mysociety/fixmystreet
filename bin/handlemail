@@ -170,8 +170,7 @@ sub handle_non_bounce_to_null_address {
     my $mail = FixMyStreet::Email::construct_email({
         From => [ FixMyStreet->config('CONTACT_EMAIL'), 'FixMyStreet' ],
         To => $data{return_path},
-        _template_ => $template,
-        _parameters_ => { },
+        _body_ => $template,
     });
     send_mail($mail->as_string, '<>', $data{return_path});
 }

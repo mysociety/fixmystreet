@@ -52,15 +52,8 @@ sub build_recipient_list {
 
 sub get_template {
     my ( $self, $row ) = @_;
-
-    my $template = 'submit.txt';
-
-    if ($row->cobrand eq 'fixmystreet') {
-        $template = 'submit-oxfordshire.txt' if $row->bodies_str eq 2237;
-    }
-
-    $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, $template);
-    return $template;
+    return 'submit-oxfordshire.txt' if $row->cobrand eq 'fixmystreet' && $row->bodies_str eq 2237;
+    return 'submit.txt';
 }
 
 sub send_from {
@@ -88,8 +81,6 @@ sub send {
     my ($verbose, $nomail) = CronFns::options();
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
     my $params = {
-        _template_ => $self->get_template( $row ),
-        _parameters_ => $h,
         To => $self->to,
         From => $self->send_from( $row ),
     };
@@ -108,7 +99,9 @@ sub send {
         $params->{From} = [ $sender, $params->{From}[1] ];
     }
 
-    my $result = FixMyStreet::Email::send_cron($row->result_source->schema, $params, $sender, $nomail, $cobrand);
+    my $result = FixMyStreet::Email::send_cron($row->result_source->schema,
+        $self->get_template($row), $h,
+        $params, $sender, $nomail, $cobrand, $row->lang);
 
     unless ($result) {
         $self->success(1);

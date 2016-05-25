@@ -28,7 +28,7 @@ pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
 culpa qui officia deserunt mollit anim id est laborum.
 
 Yours,=20=20
-FixMyStreet.=20=
+FixMyStreet.=
 
 --BOUNDARY
 Content-Type: image/gif; name="foo.gif"

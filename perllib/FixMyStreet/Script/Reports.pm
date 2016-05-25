@@ -289,19 +289,18 @@ sub _send_report_sent_email {
     my $nomail = shift;
     my $cobrand = shift;
 
-    my $template = FixMyStreet->get_email_template($row->cobrand, $row->lang, 'confirm_report_sent.txt');
-
     FixMyStreet::Email::send_cron(
         $row->result_source->schema,
+        'confirm_report_sent.txt',
+        $h,
         {
-            _template_ => $template,
-            _parameters_ => $h,
             To => $row->user->email,
             From => [ FixMyStreet->config('CONTACT_EMAIL'), $cobrand->contact_name ],
         },
         FixMyStreet->config('CONTACT_EMAIL'),
         $nomail,
-        $cobrand
+        $cobrand,
+        $row->lang,
     );
 }
 

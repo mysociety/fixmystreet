@@ -1,22 +1,22 @@
-Subject: New <?=$values['site_name']?> reports in <?=$values['area_name']?>
+Subject: New [% site_name %] reports in [% area_name %]
 
-The following new <?=$values['site_name']?> reports have been added in
-the <?=$values['area_name']?> area:
+The following new [% site_name %] reports have been added in
+the [% area_name %] area:
 
-<?=$values['data']?>
+[% data %]
 
-<?=$values['signature']?>
+[% signature %]
 
 
 Unsubscribe?
 
-You asked us to send you an email when someone makes a new <?=$values['site_name']?>
-report in <?=$values['area_name']?>. This is a free service from <?=$values['site_name']?>.
+You asked us to send you an email when someone makes a new [% site_name %]
+report in [% area_name %]. This is a free service from [% site_name %].
 
 If you no longer wish to receive an email whenever there are new reports in
-the <?=$values['area_name']?> area, please follow this link:
+the [% area_name %] area, please follow this link:
 
-<?=$values['unsubscribe_url']?>
+[% unsubscribe_url %]
 
 This email was sent automatically, from an unmonitored email account - so please
 do not reply to it.

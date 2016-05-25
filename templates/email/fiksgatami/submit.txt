@@ -1,31 +1,31 @@
-Subject: Problemrapport: <?=$values['title']?>
+Subject: Problemrapport: [% title %]
 
-Til <?=$values['bodies_name']?>,
+Til [% bodies_name %],
 
-<?=$values['missing']?><?=$values['multiple']?>En bruker av
+[% missing %][% multiple %]En bruker av
 FiksGataMi har sendt inn følgende rapport om et lokalt
 problem som vi tror trenger deres oppmerksomhet.
 
-<?=$values['fuzzy']?>, eller for å bidra med en oppdatering om problemet,
+[% fuzzy %], eller for å bidra med en oppdatering om problemet,
 vennligst besøk følgende lenke:
 
-    <?=$values['url']?>
+    [% url %]
 
-<?=$values['has_photo']?>----------
+[% has_photo %]----------
 
-Navn: <?=$values['name']?>
+Navn: [% name %]
 
-E-post: <?=$values['email']?>
+E-post: [% email %]
 
-<?=$values['phone_line']?><?=$values['category_line']?>Tema: <?=$values['title']?>
+[% phone_line %][% category_line %]Tema: [% title %]
 
-Detajer: <?=$values['detail']?>
+Detajer: [% detail %]
 
-<?=$values['easting_northing']?>Breddegrad: <?=$values['latitude']?>
+[% easting_northing %]Breddegrad: [% latitude %]
 
-Lengegrad: <?=$values['longitude']?>
+Lengegrad: [% longitude %]
 
-<?=$values['closest_address']?>----------
+[% closest_address %]----------
 
 Svar på denne e-posten går til brukeren som sendte inn problemet.
 
@@ -34,7 +34,7 @@ FiksGataMi-gruppen
 
 [ Denne meldingen ble sendt inn via FiksGataMi, et prosjekt hos foreningen NUUG.
 Hvis det er en mer passende e-postadresse for meldinger om
-<?=$values['category_footer']?>, vær så snill å gi oss beskjed ved å besøke
+[% category_footer %], vær så snill å gi oss beskjed ved å besøke
 <http://www.fiksgatami.no/contact>.
 Dette vil bidra til å forbedre tjenesten for lokalbefolkningen. Vi
 tar også gjerne imot andre tilbakemeldinger. ]

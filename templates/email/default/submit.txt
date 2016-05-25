@@ -1,38 +1,38 @@
-Subject: Problem Report: <?=$values['title']?>
+Subject: Problem Report: [% title %]
 
-Dear <?=$values['bodies_name']?>,
+Dear [% bodies_name %],
 
-<?=$values['missing']?><?=$values['multiple']?>A user of
-<?=$values['site_name']?> has submitted the following report
+[% missing %][% multiple %]A user of
+[% site_name %] has submitted the following report
 of a local problem that they believe might require your attention.
 
-<?=$values['fuzzy']?>, or to provide an update on the problem,
+[% fuzzy %], or to provide an update on the problem,
 please visit the following link:
 
-    <?=$values['url']?>
+    [% url %]
 
-<?=$values['has_photo']?>----------
+[% has_photo %]----------
 
-Name: <?=$values['name']?>
+Name: [% name %]
 
-Email: <?=$values['email']?>
+Email: [% email %]
 
-<?=$values['phone_line']?><?=$values['category_line']?>Subject: <?=$values['title']?>
+[% phone_line %][% category_line %]Subject: [% title %]
 
-Details: <?=$values['detail']?>
+Details: [% detail %]
 
-<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
+[% easting_northing %]Latitude: [% latitude %]
 
-Longitude: <?=$values['longitude']?>
+Longitude: [% longitude %]
 
-View OpenStreetMap of this location: <?=$values['osm_url']?>
+View OpenStreetMap of this location: [% osm_url %]
 
-<?=$values['closest_address']?>----------
+[% closest_address %]----------
 
 Replies to this email will go to the user who submitted the problem.
 
-<?=$values['signature']?>
+[% signature %]
 
 If there is a more appropriate email address for messages about
-<?=$values['category_footer']?>, please let us know. This will help improve the
+[% category_footer %], please let us know. This will help improve the
 service for local people. We also welcome any other feedback you may have.

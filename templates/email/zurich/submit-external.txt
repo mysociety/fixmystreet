@@ -1,11 +1,11 @@
-Subject: Züri wie neu: Weitergeleitete Meldung #<?=$values['id']?>
+Subject: Züri wie neu: Weitergeleitete Meldung #[% id %]
 
-Grüezi <?=$values['bodies_name']?>,
+Grüezi [% bodies_name %],
 
-<?=$values['external_message']?>
+[% external_message %]
 
 
-Öffentliche URL: <?=$values['url']?>
+Öffentliche URL: [% url %]
 
 
 Bei Fragen zu "Züri wie neu" wenden Sie sich bitte an gis-zentrum@zuerich.ch.

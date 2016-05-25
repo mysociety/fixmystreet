@@ -587,14 +587,6 @@ sub admin_report_edit {
         #    2) setting $problem->whensent(undef) may make it eligible for generating an email
         #   to the body (internal or external).  See DBRS::Problem->send_reports for Zurich-
         #   specific categories which are eligible for this.
-        #
-        #   It looks like both of these will do:
-        #       a) TT processing of [% ... %] directives, in FMS::App->send_email(_cron)
-        #       b) pseudo-PHP substitution of <?=$values['name']?> which is done as
-        #       naive substitution
-        #       commonlib mySociety::Email
-        #
-        #   So it makes sense to add new parameters as the more powerful TT (a).
 
         my $redirect = 0;
         my $new_cat = $c->get_param('category') || '';

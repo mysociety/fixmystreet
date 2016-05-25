@@ -2,10 +2,10 @@ Subject: Nye saker på FiksGataMi.no
 
 Følgende nye saker er lagt til:
 
-<?=$values['data']?>
+[% data %]
 
 Vennlig hilsen,  
 FiksGataMi-gruppen
 
 Hvis du ikke ønsker å motta e-post om nye saker,
-klikk på følgende lenke: <?=$values['unsubscribe_url']?>
+klikk på følgende lenke: [% unsubscribe_url %]

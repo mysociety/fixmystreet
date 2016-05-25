@@ -2,8 +2,8 @@ Subject: Rückmeldung erforderlich auf Züri wie neu
 
 Die folgenden Meldungen wurden eskaliert, da sie nicht innerhalb von fünf Tagen beantwortet worden sind:
 
-<?=$values['data']?>
+[% data %]
 
 Um diese Meldungen zu bearbeiten, klicken Sie auf folgende URL:
 
-<?=$values['admin_url']?>
+[% admin_url %]

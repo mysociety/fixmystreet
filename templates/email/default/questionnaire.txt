@@ -1,24 +1,24 @@
-Subject: Questionnaire about your <?=$values['site_name']?> report: '<?=$values['title']?>'
+Subject: Questionnaire about your [% site_name %] report: '[% title %]'
 
-Hello <?=$values['name']?>,
+Hello [% name %],
 
-<?=$values['created']?> ago, you reported a problem using <?=$values['site_name']?>.
+[% created %] ago, you reported a problem using [% site_name %].
 
 The details of that report are at the end of this email.
 
-To keep <?=$values['site_name']?> up to date and relevant, we'd appreciate it
+To keep [% site_name %] up to date and relevant, we'd appreciate it
 if you could follow the link below and fill in our short questionnaire
 updating the status of your problem:
 
-    <?=$values['url']?>
+    [% url %]
 
-<?=$values['signature']?>
+[% signature %]
 
 Your report was as follows:
 
-<?=$values['title']?>
+[% title %]
 
-<?=$values['detail']?>
+[% detail %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

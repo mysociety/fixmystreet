@@ -4,22 +4,22 @@ A user of
 See Something, Say Something has submitted the following report
 of a problem that they believe might require your attention.
 
-<?=$values['image_url']?>
+[% image_url %]
 ----------
 
-<?=$values['user_details']?>
+[% user_details %]
 
-<?=$values['phone_line']?><?=$values['category_line']?><?=$values['subcategory_line']?>
+[% phone_line %][% category_line %][% subcategory_line %]
 
-Details: <?=$values['detail']?>
+Details: [% detail %]
 
-<?=$values['easting_northing']?>Latitude: <?=$values['latitude']?>
+[% easting_northing %]Latitude: [% latitude %]
 
-Longitude: <?=$values['longitude']?>
+Longitude: [% longitude %]
 
-<?=$values['closest_address']?>----------
+[% closest_address %]----------
 
 Replies to this email will go to the user who submitted the problem
 unless it is an anonymous report in which case they will be discarded.
 
-<?=$values['signature']?>
+[% signature %]
