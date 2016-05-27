@@ -1053,6 +1053,11 @@ sub save_user_and_report : Private {
         $report->external_source( $c->config->{MESSAGE_MANAGER_URL} ) ;
     }
 
+    if ( $report->is_from_abuser ) {
+        $c->stash->{template} = 'tokens/abuse.html';
+        $c->detach;
+    }
+
     if ( $c->stash->{is_social_user} ) {
         my $token = $c->model("DB::Token")->create( {
             scope => 'problem/social',

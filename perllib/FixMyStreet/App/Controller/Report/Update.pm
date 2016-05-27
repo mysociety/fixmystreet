@@ -402,6 +402,11 @@ sub save_update : Private {
         $update->photo($fileid);
     }
 
+    if ( $update->is_from_abuser ) {
+        $c->stash->{template} = 'tokens/abuse.html';
+        $c->detach;
+    }
+
     if ( $c->stash->{is_social_user} ) {
         my $token = $c->model("DB::Token")->create( {
             scope => 'update/social',
