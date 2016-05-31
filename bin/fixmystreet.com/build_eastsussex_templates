@@ -1,0 +1,96 @@
+#!/usr/bin/env perl
+#
+# Build header.html and footer.html from online East Sussex template fragments.
+
+use strict;
+use warnings;
+use feature 'say';
+
+my %TEMPLATES = (
+    "header.html.template" => [
+        "HtmlTag",
+        "MetadataDesktop",
+        [
+            "HeaderDesktop",
+            [
+                ["<header>", '<header class="eastsussex">'],
+            ]
+        ],
+    ],
+    "footer.html.template" => [
+        "FooterDesktop",
+    ]
+);
+
+my $BASE_URL = "https://www.eastsussex.gov.uk/masterpages/remote/control.aspx?control=%s&host=mysociety.org";
+
+use File::Basename qw(dirname basename);
+use File::Spec;
+my $DIR;
+BEGIN {
+    $DIR = dirname(File::Spec->rel2abs($0)) . '/../..';
+    require "$DIR/setenv.pl";
+}
+
+use File::ChangeNotify;
+use Getopt::Long;
+use LWP::Simple qw($ua);
+use Path::Tiny;
+
+$ua->agent("FixMyStreet/1.0");
+# The server seems to have some issues with SSL negotiation
+$ua->ssl_opts(SSL_version => 'SSLv23:!SSLv2:!SSLv3:!TLSv11:!TLSv12');
+
+chdir "$DIR/templates/web/eastsussex";
+
+GetOptions('watch' => \my $watch);
+
+if ($watch) {
+    watch_local_files();
+} else {
+    update_templates();
+}
+
+# ---
+
+sub update_templates {
+    while (my ($template_path, $fragment_names) = each %TEMPLATES) {
+        my %fragments;
+        foreach my $name (@$fragment_names) {
+            my $patches;
+            ($name, $patches) = @$name if ref $name;
+
+            my $url = sprintf($BASE_URL, $name);
+            my $content = LWP::Simple::get($url);
+            # If we got nothing, bail out!
+            return unless $content;
+
+            $content =~ s/\r//g;
+            $content =~ s/$_->[0]/$_->[1]/ for @$patches;
+            $fragments{$name} = $content;
+            path("$name.html")->spew_utf8($fragments{$name});
+        }
+        my $template = path($template_path)->slurp_utf8;
+        $template =~ s/{$_}/$fragments{$_}/ for keys %fragments;
+        path(substr($template_path, 0, -9))->spew_utf8($template);
+    }
+    return 1;
+}
+
+sub watch_local_files {
+    say "Watching for changes to: " . join(', ', keys %TEMPLATES);
+    my $files = join('|', keys %TEMPLATES);
+    my $watcher = File::ChangeNotify->instantiate_watcher(
+        directories => '.',
+        filter => qr/$files/,
+    );
+
+    while ( my @events = $watcher->wait_for_events() ) {
+        for my $event (@events) {
+            my $filename = basename($event->path);
+            say "$filename has changed, updating templates...";
+            my $success = update_templates();
+            say $success ? "done." : 'Failed.';
+        }
+    }
+}
