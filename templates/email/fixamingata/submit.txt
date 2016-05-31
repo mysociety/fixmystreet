@@ -12,17 +12,15 @@ tror medborgaren behöver er uppmärksamhet.
 
     [% url %]
 
-[% has_photo %]
-
 ** Uppgiftslämnare
 
 Namn: [% name %]
 
 Epost: [% email %]
 
-[% phone_line %]
+[% phone_line %]** Information om ärendet
 
-** Information om ärendet
+ID: [% id %]
 
 [% category_line %]Ärende: [% title %]
 
@@ -34,7 +32,9 @@ Epost: [% email %]
 
 Longitude: [% longitude %]
 
-[% closest_address %]----------
+** Övrigt
+
+[% has_photo %][% closest_address %]----------
 
 Svar på det här brevet kommer att skickas till den person som lämnade
 rapporten.

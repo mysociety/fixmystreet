@@ -1,14 +1,8 @@
-<p>[% loc("Please note:") %]</p>
-
 <ul class="plain-list">
-    <li>[% loc("We will only use your personal information in accordance with our <a href=\"/privacy\">privacy policy.</a>") %]</li>
-    <li>[% loc("Please be polite, concise and to the point.") %]</li>
-    <li>[% loc("Please do not be abusive&nbsp;&mdash; abusing your council devalues the service for all users.") %]</li>
-    <li>[% loc("Writing your message entirely in block capitals makes it hard to read, as does a lack of punctuation.") %]</li>
 [% IF all_councils.items.first > 0 %]
-    <li>[% id = all_councils.items.first;
+    <li style="margin-bottom: 0em;">[% id = all_councils.items.first;
            tprintf("Kom ihåg att FixaMinGata primärt är avsett för att rapportera fysiska problem som kan åtgärdas. Om ditt problem inte lämpar sig för att rapportera via den här webbsidan kan du kontakta din kommun direkt via <a href='%s'>deras webbsida</a>.", all_body_urls.$id); %]</li>
 [% ELSE %]
-    <li>[% loc("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website.") %]</li>
+    <li style="margin-bottom: 0em;">[% loc("Remember that FixMyStreet is primarily for reporting physical problems that can be fixed. If your problem is not appropriate for submission via this site remember that you can contact your council directly using their own website.") %]</li>
 [% END %]
 </ul>
