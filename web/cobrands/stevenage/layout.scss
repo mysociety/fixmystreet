@@ -11,7 +11,7 @@
     padding-top: 0.5em;
     padding-bottom: 0.25em;
     background-color: #6b6969;
-    @include background(linear-gradient(#6b6969, #555454));
+    @include linear-gradient(#6b6969, #555454);
 
     .iel8 & {
       background-color: #6b6969;
@@ -40,7 +40,7 @@
 }
 
 #main-nav {
-    @include clearfix();
+    @include clearfix;
     width: auto;
     max-width: 984px; // match the Stevenage header width
     float: none;

@@ -16,12 +16,12 @@ $direction: 'left' !default;
   height: auto;
   @include border-radius(4px);
   background: $c1;
-  @include background (linear-gradient($c1, $c2)) ;
+  @include linear-gradient($c1, $c2);
   border:1px solid $c3;  
   color:$c4;
   &:hover:enabled {
     background:$c5;
-    @include background (linear-gradient($c6, $c5)); 
+    @include linear-gradient($c6, $c5);
     text-decoration: none;
     border:1px solid $c7;  
     color:$c8;
@@ -58,4 +58,69 @@ $right: right;
     } @else {
         @return $rtl;
     }
+}
+
+// Compass-like mixins
+
+@mixin box-sizing($bs) {
+  $bs: unquote($bs);
+  @include experimental(box-sizing, $bs, -moz, -webkit, not -o, not -ms, official);
+}
+
+@mixin border-radius($radius: 5px) {
+  @include experimental(border-radius, $radius, -moz, -webkit, not -o, not -ms, official);
+}
+
+@mixin box-shadow($shadow) {
+  @include experimental(box-shadow, $shadow, -moz, -webkit, not -o, not -ms, official);
+}
+
+@mixin experimental($property, $value, $moz: true, $webkit: true, $o: true, $ms: true, $official: true) {
+  @if $webkit   { -webkit-#{$property} : $value; }
+  @if $moz      {    -moz-#{$property} : $value; }
+  @if $ms       {     -ms-#{$property} : $value; }
+  @if $o        {      -o-#{$property} : $value; }
+  @if $official {         #{$property} : $value; }
+}
+
+@mixin inline-block($alignment: middle) {
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+}
+
+@mixin clearfix {
+    &:before, &:after { content: " "; display: table; }
+    &:after { clear: both; }
+    & { *zoom: 1; }
+}
+
+@mixin linear-gradient($stops...) {
+  $webkit-gradient-stops: ();
+  $webkit-end-point: 100%;
+  @each $stop in $stops {
+    $pos: none;
+    @if length($stop) > 1 {
+      @if length($stops) == 2 && unit(nth($stop, 2)) == 'px' {
+        $webkit-end-point: nth($stop, 2);
+        $pos: 100%;
+      } @else {
+        $pos: nth($stop, 2);
+      }
+    } @else if (length($stop) == 1 && index($stops, $stop) == 1) {
+      $pos: 0%;
+    } @else {
+      $pos: 100%;
+    }
+    $webkit-gradient-stops: append($webkit-gradient-stops,
+                                   color-stop($pos, nth($stop, 1)),
+                                   comma);
+  }
+
+  background: -webkit-gradient(linear, 0% 0%, 0% $webkit-end-point, $webkit-gradient-stops);
+  @each $prefix in -moz-, -o-, -webkit-, "" {
+    background: #{$prefix}linear-gradient($stops);
+  }
 }

@@ -1,31 +1,137 @@
-#!/bin/bash
-#
-# make_css:
-# Generate CSS files from SCSS files.
-#
-# Requires sass which you can get from http://sass-lang.com/
-# FixMyStreet cobrand requires compass
-#
-# Copyright (c) 2012 UK Citizens Online Democracy. All rights reserved.
-# Email: matthew@mysociety.org. WWW: http://www.mysociety.org
+#!/usr/bin/env perl
 
-COMPASS=compass
-SASS=sass
-DIR=$(cd "$(dirname "$0")" >/dev/null && pwd -P)
-PARENT=$(cd "$DIR"/../.. >/dev/null && pwd)
-if [ -f "$PARENT/gem-bin/compass" ]; then
-    COMPASS=$PARENT/gem-bin/compass
-    SASS=$PARENT/gem-bin/sass
-fi
+use strict;
+use warnings;
+use feature 'say';
 
-DIRECTORY=$(cd "$DIR"/../web >/dev/null && pwd)
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
 
-DIRS=${@:-`find -L $DIRECTORY -name "*.scss" -exec dirname {} \; | uniq`}
+use CSS::Sass;
+use File::ChangeNotify;
+use File::Find::Rule;
+use File::Slurp;
+use Getopt::Long;
+use Path::Tiny;
+use Pod::Usage;
 
-for dir in $DIRS; do
-    if [ -e "$dir/config.rb" ]; then
-        $COMPASS compile --output-style compressed $dir
-    else
-        $SASS --scss --update --style compressed $dir
-    fi
-done
+# Store ARGV in case we need to restart later.
+my @ARGVorig = @ARGV;
+
+GetOptions(
+    'verbose' => \my $verbose,
+    'watch' => \my $watch,
+    'help|?' => \my $help,
+) or pod2usage(2);
+pod2usage(1) if $help;
+
+my $sass = CSS::Sass->new(
+    output_style => SASS_STYLE_COMPRESSED,
+    dont_die => 1,
+);
+
+# Get directories from the command line, defaulting to 'web' if none.
+# We need absolute paths so that the include files lookup works.
+my @dirs = map { m{/} ? $_ : "web/cobrands/$_" } @ARGV;
+@dirs = 'web' unless @dirs;
+@dirs = map { path($_)->absolute->stringify } @dirs;
+
+# Initial compilation, to also discover all the included files.
+my %includes;
+my %include_to_main;
+foreach my $file (File::Find::Rule->file->name(qr/^[^_].*\.scss$/)->in(@dirs)) {
+    my @includes = compile($file, $verbose);
+    $includes{$file} = \@includes;
+    map { push @{$include_to_main{$_}}, $file } @includes ? @includes : $file;
+}
+
+# If we're not watching, we're done!
+exit unless $watch;
+
+my $watcher = File::ChangeNotify->instantiate_watcher(
+    directories => [ @dirs, keys %include_to_main ],
+    filter => qr/\.scss$/,
+);
+
+say "\033[34mWatching for changes\033[0m";
+
+while ( my @events = $watcher->wait_for_events() ) {
+    for my $file (map { $_->path } @events) {
+        verbose($file, "%s was updated");
+        for my $inc (@{$include_to_main{$file}}) {
+            my @includes = compile($inc, 1);
+            # From CSS::Sass::Watchdog test, we see includes are sorted
+            if (@includes && @{$includes{$inc}} && "@{$includes{$inc}}" ne "@includes") {
+                say "\033[34mRestarting to update includes\033[0m";
+                exec( $^X, $0, @ARGVorig ) or die "Can't re-exec myself($^X,$0): $!\n";
+            }
+        }
+    }
+}
+
+# Given a SCSS file, compile it and generate a .map file,
+# show an error if any, and return the list of includes.
+sub compile {
+    my ($file, $verbose) = @_;
+    (my $output_file = $file) =~ s/scss$/css/;
+    my $source_map_file = "$output_file.map";
+
+    $sass->options->{source_map_file} = $source_map_file;
+    my ($css, $stats) = $sass->compile_file($file);
+    unless ($css) {
+        warn "\033[31m" . $sass->last_error . "\033[0m";;
+        return;
+    }
+
+    my $written = write_if_different($output_file, $css);
+    if ($written) {
+        verbose($file, "    \033[32mupdated\033[0m %s");
+    } elsif ($verbose) {
+        verbose($file, "  \033[33munchanged\033[0m %s");
+    }
+    write_if_different($source_map_file, $stats->{source_map_string});
+    return @{$stats->{included_files} || []};
+}
+
+# Write a file, only if it has changed.
+sub write_if_different {
+    my ($fn, $data) = @_;
+    my $current = File::Slurp::read_file($fn, { binmode => ':utf8', err_mode => 'quiet' });
+    if (!$current || $current ne $data) {
+        File::Slurp::write_file($fn, { binmode => ':utf8' }, $data);
+        return 1;
+    }
+    return 0;
+}
+
+sub verbose {
+    my ($file, $format) = @_;
+    # Strip most of file path, keep dir/file
+    (my $pr = $file) =~ s{.*/(.*/.*)\.scss}{$1};
+    say sprintf $format, $pr;
+}
+
+__END__
+
+=head1 NAME
+
+make_css - Generate CSS files from SCSS files, watch for changes.
+
+=head1 SYNOPSIS
+
+make_css [options] [dirs ...]
+
+ Options:
+   --verbose        display more information
+   --watch          wait for file updates and compile automatically
+   --help           this help message
+
+If no directories are specified, any .scss files under web/ that do not begin
+with a "_" will be processed. "web/cobrands/" may be omitted from a given
+directory.
+
+=cut

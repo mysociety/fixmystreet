@@ -9,12 +9,11 @@ $image-sprite: '/cobrands/fixamingata/images/sprite.png';
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
-@import "compass";
 
 @import "../sass/base";
 
 #site-header {
-    @include background(linear-gradient(#000, #ccc 10%, #ccc 90%, #000));
+    @include linear-gradient(#000, #ccc 10%, #ccc 90%, #000);
 }
 
 #site-logo {

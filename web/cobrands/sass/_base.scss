@@ -444,7 +444,7 @@ p.label-valid {
 #site-header{
   border-top: 0.25em solid $primary;
   height: 3em;
-  @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+  @include linear-gradient(#000, #222 10%, #222 90%, #000);
   .container {
     min-height:4em;
   }

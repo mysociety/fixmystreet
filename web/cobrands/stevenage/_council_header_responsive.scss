@@ -30,7 +30,7 @@
 
   // Clear the floated search and "PARF" elements.
   .stv-inner {
-    @include clearfix();
+    @include clearfix;
   }
 
   // Menu items should be one sixth of menu width.
