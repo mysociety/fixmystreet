@@ -73,7 +73,7 @@
 }
 
 .next-steps__step__cta {
-  @include pie-clearfix;
+  @include clearfix;
   padding-top: 0.4em; // extra padding between buttons and previous paragraph
 
   a {
@@ -97,7 +97,7 @@
 }
 
 .next-steps__step--goodies {
-  @include pie-clearfix;
+  @include clearfix;
 
   .goodies-preview {
     float: $right;
@@ -286,7 +286,7 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
   }
 
   .row {
-    @include clearfix();
+    @include clearfix;
     margin-left: $grid-gutter / -2;
     margin-right: $grid-gutter / -2;
   }

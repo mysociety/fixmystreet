@@ -1,13 +1,6 @@
 @import "_colours";;
 @import "../sass/layout";
 
-/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
-.clearfix:before,
-.clearfix:after { content: " "; display: table; }
-.clearfix:after { clear: both; }
-/* For IE 6/7 only */
-.clearfix { *zoom: 1; }
-
 #front-main {
     // Undo the top margin added in base.scss
     margin-top: 0;

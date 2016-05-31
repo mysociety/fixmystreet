@@ -5,13 +5,6 @@
 
 $fixed_page_width: 990px;
 
-/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
-.clearfix:before, .clearfix:after { content: " "; display: table; }
-.clearfix:after { clear: both; }
-/* For IE 6/7 only */
-.clearfix { *zoom: 1; }
-
-
 #site-logo,
 .ie6 #site-logo,
 body.frontpage #site-logo,
