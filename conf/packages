@@ -3,6 +3,7 @@
 # mailing list if you want to change it.
 
 make
+g++
 jhead
 liblocale-gettext-perl
 libsoap-lite-perl
