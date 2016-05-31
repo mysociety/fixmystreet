@@ -74,7 +74,7 @@ h3, h4,
 
 .nav-menu--main {
     a:hover {
-        @include background(linear-gradient(#000, #444 10%, #444 95%, #111));
+        @include linear-gradient(#000, #444 10%, #444 95%, #111);
     }
 }
 
@@ -88,7 +88,7 @@ h3, h4,
 body.mappage {
     .nav-wrapper {
         .nav-wrapper-2 {
-            @include background(linear-gradient(#000, #222 10%, #222 90%, #000));
+            @include linear-gradient(#000, #222 10%, #222 90%, #000);
         }
     }
 }

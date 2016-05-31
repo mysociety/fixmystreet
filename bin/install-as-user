@@ -71,32 +71,6 @@ if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
     echo $DONE_MSG
 fi
 
-# Install the compass gem locally - it's required for generating the
-# CSS. Don't trust the bundled bundler in e.g. precise.
-echo "Setting up CSS... "
-gem1.9.1 install --user-install --no-ri --no-rdoc bundler
-FMS_GEMPATH="$DIRECTORY/gem-bin"
-FMS_GEMPATH="$FMS_GEMPATH:$(ruby1.9.1 -rubygems -e 'puts Gem.user_dir')/bin"
-export PATH="$FMS_GEMPATH:$PATH"
-
-if ! grep -q 'Set up local PATH for FixMyStreet' $HOME/.bashrc; then
-    cat >>$HOME/.bashrc <<EOBRC
-
-# Set up local PATH for FixMyStreet
-export PATH="$FMS_GEMPATH:\$PATH"
-EOBRC
-fi
-
-bundle install --deployment --path "$DIRECTORY/gems" --binstubs "$DIRECTORY/gem-bin"
-
-# Use compass to generate the CSS, if it doesn't seem to already
-# exist:
-if [ ! -f web/cobrands/default/base.css ]
-then
-    bin/make_css
-fi
-echo $DONE_MSG
-
 # Write sensible values into the config file, if it doesn't already exist
 if [ ! -f conf/general.yml ]; then
     echo -n "Setting up default conf/general.yml file... "
@@ -115,6 +89,13 @@ fi
 echo "Installing required Perl modules - this may take some time"
 cd "$REPOSITORY"
 bin/install_perl_modules
+echo $DONE_MSG
+
+echo "Setting up CSS... "
+if [ ! -f web/cobrands/default/base.css ]
+then
+    bin/make_css
+fi
 echo $DONE_MSG
 
 # Create the database if it doesn't exist:

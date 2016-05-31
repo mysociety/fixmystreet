@@ -14,7 +14,7 @@
     padding-top: 0.75em;
     padding-bottom: 0.25em;
     background-color: #6b6969;
-    @include background(linear-gradient(#6b6969, #555454));
+    @include linear-gradient(#6b6969, #555454);
   }
 }
 
@@ -99,7 +99,7 @@ body.mappage {
             width: 29em;
             padding-top: 0.15em;
             z-index: 0;
-            @include background(linear-gradient(#6b6969, #555454));
+            @include linear-gradient(#6b6969, #555454);
         }
     }
 }
@@ -227,7 +227,7 @@ body.frontpage {
 
     .nav-wrapper {
         .nav-wrapper-2 {
-            @include background(linear-gradient(#222, #555 30%, #555 60%, #222));
+            @include linear-gradient(#222, #555 30%, #555 60%, #222);
         }
     }
     // f432a72d - moved sticky sidebars down a bit to account for the larger header
