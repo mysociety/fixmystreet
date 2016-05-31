@@ -247,11 +247,9 @@ td { vertical-align: top; }
 .invisible { visibility: hidden; }
 
 /* Contain floats: h5bp.com/q */
-/* mySociety change: rename to cf */
-.cf:before, .cf:after { content: ""; display: table; }
-.cf:after { clear: both; }
-.cf { *zoom: 1; }
-
+.clearfix:before, .clearfix:after { content: " "; display: table; }
+.clearfix:after { clear: both; }
+.clearfix { *zoom: 1; }
 
 
 /* ==|== print styles =======================================================

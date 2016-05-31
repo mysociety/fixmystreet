@@ -92,17 +92,9 @@ $right: right;
 }
 
 @mixin clearfix {
-  overflow: hidden;
-  *zoom: 1;
-}
-
-@mixin pie-clearfix {
-  &:after {
-    content: "";
-    display: table;
-    clear: both;
-  }
-  *zoom: 1;
+    &:before, &:after { content: " "; display: table; }
+    &:after { clear: both; }
+    & { *zoom: 1; }
 }
 
 @mixin linear-gradient($stops...) {

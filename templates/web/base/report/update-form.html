@@ -21,7 +21,7 @@
           [% END %]
           [% IF c.user_exists %]
             [% INCLUDE 'report/update/form_name.html' %]
-            <div class="cf"><input class="final-submit green-btn" type="submit" id="update_post" value="[% loc('Post') %]"></div>
+            <div class="clearfix"><input class="final-submit green-btn" type="submit" id="update_post" value="[% loc('Post') %]"></div>
           [% ELSIF oauth_need_email %]
             [% INCLUDE 'report/update/form_user_loggedout_email.html' required = 1 %]
             <div id="form_sign_in">

@@ -1,6 +1,6 @@
 [% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
 
-<div class="problem-header cf" problem-id="[% problem.id %]">
+<div class="problem-header clearfix" problem-id="[% problem.id %]">
 
   [% IF moderating %]
     [% original = problem_original %]
