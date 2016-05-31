@@ -6,7 +6,6 @@ perl
 perlmagick
 libmath-bigint-gmp-perl
 gettext
-ruby1.9.1
 postgresql
 postgresql-server-dev-8.4
 gnuplot

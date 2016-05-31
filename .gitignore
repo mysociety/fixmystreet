@@ -18,6 +18,7 @@ FixMyBarangay.po
 /web/css/core.css
 /web/css/main.css
 /web/cobrands/*/*.css
+/web/cobrands/*/*.css.map
 /web/cobrands/seesomething
 
 # Photo upload cache

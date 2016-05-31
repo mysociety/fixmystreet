@@ -117,7 +117,8 @@ feature 'zurich', 'Zueri wie neu specific requirements' => sub {
 # Moderation by from_body user
 requires 'Algorithm::Diff';
 
-# Modules used by css watcher
+# Modules used by CSS & watcher
+requires 'CSS::Sass';
 requires 'File::ChangeNotify';
 requires 'Path::Tiny';
 requires 'File::Find::Rule';

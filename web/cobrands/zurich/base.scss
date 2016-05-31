@@ -1,7 +1,6 @@
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
-@import "compass";
 
 @import "../sass/base";
 
@@ -128,7 +127,7 @@ h4.static-with-rule {
 
 .admin-nav {
     background: #f4f4f4;
-    @include background(linear-gradient(#fbfbfb, #efefef));
+    @include linear-gradient(#fbfbfb, #efefef);
     border-bottom: 2px solid $table_border_color;
     ul {
         overflow:auto;

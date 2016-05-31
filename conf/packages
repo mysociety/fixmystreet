@@ -11,7 +11,6 @@ perl
 perlmagick
 libmath-bigint-gmp-perl
 gettext
-ruby-compass
 postgresql-server-dev-9.1 | postgresql-server-dev-8.4
 gnuplot
 ttf-bitstream-vera
