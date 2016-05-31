@@ -12,7 +12,7 @@ perl
 perlmagick
 libmath-bigint-gmp-perl
 gettext
-postgresql-server-dev-9.1 | postgresql-server-dev-8.4
+postgresql-server-dev-all
 gnuplot
 ttf-bitstream-vera
 libexpat1-dev
