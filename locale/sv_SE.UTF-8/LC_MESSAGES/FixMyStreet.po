@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-04-29 13:21+0000\n"
+"PO-Revision-Date: 2016-05-29 15:42+0000\n"
 "Last-Translator: Jon Kristensen <info@jonkri.com>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/mysociety/fixmystreet/language/sv_SE/)\n"
 "Language: sv_SE\n"
@@ -24,7 +24,7 @@ msgstr ""
 #: perllib/FixMyStreet/DB/Result/Problem.pm:618
 #: perllib/FixMyStreet/Script/Reports.pm:189
 msgid " and "
-msgstr "eller"
+msgstr " och "
 
 #: templates/web/base/report/new/councils_text_all.html:2
 #: templates/web/base/report/new/councils_text_none.html:12
@@ -33,7 +33,7 @@ msgstr "eller"
 #: templates/web/base/report/new/councils_text_some.html:22
 #: templates/web/base/report/new/councils_text_some.html:5
 msgid " or "
-msgstr "eller"
+msgstr " eller "
 
 #: templates/web/base/admin/edit-league.html:12
 msgid "%d edits by %s"
@@ -294,8 +294,7 @@ msgstr "Alla rapporter som CSV"
 
 #: templates/web/base/footer.html:32
 #: templates/web/zurich/admin/index-dm.html:12
-#: templates/web/zurich/admin/stats.html:13
-#: templates/web/zurich/footer.html:20
+#: templates/web/zurich/admin/stats.html:13 templates/web/zurich/footer.html:20
 #: templates/web/zurich/nav_over_content.html:6
 msgid "All reports"
 msgstr "Alla rapporter"
@@ -414,14 +413,13 @@ msgstr "Efter datum"
 
 #: templates/web/base/auth/token.html:21 templates/web/base/email_sent.html:18
 msgid "Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time."
-msgstr "Kan du inte hitta vårt e-brev? Kolla din skräppostmapp &ndash;&ndash; det är lösningen 99% av tiden."
+msgstr "Kan du inte hitta vårt e-brev? Kolla din skräppostmapp &ndash; det är lösningen 99% av tiden."
 
 #: templates/web/base/around/_report_banner.html:5
 msgid "Can't see the map? <em>Skip this step</em>"
 msgstr "Kan du inte se kartan? <em>Hoppa över det här steget</em>"
 
-#: templates/web/base/admin/body.html:68
-#: templates/web/base/admin/index.html:54
+#: templates/web/base/admin/body.html:68 templates/web/base/admin/index.html:54
 #: templates/web/base/report/new/category.html:7
 #: templates/web/base/report/new/category_wrapper.html:3
 #: templates/web/zurich/admin/body.html:14
@@ -589,8 +587,7 @@ msgstr "Bekräfta via epost nedan genom att ange ett nytt lösenord. När du bek
 msgid "Confirmation"
 msgstr "Bekräftelse"
 
-#: templates/web/base/admin/body.html:164
-#: templates/web/base/admin/body.html:79
+#: templates/web/base/admin/body.html:164 templates/web/base/admin/body.html:79
 #: templates/web/base/admin/category_edit.html:37
 #: templates/web/base/admin/category_edit.html:92
 #: templates/web/zurich/admin/stats.html:40
@@ -715,8 +712,7 @@ msgid "Delete template"
 msgstr "Ta bort mall"
 
 #: templates/web/base/admin/bodies.html:27
-#: templates/web/base/admin/body.html:175
-#: templates/web/base/admin/body.html:81
+#: templates/web/base/admin/body.html:175 templates/web/base/admin/body.html:81
 #: templates/web/base/admin/category_edit.html:42
 #: templates/web/base/admin/category_edit.html:93
 msgid "Deleted"
@@ -1387,10 +1383,9 @@ msgid "Loading..."
 msgstr "Laddar..."
 
 #: templates/web/base/alert/choose.html:1
-#: templates/web/base/alert/choose.html:3
-#: templates/web/base/alert/index.html:1 templates/web/base/alert/index.html:3
-#: templates/web/base/alert/list.html:1 templates/web/base/alert/list.html:5
-#: templates/web/base/alert/updates.html:1
+#: templates/web/base/alert/choose.html:3 templates/web/base/alert/index.html:1
+#: templates/web/base/alert/index.html:3 templates/web/base/alert/list.html:1
+#: templates/web/base/alert/list.html:5 templates/web/base/alert/updates.html:1
 #: templates/web/base/tokens/confirm_alert.html:1
 msgid "Local RSS feeds and email alerts"
 msgstr "Lokala RSS-flöden och epostbevakningar"
@@ -2094,9 +2089,8 @@ msgstr "Ange om problemet har lösts eller ej"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Ladda upp en JPEG-bild"
+msgstr "Ladda upp endast en bild"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -2143,8 +2137,7 @@ msgstr "Personlig integritet"
 msgid "Privacy and cookies"
 msgstr "Integritetsskydd och kakor"
 
-#: templates/web/base/admin/body.html:200
-#: templates/web/base/admin/body.html:85
+#: templates/web/base/admin/body.html:200 templates/web/base/admin/body.html:85
 #: templates/web/base/admin/category_edit.html:45
 #: templates/web/base/admin/report_edit.html:77
 msgid "Private"
@@ -2782,8 +2775,7 @@ msgstr "Prenumerera med epost"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1272
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:383
 #: templates/web/base/admin/bodies.html:25
-#: templates/web/base/admin/index.html:1
-#: templates/web/base/status/index.html:1
+#: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
 #: templates/web/base/status/index.html:3
 #: templates/web/zurich/admin/index-dm.html:1
 #: templates/web/zurich/admin/index-sdm.html:1
@@ -3139,7 +3131,7 @@ msgstr "Den här rapporten skickades anonymt."
 
 #: perllib/FixMyStreet/Script/Reports.pm:85
 msgid "This web page also contains a photo of the problem, provided by the user."
-msgstr "Den här sidan innehåller också ett foto av problemet"
+msgstr "Länken ovan innehåller också ett foto av problemet."
 
 #: templates/web/zurich/admin/report_edit-sdm.html:123
 #: templates/web/zurich/admin/report_edit-sdm.html:76
@@ -3331,8 +3323,7 @@ msgstr "Användarsökningen matchar mot användares namn och e-postadresser."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1277
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:399
-#: templates/web/base/admin/flagged.html:29
-#: templates/web/zurich/header.html:69
+#: templates/web/base/admin/flagged.html:29 templates/web/zurich/header.html:69
 msgid "Users"
 msgstr "Användare"
 
@@ -3903,51 +3894,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Vi har ännu <strong>ingen</strong> information om kommunen på den platsen"
 msgstr[1] "Kommunen på platsen har valt att inte ta emot rapporter från FixaMinGata."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, rapporterad %s"
-
-#~ msgid "About us"
-#~ msgstr "Om oss"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Eposta mig nya problem lokalt"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Tom lägenhet"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Tomt hus"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Tomt kontor eller annan kommersiell lokal"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Tom pub eller bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Tom publik byggnad - skola, sjukhus, etc."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Ange ett närligande gatunamn och ort, postnummer och distrikt i Delhi"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixaMinGata"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Tyvärr kan du inte bekräfta obekräftade rapporter"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problem i detta område"
-
-#~ msgid "Property type:"
-#~ msgstr "Fastighetstyp:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS-flöde för problem i denna %s"
-
-#~ msgid "Sorry, you can not log in with Facebook. Please try again later."
-#~ msgstr "Du kunde inte logga in med Facebook. Försök gärna igen."
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Hela block med tomma lägenheter"
