@@ -209,7 +209,7 @@ body.twothirdswidthpage {
         &#fixed {
             padding-top: 2em;
             background: $col_fixed_label;
-            @include background(linear-gradient(#769643, $col_fixed_label 4px));
+            @include linear-gradient(#769643, $col_fixed_label 4px);
         }
         &#closed {
             padding-top: 2em;
@@ -318,7 +318,7 @@ body.mappage.admin {
             margin: 2em 0;
 
             &:hover {
-                @include background(linear-gradient(#fcc, #daa 50%));
+                @include linear-gradient(#fcc, #daa 50%);
             };
         }
     }

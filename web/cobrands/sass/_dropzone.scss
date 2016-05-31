@@ -9,7 +9,7 @@ $dropzone-background-color--awakened: mix($dropzone-link-color, $dropzone-backgr
 $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%);
 
 .dropzone {
-  @include clearfix();
+  @include clearfix;
   border: 0.125em solid $dropzone-border-color;
   background-color: $dropzone-background-color;
   border-radius: $dropzone-border-radius;

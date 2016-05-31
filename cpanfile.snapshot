@@ -172,6 +172,37 @@ DISTRIBUTIONS
       strict 0
       vars 0
       warnings 0
+  CSS-Sass-3.3.3
+    pathname: O/OC/OCBNET/CSS-Sass-3.3.3.tar.gz
+    provides:
+      CSS::Sass 3.003003
+      CSS::Sass::Value 3.003003
+      CSS::Sass::Value::Boolean 3.003003
+      CSS::Sass::Value::Color 3.003003
+      CSS::Sass::Value::Error 3.003003
+      CSS::Sass::Value::List 3.003003
+      CSS::Sass::Value::List::Comma 3.003003
+      CSS::Sass::Value::List::Space 3.003003
+      CSS::Sass::Value::Map 3.003003
+      CSS::Sass::Value::Null 3.003003
+      CSS::Sass::Value::Number 3.003003
+      CSS::Sass::Value::String 3.003003
+      CSS::Sass::Value::String::Constant 3.003003
+      CSS::Sass::Value::String::Quoted 3.003003
+      CSS::Sass::Watchdog 3.003003
+      CSS::Sass::Watchdog::Queue 3.003003
+    requirements:
+      Carp 1.01
+      Encode::Locale 0.01
+      ExtUtils::CppGuess 0.09
+      ExtUtils::MakeMaker 6.52
+      File::Slurp 0.01
+      Getopt::Long 0.01
+      List::MoreUtils 0.01
+      perl 5.008
+      strict 0
+      version 0
+      warnings 0
   Cache-Memcached-1.30
     pathname: D/DO/DORMANDO/Cache-Memcached-1.30.tar.gz
     provides:
@@ -193,6 +224,19 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       IPC::Open3 1.0103
       Test::More 0
+  Capture-Tiny-0.40
+    pathname: D/DA/DAGOLDEN/Capture-Tiny-0.40.tar.gz
+    provides:
+      Capture::Tiny 0.40
+    requirements:
+      Carp 0
+      Exporter 0
+      ExtUtils::MakeMaker 6.17
+      File::Spec 0
+      File::Temp 0
+      IO::Handle 0
+      Scalar::Util 0
+      perl 5.006
       strict 0
       warnings 0
   Carp-Assert-0.20
@@ -2774,6 +2818,14 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.30
       strict 0
       warnings 0
+  ExtUtils-CppGuess-0.11
+    pathname: D/DA/DAVIDO/ExtUtils-CppGuess-0.11.tar.gz
+    provides:
+      ExtUtils::CppGuess 0.11
+    requirements:
+      Capture::Tiny 0
+      ExtUtils::MakeMaker 0
+      File::Basename 0
   ExtUtils-Helpers-0.022
     pathname: L/LE/LEONT/ExtUtils-Helpers-0.022.tar.gz
     provides:

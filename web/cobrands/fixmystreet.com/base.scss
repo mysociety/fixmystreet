@@ -6,7 +6,6 @@
 
 @import "../sass/h5bp";
 @import "_colours";
-@import "compass";
 @import "../sass/base";
 
 .top_banner {
@@ -74,7 +73,7 @@
 }
 
 .next-steps__step__cta {
-  @include pie-clearfix;
+  @include clearfix;
   padding-top: 0.4em; // extra padding between buttons and previous paragraph
 
   a {
@@ -98,7 +97,7 @@
 }
 
 .next-steps__step--goodies {
-  @include pie-clearfix;
+  @include clearfix;
 
   .goodies-preview {
     float: $right;
@@ -218,10 +217,10 @@
         background: rgba(255,255,255,0.3);
 
         input#sub {
-            @include background(linear-gradient(#49c0ff, #1091d5));
+            @include linear-gradient(#49c0ff, #1091d5);
 
             &:hover, &:focus {
-                @include background(linear-gradient(darken(#49c0ff, 10%), darken(#1091d5, 10%)));
+                @include linear-gradient(darken(#49c0ff, 10%), darken(#1091d5, 10%));
             }
         }
     }
@@ -287,7 +286,7 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
   }
 
   .row {
-    @include clearfix();
+    @include clearfix;
     margin-left: $grid-gutter / -2;
     margin-right: $grid-gutter / -2;
   }

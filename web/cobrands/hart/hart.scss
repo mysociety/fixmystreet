@@ -4,16 +4,8 @@
 
     */
 
-@import "compass";
+@import "../sass/mixins";
 @import "_colours";
-
-/* from http://nicolasgallagher.com/micro-clearfix-hack/ */
-.clearfix:before,
-.clearfix:after { content: " "; display: table; }
-.clearfix:after { clear: both; }
-/* For IE 6/7 only */
-.clearfix { *zoom: 1; }
-
 
 // Taken from Bromley's form css
 input[type=text],

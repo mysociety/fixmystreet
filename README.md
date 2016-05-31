@@ -38,6 +38,11 @@ add your own issue if not.
 We've extracted all of the mobile apps from this repository into the
 [fixmystreet-mobile repository](https://github.com/mysociety/fixmystreet-mobile).
 
+## Acknowledgements
+
+Thanks to [Browserstack](https://www.browserstack.com/) who let us use their
+web-based cross-browser testing tools for this project.
+
 ## Releases
 
 * v1.8.2 (3rd May 2016)
