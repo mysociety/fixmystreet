@@ -100,7 +100,7 @@ body.mappage {
     }
 }
 
-.general-notes, #report-a-problem-sidebar p, #report-a-problem-sidebar .sidebar-notes .plain-list li {
+.general-notes {
     font-size: 13px;
     line-height: 14px;
 }
@@ -215,9 +215,7 @@ body.twothirdswidthpage .content aside {
     }
 }
 
-@media only screen and (min-width: 48em) {
-    footer {
-        display: block;
-    }
+footer {
+    display: block;
 }
 

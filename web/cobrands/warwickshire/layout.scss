@@ -6,25 +6,13 @@ $mappage-header-height: 41px + 100px + 37px; // .navbar-inverse + #top-header + 
 
 #site-header {
     position: relative;
-    border-top-width: 0;
-
     .navbar {
         margin-bottom: 0;
-    }
-
-    .container {
-        min-height: 0;
     }
 }
 
 // Needs to be within body.frontpage to override an existing rule in _layout.scss
 body.frontpage {
-    #site-header {
-        height: auto;
-    }
-}
-
-@media (max-width: 61em) and (min-width: 48em) {
     #site-header {
         height: auto;
     }
@@ -75,16 +63,11 @@ body.twothirdswidthpage .content .sticky-sidebar {
 // default FMS style.
 
 // http://www.warwickshire.gov.uk/wp-content/themes/gamma/style.css
-.container,
-.navbar-static-top .container,
-.navbar-fixed-top .container,
-.navbar-fixed-bottom .container,
-body.mappage .container {
+.container {
   width: 940px;
 }
 
-.navbar .container,
-body.mappage .container {
+.navbar .container {
   width: auto;
 }
 

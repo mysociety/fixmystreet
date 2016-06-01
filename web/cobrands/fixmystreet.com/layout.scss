@@ -195,10 +195,6 @@ body.twothirdswidthpage {
     .container {
         .content {
             footer {
-                max-width: 48em;
-                @media only screen and (min-width: 61em) {
-                    max-width: 60em;
-                }
                 .tablewrapper {
                     border: 0px;
                 }

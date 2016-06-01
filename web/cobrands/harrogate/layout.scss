@@ -4,41 +4,33 @@ $mappage-header-height: 10em;
 @import "_colours";
 @import "../sass/layout";
 
-@media only screen and (min-width: 48em) {
-    #site-logo,
-    .ie6 #site-logo,
-
-    body.frontpage #site-logo,
-    .ie6 body.frontpage #site-logo,
-
-    body.twothirdswidthpage #site-logo,
-    .ie6 body.twothirdswidthpage #site-logo
-    {
-            position: relative;
-            top: 1.2em;
-            margin: 0;
-            padding: 0;
-            background: url("/cobrands/harrogate/HBCLogo.png") 0 0 no-repeat;
-            width: 227px;
-            height: 122px;
-    }
-
-    body.frontpage #site-header,
-    .ie6 body.frontpage #site-header,
-    body.twothirdswidthpage #site-header,
-    .ie6 body.twothirdswidthpage #site-header
-    {
-        height: 10em;
-    }
+#site-logo,
+.ie6 #site-logo,
+body.frontpage #site-logo
+{
+        position: relative;
+        top: 1.2em;
+        margin: 0;
+        padding: 0;
+        background: url("/cobrands/harrogate/HBCLogo.png") 0 0 no-repeat;
+        width: 227px;
+        height: 122px;
 }
 
-@media only screen and (min-width: 48em) {
-    body.twothirdswidthpage .container .content footer .tablewrapper a:link,
-    body.twothirdswidthpage .container .content footer .tablewrapper a:visited,
-    body.fullwidthpage .container .content footer .tablewrapper a:link,
-    body.fullwidthpage .container .content footer .tablewrapper a:visited {
-        color: white;
-    }
+#site-header,
+body.frontpage #site-header,
+.ie6 body.frontpage #site-header,
+.ie7 body.frontpage #site-header,
+.nav-wrapper-2
+{
+    height: 10em;
+}
+
+body.twothirdswidthpage .container .content footer .tablewrapper a:link,
+body.twothirdswidthpage .container .content footer .tablewrapper a:visited,
+body.fullwidthpage .container .content footer .tablewrapper a:link,
+body.fullwidthpage .container .content footer .tablewrapper a:visited {
+    color: white;
 }
 
 #main-nav {
@@ -58,10 +50,8 @@ body.twothirdswidthpage .container .content {
     padding-right: 0;
 }
 
-@media only screen and (min-width: 48em) {
-    body.fullwidthpage .container .content {
-        margin-top: 3em; // push far enough for the sign-out link to also be visible
-    }
+body.fullwidthpage .container .content {
+    margin-top: 3em; // push far enough for the sign-out link to also be visible
 }
 
 body.twothirdswidthpage .content aside {
