@@ -16,6 +16,8 @@ use File::ChangeNotify;
 use File::Find::Rule;
 use File::Slurp;
 use Getopt::Long;
+use MIME::Base64;
+use MIME::Types;
 use Path::Tiny;
 use Pod::Usage;
 
@@ -29,9 +31,21 @@ GetOptions(
 ) or pod2usage(2);
 pod2usage(1) if $help;
 
+my $mime_types = MIME::Types->new;
+
 my $sass = CSS::Sass->new(
     output_style => SASS_STYLE_COMPRESSED,
     dont_die => 1,
+    sass_functions => {
+        'inline-image($url)' => sub {
+            my ($url) = @_;
+            die '$url should be a string' unless $url->isa("CSS::Sass::Value::String");
+            # URL is given with reference to the file, which we don't have here. Assume.
+            my $data = encode_base64(path("web/cobrands/fixmystreet/$url")->slurp_raw, "");
+            my $type = $mime_types->mimeTypeOf($url);
+            return "url('data:$type;base64,$data')";
+        }
+    },
 );
 
 # Get directories from the command line, defaulting to 'web' if none.
