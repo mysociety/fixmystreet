@@ -8,7 +8,7 @@ title: Blog
 <ul class="list-of-blog-posts">
 {% for post in site.posts %}
     <li class="listed-blog-post">
-        <h2 class="blog-title"><a href="{{ post.url }}">{{ post.title }}</a> <small class="meta meta--date">{{ post.date | date: "%d %B %Y" }}</small></h2>
+        <h2 class="blog-title"><a href="{{ post.url }}">{{ post.title }}</a> <small class="meta meta--date">{{ post.date | date: "%-d %B %Y" }}</small></h2>
         {{ post.content }}
     </li>
 {% endfor %}
