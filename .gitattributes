@@ -1,0 +1,5 @@
+# Disable the auto-CRLF normalization mess for all files to prevent
+# them being checked out with CRLF line endings (on Windows), which
+# breaks if they e.g. run vagrant up.
+
+* -text
