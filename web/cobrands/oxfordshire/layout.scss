@@ -1,3 +1,7 @@
+// We specify a 4em header height in pixels, to make
+// the .menubar link padding calculations simpler.
+$mappage-header-height: 64px;
+
 @import "_colours";
 @import "../sass/layout";
 @import "../sass/report_list_pins";
@@ -24,8 +28,7 @@ body, body a {
 }
 
 // Currently hide the nav-wrapper, because it's in going into Oxfordshire's own nav
-// likewise with user-meta
-.nav-wrapper, #user-meta {
+.nav-wrapper {
     display: none;
 }
 
@@ -71,10 +74,6 @@ body.twothirdswidthpage {
 .full-width { width: 464px; }
 .shadow-wrap { width: 464px; }
 
-#map_box {
-    width: 956px;
-    height: 600px;
-}
 .content { width: 432px; }
 
 body.fullwidthpage .content { width: auto; }
@@ -94,8 +93,6 @@ body.twothirdswidthpage .content {
 }
 
 body.mappage {
-  $mappage-header-height: 60px;
-
   #oxford-wrapper {
     width: auto;
     padding: 0;
@@ -103,13 +100,13 @@ body.mappage {
   }
 
   #oxford-header {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    z-index: 2; // 1 more than `body.mappage .content`
+    z-index: 1;
     width: auto;
-    min-height: $mappage-header-height;
+    min-height: $mappage-header-height; // override the normal min-height of 133px
     padding: 0;
     background-color: #069b01; // picked from header.jpg
     background-position: 100% 40%;
@@ -160,25 +157,6 @@ body.mappage {
         }
       }
     }
-
-    .oxford-user {
-      display: block;
-      font-size: 13px;
-      margin: 0;
-      color: mix(#ddd, #069b01, 80%);
-
-      p {
-          margin: 0;
-          padding-top: ($mappage-header-height - 20px) / 2;
-          padding-bottom: ($mappage-header-height - 20px) / 2;
-          line-height: 20px;
-      }
-
-      a {
-        padding: 0 10px;
-        text-decoration: none;
-      }
-    }
   }
 
   .wrapper .table-cell {
@@ -190,36 +168,27 @@ body.mappage {
     width: auto;
   }
 
-  .content {
-    padding: 1em;
-    padding-top: $mappage-header-height + 10px;
-    position: relative;
-    z-index: 1;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  #map_sidebar {
     background-color: $oxfordshire_very_light_green;
+  }
 
-    // fixmystreet.js gives this element a min-height equal to the window height.
-    // Set border-box sizing, so that our padding doesn't get added onto height.
-    box-sizing: border-box;
+  .extra-text {
+    padding: 1em;
+    margin: 0 -1em;
+    border-bottom: 1px solid $oxfordshire_mid_grey_green;
 
-    .extra-text {
-      padding: 1em;
-      margin: 0 -1em;
-      border-bottom: 1px solid $oxfordshire_mid_grey_green;
-
-      p:last-child {
-        margin-bottom: 0;
-      }
+    p:last-child {
+      margin-bottom: 0;
     }
+  }
 
-    .full-width {
-      width: auto;
-      margin: 0 -1em;
-    }
+  .full-width {
+    width: auto;
+    margin: 0 -1em;
+  }
 
-    input[type="file"] {
-      background-color: transparent;
-    }
+  input[type="file"] {
+    background-color: transparent;
   }
 
   // Space between green header and sidebar content
@@ -306,8 +275,6 @@ h4.static-with-rule {
 }
 
 .shadow-wrap {
-    width: 432px;
-
     ul#key-tools {
         -webkit-box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
         -moz-box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;

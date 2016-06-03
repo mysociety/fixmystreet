@@ -96,29 +96,13 @@ body.twothirdswidthpage {
     }
 }
 
-// 15591af7 - Stevenage Map page changes
-#map_box {
-    top: 140px;
-}
-#fms_pan_zoom {
-    top: 190px !important;
-}
-
-// 2a23e09f - Moved menu on map page and reverted to full header.
-#report-a-problem-sidebar {
-    top: 9em;
-}
-
 // d523b431
 body.frontpage {
     .nav-wrapper-2 {
         height: auto;
     }
-    // 1162d5c8 - Changed the colour of the user text when you're logged in to be more readable
-    #user-meta {
-        p {
-            color: #fff;
-        }
+    #site-header {
+        height: auto;
     }
 }
 
@@ -183,7 +167,6 @@ body.mappage {
         position: absolute;
         top: 0;
         padding: 0;
-        height: 4em;
         background: #fff url("http://www.stevenage.gov.uk/Images/headerBG.jpg") repeat-x bottom left;
     }
 

@@ -2,13 +2,15 @@
 
 $image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
 $layout_front_stats_color: $primary !default;
+$mappage-header-height: 4em !default;
 
 .internal-link-fixed-header {
     display: block;
-    /* 5em is roughly the height of .nav-wrapper-2 (4em) plus the border-top on
-    .nav-wrapper-2 (4px), plus the padding-top on .item-list__item (0.5em). */
-    padding-top: 5em;
-    margin-top: -5em;
+    /* Roughly the height of .nav-wrapper-2 (mappage-header-height) plus the
+     * border-top on .nav-wrapper-2 (4px), plus the padding-top on
+     * .item-list__item (0.5em). */
+    padding-top: $mappage-header-height + 1em;
+    margin-top: -($mappage-header-height + 1em);
 }
 
 //hacks for desk/mob only stuff
@@ -40,16 +42,6 @@ h1 {
   padding: 0em;
   width: 60em;
   position: relative;
-}
-
-//z-index stack order gets reset to 0 in ie6/7 if you position anything,
-//so to fix things we give it a high value (don't ask me why)
-//see: http://brenelz.com/blog/squish-the-internet-explorer-z-index-bug/
-//this affects #site-logo
-.ie6, .ie7 {
-  .container {
-    z-index:100;
-  }
 }
 
 .wrapper{
@@ -105,26 +97,21 @@ h1 {
   .container {
     position: static;//reset position so the nav links become clickable
   }
+
+  .ie6 &,
+  .ie7 & {
+      height: 3em;
+      // Without this, the #site-logo is unclickable.
+      // Something to do with broken z-index nesting in IE6-7.
+      z-index: 2;
+  }
 }
+
 #site-logo {
   top: 0.9em;
   #{$left}: auto;
   position: absolute;
   z-index: 3;
-}
-.ie6, .ie7 {
-  #site-header {
-    height:3em;
-    .container {
-      //ie broken z-index bug: the site-logo won't appear if we don't do this
-      //doesn't seem to render the nav link unclickable like in other browsers
-      position: relative;
-    }
-  }
-  #site-logo {
-    position: absolute;
-    top:-3.25em;
-  }
 }
 
 #nav-link {
@@ -235,23 +222,68 @@ h1 {
 
 // map page - has fixed header and different styling
 body.mappage {
+
+  .wrapper .table-cell,
+  .nav-wrapper {
+    // No need for the table-cell stuff now we're using absolute positioning
+    display: block;
+  }
+
   .container {
     width: auto;
+    position: static;
   }
 
   .content {
-    float: $left;
-    padding: 1em 1em 10em;
+    width: auto;
+    padding: 0;
     margin: 0;
   }
 
+  #site-header {
+    // With the exception of the #site-logo child, the rest of
+    // #site-header gets entirely hidden behind .nav-wrapper-2
+    position: absolute;
+    z-index: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: $mappage-header-height;
+  }
+
   #site-logo {
+    position: absolute;
     #{$left}: 12px;
+    // Also inherits...
+    //   `top: 0.9em`
+    //   `z-index: 3`
+    // ...from the non-mappage version, above
   }
 
   #main-nav {
     width: auto;
     margin-#{$right}: 1em;
+  }
+
+  .nav-wrapper {
+    .nav-wrapper-2 {
+      position: absolute;
+      z-index: auto;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: $map_nav_bg;
+
+      // Watch out! If the nav links break onto two lines, the header will
+      // get taller, and overlap the top of #map_sidebar and #map_box.
+      // (But at least the nav links will be legible.)
+      min-height: $mappage-header-height;
+
+      // Count the 4px border-top as part of the height (mappage-header-height)
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+    }
   }
 
   .nav-menu--main a, .nav-menu--main span {
@@ -261,43 +293,6 @@ body.mappage {
   .nav-menu--main a.report-a-problem-btn {
     padding: 0.5em;
     margin: 0.9em 0.25em 0.85em;
-  }
-
-  .nav-wrapper{
-    .nav-wrapper-2{
-      position: fixed;
-      background: $map_nav_bg;
-    }
-  }
-
-  #site-logo{
-    position: fixed;
-  }
-
-  #user-meta {
-    max-width: none;
-    p {
-      display: block;
-      height: auto;
-      width: 22.2em; // 27em (.content width) - 2em (.content padding) - 6em - 0.8em
-      padding: flip(0.5em 6em 0.5em 0.8em, 0.5em 0.8em 0.5em 6em);
-      top: 0;
-      #{$left}: 0;
-      z-index: 1;
-      box-shadow: none;
-      background: #FCEA9A;
-      border-bottom: 1px solid #ffd000;
-
-      a {
-        // move the "Sign out" link in and down a bit, because of extra padding on parent
-        top: 0.8em;
-        #{$right}: 0.8em;
-      }
-    }
-
-    & + .container .content {
-      padding-top: 3.5em; // make room for user menu!
-    }
   }
 
   .banner {
@@ -324,9 +319,6 @@ body.mappage {
     #site-logo {
       position: absolute;
     }
-    #user-meta {
-      margin-#{$left}: 2em;
-    }
   }
 }
 //ie8 needs different stuff on .nav-wrapper so we
@@ -344,6 +336,42 @@ body.mappage {
     #site-logo {
       position: absolute;
     }
+  }
+}
+
+#map_box {
+  position: absolute;
+  z-index: auto;
+  top: $mappage-header-height;
+  bottom: 0;
+  #{$right}: 0;
+  #{$left}: 29em; // width of sidebar
+  width: auto; // stretch from right edge of sidebar to left edge of window
+  height: auto; // stretch from bottom of header to bottom of window
+  margin: 0;
+
+  .with-notes & {
+    #{$left}: 44em;
+  }
+}
+
+#map_sidebar {
+  position: absolute;
+  z-index: auto;
+  top: $mappage-header-height;
+  #{$left}: 0;
+  bottom: 0;
+  width: 27em; // width of sidebar, minus padding
+  padding: 1em 1em 3em 1em; // extra padding-bottom to clear the .shadow-wrap element
+  overflow: auto; // vertical scrollbar when list is taller than window
+  background-color: #fff; // since no longer in the flow inside .content
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+
+  .with-notes & {
+    width: 42em;
+    // TODO: Should have a bitmap image fallback for old browsers!!
+    background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
+    background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
   }
 }
 
@@ -597,17 +625,6 @@ body.authpage {
   }
 }
 
-// map box (fallback for non js really as most users
-// will have fullscreen map)
-#map_box{
-  position: absolute;
-  height: 29em;
-  width: 29em;
-  #{$right}: 1em;
-  top: 3em;
-  z-index:1;
-}
-
 // Openlayers map controls (overrides)
 #fms_pan_zoom_panup,
 #fms_pan_zoom_pandown,
@@ -623,14 +640,14 @@ body.authpage {
 
 // push zoom back over to right
 #fms_pan_zoom_zoomin {
-  #{$left}: auto !important;
-  #{$right}: 30px !important;
-  top:130px !important;
+  #{$left}: auto;
+  #{$right}: 30px;
+  top: 130px;
 }
 #fms_pan_zoom_zoomout {
-  #{$left}: auto !important;
-  #{$right}: 30px !important;
-  top:174px !important;
+  #{$left}: auto;
+  #{$right}: 30px;
+  top: 174px;
 }
 
 .olControlAttribution {
@@ -666,45 +683,6 @@ body.authpage {
     &.closed {
       background-position: center -183px;
     }
-}
-
-// log in bit, pokes above the .content div
-#user-meta{
-  display:block;
-  position: relative;
-  max-width: 60em;
-  margin: 0 auto;
-  p {
-    @include inline-block;
-    position: absolute;
-    top: 1em;
-    #{$left}: 1em;
-    height:2em;
-    padding: flip(0.25em 6em 0.5em 0.5em, 0.25em 0.5em 0.5em 6em);
-    @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
-    a {
-      top:0.5em;
-      #{$right}: 0.5em;
-      font-size:0.6875em;
-      padding:0.5em 0.75em;
-      line-height:1em;
-      &:hover {
-        text-decoration:none;
-        background:#444;
-      }
-    }
-  }
-}
-.ie6, .ie7 {
-  #user-meta {
-    z-index:1;
-    p {
-      top:-2em;
-    }
-  }
-}
-.ie6 #user-meta {
-  width: 60em; //ie6 doesn't like max-width
 }
 
 
@@ -764,11 +742,20 @@ body.authpage {
   &.static {
     padding: 0 0 1em;
     position: static;
+    width: auto; // avoid horizontal scrollbar as drawer opens (on devices with permanent scroll bars)
   }
 }
+
 // The padding is for the fading out when it's fixed positioned, which it isn't in IE6.
 .ie6 .shadow-wrap {
   padding-top: 0;
+}
+
+// Old versions of IE don't have box-sixing, so negative margins leave a 2em gap.
+// We can set a fixed width instead, which might result in a horizontal scrollbar
+// while the drawer is opening. Quel dommage.
+.iel8 .shadow-wrap.static {
+    width: 29em;
 }
 
 // If JS is disabled, these are still CSS positioned, so don't want behind shining through.
@@ -780,24 +767,14 @@ body.authpage {
     margin-bottom: 0;
 }
 
-// pokes over the RHS with a little triangle
 .big-green-banner {
   top: auto;
-  #{$right}: -1.25em;
-  margin-#{$left}: -2em;
+  margin: (-1em/1.375) (-1em/1.375) 0 (-1em/1.375);
   font-size: 1.375em;
-  padding: flip(1em 3em 1em 1em, 1em 1em 1em 3em);
+  padding: flip(1em 2em 1em 1em, 1em 1em 1em 2em);
   background: $col_click_map inline-image("../fixmystreet/images/chevron-white-#{$right}.svg") $right center no-repeat;
-  background-size: 27px+36px 33px;
-  &:before {
-    left: flip(auto, 0);
-    right: flip(0, auto);
-    top: -0.5em;
-    position: absolute;
-    border-top: 0.5em solid transparent;
-    border-#{$left}: 0.5em solid $col_click_map_dark;
-    border-bottom:none;
-  }
+  background-size: 43px 33px;
+
   span {
     display: block;
     font-size: 80%;
@@ -848,14 +825,6 @@ body.authpage {
   }
 }
 
-
-// for pulling elements fullwidth regardless
-// of .contents' padding
-.full-width{
-  margin: flip(0 0 0em -1em, 0 -1em 0 0);
-  width: 29em;
-}
-
 /*FORMS*/
 input[type=text],
 input[type=password],
@@ -875,40 +844,32 @@ textarea.form-error {
   @include border-radius(0 0 0.25em 0.25em);
 }
 
-#report-a-problem-sidebar {
-    position: absolute;
-    #{$left}: 29em;
-    width: 15em;
-    @include box-shadow(rgba(0, 0, 0, 0.6) 0px 0px 4px 1px);
+// If the form is .with-notes, limit the width of the inputs
+// to make space for the #report-a-problem-sidebar.
+#side-form, #side {
+  .with-notes & {
+    width: 27em;
+  }
 }
 
-// Report a problem sidebar notes
+// Notes presented alongside the reporting form
 #report-a-problem-sidebar {
-  top:5em;
+  margin-bottom: 2em;
+
+  // If the parent is .with-notes we know we have space to
+  // float the sidebar content to the side of the form.
+  .with-notes & {
+    float: #{$right};
+    width: 13em;
+    margin-#{$right}: -15em;
+  }
+
   div {
-    padding:1em;
-    font-size:0.75em;
-    background:#eeeeee;
+    font-size: 0.75em;
   }
-  .sidebar-notes {
-    background:#333333;
-    color:#ffffff;
-  }
-}
-.ie6, .ie7 {
-  #report-a-problem-sidebar {
-    #{$left}: 28.5em; // 0.5em left margin gone on .content in IE6/7, so reduce this accordingly.
-    z-index: 1;
-  }
-}
 
-.no-js #report-a-problem-sidebar {
-  position: static;
-  width: auto;
-  @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
-  .sidebar-tips,
   .sidebar-notes {
-    font-size:1em;
+    color: #666;
   }
 }
 
@@ -936,24 +897,6 @@ body.frontpage {
     width: 300px;
     height: 60px;
     background: url($image-sprite) -2px -108px no-repeat;
-  }
-  #user-meta {
-    z-index:10;
-    p {
-      top: -4em;
-      #{$left}: auto;
-      #{$right}: 0;
-      color:$primary;
-      background:none;
-      @include box-shadow(rgba(0, 0, 0, 0) 0 0 0);
-      a {
-        background:#fff;
-        color:#1a1a1a;
-        &:hover {
-          background:#ddd;
-        }
-      }
-    }
   }
 }
 //logo fix
@@ -1136,12 +1079,6 @@ body.frontpage {
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABJ9JREFUeNqsVXlMHFUYf/Pe7O7M7E2Xw6UFWg5LQ1GTosa0IT00wYbGaKoltWnaRGNrjIptiUalXqlJU9RU0fSPHtqCR20pliBpQpAmxQgoLDeLQIEuh2WBndmDnZn3fMvRsqEGVv0mv3lzvPd97/u97wBgmXLUbHvOFZ/cJK1KbTtmiX4F/J+ySzBuDiakeSdWphA3RSAhTX3NaN2znLVwyQkMA/YbzAcwAAIFIBSYELjPYH6Zpf9CwrEMeGS1zhalh2zEBkIq2NCdkDvfyOxCRqHfnnpIWN9caK+5URDX2VJob8zfZsqJyIBKlVzweU7pIMIC3TFHIUAISkSx2GKE2uK8qNK0ODZbVsgKuwllnthp/S4rUZs0vx4th0dHcLp3FCv1VogEL8G9Jz2THx4Tx79+Yh23/oVs4zuBwKx3CuWQ5aHO5VYba7oDDjDj/TJEpSgWJytD0FAP5Dm6PD4ySZmSIUM0+C6DoGdUdkXkwULBC56HJtRJuxFpsu7nsll60CwHQY3D/8PRq1NFQZXg+TP8TwKphhc3GXPS4zWP9tySm07XSZe9MgkLEpCuX5uZZdqQBwEM1nsaStq87V3/xtjGTVzKB29bj0RZkK2s3PvTJ59PnWG2Rm3esTP2mW80gDUByq+CFffJoS+2tkrtTZEoz80R1pVfjrsBEGMGCvWAQ+DsV5MFcLstp0jFqsmH/cCn+qjLMGqLdcvrcOkIDpO9eYY9QMuYVRED1U8A8Sjg6Vz9AahH+mi84OhCzwISbAwT8fFoFr6EjlgvMAh2eDtP85AP7XwGHORAi9R6USVqRNrPlUqlIEgCSM8ApGMAtCBw/nvpLGqR2qoFxIMYbUwCJvh2tbv6oyt/lX8Z6fa7e+Thdsd0bdpa7QqvF49UlPmKXz0y/vEdHqyshaeDH2lNNoPGmhlUfQMuydmzHOX2VENMTKKQ0OMQu6Qxv8hqaLDMhWoY0VlxuXkPx24vZhhooa/elts1hddvfXsCE/yPyrftTdj15ME1n3J6FOsTlbFrZwbeqDrVdz4sD0Ji41fan019q1MF2Ego/wy9NIjDl5zHM1xeZ8e9lMenGuIPl2zoIIAxqjIGiO4cIeg/vrs+fbBDvBlWi3RISKF5YCQYz5XkGRchx+rT6djBpzyYaM3Zl0ftaqd++fGSt7m2NTqBT9dwyOgXldmaRWnRcgyflGnKWGTAr0hOTFQPjSQTHWciihCCJd9IM/fAxuTV712shTreHppreXz3of739+dMDFW1E0wUBjIsHQGt4gDT8BtsF52L+oE74BquH7l6kFIzoYE6agBJv49V5o/JI39G5750mNFydlWaAiHQOca45/Pfvdk17bp2ur+AM6CAYGKBlkdyQ+Xom4OdYve83rBy3Tj284U+T/N1njUmBVTf0Lh/qBdABDQ2+31Elu8mkaoAyAsxgHbIK5/1FnX9NlmVmGFa0/vHVL+zYaJloc5F/cAdGB4AIIT51FaBWFdRps94bIciB2ZaJ+T1wNf2azmYS8bOOndbCPcKhGX1g0BfqwPpzUS3Ki0ZanVeT13FuZHiQ4UkOK0stfZvAQYA/wr53nPx8cUAAAAASUVORK5CYII=);
     background-size: auto;
     background-position: 50% 50%;
-  }
-
-  //Map becomes percentage width
-  #map_box{
-    #{$left}: 32em;
-    width:auto;
   }
 
   //Revert to mobile use of the .full-width class

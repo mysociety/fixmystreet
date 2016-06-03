@@ -61,10 +61,6 @@ body.frontpage #site-header, #site-header {
 }
 
 body.frontpage {
-    #user-meta p {
-        top: -9em;
-    }
-
     .item-list--reports__item {
         border-left: solid 4px $primary;
     }
@@ -74,11 +70,6 @@ body.frontpage {
         width: 990px;
         top: 262px;
     }
-}
-
-body.twothirdswidthpage #user-meta p {
-    padding-bottom: 0;
-    z-index: 2;
 }
 
 .nav-wrapper .nav-wrapper-2 {

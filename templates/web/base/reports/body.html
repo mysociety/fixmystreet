@@ -27,7 +27,8 @@
 [% map_html %]
 
 </div>
-<div id="side">
+<div id="map_sidebar">
+    <div id="side">
 
 <h1 id="reports_heading">
     [% IF ward %]
@@ -66,5 +67,6 @@
 
 [% INCLUDE 'pagination.html', param = 'p' %]
 
+    </div>
 </div>
 [% INCLUDE 'footer.html' %]

@@ -7,24 +7,25 @@
 [% map_html %]
 </div>
 
-<div id="side">
+<div id="map_sidebar">
+    <div id="side">
 
-<h1>[% loc('All Reports') %]</h1>
+        <h1>[% loc('All Reports') %]</h1>
 
-[% INCLUDE 'pagination.html', param = 'p' %]
+        [% INCLUDE 'pagination.html', param = 'p' %]
 
-<section class="full-width">
-  [% IF problems.0 %]
-    <ul class="item-list item-list--reports">
-      [% FOREACH problem IN problems.0 %]
-        [% INCLUDE 'reports/_list-entry.html' %]
-      [% END %]
-    </ul>
-  [% END %]
-</section>
+        <section class="full-width">
+          [% IF problems.0 %]
+            <ul class="item-list item-list--reports">
+              [% FOREACH problem IN problems.0 %]
+                [% INCLUDE 'reports/_list-entry.html' %]
+              [% END %]
+            </ul>
+          [% END %]
+        </section>
 
-[% INCLUDE 'pagination.html', param = 'p' %]
+        [% INCLUDE 'pagination.html', param = 'p' %]
 
+    </div>
 </div>
 [% INCLUDE 'footer.html' %]
-

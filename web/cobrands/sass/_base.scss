@@ -554,27 +554,6 @@ body.mappage .wrapper {
   position: static;
 }
 
-// this is the user's logged in details or the login link etc
-#user-meta {
-  p {
-    position: relative;
-    color: $primary_text;
-    background: $primary;
-    padding: flip(1em 6em 1em 1em, 1em 1em 1em 6em);
-    a {
-      position: absolute;
-      #{$right}: 1em;
-      @include inline-block;
-      text-transform:uppercase;
-      font-size:0.75em;
-      background:#333;
-      padding:0.25em 0.75em;
-      color:#fff;
-      @include border-radius(0.25em);
-    }
-  }
-}
-
 
 // #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
 .shadow-wrap {
@@ -829,25 +808,13 @@ input.final-submit {
 
 .big-green-banner {
   position: relative;
-  top:-1.75em;
+  top: -1.75em;
   background: $col_click_map;
   color: #fff;
-  padding:1em;
-  text: {
-    transform:uppercase;
-    align:center;
-  }
-  font-size:0.875em;
-  &:before {
-    content: "";
-    #{$left}: -0.5em;
-    top:0;
-    position: absolute;
-    width: 0;
-    height: 0;
-    border-#{$left}: 0.5em solid transparent;
-    border-bottom: 0.5em solid $col_click_map_dark;
-  }
+  padding: 1em;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 0.875em;
 }
 
 .banner {
@@ -1061,17 +1028,27 @@ input.final-submit {
 }
 
 // map stuff
-#map_box{
+#map_box {
   @extend .full-width;
   background: #333;
   height: 29em;
   margin-bottom: 1em;
   overflow: hidden;
   position: relative;
+
   #map {
     width: 100%;
     height: 100%;
-    position: relative;
+
+    // IE7 doesn't understand 100% height when the parent height is "auto",
+    // so we have to explicitly tell it to pin the element to the top and
+    // bottom of the parent. No need for an ie7-specific condition, because
+    // this makes no difference in other browsers.
+    // We keep the "height: 100%" in there to give IE7 context for the 100%
+    // height on #map's child, div.olMapViewport.
+    position: absolute;
+    top: 0;
+    bottom: 0;
   }
 }
 
@@ -1085,9 +1062,9 @@ html.js #map .noscript {
 // OpenLayers fix for navigation being top right
 // Left and right so that zoom can be left, pan right.
 #fms_pan_zoom {
-  top: 0.5em;
-  #{$left}: 0.5em !important;
-  #{$right}: 0.5em !important;
+  top: 0.5em; // This will be overridden in JS if there's a full screen map with banner
+  #{$left}: 0.5em;
+  #{$right}: 0.5em;
 }
 // The left and right of the above causes the navigation to move off-screen left in IE6.
 .ie6 #fms_pan_zoom {
@@ -1101,55 +1078,55 @@ html.js #map .noscript {
 #fms_pan_zoom_panright,
 #fms_pan_zoom_zoomin,
 #fms_pan_zoom_zoomout {
-  width:36px !important;
-  height:36px !important;
+  width: 36px;
+  height: 36px;
   text-indent: flip(-999999px, 999999px); // text-align from OL style makes this necessary
-  background:url($image-sprite) no-repeat;
+  background: url($image-sprite) no-repeat;
   filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
 
 #fms_pan_zoom_zoomworld {
-  display:none !important;
-  visibility:none !important;
+  display: none !important;
+  visibility: none !important;
 }
 
 #fms_pan_zoom_panup {
-  background-position:-42px -222px;
-  #{$right}: 30px !important;
-  #{$left}: auto !important;
-  top:0 !important;
+  background-position: -42px -222px;
+  #{$right}: 30px;
+  #{$left}: auto;
+  top: 0;
 }
 #fms_pan_zoom_pandown {
-  background-position:-42px -282px;
-  #{$right}: 30px !important;
-  #{$left}: auto !important;
-  top:72px !important;
+  background-position: -42px -282px;
+  #{$right}: 30px;
+  #{$left}: auto;
+  top: 72px;
 }
 #fms_pan_zoom_panleft {
-  background-position:-12px -252px;
-  width:48px !important;
-  #{$right}: flip(48px, 0) !important;
-  #{$left}: auto !important;
-  top:36px !important;
+  background-position: -12px -252px;
+  width: 48px;
+  #{$right}: flip(48px, 0);
+  #{$left}: auto;
+  top: 36px;
 }
 #fms_pan_zoom_panright {
-  background-position:-60px -252px;
-  width:48px !important;
-  #{$right}: flip(0, 48px) !important;
-  #{$left}: auto !important;
-  top:36px !important;
+  background-position: -60px -252px;
+  width: 48px;
+  #{$right}: flip(0, 48px);
+  #{$left}: auto;
+  top: 36px;
 }
 #fms_pan_zoom_zoomin {
-  background-position:-152px -223px;
-  height:44px !important;
-  #{$left}: 0 !important;
-  top:0 !important;
+  background-position: -152px -223px;
+  height: 44px;
+  #{$left}: 0;
+  top: 0;
 }
 #fms_pan_zoom_zoomout {
-  background-position:-152px -259px;
-  height:44px !important;
-  #{$left}: 0 !important;
-  top:44px !important;
+  background-position: -152px -259px;
+  height: 44px;
+  #{$left}: 0;
+  top: 44px;
 }
 
 //hide pins, show old reports etc
@@ -1817,6 +1794,13 @@ table.nicetable {
     border-radius: 0 0.25em 0.25em 0;
     border-right-width: 1px; // reinstate border on last item
   }
+}
+
+.my-account-buttons a {
+  display: inline-block;
+  background: #f6f6f6;
+  padding: 0.5em 1em;
+  border-radius: 0.2em;
 }
 
 

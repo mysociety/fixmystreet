@@ -10,6 +10,8 @@
 [% map_html %]
 </div>
 
+<div id="map_sidebar">
+
 <form method="post" action="[% c.uri_for( 'report_edit', problem.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% token %]" >
     <input type="hidden" name="submit" value="1" >
@@ -142,6 +144,8 @@
 
 </div>
 </form>
+
+</div>
 
 <div id="print_report_map" class="print-only">
 [% INCLUDE 'maps/noscript_map.html' map=print_report_map nsm_prefix="large_" %]

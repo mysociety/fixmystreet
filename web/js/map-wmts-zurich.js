@@ -56,15 +56,9 @@ $(function(){
  function set_map_config(perm) {
     // This stuff is copied from js/map-bing-ol.js
 
-    var nav_opts = { zoomWheelEnabled: false };
-    if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
-        nav_opts = {};
-    }
-    fixmystreet.nav_control = new OpenLayers.Control.Navigation(nav_opts);
-
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
-        fixmystreet.nav_control
+        new OpenLayers.Control.Navigation()
     ];
     if ( fixmystreet.page != 'report' || !$('html').hasClass('mobile') ) {
         fixmystreet.controls.push( new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' }) );

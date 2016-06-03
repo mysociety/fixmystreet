@@ -11,25 +11,6 @@ function isR2L() {
 }
 
 /*
- * general height fixing function
- *
- * elem1: element to check against
- * elem2: target element
- * offset: this will be added (if present) to the final value, useful for height errors
- */
-function heightFix(elem1, elem2, offset, force) {
-    var h1 = $(elem1).height(),
-        h2 = $(elem2).height();
-    if (offset === undefined) {
-        offset = 0;
-    }
-    if (h1 > h2 || force) {
-        $(elem2).css( { 'min-height': h1+offset } );
-    }
-}
-
-
-/*
  * very simple tab function
  *
  * elem: trigger element, must have an href attribute (so probably needs to be an <a>)
@@ -56,24 +37,6 @@ function tabs(elem, indirect) {
     }
 }
 
-/* Geographic functions for faking map centre, as it appears to be offset from
-   where it actually is */
-
-function midpoint_box_excluding_column(col_offset, col_width, box_offset, box_width) {
-    var r2l = isR2L(),
-        diff = r2l ? box_width : (box_offset.left - col_width),
-        q = (col_offset.left - diff) / 2;
-    if ((r2l && q > 0) || (!r2l && q < 0)) {
-        return 0;
-    }
-    return q;
-}
-
-function fixmystreet_midpoint() {
-    var $content = $('.content'), mb = $('#map_box');
-    return midpoint_box_excluding_column($content.offset(), $content.width(), mb.offset(), mb.width());
-}
-
 
 $(function(){
     var $html = $('html');
@@ -91,12 +54,7 @@ $(function(){
         if (last_type == type) { return; }
         if (type == 'mobile') {
             $html.addClass('mobile');
-            $('#map_box').prependTo('.content').css({
-                zIndex: '', position: '',
-                top: '', left: '', right: '', bottom: '',
-                width: '', height: '10em',
-                margin: ''
-            });
+            $('#map_box').css({ height: '10em' });
             if (typeof fixmystreet !== 'undefined') {
                 fixmystreet.state_map = ''; // XXX
             }
@@ -114,8 +72,6 @@ $(function(){
                     .addClass('mobile-map-banner')
                     .appendTo('#map_box')
                     .html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
-            } else {
-                $('#fms_pan_zoom').css({ top: '0.5em' });
             }
             $('span.report-a-problem-btn').on('click.reportBtn', function(){
                 $('html, body').animate({scrollTop:0}, 500);
@@ -125,7 +81,7 @@ $(function(){
         } else {
             // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
-            position_map_box();
+            $('#map_box').css({ height: '' });
             if (typeof fixmystreet !== 'undefined') {
                 fixmystreet.state_map = 'full';
             }
@@ -135,6 +91,12 @@ $(function(){
                 if (cobrand !== 'oxfordshire') {
                     $('#site-header').show();
                 }
+                $('#map_box').prependTo('.content').css({
+                    position: '',
+                    top: '', left: '', right: '', bottom: '',
+                    height: '',
+                    margin: ''
+                });
                 if (typeof variation !== 'undefined' && variation === 1) {
                     banner_text = 'Click map to request a fix';
                 }
@@ -143,7 +105,7 @@ $(function(){
                     .prependTo('#side')
                     .html(banner_text);
             }
-            $('#fms_pan_zoom').css({ top: '4.75em' });
+            $('#fms_pan_zoom').css({ top: '' });
             $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
         last_type = type;
@@ -152,11 +114,6 @@ $(function(){
     /*
      * Report a problem page
      */
-    //desktop
-    if ($('#report-a-problem-sidebar').is(':visible')) {
-        heightFix('#report-a-problem-sidebar', '.content', 26);
-    }
-
     //show/hide notes on mobile
     $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-fwd">' + translation_strings.how_to_send + '</a>').hide();
     $('.rap-notes-trigger').click(function(e){
@@ -388,68 +345,74 @@ $(function(){
 
 // A sliding drawer from the bottom of the page, large version
 $.fn.drawer = function(id, ajax) {
-    // IE7 positions the fixed tool bar 1em to the left unless it comes after
-    // the full-width section, ho-hum. Move it to where it would be after an
-    // open/close anyway
-    if ($('html.ie7').length) {
-        var $sw = $('.shadow-wrap'), $content = $('.content[role="main"]');
-        $sw.appendTo($content);
-    }
-    this.toggle(function(){
-        var $this = $(this), d = $('#' + id), $content = $('.content[role="main"]');
-        if (!$this.addClass('hover').data('setup')) {
-            // make a drawer div with an innerDiv
-            if (!d.length) {
-                d = $('<div id="' + id + '">');
-            }
-            var innerDiv = $('<div>');
-            d.wrapInner(innerDiv);
 
-            // if ajax, load it with a spinner
+    // The link/button that triggered the drawer
+    var $this = $(this);
+
+    // A bunch of elements that will come in handy when opening/closing
+    // the drawer. Because $sw changes its position in the DOM, we capture
+    // all these elements just once, the first time .drawer() is called.
+    var $sidebar = $('#map_sidebar');
+    var $sw = $this.parents('.shadow-wrap');
+    var $swparent = $sw.parent();
+
+    this.toggle(function(){
+        // Find the specified drawer, or create it if it doesn't exist
+        var $drawer = $('#' + id);
+        if ($drawer.length === 0) {
+            $drawer = $('<div id="' + id + '">');
+            $drawer.appendTo($swparent);
+        }
+
+        if ( ! $this.data('setup') ) {
+            // Optionally fill $drawer with HTML from an AJAX data source
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
                 var margin = isR2L() ? 'margin-left' : 'margin-right';
-                $this.prepend(' <img class="spinner" src="/cobrands/fixmystreet/images/spinner-black-333.gif" style="' + margin + ':2em;">');
-                innerDiv.load(href, function(){
-                    $('.spinner').remove();
-                });
+                var $ajax_result = $('<div>').appendTo($drawer);
+                $ajax_result.html('<p style="text-align:center">Loading</p>');
+                $ajax_result.load(href);
             }
 
-            // Tall drawer - put after .content for scrolling to work okay.
-            // position over the top of the main .content in precisely the correct location
+            // Style up the $drawer
+            var drawer_top = $(window).height() - $sw.height();
             var drawer_css = {
-                position: 'absolute',
-                zIndex: '1100',
-                marginTop: $('html.ie6, html.ie7').length ? '-3em' : 0, // IE6/7 otherwise include the 3em padding and stay too low
-                top: $(window).height() - $content.offset().top
+                position: 'fixed',
+                zIndex: 10,
+                top: drawer_top,
+                bottom: 0,
+                width: $sidebar.css('width'),
+                paddingLeft: $sidebar.css('padding-left'),
+                paddingRight: $sidebar.css('padding-right'),
+                overflow: 'auto',
+                background: '#fff'
             };
             drawer_css[isR2L() ? 'right' : 'left'] = 0;
-            d.insertAfter($content).addClass('content').css(drawer_css)
-                .removeClass('hidden-js').find('h2').css({ marginTop: 0 });
+            $drawer.css(drawer_css).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
             $this.data('setup', true);
         }
 
-        //do the animation
-        $('.shadow-wrap').prependTo(d).addClass('static');
-        d.show().animate({top:'3em'}, 1000, function(){
-            $content.fadeOut(function() {
-                d.css({ position: 'relative' });
-            });
-        });
+        // Insert the .shadow-wrap controls into the top of the drawer.
+        $sw.addClass('static').prependTo($drawer);
+
+        // Animate the drawer into place, enitrely covering the sidebar.
+        var sidebar_top_px = $sidebar.position().top;
+        $drawer.show().animate({ top: sidebar_top_px }, 1000);
+
     }, function(e){
-        var $this = $(this), d = $('#' + id), $sw = $('.shadow-wrap'),
-            $content = $('.content[role="main"]'),
-            tot_height = $(window).height() - d.offset().top;
-        $this.removeClass('hover');
-        d.css({ position: 'absolute' }).animate({ top: tot_height }, 1000, function(){
-            d.hide();
-            $sw.appendTo($content).removeClass('static');
+        // Slide the drawer down, move the .shadow-wrap back to its
+        // original parent, and hide the drawer for potential re-use later.
+        var $drawer = $('#' + id);
+        var drawer_top = $(window).height() - $sw.height();
+
+        $drawer.animate({ top: drawer_top }, 1000, function(){
+            $sw.removeClass('static').appendTo($swparent);
+            $drawer.hide();
         });
-        $content.show();
     });
 };
 
-    if ($('html.mobile').length || slide_wards_down ) {
+    if ($('html.mobile').length) {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
         $('#key-tool-wards').click(function(e){
             e.preventDefault();
@@ -539,25 +502,6 @@ $.fn.drawer = function(id, ajax) {
         $('a[rel=fancy]').fancybox({
             'overlayColor': '#000000'
         });
-    }
-
-    /*
-     * heightfix the desktop .content div
-     *
-     * this must be kept near the end so that the
-     * rendered height is used after any page manipulation (such as tabs)
-     */
-    if (!$('html.mobile').length) {
-        if (!($('body').hasClass('fullwidthpage'))){
-            var offset = -15 * 16;
-            if (cobrand == 'oxfordshire') {
-                // Oxfordshire uses box-sizing:border-box and padding to work out height
-                offset = 0;
-            }
-            heightFix(window, '.content', offset, 1);
-            // in case we have a map that isn't full screen
-            map_fix();
-        }
     }
 
 });

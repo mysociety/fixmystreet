@@ -23,7 +23,7 @@
     <p class="form-error">[% loc('Sorry, we could not log you in. Please fill in the form below.') %]</p>
 [% END %]
 
-[% TRY %][% PROCESS 'report/new/sidebar.html' %][% CATCH file %][% END %]
+[% sidebar_html %]
 
 [% INCLUDE 'errors.html' %]
 

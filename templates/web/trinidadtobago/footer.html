@@ -20,7 +20,7 @@
                         <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %] class="report-a-problem-btn"
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
-                            %]>[% loc("Your reports") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
+                            %]>[% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END

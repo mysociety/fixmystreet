@@ -64,32 +64,6 @@ body.alertindex form.full-width {
   margin-left: 0;
 }
 
-// Override the little banner you get when you're logged in on the map page
-// because FMS makes it a different colour and moves it over to the left.
-body.mappage #user-meta p {
-  background-color: $bromley_blue;
-  border-bottom: 1px solid #444;
-}
-
-// And also override the banner on other pages so that it lines up properly
-#user-meta, body.mappage #user-meta {
-  max-width: 1200px;
-}
-#user-meta p,
-body.frontpage #user-meta p {
-  top: 0;
-  right: auto;
-  background-color: $bromley_blue;
-  color: #fff;
-  box-shadow: none;
-}
-
-// Because we've moved the user-meta, we also have to move the #front-main div
-// down a bit so that it shows the #user-meta
-#front-main {
-  margin-top:3em
-}
-
 // The page h1 needs to be white on desktop, because it's in a blue box
 h1.main {
   color: #fff;

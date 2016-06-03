@@ -24,21 +24,8 @@
         <![endif]-->
 
         <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
-        <script src="[% start %][% version('/cobrands/fixmystreet/position_map.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html' %]
         [% extra_js %]
-        <script type="text/javascript">
-            $(function(){
-                var $html = $('html');
-                $(window).resize(function(){
-                    if(!$html.hasClass('mobile')) {
-                        // Hart has a bigger header and so needs more room for
-                        // the map controls
-                        $('#fms_pan_zoom').css({ top: '17.75em' });
-                    }
-                }).resize();
-            });
-        </script>
 
         <link rel="Shortcut Icon" type="image/x-icon" href="/cobrands/hart/favicon.ico">
 
@@ -57,7 +44,7 @@
                         <li> <a href="#main-nav"><div class="menu-icon">&nbsp;</div></a>
                     </ul>
                 </div>
-                <div class="header-container">
+                <div class="container">
                     <a id="site-logo" href="http://www.hart.gov.uk">Hart District Council</a>
                 </div>
             </header>

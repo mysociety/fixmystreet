@@ -1,44 +1,20 @@
 @import "_colours";
 @import "../sass/layout";
 
-@media only screen and (min-width: 48em) {
-  .content {
-    margin-top: 8em;
-  }
-  .header-container {
-      max-width: 60em;
-      margin: 0 auto;
-      padding: 0em;
-      position: relative;
-  }
-  body.mappage .content {
-    margin-top: 14em;
-  }
-  
-  #front-main-container {
-      background-color: $hart_primary;
-  }
-  .hart-footer-wrapper {
-    display: block;
-  }
+.content {
+  margin-top: 8em;
 }
 
-#report-a-problem-sidebar {
-  top: 14em;
+#front-main-container {
+    background-color: $hart_primary;
 }
 
 body.twothirdswidthpage .content {
-    width: 30em; 
     aside {
-        left: 672px;
-        width: 208px;
-        padding: 16px;
         @include box-shadow(none);
     }
     .sticky-sidebar {
-        left: 672px;
         aside {
-            position: fixed;
             top: 14em;
         }
     }

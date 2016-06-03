@@ -7,14 +7,23 @@
 [% IF problems.size %]
     [% map_html %]
     </div>
-    <div id="side">
+    <div id="map_sidebar">
+        <div id="side">
 [% ELSE %]
-    <div id="skipped-map">
+    <div id="map_sidebar">
+        <div id="skipped-map">
 [% END %]
 
-<h1>[% loc('Your Reports') %]</h1>
+<h1>[% loc('Your account') %]</h1>
 
-<p><a href="/auth/change_password">[% loc('Change password') %]</a></p>
+<p>[% c.user.name %] [% c.user.email %]</p>
+
+<p class="my-account-buttons">
+  <a href="/auth/change_password">[% loc('Change password') %]</a>
+  <a href="/auth/sign_out">[% loc('Sign out') %]</a>
+</p>
+
+<h2>[% loc('Your reports') %]</h2>
 
 [% IF ! has_content %]
 [% tprintf( loc('You haven&rsquo;t created any reports yet.  <a href="%s">Report a problem now.</a>'),
@@ -63,6 +72,7 @@
     [% "</ul>" IF loop.last %]
 [% END %]
 
-</div>
+        </div>
+    </div>
 
 [% INCLUDE 'footer.html' %]

@@ -50,15 +50,6 @@
                 </div>
             </header>
 
-          [% IF c.user_exists %]
-            <div id="user-meta">
-                <p>
-                    [% tprintf(loc('Hi %s'), c.user.name || c.user.email) %]
-                    <a href="/auth/sign_out">[% loc('sign out') %]</a>
-                </p>
-            </div>
-          [% END %]
-
             [% INCLUDE 'post_header_extra.html' %]
             [% pre_container_extra %]
 
