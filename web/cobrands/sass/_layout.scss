@@ -9,8 +9,13 @@ $mappage-header-height: 4em !default;
     /* Roughly the height of .nav-wrapper-2 (mappage-header-height) plus the
      * border-top on .nav-wrapper-2 (4px), plus the padding-top on
      * .item-list__item (0.5em). */
-    padding-top: $mappage-header-height + 1em;
-    margin-top: -($mappage-header-height + 1em);
+    @if unit($mappage-header-height) == 'em' {
+        padding-top: $mappage-header-height + 1em;
+        margin-top: -($mappage-header-height + 1em);
+    } @else {
+        padding-top: $mappage-header-height + 16px;
+        margin-top: -($mappage-header-height + 16px);
+    }
 }
 
 //hacks for desk/mob only stuff
