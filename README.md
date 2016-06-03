@@ -45,6 +45,31 @@ web-based cross-browser testing tools for this project.
 
 ## Releases
 
+* v1.8.3 (3rd June 2016)
+    - Admin improvements
+        - Add search boxes to admin index page, and move stats. #1295
+        - Allow change of email in admin to existing entry. #1207
+        - Speed up photo removal. #1400
+        - Improve in-place moderation UI. #1388
+    - Front end improvements:
+        - Improve printing of report page in Firefox. #1394
+        - Fallback if request to Gaze fails. #1286
+    - Bugfixes:
+        - Fix non-working Google Maps layer. #1215
+        - Fix map tap sensitivity on some devices. #911 and openlayers/ol2#1418
+        - Fix lack of removal of cached update photos. #1405
+        - Handle reports/updates by logged in abuse entries.
+        - Fix size of grey chevrons.
+    - Development improvements:
+        - Massive speed increase to CSS compilation. #1414
+        - Use only one templating system for emails. #1410
+        - Move summary string function to template. #694
+        - Consolidate CSS clearfix handling. #1414
+        - Disable auto-CRLF conversion on git checkout.
+        - Support for Debian Jessie/Ubuntu Xenial.
+    - UK only
+        - Add standard mySociety footer. #1385
+
 * v1.8.2 (3rd May 2016)
     - Security:
         - Fix vulnerability in image upload that allowed external
