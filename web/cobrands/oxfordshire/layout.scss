@@ -283,11 +283,6 @@ h4.static-with-rule {
     }
 }
 
-// Stop bottom of update form disappearing behind the #key-tools shadow
-#update_form {
-  padding-bottom: 4em;
-}
-
 #oxford-wrapper #front-main #postcodeForm div {
   border: 1px solid #fff; // because orange "Go" button (see below) abuts this border, looks a tiny bit better if it's not dark green
 

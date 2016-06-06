@@ -771,6 +771,10 @@ body.authpage {
 #report-updates-data fieldset {
     margin-bottom: 0;
 }
+// Stop bottom of update form disappearing behind the #key-tools shadow
+#update_form {
+  padding-bottom: 4em;
+}
 
 .big-green-banner {
   top: auto;
