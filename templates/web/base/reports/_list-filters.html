@@ -18,8 +18,7 @@
     </select>
 [% END %]
 
-[% IF use_section_wrapper %]
-<section class="full-width">
+[% IF use_form_wrapper %]
     <form method="get" action="">
 [% END %]
 
@@ -28,7 +27,6 @@
             <input type="submit" value="[% loc('Go') %]">
         </p>
 
-[% IF use_section_wrapper %]
+[% IF use_form_wrapper %]
     </form>
-</section>
 [% END %]

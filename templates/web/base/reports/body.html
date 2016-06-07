@@ -59,13 +59,12 @@
 </p>
 [% END %]
 
-[% INCLUDE "reports/_list-filters.html", use_section_wrapper = 1 %]
-
+<section class="full-width">
+[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
 [% INCLUDE 'pagination.html', param = 'p' %]
-
 [% INCLUDE 'reports/_problem-list.html' %]
-
 [% INCLUDE 'pagination.html', param = 'p' %]
+</section>
 
     </div>
 </div>

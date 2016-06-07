@@ -12,9 +12,9 @@
 
         <h1>[% loc('All Reports') %]</h1>
 
+        <section class="full-width">
         [% INCLUDE 'pagination.html', param = 'p' %]
 
-        <section class="full-width">
           [% IF problems.0 %]
             <ul class="item-list item-list--reports">
               [% FOREACH problem IN problems.0 %]
@@ -22,9 +22,9 @@
               [% END %]
             </ul>
           [% END %]
-        </section>
 
         [% INCLUDE 'pagination.html', param = 'p' %]
+        </section>
 
     </div>
 </div>

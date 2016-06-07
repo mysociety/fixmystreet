@@ -34,23 +34,21 @@
     [% INCLUDE '_hart_hants_note.html' %]
 [% END %]
 
-[% INCLUDE "reports/_list-filters.html", use_section_wrapper = 1 %]
-
-[% INCLUDE 'pagination.html',
-    pager = problems_pager,
-    param = 'p'
-%]
-
+<section class="full-width">
+[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+[% INCLUDE 'pagination.html', pager = problems_pager, param = 'p' %]
 [% INCLUDE 'my/_problem-list.html' %]
+</section>
 
 [% FOREACH u IN updates %]
     [% IF loop.first %]
         <h2>[% loc('Your updates') %]</h2>
+        <section class="full-width">
         [% INCLUDE 'pagination.html',
             pager = updates_pager,
             param = 'u'
         %]
-        <ul class="item-list item-list--updates full-width">
+        <ul class="item-list item-list--updates">
     [% END %]
 
     <li class="item-list__item item-list__item--updates">
@@ -69,7 +67,7 @@
             </div>
         </div>
     </li>
-    [% "</ul>" IF loop.last %]
+    [% "</ul></section>" IF loop.last %]
 [% END %]
 
         </div>
