@@ -61,9 +61,11 @@ then
     overwrite_rc_local
 fi
 
-# Tell the user what to do next:
+if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
+    # Tell the user what to do next:
 
-echo Installation complete - you should now be able to view the site at:
-echo   http://$HOST/
-echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
-echo running: $REPOSITORY/bin/run-tests t
+    echo Installation complete - you should now be able to view the site at:
+    echo   http://$HOST/
+    echo Or you can run the tests by switching to the "'$UNIX_USER'" user and
+    echo running: $REPOSITORY/bin/run-tests t
+fi

@@ -43,13 +43,23 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # Fetch and run install script
     wget -O install-site.sh --no-verbose https://github.com/mysociety/commonlib/raw/master/bin/install-site.sh
     sh install-site.sh --dev fixmystreet vagrant 127.0.0.1.xip.io
-    # We want to be on port 3000 for development
-    sed -i -r -e "s,^( *BASE_URL: .*)',\\1:3000'," fixmystreet/conf/general.yml
-    # All done
-    echo "****************"
-    echo "You can now ssh into your vagrant box: vagrant ssh"
-    echo "The website code is found in: ~/fixmystreet"
-    echo "You can run the dev server with: script/fixmystreet_app_server.pl [-d] [-r] [--fork]"
+    SUCCESS=$?
+    # Even if it failed somehow, we might as well update the port if possible
+    if [ -e fixmystreet/conf/general.yml ]; then
+        # We want to be on port 3000 for development
+        sed -i -r -e "s,^( *BASE_URL: .*)',\\1:3000'," fixmystreet/conf/general.yml
+    fi
+    if [ $SUCCESS -eq 0 ]; then
+        # All done
+        echo "****************"
+        echo "You can now ssh into your vagrant box: vagrant ssh"
+        echo "The website code is found in: ~/fixmystreet"
+        echo "You can run the dev server with: script/fixmystreet_app_server.pl [-d] [-r] [--fork]"
+    else
+        echo "Unfortunately, something appears to have gone wrong with the installation."
+        echo "Please see above for any errors, and do ask on our mailing list for help."
+        exit 1
+    fi
   EOS
 
   # Create a private network, which allows host-only access to the machine

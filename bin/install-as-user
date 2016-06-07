@@ -30,14 +30,6 @@ DB_NAME="fixmystreet"
 
 # Check that the arguments we've been passed are sensible:
 
-IP_ADDRESS_FOR_HOST="$(dig +short $HOST)"
-
-if [ x = x"$IP_ADDRESS_FOR_HOST" ]
-then
-    error_msg "The hostname $HOST didn't resolve to an IP address"
-    exit 1
-fi
-
 if ! id "$UNIX_USER" 2> /dev/null > /dev/null
 then
     error_msg "The user '$UNIX_USER' didn't exist."
