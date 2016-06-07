@@ -60,18 +60,6 @@ h1.main {
   background: url('/cobrands/hart/tab-blue.png') 0 0 no-repeat;
 }
 
-#problems-nav {
-    border-bottom:0.25em solid $primary;
-    ul li a {
-        text-transform: none;
-        color: #666;
-        &.active {
-            background: $primary;
-            color: #fff;
-        }
-    }
-}
-
 .big-green-banner {
     text-transform: none;
 }

@@ -1303,55 +1303,6 @@ a:hover.rap-notes-trigger {
   margin:1em 0;
 }
 
-//report a problem tabs
-#problems-nav {
-  padding:0 1em;
-  overflow:hidden;
-  border-bottom:0.25em solid #333;
-  ul {
-    @include list-reset-soft;
-    display:table;
-    width:100%;
-    li {
-      display:table-cell;
-      border-#{$right}: 0.25em solid #fff;
-      &:last-child {
-        border-#{$right}: none;
-      }
-      a {
-        display:block;
-        background:#e2e2e2;
-        color:#333;
-        padding:1em;
-        text: {
-          transform:uppercase;
-          align:center;
-        }
-        &:hover {
-          text-decoration:none;
-          background:#e6e6e6;
-        }
-        &.active {
-          background:#333;
-          color:#fff;
-        }
-      }
-    }
-  }
-}
-
-//display:table fixes
-.ie6, .ie7 {
-  #problems-nav {
-    clear:both;
-    margin:0;
-    padding:0;
-    ul li {
-      float: $left;
-    }
-  }
-}
-
 
 /* Reporting a problem bits */
 

@@ -81,18 +81,6 @@ h1.main {
     list-style: none;
 }
 
-#problems-nav {
-    border-bottom:0.25em solid $primary;
-    ul li a {
-        text-transform: none;
-        color: #666;
-        &.active {
-            background: $primary;
-            color: #fff;
-        }
-    }
-}
-
 .big-green-banner {
     text-transform: none;
     z-index: 5000;
@@ -131,8 +119,6 @@ h1.main {
 
         div {
             padding-top: 0px;
-            input#pc {
-            }
             input#sub {
                 height: 100%;
             }
