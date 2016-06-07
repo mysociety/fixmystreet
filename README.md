@@ -51,6 +51,8 @@ web-based cross-browser testing tools for this project.
         - Rename "Your reports" in main navigation to "Your account".
         - Centre map on pin location when creating a report.
         - Allow scroll wheel to zoom map. #1326
+        - Wrap emails better for differing screen sizes. #1393
+        - Fix annoying jump when "Get updates" drawer opened. #1425
     - Development improvements:
         - Add output style option to make_css command.
         - Remove some unused CSS, and simplify full-width. #1423
