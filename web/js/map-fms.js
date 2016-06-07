@@ -41,10 +41,10 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
         var c = this.map.getCenter();
         var in_uk = c ? this.in_uk(c) : true;
         if (z >= 16 && in_uk) {
-            copyrights = 'Contains Ordnance Survey data &copy; Crown copyright and database right 2014';
+            copyrights = 'Contains Ordnance Survey data &copy; Crown copyright and database right 2016';
         } else {
             logo = '<a href="https://www.bing.com/maps/"><img border=0 src="//dev.virtualearth.net/Branding/logo_powered_by.png"></a>';
-            copyrights = '&copy; 2011 <a href="https://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
+            copyrights = '&copy; 2016 <a href="https://www.bing.com/maps/">Microsoft</a>. &copy; AND, Navteq, Ordnance Survey';
         }
         this._updateAttribution(copyrights, logo);
     },
