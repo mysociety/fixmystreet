@@ -11,7 +11,6 @@ use Encode;
 use POSIX qw();
 use Template;
 use Digest::HMAC_SHA1 qw(hmac_sha1_hex);
-use Text::Wrap;
 use mySociety::Locale;
 use mySociety::Random qw(random_bytes);
 use Utils::Email;
@@ -188,13 +187,6 @@ sub construct_email ($) {
     # regex means, "replace any line ending that is neither preceded (?<!\n)
     # nor followed (?!\n) by a blank line with a single space".
     $body =~ s#(?<!\n)(?<!  )\n(?!\n)# #gs;
-
-    # Wrap text to 72-column lines.
-    local($Text::Wrap::columns) = 69;
-    local($Text::Wrap::huge) = 'overflow';
-    local($Text::Wrap::unexpand) = 0;
-    $body = Text::Wrap::wrap('', '', $body);
-    $body =~ s/^\s+$//mg; # Do it again because of wordwrapping indented lines
 
     $p->{Subject} = $subject if defined($subject);
 
