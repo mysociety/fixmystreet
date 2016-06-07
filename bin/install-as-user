@@ -53,7 +53,9 @@ fi
 REPOSITORY="$DIRECTORY/fixmystreet"
 LINK_DESTINATION="$HOME/fixmystreet"
 
-ln -sfn "$REPOSITORY" $LINK_DESTINATION
+if [ "$REPOSITORY" != "$LINK_DESTINATION" ]; then
+    ln -sfn "$REPOSITORY" $LINK_DESTINATION
+fi
 cd "$REPOSITORY"
 
 if [ ! "$DEVELOPMENT_INSTALL" = true ]; then
