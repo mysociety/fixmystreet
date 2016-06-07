@@ -45,6 +45,19 @@ web-based cross-browser testing tools for this project.
 
 ## Releases
 
+* In development
+    - Front end improvements:
+        - Stop map being underneath content sidebar/header. #1350 #361
+        - Rename "Your reports" in main navigation to "Your account".
+        - Centre map on pin location when creating a report.
+        - Allow scroll wheel to zoom map. #1326
+    - Development improvements:
+        - Add output style option to make_css command.
+        - Remove some unused CSS, and simplify full-width. #1423
+    - Vagrant installation improvements:
+        - Improve error handling.
+        - Don't add a symlink if it is to the same place.
+
 * v1.8.3 (3rd June 2016)
     - Admin improvements
         - Add search boxes to admin index page, and move stats. #1295
