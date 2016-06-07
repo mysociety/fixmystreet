@@ -12,6 +12,7 @@ body {
 
 footer {
     background: #00a1de;
+    display: none;
 }
 
 .content {
@@ -38,20 +39,16 @@ h1.main {
     margin: 0.5em 0;
 }
 
-.container {
-    padding: 0 1em 1em; /* if remove this 1em, need to edit .full-width! */
-}
-
 #site-header {
     position: relative;
-    background: $primary;
-    height: 76px;
+    background: #fff;
+    height: auto;
+    .container {
+        padding: 0;
+    }
 }
 #site-header .eastsussex .header {
     margin: 0 0 2px;
-}
-.frontpage #site-header .eastsussex .header {
-    margin: 0 0 9px;
 }
 
 // Make the navigation bar thinner on the map page so that it takes up less
@@ -98,14 +95,6 @@ h1.main {
 }
 
 #front-main {
-
-    margin: 0;
-    // Add some margin to the top of this so that the FMS menu doesn't overlap
-    // it, because we show a menu at the top on East Sussex as well as at the
-    // bottom.
-    margin-top: 5em;
-    padding: 1em;
-
     #front-main-container {
         text-align: center;
     }
@@ -162,24 +151,6 @@ body > p {
             color: white;
         }
     }
-}
-
-// Add some margin to the top of this so that the FMS menu doesn't overlap
-// it, because we show a menu at the top on East Sussex as well as at the
-// bottom.
-.content {
-    margin-top: 5em;
-}
-// Undo that top margin on the map pages, because we don't show the menu there
-// and on the front page, because we've already accounted for it with our
-// margin on #front-main above.
-.mappage .content,
-.frontpage .content {
-    margin-top: 0em;
-}
-
-footer {
-    display: none;
 }
 
 .footer .languages ul {
