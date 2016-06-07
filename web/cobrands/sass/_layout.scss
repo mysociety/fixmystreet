@@ -367,7 +367,7 @@ body.mappage {
   #{$left}: 0;
   bottom: 0;
   width: 27em; // width of sidebar, minus padding
-  padding: 1em 1em 3em 1em; // extra padding-bottom to clear the .shadow-wrap element
+  padding: 1em 1em 0 1em; // Bottom padding taken care of by ::after
   overflow: auto; // vertical scrollbar when list is taller than window
   background-color: #fff; // since no longer in the flow inside .content
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -378,6 +378,21 @@ body.mappage {
     background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
     background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
   }
+}
+
+// Firefox/IE and Chrome/Safari (e.g.) differ on where to clip overflowed
+// elements, one group clip outside padding, one clips inside. So using padding
+// in #map_sidebar works in Chrome/Safari but not in Firefox/IE. Instead, we
+// add some extra height using ::after.
+#map_sidebar::after {
+    content: "";
+    display: block;
+    height: 4em;
+}
+
+// IE<=8 does not support ::after
+.iel8 #map_sidebar {
+    padding-bottom: 4em;
 }
 
 #skip-this-step {
@@ -698,7 +713,7 @@ body.authpage {
   bottom: 0;
   width: 29em;
   overflow: hidden;
-  padding-top: 3em;
+  padding-top: 2em;
   ul#key-tools {
     border-top: 0.25em solid $primary;
     margin: 0;
@@ -770,10 +785,6 @@ body.authpage {
 // Prevent gap in non-JS, and looks better with JS, due to some padding/margin effect.
 #report-updates-data fieldset {
     margin-bottom: 0;
-}
-// Stop bottom of update form disappearing behind the #key-tools shadow
-#update_form {
-  padding-bottom: 4em;
 }
 
 .big-green-banner {
