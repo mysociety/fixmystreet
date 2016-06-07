@@ -187,6 +187,7 @@ sub construct_email ($) {
     # regex means, "replace any line ending that is neither preceded (?<!\n)
     # nor followed (?!\n) by a blank line with a single space".
     $body =~ s#(?<!\n)(?<!  )\n(?!\n)# #gs;
+    $body =~ s# +$##mg;
 
     $p->{Subject} = $subject if defined($subject);
 
