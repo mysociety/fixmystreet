@@ -24,7 +24,15 @@ use Pod::Usage;
 # Store ARGV in case we need to restart later.
 my @ARGVorig = @ARGV;
 
+my %styles = (
+    nested => SASS_STYLE_NESTED,
+    expanded => SASS_STYLE_EXPANDED,
+    compact => SASS_STYLE_COMPACT,
+    compressed => SASS_STYLE_COMPRESSED,
+);
+my $style = 'compressed';
 GetOptions(
+    'style|t=s' => sub { die "Unknown style\n" unless $_[1] =~ /nested|expanded|compact|compressed/; $style = $_[1]; },
     'verbose' => \my $verbose,
     'watch' => \my $watch,
     'help|?' => \my $help,
@@ -34,7 +42,7 @@ pod2usage(1) if $help;
 my $mime_types = MIME::Types->new;
 
 my $sass = CSS::Sass->new(
-    output_style => SASS_STYLE_COMPRESSED,
+    output_style => $styles{$style},
     dont_die => 1,
     sass_functions => {
         'inline-image($url)' => sub {
@@ -142,6 +150,7 @@ make_css [options] [dirs ...]
  Options:
    --verbose        display more information
    --watch          wait for file updates and compile automatically
+   --style, -t      CSS output style (one of nested, expanded, compact, compressed)
    --help           this help message
 
 If no directories are specified, any .scss files under web/ that do not begin
