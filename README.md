@@ -53,8 +53,12 @@ web-based cross-browser testing tools for this project.
         - Allow scroll wheel to zoom map. #1326
         - Wrap emails better for differing screen sizes. #1393
         - Fix annoying jump when "Get updates" drawer opened. #1425
+    - Bugfixes:
+        - Fix display of close arrow/cross when drawer open. #1424
+        - Redirect correctly if filter used without JavaScript. #1422
     - Development improvements:
-        - Add output style option to make_css command.
+        - make_css: Add output style option.
+        - make_css: Follow symlinks.
         - Remove some unused CSS, and simplify full-width. #1423
     - Vagrant installation improvements:
         - Improve error handling.
