@@ -592,12 +592,12 @@ body.mappage .wrapper {
           color:#fff;
         }
         &.abuse {
-          background-image:url($image-sprite);
-          background-position:center -2424px;
+          background-image: url($image-sprite);
+          background-position: center -2424px;
         }
         &.feed {
-          background-image:url($image-sprite);
-          background-position:center -2563px;
+          background-image: url($image-sprite);
+          background-position: center -2563px;
         }
         &.share {
           background-image: url('/cobrands/fixmystreet/images/share.png');
@@ -608,9 +608,12 @@ body.mappage .wrapper {
           background-position: center 25%;
           background-size: 20px 25px;
         }
+        &.chevron.hover {
+          background-size: auto auto;
+        }
         &.hover {
-          background-image:url($image-sprite);
-          background-position:center -2064px;
+          background-image: url($image-sprite);
+          background-position: center -2064px;
         }
       }
     }

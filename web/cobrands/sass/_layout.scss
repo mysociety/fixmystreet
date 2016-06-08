@@ -744,8 +744,14 @@ body.authpage {
           background-position: $right 50%;
           background-size: 12px 15px;
         }
+        &.chevron.hover {
+          // Reset things that changed
+          border-#{$right}: none;
+          padding-#{$right}: 1.5em;
+          background-size: auto auto;
+        }
         &.hover {
-          background-image:url($image-sprite);
+          background-image: url($image-sprite);
           background-position: flip(right, -337px) -1876px;
         }
       }

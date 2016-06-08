@@ -319,11 +319,11 @@ $(function(){
     var opened;
 
     $.fn.small_drawer = function(id) {
+        var $this = $(this), d = $('#' + id);
         this.toggle(function(){
             if (opened) {
                 opened.click();
             }
-            var $this = $(this), d = $('#' + id);
             if (!$this.addClass('hover').data('setup')) {
                 d.hide().removeClass('hidden-js').css({
                 padding: '1em',
@@ -334,7 +334,6 @@ $(function(){
             d.slideDown();
             opened = $this;
         }, function(e){
-            var $this = $(this), d = $('#' + id);
             $this.removeClass('hover');
             d.slideUp();
             opened = null;
@@ -355,16 +354,16 @@ $.fn.drawer = function(id, ajax) {
     var $sidebar = $('#map_sidebar');
     var $sw = $this.parents('.shadow-wrap');
     var $swparent = $sw.parent();
+    var $drawer = $('#' + id);
 
     this.toggle(function(){
         // Find the specified drawer, or create it if it doesn't exist
-        var $drawer = $('#' + id);
         if ($drawer.length === 0) {
             $drawer = $('<div id="' + id + '">');
             $drawer.appendTo($swparent);
         }
 
-        if ( ! $this.data('setup') ) {
+        if (!$this.addClass('hover').data('setup')) {
             // Optionally fill $drawer with HTML from an AJAX data source
             if (ajax) {
                 var href = $this.attr('href') + ';ajax=1';
@@ -402,7 +401,7 @@ $.fn.drawer = function(id, ajax) {
     }, function(e){
         // Slide the drawer down, move the .shadow-wrap back to its
         // original parent, and hide the drawer for potential re-use later.
-        var $drawer = $('#' + id);
+        $this.removeClass('hover');
         var drawer_top = $(window).height() - $sw.height();
 
         $drawer.animate({ top: drawer_top }, 1000, function(){
