@@ -65,7 +65,7 @@ my @dirs = map { m{/} ? $_ : "web/cobrands/$_" } @ARGV;
 # Initial compilation, to also discover all the included files.
 my %includes;
 my %include_to_main;
-foreach my $file (File::Find::Rule->file->name(qr/^[^_].*\.scss$/)->in(@dirs)) {
+foreach my $file (File::Find::Rule->file->extras({ follow => 1 })->name(qr/^[^_].*\.scss$/)->in(@dirs)) {
     my @includes = compile($file, $verbose);
     $includes{$file} = \@includes;
     map { push @{$include_to_main{$_}}, $file } @includes ? @includes : $file;
