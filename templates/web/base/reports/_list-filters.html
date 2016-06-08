@@ -25,7 +25,7 @@
 
         <p class="report-list-filters">
             [% tprintf(loc('<label>Show %s</label> <label>about %s</label>', 'The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories'), select_status, select_category) %]
-            <input type="submit" value="[% loc('Go') %]">
+            <input type="submit" name="filter_update" value="[% loc('Go') %]">
         </p>
 
 [% IF use_section_wrapper %]
