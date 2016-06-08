@@ -21,34 +21,7 @@
 
 [% INCLUDE 'report/banner.html' %]
 [% INCLUDE 'report/_main.html' %]
-
-<div class="shadow-wrap">
-    <ul id="key-tools">
-        <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse') %]</a></li>
-        <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
-        <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
-    </ul>
-
-<div id="report-updates-data" class="hidden-js">
-    <form action="[% c.uri_for( '/alert/subscribe' ) %]" method="post">
-        <p><a href="[% c.uri_for( '/rss', problem.id ) %]">
-            <img src="/i/feed.png" width="16" height="16" title="[% loc('RSS feed') %]" alt="[% loc('RSS feed of updates to this problem' ) %]" border="0" style="float: right">
-        </a></p>
-        <p>[% loc('Receive email when updates are left on this problem.' ) %]</p>
-        <fieldset>
-        <label class="hidden n" for="alert_rznvy">[% loc('Your email') %]</label>
-        <div class="form-txt-submit-box">
-            <input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30" placeholder="[% loc('Your email') %]">
-            <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
-        </div>
-        <input type="hidden" name="id" value="[% problem.id %]">
-        <input type="hidden" name="type" value="updates">
-        </fieldset>
-    </form>
-</div>
-
-</div>
-
+[% INCLUDE 'report/display_tools.html' %]
 [% INCLUDE 'report/updates.html' %]
 
 <div id="update_form">
