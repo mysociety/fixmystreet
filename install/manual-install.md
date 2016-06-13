@@ -78,7 +78,7 @@ can unlink gettext once everything is installed.
 
 #### c. Other
 
-You need Perl 5.8, ImageMagick with the perl bindings, gettext, and compass.
+You need Perl 5.8, ImageMagick with the perl bindings, and gettext.
 If you're expecting a lot of traffic it's recommended that you install memcached: <http://memcached.org/>
 
 ### 3. Install prerequisite Perl modules
@@ -102,14 +102,12 @@ the included modules to be built, including expat (libexpat1-dev), postgresql
 (postgresql-server-dev-8.4), or the GMP math library (libgmp3-dev).</p>
 </div>
 
-### 4. Install compass and generate CSS
+### 4. Generate CSS
 
-There is a script, `bin/make_css`, that uses Compass and sass to convert the
-SCSS files to CSS files. So let's install compass and run that:
+There is a script, `bin/make_css`, that converts our SCSS files to CSS files.
+So let's run that:
 
 {% highlight bash %}
-$ gem install --user-install --no-ri --no-rdoc bundler
-$ $(ruby -rubygems -e 'puts Gem.user_dir')/bin/bundle install --deployment --path ../gems --binstubs ../gem-bin
 $ bin/make_css
 {% endhighlight %}
 
