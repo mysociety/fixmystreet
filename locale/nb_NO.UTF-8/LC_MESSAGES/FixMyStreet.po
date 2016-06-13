@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2016-05-28 21:04+0000\n"
+"Last-Translator: Jan Høydahl <jh@cominvent.com>\n"
 "Language-Team: Norwegian Bokmål (Norway) (http://www.transifex.com/mysociety/fixmystreet/language/nb_NO/)\n"
 "Language: nb_NO\n"
 "MIME-Version: 1.0\n"
@@ -58,7 +58,7 @@ msgstr "%s administrator:"
 
 #: templates/web/base/status/stats.html:26
 msgid "%s bodies"
-msgstr ""
+msgstr "%s administrasjoner"
 
 #: templates/web/base/status/stats.html:24
 msgid "%s confirmed alerts, %s unconfirmed"
@@ -110,7 +110,7 @@ msgid ""
 "will be sent to the district council, so will appear in both of the district\n"
 "council&rsquo;s alerts, but will only appear in the \"Within the boundary\" alert\n"
 "for the county council."
-msgstr ""
+msgstr "%s sender forskjellige kategorier problemer til rett administrasjon, så problemer innenfor grensene til en gitt administrasjon vil ikke alltid samsvare med problemrapporter sendt til den administrasjonen. For eksempel, en grafitti-rapport vil bli sendt til kommunen, og vil dukke opp på kommunens varsler, men vil kun vises i \"innenfor grensen\" varselet for fylket."
 
 #: perllib/FixMyStreet/Cobrand/UK.pm:256 perllib/FixMyStreet/Cobrand/UK.pm:268
 msgid "%s ward, %s"
@@ -340,7 +340,7 @@ msgstr "Er du en utvikler?"
 
 #: templates/web/base/js/translation_strings.html:52
 msgid "Are you sure you want to cancel this upload?"
-msgstr ""
+msgstr "Er du sikker på at du vil avbryte opplastingen?"
 
 #: templates/web/base/admin/body-form.html:69
 #: templates/web/base/admin/body.html:16
@@ -590,7 +590,7 @@ msgstr "Bekreft konto"
 #: templates/web/base/report/new/form_user_loggedout_password.html:21
 #: templates/web/base/report/update/form_user_loggedout_password.html:20
 msgid "Confirm by email instead, providing a new password at that point. When you confirm, your password will be updated."
-msgstr ""
+msgstr "Bekreft via e-post isteden, ved å oppgi et nytt passord da. Når du bekrefter vil passordet ditt bli oppdatert."
 
 #: templates/web/base/questionnaire/creator_fixed.html:1
 #: templates/web/base/tokens/confirm_problem.html:1
@@ -772,7 +772,7 @@ msgstr "Arbeidshester"
 #: templates/web/base/report/update-form.html:29
 #: templates/web/base/report/update/form_user_loggedout.html:27
 msgid "Do you have a %s password?"
-msgstr "Har du et FiksGataMi-passord?"
+msgstr "Har du et %s-passord?"
 
 #: templates/web/base/questionnaire/index.html:55
 msgid "Don&rsquo;t know"
@@ -784,7 +784,7 @@ msgstr "Liker ikke skjemaer?"
 
 #: templates/web/base/js/translation_strings.html:51
 msgid "Drag and drop photos here or <u>click to upload</u>"
-msgstr ""
+msgstr "Dra og slipp bilder hit eller <u>klikk for å laste opp</u>"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:14
@@ -1559,7 +1559,7 @@ msgstr "Nye lokale problemer på FiksGataMi"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:117
 msgid "New note to DM:"
-msgstr ""
+msgstr "Nytt notat til DM:"
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
@@ -1727,7 +1727,7 @@ msgstr "Note: <strong>%d</strong>"
 
 #: templates/web/zurich/admin/list_updates.html:21
 msgid "Notes from SDM to DM"
-msgstr ""
+msgstr "Notater fra SDM til DM"
 
 #: templates/web/base/report/new/form_user_loggedout.html:2
 #: templates/web/base/report/new/form_user_loggedout.html:24
@@ -1972,7 +1972,7 @@ msgstr "Vennligst legg til en melding"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1079
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1134
 msgid "Please enter a name"
-msgstr ""
+msgstr "Vennligst skriv et navn"
 
 #: templates/web/base/auth/change_password.html:12
 #: templates/web/base/auth/change_password.html:15
@@ -2081,7 +2081,7 @@ msgstr "Vær oppmerksom på at oppdateringer ikke blir videresendt til administr
 
 #: templates/web/base/report/new/oauth_email_form.html:4
 msgid "Please note your report has <strong>not yet been sent</strong>."
-msgstr ""
+msgstr "Merk at din rapport <strong>enda ikke har blitt sendt</strong>."
 
 #: templates/web/base/report/new/fill_in_details_form.html:20
 #: templates/web/zurich/report/new/fill_in_details_form.html:11
@@ -2090,7 +2090,7 @@ msgstr "Merk at din rapport <strong>ennå ikke er sendt</strong.  Velg en katego
 
 #: templates/web/base/report/display.html:26
 msgid "Please note your update has <strong>not yet been posted</strong>."
-msgstr ""
+msgstr "Merk at din oppdatering <strong>enda ikke har blitt sendt</strong>."
 
 #: templates/web/base/report/new/notes.html:1
 #: templates/web/zurich/report/new/notes.html:1
@@ -2130,9 +2130,8 @@ msgstr "Vennligs oppgi om dette problemet er blitt fikset eller ikke"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Vennligst last opp kun JPEG-bilder"
+msgstr "Vennligst last opp kun bilder"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -2601,7 +2600,7 @@ msgstr "Velg et område"
 
 #: templates/web/base/alert/_list.html:10
 msgid "Select which type of alert you’d like and click the button for an RSS feed, or enter your email address to subscribe to an email alert."
-msgstr ""
+msgstr "Velg hvilken type varsel du ønsker og klikk på knappen for en RSS-kilde, eller skriv inn din e-postadresse for å abonnere på et e-postvarsel."
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:835
 msgid "Sent report back"
@@ -2703,7 +2702,7 @@ msgstr "Beklager, vi kunne ikke finne det stedet."
 #: templates/web/base/report/display.html:21
 #: templates/web/base/report/new/fill_in_details_form.html:23
 msgid "Sorry, we could not log you in. Please fill in the form below."
-msgstr ""
+msgstr "Beklager, vi kunne ikke logge deg inn. Vennligst fyll in skjemaet nedenfor."
 
 #: perllib/FixMyStreet/Geocode/Bing.pm:35
 #: perllib/FixMyStreet/Geocode/Google.pm:45
@@ -3438,7 +3437,7 @@ msgstr "Vi fant mer en ett treff for den plassen.  Vi viser opp til ti treff, s�
 #: templates/web/base/report/display.html:27
 #: templates/web/base/report/new/oauth_email_form.html:5
 msgid "We need your email address, please give it below."
-msgstr ""
+msgstr "Vi behøver din epost-adresse, vennligst oppgi den nedenfor."
 
 #: templates/web/base/report/new/form_user_loggedout_email.html:2
 #: templates/web/base/report/update/form_user_loggedout_email.html:2
@@ -3490,7 +3489,7 @@ msgstr "Når sendt"
 
 #: templates/web/base/js/translation_strings.html:50
 msgid "Whoa there Testino! Three photos are enough."
-msgstr ""
+msgstr "Oj oj, brems ned! Tre bilder er nok."
 
 #: templates/web/base/tokens/confirm_alert.html:7
 msgid "Why stop there? <a href=\"/alert\">Set up more alerts</a> for free."
@@ -3612,7 +3611,7 @@ msgstr "Du har allerede lagt ved bilder til denne rapporten. Merk at du kan maks
 #: templates/web/base/questionnaire/index.html:83
 #: templates/web/base/report/update/form_update.html:14
 msgid "You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed)."
-msgstr ""
+msgstr "Du har allerede lagt ved bilder til denne rapporten. Merk at du kan maksimalt legge ved 3 til rapporten (hvis du laster opp flere blir det eldste slettet)."
 
 #: templates/web/base/auth/sign_out.html:4
 #: templates/web/zurich/auth/sign_out.html:3
@@ -3712,7 +3711,7 @@ msgstr "Ditt telefonnummer"
 
 #: templates/web/base/questionnaire/index.html:14
 msgid "Your report"
-msgstr ""
+msgstr "Din rapport"
 
 #: templates/web/base/footer.html:29
 msgid "Your reports"
