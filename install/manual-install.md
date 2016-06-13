@@ -40,13 +40,12 @@ and then run <code>git submodule update --init</code> separately.
 
 #### a. Debian / Linux
 
-If you're using Debian 7 ("wheezy") or a LTS version of Ubuntu, then the
-packages to install some required dependencies are listed in
-`conf/packages.debian-wheezy` or `conf/packages.ubuntu-precise` (which also
-works fine for trusty). To install all of them you can run e.g.:
+If you're using Debian or Ubuntu, then the packages to install required
+dependencies are listed in `conf/packages.generic`. To install all of them you
+can run e.g.:
 
 {% highlight bash %}
-$ sudo xargs -a conf/packages.debian-wheezy apt-get install
+$ sudo xargs -a conf/packages.generic apt-get install
 {% endhighlight %}
 
 A similar list of packages should work for other Debian-based distributions.
