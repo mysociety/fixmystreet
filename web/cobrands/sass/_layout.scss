@@ -60,7 +60,7 @@ h1 {
 
 //pad the top of the wrapper to allow space for the menu to fit in
 //when its positioned absolute below
-.ie6, .ie7 {
+.ie7 {
   .wrapper {
     padding-top:4em;
   }
@@ -79,7 +79,7 @@ h1 {
 }
 
 //position absolute the menu as ie doesn't like display:table
-.ie6, .ie7 {
+.ie7 {
   .nav-wrapper {
     position: absolute;
     top:0;
@@ -103,7 +103,6 @@ h1 {
     position: static;//reset position so the nav links become clickable
   }
 
-  .ie6 &,
   .ie7 & {
       height: 3em;
       // Without this, the #site-logo is unclickable.
@@ -307,7 +306,7 @@ body.mappage {
   }
 }
 
-.ie6, .ie7 {
+.ie7 {
   body.mappage {
     // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
     .container {
@@ -538,15 +537,6 @@ body.twothirdswidthpage {
     }
   }
 }
-//as ie6 doesn't like 'fixed' we will make it absolute again
-.ie6 body.twothirdswidthpage .content .sticky-sidebar {
-  position:static;
-  aside {
-    position:absolute;
-    #{$left}: 42em;
-    top:0;
-  }
-}
 
 // Centre the login and password change pages,
 // but keep them narrow to match the report sidebar
@@ -578,10 +568,10 @@ body.authpage {
 }
 
 //fix table to be a block for ie, float the children
-.ie6, .ie7 {
+.ie7 {
   .tablewrapper {
     display:block;
-    div {//ie6 doesn't support '>div', so we'll go with the somewhat risker 'div'
+    >div {
       width:48%;
       display:block;
       float: $left;
@@ -612,7 +602,7 @@ body.authpage {
 	  border-bottom:none;
   }
 }
-.ie6, .ie7 {
+.ie7 {
   #footer-mobileapps {
       margin:0 0.5em;
       margin-#{$right}: 2%;
@@ -632,7 +622,7 @@ body.authpage {
     }
   }
 }
-.ie6, .ie7 {
+.ie7 {
   #footer-help {
     margin-#{$left}: 2%;
     ul {
@@ -772,11 +762,6 @@ body.authpage {
   }
 }
 
-// The padding is for the fading out when it's fixed positioned, which it isn't in IE6.
-.ie6 .shadow-wrap {
-  padding-top: 0;
-}
-
 // Old versions of IE don't have box-sixing, so negative margins leave a 2em gap.
 // We can set a fixed width instead, which might result in a horizontal scrollbar
 // while the drawer is opening. Quel dommage.
@@ -841,13 +826,6 @@ body.authpage {
         border-bottom: 0.75em solid #666;
       }
     }
-  }
-}
-.ie6 .banner p {
-  top:-1.5em;
-  &#fixed {
-    background-image:url(/cobrands/fixmystreet/images/ie_fixed.gif);
-    background-position:center 0.75em;
   }
 }
 
@@ -935,7 +913,7 @@ body.frontpage {
     }
   }
 }
-.ie6, .ie7 {
+.ie7 {
   body.frontpage {
     #site-header {
       height:4em;
@@ -944,9 +922,6 @@ body.frontpage {
       top:-1em;
     }
   }
-}
-.ie6 body.frontpage #site-logo {
-  background:url(/cobrands/fixmystreet/images/ie_front_logo.gif) 0 0 no-repeat;
 }
 
 // big yellow bit full screen width
@@ -1038,7 +1013,7 @@ body.frontpage {
     }
   }
 }
-.ie6, .ie7 {
+.ie7 {
   #front_stats {
     div {
       width:8em;
@@ -1056,8 +1031,7 @@ body.frontpage {
    margin-top:0;
 }
 
-
-.ie6, .ie7 {
+.ie7 {
   .tablewrapper {
     #front-howto {
       margin-#{$right}: 2%;

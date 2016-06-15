@@ -5,11 +5,8 @@
 $max_page_width: 1200px;
 
 #site-logo,
-.ie6 #site-logo,
 body.frontpage #site-logo,
-.ie6 body.frontpage #site-logo,
-body.twothirdswidthpage #site-logo,
-.ie6 body.twothirdswidthpage #site-logo
+body.twothirdswidthpage #site-logo
 {
         position: relative;
         top: 13px;
@@ -250,13 +247,14 @@ footer p.social a:active,footer p.social a:focus,footer p.social a:hover
   text-decoration:none;
 }
 
-.ie6, .ie7, .ie8 {
+.ie7, .ie8 {
   footer p.social a {
     font-size:2.25em;
   }
 }
 
-.ie6, .ie7 {
+// No :before support in IE7, reset things back
+.ie7 {
   footer p.social a {
     font-size:1.2em!important;
     height:1.5em;
