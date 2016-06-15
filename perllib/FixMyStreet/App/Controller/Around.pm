@@ -156,6 +156,8 @@ sub display_location : Private {
     # set the template to use
     $c->stash->{template} = 'around/display_location.html';
 
+    $c->forward('/auth/get_csrf_token');
+
     # get the lat,lng
     my $latitude  = $c->stash->{latitude};
     my $longitude = $c->stash->{longitude};

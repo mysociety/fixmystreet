@@ -810,17 +810,12 @@ subtest "photo must be supplied for categories that require it" => sub {
         MAPIT_ID_WHITELIST => [ 423017 ],
         MAP_TYPE => 'Zurich,OSM',
     }, sub {
-        $mech->post_ok( '/report/new', {
+        $mech->get_ok('/report/new?lat=47.381817&lon=8.529156');
+        $mech->submit_form_ok({ with_fields => {
             detail => 'Problem-Bericht',
-            lat => 47.381817,
-            lon => 8.529156,
             email => 'user@example.org',
-            pc => '',
-            name => '',
             category => 'Graffiti - photo required',
-            photo => '',
-            submit_problem => 1,
-        });
+        }});
         is $mech->res->code, 200, "missing photo shouldn't return anything but 200";
         $mech->content_contains(_("Photo is required."), 'response should contain photo error message');
     };

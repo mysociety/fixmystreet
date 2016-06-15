@@ -81,6 +81,7 @@ sub report_new : Path : Args(0) {
 
     # create the report - loading a partial if available
     $c->forward('initialize_report');
+    $c->forward('/auth/get_csrf_token');
 
     # work out the location for this report and do some checks
     # Also show map if we're just updating the filters
@@ -96,6 +97,7 @@ sub report_new : Path : Args(0) {
     # deal with the user and report and check both are happy
 
     return unless $c->forward('check_form_submitted');
+    $c->forward('/auth/check_csrf_token');
     $c->forward('process_user');
     $c->forward('process_report');
     $c->forward('/photo/process_photo');

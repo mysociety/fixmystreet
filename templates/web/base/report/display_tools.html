@@ -2,6 +2,7 @@
     <ul id="key-tools">
         [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_body( c.cobrand.council_id ) %]
         <li><form method="post" action="/report/delete/[% problem.id %]" id="remove-from-site-form">
+            <input type="hidden" name="token" value="[% csrf_token %]">
             <input type="submit" id="key-tool-report-abuse" class="abuse" value="Remove from site">
         </form></li>
         [% ELSIF c.cobrand.moniker != 'zurich' %]
@@ -50,6 +51,7 @@
             <input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30" placeholder="[% loc('Your email') %]">
             <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
         </div>
+        <input type="hidden" name="token" value="[% csrf_token %]">
         <input type="hidden" name="id" value="[% problem.id %]">
         <input type="hidden" name="type" value="updates">
         </fieldset>

@@ -22,7 +22,7 @@
 <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
-    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="token" value="[% csrf_token %]" >
   [% IF contact.extra %]
     <p><strong>[% loc('Extra data:') %] </strong>
     [% USE Dumper %]

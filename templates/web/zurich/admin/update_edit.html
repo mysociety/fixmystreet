@@ -4,7 +4,7 @@
 [% status_message %]
 
 <form method="post" action="[% c.uri_for( 'update_edit', update.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
 <ul>
 <li><a href="[% c.uri_for_email( '/report', update.problem_id ) %]#update_[% update.id %]">[% loc('View report on site' )%]</a></li>

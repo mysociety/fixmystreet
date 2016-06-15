@@ -57,6 +57,8 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
     $c->detach unless $c->user_exists;
     $c->detach unless $c->user->has_permission_to(moderate => $problem->bodies_str);
 
+    $c->forward('/auth/check_csrf_token');
+
     my $original = $problem->find_or_new_related( moderation_original_data => {
         title => $problem->title,
         detail => $problem->detail,

@@ -128,7 +128,7 @@ $mech->not_logged_in_ok;
     ok my $form = $mech->form_name('change_password'),
       "found change password form";
     is_deeply [ sort grep { $_ } map { $_->name } $form->inputs ],    #
-      [ 'confirm', 'new_password' ],
+      [ 'confirm', 'new_password', 'token' ],
       "check we got expected fields (ie not old_password)";
 
     # check the various ways the form can be wrong

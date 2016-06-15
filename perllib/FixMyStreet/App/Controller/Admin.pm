@@ -215,7 +215,7 @@ sub bodies : Path('bodies') : Args(0) {
         return;
     }
 
-    $c->forward( 'get_token' );
+    $c->forward( '/auth/get_csrf_token' );
 
     my $edit_activity = $c->model('DB::ContactsHistory')->search(
         undef,
@@ -232,7 +232,7 @@ sub bodies : Path('bodies') : Args(0) {
     my $posted = $c->get_param('posted') || '';
     if ( $posted eq 'body' ) {
         $c->forward('check_for_super_user');
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward('body_params');
         my $body = $c->model('DB::Body')->create( $params );
@@ -289,7 +289,7 @@ sub body : Path('body') : Args(1) {
     $c->stash->{body_id} = $body_id;
 
     $c->forward( 'check_for_super_user' );
-    $c->forward( 'get_token' );
+    $c->forward( '/auth/get_csrf_token' );
     $c->forward( 'lookup_body' );
     $c->forward( 'fetch_all_bodies' );
     $c->forward( 'body_form_dropdowns' );
@@ -318,7 +318,7 @@ sub update_contacts : Private {
     my $editor = $c->forward('get_user');
 
     if ( $posted eq 'new' ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         my %errors;
 
@@ -370,7 +370,7 @@ sub update_contacts : Private {
         }
 
     } elsif ( $posted eq 'update' ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         my @categories = $c->get_param_list('confirmed');
 
@@ -393,7 +393,7 @@ sub update_contacts : Private {
         $c->stash->{updated} = _('Values updated');
     } elsif ( $posted eq 'body' ) {
         $c->forward('check_for_super_user');
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward( 'body_params' );
         $c->stash->{body}->update( $params );
@@ -476,7 +476,7 @@ sub category_edit : Path('body') : Args(2) {
 
     $c->stash->{body_id} = $body_id;
 
-    $c->forward( 'get_token' );
+    $c->forward( '/auth/get_csrf_token' );
     $c->forward( 'lookup_body' );
 
     my $contact = $c->stash->{body}->contacts->search( { category => $category } )->first;
@@ -643,7 +643,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->stash->{problem} = $problem;
 
-    $c->forward('get_token');
+    $c->forward('/auth/get_csrf_token');
 
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $c->stash->{page} = 'admin';
@@ -689,7 +689,7 @@ sub report_edit : Path('report_edit') : Args(1) {
           ->all ];
 
     if ( $c->get_param('resend') ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         $problem->whensent(undef);
         $problem->update();
@@ -699,7 +699,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $c->forward( 'log_edit', [ $id, 'problem', 'resend' ] );
     }
     elsif ( $c->get_param('mark_sent') ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
         $problem->whensent(\'current_timestamp');
         $problem->update();
         $c->stash->{status_message} = '<p><em>' . _('That problem has been marked as sent.') . '</em></p>';
@@ -717,7 +717,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         $c->forward('ban_user');
     }
     elsif ( $c->get_param('submit') ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         my $done   = 0;
         my $edited = 0;
@@ -917,7 +917,7 @@ sub users: Path('users') : Args(0) {
         }
 
     } else {
-        $c->forward('get_token');
+        $c->forward('/auth/get_csrf_token');
         $c->forward('fetch_all_bodies');
 
         # Admin users by default
@@ -942,7 +942,7 @@ sub update_edit : Path('update_edit') : Args(1) {
     $c->detach( '/page_error_404_not_found' )
       unless $update;
 
-    $c->forward('get_token');
+    $c->forward('/auth/get_csrf_token');
 
     $c->stash->{update} = $update;
 
@@ -965,7 +965,7 @@ sub update_edit : Path('update_edit') : Args(1) {
         $c->stash->{update}->discard_changes;
     }
     elsif ( $c->get_param('submit') ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         my $old_state = $update->state;
         my $new_state = $c->get_param('state');
@@ -1047,12 +1047,12 @@ sub user_add : Path('user_edit') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->stash->{template} = 'admin/user_edit.html';
-    $c->forward('get_token');
+    $c->forward('/auth/get_csrf_token');
     $c->forward('fetch_all_bodies');
 
     return unless $c->get_param('submit');
 
-    $c->forward('check_token');
+    $c->forward('/auth/check_csrf_token');
 
     unless ($c->get_param('email')) {
         $c->stash->{field_errors}->{email} = _('Please enter a valid email');
@@ -1084,7 +1084,7 @@ sub user_add : Path('user_edit') : Args(0) {
 sub user_edit : Path('user_edit') : Args(1) {
     my ( $self, $c, $id ) = @_;
 
-    $c->forward('get_token');
+    $c->forward('/auth/get_csrf_token');
 
     my $user = $c->model('DB::User')->find( { id => $id } );
     $c->stash->{user} = $user;
@@ -1092,7 +1092,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     $c->forward('fetch_all_bodies');
 
     if ( $c->get_param('submit') ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
 
         my $edited = 0;
 
@@ -1326,40 +1326,6 @@ sub get_user : Private {
     $user ||= '';
 
     return $user;
-}
-
-=item get_token
-
-Generate a token based on user and secret
-
-=cut
-
-sub get_token : Private {
-    my ( $self, $c ) = @_;
-
-    my $secret = $c->model('DB::Secret')->get;
-    my $user = $c->forward('get_user');
-    my $token = sha1_hex($user . $secret);
-    $c->stash->{token} = $token;
-
-    return 1;
-}
-
-=item check_token
-
-Check that a token has been set on a request and it's the correct token. If
-not then display 404 page
-
-=cut
-
-sub check_token : Private {
-    my ( $self, $c ) = @_;
-
-    if ( !$c->get_param('token') || $c->get_param('token') ne $c->stash->{token} ) {
-        $c->detach( '/page_error_404_not_found' );
-    }
-
-    return 1;
 }
 
 =item log_edit
