@@ -226,7 +226,6 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     my $category_extra = '';
     my $generate;
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
-        $c->stash->{report_meta} = {};
         $c->stash->{category_extras} = { $category => $c->stash->{category_extras}->{$category} };
         $generate = 1;
     }
