@@ -71,8 +71,6 @@ sub process_services {
 
     $self->found_contacts( [] );
     my $services = $list->{service};
-    # XML might only have one result and then squashed the 'array'-ness
-    $services = [ $services ] unless ref $services eq 'ARRAY';
     foreach my $service ( @$services ) {
         $self->_current_service( $service );
         $self->process_service;
@@ -83,17 +81,21 @@ sub process_services {
 sub process_service {
     my $self = shift;
 
-    my $category = $self->_current_body->areas->{2218} ?
-                    $self->_current_service->{description} :
-                    $self->_current_service->{service_name};
+    my $service_name = $self->_normalize_service_name;
 
-    print $self->_current_service->{service_code} . ': ' . $category .  "\n" if $self->verbose >= 2;
+    unless ($self->_current_service->{service_code}) {
+        warn "Service $service_name has no service code for body @{[$self->_current_body->id]}\n"
+            if $self->verbose >= 1;
+        return;
+    }
+
+    print $self->_current_service->{service_code} . ': ' . $service_name .  "\n" if $self->verbose >= 2;
     my $contacts = $self->schema->resultset('Contact')->search(
         {
             body_id => $self->_current_body->id,
             -OR => [
                 email => $self->_current_service->{service_code},
-                category => $category,
+                category => $service_name,
             ]
         }
     );
@@ -102,7 +104,7 @@ sub process_service {
         printf(
             "Multiple contacts for service code %s, category %s - Skipping\n",
             $self->_current_service->{service_code},
-            $category,
+            $service_name,
         );
 
         # best to not mark them as deleted as we don't know what we're doing
@@ -205,13 +207,7 @@ sub _add_meta_to_contact {
     print "Fetching meta data for " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
     my $meta_data = $self->_current_open311->get_service_meta_info( $self->_current_service->{service_code} );
 
-    if ( ref $meta_data->{ attributes }->{ attribute } eq 'HASH' ) {
-        $meta_data->{ attributes }->{ attribute } = [
-            $meta_data->{ attributes }->{ attribute }
-        ];
-    }
-
-    if ( ! $meta_data->{attributes}->{attribute} ) {
+    unless ($meta_data->{attributes}) {
         warn sprintf( "Empty meta data for %s at %s",
                       $self->_current_service->{service_code},
                       $self->_current_body->endpoint )
@@ -225,7 +221,7 @@ sub _add_meta_to_contact {
         map { $_->{description} =~ s/:\s*//; $_ }
         # there is a display order and we only want to sort once
         sort { $a->{order} <=> $b->{order} }
-        @{ $meta_data->{attributes}->{attribute} };
+        @{ $meta_data->{attributes} };
 
     # Some Open311 endpoints, such as Bromley and Warwickshire send <metadata>
     # for attributes which we *don't* want to display to the user (e.g. as

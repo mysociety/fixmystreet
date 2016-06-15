@@ -74,17 +74,10 @@ sub send_service_request {
         my $obj = $self->_get_xml_object( $response );
 
         if ( $obj ) {
-            if ( $obj->{ request }->{ service_request_id } ) {
-                my $request_id = $obj->{request}->{service_request_id};
-
-                unless ( ref $request_id ) {
-                    return $request_id;
-                }
-            } else {
-                my $token = $obj->{ request }->{ token };
-                if ( $token ) {
-                    return $self->get_service_request_id_from_token( $token );
-                }
+            if ( my $request_id = $obj->{request}->[0]->{service_request_id} ) {
+                return $request_id unless ref $request_id;
+            } elsif ( my $token = $obj->{request}->[0]->{token} ) {
+                return $self->get_service_request_id_from_token( $token );
             }
         }
 
@@ -215,8 +208,8 @@ sub get_service_request_id_from_token {
 
     my $obj = $self->_get_xml_object( $service_token_xml );
 
-    if ( $obj && $obj->{ request }->{ service_request_id } ) {
-        return $obj->{ request }->{ service_request_id };
+    if ( $obj && $obj->{request}->[0]->{service_request_id} ) {
+        return $obj->{request}->[0]->{service_request_id};
     } else {
         return 0;
     }
@@ -240,15 +233,7 @@ sub get_service_request_updates {
 
     my $xml = $self->_get( $self->endpoints->{service_request_updates}, $params || undef );
     my $service_requests = $self->_get_xml_object( $xml );
-    my $requests;
-    if ( ref $service_requests->{request_update } eq 'ARRAY' ) {
-        $requests = $service_requests->{request_update};
-    }
-    else {
-        $requests = [ $service_requests->{request_update} ];
-    }
-
-    return $requests;
+    return $service_requests->{request_update};
 }
 
 sub post_service_request_update {
@@ -263,16 +248,10 @@ sub post_service_request_update {
         my $obj = $self->_get_xml_object( $response );
 
         if ( $obj ) {
-            if ( $obj->{ request_update }->{ update_id } ) {
-                my $update_id = $obj->{request_update}->{update_id};
-
-                # if there's nothing in the update_id element we get a HASHREF back
-                unless ( ref $update_id ) {
-                    return $obj->{ request_update }->{ update_id };
-                }
+            if ( my $update_id = $obj->{request_update}->[0]->{update_id} ) {
+                return $update_id unless ref $update_id;
             } else {
-                my $token = $obj->{ request_update }->{ token };
-                if ( $token ) {
+                if ( my $token = $obj->{request_update}->[0]->{token} ) {
                     return $self->get_service_request_id_from_token( $token );
                 }
             }
@@ -455,7 +434,6 @@ sub _process_error {
     my $msg = '';
     if ( ref $obj && exists $obj->{error} ) {
         my $errors = $obj->{error};
-        $errors = [ $errors ] if ref $errors ne 'ARRAY';
         $msg .= sprintf( "%s: %s\n", $_->{code}, $_->{description} ) for @{ $errors };
     }
 
@@ -463,16 +441,28 @@ sub _process_error {
 }
 
 sub _get_xml_object {
-    my $self = shift;
-    my $xml= shift;
+    my ($self, $xml) = @_;
 
-    my $simple = XML::Simple->new();
-    my $obj;
-
-    eval {
-        $obj = $simple ->parse_string( $xml, ForceArray => [ qr/^key$/, qr/^name$/ ]  );
+    # Of these, services/service_requests/service_request_updates are root
+    # elements, so GroupTags has no effect, but this is used in ForceArray too.
+    my $group_tags = {
+        services => 'service',
+        attributes => 'attribute',
+        values => 'value',
+        service_requests => 'request',
+        errors => 'error',
+        service_request_updates => 'request_update',
     };
-
+    my $simple = XML::Simple->new(
+        ForceArray => [ values %$group_tags ],
+        KeyAttr => {},
+        GroupTags => $group_tags,
+        SuppressEmpty => undef,
+    );
+    my $obj = eval {
+        $simple->parse_string($xml);
+    };
     return $obj;
 }
+
 1;

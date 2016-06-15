@@ -5,7 +5,7 @@
       [% INCLUDE "report/new/unresponsive_body.html" body_id = unresponsive.$category %]
     [%- END %]
 
-    [%- IF report_meta %]
+    [%- IF category_extras.$category.size %]
     <h4>[% loc('Additional Information') %]</h4>
         [%- FOR meta IN category_extras.$category %]
         [%- meta_name = meta.code -%]
@@ -17,8 +17,8 @@
             [% IF meta.variable != 'false' %]
                 [% IF meta.exists('values') %]
                     <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-                        [% FOR option IN meta.values.value %]
-                            <option value="[% option.key.0 %]"[% IF option.key.0 == report_meta.$meta_name.value %] selected[% END %]>[% option.name.0 %]</option>
+                        [% FOR option IN meta.values %]
+                            <option value="[% option.key %]"[% IF option.key == report_meta.$meta_name.value %] selected[% END %]>[% option.name %]</option>
                         [% END %]
                     </select>
                 [% ELSE %]

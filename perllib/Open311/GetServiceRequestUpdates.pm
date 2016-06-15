@@ -122,8 +122,7 @@ sub update_comments {
                     }
                 );
 
-                # ref test as XML::Simple will have returned an empty hashref for empty element
-                if ($request->{media_url} && !ref $request->{media_url}) {
+                if ($request->{media_url}) {
                     my $ua = LWP::UserAgent->new;
                     my $res = $ua->get($request->{media_url});
                     if ( $res->is_success && $res->content_type eq 'image/jpeg' ) {
