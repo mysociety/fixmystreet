@@ -37,16 +37,17 @@ sub general : Path : Args(0) {
     # all done unless we have a form posted to us
     return unless $c->req->method eq 'POST';
 
-    # decide which action to take
-    $c->detach('facebook_sign_in') if $c->get_param('facebook_sign_in');
-    $c->detach('twitter_sign_in') if $c->get_param('twitter_sign_in');
-
-    my $clicked_password = $c->get_param('sign_in');
     my $clicked_email = $c->get_param('email_sign_in');
+    my $data_address = $c->get_param('email');
     my $data_password = $c->get_param('password_sign_in');
     my $data_email = $c->get_param('name') || $c->get_param('password_register');
 
+    # decide which action to take
     $c->detach('email_sign_in') if $clicked_email || ($data_email && !$data_password);
+    if (!$data_address && !$data_password && !$data_email) {
+        $c->detach('facebook_sign_in') if $c->get_param('facebook_sign_in');
+        $c->detach('twitter_sign_in') if $c->get_param('twitter_sign_in');
+    }
 
        $c->forward( 'sign_in' )
     && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
