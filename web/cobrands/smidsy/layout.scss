@@ -66,6 +66,13 @@ body {
   margin-right: 15px; // to match nav items
 }
 
+.mysoc-footer {
+  // The below lines are so that on e.g. /faq the footer will move on
+  // top of the fixed sidebar in narrow height situations.
+  position: relative;
+  z-index: 1;
+}
+
 body.mappage .mysoc-footer {
     display: none;
 }
