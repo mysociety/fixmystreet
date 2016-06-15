@@ -52,13 +52,13 @@ for my $test (
         desc => 'basic parsing - empty element',
         updated_datetime => '<updated_datetime />',
         res =>  { update_id => 638344, service_request_id => 1,
-                status => 'open', description => 'This is a note', updated_datetime => {} } ,
+                status => 'open', description => 'This is a note', updated_datetime => undef } ,
     },
     {
         desc => 'basic parsing - element with no content',
         updated_datetime => '<updated_datetime></updated_datetime>',
         res =>  { update_id => 638344, service_request_id => 1,
-                status => 'open', description => 'This is a note', updated_datetime => {} } ,
+                status => 'open', description => 'This is a note', updated_datetime => undef } ,
     },
     {
         desc => 'basic parsing - element with content',

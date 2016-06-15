@@ -419,7 +419,6 @@ for my $test (
         );
 
         my $service_list = get_xml_simple_object( $services_xml );
-        $service_list = { service => [ $service_list->{ service } ] };
 
         $processor->_current_open311( $o );
         $processor->_current_body( $body );
@@ -690,17 +689,7 @@ sub get_standard_xml {
 
 sub get_xml_simple_object {
     my $xml = shift;
-
-    my $simple = XML::Simple->new();
-    my $obj;
-
-    eval {
-        $obj = $simple->XMLin( $xml );
-    };
-
-    die $@ if $@;
-
-    return $obj;
+    return Open311->_get_xml_object($xml);
 }
 
 done_testing();

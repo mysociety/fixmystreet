@@ -71,8 +71,6 @@ sub process_services {
 
     $self->found_contacts( [] );
     my $services = $list->{service};
-    # XML might only have one result and then squashed the 'array'-ness
-    $services = [ $services ] unless ref $services eq 'ARRAY';
     foreach my $service ( @$services ) {
         $self->_current_service( $service );
         $self->process_service;
@@ -205,13 +203,7 @@ sub _add_meta_to_contact {
     print "Fetching meta data for " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
     my $meta_data = $self->_current_open311->get_service_meta_info( $self->_current_service->{service_code} );
 
-    if ( ref $meta_data->{ attributes }->{ attribute } eq 'HASH' ) {
-        $meta_data->{ attributes }->{ attribute } = [
-            $meta_data->{ attributes }->{ attribute }
-        ];
-    }
-
-    if ( ! $meta_data->{attributes}->{attribute} ) {
+    unless ($meta_data->{attributes}) {
         warn sprintf( "Empty meta data for %s at %s",
                       $self->_current_service->{service_code},
                       $self->_current_body->endpoint )
@@ -225,7 +217,7 @@ sub _add_meta_to_contact {
         map { $_->{description} =~ s/:\s*//; $_ }
         # there is a display order and we only want to sort once
         sort { $a->{order} <=> $b->{order} }
-        @{ $meta_data->{attributes}->{attribute} };
+        @{ $meta_data->{attributes} };
 
     # Some Open311 endpoints, such as Bromley and Warwickshire send <metadata>
     # for attributes which we *don't* want to display to the user (e.g. as
