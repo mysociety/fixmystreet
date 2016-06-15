@@ -92,13 +92,11 @@ sub send_cron {
         unpack('h*', random_bytes(5, 1)), FixMyStreet->config('EMAIL_DOMAIN')
     );
 
+    my @include_path = @{ $cobrand->path_to_email_templates($lang_code) };
+    push @include_path, FixMyStreet->path_to( 'templates', 'email', 'default' )->stringify;
     my $tt = Template->new({
         ENCODING => 'utf8',
-        INCLUDE_PATH => [
-            FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker, $lang_code )->stringify,
-            FixMyStreet->path_to( 'templates', 'email', $cobrand->moniker )->stringify,
-            FixMyStreet->path_to( 'templates', 'email', 'default' )->stringify,
-        ],
+        INCLUDE_PATH => \@include_path,
     });
     $vars->{signature} = _render_template($tt, 'signature.txt', $vars);
     $vars->{site_name} = Utils::trim_text(_render_template($tt, 'site-name.txt', $vars));

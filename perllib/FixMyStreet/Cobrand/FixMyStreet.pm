@@ -10,6 +10,13 @@ sub path_to_web_templates {
         FixMyStreet->path_to( 'templates/web/fixmystreet.com' )->stringify,
     ];
 }
+sub path_to_email_templates {
+    my ( $self, $lang_code ) = @_;
+    return [
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com')->stringify,
+    ];
+}
+
 
 # FixMyStreet should return all cobrands
 sub restriction {

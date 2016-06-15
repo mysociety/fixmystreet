@@ -7,7 +7,7 @@ my $mech = FixMyStreet::TestMech->new;
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com' );
-my $body = $mech->create_body_ok( 2482, 'Bromley', id => 2482 );
+my $body = $mech->create_body_ok( 2482, 'Bromley Council', id => 2482 );
 $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
@@ -55,6 +55,66 @@ subtest 'testing special Open311 behaviour', sub {
     is $report->send_method_used, 'Open311', 'Report sent via Open311';
     is $report->external_id, 248, 'Report has right external ID';
 };
+
+for my $test (
+    {
+        cobrand => 'bromley',
+        fields => {
+            submit_update   => 1,
+            rznvy           => 'unregistered@example.com',
+            update          => 'Update from an unregistered user',
+            add_alert       => undef,
+            first_name            => 'Unreg',
+            last_name            => 'User',
+            fms_extra_title => 'DR',
+            may_show_name   => undef,
+        }
+    },
+    {
+        cobrand => 'fixmystreet',
+        fields => {
+            submit_update   => 1,
+            rznvy           => 'unregistered@example.com',
+            update          => 'Update from an unregistered user',
+            add_alert       => undef,
+            name            => 'Unreg User',
+            fms_extra_title => 'DR',
+            may_show_name   => undef,
+        }
+    },
+)
+{
+    subtest 'check Bromley update emails via ' . $test->{cobrand} . ' cobrand are correct' => sub {
+        $mech->log_out_ok();
+        $mech->clear_emails_ok();
+
+        my $report_id = $report->id;
+
+        FixMyStreet::override_config {
+            ALLOWED_COBRANDS => [ $test->{cobrand} ],
+        }, sub {
+            $mech->get_ok("/report/$report_id");
+            $mech->submit_form_ok(
+                {
+                    with_fields => $test->{fields}
+                },
+                'submit update'
+            );
+        };
+        $mech->content_contains('Nearly done! Now check your email');
+
+        my $email = $mech->get_email;
+        ok $email, "got an email";
+        like $email->body, qr/This update will be sent to Bromley Council/i, "Email indicates problem will be sent to Bromley";
+        unlike $email->body, qr/Note that we do not send updates to/i, "Email does not say updates aren't sent to Bromley";
+
+        my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => 'unregistered@example.com' } );
+
+        ok $unreg_user, 'found user';
+
+        $mech->delete_user( $unreg_user );
+    };
+}
 
 # Clean up
 $mech->delete_user($user);

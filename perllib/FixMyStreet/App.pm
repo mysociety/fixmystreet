@@ -310,10 +310,7 @@ sub send_email {
         from => [ $sender, _($sender_name) ],
         %{ $c->stash },
         %$extra_stash_values,
-        additional_template_paths => [
-            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker, $c->stash->{lang_code} )->stringify,
-            FixMyStreet->path_to( 'templates', 'email', $c->cobrand->moniker )->stringify,
-        ]
+        additional_template_paths => $c->cobrand->path_to_email_templates($c->stash->{lang_code}),
     };
 
     return if FixMyStreet::Email::is_abuser($c->model('DB')->schema, $vars->{to});

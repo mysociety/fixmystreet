@@ -21,6 +21,16 @@ sub path_to_web_templates {
     ];
 }
 
+sub path_to_email_templates {
+    my ( $self, $lang_code ) = @_;
+    my $paths = [
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code )->stringify,
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker )->stringify,
+        FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com')->stringify,
+    ];
+    return $paths;
+}
+
 sub site_key {
     my $self = shift;
     return $self->council_url;

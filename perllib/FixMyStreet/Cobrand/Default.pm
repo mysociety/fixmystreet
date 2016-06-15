@@ -32,6 +32,24 @@ sub path_to_web_templates {
     return $paths;
 }
 
+=head1 path_to_email_templates
+
+    $path = $cobrand->path_to_email_templates(  );
+
+Returns the path to the email templates for this cobrand - by default
+"templates/email/$moniker" (and then default in Email.pm).
+
+=cut
+
+sub path_to_email_templates {
+    my ( $self, $lang_code ) = @_;
+    my $paths = [
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code )->stringify,
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker )->stringify,
+    ];
+    return $paths;
+}
+
 =head1 country
 
 Returns the country that this cobrand operates in, as an ISO3166-alpha2 code.
