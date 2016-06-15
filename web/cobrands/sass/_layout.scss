@@ -532,6 +532,7 @@ body.authpage {
 //fix table to be a block for ie, float the children
 .ie6, .ie7 {
   .tablewrapper {
+    *zoom: 1;
     display:block;
     div {//ie6 doesn't support '>div', so we'll go with the somewhat risker 'div'
       width:48%;
