@@ -81,17 +81,21 @@ sub process_services {
 sub process_service {
     my $self = shift;
 
-    my $category = $self->_current_body->areas->{2218} ?
-                    $self->_current_service->{description} :
-                    $self->_current_service->{service_name};
+    my $service_name = $self->_normalize_service_name;
 
-    print $self->_current_service->{service_code} . ': ' . $category .  "\n" if $self->verbose >= 2;
+    unless ($self->_current_service->{service_code}) {
+        warn "Service $service_name has no service code for body @{[$self->_current_body->id]}\n"
+            if $self->verbose >= 1;
+        return;
+    }
+
+    print $self->_current_service->{service_code} . ': ' . $service_name .  "\n" if $self->verbose >= 2;
     my $contacts = $self->schema->resultset('Contact')->search(
         {
             body_id => $self->_current_body->id,
             -OR => [
                 email => $self->_current_service->{service_code},
-                category => $category,
+                category => $service_name,
             ]
         }
     );
@@ -100,7 +104,7 @@ sub process_service {
         printf(
             "Multiple contacts for service code %s, category %s - Skipping\n",
             $self->_current_service->{service_code},
-            $category,
+            $service_name,
         );
 
         # best to not mark them as deleted as we don't know what we're doing
