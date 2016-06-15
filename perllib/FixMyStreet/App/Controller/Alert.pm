@@ -36,6 +36,8 @@ sub index : Path('') : Args(0) {
 sub list : Path('list') : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->forward('/auth/get_csrf_token');
+
     return
       unless $c->forward('setup_request')
           && $c->forward('prettify_pc')
@@ -112,6 +114,8 @@ Sign up to email alerts
 sub subscribe_email : Private {
     my ( $self, $c ) = @_;
 
+    $c->forward('/auth/check_csrf_token');
+
     $c->stash->{errors} = [];
     $c->forward('process_user');
 
@@ -145,6 +149,8 @@ sub subscribe_email : Private {
 
 sub updates : Path('updates') : Args(0) {
     my ( $self, $c ) = @_;
+
+    $c->forward('/auth/get_csrf_token');
 
     $c->stash->{email} = $c->get_param('rznvy');
     $c->stash->{problem_id} = $c->get_param('id');

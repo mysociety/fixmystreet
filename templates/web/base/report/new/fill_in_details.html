@@ -12,16 +12,15 @@
         <input type="hidden" name="map_override" value="[% c.req.params.map_override | html %]">
     [% END %]
 
-    <input type="hidden" name="pc" value="[% pc | html %]">
-
 [% ELSE %]
 
 <form action="[% c.uri_for('/report/new') %]" method="post" name="mapSkippedForm"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %] class="validate">
-    <input type="hidden" name="pc" value="[% pc | html %]">
     <input type="hidden" name="skipped" value="1">
 
 [% END %]
 
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="pc" value="[% pc | html %]">
     <input type="hidden" name="latitude" id="fixmystreet.latitude" value="[% latitude | html %]">
     <input type="hidden" name="longitude" id="fixmystreet.longitude" value="[% longitude | html %]">
 

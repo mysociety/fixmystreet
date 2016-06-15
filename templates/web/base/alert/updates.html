@@ -23,6 +23,7 @@
             <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
         </div>
 
+        <input type="hidden" name="token" value="[% csrf_token %]">
         <input type="hidden" name="id" value="[% problem_id | html %]">
         <input type="hidden" name="type" value="updates">
     </fieldset>

@@ -56,6 +56,7 @@
     [% INCLUDE 'errors.html' %]
 
     <form method="post" action="[% c.uri_for( '/report/update' ) %]" name="updateForm" class="validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+        <input type="hidden" name="token" value="[% csrf_token %]">
         <fieldset>
             <input type="hidden" name="submit_update" value="1">
             <input type="hidden" name="id" value="[% problem.id | html %]">
