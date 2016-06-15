@@ -93,7 +93,7 @@ sub send_cron {
     );
 
     my @include_path = @{ $cobrand->path_to_email_templates($lang_code) };
-    push @include_path, FixMyStreet->path_to( 'templates', 'email', 'default' )->stringify;
+    push @include_path, FixMyStreet->path_to( 'templates', 'email', 'default' );
     my $tt = Template->new({
         ENCODING => 'utf8',
         INCLUDE_PATH => \@include_path,

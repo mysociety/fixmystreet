@@ -27,7 +27,7 @@ Returns the path to the templates for this cobrand - by default
 sub path_to_web_templates {
     my $self = shift;
     my $paths = [
-        FixMyStreet->path_to( 'templates/web', $self->moniker )->stringify,
+        FixMyStreet->path_to( 'templates/web', $self->moniker ),
     ];
     return $paths;
 }
@@ -44,8 +44,8 @@ Returns the path to the email templates for this cobrand - by default
 sub path_to_email_templates {
     my ( $self, $lang_code ) = @_;
     my $paths = [
-        FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code )->stringify,
-        FixMyStreet->path_to( 'templates', 'email', $self->moniker )->stringify,
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code ),
+        FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
     ];
     return $paths;
 }
