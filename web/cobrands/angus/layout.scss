@@ -218,7 +218,7 @@ footer p.social a
   background-color:#3c3c3c;
   border-radius:1em;
   float:left;
-  font-size:2.25rem;
+  font-size: 2.8125em; // 0.8em from footer, so this then == 2.25rem
   height:1em;
   margin:0 .25em 0 0;
   text-indent:-20000px;
@@ -229,28 +229,17 @@ footer p.social a
 footer p.social a:before
 {
   float:left;
-  font-size:1.25rem;
+  font-size: 1.5625em; // 0.8em from footer, so this == 1.25rem
   line-height:1.8;
   text-align:center;
   text-indent:0;
   width:100%;
 }
 
-.lt-ie9 footer p.social a:before
-{
-  font-size:1.25em;
-}
-
 footer p.social a:active,footer p.social a:focus,footer p.social a:hover
 {
   background-color:#353535;
   text-decoration:none;
-}
-
-.ie7, .ie8 {
-  footer p.social a {
-    font-size:2.25em;
-  }
 }
 
 // No :before support in IE7, reset things back

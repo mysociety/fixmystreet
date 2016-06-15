@@ -153,13 +153,6 @@ body.mappage {
         // content sidebar down beyond .nav-wrapper-2
         height: 3em;
         display: block;
-
-        // For reasons beyond my comprehension, the 3em
-        // height results in a 3em gap in IE8. I assume
-        // some bug with table-cell / table-caption?
-        .ie8 & {
-            height: 0;
-        }
     }
 
     // Over-specific selector required to trump _layout.scss
