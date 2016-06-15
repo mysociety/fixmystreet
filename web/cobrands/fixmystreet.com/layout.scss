@@ -307,6 +307,10 @@ body.unresponsive-council {
 
 .mysoc-footer {
   margin-top: 3em;
+  // The below lines are so that on e.g. /about/posters the footer will move on
+  // top of the fixed sidebar in narrow height situations.
+  position: relative;
+  z-index: 1;
 }
 body.mappage .mysoc-footer {
     display: none;
