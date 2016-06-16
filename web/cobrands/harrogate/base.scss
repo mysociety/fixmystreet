@@ -1,20 +1,22 @@
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
+@import "./_fonts";
 
 @import "../sass/base";
 
-body.frontpage #site-logo,
-#site-logo
-{
-    display: block;
-    margin: 2px;
-    padding-left: 10px;
-    position: static;
+// Hide the standard Harrogate header nav
+#site-header {
+  .site-header__toggles, .site-header__right-info, .main-menu, .site-header__tasks__search-outer, .visually-hidden, .site-header__tasks__fms-nav {
+    display: none;
+  }
+}
 
-    background: url("/cobrands/harrogate/HBCLogo-mobile.png") 0 0 no-repeat;
-    width: 106px;
-    height: 37px;
+header.site-header {
+  .site-header__identity__logo svg {
+      height: 50px;
+      width: 100px;
+  }
 }
 
 #report-cta {
@@ -49,9 +51,14 @@ label[for=form_INFO_TEXT] {
 
 
 #council_responsibilities_note {
-    background-color: lighten($primary, 30%);
+    background-color: $harrogate_blue;
+    color: white;
     padding: 0.5em;
     font-size: 0.8em;
+    a {
+      color: white;
+      text-decoration: underline;
+    }
 }
 
 .nycc-notice {
@@ -65,3 +72,22 @@ label[for=form_INFO_TEXT] {
         text-decoration: underline;
     }
 }
+
+a.platform-logo {
+    vertical-align: baseline;
+    display: inline-block;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: auto 1.5em;
+    background-image: url(/cobrands/fixmystreet/images/fms-platform-logo.svg);
+    text-indent: -1000%;
+    height: 1.7em;
+    width: 16em;
+    padding-#{$right}: 0.25em;
+}
+
+footer {
+  background-color: black;
+  color: white;
+}
+

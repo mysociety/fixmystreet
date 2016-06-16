@@ -1,124 +1,118 @@
-// Super tall map page header to accommodate the big logo
-$mappage-header-height: 10em;
-
 @import "_colours";
 @import "../sass/layout";
 
-#site-logo,
-body.frontpage #site-logo
-{
-        position: relative;
-        top: 1.2em;
-        margin: 0;
-        padding: 0;
-        background: url("/cobrands/harrogate/HBCLogo.png") 0 0 no-repeat;
-        width: 227px;
-        height: 122px;
+@import "_harrogate_header";
+@import "_harrogate_header_overrides";
+
+body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
+  #main-nav {
+    display: none;
+  }
+  .nav-wrapper .nav-wrapper-2 {
+      height: 0;
+      min-height: 0;
+      border-top: none;
+  }
+  #site-header {
+    height: auto;
+
+    .site-header__tasks__fms-nav {
+      display: block;
+      
+      .container {
+        min-height: 0;
+      }
+      
+      ul {
+        float: none;
+        text-align: center;
+        margin: 1em 0 0;
+        
+        li {
+          display: inline-block;
+          float: none;
+        }
+      }
+    }
+
+    .nav-menu--header {
+      float: none;
+    }
+  }
+
+  .content .sticky-sidebar aside {
+    top: 18em;
+  }
 }
 
-#site-header,
-body.frontpage #site-header,
-.ie7 body.frontpage #site-header,
-.nav-wrapper-2
-{
-    height: 10em;
-}
-
-body.twothirdswidthpage .container .content footer .tablewrapper a:link,
-body.twothirdswidthpage .container .content footer .tablewrapper a:visited,
-body.fullwidthpage .container .content footer .tablewrapper a:link,
-body.fullwidthpage .container .content footer .tablewrapper a:visited {
-    color: white;
-}
-
-#main-nav {
-    margin-top: 3.2em;
-}
-
-body.mappage #main-nav,
-{
-    // TODO would be better to edit containers to figure out where missing em is defined
-    margin-top: 2.2em;
-}
-
-body.fullwidthpage .container .content,
-body.twothirdswidthpage .container .content {
-    margin: 0;
-    padding-left: 0;
-    padding-right: 0;
-}
-
-body.fullwidthpage .container .content {
-    margin-top: 3em; // push far enough for the sign-out link to also be visible
-}
-
-body.twothirdswidthpage .content aside {
-    margin-top: 2em;
-}
-
-
-body.twothirdswidthpage form.full-width {
-    margin: 0;
-}
-
-
-.nav-menu--main {
-    background: #ededed;
-}
-
-.nav-menu--main span {
-    color: #fff;
-    background: $primary;
-}
-
-.nav-menu--main a, .nav-menu--main span,
-body.mappage .nav-menu--main a, body.mappage .nav-menu--main span {
-    padding: 0.75em 1.02em;
-}
-
-body.mappage .nav-menu--main {
-    margin-top: 1em;
-}
-
-body.mappage .nav-wrapper .nav-wrapper-2 {
-    background: #fff;
-    border-bottom: solid 4px $primary;
-}
-
-.nav-wrapper .nav-wrapper-2 {
-    border-top: 0px;
+body.mappage {
+  #main-nav {
+    display: block;
+  }
+  #site-header {
+    .site-header__tasks__search-outer, .site-header__toggles, .site-header__right-info,  {
+      display: none;
+    }
+    .site-header__identity__logo a {
+      position: absolute;
+      left: 5px;
+      top: 0;
+      height: 61px;
+      width: 134px;
+    }
+  }
+  .nav-wrapper .nav-wrapper-2 {
+    background-color: transparent;
+  }
 }
 
 #front-main {
-    background: none;
-    padding: 0;
+  background: transparent;
+  color: black;
+  
+  #front-main-container {
+    border: 4px solid $harrogate_yellow;
+    padding: 1em;
+  }
+}
 
-    #front-main-container {
-        background: $primary;
-        padding: 2em 0;
-        margin-bottom: 1.2em;
-        @include border-radius(12px);
+footer {
+  padding: 2em 0;
+  font-size: 0.9em;
 
-        #postcode-intro {
-            margin: 0 2em;
+  .site-footer__heading {
+    display: none;
+  }
+
+  .item-list--inline {
+    border: none;
+    margin: 0;
+    padding: 1em 0;
+
+    .item-list__item {
+      display: inline;
+      list-style: none;
+      background-color: transparent;
+      margin: 0;
+      padding: 0 1.25em 0 0;
+
+      a {
+        color: white;
+        &:hover {
+          text-decoration: underline;
         }
+      }
     }
-
+  }
 }
 
-body.mappage .content {
-    margin-top: 4em;
+footer .container, #site-header .container {
+  max-width: 1280px;
+  width: 100%;
 }
 
-
-body.twothirdswidthpage .container .content footer,
-body.fullwidthpage .container .content footer
-{
-    .tablewrapper {
-        width: 100%;
-        background: $primary;
-        @include border-radius(12px);
-        margin-bottom: 2em;
-
-    }
+@media screen and (min-width: 1280px) {
+  footer .container, #site-header .container {
+    width: 1280px;
+  }
 }
