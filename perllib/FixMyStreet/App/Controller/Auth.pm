@@ -139,6 +139,10 @@ sub email_sign_in : Private {
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
     $token_data->{twitter_id} = $c->session->{oauth}{twitter_id}
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
+    if ($c->stash->{current_user}) {
+        $token_data->{old_email} = $c->stash->{current_user}->email;
+        $token_data->{r} = 'auth/change_email/success';
+    }
 
     my $token_obj = $c->model('DB::Token')->create({
         scope => 'email_sign_in',
@@ -146,7 +150,8 @@ sub email_sign_in : Private {
     });
 
     $c->stash->{token} = $token_obj->token;
-    $c->send_email( 'login.txt', { to => $good_email } );
+    my $template = $c->stash->{email_template} || 'login.txt';
+    $c->send_email( $template, { to => $good_email } );
     $c->stash->{template} = 'auth/token.html';
 }
 
@@ -177,17 +182,40 @@ sub token : Path('/M') : Args(1) {
         return;
     }
 
-    # Sign out in case we are another user
-    $c->logout();
-
     # find or create the user related to the token.
     my $data = $token_obj->data;
-    my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
+
+    if ($data->{old_email} && (!$c->user_exists || $c->user->email ne $data->{old_email})) {
+        $c->stash->{token_not_found} = 1;
+        return;
+    }
+
+    # sign out in case we are another user
+    $c->logout();
+
+    my $user = $c->model('DB::User')->find_or_new({ email => $data->{email} });
+
+    if ($data->{old_email}) {
+        # Were logged in as old_email, want to switch to email ($user)
+        if ($user->in_storage) {
+            my $old_user = $c->model('DB::User')->find({ email => $data->{old_email} });
+            if ($old_user) {
+                $old_user->adopt($user);
+                $user = $old_user;
+                $user->email($data->{email});
+            }
+        } else {
+            # Updating to a new (to the db) email address, easier!
+            $user = $c->model('DB::User')->find({ email => $data->{old_email} });
+            $user->email($data->{email});
+        }
+    }
+
     $user->name( $data->{name} ) if $data->{name};
     $user->password( $data->{password}, 1 ) if $data->{password};
     $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
-    $user->update;
+    $user->update_or_insert;
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page
@@ -444,6 +472,28 @@ sub change_password : Local {
     $c->user->obj->update( { password => $new } );
     $c->stash->{password_changed} = 1;
 
+}
+
+=head2 change_email
+
+Let the user change their email.
+
+=cut
+
+sub change_email : Local {
+    my ( $self, $c ) = @_;
+
+    $c->detach( 'redirect' ) unless $c->user;
+
+    $c->forward('get_csrf_token');
+
+    # If not a post then no submission
+    return unless $c->req->method eq 'POST';
+
+    $c->forward('check_csrf_token');
+    $c->stash->{current_user} = $c->user;
+    $c->stash->{email_template} = 'change_email.txt';
+    $c->forward('email_sign_in');
 }
 
 sub get_csrf_token : Private {

@@ -7,11 +7,13 @@ use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 my $test_email    = 'test@example.com';
+my $test_email2   = 'test@example.net';
 my $test_password = 'foobar';
 $mech->delete_user($test_email);
 
 END {
     $mech->delete_user($test_email);
+    $mech->delete_user($test_email2);
     done_testing();
 }
 
@@ -63,7 +65,6 @@ $mech->not_logged_in_ok;
 
 # check that we got one email
 {
-    $mech->email_count_is(1);
     my $email = $mech->get_email;
     $mech->clear_emails_ok;
     is $email->header('Subject'), "Your FixMyStreet account details",
@@ -116,7 +117,6 @@ $mech->not_logged_in_ok;
     # follow link and change password - check not prompted for old password
     $mech->not_logged_in_ok;
 
-    $mech->email_count_is(1);
     my $email = $mech->get_email;
     $mech->clear_emails_ok;
     my ($link) = $email->body =~ m{(http://\S+)};
@@ -175,6 +175,54 @@ $mech->not_logged_in_ok;
     ok $user->password, "user now has a password";
 }
 
+subtest "Test change email page" => sub {
+    # Still signed in from the above test
+    $mech->get_ok('/my');
+    $mech->follow_link_ok({url => '/auth/change_email'});
+    $mech->submit_form_ok(
+        { with_fields => { email => "" } },
+        "submit blank change email form"
+    );
+    $mech->content_contains( 'Please enter your email', "found expected error" );
+    $mech->submit_form_ok({ with_fields => { email => $test_email2 } }, "change_email to $test_email2");
+    is $mech->uri->path, '/auth/change_email', "still on change email page";
+    $mech->content_contains( 'Now check your email', "found check your email" );
+    my $email = $mech->get_email;
+    $mech->clear_emails_ok;
+    my ($link) = $email->body =~ m{(http://\S+)};
+    $mech->get_ok($link);
+    is $mech->uri->path, '/auth/change_email/success', "redirected to the change_email page";
+    $mech->content_contains('successfully confirmed');
+    ok(FixMyStreet::App->model('DB::User')->find( { email => $test_email2 } ), "got a user");
+
+    ok(FixMyStreet::App->model('DB::User')->create( { email => $test_email } ), "created old user");
+    $mech->submit_form_ok({ with_fields => { email => $test_email } },
+        "change_email back to $test_email"
+    );
+    is $mech->uri->path, '/auth/change_email', "still on change email page";
+    $mech->content_contains( 'Now check your email', "found check your email" );
+    $email = $mech->get_email;
+    $mech->clear_emails_ok;
+    ($link) = $email->body =~ m{(http://\S+)};
+    $mech->get_ok($link);
+    is $mech->uri->path, '/auth/change_email/success', "redirected to the change_email page";
+    $mech->content_contains('successfully confirmed');
+
+    # Test you can't click the link if logged out
+    $mech->submit_form_ok({ with_fields => { email => $test_email } },
+        "change_email back to $test_email"
+    );
+    is $mech->uri->path, '/auth/change_email', "still on change email page";
+    $mech->content_contains( 'Now check your email', "found check your email" );
+    $email = $mech->get_email;
+    $mech->clear_emails_ok;
+    ($link) = $email->body =~ m{(http://\S+)};
+    $mech->log_out_ok;
+    $mech->get_ok($link);
+    isnt $mech->uri->path, '/auth/change_email/success', "not redirected to the change_email page";
+    $mech->content_contains('Sorry');
+};
+
 foreach my $remember_me ( '1', '0' ) {
     subtest "sign in using valid details (remember_me => '$remember_me')" => sub {
         $mech->get_ok('/auth');
@@ -188,7 +236,7 @@ foreach my $remember_me ( '1', '0' ) {
                 },
                 button => 'sign_in',
             },
-            "sign in with '$test_email' & '$test_password"
+            "sign in with '$test_email' & '$test_password'"
         );
         is $mech->uri->path, '/my', "redirected to correct page";
 

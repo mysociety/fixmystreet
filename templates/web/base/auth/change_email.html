@@ -1,0 +1,37 @@
+[% INCLUDE 'header.html', title = loc('Change email address'), bodyclass = 'authpage' %]
+
+<h1>[% loc('Change email address') %]</h1>
+
+[% IF c.req.args.0 == 'success' %]
+    <p class="form-success">[% loc('You have successfully confirmed your email address.') %]</p>
+[% END %]
+
+[% loc('Your email address') %]: [% c.user.email %]
+
+<form action="[% c.uri_for('change_email') %]" method="post" name="change_email">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+
+    <fieldset>
+    [% IF email_error;
+        errors = {
+            missing = loc('Please enter your email'),
+            other   = loc('Please check your email address is correct')
+        };
+        loc_email_error = errors.$email_error || errors.other;
+    %]
+    <div class="form-error">[% loc_email_error %]</div>
+    [% END %]
+
+    <div class="form-field">
+        <label for="email">[% loc('New email address:') %]</label>
+        <input type="email" name="email" id="email" value="[% email | html %]">
+    </div>
+    <div class="final-submit">
+        <input type="submit" value="[% loc('Change email address') %]">
+    </div>
+
+    </fieldset>
+</form>
+
+
+[% INCLUDE 'footer.html' %]
