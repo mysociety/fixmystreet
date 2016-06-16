@@ -1,8 +1,3 @@
-                    [% IF pagefooter %]
-                    <footer role="contentinfo">
-                        [% INCLUDE 'front/footer-marketing.html' %]
-                    </footer>
-                    [% END %]
                 </div><!-- .content role=main -->
             </div><!-- .container -->
         </div><!-- .table-cell -->
@@ -10,42 +5,37 @@
         <div class="nav-wrapper">
             <div class="nav-wrapper-2">
                 <div id="main-nav" role="navigation">
-
-                    <ul class="nav-menu nav-menu--main">
-                        [% selected = c.req.uri.path == '/' %]
-                        <li><[% IF selected %]span[% ELSE %]a href="/"[% END %]>
-                            [% loc("Report a problem") %]</[% selected == '/' ? 'span' : 'a' %]></li>
-
-                        [% selected = c.req.uri.path == '/my' %]
-                        <li>
-                            <[% IF selected %]span[% ELSE %]a href="/my"[% END %]>
-                            [% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% selected ? 'span' : 'a' %]></li>
-
-                        [% selected = c.req.uri.path == '/reports/Harrogate' %]
-                        <li>
-                            <[% IF selected %]span[% ELSE %]a href="/reports"[% END %]>
-                            [% loc("All reports") %]</[% selected ? 'span' : 'a' %]></li>
-
-                        [% selected = c.req.uri.path == '/alert' %]
-                        <li>
-                            <[% IF selected %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END %]>
-                            [% loc("Local alerts") %]</[% selected ? 'span' : 'a' %]></li>
-
-                        [% selected = c.req.uri.path == '/faq' %]
-                        <li>
-                            <[% IF selected %]span[% ELSE %]a href="/faq"[% END %]>
-                            [% loc("Help") %]</[% selected ? 'span' : 'a' %]></li>
-
-                        [% selected = c.req.uri.path == '/privacy' %]
-                        <li class="nav-menu__item--privacy">
-                            <[% IF selected %]span[% ELSE %]a href="/privacy"[% END %]>
-                            [% loc("Privacy") %]</[% selected ? 'span' : 'a' %]></li>
-                    </ul>
+                    [% INCLUDE 'main_menu.html' extra_class = 'nav-menu--main' %]
                 </div>
             </div>
         </div>
 
 <!-- [% INCLUDE 'debug_footer.html' %] -->
     </div> <!-- .wrapper -->
+
+    [% IF pagefooter %]
+    <footer class="site-footer">
+        <div class="container">
+            <section class="site-footer__useful-links">
+                <h2 class="site-footer__heading">Useful links</h2>
+                <ul class="site-footer__list item-list item-list--inline">
+                    <li class="site-footer__list__item item-list__item"><a class="site-footer__link" href="https://www.harrogate.gov.uk/accessibility">Accessibility</a></li>
+                    <li class="site-footer__list__item item-list__item"><a class="site-footer__link" href="https://www.harrogate.gov.uk/contactus">Contact us</a></li>
+                    <li class="site-footer__list__item item-list__item"><a class="site-footer__link" href="https://www.harrogate.gov.uk/feedback">Feedback</a></li>
+                    <li class="site-footer__list__item item-list__item"><a class="site-footer__link" href="https://www.harrogate.gov.uk/terms">Terms of use</a></li>
+                    <li class="site-footer__list__item item-list__item"><a class="site-footer__link" href="https://www.harrogate.gov.uk/cookies">Privacy and cookies</a></li>
+                    <li class="site-footer__list__item item-list__item"><a class="site-footer__link" href="http://www.northyorks.gov.uk/" target="_blank">North Yorkshire County Council</a></li>
+                    <li class="site-footer__list__item item-list__item"><a class="site-footer__link" href="https://www.gov.uk/" target="_blank">GOV.UK</a></li>
+                    <!-- <li><a href="https://www.harrogate.gov.uk/site_map" rel="nofollow">Site map</a></li> -->
+                </ul>
+                <p class="site-footer__rights">© 2016 Harrogate Borough Council</p>
+                <p class="site-footer__rights-two">
+                    Powered by <a class="platform-logo" href="https://fixmystreet.com/about/council/">FixMyStreet for Councils</a>
+                </p>
+            </section>
+        </div>
+    </footer>
+    [% END %]
+
 </body>
 </html>
