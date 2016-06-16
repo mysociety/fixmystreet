@@ -642,7 +642,7 @@ sub setup_categories_and_bodies : Private {
             my $metas = $contact->get_extra_fields;
             if (scalar @$metas) {
                 foreach (@$metas) {
-                    if ($_->{values} && $_->{values}->{value}) {
+                    if (ref $_->{values} eq 'HASH') {
                         $_->{values} = [ map { { name => $_->{name}[0], key => $_->{key}[0] } } @{$_->{values}->{value}} ];
                     }
                 }

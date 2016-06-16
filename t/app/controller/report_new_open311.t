@@ -30,6 +30,14 @@ my $contact1 = $mech->create_contact_ok(
                } 
              ],
 );
+my $contact1b = $mech->create_contact_ok(
+    body_id => $body->id, # Edinburgh
+    category => 'Moon lighting',
+    email => '100b',
+    extra => [ { description => 'Moon type', code => 'type', required => 'False', values =>
+                   [ { name => 'Full', key => 'full' }, { name => 'New', key => 'new' } ] }
+             ],
+);
 my $contact2 = $mech->create_contact_ok(
     body_id => $body->id, # Edinburgh
     category => 'Graffiti Removal',
