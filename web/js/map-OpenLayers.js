@@ -394,12 +394,6 @@ $(function(){
         }, fixmystreet.map_options)
     );
 
-    // Need to do this here, after the map is created (might not have been when
-    // resize() called)
-    if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
-        $('#fms_pan_zoom').css({ top: '2.75em' });
-    }
-
     // Set it up our way
 
     var layer;

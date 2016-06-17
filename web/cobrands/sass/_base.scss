@@ -1269,6 +1269,42 @@ a:hover.rap-notes-trigger {
   margin:1em 0;
 }
 
+.mobile #map_box {
+  height: 10em; // eg: at the top of individual report pages
+}
+
+// When you're in the reporting flow on mobile, we hide the site-header
+// and make the map full screen to reduce distractions. JavaScript also
+// tweaks the text content of some of the map-related elements, to make
+// it more "app-like".
+.mobile-reporting-map {
+  #site-header {
+    display: none;
+  }
+
+  #map_box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto; // override `.mobile #map_box` height:10em
+    margin: 0;
+  }
+
+  #fms_pan_zoom {
+    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
+  }
+
+  .container {
+    padding: 0; // map_box needs to be full width, so remove page gutter
+  }
+
+  #map_sidebar {
+    padding: 1em; // reinstate page gutter, but on sidebar, so map_box is unaffected
+  }
+}
+
 
 /* Reporting a problem bits */
 

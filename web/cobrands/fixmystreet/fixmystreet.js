@@ -54,24 +54,16 @@ $(function(){
         if (last_type == type) { return; }
         if (type == 'mobile') {
             $html.addClass('mobile');
-            $('#map_box').css({ height: '10em' });
-            if (typeof fixmystreet !== 'undefined') {
-                fixmystreet.state_map = ''; // XXX
-            }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-                // Immediately go full screen map if on around page
-                $('#site-header').hide();
-                $('#map_box').prependTo('.wrapper').css({
-                    position: 'absolute',
-                    top: 0, left: 0, right: 0, bottom: 0,
-                    height: 'auto',
-                    margin: 0
-                });
-                $('#fms_pan_zoom').css({ top: '2.75em' });
+                // Creates the "app-like" mobile reporting UI with full screen map
+                // and special "OK/Cancel" buttons etc.
+                $html.addClass('mobile-reporting-map');
+
+                var banner_text = '<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map;
                 $('.big-green-banner')
                     .addClass('mobile-map-banner')
                     .appendTo('#map_box')
-                    .html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
+                    .html(banner_text);
             }
             $('span.report-a-problem-btn').on('click.reportBtn', function(){
                 $('html, body').animate({scrollTop:0}, 500);
@@ -79,24 +71,13 @@ $(function(){
                 $(this).toggleClass('hover');
             });
         } else {
-            // Make map full screen on non-mobile sizes.
             $html.removeClass('mobile');
-            $('#map_box').css({ height: '' });
-            if (typeof fixmystreet !== 'undefined') {
-                fixmystreet.state_map = 'full';
-            }
             if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-                // Remove full-screen-ness
+                // Removes the "app-like" mobile reporting UI, reverting all the
+                // changes made above.
+                $html.removeClass('mobile-reporting-map');
+
                 var banner_text = translation_strings.report_problem_heading;
-                if (cobrand !== 'oxfordshire') {
-                    $('#site-header').show();
-                }
-                $('#map_box').prependTo('.content').css({
-                    position: '',
-                    top: '', left: '', right: '', bottom: '',
-                    height: '',
-                    margin: ''
-                });
                 if (typeof variation !== 'undefined' && variation === 1) {
                     banner_text = 'Click map to request a fix';
                 }
@@ -105,7 +86,6 @@ $(function(){
                     .prependTo('#side')
                     .html(banner_text);
             }
-            $('#fms_pan_zoom').css({ top: '' });
             $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
         }
         last_type = type;
