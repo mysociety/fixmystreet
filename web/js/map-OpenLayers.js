@@ -646,6 +646,17 @@ OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
 /* Pan data handler */
 OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
     read: function(json, filter) {
+        // Check we haven't received the data after the map has been clicked.
+        if (fixmystreet.page == 'new') {
+            // If we have, we want to do nothing, which means returning an
+            // array of the back-projected version of the current pin
+            var pin = fixmystreet.markers.features[0].clone();
+            pin.geometry.transform(
+                fixmystreet.map.getProjectionObject(),
+                new OpenLayers.Projection("EPSG:4326")
+            );
+            return [ pin ];
+        }
         if (typeof json == 'string') {
             obj = OpenLayers.Format.JSON.prototype.read.apply(this, [json, filter]);
         } else {
