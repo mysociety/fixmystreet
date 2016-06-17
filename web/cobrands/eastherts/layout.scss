@@ -1,0 +1,229 @@
+@import "_colours";
+@import "../sass/layout";
+
+#site-header {
+  // default layout.scss sets this, so we need it here as well as base.scss
+  background: $eh_blue;
+  background-image: url(img/header_mid.jpg);
+  background-repeat: repeat-x;
+}
+
+// Get rid of the top border
+.nav-wrapper .nav-wrapper-2 {
+  border-top: none;
+}
+
+body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
+  $logo-height: 90px;
+  $eh-nav-height: 32px;
+  $fms-nav-height: 43px;
+
+  #site-header {
+    background-color: $base_bg;
+    height: $logo-height + $eh-nav-height + $fms-nav-height;
+
+    .container {
+      height: auto;
+    }
+
+    .container:first-child {
+      height: $logo-height;
+    }
+
+    .header__eh_nav {
+      display: block;
+      background-color: $eh_dark_green;
+      background-image: url(img/welcome_mid.gif);
+      background-repeat: repeat-x;
+      background-position: 0 0;
+      height: $eh-nav-height;
+
+      ul, span {
+        font-size: 1.1em;
+        line-height: $eh-nav-height;
+        color: white;
+      }
+
+      ul {
+        float: right;
+        text-align: right;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+
+        li {
+          display: inline;
+          margin: 0;
+          padding: 0;
+
+          a {
+            color: white;
+            padding: 0 0.5em 0 0.6em;
+          }
+        }
+      }
+    }
+
+    .header__eh_top_nav {
+      display: block;
+      position: relative;
+      z-index: 4;
+
+      ul {
+        float: right;
+        margin: 0;
+        list-style: none;
+
+        li {
+          display: inline;
+          list-style: none;
+        }
+      }
+
+      ul#toputilnav {
+        width: 100%;
+        text-align: right;
+
+        li {
+          margin: 0;
+          padding: 0;
+
+          a {
+            padding: 0 0.5em 0 0.25em;
+            font-size: 0.9em;
+            color: black;
+          }
+
+          &:after {
+            content: "";
+            border-right: solid 1px $eh_dark_grey;
+          }
+
+          // For some reason the spacing isn't even on the 'cookies' link,
+          // so this sorts it out.
+          &:first-child {
+            margin-right: 0.25em;
+          };
+
+          &:last-child {
+            a {
+              padding-right: 0;
+            }
+            &:after {
+              border-right: none;
+            }
+          }
+        }
+      }
+
+      ul#bannerimages {
+        margin-top: 0.25em;
+      }
+    }
+  }
+
+  #site-logo {
+    $img-height: 184px;
+    $img-width: 399px;
+    top: $logo-height - $img-height;
+    width: $img-width;
+    height: $img-height;
+    background-image: url(img/toplogo.jpg);
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-color: $eh_blue;
+    background-size: $img-width $img-height;
+  }
+
+  .nav-menu {
+    position: absolute;
+    top: $logo-height + $eh-nav-height;
+    height: $fms-nav-height;
+    margin: 0 auto;
+    width: 60em;
+    padding: 0;
+    text-align: center;
+    float: none;
+    li {
+      float: none;
+      display: inline-block;
+    }
+  }
+
+  // Make elements beneath clickable
+  .nav-wrapper .nav-wrapper-2 {
+    min-height: 0;
+    height: 0;
+  }
+}
+
+#front-main {
+  background-color: #f6f6f6;
+}
+
+.content, #front-main {
+  color: $eh_dark_grey;
+}
+
+body.twothirdswidthpage .content .sticky-sidebar aside {
+  top: 11em;
+  box-shadow: none;
+}
+
+body.mappage {
+  .nav-wrapper .nav-wrapper-2 {
+    background-color: $eh_blue;
+    background-image: url(img/header_mid.jpg);
+    background-repeat: repeat-x;
+    background-position: top;
+  }
+
+  #site-logo {
+    top: 8px;
+  }
+
+  .nav-menu--main {
+    a {
+      color: white;
+    }
+    span {
+      color: $eh_dark_grey;
+    }
+  }
+}
+
+
+footer ul {
+  margin-bottom: 0.5em;
+  li {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+
+    &:after {
+      content: "";
+      border-right: solid 1px $eh_dark_grey;
+    }
+    &:last-child:after {
+      border-right: none;
+    }
+
+    a {
+      padding: 0 0.5em 0 0.25em;
+    }
+  }
+}
+
+// Stop the FMS nav being too wide and off to the right off the page
+// at this break point.
+@media only screen and (min-width: 48em) and (max-width: 61em) {
+  #main-nav {
+    float: $left;
+    padding-#{$left}: 0;
+  }
+  body.fullwidthpage, body.twothirdswidthpage, body.authpage, body.frontpage {
+    .nav-menu {
+      width: 100%;
+    }
+  }
+}

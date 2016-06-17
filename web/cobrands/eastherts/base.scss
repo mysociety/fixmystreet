@@ -1,0 +1,56 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+.header__eh_nav, .header__eh_top_nav, .nav-menu li.user-meta--nav {
+  display: none;
+}
+
+#site-header {
+  border-top: none;
+  background: $eh_blue;
+}
+
+#site-logo {
+  background: url(img/toplogo.gif);
+  background-size: 51px 48px;
+  height: 48px;
+  width: 51px;
+  top: 0px;
+  left: 2px;
+}
+
+h1, h2, h3, h4 {
+  color: $eh_green;
+}
+
+footer {
+  background-color: $eh_med_grey;
+  background-image: url(img/footer.gif);
+  background-repeat: repeat-x;
+  background-position: top;
+
+  text-align: center;
+  padding: 1em;
+  margin: 0;
+
+  p {
+    margin: 0;
+  }
+
+  ul {
+    margin: 0;
+    li {
+      list-style: none;
+
+      a, a:visited, a:hover, a:active {
+        color: $eh_dark_grey;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
