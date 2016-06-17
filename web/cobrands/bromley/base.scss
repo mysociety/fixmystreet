@@ -17,10 +17,6 @@
   position: absolute;
   z-index:2;
 }
-// Override in IE too
-.ie6 #site-logo {
-  background: url('/cobrands/bromley/bromley-logo.s.png') 0 0 no-repeat;
-}
 
 // Change the colour and size of the site header to suit
 #site-header {
@@ -344,8 +340,8 @@ input.field, input.text,
   border-bottom: none!important;
 }
 
-// Fix the A-Z menu in IE 6/7
-.ie6, .ie7 {
+// Fix the A-Z menu in IE7
+.ie7 {
   .main-a-z ul li {
     display:block;
     float:left;

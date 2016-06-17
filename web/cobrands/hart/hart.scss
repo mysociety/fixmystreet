@@ -373,23 +373,9 @@ body.frontpage .table-cell .content {
 }
 
 // IE specific CSS
-.ie6 {
-    div { zoom: 1; }
-    .hart-wrapper { padding: 0; }
-    #hart-footer { margin: 0; }
-    //#search input { padding: 8px 5px 2px; }
-    //#search input.button { padding: 0; width: 68px; line-height: 24px; }
-    input.button { overflow: visible; width: 1%; }
-}
 .ie7 {
     div { zoom: 1; }
-    //#search input { padding: 8px 5px 2px; }
-    //#search input.button { padding: 0; width: 68px; line-height: 24px; }
     input.button { overflow: visible; }
-}
-.ie8 {
-    //#search input { padding: 8px 5px 2px; }
-    //#search input.button { padding: 0; line-height: 24px; }
 }
 
 // mySociety additions

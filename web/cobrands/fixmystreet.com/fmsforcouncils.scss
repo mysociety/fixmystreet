@@ -519,7 +519,9 @@ $fms-green: #62b356;
   }
 }
 
- .ie8, .ie7 {
+/* Apply the desktop width media queries from above in
+   IE7/8 which do not handle media queries */
+.ie8, .ie7 {
     .fms-for-councils {
       .wrapper {
         display: table;
@@ -601,5 +603,4 @@ $fms-green: #62b356;
         margin-left: 30px;
       }
     }
-
-  }
+}

@@ -335,13 +335,7 @@ label{
     }
   }
 }
-// IE6 doesn't extend the grey box back with the above negative margins, and
-// the password box falls off screen for some reason. Just have boring margins,
-// it looks okay.
-.ie6 .form-box {
-    margin: 0 0 0.25em;
-    padding: 1em;
-}
+
 // Prevent grey displaying oddly by giving it a width, and stop odd left margin issue
 .ie7 .form-box {
     width: 100%;
@@ -460,9 +454,6 @@ p.label-valid {
   position: absolute;
   z-index:2;
 }
-.ie6 #site-logo {
-  background: url('/cobrands/fixmystreet/images/ie_logo.gif') 0 -5px no-repeat;
-}
 
 // this is a skip to nav for mobile users only
 #nav-link {
@@ -531,9 +522,6 @@ p.label-valid {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHQAAAAYCAYAAAArrNkGAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABBtJREFUaN7tmT2u1DAQx/cIPgBCQUJCICH5BuQIPkIq6hzBB0AyiAP4ABQ5ghtEm54mEtVrICUNkpmsJjBvdvyR1S7hPa2lv1aJs5PEP894xjkc/tMWY+xADhRQA8iC9I7PtD6PP9xa9aC1oCnmm9lpgtHW3WiVB03HuqYeA9DlPZbJuXj8o5wgGM5os+ixLb74MeTt+Hz+kiGXva99jEDjJV7w+5Pn3aIHNoEvB/Tu7s6iejzuQAEUQRPIgxT2KTwesX+5rkvYs7yP2KDXLN7XXCKkAUgHiii3MaQuideI9x/x2GB/gxFjVZMIoY6AmtBGJ+QJluUKgdheI1LpfveuoQMciTw7XrUAbEFzot8Re4GcnwWghv23Ezx0PiejBYiBAA0/Pz7VoOV3AKnEup1LwhyBQFsr2Jkzdjy51hZyBIuwaOuFZ6fPPaaA5jQX+hvi4fS8YUC9BBzXqJOB4INXAGpAM8oAxBEUUbYSQiCD1ZWACnZGhDJIUacGaBbY34ghAxfAdHheCxBHAs6yvp7YpP/zDOgk9WHIGhMvOZ5TrjCgfUUSptigqQqg1M7A7kHhTVvWUAF8Q/r6ZObPQy4bfMf62wycoeSFOEmoPS2sQ74mdFUC1RhuHQ25QonkKurjE6CCpzTC+9CmNwBNeiHz/oGvabnweG+9E9ZDul6GDDiD53tybsoMYIMJhhQSjy/28YVzoAgKoGRt+uvHMwUaQRHkS7N/I1AjhGuuGs+2ifsOPOwKk6TLAeUe2J4DFPtG7vnsnK3MQPngTwg0ErUZoC3CPEqyWbmDJQG1cVvbCpRPmIadm6Wy5VpAeXKkpCRqQ1F/DwBAnAlQnQHaEKDzlYGGgvQWoEJy1LOx8P8SqOLJEU2uNhbhvQC0AVn76n3/9vWHpIe++/Km/fxVL17aL3ATSYU5E2h77rbkBqA2kYFHsbS7FlAhOTrJpIXwkirYRynMAEgDiignwHSgiGozCceUg5EBqs5N2hhQX8gnpDaldoquCVQn6lmV2foLbJdkSmWkANESoNPLT98UyKMUgbnIFsqWGRMxQ0JbW1G2eCHsdmQferWlMwlPxHuLnwiFa9NefU2gQiJ0UholBixm6lGV8lAEGVFDykMr6l5e5OeA1tg5ASB8wcmVMEa4rtkLqM3VnqQuDJnBmHnhT6A2oKPNBSIFuq6hoCbzCatY91Zs/ZXspED5Ws+rDu0IbZUSEps//YmQuvbrCg8NFd8I1zBl8bd66w8galBA6Q3rmWKb3YZlpIqE0Da13pLrVjtd6flxMtP7qorvse1hjyYkRfs8yMP/8E83WMIeII2wdrobnk0gG6HOnUu7WteAqRKf39QN0yagTlhf9/lwz9fNG8yzgBrmmWa3h8Ftv0HaQLi1TYlaSGX3UvsNzdBKw+waoEEAAAAASUVORK5CYII=');
   background-repeat: no-repeat;
   text-indent: -999999px;
-}
-.ie6 #mysoc-logo {
-  background: url('/cobrands/fixmystreet/images/ie_mysoc_logo.gif') center no-repeat;
 }
 .ie7 #mysoc-logo {
   background: url($image-sprite) -240px -38px no-repeat;
@@ -621,7 +609,7 @@ body.mappage .wrapper {
 }
 
 //because display:table doesn't work we float
-.ie6, .ie7 {
+.ie7 {
   .shadow-wrap {
     ul#key-tools{
       background:#f5f5f5;
@@ -633,19 +621,6 @@ body.mappage .wrapper {
         }
       }
     }
-  }
-}
-.ie6 .shadow-wrap ul#key-tools li a {
-  &.abuse {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
-    background-position: $right 0px;
-  }
-  &.feed {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite.gif');
-    background-position: $right -58px;
-  }
-  &:hover {
-    background-image:url('/cobrands/fixmystreet/images/ie_key_tools_sprite_dark.gif');
   }
 }
 .iel8 {
@@ -939,15 +914,6 @@ input.final-submit {
   border-bottom: none;
 }
 
-.ie6 .item-list--reports__item {
-  a {
-    height: 5.5em;
-  }
-  .img {
-    height: 60px;
-  }
-}
-
 .problem-header .update-img,
 .item-list .update-img {
     float: $right;
@@ -1069,10 +1035,6 @@ html.js #map .noscript {
   #{$left}: 0.5em;
   #{$right}: 0.5em;
 }
-// The left and right of the above causes the navigation to move off-screen left in IE6.
-.ie6 #fms_pan_zoom {
-  #{$left}: auto !important;
-}
 
 // Openlayers map controls (overrides)
 #fms_pan_zoom_panup,
@@ -1167,21 +1129,6 @@ html.js #map .noscript {
       background-color:#000;
       text-decoration:none;
     }
-  }
-}
-
-.ie6 #sub_map_links a {
-  &#hide_pins_link {
-    background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
-    background-position: $right 1px;
-  }
-  &#all_pins_link {
-    background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
-    background-position: $right -45px;
-  }
-  &#map_permalink {
-    background-image:url('/cobrands/fixmystreet/images/ie_sub_map_links_sprite.gif');
-    background-position: $right -93px;
   }
 }
 

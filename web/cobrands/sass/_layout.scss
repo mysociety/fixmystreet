@@ -60,7 +60,7 @@ h1 {
 
 //pad the top of the wrapper to allow space for the menu to fit in
 //when its positioned absolute below
-.ie6, .ie7 {
+.ie7 {
   .wrapper {
     padding-top:4em;
   }
@@ -79,7 +79,7 @@ h1 {
 }
 
 //position absolute the menu as ie doesn't like display:table
-.ie6, .ie7 {
+.ie7 {
   .nav-wrapper {
     position: absolute;
     top:0;
@@ -103,7 +103,6 @@ h1 {
     position: static;//reset position so the nav links become clickable
   }
 
-  .ie6 &,
   .ie7 & {
       height: 3em;
       // Without this, the #site-logo is unclickable.
@@ -192,14 +191,15 @@ h1 {
   width:84px;
   height:16px;
   background-size: 100px auto;
-  background-position: -8px 0px;
+  background-position: 50% 50%;
   opacity: 0.8;
   &:hover {
     opacity: 1;
   }
-}
-.ie8 #mysoc-logo {
-  width: 100px;
+  // IE8 does not support background-size, so increase width to show whole image
+  .ie8 & {
+    width: 100px;
+  }
 }
 .ie7 #mysoc-logo {
     background-position: -260px -43px;
@@ -257,10 +257,10 @@ body.mappage {
   }
 
   #site-logo {
-    position: absolute;
     #{$left}: 12px;
     // Also inherits...
     //   `top: 0.9em`
+    //   `position: absolute`
     //   `z-index: 3`
     // ...from the non-mappage version, above
   }
@@ -307,7 +307,7 @@ body.mappage {
   }
 }
 
-.ie6, .ie7 {
+.ie7 {
   body.mappage {
     // The below is *mandatory* to allow pins/zoom to be clickable in IE6/7. Do NOT remove.
     .container {
@@ -320,26 +320,6 @@ body.mappage {
       .nav-wrapper-2 {
         position:static;
       }
-    }
-    #site-logo {
-      position: absolute;
-    }
-  }
-}
-//ie8 needs different stuff on .nav-wrapper so we
-//have to define all the rest of it again as this resets
-//the z-index base yet again :S
-.ie8 {
-  body.mappage {
-    .nav-wrapper{
-      position: relative;
-      z-index:0;
-      .nav-wrapper-2 {
-        position:static;
-      }
-    }
-    #site-logo {
-      position: absolute;
     }
   }
 }
@@ -538,15 +518,6 @@ body.twothirdswidthpage {
     }
   }
 }
-//as ie6 doesn't like 'fixed' we will make it absolute again
-.ie6 body.twothirdswidthpage .content .sticky-sidebar {
-  position:static;
-  aside {
-    position:absolute;
-    #{$left}: 42em;
-    top:0;
-  }
-}
 
 // Centre the login and password change pages,
 // but keep them narrow to match the report sidebar
@@ -578,10 +549,11 @@ body.authpage {
 }
 
 //fix table to be a block for ie, float the children
-.ie6, .ie7 {
+.ie7 {
   .tablewrapper {
+    *zoom: 1;
     display:block;
-    div {//ie6 doesn't support '>div', so we'll go with the somewhat risker 'div'
+    >div {
       width:48%;
       display:block;
       float: $left;
@@ -612,7 +584,7 @@ body.authpage {
 	  border-bottom:none;
   }
 }
-.ie6, .ie7 {
+.ie7 {
   #footer-mobileapps {
       margin:0 0.5em;
       margin-#{$right}: 2%;
@@ -632,7 +604,7 @@ body.authpage {
     }
   }
 }
-.ie6, .ie7 {
+.ie7 {
   #footer-help {
     margin-#{$left}: 2%;
     ul {
@@ -772,11 +744,6 @@ body.authpage {
   }
 }
 
-// The padding is for the fading out when it's fixed positioned, which it isn't in IE6.
-.ie6 .shadow-wrap {
-  padding-top: 0;
-}
-
 // Old versions of IE don't have box-sixing, so negative margins leave a 2em gap.
 // We can set a fixed width instead, which might result in a horizontal scrollbar
 // while the drawer is opening. Quel dommage.
@@ -841,13 +808,6 @@ body.authpage {
         border-bottom: 0.75em solid #666;
       }
     }
-  }
-}
-.ie6 .banner p {
-  top:-1.5em;
-  &#fixed {
-    background-image:url(/cobrands/fixmystreet/images/ie_fixed.gif);
-    background-position:center 0.75em;
   }
 }
 
@@ -935,7 +895,7 @@ body.frontpage {
     }
   }
 }
-.ie6, .ie7 {
+.ie7 {
   body.frontpage {
     #site-header {
       height:4em;
@@ -944,9 +904,6 @@ body.frontpage {
       top:-1em;
     }
   }
-}
-.ie6 body.frontpage #site-logo {
-  background:url(/cobrands/fixmystreet/images/ie_front_logo.gif) 0 0 no-repeat;
 }
 
 // big yellow bit full screen width
@@ -1038,7 +995,7 @@ body.frontpage {
     }
   }
 }
-.ie6, .ie7 {
+.ie7 {
   #front_stats {
     div {
       width:8em;
@@ -1056,8 +1013,7 @@ body.frontpage {
    margin-top:0;
 }
 
-
-.ie6, .ie7 {
+.ie7 {
   .tablewrapper {
     #front-howto {
       margin-#{$right}: 2%;
@@ -1104,7 +1060,6 @@ body.frontpage {
     // Just the mySociety circle logo
     background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAABJ9JREFUeNqsVXlMHFUYf/Pe7O7M7E2Xw6UFWg5LQ1GTosa0IT00wYbGaKoltWnaRGNrjIptiUalXqlJU9RU0fSPHtqCR20pliBpQpAmxQgoLDeLQIEuh2WBndmDnZn3fMvRsqEGVv0mv3lzvPd97/u97wBgmXLUbHvOFZ/cJK1KbTtmiX4F/J+ySzBuDiakeSdWphA3RSAhTX3NaN2znLVwyQkMA/YbzAcwAAIFIBSYELjPYH6Zpf9CwrEMeGS1zhalh2zEBkIq2NCdkDvfyOxCRqHfnnpIWN9caK+5URDX2VJob8zfZsqJyIBKlVzweU7pIMIC3TFHIUAISkSx2GKE2uK8qNK0ODZbVsgKuwllnthp/S4rUZs0vx4th0dHcLp3FCv1VogEL8G9Jz2THx4Tx79+Yh23/oVs4zuBwKx3CuWQ5aHO5VYba7oDDjDj/TJEpSgWJytD0FAP5Dm6PD4ySZmSIUM0+C6DoGdUdkXkwULBC56HJtRJuxFpsu7nsll60CwHQY3D/8PRq1NFQZXg+TP8TwKphhc3GXPS4zWP9tySm07XSZe9MgkLEpCuX5uZZdqQBwEM1nsaStq87V3/xtjGTVzKB29bj0RZkK2s3PvTJ59PnWG2Rm3esTP2mW80gDUByq+CFffJoS+2tkrtTZEoz80R1pVfjrsBEGMGCvWAQ+DsV5MFcLstp0jFqsmH/cCn+qjLMGqLdcvrcOkIDpO9eYY9QMuYVRED1U8A8Sjg6Vz9AahH+mi84OhCzwISbAwT8fFoFr6EjlgvMAh2eDtP85AP7XwGHORAi9R6USVqRNrPlUqlIEgCSM8ApGMAtCBw/nvpLGqR2qoFxIMYbUwCJvh2tbv6oyt/lX8Z6fa7e+Thdsd0bdpa7QqvF49UlPmKXz0y/vEdHqyshaeDH2lNNoPGmhlUfQMuydmzHOX2VENMTKKQ0OMQu6Qxv8hqaLDMhWoY0VlxuXkPx24vZhhooa/elts1hddvfXsCE/yPyrftTdj15ME1n3J6FOsTlbFrZwbeqDrVdz4sD0Ji41fan019q1MF2Ego/wy9NIjDl5zHM1xeZ8e9lMenGuIPl2zoIIAxqjIGiO4cIeg/vrs+fbBDvBlWi3RISKF5YCQYz5XkGRchx+rT6djBpzyYaM3Zl0ftaqd++fGSt7m2NTqBT9dwyOgXldmaRWnRcgyflGnKWGTAr0hOTFQPjSQTHWciihCCJd9IM/fAxuTV712shTreHppreXz3of739+dMDFW1E0wUBjIsHQGt4gDT8BtsF52L+oE74BquH7l6kFIzoYE6agBJv49V5o/JI39G5750mNFydlWaAiHQOca45/Pfvdk17bp2ur+AM6CAYGKBlkdyQ+Xom4OdYve83rBy3Tj284U+T/N1njUmBVTf0Lh/qBdABDQ2+31Elu8mkaoAyAsxgHbIK5/1FnX9NlmVmGFa0/vHVL+zYaJloc5F/cAdGB4AIIT51FaBWFdRps94bIciB2ZaJ+T1wNf2azmYS8bOOndbCPcKhGX1g0BfqwPpzUS3Ki0ZanVeT13FuZHiQ4UkOK0stfZvAQYA/wr53nPx8cUAAAAASUVORK5CYII=);
     background-size: auto;
-    background-position: 50% 50%;
   }
 
   //Revert to mobile use of the .full-width class
