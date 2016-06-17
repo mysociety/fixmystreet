@@ -5,7 +5,8 @@
 
 <form action="[% c.uri_for('/around') %]" method="get" name="mapForm" id="mapForm">
 <script type="text/javascript">
-var fixmystreet = {
+var fixmystreet = fixmystreet || {};
+$.extend(fixmystreet, {
     'page': '',
     'latitude': 52.505241,
     'longitude': -1.815285,
@@ -13,8 +14,7 @@ var fixmystreet = {
     'numZoomLevels': 5,
     'zoomOffset': 13,
     'map_type': ""
-
-}
+});
 </script>
 <div id="map_box">
     <div id="map"></div>

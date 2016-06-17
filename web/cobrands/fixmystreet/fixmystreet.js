@@ -3,6 +3,8 @@
  * FixMyStreet JavaScript
  */
 
+var fixmystreet = fixmystreet || {};
+
 /*
  * Find directionality of content
  */
@@ -10,124 +12,187 @@ function isR2L() {
     return !!$('html[dir=rtl]').length;
 }
 
-/*
- * very simple tab function
- *
- * elem: trigger element, must have an href attribute (so probably needs to be an <a>)
- */
-function tabs(elem, indirect) {
-    var href = elem.attr('href');
-    //stupid IE sometimes adds the full uri into the href attr, so trim
-    var start = href.indexOf('#'),
-        target = href.slice(start, href.length);
+// Some small jQuery extensions
+(function($) {
+  var opened;
 
-    if (indirect) {
-        elem = $(target + '_tab');
+  $.fn.extend({
+    // A sliding drawer from the bottom of the page, small version
+    // that doesn't change the main content at all.
+    small_drawer: function(id) {
+        var $this = $(this), d = $('#' + id);
+        this.toggle(function() {
+            if (opened) {
+                opened.click();
+            }
+            if (!$this.addClass('hover').data('setup')) {
+                d.hide().removeClass('hidden-js').css({
+                padding: '1em',
+                background: '#fff'
+                });
+                $this.data('setup', true);
+            }
+            d.slideDown();
+            opened = $this;
+        }, function(e) {
+            $this.removeClass('hover');
+            d.slideUp();
+            opened = null;
+        });
+    },
+
+    // A sliding drawer from the bottom of the page, large version
+    drawer: function(id, ajax) {
+
+        // The link/button that triggered the drawer
+        var $this = $(this);
+
+        // A bunch of elements that will come in handy when opening/closing
+        // the drawer. Because $sw changes its position in the DOM, we capture
+        // all these elements just once, the first time .drawer() is called.
+        var $sidebar = $('#map_sidebar');
+        var $sw = $this.parents('.shadow-wrap');
+        var $swparent = $sw.parent();
+        var $drawer = $('#' + id);
+
+        this.toggle(function() {
+            // Find the specified drawer, or create it if it doesn't exist
+            if ($drawer.length === 0) {
+                $drawer = $('<div id="' + id + '">');
+                $drawer.appendTo($swparent);
+            }
+
+            if (!$this.addClass('hover').data('setup')) {
+                // Optionally fill $drawer with HTML from an AJAX data source
+                if (ajax) {
+                    var href = $this.attr('href') + ';ajax=1';
+                    var margin = isR2L() ? 'margin-left' : 'margin-right';
+                    var $ajax_result = $('<div>').appendTo($drawer);
+                    $ajax_result.html('<p style="text-align:center">Loading</p>');
+                    $ajax_result.load(href);
+                }
+
+                // Style up the $drawer
+                var drawer_top = $(window).height() - $sw.height();
+                var drawer_css = {
+                    position: 'fixed',
+                    zIndex: 10,
+                    top: drawer_top,
+                    bottom: 0,
+                    width: $sidebar.css('width'),
+                    paddingLeft: $sidebar.css('padding-left'),
+                    paddingRight: $sidebar.css('padding-right'),
+                    overflow: 'auto',
+                    background: '#fff'
+                };
+                drawer_css[isR2L() ? 'right' : 'left'] = 0;
+                $drawer.css(drawer_css).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
+                $this.data('setup', true);
+            }
+
+            // Insert the .shadow-wrap controls into the top of the drawer.
+            $sw.addClass('static').prependTo($drawer);
+
+            // Animate the drawer into place, enitrely covering the sidebar.
+            var sidebar_top_px = $sidebar.position().top;
+            $drawer.show().animate({ top: sidebar_top_px }, 1000);
+
+        }, function(e) {
+            // Slide the drawer down, move the .shadow-wrap back to its
+            // original parent, and hide the drawer for potential re-use later.
+            $this.removeClass('hover');
+            var drawer_top = $(window).height() - $sw.height();
+
+            $drawer.animate({ top: drawer_top }, 1000, function() {
+                $sw.removeClass('static').appendTo($swparent);
+                $drawer.hide();
+            });
+        });
     }
 
-    if(!$(target).hasClass('open'))
-    {
-        //toggle class on nav
-        $('.tab-nav .active').removeClass('active');
-        elem.addClass('active');
+  });
+})(jQuery);
 
-        //hide / show the correct tab
-        $('.tab.open').hide().removeClass('open');
-        $(target).show().addClass('open');
-    }
-}
+fixmystreet.mobile_reporting = {
+  apply_ui: function() {
+    // Creates the "app-like" mobile reporting UI with full screen map
+    // and special "OK/Cancel" buttons etc.
+    $('html').addClass('mobile-reporting-map');
 
+    var banner_text = '<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map;
+    $('.big-green-banner')
+        .addClass('mobile-map-banner')
+        .appendTo('#map_box')
+        .html(banner_text);
+  },
 
-$(function(){
-    var $html = $('html');
+  remove_ui: function() {
+    // Removes the "app-like" mobile reporting UI, reverting all the
+    // changes made by fixmystreet.mobile_reporting.apply_ui().
 
-    var cobrand = $('meta[name="cobrand"]').attr('content');
+    $('html').removeClass('mobile-reporting-map');
 
+    var banner_text = translation_strings.report_problem_heading;
     if (typeof variation !== 'undefined' && variation === 1) {
-        $('input[name=variant]').val(1);
+        banner_text = 'Click map to request a fix';
+    }
+    $('.big-green-banner')
+        .removeClass('mobile-map-banner')
+        .prependTo('#side')
+        .html(banner_text);
+  }
+};
+
+fixmystreet.resize_to = {
+  mobile_page: function() {
+    $('html').addClass('mobile');
+    if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+        fixmystreet.mobile_reporting.apply_ui();
     }
 
-    // Deal with switching between mobile and desktop versions on resize
+    // On the front page, make it so that the "report a problem" menu item
+    // scrolls to the top of the page, and has a hover effect, rather than
+    // just being an innert span.
+    $('span.report-a-problem-btn').on('click.reportBtn', function() {
+        $('html, body').animate({scrollTop:0}, 500);
+    }).css({ cursor:'pointer' }).on('hover.reportBtn', function() {
+        $(this).toggleClass('hover');
+    });
+  },
+
+  desktop_page: function() {
+    $('html').removeClass('mobile');
+    if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
+        fixmystreet.mobile_reporting.remove_ui();
+    }
+
+    // On a desktop, so reset the "Report a problem" nav item to act
+    // like an innert span again.
+    $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
+  }
+};
+
+fixmystreet.set_up = fixmystreet.set_up || {};
+$.extend(fixmystreet.set_up, {
+  on_resize: function() {
     var last_type;
-    $(window).resize(function(){
+    $(window).on('resize', function() {
         var type = Modernizr.mq('(min-width: 48em)') || $('html.iel8').length ? 'desktop' : 'mobile';
         if (last_type == type) { return; }
         if (type == 'mobile') {
-            $html.addClass('mobile');
-            if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-                // Creates the "app-like" mobile reporting UI with full screen map
-                // and special "OK/Cancel" buttons etc.
-                $html.addClass('mobile-reporting-map');
-
-                var banner_text = '<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map;
-                $('.big-green-banner')
-                    .addClass('mobile-map-banner')
-                    .appendTo('#map_box')
-                    .html(banner_text);
-            }
-            $('span.report-a-problem-btn').on('click.reportBtn', function(){
-                $('html, body').animate({scrollTop:0}, 500);
-            }).css({ cursor:'pointer' }).on('hover.reportBtn', function(){
-                $(this).toggleClass('hover');
-            });
+            fixmystreet.resize_to.mobile_page();
         } else {
-            $html.removeClass('mobile');
-            if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-                // Removes the "app-like" mobile reporting UI, reverting all the
-                // changes made above.
-                $html.removeClass('mobile-reporting-map');
-
-                var banner_text = translation_strings.report_problem_heading;
-                if (typeof variation !== 'undefined' && variation === 1) {
-                    banner_text = 'Click map to request a fix';
-                }
-                $('.big-green-banner')
-                    .removeClass('mobile-map-banner')
-                    .prependTo('#side')
-                    .html(banner_text);
-            }
-            $('span.report-a-problem-btn').css({ cursor:'' }).off('.reportBtn');
+            fixmystreet.resize_to.desktop_page();
         }
         last_type = type;
     }).resize();
+  },
 
-    /*
-     * Report a problem page
-     */
-    //show/hide notes on mobile
-    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-fwd">' + translation_strings.how_to_send + '</a>').hide();
-    $('.rap-notes-trigger').click(function(e){
-        e.preventDefault();
-        //check if we've already moved the notes
-        if($('.rap-notes').length > 0){
-            //if we have, show and hide .content
-            $('.content').hide();
-            $('.rap-notes').show();
-        }else{
-            //if not, move them and show, hiding .content
-            $('.content').after('<div class="content rap-notes"></div>').hide();
-            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-back">' + translation_strings.back + '</a>');
-        }
-        $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
-        location.hash = 'rap-notes';
-    });
-    $('.mobile').on('click', '.rap-notes-close', function(e){
-        e.preventDefault();
-        //hide notes, show .content
-        $('.content').show();
-        $('.rap-notes').hide();
-        $('html, body').scrollTop($('#mob_ok').offset().top);
-        location.hash = 'report';
-    });
-
-    //move 'skip this step' link on mobile
-    $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
-
-    // Set up the Dropzone image uploader
-    if('Dropzone' in window){
+  dropzone: function() {
+    if ('Dropzone' in window) {
       Dropzone.autoDiscover = false;
     }
-    if('Dropzone' in window && $('#form_photo').length){
+    if ('Dropzone' in window && $('#form_photo').length) {
       var $originalLabel = $('[for="form_photo"]');
       var $originalInput = $('#form_photos');
       var $dropzone = $('<div>').addClass('dropzone');
@@ -149,16 +214,16 @@ $(function(){
         dictInvalidFileType: translation_strings.upload_invalid_file_type,
         dictMaxFilesExceeded: translation_strings.upload_max_files_exceeded,
 
-        fallback: function(){
+        fallback: function() {
           $dropzone.remove();
           $originalLabel.attr('for', 'form_photo');
           $originalInput.show();
         },
-        init: function(){
-          this.on("addedfile", function(file){
+        init: function() {
+          this.on("addedfile", function(file) {
             $('input[type=submit]').prop("disabled", true).removeClass('green-btn');
           });
-          this.on("queuecomplete", function(){
+          this.on("queuecomplete", function() {
             $('input[type=submit]').removeAttr('disabled').addClass('green-btn');
           });
           this.on("success", function(file, xhrResponse) {
@@ -168,20 +233,20 @@ $(function(){
                 newstr = ids.join(',');
             $('input[name=upload_fileid]').val(newstr);
           });
-          this.on("error", function(file, errorMessage, xhrResponse){
+          this.on("error", function(file, errorMessage, xhrResponse) {
           });
-          this.on("removedfile", function(file){
+          this.on("removedfile", function(file) {
             var ids = $('input[name=upload_fileid]').val().split(','),
-                newstr = $.grep(ids, function(n){ return (n!=file.server_id); }).join(',');
+                newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
             $('input[name=upload_fileid]').val(newstr);
           });
-          this.on("maxfilesexceeded", function(file){
+          this.on("maxfilesexceeded", function(file) {
             this.removeFile(file);
             var $message = $('<div class="dz-message dz-error-message">');
             $message.text(translation_strings.upload_max_files_exceeded);
             $message.prependTo(this.element);
-            setTimeout(function(){
-              $message.slideUp(250, function(){
+            setTimeout(function() {
+              $message.slideUp(250, function() {
                 $message.remove();
               });
             }, 2000);
@@ -200,230 +265,58 @@ $(function(){
         photodrop.options.maxFiles -= 1;
       });
     }
+  },
 
-    /*
-     * Tabs
-     */
-    //make initial tab active
-    $('.tab-nav a').first().addClass('active');
-    $('.tab').first().addClass('open');
-
-    //hide other tabs
-    $('.tab').not('.open').hide();
-
-    //set up click event
-    $(".tab-nav").on('click', 'a', function(e){
+  mobile_ui_tweaks: function() {
+    //show/hide notes on mobile
+    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-fwd">' + translation_strings.how_to_send + '</a>').hide();
+    $('.rap-notes-trigger').click(function(e) {
         e.preventDefault();
-        tabs($(this));
+        //check if we've already moved the notes
+        if ($('.rap-notes').length > 0) {
+            //if we have, show and hide .content
+            $('.content').hide();
+            $('.rap-notes').show();
+        } else {
+            //if not, move them and show, hiding .content
+            $('.content').after('<div class="content rap-notes"></div>').hide();
+            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-back">' + translation_strings.back + '</a>');
+        }
+        $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
+        location.hash = 'rap-notes';
     });
-    $('.tab_link').click(function(e) {
+    $('.mobile').on('click', '.rap-notes-close', function(e) {
         e.preventDefault();
-        tabs($(this), 1);
+        //hide notes, show .content
+        $('.content').show();
+        $('.rap-notes').hide();
+        $('html, body').scrollTop($('#mob_ok').offset().top);
+        location.hash = 'report';
     });
 
-    /*
-     * Skip to nav on mobile
-     */
-    $('.mobile').on('click', '#nav-link', function(e){
+    //move 'skip this step' link on mobile
+    $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
+
+    // nicetable - on mobile shift 'name' col to be a row
+    $('.mobile .nicetable th.title').remove();
+    $('.mobile .nicetable td.title').each(function(i) {
+        $(this).attr('colspan', 5).insertBefore($(this).parent('tr')).wrap('<tr class="heading" />');
+    });
+  },
+
+  on_mobile_nav_click: function() {
+    $('.mobile').on('click', '#nav-link', function(e) {
         e.preventDefault();
         var offset = $('#main-nav').offset().top;
         $('html, body').animate({scrollTop:offset}, 1000);
         window.location.hash = 'main-nav';
     });
+  },
 
-
-    /*
-     * Show stuff on input focus
-     */
-    var form_focus_data = $('.form-focus-trigger').map(function() {
-        return $(this).val();
-    }).get().join('');
-    if (!form_focus_data) {
-        $('.form-focus-hidden').hide();
-        $('.form-focus-trigger').on('focus', function(){
-            $('.form-focus-hidden').fadeIn(500);
-        });
-    }
-
-    /* Log in with email button */
-    var email_form = $('#js-social-email-hide'),
-        button = $('<button class="btn btn--social btn--social-email">Log in with email</button>'),
-        form_box = $('<div class="form-box"></div>');
-    button.click(function(e){
-        e.preventDefault();
-        email_form.fadeIn(500);
-        form_box.hide();
-    });
-    form_box.append(button).insertBefore(email_form);
-    if ($('.form-error').length) {
-        button.click();
-    }
-
-    /*
-     * Show on click - pretty generic
-     */
-    $('.hideshow-trigger').on('click', function(e){
-        e.preventDefault();
-        var href = $(this).attr('href'),
-            //stupid IE sometimes adds the full uri into the href attr, so trim
-            start = href.indexOf('#'),
-            target = href.slice(start, href.length);
-
-        $(target).removeClass('hidden-js');
-
-        $(this).hide();
-    });
-
-    /*
-     * nicetable - on mobile shift 'name' col to be a row
-     */
-    $('.mobile .nicetable th.title').remove();
-    $('.mobile .nicetable td.title').each(function(i){
-        $(this).attr('colspan', 5).insertBefore($(this).parent('tr')).wrap('<tr class="heading" />');
-    });
-    // $('.mobile .nicetable tr.heading > td.title').css({'min-width':'300px'});
-    // $('.mobile .nicetable tr > td.data').css({'max-width':'12%'});
-
-    /*
-     * Map controls prettiness
-     */
-
-// A sliding drawer from the bottom of the page, small version
-// that doesn't change the main content at all.
-(function($){
-
-    var opened;
-
-    $.fn.small_drawer = function(id) {
-        var $this = $(this), d = $('#' + id);
-        this.toggle(function(){
-            if (opened) {
-                opened.click();
-            }
-            if (!$this.addClass('hover').data('setup')) {
-                d.hide().removeClass('hidden-js').css({
-                padding: '1em',
-                background: '#fff'
-                });
-                $this.data('setup', true);
-            }
-            d.slideDown();
-            opened = $this;
-        }, function(e){
-            $this.removeClass('hover');
-            d.slideUp();
-            opened = null;
-        });
-    };
-
-})(jQuery);
-
-// A sliding drawer from the bottom of the page, large version
-$.fn.drawer = function(id, ajax) {
-
-    // The link/button that triggered the drawer
-    var $this = $(this);
-
-    // A bunch of elements that will come in handy when opening/closing
-    // the drawer. Because $sw changes its position in the DOM, we capture
-    // all these elements just once, the first time .drawer() is called.
-    var $sidebar = $('#map_sidebar');
-    var $sw = $this.parents('.shadow-wrap');
-    var $swparent = $sw.parent();
-    var $drawer = $('#' + id);
-
-    this.toggle(function(){
-        // Find the specified drawer, or create it if it doesn't exist
-        if ($drawer.length === 0) {
-            $drawer = $('<div id="' + id + '">');
-            $drawer.appendTo($swparent);
-        }
-
-        if (!$this.addClass('hover').data('setup')) {
-            // Optionally fill $drawer with HTML from an AJAX data source
-            if (ajax) {
-                var href = $this.attr('href') + ';ajax=1';
-                var margin = isR2L() ? 'margin-left' : 'margin-right';
-                var $ajax_result = $('<div>').appendTo($drawer);
-                $ajax_result.html('<p style="text-align:center">Loading</p>');
-                $ajax_result.load(href);
-            }
-
-            // Style up the $drawer
-            var drawer_top = $(window).height() - $sw.height();
-            var drawer_css = {
-                position: 'fixed',
-                zIndex: 10,
-                top: drawer_top,
-                bottom: 0,
-                width: $sidebar.css('width'),
-                paddingLeft: $sidebar.css('padding-left'),
-                paddingRight: $sidebar.css('padding-right'),
-                overflow: 'auto',
-                background: '#fff'
-            };
-            drawer_css[isR2L() ? 'right' : 'left'] = 0;
-            $drawer.css(drawer_css).removeClass('hidden-js').find('h2').css({ marginTop: 0 });
-            $this.data('setup', true);
-        }
-
-        // Insert the .shadow-wrap controls into the top of the drawer.
-        $sw.addClass('static').prependTo($drawer);
-
-        // Animate the drawer into place, enitrely covering the sidebar.
-        var sidebar_top_px = $sidebar.position().top;
-        $drawer.show().animate({ top: sidebar_top_px }, 1000);
-
-    }, function(e){
-        // Slide the drawer down, move the .shadow-wrap back to its
-        // original parent, and hide the drawer for potential re-use later.
-        $this.removeClass('hover');
-        var drawer_top = $(window).height() - $sw.height();
-
-        $drawer.animate({ top: drawer_top }, 1000, function(){
-            $sw.removeClass('static').appendTo($swparent);
-            $drawer.hide();
-        });
-    });
-};
-
-    if ($('html.mobile').length) {
-        $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
-        $('#key-tool-wards').click(function(e){
-            e.preventDefault();
-            $('#council_wards').slideToggle('800', function(){
-              $('#key-tool-wards').toggleClass('hover');
-            });
-        });
-    } else {
-        $('#key-tool-wards').drawer('council_wards', false);
-        $('#key-tool-around-updates').drawer('updates_ajax', true);
-    }
-    $('#key-tool-report-updates').small_drawer('report-updates-data');
-    $('#key-tool-report-share').small_drawer('report-share');
-
-    // Go directly to RSS feed if RSS button clicked on alert page
-    // (due to not wanting around form to submit, though good thing anyway)
-    $('body').on('click', '#alert_rss_button', function(e){
-        e.preventDefault();
-        var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
-        window.location.href = feed;
-    });
-    $('body').on('click', '#alert_email_button', function(e){
-        e.preventDefault();
-        var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
-        form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
-        $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
-            var $v = $(this);
-            $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
-        });
-        $('body').append(form);
-        form.submit();
-    });
-
+  map_controls: function() {
     //add permalink on desktop, force hide on mobile
     //add links container (if its not there)
-    if (cobrand != 'zurich' && !$('.mobile').length) {
+    if (window.cobrand != 'zurich' && !$('.mobile').length) {
         if ($('#sub_map_links').length === 0) {
             $('<p id="sub_map_links" />').insertAfter($('#map'));
         }
@@ -436,11 +329,12 @@ $.fn.drawer = function(id, ajax) {
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
     }
+
     //add open/close toggle button on desk
     $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
 
     //set up map_links_toggle click event
-    $('#map_links_toggle').on('click', function(){
+    $('#map_links_toggle').on('click', function() {
         var sub_map_links_css = {},
             left_right = isR2L() ? 'left' : 'right';
         if ($(this).hasClass('closed')) {
@@ -452,16 +346,94 @@ $.fn.drawer = function(id, ajax) {
         }
         $('#sub_map_links').animate(sub_map_links_css, 1200);
     });
+  },
 
+  map_sidebar_key_tools: function() {
+    if ($('html.mobile').length) {
+        $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
+        $('#key-tool-wards').click(function(e) {
+            e.preventDefault();
+            $('#council_wards').slideToggle('800', function() {
+              $('#key-tool-wards').toggleClass('hover');
+            });
+        });
+    } else {
+        $('#key-tool-wards').drawer('council_wards', false);
+        $('#key-tool-around-updates').drawer('updates_ajax', true);
+    }
+    $('#key-tool-report-updates').small_drawer('report-updates-data');
+    $('#key-tool-report-share').small_drawer('report-share');
+  },
 
-    /*
-     * Add close buttons for .promo's
-     */
-    if($('.promo').length){
+  email_login_form: function() {
+    // Log in with email button
+    var email_form = $('#js-social-email-hide'),
+        button = $('<button class="btn btn--social btn--social-email">Log in with email</button>'),
+        form_box = $('<div class="form-box"></div>');
+    button.click(function(e) {
+        e.preventDefault();
+        email_form.fadeIn(500);
+        form_box.hide();
+    });
+    form_box.append(button).insertBefore(email_form);
+    if ($('.form-error').length) {
+        button.click();
+    }
+  },
+
+  fancybox_images: function() {
+    // Fancybox fullscreen images
+    if (typeof $.fancybox == 'function') {
+        $('a[rel=fancy]').fancybox({
+            'overlayColor': '#000000'
+        });
+    }
+  },
+
+  form_focus_triggers: function() {
+    // If all of the form-focus-triggers are empty, hide form-focus-hidden.
+    // (If the triggers aren't empty, then chances are we're being re-shown
+    // the form after a validation error, so don't hide form-focus-hidden.)
+    // Unhide form-focus-hidden when any of the triggers are focussed.
+    var form_focus_data = $('.form-focus-trigger').map(function() {
+        return $(this).val();
+    }).get().join('');
+    if (!form_focus_data) {
+        $('.form-focus-hidden').hide();
+        $('.form-focus-trigger').on('focus', function() {
+            $('.form-focus-hidden').fadeIn(500);
+        });
+    }
+  },
+
+  alert_page_buttons: function() {
+    // Go directly to RSS feed if RSS button clicked on alert page
+    // (due to not wanting around form to submit, though good thing anyway)
+    $('body').on('click', '#alert_rss_button', function(e) {
+        e.preventDefault();
+        var feed = $('input[name=feed][type=radio]:checked').nextAll('a').attr('href');
+        window.location.href = feed;
+    });
+    $('body').on('click', '#alert_email_button', function(e) {
+        e.preventDefault();
+        var form = $('<form/>').attr({ method:'post', action:"/alert/subscribe" });
+        form.append($('<input name="alert" value="Subscribe me to an email alert" type="hidden" />'));
+        $('#alerts input[type=text], #alerts input[type=hidden], #alerts input[type=radio]:checked').each(function() {
+            var $v = $(this);
+            $('<input/>').attr({ name:$v.attr('name'), value:$v.val(), type:'hidden' }).appendTo(form);
+        });
+        $('body').append(form);
+        form.submit();
+    });
+  },
+
+  promo_elements: function() {
+    // Add close buttons for .promo's
+    if ($('.promo').length) {
         $('.promo').append('<a href="#" class="close-promo">x</a>');
     }
     //only close its own parent
-    $('.promo').on('click', '.close-promo', function(e){
+    $('.promo').on('click', '.close-promo', function(e) {
         e.preventDefault();
         $(this).parent('.promo').animate({
             'height':0,
@@ -473,14 +445,159 @@ $.fn.drawer = function(id, ajax) {
             queue:false
         }).fadeOut(500);
     });
+  }
+});
 
-    /*
-     * Fancybox fullscreen images
-     */
-    if (typeof $.fancybox == 'function') {
-        $('a[rel=fancy]').fancybox({
-            'overlayColor': '#000000'
+fixmystreet.update_pin = function(lonlat) {
+    fixmystreet.maps.update_pin(lonlat);
+
+    $.getJSON('/report/new/ajax', {
+        latitude: $('#fixmystreet\\.latitude').val(),
+        longitude: $('#fixmystreet\\.longitude').val()
+    }, function(data) {
+        if (data.error) {
+            if (!$('#side-form-error').length) {
+                $('<div id="side-form-error"/>').insertAfter($('#side-form'));
+            }
+            $('#side-form-error').html('<h1>' + translation_strings.reporting_a_problem + '</h1><p>' + data.error + '</p>').show();
+            $('#side-form').hide();
+            $('body').removeClass('with-notes');
+            return;
+        }
+        $('#side-form, #site-logo').show();
+        var old_category = $("select#form_category").val();
+        $('#councils_text').html(data.councils_text);
+        $('#form_category_row').html(data.category);
+        if ($("select#form_category option[value=\""+old_category+"\"]").length) {
+            $("select#form_category").val(old_category);
+        }
+        if ( data.extra_name_info && !$('#form_fms_extra_title').length ) {
+            // there might be a first name field on some cobrands
+            var lb = $('#form_first_name').prev();
+            if ( lb.length === 0 ) { lb = $('#form_name').prev(); }
+            lb.before(data.extra_name_info);
+        }
+
+        // If the category filter appears on the map and the user has selected
+        // something from it, then pre-fill the category field in the report,
+        // if it's a value already present in the drop-down.
+        var category = $("#filter_categories").val();
+        if (category !== undefined && $("#form_category option[value="+category+"]").length) {
+            $("#form_category").val(category);
+        }
+
+        var category_select = $("select#form_category");
+        if (category_select.val() != '-- Pick a category --') {
+            category_select.change();
+        }
+    });
+
+    if (!$('#side-form-error').is(':visible')) {
+        $('#side-form, #site-logo').show();
+        window.scrollTo(0, 0);
+    }
+
+};
+
+fixmystreet.begin_report = function(lonlat) {
+    fixmystreet.maps.begin_report(lonlat);
+
+    // Store pin location in form fields, and check coverage of point
+    fixmystreet.update_pin(lonlat);
+
+    // It's possible to invoke this multiple times in a row
+    // (eg: by clicking on the map multiple times, to
+    // reposition your report). But there is some stuff we
+    // only want to happen the first time you switch from
+    // the "around" view to the "new" report view. So, here
+    // we check whether we've already transitioned into the
+    // "new" report view, and if so, we return from the
+    // callback early, skipping the remainder of the setup
+    // stuff.
+    if (fixmystreet.page == 'new') {
+        if (fixmystreet.map.panTo) {
+            fixmystreet.map.panDuration = 100;
+            fixmystreet.map.panTo(lonlat);
+            fixmystreet.map.panDuration = 50;
+        }
+        return;
+    }
+
+    // If there are notes to be displayed, add the .with-notes class
+    // to make the sidebar wider.
+    if ($('#report-a-problem-sidebar').length) {
+        $('body').addClass('with-notes');
+    }
+
+    /* For some reason on IOS5 if you use the jQuery show method it
+     * doesn't display the JS validation error messages unless you do this
+     * or you cause a screen redraw by changing the phone orientation.
+     * NB: This has to happen after the call to show() in fixmystreet.update_pin */
+    if ( navigator.userAgent.match(/like Mac OS X/i)) {
+        document.getElementById('side-form').style.display = 'block';
+    }
+    $('#side').hide();
+
+    if (fixmystreet.map.updateSize) {
+        fixmystreet.map.updateSize(); // required after changing the size of the map element
+    }
+    if (fixmystreet.map.panTo) {
+        fixmystreet.map.panDuration = 100;
+        fixmystreet.map.panTo(lonlat);
+        fixmystreet.map.panDuration = 50;
+    }
+
+    $('#sub_map_links').hide();
+    if ($('html').hasClass('mobile')) {
+        var $map_box = $('#map_box'),
+            width = $map_box.width(),
+            height = $map_box.height();
+        $map_box.append(
+            '<p id="mob_sub_map_links">' +
+            '<a href="#" id="try_again">' +
+                translation_strings.try_again +
+            '</a>' +
+            '<a href="#ok" id="mob_ok">' +
+                translation_strings.ok +
+            '</a>' +
+            '</p>')
+        .css({
+            position: 'relative', // Stop map being absolute, so reporting form doesn't get hidden
+            width: width,
+            height: height
+        });
+
+        $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.right_place);
+
+        // mobile user clicks 'ok' on map
+        $('#mob_ok').toggle(function(){
+            //scroll the height of the map box instead of the offset
+            //of the #side-form or whatever as we will probably want
+            //to do this on other pages where #side-form might not be
+            $('html, body').animate({ scrollTop: height-60 }, 1000, function(){
+                $('#mob_sub_map_links').addClass('map_complete');
+                $('#mob_ok').text(translation_strings.map);
+            });
+        }, function(){
+            $('html, body').animate({ scrollTop: 0 }, 1000, function(){
+                $('#mob_sub_map_links').removeClass('map_complete');
+                $('#mob_ok').text(translation_strings.ok);
+            });
         });
     }
 
+    fixmystreet.page = 'new';
+    location.hash = 'report';
+};
+
+$(function() {
+    window.cobrand = $('meta[name="cobrand"]').attr('content');
+
+    if (typeof variation !== 'undefined' && variation === 1) {
+        $('input[name=variant]').val(1);
+    }
+
+    $.each(fixmystreet.set_up, function(setup_name, setup_func) {
+        setup_func();
+    });
 });

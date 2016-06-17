@@ -52,14 +52,7 @@ var add_streetlights = (function() {
         fixmystreet.markers.features[0].move(lonlat);
 
         // Need to ensure the correct coords are used for the report
-        // We can't call fixmystreet_update_pin because that refreshes the category list,
-        // clobbering the value we stored in the #form_column_id field.
-        lonlat.transform(
-            fixmystreet.map.getProjectionObject(),
-            new OpenLayers.Projection("EPSG:4326")
-        );
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
-        document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+        fixmystreet.maps.update_pin(lonlat);
 
         // Make sure the marker that was clicked is drawn on top of its neighbours
         var layer = e.feature.layer;

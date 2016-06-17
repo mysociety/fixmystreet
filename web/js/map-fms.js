@@ -1,13 +1,14 @@
-var fms_tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.org/sv' ];
+fixmystreet.maps.tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.org/sv' ];
 
-function set_map_config(perm) {
-    _set_map_config();
-
-    if (fixmystreet.map_type) {
-        fms_tile_base = fixmystreet.map_type;
-    }
-    fixmystreet.map_type = OpenLayers.Layer.BingUK;
-}
+fixmystreet.maps.config = (function(original) {
+    return function(){
+        if (fixmystreet.map_type) {
+            this.tile_base = fixmystreet.map_type;
+        }
+        original();
+        fixmystreet.map_type = OpenLayers.Layer.BingUK;
+    };
+})(fixmystreet.maps.config);
 
 OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
     uk_bounds: [
@@ -54,8 +55,8 @@ OpenLayers.Layer.BingUK = OpenLayers.Class(OpenLayers.Layer.Bing, {
         var in_uk = this.in_uk(bounds.getCenterLonLat());
         if (z >= 16 && in_uk) {
             urls = [];
-            for (var i=0; i< fms_tile_base[0].length; i++) {
-                urls.push( fms_tile_base[1].replace('{S}', fms_tile_base[0][i]) + "/${z}/${x}/${y}.png" );
+            for (var i=0; i< fixmystreet.maps.tile_base[0].length; i++) {
+                urls.push( fixmystreet.maps.tile_base[1].replace('{S}', fixmystreet.maps.tile_base[0][i]) + "/${z}/${x}/${y}.png" );
             }
         } else {
             var type = '';

@@ -94,10 +94,10 @@ var matrix_ids = [
 ];
 
 /* 
- * set_map_config() is called on dom ready in map-OpenLayers.js
+ * maps.config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
  */
- function set_map_config(perm) {
+fixmystreet.maps.config = function() {
     // This stuff is copied from js/map-bing-ol.js
 
     var nav_opts = { zoomWheelEnabled: false };
@@ -146,7 +146,7 @@ var matrix_ids = [
     // Give main code a new bbox_strategy that translates between
     // lat/lon and our WMTS layer's coordinates
     fixmystreet.bbox_strategy = new OpenLayers.Strategy.ReprojectBBOX({ratio: 1});
-}
+};
 
 OpenLayers.Strategy.ReprojectBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     getMapBounds: function() {
@@ -165,7 +165,7 @@ OpenLayers.Strategy.ReprojectBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     CLASS_NAME: "OpenLayers.Strategy.ReprojectBBOX"
 });
 
-function fms_marker_size_for_zoom(zoom) {
+fixmystreet.maps.marker_size_for_zoom = function(zoom) {
     if (zoom >= 7) {
         return 'normal';
     } else if (zoom >= 4) {
@@ -173,4 +173,4 @@ function fms_marker_size_for_zoom(zoom) {
     } else {
         return 'mini';
     }
-}
+};

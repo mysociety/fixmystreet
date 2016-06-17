@@ -2,58 +2,62 @@
  * Maps for FMZ using Zurich council's WMTS tile server 
  */
 
-function fixmystreet_zurich_admin_drag() {
-    var admin_drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
-        onComplete: function(feature, e) {
-            var lonlat = feature.geometry.clone();
-            lonlat.transform(
-                fixmystreet.map.getProjectionObject(),
-                new OpenLayers.Projection("EPSG:4326")
-            );
-            if (window.confirm( 'Richtiger Ort?' ) ) {
-                // Store new co-ordinates
-                document.getElementById('fixmystreet.latitude').value = lonlat.y;
-                document.getElementById('fixmystreet.longitude').value = lonlat.x;
-            } else {
-                // Put it back
-                var lat = document.getElementById('fixmystreet.latitude').value;
-                var lon = document.getElementById('fixmystreet.longitude').value;
-                lonlat = new OpenLayers.LonLat(lon, lat).transform(
-                    new OpenLayers.Projection("EPSG:4326"),
-                    fixmystreet.map.getProjectionObject()
+(function() {
+
+    function admin_drag() {
+        var drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+            onComplete: function(feature, e) {
+                var lonlat = feature.geometry.clone();
+                lonlat.transform(
+                    fixmystreet.map.getProjectionObject(),
+                    new OpenLayers.Projection("EPSG:4326")
                 );
-                fixmystreet.markers.features[0].move(lonlat);
+                if (window.confirm( 'Richtiger Ort?' ) ) {
+                    // Store new co-ordinates
+                    document.getElementById('fixmystreet.latitude').value = lonlat.y;
+                    document.getElementById('fixmystreet.longitude').value = lonlat.x;
+                } else {
+                    // Put it back
+                    var lat = document.getElementById('fixmystreet.latitude').value;
+                    var lon = document.getElementById('fixmystreet.longitude').value;
+                    lonlat = new OpenLayers.LonLat(lon, lat).transform(
+                        new OpenLayers.Projection("EPSG:4326"),
+                        fixmystreet.map.getProjectionObject()
+                    );
+                    fixmystreet.markers.features[0].move(lonlat);
+                }
+            }
+        } );
+        fixmystreet.map.addControl( drag );
+        drag.activate();
+    }
+
+    $(function(){
+        $('#map_layer_toggle').toggle(function(){
+            $(this).text('Luftbild');
+            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
+        }, function(){
+            $(this).text('Stadtplan');
+            fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
+        });
+
+        /* Admin dragging of pin */
+        if (fixmystreet.page == 'admin') {
+            if ($.browser.msie) {
+                $(window).load(admin_drag);
+            } else {
+                admin_drag();
             }
         }
-    } );
-    fixmystreet.map.addControl( admin_drag );
-    admin_drag.activate();
-}
-
-$(function(){
-    $('#map_layer_toggle').toggle(function(){
-        $(this).text('Luftbild');
-        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[1]);
-    }, function(){
-        $(this).text('Stadtplan');
-        fixmystreet.map.setBaseLayer(fixmystreet.map.layers[0]);
     });
 
-    /* Admin dragging of pin */
-    if (fixmystreet.page == 'admin') {
-        if ($.browser.msie) {
-            $(window).load(fixmystreet_zurich_admin_drag);
-        } else {
-            fixmystreet_zurich_admin_drag();
-        }
-    }
-});
+})();
 
 /* 
- * set_map_config() is called on dom ready in map-OpenLayers.js
+ * maps.config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
  */
- function set_map_config(perm) {
+fixmystreet.maps.config = function() {
     // This stuff is copied from js/map-bing-ol.js
 
     fixmystreet.controls = [
@@ -247,7 +251,7 @@ $(function(){
     fixmystreet.bbox_strategy = new OpenLayers.Strategy.ZurichBBOX({ratio: 1});
 
     fixmystreet.area_format = { fillColor: 'none', strokeWidth: 4, strokeColor: 'black' };
-}
+};
 
 OpenLayers.Strategy.ZurichBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     getMapBounds: function() {

@@ -6,7 +6,8 @@
 
 <input type="hidden" name="zoom" value="[% map.zoom %]">
 <script type="text/javascript">
-var fixmystreet = {
+var fixmystreet = fixmystreet || {};
+$.extend(fixmystreet, {
     'page': '[% page %]',
     'area': [ [% map.area.join(',') %] ],
     'all_pins': '[% all_pins %]',
@@ -36,7 +37,7 @@ var fixmystreet = {
         'origin_x': [% map.origin_x %],
         'origin_y': [% map.origin_y %]
     }
-}
+});
 </script>
 <div id="map_box" aria-hidden="true">
     [% pre_map %]

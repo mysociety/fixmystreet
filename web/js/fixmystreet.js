@@ -1,20 +1,12 @@
-/*
- * fixmystreet.js
- * FixMyStreet JavaScript used by all cobrands.
- * With the JavaScript written more proper like.
- */
+var fixmystreet = fixmystreet || {};
 
-(function($){
+fixmystreet.set_up = fixmystreet.set_up || {};
 
-/*
- Deal with changes to category by asking for details from the server.
- */
-$(function(){
+$.extend(fixmystreet.set_up, {
 
-    var $html = $('html');
-
+  basics: function() {
     // Add a class to the whole page saying JavaScript is enabled (for CSS and so on)
-    $html.removeClass('no-js').addClass('js');
+    $('html').removeClass('no-js').addClass('js');
 
     // Preload the new report pin
     if ( typeof fixmystreet !== 'undefined' && typeof fixmystreet.pin_prefix !== 'undefined' ) {
@@ -28,7 +20,9 @@ $(function(){
 
     // In case we've come here by clicking back to a form that disabled a submit button
     $('input[type=submit]').removeAttr('disabled');
+  },
 
+  questionnaire: function() {
     // Questionnaire hide/showings
     if (!$('#been_fixed_no').prop('checked') && !$('#been_fixed_unknown').prop('checked')) {
         $('.js-another-questionnaire').hide();
@@ -42,9 +36,9 @@ $(function(){
     $('#been_fixed_yes').on('click', function() {
         $('.js-another-questionnaire').hide('fast');
     });
+  },
 
-    // Form validation
-
+  form_validation: function() {
     // FIXME - needs to use translated string
     jQuery.validator.addMethod('validCategory', function(value, element) {
         return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
@@ -133,8 +127,9 @@ $(function(){
         $('#form_rznvy').removeClass();
         $('#email').removeClass();
     });
+  },
 
-    // Geolocation
+  geolocation: function() {
     if (geo_position_js.init()) {
         var link = '<a href="LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
         $('form[action="/alert/list"]').append(link.replace('LINK','/alert/list'));
@@ -176,7 +171,10 @@ $(function(){
             });
         });
     }
+  },
 
+  category_change: function() {
+    // Deal with changes to category by asking for details from the server.
     // Delegation is necessary because #form_category may be replaced during the lifetime of the page
     $("#problem_form").on("change.category", "select#form_category", function(){
         var args = {
@@ -199,12 +197,12 @@ $(function(){
             }
         });
     });
+  },
 
+  add_validation: function() {
     // Map form doesn't work in some browsers with HTML5 validation and hidden form, so
     // we disable validation by default, and add it in the JS case.
-    // For some reason, the removeAttr doesn't work if we place it at beginning.
     $('#mapForm').removeAttr('novalidate');
+  }
+
 });
-
-})(jQuery);
-

@@ -1,4 +1,4 @@
-function set_map_config(perm) {
+fixmystreet.maps.config = function() {
     var permalink_id;
     if ($('#map_permalink').length) {
         permalink_id = 'map_permalink';
@@ -16,4 +16,4 @@ function set_map_config(perm) {
 
     // The Stamen JS returns HTTP urls, fix that
     stamen.tile.getProvider('toner-lite').url = 'https://stamen-tiles-{S}a.ssl.fastly.net/toner-lite/{Z}/{X}/{Y}.png';
-}
+};
