@@ -207,7 +207,7 @@ sub _add_meta_to_contact {
     print "Fetching meta data for " . $self->_current_service->{service_code} . "\n" if $self->verbose >= 2;
     my $meta_data = $self->_current_open311->get_service_meta_info( $self->_current_service->{service_code} );
 
-    unless ($meta_data->{attributes}) {
+    unless (ref $meta_data->{attributes} eq 'ARRAY') {
         warn sprintf( "Empty meta data for %s at %s",
                       $self->_current_service->{service_code},
                       $self->_current_body->endpoint )
