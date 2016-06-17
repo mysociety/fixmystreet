@@ -1,0 +1,131 @@
+@import "../sass/h5bp";
+@import "./_colours";
+@import "./_fonts";
+@import "../sass/mixins";
+
+@import "../sass/base";
+
+// Put the BCC logo in place, and reveal the 'bristol.gov.uk' text alongside it
+#site-logo {
+  @extend %bold-font;
+
+  background: url(/cobrands/bristol/img/bcclogo.png) 0 0 no-repeat;
+  background-size: 37px;
+  text-indent: 47px;
+  line-height: 37px;
+  font-size: 24px;
+  padding: 0;
+  margin: 0;
+  color: white;
+}
+
+#site-header {
+  height: 3.5em;
+  border-bottom: solid 5px $bcc_red;
+  border-top-color: $g1;
+  background: $g1; // Can't use background-color as it's ignored in favour of existing background
+}
+
+// Style the Bristol footer correctly
+.bristol_footer {
+  background-color: $g1;
+  border-top: solid 5px $bcc_red;
+
+  footer {
+    margin: 0 auto;
+    padding: 1em 0;
+    max-width: 60em;
+    text-align: center;
+
+    #footer-logo, .footer-title {
+      display: none;
+    }
+
+    ul {
+      list-style: none;
+      margin-left: 0;
+      font-size: 0.875em;
+
+      li {
+        display: inline-block;
+      }
+    }
+
+    .legal-nav li {
+      padding: 0 1em;
+
+      &:after {
+      }
+    }
+
+    .footer-social-links li {
+      margin-right: 6px;
+      padding: 0;
+      background-color: black;
+      height: 42px;
+      width: 42px;
+    }
+
+    a, a:hover {
+      color: white;
+      text-decoration: none;
+    }
+  }
+}
+
+// Set the default font colour everywhere
+body, .content {
+  color: $g1;
+}
+
+// Make sure the numbers on the front page have the correct font weight
+#front-howto {
+  #front_stats {
+    color: white;
+
+    div {
+      @extend %bold-font;
+    }
+  }
+}
+
+// FAQ/privacy pages should have correctly-weighted headers
+dl dt {
+  @extend %bold-font;
+}
+
+
+#front-main {
+  text-align: left;
+
+  h1 {
+    font-size: 1.75em;
+  }
+  h2 {
+    font-style: normal;
+    font-size: 1.25em;
+  }
+
+  #postcodeForm {
+    color: white;
+    margin-top: 1em;
+  }
+}
+
+p, dd, aside {
+  a, a:visited, a:hover {
+    color: $b3;
+  }
+}
+
+a#geolocate_link {
+  color: $b3;
+}
+
+label {
+  @extend %bold-font;
+}
+
+#map #drag .square-map__tile {
+  position: static;
+}
