@@ -1,8 +1,9 @@
-Subject: Questionnaire about '[% title %]'
+Subject: Questionnaire about your report: '[% title %]'
 
-Hi [% name %],
+Hello [% name %],
 
-[% created %] ago, you reported a problem. To keep the site
+[% created %] ago, you reported a problem, the details of
+which are at the end of this email. To keep the site
 up to date and relevant, please fill in a short questionnaire
 updating the status of your problem:
 
@@ -13,8 +14,7 @@ mailbox, please do not reply.
 
 [% signature %]
 
-
-Your problem was as follows:
+Your report was as follows:
 
 [% title %]
 
