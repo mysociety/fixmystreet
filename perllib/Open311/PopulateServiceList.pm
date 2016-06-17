@@ -83,7 +83,7 @@ sub process_service {
 
     my $service_name = $self->_normalize_service_name;
 
-    unless ($self->_current_service->{service_code}) {
+    unless (defined $self->_current_service->{service_code}) {
         warn "Service $service_name has no service code for body @{[$self->_current_body->id]}\n"
             if $self->verbose >= 1;
         return;
