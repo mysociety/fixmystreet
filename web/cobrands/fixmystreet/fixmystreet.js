@@ -208,13 +208,23 @@ $.extend(fixmystreet.set_up, {
     }).resize();
   },
 
-  dropzone: function() {
+  dropzone: function($context) {
+
+    // Pass a jQuery element, eg $('.foobar'), into this function
+    // to limit all the selectors to that element. Handy if you want
+    // to only bind/detect Dropzones in a particular part of the page,
+    // or if your selectors (eg: "#form_photo") aren't unique across
+    // the whole page.
+    if (typeof $context === undefined) {
+        $context = $(document);
+    }
+
     if ('Dropzone' in window) {
       Dropzone.autoDiscover = false;
     }
-    if ('Dropzone' in window && $('#form_photo').length) {
-      var $originalLabel = $('[for="form_photo"]');
-      var $originalInput = $('#form_photos');
+    if ('Dropzone' in window && $('#form_photo', $context).length) {
+      var $originalLabel = $('[for="form_photo"]', $context);
+      var $originalInput = $('#form_photos', $context);
       var $dropzone = $('<div>').addClass('dropzone');
 
       $originalLabel.removeAttr('for');
@@ -241,24 +251,24 @@ $.extend(fixmystreet.set_up, {
         },
         init: function() {
           this.on("addedfile", function(file) {
-            $('input[type=submit]').prop("disabled", true).removeClass('green-btn');
+            $('input[type=submit]', $context).prop("disabled", true).removeClass('green-btn');
           });
           this.on("queuecomplete", function() {
-            $('input[type=submit]').removeAttr('disabled').addClass('green-btn');
+            $('input[type=submit]', $context).removeAttr('disabled').addClass('green-btn');
           });
           this.on("success", function(file, xhrResponse) {
-            var ids = $('input[name=upload_fileid]').val().split(','),
+            var ids = $('input[name=upload_fileid]', $context).val().split(','),
                 id = (file.server_id = xhrResponse.id),
                 l = ids.push(id),
                 newstr = ids.join(',');
-            $('input[name=upload_fileid]').val(newstr);
+            $('input[name=upload_fileid]', $context).val(newstr);
           });
           this.on("error", function(file, errorMessage, xhrResponse) {
           });
           this.on("removedfile", function(file) {
-            var ids = $('input[name=upload_fileid]').val().split(','),
+            var ids = $('input[name=upload_fileid]', $context).val().split(','),
                 newstr = $.grep(ids, function(n) { return (n!=file.server_id); }).join(',');
-            $('input[name=upload_fileid]').val(newstr);
+            $('input[name=upload_fileid]', $context).val(newstr);
           });
           this.on("maxfilesexceeded", function(file) {
             this.removeFile(file);
@@ -274,7 +284,7 @@ $.extend(fixmystreet.set_up, {
         }
       });
 
-      $.each($('input[name=upload_fileid]').val().split(','), function(i, f) {
+      $.each($('input[name=upload_fileid]', $context).val().split(','), function(i, f) {
         if (!f) {
             return;
         }
@@ -314,7 +324,9 @@ $.extend(fixmystreet.set_up, {
         if ($('#sub_map_links').length === 0) {
             $('<p id="sub_map_links" />').insertAfter($('#map'));
         }
-        $('#sub_map_links').append('<a href="#" id="map_permalink">' + translation_strings.permalink + '</a>');
+        if ($('#map_permalink').length === 0) {
+            $('#sub_map_links').append('<a href="#" id="map_permalink">' + translation_strings.permalink + '</a>');
+        }
     }
 
     if ($('.mobile').length) {
@@ -324,22 +336,25 @@ $.extend(fixmystreet.set_up, {
         $('#report-updates-data').insertAfter($('#map_box'));
     }
 
-    //add open/close toggle button on desk
-    $('#sub_map_links').prepend('<span id="map_links_toggle">&nbsp;</span>');
-
-    //set up map_links_toggle click event
-    $('#map_links_toggle').on('click', function() {
-        var sub_map_links_css = {},
-            left_right = isR2L() ? 'left' : 'right';
-        if ($(this).hasClass('closed')) {
-            $(this).removeClass('closed');
-            sub_map_links_css[left_right] = '0';
-        } else {
-            $(this).addClass('closed');
-            sub_map_links_css[left_right] = -$('#sub_map_links').width();
-        }
-        $('#sub_map_links').animate(sub_map_links_css, 1200);
-    });
+    //add open/close toggle button (if its not there)
+    if ($('#map_links_toggle').length === 0) {
+        $('<span>')
+            .html('&nbsp;')
+            .attr('id', 'map_links_toggle')
+            .on('click', function() {
+                var sub_map_links_css = {},
+                    left_right = isR2L() ? 'left' : 'right';
+                if ($(this).hasClass('closed')) {
+                    $(this).removeClass('closed');
+                    sub_map_links_css[left_right] = '0';
+                } else {
+                    $(this).addClass('closed');
+                    sub_map_links_css[left_right] = -$('#sub_map_links').width();
+                }
+                $('#sub_map_links').animate(sub_map_links_css, 1200);
+            })
+            .prependTo('#sub_map_links');
+    }
   },
 
   map_sidebar_key_tools: function() {
@@ -439,6 +454,65 @@ $.extend(fixmystreet.set_up, {
             queue:false
         }).fadeOut(500);
     });
+  },
+
+  ajax_history: function() {
+    $('#map_sidebar').on('click', '.item-list--reports a', function(e) {
+        e.preventDefault();
+        var reportPageUrl = $(this).attr('href');
+        var reportId = parseInt(reportPageUrl.replace(/^.*\/([0-9]+)$/, '$1'), 10);
+
+        // If we've already selected this report
+        if (reportId == window.selected_problem_id) {
+            return;
+        }
+
+        fixmystreet.display.report(reportPageUrl, reportId, function() {
+            // Since this navigation was the result of a user action,
+            // we want to record the navigation as a state, so the user
+            // can return to it later using their Back button.
+            if ('pushState' in history) {
+                history.pushState({
+                    reportId: reportId,
+                    reportPageUrl: reportPageUrl
+                }, null, reportPageUrl);
+            }
+        });
+    });
+
+    $('#map_sidebar').on('click', '.js-back-to-report-list', function(e) {
+        e.preventDefault();
+        var reportListUrl = $(this).attr('href');
+        fixmystreet.display.around(reportListUrl, function() {
+            // Since this navigation was the result of a user action,
+            // we want to record the navigation as a state, so the user
+            // can return to it later using their Back button.
+            if ('pushState' in history) {
+                history.pushState(null, null, reportListUrl);
+            }
+        });
+    });
+
+    window.addEventListener('popstate', function(e) {
+        // The user has pressed the Back button, and there is a
+        // stored History state for them to return to.
+
+        // Note: no pushState callbacks in these display_* calls,
+        // because we're already inside a popstate: We want to roll
+        // back to a previous state, not create a new one!
+
+        if (e.state === null) {
+            // User has navigated Back from a pushStated state, presumably to
+            // see the list of all reports (which was shown on pageload). By
+            // this point, the browser has *already* updated the URL bar so
+            // location.href is something like foo.com/around?pc=abc-123,
+            // which we pass into fixmystreet.display.around() as a fallback
+            // incase the list isn't already in the DOM.
+            fixmystreet.display.around(window.location.href);
+        } else if ('reportId' in e.state) {
+            fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
+        }
+    });
   }
 });
 
@@ -493,7 +567,8 @@ fixmystreet.update_pin = function(lonlat) {
 
 };
 
-fixmystreet.begin_report = function(lonlat) {
+fixmystreet.display = {
+  begin_report: function(lonlat) {
     fixmystreet.maps.begin_report(lonlat);
 
     // Store pin location in form fields, and check coverage of point
@@ -582,10 +657,106 @@ fixmystreet.begin_report = function(lonlat) {
 
     fixmystreet.page = 'new';
     location.hash = 'report';
+  },
+
+  report: function(reportPageUrl, reportId, callback) {
+    $.ajax(reportPageUrl).done(function(html, textStatus, jqXHR) {
+        var $reportPage = $(html);
+        var $sideReport = $reportPage.find('#side-report');
+
+        if ($sideReport.length) {
+            $('#side').hide(); // Hide the list of reports
+            $('#side-report').remove(); // Remove any existing report page content from sidebar
+            $sideReport.appendTo('#map_sidebar'); // Insert this report's content
+
+            var found = html.match(/<title>([\s\S]*?)<\/title>/);
+            var page_title = found[1];
+            document.title = page_title;
+            fixmystreet.page = 'report';
+
+            fixmystreet.mobile_reporting.remove_ui();
+            if ($('html').hasClass('mobile') && fixmystreet.map.updateSize) {
+                fixmystreet.map.updateSize();
+            }
+
+            // If this is the first individual report we've loaded, remove the
+            // "all reports" sub_map_links but store them in a global variable
+            // so we can reinsert them when the user returns to the all reports
+            // view. With #sub_map_links detached from the DOM, we set up the
+            // individual report's sub_map_links using map_controls().
+            if (!('originalSubMapLinks' in window)) {
+                window.originalSubMapLinks = $('#sub_map_links').detach();
+            }
+            fixmystreet.set_up.map_controls();
+
+            $sideReport.find('#key-tool-problems-nearby').addClass('js-back-to-report-list');
+            fixmystreet.set_up.map_sidebar_key_tools();
+
+            fixmystreet.set_up.fancybox_images();
+            fixmystreet.set_up.dropzone($sideReport);
+            fixmystreet.set_up.form_focus_triggers();
+
+            window.selected_problem_id = reportId;
+            var marker = fixmystreet.maps.get_marker_by_id(reportId);
+            if (fixmystreet.map.panTo && ($('html').hasClass('mobile') || !marker.onScreen())) {
+                fixmystreet.map.panTo(
+                    marker.geometry.getBounds().getCenterLonLat()
+                );
+            }
+            if (fixmystreet.maps.markers_resize) {
+                fixmystreet.maps.markers_resize(); // force a redraw so the selected marker gets bigger
+            }
+
+            if (typeof callback === 'function') {
+                callback();
+            }
+
+        } else {
+            window.location.href = reportPageUrl;
+        }
+
+    }).fail(function(jqXHR, textStatus, errorThrown) {
+        window.location.href = reportPageUrl;
+
+    });
+  },
+
+  around: function(reportListUrl, callback) {
+    // If the report list is already in the DOM,
+    // just reveal it, rather than loading new page.
+    if ($('#side').length) {
+        $('#side').show();
+        $('#side-report').remove();
+
+        document.title = fixmystreet.original_title;
+        fixmystreet.page = 'around';
+        if ($('html').hasClass('mobile')) {
+            fixmystreet.mobile_reporting.apply_ui();
+            fixmystreet.map.updateSize();
+        }
+
+        if ('originalSubMapLinks' in window) {
+            $('#sub_map_links').replaceWith(window.originalSubMapLinks);
+            delete window.originalSubMapLinks;
+        }
+        fixmystreet.set_up.map_controls();
+
+        window.selected_problem_id = undefined;
+        fixmystreet.markers.refresh({force: true}); // force a redraw to return (de)selected marker to normal size
+
+        if (typeof callback === 'function') {
+            callback();
+        }
+    } else {
+        window.location.href = reportListUrl;
+    }
+  }
 };
+
 
 $(function() {
     window.cobrand = $('meta[name="cobrand"]').attr('content');
+    fixmystreet.original_title = document.title;
 
     if (typeof variation !== 'undefined' && variation === 1) {
         $('input[name=variant]').val(1);

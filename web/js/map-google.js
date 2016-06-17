@@ -82,7 +82,7 @@ fixmystreet.maps = {};
 
     function map_clicked(e) {
         var lonlat = e.latLng;
-        fixmystreet.begin_report(lonlat);
+        fixmystreet.display.begin_report(lonlat);
     }
 
     /* Pan data handler */

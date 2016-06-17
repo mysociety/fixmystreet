@@ -1,5 +1,8 @@
 [% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
 
+<a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
+    class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
+
 <div class="problem-header clearfix" problem-id="[% problem.id %]">
 
   [% IF moderating %]
