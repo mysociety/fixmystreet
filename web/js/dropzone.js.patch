@@ -1,0 +1,36 @@
+--- web/js/src/dropzone.orig.js	2016-06-17 21:29:47.000000000 +0100
++++ web/js/src/dropzone.js	2016-06-20 11:40:55.000000000 +0100
+@@ -1469,7 +1469,7 @@
+     return _results;
+   };
+ 
+-  Dropzone.blacklistedBrowsers = [/opera.*Macintosh.*version\/12/i];
++  Dropzone.blacklistedBrowsers = [/opera.*(Windows Phone|Macintosh).*version\/12/i];
+ 
+   Dropzone.isBrowserSupported = function() {
+     var capableBrowser, regex, _i, _len, _ref;
+@@ -1679,7 +1679,23 @@
+   drawImageIOSFix = function(ctx, img, sx, sy, sw, sh, dx, dy, dw, dh) {
+     var vertSquashRatio;
+     vertSquashRatio = detectVerticalSquash(img);
+-    return ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh / vertSquashRatio);
++    dh = dh / vertSquashRatio;
++
++    /* An improved version of http://stackoverflow.com/a/28356942/669631 */
++    var orientation = 0;
++    switch (EXIF.getData(img)) {
++        case 3: orientation = 2; break;
++        case 6: orientation = 1; break;
++        case 8: orientation = -1; break;
++    }
++    if (orientation) {
++        ctx.translate(dx + dw/2, dy + dh/2);
++        ctx.rotate(orientation * Math.PI / 2);
++        dx = -dw/2;
++        dy = -dh/2;
++    }
++
++    return ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh);
+   };
+ 
+ 
