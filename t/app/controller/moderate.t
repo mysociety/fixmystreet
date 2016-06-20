@@ -8,6 +8,7 @@ use FixMyStreet::App;
 use Data::Dumper;
 
 my $mech = FixMyStreet::TestMech->new;
+$mech->host('www.example.org');
 
 my $BROMLEY_ID = 2482;
 my $body = $mech->create_body_ok( $BROMLEY_ID, 'Bromley Council' );
@@ -92,11 +93,12 @@ my %problem_prepopulated = (
 subtest 'Problem moderation' => sub {
 
     subtest 'Post modify title and text' => sub {
-        $mech->post_ok('/moderate/report/' . $report->id, {
+        $mech->get_ok($REPORT_URL);
+        $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_title  => 'Good good',
             problem_detail => 'Good good improved',
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $report->discard_changes;
@@ -105,11 +107,11 @@ subtest 'Problem moderation' => sub {
     };
 
     subtest 'Revert title and text' => sub {
-        $mech->post_ok('/moderate/report/' . $report->id, {
+        $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_revert_title  => 1,
             problem_revert_detail => 1,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $report->discard_changes;
@@ -120,18 +122,18 @@ subtest 'Problem moderation' => sub {
     subtest 'Make anonymous' => sub {
         $mech->content_lacks('Reported anonymously');
 
-        $mech->post_ok('/moderate/report/' . $report->id, {
+        $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_show_name => 0,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_contains('Reported anonymously');
 
-        $mech->post_ok('/moderate/report/' . $report->id, {
+        $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_show_name => 1,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_lacks('Reported anonymously');
@@ -140,18 +142,18 @@ subtest 'Problem moderation' => sub {
     subtest 'Hide photo' => sub {
         $mech->content_contains('Photo of this report');
 
-        $mech->post_ok('/moderate/report/' . $report->id, {
+        $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_show_photo => 0,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_lacks('Photo of this report');
 
-        $mech->post_ok('/moderate/report/' . $report->id, {
+        $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_show_photo => 1,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_contains('Photo of this report');
@@ -160,10 +162,10 @@ subtest 'Problem moderation' => sub {
     subtest 'Hide report' => sub {
         $mech->clear_emails_ok;
 
-        my $resp = $mech->post('/moderate/report/' . $report->id, {
+        $mech->submit_form_ok({ with_fields => {
             %problem_prepopulated,
             problem_hide => 1,
-        });
+        }});
         $mech->base_unlike( qr{/report/}, 'redirected to front page' );
 
         $report->discard_changes;
@@ -185,22 +187,23 @@ $mech->content_lacks('Posted anonymously', 'sanity check');
 
 subtest 'Problem 2' => sub {
     my $REPORT2_URL = '/report/' . $report2->id ;
-    $mech->post_ok('/moderate/report/' . $report2->id, {
+    $mech->get_ok($REPORT2_URL);
+    $mech->submit_form_ok({ with_fields => {
         %problem_prepopulated,
         problem_title  => 'Good good',
         problem_detail => 'Good good improved',
-    });
+    }});
     $mech->base_like( qr{\Q$REPORT2_URL\E} );
 
     $report2->discard_changes;
     is $report2->title, 'Good [...] good';
     is $report2->detail, 'Good [...] good [...]improved';
 
-    $mech->post_ok('/moderate/report/' . $report2->id, {
+    $mech->submit_form_ok({ with_fields => {
         %problem_prepopulated,
         problem_revert_title  => 1,
         problem_revert_detail => 1,
-    });
+    }});
     $mech->base_like( qr{\Q$REPORT2_URL\E} );
 
     $report2->discard_changes;
@@ -229,13 +232,12 @@ my $update = create_update();
 
 subtest 'updates' => sub {
 
-    my $MODERATE_UPDATE_URL = sprintf '/moderate/report/%d/update/%d', $report->id, $update->id;
-
     subtest 'Update modify text' => sub {
-        $mech->post_ok( $MODERATE_UPDATE_URL, {
+        $mech->get_ok($REPORT_URL);
+        $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_detail => 'update good good good',
-        }) or die $mech->content;
+        }}) or die $mech->content;
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $update->discard_changes;
@@ -243,10 +245,10 @@ subtest 'updates' => sub {
     };
 
     subtest 'Revert text' => sub {
-        $mech->post_ok( $MODERATE_UPDATE_URL, {
+        $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_revert_detail  => 1,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $update->discard_changes;
@@ -258,18 +260,18 @@ subtest 'updates' => sub {
         $mech->content_lacks('Posted anonymously')
             or die sprintf '%d (%d)', $update->id, $report->comments->count;
 
-        $mech->post_ok( $MODERATE_UPDATE_URL, {
+        $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_show_name => 0,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_contains('Posted anonymously');
 
-        $mech->post_ok( $MODERATE_UPDATE_URL, {
+        $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_show_name => 1,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_lacks('Posted anonymously');
@@ -283,18 +285,18 @@ subtest 'updates' => sub {
         $mech->content_contains('Photo of this report')
             or die $mech->content;
 
-        $mech->post_ok( $MODERATE_UPDATE_URL, {
+        $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_show_photo => 0,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_lacks('Photo of this report');
 
-        $mech->post_ok( $MODERATE_UPDATE_URL, {
+        $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_show_photo => 1,
-        });
+        }});
         $mech->base_like( qr{\Q$REPORT_URL\E} );
 
         $mech->content_contains('Photo of this report');
@@ -303,10 +305,10 @@ subtest 'updates' => sub {
     subtest 'Hide comment' => sub {
         $mech->content_contains('update good good bad good');
 
-        $mech->post_ok( $MODERATE_UPDATE_URL, {
+        $mech->submit_form_ok({ with_fields => {
             %update_prepopulated,
             update_hide => 1,
-        });
+        }});
         $mech->content_lacks('update good good bad good');
     };
 
@@ -316,11 +318,11 @@ subtest 'updates' => sub {
 my $update2 = create_update();
 
 subtest 'Update 2' => sub {
-    my $MODERATE_UPDATE2_URL = sprintf '/moderate/report/%d/update/%d', $report->id, $update2->id;
-    $mech->post_ok( $MODERATE_UPDATE2_URL, {
+    $mech->get_ok($REPORT_URL);
+    $mech->submit_form_ok({ with_fields => {
         %update_prepopulated,
         update_detail => 'update good good good',
-    }) or die $mech->content;
+    }}) or die $mech->content;
 
     $update2->discard_changes;
     is $update2->text, 'update good good [...] good',

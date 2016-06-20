@@ -1,5 +1,5 @@
 <form method="post" action="[% c.uri_for( 'user_edit', user.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <input type="hidden" name="token" value="[% token %]" >
+    <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
 
     [% IF c.cobrand.moniker == 'zurich' AND field_errors.email %]

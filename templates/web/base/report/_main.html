@@ -5,6 +5,7 @@
   [% IF moderating %]
     [% original = problem_original %]
     <form method="post" action="/moderate/report/[% problem.id %]">
+        <input type="hidden" name="token" value="[% csrf_token %]">
         <p class="moderate-display">
             <input type="button" class="btn moderate" value="moderate">
         </p>

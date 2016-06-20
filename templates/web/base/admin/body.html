@@ -97,7 +97,7 @@
 
   <p>
     <input type="hidden" name="posted" value="update">
-    <input type="hidden" name="token" value="[% token %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" name="Update statuses" value="[% loc('Update statuses') %]">
   </p>
 </form>
@@ -202,7 +202,7 @@
 
     <p>
       <input type="hidden" name="posted" value="new" >
-      <input type="hidden" name="token" value="[% token %]" >
+      <input type="hidden" name="token" value="[% csrf_token %]" >
       <input type="submit" name="Create category" value="[% errors ? loc('Save changes') : loc('Create category') %]" >
     </p>
 

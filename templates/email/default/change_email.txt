@@ -1,0 +1,11 @@
+Subject: Updating your [% INCLUDE 'site-name.txt' | trim %] email address
+
+Please click on the link below to confirm you wish to update your
+email address on [% INCLUDE 'site-name.txt' | trim %].
+
+[% c.uri_for_action( 'auth/token', token ) %]
+
+[% INCLUDE 'signature.txt' %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

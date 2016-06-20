@@ -510,20 +510,14 @@ subtest 'check non authority user cannot change set state' => sub {
     $user->update;
 
     $mech->get_ok("/report/$report_id");
-    $mech->post_ok( "/report/update", {
-                submit_update => 1,
-                id => $report_id,
-                name => $user->name,
-                may_show_name => 1,
-                add_alert => undef,
-                photo1 => '',
-                photo2 => '',
-                photo3 => '',
-                update => 'this is a forbidden update',
-                state => 'fixed - council',
+    $mech->submit_form_ok( {
+        form_id => 'form_update_form',
+        fields => {
+            may_show_name => 1,
+            update => 'this is a forbidden update',
+            state => 'fixed - council',
         },
-        'submitted with state',
-    );
+    }, 'submitted with state');
 
     is $mech->uri->path, "/report/update", "at /report/update";
 
@@ -540,20 +534,14 @@ for my $state ( qw/unconfirmed hidden partial/ ) {
         $user->update;
 
         $mech->get_ok("/report/$report_id");
-        $mech->post_ok( "/report/update", {
-                    submit_update => 1,
-                    id => $report_id,
-                    name => $user->name,
-                    may_show_name => 1,
-                    add_alert => undef,
-                    photo1 => '',
-                    photo2 => '',
-                    photo3 => '',
-                    update => 'this is a forbidden update',
-                    state => $state,
+        $mech->submit_form_ok( {
+            form_id => 'form_update_form',
+            fields => {
+                may_show_name => 1,
+                update => 'this is a forbidden update',
+                state => $state,
             },
-            'submitted with state',
-        );
+        }, 'submitted with state');
 
         is $mech->uri->path, "/report/update", "at /report/update";
 
@@ -570,10 +558,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to investigating',
             state => 'investigating',
         },
@@ -584,10 +568,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to in progress',
             state => 'in progress',
         },
@@ -598,10 +578,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to fixed',
             state => 'fixed',
         },
@@ -612,10 +588,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to action scheduled',
             state => 'action scheduled',
         },
@@ -626,10 +598,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to unable to fix',
             state => 'unable to fix',
         },
@@ -640,10 +608,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to internal referral',
             state => 'internal referral',
         },
@@ -655,10 +619,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to not responsible',
             state => 'not responsible',
         },
@@ -670,10 +630,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to duplicate',
             state => 'duplicate',
         },
@@ -685,10 +641,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to internal referral',
             state => 'internal referral',
         },
@@ -700,10 +652,6 @@ for my $test (
         fields => {
             name => $user->name,
             may_show_name => 1,
-            add_alert => undef,
-            photo1 => '',
-            photo2 => '',
-            photo3 => '',
             update => 'Set state to fixed',
             state => 'fixed',
         },

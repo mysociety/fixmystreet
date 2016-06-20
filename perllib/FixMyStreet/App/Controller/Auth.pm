@@ -6,8 +6,9 @@ BEGIN { extends 'Catalyst::Controller'; }
 
 use Email::Valid;
 use Net::Domain::TLD;
-use mySociety::AuthToken;
+use Digest::HMAC_SHA1 qw(hmac_sha1);
 use JSON::MaybeXS;
+use MIME::Base64;
 use Net::Facebook::Oauth2;
 use Net::Twitter::Lite::WithAPIv1_1;
 
@@ -37,16 +38,17 @@ sub general : Path : Args(0) {
     # all done unless we have a form posted to us
     return unless $c->req->method eq 'POST';
 
-    # decide which action to take
-    $c->detach('facebook_sign_in') if $c->get_param('facebook_sign_in');
-    $c->detach('twitter_sign_in') if $c->get_param('twitter_sign_in');
-
-    my $clicked_password = $c->get_param('sign_in');
     my $clicked_email = $c->get_param('email_sign_in');
+    my $data_address = $c->get_param('email');
     my $data_password = $c->get_param('password_sign_in');
     my $data_email = $c->get_param('name') || $c->get_param('password_register');
 
+    # decide which action to take
     $c->detach('email_sign_in') if $clicked_email || ($data_email && !$data_password);
+    if (!$data_address && !$data_password && !$data_email) {
+        $c->detach('facebook_sign_in') if $c->get_param('facebook_sign_in');
+        $c->detach('twitter_sign_in') if $c->get_param('twitter_sign_in');
+    }
 
        $c->forward( 'sign_in' )
     && $c->detach( 'redirect_on_signin', [ $c->get_param('r') ] );
@@ -137,6 +139,10 @@ sub email_sign_in : Private {
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{facebook_id};
     $token_data->{twitter_id} = $c->session->{oauth}{twitter_id}
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
+    if ($c->stash->{current_user}) {
+        $token_data->{old_email} = $c->stash->{current_user}->email;
+        $token_data->{r} = 'auth/change_email/success';
+    }
 
     my $token_obj = $c->model('DB::Token')->create({
         scope => 'email_sign_in',
@@ -144,7 +150,8 @@ sub email_sign_in : Private {
     });
 
     $c->stash->{token} = $token_obj->token;
-    $c->send_email( 'login.txt', { to => $good_email } );
+    my $template = $c->stash->{email_template} || 'login.txt';
+    $c->send_email( $template, { to => $good_email } );
     $c->stash->{template} = 'auth/token.html';
 }
 
@@ -175,17 +182,40 @@ sub token : Path('/M') : Args(1) {
         return;
     }
 
-    # Sign out in case we are another user
-    $c->logout();
-
     # find or create the user related to the token.
     my $data = $token_obj->data;
-    my $user = $c->model('DB::User')->find_or_create( { email => $data->{email} } );
+
+    if ($data->{old_email} && (!$c->user_exists || $c->user->email ne $data->{old_email})) {
+        $c->stash->{token_not_found} = 1;
+        return;
+    }
+
+    # sign out in case we are another user
+    $c->logout();
+
+    my $user = $c->model('DB::User')->find_or_new({ email => $data->{email} });
+
+    if ($data->{old_email}) {
+        # Were logged in as old_email, want to switch to email ($user)
+        if ($user->in_storage) {
+            my $old_user = $c->model('DB::User')->find({ email => $data->{old_email} });
+            if ($old_user) {
+                $old_user->adopt($user);
+                $user = $old_user;
+                $user->email($data->{email});
+            }
+        } else {
+            # Updating to a new (to the db) email address, easier!
+            $user = $c->model('DB::User')->find({ email => $data->{old_email} });
+            $user->email($data->{email});
+        }
+    }
+
     $user->name( $data->{name} ) if $data->{name};
     $user->password( $data->{password}, 1 ) if $data->{password};
     $user->facebook_id( $data->{facebook_id} ) if $data->{facebook_id};
     $user->twitter_id( $data->{twitter_id} ) if $data->{twitter_id};
-    $user->update;
+    $user->update_or_insert;
     $c->authenticate( { email => $user->email }, 'no_password' );
 
     # send the user to their page
@@ -414,11 +444,12 @@ sub change_password : Local {
 
     $c->detach( 'redirect' ) unless $c->user;
 
-    # FIXME - CSRF check here
-    # FIXME - minimum criteria for passwords (length, contain number, etc)
+    $c->forward('get_csrf_token');
 
     # If not a post then no submission
     return unless $c->req->method eq 'POST';
+
+    $c->forward('check_csrf_token');
 
     # get the passwords
     my $new = $c->get_param('new_password') // '';
@@ -441,6 +472,60 @@ sub change_password : Local {
     $c->user->obj->update( { password => $new } );
     $c->stash->{password_changed} = 1;
 
+}
+
+=head2 change_email
+
+Let the user change their email.
+
+=cut
+
+sub change_email : Local {
+    my ( $self, $c ) = @_;
+
+    $c->detach( 'redirect' ) unless $c->user;
+
+    $c->forward('get_csrf_token');
+
+    # If not a post then no submission
+    return unless $c->req->method eq 'POST';
+
+    $c->forward('check_csrf_token');
+    $c->stash->{current_user} = $c->user;
+    $c->stash->{email_template} = 'change_email.txt';
+    $c->forward('email_sign_in');
+}
+
+sub get_csrf_token : Private {
+    my ( $self, $c ) = @_;
+
+    my $time = $c->stash->{csrf_time} || time();
+    my $hash = hmac_sha1("$time-" . ($c->sessionid || ""), $c->model('DB::Secret')->get);
+    $hash = encode_base64($hash, "");
+    $hash =~ s/=$//;
+    my $token = "$time-$hash";
+    $c->stash->{csrf_token} = $token unless $c->stash->{csrf_time};
+    return $token;
+}
+
+sub check_csrf_token : Private {
+    my ( $self, $c ) = @_;
+
+    my $token = $c->get_param('token') || "";
+    $token =~ s/ /+/g;
+    my ($time) = $token =~ /^(\d+)-[0-9a-zA-Z+\/]+$/;
+    $c->stash->{csrf_time} = $time;
+    $c->detach('no_csrf_token')
+        unless $time
+            && $time > time() - 3600
+            && $token eq $c->forward('get_csrf_token');
+    delete $c->stash->{csrf_time};
+}
+
+sub no_csrf_token : Private {
+    my ($self, $c) = @_;
+    $c->stash->{message} = _('Unknown error');
+    $c->stash->{template} = 'errors/generic.html';
 }
 
 =head2 sign_out

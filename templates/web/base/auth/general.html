@@ -86,8 +86,15 @@
             <input class="green-btn" type="submit" name="sign_in" value="[% loc('Sign in') %]">
         </div>
 
-        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
-        <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+        <div class="checkbox-group">
+            <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+            <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+        </div>
+
+        <div class="general-notes">
+            <p><strong>[% loc('Forgotten your password?') %]</strong>
+            [% loc('Sign in by email instead, providing a new password. When you click the link in your email, your password will be updated.') %]</p>
+        </div>
 
     </div>
 [% END %]

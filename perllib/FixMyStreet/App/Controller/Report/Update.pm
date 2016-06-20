@@ -25,6 +25,7 @@ sub report_update : Path : Args(0) {
     $c->forward('check_form_submitted')
       or $c->go( '/report/display', [ $c->stash->{problem}->id ] );
 
+    $c->forward('/auth/check_csrf_token');
     $c->forward('process_update');
     $c->forward('process_user');
     $c->forward('/photo/process_photo');

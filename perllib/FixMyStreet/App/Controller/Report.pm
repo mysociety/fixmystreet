@@ -72,6 +72,7 @@ sub ajax : Path('ajax') : Args(1) {
 sub _display : Private {
     my ( $self, $c, $id ) = @_;
 
+    $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
@@ -248,6 +249,8 @@ users too about this change, at which point we can delete:
 
 sub delete :Local :Args(1) {
     my ( $self, $c, $id ) = @_;
+
+    $c->forward('/auth/check_csrf_token');
 
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     my $p = $c->stash->{problem};

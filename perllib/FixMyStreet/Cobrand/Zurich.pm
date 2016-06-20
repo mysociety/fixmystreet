@@ -541,7 +541,7 @@ sub admin_report_edit {
 
     # If super or dm check that the token is correct before proceeding
     if ( ($type eq 'super' || $type eq 'dm') && $c->get_param('submit') ) {
-        $c->forward('check_token');
+        $c->forward('/auth/check_csrf_token');
     }
 
     # All types of users can add internal notes
@@ -807,7 +807,7 @@ sub admin_report_edit {
             # subdivision, or because the customer was not contactable.
             # We handle these in the same way but with different statuses.
 
-            $c->forward('check_token');
+            $c->forward('/auth/check_csrf_token');
 
             my $not_contactable = $c->get_param('not_contactable');
 
@@ -829,7 +829,7 @@ sub admin_report_edit {
             $self->update_admin_log($c, $problem);
             $c->res->redirect( '/admin/summary' );
         } elsif ($c->get_param('submit')) {
-            $c->forward('check_token');
+            $c->forward('/auth/check_csrf_token');
 
             my $db_update = 0;
             if ( $c->get_param('latitude') != $problem->latitude || $c->get_param('longitude') != $problem->longitude ) {

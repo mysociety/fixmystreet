@@ -239,9 +239,30 @@ sub has_permission_to {
     return $permission ? 1 : undef;
 }
 
-sub print {
-    my $self = shift;
-    return '[' . (join '-', @_) . ']';
+sub adopt {
+    my ($self, $other) = @_;
+
+    return if $self->id == $other->id;
+
+    # Move most things from $other to $self
+    foreach (qw(Problem Comment Alert AdminLog )) {
+        $self->result_source->schema->resultset($_)
+            ->search({ user_id => $other->id })
+            ->update({ user_id => $self->id });
+    }
+
+    # It's possible the user permissions for the other user exist, so
+    # try updating, and then delete anyway.
+    foreach ($self->result_source->schema->resultset("UserBodyPermission")
+                ->search({ user_id => $other->id })->all) {
+        eval {
+            $_->update({ user_id => $self->id });
+        };
+        $_->delete if $@;
+    }
+
+    # Delete the now empty user
+    $other->delete;
 }
 
 1;

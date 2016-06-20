@@ -236,7 +236,7 @@
     
     <p>
     <input type="hidden" name="posted" value="body">
-    <input type="hidden" name="token" value="[% token %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" value="[% body ? loc('Update body') : loc('Add body') %]">
     </p>
     </form>

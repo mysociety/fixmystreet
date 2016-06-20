@@ -8,6 +8,7 @@
         <li class="item-list__item item-list__item--updates">
           [% IF moderating; original_update = update.moderation_original_data %]
             <form method="post" action="/moderate/report/[% problem.id %]/update/[% update.id %]">
+                <input type="hidden" name="token" value="[% csrf_token %]">
                 <input type="button" class="btn moderate moderate-display" value="moderate">
                 <div class="moderate-edit">
                     <input type="checkbox" class="hide-document" name="update_hide">

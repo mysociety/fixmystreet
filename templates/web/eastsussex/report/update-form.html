@@ -24,6 +24,7 @@
     </p>
 
     <form method="post" action="/report/new">
+        <input type="hidden" name="token" value="[% csrf_token %]">
         <input type="hidden" name="latitude" value="[% problem.latitude %]">
         <input type="hidden" name="longitude" value="[% problem.longitude %]">
         <input type="submit" class="green-btn" value="CREATE A NEW PROBLEM NEARBY">
@@ -56,6 +57,7 @@
     [% INCLUDE 'errors.html' %]
 
     <form method="post" action="[% c.uri_for( '/report/update' ) %]" id="form_update_form" name="updateForm" class="validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+        <input type="hidden" name="token" value="[% csrf_token %]">
         <fieldset>
             <input type="hidden" name="submit_update" value="1">
             <input type="hidden" name="id" value="[% problem.id | html %]">
