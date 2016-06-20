@@ -115,24 +115,19 @@ sub subscribe_email : Private {
     $c->stash->{errors} = [];
     $c->forward('process_user');
 
-    my $type = $c->get_param('type');
-    push @{ $c->stash->{errors} }, _('Please select the type of alert you want')
-      if $type && $type eq 'local' && !$c->get_param('feed');
-    if (@{ $c->stash->{errors} }) {
-        $c->go('updates') if $type && $type eq 'updates';
-        $c->go('list') if $type && $type eq 'local';
-        $c->go('index');
-    }
-
+    my $type = $c->get_param('type') || "";
     if ( $type eq 'updates' ) {
         $c->forward('set_update_alert_options');
-    }
-    elsif ( $type eq 'local' ) {
+    } elsif ( $type eq 'local' ) {
         $c->forward('set_local_alert_options');
-    }
-    else {
+    } else {
         $c->detach( '/page_error_404_not_found', [ 'Invalid type' ] );
     }
+
+    push @{ $c->stash->{errors} }, _('Please select the type of alert you want')
+      if !$c->stash->{alert_options};
+
+    $c->go($type eq 'updates' ? 'updates' : 'list') if @{ $c->stash->{errors} };
 
     $c->forward('create_alert');
     if ( $c->stash->{alert}->confirmed ) {
@@ -211,6 +206,7 @@ sub set_update_alert_options : Private {
     my ( $self, $c ) = @_;
 
     my $report_id = $c->get_param('id');
+    return unless $report_id =~ /^[1-9]\d*$/;
 
     my $options = {
         user       => $c->stash->{alert_user},
@@ -251,6 +247,7 @@ sub set_local_alert_options : Private {
         $type = 'local_problems';
         push @params, $2, $1; # Note alert parameters are lon,lat
     }
+    return unless $type;
 
     my $options = {
         user       => $c->stash->{alert_user},
