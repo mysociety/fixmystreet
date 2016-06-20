@@ -11,11 +11,21 @@ fixmystreet.maps = {};
 (function() {
 
     fixmystreet.maps.update_pin = function(lonlat) {
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat();
-        document.getElementById('fixmystreet.longitude').value = lonlat.lng();
+        var lat = lonlat.lat();
+        var lon = lonlat.lng();
+        document.getElementById('fixmystreet.latitude').value = lat;
+        document.getElementById('fixmystreet.longitude').value = lon;
+        return {
+            'url': { 'lon': lon, 'lat': lat },
+            'state': { 'lon': lon, 'lat': lat }
+        };
     };
 
     fixmystreet.maps.begin_report = function(lonlat) {
+        if (typeof lonlat.lat !== 'function') {
+            lonlat = new google.maps.LatLng(lonlat.lat, lonlat.lon);
+        }
+
         if (fixmystreet.page == 'new') {
             /* Already have a pin */
             fixmystreet.report_marker.setPosition(lonlat);
@@ -35,6 +45,15 @@ fixmystreet.maps = {};
                 fixmystreet.markers[m].setMap(null);
             }
         }
+        return lonlat;
+    };
+
+    fixmystreet.maps.display_around = function() {
+        if (fixmystreet.report_marker) {
+            fixmystreet.report_marker.setMap(null);
+        }
+        fixmystreet.event_update_map = google.maps.event.addListener(fixmystreet.map, 'idle', update_pins);
+        google.maps.event.trigger(fixmystreet.map, 'idle');
     };
 
     function PaddingControl(div) {
@@ -81,6 +100,11 @@ fixmystreet.maps = {};
     }
 
     function map_clicked(e) {
+        if ($('.js-back-to-report-list').length) {
+            $('.js-back-to-report-list').trigger('click');
+            return true;
+        }
+
         var lonlat = e.latLng;
         fixmystreet.display.begin_report(lonlat);
     }
@@ -147,28 +171,6 @@ fixmystreet.maps = {};
         if (document.getElementById('mapForm')) {
             var l = google.maps.event.addListener(fixmystreet.map, 'click', map_clicked);
         }
-
-        $(window).hashchange(function(){
-            if (location.hash && location.hash != '#') {
-                return;
-            }
-
-            // Okay, back to around view.
-            fixmystreet.report_marker.setMap(null);
-            fixmystreet.event_update_map = google.maps.event.addListener(fixmystreet.map, 'idle', update_pins);
-            google.maps.event.trigger(fixmystreet.map, 'idle');
-            if ( fixmystreet.state_pins_were_hidden ) {
-                // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
-                $('#hide_pins_link').click();
-            }
-            $('#side-form').hide();
-            $('#side').show();
-            $('#sub_map_links').show();
-            //only on mobile
-            $('#mob_sub_map_links').remove();
-            $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
-            fixmystreet.page = 'around';
-        });
 
         if ( fixmystreet.area.length ) {
             for (var i=0; i<fixmystreet.area.length; i++) {

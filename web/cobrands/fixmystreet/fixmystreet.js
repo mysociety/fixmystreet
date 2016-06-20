@@ -511,13 +511,26 @@ $.extend(fixmystreet.set_up, {
             fixmystreet.display.around(window.location.href);
         } else if ('reportId' in e.state) {
             fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
+        } else if ('newReportAtLonlat' in e.state) {
+            fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
         }
     });
   }
 });
 
-fixmystreet.update_pin = function(lonlat) {
-    fixmystreet.maps.update_pin(lonlat);
+// The new location will be saved to a history state unless
+// savePushState is set to false.
+fixmystreet.update_pin = function(lonlat, savePushState) {
+    var lonlats = fixmystreet.maps.update_pin(lonlat);
+
+    if (savePushState !== false) {
+        if ('pushState' in history) {
+            var newReportUrl = '/report/new?longitude=' + lonlats.url.lon + '&latitude=' + lonlats.url.lat;
+            history.pushState({
+                newReportAtLonlat: lonlats.state
+            }, null, newReportUrl);
+        }
+    }
 
     $.getJSON('/report/new/ajax', {
         latitude: $('#fixmystreet\\.latitude').val(),
@@ -568,11 +581,11 @@ fixmystreet.update_pin = function(lonlat) {
 };
 
 fixmystreet.display = {
-  begin_report: function(lonlat) {
-    fixmystreet.maps.begin_report(lonlat);
+  begin_report: function(lonlat, saveHistoryState) {
+    lonlat = fixmystreet.maps.begin_report(lonlat);
 
     // Store pin location in form fields, and check coverage of point
-    fixmystreet.update_pin(lonlat);
+    fixmystreet.update_pin(lonlat, saveHistoryState);
 
     // It's possible to invoke this multiple times in a row
     // (eg: by clicking on the map multiple times, to
@@ -656,7 +669,6 @@ fixmystreet.display = {
     }
 
     fixmystreet.page = 'new';
-    location.hash = 'report';
   },
 
   report: function(reportPageUrl, reportId, callback) {
@@ -727,23 +739,30 @@ fixmystreet.display = {
     // just reveal it, rather than loading new page.
     if ($('#side').length) {
         $('#side').show();
+        $('#side-form').hide();
         $('#side-report').remove();
+
+        $('body').removeClass('with-notes');
 
         document.title = fixmystreet.original_title;
         fixmystreet.page = 'around';
         if ($('html').hasClass('mobile')) {
+            $('#mob_sub_map_links').remove();
             fixmystreet.mobile_reporting.apply_ui();
-            fixmystreet.map.updateSize();
         }
 
         if ('originalSubMapLinks' in window) {
             $('#sub_map_links').replaceWith(window.originalSubMapLinks);
             delete window.originalSubMapLinks;
         }
+        $('#sub_map_links').show();
         fixmystreet.set_up.map_controls();
 
         window.selected_problem_id = undefined;
-        fixmystreet.markers.refresh({force: true}); // force a redraw to return (de)selected marker to normal size
+
+        // Perform vendor-specific map setup steps,
+        // to get map back into "around" mode.
+        fixmystreet.maps.display_around();
 
         if (typeof callback === 'function') {
             callback();

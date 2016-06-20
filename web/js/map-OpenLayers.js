@@ -4,18 +4,43 @@ var fixmystreet = fixmystreet || {};
 
     fixmystreet.maps = {
       // This function might be passed either an OpenLayers.LonLat (so has
-      // lon and lat) or an OpenLayers.Geometry.Point (so has x and y)
+      // lon and lat), or an OpenLayers.Geometry.Point (so has x and y).
       update_pin: function(lonlat) {
-        lonlat = lonlat.clone().transform(
+        var transformedLonlat = lonlat.clone().transform(
             fixmystreet.map.getProjectionObject(),
             new OpenLayers.Projection("EPSG:4326")
         );
 
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
-        document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+        var lat = transformedLonlat.lat || transformedLonlat.y;
+        var lon = transformedLonlat.lon || transformedLonlat.x;
+
+        document.getElementById('fixmystreet.latitude').value = lat;
+        document.getElementById('fixmystreet.longitude').value = lon;
+        return {
+            'url': { 'lon': lon, 'lat': lat },
+            'state': { 'lon': lonlat.lon, 'lat': lonlat.lat }
+        };
+      },
+
+      display_around: function() {
+        // Required after changing the size of the map element
+        fixmystreet.map.updateSize();
+
+        // Dragging the map should fetch new local reports from server
+        fixmystreet.bbox_strategy.activate();
+
+        // Should not be able to drag normal pins!!
+        drag.deactivate();
+
+        // Force a redraw to return (de)selected marker to normal size
+        fixmystreet.markers.refresh({force: true});
       },
 
       begin_report: function(lonlat) {
+        if (typeof lonlat.clone !== 'function') {
+            lonlat = new OpenLayers.LonLat(lonlat.lon, lonlat.lat);
+        }
+
         if (fixmystreet.page == 'new') {
             /* Already have a pin */
             fixmystreet.markers.features[0].move(lonlat);
@@ -31,9 +56,9 @@ var fixmystreet = fixmystreet || {};
         // link so that it updates the text in case they go
         // back
         if ( ! fixmystreet.markers.getVisibility() ) {
-            fixmystreet.state_pins_were_hidden = true;
             $('#hide_pins_link').click();
         }
+        return lonlat;
       },
 
       markers_list: function(pins, transform) {
@@ -120,7 +145,7 @@ var fixmystreet = fixmystreet || {};
             this._drag.activate();
         },
         deactivate: function() {
-            this._drag.deactivate();
+            this._drag && this._drag.deactivate();
         }
     };
 
@@ -450,30 +475,6 @@ var fixmystreet = fixmystreet || {};
             fixmystreet.map.addControl(click);
             click.activate();
         }
-
-        $(window).hashchange(function(){
-            if (location.hash && location.hash != '#') {
-                return;
-            }
-
-            // Okay, back to around view.
-            fixmystreet.bbox_strategy.activate();
-            fixmystreet.markers.refresh( { force: true } );
-            if ( fixmystreet.state_pins_were_hidden ) {
-                // If we had pins hidden when we clicked map (which had to show the pin layer as I'm doing it in one layer), hide them again.
-                $('#hide_pins_link').click();
-            }
-            drag.deactivate();
-            $('#side-form').hide();
-            $('#side').show();
-            $('body').removeClass('with-notes');
-            fixmystreet.map.updateSize(); // required after changing the size of the map element
-            $('#sub_map_links').show();
-            //only on mobile
-            $('#mob_sub_map_links').remove();
-            $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map);
-            fixmystreet.page = 'around';
-        });
 
         // Hide the pin filter submit button. Not needed because we'll use JS
         // to refresh the map when the filter inputs are changed.

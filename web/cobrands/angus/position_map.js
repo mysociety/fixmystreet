@@ -311,18 +311,19 @@ var add_streetlights = (function() {
                 streetlight_fault_layer.setVisibility(false);
             }
         });
-
-        // Make sure the streetlights get hidden if the back button is pressed
-        $(window).on('hashchange', function() {
-            if (location.hash === '') {
-                streetlight_layer.setVisibility(false);
-                streetlight_fault_layer.setVisibility(false);
-                fixmystreet.markers.setVisibility(true);
-                fixmystreet.bbox_strategy.activate();
-                fixmystreet.markers.refresh( { force: true } );
-            }
-        });
     }
+
+    // Make sure the streetlights get hidden if the back button is pressed
+    fixmystreet.maps.display_around = (function(original) {
+        function hide_streetlights() {
+            streetlight_layer.setVisibility(false);
+            streetlight_fault_layer.setVisibility(false);
+            fixmystreet.markers.setVisibility(true);
+            original.apply(fixmystreet.maps);
+        }
+        return hide_streetlights;
+    })(fixmystreet.maps.display_around);
+
     return add_streetlights;
 })();
 
