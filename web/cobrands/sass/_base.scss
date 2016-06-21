@@ -313,24 +313,32 @@ label{
   margin: 0 -1em 0.25em;
   background: #eee;
   padding: 1em;
-  > input[type=text], input[type=email] {
-    margin-bottom:1em;
+
+  & > input[type=text],
+  & > input[type=email] {
+    margin-bottom: 1em;
   }
+
+  & > label:first-child {
+    margin-top: 0;
+  }
+
   .title {
-    font-size:1.25em;
-    margin:0.5em 0;
+    font-size: 1.25em;
+    margin: 0.5em 0;
   }
+
   h2 {
     margin: 0 0 0.5em;
   }
+
   h5 {
-    margin:0 0 1em;
-    font: {
-      size:1.125em;
-      weight:normal;
-    }
+    margin: 0 0 1em;
+    font-size: 1.125em;
+    font-weight: normal;
+
     strong {
-      font-size:2em;
+      font-size: 2em;
       margin-#{$right}: 0.25em;
     }
   }
@@ -342,6 +350,13 @@ label{
     margin: 0 0 0.25em;
     padding: 1em;
 }
+
+// When the user is logged in, we show a shorter form-box,
+// without a heading before it. So add some space before.
+#form-box--logged-in-name {
+  margin-top: 1.25em;
+}
+
 // Prevent grey displaying oddly by giving it a width, and stop odd left margin issue
 .ie7 .form-box {
     width: 100%;
