@@ -222,12 +222,9 @@ h1 {
   padding: 1em 1em 3em;
   background: #fff;
   color: #222;
-  @include box-shadow(0 0 10px rgba(0,0,0,0.5));
 }
 .iel8 {
   .content {
-    // If no box-shadow, just want a boring black border to stand it out from the map.
-    border: 1px solid #666;
     //take off margins so we line up properly
     margin: 0 0.5em;
   }
@@ -392,7 +389,6 @@ body.twothirdswidthpage,
 body.fullwidthpage {
     .container {
         .content {
-            box-shadow: none;
             padding: 1em;
             margin-bottom: 0em;
             footer {
@@ -438,10 +434,6 @@ body.fullwidthpage {
 .iel8 {
   body.twothirdswidthpage,
   body.fullwidthpage {
-    .content {
-      border: 0px;
-    }
-
     .container .content footer a.platform-logo {
       color: #ffffff;
       background: none;
@@ -470,7 +462,6 @@ body.twothirdswidthpage {
       z-index: -1;
       width:13em;
       padding:1em;
-      @include box-shadow(0px 0px 6px 1px #000);
       h2 {
         margin-top: 0;
       }
@@ -507,7 +498,6 @@ body.authpage {
     margin-#{$left}: auto;
     margin-#{$right}: auto;
     margin-bottom: 0;
-    box-shadow: none;
     padding: 1em; // same as .twothirdswidthpage .content
   }
 }
@@ -556,7 +546,6 @@ body.authpage {
   border-#{$right}: 1em solid transparent;
   background:none;
   padding:0;
-  @include box-shadow(inset rgba(0, 0, 0, 0) 0 0 0);
   h2 {
     color:#222;
     margin-top:0;
@@ -720,7 +709,7 @@ body.authpage {
   ul#key-tools {
     border-top: 0.25em solid $primary;
     margin: 0;
-    @include box-shadow(-0em 0px 1em 1em #fff);
+    @include box-shadow(0 0 1em 1em #fff);
     li {
       border:none;
       a, input[type=submit] {

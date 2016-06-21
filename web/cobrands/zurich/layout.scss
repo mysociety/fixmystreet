@@ -4,35 +4,25 @@
 
 // Things to override from parent stylesheet
 
-// White background, so no shadow or margin needed.
 .content {
     color: #3c3c3c;
-    @include box-shadow(none);
 }
-.iel8 {
-    .content {
-        border: none;
-    }
-}
-// Except on map pages (which includes the front page)
-body.mappage .content, body.frontpage .content {
+
+// Front page content needs a shadow.
+// (Purely decorative: No need for border fallback for IE8)
+body.frontpage .content {
     @include box-shadow(0 0 6px 1px #000);
 }
-.iel8 {
-    body.mappage .content, body.frontpage .content {
-        border: 1px solid #666;
-    }
-}
-/* The header on a map page needs a shadow too */
-body.mappage .nav-wrapper-2 {
+// The header on a map page needs a shadow too
+body.mappage .nav-wrapper .nav-wrapper-2 {
     @include box-shadow(0 0 6px 1px #000);
 }
-/* Except on admin pages where there's an admin nav directly underneath it */
+// Except on admin pages where there's an admin nav directly underneath it
 body.mappage.admin .nav-wrapper-2 {
     @include box-shadow(none);
 }
 
-/* Fix positioning of images in the admin */
+// Fix positioning of images in the admin
 body.admin .admin-nav-wrapper {
     z-index: 1;
 }
@@ -191,9 +181,6 @@ body.mappage {
 
 body.twothirdswidthpage {
     .content {
-        aside {
-            @include box-shadow(none);
-        }
         .sticky-sidebar aside {
           top: 14em; // overrides default value, due to Zurich nav at top of content
         }

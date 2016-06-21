@@ -34,24 +34,15 @@ body, body a {
   display: none;
 }
 
-// White background, so no shadow or margin needed.
-.content {
+// White background, so no margin needed.
+.content,
+.iel8 .content {
     margin: 0;
-    @include box-shadow(none);
-}
-.iel8 {
-    .content {
-        margin: 0;
-        border: none;
-    }
 }
 
 // Fix location of aside sidebar
 body.twothirdswidthpage {
     .content {
-        aside {
-            @include box-shadow(none);
-        }
         .sticky-sidebar {
             aside {
                 position: fixed;
@@ -114,7 +105,7 @@ body.mappage {
     background-color: #069b01; // picked from header.jpg
     background-position: 100% 40%;
     overflow: auto;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    @include box-shadow(0 0 5px rgba(0,0,0,0.3));
 
     & > * {
       display: none;
@@ -309,9 +300,7 @@ h4.static-with-rule {
     width: 432px;
 
     ul#key-tools {
-        -webkit-box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
-        -moz-box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
-        box-shadow: 0em 0px 1em 1em $oxfordshire_very_light_green;
+        @include box-shadow(0 0 1em 1em $oxfordshire_very_light_green);
         border-top-width: 2px;
     }
 }
@@ -345,9 +334,10 @@ input.green-btn{
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  @include box-shadow(
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 1px 2px rgba(0, 0, 0, 0.05)
+  );
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
   font-weight: normal;
   cursor: pointer;
