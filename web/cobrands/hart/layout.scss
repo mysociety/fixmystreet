@@ -10,16 +10,9 @@
 }
 
 body.twothirdswidthpage .content {
-    aside {
-        @include box-shadow(none);
-    }
     .sticky-sidebar {
         aside {
             top: 14em;
         }
     }
-}
-
-.content {
-    @include box-shadow(none);
 }

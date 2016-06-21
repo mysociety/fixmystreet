@@ -80,7 +80,6 @@
 // d523b431
 body.fullwidthpage {
     .content {
-        @include box-shadow(none);
         background: none;
     }
 }

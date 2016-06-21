@@ -71,16 +71,16 @@ $right: right;
   @include experimental(border-radius, $radius, -moz, -webkit, not -o, not -ms, official);
 }
 
-@mixin box-shadow($shadow) {
-  @include experimental(box-shadow, $shadow, -moz, -webkit, not -o, not -ms, official);
+@mixin box-shadow($shadows...) {
+  @include experimental(box-shadow, $shadows, -moz, -webkit, not -o, not -ms, official);
 }
 
 @mixin experimental($property, $value, $moz: true, $webkit: true, $o: true, $ms: true, $official: true) {
-  @if $webkit   { -webkit-#{$property} : $value; }
-  @if $moz      {    -moz-#{$property} : $value; }
-  @if $ms       {     -ms-#{$property} : $value; }
-  @if $o        {      -o-#{$property} : $value; }
-  @if $official {         #{$property} : $value; }
+  @if $webkit   { -webkit-#{$property} : #{$value}; }
+  @if $moz      {    -moz-#{$property} : #{$value}; }
+  @if $ms       {     -ms-#{$property} : #{$value}; }
+  @if $o        {      -o-#{$property} : #{$value}; }
+  @if $official {         #{$property} : #{$value}; }
 }
 
 @mixin inline-block($alignment: middle) {
