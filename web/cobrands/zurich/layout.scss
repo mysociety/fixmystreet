@@ -249,13 +249,21 @@ body.fullwidthpage.admin .content {
 }
 
 body.mappage.admin {
-    .content {
-        margin-top: 5em;
-        margin-left: 0;
-        padding: 0px;
+    // Shuffle things around so they're in the right place
+    #map_box {
+        top: 11em;
+        left: 40em;
+    }
+    #map_sidebar {
+        top: 11em;
         width: 40em;
+        padding: 0;
         background: #fff url(/cobrands/zurich/admin-faux-columns.gif) top center repeat-y;
         @include box-shadow(0 0 5px rgba(0,0,0,0.5));
+    }
+    .content {
+        // To push down the admin navigation
+        margin-top: 6em;
     }
 }
 
