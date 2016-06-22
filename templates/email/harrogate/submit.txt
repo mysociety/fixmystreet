@@ -21,7 +21,9 @@ Email: [% email %]
 
 [% detail %] [% additional_information %]
 
-[% easting_northing %]Latitude: [% latitude %]
+Easting/Northing: [% easting %]/[% northing %]
+
+Latitude: [% latitude %]
 
 Longitude: [% longitude %]
 

@@ -13,7 +13,9 @@ of a problem that they believe might require your attention.
 
 Details: [% detail %]
 
-[% easting_northing %]Latitude: [% latitude %]
+Easting/Northing: [% easting %]/[% northing %]
+
+Latitude: [% latitude %]
 
 Longitude: [% longitude %]
 

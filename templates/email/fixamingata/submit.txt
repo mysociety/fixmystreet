@@ -28,7 +28,7 @@ ID: [% id %]
 
 ** Geografisk position
 
-[% easting_northing %]Latitude: [% latitude %]
+Latitude: [% latitude %]
 
 Longitude: [% longitude %]
 

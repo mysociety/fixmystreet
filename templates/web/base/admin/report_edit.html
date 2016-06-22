@@ -25,11 +25,18 @@
     '/' UNLESS c.config.MAPIT_URL.search('/$')
 %]point/4326/[% problem.longitude %],[% problem.latitude %].html"
 class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
-( [%
+
+[% SET local_coords = problem.local_coords;
+   IF local_coords %]
+    ([% local_coords.0 %], [% local_coords.1 %])
+[% END %]
+
+([%
     SET postcode_safe = problem.postcode | html;
     tprintf( loc('originally entered: &ldquo;%s&rdquo;'), postcode_safe )
 %],
-[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</li>
+[% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])
+</li>
 
 <li>[% loc('Body:') %]
   [% IF problem.bodies_str %]

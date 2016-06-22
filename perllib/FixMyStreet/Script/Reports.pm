@@ -108,8 +108,6 @@ sub send(;$) {
             $h{user_details} .= sprintf(_('Email: %s'), $row->user->email) . "\n\n";
         }
 
-        $h{easting_northing} = '';
-
         if ($cobrand->can('process_additional_metadata_for_email')) {
             $cobrand->process_additional_metadata_for_email($row, \%h);
         }
@@ -150,19 +148,9 @@ sub send(;$) {
                 $reporters{ $sender }->add_body( $body, $sender_info->{config} );
             }
 
-            # If we are in the UK include eastings and northings, and nearest stuff
+            # If we are in the UK include eastings and northings
             if ( $cobrand->country eq 'GB' && !$h{easting} ) {
-                my $coordsyst = 'G';
-                my $first_area = $body->body_areas->first->area_id;
-                my $area_info = mySociety::MaPit::call('area', $first_area);
-                $coordsyst = 'I' if $area_info->{type} eq 'LGD';
-
-                ( $h{easting}, $h{northing} ) = Utils::convert_latlon_to_en( $h{latitude}, $h{longitude}, $coordsyst );
-
-                # email templates don't have conditionals so we need to format this here
-                $h{easting_northing} = "Easting/Northing";
-                $h{easting_northing} .= " (IE)" if $coordsyst eq 'I';
-                $h{easting_northing} .= ": $h{easting}/$h{northing}\n\n";
+                ( $h{easting}, $h{northing}, $h{coordsyst} ) = $row->local_coords;
             }
         }
 
