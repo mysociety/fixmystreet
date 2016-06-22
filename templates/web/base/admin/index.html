@@ -44,6 +44,22 @@ and to receive notices of updates.
 <input type="submit" value="[% loc('Go') %]">
 </form>
 
+[% IF unsent_reports.size %]
+<h2>[% loc('Reports waiting to be sent') %]</h2>
+
+<table cellspacing="0" cellpadding="2" border="1">
+    <tr>
+        <th>[% loc('ID') %]</th>
+        <th>[% loc('Title') %]</th>
+        <th>[% loc('Name') %]</th>
+        <th>[% loc('Body') %]</th>
+        <th>[% loc('State') %]</th>
+        <th>*</th>
+    </tr>
+    [% INCLUDE 'admin/problem_row.html' problems = unsent_reports %]
+</table>
+[% END %]
+
 <h2>[% loc('Stats') %]</h2>
 [% INCLUDE 'status/stats.html' admin_include_users=1 %]
 

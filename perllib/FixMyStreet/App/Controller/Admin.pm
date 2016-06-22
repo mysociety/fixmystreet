@@ -73,6 +73,13 @@ sub index : Path : Args(0) {
 
     $c->forward('stats_by_state');
 
+    my @unsent = $c->model('DB::Problem')->search( {
+        state => [ 'confirmed' ],
+        whensent => undef,
+        bodies_str => { '!=', undef },
+    } )->all;
+    $c->stash->{unsent_reports} = \@unsent;
+
     my $alerts = $c->model('DB::Alert')->summary_report_alerts( $c->cobrand->restriction );
 
     my %alert_counts =
