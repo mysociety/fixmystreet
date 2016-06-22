@@ -1,0 +1,14 @@
+@import "_colours";
+@import "../sass/layout";
+
+.big-green-banner {
+    text-transform: none;
+}
+
+.nav-menu--main a.report-a-problem-btn {
+    color: white;
+}
+
+#front-main {
+    background-color: $front_main_background;
+}
