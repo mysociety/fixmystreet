@@ -1066,6 +1066,7 @@ sub user_add : Path('user_edit') : Args(0) {
     my $user = $c->model('DB::User')->find_or_create( {
         name => $c->get_param('name'),
         email => $c->get_param('email'),
+        phone => $c->get_param('phone') || undef,
         from_body => $c->get_param('body') || undef,
         flagged => $c->get_param('flagged') || 0,
     }, {
@@ -1098,6 +1099,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->email ne $c->get_param('email') ||
             $user->name ne $c->get_param('name') ||
+            $user->phone ne $c->get_param('phone') ||
             ($user->from_body && $user->from_body->id ne $c->get_param('body')) ||
             (!$user->from_body && $c->get_param('body'))
         ) {
@@ -1106,6 +1108,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         $user->name( $c->get_param('name') );
         $user->email( $c->get_param('email') );
+        $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
         $user->from_body( $c->get_param('body') || undef );
         $user->flagged( $c->get_param('flagged') || 0 );
 

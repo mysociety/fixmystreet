@@ -15,9 +15,13 @@
               %]
             </p>
           </div>
-          [% loc('Name:') %] <input type='text' name='name' id='name' value='[% user.name | html %]'>
+          <label for="name">[% loc('Name:') %]</label>
+          <input type='text' name='name' id='name' value='[% user.name | html %]'>
         </li>
-        <li>[% loc('Email:') %] <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
+        <li><label for="email">[% loc('Email:') %]</label>
+        <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
+        <li><label for="phone">[% loc('Phone:') %]</label>
+        <input type='text' id='phone' name='phone' value='[% user.phone | html %]'></li>
         <li>
           <div class="admin-hint">
             <p>

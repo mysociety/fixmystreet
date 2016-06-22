@@ -1136,6 +1136,7 @@ for my $test (
             name => 'Test User',
             email => 'test@example.com',
             body => $haringey->id,
+            phone => '',
             flagged => undef,
         },
         changes => {
@@ -1150,6 +1151,7 @@ for my $test (
             name => 'Changed User',
             email => 'test@example.com',
             body => $haringey->id,
+            phone => '',
             flagged => undef,
         },
         changes => {
@@ -1164,6 +1166,7 @@ for my $test (
             name => 'Changed User',
             email => 'changed@example.com',
             body => $haringey->id,
+            phone => '',
             flagged => undef,
         },
         changes => {
@@ -1178,6 +1181,7 @@ for my $test (
             name => 'Changed User',
             email => 'changed@example.com',
             body => $southend->id,
+            phone => '',
             flagged => undef,
         },
         changes => {
@@ -1192,6 +1196,7 @@ for my $test (
             name => 'Changed User',
             email => 'changed@example.com',
             body => $southend->id,
+            phone => '',
             flagged => 'on',
         },
         changes => {
