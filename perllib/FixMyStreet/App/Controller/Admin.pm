@@ -1106,7 +1106,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->email ne $c->get_param('email') ||
             $user->name ne $c->get_param('name') ||
-            $user->phone ne $c->get_param('phone') ||
+            ($user->phone || "") ne $c->get_param('phone') ||
             ($user->from_body && $user->from_body->id ne $c->get_param('body')) ||
             (!$user->from_body && $c->get_param('body'))
         ) {
