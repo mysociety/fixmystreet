@@ -64,6 +64,14 @@ sub index : Path : Args(0) {
         return $c->res->redirect($new_uri);
     }
 
+    # Pre-fill the name/email fields from querystring
+    if ( $c->get_param('initial[email]') ) {
+        $c->stash->{initial_email} = $c->get_param('initial[email]');
+    }
+    if ( $c->get_param('initial[name]') ) {
+        $c->stash->{initial_name} = $c->get_param('initial[name]');
+    }
+
     # Show the nearby reports
     $c->detach('display_location');
 }
