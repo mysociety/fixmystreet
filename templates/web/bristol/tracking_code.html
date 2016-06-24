@@ -1,0 +1,15 @@
+[% IF c.config.BASE_URL == "https://www.fixmystreet.com" %]
+
+<script>
+    !function(b,r,i,s,t,o,l){b.GoogleAnalyticsObject=i;b[i]||(b[i]=function(){
+    (b[i].q=b[i].q||[]).push(arguments)});b[i].l=+new Date;o=r.createElement(s);
+    l=r.getElementsByTagName(s)[0];o.src=t;l.parentNode.insertBefore(o,l)}
+    (window,document,'ga','script','https://www.google-analytics.com/analytics.js');
+
+    ga('create', 'UA-79501135-1', 'auto');
+    ga('send', 'pageview');
+</script>
+
+[% ELSE %]
+<!-- Tracking code not inserted as "[% c.config.BASE_URL %]" not "https://www.fixmystreet.com" -->
+[% END %]
