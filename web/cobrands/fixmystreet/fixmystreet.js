@@ -307,10 +307,6 @@ $(function(){
     /*
      * Map controls prettiness
      */
-    //add links container (if its not there)
-    if($('#sub_map_links').length === 0){
-        $('<p id="sub_map_links" />').insertAfter($('#map'));
-    }
 
 // A sliding drawer from the bottom of the page, small version
 // that doesn't change the main content at all.
@@ -446,11 +442,15 @@ $.fn.drawer = function(id, ajax) {
     });
 
     //add permalink on desktop, force hide on mobile
-    if (cobrand != 'zurich') {
+    //add links container (if its not there)
+    if (cobrand != 'zurich' && !$('.mobile').length) {
+        if ($('#sub_map_links').length === 0) {
+            $('<p id="sub_map_links" />').insertAfter($('#map'));
+        }
         $('#sub_map_links').append('<a href="#" id="map_permalink">' + translation_strings.permalink + '</a>');
     }
 
-    if($('.mobile').length){
+    if ($('.mobile').length) {
         $('#map_permalink').hide();
         $('#key-tools a.feed').appendTo('#sub_map_links');
         $('#key-tools li:empty').remove();

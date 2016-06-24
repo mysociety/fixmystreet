@@ -301,9 +301,13 @@ label{
   margin-top: 1.25em;
   margin-bottom: 0.25em;
   font-weight: bold;
-  &.inline{
+  &.inline {
     display: inline;
     padding: flip(0 2em 0 1em, 0 1em 0 2em);
+    font-weight: normal;
+  }
+  &.inline-text {
+    display: inline;
     font-weight: normal;
   }
 }
@@ -542,10 +546,9 @@ body.mappage .wrapper {
   position: static;
 }
 
-
 // #key-tools is the list that's pulled out an stick to the bottom of the page of desktop, below is mostly just aesthetic
 .shadow-wrap {
-  @extend .full-width;
+  margin: 0 -1em;
   ul#key-tools{
     @include list-reset-soft;
     margin-bottom: 1em;
@@ -644,7 +647,7 @@ footer {
 }
 
 #footer-mobileapps {
-  @extend .full-width;
+  margin: 0 -1em;
   padding: 1em 1em 0;
   h4 {
     margin:0;
@@ -998,10 +1001,9 @@ input.final-submit {
 
 // map stuff
 #map_box {
-  @extend .full-width;
+  margin: 0 -1em 1em;
   background: #333;
   height: 29em;
-  margin-bottom: 1em;
   overflow: hidden;
   position: relative;
 
@@ -1348,11 +1350,10 @@ table.nicetable {
 }
 
 .promo {
-  @extend .full-width;
+  margin: 0 -1em 1em;
   color: $primary_text;
   background: $primary;
   padding:1em;
-  margin-bottom:1em;
   overflow:hidden;
   position: relative;
   .close-promo {
@@ -1372,10 +1373,9 @@ table.nicetable {
 }
 
 .alert {
-  @extend .full-width;
+  margin: 0 -1em 1em;
   background:#ff0000;
   padding:1em;
-  margin-bottom:1em;
   color:#fff;
   a, a:hover {
     color:$primary;
@@ -1442,7 +1442,7 @@ table.nicetable {
     margin: 0.5em 0 0;
   }
   #postcodeForm {
-    @extend .full-width;
+    margin: 0 -1em;
     padding:1em;
     color: $primary_text;
     background: $primary;

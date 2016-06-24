@@ -324,6 +324,18 @@ body.mappage {
   }
 }
 
+// Want to cover over the blue sidebar
+body.mappage.admin {
+    .full-width--top {
+        margin-top: -1em;
+        padding-top: 1em;
+    }
+    .full-width--bottom {
+        padding-bottom: 1em;
+        margin-bottom: -4em;
+    }
+}
+
 #map_box {
   position: absolute;
   z-index: auto;
@@ -839,7 +851,7 @@ textarea.form-error {
 }
 
 // Notes presented alongside the reporting form
-#report-a-problem-sidebar {
+.sidebar, #report-a-problem-sidebar {
   margin-bottom: 2em;
 
   // If the parent is .with-notes we know we have space to
@@ -852,6 +864,13 @@ textarea.form-error {
 
   div {
     font-size: 0.75em;
+  }
+
+  ul {
+      @include list-reset-soft;
+      li {
+          margin-bottom: 0.5em;
+      }
   }
 
   .sidebar-notes {

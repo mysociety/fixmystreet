@@ -652,23 +652,21 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('/auth/get_csrf_token');
 
-    if ( $c->cobrand->moniker eq 'zurich' ) {
-        $c->stash->{page} = 'admin';
-        FixMyStreet::Map::display_map(
-            $c,
+    $c->stash->{page} = 'admin';
+    FixMyStreet::Map::display_map(
+        $c,
+        latitude  => $problem->latitude,
+        longitude => $problem->longitude,
+        pins      => $problem->used_map
+        ? [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            pins      => $problem->used_map
-            ? [ {
-                latitude  => $problem->latitude,
-                longitude => $problem->longitude,
-                colour    => $c->cobrand->pin_colour($problem),
-                type      => 'big',
-              } ]
-            : [],
-            print_report => 1,
-        );
-    }
+            colour    => $c->cobrand->pin_colour($problem, 'admin'),
+            type      => 'big',
+          } ]
+        : [],
+        print_report => 1,
+    );
 
     if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
         $self->rotate_photo($c, $problem, @$rotate_photo_param);
@@ -707,8 +705,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
     elsif ( $c->get_param('mark_sent') ) {
         $c->forward('/auth/check_csrf_token');
-        $problem->whensent(\'current_timestamp');
-        $problem->update();
+        $problem->update({ whensent => \'current_timestamp' })->discard_changes;
         $c->stash->{status_message} = '<p><em>' . _('That problem has been marked as sent.') . '</em></p>';
         $c->forward( 'log_edit', [ $id, 'problem', 'marked sent' ] );
     }
