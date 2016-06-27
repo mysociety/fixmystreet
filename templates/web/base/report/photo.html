@@ -4,8 +4,8 @@
   [% END %]
   [% FOR photo IN object.photos %]
     <div class="update-img">
-        <a href="[% c.cobrand.base_url %][% photo.url_full %]" rel="fancy">
-            <img alt="Photo of this report" src="[% c.cobrand.base_url %][% photo.url %]">
+        <a href="[% photo.url_full %]" rel="fancy">
+            <img alt="Photo of this report" src="[% photo.url %]">
         <span>zoom</span></a>
     </div>
   [% END %]
