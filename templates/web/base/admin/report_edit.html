@@ -52,7 +52,7 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 [% IF problem.used_map %][% loc('used map') %][% ELSE %][% loc("didn't use map") %][% END %])</small>
 </li>
 
-<li>[% loc('Body:') %]
+<li>[% loc('Bodies') %]:
   [% IF problem.bodies_str %]
     [% FOREACH body IN problem.bodies.values %]
       [% SET body_printed = 1 %]
@@ -67,6 +67,9 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
   [% END %]
   <small>([% loc('other areas:') %] [% problem.areas | remove('^,') | remove( ',$' ) | replace(',', ', ') %])</small>
 </li>
+[% IF problem.bodies_missing %]
+<li>[% loc('Missing bodies:') %] [% problem.bodies_missing | html %]</li>
+[% END %]
 [% IF problem.extra.address %]
 <li>[% loc('Property address:') %] [% problem.extra.address | html %]</li>
 [% END %]
@@ -74,8 +77,14 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li class="sm">[% loc('Created:') %] [% PROCESS format_time time=problem.created %]</li>
 <li class="sm">[% loc('Confirmed:') %] [% PROCESS format_time time=problem.confirmed no_time='-' %]</li>
 <li class="sm">[% loc('Sent:') %] [% PROCESS format_time time=problem.whensent %]
-[% IF problem.state == 'confirmed' AND problem.whensent %]<input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">[% END %]
-[% IF NOT problem.whensent %]<input type="submit" name="mark_sent" value="[% loc('Mark as sent') %]">[% END %]
+  [% IF problem.send_method_used %]
+    ([% problem.send_method_used %])
+  [% END %]
+  [% IF problem.state == 'confirmed' AND problem.whensent %]
+    <input onclick="return confirm('[% loc('You really want to resend?') %]')" type="submit" name="resend" value="[% loc('Resend report') %]">
+  [% ELSIF NOT problem.whensent %]
+    <input type="submit" name="mark_sent" value="[% loc('Mark as sent') %]">
+  [% END %]
 </li>
 <li class="sm">[% loc('Last update:') %] [% PROCESS format_time time=problem.lastupdate %]</li>
 <li>[% loc('Service:') %] [% problem.service OR '<em>' _ loc('None') _ '</em>' %]</li>
@@ -84,6 +93,13 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 </li>
 <li>[% loc('Extra data:') %] [% problem.extra ? 'Yes' : 'No' %]</li>
 <li>[% loc('Going to send questionnaire?') %] [% IF problem.send_questionnaire %][% loc('Yes') %][% ELSE %][% loc('No') %][% END %]</li>
+
+<li><label for="external_id">[% loc('External ID') %]:</label>
+    <input type="text" name="external_id" id="external_id" value="[% problem.external_id | html %]">
+<li><label for="external_body">[% loc('External body') %]:</label>
+    <input type="text" name="external_body" body="external_body" value="[% problem.external_body | html %]">
+<li><label for="external_team">[% loc('External team') %]:</label>
+    <input type="text" name="external_team" team="external_team" value="[% problem.external_team | html %]">
 
 </ul>
 </div>
