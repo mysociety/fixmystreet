@@ -55,9 +55,8 @@ sub base_url {
     my $base_url = FixMyStreet->config('BASE_URL');
     my $u = $self->council_url;
     if ( $base_url !~ /$u/ ) {
-        # council cobrands are not https so transform to http as well
-        $base_url =~ s{(https?)://(?!www\.)}{http://$u.}g;
-        $base_url =~ s{(https?)://www\.}{http://$u.}g;
+        $base_url =~ s{(https?://)(?!www\.)}{$1$u.}g;
+        $base_url =~ s{(https?://)www\.}{$1$u.}g;
     }
     return $base_url;
 }
