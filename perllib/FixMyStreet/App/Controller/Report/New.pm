@@ -877,20 +877,20 @@ sub process_report : Private {
         }
 
         my @extra;
-        # NB: we are only checking extras for the *first* retrieved contact.
-        my $metas = $contacts[0]->get_extra_fields();
-
-        foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' ) {
-                unless ( $c->get_param($field->{code}) ) {
-                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+        foreach my $contact (@contacts) {
+            my $metas = $contact->get_extra_fields;
+            foreach my $field ( @$metas ) {
+                if ( lc( $field->{required} ) eq 'true' ) {
+                    unless ( $c->get_param($field->{code}) ) {
+                        $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                    }
                 }
+                push @extra, {
+                    name => $field->{code},
+                    description => $field->{description},
+                    value => $c->get_param($field->{code}) || '',
+                };
             }
-            push @extra, {
-                name => $field->{code},
-                description => $field->{description},
-                value => $c->get_param($field->{code}) || '',
-            };
         }
 
         if ( $c->stash->{non_public_categories}->{ $report->category } ) {
