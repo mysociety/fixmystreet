@@ -55,7 +55,12 @@ sub load_and_check_areas : Private {
     $params{generation} = $c->config->{MAPIT_GENERATION}
         if $c->config->{MAPIT_GENERATION};
 
-    if ( $c->stash->{fetch_all_areas} ) {
+    if ($c->stash->{prefetched_all_areas}) {
+        $all_areas = {
+            map { $_ => { id => $_ } }
+            @{$c->stash->{prefetched_all_areas}}
+        };
+    } elsif ( $c->stash->{fetch_all_areas} ) {
         my %area_types = map { $_ => 1 } @$area_types;
         $all_areas =
           mySociety::MaPit::call( 'point',

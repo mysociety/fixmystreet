@@ -681,6 +681,8 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
     }
 
+    $c->stash->{categories} = $c->forward('categories_for_point');
+
     if ( $c->cobrand->moniker eq 'zurich' ) {
         my $done = $c->cobrand->admin_report_edit();
         return if $done;
@@ -729,11 +731,17 @@ sub report_edit : Path('report_edit') : Args(1) {
             flagged => $c->get_param('flagged') ? 1 : 0,
             non_public => $c->get_param('non_public') ? 1 : 0,
         );
-        $columns{bodies_str} = $c->get_param('body') if $c->get_param('body');
         foreach (qw/state anonymous title detail name external_id external_body external_team/) {
             $columns{$_} = $c->get_param($_);
         }
         $problem->set_inflated_columns(\%columns);
+
+        if ((my $category = $c->get_param('category')) ne $problem->category) {
+            $problem->category($category);
+            my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+            my $bs = join( ',', map { $_->body_id } @contacts );
+            $problem->bodies_str($bs);
+        }
 
         if ( $c->get_param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(
@@ -775,6 +783,24 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
 
     return 1;
+}
+
+sub categories_for_point : Private {
+    my ($self, $c) = @_;
+
+    $c->stash->{report} = $c->stash->{problem};
+    # We have a report, stash its location
+    $c->forward('/report/new/determine_location_from_report');
+    # Look up the areas for this location
+    $c->stash->{prefetched_all_areas} = [ grep { $_ } split ',', $c->stash->{report}->areas ];
+    $c->forward('/around/check_location_is_acceptable');
+    # As with a new report, fetch the bodies/categories
+    $c->forward('/report/new/setup_categories_and_bodies');
+
+    # Remove the "Pick a category" option
+    shift @{$c->stash->{category_options}} if @{$c->stash->{category_options}};
+
+    return $c->stash->{category_options};
 }
 
 sub templates : Path('templates') : Args(0) {
