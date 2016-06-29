@@ -1,14 +1,20 @@
 /**
- * OpenLayers Swiss (CH1903) grid projection transformations
+ * OpenLayers Swiss (CH1903+/LV95) grid projection transformations
  * 
- * Provides transform functions for WGS84<->CH1903 projections.
+ * Provides transform functions for WGS84<->CH1903+ projections.
  *
  * Maths courtesy of the Swiss Federal Office of Topography:
  * http://www.swisstopo.admin.ch/internet/swisstopo/en/home/products/software/products/skripts.html
  * Simplifed a bit, and with x/y swapped the normal way round.
  */
 
-OpenLayers.Projection.CH1903 = {
+// Use the same calcs as CH1903 but with offset.
+// Maximum distortion is 3M which should be sufficient for our purposes.
+var LV95_X_OFFSET = 2000000;
+var LV95_Y_OFFSET = 1000000;
+
+
+OpenLayers.Projection.CH1903Plus = {
 
     // Convert WGS lat/long (° dec) to CH x
     WGStoCHx: function(lat, lng) {
@@ -22,7 +28,7 @@ OpenLayers.Projection.CH1903 = {
         var lng_aux = (lng - 26782.5) / 10000;
 
         // Process X
-        var x = 600072.37;
+        var x = 600072.37 + LV95_X_OFFSET;
         x = x + (211455.93 * lng_aux);
         x = x - (10938.51 * lng_aux * lat_aux);
         x = x - (0.36 * lng_aux * Math.pow(lat_aux, 2));
@@ -43,7 +49,7 @@ OpenLayers.Projection.CH1903 = {
         var lng_aux = (lng - 26782.5)/10000;
 
         // Process Y
-        var y = 200147.07;
+        var y = 200147.07 + LV95_Y_OFFSET;
         y = y + (308807.95 * lat_aux);
         y = y + (3745.25 * Math.pow(lng_aux, 2));
         y = y + (76.63 * Math.pow(lat_aux, 2));
@@ -59,8 +65,8 @@ OpenLayers.Projection.CH1903 = {
 
         // Converts militar to civil and  to unit = 1000km
         // Axiliary values (% Bern)
-        var x_aux = (x - 600000) / 1000000;
-        var y_aux = (y - 200000) / 1000000;
+        var x_aux = (x - 600000 - LV95_X_OFFSET) / 1000000;
+        var y_aux = (y - 200000 - LV95_Y_OFFSET) / 1000000;
 
         // Process lat
         var lat = 16.9023892;
@@ -82,8 +88,8 @@ OpenLayers.Projection.CH1903 = {
 
         // Converts militar to civil and  to unit = 1000km
         // Axiliary values (% Bern)
-        var x_aux = (x - 600000) / 1000000;
-        var y_aux = (y - 200000) / 1000000;
+        var x_aux = (x - 600000 - LV95_X_OFFSET) / 1000000;
+        var y_aux = (y - 200000 - LV95_Y_OFFSET) / 1000000;
 
         // Process long
         var lng = 2.6779094;
@@ -101,8 +107,8 @@ OpenLayers.Projection.CH1903 = {
 
     // Function to convert a WGS84 coordinate to a Swiss coordinate.
     projectForwardSwiss: function(point) {
-        var x = OpenLayers.Projection.CH1903.WGStoCHx(point.y, point.x),
-            y = OpenLayers.Projection.CH1903.WGStoCHy(point.y, point.x);
+        var x = OpenLayers.Projection.CH1903Plus.WGStoCHx(point.y, point.x),
+            y = OpenLayers.Projection.CH1903Plus.WGStoCHy(point.y, point.x);
         point.x = x;
         point.y = y;
         return point;
@@ -110,8 +116,8 @@ OpenLayers.Projection.CH1903 = {
 
     // Function to convert a Swiss coordinate to a WGS84 coordinate. 
     projectInverseSwiss: function(point) {
-        var lon = OpenLayers.Projection.CH1903.chToWGSlng(point.x, point.y);
-        var lat = OpenLayers.Projection.CH1903.chToWGSlat(point.x, point.y);
+        var lon = OpenLayers.Projection.CH1903Plus.chToWGSlng(point.x, point.y);
+        var lat = OpenLayers.Projection.CH1903Plus.chToWGSlat(point.x, point.y);
         point.x = lon;
         point.y = lat;
         return point;
@@ -120,9 +126,9 @@ OpenLayers.Projection.CH1903 = {
 
 /**
  * Note: One transform declared
- * Transforms from EPSG:4326 to EPSG:21781
+ * Transforms from EPSG:4326 to EPSG:2056
  */
- OpenLayers.Projection.addTransform("EPSG:4326", "EPSG:21781",
-    OpenLayers.Projection.CH1903.projectForwardSwiss);
- OpenLayers.Projection.addTransform("EPSG:21781", "EPSG:4326",
-    OpenLayers.Projection.CH1903.projectInverseSwiss);
+ OpenLayers.Projection.addTransform("EPSG:4326", "EPSG:2056",
+    OpenLayers.Projection.CH1903Plus.projectForwardSwiss);
+ OpenLayers.Projection.addTransform("EPSG:2056", "EPSG:4326",
+    OpenLayers.Projection.CH1903Plus.projectInverseSwiss);

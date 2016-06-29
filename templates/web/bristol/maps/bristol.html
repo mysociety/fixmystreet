@@ -2,8 +2,12 @@
 <script type="text/javascript" src="[% version('/js/OpenLayers.2.11.zurich.js') %]"></script>
 <script type="text/javascript" src="[% version('/js/OpenLayers.Projection.OrdnanceSurvey.js') %]"></script>
 <script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-wmts-base.js') %]"></script>
 <script type="text/javascript" src="[% version('/js/map-wmts-bristol.js') %]"></script>
 <script type="text/javascript" src="[% version('/js/jquery.ba-hashchange.min.js') %]"></script>
 [% END %]
 
-[% map_html = INCLUDE maps/openlayers.html %]
+[% map_html = BLOCK %]
+[% INCLUDE maps/openlayers.html %]
+[% INCLUDE maps/wmts_config.html %]
+[% END %]

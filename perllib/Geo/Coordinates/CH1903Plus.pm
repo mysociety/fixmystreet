@@ -1,5 +1,5 @@
-# Geo::Coordinates::CH1903
-# Conversion between WGS84 and Swiss CH1903.
+# Geo::Coordinates::CH1903Plus
+# Conversion between WGS84 and Swiss CH1903+ (aka LV95).
 #
 # Copyright (c) 2012 UK Citizens Online Democracy. This module is free
 # software; you can redistribute it and/or modify it under the same terms as
@@ -7,15 +7,20 @@
 #
 # WWW: http://www.mysociety.org/
 
-package Geo::Coordinates::CH1903;
+package Geo::Coordinates::CH1903Plus;
 
-$Geo::Coordinates::CH1903::VERSION = '1.00';
+$Geo::Coordinates::CH1903Plus::VERSION = '1.00';
 
 use strict;
 
+# Use the same calcs as CH1903 but with offset.
+# Maximum distortion is 3M which should be sufficient for our purposes.
+use constant LV95_X_OFFSET => 2000000;
+use constant LV95_Y_OFFSET => 1000000;
+
 =head1 NAME
 
-Geo::Coordinates::CH1903
+Geo::Coordinates::CH1903Plus
 
 =head1 VERSION
 
@@ -23,11 +28,11 @@ Geo::Coordinates::CH1903
 
 =head1 SYNOPSIS
 
-    use Geo::Coordinates::CH1903;
+    use Geo::Coordinates::CH1903Plus;
 
     my ($lat, $lon) = ...;
-    my ($e, $n) = Geo::Coordinates::CH1903::from_latlon($lat, $lon);
-    my ($lat, $lon) = Geo::Coordinates::CH1903::to_latlon($e, $n);
+    my ($e, $n) = Geo::Coordinates::CH1903Plus::from_latlon($lat, $lon);
+    my ($lat, $lon) = Geo::Coordinates::CH1903Plus::to_latlon($e, $n);
 
 =head1 FUNCTIONS
 
@@ -44,13 +49,13 @@ sub from_latlon($$) {
     my $lat_aux = ($lat - 169028.66) / 10000;
     my $lon_aux = ($lon - 26782.5) / 10000;
 
-    my $x = 600072.37
+    my $x = 600072.37 + LV95_X_OFFSET
         + (211455.93 * $lon_aux)
         - (10938.51 * $lon_aux * $lat_aux)
         - (0.36 * $lon_aux * $lat_aux**2)
         - (44.54 * $lon_aux**3);
 
-    my $y = 200147.07
+    my $y = 200147.07 + LV95_Y_OFFSET
         + (308807.95 * $lat_aux)
         + (3745.25 * $lon_aux**2)
         + (76.63 * $lat_aux**2)
@@ -63,8 +68,8 @@ sub from_latlon($$) {
 sub to_latlon($$) {
     my ($x, $y) = @_;
 
-    my $x_aux = ($x - 600000) / 1000000;
-    my $y_aux = ($y - 200000) / 1000000;
+    my $x_aux = ($x - 600000 - LV95_X_OFFSET) / 1000000;
+    my $y_aux = ($y - 200000 - LV95_Y_OFFSET) / 1000000;
 
     my $lat = 16.9023892
         + (3.238272 * $y_aux)

@@ -118,52 +118,9 @@ var matrix_ids = [
     if ( fixmystreet.page == 'report' ) {
         fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
     }
-
-    fixmystreet.map_type = OpenLayers.Layer.WMTS;
-
-    // Set DPI - default is 72
-    OpenLayers.DOTS_PER_INCH = fixmystreet.wmts_config.tile_dpi;
-
-    fixmystreet.map_options = {
-        maxExtent: layer_bounds,
-        units: 'm',
-        scales: fixmystreet.wmts_config.scales
-    };
-
-    fixmystreet.layer_options = [{
-        projection: new OpenLayers.Projection(fixmystreet.wmts_config.map_projection),
-        name: fixmystreet.wmts_config.layer_name,
-        layer: fixmystreet.wmts_config.layer_name,
-        formatSuffix: fixmystreet.wmts_config.tile_suffix.replace(".", ""),
-        matrixSet: fixmystreet.wmts_config.matrix_set,
-        requestEncoding: "REST",
-        url: fixmystreet.wmts_config.tile_url,
-        style: fixmystreet.wmts_config.layer_style,
-        matrixIds: matrix_ids,
-        tileOrigin: new OpenLayers.LonLat(fixmystreet.wmts_config.origin_x, fixmystreet.wmts_config.origin_y)
-    }];
-
-    // Give main code a new bbox_strategy that translates between
-    // lat/lon and our WMTS layer's coordinates
-    fixmystreet.bbox_strategy = new OpenLayers.Strategy.ReprojectBBOX({ratio: 1});
+    
+    setup_wmts_base_map();
 }
-
-OpenLayers.Strategy.ReprojectBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
-    getMapBounds: function() {
-        // Get the map bounds but return them in lat/lon, not
-        // local coordinates
-        if (this.layer.map === null) {
-            return null;
-        }
-
-        var localBounds = this.layer.map.getExtent();
-        // Transform bound corners into WGS84
-        localBounds.transform( new OpenLayers.Projection(fixmystreet.wmts_config.map_projection), new OpenLayers.Projection("EPSG:4326") );
-        return localBounds;
-    },
-
-    CLASS_NAME: "OpenLayers.Strategy.ReprojectBBOX"
-});
 
 function fms_marker_size_for_zoom(zoom) {
     if (zoom >= 7) {

@@ -13,7 +13,7 @@ package FixMyStreet::Geocode::Zurich;
 use strict;
 use Digest::MD5 qw(md5_hex);
 use File::Path ();
-use Geo::Coordinates::CH1903;
+use Geo::Coordinates::CH1903Plus;
 use Storable;
 use Utils;
 
@@ -46,7 +46,7 @@ sub setup_soap {
         )
     );
     $soap = SOAP::Lite->on_action( sub { $action . $_[1]; } )->proxy($url);
-    $method = SOAP::Data->name('getLocation')->attr({ xmlns => $attr });
+    $method = SOAP::Data->name('getLocation95')->attr({ xmlns => $attr });
 }
 
 # string STRING CONTEXT
@@ -95,7 +95,7 @@ sub string {
     foreach (@$results) {
         ($latitude, $longitude) =
             map { Utils::truncate_coordinate($_) }
-            Geo::Coordinates::CH1903::to_latlon($_->{easting}, $_->{northing});
+            Geo::Coordinates::CH1903Plus::to_latlon($_->{easting}, $_->{northing});
         push (@$error, {
             address => $_->{text},
             latitude => $latitude,

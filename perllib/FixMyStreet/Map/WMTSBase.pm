@@ -42,7 +42,8 @@ sub zoom_parameters {
 # A hash of parameters used in calculations for map tiles
 sub tile_parameters {
     my $params = {
-        url          => '', # URL of the map tiles, up to the /{z}/{x}/{y} part
+        urls         => [ '' ], # URL of the map tiles, up to the /{z}/{x}/{y} part
+        layer_names  => [ '' ],
         wmts_version => '1.0.0',
         layer_style  => '',
         matrix_set   => '',
@@ -206,14 +207,14 @@ sub get_map_hash {
         numZoomLevels => $self->zoom_parameters->{default_zoom},
         tile_size => $self->tile_parameters->{size},
         tile_dpi => $self->tile_parameters->{dpi},
-        tile_url => $self->tile_parameters->{url},
+        tile_urls => encode_json $self->tile_parameters->{urls},
         tile_suffix => $self->tile_parameters->{suffix},
-        layer_name => $self->tile_parameters->{layer_name},
+        layer_names => encode_json $self->tile_parameters->{layer_names},
         layer_style => $self->tile_parameters->{layer_style},
         matrix_set => $self->tile_parameters->{matrix_set},
         map_projection => $self->tile_parameters->{projection},
-        origin_x => $self->tile_parameters->{origin_x},
-        origin_y => $self->tile_parameters->{origin_y},
+        origin_x => force_float_format($self->tile_parameters->{origin_x}),
+        origin_y => force_float_format($self->tile_parameters->{origin_y}),
         scales => encode_json \@scales,
     };
 }
@@ -222,7 +223,7 @@ sub tile_base_url {
     my $self = shift;
     my $params = $self->tile_parameters;
     return sprintf '%s/%s/%s/%s/%s',
-        $params->{url}, $params->{wmts_version}, $params->{layer_name},
+        $params->{urls}[0], $params->{wmts_version}, $params->{layer_names}[0],
         $params->{layer_style}, $params->{matrix_set};
 }
 
@@ -334,6 +335,13 @@ sub click_to_wgs84 {
     my $zoom = (defined $c->get_param('zoom') ? $c->get_param('zoom') : $self->zoom_parameters->{default_zoom});
     my ($lat, $lon) = $self->tile_to_latlon($tile_x, $tile_y, $zoom);
     return ( $lat, $lon );
+}
+
+sub force_float_format {
+  my $in = shift;
+  return mySociety::Locale::in_gb_locale {
+      sprintf( '%f', $in );
+  };
 }
 
 1;
