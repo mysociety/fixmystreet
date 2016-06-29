@@ -16,8 +16,8 @@ my $problem_rs = FixMyStreet::DB->resultset('Problem');
 my $problem = $problem_rs->new(
     {
         postcode     => 'EH99 1SP',
-        latitude     => '51.5',
-        longitude    => '-0.1',
+        latitude     => '54.5',
+        longitude    => '-1.5',
         areas        => 1,
         title        => '',
         detail       => '',
@@ -487,7 +487,7 @@ foreach my $test ( {
         to            => qr'Ballymoney Borough Council',
         body          => $body_ids{14279}[0],
         category      => 'Graffiti',
-        longitude => -9.5,
+        longitude => -6.5,
     }, {
         %common,
         desc          => 'directs NI correctly, 2',
@@ -497,7 +497,7 @@ foreach my $test ( {
         to            => qr'TransportNI \(Western\)" <roads',
         body          => $body_ids{14279}[1],
         category      => 'Street lighting',
-        longitude => -9.5,
+        longitude => -6.5,
     }, {
         %common,
         desc          => 'does not send to unconfirmed contact',
@@ -535,7 +535,7 @@ foreach my $test ( {
             category => $test->{ category } || 'potholes',
             name => $test->{ name },
             cobrand => $test->{ cobrand } || 'fixmystreet',
-            longitude => $test->{longitude} || '-0.1',
+            longitude => $test->{longitude} || '-1.5',
         } );
 
         FixMyStreet::override_config $override, sub {
@@ -552,7 +552,7 @@ foreach my $test ( {
             like $email->body, qr/Subject: A Title/, 'more email body checking';
             like $email->body, $test->{ dear }, 'Salutation looks correct';
             if ($test->{longitude}) {
-                like $email->body, qr{Easting/Northing \(IE\): 95938/28531};
+                like $email->body, qr{Easting/Northing \(IE\): 297279/362371};
             } else {
                 like $email->body, qr{Easting/Northing: };
             }

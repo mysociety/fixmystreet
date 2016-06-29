@@ -327,7 +327,6 @@ foreach my $test (
             non_public => undef,
         },
         changes     => { title => 'Edited Report', },
-        log_count   => 1,
         log_entries => [qw/edit/],
         resend      => 0,
     },
@@ -344,7 +343,6 @@ foreach my $test (
             non_public => undef,
         },
         changes     => { detail => 'Edited Detail', },
-        log_count   => 2,
         log_entries => [qw/edit edit/],
         resend      => 0,
     },
@@ -361,7 +359,6 @@ foreach my $test (
             non_public => undef,
         },
         changes     => { name => 'Edited User', },
-        log_count   => 3,
         log_entries => [qw/edit edit edit/],
         resend      => 0,
         user        => $user,
@@ -381,7 +378,6 @@ foreach my $test (
         changes => {
             flagged    => 'on',
         },
-        log_count   => 4,
         log_entries => [qw/edit edit edit edit/],
         resend      => 0,
         user        => $user,
@@ -399,7 +395,6 @@ foreach my $test (
             non_public => undef,
         },
         changes     => { email => $user2->email, },
-        log_count   => 5,
         log_entries => [qw/edit edit edit edit edit/],
         resend      => 0,
         user        => $user2,
@@ -417,8 +412,7 @@ foreach my $test (
             non_public => undef,
         },
         changes   => { state => 'unconfirmed' },
-        log_count => 6,
-        log_entries => [qw/state_change edit edit edit edit edit/],
+        log_entries => [qw/edit state_change edit edit edit edit edit/],
         resend      => 0,
     },
     {
@@ -434,8 +428,7 @@ foreach my $test (
             non_public => undef,
         },
         changes   => { state => 'confirmed' },
-        log_count => 7,
-        log_entries => [qw/state_change state_change edit edit edit edit edit/],
+        log_entries => [qw/edit state_change edit state_change edit edit edit edit edit/],
         resend      => 0,
     },
     {
@@ -451,9 +444,8 @@ foreach my $test (
             non_public => undef,
         },
         changes   => { state => 'fixed' },
-        log_count => 8,
         log_entries =>
-          [qw/state_change state_change state_change edit edit edit edit edit/],
+          [qw/edit state_change edit state_change edit state_change edit edit edit edit edit/],
         resend => 0,
     },
     {
@@ -469,9 +461,8 @@ foreach my $test (
             non_public => undef,
         },
         changes     => { state => 'hidden' },
-        log_count   => 9,
         log_entries => [
-            qw/state_change state_change state_change state_change edit edit edit edit edit/
+            qw/edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -491,9 +482,8 @@ foreach my $test (
             state     => 'confirmed',
             anonymous => 1,
         },
-        log_count   => 11,
         log_entries => [
-            qw/edit state_change state_change state_change state_change state_change edit edit edit edit edit/
+            qw/edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -510,9 +500,8 @@ foreach my $test (
             non_public => undef,
         },
         changes     => {},
-        log_count   => 12,
         log_entries => [
-            qw/resend edit state_change state_change state_change state_change state_change edit edit edit edit edit/
+            qw/resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 1,
     },
@@ -531,9 +520,8 @@ foreach my $test (
         changes     => {
             non_public => 'on',
         },
-        log_count   => 13,
         log_entries => [
-            qw/edit resend edit state_change state_change state_change state_change state_change edit edit edit edit edit/
+            qw/edit resend edit state_change edit state_change edit state_change edit state_change edit state_change edit edit edit edit edit/
         ],
         resend => 0,
     },
@@ -543,6 +531,7 @@ foreach my $test (
         $log_entries->reset;
         $mech->get_ok("/admin/report_edit/$report_id");
 
+        @{$test->{fields}}{'external_id', 'external_body', 'external_team'} = (13, "", "");
         is_deeply( $mech->visible_form_values(), $test->{fields}, 'initial form values' );
 
         my $new_fields = {
@@ -557,7 +546,7 @@ foreach my $test (
         }
 
         is_deeply( $mech->visible_form_values(), $new_fields, 'changed form values' );
-        is $log_entries->count, $test->{log_count}, 'log entry count';
+        is $log_entries->count, scalar @{$test->{log_entries}}, 'log entry count';
         is $log_entries->next->action, $_, 'log entry added' for @{ $test->{log_entries} };
 
         $report->discard_changes;
@@ -596,6 +585,9 @@ subtest 'change email to new user' => sub {
         anonymous => 1,
         flagged => 'on',
         non_public => 'on',
+        external_id => '13',
+        external_body => '',
+        external_team => '',
     };
 
     is_deeply( $mech->visible_form_values(), $fields, 'initial form values' );

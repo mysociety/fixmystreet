@@ -160,6 +160,7 @@ __PACKAGE__->rabx_column('geocode');
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
+use FixMyStreet::Map::FMS;
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra';
@@ -672,13 +673,15 @@ sub duration_string {
 
 sub local_coords {
     my $self = shift;
-    if ($self->cobrand eq 'zurich') {
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($self->cobrand)->new;
+    if ($cobrand->moniker eq 'zurich') {
         my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($self->latitude, $self->longitude);
         return ( int($x+0.5), int($y+0.5) );
-    }
-    else {
-        # return a dummy value until this function is implemented.  useful for testing.
-        return (0, 0);
+    } elsif ($cobrand->country eq 'GB') {
+        my $coordsyst = 'G';
+        $coordsyst = 'I' if FixMyStreet::Map::FMS::in_northern_ireland_box($self->latitude, $self->longitude);
+        my ($x, $y) = Utils::convert_latlon_to_en( $self->latitude, $self->longitude, $coordsyst );
+        return ($x, $y, $coordsyst);
     }
 }
 

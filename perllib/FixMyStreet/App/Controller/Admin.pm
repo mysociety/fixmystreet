@@ -652,23 +652,21 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     $c->forward('/auth/get_csrf_token');
 
-    if ( $c->cobrand->moniker eq 'zurich' ) {
-        $c->stash->{page} = 'admin';
-        FixMyStreet::Map::display_map(
-            $c,
+    $c->stash->{page} = 'admin';
+    FixMyStreet::Map::display_map(
+        $c,
+        latitude  => $problem->latitude,
+        longitude => $problem->longitude,
+        pins      => $problem->used_map
+        ? [ {
             latitude  => $problem->latitude,
             longitude => $problem->longitude,
-            pins      => $problem->used_map
-            ? [ {
-                latitude  => $problem->latitude,
-                longitude => $problem->longitude,
-                colour    => $c->cobrand->pin_colour($problem),
-                type      => 'big',
-              } ]
-            : [],
-            print_report => 1,
-        );
-    }
+            colour    => $c->cobrand->pin_colour($problem, 'admin'),
+            type      => 'big',
+          } ]
+        : [],
+        print_report => 1,
+    );
 
     if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
         $self->rotate_photo($c, $problem, @$rotate_photo_param);
@@ -707,8 +705,7 @@ sub report_edit : Path('report_edit') : Args(1) {
     }
     elsif ( $c->get_param('mark_sent') ) {
         $c->forward('/auth/check_csrf_token');
-        $problem->whensent(\'current_timestamp');
-        $problem->update();
+        $problem->update({ whensent => \'current_timestamp' })->discard_changes;
         $c->stash->{status_message} = '<p><em>' . _('That problem has been marked as sent.') . '</em></p>';
         $c->forward( 'log_edit', [ $id, 'problem', 'marked sent' ] );
     }
@@ -726,37 +723,17 @@ sub report_edit : Path('report_edit') : Args(1) {
     elsif ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
 
-        my $done   = 0;
-        my $edited = 0;
-
-        my $new_state = $c->get_param('state');
         my $old_state = $problem->state;
 
-        my $flagged = $c->get_param('flagged') ? 1 : 0;
-        my $non_public = $c->get_param('non_public') ? 1 : 0;
-
-        # do this here so before we update the values in problem
-        if ( $c->get_param('anonymous') ne $problem->anonymous
-            || $c->get_param('name') ne $problem->name
-            || $c->get_param('email') ne $problem->user->email
-            || $c->get_param('title') ne $problem->title
-            || $c->get_param('detail') ne $problem->detail
-            || ($c->get_param('body') && $c->get_param('body') ne $problem->bodies_str)
-            || $flagged != $problem->flagged
-            || $non_public != $problem->non_public )
-        {
-            $edited = 1;
+        my %columns = (
+            flagged => $c->get_param('flagged') ? 1 : 0,
+            non_public => $c->get_param('non_public') ? 1 : 0,
+        );
+        $columns{bodies_str} = $c->get_param('body') if $c->get_param('body');
+        foreach (qw/state anonymous title detail name external_id external_body external_team/) {
+            $columns{$_} = $c->get_param($_);
         }
-
-        $problem->anonymous( $c->get_param('anonymous') );
-        $problem->title( $c->get_param('title') );
-        $problem->detail( $c->get_param('detail') );
-        $problem->state( $new_state );
-        $problem->name( $c->get_param('name') );
-        $problem->bodies_str( $c->get_param('body') ) if $c->get_param('body');
-
-        $problem->flagged( $flagged );
-        $problem->non_public( $non_public );
+        $problem->set_inflated_columns(\%columns);
 
         if ( $c->get_param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(
@@ -773,7 +750,7 @@ sub report_edit : Path('report_edit') : Args(1) {
             $self->remove_photo($c, $problem, $remove_photo_param);
         }
 
-        if ( $remove_photo_param || $new_state eq 'hidden' ) {
+        if ( $remove_photo_param || $problem->state eq 'hidden' ) {
             $problem->get_photoset->delete_cached;
         }
 
@@ -781,27 +758,20 @@ sub report_edit : Path('report_edit') : Args(1) {
             $problem->confirmed( \'current_timestamp' );
         }
 
-        if ($done) {
-            $problem->discard_changes;
+        $problem->lastupdate( \'current_timestamp' );
+        $problem->update;
+
+        if ( $problem->state ne $old_state ) {
+            $c->forward( 'log_edit', [ $id, 'problem', 'state_change' ] );
         }
-        else {
-            $problem->lastupdate( \'current_timestamp' ) if $edited || $new_state ne $old_state;
-            $problem->update;
+        $c->forward( 'log_edit', [ $id, 'problem', 'edit' ] );
 
-            if ( $new_state ne $old_state ) {
-                $c->forward( 'log_edit', [ $id, 'problem', 'state_change' ] );
-            }
-            if ($edited) {
-                $c->forward( 'log_edit', [ $id, 'problem', 'edit' ] );
-            }
+        $c->stash->{status_message} =
+          '<p><em>' . _('Updated!') . '</em></p>';
 
-            $c->stash->{status_message} =
-              '<p><em>' . _('Updated!') . '</em></p>';
-
-            # do this here otherwise lastupdate and confirmed times
-            # do not display correctly
-            $problem->discard_changes;
-        }
+        # do this here otherwise lastupdate and confirmed times
+        # do not display correctly
+        $problem->discard_changes;
     }
 
     return 1;
@@ -1106,7 +1076,7 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if ( $user->email ne $c->get_param('email') ||
             $user->name ne $c->get_param('name') ||
-            $user->phone ne $c->get_param('phone') ||
+            ($user->phone || "") ne $c->get_param('phone') ||
             ($user->from_body && $user->from_body->id ne $c->get_param('body')) ||
             (!$user->from_body && $c->get_param('body'))
         ) {

@@ -1,0 +1,11 @@
+<div class="full-width full-width--top">
+    <p>
+        <strong>[% tprintf(loc('%s admin:', "%s here is the site name"), site_name) %]</strong>
+      [%- FOREACH link IN allowed_links %]
+        <a href="[% c.uri_for( link ) %]">[% allowed_pages.$link.0 %]</a>
+        [% IF NOT loop.last %]|[% END %]
+      [% END %]
+    </p>
+</div>
+
+<h1>[% title %]</h1>

@@ -21,7 +21,7 @@ E-post: [% email %]
 
 Detaljer: [% detail %]
 
-[% easting_northing %]Breiddegrad: [% latitude %]
+Breiddegrad: [% latitude %]
 
 Lengdegrad: [% longitude %]
 

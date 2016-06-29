@@ -21,7 +21,11 @@ Email: [% email %]
 
 Details: [% detail %]
 
-[% easting_northing %]Latitude: [% latitude %]
+Easting/Northing
+[%- " (IE)" IF coordsyst == "I" -%]
+: [% easting %]/[% northing %]
+
+Latitude: [% latitude %]
 
 Longitude: [% longitude %]
 

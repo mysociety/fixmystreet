@@ -9,6 +9,11 @@ $button_col:    #fff;
 $button_bg_col: #a1a1a1;  // also search bar (tables)
 
 .admin {
+    .full-width {
+        padding: 0 1em;
+        background-color: #fff;
+    }
+
     table {
         width: 100%;
         font-size: 0.9em;
