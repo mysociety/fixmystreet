@@ -140,6 +140,8 @@ fixmystreet.mobile_reporting = {
         .removeClass('mobile-map-banner')
         .prependTo('#side')
         .html(banner_text);
+    $('#map_box').css({ width: "", height: "", position: "" });
+    $('#mob_sub_map_links').remove();
   }
 };
 
@@ -162,9 +164,7 @@ fixmystreet.resize_to = {
 
   desktop_page: function() {
     $('html').removeClass('mobile');
-    if (typeof fixmystreet !== 'undefined' && fixmystreet.page == 'around') {
-        fixmystreet.mobile_reporting.remove_ui();
-    }
+    fixmystreet.mobile_reporting.remove_ui();
 
     // On a desktop, so reset the "Report a problem" nav item to act
     // like an innert span again.
