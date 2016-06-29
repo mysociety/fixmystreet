@@ -67,7 +67,7 @@ sub string {
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'zurich/';
     my $cache_file = $cache_dir . md5_hex($s);
     my $result;
-    if (-s $cache_file && -M $cache_file <= 7) {
+    if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
         $result = retrieve($cache_file);
     } else {
         my $search = SOAP::Data->name('search' => $s)->type('');
@@ -81,7 +81,7 @@ sub string {
         }
         $result = $result->result;
         File::Path::mkpath($cache_dir);
-        store $result, $cache_file if $result;
+        store $result, $cache_file if $result && !FixMyStreet->config('STAGING_SITE');
     }
 
     if (!$result || !$result->{Location}) {

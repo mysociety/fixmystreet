@@ -72,7 +72,7 @@ sub cache {
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . $type . '/';
     my $cache_file = $cache_dir . md5_hex($url);
     my $js;
-    if (-s $cache_file && -M $cache_file <= 7) {
+    if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
         $js = File::Slurp::read_file($cache_file);
     } else {
         $url .= '&' . $args if $args;
@@ -80,7 +80,7 @@ sub cache {
         $js = LWP::Simple::get($url);
         $js = encode_utf8($js) if utf8::is_utf8($js);
         File::Path::mkpath($cache_dir);
-        if ($js && (!$re || $js !~ $re)) {
+        if ($js && (!$re || $js !~ $re) && !FixMyStreet->config('STAGING_SITE')) {
             File::Slurp::write_file($cache_file, $js);
         }
     }
