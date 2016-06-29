@@ -152,6 +152,21 @@ fixmystreet.resize_to = {
         fixmystreet.mobile_reporting.apply_ui();
     }
 
+    // Hide sidebar notes ("rap-notes") on the /report/new page on mobile,
+    // and provide a button that reveals/hides them again.
+    var $rapSidebar = $('#report-a-problem-sidebar');
+    if ($rapSidebar.length) {
+        $rapSidebar.hide();
+        $('<a>')
+            .addClass('rap-notes-trigger button-fwd')
+            .html(translation_strings.how_to_send)
+            .insertBefore($rapSidebar)
+            .on('click', function(){
+                $rapSidebar.slideToggle(100);
+                $(this).toggleClass('clicked');
+            });
+    }
+
     // On the front page, make it so that the "report a problem" menu item
     // scrolls to the top of the page, and has a hover effect, rather than
     // just being an innert span.
@@ -165,6 +180,11 @@ fixmystreet.resize_to = {
   desktop_page: function() {
     $('html').removeClass('mobile');
     fixmystreet.mobile_reporting.remove_ui();
+
+    // Undo the special "rap-notes" tweaks that might have
+    // been put into place by previous mobile UI.
+    $('#report-a-problem-sidebar').show();
+    $('.rap-notes-trigger').remove();
 
     // On a desktop, so reset the "Report a problem" nav item to act
     // like an innert span again.
@@ -268,32 +288,6 @@ $.extend(fixmystreet.set_up, {
   },
 
   mobile_ui_tweaks: function() {
-    //show/hide notes on mobile
-    $('.mobile #report-a-problem-sidebar').after('<a href="#" class="rap-notes-trigger button-fwd">' + translation_strings.how_to_send + '</a>').hide();
-    $('.rap-notes-trigger').click(function(e) {
-        e.preventDefault();
-        //check if we've already moved the notes
-        if ($('.rap-notes').length > 0) {
-            //if we have, show and hide .content
-            $('.content').hide();
-            $('.rap-notes').show();
-        } else {
-            //if not, move them and show, hiding .content
-            $('.content').after('<div class="content rap-notes"></div>').hide();
-            $('#report-a-problem-sidebar').appendTo('.rap-notes').show().after('<a href="#" class="rap-notes-close button-back">' + translation_strings.back + '</a>');
-        }
-        $('html, body').scrollTop($('#report-a-problem-sidebar').offset().top);
-        location.hash = 'rap-notes';
-    });
-    $('.mobile').on('click', '.rap-notes-close', function(e) {
-        e.preventDefault();
-        //hide notes, show .content
-        $('.content').show();
-        $('.rap-notes').hide();
-        $('html, body').scrollTop($('#mob_ok').offset().top);
-        location.hash = 'report';
-    });
-
     //move 'skip this step' link on mobile
     $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');
 

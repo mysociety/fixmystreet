@@ -149,11 +149,6 @@ fixmystreet.maps = {};
         }
 
         $(window).hashchange(function(){
-            if (location.hash == '#report' && $('.rap-notes').is(':visible')) {
-                $('.rap-notes-close').click();
-                return;
-            }
-
             if (location.hash && location.hash != '#') {
                 return;
             }

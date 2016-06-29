@@ -841,7 +841,7 @@ textarea.form-error {
 
 // Notes presented alongside the reporting form
 .sidebar, #report-a-problem-sidebar {
-  margin-bottom: 2em;
+  padding: 0;
 
   // If the parent is .with-notes we know we have space to
   // float the sidebar content to the side of the form.

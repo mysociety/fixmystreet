@@ -801,6 +801,17 @@ input.final-submit {
   }
 }
 
+.rap-notes-trigger {
+  &.clicked {
+    background-image: inline-image("../fixmystreet/images/cross-grey.svg");
+
+    .iel8 & {
+      background-image: url("../fixmystreet/images/cross-grey.png");
+    }
+  }
+}
+
+
 .big-green-banner {
   position: relative;
   top: -1.75em;
@@ -1257,16 +1268,17 @@ html.js #map .noscript {
     }
 }
 
-// only on mobile, this is a sidebar on desk (#report-a-problem-sidebar)
+// only on mobile
 a.rap-notes-trigger,
 a:hover.rap-notes-trigger {
-  display:block;
-  width:90%;
-  padding-#{$left}: 5%;
-  padding-#{$right}: 5%;
+  display: block;
+  margin-bottom: 1em;
 }
-.rap-notes {
-  margin:1em 0;
+
+#report-a-problem-sidebar {
+  margin-bottom: 2em;
+  padding: 1em;
+  background-color: #E9F2FF;
 }
 
 .mobile #map_box {
