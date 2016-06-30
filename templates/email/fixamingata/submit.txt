@@ -51,11 +51,11 @@ mot system som Open311.
 Om ni vill läsa mer om FixaMinGata och vad det innebär för er som kommun
 kan ni hitta ytterligare information på vår informationssida för kommuner:
 
-  <http://fixamingata.se/kommun>
+  <https://fixamingata.se/kommun>
 
 Kontakta Föreningen Sambruk via:
 
-  <http://fixamingata.se/contact>
+  <https://fixamingata.se/contact>
 
 [% signature %]
 
