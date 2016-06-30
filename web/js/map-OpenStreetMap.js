@@ -63,10 +63,10 @@ OpenLayers.Layer.OSM.MapQuestOpen = OpenLayers.Class(OpenLayers.Layer.OSM, {
      */
     initialize: function(name, options) {
         var url = [
-            "http://otile1.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "http://otile2.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "http://otile3.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
-            "http://otile4.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
+            "https://otile1-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+            "https://otile2-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+            "https://otile3-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png",
+            "https://otile4-s.mqcdn.com/tiles/1.0.0/map/${z}/${x}/${y}.png"
         ];
         options = OpenLayers.Util.extend({
             /* Below line added to OSM's file in order to allow minimum zoom level */
