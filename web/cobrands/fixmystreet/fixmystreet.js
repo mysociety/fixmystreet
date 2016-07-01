@@ -313,7 +313,18 @@ $.extend(fixmystreet.set_up, {
         e.preventDefault();
         var offset = $('#main-nav').offset().top;
         $('html, body').animate({scrollTop:offset}, 1000);
-        window.location.hash = 'main-nav';
+
+        // Registering a pushState here means that mobile users can
+        // press their browser's Back button to return out of the
+        // mobile menu (easier than scrolling all the way back up
+        // the page). However, to show the map page popstate listener
+        // that this was a special state, we set hashchange to true in
+        // the event state, so we can detect it, and ignore it, later.
+        if ('pushState' in history) {
+            history.pushState({
+                hashchange: true
+            }, null);
+        }
     });
   },
 
@@ -513,6 +524,9 @@ $.extend(fixmystreet.set_up, {
             fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
         } else if ('newReportAtLonlat' in e.state) {
             fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
+        } else if ('hashchange' in e.state) {
+            // This popstate was just here because the hash changed.
+            // (eg: mobile nav click.) We want to ignore it.
         }
     });
   }
