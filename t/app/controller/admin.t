@@ -1232,7 +1232,7 @@ subtest "Check admin_base_url" => sub {
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($report->cobrand)->new();
 
     is ($report->admin_url($cobrand),
-        (sprintf 'https://secure.mysociety.org/admin/bci/report_edit/%d', $report_id),
+        (sprintf 'http://www.example.org/admin/report_edit/%d', $report_id),
         'get_admin_url OK');
 };
 

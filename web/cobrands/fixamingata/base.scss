@@ -4,8 +4,6 @@
  * layout for browsers that can't handle media queries. Baseline grid of 1.5em.
  */
 
-$image-sprite: '/cobrands/fixamingata/images/sprite.png';
-
 @import "../sass/h5bp";
 @import "./_colours";
 @import "../sass/mixins";
@@ -20,7 +18,7 @@ $image-sprite: '/cobrands/fixamingata/images/sprite.png';
     width: 185px;
     margin-top: 8px;
     margin-left: 10px;
-    background: url('/cobrands/fixamingata/images/fms-logo.png') no-repeat;
+    background: url('images/fms-logo.png') no-repeat;
 }
 
 #report-cta {

@@ -176,7 +176,8 @@ sub version {
         $version_hash{$file} = ( stat( $path ) )[9];
     }
     $version_hash{$file} ||= '';
-    return "$file?$version_hash{$file}";
+    my $admin = $self->template->context->stash->{admin} ? FixMyStreet->config('ADMIN_BASE_URL') : '';
+    return "$admin$file?$version_hash{$file}";
 }
 
 sub decode {

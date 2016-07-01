@@ -1,12 +1,13 @@
 /* COLOURS */
 
+$image-sprite: 'images/sprite.png';
 $menu-image: 'menu-black';
 
 $primary: #00b1da;
 $primary_b: #0087a6;
 $primary_text: #222;
 
-$base_bg: #eee url(/cobrands/fixamingata/images/tile.jpg) 0 0 repeat;
+$base_bg: #eee url(images/tile.jpg) 0 0 repeat;
 $base_fg: $primary_text;
 
 $map_nav_bg: #eee;

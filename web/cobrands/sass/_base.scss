@@ -3,7 +3,7 @@
 $body-font: MuseoSans, Helmet, Freesans, sans-serif !default;
 $meta-font: Helmet, Freesans, sans-serif !default;
 $heading-font: 'Museo300-display', MuseoSans, Helmet, Freesans, sans-serif !default;
-$image-sprite: '/cobrands/fixmystreet/images/sprite.png' !default;
+$image-sprite: '../fixmystreet/images/sprite.png' !default;
 $menu-image: 'menu-white' !default;
 
 $itemlist_item_background: #f6f6f6 !default;
@@ -477,7 +477,7 @@ p.label-valid {
 #nav-link {
   width: 3em;
   height: 3em; // same height as #site-header
-  background: transparent url(/cobrands/fixmystreet/images/#{$menu-image}.png) center center no-repeat;
+  background: transparent url(../fixmystreet/images/#{$menu-image}.png) center center no-repeat;
   background-image: inline-image("../fixmystreet/images/#{$menu-image}.svg"), none;
   background-size: 22px 18px;
   display: block;

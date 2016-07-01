@@ -23,10 +23,6 @@ sub restriction {
     return {};
 }
 
-sub admin_base_url {
-    return 'https://secure.mysociety.org/admin/bci';
-}
-
 sub title_list {
     my $self = shift;
     my $areas = shift;
