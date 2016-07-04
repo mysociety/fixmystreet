@@ -512,6 +512,8 @@ $.extend(fixmystreet.set_up, {
         // because we're already inside a popstate: We want to roll
         // back to a previous state, not create a new one!
 
+        var location = window.history.location || window.location;
+
         if (e.state === null) {
             // User has navigated Back from a pushStated state, presumably to
             // see the list of all reports (which was shown on pageload). By
@@ -519,7 +521,7 @@ $.extend(fixmystreet.set_up, {
             // location.href is something like foo.com/around?pc=abc-123,
             // which we pass into fixmystreet.display.around() as a fallback
             // incase the list isn't already in the DOM.
-            fixmystreet.display.around(window.location.href);
+            fixmystreet.display.around(location.href);
         } else if ('reportId' in e.state) {
             fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
         } else if ('newReportAtLonlat' in e.state) {
