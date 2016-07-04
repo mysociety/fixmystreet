@@ -1,28 +1,30 @@
 [% USE date %][% USE Math %]
+[% SET start = c.config.ADMIN_BASE_URL IF admin %]
+
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 
 <meta name="cobrand" content="[% c.cobrand.moniker %]">
 
-<script type="text/javascript" src="[% start %]/js/validation_rules.js?[% Math.int( date.now / 3600 ) %]"></script>
 <script type="text/javascript" src="[% start %]/js/translation_strings.[% lang_code %].js?[% Math.int( date.now / 3600 ) %]"></script>
 
-<script type="text/javascript" src="[% start %]/jslib/jquery-1.7.2.min.js"></script>
-<script src="[% start %][% version('/js/jquery.validate.min.js') %]" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" src="[% start %][% version('/js/dropzone.min.js') %]"></script>
+<script type="text/javascript" src="[% version('/jslib/jquery-1.7.2.min.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/validation_rules.js') %]"></script>
+<script src="[% version('/js/jquery.validate.min.js') %]" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="[% version('/js/dropzone.min.js') %]"></script>
 
-<script type="text/javascript" src="[% start %][% version('/js/geo.min.js') %]"></script>
-<script type="text/javascript" src="[% start %][% version('/js/fixmystreet.js') %]"></script>
-<script type="text/javascript" src="[% start %][% version('/cobrands/fixmystreet/fixmystreet.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/geo.min.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/fixmystreet.js') %]"></script>
+<script type="text/javascript" src="[% version('/cobrands/fixmystreet/fixmystreet.js') %]"></script>
 
 [% IF admin %]
-  <script src="[% start %]/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js"></script>
-  <link rel="stylesheet" href="[% start %]/js/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css" />
-  <script type="text/javascript" src="[% start %][% version('/js/fixmystreet-admin.js') %]"></script>
+  <script src="[% version('/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js') %]"></script>
+  <link rel="stylesheet" href="[% version('/js/jquery-ui/css/smoothness/jquery-ui-1.10.3.custom.min.css') %]">
+  <script type="text/javascript" src="[% version('/js/fixmystreet-admin.js') %]"></script>
 [% END %]
 
 [% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
 [% IF moderating %]
-  <script type="text/javascript" src="[% start %][% version('/js/moderate.js') %]"></script>
+  <script type="text/javascript" src="[% version('/js/moderate.js') %]"></script>
 [% END %]
 
 [% map_js %]

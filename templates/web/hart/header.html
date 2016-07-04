@@ -12,17 +12,15 @@
 
         [% INCLUDE 'header_opengraph.html' %]
 
-[% SET start = c.config.ADMIN_BASE_URL IF admin %]
-
-        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
-        <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
+        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]" media="(min-width:48em)">
         <link rel="stylesheet" href="[% version('/cobrands/hart/hart.css') %]">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% start %][% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
+            <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
         <![endif]-->
 
-        <script src="[% start %][% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
+        <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html' %]
         [% extra_js %]
 

@@ -155,8 +155,8 @@ ALLOWED_COBRANDS:
   - cobrand2: 'hostname_substring2'
   - cobrand3
 
-# This is only used in "offensive report" emails to provide a link directly to
-# the admin interface. If wanted, set to the full URL of your admin interface.
+# This is used in e.g. "offensive report" emails to provide a link directly to
+# the admin interface. Defaults to BASE_URL with "/admin" on the end.
 ADMIN_BASE_URL: ''
 
 # How many items are returned in the GeoRSS feeds by default

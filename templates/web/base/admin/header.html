@@ -1,6 +1,7 @@
 [%
     SET bodyclass = bodyclass || 'fullwidthpage';
-    INCLUDE 'header.html' admin = 1, bodyclass = bodyclass _ ' admin';
+    SET admin = 1;
+    INCLUDE 'header.html' bodyclass = bodyclass _ ' admin';
 %]
 <style type="text/css">
 dt { clear: left; float: left; font-weight: bold; }

@@ -24,8 +24,6 @@ sub translation_strings : LocalRegex('^translation_strings\.(.*?)\.js$') : Args(
     $c->res->content_type( 'application/javascript' );
 }
 
-sub validation_rules : Path('validation_rules.js') : Args(0) { }
-
 __PACKAGE__->meta->make_immutable;
 
 1;

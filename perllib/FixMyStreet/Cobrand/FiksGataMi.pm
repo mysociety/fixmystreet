@@ -32,10 +32,6 @@ sub area_types {
     [ 'NKO', 'NFY', 'NRA' ];
 }
 
-sub admin_base_url {
-    return 'http://www.fiksgatami.no/admin';
-}
-
 sub geocode_postcode {
     my ( $self, $s ) = @_;
 
