@@ -12,7 +12,7 @@ sub is_two_tier { return 1; }
 
 sub base_url {
     return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
-    return 'http://fixmystreet.oxfordshire.gov.uk';
+    return 'https://fixmystreet.oxfordshire.gov.uk';
 }
 
 sub enter_postcode_text {
