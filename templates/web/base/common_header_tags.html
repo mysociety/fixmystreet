@@ -3,10 +3,10 @@
 
 <meta name="cobrand" content="[% c.cobrand.moniker %]">
 
-<script type="text/javascript" src="[% start %]/js/validation_rules.js?[% Math.int( date.now / 3600 ) %]"></script>
 <script type="text/javascript" src="[% start %]/js/translation_strings.[% lang_code %].js?[% Math.int( date.now / 3600 ) %]"></script>
 
 <script type="text/javascript" src="[% start %]/jslib/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="[% start %][% version('/js/validation_rules.js') %]"></script>
 <script src="[% start %][% version('/js/jquery.validate.min.js') %]" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" src="[% start %][% version('/js/dropzone.min.js') %]"></script>
 
