@@ -701,6 +701,7 @@ subtest "test password errors for a user who is signing in as they report" => su
 
 subtest "test report creation for a user who is signing in as they report" => sub {
     $mech->log_out_ok;
+    $mech->cookie_jar({});
     $mech->clear_emails_ok;
 
     # check that the user does not exist
