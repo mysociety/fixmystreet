@@ -85,6 +85,9 @@ sub sign_in : Private {
         $c->set_session_cookie_expire(0)
           unless $remember_me;
 
+        # Regenerate CSRF token as session ID changed
+        $c->forward('get_csrf_token');
+
         return 1;
     }
 
