@@ -558,47 +558,40 @@ sub meta_line {
     my $date_time = Utils::prettify_dt( $problem->confirmed );
     my $meta = '';
 
+    my $category = $problem->category;
+    if ($c->cobrand->can('change_category_text')) {
+        $category = $c->cobrand->change_category_text($category);
+    }
+
     if ( $problem->anonymous ) {
-        if (    $problem->service
-            and $problem->category && $problem->category ne _('Other') )
-        {
+        if ( $problem->service and $category && $category ne _('Other') ) {
             $meta =
             sprintf( _('Reported via %s in the %s category anonymously at %s'),
-                $problem->service, $problem->category, $date_time );
-        }
-        elsif ( $problem->service ) {
+                $problem->service, $category, $date_time );
+        } elsif ( $problem->service ) {
             $meta = sprintf( _('Reported via %s anonymously at %s'),
                 $problem->service, $date_time );
-        }
-        elsif ( $problem->category and $problem->category ne _('Other') ) {
+        } elsif ( $category and $category ne _('Other') ) {
             $meta = sprintf( _('Reported in the %s category anonymously at %s'),
-                $problem->category, $date_time );
-        }
-        else {
+                $category, $date_time );
+        } else {
             $meta = sprintf( _('Reported anonymously at %s'), $date_time );
         }
-    }
-    else {
-        if (    $problem->service
-            and $problem->category && $problem->category ne _('Other') )
-        {
+    } else {
+        if ( $problem->service and $category && $category ne _('Other') ) {
             $meta = sprintf(
                 _('Reported via %s in the %s category by %s at %s'),
-                $problem->service, $problem->category,
+                $problem->service, $category,
                 $problem->name,    $date_time
             );
-        }
-        elsif ( $problem->service ) {
+        } elsif ( $problem->service ) {
             $meta = sprintf( _('Reported via %s by %s at %s'),
                 $problem->service, $problem->name, $date_time );
-        }
-        elsif ( $problem->category and $problem->category ne _('Other') ) {
+        } elsif ( $category and $category ne _('Other') ) {
             $meta = sprintf( _('Reported in the %s category by %s at %s'),
-                $problem->category, $problem->name, $date_time );
-        }
-        else {
-            $meta =
-            sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
+                $category, $problem->name, $date_time );
+        } else {
+            $meta = sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
         }
     }
 
