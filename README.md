@@ -40,6 +40,10 @@ We've extracted all of the mobile apps from this repository into the
 
 ## Releases
 
+* v1.7.2 (6th July 2016)
+    - Security:
+        - Fix XSS vulnerability in OpenGraph header and hide/all pins links.
+
 * v1.7.1 (3rd May 2016)
     - Security:
         - Fix vulnerability in image upload that allowed external
