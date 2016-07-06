@@ -51,18 +51,39 @@ web-based cross-browser testing tools for this project.
         - Rename "Your reports" in main navigation to "Your account".
         - Centre map on pin location when creating a report.
         - Allow scroll wheel to zoom map. #1326
-        - Wrap emails better for differing screen sizes. #1393
-        - Fix annoying jump when "Get updates" drawer opened. #1425
-    - Bugfixes:
-        - Fix display of close arrow/cross when drawer open. #1424
-        - Redirect correctly if filter used without JavaScript. #1422
+        - Allow users to change their own email. #360 #1440
+    - Admin improvements:
+        - Greatly improve report edit page, including map. #1347
+        - Show any waiting reports on admin index page. #1382
+        - Allow user's phone number to be edited.
     - Development improvements:
         - make_css: Add output style option.
         - make_css: Follow symlinks.
         - Remove some unused CSS, and simplify full-width. #1423
+        - Tidy up/harden some Open311 handling. #1428
+        - Use static validation_rules.js file. #1451
+        - Remove need to customise OpenLayers built script. #1448
     - Vagrant installation improvements:
         - Improve error handling.
         - Don't add a symlink if it is to the same place.
+    - Backwards incompatible changes:
+        - Drop support for IE6. #1356
+
+* v1.8.4 (6th July 2016)
+    - Security:
+        - Fix XSS vulnerability in OpenGraph header and hide/all pins links.
+    - Front end improvements:
+        - Wrap emails better for differing screen sizes. #1393
+        - Fix annoying jump when "Get updates" drawer opened. #1425
+        - Improve auth flow taken when return key used. #1433
+        - Add and improve more CSRF tokens. #1433
+        - Remove default box-shadow. #1419
+        - Fix missing margin before reporting form email input. #1418
+    - Bugfixes:
+        - Redirect correctly if filter used without JavaScript. #1422
+        - Remove race condition when starting new report. #1434
+        - Fix a couple of display bugs in IE7. #1356
+        - Correctly orient preview images. #1378
 
 * v1.8.3 (3rd June 2016)
     - Admin improvements
