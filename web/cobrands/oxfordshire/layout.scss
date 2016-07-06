@@ -53,7 +53,7 @@ body.twothirdswidthpage {
                 li { // from occ website
                   padding-left: 19px;
                   font: 0.813em "Trebuchet MS";
-                  background: url("/cobrands/oxfordshire/images/dot6x6.jpg") no-repeat 0 5px;
+                  background: url("images/dot6x6.jpg") no-repeat 0 5px;
                 }
             }
         }
@@ -114,7 +114,7 @@ body.mappage {
       height: $mappage-header-height;
       width: 200px;
       margin: 0;
-      background: transparent url("/cobrands/oxfordshire/images/logo-light-green.gif") no-repeat 50% 50%;
+      background: transparent url("images/logo-light-green.gif") no-repeat 50% 50%;
       text-indent: -999px;
 
       * {
@@ -310,7 +310,7 @@ input.green-btn{
 
     p {
         color: $oxfordshire_lt_green;
-        background-image: url(/cobrands/oxfordshire/images/click-map-chevron-small.gif);
+        background-image: url(images/click-map-chevron-small.gif);
     }
 }
 
