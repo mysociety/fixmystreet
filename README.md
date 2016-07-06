@@ -45,6 +45,22 @@ web-based cross-browser testing tools for this project.
 
 ## Releases
 
+* v1.8.4 (6th July 2016)
+    - Security:
+        - Fix XSS vulnerability in OpenGraph header and hide/all pins links.
+    - Front end improvements:
+        - Wrap emails better for differing screen sizes. #1393
+        - Fix annoying jump when "Get updates" drawer opened. #1425
+        - Improve auth flow taken when return key used. #1433
+        - Add and improve more CSRF tokens. #1433
+        - Remove default box-shadow. #1419
+        - Fix missing margin before reporting form email input. #1418
+    - Bugfixes:
+        - Redirect correctly if filter used without JavaScript. #1422
+        - Remove race condition when starting new report. #1434
+        - Fix a couple of display bugs in IE7. #1356
+        - Correctly orient preview images. #1378
+
 * v1.8.3 (3rd June 2016)
     - Admin improvements
         - Add search boxes to admin index page, and move stats. #1295
