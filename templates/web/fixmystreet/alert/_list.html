@@ -19,7 +19,7 @@
   <p id="rss_local">
     <input type="radio" name="feed" id="[% rss_feed_id %]" value="[% rss_feed_id %]"[% IF rss_feed_id == selected_feed || selected_feed == '' %] checked[% END %]>
     <label class="inline" for="[% rss_feed_id %]">[% tprintf( loc('Problems within %.1fkm of this location'), population_radius ) %]</label>
-    <a href='[% rss_feed_uri %]'><img src='/i/feed.png' width='16' height='16' title='[% loc('RSS feed of nearby problems') %]' alt='[% loc('RSS feed') %]' border='0'></a>
+    <a href="[% rss_feed_uri %]"><img src='/i/feed.png' width='16' height='16' title='[% loc('RSS feed of nearby problems') %]' alt='[% loc('RSS feed') %]' border='0'></a>
     <br />
     [% loc('(a default distance which covers roughly 200,000 people)') %] 
   </p>
