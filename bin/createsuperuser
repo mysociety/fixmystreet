@@ -1,0 +1,33 @@
+#!/usr/bin/env perl
+
+# createsuperuser:
+# Create superusers or grant is_superuser flag to existing users.
+#
+# Usage:
+#
+# Create a new superuser with password 'password123'
+# $ bin/createsuperuser user1@example.org password123
+#
+# Grant superuser status to an existing user:
+# $ bin/createsuperuser user2@example.org
+#
+# Superusers can create superusers and grant/rescind superuser status via /admin
+#
+# Copyright (c) 2016 UK Citizens Online Democracy. All rights reserved.
+# Email: davea@mysociety.org. WWW: http://www.mysociety.org
+
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../setenv.pl";
+}
+
+
+use FixMyStreet;
+use FixMyStreet::Script::CreateSuperuser;
+
+FixMyStreet::Script::CreateSuperuser::createsuperuser();

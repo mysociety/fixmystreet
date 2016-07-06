@@ -369,8 +369,8 @@ sub uri {
 
     {
         no warnings 'once';
-        (my $map_class = $FixMyStreet::Map::map_class) =~ s/^FixMyStreet::Map:://;
-        return $uri unless $map_class =~ /OSM|FMS/;
+        my $map_class = $FixMyStreet::Map::map_class;
+        return $uri unless $map_class && $map_class =~ /FixMyStreet::Map::(OSM|FMS)/;
     }
 
     $uri->query_param( zoom => 3 )
@@ -621,6 +621,18 @@ Show the problem creation graph in the admin interface
 =cut
 
 sub admin_show_creation_graph { 1 }
+
+=head2 admin_allow_user
+
+Perform checks on whether this user can access admin. By default only superusers
+are allowed.
+
+=cut
+
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if $user->is_superuser;
+}
 
 =head2 area_types
 

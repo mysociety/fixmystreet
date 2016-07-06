@@ -55,6 +55,17 @@
           
           [% loc('Flagged:') %] <input type="checkbox" id="flagged" name="flagged"[% user.flagged ? ' checked' : '' %]>
         </li>
+
+        [% IF c.user.is_superuser %]
+          <li>
+            <div class="admin-hint">
+              <p>
+                [% loc("Superusers have permission to perform <strong>all actions</strong> within the admin.") %]
+              </p>
+            </div>
+            [% loc('Superuser:') %] <input type="checkbox" id="is_superuser" name="is_superuser"[% user.is_superuser ? ' checked' : '' %]>
+          </li>
+        [% END %]
       [% END %]
     </ul>
     <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >

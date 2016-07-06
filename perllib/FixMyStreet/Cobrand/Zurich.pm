@@ -371,6 +371,12 @@ sub update_admin_log {
     $c->forward( 'log_edit', [ $problem->id, 'problem', $text, $time_spent ] );
 }
 
+# Any user with from_body set can view admin
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if $user->from_body;
+}
+
 # Specific administrative displays
 
 sub admin_pages {

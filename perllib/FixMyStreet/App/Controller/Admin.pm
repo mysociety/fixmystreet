@@ -32,10 +32,12 @@ sub begin : Private {
 
     $c->uri_disposition('relative');
 
-    if ( $c->cobrand->moniker eq 'zurich' || $c->cobrand->moniker eq 'seesomething' ) {
-        $c->detach( '/auth/redirect' ) unless $c->user_exists;
-        $c->detach( '/auth/redirect' ) unless $c->user->from_body;
+    # User must be logged in to see cobrand, and meet whatever checks the
+    # cobrand specifies. Default cobrand just requires superuser flag to be set.
+    unless ( $c->user_exists && $c->cobrand->admin_allow_user($c->user) ) {
+        $c->detach( '/auth/redirect' );
     }
+
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $c->cobrand->admin_type();
     }
@@ -1072,6 +1074,8 @@ sub user_add : Path('user_edit') : Args(0) {
         phone => $c->get_param('phone') || undef,
         from_body => $c->get_param('body') || undef,
         flagged => $c->get_param('flagged') || 0,
+        # Only superusers can create superusers
+        is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
     }, {
         key => 'users_email_key'
     } );
@@ -1114,6 +1118,8 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
         $user->from_body( $c->get_param('body') || undef );
         $user->flagged( $c->get_param('flagged') || 0 );
+        # Only superusers can grant superuser status
+        $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
 
         unless ($user->email) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');

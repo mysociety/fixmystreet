@@ -27,6 +27,7 @@ create table users (
     password        text    not null default '',
     from_body       integer,
     flagged         boolean not null default 'f',
+    is_superuser    boolean not null default 'f',
     title           text,
     twitter_id      bigint  unique,
     facebook_id     bigint  unique
