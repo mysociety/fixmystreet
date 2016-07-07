@@ -767,14 +767,14 @@ msgstr ""
 
 #: templates/web/base/js/translation_strings.html:51
 msgid "Drag and drop photos here or <u>click to upload</u>"
-msgstr ""
+msgstr "Fotos hierhin ziehen oder <u>hochladen</u>"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:14
 #: templates/web/base/report/update/form_update.html:36
 #: templates/web/base/report/update/form_update.html:38
 msgid "Duplicate"
-msgstr ""
+msgstr "Duplikat"
 
 #: templates/web/base/admin/body.html:106
 msgid ""
