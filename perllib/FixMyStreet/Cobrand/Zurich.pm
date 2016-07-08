@@ -1163,7 +1163,7 @@ sub admin_stats {
             $public_response =~ s{\r?\n}{ <br/> }g if $public_response;
 
             # Assemble photo URL, if report has a photo
-            my $media_url = @{$report->photos} ? ($c->cobrand->base_url . $report->photos->[0]->{url}) : '';
+            my $media_url = ( @{$report->photos} && $c->cobrand->allow_photo_display($report) ) ? ($c->cobrand->base_url . $report->photos->[0]->{url}) : '';
 
             my @columns = (
                 $report->id,

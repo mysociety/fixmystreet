@@ -668,7 +668,7 @@ sub local_coords {
     my $self = shift;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($self->cobrand)->new;
     if ($cobrand->moniker eq 'zurich') {
-        my ($x, $y) = Geo::Coordinates::CH1903::from_latlon($self->latitude, $self->longitude);
+        my ($x, $y) = Geo::Coordinates::CH1903Plus::from_latlon($self->latitude, $self->longitude);
         return ( int($x+0.5), int($y+0.5) );
     } elsif ($cobrand->country eq 'GB') {
         my $coordsyst = 'G';

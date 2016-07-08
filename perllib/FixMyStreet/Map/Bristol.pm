@@ -20,9 +20,9 @@ sub zoom_parameters {
 sub tile_parameters {
     my $self = shift;
     my $params = {
-        url             => 'https://maps.bristol.gov.uk/arcgis/rest/services/base/2015_BCC_96dpi/MapServer/WMTS/tile',
+        urls            => [ 'https://maps.bristol.gov.uk/arcgis/rest/services/base/2015_BCC_96dpi/MapServer/WMTS/tile' ],
+        layer_names     => [ '2015_BCC_96dpi' ],
         wmts_version    => '1.0.0',
-        layer_name      => '2015_BCC_96dpi',
         layer_style     => 'default',
         matrix_set      => 'default028mm',
         suffix          => '.png', # appended to tile URLs
@@ -58,6 +58,10 @@ sub scales {
 
 sub copyright {
     return '&copy; BCC';
+}
+
+sub map_type {
+    return 'bristol';
 }
 
 # Reproject a WGS84 lat/lon into BNG easting/northing

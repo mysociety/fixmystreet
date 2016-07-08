@@ -13,7 +13,7 @@ package FixMyStreet::Geocode::Zurich;
 use strict;
 use Digest::MD5 qw(md5_hex);
 use File::Path ();
-use Geo::Coordinates::CH1903;
+use Geo::Coordinates::CH1903Plus;
 use Storable;
 use Utils;
 
@@ -46,7 +46,7 @@ sub setup_soap {
         )
     );
     $soap = SOAP::Lite->on_action( sub { $action . $_[1]; } )->proxy($url);
-    $method = SOAP::Data->name('getLocation')->attr({ xmlns => $attr });
+    $method = SOAP::Data->name('getLocation95')->attr({ xmlns => $attr });
 }
 
 # string STRING CONTEXT
@@ -67,7 +67,7 @@ sub string {
     my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'zurich/';
     my $cache_file = $cache_dir . md5_hex($s);
     my $result;
-    if (-s $cache_file && -M $cache_file <= 7) {
+    if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
         $result = retrieve($cache_file);
     } else {
         my $search = SOAP::Data->name('search' => $s)->type('');
@@ -81,7 +81,7 @@ sub string {
         }
         $result = $result->result;
         File::Path::mkpath($cache_dir);
-        store $result, $cache_file if $result;
+        store $result, $cache_file if $result && !FixMyStreet->config('STAGING_SITE');
     }
 
     if (!$result || !$result->{Location}) {
@@ -95,7 +95,7 @@ sub string {
     foreach (@$results) {
         ($latitude, $longitude) =
             map { Utils::truncate_coordinate($_) }
-            Geo::Coordinates::CH1903::to_latlon($_->{easting}, $_->{northing});
+            Geo::Coordinates::CH1903Plus::to_latlon($_->{easting}, $_->{northing});
         push (@$error, {
             address => $_->{text},
             latitude => $latitude,
