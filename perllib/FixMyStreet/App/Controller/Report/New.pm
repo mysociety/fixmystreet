@@ -602,12 +602,12 @@ sub setup_categories_and_bodies : Private {
     my %bodies = map { $_->id => $_ } @bodies;
     my $first_body = ( values %bodies )[0];
 
-    my @contacts                #
+    my $contacts                #
       = $c                      #
       ->model('DB::Contact')    #
       ->not_deleted             #
-      ->search( { body_id => [ keys %bodies ] } )
-      ->all;
+      ->search( { body_id => [ keys %bodies ] } );
+    my @contacts = $c->cobrand->categories_restriction($contacts)->all;
 
     # variables to populate
     my %bodies_to_list = ();       # Bodies with categories assigned
@@ -669,15 +669,6 @@ sub setup_categories_and_bodies : Private {
 
     $c->cobrand->munge_category_list(\@category_options, \@contacts, \%category_extras)
         if $c->cobrand->can('munge_category_list');
-
-    if ($c->cobrand->can('hidden_categories')) {
-        my %hidden_categories = map { $_ => 1 }
-            $c->cobrand->hidden_categories;
-
-        @category_options = grep { 
-            !$hidden_categories{$_} 
-            } @category_options;
-    }
 
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;

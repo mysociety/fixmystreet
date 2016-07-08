@@ -55,4 +55,14 @@ sub send_questionnaires {
     return 0;
 }
 
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    # Categories covering the Bristol area have a mixture of Open311 and Email
+    # send methods. Bristol only want Open311 categories to be visible on their
+    # cobrand, not the email categories from FMS.com. We've set up the
+    # Email categories with a devolved send_method, so can identify Open311
+    # categories as those which have a blank send_method.
+    return $rs->search( { send_method => undef } );
+}
+
 1;

@@ -30,10 +30,9 @@ sub example_places {
     return ( 'GU51 4JX', 'Primrose Drive' );
 }
 
-sub hidden_categories {
-    return (
-        'Graffiti on bridges/subways',
-    );
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs->search( { category => { '!=' => 'Graffiti on bridges/subways' } } );
 }
 
 sub send_questionnaires {

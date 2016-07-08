@@ -103,6 +103,17 @@ sub updates_restriction {
     return $rs;
 }
 
+=head1 categories_restriction
+
+Used to restrict categories available when making new report in a cobrand in a
+particular way. Do nothing by default.
+
+=cut
+
+sub categories_restriction {
+    my ($self, $rs) = @_;
+    return $rs;
+}
 
 sub site_key { return 0; }
 
