@@ -29,7 +29,7 @@ FixMyStreet::override_config {
     $mech->title_like(qr/^Local RSS feeds and email alerts/);
     $mech->content_contains('Here are the types of local problem alerts for &lsquo;EH99&nbsp;1SP&rsquo;');
     $mech->content_contains('html class="no-js" lang="en-gb"');
-    $mech->content_contains('Problems within 8.5km');
+    $mech->content_contains('Problems within 10.0km');
     $mech->content_contains('rss/pc/EH991SP/2');
     $mech->content_contains('rss/pc/EH991SP/5');
     $mech->content_contains('rss/pc/EH991SP/10');
