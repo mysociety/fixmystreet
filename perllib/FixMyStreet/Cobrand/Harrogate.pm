@@ -12,7 +12,8 @@ sub council_url { return 'harrogate'; }
 sub is_two_tier { return 1; } # with North Yorkshire CC 2235
 
 sub base_url {
-    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
     return 'http://fix.harrogate.gov.uk';
 }
 

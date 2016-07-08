@@ -658,7 +658,12 @@ sub can_display_external_id {
 
 sub duration_string {
     my ( $problem, $c ) = @_;
-    my $body = $problem->body( $c );
+    my $body;
+    if ( $c->cobrand->can('link_to_council_cobrand') ) {
+        $body = $c->cobrand->link_to_council_cobrand($problem);
+    } else {
+        $body = $problem->body( $c );
+    }
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
@@ -867,5 +872,25 @@ sub get_time_spent {
         })->single;
     return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
 }
+
+=head2 get_cobrand_logged
+
+Get a cobrand object for the cobrand the problem was logged for.
+
+e.g. if a problem was logged at www.fixmystreet.com, this will be a
+FixMyStreet::Cobrand::FixMyStreet object.
+
+=cut
+
+has get_cobrand_logged => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $self->cobrand );
+        return $cobrand_class->new;
+    },
+);
+
 
 1;

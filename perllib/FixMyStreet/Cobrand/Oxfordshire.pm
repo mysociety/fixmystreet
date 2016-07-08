@@ -11,7 +11,8 @@ sub council_url { return 'oxfordshire'; }
 sub is_two_tier { return 1; }
 
 sub base_url {
-    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
     return 'https://fixmystreet.oxfordshire.gov.uk';
 }
 
@@ -97,6 +98,7 @@ sub reports_ordering {
 
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
+    return 'grey' unless $self->owns_problem( $p );
     return 'grey' if $p->state eq 'not responsible';
     return 'green' if $p->is_fixed || $p->is_closed;
     return 'red' if $p->state eq 'confirmed';

@@ -10,7 +10,8 @@ sub council_name { return 'Angus Council'; }
 sub council_url { return 'angus'; }
 
 sub base_url {
-    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
     return 'https://fix.angus.gov.uk';
 }
 

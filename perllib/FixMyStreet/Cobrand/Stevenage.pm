@@ -11,7 +11,8 @@ sub council_url { return 'stevenage'; }
 sub is_two_tier { return 1; }
 
 sub base_url {
-    return FixMyStreet->config('BASE_URL') if FixMyStreet->config('STAGING_SITE');
+    my $self = shift;
+    return $self->next::method() if FixMyStreet->config('STAGING_SITE');
     return 'http://fixmystreet.stevenage.gov.uk';
 }
 

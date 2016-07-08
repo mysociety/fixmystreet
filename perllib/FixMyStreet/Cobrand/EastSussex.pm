@@ -113,6 +113,8 @@ sub reports_per_page { return 20; }
 sub pin_colour {
     my ( $self, $p, $context ) = @_;
 
+    return 'grey' unless $self->owns_problem( $p );
+
     # TODO refactor to a Moo(se)? lazy attribute
     my $open_states = $self->{open_states} ||= $p->open_states;
 

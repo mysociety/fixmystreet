@@ -32,7 +32,7 @@ sub confirm_problem : Path('/P') {
         $c->stash->{report} = {
             id => 123,
             title => 'Title of Report',
-            bodies_str => 'True',
+            bodies_str => '1',
             url => '/report/123',
             service => $c->get_param('service'),
         };
@@ -195,7 +195,7 @@ sub confirm_update : Path('/C') {
         $c->stash->{problem} = {
             id => 123,
             title => 'Title of Report',
-            bodies_str => 'True',
+            bodies_str => '1',
             url => '/report/123',
         };
         return;

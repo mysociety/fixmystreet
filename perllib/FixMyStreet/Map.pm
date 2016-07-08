@@ -100,9 +100,9 @@ sub _map_features {
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
-    my $around_map      = $c->cobrand->problems->around_map( @around_args, undef, $category, $states );
+    my $around_map      = $c->cobrand->problems_on_map->around_map( @around_args, undef, $category, $states );
     my $around_map_list = $around_limit
-        ? $c->cobrand->problems->around_map( @around_args, $around_limit, $category, $states )
+        ? $c->cobrand->problems_on_map->around_map( @around_args, $around_limit, $category, $states )
         : $around_map;
 
     my $dist = FixMyStreet::Gaze::get_radius_containing_population( $lat, $lon );

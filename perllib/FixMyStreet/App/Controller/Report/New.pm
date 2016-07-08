@@ -143,22 +143,11 @@ sub report_new_ajax : Path('mobile') : Args(0) {
     $c->forward('save_user_and_report');
 
     my $report = $c->stash->{report};
-    my $data = $c->stash->{token_data} || {};
-    my $token = $c->model("DB::Token")->create( {
-        scope => 'problem',
-        data => {
-            %$data,
-            id => $report->id
-        }
-    } );
     if ( $report->confirmed ) {
         $c->forward( 'create_reporter_alert' );
         $c->stash->{ json_response } = { success => 1, report => $report->id };
     } else {
-        $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
-        $c->send_email( 'problem-confirm.txt', {
-            to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
-        } );
+        $c->forward( 'send_problem_confirm_email' );
         $c->stash->{ json_response } = { success => 1 };
     }
 
@@ -1021,6 +1010,31 @@ sub tokenize_user : Private {
         if $c->get_param('oauth_need_email') && $c->session->{oauth}{twitter_id};
 }
 
+sub send_problem_confirm_email : Private {
+    my ( $self, $c ) = @_;
+    my $data = $c->stash->{token_data} || {};
+    my $report = $c->stash->{report};
+    my $token = $c->model("DB::Token")->create( {
+        scope => 'problem',
+        data => {
+            %$data,
+            id => $report->id
+        }
+    } );
+
+    my $template = 'problem-confirm.txt';
+    $template = 'problem-confirm-not-sending.txt' unless $report->bodies_str;
+
+    $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
+    if ($c->cobrand->can('problem_confirm_email_extras')) {
+        $c->cobrand->problem_confirm_email_extras($report);
+    }
+
+    $c->send_email( $template, {
+        to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
+    } );
+}
+
 =head2 save_user_and_report
 
 Save the user and the report.
@@ -1178,30 +1192,13 @@ sub redirect_or_confirm_creation : Private {
         return 1;
     }
 
-    my $template = 'problem-confirm.txt';
-    $template = 'problem-confirm-not-sending.txt' unless $report->bodies_str;
-
-    # otherwise create a confirm token and email it to them.
-    my $data = $c->stash->{token_data} || {};
-    my $token = $c->model("DB::Token")->create( {
-        scope => 'problem',
-        data => {
-            %$data,
-            id => $report->id
-        }
-    } );
-    $c->stash->{token_url} = $c->uri_for_email( '/P', $token->token );
-    if ($c->cobrand->can('problem_confirm_email_extras')) {
-        $c->cobrand->problem_confirm_email_extras($report);
-    }
-    $c->send_email( $template, {
-        to => [ $report->name ? [ $report->user->email, $report->name ] : $report->user->email ],
-    } );
+    # otherwise email a confirm token to them.
+    $c->forward( 'send_problem_confirm_email' );
 
     # tell user that they've been sent an email
     $c->stash->{template}   = 'email_sent.html';
     $c->stash->{email_type} = 'problem';
-    $c->log->info($report->user->id . ' created ' . $report->id . ', email sent, ' . ($data->{password} ? 'password set' : 'password not set'));
+    $c->log->info($report->user->id . ' created ' . $report->id . ', email sent, ' . ($c->stash->{token_data}->{password} ? 'password set' : 'password not set'));
 }
 
 sub create_reporter_alert : Private {

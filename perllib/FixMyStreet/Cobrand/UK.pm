@@ -336,5 +336,61 @@ sub report_check_for_errors {
     return %errors;
 }
 
-1;
+=head2 get_body_handler_for_problem
 
+Returns a cobrand for the body that a problem was logged against.
+
+    my $handler = $cobrand->get_body_handler_for_problem($row);
+    my $handler = $cobrand_class->get_body_handler_for_problem($row);
+
+If the UK council in bodies_str has a FMS.com cobrand then an instance of that
+cobrand class is returned, otherwise the default FixMyStreet cobrand is used.
+
+=cut
+
+sub get_body_handler_for_problem {
+    my ($self, $row) = @_;
+
+    my @bodies = values %{$row->bodies};
+    my %areas = map { %{$_->areas} } @bodies;
+
+    foreach my $avail ( FixMyStreet::Cobrand->available_cobrand_classes ) {
+        my $class = FixMyStreet::Cobrand->get_class_for_moniker($avail->{moniker});
+        my $cobrand = $class->new({});
+        next unless $cobrand->can('council_id');
+        return $cobrand if $areas{$cobrand->council_id};
+    }
+
+    return ref $self ? $self : $self->new;
+}
+
+=head2 link_to_council_cobrand
+
+If a problem was sent to a UK council who has a FMS cobrand and the report is
+currently being viewed on a different cobrand, then link the council's name to
+that problem on the council's cobrand.
+
+=cut
+
+sub link_to_council_cobrand {
+    my ( $self, $problem ) = @_;
+    # If the report was sent to a cobrand that we're not currently on,
+    # include a link to view it on the responsible cobrand.
+    # This only occurs if the report was sent to a single body and we're not already
+    # using the body name as a link to all problem reports.
+    my $handler = $self->get_body_handler_for_problem($problem);
+    $self->{c}->log->debug( sprintf "bodies: %s areas: %s self: %s handler: %s", $problem->bodies_str, $problem->areas, $self->moniker, $handler->moniker );
+    my $bodies_str_ids = $problem->bodies_str_ids;
+    if ( !mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS') &&
+         scalar(@$bodies_str_ids) == 1 && $handler->is_council &&
+         $handler->moniker ne $self->{c}->cobrand->moniker
+       ) {
+        my $url = sprintf("%s%s", $handler->base_url, $problem->url);
+        return sprintf("<a href='%s'>%s</a>", $url, $problem->body( $self->{c} ));
+    } else {
+        return $problem->body( $self->{c} );
+    }
+}
+
+
+1;
