@@ -562,7 +562,7 @@ fixmystreet.update_pin = function(lonlat) {
 
     if (!$('#side-form-error').is(':visible')) {
         $('#side-form, #site-logo').show();
-        window.scrollTo(0, 0);
+        $('#map_sidebar').scrollTop(0);
     }
 
 };
@@ -668,6 +668,7 @@ fixmystreet.display = {
             $('#side').hide(); // Hide the list of reports
             $('#side-report').remove(); // Remove any existing report page content from sidebar
             $sideReport.appendTo('#map_sidebar'); // Insert this report's content
+            $('#map_sidebar').scrollTop(0);
 
             var found = html.match(/<title>([\s\S]*?)<\/title>/);
             var page_title = found[1];
