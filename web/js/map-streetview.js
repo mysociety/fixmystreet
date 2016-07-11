@@ -1,4 +1,4 @@
-function set_map_config(perm) {
+fixmystreet.maps.config = function() {
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
         new OpenLayers.Control.Navigation(),
@@ -6,7 +6,7 @@ function set_map_config(perm) {
         new OpenLayers.Control.PanZoomFMS()
     ];
     fixmystreet.map_type = OpenLayers.Layer.StreetView;
-}
+};
 
 // http://os.openstreetmap.org/openlayers/OS.js (added one line)
 

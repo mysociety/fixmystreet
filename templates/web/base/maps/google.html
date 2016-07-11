@@ -9,12 +9,12 @@
 </style>
 <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script type="text/javascript" src="[% version('/js/map-google.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/jquery.ba-hashchange.min.js') %]"></script>
 [% END %]
 
 [% map_html = BLOCK %]
 <script type="text/javascript">
-var fixmystreet = {
+var fixmystreet = fixmystreet || {};
+$.extend(fixmystreet, {
     'page': '[% page %]',
     'area': [ [% map.area.join(',') %] ],
     'all_pins': '[% all_pins %]',
@@ -27,7 +27,7 @@ var fixmystreet = {
     'zoom': [% map.zoom %],
 [%- END %]
     'pins': [% INCLUDE maps/pins_js.html %]
-}
+});
 </script>
 <div id="map_box">
     [% pre_map %]

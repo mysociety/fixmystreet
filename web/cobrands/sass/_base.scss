@@ -651,8 +651,16 @@ body.mappage .wrapper {
     float: $right;
 }
 
-#report-share iframe {
-    vertical-align: top;
+#report-share {
+    .btn {
+        padding-left: 1.5em;
+        padding-right: 1.5em;
+        display: inline-block;
+    }
+
+    .btn + .btn {
+        margin-left: 1em;
+    }
 }
 
 //footer blocks
@@ -749,10 +757,13 @@ input.final-submit {
     }
 }
 
+.btn--block {
+    display: block;
+    width: auto;
+}
+
 // Under the button to override its text transform and width
 .btn--social {
-    display: block;
-    width: 100%;
     text-transform: none;
     text-align: center;
 }
@@ -800,6 +811,17 @@ input.final-submit {
     background-position: -18px -802px;
   }
 }
+
+.rap-notes-trigger {
+  &.clicked {
+    background-image: inline-image("../fixmystreet/images/cross-grey.svg");
+
+    .iel8 & {
+      background-image: url("../fixmystreet/images/cross-grey.png");
+    }
+  }
+}
+
 
 .big-green-banner {
   position: relative;
@@ -981,6 +1003,22 @@ input.final-submit {
     &:hover span {
       opacity: 1;
     }
+  }
+}
+
+.problem-back {
+  display: block;
+  font-size: 1em;
+  line-height: 1.2em;
+  margin-bottom: 1em;
+  padding-bottom: 0.8em;
+  padding-#{$left}: 22px;
+  background: transparent url(/cobrands/fixmystreet/images/chevron-grey-#{$left}.svg) #{$left} 0 no-repeat;
+  background-size: 13px 16px;
+  border-bottom: 1px solid #eee;
+
+  &:link, &:visited, &:hover {
+    color: #666;
   }
 }
 
@@ -1257,16 +1295,53 @@ html.js #map .noscript {
     }
 }
 
-// only on mobile, this is a sidebar on desk (#report-a-problem-sidebar)
+// only on mobile
 a.rap-notes-trigger,
 a:hover.rap-notes-trigger {
-  display:block;
-  width:90%;
-  padding-#{$left}: 5%;
-  padding-#{$right}: 5%;
+  display: block;
+  margin-bottom: 1em;
 }
-.rap-notes {
-  margin:1em 0;
+
+#report-a-problem-sidebar {
+  margin-bottom: 2em;
+  padding: 1em;
+  background-color: #E9F2FF;
+}
+
+.mobile #map_box {
+  height: 10em; // eg: at the top of individual report pages
+}
+
+// When you're in the reporting flow on mobile, we hide the site-header
+// and make the map full screen to reduce distractions. JavaScript also
+// tweaks the text content of some of the map-related elements, to make
+// it more "app-like".
+.mobile-reporting-map {
+  #site-header {
+    display: none;
+  }
+
+  #map_box {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto; // override `.mobile #map_box` height:10em
+    margin: 0;
+  }
+
+  #fms_pan_zoom {
+    top: 2.75em; // make space for the semi-transparent "Place pin on map" bar
+  }
+
+  .container {
+    padding: 0; // map_box needs to be full width, so remove page gutter
+  }
+
+  #map_sidebar {
+    padding: 1em; // reinstate page gutter, but on sidebar, so map_box is unaffected
+  }
 }
 
 
@@ -1682,6 +1757,15 @@ table.nicetable {
     font-weight: bold;
     float: left; // float fallback for browsers that don't support flexbox
     flex: 1 0 auto;
+
+    @media(max-width: 400px){
+      // Shameful hack to stop the control expanding wider than the window
+      // on narrow devices (eg: 320px iPhone), which would cause horizontal
+      // scrolling, and clipped text on the new report page, for example.
+      // Flexbox will add the spacing back in anyway. Ideally we'd only apply
+      // this style if flexbox is supported, but there's no easy way to do that.
+      padding: 0.75em 0;
+    }
 
     &:hover, &:focus {
       background: #f3f3f3 linear-gradient(to bottom, #f9f9f9 0%, #e9e9e9 100%) 0 0 no-repeat;

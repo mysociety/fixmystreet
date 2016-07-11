@@ -52,14 +52,7 @@ var add_streetlights = (function() {
         fixmystreet.markers.features[0].move(lonlat);
 
         // Need to ensure the correct coords are used for the report
-        // We can't call fixmystreet_update_pin because that refreshes the category list,
-        // clobbering the value we stored in the #form_column_id field.
-        lonlat.transform(
-            fixmystreet.map.getProjectionObject(),
-            new OpenLayers.Projection("EPSG:4326")
-        );
-        document.getElementById('fixmystreet.latitude').value = lonlat.lat || lonlat.y;
-        document.getElementById('fixmystreet.longitude').value = lonlat.lon || lonlat.x;
+        fixmystreet.maps.update_pin(lonlat);
 
         // Make sure the marker that was clicked is drawn on top of its neighbours
         var layer = e.feature.layer;
@@ -318,18 +311,19 @@ var add_streetlights = (function() {
                 streetlight_fault_layer.setVisibility(false);
             }
         });
-
-        // Make sure the streetlights get hidden if the back button is pressed
-        $(window).on('hashchange', function() {
-            if (location.hash === '') {
-                streetlight_layer.setVisibility(false);
-                streetlight_fault_layer.setVisibility(false);
-                fixmystreet.markers.setVisibility(true);
-                fixmystreet.bbox_strategy.activate();
-                fixmystreet.markers.refresh( { force: true } );
-            }
-        });
     }
+
+    // Make sure the streetlights get hidden if the back button is pressed
+    fixmystreet.maps.display_around = (function(original) {
+        function hide_streetlights() {
+            streetlight_layer.setVisibility(false);
+            streetlight_fault_layer.setVisibility(false);
+            fixmystreet.markers.setVisibility(true);
+            original.apply(fixmystreet.maps);
+        }
+        return hide_streetlights;
+    })(fixmystreet.maps.display_around);
+
     return add_streetlights;
 })();
 

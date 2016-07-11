@@ -15,7 +15,7 @@ $(function(){
     }
 });
 
-function set_map_config(perm) {
+fixmystreet.maps.config = function() {
     var permalink_id;
     if ($('#map_permalink').length) {
         permalink_id = 'map_permalink';
@@ -37,5 +37,4 @@ function set_map_config(perm) {
         {},
         { type: google.maps.MapTypeId.HYBRID }
     ];
-}
-
+};

@@ -94,10 +94,10 @@ var matrix_ids = [
 ];
 
 /* 
- * set_map_config() is called on dom ready in map-OpenLayers.js
+ * maps.config() is called on dom ready in map-OpenLayers.js
  * to setup the way the map should operate.
  */
- function set_map_config(perm) {
+fixmystreet.maps.config = function() {
     // This stuff is copied from js/map-bing-ol.js
 
     var nav_opts = { zoomWheelEnabled: false };
@@ -120,9 +120,9 @@ var matrix_ids = [
     }
     
     setup_wmts_base_map();
-}
+};
 
-function fms_marker_size_for_zoom(zoom) {
+fixmystreet.maps.marker_size_for_zoom = function(zoom) {
     if (zoom >= 7) {
         return 'normal';
     } else if (zoom >= 4) {
@@ -130,4 +130,4 @@ function fms_marker_size_for_zoom(zoom) {
     } else {
         return 'mini';
     }
-}
+};

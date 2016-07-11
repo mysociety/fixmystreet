@@ -8,12 +8,14 @@
 <script type="text/javascript" src="[% start %]/js/translation_strings.[% lang_code %].js?[% Math.int( date.now / 3600 ) %]"></script>
 
 <script type="text/javascript" src="[% version('/jslib/jquery-1.7.2.min.js') %]"></script>
+<!--[if lte IE 9]>
+  <script type="text/javascript" src="[% version('/js/history.polyfill.min.js') %]"></script>
+<![endif]-->
 <script type="text/javascript" src="[% version('/js/validation_rules.js') %]"></script>
 <script src="[% version('/js/jquery.validate.min.js') %]" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" src="[% version('/js/dropzone.min.js') %]"></script>
 
 <script type="text/javascript" src="[% version('/js/geo.min.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/fixmystreet.js') %]"></script>
 <script type="text/javascript" src="[% version('/cobrands/fixmystreet/fixmystreet.js') %]"></script>
 
 [% IF admin %]

@@ -1,4 +1,4 @@
-function _set_map_config() {
+fixmystreet.maps.config = function() {
     var permalink_id;
     if ($('#map_permalink').length) {
         permalink_id = 'map_permalink';
@@ -15,12 +15,8 @@ function _set_map_config() {
     if ( fixmystreet.page == 'report' ) {
         fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
     }
-}
-
-function set_map_config(perm) {
-    _set_map_config();
     fixmystreet.map_type = OpenLayers.Layer.Bing;
-}
+};
 
 OpenLayers.Layer.Bing = OpenLayers.Class(OpenLayers.Layer.XYZ, {
     attributionTemplate: '${logo}${copyrights}',
