@@ -23,19 +23,14 @@
 
 [% IF c.cobrand.moniker == 'fixmystreet' %]
     <div id="report-share" class="hidden-js" align="center">
-        <div id="fb-root"></div>
-        <a href="https://twitter.com/share" class="twitter-share-button" data-text="I just reported &lsquo;[% problem.title_safe | html %]&rsquo;" data-via="fixmystreet" data-related="mysociety" data-count="none" data-dnt="true">Tweet</a>
-        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-
-        <script>(function(d, s, id) {
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) return;
-          js = d.createElement(s); js.id = id;
-          js.src = "//connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v2.6";
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));</script>
-        <div style="line-height:1" class="fb-share-button" data-layout="button" data-mobile-iframe="true"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?src=sdkpreparse">Share</a></div>
-
+        <a class="btn btn--social btn--twitter" href="https://twitter.com/intent/tweet?text=I%20just%20viewed%20this%20report:%20&lsquo;[% problem.title_safe | uri %]&rsquo;&amp;via=fixmystreet&amp;related=mySociety">
+            <img alt="" src="/i/twitter-icon-32.png" width="17" height="32">
+            Tweet
+        </a>
+        <a class="btn btn--social btn--facebook" href="https://www.facebook.com/sharer/sharer.php?u=[% c.cobrand.base_url %][% c.req.uri.path %]">
+            <img alt="" src="/i/facebook-icon-32.png" width="17" height="32">
+            Share
+        </a>
     </div>
 [% END %]
 

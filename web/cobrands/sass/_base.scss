@@ -651,8 +651,16 @@ body.mappage .wrapper {
     float: $right;
 }
 
-#report-share iframe {
-    vertical-align: top;
+#report-share {
+    .btn {
+        padding-left: 1.5em;
+        padding-right: 1.5em;
+        display: inline-block;
+    }
+
+    .btn + .btn {
+        margin-left: 1em;
+    }
 }
 
 //footer blocks
@@ -749,10 +757,13 @@ input.final-submit {
     }
 }
 
+.btn--block {
+    display: block;
+    width: auto;
+}
+
 // Under the button to override its text transform and width
 .btn--social {
-    display: block;
-    width: 100%;
     text-transform: none;
     text-align: center;
 }
