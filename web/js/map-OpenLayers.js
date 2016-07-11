@@ -236,7 +236,7 @@ var fixmystreet = fixmystreet || {};
                 graphicOpacity: 1
             },
             1: {
-                graphicOpacity: 0.15
+                graphicOpacity: 0.4
             }
         });
         var pin_layer_options = {
