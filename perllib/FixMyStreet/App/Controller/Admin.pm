@@ -32,11 +32,11 @@ sub begin : Private {
 
     $c->uri_disposition('relative');
 
-    if ( $c->cobrand->moniker eq 'zurich' || $c->cobrand->moniker eq 'seesomething' ) {
+    if ( $c->cobrand eq 'zurich' || $c->cobrand eq 'seesomething' ) {
         $c->detach( '/auth/redirect' ) unless $c->user_exists;
         $c->detach( '/auth/redirect' ) unless $c->user->from_body;
     }
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'zurich' ) {
         $c->cobrand->admin_type();
     }
 }
@@ -67,7 +67,7 @@ Displays some summary information for the requests.
 sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
-    if ($c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} ne 'super') {
+    if ($c->cobrand eq 'zurich' && $c->stash->{admin_type} ne 'super') {
         return $c->cobrand->admin();
     }
 
@@ -313,7 +313,7 @@ sub body : Path('body') : Args(1) {
 
 sub check_for_super_user : Private {
     my ( $self, $c ) = @_;
-    if ( $c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} ne 'super' ) {
+    if ( $c->cobrand eq 'zurich' && $c->stash->{admin_type} ne 'super' ) {
         $c->detach('/page_error_404_not_found', []);
     }
 }
@@ -510,7 +510,7 @@ sub reports : Path('reports') {
     my ( $self, $c ) = @_;
 
     my $query = {};
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'zurich' ) {
         my $type = $c->stash->{admin_type};
         my $body = $c->stash->{body};
         if ( $type eq 'dm' ) {
@@ -670,7 +670,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     if (my $rotate_photo_param = $self->_get_rotate_photo_param($c)) {
         $self->rotate_photo($c, $problem, @$rotate_photo_param);
-        if ( $c->cobrand->moniker eq 'zurich' ) {
+        if ( $c->cobrand eq 'zurich' ) {
             # Clicking the photo rotation buttons should do nothing
             # except for rotating the photo, so return the user
             # to the report screen now.
@@ -681,7 +681,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
     }
 
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'zurich' ) {
         my $done = $c->cobrand->admin_report_edit();
         return if $done;
     }
@@ -781,7 +781,7 @@ sub templates : Path('templates') : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->detach( '/page_error_404_not_found' )
-        unless $c->cobrand->moniker eq 'zurich';
+        unless $c->cobrand eq 'zurich';
 
     my $user = $c->user;
 
@@ -792,7 +792,7 @@ sub templates_view : Path('templates') : Args(1) {
     my ($self, $c, $body_id) = @_;
 
     $c->detach( '/page_error_404_not_found' )
-        unless $c->cobrand->moniker eq 'zurich';
+        unless $c->cobrand eq 'zurich';
 
     # e.g. for admin
 
@@ -806,7 +806,7 @@ sub template_edit : Path('templates') : Args(2) {
     my ( $self, $c, $body_id, $template_id ) = @_;
 
     $c->detach( '/page_error_404_not_found' )
-        unless $c->cobrand->moniker eq 'zurich';
+        unless $c->cobrand eq 'zurich';
 
     my $body = $c->model('DB::Body')->find($body_id)
         or $c->detach( '/page_error_404_not_found' );
@@ -1180,7 +1180,7 @@ sub stats : Path('stats') : Args(0) {
 
     $c->forward('fetch_all_bodies');
 
-    if ( $c->cobrand->moniker eq 'seesomething' || $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'seesomething' || $c->cobrand eq 'zurich' ) {
         return $c->cobrand->admin_stats();
     }
 
@@ -1521,7 +1521,7 @@ sub fetch_all_bodies : Private {
     my ($self, $c ) = @_;
 
     my @bodies = $c->model('DB::Body')->all;
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'zurich' ) {
         @bodies = $c->cobrand->admin_fetch_all_bodies( @bodies );
     } else {
         @bodies = sort { strcoll($a->name, $b->name) } @bodies;

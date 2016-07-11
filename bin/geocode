@@ -91,7 +91,7 @@ my $cobrand_name = FixMyStreet::Cobrand->get_class_for_moniker($cobrand_option);
 my $cobrand = $cobrand_name->new();
 
 say "USING COBRAND $cobrand_name";
-if ($cobrand->moniker ne lc($cobrand_option)) {
+if ($cobrand ne lc($cobrand_option)) {
     say "!!! asked for $cobrand_option";
     say "!!! Check ALLOWED_COBRANDS setting in conf/general.yml (or supplied --override-config file)";
     say Dumper(\@allowed_cobrands);

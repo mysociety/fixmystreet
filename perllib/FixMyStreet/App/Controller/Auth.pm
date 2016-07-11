@@ -414,7 +414,7 @@ Used after signing in to take the person back to where they were.
 sub redirect_on_signin : Private {
     my ( $self, $c, $redirect ) = @_;
     $redirect = 'my' unless $redirect;
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'zurich' ) {
         $redirect = 'my' if $redirect eq 'admin';
         $redirect = 'admin' if $c->user->from_body;
     }

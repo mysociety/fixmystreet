@@ -55,7 +55,7 @@ sub send(;$) {
         # more than once if there are multiple vhosts running off the same database. The email_host
         # call checks if this is the host that sends mail for this cobrand.
         if (! $cobrand->email_host()) {
-            debug_print("skipping because this host does not send reports for cobrand " . $cobrand->moniker, $row->id) if $debug_mode;
+            debug_print("skipping because this host does not send reports for cobrand " . $cobrand, $row->id) if $debug_mode;
             next;
         }
 

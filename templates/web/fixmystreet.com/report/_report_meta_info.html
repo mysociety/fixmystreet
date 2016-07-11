@@ -1,5 +1,5 @@
 [% problem.meta_line(c) | html %]
-[% IF c.cobrand.moniker != problem.get_cobrand_logged.moniker AND problem.get_cobrand_logged.is_council %]
+[% IF c.cobrand != problem.get_cobrand_logged AND problem.get_cobrand_logged.is_council %]
     using <a href="https://www.fixmystreet.com/about/council">FixMyStreet for Councils</a>
 [% END %]
 [%- IF !problem.used_map %]; <strong>([% loc('there is no pin shown as the user did not use the map') %])</strong>[% END %]

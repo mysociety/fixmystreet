@@ -8,7 +8,7 @@
     %]
 [% END %]
 
-[% IF c.cobrand.moniker == 'oxfordshire' %]
+[% IF c.cobrand == 'oxfordshire' %]
     [% ward_text = 'View reports by division' %]
 [% ELSIF c.cobrand.is_council %]
     [% ward_text = loc( 'View reports by ward' ) %]
@@ -38,7 +38,7 @@
     [% END %]
 </h1>
 
-[% IF c.cobrand.moniker == 'hart' %]
+[% IF c.cobrand == 'hart' %]
     [% INCLUDE '_hart_hants_note.html' %]
 [% END %]
 
@@ -52,7 +52,7 @@
 
 [% INCLUDE 'reports/_ward-list.html' %]
 
-[% IF c.cobrand.moniker == 'fixmystreet' %]
+[% IF c.cobrand == 'fixmystreet' %]
 <p class="promo">
     FixMyStreet is now available for local council websites.
     <a href="https://www.fixmystreet.com/council">Find&nbsp;out&nbsp;more</a>.

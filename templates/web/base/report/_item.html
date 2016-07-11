@@ -5,7 +5,7 @@
     [% END %]
         <h3 class="item-list__heading">[% problem.title | html %]</h3>
         <small>
-            [%- IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]
+            [%- IF c.cobrand != 'fixamingata' %] [%# Default: %]
                 [%- prettify_dt( problem.confirmed, 1 ) %]
             [%- ELSE %] [%# Swedish cobrand fixamingata: %]
                 [%- prettify_dt( problem.confirmed) %]

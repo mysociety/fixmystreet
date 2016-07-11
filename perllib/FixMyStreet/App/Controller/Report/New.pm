@@ -952,7 +952,7 @@ sub check_for_errors : Private {
 
     # Zurich, we don't care about title or name
     # There is no title, and name is optional
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'zurich' ) {
         delete $field_errors{title};
         delete $field_errors{name};
         my $report = $c->stash->{report};
@@ -1110,7 +1110,7 @@ sub save_user_and_report : Private {
         # Logged in and matches, so instantly confirm (except Zurich, with no confirmation)
         $report->user->update();
         $report->confirm
-            unless $c->cobrand->moniker eq 'zurich';
+            unless $c->cobrand eq 'zurich';
         $c->log->info($report->user->id . ' is logged in for this report');
     }
     else {

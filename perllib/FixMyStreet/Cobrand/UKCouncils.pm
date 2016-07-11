@@ -16,7 +16,7 @@ sub is_council {
 sub path_to_web_templates {
     my $self = shift;
     return [
-        FixMyStreet->path_to( 'templates/web', $self->moniker ),
+        FixMyStreet->path_to( 'templates/web', $self ),
         FixMyStreet->path_to( 'templates/web/fixmystreet-uk-councils' ),
     ];
 }
@@ -24,8 +24,8 @@ sub path_to_web_templates {
 sub path_to_email_templates {
     my ( $self, $lang_code ) = @_;
     my $paths = [
-        FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code ),
-        FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
+        FixMyStreet->path_to( 'templates', 'email', $self, $lang_code ),
+        FixMyStreet->path_to( 'templates', 'email', $self ),
         FixMyStreet->path_to( 'templates', 'email', 'fixmystreet.com'),
     ];
     return $paths;
@@ -37,7 +37,7 @@ sub site_key {
 }
 
 sub restriction {
-    return { cobrand => shift->moniker };
+    return { cobrand => shift };
 }
 
 sub problems_restriction {

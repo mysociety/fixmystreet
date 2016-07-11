@@ -186,7 +186,7 @@ sub setup_request {
 
     # debug
     $c->log->debug( sprintf "Set lang to '%s' and cobrand to '%s'",
-        $set_lang, $cobrand->moniker );
+        $set_lang, $cobrand );
 
     $c->stash->{site_name} = Utils::trim_text($c->render_fragment('site-name.html'));
 
@@ -203,7 +203,7 @@ sub setup_request {
     }
 
     # XXX Put in cobrand / do properly
-    if ($c->cobrand->moniker eq 'zurich') {
+    if ($c->cobrand eq 'zurich') {
         FixMyStreet::DB::Result::Problem->visible_states_add('unconfirmed');
         FixMyStreet::DB::Result::Problem->visible_states_remove('investigating');
     }

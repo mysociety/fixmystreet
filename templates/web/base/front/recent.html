@@ -5,7 +5,7 @@
 [% IF recent_photos.size %]
 <div id="front-recently">
     <h2>
-        [%- IF c.cobrand.moniker == 'hart' %]
+        [%- IF c.cobrand == 'hart' %]
             Recently reported
         [% ELSE %]
             [% loc('Recently reported problems') %]

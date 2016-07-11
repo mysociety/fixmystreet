@@ -33,7 +33,7 @@ sub index : Path : Args(0) {
     my ( $self, $c ) = @_;
 
     # Zurich goes straight to map page, with all reports
-    if ( $c->cobrand->moniker eq 'zurich' ) {
+    if ( $c->cobrand eq 'zurich' ) {
         $c->forward( 'stash_report_filter_status' );
         $c->forward( 'load_and_group_problems' );
         my $pins = $c->stash->{pins};
@@ -205,7 +205,7 @@ sub rss_area_ward : Path('/rss/area') : Args(2) {
     $url .= '/' . $c->cobrand->short_name( $c->stash->{ward} ) if $c->stash->{ward};
     $c->stash->{qs} = "/$url";
 
-    if ($c->cobrand->moniker eq 'fixmystreet' && $c->stash->{area}{type} ne 'DIS' && $c->stash->{area}{type} ne 'CTY') {
+    if ($c->cobrand eq 'fixmystreet' && $c->stash->{area}{type} ne 'DIS' && $c->stash->{area}{type} ne 'CTY') {
         # UK-specific types - two possibilites are the same for one-tier councils, so redirect one to the other
         # With bodies, this should presumably redirect if only one body covers
         # the area, and then it will need that body's name (rather than
@@ -413,7 +413,7 @@ sub load_and_group_problems : Private {
 
     my ( %problems, @pins );
     while ( my $problem = $problems->next ) {
-        $c->log->debug( $problem->cobrand . ', cobrand is ' . $c->cobrand->moniker );
+        $c->log->debug( $problem->cobrand . ', cobrand is ' . $c->cobrand );
         if ( !$c->stash->{body} ) {
             add_row( $c, $problem, 0, \%problems, \@pins );
             next;

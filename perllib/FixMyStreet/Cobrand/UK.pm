@@ -379,11 +379,11 @@ sub link_to_council_cobrand {
     # This only occurs if the report was sent to a single body and we're not already
     # using the body name as a link to all problem reports.
     my $handler = $self->get_body_handler_for_problem($problem);
-    $self->{c}->log->debug( sprintf "bodies: %s areas: %s self: %s handler: %s", $problem->bodies_str, $problem->areas, $self->moniker, $handler->moniker );
+    $self->{c}->log->debug( sprintf "bodies: %s areas: %s self: %s handler: %s", $problem->bodies_str, $problem->areas, $self, $handler );
     my $bodies_str_ids = $problem->bodies_str_ids;
     if ( !mySociety::Config::get('AREA_LINKS_FROM_PROBLEMS') &&
          scalar(@$bodies_str_ids) == 1 && $handler->is_council &&
-         $handler->moniker ne $self->{c}->cobrand->moniker
+         $handler ne $self->{c}->cobrand
        ) {
         my $url = sprintf("%s%s", $handler->base_url, $problem->url);
         return sprintf("<a href='%s'>%s</a>", $url, $problem->body( $self->{c} ));

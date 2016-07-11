@@ -252,7 +252,7 @@ sub output_requests : Private {
             'interface_used' => [ $problem->service ], # Not in Open311 v2
         };
 
-        if ( $c->cobrand->moniker eq 'zurich' ) {
+        if ( $c->cobrand eq 'zurich' ) {
             $request->{service_notice} = [ 
                 $problem->get_extra_metadata('public_response')
             ];

@@ -5,23 +5,23 @@
             <input type="hidden" name="token" value="[% csrf_token %]">
             <input type="submit" id="key-tool-report-abuse" class="abuse" value="Remove from site">
         </form></li>
-        [% ELSIF c.cobrand.moniker != 'zurich' %]
+        [% ELSIF c.cobrand != 'zurich' %]
         <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse' ) %]</a></li>
         [% END %]
-        [% IF c.cobrand.moniker != 'zurich' %]
+        [% IF c.cobrand != 'zurich' %]
         <li><a rel="nofollow" id="key-tool-report-updates" class="feed" href="[% c.uri_for( '/alert/subscribe', { id => problem.id } ) %]">[% loc('Get updates' ) %]</a></li>
         [% END %]
-        [% IF c.cobrand.moniker == 'fixmystreet' %]
+        [% IF c.cobrand == 'fixmystreet' %]
         <li><a rel="nofollow" id="key-tool-report-share" class="share" href="#report-share">[% loc('Share') %]</a></li>
         [% END %]
-      [% IF c.cobrand.moniker == 'zurich' %]
+      [% IF c.cobrand == 'zurich' %]
         <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems on the map' ) %]</a></li>
       [% ELSE %]
         <li><a class="chevron" id="key-tool-problems-nearby" href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]">[% loc( 'Problems nearby' ) %]</a></li>
       [% END %]
     </ul>
 
-[% IF c.cobrand.moniker == 'fixmystreet' %]
+[% IF c.cobrand == 'fixmystreet' %]
     <div id="report-share" class="hidden-js" align="center">
         <div id="fb-root"></div>
         <a href="https://twitter.com/share" class="twitter-share-button" data-text="I just reported &lsquo;[% problem.title_safe | html %]&rsquo;" data-via="fixmystreet" data-related="mysociety" data-count="none" data-dnt="true">Tweet</a>

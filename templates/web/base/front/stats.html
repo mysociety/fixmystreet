@@ -36,7 +36,7 @@
 <div id="front_stats">
     <div>[% tprintf( new_text, decode(new_n) ) %]</div>
     <div>[% tprintf( fixed_text, decode(fixed_n) ) %]</div>
-    [% IF c.cobrand.moniker != 'zurich' %]
+    [% IF c.cobrand != 'zurich' %]
     <div>[% tprintf( updates_text, decode(updates_n) ) %]</div>
     [% END %]
 </div>

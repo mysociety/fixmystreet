@@ -6,7 +6,7 @@
     <li>[% loc('Enter details of the problem') %]</li>
     [% IF c.cobrand.is_council %]
         <li>Confirm the report and [% c.cobrand.council_name %] will investigate</li>
-    [% ELSIF c.cobrand.moniker == 'zurich' %]
+    [% ELSIF c.cobrand == 'zurich' %]
     [% ELSE %]
         <li>[% loc('We send it to the council on your behalf') %]</li>
     [% END %]

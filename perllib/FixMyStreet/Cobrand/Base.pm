@@ -3,6 +3,23 @@ package FixMyStreet::Cobrand::Base;
 use strict;
 use warnings;
 
+use overload
+    '==' => 'eq',
+    'eq' => 'eq',
+    '!=' => 'ne',
+    'ne' => 'ne',
+    '""' => sub { $_[0]->moniker };
+
+sub ne {
+    my ($self, $other) = @_;
+    !$self->eq($other);
+}
+
+sub eq {
+    my ($self, $other) = @_;
+    $self->moniker eq (ref $other ? $other->moniker : $other);
+}
+
 =head2 new
 
     my $cobrand = $class->new;

@@ -19,7 +19,7 @@
   <table cellspacing="0" cellpadding="2" border="1">
       <tr>
           <th>[% loc('Name') %]</th>
-        [% IF c.cobrand.moniker == 'zurich' %]
+        [% IF c.cobrand == 'zurich' %]
           <th>[% loc('Email') %]</th>
         [% ELSE %]
           <th>[% loc('Summary') %]</th>
@@ -28,11 +28,11 @@
       </tr>
   [%- FOREACH body IN bodies %]
       [%- SET id = body.id %]
-      [% NEXT IF c.cobrand.moniker == 'zurich' AND admin_type == 'dm' AND (body.parent OR body.bodies) %]
+      [% NEXT IF c.cobrand == 'zurich' AND admin_type == 'dm' AND (body.parent OR body.bodies) %]
       <tr[% IF body.deleted %] class="adminhidden"[% END %]
         [% IF NOT counts.$id OR counts.$id.deleted == counts.$id.c %] class="is-deleted"[% END %]>
           <td>
-            [% IF c.cobrand.moniker == 'zurich' %]
+            [% IF c.cobrand == 'zurich' %]
               [% FILTER repeat(4*body.api_key) %]&nbsp;[% END %]
               [% IF admin_type == 'super' %]
                 <a href="[% c.uri_for( 'body', id ) %]">[% body.name | html %]</a>
@@ -44,7 +44,7 @@
               [%- IF body.parent %], [% body.parent.name | html %][% END -%]
             [% END %]
           </td>
-      [% IF c.cobrand.moniker == 'zurich' %]
+      [% IF c.cobrand == 'zurich' %]
           <td>[% body.endpoint %]</td>
       [% ELSE %]
           <td>
@@ -69,7 +69,7 @@
   </table>
 [% END %]
 
-[% IF c.cobrand.moniker != 'zurich' OR admin_type == 'super' %]
+[% IF c.cobrand != 'zurich' OR admin_type == 'super' %]
     <div class="admin-box">
       <h2>[% loc('Add body') %]</h2>
       [% INCLUDE 'admin/body-form.html', body='' %]

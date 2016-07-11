@@ -19,10 +19,10 @@
         [%
            # For clarity, the 'fixmystreet' moniker (for fixmystreet.com) puts
            # it stylesheets under fixmystreet.com
-           IF c.cobrand.moniker == 'fixmystreet';
+           IF c.cobrand == 'fixmystreet';
                SET css_dir = 'fixmystreet.com';
            ELSE;
-               SET css_dir = c.cobrand.moniker;
+               SET css_dir = c.cobrand;
            END %]
         <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/base.css') %]">
         <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/layout.css') %]" media="(min-width:48em)">

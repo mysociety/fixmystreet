@@ -34,7 +34,7 @@ sub run_host_tests {
         my $test_moniker = lc $test_class;
         is $cobrand, "FixMyStreet::Cobrand::$test_class", "does $host -> F::C::$test_class";
         my $c = $cobrand->new();
-        is $c->moniker, $test_moniker;
+        is $c, $test_moniker;
     }
 }
 
@@ -99,7 +99,7 @@ FixMyStreet::override_config {
 # check that the moniker works as expected both on class and object.
 is FixMyStreet::Cobrand::FiksGataMi->moniker, 'fiksgatami',
   'class->moniker works';
-is FixMyStreet::Cobrand::FiksGataMi->new->moniker, 'fiksgatami',
+is FixMyStreet::Cobrand::FiksGataMi->new, 'fiksgatami',
   'object->moniker works';
 
 # check is_default works

@@ -27,7 +27,7 @@ Returns the path to the templates for this cobrand - by default
 sub path_to_web_templates {
     my $self = shift;
     my $paths = [
-        FixMyStreet->path_to( 'templates/web', $self->moniker ),
+        FixMyStreet->path_to( 'templates/web', $self ),
     ];
     return $paths;
 }
@@ -44,8 +44,8 @@ Returns the path to the email templates for this cobrand - by default
 sub path_to_email_templates {
     my ( $self, $lang_code ) = @_;
     my $paths = [
-        FixMyStreet->path_to( 'templates', 'email', $self->moniker, $lang_code ),
-        FixMyStreet->path_to( 'templates', 'email', $self->moniker ),
+        FixMyStreet->path_to( 'templates', 'email', $self, $lang_code ),
+        FixMyStreet->path_to( 'templates', 'email', $self ),
     ];
     return $paths;
 }
@@ -151,7 +151,7 @@ Return a restriction to data saved while using this specific cobrand site.
 sub restriction {
     my $self = shift;
 
-    return $self->moniker ? { cobrand => $self->moniker } : {};
+    return $self ? { cobrand => $self } : {};
 }
 
 =head2 base_url_with_lang 
@@ -995,7 +995,7 @@ sub updates_as_hashref {
 
 sub jurisdiction_id_example {
     my $self = shift;
-    return $self->moniker;
+    return $self;
 }
 
 =head2 body_details_data
