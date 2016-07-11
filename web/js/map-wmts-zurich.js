@@ -3,13 +3,13 @@
  */
 
 // From 'fullExtent' from http://www.gis.stadt-zuerich.ch/maps/rest/services/tiled95/LuftbildHybrid/MapServer?f=pjson
-var layer_bounds = new OpenLayers.Bounds(
+fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
     2676000.9069999997, // W
     1241399.842, // S
     2689900.9069999997, // E
     1254599.842); // N
 
-var matrix_ids = [
+fixmystreet.maps.matrix_ids = [
   // The two highest zoom levels are pretty much useless so they're disabled.
   // {
   //   "matrixHeight": 882,
@@ -184,7 +184,7 @@ fixmystreet.maps.config = function() {
         fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
     }
 
-    setup_wmts_base_map();
+    this.setup_wmts_base_map();
 
     fixmystreet.area_format = { fillColor: 'none', strokeWidth: 4, strokeColor: 'black' };
 };

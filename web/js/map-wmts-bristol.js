@@ -3,13 +3,13 @@
  */
 
 // From the 'fullExtent' key from http://maps.bristol.gov.uk/arcgis/rest/services/base/2015_BCC_96dpi/MapServer?f=pjson
-var layer_bounds = new OpenLayers.Bounds(
+fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
     268756.31099999975, // W
     98527.70309999958, // S
     385799.51099999994, // E
     202566.10309999995); // N
 
-var matrix_ids = [
+fixmystreet.maps.matrix_ids = [
     {
       "identifier": "0",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
@@ -119,7 +119,7 @@ fixmystreet.maps.config = function() {
         fixmystreet.controls.push( new OpenLayers.Control.PermalinkFMS('key-tool-problems-nearby', '/around') );
     }
     
-    setup_wmts_base_map();
+    this.setup_wmts_base_map();
 };
 
 fixmystreet.maps.marker_size_for_zoom = function(zoom) {

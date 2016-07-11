@@ -1,29 +1,29 @@
 // Functionality required by all OpenLayers WMTS base maps
 
-function setup_wmts_base_map() {
+fixmystreet.maps.setup_wmts_base_map = function() {
     fixmystreet.map_type = OpenLayers.Layer.WMTS;
 
     // Set DPI - default is 72
     OpenLayers.DOTS_PER_INCH = fixmystreet.wmts_config.tile_dpi;
 
     fixmystreet.map_options = {
-        maxExtent: layer_bounds,
+        maxExtent: this.layer_bounds,
         units: 'm',
         scales: fixmystreet.wmts_config.scales
     };
 
     fixmystreet.layer_options = [];
-    fixmystreet.wmts_config.layer_names.forEach(function(v, i) {
+    $.each(fixmystreet.wmts_config.layer_names, function(i, v) {
         fixmystreet.layer_options.push({
             projection: new OpenLayers.Projection(fixmystreet.wmts_config.map_projection),
-            name: fixmystreet.wmts_config.layer_names[i],
-            layer: fixmystreet.wmts_config.layer_names[i],
+            name: v,
+            layer: v,
             formatSuffix: fixmystreet.wmts_config.tile_suffix.replace(".", ""),
             matrixSet: fixmystreet.wmts_config.matrix_set,
             requestEncoding: "REST",
             url: fixmystreet.wmts_config.tile_urls[i],
             style: fixmystreet.wmts_config.layer_style,
-            matrixIds: matrix_ids,
+            matrixIds: fixmystreet.maps.matrix_ids,
             tileOrigin: new OpenLayers.LonLat(fixmystreet.wmts_config.origin_x, fixmystreet.wmts_config.origin_y)
         });
     });
@@ -33,7 +33,7 @@ function setup_wmts_base_map() {
     fixmystreet.bbox_strategy = new OpenLayers.Strategy.ReprojectBBOX({
         ratio: 1
     });
-}
+};
 
 OpenLayers.Strategy.ReprojectBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     getMapBounds: function() {
@@ -51,6 +51,3 @@ OpenLayers.Strategy.ReprojectBBOX = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
 
     CLASS_NAME: "OpenLayers.Strategy.ReprojectBBOX"
 });
-
-
-// 
