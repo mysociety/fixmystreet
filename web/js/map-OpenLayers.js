@@ -136,7 +136,7 @@ var fixmystreet = fixmystreet || {};
 
     function sidebar_highlight(problem_id) {
         if (typeof problem_id !== 'undefined') {
-            var $a = $('.item-list--reports a[href$="' + problem_id + '"]');
+            var $a = $('.item-list--reports a[href$="/' + problem_id + '"]');
             $a.parent().addClass('hovered');
         } else {
             $('.item-list--reports .hovered').removeClass('hovered');
@@ -144,7 +144,7 @@ var fixmystreet = fixmystreet || {};
     }
 
     function marker_click(problem_id) {
-        var $a = $('.item-list--reports a[href$="' + problem_id + '"]');
+        var $a = $('.item-list--reports a[href$="/' + problem_id + '"]');
         $a[0] && $a[0].click();
     }
 
