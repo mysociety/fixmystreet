@@ -491,6 +491,7 @@ sub add_row {
         colour    => $c->cobrand->pin_colour( $problem, 'reports' ),
         id        => $problem->id,
         title     => $problem->title_safe,
+        problem   => $problem,
     };
 }
 
