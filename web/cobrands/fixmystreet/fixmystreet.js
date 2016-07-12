@@ -533,7 +533,7 @@ $.extend(fixmystreet.set_up, {
   map_controls: function() {
     //add permalink on desktop, force hide on mobile
     //add links container (if its not there)
-    if (window.cobrand != 'zurich' && !$('.mobile').length) {
+    if (window.cobrand != 'zurich') {
         if ($('#sub_map_links').length === 0) {
             $('<p id="sub_map_links" />').insertAfter($('#map'));
         }
@@ -544,9 +544,20 @@ $.extend(fixmystreet.set_up, {
 
     if ($('.mobile').length) {
         $('#map_permalink').hide();
-        $('#key-tools a.feed').appendTo('#sub_map_links');
+        // Make sure we end up with one Get updates link
+        if ($('#key-tools a.feed').length) {
+            $('#sub_map_links a.feed').remove();
+            $('#key-tools a.feed').appendTo('#sub_map_links');
+        }
         $('#key-tools li:empty').remove();
         $('#report-updates-data').insertAfter($('#map_box'));
+    }
+
+    // Show/hide depending on whether it has any children to show
+    if ($('#sub_map_links a:visible').length) {
+        $('#sub_map_links').show();
+    } else {
+        $('#sub_map_links').hide();
     }
 
     //add open/close toggle button (if its not there)
@@ -896,8 +907,8 @@ fixmystreet.display = {
             // so we can reinsert them when the user returns to the all reports
             // view. With #sub_map_links detached from the DOM, we set up the
             // individual report's sub_map_links using map_controls().
-            if (!('originalSubMapLinks' in window)) {
-                window.originalSubMapLinks = $('#sub_map_links').detach();
+            if (!fixmystreet.original.sub_map_links) {
+                fixmystreet.original.sub_map_links = $('#sub_map_links').detach();
             }
             fixmystreet.set_up.map_controls();
 
@@ -952,11 +963,10 @@ fixmystreet.display = {
             fixmystreet.mobile_reporting.apply_ui();
         }
 
-        if ('originalSubMapLinks' in window) {
-            $('#sub_map_links').replaceWith(window.originalSubMapLinks);
-            delete window.originalSubMapLinks;
+        if (fixmystreet.original.sub_map_links) {
+            $('#sub_map_links').replaceWith(fixmystreet.original.sub_map_links);
+            delete fixmystreet.original.sub_map_links;
         }
-        $('#sub_map_links').show();
         fixmystreet.set_up.map_controls();
 
         window.selected_problem_id = undefined;
