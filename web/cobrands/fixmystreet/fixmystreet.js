@@ -704,34 +704,6 @@ $.extend(fixmystreet.set_up, {
             }
         });
     });
-
-    window.addEventListener('popstate', function(e) {
-        // The user has pressed the Back button, and there is a
-        // stored History state for them to return to.
-
-        // Note: no pushState callbacks in these display_* calls,
-        // because we're already inside a popstate: We want to roll
-        // back to a previous state, not create a new one!
-
-        var location = window.history.location || window.location;
-
-        if (e.state === null) {
-            // User has navigated Back from a pushStated state, presumably to
-            // see the list of all reports (which was shown on pageload). By
-            // this point, the browser has *already* updated the URL bar so
-            // location.href is something like foo.com/around?pc=abc-123,
-            // which we pass into fixmystreet.display.around() as a fallback
-            // incase the list isn't already in the DOM.
-            fixmystreet.display.around(location.href);
-        } else if ('reportId' in e.state) {
-            fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
-        } else if ('newReportAtLonlat' in e.state) {
-            fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
-        } else if ('hashchange' in e.state) {
-            // This popstate was just here because the hash changed.
-            // (eg: mobile nav click.) We want to ignore it.
-        }
-    });
   }
 });
 
@@ -985,6 +957,7 @@ fixmystreet.display = {
         if (typeof callback === 'function') {
             callback();
         }
+
     } else {
         window.location.href = reportListUrl;
     }
@@ -1003,4 +976,37 @@ $(function() {
     $.each(fixmystreet.set_up, function(setup_name, setup_func) {
         setup_func();
     });
+
+    $(window).on('load', function () {
+        setTimeout(function () {
+            window.addEventListener('popstate', function(e) {
+                // The user has pressed the Back button, and there is a
+                // stored History state for them to return to.
+
+                // Note: no pushState callbacks in these display_* calls,
+                // because we're already inside a popstate: We want to roll
+                // back to a previous state, not create a new one!
+
+                var location = window.history.location || window.location;
+
+                if (e.state === null) {
+                    // User has navigated Back from a pushStated state, presumably to
+                    // see the list of all reports (which was shown on pageload). By
+                    // this point, the browser has *already* updated the URL bar so
+                    // location.href is something like foo.com/around?pc=abc-123,
+                    // which we pass into fixmystreet.display.around() as a fallback
+                    // incase the list isn't already in the DOM.
+                    fixmystreet.display.around(location.href);
+                } else if ('reportId' in e.state) {
+                    fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
+                } else if ('newReportAtLonlat' in e.state) {
+                    fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
+                } else if ('hashchange' in e.state) {
+                    // This popstate was just here because the hash changed.
+                    // (eg: mobile nav click.) We want to ignore it.
+                }
+            });
+        }, 0);
+    });
+
 });
