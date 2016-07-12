@@ -27,12 +27,17 @@ var fixmystreet = fixmystreet || {};
         fixmystreet.map.updateSize();
 
         // Dragging the map should fetch new local reports from server
-        fixmystreet.bbox_strategy.activate();
+        if (fixmystreet.bbox_strategy) {
+            fixmystreet.bbox_strategy.activate();
+        }
 
         // Should not be able to drag normal pins!!
         drag.deactivate();
 
         // Force a redraw to return (de)selected marker to normal size
+        // Redraw for all pages, kick off a refresh too for around
+        // TODO Put 'new report' pin in different layer to simplify this and elsewhere
+        fixmystreet.maps.markers_resize();
         fixmystreet.markers.refresh({force: true});
       },
 
