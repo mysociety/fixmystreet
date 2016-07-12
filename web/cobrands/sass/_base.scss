@@ -1344,6 +1344,13 @@ a:hover.rap-notes-trigger {
   }
 }
 
+.mobile-reporting-map.only-map {
+  height: 100%;
+  body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
 
 /* Reporting a problem bits */
 
