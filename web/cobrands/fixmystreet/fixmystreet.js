@@ -703,7 +703,7 @@ $.extend(fixmystreet.set_up, {
     $('#map_sidebar').on('click', '.js-back-to-report-list', function(e) {
         e.preventDefault();
         var reportListUrl = $(this).attr('href');
-        fixmystreet.display.around(reportListUrl, function() {
+        fixmystreet.display.reports_list(reportListUrl, function() {
             // Since this navigation was the result of a user action,
             // we want to record the navigation as a state, so the user
             // can return to it later using their Back button.
@@ -934,7 +934,8 @@ fixmystreet.display = {
     });
   },
 
-  around: function(reportListUrl, callback) {
+  // This could be an /around page or a /reports page
+  reports_list: function(reportListUrl, callback) {
     // If the report list is already in the DOM,
     // just reveal it, rather than loading new page.
     if ($('#side').length) {
@@ -944,9 +945,9 @@ fixmystreet.display = {
 
         $('body').removeClass('with-notes');
 
-        document.title = fixmystreet.original_title;
-        fixmystreet.page = 'around';
-        if ($('html').hasClass('mobile')) {
+        document.title = fixmystreet.original.title;
+        fixmystreet.page = fixmystreet.original.page;
+        if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
             $('#mob_sub_map_links').remove();
             fixmystreet.mobile_reporting.apply_ui();
         }
@@ -977,7 +978,10 @@ fixmystreet.display = {
 
 $(function() {
     window.cobrand = $('meta[name="cobrand"]').attr('content');
-    fixmystreet.original_title = document.title;
+    fixmystreet.original = {
+        'title': document.title,
+        'page': fixmystreet.page
+    };
 
     if (typeof variation !== 'undefined' && variation === 1) {
         $('input[name=variant]').val(1);
@@ -1004,9 +1008,9 @@ $(function() {
                     // see the list of all reports (which was shown on pageload). By
                     // this point, the browser has *already* updated the URL bar so
                     // location.href is something like foo.com/around?pc=abc-123,
-                    // which we pass into fixmystreet.display.around() as a fallback
-                    // incase the list isn't already in the DOM.
-                    fixmystreet.display.around(location.href);
+                    // which we pass into fixmystreet.display.reports_list() as a fallback
+                    // in case the list isn't already in the DOM.
+                    fixmystreet.display.reports_list(location.href);
                 } else if ('reportId' in e.state) {
                     fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
                 } else if ('newReportAtLonlat' in e.state) {
