@@ -79,7 +79,7 @@ sub send {
     }
 
     my ($verbose, $nomail) = CronFns::options();
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+    my $cobrand = $row->cobrand;
     my $params = {
         To => $self->to,
         From => $self->send_from( $row ),

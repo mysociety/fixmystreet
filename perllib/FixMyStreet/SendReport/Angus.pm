@@ -70,7 +70,7 @@ sub jadu_form_fields {
     foreach my $field (@$metas) {
         $extras{$field->{name}} = $field->{value};
     }
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+    my $cobrand = $row->cobrand;
     my $output = $xml->XMLout({
         formfields => {
             formfield => [

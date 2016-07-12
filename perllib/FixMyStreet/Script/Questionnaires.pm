@@ -39,7 +39,7 @@ sub send_questionnaires_period {
 
     while (my $row = $unsent->next) {
 
-        my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
+        my $cobrand = $row->cobrand;
         $cobrand->set_lang_and_domain($row->lang, 1);
 
         # Not all cobrands send questionnaires

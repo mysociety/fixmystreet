@@ -369,6 +369,13 @@ around service => sub {
     return $s;
 };
 
+around cobrand => sub {
+    my ( $orig, $self ) = ( shift, shift );
+    my $s = $self->$orig(@_) || "";
+    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($s)->new;
+    return $cobrand;
+};
+
 sub title_safe {
     my $self = shift;
     return _('Awaiting moderation') if $self->cobrand eq 'zurich' && $self->state eq 'unconfirmed';
@@ -671,7 +678,7 @@ sub duration_string {
 
 sub local_coords {
     my $self = shift;
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($self->cobrand)->new;
+    my $cobrand = $self->cobrand;
     if ($cobrand eq 'zurich') {
         my ($x, $y) = Geo::Coordinates::CH1903Plus::from_latlon($self->latitude, $self->longitude);
         return ( int($x+0.5), int($y+0.5) );
@@ -872,25 +879,5 @@ sub get_time_spent {
         })->single;
     return $admin_logs ? $admin_logs->get_column('sum_time_spent') : 0;
 }
-
-=head2 get_cobrand_logged
-
-Get a cobrand object for the cobrand the problem was logged for.
-
-e.g. if a problem was logged at www.fixmystreet.com, this will be a
-FixMyStreet::Cobrand::FixMyStreet object.
-
-=cut
-
-has get_cobrand_logged => (
-    is => 'ro',
-    lazy => 1,
-    default => sub {
-        my $self = shift;
-        my $cobrand_class = FixMyStreet::Cobrand->get_class_for_moniker( $self->cobrand );
-        return $cobrand_class->new;
-    },
-);
-
 
 1;

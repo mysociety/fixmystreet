@@ -102,8 +102,6 @@ sub report_moderate_audit : Private {
         reason => (sprintf '%s (%s)', $reason, $types_csv),
     });
 
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($problem->cobrand)->new();
-
     my $token = $c->model("DB::Token")->create({
         scope => 'moderation',
         data => { id => $problem->id }

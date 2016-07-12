@@ -1229,9 +1229,8 @@ subtest "Test setting a report from unconfirmed to something else doesn't cause 
 
 subtest "Check admin_base_url" => sub {
     my $rs = FixMyStreet::App->model('DB::Problem');
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($report->cobrand)->new();
 
-    is ($report->admin_url($cobrand),
+    is ($report->admin_url($report->cobrand),
         (sprintf 'http://www.example.org/admin/report_edit/%d', $report_id),
         'get_admin_url OK');
 };

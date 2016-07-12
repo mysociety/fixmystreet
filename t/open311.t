@@ -667,7 +667,12 @@ subtest 'check FixaMinGata' => sub {
     my $extra = {
         url => 'http://example.com/report/1',
     };
-    my $results = make_service_req( $problem, $extra, $problem->category, '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>' );
+    my $results;
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixamingata' ],
+    }, sub {
+        $results = make_service_req( $problem, $extra, $problem->category, '<?xml version="1.0" encoding="utf-8"?><service_requests><request><service_request_id>248</service_request_id></request></service_requests>' );
+    };
     is $results->{ res }, 248, 'got request id';
     my $description = <<EOT;
 Beskrivning: MØØse

@@ -1072,9 +1072,12 @@ sub save_user_and_report : Private {
     }
 
     if ( $c->stash->{is_social_user} ) {
+        my $data = { $report->get_inflated_columns };
+        # The cobrand will have been inflated to an object which we can't store
+        $data->{cobrand} = $data->{cobrand}->moniker;
         my $token = $c->model("DB::Token")->create( {
             scope => 'problem/social',
-            data => { $report->get_inflated_columns },
+            data => $data,
         } );
 
         $c->stash->{detach_to} = '/report/new/oauth_callback';
@@ -1209,7 +1212,7 @@ sub create_reporter_alert : Private {
         user         => $problem->user,
         alert_type   => 'new_updates',
         parameter    => $problem->id,
-        cobrand      => $problem->cobrand,
+        cobrand      => $problem->cobrand->moniker,
         cobrand_data => $problem->cobrand_data,
         lang         => $problem->lang,
     } )->confirm;

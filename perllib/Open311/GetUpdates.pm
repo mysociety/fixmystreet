@@ -55,8 +55,7 @@ sub update_reports {
           ->search( { external_id => $request_id, } );
 
         if (my $p = $problem->first) {
-            my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($p->cobrand)->new();
-            $cobrand->set_lang_and_domain($p->lang, 1, FixMyStreet->path_to('locale')->stringify );
+            $p->cobrand->set_lang_and_domain($p->lang, 1, FixMyStreet->path_to('locale')->stringify );
             $p->update_from_open311_service_request( $request, $body, $self->system_user );
         }
     }
