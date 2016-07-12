@@ -677,6 +677,13 @@ $.extend(fixmystreet.set_up, {
 
         // If we've already selected this report
         if (reportId == window.selected_problem_id) {
+            if (fixmystreet.map.setCenter) {
+                // Second click, zoom in to the report on the map
+                var marker = fixmystreet.maps.get_marker_by_id(reportId);
+                fixmystreet.map.setCenter(
+                    marker.geometry.getBounds().getCenterLonLat(),
+                    fixmystreet.map.getNumZoomLevels() - 1 );
+            }
             return;
         }
 
