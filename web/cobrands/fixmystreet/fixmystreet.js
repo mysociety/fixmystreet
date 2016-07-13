@@ -55,6 +55,7 @@ function isR2L() {
         var $swparent = $sw.parent();
         var $drawer = $('#' + id);
 
+        this.off('click');
         this.toggle(function() {
             // Find the specified drawer, or create it if it doesn't exist
             if ($drawer.length === 0) {
@@ -584,7 +585,8 @@ $.extend(fixmystreet.set_up, {
   map_sidebar_key_tools: function() {
     if ($('html.mobile').length) {
         $('#council_wards').hide().removeClass('hidden-js').find('h2').hide();
-        $('#key-tool-wards').click(function(e) {
+        $('#key-tool-wards').off('click.wards');
+        $('#key-tool-wards').on('click.wards', function(e) {
             e.preventDefault();
             $('#council_wards').slideToggle('800', function() {
               $('#key-tool-wards').toggleClass('hover');
