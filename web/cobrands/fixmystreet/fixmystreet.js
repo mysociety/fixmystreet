@@ -896,7 +896,6 @@ fixmystreet.display = {
 
             var found = html.match(/<title>([\s\S]*?)<\/title>/);
             var page_title = found[1];
-            document.title = page_title;
             fixmystreet.page = 'report';
 
             fixmystreet.mobile_reporting.remove_ui();
@@ -937,6 +936,7 @@ fixmystreet.display = {
             if (typeof callback === 'function') {
                 callback();
             }
+            document.title = page_title;
 
         } else {
             window.location.href = reportPageUrl;
@@ -959,7 +959,6 @@ fixmystreet.display = {
 
         $('body').removeClass('with-notes');
 
-        document.title = fixmystreet.original.title;
         fixmystreet.page = fixmystreet.original.page;
         if ($('html').hasClass('mobile') && fixmystreet.page == 'around') {
             $('#mob_sub_map_links').remove();
@@ -981,6 +980,7 @@ fixmystreet.display = {
         if (typeof callback === 'function') {
             callback();
         }
+        document.title = fixmystreet.original.title;
 
     } else {
         window.location.href = reportListUrl;
