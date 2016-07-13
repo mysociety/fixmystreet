@@ -202,9 +202,36 @@ var fixmystreet = fixmystreet || {};
         }
     }
 
-    function marker_click(problem_id) {
+    function marker_click(problem_id, evt) {
         var $a = $('.item-list--reports a[href$="/' + problem_id + '"]');
-        $a[0] && $a[0].click();
+        if (!$a[0]) {
+            return;
+        }
+
+        // All of this, just so that ctrl/cmd-click on a pin works?!
+        var event;
+        if (window.MouseEvent) {
+            event = new MouseEvent('click', evt);
+            $a[0].dispatchEvent(event);
+        } else if (document.createEvent) {
+            event = document.createEvent("MouseEvents");
+            event.initMouseEvent(
+                'click', true, true, window, 1,
+                0, 0, 0, 0,
+                evt.ctrlKey, evt.altKey, evt.shiftKey, evt.metaKey,
+                0, null);
+            $a[0].dispatchEvent(event);
+        } else if (document.createEventObject) {
+            event = document.createEventObject();
+            event.metaKey = evt.metaKey;
+            event.ctrlKey = evt.ctrlKey;
+            if (e.metaKey === undefined) {
+                e.metaKey = e.ctrlKey;
+            }
+            $a[0].fireEvent("onclick", event);
+        } else {
+            $a[0].click();
+        }
     }
 
     function categories_or_status_changed() {
@@ -331,7 +358,7 @@ var fixmystreet = fixmystreet || {};
                     // Override clickFeature so that we can use it even though
                     // hover is true. http://gis.stackexchange.com/a/155675
                     clickFeature: function (feature) {
-                        marker_click(feature.attributes.id);
+                        marker_click(feature.attributes.id, this.handlers.feature.evt);
                     },
                     overFeature: function (feature) {
                         if (fixmystreet.latest_map_hover_event != 'overFeature') {

@@ -684,7 +684,12 @@ $.extend(fixmystreet.set_up, {
 
   ajax_history: function() {
     $('#map_sidebar').on('click', '.item-list--reports a', function(e) {
+        if (e.metaKey || e.ctrlKey) {
+            return;
+        }
+
         e.preventDefault();
+
         var reportPageUrl = $(this).attr('href');
         var reportId = parseInt(reportPageUrl.replace(/^.*\/([0-9]+)$/, '$1'), 10);
 
@@ -714,6 +719,10 @@ $.extend(fixmystreet.set_up, {
     });
 
     $('#map_sidebar').on('click', '.js-back-to-report-list', function(e) {
+        if (e.metaKey || e.ctrlKey) {
+            return;
+        }
+
         e.preventDefault();
         var reportListUrl = $(this).attr('href');
         fixmystreet.display.reports_list(reportListUrl, function() {
