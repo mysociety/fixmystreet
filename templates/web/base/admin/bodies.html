@@ -69,7 +69,7 @@
   </table>
 [% END %]
 
-[% IF c.cobrand.moniker != 'zurich' OR admin_type == 'super' %]
+[% IF (c.cobrand.moniker == 'zurich' AND admin_type == 'super') OR c.user.is_superuser %]
     <div class="admin-box">
       <h2>[% loc('Add body') %]</h2>
       [% INCLUDE 'admin/body-form.html', body='' %]

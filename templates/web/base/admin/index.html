@@ -30,19 +30,21 @@ and to receive notices of updates.
         <input type="text" name="search"  size="30" id="search_users" value="[% searched | html %]">
 </form>
 
-<form method="get" action="[% c.uri_for('bodies') %]">
-<label for="search_body">[% loc('Edit body details') %]</label>
-<select id="search_body" name="body">
-[% FOREACH body IN bodies %]
-  [%- SET id = body.id %]
-    <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
-        [% body.name | html %]
-        [%- IF body.parent %], [% body.parent.name | html %][% END -%]
-    </option>
+[% IF c.user.is_superuser %]
+  <form method="get" action="[% c.uri_for('bodies') %]">
+  <label for="search_body">[% loc('Edit body details') %]</label>
+  <select id="search_body" name="body">
+  [% FOREACH body IN bodies %]
+    [%- SET id = body.id %]
+      <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
+          [% body.name | html %]
+          [%- IF body.parent %], [% body.parent.name | html %][% END -%]
+      </option>
+  [% END %]
+  </select>
+  <input type="submit" value="[% loc('Go') %]">
+  </form>
 [% END %]
-</select>
-<input type="submit" value="[% loc('Go') %]">
-</form>
 
 [% IF unsent_reports.size %]
 <h2>[% loc('Reports waiting to be sent') %]</h2>

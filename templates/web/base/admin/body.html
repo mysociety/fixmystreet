@@ -213,7 +213,7 @@
   </form>
 </div>
 
-[% IF NOT errors %]
+[% IF NOT errors and c.user.is_superuser %]
 <div class="admin-box">
   <h2>[% loc('Edit body details') %]</h2>
   [% INCLUDE 'admin/body-form.html' %]

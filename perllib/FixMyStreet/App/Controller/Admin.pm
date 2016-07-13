@@ -315,8 +315,13 @@ sub body : Path('body') : Args(1) {
 
 sub check_for_super_user : Private {
     my ( $self, $c ) = @_;
-    if ( $c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} ne 'super' ) {
-        $c->detach('/page_error_404_not_found', []);
+
+    my $superuser = $c->user->is_superuser;
+    # Zurich currently has its own way of defining superusers
+    $superuser ||= $c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} eq 'super';
+
+    unless ( $superuser ) {
+        $c->detach('/page_error_403_access_denied', []);
     }
 }
 
