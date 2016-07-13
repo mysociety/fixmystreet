@@ -65,82 +65,44 @@ sub display_map {
 }
 
 sub map_features {
-    my ( $c, $lat, $lon, $interval, $category, $states ) = @_;
+    my ( $c, %p ) = @_;
 
-   # TODO - be smarter about calculating the surrounding square
-   # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
-    my $lat_delta = 0.00438;
-    my $lon_delta = 0.00736;
-    return _map_features(
-        $c, $lat, $lon,
-        $lon - $lon_delta, $lat - $lat_delta,
-        $lon + $lon_delta, $lat + $lat_delta,
-        $interval, $category, $states
-    );
-}
+    if ($p{bbox}) {
+        @p{"min_lon", "min_lat", "max_lon", "max_lat"} = split /,/, $p{bbox};
+    }
 
-sub map_features_bounds {
-    my ( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category, $states ) = @_;
-
-    my $lat = ( $max_lat + $min_lat ) / 2;
-    my $lon = ( $max_lon + $min_lon ) / 2;
-    return _map_features(
-        $c, $lat, $lon,
-        $min_lon, $min_lat,
-        $max_lon, $max_lat,
-        $interval, $category,
-        $states
-    );
-}
-
-sub _map_features {
-    my ( $c, $lat, $lon, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category, $states ) = @_;
+    if ($p{latitude} && $p{longitude}) {
+        # TODO - be smarter about calculating the surrounding square
+        # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
+        my $lat_delta = 0.00438;
+        my $lon_delta = 0.00736;
+        $p{min_lon} = $p{longitude} - $lon_delta;
+        $p{min_lat} = $p{latitude} - $lat_delta;
+        $p{max_lon} = $p{longitude} + $lon_delta;
+        $p{max_lat} = $p{latitude} + $lat_delta;
+    } else {
+        $p{longitude} = ($p{max_lon} + $p{min_lon} ) / 2;
+        $p{latitude} = ($p{max_lat} + $p{min_lat} ) / 2;
+    }
 
     # list of problems around map can be limited, but should show all pins
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
-    my @around_args = ( $min_lat, $max_lat, $min_lon, $max_lon, $interval );
-    my $around_map      = $c->cobrand->problems_on_map->around_map( @around_args, undef, $category, $states );
-    my $around_map_list = $around_limit
-        ? $c->cobrand->problems_on_map->around_map( @around_args, $around_limit, $category, $states )
-        : $around_map;
+    my @around_args = @p{"min_lat", "max_lat", "min_lon", "max_lon", "interval"};
+    my $on_map_all = $c->cobrand->problems_on_map->around_map( @around_args, undef, $p{category}, $p{states} );
+    my $on_map_list = $around_limit
+        ? $c->cobrand->problems_on_map->around_map( @around_args, $around_limit, $p{category}, $p{states} )
+        : $on_map_all;
 
-    my $dist = FixMyStreet::Gaze::get_radius_containing_population( $lat, $lon );
+    my $dist = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );
 
     my $limit  = 20;
-    my @ids    = map { $_->id } @$around_map_list;
+    my @ids    = map { $_->id } @$on_map_list;
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, \@ids, $limit, $lat, $lon, $interval, $category, $states
+        $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "interval", "category", "states"}
     );
 
-    return ( $around_map, $around_map_list, $nearby, $dist );
-}
-
-sub map_pins {
-    my ($c, $interval) = @_;
-
-    my $bbox = $c->get_param('bbox');
-    my ( $min_lon, $min_lat, $max_lon, $max_lat ) = split /,/, $bbox;
-    my $category = $c->get_param('filter_category');
-
-    $c->forward( '/reports/stash_report_filter_status' );
-    my $states = $c->stash->{filter_problem_states};
-
-    my ( $around_map, $around_map_list, $nearby, $dist ) =
-      FixMyStreet::Map::map_features_bounds( $c, $min_lon, $min_lat, $max_lon, $max_lat, $interval, $category, $states );
-
-    # create a list of all the pins
-    my @pins = map {
-        # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
-        my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
-        my $colour = $c->cobrand->pin_colour( $p, 'around' );
-        [ $p->latitude, $p->longitude,
-          $colour,
-          $p->id, $p->title_safe
-        ]
-    } @$around_map, @$nearby;
-
-    return (\@pins, $around_map_list, $nearby, $dist);
+    return ( $on_map_all, $on_map_list, $nearby, $dist );
 }
 
 sub click_to_wgs84 {

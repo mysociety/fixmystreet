@@ -485,14 +485,7 @@ sub stash_report_filter_status : Private {
 sub add_row {
     my ( $c, $problem, $body, $problems, $pins ) = @_;
     push @{$problems->{$body}}, $problem;
-    push @$pins, {
-        latitude  => $problem->latitude,
-        longitude => $problem->longitude,
-        colour    => $c->cobrand->pin_colour( $problem, 'reports' ),
-        id        => $problem->id,
-        title     => $problem->title_safe,
-        problem   => $problem,
-    };
+    push @$pins, $problem->pin_data($c, 'reports');
 }
 
 =head1 AUTHOR
