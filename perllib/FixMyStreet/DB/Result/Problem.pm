@@ -161,6 +161,13 @@ use Moo;
 use namespace::clean -except => [ 'meta' ];
 use Utils;
 use FixMyStreet::Map::FMS;
+use LWP::Simple qw($ua);
+
+my $IM = eval {
+    require Image::Magick;
+    Image::Magick->import;
+    1;
+};
 
 with 'FixMyStreet::Roles::Abuser',
      'FixMyStreet::Roles::Extra',
@@ -654,7 +661,7 @@ sub can_display_external_id {
     if ($self->external_id && $self->send_method_used && $self->bodies_str =~ /(2237|2550)/) {
         return 1;
     }
-    return 0;    
+    return 0;
 }
 
 sub duration_string {
@@ -836,7 +843,7 @@ __PACKAGE__->has_many(
   "admin_log_entries",
   "FixMyStreet::DB::Result::AdminLog",
   { "foreign.object_id" => "self.id" },
-  { 
+  {
       cascade_copy => 0, cascade_delete => 0,
       where => { 'object_type' => 'problem' },
   }
@@ -873,6 +880,7 @@ has get_cobrand_logged => (
     },
 );
 
+
 sub pin_data {
     my ($self, $c, $page, %opts) = @_;
     my $colour = $c->cobrand->pin_colour($self, $page);
@@ -885,6 +893,73 @@ sub pin_data {
         title => $opts{private} ? $self->title : $self->title_safe,
         problem => $self,
     }
+};
+
+sub static_map {
+    my ($self) = @_;
+
+    return unless $IM;
+
+    my $orig_map_class = FixMyStreet::Map::set_map_class('OSM')
+        unless $FixMyStreet::Map::map_class->isa("FixMyStreet::Map::OSM");
+
+    my $map_data = $FixMyStreet::Map::map_class->generate_map_data(
+        { cobrand => $self->get_cobrand_logged },
+        latitude  => $self->latitude,
+        longitude => $self->longitude,
+        pins      => $self->used_map
+        ? [ {
+            latitude  => $self->latitude,
+            longitude => $self->longitude,
+            colour    => $self->get_cobrand_logged->pin_colour($self, 'report'),
+            type      => 'big',
+          } ]
+        : [],
+    );
+
+    $ua->agent("FixMyStreet/1.0");
+    my $image;
+    for (my $i=0; $i<4; $i++) {
+        my $tile_url = $map_data->{tiles}->[$i];
+        if ($tile_url =~ m{^//}) {
+            $tile_url = "https:$tile_url";
+        }
+        my $tile = LWP::Simple::get($tile_url);
+        my $im = Image::Magick->new;
+        $im->BlobToImage($tile);
+        if (!$image) {
+            $image = $im;
+            $image->Extent(geometry => '512x512', gravity => 'NorthWest');
+        } else {
+            my $gravity = ($i<2?'North':'South') . ($i%2?'East':'West');
+            $image->Composite(image => $im, gravity => $gravity);
+        }
+    }
+
+    # The only pin might be the report pin, with added x/y
+    my $pin = $map_data->{pins}->[0];
+    if ($pin) {
+        my $im = Image::Magick->new;
+        $im->read(FixMyStreet->path_to('web', 'i', 'pin-yellow.png'));
+        $image->Composite(image => $im, gravity => 'NorthWest',
+            x => $pin->{px} - 24, y => $pin->{py} - 64);
+    }
+
+    # Bottom 128/ top 64 pixels will never have a pin
+    $image->Extent( geometry => '512x384', gravity => 'NorthWest');
+    $image->Extent( geometry => '512x320', gravity => 'SouthWest');
+
+    $image->Scale( geometry => "310x200>" );
+
+    my @blobs = $image->ImageToBlob(magick => 'jpeg');
+    undef $image;
+
+    FixMyStreet::Map::set_map_class($orig_map_class) if $orig_map_class;
+
+    return {
+        data => $blobs[0],
+        content_type => 'image/jpeg',
+    };
 }
 
 1;
