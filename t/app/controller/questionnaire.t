@@ -17,10 +17,7 @@ $mech->clear_emails_ok;
 # create a test user and report
 $mech->delete_user('test@example.com');
 
-my $user =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
-ok $user, "created test user";
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
 my $dt = DateTime->now()->subtract( weeks => 5 );
 my $report_time = $dt->ymd . ' ' . $dt->hms;

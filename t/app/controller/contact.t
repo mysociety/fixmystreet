@@ -52,12 +52,7 @@ for my $test (
   )
 {
     subtest 'check reporting a problem displays correctly' => sub {
-        my $user = FixMyStreet::App->model('DB::User')->find_or_create(
-            {
-                name  => $test->{name},
-                email => $test->{email}
-            }
-        );
+        my $user = $mech->create_user_ok($test->{email}, name => $test->{name});
 
         my $problem = FixMyStreet::App->model('DB::Problem')->create(
             {
@@ -80,12 +75,8 @@ for my $test (
 
         if ( $test->{update} ) {
             my $update_info = $test->{update};
-            my $update_user = FixMyStreet::App->model('DB::User')->find_or_create(
-                {
-                    name  => $update_info->{name},
-                    email => $update_info->{email}
-                }
-            );
+            my $update_user = $mech->create_user_ok($update_info->{email},
+                name => $update_info->{name});
 
             $update = FixMyStreet::App->model('DB::Comment')->create(
                 {

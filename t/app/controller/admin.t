@@ -6,32 +6,16 @@ use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $user =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test@example.com' } );
-ok $user, "created test user";
-$user->update({ name => 'Test User' });
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
-my $user2 =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test2@example.com', name => 'Test User 2' } );
-ok $user2, "created second test user";
+my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 
-my $superuser =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'superuser@example.com', name => 'Super User', is_superuser => 1 } );
-ok $superuser, "created superuser";
+my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237 );
-my $oxfordshireuser =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'counciluser@example.com', name => 'Council User', from_body => $oxfordshire } );
-ok $oxfordshireuser, "created council user";
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
-
-my $user3 =
-  FixMyStreet::App->model('DB::User')
-  ->find( { email => 'test3@example.com', name => 'Test User 2' } );
+my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 2');
 
 if ( $user3 ) {
   $mech->delete_user( $user3 );

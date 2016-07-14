@@ -15,9 +15,7 @@ my $body = $mech->create_body_ok( $BROMLEY_ID, 'Bromley Council' );
 
 my $dt = DateTime->now;
 
-my $user =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test-moderation@example.com', name => 'Test User' } );
+my $user = $mech->create_user_ok('test-moderation@example.com', name => 'Test User');
 $user->user_body_permissions->delete_all;
 $user->discard_changes;
 

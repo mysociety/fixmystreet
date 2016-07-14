@@ -13,15 +13,9 @@ my $mech = FixMyStreet::TestMech->new;
 $mech->delete_user('commenter@example.com');
 $mech->delete_user('test@example.com');
 
-my $user =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
-ok $user, "created test user";
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
-my $user2 =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'commenter@example.com', name => 'Commenter' } );
-ok $user2, "created comment user";
+my $user2 = $mech->create_user_ok('commenter@example.com', name => 'Commenter');
 
 my $body = $mech->create_body_ok(2504, 'Westminster City Council');
 

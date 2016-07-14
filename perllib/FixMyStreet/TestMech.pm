@@ -63,11 +63,10 @@ Create a test user (or find it and return if it already exists).
 
 sub create_user_ok {
     my $self = shift;
-    my ($email) = @_;
+    my ( $email, %extra ) = @_;
 
-    my $user =
-      FixMyStreet::DB->resultset('User')
-      ->find_or_create( { email => $email } );
+    my $params = { email => $email, %extra };
+    my $user = FixMyStreet::DB->resultset('User')->find_or_create($params);
     ok $user, "found/created user for $email";
 
     return $user;
