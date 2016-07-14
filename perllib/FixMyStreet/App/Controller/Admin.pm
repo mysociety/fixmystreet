@@ -244,13 +244,15 @@ sub bodies : Path('bodies') : Args(0) {
         $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward('body_params');
-        my $body = $c->model('DB::Body')->create( $params );
-        my @area_ids = $c->get_param_list('area_ids');
-        foreach (@area_ids) {
-            $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
-        }
+        unless ( keys $c->stash->{body_errors} ) {
+            my $body = $c->model('DB::Body')->create( $params );
+            my @area_ids = $c->get_param_list('area_ids');
+            foreach (@area_ids) {
+                $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
+            }
 
-        $c->stash->{updated} = _('New body added');
+            $c->stash->{updated} = _('New body added');
+        }
     }
 
     $c->forward( 'fetch_all_bodies' );
@@ -410,18 +412,20 @@ sub update_contacts : Private {
         $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward( 'body_params' );
-        $c->stash->{body}->update( $params );
-        my @current = $c->stash->{body}->body_areas->all;
-        my %current = map { $_->area_id => 1 } @current;
-        my @area_ids = $c->get_param_list('area_ids');
-        foreach (@area_ids) {
-            $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
-            delete $current{$_};
-        }
-        # Remove any others
-        $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
+        unless ( keys $c->stash->{body_errors} ) {
+            $c->stash->{body}->update( $params );
+            my @current = $c->stash->{body}->body_areas->all;
+            my %current = map { $_->area_id => 1 } @current;
+            my @area_ids = $c->get_param_list('area_ids');
+            foreach (@area_ids) {
+                $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
+                delete $current{$_};
+            }
+            # Remove any others
+            $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
 
-        $c->stash->{updated} = _('Values updated');
+            $c->stash->{updated} = _('Values updated');
+        }
     }
 }
 
@@ -440,7 +444,18 @@ sub body_params : Private {
         deleted => 0,
     );
     my %params = map { $_ => $c->get_param($_) || $defaults{$_} } keys %defaults;
+    $c->forward('check_body_params', [ \%params ]);
     return \%params;
+}
+
+sub check_body_params : Private {
+    my ( $self, $c, $params ) = @_;
+
+    $c->stash->{body_errors} ||= {};
+
+    unless ($params->{name}) {
+        $c->stash->{body_errors}->{name} = _('Please enter a name for this body');
+    }
 }
 
 sub display_contacts : Private {
