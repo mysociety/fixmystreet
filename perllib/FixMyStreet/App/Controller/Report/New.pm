@@ -661,6 +661,7 @@ sub setup_categories_and_bodies : Private {
 
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
+    $c->stash->{contacts} = \@contacts;
     $c->stash->{all_body_names} = [ map { $_->name } values %bodies ];
     $c->stash->{all_body_urls} = [ map { $_->external_url } values %bodies ];
     $c->stash->{bodies_to_list} = [ keys %bodies_to_list ];
@@ -777,8 +778,7 @@ sub process_report : Private {
       map { $_ => $c->get_param($_) }
       (
         'title', 'detail', 'pc',                 #
-        'detail_size', 'detail_depth',
-        'detail_offensive',
+        'detail_size',
         'may_show_name',                         #
         'category',                              #
         'subcategory',                              #
@@ -802,9 +802,8 @@ sub process_report : Private {
     $report->title( Utils::cleanup_text( $params{title} ) );
 
     my $detail = Utils::cleanup_text( $params{detail}, { allow_multiline => 1 } );
-    for my $w ('depth', 'size', 'offensive') {
+    for my $w ('size') {
         next unless $params{"detail_$w"};
-        next if $params{"detail_$w"} eq '-- Please select --';
         $detail .= "\n\n\u$w: " . $params{"detail_$w"};
     }
     $report->detail( $detail );
@@ -814,32 +813,13 @@ sub process_report : Private {
 
     # set these straight from the params
     $report->category( _ $params{category} ) if $params{category};
-
     $report->subcategory( $params{subcategory} );
 
     my $areas = $c->stash->{all_areas_mapit};
     $report->areas( ',' . join( ',', sort keys %$areas ) . ',' );
 
-    # From earlier in the process.
-    $areas = $c->stash->{all_areas};
-    my $bodies = $c->stash->{bodies};
-    my $first_area = ( values %$areas )[0];
-    my $first_body = ( values %$bodies )[0];
-
     if ( $report->category ) {
-
-        # FIXME All contacts were fetched in setup_categories_and_bodies,
-        # so can this DB call also be avoided?
-        my @contacts = $c->       #
-          model('DB::Contact')    #
-          ->not_deleted           #
-          ->search(
-            {
-                body_id => [ keys %$bodies ],
-                category => $report->category
-            }
-          )->all;
-
+        my @contacts = grep { $_->category eq $report->category } @{$c->stash->{contacts}};
         unless ( @contacts ) {
             $c->stash->{field_errors}->{category} = _('Please choose a category');
             $report->bodies_str( -1 );
@@ -877,20 +857,20 @@ sub process_report : Private {
         }
 
         my @extra;
-        # NB: we are only checking extras for the *first* retrieved contact.
-        my $metas = $contacts[0]->get_extra_fields();
-
-        foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' ) {
-                unless ( $c->get_param($field->{code}) ) {
-                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+        foreach my $contact (@contacts) {
+            my $metas = $contact->get_extra_fields;
+            foreach my $field ( @$metas ) {
+                if ( lc( $field->{required} ) eq 'true' ) {
+                    unless ( $c->get_param($field->{code}) ) {
+                        $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                    }
                 }
+                push @extra, {
+                    name => $field->{code},
+                    description => $field->{description},
+                    value => $c->get_param($field->{code}) || '',
+                };
             }
-            push @extra, {
-                name => $field->{code},
-                description => $field->{description},
-                value => $c->get_param($field->{code}) || '',
-            };
         }
 
         if ( $c->stash->{non_public_categories}->{ $report->category } ) {
