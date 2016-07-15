@@ -454,11 +454,7 @@ create table user_body_permissions (
     id serial not null primary key,
     user_id int references users(id) not null,
     body_id int references body(id) not null,
-    permission_type text not null check(
-        permission_type='moderate' or
-        -- for future expansion --
-        permission_type='admin'
-    ),
+    permission_type text not null,
     unique(user_id, body_id, permission_type)
 );
 
