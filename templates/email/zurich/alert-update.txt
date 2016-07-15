@@ -2,7 +2,7 @@ Subject: New update on report - '[% title %]'
 
 The following update has been left on this report:
 
-[% data %]
+[% INCLUDE '_email_comment_list.txt' %]
 
 To view this report on the site, please visit the following URL:
     [% problem_url %]

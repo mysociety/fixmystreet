@@ -1,6 +1,6 @@
-Subject: Frågeformulär om '[% title %]'
+Subject: Frågeformulär om '[% report.title %]'
 
-Hej [% name %],
+Hej [% report.name %],
 
 OBS! Du kan inte svara på detta brev. För att se eller svara på dessa
 uppdateringar, klicka på följande länk:
@@ -19,6 +19,6 @@ kommentarsfältet i frågeformuläret.
 
 Ditt rapporterade problem var enligt nedan:
 
-[% title %]
+[% report.title %]
 
-[% detail %]
+[% report.detail %]

@@ -548,24 +548,25 @@ foreach my $test ( {
             like $email->header('To'), $test->{ to }, 'to line looks correct';
             is $email->header('From'), sprintf('"%s" <%s>', $test->{ name }, $test->{ email } ), 'from line looks correct';
             like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
-            like $email->body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
-            like $email->body, qr/Subject: A Title/, 'more email body checking';
-            like $email->body, $test->{ dear }, 'Salutation looks correct';
+            my $body = $mech->get_text_body_from_email($email);
+            like $body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
+            like $body, qr/Subject: A Title/, 'more email body checking';
+            like $body, $test->{ dear }, 'Salutation looks correct';
             if ($test->{longitude}) {
-                like $email->body, qr{Easting/Northing \(IE\): 297279/362371};
+                like $body, qr{Easting/Northing \(IE\): 297279/362371};
             } else {
-                like $email->body, qr{Easting/Northing: };
+                like $body, qr{Easting/Northing: };
             }
 
             if ( $test->{multiple} ) {
-                like $email->body, qr/This email has been sent to several councils /, 'multiple body text correct';
+                like $body, qr/This email has been sent to several councils /, 'multiple body text correct';
             } elsif ( $test->{ missing } ) {
-                like $email->body, $test->{ missing }, 'missing body information correct';
+                like $body, $test->{ missing }, 'missing body information correct';
             }
 
             if ( $test->{url} ) {
                 my $id = $problem->id;
-                like $email->body, qr[$test->{url}fixmystreet.com/report/$id], 'URL present is correct';
+                like $body, qr[$test->{url}fixmystreet.com/report/$id], 'URL present is correct';
             }
 
             $problem->discard_changes;
@@ -655,16 +656,18 @@ subtest 'check can turn on report sent email alerts' => sub {
     like $email->header('To'),qr/City of Edinburgh Council/, 'to line looks correct';
     is $email->header('From'), '"Test User" <system_user@example.com>', 'from line looks correct';
     like $email->header('Subject'), qr/A Title/, 'subject line looks correct';
-    like $email->body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
-    like $email->body, qr/Subject: A Title/, 'more email body checking';
-    like $email->body, qr/Dear City of Edinburgh Council/, 'Salutation looks correct';
+    my $body = $mech->get_text_body_from_email($email);
+    like $body, qr/A user of FixMyStreet/, 'email body looks a bit like a report';
+    like $body, qr/Subject: A Title/, 'more email body checking';
+    like $body, qr/Dear City of Edinburgh Council/, 'Salutation looks correct';
 
     $problem->discard_changes;
     ok defined( $problem->whensent ), 'whensent set';
 
     $email = $emails[1];
     like $email->header('Subject'), qr/FixMyStreet Report Sent/, 'report sent email title correct';
-    like $email->body, qr/to submit your report/, 'report sent body correct';
+    $body = $mech->get_text_body_from_email($email);
+    like $body, qr/to submit your report/, 'report sent body correct';
 
     $send_confirmation_mail_override->restore();
 };

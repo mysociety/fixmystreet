@@ -8,7 +8,7 @@ uppdateringar, klicka på följande länk:
 Följande uppdatering har lämnats för rapporten
 [% title %]:
 
-[% data %]
+[% INCLUDE '_email_comment_list.txt' %]
 
 [% state_message %]
 

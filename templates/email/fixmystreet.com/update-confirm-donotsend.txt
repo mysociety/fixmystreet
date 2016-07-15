@@ -1,8 +1,8 @@
 [% IF update.problem.bodies_str != 2482 AND update.problem.bodies_str != 2347 %]
 Note that we do not send updates to [% update.problem.body %] - they are
-intended as a place for [% INCLUDE 'site-name.txt' | trim %] users to
+intended as a place for [% site_name %] users to
 discuss, support, and offer advice.
 [% ELSE %]
 This update will be sent to [% update.problem.body %] and will
-also be displayed on the [% INCLUDE 'site-name.txt' | trim %] website.
+also be displayed on the [% site_name %] website.
 [% END %]

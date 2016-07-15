@@ -221,6 +221,48 @@ sub get_email {
     return $emails[0];
 }
 
+sub get_text_body_from_email {
+    my ($mech, $email, $obj) = @_;
+    unless ($email) {
+        $email = $mech->get_email;
+        $mech->clear_emails_ok;
+    }
+
+    my $body;
+    $email->walk_parts(sub {
+        my $part = shift;
+        return if $part->subparts;
+        return if $part->content_type !~ m{text/plain};
+        $body = $obj ? $part : $part->body;
+        ok $body, "Found text body";
+    });
+    return $body;
+}
+
+sub get_link_from_email {
+    my ($mech, $email, $multiple) = @_;
+    unless ($email) {
+        $email = $mech->get_email;
+        $mech->clear_emails_ok;
+    }
+
+    my @links;
+    $email->walk_parts(sub {
+        my $part = shift;
+        return if $part->subparts;
+        return if $part->content_type !~ m{text/};
+        if (@links) {
+            # Must be an HTML part now, first two links are in header
+            my @html_links = $part->body =~ m{https?://[^"]+}g;
+            is $links[0], $html_links[2], 'HTML link matches text link';
+        } else {
+            @links = $part->body =~ m{https?://\S+}g;
+            ok @links, "Found links in email '@links'";
+        }
+    });
+    return $multiple ? @links : $links[0];
+}
+
 =head2 get_first_email
 
     $email = $mech->get_first_email(@emails);

@@ -1,0 +1,8 @@
+[% FOR row IN data -%]
+[% row.item_name _ ' : ' IF row.item_name AND NOT row.item_anonymous -%]
+[% '(' _ cobrand.prettify_dt(row.confirmed) _ ') ' IF cobrand.include_time_in_update_alerts -%]
+[% row.item_text %]
+
+------
+
+[% END %]

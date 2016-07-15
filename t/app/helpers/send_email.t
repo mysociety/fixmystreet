@@ -2,6 +2,12 @@ use strict;
 use warnings;
 use utf8;
 
+package FixMyStreet::Cobrand::Tester;
+use parent 'FixMyStreet::Cobrand::Default';
+sub path_to_email_templates { [ FixMyStreet->path_to( 't', 'app', 'helpers', 'emails') ] }
+
+package main;
+
 BEGIN {
     use FixMyStreet;
     FixMyStreet->test_mode(1);
@@ -28,8 +34,12 @@ $c->stash->{foo} = 'bar';
 Email::Send::Test->clear;
 
 # send the test email
-ok $c->send_email( 'test.txt', { to => 'test@recipient.com' } ),
-  "sent an email";
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'tester' ],
+}, sub {
+    ok $c->send_email( 'test.txt', { to => 'test@recipient.com' } ),
+      "sent an email";
+};
 
 # check it got templated and sent correctly
 my @emails = Email::Send::Test->emails;
@@ -51,9 +61,7 @@ is_string $email->body, $expected_email->body, 'email is as expected';
 subtest 'MIME attachments' => sub {
     my $data = path(__FILE__)->parent->child('grey.gif')->slurp_raw;
 
-    Email::Send::Test->clear;
-    my @emails = Email::Send::Test->emails;
-    is scalar(@emails), 0, "reset";
+    $mech->clear_emails_ok;
 
     ok $c->send_email( 'test.txt',
         { to => 'test@recipient.com',
@@ -108,6 +116,20 @@ subtest 'MIME attachments' => sub {
             $path->spew($email_as_string);
             diag "Saved output in $path";
         };
+    $mech->clear_emails_ok;
+};
+
+subtest 'Inline emails!' => sub {
+    ok $c->send_email( 'html_test.txt', { to => 'test@recipient.com' } ), "sent an email with email attachments";
+
+    my $email = $mech->get_email;
+    like $email->debug_structure, qr[
+         \+\ multipart/related.*\n
+        \ {5}\+\ multipart/alternative.*\n
+           \ {10}\+\ text/plain.*\n
+           \ {10}\+\ text/html.*\n
+        \ {5}\+\ image/gif]x;
+    $mech->clear_emails_ok;
 };
 
 done_testing;

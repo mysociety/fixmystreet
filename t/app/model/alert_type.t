@@ -145,7 +145,7 @@ for my $test (
         my @emails = $mech->get_email;
         my $msg = $test->{msg};
         for my $email (@emails) {
-            my $body = $email->body;
+            my $body = $mech->get_text_body_from_email($email);
             my $to = $email->header('To');
 
             like $body, qr/$msg/, 'email says problem is ' . $test->{state};
@@ -193,9 +193,8 @@ subtest "correct text for title after URL" => sub {
         FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
 
-    my $email = $mech->get_email;
     (my $title = $report->title) =~ s/ /\\s+/;
-    my $body = $email->body;
+    my $body = $mech->get_text_body_from_email;
 
     like $body, qr#report/$report_id\s+-\s+$title#, 'email contains expected title';
 };
@@ -330,8 +329,7 @@ foreach my $test (
             FixMyStreet::DB->resultset('AlertType')->email_alerts();
         };
 
-        my $email = $mech->get_email;
-        my $body = $email->body;
+        my $body = $mech->get_text_body_from_email;
 
         if ( $test->{nearest} ) {
             like $body, $test->{nearest}, 'correct nearest line';
@@ -439,8 +437,7 @@ subtest "check alerts from cobrand send main site url for alerts for different c
         FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
 
-    my $email = $mech->get_email;
-    my $body = $email->body;
+    my $body = $mech->get_text_body_from_email;
 
     my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $expected3 = FixMyStreet->config('BASE_URL') . '/report/' . $report_outside_district->id;
@@ -476,8 +473,7 @@ subtest "check local alerts from cobrand send main site url for alerts for diffe
 
     FixMyStreet::DB->resultset('AlertType')->email_alerts();
 
-    my $email = $mech->get_email;
-    my $body = $email->body;
+    my $body = $mech->get_text_body_from_email;
 
     my $expected1 = FixMyStreet->config('BASE_URL') . '/report/' . $report_to_county_council->id;
     my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker('hart')->new();
@@ -505,9 +501,7 @@ subtest "correct i18n-ed summary for state of closed" => sub {
         FixMyStreet::DB->resultset('AlertType')->email_alerts();
     };
 
-    $mech->email_count_is( 1 );
-    my $email = $mech->get_email;
-    my $body = $email->body;
+    my $body = $mech->get_text_body_from_email;
     my $msg = 'Denne rapporten er for tiden markert som lukket';
     like $body, qr/$msg/, 'email says problem is closed, in Norwegian';
 };

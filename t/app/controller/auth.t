@@ -72,8 +72,7 @@ $mech->not_logged_in_ok;
     is $email->header('To'), $test_email, "to is correct";
 
     # extract the link
-    my ($link) = $email->body =~ m{(http://\S+)};
-    ok $link, "Found a link in email '$link'";
+    my $link = $mech->get_link_from_email($email);
 
     # check that the user does not exist
     sub get_user {
@@ -117,9 +116,7 @@ $mech->not_logged_in_ok;
     # follow link and change password - check not prompted for old password
     $mech->not_logged_in_ok;
 
-    my $email = $mech->get_email;
-    $mech->clear_emails_ok;
-    my ($link) = $email->body =~ m{(http://\S+)};
+    my $link = $mech->get_link_from_email;
     $mech->get_ok($link);
     is $mech->uri->path, '/faq', "redirected to the Help page";
 
@@ -187,9 +184,7 @@ subtest "Test change email page" => sub {
     $mech->submit_form_ok({ with_fields => { email => $test_email2 } }, "change_email to $test_email2");
     is $mech->uri->path, '/auth/change_email', "still on change email page";
     $mech->content_contains( 'Now check your email', "found check your email" );
-    my $email = $mech->get_email;
-    $mech->clear_emails_ok;
-    my ($link) = $email->body =~ m{(http://\S+)};
+    my $link = $mech->get_link_from_email;
     $mech->get_ok($link);
     is $mech->uri->path, '/auth/change_email/success', "redirected to the change_email page";
     $mech->content_contains('successfully confirmed');
@@ -201,9 +196,7 @@ subtest "Test change email page" => sub {
     );
     is $mech->uri->path, '/auth/change_email', "still on change email page";
     $mech->content_contains( 'Now check your email', "found check your email" );
-    $email = $mech->get_email;
-    $mech->clear_emails_ok;
-    ($link) = $email->body =~ m{(http://\S+)};
+    $link = $mech->get_link_from_email;
     $mech->get_ok($link);
     is $mech->uri->path, '/auth/change_email/success', "redirected to the change_email page";
     $mech->content_contains('successfully confirmed');
@@ -214,9 +207,7 @@ subtest "Test change email page" => sub {
     );
     is $mech->uri->path, '/auth/change_email', "still on change email page";
     $mech->content_contains( 'Now check your email', "found check your email" );
-    $email = $mech->get_email;
-    $mech->clear_emails_ok;
-    ($link) = $email->body =~ m{(http://\S+)};
+    $link = $mech->get_link_from_email;
     $mech->log_out_ok;
     $mech->get_ok($link);
     isnt $mech->uri->path, '/auth/change_email/success', "not redirected to the change_email page";

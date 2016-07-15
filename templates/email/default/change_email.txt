@@ -1,7 +1,7 @@
-Subject: Updating your [% INCLUDE 'site-name.txt' | trim %] email address
+Subject: Updating your [% site_name %] email address
 
 Please click on the link below to confirm you wish to update your
-email address on [% INCLUDE 'site-name.txt' | trim %].
+email address on [% site_name %].
 
 [% c.uri_for_action( 'auth/token', token ) %]
 

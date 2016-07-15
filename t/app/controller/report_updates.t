@@ -362,10 +362,11 @@ for my $test (
         $mech->content_contains('Nearly done! Now check your email');
 
         my $email = $mech->get_email;
-        ok $email, "got an email";
-        like $email->body, qr/confirm your update on/i, "Correct email text";
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/confirm your update on/i, "Correct email text";
 
-        my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
+        my $url = $mech->get_link_from_email($email);
+        my ($url_token) = $url =~ m{/C/(\S+)};
         ok $url, "extracted confirm url '$url'";
 
         my $token = FixMyStreet::App->model('DB::Token')->find(
@@ -392,7 +393,7 @@ for my $test (
         is $update->text, $details->{update}, 'update text';
         is $add_alerts, $details->{add_alert} ? 1 : 0, 'do not sign up for alerts';
 
-        $mech->get_ok( $url . $url_token );
+        $mech->get_ok( $url );
         $mech->content_contains("/report/$report_id#update_$update_id");
 
         my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => $details->{rznvy} } );
@@ -1000,10 +1001,11 @@ subtest 'submit an update for a registered user, creating update by email' => su
     is $user->name, 'Mr Reg', 'name unchanged';
 
     my $email = $mech->get_email;
-    ok $email, "got an email";
-    like $email->body, qr/confirm your update on/i, "Correct email text";
+    my $body = $mech->get_text_body_from_email($email);
+    like $body, qr/confirm your update on/i, "Correct email text";
 
-    my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
+    my $url = $mech->get_link_from_email($email);
+    my ($url_token) = $url =~ m{/C/(\S+)};
     ok $url, "extracted confirm url '$url'";
 
     my $token = FixMyStreet::App->model('DB::Token')->find( {
@@ -1021,7 +1023,7 @@ subtest 'submit an update for a registered user, creating update by email' => su
     is $update->user->email, 'registered@example.com', 'update email';
     is $update->text, 'Update from a user', 'update text';
 
-    $mech->get_ok( $url . $url_token );
+    $mech->get_ok( $url );
     $mech->content_contains("/report/$report_id#update_$update_id");
 
     # User should have new name and password
@@ -1514,8 +1516,6 @@ for my $test (
 
         $mech->content_contains( 'Now check your email' );
 
-        $mech->email_count_is(1);
-
         my $results = { %{ $test->{fields} }, %{ $test->{changed} }, };
 
         my $update = $report->comments->first;
@@ -1526,10 +1526,11 @@ for my $test (
         is $update->anonymous, $test->{anonymous}, 'user anonymous';
 
         my $email = $mech->get_email;
-        ok $email, "got an email";
-        like $email->body, qr/confirm your update on/i, "Correct email text";
+        my $body = $mech->get_text_body_from_email($email);
+        like $body, qr/confirm your update on/i, "Correct email text";
 
-        my ( $url, $url_token ) = $email->body =~ m{(http://\S+/C/)(\S+)};
+        my $url = $mech->get_link_from_email($email);
+        my ($url_token) = $url =~ m{/C/(\S+)};
         ok $url, "extracted confirm url '$url'";
 
         my $token = FixMyStreet::App->model('DB::Token')->find(

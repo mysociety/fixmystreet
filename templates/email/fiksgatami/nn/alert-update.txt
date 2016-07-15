@@ -2,7 +2,7 @@ Subject: Nye oppdateringar for problem – '[% title %]'
 
 Følgjande oppdateringar har vorte lagt inn for dette problemet:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 [% state_message %]
 

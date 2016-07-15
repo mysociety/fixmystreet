@@ -2,7 +2,7 @@ Subject: Nye saker i nærleiken på FiksGataMi.no
 
 Følgjande saker i nærleiken er lagd inn på FiksGataMi.no:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 Venleg helsing,  
 FiksGataMi-gruppa

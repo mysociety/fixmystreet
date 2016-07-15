@@ -3,7 +3,7 @@ Subject: Nye saker i [% area_name %] hos FiksGataMi.no
 Følgjande saker er sendt til
 [% area_name %]:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 Venleg helsing,  
 FiksGataMi-gruppa

@@ -1,0 +1,36 @@
+[%
+
+email_summary = "You need to confirm your " _ site_name _ " report before it can be made public.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">Please confirm your&nbsp;report</h1>
+  <p style="[% p_style %]">Please click on the link below to confirm that you want your report to appear
+on [% site_name %], despite not being sent to the
+council.</p>
+  <p style="[% p_style %]">Your report will also appear on the [% site_name %] website.</p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% token_url %]">Yes, publish my report</a>
+  </p>
+  <p style="[% p_style %]">If you no longer wish to publish this report, please take no further action.</p>
+  [% end_padded_box %]
+</th>
+<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
+  <img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
+  [% start_padded_box %]
+  [% IF report.photo %]
+    <img style="[% preview_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="" align="right">
+  [% END %]
+    <h2 style="[% h2_style %]">[% report.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
+  [% end_padded_box %]
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

@@ -5,6 +5,7 @@ use warnings;
 use Utils;
 use FixMyStreet::DB;
 use FixMyStreet::Email;
+use FixMyStreet::Map;
 use FixMyStreet::Cobrand;
 
 sub send {
@@ -41,6 +42,7 @@ sub send_questionnaires_period {
 
         my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->cobrand)->new();
         $cobrand->set_lang_and_domain($row->lang, 1);
+        FixMyStreet::Map::set_map_class($cobrand->map_type);
 
         # Not all cobrands send questionnaires
         next unless $cobrand->send_questionnaires;
@@ -53,6 +55,7 @@ sub send_questionnaires_period {
         next unless $cobrand->email_host;
 
         my %h = map { $_ => $row->$_ } qw/name title detail category/;
+        $h{report} = $row;
         $h{created} = Utils::prettify_duration( time() - $row->confirmed->epoch, 'week' );
 
         my $questionnaire = $rs->create( {

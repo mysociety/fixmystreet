@@ -1,0 +1,38 @@
+[%
+
+email_summary = "Your report on " _ site_name _ " has been moderated.";
+email_columns = 2;
+
+PROCESS '_email_settings.html';
+
+INCLUDE '_email_top.html';
+
+%]
+
+<th style="[% td_style %][% primary_column_style %]" id="primary_column">
+  [% start_padded_box %]
+  <h1 style="[% h1_style %]">Your report has been&nbsp;moderated</h1>
+[% IF types == 'hide' -%]
+  <p style="[% p_style %]">The report has been hidden from the site.</p>
+[% ELSE %]
+  <p style="[% p_style %]">The following data has been changed: <strong>[% types %]</strong></p>
+  <p style="margin: 20px auto; text-align: center">
+    <a style="[% button_style %]" href="[% report_uri %]">View my report</a>
+  </p>
+[% END -%]
+  <p style="[% p_style %]">If you do not think that this report should have been moderated, you may contact
+the team at <a href="[% report_complain_uri %]">[% report_complain_uri %]</a></p>
+  [% end_padded_box %]
+</th>
+<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
+  <img style="[% map_image_style %]" src="[% inline_image(problem.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
+  [% start_padded_box %]
+  [% IF problem.photo %]
+    <img style="[% preview_photo_style %]" src="[% inline_image(problem.get_first_image_fp) %]" alt="" align="right">
+  [% END %]
+    <h2 style="[% h2_style %]">[% problem.moderation_original_data.title | html %]</h2>
+    <p style="[% secondary_p_style %]">[% problem.moderation_original_data.detail | html %]</p>
+  [% end_padded_box %]
+</th>
+
+[% INCLUDE '_email_bottom.html' %]

@@ -1,11 +1,11 @@
-Subject: Your [% INCLUDE 'site-name.txt' | trim %] account details
+Subject: Your [% site_name %] account details
 
 Please click on the link below to confirm your email address.
 
 [% c.uri_for_action( 'auth/token', token ) %]
 
 Once you've done this, you'll be able to view and manage all reports and
-updates you've made on [% INCLUDE 'site-name.txt' | trim %].
+updates you've made on [% site_name %].
 
 [% INCLUDE 'signature.txt' %]
 

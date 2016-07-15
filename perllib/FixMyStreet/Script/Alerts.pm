@@ -15,8 +15,12 @@ use RABX;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use FixMyStreet::Email;
+use FixMyStreet::Map;
+use FixMyStreet::App::Model::PhotoSet;
 
 FixMyStreet->configure_mysociety_dbhandle;
+
+my $parser = DateTime::Format::Pg->new();
 
 # Child must have confirmed, id, email, state(!) columns
 # If parent/child, child table must also have name and text
@@ -37,6 +41,7 @@ sub send() {
                    $item_table.id as item_id, $item_table.text as item_text,
                    $item_table.name as item_name, $item_table.anonymous as item_anonymous,
                    $item_table.confirmed as item_confirmed,
+                   $item_table.photo as item_photo,
                    $head_table.*
             from alert, $item_table, $head_table
                 where alert.parameter::integer = $head_table.id
@@ -63,7 +68,7 @@ sub send() {
         $query = dbh()->prepare($query);
         $query->execute();
         my $last_alert_id;
-        my %data = ( template => $alert_type->template, data => '', schema => $schema );
+        my %data = ( template => $alert_type->template, data => [], schema => $schema );
         while (my $row = $query->fetchrow_hashref) {
 
             my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($row->{alert_cobrand})->new();
@@ -84,7 +89,7 @@ sub send() {
             } );
             if ($last_alert_id && $last_alert_id != $row->{alert_id}) {
                 _send_aggregated_alert_email(%data);
-                %data = ( template => $alert_type->template, data => '', schema => $schema );
+                %data = ( template => $alert_type->template, data => [], schema => $schema );
             }
 
             # create problem status message for the templates
@@ -116,30 +121,50 @@ sub send() {
                 } else {
                     $data{problem_url} = $url . "/report/" . $row->{id};
                 }
-                $data{data} .= $row->{item_name} . ' : ' if $row->{item_name} && !$row->{item_anonymous};
-                if ( $cobrand->include_time_in_update_alerts ) {
-                    my $parser = DateTime::Format::Pg->new();
-                    my $dt = $parser->parse_timestamp( $row->{item_confirmed} );
-                    # We need to always set this otherwise we end up with the DateTime
-                    # object being in the floating timezone in which case applying a
-                    # subsequent timezone set will have no effect. 
-                    # this is basically recreating the code from the inflate wrapper
-                    # in the database model.
-                    FixMyStreet->set_time_zone($dt);
-                    $data{data} .= $cobrand->prettify_dt( $dt, 'alert' ) . "\n\n";
-                }
-                $data{data} .= $row->{item_text} . "\n\n------\n\n";
+
+                my $dt = $parser->parse_timestamp( $row->{item_confirmed} );
+                # We need to always set this otherwise we end up with the DateTime
+                # object being in the floating timezone in which case applying a
+                # subsequent timezone set will have no effect.
+                # this is basically recreating the code from the inflate wrapper
+                # in the database model.
+                FixMyStreet->set_time_zone($dt);
+                $row->{confirmed} = $dt;
+
+                # Hack in the image for the non-object updates
+                $row->{get_first_image_fp} = sub {
+                    return FixMyStreet::App::Model::PhotoSet->new({
+                        db_data => $row->{item_photo},
+                    })->get_image_data( num => 0, size => 'fp' );
+                };
+
             # this is ward and council problems
             } else {
-                $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
                 if ( exists $row->{geocode} && $row->{geocode} && $ref =~ /ward|council/ ) {
                     my $nearest_st = _get_address_from_gecode( $row->{geocode} );
-                    $data{data} .= $nearest_st if $nearest_st;
+                    $row->{nearest} = $nearest_st;
                 }
-                $data{data} .= "\n\n------\n\n";
+
+                my $dt = $parser->parse_timestamp( $row->{confirmed} );
+                FixMyStreet->set_time_zone($dt);
+                $row->{confirmed} = $dt;
+
+                # Hack in the image for the non-object reports
+                $row->{get_first_image_fp} = sub {
+                    return FixMyStreet::App::Model::PhotoSet->new({
+                        db_data => $row->{photo},
+                    })->get_image_data( num => 0, size => 'fp' );
+                };
             }
+
+            push @{$data{data}}, $row;
+
             if (!$data{alert_user_id}) {
                 %data = (%data, %$row);
+                if ($ref eq 'new_updates') {
+                    # Get a report object for its photo and static map
+                    $data{report} = $schema->resultset('Problem')->find({ id => $row->{id} });
+                }
                 if ($ref eq 'area_problems' || $ref eq 'council_problems' || $ref eq 'ward_problems') {
                     my $va_info = mySociety::MaPit::call('area', $row->{alert_parameter});
                     $data{area_name} = $va_info->{name};
@@ -149,7 +174,7 @@ sub send() {
                     $data{ward_name} = $va_info->{name};
                 }
             }
-            $data{cobrand} = $row->{alert_cobrand};
+            $data{cobrand} = $cobrand;
             $data{cobrand_data} = $row->{alert_cobrand_data};
             $data{lang} = $row->{alert_lang};
             $last_alert_id = $row->{alert_id};
@@ -183,15 +208,16 @@ sub send() {
         my $states = "'" . join( "', '", FixMyStreet::DB::Result::Problem::visible_states() ) . "'";
         my %data = (
             template => $template,
-            data => '',
+            data => [],
             alert_id => $alert->id,
             alert_email => $alert->user->email,
             lang => $alert->lang,
-            cobrand => $alert->cobrand,
+            cobrand => $cobrand,
             cobrand_data => $alert->cobrand_data,
             schema => $schema,
         );
-        my $q = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.title from problem_find_nearby(?, ?, ?) as nearby, problem, users
+        my $q = "select problem.id, problem.bodies_str, problem.postcode, problem.geocode, problem.confirmed,
+            problem.title, problem.detail, problem.photo from problem_find_nearby(?, ?, ?) as nearby, problem, users
             where nearby.problem_id = problem.id
             and problem.user_id = users.id
             and problem.state in ($states)
@@ -207,24 +233,31 @@ sub send() {
                 alert_id  => $alert->id,
                 parameter => $row->{id},
             } );
-            my $url = $cobrand->base_url_for_report($row);
-            $data{data} .= $url . "/report/" . $row->{id} . " - $row->{title}\n\n";
             if ( exists $row->{geocode} && $row->{geocode} ) {
                 my $nearest_st = _get_address_from_gecode( $row->{geocode} );
-                $data{data} .= $nearest_st if $nearest_st;
+                $row->{nearest} = $nearest_st;
             }
-            $data{data} .= "\n\n------\n\n";
+            my $dt = $parser->parse_timestamp( $row->{confirmed} );
+            FixMyStreet->set_time_zone($dt);
+            $row->{confirmed} = $dt;
+            $row->{get_first_image_fp} = sub {
+                return FixMyStreet::App::Model::PhotoSet->new({
+                    db_data => $row->{photo},
+                })->get_image_data( num => 0, size => 'fp' );
+            };
+            push @{$data{data}}, $row;
         }
-        _send_aggregated_alert_email(%data) if $data{data};
+        _send_aggregated_alert_email(%data) if @{$data{data}};
     }
 }
 
 sub _send_aggregated_alert_email(%) {
     my %data = @_;
 
-    my $cobrand = FixMyStreet::Cobrand->get_class_for_moniker($data{cobrand})->new();
+    my $cobrand = $data{cobrand};
 
     $cobrand->set_lang_and_domain( $data{lang}, 1, FixMyStreet->path_to('locale')->stringify );
+    FixMyStreet::Map::set_map_class($cobrand->map_type);
 
     if (!$data{alert_email}) {
         my $user = $data{schema}->resultset('User')->find( {

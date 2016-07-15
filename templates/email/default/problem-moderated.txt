@@ -1,8 +1,8 @@
-Subject: Your report on [% INCLUDE 'site-name.txt' | trim %] has been moderated
+Subject: Your report on [% site_name %] has been moderated
 
 Hello [% user.name %],
 
-Your report on [% INCLUDE 'site-name.txt' | trim %] has been moderated.
+Your report on [% site_name %] has been moderated.
 
 [% IF types == 'hide' -%]
 The report has been hidden from the site.
@@ -28,8 +28,7 @@ You can see the report at [% report_uri %]
 If you do not think that this report should have been moderated, you may contact
 the team at [% report_complain_uri %]
 
-Thank you for submitting a report through [% INCLUDE 'site-name.txt' | trim %].
-
+Thank you for submitting a report through [% site_name %].
 
 
 [% INCLUDE 'signature.txt' %]

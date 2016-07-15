@@ -1,6 +1,6 @@
 Subject: Spørreskjema for din sak på FiksGataMi
 
-Hei [% name %],
+Hei [% report.name %],
 
 for [% created %] siden, la du til en sak på FiksGataMi.no
 med detaljene som vist i denne e-posten. For å holde vår nettside oppdatert
@@ -16,8 +16,8 @@ FiksGataMi-gruppen
 
 Saken du la til var som følger:
 
-[% title %]
+[% report.title %]
 
-[% detail %]
+[% report.detail %]
 
 

@@ -168,26 +168,22 @@ sub prepare_params_for_email : Private {
 
     if ( $c->stash->{update} ) {
 
-        my $problem_url = $base_url . '/report/' . $c->stash->{update}->problem_id
+        $c->stash->{problem_url} = $base_url . '/report/' . $c->stash->{update}->problem_id
             . '#update_' . $c->stash->{update}->id;
-        my $admin_url = " - $admin_url" . '/update_edit/' . $c->stash->{update}->id
-            if $admin_url;
-        $c->stash->{message} .= sprintf(
-            " \n\n[ Complaint about update %d on report %d - %s%s ]",
+        $c->stash->{admin_url} = $admin_url . '/update_edit/' . $c->stash->{update}->id;
+        $c->stash->{complaint} = sprintf(
+            "Complaint about update %d on report %d",
             $c->stash->{update}->id,
             $c->stash->{update}->problem_id,
-            $problem_url, $admin_url
         );
     }
     elsif ( $c->stash->{problem} ) {
 
-        my $problem_url = $base_url . '/report/' . $c->stash->{problem}->id;
-        $admin_url = " - $admin_url" . '/report_edit/' . $c->stash->{problem}->id
-            if $admin_url;
-        $c->stash->{message} .= sprintf(
-            " \n\n[ Complaint about report %d - %s%s ]",
+        $c->stash->{problem_url} = $base_url . '/report/' . $c->stash->{problem}->id;
+        $c->stash->{admin_url} = $admin_url . '/report_edit/' . $c->stash->{problem}->id;
+        $c->stash->{complaint} = sprintf(
+            "Complaint about report %d",
             $c->stash->{problem}->id,
-            $problem_url, $admin_url
         );
 
         # flag this so it's automatically listed in the admin interface

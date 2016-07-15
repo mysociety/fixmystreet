@@ -52,7 +52,6 @@ sub build_recipient_list {
 
 sub get_template {
     my ( $self, $row ) = @_;
-    return 'submit-oxfordshire.txt' if $row->cobrand eq 'fixmystreet' && $row->bodies_str eq 2237;
     return 'submit.txt';
 }
 

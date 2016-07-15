@@ -1,6 +1,6 @@
-Subject: Questionnaire about your [% site_name %] report: '[% title %]'
+Subject: Questionnaire about your [% site_name %] report: '[% report.title %]'
 
-Hello [% name %],
+Hello [% report.name %],
 
 [% created %] ago, you reported a problem using [% site_name %].
 
@@ -16,9 +16,9 @@ updating the status of your problem:
 
 Your report was as follows:
 
-[% title %]
+[% report.title %]
 
-[% detail %]
+[% report.detail %]
 
 This email was sent automatically, from an unmonitored email account - so
 please do not reply to it.

@@ -2,7 +2,7 @@ Subject: Nye saker på FiksGataMi.no
 
 Følgjande nye saker er lagt til:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 Venleg helsing,  
 FiksGataMi-gruppa

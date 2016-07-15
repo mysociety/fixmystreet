@@ -1,0 +1,19 @@
+[% FOR report IN data %]
+<div style="[% list_item_style %]">
+[% IF report.photo %]
+  <a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
+    <img style="[% list_item_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="">
+  </a>
+[% END %]
+  <h2 style="[% list_item_h2_style %]">
+    <a href="[% cobrand.base_url_for_report( report ) %]/report/[% report.id %]">
+      [%~ report.title | html ~%]
+    </a>
+  </h2>
+  <p style="[% list_item_p_style %]">[% report.detail | html %]</p>
+  <p style="[% list_item_date_style %]">
+    [% cobrand.prettify_dt( report.confirmed ) %].
+    [% report.nearest %]
+  </p>
+</div>
+[% END %]
