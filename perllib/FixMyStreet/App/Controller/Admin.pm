@@ -669,6 +669,13 @@ sub report_edit : Path('report_edit') : Args(1) {
     $c->detach( '/page_error_404_not_found' )
       unless $problem;
 
+    unless (
+        $c->cobrand->moniker eq 'zurich'
+        || $c->user->has_permission_to(report_edit => $problem->bodies_str)
+    ) {
+        $c->detach( '/page_error_403_access_denied', [] );
+    }
+
     $c->stash->{problem} = $problem;
 
     $c->forward('/auth/get_csrf_token');

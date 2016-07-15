@@ -1331,6 +1331,53 @@ subtest "Users with from_body can't access fixmystreet.com admin" => sub {
     };
 };
 
+$report->bodies_str(2237);
+$report->cobrand('oxfordshire');
+$report->update;
+
+$mech->log_in_ok( $oxfordshireuser->email );
+
+subtest "Users can't edit report without report_edit permission" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->get("/admin/report_edit/$report_id");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404, can't edit report without report_edit permission";
+    };
+};
+
+subtest "Users can edit report with report_edit permission" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $oxfordshireuser->user_body_permissions->create({
+            body => $oxfordshire,
+            permission_type => 'report_edit',
+        });
+
+        $mech->get_ok("/admin/report_edit/$report_id");
+        $mech->content_contains( $report->title );
+    };
+};
+
+subtest "Users can't edit another council's reports with their own council's report_edit permission" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $report->bodies_str(2482);
+        $report->cobrand('bromley');
+        $report->update;
+
+        $mech->get("/admin/report_edit/$report_id");
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404, can't edit report with incorrect body in report_edit permission";
+    };
+};
+
+
+$mech->log_out_ok;
+$oxfordshireuser->user_body_permissions->delete_all;
 
 
 $mech->delete_user( $user );
