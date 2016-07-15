@@ -85,7 +85,7 @@ my $contact6 = $mech->create_contact_ok(
 );
 my $contact7 = $mech->create_contact_ok(
     body_id => $body_ids{2227}, # Hampshire
-    category => 'Street lighting',
+    category => 'Street  lighting',
     email => 'highways@example.com',
 );
 my $contact8 = $mech->create_contact_ok(
