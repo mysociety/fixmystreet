@@ -75,7 +75,7 @@ sub index : Path : Args(0) {
 
     $c->forward('stats_by_state');
 
-    my @unsent = $c->model('DB::Problem')->search( {
+    my @unsent = $c->cobrand->problems->search( {
         state => [ 'confirmed' ],
         whensent => undef,
         bodies_str => { '!=', undef },
