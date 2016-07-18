@@ -79,15 +79,10 @@ at the same time as others -- but if you're not sure then just work through the 
     Make sure you're being challenged to provide a username and password when
     accessing the admin at <code>/admin</code>.
     <p>
-      Typically this means using HTTP auth. If you've 
-      <a href="{{ site.baseurl }}install/ami/">installed from the AMI</a> 
-      this will already be in place, but you still need to change the
-      credentials from the default.
+      Typically this means using creating a superuser. If you've
+      not already done so, run the `bin/createsuperuser` script to create a user
+      that has access to the admin.
     </p>
-    <p>
-      See <a href="http://httpd.apache.org/docs/current/mod/mod_authn_file.html">the Apache htauth
-      documentation</a> for more details.
-    </p>      
   </dd>
   <dt>
     <h3>Change the colour scheme</h3>

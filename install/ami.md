@@ -56,19 +56,15 @@ Then you should restart the Catalyst FastCGI server with:
 If you find the hostname of your EC2 instance from the AWS console,
 you should then be able to see the site at http://your-ec2-hostname.eu-west-1.compute.amazonaws.com
 
-By default, the admin part of the website (`/admin`) is password
-protected (with HTTP basic authentication).  In order to use this
+By default, the admin part of the website (`/admin`) requires a user with
+superuser permission to log in. In order to use this
 interface, you will need to create a username and password for one or
-more admin users.  To add such a user, you can use the `htpasswd`
-command from the `apache2-utils` packages, as follows:
+more superusers.  To add such a user, you can use the `createsuperuser`
+command, as follows:
 
-    ubuntu@ip-10-58-66-208:~$ sudo apt-get install apache2-utils
-    [...]
     ubuntu@ip-10-58-66-208:~$ sudo su - fms
-    fms@ip-10-58-191-98:~$ htpasswd /var/www/fixmystreet/admin-htpasswd fmsadmin
-    New password:
-    Re-type new password:
-    Adding password for user fmsadmin
+    fms@ip-10-58-191-98:~$ bin/createsuperuser fmsadmin@example.org password
+    fmsadmin@example.org is now a superuser.
 
 This basic installation uses the default cobrand, with a
 (deliberately) rather garish colour scheme.  

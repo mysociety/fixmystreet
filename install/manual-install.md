@@ -202,7 +202,7 @@ in order for the server to automatically restart when you update the code.
 
 #### Next Steps
 
-* The admin site should be protected using HTTP AUTH.
+* Create a superuser with the `bin/createsuperuser` script to access admin site.
 * [Customise your install using Templates, CSS and a Cobrand module](/customising/).
 * Add contact details for authorities and categories using the admin interface.
 

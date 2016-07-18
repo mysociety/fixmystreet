@@ -65,3 +65,6 @@ To start the dev server:
 The server will now be running and you can visit it at the address
 `http://fixmystreet.127.0.0.1.xip.io:3000/`
 
+The username and password to access the admin (at address
+`http://fixmystreet.127.0.0.1.xip.io:3000/admin/`) will have been shown at the
+end of the `vagrant up` output.
