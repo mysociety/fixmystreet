@@ -8,7 +8,6 @@ use JSON::MaybeXS;
 use File::Path;
 use File::Slurp;
 use FixMyStreet::App::Model::PhotoSet;
-use if !$ENV{TRAVIS}, 'Image::Magick';
 
 =head1 NAME
 

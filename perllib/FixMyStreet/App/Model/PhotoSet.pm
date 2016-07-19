@@ -4,7 +4,13 @@ package FixMyStreet::App::Model::PhotoSet;
 
 use Moose;
 use Path::Tiny 'path';
-use if !$ENV{TRAVIS}, 'Image::Magick';
+
+my $IM = eval {
+    require Image::Magick;
+    Image::Magick->import;
+    1;
+};
+
 use Scalar::Util 'openhandle', 'blessed';
 use Digest::SHA qw(sha1_hex);
 use Image::Size;
@@ -318,7 +324,7 @@ sub rotate_image {
 
 sub _rotate_image {
     my ($photo, $direction) = @_;
-    return $photo unless $Image::Magick::VERSION;
+    return $photo unless $IM;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Rotate($direction);
@@ -332,7 +338,7 @@ sub _rotate_image {
 # Shrinks a picture to the specified size, but keeping in proportion.
 sub _shrink {
     my ($photo, $size) = @_;
-    return $photo unless $Image::Magick::VERSION;
+    return $photo unless $IM;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Scale(geometry => "$size>");
@@ -346,7 +352,7 @@ sub _shrink {
 # Shrinks a picture to 90x60, cropping so that it is exactly that.
 sub _crop {
     my ($photo) = @_;
-    return $photo unless $Image::Magick::VERSION;
+    return $photo unless $IM;
     my $image = Image::Magick->new;
     $image->BlobToImage($photo);
     my $err = $image->Resize( geometry => "90x60^" );
