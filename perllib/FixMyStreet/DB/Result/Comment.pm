@@ -99,7 +99,8 @@ __PACKAGE__->rabx_column('extra');
 use Moo;
 use namespace::clean -except => [ 'meta' ];
 
-with 'FixMyStreet::Roles::Abuser';
+with 'FixMyStreet::Roles::Abuser',
+     'FixMyStreet::Roles::PhotoSet';
 
 my $stz = sub {
     my ( $orig, $self ) = ( shift, shift );
@@ -145,26 +146,6 @@ sub confirm {
 
     $self->state( 'confirmed' );
     $self->confirmed( \'current_timestamp' );
-}
-
-=head2 get_photoset
-
-Return a PhotoSet object for all photos attached to this field
-
-    my $photoset = $obj->get_photoset;
-    print $photoset->num_images;
-    return $photoset->get_image_data(num => 0, size => 'full');
-
-=cut
-
-sub get_photoset {
-    my ($self) = @_;
-    my $class = 'FixMyStreet::App::Model::PhotoSet';
-    eval "use $class";
-    return $class->new({
-        db_data => $self->photo,
-        object => $self,
-    });
 }
 
 sub photos {

@@ -163,7 +163,8 @@ use Utils;
 use FixMyStreet::Map::FMS;
 
 with 'FixMyStreet::Roles::Abuser',
-     'FixMyStreet::Roles::Extra';
+     'FixMyStreet::Roles::Extra',
+     'FixMyStreet::Roles::PhotoSet';
 
 =head2
 
@@ -807,26 +808,6 @@ Return most recent ModerationLog object
 sub latest_moderation_log_entry {
     my $self = shift;
     return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
-}
-
-=head2 get_photoset
-
-Return a PhotoSet object for all photos attached to this field
-
-    my $photoset = $obj->get_photoset;
-    print $photoset->num_images;
-    return $photoset->get_image_data(num => 0, size => 'full');
-
-=cut
-
-sub get_photoset {
-    my ($self) = @_;
-    my $class = 'FixMyStreet::App::Model::PhotoSet';
-    eval "use $class";
-    return $class->new({
-        db_data => $self->photo,
-        object => $self,
-    });
 }
 
 sub photos {
