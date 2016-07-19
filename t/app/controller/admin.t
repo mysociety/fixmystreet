@@ -23,10 +23,10 @@ my $superuser =
 ok $superuser, "created superuser";
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237 );
-my $counciluser =
+my $oxfordshireuser =
   FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'counciluser@example.com', name => 'Council User', from_body => $oxfordshire->id } );
-ok $counciluser, "created council user";
+  ->find_or_create( { email => 'counciluser@example.com', name => 'Council User', from_body => $oxfordshire } );
+ok $oxfordshireuser, "created council user";
 
 
 my $user3 =
@@ -1304,13 +1304,47 @@ subtest "Users without from_body can't access admin" => sub {
     $mech->log_out_ok;
 };
 
-subtest "Users with from_body can access admin" => sub {
-    $mech->log_in_ok( $counciluser->email );
+subtest "Users with from_body can access their own council's admin" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->log_in_ok( $oxfordshireuser->email );
 
-    $mech->get_ok('/admin');
-    $mech->content_contains( 'FixMyStreet admin:' );
+        $mech->get_ok('/admin');
+        $mech->content_contains( 'FixMyStreet admin:' );
 
-    $mech->log_out_ok;
+        $mech->log_out_ok;
+    };
+};
+
+subtest "Users with from_body can't access another council's admin" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'bristol' ],
+    }, sub {
+        $mech->log_in_ok( $oxfordshireuser->email );
+
+        $mech->get_ok('/admin');
+        is $mech->uri->path, '/my', "redirected to correct page";
+        is $mech->res->code, 200, "got 200 for final destination";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+
+        $mech->log_out_ok;
+    };
+};
+
+subtest "Users with from_body can't access fixmystreet.com admin" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    }, sub {
+        $mech->log_in_ok( $oxfordshireuser->email );
+
+        $mech->get_ok('/admin');
+        is $mech->uri->path, '/my', "redirected to correct page";
+        is $mech->res->code, 200, "got 200 for final destination";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+
+        $mech->log_out_ok;
+    };
 };
 
 
@@ -1319,7 +1353,7 @@ $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );
 $mech->delete_user( $superuser );
-$mech->delete_user( $counciluser );
+$mech->delete_user( $oxfordshireuser );
 $mech->delete_user( 'test4@example.com' );
 
 done_testing();
