@@ -324,15 +324,11 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
-  geolocation: function() {
-    if (geo_position_js.init()) {
-        var link = '<a href="LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
-        $('form[action="/alert/list"]').append(link.replace('LINK','/alert/list'));
-        if ($('body.frontpage').length) {
-            $('#postcodeForm').after(link.replace('LINK','/around'));
-        } else{
-            $('#postcodeForm').append(link.replace('LINK','/around'));
-        }
+  report_geolocation: function() {
+    if (!geo_position_js.init()) {
+        return;
+    }
+    function add_click_handler(success_callback) {
         $('#geolocate_link').click(function(e) {
             var $link = $(this);
             e.preventDefault();
@@ -345,10 +341,7 @@ $.extend(fixmystreet.set_up, {
             }
             geo_position_js.getCurrentPosition(function(pos) {
                 $link.find('img').remove();
-                var latitude = pos.coords.latitude;
-                var longitude = pos.coords.longitude;
-                var page = $link.attr('href');
-                location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
+                success_callback(pos);
             }, function(err) {
                 $link.find('img').remove();
                 if (err.code == 1) { // User said no
@@ -364,6 +357,34 @@ $.extend(fixmystreet.set_up, {
                 enableHighAccuracy: true,
                 timeout: 10000
             });
+        });
+    }
+    if ($('#postcodeForm').length) {
+        var link = '<a href="LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
+        $('form[action="/alert/list"]').append(link.replace('LINK','/alert/list'));
+        if ($('body.frontpage').length) {
+            $('#postcodeForm').after(link.replace('LINK','/around'));
+        } else{
+            $('#postcodeForm').append(link.replace('LINK','/around'));
+        }
+        add_click_handler(function(pos) {
+            var latitude = pos.coords.latitude;
+            var longitude = pos.coords.longitude;
+            var page = $('#geolocate_link').attr('href');
+            location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
+        });
+    }
+    if ($('form#report_inspect_form').length) {
+        add_click_handler(function(pos) {
+            var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
+            var bng = latlon.clone().transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
+            );
+            $("#problem_northing").text(bng.lat.toFixed(1));
+            $("#problem_easting").text(bng.lon.toFixed(1));
+            $("form#report_inspect_form input[name=latitude]").val(latlon.lat);
+            $("form#report_inspect_form input[name=longitude]").val(latlon.lon);
         });
     }
   },

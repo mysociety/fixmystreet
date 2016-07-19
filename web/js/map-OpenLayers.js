@@ -136,6 +136,37 @@ var fixmystreet = fixmystreet || {};
         } else {
             return 'small';
         }
+      },
+
+      // Handle a single report pin being moved by dragging it on the map.
+      // pin_moved_callback is called with a new EPSG:4326 OpenLayers.LonLat if
+      // the user drags the pin and confirms its new location.
+      admin_drag: function(pin_moved_callback, confirm_change) {
+          confirm_change = confirm_change || false;
+          var original_lonlat;
+          var drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+              onStart: function(feature, e) {
+                  // Keep track of where the feature started, so we can put it
+                  // back if the user cancels the operation.
+                  original_lonlat = new OpenLayers.LonLat(feature.geometry.x, feature.geometry.y);
+              },
+              onComplete: function(feature, e) {
+                  var lonlat = feature.geometry.clone();
+                  lonlat.transform(
+                      fixmystreet.map.getProjectionObject(),
+                      new OpenLayers.Projection("EPSG:4326")
+                  );
+                  if ((confirm_change && window.confirm(translation_strings.correct_position)) || !confirm_change) {
+                      // Let the callback know about the newly confirmed position
+                      pin_moved_callback(lonlat);
+                  } else {
+                      // Put it back
+                      fixmystreet.markers.features[0].move(original_lonlat);
+                  }
+              }
+          } );
+          fixmystreet.map.addControl( drag );
+          drag.activate();
       }
     };
 
@@ -237,6 +268,26 @@ var fixmystreet = fixmystreet || {};
     function categories_or_status_changed() {
         // If the category or status has changed we need to re-fetch map markers
         fixmystreet.markers.refresh({force: true});
+    }
+
+    function setup_inspector_marker_drag() {
+        // On the 'inspect report' page the pin is draggable, so we need to
+        // update the easting/northing fields when it's dragged.
+        if (!$('form#report_inspect_form').length) {
+            // Not actually on the inspect report page
+            return;
+        }
+        fixmystreet.maps.admin_drag(function(lonlat) {
+            var bng = lonlat.clone().transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
+            );
+            $("#problem_northing").text(bng.y.toFixed(1));
+            $("#problem_easting").text(bng.x.toFixed(1));
+            $("form#report_inspect_form input[name=latitude]").val(lonlat.y);
+            $("form#report_inspect_form input[name=longitude]").val(lonlat.x);
+        },
+        false);
     }
 
     function onload() {
@@ -395,6 +446,10 @@ var fixmystreet = fixmystreet || {};
             drag.activate();
         }
         fixmystreet.map.addLayer(fixmystreet.markers);
+
+        if (fixmystreet.page == "report") {
+            setup_inspector_marker_drag();
+        }
 
         if ( fixmystreet.zoomToBounds ) {
             zoomToBounds( fixmystreet.markers.getDataExtent() );

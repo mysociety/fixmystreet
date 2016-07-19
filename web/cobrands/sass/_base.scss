@@ -296,6 +296,11 @@ input[type=email] {
   line-height: 1em;
 }
 
+input[readonly] {
+  border-color: #cccccc;
+  color: #888888;
+}
+
 label{
   display: block;
   margin-top: 1.25em;
@@ -389,6 +394,30 @@ label{
 
 .checkbox-group {
   margin:1em 0;
+}
+
+.problem-inspector-fields {
+  select {
+    height: 2.4em; // match text inputs
+    -webkit-appearance: menulist-button; // so it's the right height in Safari
+  }
+
+  p.left,
+  p.right {
+    width: 46%;
+
+    label {
+        margin-top: 0;
+    }
+  }
+
+  p.left {
+    float: #{$left};
+  }
+
+  p.right {
+    float: #{$right};
+  }
 }
 
 
@@ -704,8 +733,9 @@ footer {
 /*BUTTONS*/
 
 // Default style set for buttons, inputs and .btn class. Red and green class available.
-
-button, input[type=submit],.btn{
+// NB: a.btn is included in the selector otherwise a:visited is more specific and
+// the wrong text colour is applied.
+button, input[type=submit], .btn, a.btn {
   @include button-reset;
 }
 

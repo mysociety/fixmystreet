@@ -333,6 +333,29 @@ body.mappage.admin {
     }
 }
 
+// Some report pages have a second column of UI elements so make room
+body.mappage.twocols {
+  #map_box {
+    #{$left}: 58em;
+  }
+
+  #map_sidebar {
+    width: 58em;
+    padding: 0;
+
+    #side-report, #side-report-secondary {
+      width: 50%;
+      float: #{$left};
+      padding: 1em;
+      box-sizing: border-box;
+    }
+
+    #side-report-secondary {
+      background-color: #eee;
+    }
+  }
+}
+
 #map_box {
   position: absolute;
   z-index: auto;

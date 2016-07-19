@@ -764,12 +764,7 @@ sub report_edit : Path('report_edit') : Args(1) {
         }
         $problem->set_inflated_columns(\%columns);
 
-        if ((my $category = $c->get_param('category')) ne $problem->category) {
-            $problem->category($category);
-            my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
-            my $bs = join( ',', map { $_->body_id } @contacts );
-            $problem->bodies_str($bs);
-        }
+        $c->forward( '/admin/report_edit_category', [ $problem ] );
 
         if ( $c->get_param('email') ne $problem->user->email ) {
             my $user = $c->model('DB::User')->find_or_create(
@@ -810,6 +805,70 @@ sub report_edit : Path('report_edit') : Args(1) {
         $problem->discard_changes;
     }
 
+    return 1;
+}
+
+=head2 report_edit_category
+
+Handles changing a problem's category and the complexity that comes with it.
+
+=cut
+
+sub report_edit_category : Private {
+    my ($self, $c, $problem) = @_;
+
+    # TODO: It's possible to assign a category belonging to a district
+    # council, meaning a 404 when the page is reloaded because the
+    # problem is no longer included in the current cobrand's
+    # problem_restriction.
+    # See mysociety/fixmystreetforcouncils#44
+    # We could
+    #  a) only allow the current body's categories to be chosen,
+    #  b) show a warning about the impending change of body
+    #  c) bounce the user to the report page on fms.com
+    # Not too worried about this right now, as it forms part of a bigger
+    # concern outlined in the above ticket and
+    # mysociety/fixmystreetforcouncils#17
+    if ((my $category = $c->get_param('category')) ne $problem->category) {
+        $problem->category($category);
+        my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+        my $bs = join( ',', map { $_->body_id } @contacts );
+        $problem->bodies_str($bs);
+    }
+}
+
+=head2 report_edit_location
+
+Handles changing a problem's location and the complexity that comes with it.
+For now, we reject the new location if the new location and old locations aren't
+covered by the same body.
+
+Returns 1 if the new position (if any) is acceptable, undef otherwise.
+
+NB: This must be called before report_edit_category, as that might modify
+$problem->bodies_str.
+
+=cut
+
+sub report_edit_location : Private {
+    my ($self, $c, $problem) = @_;
+
+    return 1 unless $c->forward('/report/new/determine_location');
+
+    if ( $c->stash->{latitude} != $problem->latitude || $c->stash->{longitude} != $problem->longitude ) {
+        delete $c->stash->{prefetched_all_areas};
+        delete $c->stash->{all_areas};
+        delete $c->stash->{fetch_all_areas};
+        delete $c->stash->{all_areas_mapit};
+        $c->forward('/council/load_and_check_areas');
+        $c->forward('/report/new/setup_categories_and_bodies');
+        my %allowed_bodies = map { $_ => 1 } @{$problem->bodies_str_ids};
+        my @new_bodies = @{$c->stash->{bodies_to_list}};
+        my $bodies_match = grep { exists( $allowed_bodies{$_} ) } @new_bodies;
+        return unless $bodies_match;
+        $problem->latitude($c->stash->{latitude});
+        $problem->longitude($c->stash->{longitude});
+    }
     return 1;
 }
 

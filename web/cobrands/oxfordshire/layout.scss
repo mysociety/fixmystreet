@@ -159,10 +159,6 @@ body.mappage {
     width: auto;
   }
 
-  #map_sidebar {
-    background-color: $oxfordshire_very_light_green;
-  }
-
   .extra-text {
     padding: 1em;
     margin: 0 -1em;
@@ -223,6 +219,15 @@ body.mappage {
 
   #oxford-footer {
     display: none;
+  }
+}
+
+#map_sidebar {
+  background-color: $oxfordshire_very_light_green;
+
+  .with-actions & {
+    background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #deead2 29em);
+    background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #deead2 29em);
   }
 }
 
