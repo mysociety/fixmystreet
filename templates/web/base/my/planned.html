@@ -1,0 +1,32 @@
+[%
+    SET bodyclass = 'mappage';
+    PROCESS "maps/${map.type}.html" IF problems.size;
+    INCLUDE 'header.html', title = loc('Your planned reports')
+%]
+
+[% IF problems.size %]
+    [% map_html %]
+    </div>
+    <div id="map_sidebar">
+        <div id="side">
+[% ELSE %]
+    <div id="map_sidebar">
+        <div id="skipped-map">
+[% END %]
+
+<h1>[% loc('Your planned reports') %]</h1>
+
+[% IF ! has_content %]
+[% loc('You haven&rsquo;t planned any reports yet.') %]
+[% END %]
+
+<section class="full-width">
+[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+[% INCLUDE 'pagination.html', pager = problems_pager, param = 'p' %]
+[% INCLUDE 'my/_problem-list.html' %]
+</section>
+
+        </div>
+    </div>
+
+[% INCLUDE 'footer.html' %]

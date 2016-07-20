@@ -38,7 +38,7 @@ __PACKAGE__->add_columns(
   "reason",
   { data_type => "text", default_value => "", is_nullable => 0 },
   "time_spent",
-  { data_type => "integer", default_value => "0", is_nullable => 0 },
+  { data_type => "integer", default_value => 0, is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
@@ -54,7 +54,7 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:RCi1FEwb9T2MZ2X+QOTTUA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-07-20 14:38:36
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:y2xZ4BDv7H+f4vbIZyNflw
 
 1;

@@ -157,6 +157,7 @@ sub delete_user {
     for my $p ( $user->problems ) {
         $p->comments->delete;
         $p->questionnaires->delete;
+        $p->user_planned_reports->delete;
         $p->delete;
     }
     for my $a ( $user->alerts ) {

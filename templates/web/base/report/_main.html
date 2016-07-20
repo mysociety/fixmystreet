@@ -5,6 +5,23 @@
 
 <div class="problem-header clearfix" problem-id="[% problem.id %]">
 
+[% IF c.user.has_permission_to('planned_reports', problem.bodies_str) %]
+<form method="post" action="/my/planned/change" id="planned_form">
+    <input type="hidden" name="id" value="[% problem.id %]">
+    <input type="hidden" name="token" value="[% csrf_token %]">
+    <input type="hidden" name="change" value="[% IF c.user.is_planned_report(problem) %]remove[% ELSE %]add[% END %]">
+    <p><input type="submit"
+        data-remove="[% loc('Remove from planned reports') %]" data-add="[% loc('Add to planned reports') %]"
+        value="
+    [%~ IF c.user.is_planned_report(problem) ~%]
+        [% loc('Remove from planned reports') %]
+    [%~ ELSE ~%]
+        [% loc('Add to planned reports') %]
+    [%~ END ~%]
+    "></p>
+</form>
+[% END %]
+
   [% IF moderating %]
     [% original = problem_original %]
     <form method="post" action="/moderate/report/[% problem.id %]">
