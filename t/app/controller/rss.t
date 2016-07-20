@@ -13,8 +13,7 @@ my $dt = DateTime->new(
     day     => 10
 );
 
-my $user1 = FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'reporter-rss@example.com', name => 'Reporter User' } );
+my $user1 = $mech->create_user_ok('reporter-rss@example.com', name => 'Reporter User');
 
 my $dt_parser = FixMyStreet::App->model('DB')->schema->storage->datetime_parser;
 

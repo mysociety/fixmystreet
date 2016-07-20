@@ -150,4 +150,11 @@ sub base_url_for_report {
     }
 }
 
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if $user->is_superuser;
+    return undef unless defined $user->from_body;
+    return $user->from_body->id == $self->council_id;
+}
+
 1;

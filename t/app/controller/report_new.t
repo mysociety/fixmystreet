@@ -654,8 +654,7 @@ subtest "test password errors for a user who is signing in as they report" => su
     # check that the user does not exist
     my $test_email = 'test-2@example.com';
 
-    my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $test_email } );
-    ok $user, "test user does exist";
+    my $user = $mech->create_user_ok($test_email);
 
     # setup the user.
     ok $user->update( {
@@ -707,8 +706,7 @@ subtest "test report creation for a user who is signing in as they report" => su
     # check that the user does not exist
     my $test_email = 'test-2@example.com';
 
-    my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $test_email } );
-    ok $user, "test user does exist";
+    my $user = $mech->create_user_ok($test_email);
 
     # setup the user.
     ok $user->update( {
@@ -909,8 +907,7 @@ subtest "test report creation for a category that is non public" => sub {
     # check that the user does not exist
     my $test_email = 'test-2@example.com';
 
-    my $user = FixMyStreet::App->model('DB::User')->find_or_create( { email => $test_email } );
-    ok $user, "test user does exist";
+    my $user = $mech->create_user_ok($test_email);
 
     $contact1->update( { non_public => 1 } );
 

@@ -156,9 +156,7 @@ foreach my $test (
 
         my $type = 'area_problems';
 
-        my $user =
-          FixMyStreet::App->model('DB::User')
-          ->find_or_create( { email => 'test-new@example.com' } );
+        my $user = $mech->create_user_ok('test-new@example.com');
 
         my $alert = FixMyStreet::App->model('DB::Alert')->find(
             {
@@ -204,9 +202,7 @@ foreach my $test (
     subtest $test->{desc} => sub {
         my $type = $test->{type} . '_problems';
 
-        my $user =
-          FixMyStreet::App->model('DB::User')
-          ->find_or_create( { email => $test->{email} } );
+        my $user = $mech->create_user_ok($test->{email});
 
         $mech->log_in_ok( $test->{email} );
         $mech->clear_emails_ok;
@@ -335,13 +331,9 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     $mech->delete_user( 'reporter@example.com' );
     $mech->delete_user( 'alerts@example.com' );
 
-    my $user1 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
-    ok $user1, "created test user";
+    my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
 
-    my $user2 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
-    ok $user2, "created test user";
+    my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
 
     for my $alert (
         {
@@ -489,13 +481,9 @@ subtest "Test signature template is used from cobrand" => sub {
     $mech->delete_user( 'reporter@example.com' );
     $mech->delete_user( 'alerts@example.com' );
 
-    my $user1 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
-    ok $user1, "created test user";
+    my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User' );
 
-    my $user2 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
-    ok $user2, "created test user";
+    my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User' );
 
     my $dt = DateTime->now()->add( days => 2);
 
@@ -638,13 +626,9 @@ for my $test (
         $mech->delete_user( 'reporter@example.com' );
         $mech->delete_user( 'alerts@example.com' );
 
-        my $user1 = FixMyStreet::App->model('DB::User')
-          ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
-        ok $user1, "created test user";
+        my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User');
 
-        my $user2 = FixMyStreet::App->model('DB::User')
-          ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
-        ok $user2, "created test user";
+        my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User');
 
         my $dt = DateTime->now->add( minutes => -30 );
         my $r_dt = $dt->clone->add( minutes => 20 );
@@ -711,17 +695,11 @@ subtest 'check new updates alerts for non public reports only go to report owner
     $mech->delete_user( 'reporter@example.com' );
     $mech->delete_user( 'alerts@example.com' );
 
-    my $user1 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
-    ok $user1, "created test user";
+    my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User');
 
-    my $user2 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
-    ok $user2, "created test user";
+    my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User');
 
-    my $user3 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'updates@example.com', name => 'Update User' } );
-    ok $user3, "created test user";
+    my $user3 = $mech->create_user_ok('updates@example.com', name => 'Update User');
 
     my $dt = DateTime->now->add( minutes => -30 );
     my $r_dt = $dt->clone->add( minutes => 20 );
@@ -812,17 +790,11 @@ subtest 'check setting inlude dates in new updates cobrand option' => sub {
     $mech->delete_user( 'reporter@example.com' );
     $mech->delete_user( 'alerts@example.com' );
 
-    my $user1 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'reporter@example.com', name => 'Reporter User' } );
-    ok $user1, "created test user";
+    my $user1 = $mech->create_user_ok('reporter@example.com', name => 'Reporter User');
 
-    my $user2 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'alerts@example.com', name => 'Alert User' } );
-    ok $user2, "created test user";
+    my $user2 = $mech->create_user_ok('alerts@example.com', name => 'Alert User');
 
-    my $user3 = FixMyStreet::App->model('DB::User')
-      ->find_or_create( { email => 'updates@example.com', name => 'Update User' } );
-    ok $user3, "created test user";
+    my $user3 = $mech->create_user_ok('updates@example.com', name => 'Update User');
 
     my $dt = DateTime->now->add( minutes => -30 );
     my $r_dt = $dt->clone->add( minutes => 20 );

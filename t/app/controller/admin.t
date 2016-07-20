@@ -6,21 +6,16 @@ use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $user =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test@example.com' } );
-ok $user, "created test user";
-$user->update({ name => 'Test User' });
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
-my $user2 =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test2@example.com', name => 'Test User 2' } );
-ok $user2, "created second test user";
+my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 
+my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
-my $user3 =
-  FixMyStreet::App->model('DB::User')
-  ->find( { email => 'test3@example.com', name => 'Test User 2' } );
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
+
+my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 2');
 
 if ( $user3 ) {
   $mech->delete_user( $user3 );
@@ -69,6 +64,8 @@ my $alert = FixMyStreet::App->model('DB::Alert')->find_or_create(
         user => $user,
     },
 );
+
+$mech->log_in_ok( $superuser->email );
 
 subtest 'check summary counts' => sub {
     my $problems = FixMyStreet::App->model('DB::Problem')->search( { state => { -in => [qw/confirmed fixed closed investigating planned/, 'in progress', 'fixed - user', 'fixed - council'] } } );
@@ -1131,6 +1128,7 @@ for my $test (
             body => $haringey->id,
             phone => '',
             flagged => undef,
+            is_superuser => undef,
         },
         changes => {
             name => 'Changed User',
@@ -1146,6 +1144,7 @@ for my $test (
             body => $haringey->id,
             phone => '',
             flagged => undef,
+            is_superuser => undef,
         },
         changes => {
             email => 'changed@example.com',
@@ -1161,6 +1160,7 @@ for my $test (
             body => $haringey->id,
             phone => '',
             flagged => undef,
+            is_superuser => undef,
         },
         changes => {
             body => $southend->id,
@@ -1176,6 +1176,7 @@ for my $test (
             body => $southend->id,
             phone => '',
             flagged => undef,
+            is_superuser => undef,
         },
         changes => {
             flagged => 'on',
@@ -1191,12 +1192,45 @@ for my $test (
             body => $southend->id,
             phone => '',
             flagged => 'on',
+            is_superuser => undef,
         },
         changes => {
             flagged => undef,
         },
         log_count => 4,
         log_entries => [qw/edit edit edit edit/],
+    },
+    {
+        desc => 'edit user add is_superuser',
+        fields => {
+            name => 'Changed User',
+            email => 'changed@example.com',
+            body => $southend->id,
+            phone => '',
+            flagged => undef,
+            is_superuser => undef,
+        },
+        changes => {
+            is_superuser => 'on',
+        },
+        log_count => 5,
+        log_entries => [qw/edit edit edit edit edit/],
+    },
+    {
+        desc => 'edit user remove is_superuser',
+        fields => {
+            name => 'Changed User',
+            email => 'changed@example.com',
+            body => $southend->id,
+            phone => '',
+            flagged => undef,
+            is_superuser => 'on',
+        },
+        changes => {
+            is_superuser => undef,
+        },
+        log_count => 5,
+        log_entries => [qw/edit edit edit edit edit/],
     },
 ) {
     subtest $test->{desc} => sub {
@@ -1237,9 +1271,73 @@ subtest "Check admin_base_url" => sub {
         'get_admin_url OK');
 };
 
+# Finished with the superuser tests
+$mech->log_out_ok;
+
+subtest "Users without from_body can't access admin" => sub {
+    $user->from_body( undef );
+    $user->update;
+
+    $mech->log_in_ok( $user->email );
+
+    $mech->get_ok('/admin');
+    is $mech->uri->path, '/my', "redirected to correct page";
+    is $mech->res->code, 200, "got 200 for final destination";
+    is $mech->res->previous->code, 302, "got 302 for redirect";
+
+    $mech->log_out_ok;
+};
+
+subtest "Users with from_body can access their own council's admin" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->log_in_ok( $oxfordshireuser->email );
+
+        $mech->get_ok('/admin');
+        $mech->content_contains( 'FixMyStreet admin:' );
+
+        $mech->log_out_ok;
+    };
+};
+
+subtest "Users with from_body can't access another council's admin" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'bristol' ],
+    }, sub {
+        $mech->log_in_ok( $oxfordshireuser->email );
+
+        $mech->get_ok('/admin');
+        is $mech->uri->path, '/my', "redirected to correct page";
+        is $mech->res->code, 200, "got 200 for final destination";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+
+        $mech->log_out_ok;
+    };
+};
+
+subtest "Users with from_body can't access fixmystreet.com admin" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'fixmystreet' ],
+    }, sub {
+        $mech->log_in_ok( $oxfordshireuser->email );
+
+        $mech->get_ok('/admin');
+        is $mech->uri->path, '/my', "redirected to correct page";
+        is $mech->res->code, 200, "got 200 for final destination";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+
+        $mech->log_out_ok;
+    };
+};
+
+
+
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );
+$mech->delete_user( $superuser );
+$mech->delete_user( $oxfordshireuser );
 $mech->delete_user( 'test4@example.com' );
 
 done_testing();

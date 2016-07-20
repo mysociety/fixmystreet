@@ -32,10 +32,12 @@ sub begin : Private {
 
     $c->uri_disposition('relative');
 
-    if ( $c->cobrand->moniker eq 'zurich' || $c->cobrand->moniker eq 'seesomething' ) {
-        $c->detach( '/auth/redirect' ) unless $c->user_exists;
-        $c->detach( '/auth/redirect' ) unless $c->user->from_body;
+    # User must be logged in to see cobrand, and meet whatever checks the
+    # cobrand specifies. Default cobrand just requires superuser flag to be set.
+    unless ( $c->user_exists && $c->cobrand->admin_allow_user($c->user) ) {
+        $c->detach( '/auth/redirect' );
     }
+
     if ( $c->cobrand->moniker eq 'zurich' ) {
         $c->cobrand->admin_type();
     }
@@ -73,7 +75,7 @@ sub index : Path : Args(0) {
 
     $c->forward('stats_by_state');
 
-    my @unsent = $c->model('DB::Problem')->search( {
+    my @unsent = $c->cobrand->problems->search( {
         state => [ 'confirmed' ],
         whensent => undef,
         bodies_str => { '!=', undef },
@@ -242,13 +244,15 @@ sub bodies : Path('bodies') : Args(0) {
         $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward('body_params');
-        my $body = $c->model('DB::Body')->create( $params );
-        my @area_ids = $c->get_param_list('area_ids');
-        foreach (@area_ids) {
-            $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
-        }
+        unless ( keys $c->stash->{body_errors} ) {
+            my $body = $c->model('DB::Body')->create( $params );
+            my @area_ids = $c->get_param_list('area_ids');
+            foreach (@area_ids) {
+                $c->model('DB::BodyArea')->create( { body => $body, area_id => $_ } );
+            }
 
-        $c->stash->{updated} = _('New body added');
+            $c->stash->{updated} = _('New body added');
+        }
     }
 
     $c->forward( 'fetch_all_bodies' );
@@ -313,8 +317,13 @@ sub body : Path('body') : Args(1) {
 
 sub check_for_super_user : Private {
     my ( $self, $c ) = @_;
-    if ( $c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} ne 'super' ) {
-        $c->detach('/page_error_404_not_found', []);
+
+    my $superuser = $c->user->is_superuser;
+    # Zurich currently has its own way of defining superusers
+    $superuser ||= $c->cobrand->moniker eq 'zurich' && $c->stash->{admin_type} eq 'super';
+
+    unless ( $superuser ) {
+        $c->detach('/page_error_403_access_denied', []);
     }
 }
 
@@ -403,18 +412,20 @@ sub update_contacts : Private {
         $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward( 'body_params' );
-        $c->stash->{body}->update( $params );
-        my @current = $c->stash->{body}->body_areas->all;
-        my %current = map { $_->area_id => 1 } @current;
-        my @area_ids = $c->get_param_list('area_ids');
-        foreach (@area_ids) {
-            $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
-            delete $current{$_};
-        }
-        # Remove any others
-        $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
+        unless ( keys $c->stash->{body_errors} ) {
+            $c->stash->{body}->update( $params );
+            my @current = $c->stash->{body}->body_areas->all;
+            my %current = map { $_->area_id => 1 } @current;
+            my @area_ids = $c->get_param_list('area_ids');
+            foreach (@area_ids) {
+                $c->model('DB::BodyArea')->find_or_create( { body => $c->stash->{body}, area_id => $_ } );
+                delete $current{$_};
+            }
+            # Remove any others
+            $c->stash->{body}->body_areas->search( { area_id => [ keys %current ] } )->delete;
 
-        $c->stash->{updated} = _('Values updated');
+            $c->stash->{updated} = _('Values updated');
+        }
     }
 }
 
@@ -433,7 +444,18 @@ sub body_params : Private {
         deleted => 0,
     );
     my %params = map { $_ => $c->get_param($_) || $defaults{$_} } keys %defaults;
+    $c->forward('check_body_params', [ \%params ]);
     return \%params;
+}
+
+sub check_body_params : Private {
+    my ( $self, $c, $params ) = @_;
+
+    $c->stash->{body_errors} ||= {};
+
+    unless ($params->{name}) {
+        $c->stash->{body_errors}->{name} = _('Please enter a name for this body');
+    }
 }
 
 sub display_contacts : Private {
@@ -1072,6 +1094,8 @@ sub user_add : Path('user_edit') : Args(0) {
         phone => $c->get_param('phone') || undef,
         from_body => $c->get_param('body') || undef,
         flagged => $c->get_param('flagged') || 0,
+        # Only superusers can create superusers
+        is_superuser => ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0,
     }, {
         key => 'users_email_key'
     } );
@@ -1114,6 +1138,8 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
         $user->from_body( $c->get_param('body') || undef );
         $user->flagged( $c->get_param('flagged') || 0 );
+        # Only superusers can grant superuser status
+        $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
 
         unless ($user->email) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');

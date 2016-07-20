@@ -56,6 +56,8 @@ web-based cross-browser testing tools for this project.
         - Greatly improve report edit page, including map. #1347
         - Show any waiting reports on admin index page. #1382
         - Allow user's phone number to be edited.
+        - /admin now requires a logged-in user with the `is_superuser` flag set
+        - `createsuperuser` command for creating superusers/granting superuser status.
     - Development improvements:
         - make_css: Add output style option.
         - make_css: Follow symlinks.

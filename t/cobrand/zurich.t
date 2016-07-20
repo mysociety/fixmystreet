@@ -698,7 +698,7 @@ subtest "only superuser can edit bodies" => sub {
     }, sub {
         $mech->get( '/admin/body/' . $zurich->id );
     };
-    is $mech->res->code, 404, "only superuser should be able to edit bodies";
+    is $mech->res->code, 403, "only superuser should be able to edit bodies";
     $mech->log_out_ok;
 };
 

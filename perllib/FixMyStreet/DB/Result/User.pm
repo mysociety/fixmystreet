@@ -26,16 +26,18 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "from_body",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "from_body",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
   "title",
   { data_type => "text", is_nullable => 1 },
-  "twitter_id",
-  { data_type => "bigint", is_nullable => 1 },
   "facebook_id",
   { data_type => "bigint", is_nullable => 1 },
+  "twitter_id",
+  { data_type => "bigint", is_nullable => 1 },
+  "is_superuser",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
@@ -90,8 +92,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-12-09 16:02:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hCq6ZDZfV/6iiu3HFhPPOg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-07-11 12:49:31
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SG86iN6Fr4/JIq7U2zYkug
 
 __PACKAGE__->add_columns(
     "password" => {
@@ -229,6 +231,8 @@ sub split_name {
 
 sub has_permission_to {
     my ($self, $permission_type, $body_id) = @_;
+
+    return 1 if $self->is_superuser;
 
     return unless $self->belongs_to_body($body_id);
 

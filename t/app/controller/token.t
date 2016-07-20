@@ -6,10 +6,8 @@ use utf8;
 use FixMyStreet::TestMech;
 use FixMyStreet::App;
 
-my $user = FixMyStreet::App->model('DB::User')->find_or_create({
-        name => 'Bob', email => 'bob@example.com',
-    });
 my $mech = FixMyStreet::TestMech->new;
+my $user = $mech->create_user_ok('bob@example.com', name => 'Bob');
 
 subtest 'Zurich special case for C::Tokens->problem_confirm' => sub {
     FixMyStreet::override_config {

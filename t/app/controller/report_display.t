@@ -12,15 +12,9 @@ my $mech = FixMyStreet::TestMech->new;
 
 # create a test user and report
 $mech->delete_user('test@example.com');
-my $user =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test@example.com', name => 'Test User' } );
-ok $user, "created test user";
+my $user = $mech->create_user_ok('test@example.com', name => 'Test User');
 
-my $user2 =
-  FixMyStreet::App->model('DB::User')
-  ->find_or_create( { email => 'test2@example.com', name => 'Other User' } );
-ok $user2, "created test user";
+my $user2 = $mech->create_user_ok('test2@example.com', name => 'Other User');
 
 my $dt = DateTime->new(
     year   => 2011,

@@ -60,6 +60,11 @@ sub allow_anonymous_reports { 1; }
 
 sub anonymous_account { return { name => 'Anonymous Submission', email => FixMyStreet->config('DO_NOT_REPLY_EMAIL') }; }
 
+sub admin_allow_user {
+    my ( $self, $user ) = @_;
+    return 1 if ( $user->from_body || $user->is_superuser );
+}
+
 sub admin_pages {
     my $self = shift;
 

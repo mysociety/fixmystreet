@@ -51,12 +51,6 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
     }
 
-    location /admin {
-        auth_basic "FixMyStreet admin interface";
-        auth_basic_user_file /var/www/fixmystreet/admin-htpasswd;
-        try_files $uri @catalyst;
-    }
-
     location / {
         if (-f $document_root/down.html) {
             return 503;

@@ -49,12 +49,15 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         # We want to be on port 3000 for development
         sed -i -r -e "s,^( *BASE_URL: .*)',\\1:3000'," fixmystreet/conf/general.yml
     fi
+    # Create a superuser for the admin
+    fixmystreet/bin/createsuperuser superuser@example.org password
     if [ $SUCCESS -eq 0 ]; then
         # All done
         echo "****************"
         echo "You can now ssh into your vagrant box: vagrant ssh"
         echo "The website code is found in: ~/fixmystreet"
         echo "You can run the dev server with: script/fixmystreet_app_server.pl [-d] [-r] [--fork]"
+        echo "Access the admin with username: superuser@example.org and password: password"
     else
         echo "Unfortunately, something appears to have gone wrong with the installation."
         echo "Please see above for any errors, and do ask on our mailing list for help."

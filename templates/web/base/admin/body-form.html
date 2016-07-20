@@ -6,6 +6,12 @@
           categories of problem) to each body."
         ) %]
     </div>
+
+    [% IF body_errors.name %]
+      <div class="fms-admin-warning">
+        [% body_errors.name %]
+      </div>
+    [% END %]
     <div class="admin-hint">
       <p>
         [% loc(

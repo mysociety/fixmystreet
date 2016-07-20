@@ -16,14 +16,9 @@ my $test_ward = 20723;
 my $body = $mech->create_body_ok($test_council, 'City of Edinburgh Council');
 
 $mech->delete_user( $test_user );
-my $user = FixMyStreet::App->model('DB::User')->create( {
-    email => $test_user,
-    password => $test_pass,
-} );
+my $user = $mech->create_user_ok($test_user, password => $test_pass);
 
-my $p_user = FixMyStreet::App->model('DB::User')->find_or_create( {
-    email => 'p_user@example.com'
-} );
+my $p_user = $mech->create_user_ok('p_user@example.com');
 
 # Dashboard tests assume we are not too early in year, to allow reporting
 # within same year, as a convenience.
