@@ -244,7 +244,7 @@ sub bodies : Path('bodies') : Args(0) {
         $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward('body_params');
-        unless ( keys $c->stash->{body_errors} ) {
+        unless ( keys %{$c->stash->{body_errors}} ) {
             my $body = $c->model('DB::Body')->create( $params );
             my @area_ids = $c->get_param_list('area_ids');
             foreach (@area_ids) {
