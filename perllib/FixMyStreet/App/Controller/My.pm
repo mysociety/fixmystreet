@@ -58,6 +58,7 @@ sub my : Path : Args(0) {
             colour    => $c->cobrand->pin_colour( $problem, 'my' ),
             id        => $problem->id,
             title     => $problem->title,
+            problem   => $problem,
         };
         push @$problems, $problem;
     }
