@@ -892,5 +892,18 @@ has get_cobrand_logged => (
     },
 );
 
+sub pin_data {
+    my ($self, $c, $page, %opts) = @_;
+    my $colour = $c->cobrand->pin_colour($self, $page);
+
+    {
+        latitude => $self->latitude,
+        longitude => $self->longitude,
+        colour => $colour,
+        id => $self->id,
+        title => $opts{private} ? $self->title : $self->title_safe,
+        problem => $self,
+    }
+}
 
 1;

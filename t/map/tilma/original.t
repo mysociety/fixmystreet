@@ -99,18 +99,18 @@ for my $test (
         $report->state($test->{state});
         $report->update;
 
-        my ( $pins, $around_map_list, $nearby, $dist ) =
-            FixMyStreet::Map::map_pins( $c, 0, 0, 0, 0 );
+        my ( $on_map_all, $on_map_list, $nearby, $dist ) =
+            FixMyStreet::Map::map_features($c, bbox => "0,0,0,0");
 
-        ok $pins;
-        ok $around_map_list;
+        ok $on_map_list;
         ok $nearby;
         ok $dist;
 
         my $id = $report->id;
         my $colour = $test->{colour};
 
-        is $pins->[0][2], $colour, 'pin colour';
+        my $pin_colour = $c->cobrand->pin_colour($on_map_all->[0], 'around');
+        is $pin_colour, $colour, 'pin colour';
     };
 }
 

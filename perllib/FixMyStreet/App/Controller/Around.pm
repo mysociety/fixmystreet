@@ -173,13 +173,15 @@ sub display_location : Private {
     $c->forward('check_and_stash_category');
 
     # get the map features
-    my ( $on_map_all, $on_map, $around_map, $distance ) =
-      FixMyStreet::Map::map_features( $c, $latitude, $longitude,
-        $interval, $c->stash->{filter_category}, $c->stash->{filter_problem_states} );
+    my ( $on_map_all, $on_map, $nearby, $distance ) =
+      FixMyStreet::Map::map_features( $c,
+        latitude => $latitude, longitude => $longitude,
+        interval => $interval, category => $c->stash->{filter_category},
+        states => $c->stash->{filter_problem_states} );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
-    $c->stash->{around_map} = $around_map;
+    $c->stash->{around_map} = $nearby;
     $c->stash->{distance}   = $distance;
 
     # create a list of all the pins
@@ -188,16 +190,8 @@ sub display_location : Private {
         @pins = map {
             # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
             my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
-            my $colour = $c->cobrand->pin_colour( $p, 'around' );
-            {
-                latitude  => $p->latitude,
-                longitude => $p->longitude,
-                colour    => $colour,
-                id        => $p->id,
-                title     => $p->title_safe,
-                problem   => $p,
-            }
-        } @$on_map_all, @$around_map;
+            $p->pin_data($c, 'around');
+        } @$on_map_all, @$nearby;
     }
 
     $c->stash->{page} = 'around'; # So the map knows to make clickable pins, update on pan
@@ -281,7 +275,8 @@ sub ajax : Path('/ajax') {
 
     $c->res->content_type('application/json; charset=utf-8');
 
-    unless ( $c->get_param('bbox') ) {
+    my $bbox = $c->get_param('bbox');
+    unless ($bbox) {
         $c->res->status(404);
         $c->res->body('');
         return;
@@ -297,18 +292,34 @@ sub ajax : Path('/ajax') {
     # Need to be the class that can handle it
     FixMyStreet::Map::set_map_class( 'OSM' );
 
+    $c->forward( '/reports/stash_report_filter_status' );
+
     # extract the data from the map
-    my ( $pins, $on_map, $around_map, $dist ) =
-      FixMyStreet::Map::map_pins( $c, $interval );
+    my ( $on_map_all, $on_map_list, $nearby, $dist ) =
+      FixMyStreet::Map::map_features($c,
+          bbox => $bbox, interval => $interval,
+          category => $c->get_param('filter_category'),
+          states => $c->stash->{filter_problem_states} );
+
+    # create a list of all the pins
+    my @pins = map {
+        # Here we might have a DB::Problem or a DB::Nearby, we always want the problem.
+        my $p = (ref $_ eq 'FixMyStreet::App::Model::DB::Nearby') ? $_->problem : $_;
+        my $colour = $c->cobrand->pin_colour( $p, 'around' );
+        [ $p->latitude, $p->longitude,
+          $colour,
+          $p->id, $p->title_safe
+        ]
+    } @$on_map_all, @$nearby;
 
     # render templates to get the html
     my $on_map_list_html = $c->render_fragment(
         'around/on_map_list_items.html',
-        { on_map => $on_map, around_map => $around_map }
+        { on_map => $on_map_list, around_map => $nearby }
     );
 
     # JSON encode the response
-    my $json = { pins => $pins };
+    my $json = { pins => \@pins };
     $json->{current} = $on_map_list_html if $on_map_list_html;
     my $body = encode_json($json);
     $c->res->body($body);

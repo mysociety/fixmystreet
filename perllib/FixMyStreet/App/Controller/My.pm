@@ -52,14 +52,7 @@ sub my : Path : Args(0) {
 
     while ( my $problem = $rs->next ) {
         $c->stash->{has_content}++;
-        push @$pins, {
-            latitude  => $problem->latitude,
-            longitude => $problem->longitude,
-            colour    => $c->cobrand->pin_colour( $problem, 'my' ),
-            id        => $problem->id,
-            title     => $problem->title,
-            problem   => $problem,
-        };
+        push @$pins, $problem->pin_data($c, 'my', private => 1);
         push @$problems, $problem;
     }
     $c->stash->{problems_pager} = $rs->pager;
