@@ -472,7 +472,7 @@ $mech->content_contains('FINAL UPDATE');
 
 $email = $mech->get_email;
 like $email->header('To'), qr/test\@example.com/, 'to line looks correct';
-like $email->header('From'), qr/division\@example.org/, 'from line looks correct';
+like $email->header('From'), qr/do-not-reply\@example.org/, 'from line looks correct';
 like $email->body, qr/FINAL UPDATE/, 'body looks correct';
 $mech->clear_emails_ok;
 

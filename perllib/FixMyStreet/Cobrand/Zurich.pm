@@ -994,10 +994,9 @@ sub _admin_send_email {
         ? [ $problem->user->email, $problem->name ]
         : $problem->user->email;
 
-    # Similar to what SendReport::Zurich does to find address to send to
-    my $body = ( values %{$problem->bodies} )[0];
-    my $sender = $body->endpoint || $c->cobrand->contact_email;
-    my $sender_name = $c->cobrand->contact_name; # $body->name?
+    my $sender = FixMyStreet->config('DO_NOT_REPLY_EMAIL');
+    my $sender_name = $c->cobrand->contact_name;
+    utf8::decode($sender_name) unless utf8::is_utf8($sender_name);
 
     $c->send_email( $template, {
         to => [ $to ],
