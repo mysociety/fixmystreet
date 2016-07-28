@@ -21,7 +21,7 @@ $direction: 'left' !default;
   @include linear-gradient($c1, $c2);
   border:1px solid $c3;
   color:$c4;
-  &:hover:enabled {
+  &:hover, &:hover:enabled {
     background:$c5;
     @include linear-gradient($c6, $c5);
     text-decoration: none;
