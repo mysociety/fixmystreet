@@ -1102,6 +1102,30 @@ subtest 'user search' => sub {
     $mech->content_contains('Haringey');
 };
 
+subtest 'search does not show user from another council' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->get_ok('/admin/users');
+        $mech->get_ok('/admin/users?search=' . $user->name);
+
+        $mech->content_contains( "Searching found no users." );
+
+        $mech->get_ok('/admin/users?search=' . $user->email);
+        $mech->content_contains( "Searching found no users." );
+    };
+};
+
+subtest 'user_edit does not show user from another council' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->get('/admin/user_edit/' . $user->id);
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+    };
+};
+
 $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
     {
         object_type => 'user',

@@ -140,6 +140,30 @@ sub problems_on_map_restriction {
     return $rs;
 }
 
+=head1 users
+
+Returns a ResultSet of Users, potentially restricted to a subset if we're on
+a cobrand that only wants some of the data.
+
+=cut
+
+sub users {
+    my $self = shift;
+    return $self->users_restriction($self->{c}->model('DB::User'));
+}
+
+=head1 users_restriction
+
+Used to restricts users in the admin in a cobrand in a particular way. Do
+nothing by default.
+
+=cut
+
+sub users_restriction {
+    my ($self, $rs) = @_;
+    return $rs;
+}
+
 sub site_key { return 0; }
 
 =head2 restriction

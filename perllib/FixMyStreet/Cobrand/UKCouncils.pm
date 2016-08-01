@@ -50,6 +50,33 @@ sub updates_restriction {
     return $rs->to_body($self->council_id);
 }
 
+sub users_restriction {
+    my ($self, $rs) = @_;
+
+    # Council admins can only see users who are members of the same council or
+    # users who have sent a report or update to that council.
+
+    my $problem_user_ids = $self->problems->search(
+        undef,
+        {
+            columns => [ 'user_id' ],
+            distinct => 1
+        }
+    )->as_query;
+    my $update_user_ids = $self->updates->search(
+        undef,
+        {
+            columns => [ 'user_id' ],
+            distinct => 1
+        }
+    )->as_query;
+
+    return $rs->search([
+        from_body => $self->council_id,
+        id => [ { -in => $problem_user_ids }, { -in => $update_user_ids } ],
+    ]);
+}
+
 sub base_url {
     my $self = shift;
     my $base_url = FixMyStreet->config('BASE_URL');
