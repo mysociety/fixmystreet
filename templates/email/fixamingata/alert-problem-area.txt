@@ -2,7 +2,7 @@ Subject: Nya rapporter i [% area_name %] på FixaMinGata
 
 Följande nya rapporter har lagts till inom [% area_name %]:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 [% signature %]
 

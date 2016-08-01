@@ -3,7 +3,7 @@ Subject: Problem Report: [% title %]
 Dear [% bodies_name %],
 
 [% missing %][% multiple %]A user of
-FixMyStreet has submitted the following report
+[% site_name %] has submitted the following report
 of a local problem that they believe might require your attention.
 
 [% fuzzy %], or to provide an update on the problem,
@@ -20,6 +20,8 @@ Email: [% email %]
 [% phone_line %][% category_line %]Subject: [% title %]
 
 Details: [% detail %]
+
+[% additional_information %]
 
 Easting/Northing
 [%- " (IE)" IF coordsyst == "I" -%]

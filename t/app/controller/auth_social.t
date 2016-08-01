@@ -113,10 +113,8 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 $mech->submit_form(with_fields => $fields);
                 $mech->content_contains('Nearly done! Now check your email');
 
-                my $email = $mech->get_email;
-                ok $email, "got an email";
+                my $url = $mech->get_link_from_email;
                 $mech->clear_emails_ok;
-                my ( $url, $url_token ) = $email->body =~ m{(https?://\S+/[CMP]/)(\S+)};
                 ok $url, "extracted confirm url '$url'";
 
                 my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $fb_email } );
@@ -125,7 +123,7 @@ for my $fb_state ( 'refused', 'no email', 'existing UID', 'okay' ) {
                 } else {
                     is $user->facebook_id, undef, 'User has no facebook ID';
                 }
-                $mech->get_ok( $url . $url_token );
+                $mech->get_ok( $url );
                 $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $fb_email } );
                 is $user->facebook_id, $fb_uid, 'User now has correct facebook ID';
 
@@ -225,10 +223,8 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 $mech->submit_form(with_fields => $fields);
                 $mech->content_contains('Nearly done! Now check your email');
 
-                my $email = $mech->get_email;
-                ok $email, "got an email";
+                my $url = $mech->get_link_from_email;
                 $mech->clear_emails_ok;
-                my ( $url, $url_token ) = $email->body =~ m{(https?://\S+/[CMP]/)(\S+)};
                 ok $url, "extracted confirm url '$url'";
 
                 my $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $tw_email } );
@@ -237,7 +233,7 @@ for my $tw_state ( 'refused', 'existing UID', 'no email' ) {
                 } else {
                     is $user->twitter_id, undef, 'User has no twitter ID';
                 }
-                $mech->get_ok( $url . $url_token );
+                $mech->get_ok( $url );
                 $user = FixMyStreet::App->model( 'DB::User' )->find( { email => $tw_email } );
                 is $user->twitter_id, $tw_uid, 'User now has correct twitter ID';
 

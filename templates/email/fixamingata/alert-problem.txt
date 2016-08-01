@@ -2,7 +2,7 @@ Subject: Nya rapporter på FixMyStreet
 
 Följande rapporter har nyligen lagts till på:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 [% signature %]
 

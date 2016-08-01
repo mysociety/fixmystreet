@@ -2,7 +2,7 @@ Subject: New reports on [% site_name %]
 
 The following new reports have been added to [% site_name %]:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 [% signature %]
 

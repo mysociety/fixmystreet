@@ -8,6 +8,7 @@ package FixMyStreet::Email;
 
 use Email::MIME;
 use Encode;
+use File::Spec;
 use POSIX qw();
 use Template;
 use Digest::HMAC_SHA1 qw(hmac_sha1_hex);
@@ -72,8 +73,75 @@ sub is_abuser {
 sub _render_template {
     my ($tt, $template, $vars, %options) = @_;
     my $var;
-    $tt->process($template, $vars, \$var);
+    $tt->process($template, $vars, \$var) || print "Template processing error: " . $tt->error() . "\n";
     return $var;
+}
+
+sub _unique_id {
+    sprintf('fms-%s-%s@%s',
+        time(), unpack('h*', random_bytes(5, 1)),
+        FixMyStreet->config('EMAIL_DOMAIN'));
+}
+
+sub message_id {
+    '<' . _unique_id() . '>'
+}
+
+sub add_inline_image {
+    my ($inline_images, $obj, $name) = @_;
+    if (ref $obj eq 'HASH') {
+        return _add_inline($inline_images, $name, $obj->{data}, $obj->{content_type});
+    } else {
+        my $file = FixMyStreet->path_to($obj);
+        return _add_inline($inline_images, $file->basename, scalar $file->slurp);
+    }
+}
+
+sub _add_inline {
+    my ($inline_images, $name, $data, $type) = @_;
+
+    return unless $data;
+
+    $name ||= 'photo';
+    if ($type) {
+        if ($name !~ /\./) {
+            my ($suffix) = $type =~ m{image/(.*)};
+            $name .= ".$suffix";
+        }
+    } else {
+        my ($b, $t) = split /\./, $name;
+        $type = "image/$t";
+    }
+
+    my $cid = _unique_id();
+    push @$inline_images, {
+        body => $data,
+        attributes => {
+            id => $cid,
+            filename => $name,
+            content_type => $type,
+            encoding => 'base64',
+            name => $name,
+        },
+    };
+    return "cid:$cid";
+}
+
+# We only want an HTML template from the same directory as the .txt
+sub get_html_template {
+    my ($template, @include_path) = @_;
+    push @include_path, FixMyStreet->path_to( 'templates', 'email', 'default' );
+    (my $html_template = $template) =~ s/\.txt$/\.html/;
+    my $template_dir = find_template_dir($template, @include_path);
+    my $html_template_dir = find_template_dir($html_template, @include_path);
+    return $html_template if $template_dir eq $html_template_dir;
+}
+
+sub find_template_dir {
+    my ($template, @include_path) = @_;
+    foreach (@include_path) {
+        return $_ if -e File::Spec->catfile($_, $template);
+    }
 }
 
 sub send_cron {
@@ -88,11 +156,11 @@ sub send_cron {
 
     return 1 if is_abuser($schema, $hdrs->{To});
 
-    $hdrs->{'Message-ID'} = sprintf('<fms-cron-%s-%s@%s>', time(),
-        unpack('h*', random_bytes(5, 1)), FixMyStreet->config('EMAIL_DOMAIN')
-    );
+    $hdrs->{'Message-ID'} = message_id();
 
     my @include_path = @{ $cobrand->path_to_email_templates($lang_code) };
+    my $html_template = get_html_template($template, @include_path);
+
     push @include_path, FixMyStreet->path_to( 'templates', 'email', 'default' );
     my $tt = Template->new({
         ENCODING => 'utf8',
@@ -101,6 +169,14 @@ sub send_cron {
     $vars->{signature} = _render_template($tt, 'signature.txt', $vars);
     $vars->{site_name} = Utils::trim_text(_render_template($tt, 'site-name.txt', $vars));
     $hdrs->{_body_} = _render_template($tt, $template, $vars);
+
+    if ($html_template) {
+        my @inline_images;
+        $vars->{inline_image} = sub { add_inline_image(\@inline_images, @_) };
+        $vars->{file_exists} = sub { -e FixMyStreet->path_to(@_) };
+        $hdrs->{_html_} = _render_template($tt, $html_template, $vars);
+        $hdrs->{_html_images_} = \@inline_images;
+    }
 
     my $email = mySociety::Locale::in_gb_locale { construct_email($hdrs) };
 
@@ -236,6 +312,47 @@ sub construct_email ($) {
         ),
     ];
 
+    my $overall_type;
+    if ($p->{_html_}) {
+        my $html = _mime_create(
+            body_str => $p->{_html_},
+            attributes => {
+                charset => 'utf-8',
+                encoding => 'quoted-printable',
+                content_type => 'text/html',
+            },
+        );
+        if ($p->{_html_images_} || $p->{_attachments_}) {
+            $parts = [ _mime_create(
+                attributes => { content_type => 'multipart/alternative' },
+                parts => [ $parts->[0], $html ]
+            ) ];
+        } else {
+            # The top level will be the alternative multipart if there are
+            # no images and no other attachments
+            push @$parts, $html;
+            $overall_type = 'multipart/alternative';
+        }
+        if ($p->{_html_images_}) {
+            foreach (@{$p->{_html_images_}}) {
+                my $cid = delete $_->{attributes}->{id};
+                my $part = _mime_create(%$_);
+                $part->header_set('Content-ID' => "<$cid>");
+                push @$parts, $part;
+            }
+            if ($p->{_attachments_}) {
+                $parts = [ _mime_create(
+                    attributes => { content_type => 'multipart/related' },
+                    parts => $parts,
+                ) ];
+            } else {
+                # The top level will be the related multipart if there are
+                # images but no other attachments
+                $overall_type = 'multipart/related';
+            }
+        }
+    }
+
     if ($p->{_attachments_}) {
         push @$parts, map { _mime_create(%$_) } @{$p->{_attachments_}};
     }
@@ -245,6 +362,7 @@ sub construct_email ($) {
         parts => $parts,
         attributes => {
             charset => 'utf-8',
+            $overall_type ? (content_type => $overall_type) : (),
         },
     );
 

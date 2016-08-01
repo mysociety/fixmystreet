@@ -2,7 +2,7 @@ Subject: Nye oppdateringer for problem - '[% title %]'
 
 Følgende oppdateringer har blitt lagt inn for dette problemet:
 
-[% data %]
+[% INCLUDE '_email_comment_list.txt' %]
 
 [% state_message %]
 

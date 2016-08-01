@@ -14,7 +14,7 @@ __PACKAGE__->config(
     ],
     ENCODING       => 'utf8',
     render_die     => 1,
-    expose_methods => ['loc'],
+    expose_methods => ['loc', 'file_exists'],
 );
 
 =head1 NAME
@@ -38,6 +38,11 @@ Passes the text to the localisation engine for translations.
 sub loc {
     my ( $self, $c, @args ) = @_;
     return _(@args);
+}
+
+sub file_exists {
+    my ( $self, $c, @args ) = @_;
+    -e FixMyStreet->path_to(@args);
 }
 
 1;

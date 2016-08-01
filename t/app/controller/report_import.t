@@ -114,11 +114,8 @@ subtest "Submit a correct entry" => sub {
     is $mech->content, 'SUCCESS', "Got success response";
 
     # check that we have received the email
-    $mech->email_count_is(1);
-    my $email = $mech->get_email;
+    my $token_url = $mech->get_link_from_email;
     $mech->clear_emails_ok;
-
-    my ($token_url) = $email->body =~ m{(http://\S+)};
     ok $token_url, "Found a token url $token_url";
 
     # go to the token url
@@ -257,11 +254,8 @@ subtest "Submit a correct entry (with location)" => sub {
     is $mech->content, 'SUCCESS', "Got success response";
 
     # check that we have received the email
-    $mech->email_count_is(1);
-    my $email = $mech->get_email;
+    my $token_url = $mech->get_link_from_email;
     $mech->clear_emails_ok;
-
-    my ($token_url) = $email->body =~ m{(http://\S+)};
     ok $token_url, "Found a token url $token_url";
 
     # go to the token url
@@ -356,11 +350,8 @@ subtest "Submit a correct entry (with location) to cobrand" => sub {
     is $mech->content, 'SUCCESS', "Got success response";
 
     # check that we have received the email
-    $mech->email_count_is(1);
-    my $email = $mech->get_email;
+    my $token_url = $mech->get_link_from_email;
     $mech->clear_emails_ok;
-
-    my ($token_url) = $email->body =~ m{(http://\S+)};
     ok $token_url, "Found a token url $token_url";
 
     # go to the token url

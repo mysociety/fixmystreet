@@ -1,6 +1,6 @@
-Subject: Questionnaire about your report: '[% title %]'
+Subject: Questionnaire about your report: '[% report.title %]'
 
-Hello [% name %],
+Hello [% report.name %],
 
 [% created %] ago, you reported a problem, the details of
 which are at the end of this email. To keep the site
@@ -16,7 +16,7 @@ mailbox, please do not reply.
 
 Your report was as follows:
 
-[% title %]
+[% report.title %]
 
-[% detail %]
+[% report.detail %]
 

@@ -3,7 +3,7 @@ Subject: New [% site_name %] reports to [% area_name %] within [% ward_name %]
 The following new [% site_name %] reports have been sent to [% area_name %]
 within [% ward_name %]:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 [% signature %]
 

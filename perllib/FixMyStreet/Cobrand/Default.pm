@@ -395,7 +395,7 @@ Return an override type of map if necessary.
 =cut
 sub map_type {
     my $self = shift;
-    return 'OSM' if $self->{c}->req->uri->host =~ /^osm\./;
+    return 'OSM' if $self->{c} && $self->{c}->req->uri->host =~ /^osm\./;
     return;
 }
 

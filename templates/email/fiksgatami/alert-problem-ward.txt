@@ -3,7 +3,7 @@ Subject: Nye saker sendt til [% area_name %] innenfor [% ward_name %] via FiksGa
 Følgende saker er sendt til [% area_name %]
 innenfor [% ward_name %]:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 Vennlig hilsen,  
 FiksGataMi-gruppen

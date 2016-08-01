@@ -278,6 +278,17 @@ sub delete :Local :Args(1) {
     return $c->res->redirect($uri);
 }
 
+sub map : Path('') : Args(2) {
+    my ( $self, $c, $id, $map ) = @_;
+
+    $c->detach( '/page_error_404_not_found', [] ) unless $map eq 'map';
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+
+    my $image = $c->stash->{problem}->static_map;
+    $c->res->content_type($image->{content_type});
+    $c->res->body($image->{data});
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;

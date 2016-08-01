@@ -607,10 +607,9 @@ foreach my $test (
     # receive token
     my $email = $mech->get_email;
     ok $email, "got an email";
-    like $email->body, qr/confirm that you want to send your\s+report/i, "confirm the problem";
+    like $mech->get_text_body_from_email($email), qr/confirm that you want to send your\s+report/i, "confirm the problem";
 
-    my ($url) = $email->body =~ m{(http://\S+)};
-    ok $url, "extracted confirm url '$url'";
+    my $url = $mech->get_link_from_email($email);
 
     # confirm token
     $mech->get_ok($url);
@@ -949,10 +948,9 @@ subtest "test report creation for a category that is non public" => sub {
 
     my $email = $mech->get_email;
     ok $email, "got an email";
-    like $email->body, qr/confirm that you want to send your\s+report/i, "confirm the problem";
+    like $mech->get_text_body_from_email($email), qr/confirm that you want to send your\s+report/i, "confirm the problem";
 
-    my ($url) = $email->body =~ m{(http://\S+)};
-    ok $url, "extracted confirm url '$url'";
+    my $url = $mech->get_link_from_email($email);
 
     # confirm token
     $mech->get_ok($url);
@@ -1145,10 +1143,9 @@ for my $test (
 
         my $email = $mech->get_email;
         ok $email, "got an email";
-        like $email->body, qr/confirm that you want to send your\s+report/i, "confirm the problem";
+        like $mech->get_text_body_from_email($email), qr/confirm that you want to send your\s+report/i, "confirm the problem";
 
-        my ($url) = $email->body =~ m{(https?://\S+)};
-        ok $url, "extracted confirm url '$url'";
+        my $url = $mech->get_link_from_email($email);
 
         # confirm token in order to update the user details
         $mech->get_ok($url);
@@ -1315,17 +1312,17 @@ subtest "test Hart" => sub {
                 # receive token
                 my $email = $mech->get_email;
                 ok $email, "got an email";
-                like $email->body, qr/to confirm that you want to send your/i, "confirm the problem";
+                my $body = $mech->get_text_body_from_email($email);
+                like $body, qr/to confirm that you want to send your/i, "confirm the problem";
 
                 # does it reference the fact that this report hasn't been sent to Hart?
                 if ( $test->{national} ) {
-                    like $email->body, qr/Hart Council is not responsible for this type/i, "mentions report hasn't gone to Hart";
+                    like $body, qr/Hart Council is not responsible for this type/i, "mentions report hasn't gone to Hart";
                 } else {
-                    unlike $email->body, qr/Hart Council is not responsible for this type/i, "doesn't mention report hasn't gone to Hart";
+                    unlike $body, qr/Hart Council is not responsible for this type/i, "doesn't mention report hasn't gone to Hart";
                 }
 
-                my ($url) = $email->body =~ m{(http://\S+)};
-                ok $url, "extracted confirm url '$url'";
+                my $url = $mech->get_link_from_email($email);
 
                 # confirm token
                 FixMyStreet::override_config {
@@ -1541,9 +1538,7 @@ subtest "unresponsive body handling works" => sub {
         ok $report, "Found the report";
         is $report->bodies_str, undef, "Report not going anywhere";
 
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        like $email->body, qr/despite not being sent/i, "correct email sent";
+        like $mech->get_text_body_from_email, qr/despite not being sent/i, "correct email sent";
 
         $user->problems->delete;
         $mech->clear_emails_ok;
@@ -1577,9 +1572,7 @@ subtest "unresponsive body handling works" => sub {
         ok $report, "Found the report";
         is $report->bodies_str, undef, "Report not going anywhere";
 
-        $email = $mech->get_email;
-        ok $email, "got an email";
-        like $email->body, qr/despite not being sent/i, "correct email sent";
+        like $mech->get_text_body_from_email, qr/despite not being sent/i, "correct email sent";
 
         $user->problems->delete;
         $mech->clear_emails_ok;
@@ -1737,10 +1730,9 @@ subtest "extra google analytics code displayed on email confirmation problem cre
 
         my $email = $mech->get_email;
         ok $email, "got an email";
-        like $email->body, qr/confirm that you want to/i, "confirm the problem";
+        like $mech->get_text_body_from_email($email), qr/confirm that you want to/i, "confirm the problem";
 
-        my ($url) = $email->body =~ m{(https?://\S+)};
-        ok $url, "extracted confirm url '$url'";
+        my $url = $mech->get_link_from_email($email);
 
         # confirm token in order to update the user details
         $mech->get_ok($url);

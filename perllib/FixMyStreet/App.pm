@@ -306,30 +306,38 @@ sub send_email {
     my $sender_name = $c->cobrand->contact_name;
 
     # create the vars to pass to the email template
+    my @include_path = @{ $c->cobrand->path_to_email_templates($c->stash->{lang_code}) };
     my $vars = {
         from => [ $sender, _($sender_name) ],
         %{ $c->stash },
         %$extra_stash_values,
-        additional_template_paths => $c->cobrand->path_to_email_templates($c->stash->{lang_code}),
+        additional_template_paths => \@include_path,
     };
 
     return if FixMyStreet::Email::is_abuser($c->model('DB')->schema, $vars->{to});
 
-    my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email(
-        {
-            _body_ => $c->view('Email')->render( $c, $template, $vars ),
-            _attachments_ => $extra_stash_values->{attachments},
-            From => $vars->{from},
-            To => $vars->{to},
-            'Message-ID' => sprintf('<fms-%s-%s@%s>',
-                time(), unpack('h*', random_bytes(5, 1)), $c->config->{EMAIL_DOMAIN}
-            ),
-            $vars->{subject} ? (Subject => $vars->{subject}) : (),
-            $vars->{'Reply-To'} ? ('Reply-To' => $vars->{'Reply-To'}) : (),
-        }
-    ) };
+    my @inline_images;
+    $vars->{inline_image} = sub { FixMyStreet::Email::add_inline_image(\@inline_images, @_); },
 
-    # send the email
+    my $html_template = FixMyStreet::Email::get_html_template($template, @include_path);
+    my $html_compiled = eval {
+        $c->view('Email')->render($c, $html_template, $vars) if $html_template;
+    };
+    $c->log->debug("Error compiling HTML $template: $@") if $@;
+
+    my $data = {
+        _body_ => $c->view('Email')->render( $c, $template, $vars ),
+        _attachments_ => $extra_stash_values->{attachments},
+        From => $vars->{from},
+        To => $vars->{to},
+        'Message-ID' => FixMyStreet::Email::message_id(),
+    };
+    $data->{Subject} = $vars->{subject} if $vars->{subject};
+    $data->{'Reply-To'} = $vars->{'Reply-To'} if $vars->{'Reply-To'};
+    $data->{_html_} = $html_compiled if $html_compiled;
+    $data->{_html_images_} = \@inline_images if @inline_images;
+
+    my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email($data) };
     $c->model('EmailSend')->send($email);
 
     return $email;

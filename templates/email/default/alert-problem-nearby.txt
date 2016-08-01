@@ -3,7 +3,7 @@ Subject: New reports on [% site_name %]
 The following [% site_name %] reports have been made within the area
 you specified:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 [% signature %]
 

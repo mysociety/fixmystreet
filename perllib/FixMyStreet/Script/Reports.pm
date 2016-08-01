@@ -14,6 +14,7 @@ use FixMyStreet;
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
 use FixMyStreet::Email;
+use FixMyStreet::Map;
 use FixMyStreet::SendReport;
 
 sub send(;$) {
@@ -60,6 +61,7 @@ sub send(;$) {
         }
 
         $cobrand->set_lang_and_domain($row->lang, 1);
+        FixMyStreet::Map::set_map_class($cobrand->map_type);
         if ( $row->is_from_abuser) {
             $row->update( { state => 'hidden' } );
             debug_print("hiding because its sender is flagged as an abuser", $row->id) if $debug_mode;
@@ -73,6 +75,7 @@ sub send(;$) {
         # Template variables for the email
         my $email_base_url = $cobrand->base_url_for_report($row);
         my %h = map { $_ => $row->$_ } qw/id title detail name category latitude longitude used_map/;
+        $h{report} = $row;
         map { $h{$_} = $row->user->$_ || '' } qw/email phone/;
         $h{confirmed} = DateTime::Format::Pg->format_datetime( $row->confirmed->truncate (to => 'second' ) )
             if $row->confirmed;

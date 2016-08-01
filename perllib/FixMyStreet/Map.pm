@@ -47,7 +47,8 @@ sub reload_allowed_maps {
 
 =head2 map_class
 
-Set and return the appropriate class given a query parameter string.
+Sets the appropriate class given a query parameter string.
+Returns the old map class, if any.
 
 =cut
 
@@ -57,7 +58,9 @@ sub set_map_class {
     $str = __PACKAGE__.'::'.$str if $str;
     my %avail = map { $_ => 1 } @ALL_MAP_CLASSES;
     $str = $ALL_MAP_CLASSES[0] unless $str && $avail{$str};
+    my $old_map_class = $map_class;
     $map_class = $str;
+    return $old_map_class;
 }
 
 sub display_map {

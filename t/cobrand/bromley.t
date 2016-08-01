@@ -103,10 +103,9 @@ for my $test (
         };
         $mech->content_contains('Nearly done! Now check your email');
 
-        my $email = $mech->get_email;
-        ok $email, "got an email";
-        like $email->body, qr/This update will be sent to Bromley Council/i, "Email indicates problem will be sent to Bromley";
-        unlike $email->body, qr/Note that we do not send updates to/i, "Email does not say updates aren't sent to Bromley";
+        my $body = $mech->get_text_body_from_email;
+        like $body, qr/This update will be sent to Bromley Council/i, "Email indicates problem will be sent to Bromley";
+        unlike $body, qr/Note that we do not send updates to/i, "Email does not say updates aren't sent to Bromley";
 
         my $unreg_user = FixMyStreet::App->model( 'DB::User' )->find( { email => 'unregistered@example.com' } );
 

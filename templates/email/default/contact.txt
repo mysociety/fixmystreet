@@ -2,4 +2,8 @@ Subject: FMS message: [% subject %]
 
 [% message %]
 
+[% IF complaint %]
+[ [% complaint %] - [% problem_url %] - [% admin_url %] ]
+[% END %]
+
 [ Sent by contact.cgi on [% host %]. IP address [% ip %] ]

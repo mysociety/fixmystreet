@@ -169,8 +169,7 @@ subtest 'Problem moderation' => sub {
         $report->discard_changes;
         is $report->state, 'hidden', 'Is hidden';
 
-        my $email = $mech->get_email;
-        my ($url) = $email->body =~ m{(http://\S+)};
+        my $url = $mech->get_link_from_email;
         ok $url, "extracted complain url '$url'";
 
         $mech->get_ok($url);

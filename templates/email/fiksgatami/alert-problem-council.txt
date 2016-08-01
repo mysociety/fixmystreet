@@ -2,7 +2,7 @@ Subject: Nye saker sendt til [% area_name %] via FiksGataMi.no
 
 Følgende saker er sendt til [% area_name %]:
 
-[% data %]
+[% INCLUDE '_email_report_list.txt' %]
 
 Vennlig hilsen,  
 FiksGataMi-gruppen

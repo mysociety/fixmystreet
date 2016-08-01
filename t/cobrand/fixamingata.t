@@ -46,10 +46,11 @@ FixMyStreet::override_config {
     FixMyStreet::DB->resultset('Problem')->send_reports();
 };
 my $email = $mech->get_email;
-like $email->header('Content-Type'), qr/utf-8/, 'encoding looks okay';
+my $plain = $mech->get_text_body_from_email($email, 1);
+like $plain->header('Content-Type'), qr/utf-8/, 'encoding looks okay';
 like $email->header('Subject'), qr/Ny rapport: Test Test/, 'subject looks okay';
 like $email->header('To'), qr/other\@example.org/, 'to line looks correct';
-like $email->body_str, qr/V\xe4nligen,/, 'signature looks correct';
+like $plain->body_str, qr/V\xe4nligen,/, 'signature looks correct';
 $mech->clear_emails_ok;
 
 my $user =
@@ -89,10 +90,10 @@ FixMyStreet::override_config {
     FixMyStreet::DB->resultset('AlertType')->email_alerts();
 };
 
-$mech->email_count_is(1);
 $email = $mech->get_email;
-like $email->header('Content-Type'), qr/utf-8/, 'encoding looks okay';
-like $email->body_str, qr/V\xe4nligen,/, 'signature looks correct';
+$plain = $mech->get_text_body_from_email($email, 1);
+like $plain->header('Content-Type'), qr/utf-8/, 'encoding looks okay';
+like $plain->body_str, qr/V\xe4nligen,/, 'signature looks correct';
 $mech->clear_emails_ok;
 
 subtest "Test ajax decimal points" => sub {

@@ -98,9 +98,10 @@ foreach my $test (
 
         my $email = $mech->get_email;
         ok $email, "got an email";
-        like $email->body, qr/$test->{email_text}/i, "Correct email text";
+        like $mech->get_text_body_from_email($email), qr/$test->{email_text}/i, "Correct email text";
 
-        my ( $url, $url_token ) = $email->body =~ m{(http://\S+/A/)(\S+)};
+        my $url = $mech->get_link_from_email($email);
+        my ($url_token) = $url =~ m{/A/(\S+)};
         ok $url, "extracted confirm url '$url'";
 
         my $token = FixMyStreet::App->model('DB::Token')->find(
@@ -119,10 +120,8 @@ foreach my $test (
 
         $mech->get_ok( $test->{uri} . "&token=$csrf" );
 
-        $email = $mech->get_email;
-        ok $email, 'got a second email';
-
-        ($url_token) = $email->body =~ m{http://\S+/A/(\S+)};
+        $url = $mech->get_link_from_email;
+        ($url_token) = $url =~ m{/A/(\S+)};
         ok $url_token ne $existing_token, 'sent out a new token';
 
         $token = FixMyStreet::App->model('DB::Token')->find(
@@ -361,9 +360,9 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
             } );
         };
         if ( $alert->{email_confirm} ) {
-            my $email = $mech->get_email;
+            my $url = $mech->get_link_from_email;
+            my ($url_token) = $url =~ m{/A/(\S+)};
             $mech->clear_emails_ok;
-            my ( $url, $url_token ) = $email->body =~ m{http://\S+(/A/(\S+))};
             my $token = FixMyStreet::App->model('DB::Token')->find( { token => $url_token, scope => 'alert' } );
             $mech->get_ok( $url );
             $mech->content_contains('alert created');
@@ -446,30 +445,32 @@ subtest "Test normal alert signups and that alerts are sent" => sub {
     my @emails = $mech->get_email;
     my $count;
     for (@emails) {
-        $count++ if $_->body =~ /The following updates have been left on this report:/;
-        $count++ if $_->body =~ /The following new FixMyStreet reports have been added in the City of\s+Edinburgh\s+Council area:/;
-        $count++ if $_->body =~ /The following FixMyStreet reports have been made within the area you\s+specified:/;
-        $count++ if $_->body =~ /\s+-\s+Testing/;
+        my $body = $mech->get_text_body_from_email($_);
+        $count++ if $body =~ /The following updates have been left on this report:/;
+        $count++ if $body =~ /The following new FixMyStreet reports have been added in the City of\s+Edinburgh\s+Council area:/;
+        $count++ if $body =~ /The following FixMyStreet reports have been made within the area you\s+specified:/;
+        $count++ if $body =~ /\s+-\s+Testing/;
     }
     is $count, 5, 'Three emails, with five matching lines in them';
 
     my $email = $emails[0];
-    like $email->body, qr/Other User/, 'Update name given';
-    unlike $email->body, qr/Anonymous User/, 'Update name not given';
+    my $body = $mech->get_text_body_from_email($email);
+    like $body, qr/Other User/, 'Update name given';
+    unlike $body, qr/Anonymous User/, 'Update name not given';
 
     # The update alert was to the problem reporter, so has a special update URL
     $mech->log_out_ok;
     $mech->get_ok( "/report/$report_id" );
     $mech->content_lacks( 'has not been fixed' );
-    my ($url) = $email->body =~ m{(http://\S+/R/\S+)};
-    ok $url, "extracted update url '$url'";
-    $mech->get_ok( $url );
+    my @urls = $mech->get_link_from_email($email, 1);
+    ok $urls[0] =~ m{/R/\S+}, "extracted update url '$urls[0]'";
+    $mech->get_ok( $urls[0] );
     is $mech->uri->path, "/report/" . $report_id, "redirected to report page";
     $mech->content_contains( 'has not been fixed' );
     $mech->not_logged_in_ok;
 
-    ($url) = $emails[0]->body =~ m{http://\S+(/A/\S+)};
-    $mech->get_ok( $url );
+    ok $urls[-1] =~ m{/A/\S+}, "unsubscribe URL '$urls[-1]'";
+    $mech->get_ok( $urls[-1] );
     $mech->content_contains('alert deleted');
     $mech->not_logged_in_ok;
 
@@ -546,13 +547,10 @@ subtest "Test signature template is used from cobrand" => sub {
     }, sub {
         FixMyStreet::App->model('DB::AlertType')->email_alerts();
     };
-    # TODO Note the below will fail if the db has an existing alert that matches
-    $mech->email_count_is(1);
 
-    my @emails = $mech->get_email;
-    my $email = $emails[0];
-    like $email->body, qr/All the best/, 'default signature used';
-    unlike $email->body, qr/twitter.com/, 'nothing from fixmystreet signature';
+    my $email = $mech->get_text_body_from_email;
+    like $email, qr/All the best/, 'default signature used';
+    unlike $email, qr/twitter.com/, 'nothing from fixmystreet signature';
 
     $update = FixMyStreet::App->model('DB::Comment')->create( {
         problem_id => $report_id,
@@ -577,12 +575,9 @@ subtest "Test signature template is used from cobrand" => sub {
     }, sub {
         FixMyStreet::App->model('DB::AlertType')->email_alerts();
     };
-    # TODO Note the below will fail if the db has an existing alert that matches
-    $mech->email_count_is(1);
 
-    @emails = $mech->get_email;
-    $email = $emails[0];
-    like $email->body, qr/twitter.com/, 'fixmystreet signature used';
+    $email = $mech->get_text_body_from_email;
+    like $email, qr/twitter.com/, 'fixmystreet signature used';
 
     $mech->delete_user($user1);
     $mech->delete_user($user2);
@@ -682,9 +677,8 @@ for my $test (
         }, sub {
             FixMyStreet::App->model('DB::AlertType')->email_alerts();
         };
-        $mech->email_count_is(1);
-        my $email = $mech->get_email;
-        like $email->body, qr/Alert\s+test\s+for\s+non\s+public\s+reports/, 'alert contains public report';
+        my $email = $mech->get_text_body_from_email;
+        like $email, qr/Alert\s+test\s+for\s+non\s+public\s+reports/, 'alert contains public report';
 
         $mech->delete_user( $user1 );
         $mech->delete_user( $user2 );
@@ -766,16 +760,14 @@ subtest 'check new updates alerts for non public reports only go to report owner
     ok $alert_user2, "alert created";
 
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
-    $mech->email_count_is(1);
-    my $email = $mech->get_email;
-    like $email->body, qr/This is some more update text/, 'alert contains update text';
+    my $email = $mech->get_text_body_from_email;
+    like $email, qr/This is some more update text/, 'alert contains update text';
 
     $mech->clear_emails_ok;
     $report->update( { non_public => 0 } );
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
-    $mech->email_count_is(1);
-    $email = $mech->get_email;
-    like $email->body, qr/This is some more update text/, 'alert contains update text';
+    $email = $mech->get_text_body_from_email;
+    like $email, qr/This is some more update text/, 'alert contains update text';
 
     $mech->delete_user( $user1 );
     $mech->delete_user( $user2 );
@@ -848,7 +840,6 @@ subtest 'check setting inlude dates in new updates cobrand option' => sub {
 
     $mech->clear_emails_ok;
     FixMyStreet::App->model('DB::AlertType')->email_alerts();
-    $mech->email_count_is(1);
 
     # if we don't do this then we're applying the date inflation code and
     # it's timezone munging to the DateTime object above and not the DateTime
@@ -858,8 +849,8 @@ subtest 'check setting inlude dates in new updates cobrand option' => sub {
     $update->discard_changes();
 
     my $date_in_alert = Utils::prettify_dt( $update->confirmed );
-    my $email = $mech->get_email;
-    like $email->body, qr/$date_in_alert/, 'alert contains date';
+    my $email = $mech->get_text_body_from_email;
+    like $email, qr/$date_in_alert/, 'alert contains date';
 
     $mech->delete_user( $user1 );
     $mech->delete_user( $user2 );

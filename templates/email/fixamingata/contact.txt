@@ -1,3 +1,7 @@
 Subject: [% subject %] (via FixaMinGata)
 
 [% message %]
+
+[% IF complaint %]
+[ [% complaint %] - [% problem_url %] - [% admin_url %] ]
+[% END %]

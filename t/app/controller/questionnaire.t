@@ -58,12 +58,14 @@ FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires( {
 } );
 my $email = $mech->get_email;
 ok $email, "got an email";
-like $email->body, qr/fill in our short questionnaire/i, "got questionnaire email";
+my $plain = $mech->get_text_body_from_email($email, 1);
+like $plain->body, qr/fill in our short questionnaire/i, "got questionnaire email";
 
-like $email->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character';
-is $email->header('Content-Type'), 'text/plain; charset="utf-8"', 'in the right character set';
+like $plain->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character';
+is $plain->header('Content-Type'), 'text/plain; charset="utf-8"', 'in the right character set';
 
-my ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
+my $url = $mech->get_link_from_email($email);
+my ($token) = $url =~ m{/Q/(\S+)};
 ok $token, "extracted questionnaire token '$token'";
 $mech->clear_emails_ok;
 
@@ -399,13 +401,14 @@ FixMyStreet::override_config {
     $questionnaire->delete;
 
     FixMyStreet::App->model('DB::Questionnaire')->send_questionnaires();
-    $email = $mech->get_email;
-    ok $email, "got an email";
-    $mech->clear_emails_ok;
 
-    (my $body = $email->body) =~ s/\s+/ /g;
+    my $email = $mech->get_email;
+    my $body = $mech->get_text_body_from_email($email);
+    $mech->clear_emails_ok;
+    $body =~ s/\s+/ /g;
     like $body, qr/fill in our short questionnaire/i, "got questionnaire email";
-    ($token) = $email->body =~ m{http://.*?/Q/(\S+)};
+    my $url = $mech->get_link_from_email($email);
+    ($token) = $url =~ m{/Q/(\S+)};
     ok $token, "extracted questionnaire token '$token'";
 
     # Test already answered the ever reported question, so not shown again
@@ -445,9 +448,10 @@ FixMyStreet::override_config {
     ok $email, "got an email";
     $mech->clear_emails_ok;
 
-    like $email->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character from user';
-    like $email->body_str, qr/sak p\xe5 FiksGataMi/, 'email contains encoded character from template';
-    is $email->header('Content-Type'), 'text/plain; charset="utf-8"', 'email is in right encoding';
+    my $plain = $mech->get_text_body_from_email($email, 1);
+    like $plain->body_str, qr/Testing \x{2013} Detail/, 'email contains encoded character from user';
+    like $plain->body_str, qr/sak p\xe5 FiksGataMi/, 'email contains encoded character from template';
+    is $plain->header('Content-Type'), 'text/plain; charset="utf-8"', 'email is in right encoding';
 };
 
 $mech->delete_user('test@example.com');
