@@ -10,15 +10,6 @@ $fms-green: #62b356;
 
 .fms-for-councils {
   background-color: #1a1a1a;
-  a {
-    color: $fms-orange;
-    &:hover,
-    &:active,
-    &:focus {
-      color: darken($fms-orange, 5%);
-      text-decoration: underline;
-    }
-  }
 
   img {
     max-width: 100%;
@@ -96,57 +87,6 @@ $fms-green: #62b356;
       }
   }
 
-  .councils-section {
-    border-bottom: 1px solid #161616;
-    border-top: 1px solid #3a3a3a;
-    padding: 2.5em 0;
-    background-image: -moz-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-    background-image: -webkit-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-    background-image: -ms-linear-gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-    background-image: gradient( 90deg, rgba(0,0,0,0) 58%, rgba(0,0,0,0.2) 100%);
-    @media only screen and (min-width: 48em) {
-      padding: 4em 0;
-    }
-
-    &.photo-break {
-      padding: 0;
-      height: 10em;
-      background-size: cover;
-      background-position: center center;
-      background-repeat: no-repeat;
-      @media only screen and (min-width: 48em) {
-        height: 25em;
-      }
-    }
-
-    h2 {
-      font-size: 1.6875em;
-      margin-top: 0;
-    }
-
-    p {
-      font-size: 1.0625em;
-    }
-  }
-
-  .photo-break--street-scene {
-    background-image: url(/cobrands/fixmystreet.com/images/fms-for-councils/street-scene.jpg);
-  }
-
-  .photo-break--highway {
-    background-image: url(/cobrands/fixmystreet.com/images/fms-for-councils/highway.jpg);
-  }
-
-  .photo-break--sunset {
-    background-image: url(/cobrands/fixmystreet.com/images/fms-for-councils/street-sunset.jpg);
-  }
-
-  .section-content {
-    @media only screen and (min-width: 60em) {
-      max-width: 60%;
-    }
-  }
-
   .councils-reporting-hint {
     display: block;
     background: $fms-yellow;
@@ -173,434 +113,65 @@ $fms-green: #62b356;
   }
 
   .hero {
-    text-align: center;
     border-top: 0;
-    background-image: url(/cobrands/fixmystreet.com/images/fms-for-councils/street-crossing.jpg);
+    background-image: url(/cobrands/fixmystreet.com/images/fms-for-councils/all-yellow.jpg);
     background-size: cover;
-    background-position: center center;
+    background-position: center bottom;
     background-repeat: no-repeat;
     padding: 4em 0;
+    color: #333;
     @media only screen and (min-width: 48em) {
-      padding: 9em 0;
+      padding: 7em 0 9em;
     }
   }
 
-    .hero-title {
-      color: #fff;
-      text-shadow: 0px 1px 7px rgba(0,0,0, 0.7);
+    .hero-quote {
       font-size: 2em;
       font-weight: bold;
+      font-family: "Helvetica Neue", Arial, Helvetica, Helmet, Freesans, sans-serif;
+      letter-spacing: -2px;
       @media only screen and (min-width: 48em) {
-        font-size: 3.375em;
+        font-size: 4em;
+        line-height: 1.2em;
       }
     }
 
-    p.hero-intro {
-      color: #fff;
-      text-shadow: 0px 1px 3px rgba(0,0,0, 0.7);
-      max-width: 37em;
-      margin-left: auto;
-      margin-right: auto;
+    .hero-cite {
+      display: block;
+      font-style: normal;
+      margin-top: 1em;
+      margin-bottom: 4em;
+      &:before {
+        display: inline-block;
+        content:"– ";
+        margin-right: 0.25em;
+      }
+    }
+
+    .hero-whatsup {
       font-size: 1.1em;
+      max-width: 37em;
+      margin-top: 2em;
       @media only screen and (min-width: 48em) {
         font-size: 1.25em;
       }
     }
 
-  /* Pricing tables */
-  .product-pricing {
-    margin-bottom: 3em;
-  }
-
-    .pricing-table {
-      color: #fff;
-      border: 1px solid #444;
-    }
-
-    .pricing-table-column {
-      width: 100%;
-      display: inline-block;
-      vertical-align: top;
-      @media only screen and (min-width: 48em) {
-       width: 33.333%;
-      }
-    }
-
-    .pricing-table-column-wrapper {
-      border-right: 1px solid #555;
-      min-height: 472px;
-      &.last {
-        border-right: 0;
-      }
-    }
-
-    .pricing-product-header {
-      background-color: $fms-orange;
-      color: #fff;
-      padding: 0.2em 0;
-      width: 100%;
-      text-align: center;
-      font-size: 1.2em;
-      line-height: 1em;
-      position: relative;
-      &:after {
-        top: 100%;
-        left: 50%;
-        border: solid transparent;
-        content: " ";
-        height: 0;
-        width: 0;
-        position: absolute;
-        pointer-events: none;
-        border-color: rgba(0,0,0,0);
-        border-top-color: $fms-orange;
-        border-width: 10px;
-        margin-left: -10px;
-      }
-      h3 {
-        font-weight: normal;
-      }
-    }
-
-    .pricing-header {
-      background-color: $fms-red;
-      padding: 1em;
-    }
-
-    .mobile-web {
-      .pricing-header {
-        background-color: $fms-blue;
-      }
-    }
-
-    .mobile-web-apps {
-      .pricing-header {
-        background-color: $fms-green;
-      }
-    }
-
-    .pricing-header-price {
-      margin-bottom: 0.5em;
-      &:last-of-type {
-        margin-bottom: 0;
-      }
-    }
-
-    .pricing-price {
-      font-size: 2.25em;
-      line-height: 1.15em;
-      .asterisk {
-        color: rgba(255,255,255,0.5);
-      }
-    }
-
-    .pricing-note {
-      font-size: 0.388888889em;
-    }
-
-    .pricing-label {
-      color: rgba(255,255,255,0.7);
-      display: block;
-    }
-
-    .pricing-content {
-      padding: 1.5em 1em;
-      ul {
-        list-style: none outside none;
-        margin: 0;
-      }
-      li {
-        list-style: none outside none
-      }
-    }
-
-    .pricing-extras-item {
-      border-bottom: 1px solid #444;
-      overflow: hidden;
-      &:last-of-type {
-        border-bottom: 0;
-      }
-    }
-
-    .pricing-extras-column--primary {
-      @media only screen and (min-width: 32em) {
-       float: left;
-        width: 66.6%;
-      }
-
-    }
-    .pricing-extras-column--secondary {
-      @media only screen and (min-width: 32em) {
-        float: right;
-        width: 33.4%;
-      }
-    }
-
-    .pricing-extras-description {
-      padding: 1.5em 1em;
-      h4 {
-        font-weight: normal;
-        font-size: 1.125em;
-        margin: 0 0 0.25em;
-      }
-      p {
-        color: #bab8b3;
-        font-size: 0.875em;
-        margin-bottom: 0;
-      }
-    }
-
-    .pricing-extras-price {
-      background-color: #2b2b2b;
-      padding: 1.5em 1em;
-      .pricing-price {
-        font-size: 1.3125em;
-        margin-bottom: 0.5em;
-        display: inline-block;
-      }
-      .pricing-label {
-        font-size: 0.875em;
-      }
-    }
-
-    .small-print {
-      margin: 0.66em 0 0;
-      small {
-        font-style: normal;
-        color: #bab8b3;
-      }
-    }
-
-    .call-to-action {
-      background-color: $fms-orange;
-      text-align: center;
-      background-image: none;
-      a {
-        color: #fff;
-        text-decoration: underline;
-      }
-      h2 {
-        font-size: 2.25em;
-        margin-bottom: 0.25em;
-        margin-top: 0;
-      }
-      p {
-        max-width: 37em;
-        margin: 0 auto 2em;
-        color: #fff;
-      }
-      .button {
-        background-color: darken($fms-orange, 7.5%);
-        font-size: 1.125em;
-        text-decoration: none;
-        &:hover,
-        &:active,
-        &:focus {
-          background-color: darken($fms-orange, 12.5%);
-        }
-      }
-    }
-
-    .call-to-action--mini {
-      text-align: left;
-      padding: 2em 0;
-      p {
-        margin: 0;
-        font-size: 1.3125em;
-      }
-    }
-
-    .flush-image {
-      position: relative;
-      width: 66%;
-      margin-left: 17%;
-      @media only screen and (min-width: 60em) {
-         position: absolute;
-         margin: 0;
-         width: auto;
-      }
-    }
-
-    .flush-image--bottom {
-      bottom: -41px;
-      @media only screen and (min-width: 48em) {
-        bottom: -65px;
-      }
-      @media only screen and (min-width: 60em) {
-        bottom: -82px;
-        right: 2em;
-      }
-    }
-
-    .flush-image--bottom-right {
-      bottom: -41px;
-      @media only screen and (min-width: 48em) {
-        bottom: -65px;
-      }
-      @media only screen and (min-width: 60em) {
-        bottom: -82px;
-        right: -1em;
-      }
-    }
-
-    .case-study-button {
-      background-color: #222;
-      padding: 1em 0;
-      border-radius: 5px;
-      display: inline-block;
-      color: #fff;
-      margin-right: 0.5em;
-      margin-bottom: 1em;
-      width: 100%;
-      @media only screen and (min-width: 48em) {
-        width: auto;
-        padding: 1em;
-      }
+    .button {
+      background-color: #333;
+      color: $fms-yellow;
+      text-decoration: none;
       &:hover,
       &:active,
       &:focus {
+        background-color: #333;
         color: #fff;
-        background-color: #1b1b1b;
-        text-decoration: none;
       }
     }
 
-    .case-study-button-label {
-      display: block;
-      font-size: 0.875em;
-      color: #bab8b3;
-      @media only screen and (max-width: 48em) {
-        margin-left: 30px;
-      }
-    }
-
-    .case-study-button-name {
-      font-size: 1.5em;
-      display: inline-block;
-      background-repeat: no-repeat;
-      background-image: url(/cobrands/fixmystreet.com/images/fms-for-councils/download-icon.png);
-      background-position: 0 7px;
-      padding-left: 30px;
-      @media only screen and (max-width: 48em) {
-        margin-left: 30px;
-      }
-    }
-
-    .case-study-button-format {
-      color: #6c6b68;
-      font-size: 0.875em;
-    }
-
-  .client-logos {
-    margin: 2em 0 0;
-    @media only screen and (min-width: 60em) {
-      position: absolute;
-      right: 0;
-      top: 3em;
-      width: 35%;
+    .mysoc-footer {
       margin-top: 0;
+      border-top: 0;
     }
-    a {
-      text-align: center;
-      display: inline-block;
-      width: 50%;
-      margin-bottom: 1em;
-      vertical-align: middle;
-      opacity: 0.5;
-      &:hover,
-      &:active,
-      &:focus {
-        opacity: 1;
-      }
-    }
-    img {
-      max-width: 100%;
-    }
+
   }
-}
-
-/* Apply the desktop width media queries from above in
-   IE7/8 which do not handle media queries */
-.ie8, .ie7 {
-    .fms-for-councils {
-      .wrapper {
-        display: table;
-      }
-
-      #site-header {
-        .container {
-          max-width: 60em;
-        }
-      }
-
-      .fixed-container {
-        width: 100%;
-      }
-
-      .button {
-        width: auto;
-        padding: 0.5em 1.25em;
-      }
-      .councils-section {
-        padding: 4em 0;
-      }
-
-      .photo-break {
-        height: 25em;
-        background-size: 100%;
-      }
-
-      .section-content {
-        max-width: 60%;
-      }
-
-      .pricing-table-column {
-        width: 33.333%;
-        display: block;
-        float: left;
-      }
-
-      .pricing-extras-column--primary {
-        float: left;
-        width: 66.6%;
-      }
-
-      .pricing-extras-column--secondary {
-        float: right;
-        width: 33.4%;
-      }
-
-      .flush-image {
-        position: absolute;
-        margin: 0;
-        width: auto;
-      }
-
-      .flush-image--bottom {
-        bottom: -82px;
-        right: 2em;
-      }
-
-      .flush-image--bottom-right {
-        bottom: -82px;
-        right: -1em;
-      }
-
-      .client-logos {
-        position: absolute;
-        right: 0;
-        top: 3em;
-        width: 35%;
-        margin-top: 0;
-      }
-
-      .case-study-button {
-        width: auto;
-        padding: 1em;
-      }
-
-      .case-study-button-name {
-        margin-left: 30px;
-      }
-    }
-}
