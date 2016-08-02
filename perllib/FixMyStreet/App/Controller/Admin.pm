@@ -1148,10 +1148,18 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->name( $c->get_param('name') );
         $user->email( $c->get_param('email') );
         $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
-        $user->from_body( $c->get_param('body') || undef );
         $user->flagged( $c->get_param('flagged') || 0 );
         # Only superusers can grant superuser status
         $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
+        # Superusers can set from_body to any value, but other staff can only
+        # set from_body to the same value as their own from_body.
+        if ($c->user->is_superuser) {
+            $user->from_body( $c->get_param('body') || undef );
+        } elsif ($c->get_param('body') eq $c->user->from_body->id) {
+            $user->from_body( $c->user->from_body );
+        } else {
+            $user->from_body( undef );
+        }
 
         unless ($user->email) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');
