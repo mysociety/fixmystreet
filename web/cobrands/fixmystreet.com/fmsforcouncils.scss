@@ -76,9 +76,11 @@ $fms-green: #62b356;
       border: none;
       width: 100%;
       padding: 0.75em 0;
+      text-align: center;
        @media only screen and (min-width: 48em) {
         width: auto;
         padding: 0.5em 1.25em;
+        text-align: left;
       }
       &:hover,
       &:active,
@@ -122,6 +124,7 @@ $fms-green: #62b356;
     color: #333;
     @media only screen and (min-width: 48em) {
       padding: 7em 0 9em;
+      background-position: right bottom;
     }
   }
 
@@ -130,6 +133,7 @@ $fms-green: #62b356;
       font-weight: bold;
       font-family: "Helvetica Neue", Arial, Helvetica, Helmet, Freesans, sans-serif;
       letter-spacing: -2px;
+      line-height: 1.2em;
       @media only screen and (min-width: 48em) {
         font-size: 4em;
         line-height: 1.2em;
