@@ -718,16 +718,31 @@ sub process_user : Private {
         }
     }
 
-    # The user is already signed in
-    if ( $c->user_exists ) {
+    # The user is already signed in. Extra bare block for 'last'.
+    if ( $c->user_exists ) { {
         my $user = $c->user->obj;
+
+        if ($c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $c->stash->{bodies})) {
+            # Act as if not logged in (and it will be auto-confirmed later on)
+            $report->user(undef);
+            last;
+        }
+
         $user->name( Utils::trim_text( $params{name} ) ) if $params{name};
         $user->phone( Utils::trim_text( $params{phone} ) );
         $user->title( $user_title ) if $user_title;
         $report->user( $user );
-        $report->name( $user->name );
+
+        if ($c->stash->{contributing_as_body} = $user->contributing_as('body', $c, $c->stash->{bodies})) {
+            $report->name($user->from_body->name);
+            $user->name($user->from_body->name) unless $user->name;
+            $c->stash->{no_reporter_alert} = 1;
+        } else {
+            $report->name($user->name);
+        }
+
         return 1;
-    }
+    } }
 
     # cleanup the email address
     my $email = $params{email} ? lc $params{email} : '';
@@ -796,7 +811,11 @@ sub process_report : Private {
     $report->send_questionnaire( $c->cobrand->send_questionnaires() );
 
     # set some simple bool values (note they get inverted)
-    $report->anonymous( $params{may_show_name} ? 0 : 1 );
+    if ($c->stash->{contributing_as_body}) {
+        $report->anonymous(0);
+    } else {
+        $report->anonymous( $params{may_show_name} ? 0 : 1 );
+    }
 
     # clean up text before setting
     $report->title( Utils::cleanup_text( $params{title} ) );
@@ -1075,7 +1094,10 @@ sub save_user_and_report : Private {
             $report->user->insert();
         }
         $report->confirm();
-
+    } elsif ( $c->forward('created_as_someone_else', [ $c->stash->{bodies} ]) ) {
+        # If created on behalf of someone else, we automatically confirm it,
+        # but we don't want to update the user account
+        $report->confirm();
     } elsif ( !$report->user->in_storage ) {
         # User does not exist.
         $c->forward('tokenize_user', [ $report ]);
@@ -1109,6 +1131,11 @@ sub save_user_and_report : Private {
     }
 
     return 1;
+}
+
+sub created_as_someone_else : Private {
+    my ($self, $c, $bodies) = @_;
+    return $c->stash->{contributing_as_another_user} || $c->stash->{contributing_as_body};
 }
 
 =head2 generate_map
@@ -1166,6 +1193,11 @@ sub redirect_or_confirm_creation : Private {
     if ( $report->confirmed ) {
         # Subscribe problem reporter to email updates
         $c->forward( 'create_reporter_alert' );
+        if ($c->stash->{contributing_as_another_user}) {
+            $c->send_email( 'other-reported.txt', {
+                to => [ [ $report->user->email, $report->name ] ],
+            } );
+        }
         $c->log->info($report->user->id . ' was logged in, showing confirmation page for ' . $report->id);
         $c->stash->{created_report} = 'loggedin';
         $c->stash->{template} = 'tokens/confirm_problem.html';
@@ -1183,6 +1215,8 @@ sub redirect_or_confirm_creation : Private {
 
 sub create_reporter_alert : Private {
     my ( $self, $c ) = @_;
+
+    return if $c->stash->{no_reporter_alert};
 
     my $problem = $c->stash->{report};
     my $alert = $c->model('DB::Alert')->find_or_create( {

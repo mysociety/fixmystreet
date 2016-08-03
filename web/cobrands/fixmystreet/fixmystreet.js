@@ -397,6 +397,34 @@ $.extend(fixmystreet.set_up, {
     $('#mapForm').removeAttr('novalidate');
   },
 
+  contribute_as: function() {
+    $('.js-contribute-as').on('change', function(){
+        var opt = this.options[this.selectedIndex],
+            val = opt.value,
+            txt = opt.text;
+        var $emailInput = $('#form_email');
+        var $nameInput = $('#form_name');
+        var $showNameCheckbox = $('#form_may_show_name');
+        var $addAlertCheckbox = $('#form_add_alert');
+        if (val === 'myself') {
+            $emailInput.val($emailInput.prop('defaultValue')).prop('disabled', true);
+            $nameInput.val($nameInput.prop('defaultValue')).prop('disabled', false);
+            $showNameCheckbox.prop('checked', false).prop('disabled', false);
+            $addAlertCheckbox.prop('checked', true).prop('disabled', false);
+        } else if (val === 'another_user') {
+            $emailInput.val('').prop('disabled', false);
+            $nameInput.val('').prop('disabled', false);
+            $showNameCheckbox.prop('checked', false).prop('disabled', false);
+            $addAlertCheckbox.prop('checked', true).prop('disabled', false);
+        } else if (val === 'body') {
+            $emailInput.val('-').prop('disabled', true);
+            $nameInput.val(txt).prop('disabled', true);
+            $showNameCheckbox.prop('checked', true).prop('disabled', true);
+            $addAlertCheckbox.prop('checked', false).prop('disabled', true);
+        }
+    }).change();
+  },
+
   on_resize: function() {
     var last_type;
     $(window).on('resize', function() {

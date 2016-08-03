@@ -2,6 +2,24 @@
 
 [% PROCESS 'user/_anonymity.html' anonymous = update.anonymous %]
 
+  [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", problem.bodies_str) %]
+  [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", problem.bodies_str) %]
+
+  [% IF can_contribute_as_another_user OR can_contribute_as_body %]
+    <label for="form_as">[% loc('Provide update as') %]</label>
+    <select id="form_as" class="js-contribute-as" name="form_as">
+        <option value="myself" selected>[% loc('Yourself') %]</option>
+      [% IF can_contribute_as_another_user %]
+        <option value="another_user">[% loc('Another user') %]</option>
+      [% END %]
+      [% IF can_contribute_as_body %]
+        <option value="body">[% c.user.from_body.name %]</option>
+      [% END %]
+    </select>
+    <label for="form_email">[% loc('Email address') %]</label>
+    <input name="rznvy" id="form_email" type="text" value="[% c.user.email | html %]">
+  [% END %]
+
 <label for="form_name">[% loc('Name') %]</label>
 [% IF field_errors.name %]
     <p class='form-error'>[% field_errors.name %]</p>
