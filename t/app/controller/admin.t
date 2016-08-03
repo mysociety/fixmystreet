@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 use Test::More;
+use LWP::Protocol::PSGI;
 
+use t::Mock::MapIt;
 use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
@@ -1145,258 +1147,270 @@ $user->update;
 
 my $southend = $mech->create_body_ok(2607, 'Southend-on-Sea Borough Council');
 
-for my $test (
-    {
-        desc => 'edit user name',
-        fields => {
-            name => 'Test User',
-            email => 'test@example.com',
-            body => $haringey->id,
-            phone => '',
-            flagged => undef,
-            is_superuser => undef,
-            "permissions[moderate]" => undef,
-            "permissions[planned_reports]" => undef,
-            "permissions[report_edit]" => undef,
-            "permissions[report_edit_category]" => undef,
-            "permissions[report_edit_priority]" => undef,
-            "permissions[report_inspect]" => undef,
-            "permissions[report_instruct]" => undef,
-            "permissions[contribute_as_another_user]" => undef,
-            "permissions[contribute_as_body]" => undef,
-            "permissions[user_edit]" => undef,
-            "permissions[user_manage_permissions]" => undef,
-            "permissions[user_assign_body]" => undef,
-            "permissions[user_assign_areas]" => undef,
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.uk/',
+}, sub {
+    LWP::Protocol::PSGI->register(t::Mock::MapIt->run_if_script, host => 'mapit.uk');
+    for my $test (
+        {
+            desc => 'edit user name',
+            fields => {
+                name => 'Test User',
+                email => 'test@example.com',
+                body => $haringey->id,
+                phone => '',
+                flagged => undef,
+                is_superuser => undef,
+                area_id => '',
+                "permissions[moderate]" => undef,
+                "permissions[planned_reports]" => undef,
+                "permissions[report_edit]" => undef,
+                "permissions[report_edit_category]" => undef,
+                "permissions[report_edit_priority]" => undef,
+                "permissions[report_inspect]" => undef,
+                "permissions[report_instruct]" => undef,
+                "permissions[contribute_as_another_user]" => undef,
+                "permissions[contribute_as_body]" => undef,
+                "permissions[user_edit]" => undef,
+                "permissions[user_manage_permissions]" => undef,
+                "permissions[user_assign_body]" => undef,
+                "permissions[user_assign_areas]" => undef,
+            },
+            changes => {
+                name => 'Changed User',
+            },
+            log_count => 1,
+            log_entries => [qw/edit/],
         },
-        changes => {
-            name => 'Changed User',
+        {
+            desc => 'edit user email',
+            fields => {
+                name => 'Changed User',
+                email => 'test@example.com',
+                body => $haringey->id,
+                phone => '',
+                flagged => undef,
+                is_superuser => undef,
+                area_id => '',
+                "permissions[moderate]" => undef,
+                "permissions[planned_reports]" => undef,
+                "permissions[report_edit]" => undef,
+                "permissions[report_edit_category]" => undef,
+                "permissions[report_edit_priority]" => undef,
+                "permissions[report_inspect]" => undef,
+                "permissions[report_instruct]" => undef,
+                "permissions[contribute_as_another_user]" => undef,
+                "permissions[contribute_as_body]" => undef,
+                "permissions[user_edit]" => undef,
+                "permissions[user_manage_permissions]" => undef,
+                "permissions[user_assign_body]" => undef,
+                "permissions[user_assign_areas]" => undef,
+            },
+            changes => {
+                email => 'changed@example.com',
+            },
+            log_count => 2,
+            log_entries => [qw/edit edit/],
         },
-        log_count => 1,
-        log_entries => [qw/edit/],
-    },
-    {
-        desc => 'edit user email',
-        fields => {
-            name => 'Changed User',
-            email => 'test@example.com',
-            body => $haringey->id,
-            phone => '',
-            flagged => undef,
-            is_superuser => undef,
-            "permissions[moderate]" => undef,
-            "permissions[planned_reports]" => undef,
-            "permissions[report_edit]" => undef,
-            "permissions[report_edit_category]" => undef,
-            "permissions[report_edit_priority]" => undef,
-            "permissions[report_inspect]" => undef,
-            "permissions[report_instruct]" => undef,
-            "permissions[contribute_as_another_user]" => undef,
-            "permissions[contribute_as_body]" => undef,
-            "permissions[user_edit]" => undef,
-            "permissions[user_manage_permissions]" => undef,
-            "permissions[user_assign_body]" => undef,
-            "permissions[user_assign_areas]" => undef,
+        {
+            desc => 'edit user body',
+            fields => {
+                name => 'Changed User',
+                email => 'changed@example.com',
+                body => $haringey->id,
+                phone => '',
+                flagged => undef,
+                is_superuser => undef,
+                area_id => '',
+                "permissions[moderate]" => undef,
+                "permissions[planned_reports]" => undef,
+                "permissions[report_edit]" => undef,
+                "permissions[report_edit_category]" => undef,
+                "permissions[report_edit_priority]" => undef,
+                "permissions[report_inspect]" => undef,
+                "permissions[report_instruct]" => undef,
+                "permissions[contribute_as_another_user]" => undef,
+                "permissions[contribute_as_body]" => undef,
+                "permissions[user_edit]" => undef,
+                "permissions[user_manage_permissions]" => undef,
+                "permissions[user_assign_body]" => undef,
+                "permissions[user_assign_areas]" => undef,
+            },
+            changes => {
+                body => $southend->id,
+            },
+            log_count => 3,
+            log_entries => [qw/edit edit edit/],
         },
-        changes => {
-            email => 'changed@example.com',
+        {
+            desc => 'edit user flagged',
+            fields => {
+                name => 'Changed User',
+                email => 'changed@example.com',
+                body => $southend->id,
+                phone => '',
+                flagged => undef,
+                is_superuser => undef,
+                area_id => '',
+                "permissions[moderate]" => undef,
+                "permissions[planned_reports]" => undef,
+                "permissions[report_edit]" => undef,
+                "permissions[report_edit_category]" => undef,
+                "permissions[report_edit_priority]" => undef,
+                "permissions[report_inspect]" => undef,
+                "permissions[report_instruct]" => undef,
+                "permissions[contribute_as_another_user]" => undef,
+                "permissions[contribute_as_body]" => undef,
+                "permissions[user_edit]" => undef,
+                "permissions[user_manage_permissions]" => undef,
+                "permissions[user_assign_body]" => undef,
+                "permissions[user_assign_areas]" => undef,
+            },
+            changes => {
+                flagged => 'on',
+            },
+            log_count => 4,
+            log_entries => [qw/edit edit edit edit/],
         },
-        log_count => 2,
-        log_entries => [qw/edit edit/],
-    },
-    {
-        desc => 'edit user body',
-        fields => {
-            name => 'Changed User',
-            email => 'changed@example.com',
-            body => $haringey->id,
-            phone => '',
-            flagged => undef,
-            is_superuser => undef,
-            "permissions[moderate]" => undef,
-            "permissions[planned_reports]" => undef,
-            "permissions[report_edit]" => undef,
-            "permissions[report_edit_category]" => undef,
-            "permissions[report_edit_priority]" => undef,
-            "permissions[report_inspect]" => undef,
-            "permissions[report_instruct]" => undef,
-            "permissions[contribute_as_another_user]" => undef,
-            "permissions[contribute_as_body]" => undef,
-            "permissions[user_edit]" => undef,
-            "permissions[user_manage_permissions]" => undef,
-            "permissions[user_assign_body]" => undef,
-            "permissions[user_assign_areas]" => undef,
+        {
+            desc => 'edit user remove flagged',
+            fields => {
+                name => 'Changed User',
+                email => 'changed@example.com',
+                body => $southend->id,
+                phone => '',
+                flagged => 'on',
+                is_superuser => undef,
+                area_id => '',
+                "permissions[moderate]" => undef,
+                "permissions[planned_reports]" => undef,
+                "permissions[report_edit]" => undef,
+                "permissions[report_edit_category]" => undef,
+                "permissions[report_edit_priority]" => undef,
+                "permissions[report_inspect]" => undef,
+                "permissions[report_instruct]" => undef,
+                "permissions[contribute_as_another_user]" => undef,
+                "permissions[contribute_as_body]" => undef,
+                "permissions[user_edit]" => undef,
+                "permissions[user_manage_permissions]" => undef,
+                "permissions[user_assign_body]" => undef,
+                "permissions[user_assign_areas]" => undef,
+            },
+            changes => {
+                flagged => undef,
+            },
+            log_count => 4,
+            log_entries => [qw/edit edit edit edit/],
         },
-        changes => {
-            body => $southend->id,
+        {
+            desc => 'edit user add is_superuser',
+            fields => {
+                name => 'Changed User',
+                email => 'changed@example.com',
+                body => $southend->id,
+                phone => '',
+                flagged => undef,
+                is_superuser => undef,
+                area_id => '',
+                "permissions[moderate]" => undef,
+                "permissions[planned_reports]" => undef,
+                "permissions[report_edit]" => undef,
+                "permissions[report_edit_category]" => undef,
+                "permissions[report_edit_priority]" => undef,
+                "permissions[report_inspect]" => undef,
+                "permissions[report_instruct]" => undef,
+                "permissions[contribute_as_another_user]" => undef,
+                "permissions[contribute_as_body]" => undef,
+                "permissions[user_edit]" => undef,
+                "permissions[user_manage_permissions]" => undef,
+                "permissions[user_assign_body]" => undef,
+                "permissions[user_assign_areas]" => undef,
+            },
+            changes => {
+                is_superuser => 'on',
+            },
+            removed => [
+                "permissions[moderate]",
+                "permissions[planned_reports]",
+                "permissions[report_edit]",
+                "permissions[report_edit_category]",
+                "permissions[report_edit_priority]",
+                "permissions[report_inspect]",
+                "permissions[report_instruct]",
+                "permissions[contribute_as_another_user]",
+                "permissions[contribute_as_body]",
+                "permissions[user_edit]",
+                "permissions[user_manage_permissions]",
+                "permissions[user_assign_body]",
+                "permissions[user_assign_areas]",
+            ],
+            log_count => 5,
+            log_entries => [qw/edit edit edit edit edit/],
         },
-        log_count => 3,
-        log_entries => [qw/edit edit edit/],
-    },
-    {
-        desc => 'edit user flagged',
-        fields => {
-            name => 'Changed User',
-            email => 'changed@example.com',
-            body => $southend->id,
-            phone => '',
-            flagged => undef,
-            is_superuser => undef,
-            "permissions[moderate]" => undef,
-            "permissions[planned_reports]" => undef,
-            "permissions[report_edit]" => undef,
-            "permissions[report_edit_category]" => undef,
-            "permissions[report_edit_priority]" => undef,
-            "permissions[report_inspect]" => undef,
-            "permissions[report_instruct]" => undef,
-            "permissions[contribute_as_another_user]" => undef,
-            "permissions[contribute_as_body]" => undef,
-            "permissions[user_edit]" => undef,
-            "permissions[user_manage_permissions]" => undef,
-            "permissions[user_assign_body]" => undef,
-            "permissions[user_assign_areas]" => undef,
+        {
+            desc => 'edit user remove is_superuser',
+            fields => {
+                name => 'Changed User',
+                email => 'changed@example.com',
+                body => $southend->id,
+                phone => '',
+                flagged => undef,
+                is_superuser => 'on',
+                area_id => '',
+            },
+            changes => {
+                is_superuser => undef,
+            },
+            added => {
+                "permissions[moderate]" => undef,
+                "permissions[planned_reports]" => undef,
+                "permissions[report_edit]" => undef,
+                "permissions[report_edit_category]" => undef,
+                "permissions[report_edit_priority]" => undef,
+                "permissions[report_inspect]" => undef,
+                "permissions[report_instruct]" => undef,
+                "permissions[contribute_as_another_user]" => undef,
+                "permissions[contribute_as_body]" => undef,
+                "permissions[user_edit]" => undef,
+                "permissions[user_manage_permissions]" => undef,
+                "permissions[user_assign_body]" => undef,
+                "permissions[user_assign_areas]" => undef,
+            },
+            log_count => 5,
+            log_entries => [qw/edit edit edit edit edit/],
         },
-        changes => {
-            flagged => 'on',
-        },
-        log_count => 4,
-        log_entries => [qw/edit edit edit edit/],
-    },
-    {
-        desc => 'edit user remove flagged',
-        fields => {
-            name => 'Changed User',
-            email => 'changed@example.com',
-            body => $southend->id,
-            phone => '',
-            flagged => 'on',
-            is_superuser => undef,
-            "permissions[moderate]" => undef,
-            "permissions[planned_reports]" => undef,
-            "permissions[report_edit]" => undef,
-            "permissions[report_edit_category]" => undef,
-            "permissions[report_edit_priority]" => undef,
-            "permissions[report_inspect]" => undef,
-            "permissions[report_instruct]" => undef,
-            "permissions[contribute_as_another_user]" => undef,
-            "permissions[contribute_as_body]" => undef,
-            "permissions[user_edit]" => undef,
-            "permissions[user_manage_permissions]" => undef,
-            "permissions[user_assign_body]" => undef,
-            "permissions[user_assign_areas]" => undef,
-        },
-        changes => {
-            flagged => undef,
-        },
-        log_count => 4,
-        log_entries => [qw/edit edit edit edit/],
-    },
-    {
-        desc => 'edit user add is_superuser',
-        fields => {
-            name => 'Changed User',
-            email => 'changed@example.com',
-            body => $southend->id,
-            phone => '',
-            flagged => undef,
-            is_superuser => undef,
-            "permissions[moderate]" => undef,
-            "permissions[planned_reports]" => undef,
-            "permissions[report_edit]" => undef,
-            "permissions[report_edit_category]" => undef,
-            "permissions[report_edit_priority]" => undef,
-            "permissions[report_inspect]" => undef,
-            "permissions[report_instruct]" => undef,
-            "permissions[contribute_as_another_user]" => undef,
-            "permissions[contribute_as_body]" => undef,
-            "permissions[user_edit]" => undef,
-            "permissions[user_manage_permissions]" => undef,
-            "permissions[user_assign_body]" => undef,
-            "permissions[user_assign_areas]" => undef,
-        },
-        changes => {
-            is_superuser => 'on',
-        },
-        removed => [
-            "permissions[moderate]",
-            "permissions[planned_reports]",
-            "permissions[report_edit]",
-            "permissions[report_edit_category]",
-            "permissions[report_edit_priority]",
-            "permissions[report_inspect]",
-            "permissions[report_instruct]",
-            "permissions[contribute_as_another_user]",
-            "permissions[contribute_as_body]",
-            "permissions[user_edit]",
-            "permissions[user_manage_permissions]",
-            "permissions[user_assign_body]",
-            "permissions[user_assign_areas]",
-        ],
-        log_count => 5,
-        log_entries => [qw/edit edit edit edit edit/],
-    },
-    {
-        desc => 'edit user remove is_superuser',
-        fields => {
-            name => 'Changed User',
-            email => 'changed@example.com',
-            body => $southend->id,
-            phone => '',
-            flagged => undef,
-            is_superuser => 'on',
-        },
-        changes => {
-            is_superuser => undef,
-        },
-        added => {
-            "permissions[moderate]" => undef,
-            "permissions[planned_reports]" => undef,
-            "permissions[report_edit]" => undef,
-            "permissions[report_edit_category]" => undef,
-            "permissions[report_edit_priority]" => undef,
-            "permissions[report_inspect]" => undef,
-            "permissions[report_instruct]" => undef,
-            "permissions[contribute_as_another_user]" => undef,
-            "permissions[contribute_as_body]" => undef,
-            "permissions[user_edit]" => undef,
-            "permissions[user_manage_permissions]" => undef,
-            "permissions[user_assign_body]" => undef,
-            "permissions[user_assign_areas]" => undef,
-        },
-        log_count => 5,
-        log_entries => [qw/edit edit edit edit edit/],
-    },
-) {
-    subtest $test->{desc} => sub {
-        $mech->get_ok( '/admin/user_edit/' . $user->id );
+    ) {
+        subtest $test->{desc} => sub {
+            $mech->get_ok( '/admin/user_edit/' . $user->id );
 
-        my $visible = $mech->visible_form_values;
-        is_deeply $visible, $test->{fields}, 'expected user';
+            my $visible = $mech->visible_form_values;
+            is_deeply $visible, $test->{fields}, 'expected user';
 
-        my $expected = {
-            %{ $test->{fields} },
-            %{ $test->{changes} }
-        };
-
-        $mech->submit_form_ok( { with_fields => $expected } );
-
-        # Some actions cause visible fields to be added/removed
-        foreach my $x (@{ $test->{removed} }) {
-            delete $expected->{$x};
-        }
-        if ( $test->{added} ) {
-            $expected = {
-                %$expected,
-                %{ $test->{added} }
+            my $expected = {
+                %{ $test->{fields} },
+                %{ $test->{changes} }
             };
-        }
 
-        $visible = $mech->visible_form_values;
-        is_deeply $visible, $expected, 'user updated';
+            $mech->submit_form_ok( { with_fields => $expected } );
 
-        $mech->content_contains( 'Updated!' );
-    };
-}
+            # Some actions cause visible fields to be added/removed
+            foreach my $x (@{ $test->{removed} }) {
+                delete $expected->{$x};
+            }
+            if ( $test->{added} ) {
+                $expected = {
+                    %$expected,
+                    %{ $test->{added} }
+                };
+            }
+
+            $visible = $mech->visible_form_values;
+            is_deeply $visible, $expected, 'user updated';
+
+            $mech->content_contains( 'Updated!' );
+        };
+    }
+};
 
 subtest "Test setting a report from unconfirmed to something else doesn't cause a front end error" => sub {
     $report->update( { confirmed => undef, state => 'unconfirmed', non_public => 0 } );

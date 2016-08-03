@@ -194,6 +194,7 @@ else {
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0043' if column_exists('users', 'area_id');
     return '0042' if table_exists('user_planned_reports');
     return '0041' if column_exists('users', 'is_superuser') && ! constraint_exists('user_body_permissions_permission_type_check');
     return '0040' if column_exists('users', 'is_superuser');

@@ -1134,6 +1134,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     }
 
     $c->forward('fetch_all_bodies');
+    $c->forward('fetch_body_areas', [ $user->from_body ]) if $user->from_body;
 
     if ( $c->get_param('submit') ) {
         $c->forward('/auth/check_csrf_token');
@@ -1166,9 +1167,18 @@ sub user_edit : Path('user_edit') : Args(1) {
             $user->from_body( undef );
         }
 
+        # Has the user's from_body changed since we fetched areas (if we ever did)?
+        # If so, we need to re-fetch areas so the UI is up to date.
+        if ( $user->from_body && $user->from_body->id ne $c->stash->{fetched_areas_body_id} ) {
+            $c->forward('fetch_body_areas', [ $user->from_body ]);
+        }
+
         if (!$user->from_body) {
-            # Non-staff users aren't allowed any permissions
+            # Non-staff users aren't allowed any permissions or to be in an area
             $user->user_body_permissions->delete_all;
+            $user->area_id(undef);
+            delete $c->stash->{areas};
+            delete $c->stash->{fetched_areas_body_id};
         } elsif ($c->stash->{available_permissions}) {
             my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
             my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
@@ -1182,6 +1192,12 @@ sub user_edit : Path('user_edit') : Args(1) {
                     permission_type => $permission_type,
                 });
             }
+        }
+
+        if ( $user->from_body && $c->user->has_permission_to('user_assign_areas', $user->from_body->id) ) {
+            my %valid_areas = map { $_->{id} => 1 } @{ $c->stash->{areas} };
+            my $new_area = $c->get_param('area_id');
+            $user->area_id( $valid_areas{$new_area} ? $new_area : undef );
         }
 
         unless ($user->email) {
@@ -1612,6 +1628,27 @@ sub fetch_all_bodies : Private {
     $c->stash->{bodies} = \@bodies;
 
     return 1;
+}
+
+sub fetch_body_areas : Private {
+    my ($self, $c, $body ) = @_;
+
+    my $body_area = $body->body_areas->first;
+
+    unless ( $body_area ) {
+        # Body doesn't have any areas defined.
+        delete $c->stash->{areas};
+        delete $c->stash->{fetched_areas_body_id};
+        return;
+    }
+
+    my $areas = mySociety::MaPit::call('area/children', [ $body_area->area_id ],
+        type => $c->cobrand->area_types_children,
+    );
+
+    $c->stash->{areas} = [ sort { strcoll($a->{name}, $b->{name}) } values %$areas ];
+    # Keep track of the areas we've fetched to prevent a duplicate fetch later on
+    $c->stash->{fetched_areas_body_id} = $body->id;
 }
 
 sub trim {
