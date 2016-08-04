@@ -87,14 +87,16 @@
     <input type="checkbox" name="bymonth" id="bymonth"[% bymonth ? ' checked' : '' %] /><label class="inline" for="bymonth">[% loc('By Date') %]</label>
     </p>
 
-    <p>
-    [% loc('Council:') %] <select id='body' name='body'>
-        <option value=''>[% loc('No council') %]</option>
-        [% FOR body IN bodies %]
-        <option value="[% body.id %]"[% ' selected' IF body.id == selected_body %]>[% body.name %]</option>
-        [% END %]
-    </select>
-    </p>
+    [% IF c.user.is_superuser %]
+      <p>
+      [% loc('Council:') %] <select id='body' name='body'>
+          <option value=''>[% loc('No council') %]</option>
+          [% FOR body IN bodies %]
+          <option value="[% body.id %]"[% ' selected' IF body.id == selected_body %]>[% body.name %]</option>
+          [% END %]
+      </select>
+      </p>
+    [% END %]
 
     <p>
     <input type="submit" name="getcounts"  size="30" id="getcounts" value="Get Count" />

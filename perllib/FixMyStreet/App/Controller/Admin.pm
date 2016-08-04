@@ -1273,7 +1273,13 @@ sub stats_fix_rate : Path('stats/fix-rate') : Args(0) {
 sub stats : Path('stats') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('fetch_all_bodies');
+    my $selected_body;
+    if ( $c->user->is_superuser ) {
+        $c->forward('fetch_all_bodies');
+        $selected_body = $c->get_param('body');
+    } else {
+        $selected_body = $c->user->from_body->id;
+    }
 
     if ( $c->cobrand->moniker eq 'seesomething' || $c->cobrand->moniker eq 'zurich' ) {
         return $c->cobrand->admin_stats();
@@ -1303,7 +1309,7 @@ sub stats : Path('stats') : Args(0) {
         my $bymonth = $c->get_param('bymonth');
         $c->stash->{bymonth} = $bymonth;
 
-        $c->stash->{selected_body} = $c->get_param('body');
+        $c->stash->{selected_body} = $selected_body;
 
         my $field = 'confirmed';
 
@@ -1332,7 +1338,7 @@ sub stats : Path('stats') : Args(0) {
             );
         }
 
-        my $p = $c->cobrand->problems->to_body($c->get_param('body'))->search(
+        my $p = $c->cobrand->problems->to_body($selected_body)->search(
             {
                 -AND => [
                     $field => { '>=', $start_date},
@@ -1361,24 +1367,6 @@ sub set_allowed_pages : Private {
     my ( $self, $c ) = @_;
 
     my $pages = $c->cobrand->admin_pages;
-
-    if( !$pages ) {
-        $pages = {
-             'summary' => [_('Summary'), 0],
-             'bodies' => [_('Bodies'), 1],
-             'reports' => [_('Reports'), 2],
-             'timeline' => [_('Timeline'), 3],
-             'users' => [_('Users'), 5],
-             'flagged'  => [_('Flagged'), 6],
-             'stats'  => [_('Stats'), 7],
-             'config' => [ _('Configuration'), 8],
-             'user_edit' => [undef, undef], 
-             'body' => [undef, undef],
-             'report_edit' => [undef, undef],
-             'update_edit' => [undef, undef],
-             'abuse_edit'  => [undef, undef],
-        }
-    }
 
     my @allowed_links = sort {$pages->{$a}[1] <=> $pages->{$b}[1]}  grep {$pages->{$_}->[0] } keys %$pages;
 

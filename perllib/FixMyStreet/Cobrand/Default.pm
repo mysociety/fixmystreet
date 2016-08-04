@@ -637,7 +637,33 @@ List of names of pages to display on the admin interface
 
 =cut
 
-sub admin_pages { 0 }
+sub admin_pages {
+    my $self = shift;
+
+    my $user = $self->{c}->user;
+
+    my $pages = {
+         'summary' => [_('Summary'), 0],
+         'bodies' => [_('Bodies'), 1],
+         'reports' => [_('Reports'), 2],
+         'timeline' => [_('Timeline'), 3],
+         'users' => [_('Users'), 5],
+         'flagged'  => [_('Flagged'), 6],
+         'stats'  => [_('Stats'), 7],
+         'user_edit' => [undef, undef],
+         'body' => [undef, undef],
+         'report_edit' => [undef, undef],
+         'update_edit' => [undef, undef],
+         'abuse_edit'  => [undef, undef],
+    };
+
+    # There are some pages that only super users can see
+    if ( $user->is_superuser ) {
+        $pages->{config} = [ _('Configuration'), 8];
+    };
+
+    return $pages;
+}
 
 =head2 admin_show_creation_graph
 
