@@ -411,7 +411,7 @@ sub update_contacts : Private {
         $c->forward('/auth/check_csrf_token');
 
         my $params = $c->forward( 'body_params' );
-        unless ( keys $c->stash->{body_errors} ) {
+        unless ( keys %{$c->stash->{body_errors}} ) {
             $c->stash->{body}->update( $params );
             my @current = $c->stash->{body}->body_areas->all;
             my %current = map { $_->area_id => 1 } @current;
