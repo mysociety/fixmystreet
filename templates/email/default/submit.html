@@ -39,12 +39,7 @@ of a local problem that they believe might require your attention.</p>
   <p style="[% p_style %] margin-top: 0.5em;">Replies to this message will go directly to [% name | html %], the user who reported the problem.</p>
   [% end_padded_box %]
 </th>
-<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
-  <img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
-  [% start_padded_box %]
-  [%~ IF has_photo %]
-    <img style="[% preview_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="" align="right">
-  [%~ END %]
+[% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% title | html %]</h2>
     [%~ IF category_line %]
     <p style="[% secondary_p_style %]">[% category | html %]</p>
@@ -57,7 +52,6 @@ of a local problem that they believe might require your attention.</p>
       </a>
       [% IF closest_address %]<br>[% closest_address | trim | replace("\n\n", "<br>") %][% END %]
     </p>
-  [% end_padded_box %]
-</th>
+[% END %]
 
 [% INCLUDE '_email_bottom.html' %]

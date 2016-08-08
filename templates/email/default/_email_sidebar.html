@@ -1,0 +1,10 @@
+[% DEFAULT report = object ~%]
+<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
+  <img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
+  [% start_padded_box %]
+    [%~ IF object.photo %]
+      <img style="[% preview_photo_style %]" src="[% inline_image(object.get_first_image_fp) %]" alt="" align="right">
+    [%~ END %]
+    [%~ content %]
+  [% end_padded_box %]
+</th>
