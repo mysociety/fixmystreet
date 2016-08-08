@@ -50,7 +50,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         sed -i -r -e "s,^( *BASE_URL: .*)',\\1:3000'," fixmystreet/conf/general.yml
     fi
     # Create a superuser for the admin
-    fixmystreet/bin/createsuperuser superuser@example.org password
+    su vagrant -c 'fixmystreet/bin/createsuperuser superuser@example.org password'
     if [ $SUCCESS -eq 0 ]; then
         # All done
         echo "****************"
