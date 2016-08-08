@@ -26,13 +26,13 @@ INCLUDE '_email_top.html';
 <th style="[% td_style %][% only_column_style %]">
   <h1 style="[% h1_style %]">[% subject | html %]</h1>
   <p style="[% p_style %]">[% message | html %]</p>
-  [% IF complaint %]
+  [%~ IF complaint %]
   <p style="[% secondary_p_style %]">
     [% complaint | html %]
     - <a href="[% problem_url %]">Report</a>
     - <a href="[% admin_url %]">Admin</a>
   </p>
-  [% END %]
+  [%~ END %]
 </th>
 
 [% INCLUDE '_email_bottom.html' %]

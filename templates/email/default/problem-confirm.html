@@ -28,9 +28,9 @@ of problem, so it will instead be sent to [% report.body %].
 <th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
   <img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
   [% start_padded_box %]
-  [% IF report.photo %]
+  [%~ IF report.photo %]
     <img style="[% preview_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="" align="right">
-  [% END %]
+  [%~ END %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
   [% end_padded_box %]
