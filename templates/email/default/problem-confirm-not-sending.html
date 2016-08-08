@@ -22,15 +22,9 @@ council.</p>
   <p style="[% p_style %]">If you no longer wish to publish this report, please take no further action.</p>
   [% end_padded_box %]
 </th>
-<th style="[% td_style %][% secondary_column_style %]" id="secondary_column">
-  <img style="[% map_image_style %]" src="[% inline_image(report.static_map, 'map.jpeg') %]" width="310" height="200" alt="">
-  [% start_padded_box %]
-  [% IF report.photo %]
-    <img style="[% preview_photo_style %]" src="[% inline_image(report.get_first_image_fp) %]" alt="" align="right">
-  [% END %]
+[% WRAPPER '_email_sidebar.html' object = report %]
     <h2 style="[% h2_style %]">[% report.title | html %]</h2>
     <p style="[% secondary_p_style %]">[% report.detail | html %]</p>
-  [% end_padded_box %]
-</th>
+[% END %]
 
 [% INCLUDE '_email_bottom.html' %]

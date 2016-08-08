@@ -14,7 +14,7 @@
   <title></title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <style type="text/css">
-  [% # Styles here will be applied by everything except Gmail.com %]
+  [%~ # Styles here will be applied by everything except Gmail.com %]
   a { [% link_style %] }
   a:hover { [% link_hover_style %] }
 
@@ -22,7 +22,7 @@
     font-family: [% body_font_family %] !important;
   }
 
-  [% # 550px = 5+5+5+520+5+5+5 %]
+  [%~ # 550px = 5+5+5+520+5+5+5 %]
   @media only screen and (max-width: 549px) {
     #main {
       min-width: 0 !important;
@@ -58,7 +58,7 @@
                 <img src="[% inline_image('web/cobrands/' _ img_dir _ '/images/email-logo.gif') %]" width="[% logo_width %]" height="[% logo_height %]" alt="[% site_name %]" style="[% logo_style %]"/>
               [%~ ELSE ~%]
                 <span style="[% logo_style %]">[% site_name %]</span>
-              [% END %]
+              [%~ END %]
             </th>
           </tr>
           <tr>

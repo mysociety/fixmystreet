@@ -338,7 +338,8 @@ sub send_email {
     $data->{_html_images_} = \@inline_images if @inline_images;
 
     my $email = mySociety::Locale::in_gb_locale { FixMyStreet::Email::construct_email($data) };
-    $c->model('EmailSend')->send($email);
+    my $return = $c->model('EmailSend')->send($email);
+    $c->log->error("$return") if !$return;
 
     return $email;
 }
