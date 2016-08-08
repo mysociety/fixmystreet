@@ -746,6 +746,12 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
 
         if ( typeof ga !== 'undefined' && window.cobrand == 'fixmystreet' ) {
             ga('send', 'pageview', { 'page': '/map_click' } );
+            ga('send', {
+                hitType: 'event',
+                eventCategory: 'Map',
+                eventAction: 'click',
+                eventLabel: 'zoom level ' + fixmystreet.map.getZoom()
+            });
         }
     }
 });
