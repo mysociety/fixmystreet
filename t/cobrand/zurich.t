@@ -115,6 +115,7 @@ my @reports = $mech->create_problems_for_body( 1, $division->id, 'Test', {
     confirmed          => undef,
     cobrand            => 'zurich',
     photo         => $sample_photo,
+    areas => ',423017,',
 });
 my $report = $reports[0];
 
@@ -482,6 +483,7 @@ $mech->clear_emails_ok;
     confirmed          => undef,
     cobrand            => 'zurich',
     photo         => $sample_photo,
+    areas => ',423017,',
 });
 $report = $reports[0];
 
@@ -523,6 +525,7 @@ $mech->email_count_is(0);
     confirmed          => undef,
     cobrand            => 'zurich',
     photo         => $sample_photo,
+    areas => ',423017,',
 });
 $report = $reports[0];
 
