@@ -924,16 +924,27 @@ sub static_map {
         if ($tile_url =~ m{^//}) {
             $tile_url = "https:$tile_url";
         }
-        my $tile = LWP::Simple::get($tile_url);
+        my $tile;
+        if (FixMyStreet->test_mode) {
+            $tile = FixMyStreet->path_to('t/app/controller/sample.jpg')->slurp(iomode => '<:raw');
+        } else {
+            $tile = LWP::Simple::get($tile_url);
+        }
+        next unless $tile;
         my $im = Image::Magick->new;
         $im->BlobToImage($tile);
+        my $gravity = ($i<2?'North':'South') . ($i%2?'East':'West');
         if (!$image) {
             $image = $im;
-            $image->Extent(geometry => '512x512', gravity => 'NorthWest');
+            $image->Extent(geometry => '512x512', gravity => $gravity);
         } else {
-            my $gravity = ($i<2?'North':'South') . ($i%2?'East':'West');
             $image->Composite(image => $im, gravity => $gravity);
         }
+    }
+
+    unless ($image) {
+        FixMyStreet::Map::set_map_class($orig_map_class) if $orig_map_class;
+        return;
     }
 
     # The only pin might be the report pin, with added x/y
