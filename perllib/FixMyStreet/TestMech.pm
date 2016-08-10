@@ -165,6 +165,7 @@ sub delete_user {
     }
     $_->delete for $user->comments;
     $_->delete for $user->admin_logs;
+    $_->delete for $user->user_body_permissions;
     $user->delete;
 
     return 1;

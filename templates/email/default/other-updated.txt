@@ -1,0 +1,16 @@
+Subject: Your update has been logged
+
+Hello [% update.name %],
+
+Your update has been logged on [% site_name %]:
+
+[% cobrand.base_url_for_report(problem) %][% problem.url %]#update_[% update.id %]
+
+Your update reads:
+
+[% update.text %]
+
+[% INCLUDE 'signature.txt' %]
+
+This email was sent automatically, from an unmonitored email account - so
+please do not reply to it.

@@ -1,7 +1,29 @@
 <div class="form-box" id="form-box--logged-in-name">
 
-    <label for="form_email">[% loc('Your email') %]</label>
-    <input disabled type="text" value="[% c.user.email | html %]">
+  [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", bodies.keys.join(",")) %]
+  [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies.keys.join(",")) %]
+
+  [% IF can_contribute_as_another_user OR can_contribute_as_body %]
+    <label for="form_as">[% loc('Report as') %]</label>
+    <select id="form_as" class="js-contribute-as" name="form_as">
+        <option value="myself" selected>[% loc('Yourself') %]</option>
+      [% IF can_contribute_as_another_user %]
+        <option value="another_user">[% loc('Another user') %]</option>
+      [% END %]
+      [% IF can_contribute_as_body %]
+        <option value="body">[% c.user.from_body.name %]</option>
+      [% END %]
+    </select>
+  [% END %]
+
+    <label for="form_email">[% loc('Email address') %]</label>
+    <input id="form_email"
+    [%- IF can_contribute_as_another_user OR can_contribute_as_body -%]
+    name="email"
+    [%- ELSE -%]
+    disabled
+    [%- END -%]
+    type="text" value="[% c.user.email | html %]">
 
     [% INCLUDE 'report/new/extra_name.html' %]
     [% PROCESS 'user/_anonymity.html' anonymous = report.anonymous %]
@@ -15,7 +37,7 @@
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
-    <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+    <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name">
 
     [%# if there is nothing in the name field then set check box as default on form %]
     <div class="checkbox-group">
@@ -24,7 +46,7 @@
     </div>
 
     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
-    <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+    <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone">
 
     <div class="general-notes">
         <p>[% loc('We never show your email address or phone number.') %]</p>

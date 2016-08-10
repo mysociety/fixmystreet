@@ -109,8 +109,15 @@ sub process_user : Private {
 
     my $update = $c->stash->{update};
 
-    if ( $c->user_exists ) {
+    # Extra block to use 'last'
+    if ( $c->user_exists ) { {
         my $user = $c->user->obj;
+
+        if ($c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $update->problem->bodies_str)) {
+            # Act as if not logged in (and it will be auto-confirmed later on)
+            last;
+        }
+
         my $name = $c->get_param('name');
         $user->name( Utils::trim_text( $name ) ) if $name;
         my $title = $c->get_param('fms_extra_title');
@@ -119,8 +126,14 @@ sub process_user : Private {
             $user->title( Utils::trim_text( $title ) );
         }
         $update->user( $user );
+
+        # Just in case, make sure the user will have a name
+        if ($c->stash->{contributing_as_body}) {
+            $user->name($user->from_body->name) unless $user->name;
+        }
+
         return 1;
-    }
+    } }
 
     # Extract all the params to a hash to make them easier to work with
     my %params = map { $_ => $c->get_param($_) }
@@ -254,16 +267,23 @@ sub process_update : Private {
       Utils::cleanup_text( $params{update}, { allow_multiline => 1 } );
 
     my $name = Utils::trim_text( $params{name} );
-    my $anonymous = $c->get_param('may_show_name') ? 0 : 1;
 
     $params{reopen} = 0 unless $c->user && $c->user->id == $c->stash->{problem}->user->id;
 
     my $update = $c->stash->{update};
     $update->text($params{update});
-    $update->name($name);
+
     $update->mark_fixed($params{fixed} ? 1 : 0);
     $update->mark_open($params{reopen} ? 1 : 0);
-    $update->anonymous($anonymous);
+
+    $c->stash->{contributing_as_body} = $c->user_exists && $c->user->contributing_as('body', $c, $update->problem->bodies_str);
+    if ($c->stash->{contributing_as_body}) {
+        $update->name($c->user->from_body->name);
+        $update->anonymous(0);
+    } else {
+        $update->name($name);
+        $update->anonymous($c->get_param('may_show_name') ? 0 : 1);
+    }
 
     if ( $params{state} ) {
         $params{state} = 'fixed - council' 
@@ -431,6 +451,10 @@ sub save_update : Private {
             $update->user->insert();
         }
         $update->confirm();
+    } elsif ( $c->forward('/report/new/created_as_someone_else', [ $update->problem->bodies_str ]) ) {
+        # If created on behalf of someone else, we automatically confirm it,
+        # but we don't want to update the user account
+        $update->confirm();
     } elsif ( !$update->user->in_storage ) {
         # User does not exist.
         $c->forward('tokenize_user', [ $update ]);
@@ -474,6 +498,11 @@ sub redirect_or_confirm_creation : Private {
     if ( $update->confirmed ) {
         $c->forward( 'update_problem' );
         $c->forward( 'signup_for_alerts' );
+        if ($c->stash->{contributing_as_another_user}) {
+            $c->send_email( 'other-updated.txt', {
+                to => [ [ $update->user->email, $update->name ] ],
+            } );
+        }
         $c->stash->{template} = 'tokens/confirm_update.html';
         return 1;
     }

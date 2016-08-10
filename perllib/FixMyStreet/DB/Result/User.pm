@@ -243,6 +243,14 @@ sub has_permission_to {
     return $permission ? 1 : undef;
 }
 
+sub contributing_as {
+    my ($self, $other, $c, $bodies) = @_;
+    $bodies = join(',', keys %$bodies) if ref $bodies eq 'HASH';
+    $c->log->error("Bad data $bodies passed to contributing_as") if ref $bodies;
+    my $form_as = $c->get_param('form_as') || '';
+    return 1 if $form_as eq $other && $self->has_permission_to("contribute_as_$other", $bodies);
+}
+
 sub adopt {
     my ($self, $other) = @_;
 
