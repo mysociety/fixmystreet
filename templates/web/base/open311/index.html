@@ -124,9 +124,6 @@ for council problem-reporting systems.</p>
 ] %]
 [% FOREACH examples %]
     <li><a href="[% url %]">[% info %]</a>
-    [% IF url.match('/requests.xml') %]
-        [ <a href="http://maps.google.com/?q=[% url.replace('.xml', '.rss') | uri %]">[% loc('GeoRSS on Google Maps') %]</a> ]
-    [% END %]
     <br>[% url | html %]</li>
 [% END %]
 
