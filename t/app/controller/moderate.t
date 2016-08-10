@@ -19,6 +19,8 @@ my $user = $mech->create_user_ok('test-moderation@example.com', name => 'Test Us
 $user->user_body_permissions->delete_all;
 $user->discard_changes;
 
+my $user2 = $mech->create_user_ok('test-moderation2@example.com', name => 'Test User 2');
+
 sub create_report {
     FixMyStreet::App->model('DB::Problem')->create(
     {
@@ -29,7 +31,7 @@ sub create_report {
         title              => 'Good bad good',
         detail             => 'Good bad bad bad good bad',
         used_map           => 't',
-        name               => 'Test User',
+        name               => 'Test User 2',
         anonymous          => 'f',
         state              => 'confirmed',
         confirmed          => $dt->ymd . ' ' . $dt->hms,
@@ -40,7 +42,7 @@ sub create_report {
         send_questionnaire => 't',
         latitude           => '51.4129',
         longitude          => '0.007831',
-        user_id            => $user->id,
+        user_id            => $user2->id,
         photo              => $mech->get_photo_data,
     });
 }
@@ -169,7 +171,9 @@ subtest 'Problem moderation' => sub {
         $report->discard_changes;
         is $report->state, 'hidden', 'Is hidden';
 
-        my $url = $mech->get_link_from_email;
+        my $email = $mech->get_email;
+        is $email->header('To'), '"Test User 2" <test-moderation2@example.com>', 'Sent to correct email';
+        my $url = $mech->get_link_from_email($email);
         ok $url, "extracted complain url '$url'";
 
         $mech->get_ok($url);
@@ -210,8 +214,8 @@ subtest 'Problem 2' => sub {
 
 sub create_update {
     $report->comments->create({
-        user      => $user,
-        name      => 'Test User',
+        user      => $user2,
+        name      => 'Test User 2',
         anonymous => 'f',
         photo     => $mech->get_photo_data,
         text      => 'update good good bad good',
