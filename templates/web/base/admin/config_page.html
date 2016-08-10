@@ -68,6 +68,7 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 </tr>
 [% INCLUDE with_cobrand value="ALL_REPORTS_PER_PAGE" cob=c.cobrand.reports_per_page %]
 [% INCLUDE just_value value="RSS_LIMIT" %]
+[% INCLUDE just_value value="OPEN311_LIMIT" conf_default = '<em>1000</em>' %]
 [% INCLUDE just_value value="AREA_LINKS_FROM_PROBLEMS" %]
 
 [% INCLUDE subsection heading="Geocoder" %]

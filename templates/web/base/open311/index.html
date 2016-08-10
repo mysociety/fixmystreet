@@ -73,7 +73,7 @@ for council problem-reporting systems.</p>
 <li><a rel="nofollow" href="http://wiki.open311.org/GeoReport_v2">[% loc('Open311 specification') %]</a></li>
 </ul>
 
-<p>[% tprintf( loc('At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date.'), c.config.RSS_LIMIT ) %]</p>
+<p>[% tprintf( loc('At most %d requests are returned in each query.  The returned requests are ordered by requested_datetime, so to get all requests, do several searches with rolling start_date and end_date.'), c.config.OPEN311_LIMIT ) %]</p>
 
 <p>[% loc('The following Open311 v2 attributes are returned for each request: service_request_id, description, lat, long, media_url, status, requested_datetime, updated_datetime, service_code and service_name.') %]</p>
 

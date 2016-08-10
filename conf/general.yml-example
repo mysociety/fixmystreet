@@ -159,8 +159,9 @@ ALLOWED_COBRANDS:
 # the admin interface. Defaults to BASE_URL with "/admin" on the end.
 ADMIN_BASE_URL: ''
 
-# How many items are returned in the GeoRSS feeds by default
+# How many items are returned in the GeoRSS and Open311 feeds by default
 RSS_LIMIT: '20'
+OPEN311_LIMIT: 1000
 # How many reports to show per page on the All Reports pages
 ALL_REPORTS_PER_PAGE: 100
 

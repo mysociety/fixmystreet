@@ -112,7 +112,7 @@ sub get_discovery : Private {
         'changeset' => [$prod_changeset],
         # XXX rewrite to match
         'key_service' => ["Read access is open to all according to our \u003Ca href='/open_data' target='_blank'\u003Eopen data license\u003C/a\u003E. For write access either: 1. return the 'guid' cookie on each call (unique to each client) or 2. use an api key from a user account which can be generated here: http://seeclickfix.com/register The unversioned url will always point to the latest supported version."],
-        'max_requests' => [ $c->config->{RSS_LIMIT} ],
+        'max_requests' => [ $c->config->{OPEN311_LIMIT} || 1000 ],
         'endpoints' => [
             {
                 'endpoint' => [
@@ -205,8 +205,9 @@ sub get_services : Private {
 
 sub output_requests : Private {
     my ( $self, $c, $criteria, $limit ) = @_;
-    $limit = $c->config->{RSS_LIMIT}
-        unless $limit && $limit <= $c->config->{RSS_LIMIT};
+    my $default_limit = $c->config->{OPEN311_LIMIT} || 1000;
+    $limit = $default_limit
+        unless $limit && $limit <= $default_limit;
 
     my $attr = {
         order_by => { -desc => 'confirmed' },
