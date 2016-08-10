@@ -2,7 +2,7 @@
     sidebar_html = PROCESS 'report/new/sidebar.html';
 
     SET bodyclass = '';
-    SET bodyclass = 'mappage' IF report.used_map;
+    SET bodyclass = 'mappage';
     SET bodyclass = bodyclass _ " with-notes" IF sidebar_html;
     PROCESS "maps/${map.type}.html" IF report.used_map;
     INCLUDE 'header.html', title => loc('Reporting a problem');
