@@ -83,6 +83,8 @@ sub send() {
             # this is for the new_updates alerts
             next if $row->{non_public} and $row->{user_id} != $row->{alert_user_id};
 
+            next unless FixMyStreet::DB::Result::Problem::visible_states()->{$row->{state}};
+
             $schema->resultset('AlertSent')->create( {
                 alert_id  => $row->{alert_id},
                 parameter => $row->{item_id},
