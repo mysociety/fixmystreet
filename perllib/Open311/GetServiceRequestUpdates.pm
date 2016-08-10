@@ -103,6 +103,7 @@ sub update_comments {
         $problem = $self->schema->resultset('Problem')->to_body($body)->search( $criteria );
 
         if (my $p = $problem->first) {
+            next unless defined $request->{update_id} && defined $request->{description};
             my $c = $p->comments->search( { external_id => $request->{update_id} } );
 
             if ( !$c->first ) {
