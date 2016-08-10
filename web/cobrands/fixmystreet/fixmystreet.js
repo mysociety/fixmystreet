@@ -951,7 +951,11 @@ fixmystreet.display = {
             fixmystreet.set_up.map_controls();
 
             $('.js-back-to-report-list').attr('href', location.href);
-            $sideReport.find('#key-tool-problems-nearby').addClass('js-back-to-report-list');
+            // Problems nearby should act the same as 'Back to all reports' on around,
+            // but on /my and /reports should go to that around page.
+            if (fixmystreet.original.page == 'around') {
+                $sideReport.find('#key-tool-problems-nearby').addClass('js-back-to-report-list');
+            }
             fixmystreet.set_up.map_sidebar_key_tools();
             fixmystreet.set_up.form_validation();
             fixmystreet.set_up.email_login_form();
