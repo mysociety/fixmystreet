@@ -61,6 +61,7 @@ LANGUAGES:
 TIME_ZONE: ""
 
 # File locations for uploaded photos and cached geocoding results.
+# Absolute paths, or relative to the project's root directory
 UPLOAD_DIR: '../upload/'
 GEO_CACHE: '../cache/'
 

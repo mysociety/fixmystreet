@@ -12,8 +12,8 @@ package FixMyStreet::Geocode::Zurich;
 
 use strict;
 use Digest::MD5 qw(md5_hex);
-use File::Path ();
 use Geo::Coordinates::CH1903Plus;
+use Path::Tiny;
 use Storable;
 use Utils;
 
@@ -64,8 +64,8 @@ sub string {
 
     setup_soap();
 
-    my $cache_dir = FixMyStreet->config('GEO_CACHE') . 'zurich/';
-    my $cache_file = $cache_dir . md5_hex($s);
+    my $cache_dir = path(FixMyStreet->config('GEO_CACHE'), 'zurich')->absolute(FixMyStreet->path_to());
+    my $cache_file = $cache_dir->child(md5_hex($s));
     my $result;
     if (-s $cache_file && -M $cache_file <= 7 && !FixMyStreet->config('STAGING_SITE')) {
         $result = retrieve($cache_file);
@@ -80,7 +80,7 @@ sub string {
             return { error => 'The geocoder appears to be down.' };
         }
         $result = $result->result;
-        File::Path::mkpath($cache_dir);
+        $cache_dir->mkpath;
         store $result, $cache_file if $result && !FixMyStreet->config('STAGING_SITE');
     }
 
