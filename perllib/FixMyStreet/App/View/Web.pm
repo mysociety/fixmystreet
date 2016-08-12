@@ -23,6 +23,7 @@ __PACKAGE__->config(
         add_links => \&add_links,
         escape_js => \&escape_js,
         html      => \&html_filter,
+        html_para => \&html_paragraph,
     },
     COMPILE_EXT => '.ttc',
     STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
@@ -164,6 +165,21 @@ sub html_filter {
         s/"/&quot;/g;
         s/'/&#39;/g;
     }
+    return $text;
+}
+
+=head2 html_paragraph
+
+Same as Template Toolkit's html_paragraph, but converts single newlines
+into <br>s too.
+
+=cut
+
+sub html_paragraph  {
+    my $text = shift;
+    my @paras = split(/(?:\r?\n){2,}/, $text);
+    s/\r?\n/<br>\n/ for @paras;
+    $text = "<p>\n" . join("\n</p>\n\n<p>\n", @paras) . "</p>\n";
     return $text;
 }
 

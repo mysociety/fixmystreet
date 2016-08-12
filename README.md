@@ -56,6 +56,7 @@ web-based cross-browser testing tools for this project.
         - Rename "Your reports" in main navigation to "Your account".
         - Centre map on pin location when creating a report.
         - Zoom into map after second click on marker.
+        - Maintain single newlines in text output. #306
     - Admin improvements:
         - Greatly improve report edit page, including map. #1347
         - Show any waiting reports on admin index page. #1382
