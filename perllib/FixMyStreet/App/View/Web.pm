@@ -5,7 +5,6 @@ use strict;
 use warnings;
 
 use mySociety::Locale;
-use mySociety::Web qw(ent);
 use FixMyStreet;
 use Utils;
 
@@ -115,8 +114,8 @@ Add some links to some text (and thus HTML-escapes the other text.
 sub add_links {
     my $text = shift;
     $text =~ s/\r//g;
-    $text = ent($text);
-    $text =~ s{(https?://)([^\s]+)}{"<a href='$1$2'>$1" . _space_slash($2) . '</a>'}ge;
+    $text = html_filter($text);
+    $text =~ s{(https?://)([^\s]+)}{'<a href="$1$2">$1' . _space_slash($2) . '</a>'}ge;
     return $text;
 }
 
