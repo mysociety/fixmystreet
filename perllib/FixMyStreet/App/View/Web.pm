@@ -18,9 +18,10 @@ __PACKAGE__->config(
     render_die     => 1,
     expose_methods => [
         'loc', 'nget', 'tprintf', 'prettify_dt',
-        'add_links', 'version', 'decode',
+        'version', 'decode',
     ],
     FILTERS => {
+        add_links => \&add_links,
         escape_js => \&escape_js,
         html      => \&html_filter,
     },
@@ -105,15 +106,14 @@ sub prettify_dt {
 
 =head2 add_links
 
-    [% add_links( text ) | html_para %]
+    [% text | add_links | html_para %]
 
 Add some links to some text (and thus HTML-escapes the other text.
 
 =cut
 
 sub add_links {
-    my ( $self, $c, $text ) = @_;
-
+    my $text = shift;
     $text =~ s/\r//g;
     $text = ent($text);
     $text =~ s{(https?://)([^\s]+)}{"<a href='$1$2'>$1" . _space_slash($2) . '</a>'}ge;

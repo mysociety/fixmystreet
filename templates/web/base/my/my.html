@@ -56,7 +56,7 @@
         <div class="item-list__update-wrap">
             [% INCLUDE 'report/photo.html' object=u %]
             <div class="item-list__update-text">
-                [% add_links( u.text ) | html_para %]
+                [% u.text | add_links | html_para %]
 
                 <p class="meta-2">
                     [% tprintf( loc("Added %s"), prettify_dt( u.confirmed, 'date' ) ) %]

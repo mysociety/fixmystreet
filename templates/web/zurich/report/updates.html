@@ -8,7 +8,7 @@
                     [%# XXX following should honour zurich_closed_states instead? %]
                     [% IF problem.state == 'fixed - council'
                     || ( problem.external_body AND problem.state == 'closed' ) %]
-                    [% add_links( problem.extra.public_response ) | html_para %]
+                    [% problem.extra.public_response | add_links | html_para %]
                   [% END %]
                 </div>
             </div>

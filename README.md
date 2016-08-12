@@ -82,6 +82,7 @@ web-based cross-browser testing tools for this project.
         - Tests can run multiple times simultaneously. #1477
         - Don’t cache geocoder results when STAGING_SITE is 1. #1447
         - Make UPLOAD_DIR/GEO_CACHE relative to project root. #1474
+        - Change add_links from a function to a filter. #1487
     - Vagrant installation improvements:
         - Improve error handling.
         - Don't add a symlink if it is to the same place.

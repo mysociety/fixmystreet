@@ -58,7 +58,7 @@
 
     [% INCLUDE 'report/photo.html' object=problem %]
     <div class="moderate-display">
-        [% add_links( problem.detail ) | html_para %]
+        [% problem.detail | add_links | html_para %]
     </div>
 
   [% IF moderating %]
