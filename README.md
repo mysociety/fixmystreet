@@ -47,29 +47,48 @@ web-based cross-browser testing tools for this project.
 
 * In development
     - Front end improvements:
+        - Add HTML emails. #1281 #1103
         - Stop map being underneath content sidebar/header. #1350 #361
+        - Use Ajax/HTML5 history to pull in reports and improve map views.
+          #1351 #1450 #1457 #1173
+        - Allow users to change their own email. #360 #1440
+        - Allow scroll wheel to zoom map. #1326
         - Rename "Your reports" in main navigation to "Your account".
         - Centre map on pin location when creating a report.
-        - Allow scroll wheel to zoom map. #1326
-        - Allow users to change their own email. #360 #1440
+        - Zoom into map after second click on marker.
     - Admin improvements:
         - Greatly improve report edit page, including map. #1347
         - Show any waiting reports on admin index page. #1382
         - Allow user's phone number to be edited.
-        - /admin now requires a logged-in user with the `is_superuser` flag set
-        - `createsuperuser` command for creating superusers/granting superuser status.
+        - And a report's category. #400
+        - /admin requires a logged-in user with the `is_superuser` flag. #1463
+        - `createsuperuser` command for creating superusers.
+        - Feature to create report as body/other user. #1473
+    - Bugfixes:
+        - Disallow empty name when creating/editing bodies in admin.
+        - Stop using collapse filter in category template.
+        - Do not send alerts for hidden reports. #1461
+        - Improve moderation display and email. #855
     - Development improvements:
         - make_css: Add output style option.
         - make_css: Follow symlinks.
         - Remove some unused CSS, and simplify full-width. #1423
         - Tidy up/harden some Open311 handling. #1428
+        - Add config for Open311 request limit, default 1000. #1313
         - Use static validation_rules.js file. #1451
         - Remove need to customise OpenLayers built script. #1448
+        - Refactor and tidy all the JavaScript. #913
+        - Speed up tests by stubbing out calls to Gaze.
+        - Tests can run multiple times simultaneously. #1477
+        - Don’t cache geocoder results when STAGING_SITE is 1. #1447
+        - Make UPLOAD_DIR/GEO_CACHE relative to project root. #1474
     - Vagrant installation improvements:
         - Improve error handling.
         - Don't add a symlink if it is to the same place.
     - Backwards incompatible changes:
         - Drop support for IE6. #1356
+    - UK
+        - Better handling of two-tier reports. #1381
 
 * v1.8.4 (6th July 2016)
     - Security:
