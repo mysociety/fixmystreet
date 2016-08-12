@@ -253,7 +253,7 @@ sub report_import : Path('/import') {
     my %input =
       map { $_ => $c->get_param($_) || '' } (
         'service', 'subject',  'detail', 'name', 'email', 'phone',
-        'easting', 'northing', 'lat',    'lon',  'id',    'phone_id',
+        'easting', 'northing', 'lat',    'lon',
       );
 
     my @errors;
@@ -305,31 +305,6 @@ sub report_import : Path('/import') {
         $c->res->body($body);
         return;
     }
-
-### leaving commented out for now as the values stored here never appear to
-### get used and the new user accounts might make them redundant anyway.
-    #
-    # # Store for possible future use
-    # if ( $input{id} || $input{phone_id} ) {
-    #     my $id = $input{id} || $input{phone_id};
-    #     my $already =
-    #       dbh()
-    #       ->selectrow_array(
-    #         'select id from partial_user where service=? and nsid=?',
-    #         {}, $input{service}, $id );
-    #     unless ($already) {
-    #         dbh()->do(
-    #             'insert into partial_user (service, nsid, name, email, phone)'
-    #               . ' values (?, ?, ?, ?, ?)',
-    #             {},
-    #             $input{service},
-    #             $id,
-    #             $input{name},
-    #             $input{email},
-    #             $input{phone}
-    #         );
-    #     }
-    # }
 
     # find or create the user
     my $report_user = $c->model('DB::User')->find_or_create(

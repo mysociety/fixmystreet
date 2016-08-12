@@ -97,9 +97,6 @@ after 'prepare_headers' => sub {
         && @$ssl_header == 2 && $self->req->header($ssl_header->[0]) eq $ssl_header->[1];
 };
 
-# set up DB handle for old code
-FixMyStreet->configure_mysociety_dbhandle;
-
 # disable debug logging unless in debug mode
 __PACKAGE__->log->disable('debug')    #
   unless __PACKAGE__->debug;
