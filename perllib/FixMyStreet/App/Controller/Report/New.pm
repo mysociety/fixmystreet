@@ -643,7 +643,6 @@ sub setup_categories_and_bodies : Private {
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{non_public_categories}  = \%non_public_categories;
-    $c->stash->{category_extras_json}  = encode_json \%category_extras;
     $c->stash->{extra_name_info} = $first_area->{id} == COUNCIL_ID_BROMLEY ? 1 : 0;
 
     my @missing_details_bodies = grep { !$bodies_to_list{$_->id} } values %bodies;
