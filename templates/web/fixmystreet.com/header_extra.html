@@ -4,7 +4,7 @@
 [%# We are conducting an A/B experiment %]
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" AND not admin %]
 <script src="//www.google-analytics.com/cx/api.js?experiment=ZwMlZkAhSbK_tP_QG64QrQ"></script>
-<script>
+<script nonce="[% csp_nonce %]">
 var variation = cxApi.chooseVariation(),
     docElement = document.documentElement,
     className = docElement.className;

@@ -12,7 +12,7 @@
 [% END %]
 
 [% map_html = BLOCK %]
-<script type="text/javascript">
+<script nonce="[% csp_nonce %]">
 var fixmystreet = fixmystreet || {};
 $.extend(fixmystreet, {
     'area': [ [% map.area.join(',') %] ],
