@@ -19,9 +19,7 @@
             <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.moniker _ '/layout.css') %]">
         <![endif]-->
 
-        <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html' %]
-        [% extra_js %]
 
         [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
 
