@@ -388,7 +388,7 @@ subtest 'Update with media_url includes image in update' => sub {
     is $problem->comments->count, 1, 'comment count';
     my $c = $problem->comments->first;
     is $c->external_id, 638344;
-    is $c->photo, '7f09ef2c3933731d47121fee1b8038b3fdd3bc77.jpeg', 'photo exists';
+    is $c->photo, '74e3362283b6ef0c48686fb0e161da4043bbcc97.jpeg', 'photo exists';
 };
 
 foreach my $test (
