@@ -1,3 +1,6 @@
+[% extra_js = BLOCK %]
+    <script src="[% version('/cobrands/fixmystreet.com/posters.js') %]"></script>
+[% END %]
 [% extra_css = BLOCK %]
     <link rel="stylesheet" href="[% version('/cobrands/fixmystreet.com/posters.css') %]">
 [% END %]
@@ -10,27 +13,6 @@
 [%
     badge = '<a href="https://www.fixmystreet.com/"> <img src="https://www.fixmystreet.com/i/fms-badge.jpeg" alt="FixMyStreet - report, view or discuss local problems" border="0"></a>'
 %]
-
-<script>
-
-$("[data-goodielink]").on('click', function(e){
-    var url = $(this).attr('href')
-    var name = $(this).attr('data-goodielink')
-    var callback = function(){
-        window.location.href = url
-    }
-    if(e.metaKey || e.ctrlKey){
-        callback = function(){}
-    } else {
-        e.preventDefault()
-    }
-    ga('send', 'event', 'goodie', 'download', name, {
-        'hitCallback': callback
-    })
-    setTimeout(callback, 2000);
-});
-
-</script>
 
 <div class="sticky-sidebar">
     <aside>
