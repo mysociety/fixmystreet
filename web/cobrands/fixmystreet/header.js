@@ -1,3 +1,5 @@
+// A minimized version of this is inline in the header.
+
 var fixmystreet = fixmystreet || {};
 
 (function(D){
