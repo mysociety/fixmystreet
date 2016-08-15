@@ -20,8 +20,8 @@ sub timeline {
 
     return $rs->search(
         {
-            state => 'confirmed',
-            created => { '>=', \"current_timestamp-'7 days'::interval" },
+            'me.state' => 'confirmed',
+            'me.created' => { '>=', \"current_timestamp-'7 days'::interval" },
         },
         {
             prefetch => $prefetch,
