@@ -116,7 +116,7 @@ sub add_links {
     my $text = shift;
     $text =~ s/\r//g;
     $text = html_filter($text);
-    $text =~ s{(https?://)([^\s]+)}{'<a href="$1$2">$1' . _space_slash($2) . '</a>'}ge;
+    $text =~ s{(https?://)([^\s]+)}{"<a href=\"$1$2\">$1" . _space_slash($2) . '</a>'}ge;
     return $text;
 }
 
