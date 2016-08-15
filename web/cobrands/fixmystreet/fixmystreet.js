@@ -119,29 +119,14 @@ fixmystreet.mobile_reporting = {
     // Creates the "app-like" mobile reporting UI with full screen map
     // and special "OK/Cancel" buttons etc.
     $('html').addClass('mobile-reporting-map only-map');
+    $('.mobile-map-banner span').text(translation_strings.place_pin_on_map);
     $('html, body').scrollTop(0);
-
-    var banner_text = '<a href="/">' + translation_strings.home + '</a> ' + translation_strings.place_pin_on_map;
-    $('.big-green-banner')
-        .addClass('mobile-map-banner')
-        .appendTo('#map_box')
-        .html(banner_text);
   },
 
   remove_ui: function() {
     // Removes the "app-like" mobile reporting UI, reverting all the
     // changes made by fixmystreet.mobile_reporting.apply_ui().
-
     $('html').removeClass('mobile-reporting-map only-map');
-
-    var banner_text = translation_strings.report_problem_heading;
-    if (typeof variation !== 'undefined' && variation === 1) {
-        banner_text = 'Click map to request a fix';
-    }
-    $('.big-green-banner')
-        .removeClass('mobile-map-banner')
-        .prependTo('#side')
-        .html(banner_text);
     $('#map_box').css({ width: "", height: "", position: "" });
     $('#mob_sub_map_links').remove();
   }
@@ -896,7 +881,7 @@ fixmystreet.display = {
             height: height
         });
 
-        $('.mobile-map-banner').html('<a href="/">' + translation_strings.home + '</a> ' + translation_strings.right_place);
+        $('.mobile-map-banner span').text(translation_strings.right_place);
 
         // mobile user clicks 'ok' on map
         $('#mob_ok').toggle(function(){
