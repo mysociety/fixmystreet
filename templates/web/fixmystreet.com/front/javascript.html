@@ -1,9 +1,10 @@
+<script src="[% version('/js/yepnope.js') %]"></script>
 <script>
 yepnope.addPrefix( 'preload', function ( resource ) {
     resource.noexec = true;
     return resource;
 });
-Modernizr.load({
+yepnope({
     load: [
         "preload![% version('/js/OpenLayers/OpenLayers.fixmystreet.js') %]",
         "preload![% version('/js/map-OpenLayers.js') %]",

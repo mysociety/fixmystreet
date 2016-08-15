@@ -5,6 +5,9 @@
 
 <meta name="cobrand" content="[% c.cobrand.moniker %]">
 
+<!--[if (lt IE 9)]>
+    <script src="[% version('/js/html5shiv.js') %]""></script>
+<![endif]-->
 <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
 <script type="text/javascript" src="[% start %]/js/translation_strings.[% lang_code %].js?[% Math.int( date.now / 3600 ) %]"></script>
 
