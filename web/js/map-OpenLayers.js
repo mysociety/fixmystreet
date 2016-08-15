@@ -744,7 +744,7 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         var lonlat = fixmystreet.map.getLonLatFromViewPortPx(e.xy);
         fixmystreet.display.begin_report(lonlat);
 
-        if ( typeof ga !== 'undefined' && window.cobrand == 'fixmystreet' ) {
+        if ( typeof ga !== 'undefined' && fixmystreet.cobrand == 'fixmystreet' ) {
             ga('send', 'pageview', { 'page': '/map_click' } );
         }
     }

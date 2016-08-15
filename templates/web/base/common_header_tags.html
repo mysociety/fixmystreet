@@ -1,14 +1,15 @@
 [% USE date %][% USE Math %]
 [% SET start = c.config.ADMIN_BASE_URL IF admin %]
 
-<meta http-equiv="content-type" content="text/html; charset=utf-8">
-
-<meta name="cobrand" content="[% c.cobrand.moniker %]">
+<meta http-equiv="content-type" content="text/html; charset=utf-8"
+    id="js-meta-data" data-page="[% page %]"
+    data-cobrand="[% c.cobrand.moniker %]">
 
 <!--[if (lt IE 9)]>
     <script src="[% version('/js/html5shiv.js') %]""></script>
 <![endif]-->
 <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
+<script src="[% version('/cobrands/fixmystreet/header.js') %]"></script>
 <script type="text/javascript" src="[% start %]/js/translation_strings.[% lang_code %].js?[% Math.int( date.now / 3600 ) %]"></script>
 
 <script type="text/javascript" src="[% version('/jslib/jquery-1.7.2.min.js') %]"></script>

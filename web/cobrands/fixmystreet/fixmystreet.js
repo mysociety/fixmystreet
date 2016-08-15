@@ -182,9 +182,6 @@ fixmystreet.resize_to = {
 fixmystreet.set_up = fixmystreet.set_up || {};
 $.extend(fixmystreet.set_up, {
   basics: function() {
-    // Add a class to the whole page saying JavaScript is enabled (for CSS and so on)
-    $('html').removeClass('no-js').addClass('js');
-
     // Preload the new report pin
     if ( typeof fixmystreet !== 'undefined' && typeof fixmystreet.pin_prefix !== 'undefined' ) {
         document.createElement('img').src = fixmystreet.pin_prefix + 'pin-green.png';
@@ -547,7 +544,7 @@ $.extend(fixmystreet.set_up, {
   map_controls: function() {
     //add permalink on desktop, force hide on mobile
     //add links container (if its not there)
-    if (window.cobrand != 'zurich') {
+    if (fixmystreet.cobrand != 'zurich') {
         if ($('#sub_map_links').length === 0) {
             $('<p id="sub_map_links" />').insertAfter($('#map'));
         }
@@ -1017,7 +1014,6 @@ fixmystreet.display = {
 
 
 $(function() {
-    window.cobrand = $('meta[name="cobrand"]').attr('content');
     fixmystreet.original = {
         'title': document.title,
         'page': fixmystreet.page
