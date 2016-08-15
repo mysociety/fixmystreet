@@ -6,7 +6,6 @@ use Catalyst::Runtime 5.80;
 use FixMyStreet;
 use FixMyStreet::Cobrand;
 use Memcached;
-use mySociety::Random qw(random_bytes);
 use FixMyStreet::Map;
 use FixMyStreet::Email;
 use Utils;
@@ -160,6 +159,8 @@ sub setup_request {
     $c->setup_dev_overrides();
 
     my $cobrand = $c->cobrand;
+
+    $cobrand->add_response_headers if $cobrand->can('add_response_headers');
 
     # append the cobrand templates to the include path
     $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates;

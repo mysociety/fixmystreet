@@ -1,6 +1,8 @@
 package FixMyStreet::Cobrand::FixMyStreet;
 use base 'FixMyStreet::Cobrand::UK';
 
+use mySociety::Random;
+
 use constant COUNCIL_ID_BROMLEY => 2482;
 
 # Special extra
@@ -17,6 +19,11 @@ sub path_to_email_templates {
     ];
 }
 
+sub add_response_headers {
+    my $self = shift;
+    my $csp_nonce = $self->{c}->stash->{csp_nonce} = unpack('h*', mySociety::Random::random_bytes(16, 1));
+    $self->{c}->res->header('Content-Security-Policy', "script-src 'self' www.google-analytics.com www.googleadservices.com 'unsafe-inline' 'nonce-$csp_nonce'")
+}
 
 # FixMyStreet should return all cobrands
 sub restriction {
