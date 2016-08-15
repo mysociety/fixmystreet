@@ -943,14 +943,15 @@ fixmystreet.display = {
             // If this is the first individual report we've loaded, remove the
             // "all reports" sub_map_links but store them in a global variable
             // so we can reinsert them when the user returns to the all reports
-            // view. With #sub_map_links detached from the DOM, we set up the
-            // individual report's sub_map_links using map_controls().
+            // view. Also set the Back link to know where to go back to.
             if (!fixmystreet.original.sub_map_links) {
                 fixmystreet.original.sub_map_links = $('#sub_map_links').detach();
+                $('.js-back-to-report-list').attr('href', location.href);
             }
+            // With #sub_map_links detached from the DOM, we set up the
+            // individual report's sub_map_links using map_controls().
             fixmystreet.set_up.map_controls();
 
-            $('.js-back-to-report-list').attr('href', location.href);
             // Problems nearby should act the same as 'Back to all reports' on around,
             // but on /my and /reports should go to that around page.
             if (fixmystreet.original.page == 'around') {
