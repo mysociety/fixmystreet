@@ -71,10 +71,6 @@ body.frontpage {
 
 .big-green-banner {
   display: none; // hide the empty banner by default
-
-  &.mobile-map-banner {
-    display: block; // show it again once the mobile javascript adds this class
-  }
 }
 
 .click-the-map {
