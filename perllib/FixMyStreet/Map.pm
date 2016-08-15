@@ -74,7 +74,7 @@ sub map_features {
         @p{"min_lon", "min_lat", "max_lon", "max_lat"} = split /,/, $p{bbox};
     }
 
-    if ($p{latitude} && $p{longitude}) {
+    if (defined $p{latitude} && defined $p{longitude}) {
         # TODO - be smarter about calculating the surrounding square
         # use deltas that are roughly 500m in the UK - so we get a 1 sq km search box
         my $lat_delta = 0.00438;
