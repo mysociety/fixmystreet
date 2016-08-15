@@ -510,6 +510,25 @@ $.extend(fixmystreet.set_up, {
     }
   },
 
+  fixed_thead: function() {
+    var thead = $('.nicetable thead');
+    if (thead.fixedThead) {
+        thead.fixedThead();
+    }
+  },
+
+  report_list_filters: function() {
+    // Hide the pin filter submit button. Not needed because we'll use JS
+    // to refresh the map when the filter inputs are changed.
+    $(".report-list-filters [type=submit]").hide();
+
+    if (fixmystreet.page == "my" || fixmystreet.page == "reports") {
+        $(".report-list-filters select").change(function() {
+            $(this).closest("form").submit();
+        });
+    }
+  },
+
   mobile_ui_tweaks: function() {
     //move 'skip this step' link on mobile
     $('.mobile #skip-this-step').addClass('chevron').wrap('<li>').parent().appendTo('#key-tools');

@@ -1,3 +1,6 @@
+[% extra_js = BLOCK %]
+    <script src="[% version('/js/jquery.fixedthead.js') %]"></script>
+[% END -%]
 [% INCLUDE 'header.html', title = loc('Summary reports'), bodyclass => 'fullwidthpage' %]
 
 <h1>[% loc('All Reports') %]</h1>
@@ -43,12 +46,5 @@
 [% END %]
 </tbody>
 </table>
-
-<script type="text/javascript" src="[% version('/js/jquery.fixedthead.js') %]"></script>
-<script type="text/javascript">
-$(function(){
-    $('.nicetable thead').fixedThead();
-});
-</script>
 
 [% INCLUDE 'footer.html', pagefooter = 'yes' %]
