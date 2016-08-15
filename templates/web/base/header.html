@@ -31,9 +31,7 @@
             <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/layout.css') %]">
         <![endif]-->
 
-        <script src="[% version('/js/modernizr.custom.js') %]" charset="utf-8"></script>
         [% INCLUDE 'common_header_tags.html' %]
-        [% extra_js %]
 
         [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
             <link rel="canonical" href="https://www.fixmystreet.com[% c.req.uri.path_query %]">
