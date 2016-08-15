@@ -192,7 +192,7 @@ Return most recent ModerationLog object
 
 sub latest_moderation_log_entry {
     my $self = shift;
-    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => 'id desc' })->first;
+    return $self->admin_log_entries->search({ action => 'moderation' }, { order_by => { -desc => 'id' } })->first;
 }
 
 __PACKAGE__->has_many(
