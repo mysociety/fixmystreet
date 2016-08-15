@@ -7,14 +7,7 @@
 [%# We are conducting an A/B experiment %]
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" AND not admin %]
 <script src="//www.google-analytics.com/cx/api.js?experiment=ZwMlZkAhSbK_tP_QG64QrQ"></script>
-<script>
-var variation = cxApi.chooseVariation(),
-    docElement = document.documentElement,
-    className = docElement.className;
-if (!/about\/council/.test(location.pathname)) {
-    docElement.className = className + ' variant' + variation;
-}
-</script>
+<script src="[% version('/cobrands/fixmystreet.com/experiment.js') %]"></script>
 [% END %]
 <style>
 html .variant1 { display: none !important; }

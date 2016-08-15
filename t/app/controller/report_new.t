@@ -1688,7 +1688,7 @@ subtest "extra google analytics code displayed on logged in problem creation" =>
         my $report = $user->problems->first;
         ok $report, "Found the report";
 
-        $mech->content_contains( "'id': 'report/" . $report->id . "'", 'extra google code present' );
+        $mech->content_contains( 'data-created-report="' . $report->id . '"', 'extra google code present' );
 
         # cleanup
         $mech->delete_user($user);
@@ -1745,7 +1745,7 @@ subtest "extra google analytics code displayed on email confirmation problem cre
         my $report = $user->problems->first;
         ok $report, "Found the report";
 
-        $mech->content_contains( "'id': 'report/" . $report->id . "'", 'extra google code present' );
+        $mech->content_contains( 'data-created-report="' . $report->id . '"', 'extra google code present' );
 
         $user->problems->delete;
         $user->alerts->delete;
