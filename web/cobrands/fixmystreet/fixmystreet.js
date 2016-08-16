@@ -1050,6 +1050,11 @@ $(function() {
         setup_func();
     });
 
+    // Have a fake history entry so we can cover all eventualities.
+    if ('replaceState' in history) {
+        history.replaceState({ initial: true });
+    }
+
     $(window).on('load', function () {
         setTimeout(function () {
             window.addEventListener('popstate', function(e) {
@@ -1060,9 +1065,16 @@ $(function() {
                 // because we're already inside a popstate: We want to roll
                 // back to a previous state, not create a new one!
 
+                if (!fixmystreet.page) {
+                    // Only care about map pages, which set this variable
+                    return;
+                }
+
                 var location = window.history.location || window.location;
 
                 if (e.state === null) {
+                    // Hashchange or whatever, we don't care.
+                } else if ('initial' in e.state) {
                     // User has navigated Back from a pushStated state, presumably to
                     // see the list of all reports (which was shown on pageload). By
                     // this point, the browser has *already* updated the URL bar so
