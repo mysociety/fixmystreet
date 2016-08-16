@@ -694,7 +694,6 @@ GEOCODING_DISAMBIGUATION:
     <p>
       If using Bing, you can use <code>town</code> and <code>bounds</code>, plus any of:
     </p>
-<!-- TODO check that Bing and Google don't really spell "centre" as "center" -->
 <pre>
   centre: "<em>&lt;lat&gt;&lt;lon&gt;</em>"
   bing_culture: <em>&lt;culture code: see <a href="http://msdn.microsoft.com/en-us/library/hh441729.aspx">Bing docs</a>&gt;</em>
@@ -703,18 +702,14 @@ GEOCODING_DISAMBIGUATION:
     <p>
       If using Google, you can use:
     </p>
-    <!-- TODO not sure Google does support centre -->
 <pre>
-  centre: "<em>&lt;lat&gt;&lt;lon&gt;</em>"
-  span: "<em>&lt;lat span&gt;,&lt;lon span&gt;</em>"
+  bounds: [ <em>&lt;min lat&gt;, &lt;min lon&gt;, &lt;max lat&gt;, &lt;max lon&gt;</em> ]
   google_country: <em>&lt;.ccTLD to restrict results to&gt;</em>
   lang: <em>&lt;language for results&gt;</em>
 </pre>    
     <div class="more-info">
       <p>Example:</p>
       <ul class="examples">
-        <!-- TODO  examples of the more complex data 
-                   e.g. Google's span,  language? -->
         <li>
           This limits geocoding requests to only return results in Mumbai, India:
 <pre>          
@@ -857,11 +852,8 @@ ALLOWED_COBRANDS:
   </dt>
   <dd>
     This is used in "offensive report" emails to provide a link directly
-    to the admin interface. If you want this, set to the full URL of your admin
-    interface.
-    <!-- TODO: check this, I think it also helps in resource URLs in templates
-               but that may only be relevant to mySoc-hosted sites that proxy
-               admin through a different domain -->
+    to the admin interface, and to make sure the admin can work through a
+    proxy. It defaults to `/admin` in your installation.
     <div class="more-info">
       <p>Example:</p>
       <ul class="examples">
@@ -966,14 +958,14 @@ ALLOWED_COBRANDS:
   </dt>
   <dd>
     Gaze is a world-wide service for population density lookups. You can leave
-    this as is.
-    <!-- TODO used to determine pop density and hence urban/rural map 
-              choices? RSS radius? Research this! -->
+    this as is. It is used to provide the default radius for email/RSS alerts
+    and to set the default zoom level on a map page (so in rural areas, you're
+    more likely to get a slightly more zoomed out map).
     <div class="more-info">
       <p>Example:</p>
       <ul class="examples">
         <li>
-          <code>GAZE_URL: 'http://gaze.mysociety.org/gaze'</code>
+          <code>GAZE_URL: 'https://gaze.mysociety.org/gaze'</code>
         </li>
       </ul>
     </div>
