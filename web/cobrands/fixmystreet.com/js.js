@@ -11,7 +11,7 @@ $(function(){
         $.cookie('has_seen_country_message', 1, {expires: 365, path: '/'});
     });
 
-    if ( $('body.frontpage').length ) {
+    if ( $('body.frontpage').length && -1 == navigator.userAgent.indexOf('Google Page Speed')) {
         if (!$.cookie('has_seen_country_message')) {
             $.ajax({
                 url: 'https://gaze.mysociety.org/gaze-rest?f=get_country_from_ip',
