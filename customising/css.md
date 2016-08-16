@@ -281,7 +281,7 @@ straightforward and involves two steps:
 
 * First, uncomment the line in your cobrand’s `_colours.scss` file as explained,
   so that the `$direction` variable is set to `right`.
-* Secondly, create a copy of the `templates/web/fixmystreet/header.html` in
+* Secondly, create a copy of the `templates/web/base/header.html` in
   your own cobrand if you haven’t already (see
   [template customising]({{ site.baseurl }}customising/templates/) for more
   details) and uncomment the `SET` line that sets `dir="rtl"`.

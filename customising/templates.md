@@ -10,20 +10,14 @@ and how to create your own custom templates.</p>
 
 When it's building a page, FixMyStreet always looks in your cobrand's web
 template directory first: if it finds a template there, it uses it, and if it
-doesn't it falls back and uses the `fixmystreet` or `base` one instead.
+doesn't it falls back and uses the `base` one instead.
 
-  <svg width="300" height="250" xmlns="http://www.w3.org/2000/svg">
+  <svg width="300" height="160" xmlns="http://www.w3.org/2000/svg">
    <g>
     <g id="fms-template-stack">
      <g id="fms_template_base">
-      <rect stroke="#000000" fill-opacity="0" id="svg_1" height="50.185915" width="262" y="187.829577" x="19" stroke-width="3" fill="#000000"/>
-      <text stroke="#000000" transform="matrix(0.738028 0 0 0.738028 5.23944 6.41831)" xml:space="preserve" text-anchor="middle" font-family="Monospace" font-size="29" id="svg_2" y="288.805344" x="196.145038" stroke-width="0" fill="#000000">base</text>
-     </g>
-     <g id="fms-template-fixmystreet">
-      <path stroke="#000000" id="svg_23" d="m137.22908,122.26178l0,44.606094l-12.435646,0l28.656044,28.656036l28.656036,-28.926376l-14.598358,0.54068l0,-45.146774l-30.278076,0.27034z" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="3" fill="#ffffff"/>
       <rect stroke="#000000" id="svg_8" height="50.185915" width="222.884508" y="100.373239" x="38.557748" stroke-width="3" fill="#ffffff"/>
-      <text stroke="#000000" transform="matrix(0.738028 0 0 0.738028 5.23944 6.41831)" xml:space="preserve" text-anchor="middle" font-family="Monospace" font-size="29" id="svg_13" y="170.305344" x="196.145042" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="0" fill="#000000">fixmystreet</text>
-      <rect stroke="#000000" id="svg_24" stroke-opacity="0" height="5.660965" width="28.055539" y="147.584084" x="138.357609" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="3" fill="#ffffff"/>
+      <text stroke="#000000" transform="matrix(0.738028 0 0 0.738028 5.23944 6.41831)" xml:space="preserve" text-anchor="middle" font-family="Monospace" font-size="29" id="svg_13" y="170.305344" x="196.145042" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="0" fill="#000000">base</text>
      </g>
      <g id="fms-template-cobrand">
       <path stroke="#000000" id="svg_18" d="m136.165344,36.887947l0,44.606102l-12.435638,0l28.656036,28.656036l28.656052,-28.926376l-14.598373,0.54068l0,-45.146778l-30.278076,0.270336z" stroke-linecap="null" stroke-linejoin="null" stroke-dasharray="null" stroke-width="3" fill="#ffffff"/>
@@ -44,8 +38,7 @@ cobrand's name: for example, do:
 Then, to override an existing template, copy it into the
 `templates/web/fixmypark/` directory and edit it there. You *must* use the
 same directory and file names as in the parent cobrand (that is, in
-`templates/web/fixmystreet` or `templates/web/base` – base might be `default` if
-you have an older version of the code).
+`templates/web/base`).
 
 <div class="attention-box">
     <strong>Please note:</strong> only make template files for those things you
@@ -66,12 +59,7 @@ Or it’s likely you’ll want to change the footer template, which puts text ri
 at the bottom of every page. Copy the footer template into your cobrand like
 this:
 
-    cp templates/web/fixmystreet/footer.html templates/web/fixmypark/
-
-<div class="attention-box helpful-hint">
-Note we’ve used the <code>fixmystreet</code> copy there, as that is the first
-“parent” of your cobrand, in preference to <code>base</code>.
-</div>
+    cp templates/web/base/footer.html templates/web/fixmypark/
 
 The templates use the popular <a
 href="http://www.template-toolkit.org">Template Toolkit</a> system &mdash; look
