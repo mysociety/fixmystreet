@@ -896,6 +896,10 @@ fixmystreet.display = {
             width: width,
             height: height
         });
+        $('#try_again').click(function(e){
+            e.preventDefault();
+            history.back();
+        });
 
         $('.mobile-map-banner span').text(translation_strings.right_place);
 
