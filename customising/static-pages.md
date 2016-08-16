@@ -1,0 +1,24 @@
+---
+layout: page
+title: Adding static pages
+---
+
+# Adding static pages
+
+<p class="lead">How to add your own static pages to your installation.</p>
+
+If you wish to add a new static page to your site, then you can place a
+template file, say `team.html`, in the `templates/web/cobrand/about/`
+directory, where `cobrand` should be replaced with your cobrand name (as
+explained in [customising FixMyStreet templates](../templates/)).
+
+The page will then be available to view at `/about/team` on your site.
+
+Have a look at the existing files in `templates/web/base/about/` for an idea
+of the contents of a file – you need a header and a footer include, but other
+than that the contents are up to you.
+
+<hr>
+
+If you wish to do more complex pages, or wish to then we recommend setting up
+e.g. a WordPress installation running at a subdomain of your site.
