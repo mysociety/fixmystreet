@@ -88,5 +88,17 @@ For example, many of the email templates themselves use the small
 `site-name.txt` and `signature.txt` templates, so you may want to override
 these (by copying them from `templates/email/default` into your own cobrand's
 directory within `templates/email`, and editing them) even if you're not
-changing anything else.
+changing anything else. On the other hand, you may wish to create new versions
+of all the emails in order to translate them.
 
+<div class="attention-box helpful-hint">
+Please do not translate the `Subject:` at the beginning of the first line, as
+that is used by the code to locate the Subject line of the email.
+</div>
+
+You may also send out HTML emails, by creating templates with an `.html`
+extension as well as the plain text `.txt` one. In order to save you a lot of
+time making working HTML emails, you may want to override the
+`_email_color_overrides.html` and `_email_setting_overrides.html` templates to
+set your own colours/branding, and then only copy other HTML templates to
+translate or otherwise change the wording.
