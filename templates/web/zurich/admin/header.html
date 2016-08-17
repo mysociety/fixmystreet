@@ -24,14 +24,3 @@
     select { width: auto; }
     .admin-report-edit select { max-width: 100%; }
 </style>
-<script>
-$(function(){
-    $('.row-link').hover(function(){
-        $(this).toggleClass("active");
-    }).click(function(){
-        window.location = this.getElementsByTagName('a')[0];
-    }).find('td:last').hide();
-    $('th.edit').hide();
-});
-</script>
-
