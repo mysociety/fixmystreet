@@ -184,4 +184,14 @@ sub admin_allow_user {
     return $user->from_body->id == $self->council_id;
 }
 
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+    $perms->{Problems}->{contribute_as_body} = "Create reports/updates as " . $self->council_name;
+    $perms->{Users}->{user_assign_areas} = "Assign users to areas in " . $self->council_name;
+
+    return $perms;
+}
+
 1;

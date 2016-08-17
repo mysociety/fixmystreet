@@ -334,5 +334,6 @@ $update2->delete;
 $report->moderation_original_data->delete;
 $report->delete;
 $report2->delete;
+$mech->delete_user($user);
 
 done_testing();

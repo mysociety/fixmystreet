@@ -1129,6 +1129,10 @@ sub user_edit : Path('user_edit') : Args(1) {
 
     $c->stash->{user} = $user;
 
+    if ( $user->from_body && $c->user->has_permission_to('user_manage_permissions', $user->from_body->id) ) {
+        $c->stash->{available_permissions} = $c->cobrand->available_permissions;
+    }
+
     $c->forward('fetch_all_bodies');
 
     if ( $c->get_param('submit') ) {
@@ -1139,7 +1143,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         if ( $user->email ne $c->get_param('email') ||
             $user->name ne $c->get_param('name') ||
             ($user->phone || "") ne $c->get_param('phone') ||
-            ($user->from_body && $user->from_body->id ne $c->get_param('body')) ||
+            ($user->from_body && $c->get_param('body') && $user->from_body->id ne $c->get_param('body')) ||
             (!$user->from_body && $c->get_param('body'))
         ) {
                 $edited = 1;
@@ -1153,12 +1157,31 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
         # Superusers can set from_body to any value, but other staff can only
         # set from_body to the same value as their own from_body.
-        if ($c->user->is_superuser) {
+        if ( $c->user->is_superuser ) {
             $user->from_body( $c->get_param('body') || undef );
-        } elsif ($c->get_param('body') eq $c->user->from_body->id) {
+        } elsif ( $c->user->has_permission_to('user_assign_body', $c->user->from_body->id ) &&
+                  $c->get_param('body') && $c->get_param('body') eq $c->user->from_body->id ) {
             $user->from_body( $c->user->from_body );
         } else {
             $user->from_body( undef );
+        }
+
+        if (!$user->from_body) {
+            # Non-staff users aren't allowed any permissions
+            $user->user_body_permissions->delete_all;
+        } elsif ($c->stash->{available_permissions}) {
+            my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
+            my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
+            $user->user_body_permissions->search({
+                body_id => $user->from_body->id,
+                permission_type => { '!=' => \@user_permissions },
+            })->delete;
+            foreach my $permission_type (@user_permissions) {
+                $user->user_body_permissions->find_or_create({
+                    body_id => $user->from_body->id,
+                    permission_type => $permission_type,
+                });
+            }
         }
 
         unless ($user->email) {

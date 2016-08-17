@@ -658,6 +658,37 @@ sub admin_allow_user {
     return 1 if $user->is_superuser;
 }
 
+=head2 available_permissions
+
+Grouped lists of permission types available for use in the admin
+
+=cut
+
+sub available_permissions {
+    my $self = shift;
+
+    return {
+        _("Problems") => {
+            moderate => _("Moderate report details"),
+            report_edit => _("Edit reports"),
+            report_edit_category => _("Edit report category"), # future use
+            report_edit_priority => _("Edit report priority"), # future use
+            report_inspect => _("Markup problem details"),
+            report_instruct => _("Instruct contractors to fix problems"), # future use
+            planned_reports => _("Manage planned reports list"),
+            contribute_as_another_user => _("Create reports/updates on a user's behalf"),
+            contribute_as_body => _("Create reports/updates as the council"),
+        },
+        _("Users") => {
+            user_edit => _("Edit other users' details"),
+            user_manage_permissions => _("Edit other users' permissions"),
+            user_assign_body => _("Grant access to the admin"),
+            user_assign_areas => _("Assign users to areas"), # future use
+        },
+    };
+}
+
+
 =head2 area_types
 
 The MaPit types this site handles
