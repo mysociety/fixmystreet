@@ -4,17 +4,17 @@ var fixmystreet = fixmystreet || {};
 
     var map_data = document.getElementById('js-map-data'),
         map_keys = [ 'area', 'all_pins', 'latitude', 'longitude', 'zoomToBounds', 'zoom', 'pin_prefix', 'numZoomLevels', 'zoomOffset', 'map_type', 'key' ],
-        numeric = { zoom: 1, numZoomLevels: 1, zoomOffset: 1 },
+        numeric = { zoom: 1, numZoomLevels: 1, zoomOffset: 1, id: 1 },
         pin_keys = [ 'lat', 'lon', 'colour', 'id', 'title', 'type' ];
 
     if (!map_data) {
         return;
     }
 
-    $.each(map_keys, function(i, v) {
-        fixmystreet[v] = map_data.getAttribute('data-' + v);
-        if (numeric[v]) {
-            fixmystreet[v] = +fixmystreet[v];
+    $.each(map_keys, function(i, key) {
+        fixmystreet[key] = map_data.getAttribute('data-' + key);
+        if (numeric[key]) {
+            fixmystreet[key] = +fixmystreet[key];
         }
     });
 
@@ -31,8 +31,12 @@ var fixmystreet = fixmystreet || {};
     fixmystreet.pins = [];
     $('.js-pin').each(function(i, pin) {
         var arr = [];
-        $.each(pin_keys, function(i, v) {
-            arr.push(pin.getAttribute('data-' + v));
+        $.each(pin_keys, function(i, key) {
+            var val = pin.getAttribute('data-' + key);
+            if (numeric[key]) {
+                val = +val;
+            }
+            arr.push(val);
         });
         fixmystreet.pins.push(arr);
     });
