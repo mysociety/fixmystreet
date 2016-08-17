@@ -23,7 +23,7 @@
             src="[% map.tiles.3 %]"
             style="top:256px; left:256px;">
     </div>
-    <div id="[% nsm_prefix %]pins">[% FOR pin IN map.pins %][% INCLUDE pin %][% END %]</div>
+    <div id="[% nsm_prefix %]pins">[% FOR pin IN map.pins %][% INCLUDE 'maps/pin.html' %][% END %]</div>
     [% INCLUDE compass %]
 </div>
 
@@ -48,25 +48,4 @@
     <div style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px;"><a rel="nofollow" href="[% world %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/zoom-world-mini.png" border="0"></a></div>
     <div style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px;"><a rel="nofollow" href="[% zoom_out %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/zoom-minus-mini.png" border="0"></a></div>
 </div>
-[% END %]
-
-
-[% BLOCK pin %]
-
-[% IF pin.id %]
-<a title="[% pin.title | html %]" href="[% c.cobrand.base_url_for_report( pin.problem ) %][% pin.problem.url %]">
-[%- END -%]
-<img border="0" src="[% start %][% c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png' %]"
-[% IF js -%]
-    class="pin js-pin" data-lat="[% pin.latitude %]" data-lon="[% pin.longitude %]"
-    data-colour="[% pin.colour %]" data-id="[% pin.id %]"
-    data-title="[% pin.title | html %]" data-type="[% pin.type %]"
-[% ELSE -%]
-    class="pin"
-[% END -%]
-    alt="[% loc('Problem') %]" style="top:[% pin.py - 64 %]px; left:[% pin.px - 24 %]px; position: absolute;">
-[%- IF pin.id -%]
-</a>
-[% END %]
-
 [% END %]

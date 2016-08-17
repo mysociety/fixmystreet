@@ -101,12 +101,6 @@
 
 <div class="admin-report-edit admin-report-edit--interact">
 
-<script type="text/javascript">
-    $(function(){
-        $('#map_box .noscript').clone().removeClass('noscript').addClass('map_clone print-only').prependTo('.admin-report-edit--interact');
-    });
-</script>
-
 <p align="right" class="screen-only"><input type="submit" name="send_back" value="[% loc('Not for my subdivision') %]"></p>
 <p align="right" class="screen-only"><input type="submit" name="not_contactable" value="[% loc('Customer not contactable') %]"></p>
 
@@ -124,15 +118,6 @@
 <p class="screen-only">
     <label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
     <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
-    <script>
-        $(function () {
-            $('#form_time_spent').spinner({
-                spin: function (e, ui) {
-                    if (ui.value < 0) { return false }
-                }
-            });
-        });
-    </script>
 </p>
 
 <p class="clearfix screen-only">
