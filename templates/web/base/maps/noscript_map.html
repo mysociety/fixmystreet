@@ -24,28 +24,5 @@
             style="top:256px; left:256px;">
     </div>
     <div id="[% nsm_prefix %]pins">[% FOR pin IN map.pins %][% INCLUDE 'maps/pin.html' %][% END %]</div>
-    [% INCLUDE compass %]
+    [% INCLUDE 'maps/_compass.html' %]
 </div>
-
-[% BLOCK compass %]
-[%
-    north    = c.uri_with( { lat = map.compass.north.0, lon = map.compass.north.1, zoom = map.zoom } )
-    south    = c.uri_with( { lat = map.compass.south.0, lon = map.compass.south.1, zoom = map.zoom } )
-    east     = c.uri_with( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
-    west     = c.uri_with( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } )
-    world    = c.uri_with( { zoom = 0 } );
-    SET zoom_in  = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
-    SET zoom_out = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom - 1 } ) IF map.zoom > 0;
-    SET zoom_in  = '#' IF map.zoom >= map.numZoomLevels - 1;
-    SET zoom_out = '#' IF map.zoom <= 0;
-%]
-<div style="position: absolute; left: 4px; top: 4px;" class="olControlPanZoom olControlNoSelect" unselectable="on">
-    <div style="position: absolute; left: 13px; top: 4px; width: 18px; height: 18px;"><a rel="nofollow" href="[% north %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/north-mini.png" border="0"></a></div>
-    <div style="position: absolute; left: 4px; top: 22px; width: 18px; height: 18px;"><a rel="nofollow" href="[% west %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/west-mini.png" border="0"></a></div>
-    <div style="position: absolute; left: 22px; top: 22px; width: 18px; height: 18px;"><a rel="nofollow" href="[% east %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/east-mini.png" border="0"></a></div>
-    <div style="position: absolute; left: 13px; top: 40px; width: 18px; height: 18px;"><a rel="nofollow" href="[% south %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/south-mini.png" border="0"></a></div>
-    <div style="position: absolute; left: 13px; top: 63px; width: 18px; height: 18px;"><a rel="nofollow" href="[% zoom_in %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/zoom-plus-mini.png" border="0"></a></div>
-    <div style="position: absolute; left: 13px; top: 81px; width: 18px; height: 18px;"><a rel="nofollow" href="[% world %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/zoom-world-mini.png" border="0"></a></div>
-    <div style="position: absolute; left: 13px; top: 99px; width: 18px; height: 18px;"><a rel="nofollow" href="[% zoom_out %]"><img style="position: relative; width: 18px; height: 18px;" src="[% start %]/js/OpenLayers/img/zoom-minus-mini.png" border="0"></a></div>
-</div>
-[% END %]

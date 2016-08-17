@@ -1,0 +1,19 @@
+[%
+    north    = c.uri_with( { lat = map.compass.north.0, lon = map.compass.north.1, zoom = map.zoom } )
+    south    = c.uri_with( { lat = map.compass.south.0, lon = map.compass.south.1, zoom = map.zoom } )
+    east     = c.uri_with( { lat = map.compass.east.0,  lon = map.compass.east.1,  zoom = map.zoom } )
+    west     = c.uri_with( { lat = map.compass.west.0,  lon = map.compass.west.1,  zoom = map.zoom } );
+    SET zoom_in  = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom + 1 } ) IF map.zoom < map.numZoomLevels - 1;
+    SET zoom_out = c.uri_with( { lat = map.latitude, lon = map.longitude, zoom = map.zoom - 1 } ) IF map.zoom > 0;
+    SET zoom_in  = '#' IF map.zoom >= map.numZoomLevels - 1;
+    SET zoom_out = '#' IF map.zoom <= 0;
+%]
+
+<div id="fms_pan_zoom" style="position: absolute;" class="olControlPanZoom olControlNoSelect" unselectable="on">
+    <a rel="nofollow" href="[% north %]"><span id="fms_pan_zoom_panup" class="olButton">pan up</span></a>
+    <a rel="nofollow" href="[% west %]"><span id="fms_pan_zoom_panleft" class="olButton">pan left</span></a>
+    <a rel="nofollow" href="[% east %]"><span id="fms_pan_zoom_panright" class="olButton">pan right</span></a>
+    <a rel="nofollow" href="[% south %]"><span id="fms_pan_zoom_pandown" class="olButton">pan down</span></a>
+    <a rel="nofollow" href="[% zoom_in %]"><span id="fms_pan_zoom_zoomin" class="olButton">zoom in</span></a>
+    <a rel="nofollow" href="[% zoom_out %]"><span id="fms_pan_zoom_zoomout" class="olButton">zoom out</span></a>
+</div>

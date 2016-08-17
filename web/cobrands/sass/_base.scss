@@ -1085,6 +1085,8 @@ html.js #map .noscript {
 #fms_pan_zoom_panright,
 #fms_pan_zoom_zoomin,
 #fms_pan_zoom_zoomout {
+  position: absolute;
+  cursor: pointer;
   width: 36px;
   height: 36px;
   text-indent: flip(-999999px, 999999px); // text-align from OL style makes this necessary
