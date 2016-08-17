@@ -15,6 +15,8 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
+my $bromley = $mech->create_body_ok(2482, 'Bromley Council', id => 2482);
+
 my $user3 = $mech->create_user_ok('test3@example.com', name => 'Test User 2');
 
 if ( $user3 ) {
@@ -1102,6 +1104,30 @@ subtest 'user search' => sub {
     $mech->content_contains('Haringey');
 };
 
+subtest 'search does not show user from another council' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->get_ok('/admin/users');
+        $mech->get_ok('/admin/users?search=' . $user->name);
+
+        $mech->content_contains( "Searching found no users." );
+
+        $mech->get_ok('/admin/users?search=' . $user->email);
+        $mech->content_contains( "Searching found no users." );
+    };
+};
+
+subtest 'user_edit does not show user from another council' => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $mech->get('/admin/user_edit/' . $user->id);
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+    };
+};
+
 $log_entries = FixMyStreet::App->model('DB::AdminLog')->search(
     {
         object_type => 'user',
@@ -1129,6 +1155,19 @@ for my $test (
             phone => '',
             flagged => undef,
             is_superuser => undef,
+            "permissions[moderate]" => undef,
+            "permissions[planned_reports]" => undef,
+            "permissions[report_edit]" => undef,
+            "permissions[report_edit_category]" => undef,
+            "permissions[report_edit_priority]" => undef,
+            "permissions[report_inspect]" => undef,
+            "permissions[report_instruct]" => undef,
+            "permissions[contribute_as_another_user]" => undef,
+            "permissions[contribute_as_body]" => undef,
+            "permissions[user_edit]" => undef,
+            "permissions[user_manage_permissions]" => undef,
+            "permissions[user_assign_body]" => undef,
+            "permissions[user_assign_areas]" => undef,
         },
         changes => {
             name => 'Changed User',
@@ -1145,6 +1184,19 @@ for my $test (
             phone => '',
             flagged => undef,
             is_superuser => undef,
+            "permissions[moderate]" => undef,
+            "permissions[planned_reports]" => undef,
+            "permissions[report_edit]" => undef,
+            "permissions[report_edit_category]" => undef,
+            "permissions[report_edit_priority]" => undef,
+            "permissions[report_inspect]" => undef,
+            "permissions[report_instruct]" => undef,
+            "permissions[contribute_as_another_user]" => undef,
+            "permissions[contribute_as_body]" => undef,
+            "permissions[user_edit]" => undef,
+            "permissions[user_manage_permissions]" => undef,
+            "permissions[user_assign_body]" => undef,
+            "permissions[user_assign_areas]" => undef,
         },
         changes => {
             email => 'changed@example.com',
@@ -1161,6 +1213,19 @@ for my $test (
             phone => '',
             flagged => undef,
             is_superuser => undef,
+            "permissions[moderate]" => undef,
+            "permissions[planned_reports]" => undef,
+            "permissions[report_edit]" => undef,
+            "permissions[report_edit_category]" => undef,
+            "permissions[report_edit_priority]" => undef,
+            "permissions[report_inspect]" => undef,
+            "permissions[report_instruct]" => undef,
+            "permissions[contribute_as_another_user]" => undef,
+            "permissions[contribute_as_body]" => undef,
+            "permissions[user_edit]" => undef,
+            "permissions[user_manage_permissions]" => undef,
+            "permissions[user_assign_body]" => undef,
+            "permissions[user_assign_areas]" => undef,
         },
         changes => {
             body => $southend->id,
@@ -1177,6 +1242,19 @@ for my $test (
             phone => '',
             flagged => undef,
             is_superuser => undef,
+            "permissions[moderate]" => undef,
+            "permissions[planned_reports]" => undef,
+            "permissions[report_edit]" => undef,
+            "permissions[report_edit_category]" => undef,
+            "permissions[report_edit_priority]" => undef,
+            "permissions[report_inspect]" => undef,
+            "permissions[report_instruct]" => undef,
+            "permissions[contribute_as_another_user]" => undef,
+            "permissions[contribute_as_body]" => undef,
+            "permissions[user_edit]" => undef,
+            "permissions[user_manage_permissions]" => undef,
+            "permissions[user_assign_body]" => undef,
+            "permissions[user_assign_areas]" => undef,
         },
         changes => {
             flagged => 'on',
@@ -1193,6 +1271,19 @@ for my $test (
             phone => '',
             flagged => 'on',
             is_superuser => undef,
+            "permissions[moderate]" => undef,
+            "permissions[planned_reports]" => undef,
+            "permissions[report_edit]" => undef,
+            "permissions[report_edit_category]" => undef,
+            "permissions[report_edit_priority]" => undef,
+            "permissions[report_inspect]" => undef,
+            "permissions[report_instruct]" => undef,
+            "permissions[contribute_as_another_user]" => undef,
+            "permissions[contribute_as_body]" => undef,
+            "permissions[user_edit]" => undef,
+            "permissions[user_manage_permissions]" => undef,
+            "permissions[user_assign_body]" => undef,
+            "permissions[user_assign_areas]" => undef,
         },
         changes => {
             flagged => undef,
@@ -1209,10 +1300,38 @@ for my $test (
             phone => '',
             flagged => undef,
             is_superuser => undef,
+            "permissions[moderate]" => undef,
+            "permissions[planned_reports]" => undef,
+            "permissions[report_edit]" => undef,
+            "permissions[report_edit_category]" => undef,
+            "permissions[report_edit_priority]" => undef,
+            "permissions[report_inspect]" => undef,
+            "permissions[report_instruct]" => undef,
+            "permissions[contribute_as_another_user]" => undef,
+            "permissions[contribute_as_body]" => undef,
+            "permissions[user_edit]" => undef,
+            "permissions[user_manage_permissions]" => undef,
+            "permissions[user_assign_body]" => undef,
+            "permissions[user_assign_areas]" => undef,
         },
         changes => {
             is_superuser => 'on',
         },
+        removed => [
+            "permissions[moderate]",
+            "permissions[planned_reports]",
+            "permissions[report_edit]",
+            "permissions[report_edit_category]",
+            "permissions[report_edit_priority]",
+            "permissions[report_inspect]",
+            "permissions[report_instruct]",
+            "permissions[contribute_as_another_user]",
+            "permissions[contribute_as_body]",
+            "permissions[user_edit]",
+            "permissions[user_manage_permissions]",
+            "permissions[user_assign_body]",
+            "permissions[user_assign_areas]",
+        ],
         log_count => 5,
         log_entries => [qw/edit edit edit edit edit/],
     },
@@ -1228,6 +1347,21 @@ for my $test (
         },
         changes => {
             is_superuser => undef,
+        },
+        added => {
+            "permissions[moderate]" => undef,
+            "permissions[planned_reports]" => undef,
+            "permissions[report_edit]" => undef,
+            "permissions[report_edit_category]" => undef,
+            "permissions[report_edit_priority]" => undef,
+            "permissions[report_inspect]" => undef,
+            "permissions[report_instruct]" => undef,
+            "permissions[contribute_as_another_user]" => undef,
+            "permissions[contribute_as_body]" => undef,
+            "permissions[user_edit]" => undef,
+            "permissions[user_manage_permissions]" => undef,
+            "permissions[user_assign_body]" => undef,
+            "permissions[user_assign_areas]" => undef,
         },
         log_count => 5,
         log_entries => [qw/edit edit edit edit edit/],
@@ -1245,6 +1379,17 @@ for my $test (
         };
 
         $mech->submit_form_ok( { with_fields => $expected } );
+
+        # Some actions cause visible fields to be added/removed
+        foreach my $x (@{ $test->{removed} }) {
+            delete $expected->{$x};
+        }
+        if ( $test->{added} ) {
+            $expected = {
+                %$expected,
+                %{ $test->{added} }
+            };
+        }
 
         $visible = $mech->visible_form_values;
         is_deeply $visible, $expected, 'user updated';
@@ -1331,6 +1476,9 @@ subtest "Users with from_body can't access fixmystreet.com admin" => sub {
     };
 };
 
+$mech->log_out_ok;
+$user2->user_body_permissions->delete_all;
+$oxfordshireuser->user_body_permissions->delete_all;
 
 
 $mech->delete_user( $user );

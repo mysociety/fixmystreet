@@ -22,25 +22,37 @@
         <input type='text' id='email' name='email' value='[% user.email | html %]'></li>
         <li><label for="phone">[% loc('Phone:') %]</label>
         <input type='text' id='phone' name='phone' value='[% user.phone | html %]'></li>
-        <li>
-          <div class="admin-hint">
-            <p>
-              [% loc(
-                "Normal (public) users should not be associated with any <strong>body</strong>.<br>
-                Authorised staff users can be associated with the body they represent.<br>
-                Depending on the implementation, staff users may have access to the dashboard (summary of
-                activity across their body), the ability to hide reports or set special report statuses.")
-              %]
-            </p>
-          </div>
-          [% loc('Body:') %] <select id='body' name='body'>
-            <option value=''>[% loc('No body') %]</option>
-        [% FOR body IN bodies %]
-            <option value="[% body.id %]"[% ' selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
-        [% END %]
-        </select>
-        [% IF user.from_body AND user.has_permission_to('moderate', user.from_body.id) %]*[% END %]
+
+        [% IF c.user.is_superuser %]
+          <li>
+            <div class="admin-hint">
+              <p>
+                [% loc(
+                  "Normal (public) users should not be associated with any <strong>body</strong>.<br>
+                  Authorised staff users can be associated with the body they represent.<br>
+                  Depending on the implementation, staff users may have access to the dashboard (summary of
+                  activity across their body), the ability to hide reports or set special report statuses.")
+                %]
+              </p>
+            </div>
+            [% loc('Body:') %] <select id='body' name='body'>
+              <option value=''>[% loc('No body') %]</option>
+          [% FOR body IN bodies %]
+              <option value="[% body.id %]"[% ' selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
+          [% END %]
+          </select>
         </li>
+        [% ELSE %]
+          <li>
+            <div class="admin-hint">
+              <p>
+                [% loc("Staff users have permission to log in to the admin.") %]
+              </p>
+            </div>
+            [% loc('Staff:') %] <input type="checkbox" id="body" name="body" value="[% c.user.from_body.id %]" [% user.from_body.id == c.user.from_body.id ? ' checked' : '' %] [% 'disabled' UNLESS c.user.has_permission_to('user_assign_body', c.user.from_body.id) %]>
+          </li>
+        [% END %]
+
       [% IF c.cobrand.moniker != 'zurich' %]
         <li>
           <div class="admin-hint">
@@ -65,6 +77,31 @@
             </div>
             [% loc('Superuser:') %] <input type="checkbox" id="is_superuser" name="is_superuser"[% user.is_superuser ? ' checked' : '' %]>
           </li>
+        [% END %]
+
+        [% IF available_permissions AND NOT user.is_superuser %]
+          <li>
+            <div class="admin-hint">
+              <p>
+                [% loc("Users can perform the following actions within their assigned body or area.") %]
+              </p>
+            </div>
+            [% loc('Permissions:') %]
+          </li>
+          [% FOREACH group IN available_permissions.pairs %]
+            <li>
+              [% group.key %]
+              <ul>
+                [% FOREACH permission IN group.value %]
+                  <li>
+                    <label>
+                      <input type="checkbox" id="perms_[% permission.key %]" name="permissions[[% permission.key %]]" [% "checked" IF user.has_permission_to(permission.key, user.from_body.id) %]>
+                      [% permission.value %]
+                    </label>
+                  </li>
+                [% END %]
+              </ul>
+          [% END %]
         [% END %]
       [% END %]
     </ul>

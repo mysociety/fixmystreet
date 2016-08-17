@@ -140,6 +140,30 @@ sub problems_on_map_restriction {
     return $rs;
 }
 
+=head1 users
+
+Returns a ResultSet of Users, potentially restricted to a subset if we're on
+a cobrand that only wants some of the data.
+
+=cut
+
+sub users {
+    my $self = shift;
+    return $self->users_restriction($self->{c}->model('DB::User'));
+}
+
+=head1 users_restriction
+
+Used to restricts users in the admin in a cobrand in a particular way. Do
+nothing by default.
+
+=cut
+
+sub users_restriction {
+    my ($self, $rs) = @_;
+    return $rs;
+}
+
 sub site_key { return 0; }
 
 =head2 restriction
@@ -613,7 +637,33 @@ List of names of pages to display on the admin interface
 
 =cut
 
-sub admin_pages { 0 }
+sub admin_pages {
+    my $self = shift;
+
+    my $user = $self->{c}->user;
+
+    my $pages = {
+         'summary' => [_('Summary'), 0],
+         'bodies' => [_('Bodies'), 1],
+         'reports' => [_('Reports'), 2],
+         'timeline' => [_('Timeline'), 3],
+         'users' => [_('Users'), 5],
+         'flagged'  => [_('Flagged'), 6],
+         'stats'  => [_('Stats'), 7],
+         'user_edit' => [undef, undef],
+         'body' => [undef, undef],
+         'report_edit' => [undef, undef],
+         'update_edit' => [undef, undef],
+         'abuse_edit'  => [undef, undef],
+    };
+
+    # There are some pages that only super users can see
+    if ( $user->is_superuser ) {
+        $pages->{config} = [ _('Configuration'), 8];
+    };
+
+    return $pages;
+}
 
 =head2 admin_show_creation_graph
 
@@ -633,6 +683,37 @@ sub admin_allow_user {
     my ( $self, $user ) = @_;
     return 1 if $user->is_superuser;
 }
+
+=head2 available_permissions
+
+Grouped lists of permission types available for use in the admin
+
+=cut
+
+sub available_permissions {
+    my $self = shift;
+
+    return {
+        _("Problems") => {
+            moderate => _("Moderate report details"),
+            report_edit => _("Edit reports"),
+            report_edit_category => _("Edit report category"), # future use
+            report_edit_priority => _("Edit report priority"), # future use
+            report_inspect => _("Markup problem details"),
+            report_instruct => _("Instruct contractors to fix problems"), # future use
+            planned_reports => _("Manage planned reports list"),
+            contribute_as_another_user => _("Create reports/updates on a user's behalf"),
+            contribute_as_body => _("Create reports/updates as the council"),
+        },
+        _("Users") => {
+            user_edit => _("Edit other users' details"),
+            user_manage_permissions => _("Edit other users' permissions"),
+            user_assign_body => _("Grant access to the admin"),
+            user_assign_areas => _("Assign users to areas"), # future use
+        },
+    };
+}
+
 
 =head2 area_types
 

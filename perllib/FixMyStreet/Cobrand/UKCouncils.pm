@@ -50,6 +50,33 @@ sub updates_restriction {
     return $rs->to_body($self->council_id);
 }
 
+sub users_restriction {
+    my ($self, $rs) = @_;
+
+    # Council admins can only see users who are members of the same council or
+    # users who have sent a report or update to that council.
+
+    my $problem_user_ids = $self->problems->search(
+        undef,
+        {
+            columns => [ 'user_id' ],
+            distinct => 1
+        }
+    )->as_query;
+    my $update_user_ids = $self->updates->search(
+        undef,
+        {
+            columns => [ 'user_id' ],
+            distinct => 1
+        }
+    )->as_query;
+
+    return $rs->search([
+        from_body => $self->council_id,
+        id => [ { -in => $problem_user_ids }, { -in => $update_user_ids } ],
+    ]);
+}
+
 sub base_url {
     my $self = shift;
     my $base_url = FixMyStreet->config('BASE_URL');
@@ -155,6 +182,16 @@ sub admin_allow_user {
     return 1 if $user->is_superuser;
     return undef unless defined $user->from_body;
     return $user->from_body->id == $self->council_id;
+}
+
+sub available_permissions {
+    my $self = shift;
+
+    my $perms = $self->next::method();
+    $perms->{Problems}->{contribute_as_body} = "Create reports/updates as " . $self->council_name;
+    $perms->{Users}->{user_assign_areas} = "Assign users to areas in " . $self->council_name;
+
+    return $perms;
 }
 
 1;

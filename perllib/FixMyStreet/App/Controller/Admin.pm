@@ -669,6 +669,13 @@ sub report_edit : Path('report_edit') : Args(1) {
     $c->detach( '/page_error_404_not_found' )
       unless $problem;
 
+    unless (
+        $c->cobrand->moniker eq 'zurich'
+        || $c->user->has_permission_to(report_edit => $problem->bodies_str)
+    ) {
+        $c->detach( '/page_error_403_access_denied', [] );
+    }
+
     $c->stash->{problem} = $problem;
 
     $c->forward('/auth/get_csrf_token');
@@ -913,7 +920,7 @@ sub users: Path('users') : Args(0) {
         my $search_n = 0;
         $search_n = int($search) if $search =~ /^\d+$/;
 
-        my $users = $c->model('DB::User')->search(
+        my $users = $c->cobrand->users->search(
             {
                 -or => [
                     email => { ilike => $isearch },
@@ -945,7 +952,7 @@ sub users: Path('users') : Args(0) {
         $c->forward('fetch_all_bodies');
 
         # Admin users by default
-        my $users = $c->model('DB::User')->search(
+        my $users = $c->cobrand->users->search(
             { from_body => { '!=', undef } },
             { order_by => 'name' }
         );
@@ -1113,8 +1120,18 @@ sub user_edit : Path('user_edit') : Args(1) {
 
     $c->forward('/auth/get_csrf_token');
 
-    my $user = $c->model('DB::User')->find( { id => $id } );
+    my $user = $c->cobrand->users->find( { id => $id } );
+    $c->detach( '/page_error_404_not_found' ) unless $user;
+
+    unless ( $c->user->is_superuser || ( $c->user->has_permission_to('user_edit', $c->user->from_body->id) ) ) {
+        $c->detach('/page_error_403_access_denied', []);
+    }
+
     $c->stash->{user} = $user;
+
+    if ( $user->from_body && $c->user->has_permission_to('user_manage_permissions', $user->from_body->id) ) {
+        $c->stash->{available_permissions} = $c->cobrand->available_permissions;
+    }
 
     $c->forward('fetch_all_bodies');
 
@@ -1126,7 +1143,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         if ( $user->email ne $c->get_param('email') ||
             $user->name ne $c->get_param('name') ||
             ($user->phone || "") ne $c->get_param('phone') ||
-            ($user->from_body && $user->from_body->id ne $c->get_param('body')) ||
+            ($user->from_body && $c->get_param('body') && $user->from_body->id ne $c->get_param('body')) ||
             (!$user->from_body && $c->get_param('body'))
         ) {
                 $edited = 1;
@@ -1135,10 +1152,37 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->name( $c->get_param('name') );
         $user->email( $c->get_param('email') );
         $user->phone( $c->get_param('phone') ) if $c->get_param('phone');
-        $user->from_body( $c->get_param('body') || undef );
         $user->flagged( $c->get_param('flagged') || 0 );
         # Only superusers can grant superuser status
         $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
+        # Superusers can set from_body to any value, but other staff can only
+        # set from_body to the same value as their own from_body.
+        if ( $c->user->is_superuser ) {
+            $user->from_body( $c->get_param('body') || undef );
+        } elsif ( $c->user->has_permission_to('user_assign_body', $c->user->from_body->id ) &&
+                  $c->get_param('body') && $c->get_param('body') eq $c->user->from_body->id ) {
+            $user->from_body( $c->user->from_body );
+        } else {
+            $user->from_body( undef );
+        }
+
+        if (!$user->from_body) {
+            # Non-staff users aren't allowed any permissions
+            $user->user_body_permissions->delete_all;
+        } elsif ($c->stash->{available_permissions}) {
+            my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
+            my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
+            $user->user_body_permissions->search({
+                body_id => $user->from_body->id,
+                permission_type => { '!=' => \@user_permissions },
+            })->delete;
+            foreach my $permission_type (@user_permissions) {
+                $user->user_body_permissions->find_or_create({
+                    body_id => $user->from_body->id,
+                    permission_type => $permission_type,
+                });
+            }
+        }
 
         unless ($user->email) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');
@@ -1229,7 +1273,13 @@ sub stats_fix_rate : Path('stats/fix-rate') : Args(0) {
 sub stats : Path('stats') : Args(0) {
     my ( $self, $c ) = @_;
 
-    $c->forward('fetch_all_bodies');
+    my $selected_body;
+    if ( $c->user->is_superuser ) {
+        $c->forward('fetch_all_bodies');
+        $selected_body = $c->get_param('body');
+    } else {
+        $selected_body = $c->user->from_body->id;
+    }
 
     if ( $c->cobrand->moniker eq 'seesomething' || $c->cobrand->moniker eq 'zurich' ) {
         return $c->cobrand->admin_stats();
@@ -1259,7 +1309,7 @@ sub stats : Path('stats') : Args(0) {
         my $bymonth = $c->get_param('bymonth');
         $c->stash->{bymonth} = $bymonth;
 
-        $c->stash->{selected_body} = $c->get_param('body');
+        $c->stash->{selected_body} = $selected_body;
 
         my $field = 'confirmed';
 
@@ -1288,7 +1338,7 @@ sub stats : Path('stats') : Args(0) {
             );
         }
 
-        my $p = $c->cobrand->problems->to_body($c->get_param('body'))->search(
+        my $p = $c->cobrand->problems->to_body($selected_body)->search(
             {
                 -AND => [
                     $field => { '>=', $start_date},
@@ -1317,24 +1367,6 @@ sub set_allowed_pages : Private {
     my ( $self, $c ) = @_;
 
     my $pages = $c->cobrand->admin_pages;
-
-    if( !$pages ) {
-        $pages = {
-             'summary' => [_('Summary'), 0],
-             'bodies' => [_('Bodies'), 1],
-             'reports' => [_('Reports'), 2],
-             'timeline' => [_('Timeline'), 3],
-             'users' => [_('Users'), 5],
-             'flagged'  => [_('Flagged'), 6],
-             'stats'  => [_('Stats'), 7],
-             'config' => [ _('Configuration'), 8],
-             'user_edit' => [undef, undef], 
-             'body' => [undef, undef],
-             'report_edit' => [undef, undef],
-             'update_edit' => [undef, undef],
-             'abuse_edit'  => [undef, undef],
-        }
-    }
 
     my @allowed_links = sort {$pages->{$a}[1] <=> $pages->{$b}[1]}  grep {$pages->{$_}->[0] } keys %$pages;
 
