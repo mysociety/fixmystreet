@@ -1,0 +1,16 @@
+[% DEFAULT pin_style = 'top:' _ (pin.py - 64) _ 'px; left:' _ (pin.px - 24) _ 'px; position: absolute;' -%]
+[% IF pin.id %]
+<a title="[% pin.title | html %]" href="[% c.cobrand.base_url_for_report( pin.problem ) %][% pin.problem.url %]">
+[%- END -%]
+<img border="0" src="[% start %][% c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png' %]"
+[% IF js -%]
+    class="pin js-pin" data-lat="[% pin.latitude %]" data-lon="[% pin.longitude %]"
+    data-colour="[% pin.colour %]" data-id="[% pin.id %]"
+    data-title="[% pin.title | html %]" data-type="[% pin.type %]"
+[% ELSE -%]
+    class="pin"
+[% END -%]
+    alt="[% loc('Problem') %]" style="[% pin_style %]">
+[%- IF pin.id -%]
+</a>
+[% END %]

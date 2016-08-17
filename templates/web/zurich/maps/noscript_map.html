@@ -45,26 +45,11 @@
 
 
 [% BLOCK pin %]
-
-[% IF pin.id %]
-<a title="[% pin.title | html %]" href="[% c.uri_for('/report/' _ pin.id) %]">
-[%- END -%]
-<img
-    data-foo="[% pin.px %],[% pin.py %]/ [% map.tile_size %]*[% map.cols %],[% map.rows %]"
-    border="0"
-    class="pin"
-    src="[% c.uri_for( c.cobrand.path_to_pin_icons _ 'pin-' _ pin.colour _ '.png') %]"
-    alt="[% loc('Problem') %]"
-    style="
-        top: [% pin.py / ( map.tile_size * map.rows ) * 100  %]%;
-        left: [% pin.px / ( map.tile_size * map.cols ) * 100  %]%;
-        position: absolute;
-        margin-left: -24px; /* Half of 48px wide image */
-        margin-top: -64px; /* All of 64px tall image */
-    "
->
-[%- IF pin.id -%]
-</a>
-[% END %]
-
+[%
+    SET pin_top = pin.py / ( map.tile_size * map.rows ) * 100;
+    SET pin_left = pin.px / ( map.tile_size * map.cols ) * 100;
+    # -24px half of 48px wide image, -64px all of 64px tall image
+    INCLUDE 'maps/pin.html'
+        pin_style = 'top:' _ pin_top _ '%; left:' _ pin_left _ '%; position:absolute; margin-left:-24px; margin-top:-64px;'
+%]
 [% END %]
