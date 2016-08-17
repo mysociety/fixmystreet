@@ -241,7 +241,7 @@ sub latlon_to_tile($$$$) {
         lon => $tile_params->{origin_x},
         lat => $tile_params->{origin_y}
     };
-    my $res = $scales[$matrix_id] /
+    my $res = $scales[$zoom] /
         ($tile_params->{inches_per_unit} * $tile_params->{dpi});
         # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
 
@@ -282,13 +282,12 @@ sub tile_to_latlon {
     my ($self, $fx, $fy, $zoom) = @_;
 
     my $tile_params = $self->tile_parameters;
-    my $matrix_id = $zoom + $self->zoom_parameters->{id_offset};
     my @scales = $self->scales;
     my $tileOrigin = {
         lon => $tile_params->{origin_x},
         lat => $tile_params->{origin_y}
     };
-    my $res = $scales[$matrix_id] /
+    my $res = $scales[$zoom] /
         ($tile_params->{inches_per_unit} * $tile_params->{dpi});
         # OpenLayers.INCHES_PER_UNIT[units] * OpenLayers.DOTS_PER_INCH
 

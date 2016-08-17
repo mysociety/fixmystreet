@@ -13,7 +13,7 @@ sub zoom_parameters {
         zoom_levels    => scalar $self->scales,
         default_zoom   => 5,
         min_zoom_level => 0,
-        id_offset      => 0,
+        id_offset      => 2,
     };
     return $params;
 }
@@ -29,7 +29,7 @@ sub tile_parameters {
         wmts_version    => '1.0.0',
         layer_style     => 'default',
         matrix_set      => 'default028mm',
-        suffix          => '', # appended to tile URLs
+        suffix          => '.jpg', # appended to tile URLs
         size            => 512, # pixels
         dpi             => 96,
         inches_per_unit => 39.3701, # BNG uses metres
