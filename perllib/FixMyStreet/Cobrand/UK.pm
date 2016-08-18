@@ -392,5 +392,9 @@ sub link_to_council_cobrand {
     }
 }
 
+sub lookup_by_ref_regex {
+    return qr/^\s*(\d+)\s*$/;
+}
+
 
 1;
