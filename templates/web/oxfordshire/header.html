@@ -42,6 +42,12 @@
                             <[% IF c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) %]span[% ELSE %]a href="/my"[% END
                              %]>[% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% ( c.req.uri.path == '/my' OR ( c.req.uri.path == '/auth' AND c.req.params.r == 'my' ) ) ? 'span' : 'a' %]>
                         </li>
+                        [% IF c.user_exists AND c.user.has_permission_to('planned_reports', c.user.from_body.id) %]
+                        <li>
+                            <[% IF c.req.uri.path == '/my/planned' %]span[% ELSE %]a href="/my/planned"[% END
+                             %]>[% loc('Planned reports') %]</[% c.req.uri.path == '/my/planned' ? 'span' : 'a' %]>
+                        </li>
+                        [% END %]
                         <li>
                             <[% IF c.req.uri.path == '/reports/Oxfordshire' %]span[% ELSE %]a href="/reports/Oxfordshire"[% END
                                  %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]>
