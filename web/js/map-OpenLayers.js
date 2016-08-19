@@ -536,39 +536,6 @@ var fixmystreet = fixmystreet || {};
    zoomTo(0) rather than zoomToMaxExtent()
 */
 OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
-    onButtonClick: function (evt) {
-        var btn = evt.buttonElement;
-        switch (btn.action) {
-            case "panup":
-                this.map.pan(0, -this.getSlideFactor("h"));
-                break;
-            case "pandown":
-                this.map.pan(0, this.getSlideFactor("h"));
-                break;
-            case "panleft":
-                this.map.pan(-this.getSlideFactor("w"), 0);
-                break;
-            case "panright":
-                this.map.pan(this.getSlideFactor("w"), 0);
-                break;
-            case "zoomin":
-            case "zoomout":
-            case "zoomworld":
-                var size = this.map.getSize(),
-                    xy = { x: size.w / 2, y: size.h / 2 };
-                switch (btn.action) {
-                    case "zoomin":
-                        this.map.zoomTo(this.map.getZoom() + 1, xy);
-                        break;
-                    case "zoomout":
-                        this.map.zoomTo(this.map.getZoom() - 1, xy);
-                        break;
-                    case "zoomworld":
-                        this.map.zoomTo(0, xy);
-                        break;
-                }
-        }
-    },
     _addButton: function(id1, id2) {
         var btn = document.createElement('div'),
             id = id1 + id2;
@@ -577,6 +544,14 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         btn.action = id;
         btn.className = "olButton";
         this.div.appendChild(btn);
+        if (OpenLayers.VERSION_NUMBER.indexOf('2.11') > -1) {
+            btn.map = this.map;
+            OpenLayers.Event.observe(btn, "mousedown", OpenLayers.Function.bindAsEventListener(this.buttonDown, btn));
+            var slideFactorPixels = this.slideFactor;
+            btn.getSlideFactor = function() {
+                return slideFactorPixels;
+            };
+        }
         this.buttons.push(btn);
         return btn;
     },
@@ -592,7 +567,6 @@ OpenLayers.Control.PanZoomFMS = OpenLayers.Class(OpenLayers.Control.PanZoom, {
         this._addButton("pan", "right");
         this._addButton("pan", "down");
         this._addButton("zoom", "in");
-        this._addButton("zoom", "world");
         this._addButton("zoom", "out");
         return this.div;
     }

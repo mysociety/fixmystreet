@@ -1094,11 +1094,6 @@ html.js #map .noscript {
   filter: none !important; // Override OpenLayers PNG handling of the navigation
 }
 
-#fms_pan_zoom_zoomworld {
-  display: none !important;
-  visibility: none !important;
-}
-
 #fms_pan_zoom_panup {
   background-position: -42px -222px;
   #{$right}: 30px;
