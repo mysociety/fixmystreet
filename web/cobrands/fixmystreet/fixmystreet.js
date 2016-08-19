@@ -401,13 +401,13 @@ $.extend(fixmystreet.set_up, {
   },
 
   contribute_as: function() {
-    $('.js-contribute-as').on('change', function(){
+    $('.content').on('change', '.js-contribute-as', function(){
         var opt = this.options[this.selectedIndex],
             val = opt.value,
             txt = opt.text;
-        var $emailInput = $('#form_email');
-        var $nameInput = $('#form_name');
-        var $showNameCheckbox = $('#form_may_show_name');
+        var $emailInput = $('input[name=email]').add('input[name=rznvy]');
+        var $nameInput = $('input[name=name]');
+        var $showNameCheckbox = $('input[name=may_show_name]');
         var $addAlertCheckbox = $('#form_add_alert');
         if (val === 'myself') {
             $emailInput.val($emailInput.prop('defaultValue')).prop('disabled', true);
