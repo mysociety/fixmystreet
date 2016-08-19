@@ -819,6 +819,23 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         if (category_select.val() != '-- Pick a category --') {
             category_select.change();
         }
+
+        if (data.contribute_as) {
+            var $select = $('.js-contribute-as');
+            if (!$select.data('original')) {
+                $select.data('original', $select.html());
+            }
+            $select.html($select.data('original'));
+            if (!data.contribute_as.another_user) {
+                $select.find('option[value=another_user]').remove();
+            }
+            if (!data.contribute_as.body) {
+                $select.find('option[value=body]').remove();
+            }
+            $('#js-contribute-as-wrapper').show();
+        } else {
+            $('#js-contribute-as-wrapper').hide();
+        }
     });
 
     if (!$('#side-form-error').is(':visible')) {

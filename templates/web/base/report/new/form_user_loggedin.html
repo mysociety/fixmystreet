@@ -1,20 +1,29 @@
 <div class="form-box" id="form-box--logged-in-name">
 
+[% IF js %]
+  <div style="display:none" id="js-contribute-as-wrapper">
+    [% INCLUDE form_as %]
+  </div>
+[% ELSE %]
   [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", bodies.keys.join(",")) %]
   [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies.keys.join(",")) %]
-
   [% IF can_contribute_as_another_user OR can_contribute_as_body %]
+    [% INCLUDE form_as %]
+  [% END %]
+[% END %]
+
+[% BLOCK form_as %]
     <label for="form_as">[% loc('Report as') %]</label>
     <select id="form_as" class="js-contribute-as" name="form_as">
         <option value="myself" selected>[% loc('Yourself') %]</option>
-      [% IF can_contribute_as_another_user %]
+      [% IF js || can_contribute_as_another_user %]
         <option value="another_user">[% loc('Another user') %]</option>
       [% END %]
-      [% IF can_contribute_as_body %]
+      [% IF js || can_contribute_as_body %]
         <option value="body">[% c.user.from_body.name %]</option>
       [% END %]
     </select>
-  [% END %]
+[% END %]
 
     <label for="form_email">[% loc('Email address') %]</label>
     <input id="form_email"

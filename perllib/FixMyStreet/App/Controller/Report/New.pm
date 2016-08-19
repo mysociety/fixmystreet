@@ -186,6 +186,15 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $extra_titles_list = $c->cobrand->title_list($c->stash->{all_areas});
 
+    my $contribute_as = {};
+    if ($c->user_exists) {
+        my $bodies = join(',', keys %{$c->stash->{bodies}});
+        my $ca_another_user = $c->user->has_permission_to('contribute_as_another_user', $bodies);
+        my $ca_body = $c->user->has_permission_to('contribute_as_body', $bodies);
+        $contribute_as->{another_user} = $ca_another_user if $ca_another_user;
+        $contribute_as->{body} = $ca_body if $ca_body;
+    }
+
     my $body = encode_json(
         {
             councils_text   => $councils_text,
@@ -193,6 +202,7 @@ sub report_form_ajax : Path('ajax') : Args(0) {
             extra_name_info => $extra_name_info,
             titles_list     => $extra_titles_list,
             categories      => $c->stash->{category_options},
+            %$contribute_as ? (contribute_as => $contribute_as) : (),
         }
     );
 
