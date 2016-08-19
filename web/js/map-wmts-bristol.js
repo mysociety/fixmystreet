@@ -98,17 +98,15 @@ fixmystreet.maps.matrix_ids = [
  * to setup the way the map should operate.
  */
 fixmystreet.maps.config = function() {
-    // This stuff is copied from js/map-bing-ol.js
-
-    var nav_opts = { zoomWheelEnabled: false };
-    if (fixmystreet.page == 'around' && $('html').hasClass('mobile')) {
-        nav_opts = {};
+    var permalink_id;
+    if ($('#map_permalink').length) {
+        permalink_id = 'map_permalink';
     }
-    fixmystreet.nav_control = new OpenLayers.Control.Navigation(nav_opts);
 
     fixmystreet.controls = [
         new OpenLayers.Control.ArgParser(),
-        fixmystreet.nav_control
+        new OpenLayers.Control.Navigation(),
+        new OpenLayers.Control.PermalinkFMS(permalink_id)
     ];
     if ( fixmystreet.page != 'report' || !$('html').hasClass('mobile') ) {
         fixmystreet.controls.push( new OpenLayers.Control.PanZoomFMS({id: 'fms_pan_zoom' }) );
