@@ -11,6 +11,7 @@ use DateTime::Format::W3CDTF;
 use HTTP::Request::Common qw(POST);
 use FixMyStreet::Cobrand;
 use FixMyStreet::DB;
+use Utils;
 
 has jurisdiction => ( is => 'ro', isa => Str );;
 has api_key => ( is => 'ro', isa => Str );
@@ -121,8 +122,8 @@ sub _populate_service_request_params {
         || ( !$self->send_notpinpointed && !$problem->used_map
              && !$problem->postcode ) )
     {
-        $params->{lat} = $problem->latitude;
-        $params->{long} = $problem->longitude;
+        $params->{lat} = Utils::truncate_coordinate($problem->latitude);
+        $params->{long} = Utils::truncate_coordinate($problem->longitude);
     # this is a special case for sending to Bromley so they can
     # report accuracy levels correctly. We include easting and
     # northing as attributes elsewhere.
