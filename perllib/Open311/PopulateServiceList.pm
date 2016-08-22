@@ -227,26 +227,26 @@ sub _add_meta_to_contact {
     # for attributes which we *don't* want to display to the user (e.g. as
     # fields in "category_extras"
 
+    if ($self->_current_body->name eq 'Bromley Council') {
+        $contact->set_extra_metadata( id_field => 'service_request_id_ext');
+    } elsif ($self->_current_body->name eq 'Warwickshire County Council') {
+        $contact->set_extra_metadata( id_field => 'external_id');
+    }
+
     my %override = (
         #2482
         'Bromley Council' => [qw(
-            service_request_id_ext
             requested_datetime
             report_url
             title
             last_name
             email
-            easting
-            northing
             report_title
             public_anonymity_required
             email_alerts_requested
         ) ],
         #2243, 
         'Warwickshire County Council' => [qw(
-            external_id
-            easting
-            northing
             closest_address
         ) ],
     );

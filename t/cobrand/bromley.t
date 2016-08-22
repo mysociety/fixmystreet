@@ -2,17 +2,25 @@ use strict;
 use warnings;
 use Test::More;
 
+use CGI::Simple;
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
 
 # Create test data
 my $user = $mech->create_user_ok( 'bromley@example.com' );
 my $body = $mech->create_body_ok( 2482, 'Bromley Council', id => 2482 );
-$mech->create_contact_ok(
+my $contact = $mech->create_contact_ok(
     body_id => $body->id,
     category => 'Other',
     email => 'LIGHT',
 );
+$contact->set_extra_metadata(id_field => 'service_request_id_ext');
+$contact->set_extra_fields(
+    { code => 'easting', datatype => 'number', },
+    { code => 'northing', datatype => 'number', },
+    { code => 'service_request_id_ext', datatype => 'number', },
+);
+$contact->update;
 
 my @reports = $mech->create_problems_for_body( 1, $body->id, 'Test', {
     cobrand => 'bromley',
@@ -45,15 +53,24 @@ subtest 'testing special Open311 behaviour', sub {
     $report->set_extra_fields();
     $report->update;
     $body->update( { send_method => 'Open311', endpoint => 'http://bromley.endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
+    my $test_data;
     FixMyStreet::override_config {
         SEND_REPORTS_ON_STAGING => 1,
+        ALLOWED_COBRANDS => [ 'fixmystreet', 'bromley' ],
     }, sub {
-        FixMyStreet::DB->resultset('Problem')->send_reports();
+        $test_data = FixMyStreet::DB->resultset('Problem')->send_reports();
     };
     $report->discard_changes;
     ok $report->whensent, 'Report marked as sent';
     is $report->send_method_used, 'Open311', 'Report sent via Open311';
     is $report->external_id, 248, 'Report has right external ID';
+
+    my $req = $test_data->{test_req_used};
+    my $c = CGI::Simple->new($req->content);
+    is $c->param('attribute[easting]'), 529025, 'Request had easting';
+    is $c->param('attribute[northing]'), 179716, 'Request had northing';
+    is $c->param('attribute[service_request_id_ext]'), $report->id, 'Request had correct ID';
+    is $c->param('jurisdiction_id'), 'FMS', 'Request had correct jurisdiction';
 };
 
 for my $test (
