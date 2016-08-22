@@ -1,4 +1,4 @@
-<form method="post" action="[% c.uri_for( 'user_edit', user.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="post" id="user_edit" action="[% c.uri_for( 'user_edit', user.id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
 
@@ -38,7 +38,7 @@
             [% loc('Body:') %] <select id='body' name='body'>
               <option value=''>[% loc('No body') %]</option>
           [% FOR body IN bodies %]
-              <option value="[% body.id %]"[% ' selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
+              <option value="[% body.id %]"[% ' selected data-originally-selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
           [% END %]
           </select>
         </li>
@@ -52,6 +52,27 @@
             [% loc('Staff:') %] <input type="checkbox" id="body" name="body" value="[% c.user.from_body.id %]" [% user.from_body.id == c.user.from_body.id ? ' checked' : '' %] [% 'disabled' UNLESS c.user.has_permission_to('user_assign_body', c.user.from_body.id) %]>
           </li>
         [% END %]
+
+        [% IF areas %]
+          <li>
+            <div class="admin-hint">
+              <p>
+                [% loc(
+                  "Normal (public) users should not be associated with any <strong>area</strong>.<br>
+                  Authorised staff users can be associated with the area in which they operate.")
+                %]
+              </p>
+            </div>
+            [% loc('Area:') %]
+            <select id='area_id' name='area_id' [% 'disabled' UNLESS c.user.has_permission_to('user_assign_areas', user.from_body.id) %]>
+              <option value=''>[% loc('No area') %]</option>
+              [% FOREACH area IN areas %]
+                <option value="[% area.id %]"[% ' selected' IF area.id == user.area_id %]>[% area.name | html %]</option>
+              [% END %]
+            </select>
+          </li>
+        [% END %]
+
 
       [% IF c.cobrand.moniker != 'zurich' %]
         <li>

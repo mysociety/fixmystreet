@@ -39,6 +39,29 @@ sub dispatch_request {
             $self->json->encode($response) };
         return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
+
+    sub (GET + /area/*) {
+        my ($self, $area) = @_;
+        my $response = {"parent_area" => undef, "generation_high" => 25, "all_names" => {}, "id" => 2245, "codes" => {"ons" => "00HY", "gss" => "E06000054", "unit_id" => "43925"}, "name" => "Wiltshire Council", "country" => "E", "type_name" => "Unitary Authority", "generation_low" => 11, "country_name" => "England", "type" => "UTA"};
+        # We must make sure we output correctly for testing purposes, we might
+        # be within a different locale here...
+        my $json = mySociety::Locale::in_gb_locale {
+            $self->json->encode($response) };
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+    },
+
+    sub (GET + /area/*/children) {
+        my ($self, $area) = @_;
+        my $response = {
+            "60705" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 60705, "codes" => { "ons" => "00HY226", "gss" => "E04011842", "unit_id" => "17101" }, "name" => "Trowbridge", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },
+            "62883" => { "parent_area" => 2245, "generation_high" => 25, "all_names" => { }, "id" => 62883, "codes" => { "ons" => "00HY026", "gss" => "E04011642", "unit_id" => "17205" }, "name" => "Bradford-on-Avon", "country" => "E", "type_name" => "Civil parish/community", "generation_low" => 12, "country_name" => "England", "type" => "CPC" },
+        };
+        # We must make sure we output correctly for testing purposes, we might
+        # be within a different locale here...
+        my $json = mySociety::Locale::in_gb_locale {
+            $self->json->encode($response) };
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+    },
 }
 
 sub postcode {

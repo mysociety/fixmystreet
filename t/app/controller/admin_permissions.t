@@ -168,7 +168,12 @@ FixMyStreet::override_config {
         ok $user2->has_permission_to("moderate", $user2->from_body->id), "user2 has been granted moderate permission";
     };
 
-    subtest "Unsetting user from_body removes all permissions " => sub {
+    $oxfordshireuser->user_body_permissions->create({
+        body => $oxfordshire,
+        permission_type => 'user_assign_areas',
+    });
+
+    subtest "Unsetting user from_body removes all permissions and area " => sub {
         is $user2->user_body_permissions->count, 1, 'user2 has 1 permission';
 
         $mech->get_ok("/admin/user_edit/$user2_id");
@@ -193,6 +198,7 @@ FixMyStreet::override_config {
         } } );
 
         is $user2->user_body_permissions->count, 0, 'user2 has had permissions removed';
+        is $user2->area_id, undef, 'user2 has had area removed';
     };
 };
 

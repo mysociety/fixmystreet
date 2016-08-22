@@ -38,6 +38,8 @@ __PACKAGE__->add_columns(
   { data_type => "bigint", is_nullable => 1 },
   "is_superuser",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "area_id",
+  { data_type => "integer", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
@@ -98,8 +100,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-07-20 15:00:41
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+pEOZ8GM14D4gqkp+fr+ZA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-08-03 13:52:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SX8BS91mWHoOm2oWdNth1w
 
 use Moo;
 use mySociety::EmailUtil;
