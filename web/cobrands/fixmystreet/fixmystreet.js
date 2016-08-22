@@ -301,6 +301,27 @@ $.extend(fixmystreet.set_up, {
         $('#form_rznvy').removeClass();
         $('#email').removeClass();
     });
+
+    $('#planned_form').submit(function(e) {
+        if (e.metaKey || e.ctrlKey) {
+            return;
+        }
+        e.preventDefault();
+        var $form = $(this),
+            $change = $form.find("input[name='change']" ),
+            $submit = $form.find("input[type='submit']" ),
+            data = $form.serialize() + '&ajax=1';
+
+        $.post(this.action, data, function(data) {
+            if (data.outcome == 'add') {
+                $change.val('remove');
+                $submit.val($submit.data('remove'));
+            } else if (data.outcome == 'remove') {
+                $change.val('add');
+                $submit.val($submit.data('add'));
+            }
+        });
+    });
   },
 
   geolocation: function() {

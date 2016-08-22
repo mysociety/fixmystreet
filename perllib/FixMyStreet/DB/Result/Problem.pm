@@ -132,10 +132,16 @@ __PACKAGE__->belongs_to(
   { id => "user_id" },
   { is_deferrable => 0, on_delete => "NO ACTION", on_update => "NO ACTION" },
 );
+__PACKAGE__->has_many(
+  "user_planned_reports",
+  "FixMyStreet::DB::Result::UserPlannedReport",
+  { "foreign.report_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-08-13 16:33:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Go+T9oFRfwQ1Ag89qPpF/g
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-07-20 15:00:41
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PMOhd1uloLTAYovW/fxgSg
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(

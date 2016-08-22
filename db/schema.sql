@@ -458,6 +458,14 @@ create table user_body_permissions (
     unique(user_id, body_id, permission_type)
 );
 
+create table user_planned_reports (
+    id serial not null primary key,
+    user_id int references users(id) not null,
+    report_id int references problem(id) not null,
+    added timestamp not null default current_timestamp,
+    removed timestamp
+);
+
 create table response_templates (
     id serial not null primary key,
     body_id int references body(id) not null,
