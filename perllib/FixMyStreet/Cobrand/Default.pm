@@ -1135,4 +1135,15 @@ sub contact_details_data {
     return ()
 }
 
+=head2 lookup_by_ref_regex
+
+Returns a regex to match postcode form input against to determine if a lookup
+by id should be done.
+
+=cut
+
+sub lookup_by_ref_regex {
+    return qr/^\s*ref:\s*(\d+)\s*$/;
+}
+
 1;

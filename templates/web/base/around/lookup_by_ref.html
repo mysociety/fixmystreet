@@ -1,0 +1,18 @@
+[% pre_container_extra = INCLUDE 'around/postcode_form.html', pc = ref %]
+[% INCLUDE 'header.html', title = loc('Reporting a problem'), bodyclass = 'frontpage fullwidthpage' %]
+
+<div class="tablewrapper">
+  <p>[% loc('We found more than one match for that problem reference:') %]</p>
+  <ul class="pc_alternatives">
+      [% FOREACH report IN matching_reports %]
+      <li>
+        <a href="/report/[% report.id | uri %]">
+          [% report.title | html %]
+          ([% IF report.id == ref %]ref. [% report.id | html %][% ELSE %]external ref. [% report.external_id | html %][% END %])
+        </a>
+      </li>
+      [% END %]
+  </ul>
+</div>
+
+[% INCLUDE 'footer.html' %]

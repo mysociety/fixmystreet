@@ -38,6 +38,11 @@ sub index : Path : Args(0) {
     # Check if we have a partial report
     my $partial_report = $c->forward('load_partial');
 
+    # Check if the user is searching for a report by ID
+    if ( $c->get_param('pc') && $c->get_param('pc') =~ $c->cobrand->lookup_by_ref_regex ) {
+        $c->go('lookup_by_ref', [ $1 ]);
+    }
+
     # Try to create a location for whatever we have
     my $ret = $c->forward('/location/determine_location_from_coords')
         || $c->forward('/location/determine_location_from_pc');
@@ -383,6 +388,24 @@ sub _geocode : Private {
     my $body = encode_json($response);
     $c->res->body($body);
 
+}
+
+sub lookup_by_ref : Private {
+    my ( $self, $c, $ref ) = @_;
+
+    my $problems = $c->cobrand->problems->search([
+        id => $ref,
+        external_id => $ref
+    ]);
+
+    if ( $problems->count == 0) {
+        $c->detach( '/page_error_404_not_found', [] );
+    } elsif ( $problems->count == 1 ) {
+        $c->res->redirect( $c->uri_for( '/report', $problems->first->id ) );
+    } else {
+        $c->stash->{ref} = $ref;
+        $c->stash->{matching_reports} = [ $problems->all ];
+    }
 }
 
 __PACKAGE__->meta->make_immutable;
