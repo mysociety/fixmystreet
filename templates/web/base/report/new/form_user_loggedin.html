@@ -27,7 +27,7 @@
 
     <label for="form_email">[% loc('Email address') %]</label>
     <input id="form_email"
-    [%- IF can_contribute_as_another_user OR can_contribute_as_body -%]
+    [%- IF js OR can_contribute_as_another_user OR can_contribute_as_body -%]
     name="email"
     [%- ELSE -%]
     disabled

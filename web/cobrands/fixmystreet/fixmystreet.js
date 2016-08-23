@@ -425,7 +425,8 @@ $.extend(fixmystreet.set_up, {
             $showNameCheckbox.prop('checked', true).prop('disabled', true);
             $addAlertCheckbox.prop('checked', false).prop('disabled', true);
         }
-    }).change();
+    });
+    $('.js-contribute-as').change();
   },
 
   on_resize: function() {
