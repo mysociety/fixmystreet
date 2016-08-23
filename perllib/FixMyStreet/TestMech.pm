@@ -600,10 +600,19 @@ sub delete_body {
     my $body = shift;
 
     $mech->delete_problems_for_body($body->id);
-    $body->contacts->delete;
+    $mech->delete_contact($_) for $body->contacts;
     $mech->delete_user($_) for $body->users;
+    $_->delete for $body->response_templates;
     $body->body_areas->delete;
     $body->delete;
+}
+
+sub delete_contact {
+    my $mech = shift;
+    my $contact = shift;
+
+    $contact->contact_response_templates->delete_all;
+    $contact->delete;
 }
 
 sub delete_problems_for_body {

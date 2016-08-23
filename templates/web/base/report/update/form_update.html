@@ -25,6 +25,9 @@
 [% END %]
 
 <label for="form_update">[% loc( 'Update' ) %]</label>
+[% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+  [% INCLUDE 'admin/response_templates_select.html' for='form_update' %]
+[% END %]
 [% IF field_errors.update %]
     <div class='form-error'>[% field_errors.update %]</div>
 [% END %]

@@ -856,6 +856,13 @@ $.extend(fixmystreet.set_up, {
       }
       add_handlers( $('.problem-header'), 'problem' );
       add_handlers( $('.item-list__item--updates'), 'update' );
+  },
+
+  response_templates: function() {
+      $('.js-template-name').change(function() {
+          var $this = $(this);
+          $('#' + $this.data('for')).val($this.val());
+      });
   }
 });
 
@@ -1079,6 +1086,7 @@ fixmystreet.display = {
             fixmystreet.set_up.dropzone($sideReport);
             fixmystreet.set_up.form_focus_triggers();
             fixmystreet.set_up.moderation();
+            fixmystreet.set_up.response_templates();
 
             window.selected_problem_id = reportId;
             var marker = fixmystreet.maps.get_marker_by_id(reportId);

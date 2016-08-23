@@ -1,0 +1,50 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Response Template for %s'), body.name) -%]
+[% rt = response_template %]
+
+[% UNLESS rt.id %]<h3>[% loc('New template') %]</h3>[% END %]
+
+<form method="post"
+    action="[% c.uri_for('templates', body.id, rt.id || 'new' ) %]"
+    enctype="application/x-www-form-urlencoded"
+    accept-charset="utf-8"
+    class="validate">
+
+    <p>
+        <strong>[% loc('Title:') %] </strong>
+        <input type="text" name="title" class="required" size="30" value="[% rt.title| html %]">
+    </p>
+    <p>
+        <strong>[% loc('Text:') %] </strong>
+        <textarea name="text" class="required">[% rt.text |html %]</textarea>
+    </p>
+    <p>
+      <label>
+        <strong>[% loc('Auto-response:') %]</strong>
+        <input type="checkbox" name="auto_response" [% 'checked' IF rt.auto_response %] />
+      </label>
+    </p>
+    <p>
+      <strong>[% loc('Categories:') %]</strong>
+      <ul>
+        [% FOR contact IN contacts %]
+          <li>
+            <label>
+              <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
+              [% contact.category %]
+            </label>
+          </li>
+        [% END %]
+      </ul>
+    </p>
+    <p>
+      <input type="hidden" name="token" value="[% csrf_token %]" >
+      <input type="submit" name="Edit templates" value="[% rt.id ? loc('Save changes') : loc('Create template') %]" >
+    </p>
+    [% IF rt.id %]
+        <p>
+            <input class="delete" type="submit" name="delete_template" value="[% loc('Delete template') %]">
+        </p>
+    [% END %]
+</form>
+
+[% INCLUDE 'admin/footer.html' %]

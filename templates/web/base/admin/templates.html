@@ -1,6 +1,8 @@
 [% INCLUDE 'admin/header.html' title=tprintf(loc('Response Templates for %s'), body.name) -%]
 
-<h2> [% tprintf(loc('Response Templates for %s'), body.name) %] </h2>
+[% IF c.cobrand.moniker == 'zurich' %]
+  <h2> [% tprintf(loc('Response Templates for %s'), body.name) %] </h2>
+[% END %]
 
 <table>
     <thead>
