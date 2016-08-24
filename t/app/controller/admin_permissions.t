@@ -167,7 +167,7 @@ FixMyStreet::override_config {
             "permissions[user_assign_areas]" => undef,
         } } );
 
-        ok $user2->has_permission_to("moderate", $user2->from_body->id), "user2 has been granted moderate permission";
+        ok $user2->has_body_permission_to("moderate"), "user2 has been granted moderate permission";
     };
 
     $oxfordshireuser->user_body_permissions->create({

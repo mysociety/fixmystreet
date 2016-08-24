@@ -41,7 +41,7 @@ sub planned : Local : Args(0) {
     my ( $self, $c ) = @_;
 
     $c->detach('/page_error_403_access_denied', [])
-        unless $c->user->from_body && $c->user->has_permission_to('planned_reports', $c->user->from_body->id);
+        unless $c->user->has_body_permission_to('planned_reports');
 
     $c->stash->{problems_rs} = $c->user->active_planned_reports;
     $c->forward('get_problems');

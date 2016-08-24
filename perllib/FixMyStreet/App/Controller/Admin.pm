@@ -982,9 +982,8 @@ sub load_template_body : Private {
     my ($self, $c, $body_id) = @_;
 
     my $zurich_user = $c->user->from_body && $c->cobrand->moniker eq 'zurich';
-    my $has_permission = $c->user->from_body &&
-                         $c->user->from_body->id eq $body_id &&
-                         $c->user->has_permission_to('template_edit', $body_id);
+    my $has_permission = $c->user->has_body_permission_to('template_edit') &&
+                         $c->user->from_body->id eq $body_id;
 
     unless ( $c->user->is_superuser || $zurich_user || $has_permission ) {
         $c->detach( '/page_error_404_not_found' );
@@ -1212,7 +1211,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     my $user = $c->cobrand->users->find( { id => $id } );
     $c->detach( '/page_error_404_not_found' ) unless $user;
 
-    unless ( $c->user->is_superuser || ( $c->user->has_permission_to('user_edit', $c->user->from_body->id) ) ) {
+    unless ( $c->user->is_superuser || $c->user->has_body_permission_to('user_edit') ) {
         $c->detach('/page_error_403_access_denied', []);
     }
 
@@ -1249,7 +1248,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         # set from_body to the same value as their own from_body.
         if ( $c->user->is_superuser ) {
             $user->from_body( $c->get_param('body') || undef );
-        } elsif ( $c->user->has_permission_to('user_assign_body', $c->user->from_body->id ) &&
+        } elsif ( $c->user->has_body_permission_to('user_assign_body') &&
                   $c->get_param('body') && $c->get_param('body') eq $c->user->from_body->id ) {
             $user->from_body( $c->user->from_body );
         } else {
