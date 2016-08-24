@@ -13,6 +13,10 @@ Readonly::Scalar my $COUNCIL_ID_OXFORDSHIRE => 2237;
 Readonly::Scalar my $COUNCIL_ID_WARWICKSHIRE => 2243;
 Readonly::Scalar my $COUNCIL_ID_GREENWICH => 2493;
 
+has open311_test_req_used => (
+    is => 'rw',
+);
+
 sub send {
     my $self = shift;
     my ( $row, $h ) = @_;
@@ -133,6 +137,9 @@ sub send {
         }
 
         my $resp = $open311->send_service_request( $row, $h, $contact->email );
+        if (FixMyStreet->test_mode) {
+            $self->open311_test_req_used($open311->test_req_used);
+        }
 
         # make sure we don't save user changes from above
         $row->discard_changes() if $revert;
