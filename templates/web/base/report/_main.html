@@ -47,8 +47,8 @@
 
     <div class="moderate-edit">
         <label>
-            <input type="checkbox" name="problem_show_name" [% problem.anonymous ? 'checked' : '' %]>
-            Hide reporter&rsquo;s name
+            <input type="checkbox" name="problem_show_name" [% 'checked' UNLESS problem.anonymous %]>
+            Show reporter&rsquo;s name
         </label>
     </div>
     <p class="report_meta_info">
