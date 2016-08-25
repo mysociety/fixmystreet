@@ -785,6 +785,56 @@ $.extend(fixmystreet.set_up, {
             }
         });
     });
+  },
+
+  moderation: function() {
+      function toggle_original ($input, revert) {
+          $input.prop('disabled', revert);
+          if (revert) {
+              $input.data('currentValue', $input.val());
+          }
+          $input.val($input.data(revert ? 'originalValue' : 'currentValue'));
+      }
+
+      function add_handlers (elem, word) {
+          elem.each( function () {
+              var $elem = $(this);
+              $elem.find('.moderate').click( function () {
+                  $elem.find('.moderate-display').hide();
+                  $elem.find('.moderate-edit').show();
+              });
+
+              $elem.find('.revert-title').change( function () {
+                  toggle_original($elem.find('input[name=problem_title]'), $(this).prop('checked'));
+              });
+
+              $elem.find('.revert-textarea').change( function () {
+                  toggle_original($elem.find('textarea'), $(this).prop('checked'));
+              });
+
+              var hide_document = $elem.find('.hide-document');
+              hide_document.change( function () {
+                  $elem.find('input[name=problem_title]').prop('disabled', $(this).prop('checked'));
+                  $elem.find('textarea').prop('disabled', $(this).prop('checked'));
+                  $elem.find('input[type=checkbox]').prop('disabled', $(this).prop('checked'));
+                  $(this).prop('disabled', false); // in case disabled above
+              });
+
+              $elem.find('.cancel').click( function () {
+                  $elem.find('.moderate-display').show();
+                  $elem.find('.moderate-edit').hide();
+              });
+
+              $elem.find('form').submit( function () {
+                  if (hide_document.prop('checked')) {
+                      return confirm('This will hide the ' + word + ' completely!  (You will not be able to undo this without contacting support.)');
+                  }
+                  return true;
+              });
+          });
+      }
+      add_handlers( $('.problem-header'), 'problem' );
+      add_handlers( $('.item-list__item--updates'), 'update' );
   }
 });
 
@@ -1007,6 +1057,7 @@ fixmystreet.display = {
             fixmystreet.set_up.fancybox_images();
             fixmystreet.set_up.dropzone($sideReport);
             fixmystreet.set_up.form_focus_triggers();
+            fixmystreet.set_up.moderation();
 
             window.selected_problem_id = reportId;
             var marker = fixmystreet.maps.get_marker_by_id(reportId);
