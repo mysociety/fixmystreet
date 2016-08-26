@@ -235,7 +235,7 @@ sub categories_summary {
 sub send_reports {
     my ( $rs, $site_override ) = @_;
     require FixMyStreet::Script::Reports;
-    FixMyStreet::Script::Reports::send($site_override);
+    return FixMyStreet::Script::Reports::send($site_override);
 }
 
 1;

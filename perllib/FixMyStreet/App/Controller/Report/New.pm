@@ -615,7 +615,7 @@ sub setup_categories_and_bodies : Private {
         unless ( $seen{$contact->category} ) {
             push @category_options, $contact->category;
 
-            my $metas = $contact->get_extra_fields;
+            my $metas = $contact->get_metadata_for_input;
             if (scalar @$metas) {
                 foreach (@$metas) {
                     if (ref $_->{values} eq 'HASH') {
@@ -861,7 +861,7 @@ sub process_report : Private {
 
         my @extra;
         foreach my $contact (@contacts) {
-            my $metas = $contact->get_extra_fields;
+            my $metas = $contact->get_metadata_for_input;
             foreach my $field ( @$metas ) {
                 if ( lc( $field->{required} ) eq 'true' ) {
                     unless ( $c->get_param($field->{code}) ) {

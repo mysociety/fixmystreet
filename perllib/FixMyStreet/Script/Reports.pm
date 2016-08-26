@@ -23,6 +23,7 @@ sub send(;$) {
 
     # Set up site, language etc.
     my ($verbose, $nomail, $debug_mode) = CronFns::options();
+    my $test_data;
 
     my $base_url = FixMyStreet->config('BASE_URL');
     my $site = $site_override || CronFns::site($base_url);
@@ -205,18 +206,18 @@ sub send(;$) {
 
         for my $sender ( keys %reporters ) {
             debug_print("sending using " . $sender, $row->id) if $debug_mode;
-            $result *= $reporters{ $sender }->send( $row, \%h );
-            if ( $reporters{ $sender }->unconfirmed_counts) {
-                foreach my $e (keys %{ $reporters{ $sender }->unconfirmed_counts } ) {
-                    foreach my $c (keys %{ $reporters{ $sender }->unconfirmed_counts->{$e} }) {
-                        $notgot{$e}{$c} += $reporters{ $sender }->unconfirmed_counts->{$e}{$c};
+            $sender = $reporters{$sender};
+            $result *= $sender->send( $row, \%h );
+            if ( $sender->unconfirmed_counts) {
+                foreach my $e (keys %{ $sender->unconfirmed_counts } ) {
+                    foreach my $c (keys %{ $sender->unconfirmed_counts->{$e} }) {
+                        $notgot{$e}{$c} += $sender->unconfirmed_counts->{$e}{$c};
                     }
                 }
-                %note = (
-                    %note,
-                    %{ $reporters{ $sender }->unconfirmed_notes }
-                );
+                %note = (%note, %{ $sender->unconfirmed_notes });
             }
+            $test_data->{test_req_used} = $sender->open311_test_req_used
+                if FixMyStreet->test_mode && $sender->can('open311_test_req_used');
         }
 
         unless ($result) {
@@ -272,6 +273,8 @@ sub send(;$) {
             print "The following reports had problems sending:\n$sending_errors";
         }
     }
+
+    return $test_data;
 }
 
 sub _send_report_sent_email {

@@ -925,13 +925,6 @@ DISTRIBUTIONS
       Test::Exception 0
       Test::More 0
       ok 0
-  Convert-NLS_DATE_FORMAT-0.06
-    pathname: K/KO/KOLIBRIE/Convert-NLS_DATE_FORMAT-0.06.tar.gz
-    provides:
-      Convert::NLS_DATE_FORMAT 0.06
-    requirements:
-      Module::Build::Tiny 0.035
-      perl 5.006001
   Cpanel-JSON-XS-3.0210
     pathname: R/RU/RURBAN/Cpanel-JSON-XS-3.0210.tar.gz
     provides:
@@ -1379,74 +1372,6 @@ DISTRIBUTIONS
       Module::Build 0.35
       Test::Exception 0
       Test::More 0
-  Data-Perl-0.002007
-    pathname: M/MA/MATTP/Data-Perl-0.002007.tar.gz
-    provides:
-      Data::Perl 0.002007
-      Data::Perl::Bool 0.002007
-      Data::Perl::Code 0.002007
-      Data::Perl::Collection::Array 0.002007
-      Data::Perl::Collection::Hash 0.002007
-      Data::Perl::Counter 0.002007
-      Data::Perl::Number 0.002007
-      Data::Perl::Role::Bool 0.002007
-      Data::Perl::Role::Code 0.002007
-      Data::Perl::Role::Collection::Array 0.002007
-      Data::Perl::Role::Collection::Hash 0.002007
-      Data::Perl::Role::Counter 0.002007
-      Data::Perl::Role::Number 0.002007
-      Data::Perl::Role::String 0.002007
-      Data::Perl::String 0.002007
-    requirements:
-      Class::Method::Modifiers 0
-      ExtUtils::MakeMaker 6.30
-      List::MoreUtils 0
-      List::Util 0
-      Module::Runtime 0
-      Role::Tiny 0
-      Scalar::Util 0
-      parent 0
-      strictures 0
-  Data-Rx-0.200005
-    pathname: R/RJ/RJBS/Data-Rx-0.200005.tar.gz
-    provides:
-      Data::Rx 0.200005
-      Data::Rx::CommonType 0.200005
-      Data::Rx::CommonType::EasyNew 0.200005
-      Data::Rx::CoreType 0.200005
-      Data::Rx::CoreType::all 0.200005
-      Data::Rx::CoreType::any 0.200005
-      Data::Rx::CoreType::arr 0.200005
-      Data::Rx::CoreType::bool 0.200005
-      Data::Rx::CoreType::def 0.200005
-      Data::Rx::CoreType::fail 0.200005
-      Data::Rx::CoreType::int 0.200005
-      Data::Rx::CoreType::map 0.200005
-      Data::Rx::CoreType::nil 0.200005
-      Data::Rx::CoreType::num 0.200005
-      Data::Rx::CoreType::one 0.200005
-      Data::Rx::CoreType::rec 0.200005
-      Data::Rx::CoreType::seq 0.200005
-      Data::Rx::CoreType::str 0.200005
-      Data::Rx::Failure 0.200005
-      Data::Rx::FailureSet 0.200005
-      Data::Rx::TypeBundle 0.200005
-      Data::Rx::TypeBundle::Core 0.200005
-      Data::Rx::Util 0.200005
-    requirements:
-      Carp 0
-      ExtUtils::MakeMaker 6.30
-      File::Find::Rule 0
-      JSON 2
-      List::Util 0
-      Number::Tolerant 0
-      Scalar::Util 0
-      Test::More 0.96
-      autodie 0
-      overload 0
-      parent 0
-      strict 0
-      warnings 0
   Data-Visitor-0.28
     pathname: D/DO/DOY/Data-Visitor-0.28.tar.gz
     provides:
@@ -1536,16 +1461,6 @@ DISTRIBUTIONS
       Module::Build 0
       Params::Validate 0.67
       Test::More 0.47
-  DateTime-Format-Oracle-0.06
-    pathname: K/KO/KOLIBRIE/DateTime-Format-Oracle-0.06.tar.gz
-    provides:
-      DateTime::Format::Oracle 0.06
-    requirements:
-      Convert::NLS_DATE_FORMAT 0.03
-      DateTime 0
-      DateTime::Format::Builder 0
-      ExtUtils::MakeMaker 0
-      Test::More 0
   DateTime-Format-Pg-0.16008
     pathname: D/DM/DMAKI/DateTime-Format-Pg-0.16008.tar.gz
     provides:
@@ -3960,22 +3875,6 @@ DISTRIBUTIONS
       Module::Runtime 0.012
       Role::Tiny 1.003
       strictures 1.004003
-  MooX-HandlesVia-0.001005
-    pathname: M/MA/MATTP/MooX-HandlesVia-0.001005.tar.gz
-    provides:
-      Data::Perl::Bool::MooseLike 0.001005
-      Data::Perl::Collection::Array::MooseLike 0.001005
-      Data::Perl::Collection::Hash::MooseLike 0.001005
-      Data::Perl::Number::MooseLike 0.001005
-      Data::Perl::String::MooseLike 0.001005
-      MooX::HandlesVia 0.001005
-    requirements:
-      Class::Method::Modifiers 0
-      Data::Perl 0.002006
-      ExtUtils::MakeMaker 6.30
-      Module::Runtime 0
-      Moo 1.003000
-      Role::Tiny 0
   MooX-Types-MooseLike-0.29
     pathname: M/MA/MATEU/MooX-Types-MooseLike-0.29.tar.gz
     provides:
@@ -4584,27 +4483,6 @@ DISTRIBUTIONS
       Carp 0
       ExtUtils::MakeMaker 0
       POSIX 0
-  Number-Tolerant-1.703
-    pathname: R/RJ/RJBS/Number-Tolerant-1.703.tar.gz
-    provides:
-      Number::Tolerant 1.703
-      Number::Tolerant::Constant 1.703
-      Number::Tolerant::Type 1.703
-      Number::Tolerant::Union 1.703
-      Test::Tolerant 1.703
-    requirements:
-      Carp 0
-      ExtUtils::MakeMaker 6.30
-      Math::BigFloat 0
-      Math::BigRat 0
-      Scalar::Util 0
-      Sub::Exporter 0.950
-      Sub::Exporter::Util 0
-      Test::Builder 0
-      overload 0
-      parent 0
-      strict 0
-      warnings 0
   Object-Signature-1.07
     pathname: A/AD/ADAMK/Object-Signature-1.07.tar.gz
     provides:
@@ -6068,48 +5946,6 @@ DISTRIBUTIONS
       constant 0
       strict 0
       warnings 0
-  Type-Tiny-0.040
-    pathname: T/TO/TOBYINK/Type-Tiny-0.040.tar.gz
-    provides:
-      Devel::TypeTiny::Perl56Compat 0.040
-      Devel::TypeTiny::Perl58Compat 0.040
-      Error::TypeTiny 0.040
-      Error::TypeTiny::Assertion 0.040
-      Error::TypeTiny::Compilation 0.040
-      Error::TypeTiny::WrongNumberOfParameters 0.040
-      Eval::TypeTiny 0.040
-      Reply::Plugin::TypeTiny 0.040
-      Test::TypeTiny 0.040
-      Type::Coercion 0.040
-      Type::Coercion::FromMoose 0.040
-      Type::Coercion::Union 0.040
-      Type::Library 0.040
-      Type::Params 0.040
-      Type::Parser 0.040
-      Type::Registry 0.040
-      Type::Tiny 0.040
-      Type::Tiny::Class 0.040
-      Type::Tiny::Duck 0.040
-      Type::Tiny::Enum 0.040
-      Type::Tiny::Intersection 0.040
-      Type::Tiny::Role 0.040
-      Type::Tiny::Union 0.040
-      Type::Utils 0.040
-      Types::Common::Numeric 0.040
-      Types::Common::String 0.040
-      Types::Standard 0.040
-      Types::Standard::ArrayRef 0.040
-      Types::Standard::Dict 0.040
-      Types::Standard::HashRef 0.040
-      Types::Standard::Map 0.040
-      Types::Standard::ScalarRef 0.040
-      Types::Standard::Tuple 0.040
-      Types::TypeTiny 0.040
-    requirements:
-      CPAN::Meta::Requirements 2.000
-      Exporter::Tiny 0.026
-      ExtUtils::MakeMaker 6.17
-      perl 5.006001
   UNIVERSAL-can-1.20140328
     pathname: C/CH/CHROMATIC/UNIVERSAL-can-1.20140328.tar.gz
     provides:

@@ -33,7 +33,9 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my ($report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Test');
+my ($report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Test', {
+    areas => ',2237,',
+});
 my $report_id = $report->id;
 ok $report, "created test report - $report_id";
 
