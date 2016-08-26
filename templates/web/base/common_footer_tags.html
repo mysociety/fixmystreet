@@ -22,11 +22,6 @@
   <script type="text/javascript" src="[% version('/js/fixmystreet-admin.js') %]"></script>
 [% END %]
 
-[% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
-[% IF moderating %]
-  <script type="text/javascript" src="[% version('/js/moderate.js') %]"></script>
-[% END %]
-
 [% extra_js %]
 
 [% TRY %][% PROCESS 'footer_extra_js.html' %][% CATCH file %][% END %]
