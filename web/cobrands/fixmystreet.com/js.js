@@ -27,3 +27,22 @@ $(function(){
     }
 
 });
+
+$(function(){
+    /* Accordion on councils page */
+
+  var allPanels = $('.accordion > .accordion-item .accordion-content').hide();
+  var allSwitches = $('.accordion .accordion-switch');
+
+  allSwitches.click(function() {
+    if ($(this).hasClass('accordion-switch--open')) {
+        return false;
+    }
+    allPanels.slideUp();
+    allSwitches.removeClass('accordion-switch--open');
+    $(this).addClass('accordion-switch--open');
+    $(this).next().slideDown();
+    return false;
+  });
+  allSwitches.first().click();
+});
