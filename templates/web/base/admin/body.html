@@ -204,6 +204,16 @@
       <label for="non_public" class="inline">[% loc('Private') %]</label>
     </p>
 
+    <div class="admin-hint">
+      <p>
+        [% loc("Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent.") %]
+      </p>
+    </div>
+    <p>
+      <input type="checkbox" name="inspection_required" value="1" id="inspection_required" [% 'checked' IF contact.get_extra_metadata('inspection_required') %]>
+      <label for="inspection_required" class="inline">[% loc('Inspection required') %]</label>
+    </p>
+
     <p>
       <input type="hidden" name="posted" value="new" >
       <input type="hidden" name="token" value="[% csrf_token %]" >

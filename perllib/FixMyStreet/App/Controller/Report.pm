@@ -318,11 +318,15 @@ sub inspect : Private {
         }
     }
 
-    if ( $c->get_param('save') ) {
+    if ( $c->get_param('save') || $c->get_param('save_inspected') ) {
         $c->forward('/auth/check_csrf_token');
 
         foreach (qw/priority detailed_location detailed_information traffic_information/) {
             $problem->set_extra_metadata( $_ => $c->get_param($_) );
+        }
+
+        if ( $c->get_param('save_inspected') ) {
+            $problem->set_extra_metadata( inspected => 1 );
         }
 
         # Handle the state changing

@@ -143,6 +143,12 @@ sub send(;$) {
             }
             $reporters{ $sender } ||= $sender->new();
 
+            my $inspection_required = $sender_info->{contact}->get_extra_metadata('inspection_required') if $sender_info->{contact};
+            if ( $inspection_required && !$row->get_extra_metadata('inspected') ) {
+                $skip = 1;
+                debug_print("skipped because not yet inspected", $row->id) if $debug_mode;
+            }
+
             if ( $reporters{ $sender }->should_skip( $row ) ) {
                 $skip = 1;
                 debug_print("skipped by sender " . $sender_info->{method} . " (might be due to previous failed attempts?)", $row->id) if $debug_mode;

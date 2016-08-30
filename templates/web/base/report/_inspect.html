@@ -76,6 +76,17 @@
           <a href="[% c.uri_for( '/report', problem.id ) %]" class="btn">[% loc('Cancel') %]</a>
           <input type="submit" value="[% loc('Save changes') %]" name="save" />
         </p>
+        <p>
+          [% UNLESS problem.get_extra_metadata('inspected') %]
+            <input type="submit" value="[% loc('Save changes + send') %]" name="save_inspected" />
+          [% ELSE %]
+            [% IF problem.whensent %]
+              [% loc("<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on.") %]
+            [% ELSE %]
+              [% loc("<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on.") %]
+            [% END %]
+          [% END %]
+        </p>
       </form>
     </div>
   </div>
