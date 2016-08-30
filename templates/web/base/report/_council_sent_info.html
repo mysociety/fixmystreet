@@ -1,6 +1,6 @@
-[% IF problem.whensent || problem.can_display_external_id %]
+[% SET duration_clause = problem.duration_string(c) %]
+[% IF duration_clause || problem.can_display_external_id %]
     <p class="council_sent_info">
-    [% SET duration_clause = problem.duration_string(c) IF problem.whensent %]
     [%- IF problem.can_display_external_id %]
         [%- IF duration_clause %]
             [%- external_ref_clause = tprintf(loc('Council ref:&nbsp;%s'), problem.external_id) %]

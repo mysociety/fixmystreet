@@ -10,6 +10,11 @@ sub council_name { return 'Oxfordshire County Council'; }
 sub council_url { return 'oxfordshire'; }
 sub is_two_tier { return 1; }
 
+sub is_council_with_case_management {
+    # XXX Change this to return 1 when OCC FMSfC goes live.
+    return FixMyStreet->config('STAGING_SITE');
+}
+
 sub map_type { 'OSM' }
 
 sub base_url {

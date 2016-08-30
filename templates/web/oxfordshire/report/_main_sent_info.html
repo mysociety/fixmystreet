@@ -1,3 +1,4 @@
-[% IF problem.whensent %]
-    <p class="council_sent_info">[% problem.duration_string(c) %]</p>
+[% SET duration_clause = problem.duration_string(c) %]
+[% IF duration_clause %]
+    <p class="council_sent_info">[% duration_clause %]</p>
 [% END %]

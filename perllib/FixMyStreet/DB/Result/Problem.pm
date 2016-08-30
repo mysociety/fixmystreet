@@ -678,6 +678,13 @@ sub duration_string {
     } else {
         $body = $problem->body( $c );
     }
+    if ( $c->cobrand->can('get_body_handler_for_problem') ) {
+        my $handler = $c->cobrand->get_body_handler_for_problem( $problem );
+        if ( $handler->can('is_council_with_case_management') && $handler->is_council_with_case_management ) {
+            return sprintf(_('Received by %s moments later'), $body);
+        }
+    }
+    return unless $problem->whensent;
     return sprintf(_('Sent to %s %s later'), $body,
         Utils::prettify_duration($problem->whensent->epoch - $problem->confirmed->epoch, 'minute')
     );
