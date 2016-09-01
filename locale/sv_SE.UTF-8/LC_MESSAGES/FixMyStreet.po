@@ -2014,7 +2014,7 @@ msgstr "Skriv in din titel"
 #: templates/web/base/auth/sign_out.html:5
 #: templates/web/zurich/auth/sign_out.html:5
 msgid "Please feel free to <a href=\"%s\">sign in again</a>, or go back to the <a href=\"/\">front page</a>."
-msgstr "Välkommen att <a href=\"&s\">logga in igen</a>, eller gå tillbaka till <a href=\"/\">startsidan</a>."
+msgstr "Välkommen att <a href=\"%s\">logga in igen</a>, eller gå tillbaka till <a href=\"/\">startsidan</a>."
 
 #: templates/web/base/report/new/fill_in_details_text.html:1
 #: templates/web/base/report/new/fill_in_details_text.html:8
