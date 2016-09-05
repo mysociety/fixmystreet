@@ -4302,10 +4302,10 @@ DISTRIBUTIONS
       IO::Socket 0
       MIME::Base64 2.11
       Test::More 0.18
-  Net-Domain-TLD-1.69
-    pathname: A/AL/ALEXP/Net-Domain-TLD-1.69.tar.gz
+  Net-Domain-TLD-1.74
+    pathname: A/AL/ALEXP/Net-Domain-TLD-1.74.tar.gz
     provides:
-      Net::Domain::TLD 1.69
+      Net::Domain::TLD 1.74
     requirements:
       Carp 0
       ExtUtils::MakeMaker 0
