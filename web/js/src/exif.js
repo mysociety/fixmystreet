@@ -55,7 +55,19 @@
             return false;
         }
 
-        var base64 = img.src.replace(/^data\:([^\;]+)\;base64,/gmi, '');
+        var data = img.src;
+        if (data.match(/^http/)) {
+            // We're loading this image from the server, presumably after a
+            // submission, so we have its URL, not yet its data.
+            var canvas = document.createElement("canvas"),
+                ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            data = canvas.toDataURL("image/jpeg");
+        }
+
+        var base64 = data.replace(/^data\:([^\;]+)\;base64,/gmi, '');
         var binary = atob(base64);
         var len = binary.length;
         var file = new ArrayBuffer(len);
