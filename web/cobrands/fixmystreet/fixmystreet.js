@@ -239,7 +239,9 @@ $.extend(fixmystreet.set_up, {
         // make sure we can see the error message when we focus on invalid elements
         showErrors: function( errorMap, errorList ) {
             if ( submitted && errorList.length ) {
-               $(window).scrollTop( $(errorList[0].element).offset().top - 120 );
+                var currScroll = $('#map_sidebar').scrollTop(),
+                    pos = $(errorList[0].element).position().top;
+               $('#map_sidebar').scrollTop( currScroll + pos - 120 );
             }
             this.defaultShowErrors();
             submitted = false;
