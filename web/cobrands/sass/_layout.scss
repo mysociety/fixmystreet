@@ -347,6 +347,10 @@ body.mappage.admin {
   .with-notes & {
     #{$left}: 44em;
   }
+
+  .with-actions & {
+    #{$left}: 58em;
+  }
 }
 
 #map_sidebar {
@@ -367,16 +371,24 @@ body.mappage.admin {
     background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
     background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
   }
+
+  .with-actions & {
+    width: 58em;
+    background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
+    background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
+  }
 }
 
 // Firefox/IE and Chrome/Safari (e.g.) differ on where to clip overflowed
 // elements, one group clip outside padding, one clips inside. So using padding
 // in #map_sidebar works in Chrome/Safari but not in Firefox/IE. Instead, we
 // add some extra height using ::after.
+// https://bugzilla.mozilla.org/show_bug.cgi?id=748518
 #map_sidebar::after {
     content: "";
     display: block;
     height: 4em;
+    clear: both;
 }
 
 // IE<=8 does not support ::after
@@ -864,6 +876,20 @@ textarea.form-error {
 
   .sidebar-notes {
     color: #666;
+  }
+}
+
+// Similar to .with-notes, there's a special version of the
+// report details page, that includes a secondary column.
+body.with-actions {
+  #side-report {
+    width: 27em;
+    float: #{$left};
+  }
+
+  #side-report-secondary {
+    width: 27em;
+    float: #{$right};
   }
 }
 

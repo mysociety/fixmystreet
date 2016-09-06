@@ -1,4 +1,5 @@
-[% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
+[% can_moderate = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
+[% can_inspect = c.user && c.user.has_permission_to('report_inspect', problem.bodies_str) && !hide_inspect_button %]
 
 <a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
     class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
@@ -22,18 +23,15 @@
 </form>
 [% END %]
 
-  [% IF moderating %]
+  [% IF can_moderate %]
     [% original = problem_original %]
     <form method="post" action="/moderate/report/[% problem.id %]">
         <input type="hidden" name="token" value="[% csrf_token %]">
-        <p class="moderate-display">
-            <input type="button" class="btn moderate" value="Moderate this report">
-        </p>
   [% END %]
 
     <h1 class="moderate-display">[% problem.title | html %]</h1>
 
-  [% IF moderating %]
+  [% IF can_moderate %]
     <div class="moderate-edit">
       [% IF problem.title != original.title %]
         <label>
@@ -62,7 +60,7 @@
 
     [% INCLUDE 'report/_support.html' %]
 
-  [% IF moderating %]
+  [% IF can_moderate %]
     [% IF problem.photo or original.photo %]
         <p class="moderate-edit">
             <label>
@@ -78,7 +76,7 @@
         [% problem.detail | add_links | html_para %]
     </div>
 
-  [% IF moderating %]
+  [% IF can_moderate %]
     <p class="moderate-edit">
       [% IF problem.detail != original.detail %]
         <label>
@@ -105,7 +103,20 @@
             <input type="button" class="btn cancel" value="Discard changes">
         </p>
     </div>
+  [% END %]
 
+  [% IF can_moderate OR can_inspect %]
+    <p class="moderate-display">
+      [% IF can_moderate %]
+        <input type="button" class="btn moderate" value="Moderate this report">
+      [% END %]
+      [% IF can_inspect %]
+        <a href="/report/[% problem.id %]/inspect" class="btn inspect">Inspect</a>
+      [% END %]
+    </p>
+  [% END %]
+
+  [% IF can_moderate %]
     </form>
   [% END %]
 

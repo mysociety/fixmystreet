@@ -1,0 +1,82 @@
+[% PROCESS 'admin/report_blocks.html'; # For the report state dropdown %]
+[% second_column = BLOCK -%]
+  <div id="side-report-secondary">
+    <div class="problem-inspector-fields clearfix">
+      <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
+        <p class="left">
+          <label for="problem_id">[% loc('Report ID:') %]</label>
+          <input type="text" readonly id="problem_id" value="[% problem.id %]">
+        </p>
+        <p class="right">
+          <label for="problem_priority">[% loc('Priority:') %]</label>
+          <select name="priority" id="problem_priority">
+            <option value="" [% 'selected' UNLESS problem.get_extra_metadata('priority') %]>-</option>
+            [% FOREACH priority IN priorities %]
+              <option value="[% priority.key %]" [% 'selected' IF problem.get_extra_metadata('priority') == priority.key %]>[% priority.value %]</option>
+            [% END %]
+          </select>
+        </p>
+        <p class="left">
+          <label for="state">[% loc('State:') %]</label>
+            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+          <select name="state" id="state">
+            [% FOREACH group IN state_groups %]
+              <optgroup label="[% group.0 %]">
+                [% FOREACH state IN group.1 %]
+                  <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
+                [% END %]
+              </optgroup>
+            [% END %]
+          </select>
+        </p>
+        <p class="right">
+          <label for="category">[% loc('Category:') %]</label>
+            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+          <select name="category" id="category">
+            [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
+            <optgroup label="[% loc('Existing category') %]">
+              <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
+            </optgroup>
+            [% END %]
+            [% IF categories.size %]
+              <optgroup label="[% loc('Available categories') %]">
+                [% FOREACH cat IN categories %]
+                  <option[% ' selected' IF problem.category == cat %]>[% cat | html %]</option>
+                [% END %]
+              </optgroup>
+            [% END %]
+          </select>
+        </p>
+        <p>
+          [% SET local_coords = problem.local_coords; %]
+          <strong>[% loc('Easting/Northing:') %]</strong>
+          <span id="problem_easting">[% local_coords.0 IF local_coords %]</span>,
+          <span id="problem_northing">[% local_coords.1 IF local_coords %]</span>
+          <input type="hidden" name="longitude" value="[% problem.longitude %]">
+          <input type="hidden" name="latitude" value="[% problem.latitude %]">
+        </p>
+        <p style="clear:both;">
+          <a href="#" id="geolocate_link">[% loc('Use my current location') %]</a>,
+          [% loc('or drag the pin on the map') %] &raquo;
+        </p>
+        <p>
+          <label for="detailed_information">[% loc('Detailed problem location:') %]</label>
+          <textarea rows="2" name="detailed_location">[% problem.get_extra_metadata('detailed_location') | html %]</textarea>
+        </p>
+        <p>
+          <label for="detailed_information">[% loc('Detailed problem information:') %]</label>
+          <textarea rows="2" name="detailed_information">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
+        </p>
+        <p>
+          <label for="traffic_information">[% loc('Traffic management information:') %]</label>
+          <textarea rows="2" name="traffic_information">[% problem.get_extra_metadata('traffic_information') | html %]</textarea>
+        </p>
+        <p>
+          <input type="hidden" name="token" value="[% csrf_token %]">
+          <a href="[% c.uri_for( '/report', problem.id ) %]" class="btn">[% loc('Cancel') %]</a>
+          <input type="submit" value="[% loc('Save changes') %]" name="save" />
+        </p>
+      </form>
+    </div>
+  </div>
+[%- END %]

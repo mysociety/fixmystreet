@@ -9,7 +9,7 @@
 body {
   font-family:"Trebuchet MS",Arial, Helvetica, sans-serif;
   line-height:18px;
-  a, a:visited {text-decoration:none; color:$oxfordshire_link_colour}
+  a:not(.btn), a:visited:not(.btn) {text-decoration:none; color:$oxfordshire_link_colour}
   a { font-size: 1em; } // mySociety
   a:hover {text-decoration:underline}
   margin:0;

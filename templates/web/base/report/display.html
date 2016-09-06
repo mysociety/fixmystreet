@@ -1,5 +1,5 @@
 [%
-    SET bodyclass = 'mappage';
+    DEFAULT bodyclass = 'mappage';
     PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
 
@@ -45,6 +45,8 @@
 [% END %]
 
   </div>
+
+  [% second_column %]
 </div>
 
 [% INCLUDE 'footer.html' %]

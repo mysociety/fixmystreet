@@ -2,6 +2,7 @@ $direction: 'left' !default;
 
 // Button reset
 @mixin button-reset($c1: #eee, $c2: #ccc, $c3: #999, $c4: #333, $c5: #777, $c6: #999, $c7: #666, $c8: #fff){
+  display: inline-block;
   cursor:pointer;
   font:{
     size: 0.875em;
@@ -14,16 +15,17 @@ $direction: 'left' !default;
   margin:0;
   width: auto;
   height: auto;
+  vertical-align: top;
   @include border-radius(4px);
   background: $c1;
   @include linear-gradient($c1, $c2);
-  border:1px solid $c3;  
+  border:1px solid $c3;
   color:$c4;
-  &:hover:enabled {
+  &:hover, &:hover:enabled {
     background:$c5;
     @include linear-gradient($c6, $c5);
     text-decoration: none;
-    border:1px solid $c7;  
+    border:1px solid $c7;
     color:$c8;
   }
 }

@@ -278,16 +278,108 @@ sub delete :Local :Args(1) {
     return $c->res->redirect($uri);
 }
 
-sub map : Path('') : Args(2) {
-    my ( $self, $c, $id, $map ) = @_;
+=head2 action_router
 
-    $c->detach( '/page_error_404_not_found', [] ) unless $map eq 'map';
+A router for dispatching handlers for sub-actions on a particular report,
+e.g. /report/1/inspect
+
+=cut
+
+sub action_router : Path('') : Args(2) {
+    my ( $self, $c, $id, $action ) = @_;
+
+    $c->go( 'inspect', [ $id ] ) if $action eq 'inspect';
+    $c->go( 'map', [ $id ] ) if $action eq 'map';
+
+    $c->detach( '/page_error_404_not_found', [] );
+}
+
+sub inspect : Private {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward('/auth/get_csrf_token');
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+    $c->forward( 'check_has_permission_to', [ 'report_inspect' ] );
+    $c->forward( 'load_updates' );
+    $c->forward( 'format_problem_for_display' );
+
+    my $problem = $c->stash->{problem};
+
+    $c->stash->{categories} = $c->forward('/admin/categories_for_point');
+
+    # The available priorities for this problem are dependent on the cobrand it
+    # was reported to, not necessarily the active cobrand (e.g. inspecting a
+    # report on fms.com that was sent to Oxfordshire), so make sure the correct
+    # priorities are available for selection.
+    if ( $c->cobrand->can('get_body_handler_for_problem') ) {
+        my $handler = $c->cobrand->get_body_handler_for_problem($c->stash->{problem});
+        if ( $handler->can('problem_response_priorities') ) {
+            $c->stash->{priorities} = $handler->problem_response_priorities;
+        }
+    }
+
+    if ( $c->get_param('save') ) {
+        $c->forward('/auth/check_csrf_token');
+
+        foreach (qw/priority detailed_location detailed_information traffic_information/) {
+            $problem->set_extra_metadata( $_ => $c->get_param($_) );
+        }
+
+        # Handle the state changing
+        my $old_state = $problem->state;
+        $problem->state($c->get_param('state'));
+        if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
+            $problem->confirmed( \'current_timestamp' );
+        }
+        if ( $problem->state eq 'hidden' ) {
+            $problem->get_photoset->delete_cached;
+        }
+        if ( $problem->state ne $old_state ) {
+            $c->forward( '/admin/log_edit', [ $id, 'problem', 'state_change' ] );
+        }
+
+        my $valid = 1;
+        if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
+            # New lat/lon isn't valid, show an error
+            $valid = 0;
+            $c->stash->{errors} = [ _('Invalid location. New location must be covered by the same council.') ];
+        }
+
+        $c->forward( '/admin/report_edit_category', [ $problem ] );
+
+        if ($valid) {
+            $problem->update;
+            $c->res->redirect( $c->uri_for( '/report', $problem->id, 'inspect' ) );
+        }
+    }
+};
+
+sub map : Private {
+    my ( $self, $c, $id ) = @_;
+
     $c->forward( 'load_problem_or_display_error', [ $id ] );
 
     my $image = $c->stash->{problem}->static_map;
     $c->res->content_type($image->{content_type});
     $c->res->body($image->{data});
 }
+
+
+=head2 check_has_permission_to
+
+Ensure the currently logged-in user has a particular permission that applies
+to the current Problem in $c->stash->{problem}. Shows the 403 page if not.
+
+=cut
+
+sub check_has_permission_to : Private {
+    my ( $self, $c, $permission ) = @_;
+
+    my $bodies = $c->stash->{problem}->bodies_str;
+
+    $c->detach('/page_error_403_access_denied', [ _("Sorry, you don't have permission to do that.") ] )
+        unless $c->user_exists && $c->user->has_permission_to($permission, $bodies);
+};
 
 __PACKAGE__->meta->make_immutable;
 
