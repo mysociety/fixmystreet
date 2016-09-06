@@ -603,6 +603,7 @@ sub delete_body {
     $mech->delete_contact($_) for $body->contacts;
     $mech->delete_user($_) for $body->users;
     $_->delete for $body->response_templates;
+    $_->delete for $body->response_priorities;
     $body->body_areas->delete;
     $body->delete;
 }
@@ -612,6 +613,7 @@ sub delete_contact {
     my $contact = shift;
 
     $contact->contact_response_templates->delete_all;
+    $contact->contact_response_priorities->delete_all;
     $contact->delete;
 }
 

@@ -87,6 +87,12 @@ __PACKAGE__->belongs_to(
   },
 );
 __PACKAGE__->has_many(
+  "response_priorities",
+  "FixMyStreet::DB::Result::ResponsePriority",
+  { "foreign.body_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "response_templates",
   "FixMyStreet::DB::Result::ResponseTemplate",
   { "foreign.body_id" => "self.id" },
@@ -106,8 +112,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2015-02-19 16:13:43
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d6GuQm8vrNmCc4NWw58srA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-06 15:33:04
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ZuzscnLqcx0k512cTZ/kdg
 
 sub url {
     my ( $self, $c, $args ) = @_;

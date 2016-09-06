@@ -127,6 +127,15 @@ create trigger contacts_update_trigger after update on contacts
 create trigger contacts_insert_trigger after insert on contacts
     for each row execute procedure contacts_updated();
 
+-- Problems can have priorities. This table must be created before problem.
+CREATE TABLE response_priorities (
+    id serial not null primary key,
+    body_id int references body(id) not null,
+    deleted boolean not null default 'f',
+    name text not null,
+    unique(body_id, name)
+);
+
 -- Problems reported by users of site
 create table problem (
     id serial not null primary key,
@@ -185,7 +194,8 @@ create table problem (
     extra text, -- extra fields required for open311
     flagged boolean not null default 'f',
     geocode bytea,
-    
+    response_priority_id int REFERENCES response_priorities(id),
+
     -- logging sending failures (used by webservices)
     send_fail_count integer not null default 0, 
     send_fail_reason text, 
@@ -481,4 +491,10 @@ CREATE TABLE contact_response_templates (
     id serial NOT NULL PRIMARY KEY,
     contact_id int REFERENCES contacts(id) NOT NULL,
     response_template_id int REFERENCES response_templates(id) NOT NULL
+);
+
+CREATE TABLE contact_response_priorities (
+    id serial NOT NULL PRIMARY KEY,
+    contact_id int REFERENCES contacts(id) NOT NULL,
+    response_priority_id int REFERENCES response_priorities(id) NOT NULL
 );

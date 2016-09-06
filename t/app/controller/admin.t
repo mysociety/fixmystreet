@@ -1177,6 +1177,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
                 "permissions[template_edit]" => undef,
+                "permissions[responsepriority_edit]" => undef,
             },
             changes => {
                 name => 'Changed User',
@@ -1208,6 +1209,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
                 "permissions[template_edit]" => undef,
+                "permissions[responsepriority_edit]" => undef,
             },
             changes => {
                 email => 'changed@example.com',
@@ -1239,6 +1241,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
                 "permissions[template_edit]" => undef,
+                "permissions[responsepriority_edit]" => undef,
             },
             changes => {
                 body => $southend->id,
@@ -1270,6 +1273,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
                 "permissions[template_edit]" => undef,
+                "permissions[responsepriority_edit]" => undef,
             },
             changes => {
                 flagged => 'on',
@@ -1301,6 +1305,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
                 "permissions[template_edit]" => undef,
+                "permissions[responsepriority_edit]" => undef,
             },
             changes => {
                 flagged => undef,
@@ -1332,6 +1337,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
                 "permissions[template_edit]" => undef,
+                "permissions[responsepriority_edit]" => undef,
             },
             changes => {
                 is_superuser => 'on',
@@ -1351,6 +1357,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]",
                 "permissions[user_assign_areas]",
                 "permissions[template_edit]",
+                "permissions[responsepriority_edit]",
             ],
             log_count => 5,
             log_entries => [qw/edit edit edit edit edit/],
@@ -1384,6 +1391,7 @@ FixMyStreet::override_config {
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
                 "permissions[template_edit]" => undef,
+                "permissions[responsepriority_edit]" => undef,
             },
             log_count => 5,
             log_entries => [qw/edit edit edit edit edit/],
@@ -1529,7 +1537,71 @@ subtest "response templates are included on page" => sub {
     };
 };
 
+$mech->log_in_ok( $superuser->email );
+
+subtest "response priorities can be added" => sub {
+    is $oxfordshire->response_priorities->count, 0, "No response priorities yet";
+    $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id . "/new" );
+
+    my $fields = {
+        name => "Cat 1A",
+        deleted => undef,
+        "contacts[".$oxfordshirecontact->id."]" => 1,
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+     is $oxfordshire->response_priorities->count, 1, "Response template was added to body";
+     is $oxfordshirecontact->response_priorities->count, 1, "Response template was added to contact";
+};
+
+subtest "response priorities can be listed" => sub {
+    $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
+
+    $mech->content_contains( $oxfordshire->response_priorities->first->name );
+};
+
+subtest "response priorities are limited by body" => sub {
+    my $bromleypriority = $bromley->response_priorities->create( {
+        deleted => 0,
+        name => "Bromley Cat 0",
+    } );
+
+     is $bromley->response_priorities->count, 1, "Response template was added to Bromley";
+     is $oxfordshire->response_priorities->count, 1, "Response template wasn't added to Oxfordshire";
+
+     $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
+     $mech->content_lacks( $bromleypriority->name );
+
+     $mech->get_ok( "/admin/responsepriorities/" . $bromley->id );
+     $mech->content_contains( $bromleypriority->name );
+};
+
 $mech->log_out_ok;
+
+subtest "response priorities can't be viewed across councils" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $oxfordshireuser->user_body_permissions->create({
+            body => $oxfordshire,
+            permission_type => 'responsepriority_edit',
+        });
+        $mech->log_in_ok( $oxfordshireuser->email );
+        $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
+        $mech->content_contains( $oxfordshire->response_priorities->first->name );
+
+
+        $mech->get( "/admin/responsepriorities/" . $bromley->id );
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+
+        my $bromley_priority_id = $bromley->response_priorities->first->id;
+        $mech->get( "/admin/responsepriorities/" . $bromley->id . "/" . $bromley_priority_id );
+        ok !$mech->res->is_success(), "want a bad response";
+        is $mech->res->code, 404, "got 404";
+    };
+};
+
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
@@ -1537,5 +1609,6 @@ $mech->delete_user( $user3 );
 $mech->delete_user( $superuser );
 $mech->delete_user( 'test4@example.com' );
 $mech->delete_body( $oxfordshire );
+$mech->delete_body( $bromley );
 
 done_testing();
