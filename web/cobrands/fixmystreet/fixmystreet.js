@@ -217,7 +217,6 @@ $.extend(fixmystreet.set_up, {
     jQuery.validator.addMethod('validCategory', function(value, element) {
         return this.optional(element) || value != '-- Pick a category --'; }, translation_strings.category );
 
-    var form_submitted = 0;
     var submitted = false;
 
     $("form.validate").each(function(){
@@ -228,21 +227,13 @@ $.extend(fixmystreet.set_up, {
         onfocusout: false,
         errorElement: 'div',
         errorClass: 'form-error',
-        // we do this to stop things jumping around on blur
-        success: function (err) { if ( form_submitted ) { err.addClass('label-valid').removeClass('label-valid-hidden').html( '&nbsp;' ); } else { err.addClass('label-valid-hidden'); } },
         errorPlacement: function( error, element ) {
-            // Different for old/new style design
-            if ($('.form-field').length) {
-                element.parent('div.form-field').before( error );
-            } else {
-                element.before( error );
-            }
+            element.before( error );
         },
         submitHandler: function(form) {
             if (form.submit_problem) {
                 $('input[type=submit]', form).prop("disabled", true);
             }
-
             form.submit();
         },
         // make sure we can see the error message when we focus on invalid elements
@@ -256,8 +247,6 @@ $.extend(fixmystreet.set_up, {
         invalidHandler: function(form, validator) { submitted = true; }
       });
     });
-
-    $('input[type=submit]').click( function(e) { form_submitted = 1; } );
 
     /* set correct required status depending on what we submit
     * NB: need to add things to form_category as the JS updating
@@ -279,21 +268,6 @@ $.extend(fixmystreet.set_up, {
         $('#form_first_name').addClass('required');
         $('#form_last_name').addClass('required');
         $('#form_fms_extra_title').addClass('required');
-    } );
-
-    $('#problem_submit > input[type="submit"]').click( function(e) {
-        $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required');
-        if ( $('#mapForm').length ) {
-            $('#form_name').addClass('validName');
-        }
-        $('#form_first_name').addClass('required');
-        $('#form_last_name').addClass('required');
-        $('#form_fms_extra_title').addClass('required');
-    } );
-
-    $('#update_post').click( function(e) {
-        $('#form_name').addClass('required').removeClass('valid');
     } );
 
     $('#facebook_sign_in, #twitter_sign_in').click(function(e){
@@ -413,12 +387,6 @@ $.extend(fixmystreet.set_up, {
             }
         });
     });
-  },
-
-  add_validation: function() {
-    // Map form doesn't work in some browsers with HTML5 validation and hidden form, so
-    // we disable validation by default, and add it in the JS case.
-    $('#mapForm').removeAttr('novalidate');
   },
 
   contribute_as: function() {

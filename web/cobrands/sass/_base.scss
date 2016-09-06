@@ -458,15 +458,6 @@ ul.error {
   @include border-radius(0.25em);
 }
 
-// don't display valid error boxes as now the page jump
-// won't be until the user submits, which is fine
-div.label-valid,
-p.label-valid {
-  display:none !important;
-  visibility: hidden;
-}
-
-
 
 /*** LAYOUT ***/
 
