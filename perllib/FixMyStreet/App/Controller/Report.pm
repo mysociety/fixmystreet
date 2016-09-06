@@ -4,6 +4,7 @@ use Moose;
 use namespace::autoclean;
 use JSON::MaybeXS;
 use List::MoreUtils qw(any);
+use Utils;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -312,13 +313,23 @@ sub inspect : Private {
     if ( $c->get_param('save') || $c->get_param('save_inspected') ) {
         $c->forward('/auth/check_csrf_token');
 
+        my $valid = 1;
+        my $update_text;
+
         if ($permissions->{report_inspect}) {
             foreach (qw/detailed_location detailed_information traffic_information/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 
             if ( $c->get_param('save_inspected') ) {
-                $problem->set_extra_metadata( inspected => 1 );
+                $update_text = Utils::cleanup_text( $c->get_param('public_update'), { allow_multiline => 1 } );
+                if ($update_text) {
+                    $problem->set_extra_metadata( inspected => 1 );
+                } else {
+                    $valid = 0;
+                    $c->stash->{errors} ||= [];
+                    push @{ $c->stash->{errors} }, _('Please provide a public update for this report.');
+                }
             }
 
             # Handle the state changing
@@ -339,11 +350,11 @@ sub inspect : Private {
             $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
         }
 
-        my $valid = 1;
         if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
             # New lat/lon isn't valid, show an error
             $valid = 0;
-            $c->stash->{errors} = [ _('Invalid location. New location must be covered by the same council.') ];
+            $c->stash->{errors} ||= [];
+            push @{ $c->stash->{errors} }, _('Invalid location. New location must be covered by the same council.');
         }
 
         if ($permissions->{report_inspect} || $permissions->{report_edit_category}) {
@@ -352,6 +363,18 @@ sub inspect : Private {
 
         if ($valid) {
             $problem->update;
+            if ( defined($update_text) ) {
+                $problem->add_to_comments( {
+                    text => $update_text,
+                    created => \'current_timestamp',
+                    confirmed => \'current_timestamp',
+                    user_id => $c->user->id,
+                    name => $c->user->from_body->name,
+                    state => 'confirmed',
+                    mark_fixed => 0,
+                    anonymous => 0,
+                } );
+            }
             $c->res->redirect( $c->uri_for( '/report', $problem->id, 'inspect' ) );
         }
     }
