@@ -46,7 +46,7 @@
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
-    <input type="text" class="validName" value="[% report.name | html %]" name="name" id="form_name">
+    <input type="text" class="validName js-form-name" value="[% report.name | html %]" name="name" id="form_name">
 
     [%# if there is nothing in the name field then set check box as default on form %]
     <div class="checkbox-group">
@@ -62,6 +62,6 @@
     </div>
 
     <div class="form-txt-submit-box">
-        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+        <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
     </div>
 </div>

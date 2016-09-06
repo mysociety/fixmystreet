@@ -14,7 +14,7 @@
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
 
-    <input type="text" class="form-focus-trigger validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+    <input type="text" class="form-focus-trigger validName js-form-name" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
     [%# if there is nothing in the name field then set check box as default on form %]
     <div class="checkbox-group">
@@ -36,6 +36,6 @@
 
     <div class="form-txt-submit-box form-focus-hidden">
         <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
-        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+        <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
     </div>
 </div>

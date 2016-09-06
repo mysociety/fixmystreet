@@ -100,7 +100,7 @@
 
             [% INCLUDE name %]
 
-            <input class="final-submit green-btn" type="submit" id="submit_register" value="[% loc('Post') %]">
+            <input class="final-submit green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]">
 
 
         [% ELSE %]
@@ -130,7 +130,7 @@
 
                     <div class="form-txt-submit-box">
                         <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
-                        <input class="green-btn" type="submit" name="submit_register" id="submit_register" value="[% loc('Post') %]">
+                        <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]">
                     </div>
                 </div>
                 <div id="form_sign_in_yes" class="form-box">
@@ -142,7 +142,7 @@
                     [% END %]
                     <div class="form-txt-submit-box">
                         <input type="password" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
-                        <input class="green-btn" type="submit" name="submit_sign_in" id="submit_sign_in" value="[% loc('Post') %]">
+                        <input class="green-btn js-submit_sign_in" type="submit" name="submit_sign_in" value="[% loc('Post') %]">
                     </div>
 
                     <div class="checkbox-group">
@@ -174,13 +174,13 @@
     [% IF field_errors.first_name %]
         <p class='form-error'>[% field_errors.first_name %]</p>
     [% END %]
-    <input type="text" value="[% names.first || first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
+    <input class="js-form-name" type="text" value="[% names.first || first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
 
     <label for="form_last_name">[% loc('Last Name') %]</label>
     [% IF field_errors.last_name %]
         <p class='form-error'>[% field_errors.last_name %]</p>
     [% END %]
-    <input type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
+    <input class="js-form-name" type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
     <div class="checkbox-group">
         <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF update AND NOT update.anonymous %]>

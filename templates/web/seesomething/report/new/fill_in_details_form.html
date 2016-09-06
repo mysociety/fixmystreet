@@ -76,7 +76,7 @@
                 <p class='form-error'>[% field_errors.name %]</p>
             [% END %]
 
-            <input type="text" class="form-focus-trigger validName" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+            <input type="text" class="form-focus-trigger validName js-form-name" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
             <label for="form_email">[% loc('Your email (optional)') %]</label>
             [% IF field_errors.email %]

@@ -96,13 +96,13 @@
                     [% IF field_errors.first_name %]
                         <p class='form-error'>[% field_errors.first_name %]</p>
                     [% END %]
-                    <input type="text" value="[% ( first_name || names.first ) | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
+                    <input class="js-form-name" type="text" value="[% ( first_name || names.first ) | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
 
                     <label for="form_last_name">[% loc('Last Name') %]</label>
                     [% IF field_errors.last_name %]
                         <p class='form-error'>[% field_errors.last_name %]</p>
                     [% END %]
-                    <input type="text" value="[% ( last_name || names.last ) | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
+                    <input class="js-form-name" type="text" value="[% ( last_name || names.last ) | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
 
                     [%# if there is nothing in the name field then set check box as default on form %]
@@ -119,7 +119,7 @@
                         </div>
 
                     <div class="form-txt-submit-box">
-                        <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                        <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
                     </div>
                 </div>
             [% ELSE %]
@@ -143,13 +143,13 @@
                         [% IF field_errors.first_name %]
                             <p class='form-error'>[% field_errors.first_name %]</p>
                         [% END %]
-                        <input type="text" class="form-focus-trigger" value="[% first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
+                        <input type="text" class="form-focus-trigger js-form-name" value="[% first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
 
                         <label for="form_last_name">[% loc('Last Name') %]</label>
                         [% IF field_errors.last_name %]
                             <p class='form-error'>[% field_errors.last_name %]</p>
                         [% END %]
-                        <input type="text" class="form-focus-trigger" value="[% last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
+                        <input type="text" class="form-focus-trigger js-form-name" value="[% last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
                         [%# if there is nothing in the name field then set check box as default on form %]
                         <div class="checkbox-group">
@@ -172,7 +172,7 @@
 
                         <div class="form-txt-submit-box form-focus-hidden">
                             <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
-                            <input class="green-btn" type="submit" id="submit_register" name="submit_register" value="[% loc('Submit') %]">
+                            <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">
                         </div>
                     </div>
 
@@ -186,7 +186,7 @@
                                 <p class='form-error'>[% field_errors.password %]</p>
                             [% END %]
                             <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
-                            <input class="green-btn" type="submit" id="submit_sign_in" name="submit_sign_in" value="[% loc('Submit') %]">
+                            <input class="green-btn js-submit_sign_in" type="submit" name="submit_sign_in" value="[% loc('Submit') %]">
                         </div>
                         
                         <div class="checkbox-group">

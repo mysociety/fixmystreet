@@ -60,7 +60,7 @@
                 [% IF field_errors.name %]
                     <p class='form-error'>[% field_errors.name %]</p>
                 [% END %]
-                <input type="text" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+                <input class="js-form-name" type="text" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
                 <label for="form_phone">[% loc('Phone number') %]</label>
                 [% IF field_errors.phone %]
@@ -69,8 +69,8 @@
                 <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]" required>
 
                 <div class="form-txt-submit-box">
-                    [%# ID of submit_sign_in so name can be option, name of submit_register so it doesn't try and sign us in %]
-                    <p><input class="green-btn" type="submit" id="submit_sign_in" name="submit_register" value="[% loc('Submit') %]">
+                    [%# class of submit_sign_in so name can be optional, name of submit_register so it doesn't try and sign us in %]
+                    <p><input class="green-btn js-submit_sign_in" type="submit" name="submit_register" value="[% loc('Submit') %]">
                 </div>
 
         </div>
