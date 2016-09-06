@@ -215,8 +215,8 @@ sub updates_as_hashref {
         $hashref->{update_pp} = $self->prettify_dt( $problem->lastupdate );
 
         if ( $problem->state eq 'fixed - council' ) {
-            $hashref->{details} = FixMyStreet::App::View::Web->add_links(
-                $ctx, $problem->get_extra_metadata('public_response') || '' );
+            $hashref->{details} = FixMyStreet::App::View::Web::add_links(
+                $problem->get_extra_metadata('public_response') || '' );
         } elsif ( $problem->state eq 'closed' ) {
             $hashref->{details} = sprintf( _('Assigned to %s'), $problem->body($ctx)->name );
         }
