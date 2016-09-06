@@ -263,10 +263,7 @@ $.extend(fixmystreet.set_up, {
 
     $('#submit_register').click( function(e) {
         $('#form_category').addClass('required validCategory').removeClass('valid');
-        $('#form_name').addClass('required');
-        if ( $('#mapForm').length ) {
-            $('#form_name').addClass('validName');
-        }
+        $('#form_name').addClass('required validName');
         $('#form_first_name').addClass('required');
         $('#form_last_name').addClass('required');
         $('#form_fms_extra_title').addClass('required');

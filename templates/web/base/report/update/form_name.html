@@ -25,8 +25,7 @@
     <p class='form-error'>[% field_errors.name %]</p>
 [% END %]
 
-<input type="text"
-    [%- IF c.cobrand.moniker.match('fixmystreet|bromley') AND problem.bodies_str == '2482' %]class="validName" [% END -%]
+<input type="text" class="validName"
     name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
 
 <div class="checkbox-group">
