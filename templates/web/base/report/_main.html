@@ -1,5 +1,6 @@
-[% can_moderate = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
-[% can_inspect = c.user && c.user.has_permission_to('report_inspect', problem.bodies_str) && !hide_inspect_button %]
+[% IF c.user_exists %]
+    [% DEFAULT permissions = c.user.permissions(c, problem.bodies_str) %]
+[%- END %]
 
 <a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
     class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
@@ -23,7 +24,7 @@
 </form>
 [% END %]
 
-  [% IF can_moderate %]
+  [% IF permissions.moderate %]
     [% original = problem_original %]
     <form method="post" action="/moderate/report/[% problem.id %]">
         <input type="hidden" name="token" value="[% csrf_token %]">
@@ -31,7 +32,7 @@
 
     <h1 class="moderate-display">[% problem.title | html %]</h1>
 
-  [% IF can_moderate %]
+  [% IF permissions.moderate %]
     <div class="moderate-edit">
       [% IF problem.title != original.title %]
         <label>
@@ -60,7 +61,7 @@
 
     [% INCLUDE 'report/_support.html' %]
 
-  [% IF can_moderate %]
+  [% IF permissions.moderate %]
     [% IF problem.photo or original.photo %]
         <p class="moderate-edit">
             <label>
@@ -76,7 +77,7 @@
         [% problem.detail | add_links | html_para %]
     </div>
 
-  [% IF can_moderate %]
+  [% IF permissions.moderate %]
     <p class="moderate-edit">
       [% IF problem.detail != original.detail %]
         <label>
@@ -105,18 +106,24 @@
     </div>
   [% END %]
 
-  [% IF can_moderate OR can_inspect %]
+  [% IF permissions.keys.grep('moderate|report_inspect|report_edit_category|report_edit_priority').size %]
     <p class="moderate-display">
-      [% IF can_moderate %]
+      [% IF permissions.moderate %]
         <input type="button" class="btn moderate" value="Moderate this report">
       [% END %]
-      [% IF can_inspect %]
-        <a href="/report/[% problem.id %]/inspect" class="btn inspect">Inspect</a>
+      [% IF !hide_inspect_button AND permissions.keys.grep('report_inspect|report_edit_category|report_edit_priority').size %]
+          <a href="/report/[% problem.id %]/inspect" class="btn inspect">
+          [%- IF permissions.report_inspect %]
+            [%- loc('Inspect') %]
+          [%- ELSE %]
+            [%- loc('Manage') %]
+          [%- END ~%]
+          </a>
       [% END %]
     </p>
   [% END %]
 
-  [% IF can_moderate %]
+  [% IF permissions.moderate %]
     </form>
   [% END %]
 

@@ -1,4 +1,5 @@
 [% PROCESS 'admin/report_blocks.html'; # For the report state dropdown %]
+[% permissions = c.user.permissions(c, problem.bodies_str) %]
 [% second_column = BLOCK -%]
   <div id="side-report-secondary">
     <div class="problem-inspector-fields clearfix">
@@ -7,6 +8,8 @@
           <label for="problem_id">[% loc('Report ID:') %]</label>
           <input type="text" readonly id="problem_id" value="[% problem.id %]">
         </p>
+
+[% IF permissions.report_edit_priority OR permissions.report_inspect %]
         <p class="right">
           <label for="problem_priority">[% loc('Priority:') %]</label>
           <select name="priority" id="problem_priority">
@@ -16,6 +19,9 @@
             [% END %]
           </select>
         </p>
+[% END %]
+
+[% IF permissions.report_inspect %]
         <p class="left">
           <label for="state">[% loc('State:') %]</label>
             [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
@@ -29,6 +35,9 @@
             [% END %]
           </select>
         </p>
+[% END %]
+
+[% IF permissions.report_edit_category OR permissions.report_inspect %]
         <p class="right">
           <label for="category">[% loc('Category:') %]</label>
             [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
@@ -47,6 +56,8 @@
             [% END %]
           </select>
         </p>
+[% END %]
+
         <p>
           [% SET local_coords = problem.local_coords; %]
           <strong>[% loc('Easting/Northing:') %]</strong>
@@ -59,6 +70,8 @@
           <a href="#" id="geolocate_link">[% loc('Use my current location') %]</a>,
           [% loc('or drag the pin on the map') %] &raquo;
         </p>
+
+[% IF permissions.report_inspect %]
         <p>
           <label for="detailed_information">[% loc('Detailed problem location:') %]</label>
           <textarea rows="2" name="detailed_location">[% problem.get_extra_metadata('detailed_location') | html %]</textarea>
@@ -71,6 +84,8 @@
           <label for="traffic_information">[% loc('Traffic management information:') %]</label>
           <textarea rows="2" name="traffic_information">[% problem.get_extra_metadata('traffic_information') | html %]</textarea>
         </p>
+[% END %]
+
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]">
           <a href="[% c.uri_for( '/report', problem.id ) %]" class="btn">[% loc('Cancel') %]</a>

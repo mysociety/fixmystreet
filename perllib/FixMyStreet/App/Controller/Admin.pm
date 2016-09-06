@@ -859,14 +859,11 @@ $problem->bodies_str.
 sub report_edit_location : Private {
     my ($self, $c, $problem) = @_;
 
-    return 1 unless $c->forward('/report/new/determine_location');
+    return 1 unless $c->forward('/location/determine_location_from_coords');
 
-    if ( $c->stash->{latitude} != $problem->latitude || $c->stash->{longitude} != $problem->longitude ) {
-        delete $c->stash->{prefetched_all_areas};
-        delete $c->stash->{all_areas};
-        delete $c->stash->{fetch_all_areas};
-        delete $c->stash->{all_areas_mapit};
-        $c->forward('/council/load_and_check_areas');
+    my ($lat, $lon) = map { Utils::truncate_coordinate($_) } $problem->latitude, $problem->longitude;
+    if ( $c->stash->{latitude} != $lat || $c->stash->{longitude} != $lon ) {
+        $c->forward('/council/load_and_check_areas', []);
         $c->forward('/report/new/setup_categories_and_bodies');
         my %allowed_bodies = map { $_ => 1 } @{$problem->bodies_str_ids};
         my @new_bodies = @{$c->stash->{bodies_to_list}};
@@ -885,8 +882,8 @@ sub categories_for_point : Private {
     # We have a report, stash its location
     $c->forward('/report/new/determine_location_from_report');
     # Look up the areas for this location
-    $c->stash->{prefetched_all_areas} = [ grep { $_ } split ',', $c->stash->{report}->areas ];
-    $c->forward('/around/check_location_is_acceptable');
+    my $prefetched_all_areas = [ grep { $_ } split ',', $c->stash->{report}->areas ];
+    $c->forward('/around/check_location_is_acceptable', [ $prefetched_all_areas ]);
     # As with a new report, fetch the bodies/categories
     $c->forward('/report/new/setup_categories_and_bodies');
 

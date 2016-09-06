@@ -481,7 +481,7 @@ sub determine_location : Private {
               || $c->forward('/location/determine_location_from_coords')
               || $c->forward('determine_location_from_report')
           )    #
-          && $c->forward('/around/check_location_is_acceptable');
+          && $c->forward('/around/check_location_is_acceptable', []);
     return;
 }
 

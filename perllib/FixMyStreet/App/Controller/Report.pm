@@ -3,6 +3,7 @@ package FixMyStreet::App::Controller::Report;
 use Moose;
 use namespace::autoclean;
 use JSON::MaybeXS;
+use List::MoreUtils qw(any);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -299,7 +300,8 @@ sub inspect : Private {
 
     $c->forward('/auth/get_csrf_token');
     $c->forward( 'load_problem_or_display_error', [ $id ] );
-    $c->forward( 'check_has_permission_to', [ 'report_inspect' ] );
+    my $permissions = $c->forward( 'check_has_permission_to',
+        [ qw/report_inspect report_edit_category report_edit_priority/ ] );
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
 
@@ -310,28 +312,32 @@ sub inspect : Private {
     if ( $c->get_param('save') || $c->get_param('save_inspected') ) {
         $c->forward('/auth/check_csrf_token');
 
-        foreach (qw/detailed_location detailed_information traffic_information/) {
-            $problem->set_extra_metadata( $_ => $c->get_param($_) );
+        if ($permissions->{report_inspect}) {
+            foreach (qw/detailed_location detailed_information traffic_information/) {
+                $problem->set_extra_metadata( $_ => $c->get_param($_) );
+            }
+
+            if ( $c->get_param('save_inspected') ) {
+                $problem->set_extra_metadata( inspected => 1 );
+            }
+
+            # Handle the state changing
+            my $old_state = $problem->state;
+            $problem->state($c->get_param('state'));
+            if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
+                $problem->confirmed( \'current_timestamp' );
+            }
+            if ( $problem->state eq 'hidden' ) {
+                $problem->get_photoset->delete_cached;
+            }
+            if ( $problem->state ne $old_state ) {
+                $c->forward( '/admin/log_edit', [ $id, 'problem', 'state_change' ] );
+            }
         }
 
-        if ( $c->get_param('save_inspected') ) {
-            $problem->set_extra_metadata( inspected => 1 );
+        if ($c->get_param('priority') && ($permissions->{report_inspect} || $permissions->{report_edit_priority})) {
+            $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
         }
-
-        # Handle the state changing
-        my $old_state = $problem->state;
-        $problem->state($c->get_param('state'));
-        if ( $problem->is_visible() and $old_state eq 'unconfirmed' ) {
-            $problem->confirmed( \'current_timestamp' );
-        }
-        if ( $problem->state eq 'hidden' ) {
-            $problem->get_photoset->delete_cached;
-        }
-        if ( $problem->state ne $old_state ) {
-            $c->forward( '/admin/log_edit', [ $id, 'problem', 'state_change' ] );
-        }
-
-        $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
 
         my $valid = 1;
         if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
@@ -340,7 +346,9 @@ sub inspect : Private {
             $c->stash->{errors} = [ _('Invalid location. New location must be covered by the same council.') ];
         }
 
-        $c->forward( '/admin/report_edit_category', [ $problem ] );
+        if ($permissions->{report_inspect} || $permissions->{report_edit_category}) {
+            $c->forward( '/admin/report_edit_category', [ $problem ] );
+        }
 
         if ($valid) {
             $problem->update;
@@ -362,18 +370,22 @@ sub map : Private {
 
 =head2 check_has_permission_to
 
-Ensure the currently logged-in user has a particular permission that applies
+Ensure the currently logged-in user has any of the provided permissions applied
 to the current Problem in $c->stash->{problem}. Shows the 403 page if not.
 
 =cut
 
 sub check_has_permission_to : Private {
-    my ( $self, $c, $permission ) = @_;
+    my ( $self, $c, @permissions ) = @_;
 
     my $bodies = $c->stash->{problem}->bodies_str;
 
+    my %permissions = map { $_ => $c->user->has_permission_to($_, $bodies) } @permissions
+        if $c->user_exists;
     $c->detach('/page_error_403_access_denied', [ _("Sorry, you don't have permission to do that.") ] )
-        unless $c->user_exists && $c->user->has_permission_to($permission, $bodies);
+        unless $c->user_exists && any { $_ } values %permissions;
+
+    return \%permissions;
 };
 
 __PACKAGE__->meta->make_immutable;

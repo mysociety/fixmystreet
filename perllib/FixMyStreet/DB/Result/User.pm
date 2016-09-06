@@ -240,18 +240,34 @@ sub split_name {
     return { first => $first || '', last => $last || '' };
 }
 
+sub permissions {
+    my ($self, $c, $body_id) = @_;
+
+    if ($self->is_superuser) {
+        my $perms = $c->cobrand->available_permissions;
+        return { map { %$_ } values %$perms };
+    }
+
+    return unless $self->belongs_to_body($body_id);
+
+    my @permissions = $self->user_body_permissions->search({
+        body_id => $self->from_body->id,
+    })->all;
+    return { map { $_->permission_type => 1 } @permissions };
+}
+
 sub has_permission_to {
     my ($self, $permission_type, $body_id) = @_;
 
     return 1 if $self->is_superuser;
 
-    return unless $self->belongs_to_body($body_id);
+    return 0 unless $self->belongs_to_body($body_id);
 
     my $permission = $self->user_body_permissions->find({ 
             permission_type => $permission_type,
             body_id => $self->from_body->id,
         });
-    return $permission ? 1 : undef;
+    return $permission ? 1 : 0;
 }
 
 =head2 has_body_permission_to
