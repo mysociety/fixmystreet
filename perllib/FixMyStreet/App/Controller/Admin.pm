@@ -219,8 +219,11 @@ sub bodies : Path('bodies') : Args(0) {
     my ( $self, $c ) = @_;
 
     if (my $body_id = $c->get_param('body')) {
-        $c->res->redirect( $c->uri_for( 'body', $body_id ) );
-        return;
+        return $c->res->redirect( $c->uri_for( 'body', $body_id ) );
+    }
+
+    if (!$c->user->is_superuser && $c->user->from_body && $c->cobrand->moniker ne 'zurich') {
+        return $c->res->redirect( $c->uri_for( 'body', $c->user->from_body->id ) );
     }
 
     $c->forward( '/auth/get_csrf_token' );
@@ -298,7 +301,10 @@ sub body : Path('body') : Args(1) {
 
     $c->stash->{body_id} = $body_id;
 
-    $c->forward( 'check_for_super_user' );
+    unless ($c->user->has_permission_to('category_edit', $body_id)) {
+        $c->forward('check_for_super_user');
+    }
+
     $c->forward( '/auth/get_csrf_token' );
     $c->forward( 'lookup_body' );
     $c->forward( 'fetch_all_bodies' );

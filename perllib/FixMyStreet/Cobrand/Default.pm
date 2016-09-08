@@ -644,10 +644,8 @@ sub admin_pages {
 
     my $pages = {
          'summary' => [_('Summary'), 0],
-         'bodies' => [_('Bodies'), 1],
          'timeline' => [_('Timeline'), 5],
          'stats'  => [_('Stats'), 8],
-         'body' => [undef, undef],
     };
 
     # There are some pages that only super users can see
@@ -656,6 +654,10 @@ sub admin_pages {
         $pages->{config} = [ _('Configuration'), 9];
     };
     # And some that need special permissions
+    if ( $user->is_superuser || $user->has_body_permission_to('category_edit') ) {
+        $pages->{bodies} = [ _('Bodies'), 1 ];
+        $pages->{body} = [ undef, undef ];
+    }
     if ( $user->is_superuser || $user->has_body_permission_to('report_edit') ) {
         $pages->{reports} = [ _('Reports'), 2 ];
         $pages->{report_edit} = [ undef, undef ];
@@ -726,6 +728,7 @@ sub available_permissions {
             user_assign_areas => _("Assign users to areas"), # future use
         },
         _("Bodies") => {
+            category_edit => _("Add/edit problem categories"),
             template_edit => _("Add/edit response templates"),
             responsepriority_edit => _("Add/edit response priorities"),
         },

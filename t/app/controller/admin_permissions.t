@@ -47,7 +47,7 @@ subtest "Users can't edit report without report_edit permission" => sub {
     }, sub {
         $mech->get("/admin/report_edit/$report_id");
         ok !$mech->res->is_success(), "want a bad response";
-        is $mech->res->code, 403, "got 403, can't edit report without report_edit permission";
+        is $mech->res->code, 404, "got 404, can't edit report without report_edit permission";
     };
 };
 
@@ -100,7 +100,7 @@ FixMyStreet::override_config {
             $report->update({ user => $report_user });
             foreach my $from_body (undef, $bromley, $oxfordshire) {
                 $user2->update({ from_body => $from_body });
-                my $result = ($from_body || '') eq $oxfordshire || $report->user eq $user2 ? ($perm ? 200 : 403 ) : 404;
+                my $result = ($from_body || '') eq $oxfordshire || $report->user eq $user2 ? ($perm ? 200 : 404 ) : 404;
                 my $u = $result == 200 ? 'can' : 'cannot';
                 my $b = $from_body ? $from_body->name : 'no body';
                 my $p = $perm ? 'with' : 'without';
