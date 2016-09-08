@@ -50,7 +50,9 @@
 
             [% IF c.cobrand.allow_photo_upload %]
                 <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
-                <label for="form_photo">[% loc('Photo') %]</label>
+                <label for="form_photo">
+                    <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
+                </label>
                 [% IF field_errors.photo %]
                     <p class='form-error'>[% field_errors.photo %]</p>
                 [% END %]
@@ -88,7 +90,7 @@
 
             <label class="" for="form_phone">[% loc('Phone number (optional)') %]</label>
             <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
-    
+
             <div class="form-txt-submit-box ">
                 <input class="green-btn" type="submit" id="submit_noname" name="submit_noname" value="[% loc('Submit') %]">
             </div>

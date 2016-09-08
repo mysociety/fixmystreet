@@ -484,6 +484,9 @@ $.extend(fixmystreet.set_up, {
       var $dropzone = $('<div>').addClass('dropzone');
 
       $originalLabel.removeAttr('for');
+      $('[data-plural]', $originalLabel).text(
+          $('[data-plural]', $originalLabel).attr('data-plural')
+      );
       $originalInput.hide();
 
       $dropzone.insertAfter($originalInput);
@@ -503,6 +506,9 @@ $.extend(fixmystreet.set_up, {
         fallback: function() {
           $dropzone.remove();
           $originalLabel.attr('for', 'form_photo');
+          $('[data-singular]', $originalLabel).text(
+              $('[data-singular]', $originalLabel).attr('data-singular')
+          );
           $originalInput.show();
         },
         init: function() {
