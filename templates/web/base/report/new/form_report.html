@@ -12,11 +12,11 @@
     [% need_to_show_category_selector = 1 %]
 [% END %]
 
-    <label for="form_title">[% loc('One-line summary') %] [% INCLUDE 'report/public_label.html' %]</label>
+    <label for="form_title">[% loc('Summarise the problem') %] [% INCLUDE 'report/public_label.html' %]</label>
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>
 [% END %]
-    <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('What’s the issue, and where is it?') %]" required>
+    <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('10 inch pothole on Example St, near post box') %]" required>
 
 [% IF c.cobrand.allow_photo_upload %]
     <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
@@ -44,11 +44,11 @@
 
 [% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
 
-    <label for="form_detail">[% loc('Description') %] [% INCLUDE 'report/public_label.html' %]</label>
+    <label for="form_detail">[% loc('Explain what’s wrong') %] [% INCLUDE 'report/public_label.html' %]</label>
 [% IF field_errors.detail %]
     <p class='form-error'>[% field_errors.detail %]</p>
 [% END %]
-    <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Explain what’s wrong, exactly where it is, and how long it’s been there…') %]" required>[% report.detail | html %]</textarea>
+    <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('This pothole has been here for two months and…') %]" required>[% report.detail | html %]</textarea>
 
 [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
 
