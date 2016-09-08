@@ -103,8 +103,8 @@ sub page_error_410_gone : Private {
 
 sub page_error_403_access_denied : Private {
     my ( $self, $c, $error_msg ) = @_;
-    $c->stash->{template}  = 'index.html';
-    $c->stash->{error} = $error_msg;
+    $c->stash->{template}  = 'errors/generic.html';
+    $c->stash->{message} = $error_msg || _("Sorry, you don't have permission to do that.");
     $c->response->status(403);
 }
 

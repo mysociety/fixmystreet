@@ -484,7 +484,7 @@ sub lookup_body : Private {
 
     my $body_id = $c->stash->{body_id};
     my $body = $c->model('DB::Body')->find($body_id);
-    $c->detach( '/page_error_404_not_found' )
+    $c->detach( '/page_error_404_not_found', [] )
       unless $body;
     $c->stash->{body} = $body;
     
@@ -672,7 +672,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     my $problem = $c->cobrand->problems->search( { id => $id } )->first;
 
-    $c->detach( '/page_error_404_not_found' )
+    $c->detach( '/page_error_404_not_found', [] )
       unless $problem;
 
     unless (
@@ -905,7 +905,7 @@ sub templates : Path('templates') : Args(0) {
         $c->forward('load_template_body', [ $user->from_body->id ]);
         $c->res->redirect( $c->uri_for( 'templates', $c->stash->{body}->id ) );
     } else {
-        $c->detach( '/page_error_404_not_found' );
+        $c->detach( '/page_error_404_not_found', [] );
     }
 }
 
@@ -937,7 +937,7 @@ sub template_edit : Path('templates') : Args(2) {
     }
     else {
         $template = $c->stash->{body}->response_templates->find( $template_id )
-            or $c->detach( '/page_error_404_not_found' );
+            or $c->detach( '/page_error_404_not_found', [] );
     }
 
     $c->forward('fetch_contacts');
@@ -989,7 +989,7 @@ sub load_template_body : Private {
                          $c->user->from_body->id eq $body_id;
 
     unless ( $c->user->is_superuser || $zurich_user || $has_permission ) {
-        $c->detach( '/page_error_404_not_found' );
+        $c->detach( '/page_error_404_not_found', [] );
     }
 
     # Regular users can only view their own body's templates
@@ -998,7 +998,7 @@ sub load_template_body : Private {
     }
 
     $c->stash->{body} = $c->model('DB::Body')->find($body_id)
-        or $c->detach( '/page_error_404_not_found' );
+        or $c->detach( '/page_error_404_not_found', [] );
 }
 
 sub users: Path('users') : Args(0) {
@@ -1061,7 +1061,7 @@ sub update_edit : Path('update_edit') : Args(1) {
 
     my $update = $c->cobrand->updates->search({ id => $id })->first;
 
-    $c->detach( '/page_error_404_not_found' )
+    $c->detach( '/page_error_404_not_found', [] )
       unless $update;
 
     $c->forward('/auth/get_csrf_token');
@@ -1212,7 +1212,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     $c->forward('/auth/get_csrf_token');
 
     my $user = $c->cobrand->users->find( { id => $id } );
-    $c->detach( '/page_error_404_not_found' ) unless $user;
+    $c->detach( '/page_error_404_not_found', [] ) unless $user;
 
     unless ( $c->user->is_superuser || $c->user->has_body_permission_to('user_edit') ) {
         $c->detach('/page_error_403_access_denied', []);
@@ -1701,7 +1701,7 @@ sub check_page_allowed : Private {
     $page ||= 'summary';
 
     if ( !grep { $_ eq $page } keys %{ $c->stash->{allowed_pages} } ) {
-        $c->detach( '/page_error_404_not_found' );
+        $c->detach( '/page_error_404_not_found', [] );
     }
 
     return 1;
