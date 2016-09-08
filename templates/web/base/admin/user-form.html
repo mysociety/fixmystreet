@@ -107,22 +107,24 @@
                 [% loc("Users can perform the following actions within their assigned body or area.") %]
               </p>
             </div>
-            [% loc('Permissions:') %]
-          </li>
+            <p>[% loc('Permissions:') %]</p>
+            <ul>
           [% FOREACH group IN available_permissions.pairs %]
             <li>
               [% group.key %]
-              <ul>
+              <ul class="no-bullets">
                 [% FOREACH permission IN group.value %]
                   <li>
-                    <label>
+                    <label class="inline">
                       <input type="checkbox" id="perms_[% permission.key %]" name="permissions[[% permission.key %]]" [% "checked" IF user.has_body_permission_to(permission.key) %]>
                       [% permission.value %]
                     </label>
                   </li>
                 [% END %]
               </ul>
+            </li>
           [% END %]
+            </ul>
         [% END %]
       [% END %]
     </ul>
