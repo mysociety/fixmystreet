@@ -648,7 +648,6 @@ sub admin_pages {
          'reports' => [_('Reports'), 2],
          'timeline' => [_('Timeline'), 5],
          'users' => [_('Users'), 6],
-         'flagged'  => [_('Flagged'), 7],
          'stats'  => [_('Stats'), 8],
          'user_edit' => [undef, undef],
          'body' => [undef, undef],
@@ -659,16 +658,17 @@ sub admin_pages {
 
     # There are some pages that only super users can see
     if ( $user->is_superuser ) {
+        $pages->{flagged} = [ _('Flagged'), 7 ];
         $pages->{config} = [ _('Configuration'), 9];
     };
     # And some that need special permissions
     if ( $user->is_superuser || $user->has_body_permission_to('template_edit') ) {
-        $pages->{templates} = [_('Templates'), 3];
-        $pages->{template_edit} = [undef, undef];
+        $pages->{templates} = [ _('Templates'), 3 ];
+        $pages->{template_edit} = [ undef, undef ];
     };
     if ( $user->is_superuser || $user->has_body_permission_to('responsepriority_edit') ) {
-        $pages->{responsepriorities} = [_('Priorities'), 4];
-        $pages->{responsepriority_edit} = [undef, undef];
+        $pages->{responsepriorities} = [ _('Priorities'), 4 ];
+        $pages->{responsepriority_edit} = [ undef, undef ];
     };
 
 

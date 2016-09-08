@@ -1025,10 +1025,8 @@ sub users: Path('users') : Args(0) {
         $c->stash->{users} = [ @users ];
 
         my $emails = $c->model('DB::Abuse')->search(
-            {
-                email => { ilike => $isearch }
-            }
-        );
+            { email => { ilike => $isearch } }
+        ) if $c->user->is_superuser;
         foreach my $email ($emails->all) {
             # Slight abuse of the boolean flagged value
             if ($email2user{$email->email}) {
@@ -1328,12 +1326,13 @@ sub flagged : Path('flagged') : Args(0) {
     # which has to use an array ref for sql quoting reasons
     $c->stash->{problems} = [ $problems->all ];
 
-    my $users = $c->model('DB::User')->search( { flagged => 1 } );
+    my $users = $c->cobrand->users->search( { flagged => 1 } );
     my @users = $users->all;
     my %email2user = map { $_->email => $_ } @users;
     $c->stash->{users} = [ @users ];
 
-    my @abuser_emails = $c->model('DB::Abuse')->all();
+    my @abuser_emails = $c->model('DB::Abuse')->all()
+        if $c->user->is_superuser;
 
     foreach my $email (@abuser_emails) {
         # Slight abuse of the boolean flagged value
@@ -1566,7 +1565,7 @@ sub flag_user : Private {
 
     return unless $email;
 
-    my $user = $c->model('DB::User')->find({ email => $email });
+    my $user = $c->cobrand->users->find({ email => $email });
 
     if ( !$user ) {
         $c->stash->{status_message} = _('Could not find user');
@@ -1594,7 +1593,7 @@ sub remove_user_flag : Private {
 
     return unless $email;
 
-    my $user = $c->model('DB::User')->find({ email => $email });
+    my $user = $c->cobrand->users->find({ email => $email });
 
     if ( !$user ) {
         $c->stash->{status_message} = _('Could not find user');
