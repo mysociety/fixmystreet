@@ -646,7 +646,7 @@ sub admin_pages {
          'summary' => [_('Summary'), 0],
          'bodies' => [_('Bodies'), 1],
          'reports' => [_('Reports'), 2],
-         'timeline' => [_('Timeline'), 3],
+         'timeline' => [_('Timeline'), 4],
          'users' => [_('Users'), 5],
          'flagged'  => [_('Flagged'), 6],
          'stats'  => [_('Stats'), 7],
@@ -661,6 +661,12 @@ sub admin_pages {
     if ( $user->is_superuser ) {
         $pages->{config} = [ _('Configuration'), 8];
     };
+    # And some that need special permissions
+    if ( $user->is_superuser || $user->has_body_permission_to('template_edit') ) {
+        $pages->{templates} = [_('Templates'), 3],
+        $pages->{template_edit} = [undef, undef],
+    };
+
 
     return $pages;
 }
@@ -710,6 +716,9 @@ sub available_permissions {
             user_manage_permissions => _("Edit other users' permissions"),
             user_assign_body => _("Grant access to the admin"),
             user_assign_areas => _("Assign users to areas"), # future use
+        },
+        _("Bodies") => {
+            template_edit => _("Add/edit response templates"),
         },
     };
 }

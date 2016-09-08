@@ -254,6 +254,29 @@ sub has_permission_to {
     return $permission ? 1 : undef;
 }
 
+=head2 has_body_permission_to
+
+Checks if the User has a from_body set, and the specified permission on that body.
+
+Instead of saying:
+
+    ($user->from_body && $user->has_permission_to('user_edit', $user->from_body->id))
+
+You can just say:
+
+    $user->has_body_permission_to('user_edit')
+
+NB unlike has_permission_to, this doesn't blindly return 1 if the user is a superuser.
+
+=cut
+
+sub has_body_permission_to {
+    my ($self, $permission_type) = @_;
+    return unless $self->from_body;
+
+    return $self->has_permission_to($permission_type, $self->from_body->id);
+}
+
 sub contributing_as {
     my ($self, $other, $c, $bodies) = @_;
     $bodies = join(',', keys %$bodies) if ref $bodies eq 'HASH';

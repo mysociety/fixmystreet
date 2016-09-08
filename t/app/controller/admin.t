@@ -15,6 +15,7 @@ my $user2 = $mech->create_user_ok('test2@example.com', name => 'Test User 2');
 my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super User', is_superuser => 1);
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council', id => 2482);
@@ -1175,6 +1176,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]" => undef,
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
+                "permissions[template_edit]" => undef,
             },
             changes => {
                 name => 'Changed User',
@@ -1205,6 +1207,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]" => undef,
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
+                "permissions[template_edit]" => undef,
             },
             changes => {
                 email => 'changed@example.com',
@@ -1235,6 +1238,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]" => undef,
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
+                "permissions[template_edit]" => undef,
             },
             changes => {
                 body => $southend->id,
@@ -1265,6 +1269,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]" => undef,
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
+                "permissions[template_edit]" => undef,
             },
             changes => {
                 flagged => 'on',
@@ -1295,6 +1300,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]" => undef,
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
+                "permissions[template_edit]" => undef,
             },
             changes => {
                 flagged => undef,
@@ -1325,6 +1331,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]" => undef,
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
+                "permissions[template_edit]" => undef,
             },
             changes => {
                 is_superuser => 'on',
@@ -1343,6 +1350,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]",
                 "permissions[user_assign_body]",
                 "permissions[user_assign_areas]",
+                "permissions[template_edit]",
             ],
             log_count => 5,
             log_entries => [qw/edit edit edit edit edit/],
@@ -1375,6 +1383,7 @@ FixMyStreet::override_config {
                 "permissions[user_manage_permissions]" => undef,
                 "permissions[user_assign_body]" => undef,
                 "permissions[user_assign_areas]" => undef,
+                "permissions[template_edit]" => undef,
             },
             log_count => 5,
             log_entries => [qw/edit edit edit edit edit/],
@@ -1490,16 +1499,43 @@ subtest "Users with from_body can't access fixmystreet.com admin" => sub {
     };
 };
 
-$mech->log_out_ok;
-$user2->user_body_permissions->delete_all;
-$oxfordshireuser->user_body_permissions->delete_all;
+subtest "response templates can be added" => sub {
+    is $oxfordshire->response_templates->count, 0, "No response templates yet";
+    $mech->log_in_ok( $superuser->email );
+    $mech->get_ok( "/admin/templates/" . $oxfordshire->id . "/new" );
 
+    my $fields = {
+        title => "Report acknowledgement",
+        text => "Thank you for your report. We will respond shortly.",
+        auto_response => undef,
+        "contacts[".$oxfordshirecontact->id."]" => 1,
+    };
+    $mech->submit_form_ok( { with_fields => $fields } );
+
+     is $oxfordshire->response_templates->count, 1, "Response template was added";
+};
+
+subtest "response templates are included on page" => sub {
+    FixMyStreet::override_config {
+        ALLOWED_COBRANDS => [ 'oxfordshire' ],
+    }, sub {
+        $report->update({ category => $oxfordshirecontact->category, bodies_str => $oxfordshire->id });
+        $mech->log_in_ok( $oxfordshireuser->email );
+
+        $mech->get_ok("/report/" . $report->id);
+        $mech->content_contains( $oxfordshire->response_templates->first->text );
+
+        $mech->log_out_ok;
+    };
+};
+
+$mech->log_out_ok;
 
 $mech->delete_user( $user );
 $mech->delete_user( $user2 );
 $mech->delete_user( $user3 );
 $mech->delete_user( $superuser );
-$mech->delete_user( $oxfordshireuser );
 $mech->delete_user( 'test4@example.com' );
+$mech->delete_body( $oxfordshire );
 
 done_testing();

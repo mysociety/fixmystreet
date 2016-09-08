@@ -473,5 +473,12 @@ create table response_templates (
     title text not null,
     text text not null,
     created timestamp not null default current_timestamp,
+    auto_response boolean NOT NULL DEFAULT 'f',
     unique(body_id, title)
+);
+
+CREATE TABLE contact_response_templates (
+    id serial NOT NULL PRIMARY KEY,
+    contact_id int REFERENCES contacts(id) NOT NULL,
+    response_template_id int REFERENCES response_templates(id) NOT NULL
 );
