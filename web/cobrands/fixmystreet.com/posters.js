@@ -26,4 +26,5 @@ $.fn.link_track = function(eventCategory, eventAction, eventLabel) {
 
 $(function() {
     $("[data-goodielink]").link_track('goodie', 'download', 'goodielink');
+    $('.js-click-select').on('click', function() { this.select(); });
 });

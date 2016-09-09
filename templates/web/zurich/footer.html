@@ -14,8 +14,9 @@
                         </p>
                       [% END %]
                         <ul class="nav-menu nav-menu--main mob-only">
-                            <li><[% IF c.req.uri.path == '/' %]a onclick="$('html, body').animate({scrollTop:0}, 500); return false;" href="#site-header"[% ELSE %]a href="/"[% END %]
-                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'a' : 'a' %]></li>[%
+                            <li><[% IF c.req.uri.path == '/' %]span[% ELSE %]a href="/"[% END %]
+                            class="report-a-problem-btn"
+                            >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                             %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
                             %]<li><[% IF c.req.uri.path == '/faq' %]span[% ELSE %]a href="/faq"[% END
