@@ -362,12 +362,18 @@ sub update_contacts : Private {
         $contact->api_key( $c->get_param('api_key') );
         $contact->send_method( $c->get_param('send_method') );
 
-        # Set the photo_required flag in extra to the appropriate value
+        # Set flags in extra to the appropriate values
         if ( $c->get_param('photo_required') ) {
             $contact->set_extra_metadata_if_undefined(  photo_required => 1 );
         }
         else {
             $contact->unset_extra_metadata( 'photo_required' );
+        }
+        if ( $c->get_param('inspection_required') ) {
+            $contact->set_extra_metadata( inspection_required => 1 );
+        }
+        else {
+            $contact->unset_extra_metadata( 'inspection_required' );
         }
 
         if ( %errors ) {

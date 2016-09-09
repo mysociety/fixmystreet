@@ -860,25 +860,25 @@ sub get_report_stats { return 0; }
 sub get_body_sender {
     my ( $self, $body, $category ) = @_;
 
+    # look up via category
+    my $contact = $body->contacts->search( { category => $category } )->first;
     if ( $body->can_be_devolved ) {
-        # look up via category
-        my $config = $body->result_source->schema->resultset("Contact")->search( { body_id => $body->id, category => $category } )->first;
-        if ( $config->send_method ) {
-            return { method => $config->send_method, config => $config };
+        if ( $contact->send_method ) {
+            return { method => $contact->send_method, config => $contact, contact => $contact };
         } else {
-            return { method => $body->send_method, config => $body };
+            return { method => $body->send_method, config => $body, contact => $contact };
         }
     } elsif ( $body->send_method ) {
-        return { method => $body->send_method, config => $body };
+        return { method => $body->send_method, config => $body, contact => $contact };
     }
 
-    return $self->_fallback_body_sender( $body, $category );
+    return $self->_fallback_body_sender( $body, $category, $contact );
 }
 
 sub _fallback_body_sender {
-    my ( $self, $body, $category ) = @_;
+    my ( $self, $body, $category, $contact ) = @_;
 
-    return { method => 'Email' };
+    return { method => 'Email', contact => $contact };
 };
 
 sub example_places {
