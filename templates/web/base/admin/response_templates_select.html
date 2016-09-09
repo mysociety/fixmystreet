@@ -1,5 +1,5 @@
 <div class="response_templates_select">
-    <select id="templates_for_[% for %]" class="js-template-name" data-for="[% for %]">
+    <select id="templates_for_[% for %]" class="js-template-name" data-for="[% for %]" name="response_template">
         <option value="">[% loc('--Choose a template--') %]</option>
       [% FOR t IN problem.response_templates %]
         <option value="[% t.text | html %]"> [% t.title | html %] </option>
