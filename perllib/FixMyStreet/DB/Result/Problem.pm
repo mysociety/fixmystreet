@@ -20,36 +20,14 @@ __PACKAGE__->add_columns(
   },
   "postcode",
   { data_type => "text", is_nullable => 0 },
-  "latitude",
-  { data_type => "double precision", is_nullable => 0 },
-  "longitude",
-  { data_type => "double precision", is_nullable => 0 },
-  "bodies_str",
-  { data_type => "text", is_nullable => 1 },
-  "areas",
-  { data_type => "text", is_nullable => 0 },
-  "category",
-  { data_type => "text", default_value => "Other", is_nullable => 0 },
   "title",
   { data_type => "text", is_nullable => 0 },
   "detail",
   { data_type => "text", is_nullable => 0 },
   "photo",
   { data_type => "bytea", is_nullable => 1 },
-  "used_map",
-  { data_type => "boolean", is_nullable => 0 },
-  "user_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "name",
   { data_type => "text", is_nullable => 0 },
-  "anonymous",
-  { data_type => "boolean", is_nullable => 0 },
-  "external_id",
-  { data_type => "text", is_nullable => 1 },
-  "external_body",
-  { data_type => "text", is_nullable => 1 },
-  "external_team",
-  { data_type => "text", is_nullable => 1 },
   "created",
   {
     data_type     => "timestamp",
@@ -57,18 +35,22 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "confirmed",
-  { data_type => "timestamp", is_nullable => 1 },
   "state",
   { data_type => "text", is_nullable => 0 },
-  "lang",
-  { data_type => "text", default_value => "en-gb", is_nullable => 0 },
-  "service",
-  { data_type => "text", default_value => "", is_nullable => 0 },
-  "cobrand",
-  { data_type => "text", default_value => "", is_nullable => 0 },
-  "cobrand_data",
-  { data_type => "text", default_value => "", is_nullable => 0 },
+  "whensent",
+  { data_type => "timestamp", is_nullable => 1 },
+  "used_map",
+  { data_type => "boolean", is_nullable => 0 },
+  "bodies_str",
+  { data_type => "text", is_nullable => 1 },
+  "anonymous",
+  { data_type => "boolean", is_nullable => 0 },
+  "category",
+  { data_type => "text", default_value => "Other", is_nullable => 0 },
+  "confirmed",
+  { data_type => "timestamp", is_nullable => 1 },
+  "send_questionnaire",
+  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
   "lastupdate",
   {
     data_type     => "timestamp",
@@ -76,14 +58,32 @@ __PACKAGE__->add_columns(
     is_nullable   => 0,
     original      => { default_value => \"now()" },
   },
-  "whensent",
-  { data_type => "timestamp", is_nullable => 1 },
-  "send_questionnaire",
-  { data_type => "boolean", default_value => \"true", is_nullable => 0 },
-  "extra",
+  "areas",
+  { data_type => "text", is_nullable => 0 },
+  "service",
+  { data_type => "text", default_value => "", is_nullable => 0 },
+  "lang",
+  { data_type => "text", default_value => "en-gb", is_nullable => 0 },
+  "cobrand",
+  { data_type => "text", default_value => "", is_nullable => 0 },
+  "cobrand_data",
+  { data_type => "text", default_value => "", is_nullable => 0 },
+  "latitude",
+  { data_type => "double precision", is_nullable => 0 },
+  "longitude",
+  { data_type => "double precision", is_nullable => 0 },
+  "external_id",
   { data_type => "text", is_nullable => 1 },
+  "external_body",
+  { data_type => "text", is_nullable => 1 },
+  "external_team",
+  { data_type => "text", is_nullable => 1 },
+  "user_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "flagged",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "extra",
+  { data_type => "text", is_nullable => 1 },
   "geocode",
   { data_type => "bytea", is_nullable => 1 },
   "send_fail_count",
@@ -106,6 +106,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "bodies_missing",
   { data_type => "text", is_nullable => 1 },
+  "response_priority_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -127,6 +129,17 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->belongs_to(
+  "response_priority",
+  "FixMyStreet::DB::Result::ResponsePriority",
+  { id => "response_priority_id" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "NO ACTION",
+    on_update     => "NO ACTION",
+  },
+);
+__PACKAGE__->belongs_to(
   "user",
   "FixMyStreet::DB::Result::User",
   { id => "user_id" },
@@ -140,8 +153,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-07-20 15:00:41
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:PMOhd1uloLTAYovW/fxgSg
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-07 11:01:40
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iH9c4VZZN/ONnhN6g89DFw
 
 # Add fake relationship to stored procedure table
 __PACKAGE__->has_one(
@@ -652,6 +665,27 @@ sub response_templates {
         },
         {
             order_by => 'title'
+        }
+    );
+}
+
+=head2 response_priorities
+
+Returns all ResponsePriorities attached to this problem's category/contact, in
+alphabetical order of name.
+
+=cut
+
+sub response_priorities {
+    my $self = shift;
+    return $self->result_source->schema->resultset('ResponsePriority')->search(
+        {
+            'me.body_id' => $self->bodies_str_ids,
+            'contact.category' => $self->category,
+        },
+        {
+            order_by => 'name',
+            join => { 'contact_response_priorities' => 'contact' },
         }
     );
 }

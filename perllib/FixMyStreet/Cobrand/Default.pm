@@ -646,10 +646,10 @@ sub admin_pages {
          'summary' => [_('Summary'), 0],
          'bodies' => [_('Bodies'), 1],
          'reports' => [_('Reports'), 2],
-         'timeline' => [_('Timeline'), 4],
-         'users' => [_('Users'), 5],
-         'flagged'  => [_('Flagged'), 6],
-         'stats'  => [_('Stats'), 7],
+         'timeline' => [_('Timeline'), 5],
+         'users' => [_('Users'), 6],
+         'flagged'  => [_('Flagged'), 7],
+         'stats'  => [_('Stats'), 8],
          'user_edit' => [undef, undef],
          'body' => [undef, undef],
          'report_edit' => [undef, undef],
@@ -659,12 +659,16 @@ sub admin_pages {
 
     # There are some pages that only super users can see
     if ( $user->is_superuser ) {
-        $pages->{config} = [ _('Configuration'), 8];
+        $pages->{config} = [ _('Configuration'), 9];
     };
     # And some that need special permissions
     if ( $user->is_superuser || $user->has_body_permission_to('template_edit') ) {
-        $pages->{templates} = [_('Templates'), 3],
-        $pages->{template_edit} = [undef, undef],
+        $pages->{templates} = [_('Templates'), 3];
+        $pages->{template_edit} = [undef, undef];
+    };
+    if ( $user->is_superuser || $user->has_body_permission_to('responsepriority_edit') ) {
+        $pages->{responsepriorities} = [_('Priorities'), 4];
+        $pages->{responsepriority_edit} = [undef, undef];
     };
 
 
@@ -719,6 +723,7 @@ sub available_permissions {
         },
         _("Bodies") => {
             template_edit => _("Add/edit response templates"),
+            responsepriority_edit => _("Add/edit response priorities"),
         },
     };
 }

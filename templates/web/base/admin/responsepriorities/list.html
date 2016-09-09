@@ -1,0 +1,22 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Response Priorities for %s'), body.name) -%]
+
+<table>
+    <thead>
+    <tr>
+        <th>  [% loc('Name') %] </th>
+        <th>  &nbsp; </th>
+    </tr>
+    </thead>
+    <tbody>
+      [% FOR p IN response_priorities %]
+          <tr [% 'class="is-deleted"' IF p.deleted %]>
+              <td>  [% p.name %] </td>
+              <td> <a href="/admin/responsepriorities/[% body.id %]/[% p.id %]" class="btn">[% loc('Edit') %]</a> </td>
+          </tr>
+      [% END %]
+    </tbody>
+</table>
+
+<a href="[% c.uri_for('', body.id, 'new') %]" class="btn">[% loc('New priority') %]</a>
+
+[% INCLUDE 'admin/footer.html' %]

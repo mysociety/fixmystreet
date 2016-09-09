@@ -10,9 +10,9 @@
         <p class="right">
           <label for="problem_priority">[% loc('Priority:') %]</label>
           <select name="priority" id="problem_priority">
-            <option value="" [% 'selected' UNLESS problem.get_extra_metadata('priority') %]>-</option>
-            [% FOREACH priority IN priorities %]
-              <option value="[% priority.key %]" [% 'selected' IF problem.get_extra_metadata('priority') == priority.key %]>[% priority.value %]</option>
+            <option value="" [% 'selected' UNLESS problem.response_priority_id %]>-</option>
+            [% FOREACH priority IN problem.response_priorities %]
+              <option value="[% priority.id %]" [% 'selected' IF problem.response_priority_id == priority.id %] [% 'disabled' IF priority.deleted %]>[% priority.name %]</option>
             [% END %]
           </select>
         </p>

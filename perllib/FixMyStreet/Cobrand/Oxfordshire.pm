@@ -99,15 +99,6 @@ sub problem_response_days {
     return undef;
 }
 
-sub problem_response_priorities {
-    return {
-        cat1a => 'Cat 1A (4 hours)',
-        cat1b => 'Cat 1B (24 hours)',
-        cat2 => 'Cat 2 (2 days)',
-        cat3 => 'Cat 3 (10 days)',
-    };
-}
-
 sub reports_ordering {
     return { -desc => 'confirmed' };
 }

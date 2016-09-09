@@ -1,0 +1,41 @@
+[% INCLUDE 'admin/header.html' title=tprintf(loc('Response Priority for %s'), body.name) -%]
+[% rp = response_priority %]
+
+[% UNLESS rp.id %]<h3>[% loc('New priority') %]</h3>[% END %]
+
+<form method="post"
+    action="[% c.uri_for('', body.id, rp.id || 'new' ) %]"
+    enctype="application/x-www-form-urlencoded"
+    accept-charset="utf-8"
+    class="validate">
+
+    <p>
+        <strong>[% loc('Name:') %] </strong>
+        <input type="text" name="name" class="required" size="30" value="[% rp.name | html %]">
+    </p>
+    <p>
+      <strong>[% loc('Categories:') %]</strong>
+      <ul>
+        [% FOR contact IN contacts %]
+          <li>
+            <label>
+              <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
+              [% contact.category %]
+            </label>
+          </li>
+        [% END %]
+      </ul>
+    </p>
+    <p>
+        <label>
+          <input type="checkbox" name="deleted" id="deleted" value="1"[% ' checked' IF rp.deleted %]>
+          [% loc('Flag as deleted') %]
+        </label>
+    </p>
+    <p>
+      <input type="hidden" name="token" value="[% csrf_token %]" >
+      <input type="submit" name="Edit priorities" value="[% rp.id ? loc('Save changes') : loc('Create priority') %]" >
+    </p>
+</form>
+
+[% INCLUDE 'admin/footer.html' %]
