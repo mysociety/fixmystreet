@@ -23,11 +23,7 @@
     <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
     <input type="hidden" name="token" value="[% csrf_token %]" >
-  [% IF contact.extra %]
-    <p><strong>[% loc('Extra data:') %] </strong>
-    [% USE Dumper %]
-    [% Dumper.dump(contact.extra) | html %]</p>
-  [% END %]
+
     <p><strong>[% loc('Email:') %] </strong>
     <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
 
@@ -85,6 +81,31 @@
     <input type="hidden" name="posted" value="new">
     <p><input type="submit" name="Save changes" value="[% loc('Save changes') %]">
 </form>
+
+[% IF contact.extra %]
+<h2>[% loc('Extra data:') %] </h2>
+<dl>
+  [% FOR pair IN contact.get_extra_metadata %]
+    <dt>[% pair.key %]</dt> <dd>[% pair.value %]</dd>
+  [% END %]
+</dl>
+<ul>
+  [% FOR meta IN contact.get_metadata_for_input %]
+    <li>
+        [% meta.order %], <code>[% meta.code %]</code>, [% meta.datatype %],
+        [% meta.required ? loc('required') : loc('optional') %]
+        <br><small>[% meta.description %]</small>
+      [% IF meta.variable != 'false' AND meta.exists('values') %]
+        <ul>
+          [% FOR option IN meta.values %]
+            <li>[% option.name %] <small>([% option.key %])</small></li>
+          [% END %]
+        </ul>
+      [%- END %]
+    </li>
+  [%- END %]
+</ul>
+[% END %]
 
 <h2>[% loc('History') %]</h2>
 <table border="1">

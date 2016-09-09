@@ -23,13 +23,13 @@ And
 
     # e.g. for sites like Zurich (but handled gracefully otherwise)
     $problem->set_extra_metadata( overdue => 1 );
-    if ($problem->get_extra_metadata( 'overdue')) { ... }
+    if ($problem->get_extra_metadata('overdue')) { ... }
 
 =head1 METHODS
 
 =head2 set_extra_metadata
 
-    $problem->set_extra_metadata( overdue => 1);
+    $problem->set_extra_metadata(overdue => 1);
 
 =cut
 
@@ -42,7 +42,7 @@ sub set_extra_metadata {
 
 =head2 set_extra_metadata_if_undefined
 
-    $problem->set_extra_metadata_if_undefined( overdue => 1);
+    $problem->set_extra_metadata_if_undefined(overdue => 1);
     # as above, but won't set if, for example 'overdue' is already set to 0
 
 =cut
@@ -72,33 +72,21 @@ sub unset_extra_metadata {
 
 =head2 get_extra_metadata
 
+    my $metadata = $problem->get_extra_metadata;
     my $overdue = $problem->get_extra_metadata('overdue');
-
-=cut
-
-sub get_extra_metadata {
-    my ($self, $key) = @_;
-    my $extra = $self->get_extra();
-
-    return $extra->{$key};
-};
-
-=head2 get_extra_metadata_as_hashref
-
-    my $hashref = $contact->get_extra_metadata_as_hashref();
 
 =cut
 
 my $META_FIELD = '_fields';
 
-sub get_extra_metadata_as_hashref {
-    my ($self) = @_;
+sub get_extra_metadata {
+    my ($self, $key) = @_;
     my $extra = $self->get_extra();
 
     my %extra = %$extra;
     delete $extra{$META_FIELD};
-    return \%extra;
-}
+    return $key ? $extra{$key} : \%extra;
+};
 
 =head2 get_extra_fields
 

@@ -54,14 +54,14 @@ subtest 'Old list layout transparently upgraded' => sub {
 
     subtest 'metadata' => sub {
         my $contact = get_test_contact([]);
-        is_deeply $contact->get_extra_metadata_as_hashref(), {}, 'No extra metadata';
+        is_deeply $contact->get_extra_metadata, {}, 'No extra metadata';
 
         $contact->set_extra_metadata('foo' => 'bar');
         is $contact->get_extra_metadata('foo'), 'bar', 'extra metadata set...';
         $contact->update;
         $contact->discard_changes;
         is $contact->get_extra_metadata('foo'), 'bar', '... and retrieved';
-        is_deeply $contact->get_extra_metadata_as_hashref(), { foo => 'bar' }, 'No extra metadata';
+        is_deeply $contact->get_extra_metadata, { foo => 'bar' }, 'No extra metadata';
     };
 };
 
@@ -88,14 +88,14 @@ subtest 'Default hash layout' => sub {
 
     subtest 'metadata' => sub {
         my $contact = get_test_contact();
-        is_deeply $contact->get_extra_metadata_as_hashref(), {}, 'No extra metadata';
+        is_deeply $contact->get_extra_metadata, {}, 'No extra metadata';
 
         $contact->set_extra_metadata('foo' => 'bar');
         is $contact->get_extra_metadata('foo'), 'bar', 'extra metadata set...';
         $contact->update;
         $contact->discard_changes;
         is $contact->get_extra_metadata( 'foo'), 'bar', '... and retrieved';
-        is_deeply $contact->get_extra_metadata_as_hashref(), { foo => 'bar' }, 'No extra metadata';
+        is_deeply $contact->get_extra_metadata, { foo => 'bar' }, 'No extra metadata';
 
         $contact->unset_extra_metadata('foo');
         is $contact->get_extra_metadata('foo'), undef, 'extra metadata now unset';
