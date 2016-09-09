@@ -50,7 +50,9 @@
 
           [% IF c.cobrand.allow_photo_upload %]
             <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
-            <label for="form_photo">[% loc('Photo') %]</label>
+            <label for="form_photo">
+                <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
+            </label>
 
               [% IF field_errors.photo %]
                 <p class='form-error'>[% field_errors.photo %]</p>
@@ -113,7 +115,7 @@
 
                     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
                     <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
-            
+
                         <div class="general-notes">
                             <p>[% loc('We never show your email address or phone number.') %]</p>
                         </div>
@@ -159,7 +161,7 @@
 
                         <label class="form-focus-hidden" for="form_phone">[% loc('Phone number (optional)') %]</label>
                         <input class="form-focus-hidden" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
-                
+
                         <div class="general-notes form-focus-hidden">
                             <p>[% loc('We never show your email address or phone number.') %]</p>
                         </div>
@@ -188,7 +190,7 @@
                             <input type="password" name="password_sign_in" id="password_sign_in" placeholder="[% loc('Your password') %]" value="">
                             <input class="green-btn js-submit_sign_in" type="submit" name="submit_sign_in" value="[% loc('Submit') %]">
                         </div>
-                        
+
                         <div class="checkbox-group">
                             <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
                             <label class="n inline" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
