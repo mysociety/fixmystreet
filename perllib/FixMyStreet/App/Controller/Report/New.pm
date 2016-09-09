@@ -616,14 +616,7 @@ sub setup_categories_and_bodies : Private {
             push @category_options, $contact->category;
 
             my $metas = $contact->get_metadata_for_input;
-            if (scalar @$metas) {
-                foreach (@$metas) {
-                    if (ref $_->{values} eq 'HASH') {
-                        $_->{values} = [ map { { name => $_->{name}[0], key => $_->{key}[0] } } @{$_->{values}->{value}} ];
-                    }
-                }
-                $category_extras{ $contact->category } = $metas;
-            }
+            $category_extras{$contact->category} = $metas if @$metas;
 
             my $body_send_method = $bodies{$contact->body_id}->send_method || '';
             $c->stash->{unresponsive}{$contact->category} = $contact->body_id
