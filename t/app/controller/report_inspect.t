@@ -52,6 +52,28 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('traffic_information'), 'Lots', 'report data changed';
     };
 
+    subtest "test inspect & instruct submission" => sub {
+        $report->unset_extra_metadata('inspected');
+        $report->update;
+        $mech->get_ok("/report/$report_id/inspect");
+        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => "This is a public update." } });
+        $report->discard_changes;
+        is $report->comments->first->text, "This is a public update.", 'Update was created';
+        is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
+    };
+
+    subtest "test update is required when instructing" => sub {
+        $report->unset_extra_metadata('inspected');
+        $report->update;
+        $report->comments->delete_all;
+        $mech->get_ok("/report/$report_id/inspect");
+        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => undef } });
+        is_deeply $mech->page_errors, [ "Please provide a public update for this report." ], 'errors match';
+        $report->discard_changes;
+        is $report->comments->count, 0, "Update wasn't created";
+        is $report->get_extra_metadata('inspected'), undef, 'report not marked as inspected';
+    };
+
     subtest "test location changes" => sub {
         $mech->get_ok("/report/$report_id/inspect");
         $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 55, longitude => -2 } });

@@ -3,6 +3,8 @@
 [% second_column = BLOCK -%]
   <div id="side-report-secondary">
     <div class="problem-inspector-fields clearfix">
+      [% INCLUDE 'errors.html' %]
+
       <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
         <p class="left">
           <label for="problem_id">[% loc('Report ID:') %]</label>
@@ -91,17 +93,24 @@
           <a href="[% c.uri_for( '/report', problem.id ) %]" class="btn">[% loc('Cancel') %]</a>
           <input type="submit" value="[% loc('Save changes') %]" name="save" />
         </p>
-        <p>
-          [% UNLESS problem.get_extra_metadata('inspected') %]
+        [% UNLESS problem.get_extra_metadata('inspected') %]
+          <p>
+            <label for="public_update">[% loc('Public update:') %]</label>
+            [% INCLUDE 'admin/response_templates_select.html' for='public_update' %]
+            <textarea rows="2" name="public_update" id="public_update" required>[% public_update | html %]</textarea>
+          </p>
+          <p>
             <input type="submit" value="[% loc('Save changes + send') %]" name="save_inspected" />
-          [% ELSE %]
+          </p>
+        [% ELSE %]
+          <p>
             [% IF problem.whensent %]
               [% loc("<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on.") %]
             [% ELSE %]
               [% loc("<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on.") %]
             [% END %]
-          [% END %]
-        </p>
+          </p>
+        [% END %]
       </form>
     </div>
   </div>
