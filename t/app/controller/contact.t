@@ -250,7 +250,7 @@ for my $test (
             $mech->get_ok('/contact');
         }
         $mech->submit_form_ok( { with_fields => $test->{fields} } );
-        $mech->content_contains('Thank you for your feedback');
+        $mech->content_contains('Thank you for your enquiry');
 
         my $email = $mech->get_email;
 
@@ -376,7 +376,7 @@ for my $test (
             $mech->clear_emails_ok;
             $mech->get_ok('/contact');
             $mech->submit_form_ok( { with_fields => $test->{fields} } );
-            $mech->content_contains('Thank you for your feedback');
+            $mech->content_contains('Thank you for your enquiry');
             $mech->email_count_is(1);
         }
     };
