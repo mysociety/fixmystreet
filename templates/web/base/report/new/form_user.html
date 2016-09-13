@@ -1,0 +1,5 @@
+[% IF c.user_exists %]
+  [% PROCESS "report/new/form_user_loggedin.html" %]
+[% ELSE %]
+  [% PROCESS "report/new/form_user_loggedout.html" %]
+[% END %]

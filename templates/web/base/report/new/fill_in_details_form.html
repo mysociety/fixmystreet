@@ -30,10 +30,6 @@
 <fieldset>
     <div id="problem_form">
         [% PROCESS 'report/new/form_report.html' %]
-      [% IF c.user_exists %]
-        [% PROCESS "report/new/form_user_loggedin.html" %]
-      [% ELSE %]
-        [% PROCESS "report/new/form_user_loggedout.html" %]
-      [% END %]
+        [% PROCESS 'report/new/form_user.html' %]
     </div>
 </fieldset>
