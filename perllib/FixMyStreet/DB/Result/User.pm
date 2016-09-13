@@ -292,6 +292,22 @@ sub has_body_permission_to {
     return $self->has_permission_to($permission_type, $self->from_body->id);
 }
 
+=head2 admin_user_body_permissions
+
+Some permissions aren't managed in the normal way via the admin, e.g. the
+'trusted' permission. This method returns a query that excludes such exceptional
+permissions.
+
+=cut
+
+sub admin_user_body_permissions {
+    my $self = shift;
+
+    return $self->user_body_permissions->search({
+        permission_type => { '!=' => 'trusted' },
+    });
+}
+
 sub contributing_as {
     my ($self, $other, $c, $bodies) = @_;
     $bodies = [ keys %$bodies ] if ref $bodies eq 'HASH';

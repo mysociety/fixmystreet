@@ -144,9 +144,14 @@ sub send(;$) {
             $reporters{ $sender } ||= $sender->new();
 
             my $inspection_required = $sender_info->{contact}->get_extra_metadata('inspection_required') if $sender_info->{contact};
-            if ( $inspection_required && !$row->get_extra_metadata('inspected') ) {
-                $skip = 1;
-                debug_print("skipped because not yet inspected", $row->id) if $debug_mode;
+            if ( $inspection_required ) {
+                unless (
+                        $row->get_extra_metadata('inspected') ||
+                        $row->user->has_permission_to( trusted => $row->bodies_str )
+                ) {
+                    $skip = 1;
+                    debug_print("skipped because not yet inspected", $row->id) if $debug_mode;
+                }
             }
 
             if ( $reporters{ $sender }->should_skip( $row ) ) {

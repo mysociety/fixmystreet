@@ -52,8 +52,28 @@ subtest 'Report is sent when inspected' => sub {
     ok $report->whensent, 'Report marked as sent';
 };
 
+subtest 'Uninspected report is sent when made by trusted user' => sub {
+    $mech->clear_emails_ok;
+    $report->unset_extra_metadata('inspected');
+    $report->whensent( undef );
+    $report->update;
+
+    $user->user_body_permissions->find_or_create({
+        body => $body,
+        permission_type => 'trusted',
+    });
+    ok  $user->has_permission_to('trusted', $report->bodies_str_ids), 'User can make trusted reports';
+
+    FixMyStreet::DB->resultset('Problem')->send_reports();
+
+    $report->discard_changes;
+    $mech->email_count_is( 1 );
+    ok $report->whensent, 'Report marked as sent';
+};
+
 done_testing();
 
 END {
+    $mech->delete_user($user);
     $mech->delete_body($body);
 }
