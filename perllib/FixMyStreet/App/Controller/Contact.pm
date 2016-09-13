@@ -191,6 +191,13 @@ sub prepare_params_for_email : Private {
         $c->stash->{problem}->update;
     }
 
+    my @extra = grep { /^extra\./ } keys %{$c->req->params};
+    foreach (@extra) {
+        my $param = $c->get_param($_);
+        my ($field_name) = /extra\.(.*)/;
+        $c->stash->{message} = "\u$field_name: $param\n\n" . $c->stash->{message};
+    }
+
     return 1;
 }
 
