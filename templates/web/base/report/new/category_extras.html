@@ -10,7 +10,7 @@
         [%- FOR meta IN category_extras.$category %]
         [%- meta_name = meta.code -%]
 
-            <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
+            <label for="form_[% meta_name %]">[% meta.description %]</label>
             [% IF field_errors.$meta_name %]
                 <p class='form-error'>[% field_errors.$meta_name %]</p>
             [% END -%]
