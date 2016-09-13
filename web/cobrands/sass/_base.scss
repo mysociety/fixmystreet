@@ -287,6 +287,38 @@ select.form-control {
     height: 2.2em; // roughly equal to default input height
 }
 
+.form-section-heading {
+    font-family: inherit;
+    color: inherit;
+    font-weight: bold;
+    margin-bottom: 0.25em;
+}
+
+.form-section-heading--private {
+    &:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 18px;
+        background: transparent url(/cobrands/fixmystreet/images/padlock.png) 0 0 no-repeat;
+        background-size: 16px 18px;
+        margin-#{$right}: 0.5em;
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/padlock@2.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/padlock.svg), none;
+        }
+    }
+}
+
+.form-section-description {
+    color: #666;
+    line-height: 1em * (22/16);
+}
+
 // grey background, full width box
 .form-box {
   margin: 0 -1em 0.25em;
@@ -1876,6 +1908,35 @@ table.nicetable {
   html.js #map .noscript {
     display: block;
   }
+}
+
+.box-warning {
+    margin: 1em -1em;
+    padding: 2em 2em;
+    background-color: mix(#fff, $primary, 70%);
+
+    h1 {
+        font-size: 1.4em;
+    }
+
+    p {
+        margin-bottom: 0.5em;
+    }
+
+    a {
+        display: inline-block;
+        margin-top: 0.5em;
+        padding: 0.5em 1em;
+        background-color: #000;
+        color: #fff;
+        border-radius: 0.3em;
+
+        &:hover,
+        &:focus {
+            text-decoration: none;
+            background-color: mix(#000, $primary, 70%);
+        }
+    }
 }
 
 @import "_admin";

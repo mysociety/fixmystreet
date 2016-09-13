@@ -4,17 +4,9 @@
     <p class="change_location">[% loc('Wrong location? Just click again on the map.') %]</p>
 [% END %]
 
-[% IF js %]
-    <p id="councils_text">
-      [% tprintf(
-          loc('All the information you provide here will be sent to <strong>%s</strong>.'),
-          loc('the local council')
-      ); %]
-      [% loc('The summary and description will also be made public (see our <a href="/privacy">privacy policy</a>).') %]
-    </p>
-[% ELSE %]
-    [% PROCESS 'report/new/councils_text.html' %]
-[% END %]
+<div id="js-top-message">
+    [% PROCESS 'report/new/top_message.html' %]
+</div>
 
 [% IF report.used_map && partial_token %]
     <p id="unknown">[% loc('Please note your report has <strong>not yet been sent</strong>. Choose a category and add further information below, then submit.') %]</p>

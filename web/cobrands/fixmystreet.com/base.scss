@@ -106,35 +106,6 @@
   }
 }
 
-.unresponsive-council-warning {
-    margin: 1em -1em;
-    padding: 2em 2em;
-    background-color: mix(#fff, $primary, 70%);
-
-    h1 {
-        font-size: 1.4em;
-    }
-
-    p {
-        margin-bottom: 0.5em;
-    }
-
-    a {
-        display: inline-block;
-        margin-top: 0.5em;
-        padding: 0.5em 1em;
-        background-color: #000;
-        color: #fff;
-        border-radius: 0.3em;
-
-        &:hover,
-        &:focus {
-            text-decoration: none;
-            background-color: mix(#000, $primary, 70%);
-        }
-    }
-}
-
 .unresponsive-council__header {
     padding-bottom: 1em;
     border-bottom: 1px solid #ccc;

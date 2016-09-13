@@ -1,0 +1,8 @@
+[% FILTER collapse %]
+[% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
+    [% loc('These will never be shown online.') %]
+[% ELSE %]
+    [% loc('These will be sent to the council, but will never be shown online.') %]
+[% END %]
+(<a href="/privacy">[% loc('See our privacy policy') %]</a>.)
+[% END -%]

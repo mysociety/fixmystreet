@@ -180,6 +180,8 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     # render templates to get the html
     my $category = $c->render_fragment( 'report/new/category.html');
     my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
+    my $councils_text_private = $c->render_fragment( 'report/new/councils_text_private.html');
+    my $top_message = $c->render_fragment('report/new/top_message.html');
     my $extra_name_info = $c->stash->{extra_name_info}
         ? $c->render_fragment('report/new/extra_name.html')
         : '';
@@ -198,11 +200,13 @@ sub report_form_ajax : Path('ajax') : Args(0) {
     my $body = encode_json(
         {
             councils_text   => $councils_text,
+            councils_text_private => $councils_text_private,
             category        => $category,
             extra_name_info => $extra_name_info,
             titles_list     => $extra_titles_list,
             categories      => $c->stash->{category_options},
             %$contribute_as ? (contribute_as => $contribute_as) : (),
+            $top_message ? (top_message => $top_message) : (),
         }
     );
 
@@ -238,7 +242,14 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $category_extra = $c->render_fragment( 'report/new/category_extras.html');
     }
 
-    my $body = encode_json({ category_extra => $category_extra });
+    my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
+    my $councils_text_private = $c->render_fragment( 'report/new/councils_text_private.html');
+
+    my $body = encode_json({
+        category_extra => $category_extra,
+        councils_text => $councils_text,
+        councils_text_private => $councils_text_private,
+    });
 
     $c->res->content_type('application/json; charset=utf-8');
     $c->res->body($body);

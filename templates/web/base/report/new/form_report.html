@@ -7,6 +7,15 @@
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
+    <h2 class="form-section-heading">Public details</h2>
+    <div class="form-section-description" id="js-councils_text">
+      [% IF js %]
+        [% PROCESS 'report/new/councils_text_all.html' list_of_names = [ loc('the local council') ] %]
+      [% ELSE %]
+        [% PROCESS 'report/new/councils_text.html' %]
+      [% END %]
+    </div>
+
     <label for="form_title">[% loc('Summarise the problem') %]</label>
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>

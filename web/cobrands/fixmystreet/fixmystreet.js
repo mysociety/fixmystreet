@@ -373,6 +373,8 @@ $.extend(fixmystreet.set_up, {
 
         $.getJSON('/report/new/category_extras', args, function(data) {
             var $category_meta = $('#category_meta');
+            $('#js-councils_text').html(data.councils_text);
+            $('#js-councils_text_private').html(data.councils_text_private);
             if ( data.category_extra ) {
                 if ( $category_meta.length ) {
                     $category_meta.replaceWith( data.category_extra );
@@ -866,7 +868,9 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         }
         $('#side-form, #site-logo').show();
         var old_category = $("select#form_category").val();
-        $('#councils_text').html(data.councils_text);
+        $('#js-councils_text').html(data.councils_text);
+        $('#js-councils_text_private').html(data.councils_text_private);
+        $('#js-top-message').html(data.top_message || '');
         $('#form_category_row').html(data.category);
         if ($("select#form_category option[value=\""+old_category+"\"]").length) {
             $("select#form_category").val(old_category);

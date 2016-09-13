@@ -1,6 +1,4 @@
 [% IF c.config.FACEBOOK_APP_ID OR c.config.TWITTER_KEY %]
-    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
-
   [% IF c.config.FACEBOOK_APP_ID %]
     <div class="form-box">
     <button name="facebook_sign_in" id="facebook_sign_in" value="facebook_sign_in" class="btn btn--block btn--social btn--facebook">
@@ -21,7 +19,6 @@
     [% PROCESS 'report/new/form_user_loggedout_email.html' required = 0 %]
 [% ELSE %]
     [% PROCESS 'report/new/form_user_loggedout_email.html' required = 1 %]
-    <h3>[% loc("Now to submit your report&hellip;") %]</h3>
 [% END %]
 
 <div id="form_sign_in">
