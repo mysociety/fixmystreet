@@ -375,7 +375,7 @@ $.extend(fixmystreet.set_up, {
             var $category_meta = $('#category_meta');
             if ( data.category_extra ) {
                 if ( $category_meta.length ) {
-                    $category_meta.html( data.category_extra );
+                    $category_meta.replaceWith( data.category_extra );
                 } else {
                     $('#form_category_row').after( data.category_extra );
                 }
