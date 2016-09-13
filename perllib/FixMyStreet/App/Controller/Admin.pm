@@ -1030,15 +1030,17 @@ sub users: Path('users') : Args(0) {
         my %email2user = map { $_->email => $_ } @users;
         $c->stash->{users} = [ @users ];
 
-        my $emails = $c->model('DB::Abuse')->search(
-            { email => { ilike => $isearch } }
-        ) if $c->user->is_superuser;
-        foreach my $email ($emails->all) {
-            # Slight abuse of the boolean flagged value
-            if ($email2user{$email->email}) {
-                $email2user{$email->email}->flagged( 2 );
-            } else {
-                push @{$c->stash->{users}}, { email => $email->email, flagged => 2 };
+        if ( $c->user->is_superuser ) {
+            my $emails = $c->model('DB::Abuse')->search(
+                { email => { ilike => $isearch } }
+            );
+            foreach my $email ($emails->all) {
+                # Slight abuse of the boolean flagged value
+                if ($email2user{$email->email}) {
+                    $email2user{$email->email}->flagged( 2 );
+                } else {
+                    push @{$c->stash->{users}}, { email => $email->email, flagged => 2 };
+                }
             }
         }
 
