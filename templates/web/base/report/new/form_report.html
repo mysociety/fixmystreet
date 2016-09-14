@@ -7,7 +7,7 @@
 [% PROCESS "report/new/category_wrapper.html" %]
 [% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
-    <label for="form_title">[% loc('Summarise the problem') %] [% INCLUDE 'report/public_label.html' %]</label>
+    <label for="form_title">[% loc('Summarise the problem') %]</label>
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>
 [% END %]
@@ -17,7 +17,6 @@
     <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
     <label for="form_photo">
         <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
-        [% INCLUDE 'report/public_label.html' %]
     </label>
 
   [% IF field_errors.photo %]
@@ -41,7 +40,7 @@
 
 [% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
 
-    <label for="form_detail">[% loc('Explain what’s wrong') %] [% INCLUDE 'report/public_label.html' %]</label>
+    <label for="form_detail">[% loc('Explain what’s wrong') %]</label>
 [% IF field_errors.detail %]
     <p class='form-error'>[% field_errors.detail %]</p>
 [% END %]
