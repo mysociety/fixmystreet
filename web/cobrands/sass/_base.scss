@@ -252,13 +252,15 @@ textarea {
 label{
   display: block;
   margin-top: 1.25em;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   font-weight: bold;
+
   &.inline {
     display: inline;
     padding: flip(0 2em 0 1em, 0 1em 0 2em);
     font-weight: normal;
   }
+
   &.inline-text {
     display: inline;
     font-weight: normal;
@@ -272,6 +274,7 @@ label{
     @include border-radius(4px);
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
     font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
+    margin-bottom: 0.5em;
 
     &[readonly] {
         box-shadow: none;
