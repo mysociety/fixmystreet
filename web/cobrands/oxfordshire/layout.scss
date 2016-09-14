@@ -171,7 +171,6 @@ body.mappage {
 
   .full-width {
     width: auto;
-    margin: 0 -1em;
   }
 
   input[type="file"] {
@@ -267,7 +266,15 @@ h4.static-with-rule {
 }
 
 .form-box {
-  background-color: darken($oxfordshire_very_light_green, 5%);
+  background-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+}
+
+.extra-category-questions {
+  background-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+
+  &:before {
+    border-bottom-color: #e3f1d5; // darker version of $oxfordshire_very_light_green
+  }
 }
 
 .shadow-wrap {

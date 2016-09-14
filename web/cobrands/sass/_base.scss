@@ -1401,6 +1401,31 @@ label .muted {
   margin-top: 0;
 }
 
+.extra-category-questions {
+  background-color: #eee;
+  padding: 1em;
+  margin-top: 1.5em; // make room for the triangle
+  position: relative;
+
+  // An upwards pointing triangle
+  &:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 1em 1em 1em;
+    border-color: transparent transparent #eee transparent;
+    position: absolute;
+    top: -0.9em; // avoid hairline gap between triangle and parent
+    #{$left}: 1.5em;
+  }
+
+  & > :first-child {
+    margin-top: 0;
+  }
+}
+
 
 table.nicetable {
   width:100%;
