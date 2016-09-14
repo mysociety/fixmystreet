@@ -2,6 +2,6 @@
 [% IF field_errors.email %]
     <p class='form-error'>[% field_errors.email %]</p>
 [% END %]
-<input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]"
+<input class="form-control" type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]"
     [% IF required %]required[% END %]
     class="required">

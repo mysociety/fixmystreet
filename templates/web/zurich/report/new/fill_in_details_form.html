@@ -46,7 +46,7 @@
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
-            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
+            <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
 
             [% PROCESS "report/new/category_wrapper.html" %]
 
@@ -54,19 +54,19 @@
                 [% IF field_errors.email %]
                     <p class='form-error'>[% field_errors.email %]</p>
                 [% END %]
-                <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
+                <input class="form-control" type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]" required>
 
                 <label for="form_name">[% loc('Name') %] [% loc('(optional)') %]</label>
                 [% IF field_errors.name %]
                     <p class='form-error'>[% field_errors.name %]</p>
                 [% END %]
-                <input class="js-form-name" type="text" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+                <input class="form-control js-form-name" type="text" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
                 <label for="form_phone">[% loc('Phone number') %]</label>
                 [% IF field_errors.phone %]
                     <p class='form-error'>[% field_errors.phone %]</p>
                 [% END %]
-                <input type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]" required>
+                <input class="form-control" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]" required>
 
                 <div class="form-txt-submit-box">
                     [%# class of submit_sign_in so name can be optional, name of submit_register so it doesn't try and sign us in %]

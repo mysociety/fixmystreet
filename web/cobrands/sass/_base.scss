@@ -10,6 +10,8 @@ $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #ccc !default;
 
+$form-control-border-color: #aaaaaa;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -222,38 +224,6 @@ h4.static-with-rule{
 
 /* FORMS */
 
-// input placeholders, these need to be on separate lines as if the browser
-// can't understand a selector it will invalidate the whole line.
-::-webkit-input-placeholder {
-  color: #666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-:-moz-placeholder {
-  color:#666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-:-ms-placeholder {
-  color:#666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-//this only gets used when the browser doesn't support @placeholder
-.placeholder {
-  color:#666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-
 input[type=file] {
     width: 100%;
 }
@@ -263,42 +233,20 @@ input[type=password],
 input[type=email],
 textarea {
   @include box-sizing(border-box);
+  display: block;
   width: 100%;
-  // adjust so the sides line up
   padding: 0.5em;
-}
-.ie7 {
-    input[type=text],
-    input[type=password],
-    input[type=email],
-    textarea {
-        max-width: 95%;
-    }
+  font-size: 1em;
+  line-height: 1em;
+
+  .ie7 & {
+    max-width: 95%;
+  }
 }
 
 textarea {
-  border: 0.125em solid #888888;
-  @include border-radius(0.25em);
-  display: block;
-  font-size: 1em;
   line-height: 1.5em;
-  font-family: $meta-font;
-  min-height:8em;
-}
-
-input[type=text],
-input[type=password],
-input[type=email] {
-  border: 0.125em solid #888888;
-  @include border-radius(0.25em);
-  display: block;
-  font-size: 1em;
-  line-height: 1em;
-}
-
-input[readonly] {
-  border-color: #cccccc;
-  color: #888888;
+  min-height: 8em;
 }
 
 label{
@@ -315,6 +263,25 @@ label{
     display: inline;
     font-weight: normal;
   }
+}
+
+.form-control {
+    display: block;
+    background-color: #fff;
+    border: 1px solid $form-control-border-color;
+    @include border-radius(4px);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
+
+    &[readonly] {
+        box-shadow: none;
+        color: #888888;
+    }
+}
+
+select.form-control {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    height: 2.2em; // roughly equal to default input height
 }
 
 // grey background, full width box
@@ -387,8 +354,8 @@ label{
     float: $right;
     width:28%;
     margin-#{$right}: 0.25em;
-    padding-top:0.7em;
-    padding-bottom:0.6em;
+    padding-top:0.6em;
+    padding-bottom:0.5em;
   }
 }
 

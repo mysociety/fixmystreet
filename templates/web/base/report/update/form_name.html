@@ -17,7 +17,7 @@
       [% END %]
     </select>
     <label for="form_email">[% loc('Email address') %]</label>
-    <input name="rznvy" id="form_email" type="text" value="[% c.user.email | html %]">
+    <input class="form-control" name="rznvy" id="form_email" type="text" value="[% c.user.email | html %]">
   [% END %]
 
 <label for="form_name">[% loc('Name') %]</label>
@@ -25,7 +25,7 @@
     <p class='form-error'>[% field_errors.name %]</p>
 [% END %]
 
-<input type="text" class="validName js-form-name"
+<input type="text" class="form-control validName js-form-name"
     name="name" id="form_name" value="[% update.name || c.user.name | html %]" placeholder="[% loc('Your name') %]">
 
 <div class="checkbox-group">

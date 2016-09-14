@@ -7,15 +7,6 @@
 @import "../sass/mixins";
 @import "_colours";
 
-// Taken from Bromley's form css
-input[type=text],
-input[type=password],
-input[type=email],
-input[type=file],
-textarea,
-select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1dee8 #d1dee8 #768b9a; color: #333; font-family: "Gill Sans MT", "Gill Sans", Arial, 'Helvetica Neue', Helvetica, sans-serif; padding: 8px;
-@include border-radius(0); }
-
 .green-btn, button.green-btn, input.green-btn {
     background: #5b7189;
     border: 1px solid #8e9eb0;
@@ -29,9 +20,6 @@ select { background: #fff; border: 1px solid #768b9a; border-color: #768b9a #d1d
 }
 .green-btn:hover, button.green-btn:hover, input.green-btn:hover {
     background: #5b7189; border: 1px solid #8e9eb0;
-}
-.form-txt-submit-box input[type=submit] {
-    padding-top: 0; padding-bottom: 0; width: auto;
 }
 
 
