@@ -188,9 +188,9 @@ sub report_form_ajax : Path('ajax') : Args(0) {
 
     my $contribute_as = {};
     if ($c->user_exists) {
-        my $bodies = join(',', keys %{$c->stash->{bodies}});
-        my $ca_another_user = $c->user->has_permission_to('contribute_as_another_user', $bodies);
-        my $ca_body = $c->user->has_permission_to('contribute_as_body', $bodies);
+        my @bodies = keys %{$c->stash->{bodies}};
+        my $ca_another_user = $c->user->has_permission_to('contribute_as_another_user', \@bodies);
+        my $ca_body = $c->user->has_permission_to('contribute_as_body', \@bodies);
         $contribute_as->{another_user} = $ca_another_user if $ca_another_user;
         $contribute_as->{body} = $ca_body if $ca_body;
     }

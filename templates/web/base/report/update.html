@@ -1,4 +1,4 @@
-[% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str) %]
+[% moderating = c.user && c.user.has_permission_to('moderate', problem.bodies_str_ids) %]
 
 [% IF loop.first %]
 <section class="full-width">

@@ -7,7 +7,7 @@
 
 <div class="problem-header clearfix" problem-id="[% problem.id %]">
 
-[% IF c.user.has_permission_to('planned_reports', problem.bodies_str) %]
+[% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) %]
 <form method="post" action="/my/planned/change" id="planned_form">
     <input type="hidden" name="id" value="[% problem.id %]">
     <input type="hidden" name="token" value="[% csrf_token %]">

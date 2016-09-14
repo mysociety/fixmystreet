@@ -5,8 +5,8 @@
     [% INCLUDE form_as %]
   </div>
 [% ELSE %]
-  [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", bodies.keys.join(",")) %]
-  [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies.keys.join(",")) %]
+  [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", bodies.keys) %]
+  [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", bodies.keys) %]
   [% IF can_contribute_as_another_user OR can_contribute_as_body %]
     [% INCLUDE form_as %]
   [% END %]

@@ -54,7 +54,7 @@ sub report : Chained('moderate') : PathPart('report') : CaptureArgs(1) {
 
     # ... and immediately, if the user isn't authorized
     $c->detach unless $c->user_exists;
-    $c->detach unless $c->user->has_permission_to(moderate => $problem->bodies_str);
+    $c->detach unless $c->user->has_permission_to(moderate => $problem->bodies_str_ids);
 
     $c->forward('/auth/check_csrf_token');
 

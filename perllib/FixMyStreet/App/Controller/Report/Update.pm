@@ -113,7 +113,7 @@ sub process_user : Private {
     if ( $c->user_exists ) { {
         my $user = $c->user->obj;
 
-        if ($c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $update->problem->bodies_str)) {
+        if ($c->stash->{contributing_as_another_user} = $user->contributing_as('another_user', $c, $update->problem->bodies_str_ids)) {
             # Act as if not logged in (and it will be auto-confirmed later on)
             last;
         }
@@ -276,7 +276,7 @@ sub process_update : Private {
     $update->mark_fixed($params{fixed} ? 1 : 0);
     $update->mark_open($params{reopen} ? 1 : 0);
 
-    $c->stash->{contributing_as_body} = $c->user_exists && $c->user->contributing_as('body', $c, $update->problem->bodies_str);
+    $c->stash->{contributing_as_body} = $c->user_exists && $c->user->contributing_as('body', $c, $update->problem->bodies_str_ids);
     if ($c->stash->{contributing_as_body}) {
         $update->name($c->user->from_body->name);
         $update->anonymous(0);
@@ -286,7 +286,7 @@ sub process_update : Private {
     }
 
     if ( $params{state} ) {
-        $params{state} = 'fixed - council' 
+        $params{state} = 'fixed - council'
             if $params{state} eq 'fixed' && $c->user && $c->user->belongs_to_body( $update->problem->bodies_str );
         $update->problem_state( $params{state} );
     } else {

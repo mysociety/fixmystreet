@@ -133,7 +133,7 @@ sub load_problem_or_display_error : Private {
     }
 
     $c->stash->{problem} = $problem;
-    if ( $c->user_exists && $c->user->has_permission_to(moderate => $problem->bodies_str) ) {
+    if ( $c->user_exists && $c->user->has_permission_to(moderate => $problem->bodies_str_ids) ) {
         $c->stash->{problem_original} = $problem->find_or_new_related(
             moderation_original_data => {
                 title => $problem->title,
@@ -401,7 +401,7 @@ to the current Problem in $c->stash->{problem}. Shows the 403 page if not.
 sub check_has_permission_to : Private {
     my ( $self, $c, @permissions ) = @_;
 
-    my $bodies = $c->stash->{problem}->bodies_str;
+    my $bodies = $c->stash->{problem}->bodies_str_ids;
 
     my %permissions = map { $_ => $c->user->has_permission_to($_, $bodies) } @permissions
         if $c->user_exists;
