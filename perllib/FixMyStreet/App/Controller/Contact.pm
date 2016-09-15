@@ -236,6 +236,10 @@ sub send_email : Private {
     my $recipient      = $c->cobrand->contact_email;
     my $recipient_name = $c->cobrand->contact_name();
 
+    if (my $localpart = $c->get_param('recipient')) {
+        $recipient = join('@', $localpart, FixMyStreet->config('EMAIL_DOMAIN'));
+    }
+
     $c->stash->{host} = $c->req->header('HOST');
     $c->stash->{ip}   = $c->req->address;
     $c->stash->{ip} .=
