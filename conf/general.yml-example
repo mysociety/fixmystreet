@@ -46,6 +46,9 @@ STAGING_SITE: 1
 # reports to live places. Set this to 1 if you want a dev site to route
 # reports as normal.
 SEND_REPORTS_ON_STAGING: 0
+# Manual testing of multiple cobrands can be made easier by skipping some
+# checks they have in them, if this variable is set
+SKIP_CHECKS_ON_STAGING: 0
 
 # What to use as front page/alert example places placeholder
 # Defaults to High Street, Main Street
