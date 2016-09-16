@@ -228,6 +228,13 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
     $c->forward('check_for_category');
 
     my $category = $c->stash->{category} || "";
+    $category = '' if $category eq _('-- Pick a category --');
+
+    my $bodies = $c->forward('contacts_to_bodies', [ $category ]);
+    my $vars = {
+        $category ? (list_of_names => [ map { $_->name } @$bodies ]) : (),
+    };
+
     my $category_extra = '';
     my $generate;
     if ( $c->stash->{category_extras}->{$category} && @{ $c->stash->{category_extras}->{$category} } >= 1 ) {
@@ -238,11 +245,10 @@ sub category_extras_ajax : Path('category_extras') : Args(0) {
         $generate = 1;
     }
     if ($generate) {
-        $c->stash->{report} = { category => $category };
-        $category_extra = $c->render_fragment( 'report/new/category_extras.html');
+        $category_extra = $c->render_fragment('report/new/category_extras.html', $vars);
     }
 
-    my $councils_text = $c->render_fragment( 'report/new/councils_text.html');
+    my $councils_text = $c->render_fragment( 'report/new/councils_text.html', $vars);
     my $councils_text_private = $c->render_fragment( 'report/new/councils_text_private.html');
 
     my $body = encode_json({
@@ -621,7 +627,7 @@ sub setup_categories_and_bodies : Private {
     my %seen;
     foreach my $contact (@contacts) {
 
-        $bodies_to_list{ $contact->body_id } = 1;
+        $bodies_to_list{ $contact->body_id } = $contact->body;
 
         unless ( $seen{$contact->category} ) {
             push @category_options, $contact->category;
@@ -651,9 +657,9 @@ sub setup_categories_and_bodies : Private {
     # put results onto stash for display
     $c->stash->{bodies} = \%bodies;
     $c->stash->{contacts} = \@contacts;
-    $c->stash->{all_body_names} = [ map { $_->name } values %bodies ];
-    $c->stash->{all_body_urls} = [ map { $_->external_url } values %bodies ];
     $c->stash->{bodies_to_list} = [ keys %bodies_to_list ];
+    $c->stash->{bodies_to_list_names} = [ map { $_->name } values %bodies_to_list ];
+    $c->stash->{bodies_to_list_urls} = [ map { $_->external_url } values %bodies_to_list ];
     $c->stash->{category_options} = \@category_options;
     $c->stash->{category_extras}  = \%category_extras;
     $c->stash->{non_public_categories}  = \%non_public_categories;
@@ -833,34 +839,14 @@ sub process_report : Private {
             return 1;
         }
 
-        if ($c->stash->{unresponsive}{$report->category} || $c->stash->{unresponsive}{ALL}) {
-            # Unresponsive, don't try and send a report.
-            $report->bodies_str(-1);
-        } else {
-            # construct the bodies string:
-            my $body_string = do {
-                if ( $c->cobrand->can('singleton_bodies_str') && $c->cobrand->singleton_bodies_str ) {
-                    # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
-                    # relies on string comparison against bodies_str.
-                    if (@contacts) {
-                        $contacts[0]->body_id;
-                    }
-                    else {
-                        '';
-                    }
-                }
-                else {
-                    #  'x,x' - x are body IDs that have this category
-                    my $bs = join( ',', map { $_->body_id } @contacts );
-                    $bs;
-                };
-            };
-            $report->bodies_str($body_string);
-            # Record any body IDs which might have meant to match, but had no contact
-            if ($body_string && @{ $c->stash->{missing_details_bodies} }) {
-                my $missing = join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } );
-                $report->bodies_missing($missing);
-            }
+        my $bodies = $c->forward('contacts_to_bodies', [ $report->category ]);
+        my $body_string = join(',', map { $_->id } @$bodies) || '-1';
+
+        $report->bodies_str($body_string);
+        # Record any body IDs which might have meant to match, but had no contact
+        if ($body_string ne '-1' && @{ $c->stash->{missing_details_bodies} }) {
+            my $missing = join( ',', map { $_->id } @{ $c->stash->{missing_details_bodies} } );
+            $report->bodies_missing($missing);
         }
 
         my @extra;
@@ -921,6 +907,24 @@ sub process_report : Private {
     $report->lang( $c->stash->{lang_code} );
 
     return 1;
+}
+
+sub contacts_to_bodies : Private {
+    my ($self, $c, $category) = @_;
+
+    my @contacts = grep { $_->category eq $category } @{$c->stash->{contacts}};
+
+    if ($c->stash->{unresponsive}{$category} || $c->stash->{unresponsive}{ALL}) {
+        [];
+    } else {
+        if ( $c->cobrand->can('singleton_bodies_str') && $c->cobrand->singleton_bodies_str ) {
+            # Cobrands like Zurich can only ever have a single body: 'x', because some functionality
+            # relies on string comparison against bodies_str.
+            [ $contacts[0]->body ];
+        } else {
+            [ map { $_->body } @contacts ];
+        }
+    }
 }
 
 =head2 check_for_errors
