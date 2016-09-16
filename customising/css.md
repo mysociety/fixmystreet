@@ -30,8 +30,6 @@ into these main files:
   basic settings information, so you can easily make a site that
   looks different simply by copying these files to your own cobrand CSS
   directory, and changing the contents, as we will describe below.
-* `config.rb` --
-  the config script used by compass
 
 Our `.gitignore` file assumes that any CSS files directly in a `cobrands/*`
 directory are generated from SCSS - if you have CSS files that you want to use
@@ -133,8 +131,7 @@ Copy the contents of `web/cobrands/default` into that directory.
 
     cp web/cobands/default/* web/cobrands/fixmypark
    
-This puts the stylesheet files you need, as well as the "magic" `config.rb`
-that enables auto-generation of the CSS (from SCSS files), into your cobrand.
+This puts the stylesheet files you need into your cobrand.
 At this point, your cobrand is effectively a copy of the default one.
 
 ### Edit the colours
