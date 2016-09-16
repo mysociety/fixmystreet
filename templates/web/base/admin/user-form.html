@@ -23,7 +23,7 @@
         <li><label for="phone">[% loc('Phone:') %]</label>
         <input type='text' id='phone' name='phone' value='[% user.phone | html %]'></li>
 
-        [% IF c.user.is_superuser %]
+        [% IF c.user.is_superuser || c.cobrand.moniker == 'zurich' %]
           <li>
             <div class="admin-hint">
               <p>
@@ -53,7 +53,7 @@
           </li>
         [% END %]
 
-        [% IF areas %]
+        [% IF areas AND c.cobrand.moniker != 'zurich' %]
           <li>
             <div class="admin-hint">
               <p>

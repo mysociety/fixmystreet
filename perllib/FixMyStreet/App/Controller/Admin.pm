@@ -1218,7 +1218,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     my $user = $c->cobrand->users->find( { id => $id } );
     $c->detach( '/page_error_404_not_found', [] ) unless $user;
 
-    unless ( $c->user->is_superuser || $c->user->has_body_permission_to('user_edit') ) {
+    unless ( $c->user->is_superuser || $c->user->has_body_permission_to('user_edit') || $c->cobrand->moniker eq 'zurich' ) {
         $c->detach('/page_error_403_access_denied', []);
     }
 
@@ -1253,7 +1253,7 @@ sub user_edit : Path('user_edit') : Args(1) {
         $user->is_superuser( ( $c->user->is_superuser && $c->get_param('is_superuser') ) || 0 );
         # Superusers can set from_body to any value, but other staff can only
         # set from_body to the same value as their own from_body.
-        if ( $c->user->is_superuser ) {
+        if ( $c->user->is_superuser || $c->cobrand->moniker eq 'zurich' ) {
             $user->from_body( $c->get_param('body') || undef );
         } elsif ( $c->user->has_body_permission_to('user_assign_body') &&
                   $c->get_param('body') && $c->get_param('body') eq $c->user->from_body->id ) {
