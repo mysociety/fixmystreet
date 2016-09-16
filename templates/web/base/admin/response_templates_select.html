@@ -1,3 +1,4 @@
+[% IF problem.response_templates %]
 <div class="response_templates_select">
     <select id="templates_for_[% for %]" class="js-template-name" data-for="[% for %]" name="response_template">
         <option value="">[% loc('--Choose a template--') %]</option>
@@ -6,3 +7,4 @@
       [% END %]
     </select>
 </div>
+[% END %]
