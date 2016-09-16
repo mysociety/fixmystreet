@@ -26,20 +26,22 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 1 },
   "password",
   { data_type => "text", default_value => "", is_nullable => 0 },
-  "flagged",
-  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "from_body",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 1 },
+  "flagged",
+  { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "title",
   { data_type => "text", is_nullable => 1 },
-  "facebook_id",
-  { data_type => "bigint", is_nullable => 1 },
   "twitter_id",
+  { data_type => "bigint", is_nullable => 1 },
+  "facebook_id",
   { data_type => "bigint", is_nullable => 1 },
   "is_superuser",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
   "area_id",
   { data_type => "integer", is_nullable => 1 },
+  "extra",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("users_email_key", ["email"]);
@@ -100,11 +102,17 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-08-03 13:52:28
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:SX8BS91mWHoOm2oWdNth1w
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-16 14:22:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7wfF1VnZax2QTXCIPXr+vg
+
+__PACKAGE__->load_components("+FixMyStreet::DB::RABXColumn");
+__PACKAGE__->rabx_column('extra');
 
 use Moo;
 use mySociety::EmailUtil;
+use namespace::clean -except => [ 'meta' ];
+
+with 'FixMyStreet::Roles::Extra';
 
 __PACKAGE__->many_to_many( planned_reports => 'user_planned_reports', 'report' );
 

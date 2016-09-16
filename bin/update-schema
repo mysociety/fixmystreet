@@ -194,6 +194,7 @@ else {
 # By querying the database schema, we can see where we're currently at
 # (assuming schema change files are never half-applied, which should be the case)
 sub get_db_version {
+    return '0046' if column_exists('users', 'extra');
     return '0045' if table_exists('response_priorities');
     return '0044' if table_exists('contact_response_templates');
     return '0043' if column_exists('users', 'area_id');
