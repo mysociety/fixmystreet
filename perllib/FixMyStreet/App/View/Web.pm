@@ -4,26 +4,24 @@ use base 'Catalyst::View::TT';
 use strict;
 use warnings;
 
-use mySociety::Locale;
 use FixMyStreet;
+use FixMyStreet::Template;
 use Utils;
 
 __PACKAGE__->config(
+    CLASS => 'FixMyStreet::Template',
     TEMPLATE_EXTENSION => '.html',
     INCLUDE_PATH       => [
         FixMyStreet->path_to( 'templates', 'web', 'base' ),
     ],
-    ENCODING       => 'utf8',
     render_die     => 1,
     expose_methods => [
-        'loc', 'nget', 'tprintf', 'prettify_dt',
+        'tprintf', 'prettify_dt',
         'version', 'decode',
     ],
     FILTERS => {
         add_links => \&add_links,
         escape_js => \&escape_js,
-        html      => \&html_filter,
-        html_para => \&html_paragraph,
     },
     COMPILE_EXT => '.ttc',
     STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
@@ -46,32 +44,6 @@ sub _rendering_error {
     # $c->log->error($error);
     $c->error($error);
     return 0;
-}
-
-=head2 loc
-
-    [% loc('Some text to localize', 'Optional comment for translator') %]
-
-Passes the text to the localisation engine for translations.
-
-=cut
-
-sub loc {
-    my ( $self, $c, $msgid ) = @_;
-    return _($msgid);
-}
-
-=head2 nget
-
-    [% nget( 'singular', 'plural', $number ) %]
-
-Use first or second srting depending on the number.
-
-=cut
-
-sub nget {
-    my ( $self, $c, @args ) = @_;
-    return mySociety::Locale::nget(@args);
 }
 
 =head2 tprintf
@@ -115,7 +87,7 @@ Add some links to some text (and thus HTML-escapes the other text.
 sub add_links {
     my $text = shift;
     $text =~ s/\r//g;
-    $text = html_filter($text);
+    $text = FixMyStreet::Template::html_filter($text);
     $text =~ s{(https?://)([^\s]+)}{"<a href=\"$1$2\">$1" . _space_slash($2) . '</a>'}ge;
     return $text;
 }
@@ -145,41 +117,6 @@ sub escape_js {
 
     $text =~ s/(?:\r\n|\n|\r)/\\n/g; # replace newlines
 
-    return $text;
-}
-
-=head2 html_filter
-
-Same as Template Toolkit's html_filter, but escapes ' too, as we don't (and
-shouldn't have to) know whether we'll be used inbetween single or double
-quotes.
-
-=cut
-
-sub html_filter {
-    my $text = shift;
-    for ($text) {
-        s/&/&amp;/g;
-        s/</&lt;/g;
-        s/>/&gt;/g;
-        s/"/&quot;/g;
-        s/'/&#39;/g;
-    }
-    return $text;
-}
-
-=head2 html_paragraph
-
-Same as Template Toolkit's html_paragraph, but converts single newlines
-into <br>s too.
-
-=cut
-
-sub html_paragraph  {
-    my $text = shift;
-    my @paras = split(/(?:\r?\n){2,}/, $text);
-    s/\r?\n/<br>\n/ for @paras;
-    $text = "<p>\n" . join("\n</p>\n\n<p>\n", @paras) . "</p>\n";
     return $text;
 }
 

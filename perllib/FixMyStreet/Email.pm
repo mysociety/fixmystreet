@@ -10,7 +10,7 @@ use Email::MIME;
 use Encode;
 use File::Spec;
 use POSIX qw();
-use Template;
+use FixMyStreet::Template;
 use Digest::HMAC_SHA1 qw(hmac_sha1_hex);
 use mySociety::Locale;
 use mySociety::Random qw(random_bytes);
@@ -162,8 +162,7 @@ sub send_cron {
     my $html_template = get_html_template($template, @include_path);
 
     push @include_path, FixMyStreet->path_to( 'templates', 'email', 'default' );
-    my $tt = Template->new({
-        ENCODING => 'utf8',
+    my $tt = FixMyStreet::Template->new({
         INCLUDE_PATH => \@include_path,
     });
     $vars->{signature} = _render_template($tt, 'signature.txt', $vars);
