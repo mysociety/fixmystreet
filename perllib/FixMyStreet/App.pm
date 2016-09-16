@@ -415,8 +415,7 @@ call), use this method.
 
 sub render_fragment {
     my ($c, $template, $vars) = @_;
-    $vars->{additional_template_paths} = $c->cobrand->path_to_web_templates
-        if $vars;
+    $vars = { %{$c->stash}, %$vars } if $vars;
     $c->view('Web')->render($c, $template, $vars);
 }
 
