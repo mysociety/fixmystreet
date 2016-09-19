@@ -378,4 +378,12 @@ sub is_planned_report {
     return $self->active_planned_reports->find({ id => $problem->id });
 }
 
+sub update_reputation {
+    my ( $self, $change ) = @_;
+
+    my $reputation = $self->get_extra_metadata('reputation') || 0;
+    $self->set_extra_metadata( reputation => $reputation + $change);
+    $self->update;
+}
+
 1;

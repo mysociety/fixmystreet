@@ -270,6 +270,8 @@ sub delete :Local :Args(1) {
     $p->lastupdate( \'current_timestamp' );
     $p->update;
 
+    $p->user->update_reputation(-1);
+
     $c->model('DB::AdminLog')->create( {
         admin_user => $c->user->email,
         object_type => 'problem',
@@ -315,6 +317,7 @@ sub inspect : Private {
 
         my $valid = 1;
         my $update_text;
+        my $reputation_change = 0;
 
         if ($permissions->{report_inspect}) {
             foreach (qw/detailed_location detailed_information traffic_information/) {
@@ -325,6 +328,7 @@ sub inspect : Private {
                 $update_text = Utils::cleanup_text( $c->get_param('public_update'), { allow_multiline => 1 } );
                 if ($update_text) {
                     $problem->set_extra_metadata( inspected => 1 );
+                    $reputation_change = 1;
                 } else {
                     $valid = 0;
                     $c->stash->{errors} ||= [];
@@ -362,6 +366,9 @@ sub inspect : Private {
         }
 
         if ($valid) {
+            if ( $reputation_change != 0 ) {
+                $problem->user->update_reputation($reputation_change);
+            }
             $problem->update;
             if ( defined($update_text) ) {
                 $problem->add_to_comments( {
