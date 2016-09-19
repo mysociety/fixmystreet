@@ -281,16 +281,25 @@ $.extend(fixmystreet.set_up, {
         var $form = $(this),
             $change = $form.find("input[name='change']" ),
             $submit = $form.find("input[type='submit']" ),
-            data = $form.serialize() + '&ajax=1';
+            $labels = $('label[for="' + $submit.attr('id') + '"]'),
+            data = $form.serialize() + '&ajax=1',
+            changeValue,
+            buttonLabel,
+            buttonValue;
 
         $.post(this.action, data, function(data) {
             if (data.outcome == 'add') {
-                $change.val('remove');
-                $submit.val($submit.data('remove'));
+                changeValue = "remove";
+                buttonLabel = $submit.data('label-remove');
+                buttonValue = $submit.data('value-remove');
             } else if (data.outcome == 'remove') {
-                $change.val('add');
-                $submit.val($submit.data('add'));
+                changeValue = "add";
+                buttonLabel = $submit.data('label-add');
+                buttonValue = $submit.data('value-add');
             }
+            $change.val(changeValue);
+            $submit.val(buttonValue).attr('aria-label', buttonLabel);
+            $labels.text(buttonValue).attr('aria-label', buttonLabel);
         });
     });
   },
@@ -791,7 +800,7 @@ $.extend(fixmystreet.set_up, {
       function add_handlers (elem, word) {
           elem.each( function () {
               var $elem = $(this);
-              $elem.find('.moderate').click( function () {
+              $elem.find('#moderate-report').on('click', function () {
                   $elem.find('.moderate-display').hide();
                   $elem.find('.moderate-edit').show();
               });

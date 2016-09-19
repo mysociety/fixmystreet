@@ -327,7 +327,7 @@ sub adopt {
     $other->delete;
 }
 
-# Planned reports
+# Planned reports / shortlist
 
 # Override the default auto-created function as we only want one live entry per user
 around add_to_planned_reports => sub {
