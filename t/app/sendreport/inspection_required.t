@@ -69,6 +69,38 @@ subtest 'Uninspected report is sent when made by trusted user' => sub {
     $report->discard_changes;
     $mech->email_count_is( 1 );
     ok $report->whensent, 'Report marked as sent';
+    is $report->get_extra_metadata('inspected'), undef, 'Report not marked as inspected';
+};
+
+subtest 'Uninspected report isn’t sent when user rep is too low' => sub {
+    $mech->clear_emails_ok;
+    $report->whensent( undef );
+    $report->update;
+
+    $user->user_body_permissions->delete;
+    $user->set_extra_metadata(reputation => 15);
+    $user->update;
+
+    $contact->set_extra_metadata(reputation_threshold => 20);
+    $contact->update;
+
+    FixMyStreet::DB->resultset('Problem')->send_reports();
+
+    $report->discard_changes;
+    $mech->email_count_is( 0 );
+    is $report->whensent, undef, 'Report hasn’t been sent';
+};
+
+subtest 'Uninspected report is sent when user rep is high enough' => sub {
+    $user->set_extra_metadata(reputation => 21);
+    $user->update;
+
+    FixMyStreet::DB->resultset('Problem')->send_reports();
+
+    $report->discard_changes;
+    $mech->email_count_is( 1 );
+    ok $report->whensent, 'Report marked as sent';
+    is $report->get_extra_metadata('inspected'), undef, 'Report not marked as inspected';
 };
 
 done_testing();
