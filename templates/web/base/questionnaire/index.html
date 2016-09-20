@@ -48,22 +48,22 @@
 [% loc('Has this problem been fixed?') %]
 </p>
 
-<p class="radio-segmented-control">
+<p class="segmented-control segmented-control--radio">
     <input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"[% ' checked' IF been_fixed == 'Yes' %]>
-    <label class="inline" for="been_fixed_yes">[% loc('Yes') %]</label>
+    <label for="been_fixed_yes">[% loc('Yes') %]</label>
     <input type="radio" name="been_fixed" id="been_fixed_no" value="No"[% ' checked' IF been_fixed == 'No' %]>
-    <label class="inline" for="been_fixed_no">[% loc('No') %]</label>
+    <label for="been_fixed_no">[% loc('No') %]</label>
     <input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"[% ' checked' IF been_fixed == 'Unknown' %]>
-    <label class="inline" for="been_fixed_unknown">[% loc('Don&rsquo;t know') %]</label>
+    <label for="been_fixed_unknown">[% loc('Don&rsquo;t know') %]</label>
 </p>
 
 [% UNLESS answered_ever_reported %]
 <p>[% loc('Have you ever reported a problem to a council before, or is this your first time?') %]</p>
-<p class="radio-segmented-control">
+<p class="segmented-control segmented-control--radio">
     <input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
-    <label class="inline" for="reported_yes">[% loc('Reported before') %]</label>
+    <label for="reported_yes">[% loc('Reported before') %]</label>
     <input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
-    <label class="inline" for="reported_no">[% loc('First time') %]</label>
+    <label for="reported_no">[% loc('First time') %]</label>
 </p>
 [% END %]
 
@@ -99,11 +99,11 @@
 
 <div class="js-another-questionnaire">
     <p>[% loc('Would you like to receive another questionnaire in 4 weeks, reminding you to check the status?') %]</p>
-    <p class="radio-segmented-control">
+    <p class="segmented-control segmented-control--radio">
         <input type="radio" name="another" id="another_yes" value="Yes"[% ' checked' IF another == 'Yes' %]>
-        <label class="inline" for="another_yes">[% loc('Yes') %]</label>
+        <label for="another_yes">[% loc('Yes') %]</label>
         <input type="radio" name="another" id="another_no" value="No"[% ' checked' IF another == 'No' %]>
-        <label class="inline" for="another_no">[% loc('No') %]</label>
+        <label for="another_no">[% loc('No') %]</label>
     </p>
 </div>
 

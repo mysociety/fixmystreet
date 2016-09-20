@@ -45,7 +45,7 @@
                         [% IF c.user_exists AND c.user.has_body_permission_to('planned_reports') %]
                         <li>
                             <[% IF c.req.uri.path == '/my/planned' %]span[% ELSE %]a href="/my/planned"[% END
-                             %]>[% loc('Planned reports') %]</[% c.req.uri.path == '/my/planned' ? 'span' : 'a' %]>
+                             %]>[% loc('Shortlist') %]</[% c.req.uri.path == '/my/planned' ? 'span' : 'a' %]>
                         </li>
                         [% END %]
                         <li>

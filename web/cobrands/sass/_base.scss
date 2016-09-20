@@ -1033,6 +1033,11 @@ input.final-submit {
 
 .problem-header {
   margin-bottom: 1em;
+
+  // Clear the admin actions after the floated photo(s).
+  .segmented-control {
+    clear: both;
+  }
 }
 
 .report_meta_info,
@@ -1773,39 +1778,47 @@ table.nicetable {
   margin-left: 0;
 }
 
-.radio-segmented-control {
-  overflow: auto; // clear floats (if browser doesn't support flexbox)
+.segmented-control {
+  @include clearfix();
   display: flex; // fancy full-width buttons for browsers that support flexbox
 
-  input {
-    position: absolute;
-    left: -999px;
-  }
-
-  label {
+  & > * {
     display: block;
     margin: 0;
-    padding: 0.75em 1.5em;
+    padding: 0.75em 0.5em;
     text-align: center;
     background: #fff linear-gradient(to bottom, #fff 0%, #eee 100%) 0 0 no-repeat;
-    border: 1px solid #ddd;
+    border: 1px solid #ccc;
     border-right-width: 0; // avoid double border between items
     font-weight: bold;
+    color: inherit !important;
+    text-decoration: none !important;
+    cursor: pointer;
     float: left; // float fallback for browsers that don't support flexbox
     flex: 1 0 auto;
 
-    @media(max-width: 400px){
-      // Shameful hack to stop the control expanding wider than the window
-      // on narrow devices (eg: 320px iPhone), which would cause horizontal
-      // scrolling, and clipped text on the new report page, for example.
-      // Flexbox will add the spacing back in anyway. Ideally we'd only apply
-      // this style if flexbox is supported, but there's no easy way to do that.
-      padding: 0.75em 0;
-    }
-
-    &:hover, &:focus {
+    &:hover {
       background: #f3f3f3 linear-gradient(to bottom, #f9f9f9 0%, #e9e9e9 100%) 0 0 no-repeat;
     }
+  }
+
+  & > :first-child {
+    border-radius: 0.25em 0 0 0.25em;
+  }
+
+  & > :last-child {
+    border-radius: 0 0.25em 0.25em 0;
+    border-right-width: 1px; // reinstate border on last item
+  }
+}
+
+// A special case of segmented control, where each "button" (or label) is
+// preceded by a radio button, which needs to be hidden but interactive.
+// Checked checkboxes give their following label a "pressed" appearance.
+.segmented-control--radio {
+  input {
+    position: absolute;
+    left: -999px;
   }
 
   input:checked + label {
@@ -1818,16 +1831,13 @@ table.nicetable {
   }
 
   input:checked + label + input + label {
-    border-left-width: none; // in favour of the realistic coloured border on the selected item
+    border-left-width: 0; // in favour of the realistic coloured border on the selected label
   }
 
+  // The first label is no longer the first child, so we need to
+  // fish it out specially with a next sibling selector.
   input:first-child + label {
     border-radius: 0.25em 0 0 0.25em;
-  }
-
-  label:last-child {
-    border-radius: 0 0.25em 0.25em 0;
-    border-right-width: 1px; // reinstate border on last item
   }
 }
 
@@ -1836,6 +1846,25 @@ table.nicetable {
   background: #f6f6f6;
   padding: 0.5em 1em;
   border-radius: 0.2em;
+}
+
+// Useful for inserting hidden forms on the page, but still allowing
+// inputs inside the form to be toggled by labels outside the form.
+// Try using this in combination with .segmented-control for funtimes.
+.hidden-label-target {
+  position: absolute;
+  top: -100px;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  // Tell assistive devices to ignore this element.
+  visibility: hidden;
+
+  // Hack for IE8 which doesn't allow interaction with
+  // `visibility:hidden` elements.
+  visibility: visible\9;
 }
 
 

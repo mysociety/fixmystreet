@@ -1,7 +1,7 @@
 [%
     SET bodyclass = 'mappage';
     PROCESS "maps/${map.type}.html" IF problems.size;
-    INCLUDE 'header.html', title = loc('Your planned reports')
+    INCLUDE 'header.html', title = loc('Your shortlist')
 %]
 
 [% IF problems.size %]
@@ -14,10 +14,10 @@
         <div id="skipped-map">
 [% END %]
 
-<h1>[% loc('Your planned reports') %]</h1>
+<h1>[% loc('Your shortlist') %]</h1>
 
 [% IF ! has_content %]
-[% loc('You haven&rsquo;t planned any reports yet.') %]
+[% loc('You haven&rsquo;t shortlisted any reports yet.') %]
 [% END %]
 
 <section class="full-width">

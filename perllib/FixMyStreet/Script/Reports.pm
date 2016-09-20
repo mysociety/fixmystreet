@@ -147,7 +147,7 @@ sub send(;$) {
             if ( $inspection_required ) {
                 unless (
                         $row->get_extra_metadata('inspected') ||
-                        $row->user->has_permission_to( trusted => $row->bodies_str )
+                        $row->user->has_permission_to( trusted => $row->bodies_str_ids )
                 ) {
                     $skip = 1;
                     debug_print("skipped because not yet inspected", $row->id) if $debug_mode;
