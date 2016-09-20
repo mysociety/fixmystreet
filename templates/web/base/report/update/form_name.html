@@ -2,8 +2,8 @@
 
 [% PROCESS 'user/_anonymity.html' anonymous = update.anonymous %]
 
-  [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", problem.bodies_str) %]
-  [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", problem.bodies_str) %]
+  [% can_contribute_as_another_user = c.user.has_permission_to("contribute_as_another_user", problem.bodies_str_ids) %]
+  [% can_contribute_as_body = c.user.from_body AND c.user.has_permission_to("contribute_as_body", problem.bodies_str_ids) %]
 
   [% IF can_contribute_as_another_user OR can_contribute_as_body %]
     <label for="form_as">[% loc('Provide update as') %]</label>

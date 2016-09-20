@@ -687,7 +687,7 @@ sub report_edit : Path('report_edit') : Args(1) {
 
     unless (
         $c->cobrand->moniker eq 'zurich'
-        || $c->user->has_permission_to(report_edit => $problem->bodies_str)
+        || $c->user->has_permission_to(report_edit => $problem->bodies_str_ids)
     ) {
         $c->detach( '/page_error_403_access_denied', [] );
     }
@@ -1276,14 +1276,14 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         if (!$user->from_body) {
             # Non-staff users aren't allowed any permissions or to be in an area
-            $user->user_body_permissions->delete_all;
+            $user->admin_user_body_permissions->delete;
             $user->area_id(undef);
             delete $c->stash->{areas};
             delete $c->stash->{fetched_areas_body_id};
         } elsif ($c->stash->{available_permissions}) {
             my @all_permissions = map { keys %$_ } values %{ $c->stash->{available_permissions} };
             my @user_permissions = grep { $c->get_param("permissions[$_]") ? 1 : undef } @all_permissions;
-            $user->user_body_permissions->search({
+            $user->admin_user_body_permissions->search({
                 body_id => $user->from_body->id,
                 permission_type => { '!=' => \@user_permissions },
             })->delete;
@@ -1299,6 +1299,35 @@ sub user_edit : Path('user_edit') : Args(1) {
             my %valid_areas = map { $_->{id} => 1 } @{ $c->stash->{areas} };
             my $new_area = $c->get_param('area_id');
             $user->area_id( $valid_areas{$new_area} ? $new_area : undef );
+        }
+
+        # Handle 'trusted' flag(s)
+        my @trusted_bodies = $c->get_param_list('trusted_bodies');
+        if ( $c->user->is_superuser ) {
+            $user->user_body_permissions->search({
+                body_id => { '!=' => \@trusted_bodies },
+                permission_type => 'trusted',
+            })->delete;
+            foreach my $body_id (@trusted_bodies) {
+                $user->user_body_permissions->find_or_create({
+                    body_id => $body_id,
+                    permission_type => 'trusted',
+                });
+            }
+        } elsif ( $c->user->from_body ) {
+            my %trusted = map { $_ => 1 } @trusted_bodies;
+            my $body_id = $c->user->from_body->id;
+            if ( $trusted{$body_id} ) {
+                $user->user_body_permissions->find_or_create({
+                    body_id => $body_id,
+                    permission_type => 'trusted',
+                });
+            } else {
+                $user->user_body_permissions->search({
+                    body_id => $body_id,
+                    permission_type => 'trusted',
+                })->delete;
+            }
         }
 
         unless ($user->email) {
