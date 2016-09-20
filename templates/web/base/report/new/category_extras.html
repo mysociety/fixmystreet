@@ -1,30 +1,39 @@
+[% DEFAULT list_of_names = bodies_to_list_names %]
+
 <div id="category_meta">
-    [%- category = report.category -%]
+  [%- IF unresponsive.$category %]
+    [%# Note: this is only shown on FMS.com %]
+    [% INCLUDE "report/new/unresponsive_body.html" body_id = unresponsive.$category %]
+  [%- END %]
 
-    [%- IF unresponsive.$category %]
-      [% INCLUDE "report/new/unresponsive_body.html" body_id = unresponsive.$category %]
-    [%- END %]
-
-    [%- IF category_extras.$category.size %]
-    <h4>[% loc('Additional Information') %]</h4>
-        [%- FOR meta IN category_extras.$category %]
+  [%- IF category_extras.$category.size %]
+    <div class="extra-category-questions full-width">
+    <h2 class="form-section-heading">[% category %]</h2>
+    <p class="form-section-description">
+      [% tprintf(
+        loc('Help <strong>%s</strong> resolve your problem quicker, by providing some extra detail. This extra information will not be published online.'),
+        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+      ); %]
+    </p>
+      [%- FOR meta IN category_extras.$category %]
         [%- meta_name = meta.code -%]
 
-            <label for="form_[% meta_name %]">[% meta.description _ ':' %]</label>
-            [% IF field_errors.$meta_name %]
-                <p class='form-error'>[% field_errors.$meta_name %]</p>
-            [% END -%]
-            [% IF meta.variable != 'false' %]
-                [% IF meta.exists('values') %]
-                    <select name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-                        [% FOR option IN meta.values %]
-                            <option value="[% option.key %]"[% IF option.key == report_meta.$meta_name.value %] selected[% END %]>[% option.name %]</option>
-                        [% END %]
-                    </select>
-                [% ELSE %]
-                    <input type="text" value="[% report_meta.$meta_name.value | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-                [% END %]
-            [% END %]
-        [%- END %]
-    [%- END %]
+        <label for="form_[% meta_name %]">[% meta.description %]</label>
+        [% IF field_errors.$meta_name %]
+        <p class='form-error'>[% field_errors.$meta_name %]</p>
+        [% END -%]
+        [% IF meta.variable != 'false' %]
+          [% IF meta.exists('values') %]
+            <select class="form-control" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+              [% FOR option IN meta.values %]
+                <option value="[% option.key %]"[% IF option.key == report_meta.$meta_name.value %] selected[% END %]>[% option.name %]</option>
+              [% END %]
+            </select>
+          [% ELSE %]
+            <input class="form-control" type="text" value="[% report_meta.$meta_name.value | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+          [% END %]
+        [% END %]
+      [%- END %]
+    </div>
+  [%- END %]
 </div>

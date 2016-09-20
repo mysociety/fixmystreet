@@ -4,25 +4,28 @@
     <p class='form-error'>[% field_errors.bodies %]</p>
 [% END %]
 
-[% TRY %]
-    [%# Useful for amending form contents based on category selection %]
-    [% PROCESS 'report/new/category_at_top.html' %]
-    [% need_to_show_category_selector = 0 %]
-[% CATCH file %]
-    [% need_to_show_category_selector = 1 %]
-[% END %]
+[% PROCESS "report/new/category_wrapper.html" %]
+[% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
-    <label for="form_title">[% loc('Summarise the problem') %] [% INCLUDE 'report/public_label.html' %]</label>
+    <h2 class="form-section-heading">Public details</h2>
+    <div class="form-section-description" id="js-councils_text">
+      [% IF js %]
+        [% PROCESS 'report/new/councils_text_all.html' list_of_names = [ loc('the local council') ] %]
+      [% ELSE %]
+        [% PROCESS 'report/new/councils_text.html' %]
+      [% END %]
+    </div>
+
+    <label for="form_title">[% loc('Summarise the problem') %]</label>
 [% IF field_errors.title %]
     <p class='form-error'>[% field_errors.title %]</p>
 [% END %]
-    <input type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('10 inch pothole on Example St, near post box') %]" required>
+    <input class="form-control" type="text" value="[% report.title | html %]" name="title" id="form_title" placeholder="[% loc('10 inch pothole on Example St, near post box') %]" required>
 
 [% IF c.cobrand.allow_photo_upload %]
     <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
     <label for="form_photo">
         <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
-        [% INCLUDE 'report/public_label.html' %]
     </label>
 
   [% IF field_errors.photo %]
@@ -46,19 +49,13 @@
 
 [% TRY %][% PROCESS 'report/new/after_photo.html' %][% CATCH file %][% END %]
 
-    <label for="form_detail">[% loc('Explain what’s wrong') %] [% INCLUDE 'report/public_label.html' %]</label>
+    <label for="form_detail">[% loc('Explain what’s wrong') %]</label>
 [% IF field_errors.detail %]
     <p class='form-error'>[% field_errors.detail %]</p>
 [% END %]
-    <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('This pothole has been here for two months and…') %]" required>[% report.detail | html %]</textarea>
+    <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('This pothole has been here for two months and…') %]" required>[% report.detail | html %]</textarea>
 
 [% TRY %][% PROCESS 'report/new/inline-tips.html' %][% CATCH file %][% END %]
-
-[% IF need_to_show_category_selector %]
-    [% PROCESS "report/new/category_wrapper.html" %]
-[% END %]
-
-[% TRY %][% PROCESS 'report/new/after_category.html' %][% CATCH file %][% END %]
 
 [% IF partial_token %]
     <input type="hidden" name="partial" value="[% partial_token.token %]">

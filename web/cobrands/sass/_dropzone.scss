@@ -1,18 +1,15 @@
 $dropzone-link-color: #0BA7D1; // match default `a` styling
 $dropzone-link-color--awakened: #0D7CCE; // match default `a:hover` styling
-$dropzone-border-color: #888; // match default form inputs
 $dropzone-border-color--awakened: $dropzone-link-color--awakened;
 $dropzone-border-color--full: #bf002a;
-$dropzone-border-radius: 0.25em; // match default form inputs
 $dropzone-background-color: #fff;
 $dropzone-background-color--awakened: mix($dropzone-link-color, $dropzone-background-color, 10%);
 $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-background-color, 10%);
 
 .dropzone {
+  @extend .form-control;
   @include clearfix;
-  border: 0.125em solid $dropzone-border-color;
   background-color: $dropzone-background-color;
-  border-radius: $dropzone-border-radius;
   padding: 1.5em;
   text-align: center;
 }
@@ -55,7 +52,7 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   cursor: auto;
 
   &:hover {
-    border-color: $dropzone-border-color;
+    border-color: $form-control-border-color;
     background-color: $dropzone-background-color;
 
     .dz-remove,
@@ -111,7 +108,7 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
   right: 0;
   bottom: 0;
 
-  border-radius: $dropzone-border-radius;
+  border-radius: 4px;
   overflow: hidden; // crop child image to border radius, even before img src has loaded
 
   img {
@@ -144,7 +141,7 @@ $dropzone-background-color--full: mix($dropzone-border-color--full, $dropzone-ba
 
   .dz-upload {
     background: rgba(0,0,0,0.2);
-    border-radius: $dropzone-border-radius;
+    border-radius: 4px;
     height: 100%;
     width: 0;
     display: block;

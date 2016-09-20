@@ -14,7 +14,7 @@
 
 [% BLOCK form_as %]
     <label for="form_as">[% loc('Report as') %]</label>
-    <select id="form_as" class="js-contribute-as" name="form_as">
+    <select id="form_as" class="form-control js-contribute-as" name="form_as">
         <option value="myself" selected>[% loc('Yourself') %]</option>
       [% IF js || can_contribute_as_another_user %]
         <option value="another_user">[% loc('Another user') %]</option>
@@ -26,7 +26,7 @@
 [% END %]
 
     <label for="form_email">[% loc('Email address') %]</label>
-    <input id="form_email"
+    <input class="form-control" id="form_email"
     [%- IF js OR can_contribute_as_another_user OR can_contribute_as_body -%]
     name="email"
     [%- ELSE -%]
@@ -46,7 +46,7 @@
     [% IF field_errors.name %]
         <p class='form-error'>[% field_errors.name %]</p>
     [% END %]
-    <input type="text" class="validName js-form-name" value="[% report.name | html %]" name="name" id="form_name">
+    <input type="text" class="form-control validName js-form-name" value="[% report.name | html %]" name="name" id="form_name">
 
     [%# if there is nothing in the name field then set check box as default on form %]
     <div class="checkbox-group">
@@ -55,11 +55,7 @@
     </div>
 
     <label for="form_phone">[% loc('Phone number (optional)') %]</label>
-    <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone">
-
-    <div class="general-notes">
-        <p>[% loc('We never show your email address or phone number.') %]</p>
-    </div>
+    <input class="form-control" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone">
 
     <div class="form-txt-submit-box">
         <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Submit') %]">

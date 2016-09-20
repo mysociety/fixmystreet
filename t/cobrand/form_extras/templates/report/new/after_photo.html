@@ -2,11 +2,11 @@
 [% IF field_errors.address %]
 <p class='form-error'>[% field_errors.address %]</p>
 [% END %]
-<input type="text" value="[% report.get_extra_metadata('address') | html %]" name="address" id="form_address" required>
+<input class="form-control" type="text" value="[% report.get_extra_metadata('address') | html %]" name="address" id="form_address" required>
 
 <label for="form_passport">Passport number (optional)</label>
 [% IF field_errors.passport %]
 <p class='form-error'>[% field_errors.passport %]</p>
 [% END %]
-<input type="text" value="[% report.get_extra_metadata('passport') | html %]" name="passport" id="form_passport">
+<input class="form-control" type="text" value="[% report.get_extra_metadata('passport') | html %]" name="passport" id="form_passport">
 

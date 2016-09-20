@@ -88,7 +88,7 @@ for the county council.', "%s is the site name"), site_name) %]
 
   [% UNLESS c.user_exists %]
     <label for="rznvy">[% loc('Your email') %]</label>
-    <input type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]">
+    <input class="form-control" type="text" id="rznvy" name="rznvy" value="[% rznvy | html %]">
   [% END %]
     <input id="alert_email_button" style="margin-top:1em;" class="green-btn" type="submit" name="alert" value="[% loc('Subscribe me to an email alert') %]">
 

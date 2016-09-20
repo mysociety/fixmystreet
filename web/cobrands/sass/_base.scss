@@ -10,6 +10,8 @@ $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #ccc !default;
 
+$form-control-border-color: #aaaaaa;
+
 @import "_mixins";
 @import "_report_list";
 
@@ -222,38 +224,6 @@ h4.static-with-rule{
 
 /* FORMS */
 
-// input placeholders, these need to be on separate lines as if the browser
-// can't understand a selector it will invalidate the whole line.
-::-webkit-input-placeholder {
-  color: #666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-:-moz-placeholder {
-  color:#666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-:-ms-placeholder {
-  color:#666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-//this only gets used when the browser doesn't support @placeholder
-.placeholder {
-  color:#666666;
-  font: {
-    style:italic;
-    size:0.9375em;
-  }
-}
-
 input[type=file] {
     width: 100%;
 }
@@ -263,58 +233,90 @@ input[type=password],
 input[type=email],
 textarea {
   @include box-sizing(border-box);
+  display: block;
   width: 100%;
-  // adjust so the sides line up
   padding: 0.5em;
-}
-.ie7 {
-    input[type=text],
-    input[type=password],
-    input[type=email],
-    textarea {
-        max-width: 95%;
-    }
+  font-size: 1em;
+  line-height: 1em;
+
+  .ie7 & {
+    max-width: 95%;
+  }
 }
 
 textarea {
-  border: 0.125em solid #888888;
-  @include border-radius(0.25em);
-  display: block;
-  font-size: 1em;
   line-height: 1.5em;
-  font-family: $meta-font;
-  min-height:8em;
-}
-
-input[type=text],
-input[type=password],
-input[type=email] {
-  border: 0.125em solid #888888;
-  @include border-radius(0.25em);
-  display: block;
-  font-size: 1em;
-  line-height: 1em;
-}
-
-input[readonly] {
-  border-color: #cccccc;
-  color: #888888;
+  min-height: 8em;
 }
 
 label{
   display: block;
   margin-top: 1.25em;
-  margin-bottom: 0.25em;
+  margin-bottom: 0.5em;
   font-weight: bold;
+
   &.inline {
     display: inline;
     padding: flip(0 2em 0 1em, 0 1em 0 2em);
     font-weight: normal;
   }
+
   &.inline-text {
     display: inline;
     font-weight: normal;
   }
+}
+
+.form-control {
+    display: block;
+    background-color: #fff;
+    border: 1px solid $form-control-border-color;
+    @include border-radius(4px);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    font-family: inherit; // eg: stop Firefox and IE10-11 using Courier in textareas
+    margin-bottom: 0.5em;
+
+    &[readonly] {
+        box-shadow: none;
+        color: #888888;
+    }
+}
+
+select.form-control {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    height: 2.2em; // roughly equal to default input height
+}
+
+.form-section-heading {
+    font-family: inherit;
+    color: inherit;
+    font-weight: bold;
+    margin-bottom: 0.25em;
+}
+
+.form-section-heading--private {
+    &:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 18px;
+        background: transparent url(/cobrands/fixmystreet/images/padlock.png) 0 0 no-repeat;
+        background-size: 16px 18px;
+        margin-#{$right}: 0.5em;
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/padlock@2.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/padlock.svg), none;
+        }
+    }
+}
+
+.form-section-description {
+    color: #666;
+    line-height: 1em * (22/16);
 }
 
 // grey background, full width box
@@ -387,8 +389,8 @@ label{
     float: $right;
     width:28%;
     margin-#{$right}: 0.25em;
-    padding-top:0.7em;
-    padding-bottom:0.6em;
+    padding-top:0.6em;
+    padding-bottom:0.5em;
   }
 }
 
@@ -1396,10 +1398,6 @@ label .muted {
 .description_tips {
   @include clearfix;
 
-  h4 {
-    margin: 0.5em 0;
-  }
-
   ul {
     width: 49%;
     margin: 0;
@@ -1438,6 +1436,31 @@ label .muted {
 
 #problem_form > label:first-child {
   margin-top: 0;
+}
+
+.extra-category-questions {
+  background-color: #eee;
+  padding: 1em;
+  margin-top: 1.5em; // make room for the triangle
+  position: relative;
+
+  // An upwards pointing triangle
+  &:before {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 1em 1em 1em;
+    border-color: transparent transparent #eee transparent;
+    position: absolute;
+    top: -0.9em; // avoid hairline gap between triangle and parent
+    #{$left}: 1.5em;
+  }
+
+  & > :first-child {
+    margin-top: 0;
+  }
 }
 
 
@@ -1914,6 +1937,35 @@ table.nicetable {
   html.js #map .noscript {
     display: block;
   }
+}
+
+.box-warning {
+    margin: 1em -1em;
+    padding: 2em 2em;
+    background-color: mix(#fff, $primary, 70%);
+
+    h1 {
+        font-size: 1.4em;
+    }
+
+    p {
+        margin-bottom: 0.5em;
+    }
+
+    a {
+        display: inline-block;
+        margin-top: 0.5em;
+        padding: 0.5em 1em;
+        background-color: #000;
+        color: #fff;
+        border-radius: 0.3em;
+
+        &:hover,
+        &:focus {
+            text-decoration: none;
+            background-color: mix(#000, $primary, 70%);
+        }
+    }
 }
 
 @import "_admin";

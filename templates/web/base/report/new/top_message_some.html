@@ -1,14 +1,4 @@
 <p>
-[% loc('All the information you provide here will be sent to') %]
-
-[% FOREACH body_id IN bodies_to_list %]
-    [% loc( ' or ') IF ! loop.first %]
-    <strong>[% bodies.$body_id.name %]</strong>
-    [%- '.' IF loop.last %]    
-[% END %]
-
-[% loc('The summary and description will also be made public (see our <a href="/privacy">privacy policy</a>).') %]
-
 [%
     nget(
         "We do <strong>not</strong> yet have details for the other council that covers this location.",

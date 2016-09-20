@@ -52,7 +52,7 @@
       [% ELSIF sign_in_error %]
         <div class="form-error">[% loc('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.') %]</div>
       [% END %]
-        <input type="email" class="required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]" autofocus>
+        <input type="email" class="form-control required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]" autofocus>
 
         <div id="form_sign_in">
             <h3>[% tprintf(loc("Do you have a %s password?", "%s is the site name"), site_name)  %]</h3>
@@ -82,7 +82,7 @@
         <label class="hidden-js n" for="password_sign_in">[% loc('Password:') %]</label>
 
         <div class="form-txt-submit-box">
-            <input type="password" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
+            <input type="password" name="password_sign_in" class="form-control" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
             <input class="green-btn" type="submit" name="sign_in" value="[% loc('Sign in') %]">
         </div>
 
@@ -104,7 +104,7 @@
         <h5>[% loc('<strong>No</strong> let me sign in by email') %]</h5>
 
         <label for="name">[% loc('Name') %]</label>
-        <input type="text" name="name" value="" placeholder="[% loc('Your name') %]">
+        <input class="form-control" type="text" name="name" value="" placeholder="[% loc('Your name') %]">
 
         <label for="password_register">[% loc('Password (optional)') %]</label>
 
@@ -113,7 +113,7 @@
         </div>
 
         <div class="form-txt-submit-box">
-            <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+            <input class="form-control" type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
             <input class="green-btn" type="submit" name="email_sign_in" value="[% loc('Sign in') %]">
         </div>
     </div>

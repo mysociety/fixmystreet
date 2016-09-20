@@ -1,10 +1,12 @@
+[% DEFAULT list_of_names = bodies_to_list_names %]
+
 <p>
 [%
     tprintf(
-        loc('All the information you provide here will be sent to <strong>%s</strong>.'),
-        all_body_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
+        loc('These will be sent to <strong>%s</strong> and also published online for others to see, in accordance with our <a href="%s">privacy policy</a>.'),
+        list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' ), '/privacy'
     );
 %]
 
-[% INCLUDE 'report/new/councils_extra_text.html' %]
+[% TRY %][% INCLUDE 'report/new/councils_extra_text.html' %][% CATCH file %][% END %]
 </p>

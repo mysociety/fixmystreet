@@ -1,11 +1,10 @@
 [% FILTER collapse %]
-[% IF unresponsive.ALL %]
-    [% PROCESS 'report/new/unresponsive_body.html' body_id = unresponsive.ALL %]
-[% ELSIF bodies_to_list.size == 0 %]
-    [% PROCESS 'report/new/councils_text_none.html' %]
-[% ELSIF bodies_to_list.size == bodies.size %]
-    [% PROCESS 'report/new/councils_text_all.html' %]
+[% IF unresponsive.$category OR unresponsive.ALL OR bodies_to_list.size == 0 %]
+    [% tprintf(
+        loc('These will be published online for others to see, in accordance with our <a href="%s">privacy policy</a>.'),
+            '/privacy')
+    %]
 [% ELSE %]
-    [% PROCESS 'report/new/councils_text_some.html' %]
+    [% PROCESS 'report/new/councils_text_all.html' %]
 [% END %]
 [% END -%]

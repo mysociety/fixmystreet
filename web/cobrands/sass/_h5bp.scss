@@ -37,8 +37,8 @@ html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 10
 body { margin: 0; font-size: 1em; line-height: 1.5; }
 
 /* mySociety addition: background colour */
-body, button, input, select, textarea {
-    font-family: sans-serif; 
+body, button {
+    font-family: sans-serif;
     color: #222;
     background-color: #fff
 }

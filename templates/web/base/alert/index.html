@@ -30,7 +30,7 @@ within a certain distance of a particular location.', "%s is the site name"), si
 <form method="get" action="/alert/list" class="form-box">
   <fieldset>
     <div class="form-txt-submit-box">
-      <input type="text" name="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
+      <input class="form-control" type="text" name="pc" value="[% pc | html %]" placeholder="[% tprintf(loc('e.g. ‘%s’ or ‘%s’'), c.cobrand.example_places) %]">
       <input class="green-btn" type="submit" value="[% loc('Go') %]">
     </div>
   </fieldset>
