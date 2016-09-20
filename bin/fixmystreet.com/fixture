@@ -1,0 +1,39 @@
+#!/usr/bin/env perl
+#
+# This script will create a test body and its categories, covering the area of
+# Westminster, and a user associated with that body, which should help testing
+# of report interactions.
+
+use strict;
+use warnings;
+
+BEGIN {
+    use File::Basename qw(dirname);
+    use File::Spec;
+    my $d = dirname(File::Spec->rel2abs($0));
+    require "$d/../../setenv.pl";
+}
+
+use FixMyStreet::DB;
+
+my $body = FixMyStreet::DB->resultset("Body")->find_or_create({ name => 'Test City Council' });
+$body->body_areas->find_or_create({ area_id => 2504 });
+foreach ("Potholes", "Street lighting", "Graffiti") {
+    (my $email = lc $_) =~ s/ /-/g;
+    $body->contacts->find_or_create({
+        category => $_,
+        email => $email . '@example.net',
+        confirmed => 't',
+        deleted => 'f',
+        whenedited => \'current_timestamp',
+        editor => 'fixture',
+        note => 'Created by fixture'
+    });
+}
+
+FixMyStreet::DB->resultset("User")->find_or_create({
+    email => 'council@example.net',
+    name => 'Test City Council User',
+    from_body => $body,
+    password => 'password',
+});

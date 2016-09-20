@@ -15,6 +15,7 @@ use Encode;
 use File::Slurp qw();
 use mySociety::GeoUtil;
 use mySociety::Locale;
+use FixMyStreet;
 
 =head2 convert_latlon_to_en
 
@@ -199,7 +200,7 @@ sub prettify_duration {
         $s = int(($s+60*60*12)/60/60/24)*60*60*24;
     } elsif ($nearest eq 'hour') {
         $s = int(($s+60*30)/60/60)*60*60;
-    } elsif ($nearest eq 'minute') {
+    } else { # minute
         $s = int(($s+30)/60)*60;
         return _('less than a minute') if $s == 0;
     }
@@ -221,7 +222,7 @@ sub _part {
             $str = mySociety::Locale::nget("%d day", "%d days", $i);
         } elsif ($m == 60*60) {
             $str = mySociety::Locale::nget("%d hour", "%d hours", $i);
-        } elsif ($m == 60) {
+        } else {
             $str = mySociety::Locale::nget("%d minute", "%d minutes", $i);
         }
         push @$o, sprintf($str, $i);
@@ -229,17 +230,5 @@ sub _part {
     }
 }
 
-=head2 read_file
-
-Reads in a UTF-8 encoded file using File::Slurp and decodes it from UTF-8.
-This appears simplest, rather than getting confused with binmodes and so on.
-
-=cut
-sub read_file {
-    my $filename = shift;
-    my $data = File::Slurp::read_file( $filename );
-    $data = Encode::decode( 'utf8', $data );
-    return $data;
-}
 
 1;
