@@ -345,8 +345,6 @@ sub update_contacts : Private {
 
         my $category = $self->trim( $c->get_param('category') );
         $errors{category} = _("Please choose a category") unless $category;
-        my $email = $self->trim( $c->get_param('email') );
-        $errors{email} = _('Please enter a valid email') unless is_valid_email($email) || $email eq 'REFUSED';
         $errors{note} = _('Please enter a message') unless $c->get_param('note');
 
         my $contact = $c->model('DB::Contact')->find_or_new(
@@ -355,6 +353,12 @@ sub update_contacts : Private {
                 category => $category,
             }
         );
+
+        my $email = $self->trim( $c->get_param('email') );
+        my $send_method = $c->get_param('send_method') || $contact->send_method || $contact->body->send_method || "";
+        unless ( $send_method eq 'Open311' ) {
+            $errors{email} = _('Please enter a valid email') unless is_valid_email($email) || $email eq 'REFUSED';
+        }
 
         $contact->email( $email );
         $contact->confirmed( $c->get_param('confirmed') ? 1 : 0 );
