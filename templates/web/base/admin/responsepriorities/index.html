@@ -3,7 +3,7 @@
 <ul>
     [% FOR body IN bodies %]
         <li>
-            <a href="/admin/responsepriorities/[% body.id %]">[% body.name %]</a>
+            <a href="[% c.uri_for('',  body.id) %]">[% body.name %]</a>
         </li>
     [% END %]
 </ul>

@@ -19,7 +19,7 @@
         <td>  [% t.title %] </td>
         <td> [% t.text %] </td>
         <td> [% t.created %] </td>
-        <td> <a href="/admin/templates/[% body.id %]/[% t.id %]" class="btn">[% loc('Edit') %]</a> </td>
+        <td> <a href="[% c.uri_for('templates', body.id, t.id) %]" class="btn">[% loc('Edit') %]</a> </td>
     </tr>
 [% END %]
     </tbody>
