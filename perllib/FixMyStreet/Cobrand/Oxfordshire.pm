@@ -112,6 +112,29 @@ sub pin_colour {
     return 'yellow';
 }
 
+sub open311_config {
+    my ($self, $row, $h, $params) = @_;
+
+    my $extra = $row->get_extra_fields;
+    push @$extra, { name => 'external_id', value => $row->id };
+
+    if ($h->{closest_address}) {
+        push @$extra, { name => 'closest_address', value => $h->{closest_address} }
+    }
+    if ( $row->used_map || ( !$row->used_map && !$row->postcode ) ) {
+        push @$extra, { name => 'northing', value => $h->{northing} };
+        push @$extra, { name => 'easting', value => $h->{easting} };
+    }
+    $row->set_extra_fields( @$extra );
+
+    $params->{extended_description} = 'oxfordshire';
+}
+
+sub open311_pre_send {
+    my ($self, $row, $open311) = @_;
+    $open311->endpoints( { requests => 'open311_service_request.cgi' } );
+}
+
 sub on_map_default_status { return 'open'; }
 
 sub contact_email {

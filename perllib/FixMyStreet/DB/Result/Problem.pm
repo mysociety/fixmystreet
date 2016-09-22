@@ -1107,9 +1107,7 @@ has traffic_management_options => (
     default => sub {
         my $self = shift;
         my $cobrand = $self->get_cobrand_logged;
-        if ( $cobrand->can('get_body_handler_for_problem') ) {
-            $cobrand = $cobrand->get_body_handler_for_problem( $self );
-        }
+        $cobrand = $cobrand->call_hook(get_body_handler_for_problem => $self) || $cobrand;
         return $cobrand->traffic_management_options;
     },
 );
