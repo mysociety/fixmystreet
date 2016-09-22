@@ -163,7 +163,7 @@ sub setup_request {
 
     my $cobrand = $c->cobrand;
 
-    $cobrand->add_response_headers if $cobrand->can('add_response_headers');
+    $cobrand->call_hook('add_response_headers');
 
     # append the cobrand templates to the include path
     $c->stash->{additional_template_paths} = $cobrand->path_to_web_templates;

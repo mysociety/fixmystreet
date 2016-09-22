@@ -613,9 +613,7 @@ sub meta_line {
     my $meta = '';
 
     my $category = $problem->category;
-    if ($c->cobrand->can('change_category_text')) {
-        $category = $c->cobrand->change_category_text($category);
-    }
+    $category = $c->cobrand->call_hook(change_category_text => $category) || $category;
 
     if ( $problem->anonymous ) {
         if ( $problem->service and $category && $category ne _('Other') ) {
@@ -748,17 +746,10 @@ sub can_display_external_id {
 
 sub duration_string {
     my ( $problem, $c ) = @_;
-    my $body;
-    if ( $c->cobrand->can('link_to_council_cobrand') ) {
-        $body = $c->cobrand->link_to_council_cobrand($problem);
-    } else {
-        $body = $problem->body( $c );
-    }
-    if ( $c->cobrand->can('get_body_handler_for_problem') ) {
-        my $handler = $c->cobrand->get_body_handler_for_problem( $problem );
-        if ( $handler->can('is_council_with_case_management') && $handler->is_council_with_case_management ) {
-            return sprintf(_('Received by %s moments later'), $body);
-        }
+    my $body = $c->cobrand->call_hook(link_to_council_cobrand => $problem) || $problem->body($c);
+    my $handler = $c->cobrand->call_hook(get_body_handler_for_problem => $problem);
+    if ( $handler && $handler->call_hook('is_council_with_case_management') ) {
+        return sprintf(_('Received by %s moments later'), $body);
     }
     return unless $problem->whensent;
     return sprintf(_('Sent to %s %s later'), $body,
