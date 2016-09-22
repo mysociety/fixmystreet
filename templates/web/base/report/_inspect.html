@@ -93,6 +93,7 @@
           <a href="[% c.uri_for( '/report', problem.id ) %]" class="btn">[% loc('Cancel') %]</a>
           <input type="submit" value="[% loc('Save changes') %]" name="save" />
         </p>
+[% IF permissions.report_inspect %]
         [% UNLESS problem.get_extra_metadata('inspected') %]
           <p>
             <label for="public_update">[% loc('Public update:') %]</label>
@@ -111,6 +112,7 @@
             [% END %]
           </p>
         [% END %]
+[% END %]
       </form>
     </div>
   </div>
