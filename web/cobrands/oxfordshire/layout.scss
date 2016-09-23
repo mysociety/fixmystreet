@@ -286,11 +286,12 @@ h4.static-with-rule {
 
 #oxford-wrapper #front-main #postcodeForm div {
   border: 1px solid #fff; // because orange "Go" button (see below) abuts this border, looks a tiny bit better if it's not dark green
+  width: 24em; // up from default 20em
 
   #pc {
-    padding: 0 2%;
-    width: 89%;
-    height: 38px;
+    padding: 0 0 0 2%;
+    width: 20em;
+    height: 40px;
   }
 }
 

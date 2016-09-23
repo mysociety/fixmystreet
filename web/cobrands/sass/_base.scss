@@ -701,22 +701,22 @@ footer {
 
 /*BUTTONS*/
 
-// Default style set for buttons, inputs and .btn class. Red and green class available.
-// NB: a.btn is included in the selector otherwise a:visited is more specific and
-// the wrong text colour is applied.
-button, input[type=submit], .btn, a.btn {
+.btn {
   @include button-reset;
 }
 
-.green-btn,
-button.green-btn,
-input.green-btn{
+.btn + .btn {
+  // Ensure extra space between inline buttons placed next to each other.
+  margin-#{$left}: 0.5em;
+}
+
+.btn-primary,
+.green-btn {
   @include button-reset(#9FDE23, #7FB900, #5B9700, #fff, #9FDE23, #7FB900, #5B9700, #fff);
 }
 
-.red-btn,
-button.red-btn,
-input.red-btn{
+.btn-danger,
+.red-btn {
   @include button-reset(#FF0038, #BF002A, #80001C, #fff, #FF0038, #BF002A, #80001C, #fff);
 }
 
@@ -726,19 +726,8 @@ input.final-submit {
   float: $right;
 }
 
-// TODO: Sort out this a/a:visited/a.btn hideousness
-.btn-block,
-a.btn-block {
-  display: block;
-  text-align: center;
-}
-
 .btn--facebook {
     @include button-reset(#3b5998, darken(#3b5998, 10%), #3b5998, #fff, darken(#3b5998, 5%), darken(#3b5998, 10%), #3b5998, #fff);
-
-    &:visited {
-        color: #fff;
-    }
 
     img {
         margin-right: 0.5em;
@@ -750,10 +739,6 @@ a.btn-block {
 
 .btn--twitter {
     @include button-reset(#55acee, darken(#55acee, 10%), #55acee, #fff, darken(#55acee, 5%), darken(#55acee, 10%), #55acee, #fff);
-
-    &:visited {
-        color: #fff;
-    }
 
     img {
         margin-right: 0.5em;
@@ -801,7 +786,7 @@ a.btn-block {
 
 .btn--block {
     display: block;
-    width: auto;
+    text-align: center;
 }
 
 // Under the button to override its text transform and width
@@ -1847,31 +1832,32 @@ table.nicetable {
 
   & > * {
     display: block;
-    margin: 0;
-    padding: 0.75em 0.5em;
     text-align: center;
-    background: #fff linear-gradient(to bottom, #fff 0%, #eee 100%) 0 0 no-repeat;
-    border: 1px solid #ccc;
     border-right-width: 0; // avoid double border between items
-    font-weight: bold;
-    color: inherit !important;
-    text-decoration: none !important;
-    cursor: pointer;
     float: left; // float fallback for browsers that don't support flexbox
     flex: 1 0 auto;
+  }
 
-    &:hover {
-      background: #f3f3f3 linear-gradient(to bottom, #f9f9f9 0%, #e9e9e9 100%) 0 0 no-repeat;
-    }
+  .btn {
+    padding: 0.75em 0.5em;
+    border-radius: 0;
+  }
+
+  .btn + .btn {
+    margin-#{$left}: 0;
   }
 
   & > :first-child {
-    border-radius: 0.25em 0 0 0.25em;
+    border-radius: 4px 0 0 4px;
   }
 
   & > :last-child {
-    border-radius: 0 0.25em 0.25em 0;
+    border-radius: 0 4px 4px 0;
     border-right-width: 1px; // reinstate border on last item
+  }
+
+  & > :first-child:last-child {
+    border-radius: 4px;
   }
 }
 

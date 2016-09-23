@@ -20,10 +20,10 @@
           <input type="hidden" name="latitude" value="[% problem.latitude %]">
         </p>
         <p>
-          <a href="https://www.google.com/maps/dir/Current+Location/[% problem.latitude %],[% problem.longitude %]" class="btn btn-block btn--navigate">[% loc('Navigate to this problem') %]</a>
+          <a href="https://www.google.com/maps/dir/Current+Location/[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
         </p>
         <p>
-          <a href="#" class="btn btn-block btn--geolocate" id="geolocate_link">[% loc('Set to my current location') %]</a>
+          <a href="#" class="btn btn--block btn--geolocate" id="geolocate_link">[% loc('Set to my current location') %]</a>
         </p>
       </div>
 
@@ -97,8 +97,8 @@
 
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]">
-          <a href="[% c.uri_for( '/report', problem.id ) %]" class="btn">[% loc('Cancel') %]</a>
-          <input type="submit" value="[% loc('Save changes') %]" name="save" />
+          <a class="btn" href="[% c.uri_for( '/report', problem.id ) %]">[% loc('Cancel') %]</a>
+          <input class="btn" type="submit" value="[% loc('Save changes') %]" name="save" />
         </p>
       </div>
 
@@ -112,7 +112,7 @@
             <textarea rows="2" name="public_update" id="public_update" class="form-control" required>[% public_update | html %]</textarea>
           </p>
           <p>
-            <input type="submit" value="[% loc('Save changes + send') %]" name="save_inspected" />
+            <input class="btn" type="submit" value="[% loc('Save changes + send') %]" name="save_inspected" />
           </p>
         [% ELSE %]
           <p>
@@ -123,6 +123,20 @@
             [% END %]
           </p>
         [% END %]
+
+        [% IF problem.get_extra_metadata('inspected') %]
+          [% IF problem.whensent %]
+            <p>[% loc("<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on.") %]</p>
+          [% ELSE %]
+            <p>[% loc("<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on.") %]</p>
+          [% END %]
+        [% END %]
+
+        <p>
+          <input type="hidden" name="token" value="[% csrf_token %]">
+          <a class="btn" href="[% c.uri_for( '/report', problem.id ) %]">[% loc('Cancel') %]</a>
+          <input class="btn btn-primary" type="submit" value="[% loc('Save changes') %]" name="save" />
+        </p>
       </div>
     [% END %]
 

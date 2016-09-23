@@ -1,32 +1,45 @@
 $direction: 'left' !default;
 
 // Button reset
-@mixin button-reset($c1: #eee, $c2: #ccc, $c3: #999, $c4: #333, $c5: #777, $c6: #999, $c7: #666, $c8: #fff){
+// Uses !important a few times to quickly reset
+// styles from a:link, a:hover, a:visited etc.
+@mixin button-reset($bg-top: #fff, $bg-bottom: #eee, $border: #ccc, $text: inherit, $hover-bg-bottom: #e9e9e9, $hover-bg-top: #f9f9f9, $hover-border: #ccc, $hover-text: inherit){
   display: inline-block;
-  cursor:pointer;
-  font:{
-    size: 0.875em;
-    family: Helmet, Freesans, sans-serif;
-    weight:bold;
-  }
-  text-transform:uppercase;
-  line-height: 1.375em;
-  padding: 0.7em 0.5em 0.5em;
-  margin:0;
+  margin: 0;
+  padding: 0.75em 1em;
   width: auto;
   height: auto;
   vertical-align: top;
+  text-align: center;
+
+  font-size: 1em;
+  line-height: 1em;
+  font-weight: bold;
+  font-family: inherit;
+  text-decoration: none !important;
+  color: $text !important;
+
+  cursor: pointer;
+  background: $bg-bottom;
+  @include linear-gradient($bg-top, $bg-bottom);
+
+  border: 1px solid $border;
   @include border-radius(4px);
-  background: $c1;
-  @include linear-gradient($c1, $c2);
-  border:1px solid $c3;
-  color:$c4;
-  &:hover, &:hover:enabled {
-    background:$c5;
-    @include linear-gradient($c6, $c5);
-    text-decoration: none;
-    border:1px solid $c7;
-    color:$c8;
+
+  &:hover,
+  &:focus {
+    background: $hover-bg-bottom;
+    @include linear-gradient($hover-bg-top, $hover-bg-bottom);
+    text-decoration: none !important;
+    border-color: $hover-border;
+    color: $hover-text !important;
+  }
+
+  &:disabled {
+    background: $bg-bottom;
+    border-color: $border;
+    color: desaturate(darken($bg-bottom, 50%), 50%) !important;
+    cursor: default;
   }
 }
 
