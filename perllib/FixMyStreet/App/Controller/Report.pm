@@ -294,6 +294,7 @@ sub action_router : Path('') : Args(2) {
 
     $c->go( 'inspect', [ $id ] ) if $action eq 'inspect';
     $c->go( 'map', [ $id ] ) if $action eq 'map';
+    $c->go( 'extras_ajax', [ $id ] ) if $action eq 'extras';
 
     $c->detach( '/page_error_404_not_found', [] );
 }
@@ -397,6 +398,34 @@ sub map : Private {
     $c->res->body($image->{data});
 }
 
+
+sub extras_ajax : Private {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward('/auth/get_csrf_token');
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+    $c->forward( 'check_has_permission_to', [ qw/report_inspect report_edit_category/ ] );
+
+    my $problem = $c->stash->{problem};
+
+    $c->stash->{categories} = $c->forward('/admin/categories_for_point');
+    $c->forward('/report/new/setup_categories_and_bodies');
+
+
+    my $output = {};
+    foreach my $category ( keys $c->stash->{category_extras} ) {
+        $c->stash->{category} = $category;
+        if ( $c->stash->{report}->category eq $category ) {
+            $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{report}->get_extra_fields() } };
+        } else {
+            delete($c->stash->{report_meta});
+        }
+        $output->{$category} = $c->render_fragment('report/new/category_extras.html');
+    }
+
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body(encode_json( $output ));
+}
 
 =head2 check_has_permission_to
 
