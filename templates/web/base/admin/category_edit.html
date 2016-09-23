@@ -19,7 +19,7 @@
 [% END %]
 </p>
 
-<form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
+<form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="category_edit">
     <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
     <input type="hidden" name="category" value="[% contact.category | html %]" >
     <input type="hidden" name="token" value="[% csrf_token %]" >
@@ -46,6 +46,15 @@
         <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
       [% END %]
     </p>
+
+    [% IF c.cobrand.moniker != 'zurich' %]
+      <p [% 'class=hidden' UNLESS contact.get_extra_metadata('inspection_required') %]>
+        <label>
+          [% loc('Reputation threshold:') %]
+          <input type="text" name="reputation_threshold" id="reputation_threshold" value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30">
+        </label>
+      </p>
+    [% END %]
 
     <p><strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40"></textarea>
 

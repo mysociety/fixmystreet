@@ -31,7 +31,8 @@ create table users (
     title           text,
     twitter_id      bigint  unique,
     facebook_id     bigint  unique,
-    area_id         integer
+    area_id         integer,
+    extra           text
 );
 
 -- Record details of reporting bodies, including open311 configuration details

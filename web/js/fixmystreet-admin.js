@@ -79,5 +79,15 @@ $(function(){
         var show_area = $(this).val() == $(this).find("[data-originally-selected]").val();
         $("form#user_edit select#area_id").closest("li").toggle(show_area);
     });
+
+    // On category edit page, hide the reputation input if inspection isn't required
+    $("form#category_edit #inspection_required").change(function() {
+        var $p = $("form#category_edit #reputation_threshold").closest("p");
+        if (this.checked) {
+            $p.removeClass("hidden");
+        } else {
+            $p.addClass("hidden");
+        }
+    });
 });
 

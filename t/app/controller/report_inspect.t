@@ -6,8 +6,8 @@ use FixMyStreet::TestMech;
 
 my $mech = FixMyStreet::TestMech->new;
 
-my $brum = $mech->create_body_ok(2514, 'Birmingham City Council');
-my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council');
+my $brum = $mech->create_body_ok(2514, 'Birmingham City Council', id => 2514);
+my $oxon = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
 my $contact = $mech->create_contact_ok( body_id => $oxon->id, category => 'Cows', email => 'cows@example.net' );
 my $rp = FixMyStreet::DB->resultset("ResponsePriority")->create({
     body => $oxon,
@@ -62,6 +62,16 @@ FixMyStreet::override_config {
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
     };
 
+    subtest "test positive reputation" => sub {
+        $report->unset_extra_metadata('inspected');
+        $report->update;
+        my $reputation = $report->user->get_extra_metadata("reputation");
+        $mech->get_ok("/report/$report_id/inspect");
+        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => "This is a public update." } });
+        $report->discard_changes;
+        is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
+    };
+
     subtest "test update is required when instructing" => sub {
         $report->unset_extra_metadata('inspected');
         $report->update;
@@ -106,6 +116,22 @@ FixMyStreet::override_config {
         };
     }
 };
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+    ALLOWED_COBRANDS => 'oxfordshire',
+}, sub {
+    subtest "test negative reputation" => sub {
+        my $reputation = $report->user->get_extra_metadata("reputation");
+
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form( button => 'remove_from_site' );
+
+        $report->discard_changes;
+        is $report->user->get_extra_metadata('reputation'), $reputation-1, "User reputation was decreased";
+    };
+};
+
 
 END {
     $mech->delete_body($oxon);

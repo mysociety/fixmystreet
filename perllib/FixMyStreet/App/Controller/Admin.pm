@@ -385,6 +385,9 @@ sub update_contacts : Private {
         else {
             $contact->unset_extra_metadata( 'inspection_required' );
         }
+        if ( $c->get_param('reputation_threshold') ) {
+            $contact->set_extra_metadata( reputation_threshold => int($c->get_param('reputation_threshold')) );
+        }
 
         if ( %errors ) {
             $c->stash->{updated} = _('Please correct the errors below');

@@ -1,0 +1,6 @@
+BEGIN;
+
+ALTER TABLE users
+    ADD COLUMN extra TEXT;
+
+COMMIT;
