@@ -370,7 +370,9 @@ $.extend(fixmystreet.set_up, {
   },
 
   category_change: function() {
-    // Deal with changes to category by asking for details from the server.
+    // Deal with changes to report category.
+
+    // On the new report form, does this by asking for details from the server.
     // Delegation is necessary because #form_category may be replaced during the lifetime of the page
     $("#problem_form").on("change.category", "select#form_category", function(){
         var args = {
@@ -395,7 +397,17 @@ $.extend(fixmystreet.set_up, {
             }
         });
     });
+
+    // On the manage/inspect report form, we already have all the extra inputs
+    // in the DOM, we just need to hide/show them as appropriate.
+    $('form#report_inspect_form [name=category]').change(function() {
+        var category = $(this).val();
+        var selector = "[data-category='"+category+"']";
+        $("form#report_inspect_form [data-category]:not("+selector+")").addClass("hidden");
+        $("form#report_inspect_form "+selector).removeClass("hidden");
+    });
   },
+
 
   contribute_as: function() {
     $('.content').on('change', '.js-contribute-as', function(){

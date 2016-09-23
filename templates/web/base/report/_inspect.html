@@ -59,9 +59,19 @@
           </select>
         </p>
 
-        <p>
-          [% INCLUDE 'report/new/category_extras_fields.html' %]
-        </p>
+        [% FOREACH category IN categories %]
+          [% cat_prefix = category | lower | replace('[^a-z]', '') %]
+          [% cat_prefix = "category_" _ cat_prefix _ "_" %]
+          [% IF category == problem.category %]
+            <p data-category="[% category | html %]">
+              [% INCLUDE 'report/new/category_extras_fields.html' %]
+            </p>
+          [% ELSIF category_extras.$category.size %]
+            <p data-category="[% category | html %]" class="hidden">
+              [% INCLUDE 'report/new/category_extras_fields.html' report_meta='' %]
+            </p>
+          [% END %]
+        [% END %]
 [% END %]
 
         <p>
