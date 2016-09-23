@@ -312,6 +312,9 @@ sub inspect : Private {
     my $problem = $c->stash->{problem};
 
     $c->stash->{categories} = $c->forward('/admin/categories_for_point');
+    $c->forward('/report/new/setup_categories_and_bodies');
+    $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
+    $c->stash->{category} = $c->stash->{problem}->category;
 
     if ( $c->get_param('save') || $c->get_param('save_inspected') ) {
         $c->forward('/auth/check_csrf_token');
