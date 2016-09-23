@@ -20,7 +20,7 @@
 [% IF c.config.BASE_URL == "https://www.fixmystreet.com" AND not admin AND NOT c.req.header('User-Agent').match('Google Page Speed') %]
 <script src="//www.google-analytics.com/cx/api.js?experiment=ZwMlZkAhSbK_tP_QG64QrQ"></script>
 <script nonce="[% csp_nonce %]">
-var variation = cxApi.chooseVariation(),
+var variation = typeof cxApi !== "undefined" ? cxApi.chooseVariation() : 0,
     docElement = document.documentElement,
     className = docElement.className;
 if (!/about\/council/.test(location.pathname)) {
