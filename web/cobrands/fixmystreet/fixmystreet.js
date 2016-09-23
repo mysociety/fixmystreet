@@ -802,7 +802,7 @@ $.extend(fixmystreet.set_up, {
       function add_handlers (elem, word) {
           elem.each( function () {
               var $elem = $(this);
-              $elem.find('#moderate-report').on('click', function () {
+              $elem.find('.js-moderate').on('click', function () {
                   $elem.find('.moderate-display').hide();
                   $elem.find('.moderate-edit').show();
               });

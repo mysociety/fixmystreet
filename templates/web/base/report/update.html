@@ -9,7 +9,7 @@
           [% IF moderating; original_update = update.moderation_original_data %]
             <form method="post" action="/moderate/report/[% problem.id %]/update/[% update.id %]">
                 <input type="hidden" name="token" value="[% csrf_token %]">
-                <input type="button" class="btn moderate moderate-display" value="Moderate this update">
+                <input type="button" class="btn js-moderate moderate-display" value="Moderate this update">
                 <div class="moderate-edit">
                     <label><input type="checkbox" class="hide-document" name="update_hide">
                     Hide update completely?</label>
