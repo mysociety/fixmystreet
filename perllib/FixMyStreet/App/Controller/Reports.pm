@@ -55,7 +55,9 @@ sub index : Path : Args(0) {
     }
 
     # Fetch all bodies
-    my @bodies = $c->model('DB::Body')->search({}, {
+    my @bodies = $c->model('DB::Body')->search({
+        deleted => 0,
+    }, {
         '+select' => [ { count => 'area_id' } ],
         '+as' => [ 'area_count' ],
         join => 'body_areas',
