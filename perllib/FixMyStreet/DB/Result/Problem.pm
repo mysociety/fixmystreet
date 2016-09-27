@@ -1020,4 +1020,16 @@ sub static_map {
     };
 }
 
+has shortlisted_user => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        my $user = $self->result_source->schema->resultset('User')->search(
+            { 'user_planned_reports.report_id' => $self->id },
+            { join => 'user_planned_reports' })->first;
+        return $user;
+    },
+);
+
 1;

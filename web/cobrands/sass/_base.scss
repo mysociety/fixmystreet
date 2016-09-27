@@ -1086,6 +1086,34 @@ input.final-submit {
   }
 }
 
+.shortlisted-status {
+  margin-top: 1em;
+  padding: 1em 1em 1em 4em; // Icon is always displayed on left, even in RtL mode
+  border-radius: 0.25em;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5) url(/cobrands/fixmystreet/images/shortlist.png) 1em 50% no-repeat;
+  background-size: 2em 2em;
+
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    background-image: url(/cobrands/fixmystreet/images/shortlist@2.png);
+  }
+
+  @media all {
+    background-image: url(/cobrands/fixmystreet/images/shortlist.svg), none;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1em;
+    font-weight: bold;
+  }
+
+  p {
+    margin: 0.5em 0 0 0;
+    font-size: 0.875em;
+  }
+}
+
 // map stuff
 #map_box {
   margin: 0 -1em 1em;

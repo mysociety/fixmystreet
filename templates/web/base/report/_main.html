@@ -147,5 +147,12 @@
     </div>
   [% END %]
 
+  [% IF permissions.planned_reports AND problem.shortlisted_user AND NOT c.user.is_planned_report(problem) %]
+    <div class="moderate-display shortlisted-status">
+      <h3>[% tprintf(loc('Shortlisted by %s'), problem.shortlisted_user.name) %]</h3>
+      <p>[% tprintf(loc('Adding this report to your shortlist will remove it from %s’s shortlist.'), problem.shortlisted_user.name) %]</p>
+    </div>
+  [% END %]
+
   [% TRY %][% PROCESS 'report/_main_after.html' %][% CATCH file %][% END %]
 </div>
