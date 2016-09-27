@@ -50,6 +50,7 @@ FixMyStreet::override_config {
 };
 $mech->content_contains( "Testing, 10th October" );
 $mech->content_lacks( 'Nearest road to the pin' );
+is $mech->response->header('Access-Control-Allow-Origin'), '*';
 
 $report->geocode( 
 {
