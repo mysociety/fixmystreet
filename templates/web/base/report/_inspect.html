@@ -1,7 +1,7 @@
 [% PROCESS 'admin/report_blocks.html'; # For the report state dropdown %]
 [% permissions = c.user.permissions(c, problem.bodies_str) %]
 [% second_column = BLOCK -%]
-  <div id="side-report-secondary">
+  <div id="side-inspect">
     [% INCLUDE 'errors.html' %]
 
     <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">

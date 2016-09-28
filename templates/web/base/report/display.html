@@ -14,6 +14,11 @@
 </div>
 
 <div id="map_sidebar">
+
+[% IF two_column_sidebar %]
+  <div class="two_column_sidebar">
+[% END %]
+
   <div id="side-report">
 
 [% IF login_success %]
@@ -47,6 +52,11 @@
   </div>
 
   [% second_column %]
+
+[% IF two_column_sidebar %]
+  </div>
+[% END %]
+
 </div>
 
 [% INCLUDE 'footer.html' %]

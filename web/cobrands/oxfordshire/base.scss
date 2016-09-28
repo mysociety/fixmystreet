@@ -69,6 +69,10 @@ dd, p {
   & > :last-child {
     margin-bottom: 0;
   }
+
+  .segmented-control + & {
+    margin-top: 1em;
+  }
 }
 
 .btn-primary {

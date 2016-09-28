@@ -139,3 +139,28 @@ $right: right;
     background: #{$prefix}linear-gradient($stops);
   }
 }
+
+@mixin flex-container() {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+@mixin flex($values, $values2009: 0) {
+  -webkit-box-flex: $values2009;
+  -moz-box-flex: $values2009;
+  -webkit-box-flex: $values;
+  -moz-box-flex: $values;
+  -webkit-flex: $values;
+  -ms-flex: $values;
+  flex: $values;
+}
+
+@mixin flex-align($alignment) {
+  -webkit-box-align: $alignment;
+  -webkit-align-items: $alignment;
+  -ms-flex-align: $alignment;
+  align-items: $alignment;
+}

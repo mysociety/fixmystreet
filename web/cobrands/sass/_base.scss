@@ -1839,14 +1839,14 @@ table.nicetable {
 
 .segmented-control {
   @include clearfix();
-  display: flex; // fancy full-width buttons for browsers that support flexbox
+  @include flex-container(); // fancy full-width buttons for browsers that support flexbox
 
   & > * {
     display: block;
     text-align: center;
     border-right-width: 0; // avoid double border between items
     float: left; // float fallback for browsers that don't support flexbox
-    flex: 1 0 auto;
+    @include flex(1 0 auto, 1);
   }
 
   .btn {
