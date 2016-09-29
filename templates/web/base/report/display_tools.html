@@ -43,7 +43,9 @@
         <fieldset>
         <label class="hidden n" for="alert_rznvy">[% loc('Your email') %]</label>
         <div class="form-txt-submit-box">
+          [% IF NOT c.user_exists %]
             <input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30" placeholder="[% loc('Your email') %]">
+          [% END %]
             <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
         </div>
         <input type="hidden" name="token" value="[% csrf_token %]">
