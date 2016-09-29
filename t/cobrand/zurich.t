@@ -936,8 +936,8 @@ subtest 'Status update shown as appropriate' => sub {
             my ($state, $update, $public, $user_response) = @$_;
             $report->update({ state => $state });
             $mech->get_ok( '/admin/report_edit/' . $report->id );
-            contains_or_lacks($mech, $update, "<textarea name='status_update'");
-            contains_or_lacks($mech, $public || $user_response, '<div class="admin-official-answer">');
+            $mech->contains_or_lacks($update, "<textarea name='status_update'");
+            $mech->contains_or_lacks($public || $user_response, '<div class="admin-official-answer">');
 
             if ($public) {
                 $mech->get_ok( '/report/' . $report->id );
@@ -946,17 +946,6 @@ subtest 'Status update shown as appropriate' => sub {
        }
     };
 };
-
-# TODO refactor into FixMyStreet::TestMech;
-sub contains_or_lacks {
-    my ($mech, $contains, $text) = @_;
-    if ($contains) {
-        $mech->content_contains($text);
-    }
-    else {
-        $mech->content_lacks($text);
-    }
-}
 
 subtest 'time_spent' => sub {
     FixMyStreet::override_config {

@@ -282,6 +282,16 @@ sub get_first_email {
     return $email_as_string;
 }
 
+=head2 contains_or_lacks
+
+Based upon boolean FLAG, checks that content contains or lacks TEXT.
+
+=cut
+
+sub contains_or_lacks {
+    my ($mech, $flag, $text) = @_;
+    $flag ? $mech->content_contains($text) : $mech->content_lacks($text);
+}
 
 =head2 page_errors
 

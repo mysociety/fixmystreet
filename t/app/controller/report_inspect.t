@@ -91,10 +91,10 @@ FixMyStreet::override_config {
             $user->user_body_permissions->delete;
             $user->user_body_permissions->create({ body => $oxon, permission_type => $test->{type} });
             $mech->get_ok("/report/$report_id/inspect");
-            has_or_lacks($test->{priority}, 'Priority');
-            has_or_lacks($test->{priority}, 'High');
-            has_or_lacks($test->{category}, 'Category');
-            has_or_lacks($test->{detailed}, 'Detailed problem information');
+            $mech->contains_or_lacks($test->{priority}, 'Priority');
+            $mech->contains_or_lacks($test->{priority}, 'High');
+            $mech->contains_or_lacks($test->{category}, 'Category');
+            $mech->contains_or_lacks($test->{detailed}, 'Detailed problem information');
             $mech->submit_form_ok({
                 button => 'save',
                 with_fields => {
@@ -111,9 +111,4 @@ END {
     $mech->delete_body($oxon);
     $mech->delete_body($brum);
     done_testing();
-}
-
-sub has_or_lacks {
-    my ($flag, $text) = @_;
-    $flag ? $mech->content_contains($text) : $mech->content_lacks($text);
 }
