@@ -207,6 +207,7 @@ sub generate : Private {
     $out =~ s{(<link>.*?</link>)}{$1<uri>$uri</uri>};
 
     $c->response->header('Content-Type' => 'application/xml; charset=utf-8');
+    $c->response->header('Access-Control-Allow-Origin' => '*');
     $c->response->body( $out );
 }
 
