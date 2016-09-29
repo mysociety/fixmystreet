@@ -22,18 +22,18 @@ and to receive notices of updates.
 
 <form method="get" action="[% c.uri_for('reports') %]" accept-charset="utf-8">
     <p><label for="search_reports">[% loc('Search Reports') %]</label>
-        <input type="text" name="search"  size="30" id="search_reports" value="[% searched | html %]">
+        <input type="text" class="form-control" name="search"  size="30" id="search_reports" value="[% searched | html %]">
 </form>
 
 <form method="get" action="[% c.uri_for('users') %]" accept-charset="utf-8">
     <p><label for="search_users">[% loc('Search Users') %]</label>
-        <input type="text" name="search"  size="30" id="search_users" value="[% searched | html %]">
+        <input type="text" class="form-control" name="search"  size="30" id="search_users" value="[% searched | html %]">
 </form>
 
 [% IF c.user.is_superuser %]
   <form method="get" action="[% c.uri_for('bodies') %]">
   <label for="search_body">[% loc('Edit body details') %]</label>
-  <select id="search_body" name="body">
+  <select class="form-control" id="search_body" name="body">
   [% FOREACH body IN bodies %]
     [%- SET id = body.id %]
       <option[% IF body.deleted %] class="adminhidden"[% END %] value="[% body.id %]">
@@ -42,7 +42,7 @@ and to receive notices of updates.
       </option>
   [% END %]
   </select>
-  <input type="submit" value="[% loc('Go') %]">
+  <input type="submit" class="btn" value="[% loc('Go') %]">
   </form>
 [% END %]
 

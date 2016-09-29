@@ -9,24 +9,24 @@
 
 <form method="post" action="[% c.uri_for('stats') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="filter-form">
     <label for="form_category">Transport Type: </label>
-    <select name="category" id="form_category">
+    <select class="form-control" name="category" id="form_category">
         <option value="">Select</option>
         [% PROCESS options, option_list = [ 'Bus', 'Metro', 'Train' ], selected = category %]
     </select>
 
     <label for="form_subcategory">Incident Type: </label>
-    <select name="subcategory" id="form_subcategory">
+    <select class="form-control" name="subcategory" id="form_subcategory">
         <option value="">Select</option>
         [% PROCESS options, option_list = ['Smoking', 'Drugs', 'Anti-social Behaviour', 'Loud Music', 'Damage', 'Feet on Seats', 'Other'], selected = subcategory %]
     </select>
 
     <label for="form_service">Device: </label>
-    <select name="service" id="form_service">
+    <select class="form-control" name="service" id="form_service">
         <option value="">Select</option>
         [% PROCESS options, option_list = [ 'Android', 'iPhone' ], selected = service %]
     </select>
 
-    <input type="submit" name="getcounts"  size="30" id="getcounts" value="Look Up" />
+    <input type="submit" class="btn" name="getcounts"  size="30" id="getcounts" value="Look Up" />
 </form>
 
 [% IF pager.total_entries == 0 %]

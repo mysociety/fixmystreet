@@ -246,7 +246,7 @@ textarea {
 
 textarea {
   line-height: 1.5em;
-  min-height: 8em;
+  min-height: 5em;
 }
 
 label{
@@ -285,6 +285,10 @@ label{
 select.form-control {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     height: 2.2em; // roughly equal to default input height
+
+    &[multiple] {
+        height: auto;
+    }
 }
 
 .form-section-heading {

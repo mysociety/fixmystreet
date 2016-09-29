@@ -68,13 +68,13 @@
 
 <form method="post" action="[% c.uri_for('stats') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p>
-    <label for="start_date">[% loc('Start Date:') %]</label><input type="text"
+    <label for="start_date">[% loc('Start Date:') %]</label><input type="text" class="form-control"
       placeholder="[% loc('Click here or enter as dd/mm/yyyy') %]" name="start_date" id="start_date"
       value="[% start_date ? start_date.strftime( '%d/%m/%Y') : '' | html %]" />
     </p>
 
     <p>
-    <label for="end_date">[% loc('End Date:') %]</label><input type="text"
+    <label for="end_date">[% loc('End Date:') %]</label><input type="text" class="form-control"
       placeholder="[% loc('Click here or enter as dd/mm/yyyy') %]" name="end_date" id="end_date" size="5"
       value="[% end_date ? end_date.strftime( '%d/%m/%Y') : '' | html %]" />
     </p>
@@ -89,7 +89,7 @@
 
     [% IF c.user.is_superuser %]
       <p>
-      [% loc('Council:') %] <select id='body' name='body'>
+      [% loc('Council:') %] <select class="form-control" id='body' name='body'>
           <option value=''>[% loc('No council') %]</option>
           [% FOR body IN bodies %]
           <option value="[% body.id %]"[% ' selected' IF body.id == selected_body %]>[% body.name %]</option>
@@ -99,7 +99,7 @@
     [% END %]
 
     <p>
-    <input type="submit" name="getcounts"  size="30" id="getcounts" value="Get Count" />
+    <input type="submit" class="btn" name="getcounts"  size="30" id="getcounts" value="Get Count" />
     </p>
 </form>
 

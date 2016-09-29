@@ -102,12 +102,12 @@
   <p>
     <input type="hidden" name="posted" value="update">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="submit" name="Update statuses" value="[% loc('Update statuses') %]">
+    <input type="submit" class="btn" name="Update statuses" value="[% loc('Update statuses') %]">
   </p>
 </form>
 
 <p class="fms-admin-info">
-    [% loc("Each contact for the body has a category, which is displayed to the public. 
+    [% loc("Each contact for the body has a category, which is displayed to the public.
             Different categories <strong>can have the same contact</strong> (email address).
             This means you can add many categories even if you only have one contact for the body.
     ") %]
@@ -138,12 +138,12 @@
         </p>
       </div>
       <p>
-        <strong>[% loc('Category:') %] </strong><input type="text" name="category" size="30" value="[% contact.category | html %]">
+        <strong>[% loc('Category:') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]">
       </p>
 
     <div class="admin-hint">
       <p>
-        [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent. 
+        [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent.
         Other categories for this body may have the same email address.") %]
       </p>
       [% IF (body.send_method AND body.send_method != 'Email') OR body.can_be_devolved  %]
@@ -154,7 +154,7 @@
     </div>
 
     <p>
-      <strong>[% loc('Email address:') %] </strong><input type="text" name="email" size="30" value="[% contact.email | html %]">
+      <strong>[% loc('Email address:') %] </strong><input type="text" class="form-control" name="email" size="30" value="[% contact.email | html %]">
     </p>
 
     <div class="admin-hint">
@@ -170,7 +170,7 @@
 
     <div class="admin-hint">
       <p>
-        [% loc("Check <strong>deleted</strong> to remove the category from use. 
+        [% loc("Check <strong>deleted</strong> to remove the category from use.
         It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
       </p>
     </div>
@@ -217,7 +217,7 @@
     <p>
       <input type="hidden" name="posted" value="new" >
       <input type="hidden" name="token" value="[% csrf_token %]" >
-      <input type="submit" name="Create category" value="[% errors ? loc('Save changes') : loc('Create category') %]" >
+      <input type="submit" class="btn" name="Create category" value="[% errors ? loc('Save changes') : loc('Create category') %]" >
     </p>
 
     <div>

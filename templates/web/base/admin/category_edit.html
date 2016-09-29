@@ -25,12 +25,12 @@
     <input type="hidden" name="token" value="[% csrf_token %]" >
 
     <p><strong>[% loc('Email:') %] </strong>
-    <input type="text" name="email" value="[% contact.email | html %]" size="30"> 
+    <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
 
     <p>
       [% IF c.cobrand.moniker != 'zurich' %]
         <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
-        <label class="inline" for="confirmed">[% loc('Confirmed' ) %]</label> 
+        <label class="inline" for="confirmed">[% loc('Confirmed' ) %]</label>
       [% ELSE %]
         <input type="hidden" name="confirmed" value="1">
       [% END %]
@@ -54,22 +54,22 @@
     <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
     <p>
         <label for="endpoint">Endpoint</label>
-        <input type="text" name="endpoint" id="endpoint" value="[% contact.endpoint | html %]" size="50">
+        <input type="text" class="form-control" name="endpoint" id="endpoint" value="[% contact.endpoint | html %]" size="50">
     </p>
 
     <p>
         <label for="jurisdiction">Jurisdiction</label>
-        <input type="text" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction | html %]" size="50">
+        <input type="text" class="form-control" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction | html %]" size="50">
     </p>
 
     <p>
         <label for="api_key">Api Key</label>
-        <input type="text" name="api_key" id="api_key" value="[% contact.api_key | html %]" size="25">
+        <input type="text" class="form-control" name="api_key" id="api_key" value="[% contact.api_key | html %]" size="25">
     </p>
 
     <p>
         <label for="send_method">Send Method</label>
-        <select name="send_method">
+        <select class="form-control" name="send_method">
             <option value=""> -- Select a method -- </option>
             [% FOR method IN send_methods %]
             <option value="[% method %]"[% ' selected' IF contact.send_method == method %]>[% method %]</option>
@@ -79,7 +79,7 @@
     [% END %]
 
     <input type="hidden" name="posted" value="new">
-    <p><input type="submit" name="Save changes" value="[% loc('Save changes') %]">
+    <p><input type="submit" class="btn" name="Save changes" value="[% loc('Save changes') %]">
 </form>
 
 [% IF contact.extra %]

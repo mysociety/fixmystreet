@@ -936,7 +936,7 @@ subtest 'Status update shown as appropriate' => sub {
             my ($state, $update, $public, $user_response) = @$_;
             $report->update({ state => $state });
             $mech->get_ok( '/admin/report_edit/' . $report->id );
-            $mech->contains_or_lacks($update, "<textarea name='status_update'");
+            $mech->contains_or_lacks($update, "name='status_update'");
             $mech->contains_or_lacks($public || $user_response, '<div class="admin-official-answer">');
 
             if ($public) {

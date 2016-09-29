@@ -39,11 +39,11 @@
   [% ELSE %]
 
     <dt><label for='title'>[% loc('Subject:') %]</label></dt>
-    <dd class="screen-only"><input size=60 type='text' id='title' name='title' value='[% problem.title | html %]'></dd>
+    <dd class="screen-only"><input size=60 type='text' class="form-control" id='title' name='title' value='[% problem.title | html %]'></dd>
     <dd class="print-only">[% problem.title | html %]</dd>
 
     <dt><label for='detail'>[% loc('Details:') %]</label></dt>
-    <dd class="screen-only"><textarea name='detail' id='detail' cols=60 rows=4>[% problem.detail | html %]</textarea></dd>
+    <dd class="screen-only"><textarea name='detail' class="form-control" id='detail' cols=60 rows=4>[% problem.detail | html %]</textarea></dd>
     <dd class="print-only">[% problem.detail | html %]</dd>
 
     [% IF problem.extra.original_detail %]
@@ -137,21 +137,21 @@
         <label for="new_internal_note">[% loc('New internal note:') %]</label>
     </dt>
     <dd class="screen-only">
-        <textarea name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea>
+        <textarea class="form-control" name='new_internal_note' id='new_internal_note' cols=60 rows=4>[% new_internal_note | html %]</textarea>
     </dd>
 
     <dt class="screen-only">
         <label for="time_spent">[% loc('Time spent (in minutes):') %]</label>
     </dt>
     <dd class="screen-only">
-      <input type="text" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
+      <input type="text" class="form-control" name="time_spent" id="form_time_spent" style="width: 4em" value="0">
     </dd>
 
     <dt class="screen-only">
         <span class="mock-label">[% loc('State:') %]</span>
     </dt>
     <dd class="screen-only">
-        <select name="state"  id="state" data-pstate="[% pstate %]">
+        <select class="form-control" name="state"  id="state" data-pstate="[% pstate %]">
             <option value="">--</option>
           [% FOREACH s IN states %]
             <option [% 'selected ' IF s.state == pstate %] value="[% s.state %]">[% s.trans %]</option>
@@ -167,7 +167,7 @@
     <li class="assignation">
         <div id="assignation__category">
             <label for="category">[% loc('Assign to different category:') %]</label>
-            <select name="category" id="category">
+            <select class="form-control" name="category" id="category">
                 <option value="">--</option>
               [% FOREACH cat IN categories %]
                 <option value="[% cat %]">[% cat %]</option>
@@ -184,7 +184,7 @@
   [% IF admin_type != 'super' AND list %]
     <li class="assignation" id="assignation__subdivision">
         <label for="body_subdivision">[% loc('Assign to subdivision:') %]</label>
-        <select name="body_subdivision" id="body_subdivision" class="assignation__select">
+        <select name="body_subdivision" id="body_subdivision" class="form-control assignation__select">
             <option value="">--</option>
             [% list %]
         </select>
@@ -209,7 +209,7 @@
                 [% loc('Assign to competent body:') %]
               [% END %]
             </label>
-            <select name="body_external" id="body_external">
+            <select class="form-control" name="body_external" id="body_external">
                 <option value="">--</option>
               [% FOR body IN bodies %]
                 [% NEXT IF body.parent OR body.bodies OR body.deleted %]
@@ -225,7 +225,7 @@
         </li>
         <li>
             [% INCLUDE 'admin/response_templates_select.html' for='external_body' %]
-            <textarea name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') | html %]</textarea>
+            <textarea class="form-control" name='external_message' id='external_body' cols=60 rows=5>[% problem.get_extra_metadata('external_message') | html %]</textarea>
         </li>
         </ul>
     [% END %]
@@ -242,7 +242,7 @@
         [% END %]
         </label>
         [% INCLUDE 'admin/response_templates_select.html' for='status_update' %]
-        <textarea name='status_update' id='status_update' cols=60 rows=5>
+        <textarea class="form-control" name='status_update' id='status_update' cols=60 rows=5>
         [%- problem.extra.public_response || default_public_response | html -%]
         </textarea>
         </li>
@@ -256,12 +256,12 @@
       # only a private email will be sent to the user.  However, in all cases,
       # this is the end of processing, so we mark this with the same text used
       # for 'No further updates %]
-    <input type="submit" name="publish_response" value="[% loc('No further updates') %]">
+    <input type="submit" class="btn" name="publish_response" value="[% loc('No further updates') %]">
   [% END %]
 
     [%# This button simply saves changes, but does NOT close the report (though
       # it may trigger other workflow %]
-    <input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" >
+    <input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" >
 </p>
 
 [% IF c.cobrand.problem_has_public_response(problem) || c.cobrand.problem_has_user_response(problem) %]

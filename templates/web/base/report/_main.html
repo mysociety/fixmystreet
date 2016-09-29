@@ -46,7 +46,7 @@
             Revert to original title
         </label>
       [% END %]
-        <h1><input type="text" name="problem_title" value="[% problem.title | html %]" data-original-value="[% original.title | html %]"></h1>
+        <h1><input class="form-control" type="text" name="problem_title" value="[% problem.title | html %]" data-original-value="[% original.title | html %]"></h1>
     </div>
   [% END %]
 
@@ -91,7 +91,7 @@
             Revert to original text
         </label>
       [% END %]
-        <textarea name="problem_detail" data-original-value="[% original.detail | html %]">[% problem.detail | html %]</textarea>
+        <textarea class="form-control" name="problem_detail" data-original-value="[% original.detail | html %]">[% problem.detail | html %]</textarea>
     </p>
 
     <div class="moderate-edit">
@@ -103,7 +103,7 @@
         </p>
         <p>
             <label for="moderation_reason">Moderation reason:</label>
-            <input type="text" name="moderation_reason" placeholder="Describe why you are moderating this">
+            <input type="text" class="form-control" name="moderation_reason" placeholder="Describe why you are moderating this">
         </p>
         <p>
             <input type="submit" class="green-btn" value="Save changes">
