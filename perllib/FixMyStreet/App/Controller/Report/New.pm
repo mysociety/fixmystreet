@@ -1242,8 +1242,11 @@ sub redirect_to_around : Private {
         lat => $c->stash->{latitude},
         lon => $c->stash->{longitude},
     };
-    foreach (qw(pc zoom status filter_category)) {
+    foreach (qw(pc zoom)) {
         $params->{$_} = $c->get_param($_);
+    }
+    foreach (qw(status filter_category)) {
+        $params->{$_} = join(',', $c->get_param_list($_, 1));
     }
 
     # delete empty values

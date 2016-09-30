@@ -92,9 +92,9 @@ sub map_features {
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
     my @around_args = @p{"min_lat", "max_lat", "min_lon", "max_lon", "interval"};
-    my $on_map_all = $c->cobrand->problems_on_map->around_map( @around_args, undef, $p{category}, $p{states} );
+    my $on_map_all = $c->cobrand->problems_on_map->around_map( @around_args, undef, $p{categories}, $p{states} );
     my $on_map_list = $around_limit
-        ? $c->cobrand->problems_on_map->around_map( @around_args, $around_limit, $p{category}, $p{states} )
+        ? $c->cobrand->problems_on_map->around_map( @around_args, $around_limit, $p{categories}, $p{states} )
         : $on_map_all;
 
     my $dist = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );
@@ -102,7 +102,7 @@ sub map_features {
     my $limit  = 20;
     my @ids    = map { $_->id } @$on_map_list;
     my $nearby = $c->model('DB::Nearby')->nearby(
-        $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "interval", "category", "states"}
+        $c, $dist, \@ids, $limit, @p{"latitude", "longitude", "interval", "categories", "states"}
     );
 
     return ( $on_map_all, $on_map_list, $nearby, $dist );

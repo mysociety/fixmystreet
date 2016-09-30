@@ -132,7 +132,7 @@ sub ward : Path : Args(2) {
     } )->all;
     @categories = map { $_->category } @categories;
     $c->stash->{filter_categories} = \@categories;
-    $c->stash->{filter_category} = $c->get_param('filter_category');
+    $c->stash->{filter_category} = [ $c->get_param_list('filter_category', 1) ];
 
     my $pins = $c->stash->{pins};
 
@@ -464,23 +464,37 @@ sub redirect_body : Private {
 sub stash_report_filter_status : Private {
     my ( $self, $c ) = @_;
 
-    my $status = $c->get_param('status') || $c->cobrand->on_map_default_status;
-    if ( $status eq 'all' ) {
-        $c->stash->{filter_status} = 'all';
-        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->visible_states();
-    } elsif ( $status eq 'open' ) {
-        $c->stash->{filter_status} = 'open';
-        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->open_states();
-    } elsif ( $status eq 'closed' ) {
-        $c->stash->{filter_status} = 'closed';
-        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->closed_states();
-    } elsif ( $status eq 'fixed' ) {
-        $c->stash->{filter_status} = 'fixed';
-        $c->stash->{filter_problem_states} = FixMyStreet::DB::Result::Problem->fixed_states();
-    } else {
-        $c->stash->{filter_status} = $c->cobrand->on_map_default_status;
+    my @status = $c->get_param_list('status', 1);
+    @status = ($c->cobrand->on_map_default_status) unless @status;
+    my %status = map { $_ => 1 } @status;
+
+    my %filter_problem_states;
+    my %filter_status;
+
+    if ($status{open}) {
+        my $s = FixMyStreet::DB::Result::Problem->open_states();
+        %filter_problem_states = (%filter_problem_states, %$s);
+        $filter_status{open} = 1;
+    }
+    if ($status{closed}) {
+        my $s = FixMyStreet::DB::Result::Problem->closed_states();
+        %filter_problem_states = (%filter_problem_states, %$s);
+        $filter_status{closed} = 1;
+    }
+    if ($status{fixed}) {
+        my $s = FixMyStreet::DB::Result::Problem->fixed_states();
+        %filter_problem_states = (%filter_problem_states, %$s);
+        $filter_status{fixed} = 1;
     }
 
+    if ($status{all}) {
+        my $s = FixMyStreet::DB::Result::Problem->visible_states();
+        # %filter_status = ();
+        %filter_problem_states = %$s;
+    }
+
+    $c->stash->{filter_problem_states} = \%filter_problem_states;
+    $c->stash->{filter_status} = \%filter_status;
     return 1;
 }
 

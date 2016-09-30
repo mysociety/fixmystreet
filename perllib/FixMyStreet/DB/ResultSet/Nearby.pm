@@ -10,7 +10,7 @@ sub to_body {
 }
 
 sub nearby {
-    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $category, $states ) = @_;
+    my ( $rs, $c, $dist, $ids, $limit, $mid_lat, $mid_lon, $interval, $categories, $states ) = @_;
 
     unless ( $states ) {
         $states = FixMyStreet::DB::Result::Problem->visible_states();
@@ -24,7 +24,7 @@ sub nearby {
         if $interval;
     $params->{id} = { -not_in => $ids }
         if $ids;
-    $params->{category} = $category if $category;
+    $params->{category} = $categories if $categories && @$categories;
 
     $rs = $c->cobrand->problems_restriction($rs);
 

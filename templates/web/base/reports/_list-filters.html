@@ -1,21 +1,23 @@
 [% select_status = BLOCK %]
-    <select class="form-control" name="status" id="statuses">
-        <option value="all"[% ' selected' IF filter_status == 'all' %]>[% loc('all reports') %]</option>
-        <option value="open"[% ' selected' IF filter_status == 'open' %]>[% loc('unfixed reports') %]</option>
-        <option value="closed"[% ' selected' IF filter_status == 'closed' %]>[% loc('closed reports') %]</option>
-        <option value="fixed"[% ' selected' IF filter_status == 'fixed' %]>[% loc('fixed reports') %]</option>
+    <select class="form-control" name="status" id="statuses" multiple data-all="[% loc('all reports') %]">
+        <option value="open"[% ' selected' IF filter_status.open %]>[% loc('unfixed reports') %]</option>
+        <option value="closed"[% ' selected' IF filter_status.closed %]>[% loc('closed reports') %]</option>
+        <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% loc('fixed reports') %]</option>
     </select>
 [% END %]
 
 [% select_category = BLOCK %]
-    <select class="form-control" name="filter_category" id="filter_categories">
-        <option value="">[% loc('Everything') %]</option>
-        [% FOR category IN filter_categories %]
-            <option value="[% category | html %]"[% ' selected' IF filter_category == category %]>
-                [% category | html %]
+  [% IF filter_categories.size %]
+    <select class="form-control" name="filter_category" id="filter_categories" multiple data-all="[% loc('everything') %]">
+        [% FOR cat IN filter_categories %]
+            <option value="[% cat | html %]"[% ' selected' IF filter_category.grep(cat).size %]>
+                [% cat | html %]
             </option>
         [% END %]
     </select>
+  [% ELSE %]
+    [% loc('everything') %]
+  [% END %]
 [% END %]
 
 [% IF use_form_wrapper %]
@@ -23,7 +25,7 @@
 [% END %]
 
         <p class="report-list-filters">
-            [% tprintf(loc('<label>Show %s</label> <label>about %s</label>', 'The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories'), select_status, select_category) %]
+            [% tprintf(loc('<label for="statuses">Show</label> %s <label for="filter_categories">about</label> %s', 'The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories'), select_status, select_category) %]
             <input type="submit" name="filter_update" value="[% loc('Go') %]">
         </p>
 

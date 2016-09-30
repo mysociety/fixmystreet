@@ -1,32 +1,51 @@
 .report-list-filters {
-  padding: 1em 1em 0;
-  margin-bottom: 0.5em;
+  padding: 1em;
+  padding-bottom: 0.75em; // compensate for 0.25em border-top on .item-list__item
+  margin-bottom: 0;
   color: #666;
   font-size: 0.85em;
-
-  label, select {
-    display: inline-block;
-    width: auto;
-  }
+  line-height: 1.8em;
 
   label {
+    // Override default label styling
     font-weight: normal;
     margin: 0;
+  }
 
-    & + label {
-      margin-#{$left}: 0.2em;
-    }
+  & > label,
+  .multi-select-container {
+    display: inline-block;
+    vertical-align: top;
   }
 
   select {
+    display: inline-block;
+    width: auto;
     color: inherit;
     font-family: inherit;
     font-size: 1em;
-
     border: 1px solid #ced7c4;
-    box-shadow: 0 1px 0 #fff;
-    height: 2em;
-    margin-#{$left}: 0.2em;
     max-width: 13em;
+    margin: 0 0.2em;
+  }
+
+  .form-control {
+    margin-bottom: 0;
+  }
+
+  .multi-select-container {
+    margin: 0 0.2em;
+  }
+
+  .multi-select-menu {
+    z-index: 11; // Stack on top of .shadow-wrap which has {z-index: 10}
+    line-height: 1.4em;
+  }
+
+  .multi-select-button {
+    max-width: 10em;
+    padding: 0 1.5em 0 0.6em;
+    line-height: 1.8em;
+    vertical-align: top;
   }
 }
