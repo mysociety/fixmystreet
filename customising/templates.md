@@ -102,3 +102,9 @@ time making working HTML emails, you may want to override the
 `_email_color_overrides.html` and `_email_setting_overrides.html` templates to
 set your own colours/branding, and then only copy other HTML templates to
 translate or otherwise change the wording.
+
+To include an inline logo in your HTML email, put it at
+`web/cobrands/yourcobrands/images/email-logo.gif` and make sure `logo_width`
+and `logo_height` are set appropriately in your
+`_email_setting_overrides.html`. The email template should then pick it up
+automatically.
