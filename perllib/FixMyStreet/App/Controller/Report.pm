@@ -317,7 +317,7 @@ sub inspect : Private {
         my $update_text;
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_location detailed_information traffic_information/) {
+            foreach (qw/detailed_information traffic_information/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 

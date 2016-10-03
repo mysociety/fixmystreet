@@ -2,48 +2,37 @@
 [% permissions = c.user.permissions(c, problem.bodies_str) %]
 [% second_column = BLOCK -%]
   <div id="side-report-secondary">
-    <div class="problem-inspector-fields clearfix">
-      [% INCLUDE 'errors.html' %]
+    [% INCLUDE 'errors.html' %]
 
-      <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
-        <p class="left">
-          <label for="problem_id">[% loc('Report ID:') %]</label>
-          <input type="text" readonly id="problem_id" value="[% problem.id %]">
+    <form id="report_inspect_form" method="post" action="[% c.uri_for( '/report', problem.id, 'inspect' ) %]">
+
+      <div class="inspect-section">
+        <p>
+          <strong>[% loc('Report ID:') %]</strong>
+          [% problem.id %]
         </p>
-
-[% IF permissions.report_edit_priority OR permissions.report_inspect %]
-        <p class="right">
-          <label for="problem_priority">[% loc('Priority:') %]</label>
-          <select name="priority" id="problem_priority">
-            <option value="" [% 'selected' UNLESS problem.response_priority_id %]>-</option>
-            [% FOREACH priority IN problem.response_priorities %]
-              <option value="[% priority.id %]" [% 'selected' IF problem.response_priority_id == priority.id %] [% 'disabled' IF priority.deleted %]>[% priority.name %]</option>
-            [% END %]
-          </select>
+        <p>
+          [% SET local_coords = problem.local_coords; %]
+          <strong>[% loc('Easting/Northing:') %]</strong>
+          <span id="problem_easting">[% local_coords.0 IF local_coords %]</span>,
+          <span id="problem_northing">[% local_coords.1 IF local_coords %]</span>
+          <input type="hidden" name="longitude" value="[% problem.longitude %]">
+          <input type="hidden" name="latitude" value="[% problem.latitude %]">
         </p>
-[% END %]
+        <p>
+          <a href="https://www.google.com/maps/dir/Current+Location/[% problem.latitude %],[% problem.longitude %]" class="btn btn-block btn--navigate">[% loc('Navigate to this problem') %]</a>
+        </p>
+        <p>
+          <a href="#" class="btn btn-block btn--geolocate" id="geolocate_link">[% loc('Set to my current location') %]</a>
+        </p>
+      </div>
 
-[% IF permissions.report_inspect %]
-        <p class="left">
-          <label for="state">[% loc('State:') %]</label>
+    [% IF permissions.report_edit_category OR permissions.report_inspect %]
+      <div class="inspect-section">
+        <p>
+          <label for="category">[% loc('Category') %]</label>
             [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-          <select name="state" id="state">
-            [% FOREACH group IN state_groups %]
-              <optgroup label="[% group.0 %]">
-                [% FOREACH state IN group.1 %]
-                  <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
-                [% END %]
-              </optgroup>
-            [% END %]
-          </select>
-        </p>
-[% END %]
-
-[% IF permissions.report_edit_category OR permissions.report_inspect %]
-        <p class="right">
-          <label for="category">[% loc('Category:') %]</label>
-            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-          <select name="category" id="category">
+          <select name="category" id="category" class="form-control">
             [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
             <optgroup label="[% loc('Existing category') %]">
               <option selected value="[% problem.category | html %]">[% (problem.category OR '-') | html %]</option>
@@ -58,47 +47,69 @@
             [% END %]
           </select>
         </p>
-[% END %]
 
+        [% IF permissions.report_inspect %]
         <p>
-          [% SET local_coords = problem.local_coords; %]
-          <strong>[% loc('Easting/Northing:') %]</strong>
-          <span id="problem_easting">[% local_coords.0 IF local_coords %]</span>,
-          <span id="problem_northing">[% local_coords.1 IF local_coords %]</span>
-          <input type="hidden" name="longitude" value="[% problem.longitude %]">
-          <input type="hidden" name="latitude" value="[% problem.latitude %]">
+          <label for="state">[% loc('State') %]</label>
+            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+          <select name="state" id="state" class="form-control">
+            [% FOREACH group IN state_groups %]
+              <optgroup label="[% group.0 %]">
+                [% FOREACH state IN group.1 %]
+                  <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
+                [% END %]
+              </optgroup>
+            [% END %]
+          </select>
         </p>
-        <p style="clear:both;">
-          <a href="#" id="geolocate_link">[% loc('Use my current location') %]</a>,
-          [% loc('or drag the pin on the map') %] &raquo;
-        </p>
+        [% END %]
+      </div>
+    [% END %]
 
-[% IF permissions.report_inspect %]
+      <div class="inspect-section">
+        [% IF permissions.report_edit_priority OR permissions.report_inspect %]
         <p>
-          <label for="detailed_information">[% loc('Detailed problem location:') %]</label>
-          <textarea rows="2" name="detailed_location">[% problem.get_extra_metadata('detailed_location') | html %]</textarea>
+          <label for="problem_priority">[% loc('Priority') %]</label>
+          <select name="priority" id="problem_priority" class="form-control">
+            <option value="" [% 'selected' UNLESS problem.response_priority_id %]>-</option>
+            [% FOREACH priority IN problem.response_priorities %]
+              <option value="[% priority.id %]" [% 'selected' IF problem.response_priority_id == priority.id %] [% 'disabled' IF priority.deleted %]>[% priority.name %]</option>
+            [% END %]
+          </select>
+        </p>
+        [% END %]
+
+        [% IF permissions.report_inspect %]
+        <p>
+          <label for="traffic_information">[% loc('Traffic management required?') %]</label>
+          [% traffic_info = problem.get_extra_metadata('traffic_information') %]
+          <select id="traffic_information" name="traffic_information" class="form-control">
+            <option value=""[% ' selected' IF NOT traffic_info %]>-</option>
+            <option[% ' selected' IF traffic_info == "Yes" %]>Yes</option>
+            <option[% ' selected' IF traffic_info == "No" %]>No</option>
+          </select>
         </p>
         <p>
-          <label for="detailed_information">[% loc('Detailed problem information:') %]</label>
-          <textarea rows="2" name="detailed_information">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
+          <label for="detailed_information">[% loc('Extra details') %]</label>
+          <textarea rows="2" name="detailed_information" class="form-control">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
         </p>
-        <p>
-          <label for="traffic_information">[% loc('Traffic management information:') %]</label>
-          <textarea rows="2" name="traffic_information">[% problem.get_extra_metadata('traffic_information') | html %]</textarea>
-        </p>
-[% END %]
+        [% END %]
 
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]">
           <a href="[% c.uri_for( '/report', problem.id ) %]" class="btn">[% loc('Cancel') %]</a>
           <input type="submit" value="[% loc('Save changes') %]" name="save" />
         </p>
-[% IF permissions.report_inspect %]
+      </div>
+
+    [% IF permissions.report_inspect %]
+      <div class="inspect-section">
         [% UNLESS problem.get_extra_metadata('inspected') %]
+          [%# TODO: Integrate this textarea into the main form, for simpler UX %]
           <p>
             <label for="public_update">[% loc('Public update:') %]</label>
             [% INCLUDE 'admin/response_templates_select.html' for='public_update' %]
-            <textarea rows="2" name="public_update" id="public_update" required>[% public_update | html %]</textarea>
+            <textarea rows="2" name="public_update" id="public_update" class="form-control" required>[% public_update | html %]</textarea>
           </p>
           <p>
             <input type="submit" value="[% loc('Save changes + send') %]" name="save_inspected" />
@@ -112,8 +123,9 @@
             [% END %]
           </p>
         [% END %]
-[% END %]
-      </form>
-    </div>
+      </div>
+    [% END %]
+
+    </form>
   </div>
 [%- END %]

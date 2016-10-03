@@ -46,10 +46,10 @@ FixMyStreet::override_config {
     };
 
     subtest "test basic inspect submission" => sub {
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Lots', state => 'Planned' } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Planned' } });
         $report->discard_changes;
         is $report->state, 'planned', 'report state changed';
-        is $report->get_extra_metadata('traffic_information'), 'Lots', 'report data changed';
+        is $report->get_extra_metadata('traffic_information'), 'Yes', 'report data changed';
     };
 
     subtest "test inspect & instruct submission" => sub {
@@ -94,7 +94,7 @@ FixMyStreet::override_config {
             $mech->contains_or_lacks($test->{priority}, 'Priority');
             $mech->contains_or_lacks($test->{priority}, 'High');
             $mech->contains_or_lacks($test->{category}, 'Category');
-            $mech->contains_or_lacks($test->{detailed}, 'Detailed problem information');
+            $mech->contains_or_lacks($test->{detailed}, 'Extra details');
             $mech->submit_form_ok({
                 button => 'save',
                 with_fields => {
