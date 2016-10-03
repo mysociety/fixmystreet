@@ -56,7 +56,7 @@ FixMyStreet::override_config {
         $report->unset_extra_metadata('inspected');
         $report->update;
         $mech->get_ok("/report/$report_id/inspect");
-        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => "This is a public update." } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", save_inspected => "1" } });
         $report->discard_changes;
         is $report->comments->first->text, "This is a public update.", 'Update was created';
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
@@ -67,7 +67,7 @@ FixMyStreet::override_config {
         $report->update;
         $report->comments->delete_all;
         $mech->get_ok("/report/$report_id/inspect");
-        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => undef, save_inspected => "1" } });
         is_deeply $mech->page_errors, [ "Please provide a public update for this report." ], 'errors match';
         $report->discard_changes;
         is $report->comments->count, 0, "Update wasn't created";

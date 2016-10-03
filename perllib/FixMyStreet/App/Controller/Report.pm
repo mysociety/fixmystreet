@@ -310,7 +310,7 @@ sub inspect : Private {
 
     $c->stash->{categories} = $c->forward('/admin/categories_for_point');
 
-    if ( $c->get_param('save') || $c->get_param('save_inspected') ) {
+    if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
 
         my $valid = 1;

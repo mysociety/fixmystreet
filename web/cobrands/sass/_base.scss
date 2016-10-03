@@ -398,6 +398,17 @@ select.form-control {
   margin:1em 0;
 }
 
+.label-containing-checkbox {
+  padding-#{$left}: 24px;
+  position: relative;
+
+  input {
+    position: absolute;
+    #{$left}: 0;
+    top: 0.2em;
+  }
+}
+
 
 // form errors
 div.form-error,

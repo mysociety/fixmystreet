@@ -426,6 +426,25 @@ $.extend(fixmystreet.set_up, {
     $('.js-contribute-as').change();
   },
 
+  inspect_with_public_update: function() {
+    $('.js-toggle-public-update').each(function() {
+        var $checkbox = $(this);
+        var toggle_public_update = function() {
+            if ($checkbox.prop('checked')) {
+                $('#public_update').parents('p').show();
+            } else {
+                $('#public_update').parents('p').hide();
+            }
+        };
+
+        $checkbox.on('change', function() {
+            toggle_public_update();
+        });
+
+        toggle_public_update();
+    });
+  },
+
   on_resize: function() {
     var last_type;
     $(window).on('resize', function() {

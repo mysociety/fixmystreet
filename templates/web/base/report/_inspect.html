@@ -63,11 +63,12 @@
           </select>
         </p>
         [% END %]
+
       </div>
     [% END %]
 
+    [% IF permissions.report_edit_priority OR permissions.report_inspect %]
       <div class="inspect-section">
-        [% IF permissions.report_edit_priority OR permissions.report_inspect %]
         <p>
           <label for="problem_priority">[% loc('Priority') %]</label>
           <select name="priority" id="problem_priority" class="form-control">
@@ -77,7 +78,6 @@
             [% END %]
           </select>
         </p>
-        [% END %]
 
         [% IF permissions.report_inspect %]
         <p>
@@ -91,36 +91,26 @@
         </p>
         <p>
           <label for="detailed_information">[% loc('Extra details') %]</label>
-          <textarea rows="2" name="detailed_information" class="form-control">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
+          <textarea rows="2" name="detailed_information" id="detailed_information" class="form-control">[% problem.get_extra_metadata('detailed_information') | html %]</textarea>
         </p>
         [% END %]
 
-        <p>
-          <input type="hidden" name="token" value="[% csrf_token %]">
-          <a class="btn" href="[% c.uri_for( '/report', problem.id ) %]">[% loc('Cancel') %]</a>
-          <input class="btn" type="submit" value="[% loc('Save changes') %]" name="save" />
-        </p>
       </div>
+    [% END %]
 
-    [% IF permissions.report_inspect %]
       <div class="inspect-section">
-        [% UNLESS problem.get_extra_metadata('inspected') %]
-          [%# TODO: Integrate this textarea into the main form, for simpler UX %]
+
+        [% IF permissions.report_inspect %]
+          <p>
+            <label class="label-containing-checkbox">
+              <input type="checkbox" name="save_inspected" value="1" class="js-toggle-public-update" [% 'checked' IF save_inspected %]>
+              [% loc('Save with a public update') %]
+            </label>
+          </p>
           <p>
             <label for="public_update">[% loc('Public update:') %]</label>
             [% INCLUDE 'admin/response_templates_select.html' for='public_update' %]
-            <textarea rows="2" name="public_update" id="public_update" class="form-control" required>[% public_update | html %]</textarea>
-          </p>
-          <p>
-            <input class="btn" type="submit" value="[% loc('Save changes + send') %]" name="save_inspected" />
-          </p>
-        [% ELSE %]
-          <p>
-            [% IF problem.whensent %]
-              [% loc("<strong>Note:</strong> This report has been sent onwards for action. Any changes made won't be passed on.") %]
-            [% ELSE %]
-              [% loc("<strong>Note:</strong> This report hasn't yet been sent onwards for action. Any changes made may not be passed on.") %]
-            [% END %]
+            <textarea rows="2" name="public_update" id="public_update" class="form-control">[% public_update | html %]</textarea>
           </p>
         [% END %]
 
@@ -138,7 +128,6 @@
           <input class="btn btn-primary" type="submit" value="[% loc('Save changes') %]" name="save" />
         </p>
       </div>
-    [% END %]
 
     </form>
   </div>
