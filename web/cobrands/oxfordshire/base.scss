@@ -87,3 +87,14 @@ dd, p {
         #fff
     );
 }
+
+@media print {
+    body {
+        background-color: #fff !important;
+    }
+
+    .mappage #oxford-header,
+    .mappage #side > .extra-text {
+        display: none !important;
+    }
+}

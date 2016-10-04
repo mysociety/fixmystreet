@@ -925,6 +925,14 @@ input.final-submit {
   margin: 0.25em 0 0;
   padding: 0.5em 1em;
   display: block;
+
+  @media print {
+    background-color: transparent !important;
+    margin: 0 !important;
+    padding: 1em 0 !important;
+    border-top: 1px solid #ccc;
+    page-break-inside: avoid;
+  }
 }
 
 .item-list__update-wrap {
@@ -954,28 +962,75 @@ input.final-submit {
 
 .item-list--reports__item {
   @extend %item-list__item--link;
+
   a {
     @include clearfix;
     padding: flip(0 0 0 1em, 0 1em 0 0);
+
+    @media print {
+      padding: 0;
+    }
   }
+
   .img {
     width: 90px;
     float: $right;
     height: auto;
     margin-#{$left}: 1em;
   }
+
   small {
     color: #666;
     display: block;
     padding: 0.25em 0;
   }
 }
+
+.item-list__item__metadata {
+  display: none;
+
+  @media print {
+    display: block;
+    @include flex-container();
+    @include flex-wrap(wrap);
+  }
+
+  & > * {
+    margin-top: 0.5em;
+    width: 33%;
+    @include flex(0 0 auto);
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 0.75em;
+    font-weight: bold;
+  }
+
+  p {
+    margin-bottom: 0;
+    min-height: 1.4em;
+  }
+}
+
 .item-list__heading {
   font-size: 1em;
   font-weight: normal;
   line-height: 1.5;
   padding-top: 0.25em;
   margin: 0;
+
+  @media print {
+    font-weight: bold;
+  }
+}
+
+.item-list__description {
+  display: none;
+
+  @media print {
+    display: block;
+  }
 }
 
 .item-list__item--empty p {
@@ -1987,15 +2042,36 @@ table.nicetable {
   #sub_map_links,
   #fms_pan_zoom,
   .screen-only,
-  .olMapViewport {
+  .olMapViewport,
+  .big-green-banner,
+  .click-the-map,
+  #skip-this-step,
+  .my-account-buttons {
     display: none !important;
   }
 
-  #map_box {
+  #site-header {
+    display: block !important;
     position: static !important;
-    height: 256px !important;
+  }
+
+  #map_box,
+  #map_sidebar {
+    position: static !important;
     width: auto !important;
-    background: #f1eee9 !important; // cream colour to match OSM image
+    background: transparent !important;
+  }
+
+  #map_box {
+    float: right !important;
+    width: 256px !important;
+    height: 256px !important;
+    margin: 0 0 1em 1em !important;
+  }
+
+  #map_sidebar {
+      // Prevent sidebar from clearing below floated map
+      overflow: visible !important;
   }
 
   #map {
