@@ -39,7 +39,7 @@
                         <label><input type="checkbox" name="update_revert_detail" class="revert-textarea">
                         Revert to original</label>
                         [% END %]
-                        <textarea name="update_detail">[% update.text | add_links %]</textarea>
+                        <textarea class="form-control" name="update_detail">[% update.text | add_links %]</textarea>
                     </div>
                     [% END %]
 
@@ -55,7 +55,7 @@
             [% IF moderating %]
                 <div class="moderate-edit">
                     <label for="moderation_reason">Moderation reason:</label>
-                    <input type="text" name="moderation_reason" 
+                    <input type="text" class="form-control" name="moderation_reason"
                         placeholder="Describe why you are moderating this">
                     <input type="submit" class="red-btn" value="Save changes">
                     <input type="button" class="btn cancel" value="Discard changes">

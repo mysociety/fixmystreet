@@ -10,11 +10,11 @@
 <li><a href="[% c.uri_for_email( '/report', update.problem_id ) %]#update_[% update.id %]">[% loc('View report on site' )%]</a></li>
 
 <li><label for='detail'>[% loc('Text:') %]</label>
-<textarea name='text' id='text' cols=60 rows=5>[% update.text | html %]</textarea></li>
+<textarea class="form-control" name='text' id='text' cols=60 rows=5>[% update.text | html %]</textarea></li>
 
 <input type="hidden" name="anonymous" value="[% update.anonymous %]">
 
-<li>[% loc('State:') %] <select name="state"  id="state">
+<li>[% loc('State:') %] <select class="form-control" name="state" id="state">
     [% FOREACH state IN [ ['confirmed', loc('Open')], ['hidden', loc('Hidden')], ['unconfirmed',loc('Unconfirmed')] ] %]
         <option [% 'selected ' IF state.0 == update.state %] value="[% state.0 %]">[% state.1 %]</option>
     [% END %]
@@ -35,6 +35,6 @@
 <label for="remove_photo" class="inline">[% loc("Remove photo (can't be undone!)") %]</label></li>
 [% END %]
 </ul>
-<input type="submit" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
+<input type="submit" class="btn" name="Submit changes" value="[% loc('Submit changes') %]" ></form>
 
 [% INCLUDE 'admin/footer.html' %]

@@ -9,7 +9,7 @@
 [% END %]
 
 <form method="get" action="[% c.uri_for('stats') %]">
-<p><select name="ym">
+<p><select class="form-control" name="ym">
     <option value="">[% loc('All reports') %]</option>
     [% FOR y IN [ 2013 .. date.format(date.now, '%Y') ];
         SET max = 12;
@@ -23,7 +23,7 @@
     [% END %]
 </select>
 
-<input type="submit" value="[% loc('Go') %]">
+<input type="submit" class="btn" value="[% loc('Go') %]">
 </form>
 
 <ul>

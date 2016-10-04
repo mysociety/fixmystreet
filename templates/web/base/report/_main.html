@@ -46,7 +46,7 @@
             Revert to original title
         </label>
       [% END %]
-        <h1><input type="text" name="problem_title" value="[% problem.title | html %]" data-original-value="[% original.title | html %]"></h1>
+        <h1><input class="form-control" type="text" name="problem_title" value="[% problem.title | html %]" data-original-value="[% original.title | html %]"></h1>
     </div>
   [% END %]
 
@@ -91,7 +91,7 @@
             Revert to original text
         </label>
       [% END %]
-        <textarea name="problem_detail" data-original-value="[% original.detail | html %]">[% problem.detail | html %]</textarea>
+        <textarea class="form-control" name="problem_detail" data-original-value="[% original.detail | html %]">[% problem.detail | html %]</textarea>
     </p>
 
     <div class="moderate-edit">
@@ -103,7 +103,7 @@
         </p>
         <p>
             <label for="moderation_reason">Moderation reason:</label>
-            <input type="text" name="moderation_reason" placeholder="Describe why you are moderating this">
+            <input type="text" class="form-control" name="moderation_reason" placeholder="Describe why you are moderating this">
         </p>
         <p>
             <input type="submit" class="green-btn" value="Save changes">
@@ -126,10 +126,10 @@
   %]
     <div class="moderate-display segmented-control" role="menu">
       [% IF permissions.moderate %]
-        <a class="js-moderate" role="menuitem" aria-label="[% loc('Moderate this report') %]">[% loc('Moderate') %]</a>
+        <a class="js-moderate btn" role="menuitem" aria-label="[% loc('Moderate this report') %]">[% loc('Moderate') %]</a>
       [% END %]
       [% IF !hide_inspect_button AND permissions.keys.grep('report_inspect|report_edit_category|report_edit_priority').size %]
-        <a href="/report/[% problem.id %]/inspect" role="menuitem">
+        <a class="btn" href="/report/[% problem.id %]/inspect#side-inspect" role="menuitem">
           [%~ IF permissions.report_inspect ~%]
             [%~ loc('Inspect') ~%]
           [%~ ELSE ~%]
@@ -139,9 +139,9 @@
       [% END %]
       [% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) %]
           [%~ IF c.user.is_planned_report(problem) ~%]
-            <label for="shortlist-report" role="menuitem" aria-label="[% loc('Remove from shortlist') %]">[% loc('Shortlisted') %]</label>
+            <label class="btn" for="shortlist-report" role="menuitem" aria-label="[% loc('Remove from shortlist') %]">[% loc('Shortlisted') %]</label>
           [%~ ELSE ~%]
-            <label for="shortlist-report" role="menuitem" aria-label="[% loc('Add to shortlist') %]">[% loc('Shortlist') %]</label>
+            <label class="btn" for="shortlist-report" role="menuitem" aria-label="[% loc('Add to shortlist') %]">[% loc('Shortlist') %]</label>
           [%~ END ~%]
       [% END %]
     </div>

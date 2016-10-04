@@ -69,4 +69,21 @@ dd, p {
   & > :last-child {
     margin-bottom: 0;
   }
+
+  .segmented-control + & {
+    margin-top: 1em;
+  }
+}
+
+.btn-primary {
+    @include button-reset(
+        $oxfordshire_button_top,
+        $oxfordshire_button_bottom,
+        $oxfordshire_button_border,
+        #fff,
+        darken($oxfordshire_button_bottom, 3%),
+        darken($oxfordshire_button_top, 3%),
+        $oxfordshire_button_border,
+        #fff
+    );
 }

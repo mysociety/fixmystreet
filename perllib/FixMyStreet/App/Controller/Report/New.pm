@@ -849,32 +849,10 @@ sub process_report : Private {
             $report->bodies_missing($missing);
         }
 
-        my @extra;
-        foreach my $contact (@contacts) {
-            my $metas = $contact->get_metadata_for_input;
-            foreach my $field ( @$metas ) {
-                if ( lc( $field->{required} ) eq 'true' ) {
-                    unless ( $c->get_param($field->{code}) ) {
-                        $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
-                    }
-                }
-                push @extra, {
-                    name => $field->{code},
-                    description => $field->{description},
-                    value => $c->get_param($field->{code}) || '',
-                };
-            }
-        }
+        $c->forward('set_report_extras', [ \@contacts ]);
 
         if ( $c->stash->{non_public_categories}->{ $report->category } ) {
             $report->non_public( 1 );
-        }
-
-        $c->cobrand->process_open311_extras( $c, $contacts[0]->body_id, \@extra );
-
-        if ( @extra ) {
-            $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
-            $report->set_extra_fields( @extra );
         }
     } elsif ( @{ $c->stash->{bodies_to_list} } ) {
 
@@ -924,6 +902,36 @@ sub contacts_to_bodies : Private {
         } else {
             [ map { $_->body } @contacts ];
         }
+    }
+}
+
+sub set_report_extras : Private {
+    my ($self, $c, $contacts, $param_prefix) = @_;
+
+    $param_prefix ||= "";
+    my @extra;
+    foreach my $contact (@$contacts) {
+        my $metas = $contact->get_metadata_for_input;
+        foreach my $field ( @$metas ) {
+            if ( lc( $field->{required} ) eq 'true' ) {
+                unless ( $c->get_param($param_prefix . $field->{code}) ) {
+                    $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
+                }
+            }
+            push @extra, {
+                name => $field->{code},
+                description => $field->{description},
+                value => $c->get_param($param_prefix . $field->{code}) || '',
+            };
+        }
+    }
+
+    $c->cobrand->process_open311_extras( $c, @$contacts[0]->body_id, \@extra )
+        if ( scalar @$contacts );
+
+    if ( @extra ) {
+        $c->stash->{report_meta} = { map { $_->{name} => $_ } @extra };
+        $c->stash->{report}->set_extra_fields( @extra );
     }
 }
 

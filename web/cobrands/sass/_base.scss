@@ -246,7 +246,7 @@ textarea {
 
 textarea {
   line-height: 1.5em;
-  min-height: 8em;
+  min-height: 5em;
 }
 
 label{
@@ -285,6 +285,10 @@ label{
 select.form-control {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     height: 2.2em; // roughly equal to default input height
+
+    &[multiple] {
+        height: auto;
+    }
 }
 
 .form-section-heading {
@@ -398,27 +402,14 @@ select.form-control {
   margin:1em 0;
 }
 
-.problem-inspector-fields {
-  select {
-    height: 2.4em; // match text inputs
-    -webkit-appearance: menulist-button; // so it's the right height in Safari
-  }
+.label-containing-checkbox {
+  padding-#{$left}: 24px;
+  position: relative;
 
-  p.left,
-  p.right {
-    width: 46%;
-
-    label {
-        margin-top: 0;
-    }
-  }
-
-  p.left {
-    float: #{$left};
-  }
-
-  p.right {
-    float: #{$right};
+  input {
+    position: absolute;
+    #{$left}: 0;
+    top: 0.2em;
   }
 }
 
@@ -725,22 +716,22 @@ footer {
 
 /*BUTTONS*/
 
-// Default style set for buttons, inputs and .btn class. Red and green class available.
-// NB: a.btn is included in the selector otherwise a:visited is more specific and
-// the wrong text colour is applied.
-button, input[type=submit], .btn, a.btn {
+.btn {
   @include button-reset;
 }
 
-.green-btn,
-button.green-btn,
-input.green-btn{
+.btn + .btn {
+  // Ensure extra space between inline buttons placed next to each other.
+  margin-#{$left}: 0.5em;
+}
+
+.btn-primary,
+.green-btn {
   @include button-reset(#9FDE23, #7FB900, #5B9700, #fff, #9FDE23, #7FB900, #5B9700, #fff);
 }
 
-.red-btn,
-button.red-btn,
-input.red-btn{
+.btn-danger,
+.red-btn {
   @include button-reset(#FF0038, #BF002A, #80001C, #fff, #FF0038, #BF002A, #80001C, #fff);
 }
 
@@ -753,10 +744,6 @@ input.final-submit {
 .btn--facebook {
     @include button-reset(#3b5998, darken(#3b5998, 10%), #3b5998, #fff, darken(#3b5998, 5%), darken(#3b5998, 10%), #3b5998, #fff);
 
-    &:visited {
-        color: #fff;
-    }
-
     img {
         margin-right: 0.5em;
         vertical-align: -0.2em;
@@ -768,10 +755,6 @@ input.final-submit {
 .btn--twitter {
     @include button-reset(#55acee, darken(#55acee, 10%), #55acee, #fff, darken(#55acee, 5%), darken(#55acee, 10%), #55acee, #fff);
 
-    &:visited {
-        color: #fff;
-    }
-
     img {
         margin-right: 0.5em;
         vertical-align: -0.2em;
@@ -780,9 +763,45 @@ input.final-submit {
     }
 }
 
+.btn--navigate,
+.btn--geolocate {
+    &:before {
+        content: "";
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        background: transparent url(/cobrands/fixmystreet/images/navigate.png) no-repeat 0 0;
+        background-size: 16px 16px;
+        margin-#{$right}: 0.5em;
+        vertical-align: -0.1em; // vertically centre icon in button
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/navigate@2.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/navigate.svg), none;
+        }
+    }
+}
+
+.btn--geolocate {
+    &:before {
+        background-image: url(/cobrands/fixmystreet/images/crosshairs.png);
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/crosshairs@2.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/crosshairs.svg), none;
+        }
+    }
+}
+
 .btn--block {
     display: block;
-    width: auto;
+    text-align: center;
 }
 
 // Under the button to override its text transform and width
@@ -1463,6 +1482,27 @@ label .muted {
   }
 }
 
+.inspect-section {
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  padding-top: 1.5em;
+  margin-top: 1.5em;
+
+  &:first-child {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  & > :first-child,
+  & > :first-child > :first-child {
+    margin-top: 0;
+  }
+}
+
+.inspect-section--hidden {
+  display: none;
+}
+
 
 table.nicetable {
   width:100%;
@@ -1803,35 +1843,36 @@ table.nicetable {
 
 .segmented-control {
   @include clearfix();
-  display: flex; // fancy full-width buttons for browsers that support flexbox
+  @include flex-container(); // fancy full-width buttons for browsers that support flexbox
 
   & > * {
     display: block;
-    margin: 0;
-    padding: 0.75em 0.5em;
     text-align: center;
-    background: #fff linear-gradient(to bottom, #fff 0%, #eee 100%) 0 0 no-repeat;
-    border: 1px solid #ccc;
     border-right-width: 0; // avoid double border between items
-    font-weight: bold;
-    color: inherit !important;
-    text-decoration: none !important;
-    cursor: pointer;
     float: left; // float fallback for browsers that don't support flexbox
-    flex: 1 0 auto;
+    @include flex(1 0 auto, 1);
+  }
 
-    &:hover {
-      background: #f3f3f3 linear-gradient(to bottom, #f9f9f9 0%, #e9e9e9 100%) 0 0 no-repeat;
-    }
+  .btn {
+    padding: 0.75em 0.5em;
+    border-radius: 0;
+  }
+
+  .btn + .btn {
+    margin-#{$left}: 0;
   }
 
   & > :first-child {
-    border-radius: 0.25em 0 0 0.25em;
+    border-radius: 4px 0 0 4px;
   }
 
   & > :last-child {
-    border-radius: 0 0.25em 0.25em 0;
+    border-radius: 0 4px 4px 0;
     border-right-width: 1px; // reinstate border on last item
+  }
+
+  & > :first-child:last-child {
+    border-radius: 4px;
   }
 }
 

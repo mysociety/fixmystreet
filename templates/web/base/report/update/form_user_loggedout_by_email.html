@@ -2,7 +2,7 @@
     <h5>[% loc('<strong>No</strong> Let me confirm my update by email') %]</h5>
 
     [% INCLUDE 'report/update/form_name.html' %]
-    
+
     <label for="password_register">[% loc('Password (optional)') %]</label>
 
     <div class="general-notes">
@@ -10,7 +10,7 @@
     </div>
 
     <div class="form-txt-submit-box">
-        <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+        <input type="password" class="form-control" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
         <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]">
     </div>
 

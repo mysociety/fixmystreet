@@ -17,12 +17,12 @@
             [% IF field_errors.detail %]
                 <p class='form-error'>[% field_errors.detail %]</p>
             [% END %]
-            <textarea rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
+            <textarea class="form-control" rows="7" cols="26" name="detail" id="form_detail" placeholder="[% loc('Please fill in details of the problem.') %]" required>[% report.detail | html %]</textarea>
 
             [% IF js %]
                 <div id="form_category_row">
                     <label for="form_category">[% loc('Transport Category') %]</label>
-                    <select name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
+                    <select class="form-control" name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
                 </div>
             [% ELSE %]
                 [% IF category_options.size %]
@@ -36,7 +36,7 @@
 
             <div id="form_subcategory_row">
                 <label for="form_subcategory">[% loc('Incident Category') %]</label>
-                <select name="subcategory" id="form_subcategory" required>
+                <select class="form-control" name="subcategory" id="form_subcategory" required>
                     <option value="">-- Pick a category --</option>
                     <option value="Smoking/other drugs">Smoking/other drugs</option>
                     <option value="Drugs">Drugs</option>
@@ -78,18 +78,18 @@
                 <p class='form-error'>[% field_errors.name %]</p>
             [% END %]
 
-            <input type="text" class="form-focus-trigger validName js-form-name" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
+            <input type="text" class="form-control form-focus-trigger validName js-form-name" value="[% report.name | html %]" name="name" id="form_name" placeholder="[% loc('Your name') %]">
 
             <label for="form_email">[% loc('Your email (optional)') %]</label>
             [% IF field_errors.email %]
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
-            <input type="email" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]">
+            <input type="email" class="form-control" value="[% report.user.email | html %]" name="email" id="form_email" placeholder="[% loc('Please enter your email address') %]">
 
 
 
-            <label class="" for="form_phone">[% loc('Phone number (optional)') %]</label>
-            <input class="" type="text" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
+            <label for="form_phone">[% loc('Phone number (optional)') %]</label>
+            <input type="text" class="form-control" value="[% report.user.phone | html %]" name="phone" id="form_phone" placeholder="[% loc('Your phone number') %]">
 
             <div class="form-txt-submit-box ">
                 <input class="green-btn" type="submit" id="submit_noname" name="submit_noname" value="[% loc('Submit') %]">

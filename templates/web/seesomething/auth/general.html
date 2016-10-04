@@ -23,11 +23,11 @@
         [% ELSIF sign_in_error %]
             <div class="form-error">[% loc('There was a problem with your email/password combination. If you cannot remember your password, or do not have one, please fill in the &lsquo;sign in by email&rsquo; section of the form.') %]</div>
         [% END %]
-        <input type="email" class="required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]">
+        <input type="email" class="form-control required email" id="email" name="email" value="[% email | html %]" placeholder="[% loc('Your email address') %]">
 
         <div class="form-txt-submit-box">
             <label class="n" for="password_sign_in">Password</label>
-            <input type="password" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
+            <input type="password" class="form-control" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
         </div>
 
         <div class="form-txt-submit-box">

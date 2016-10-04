@@ -60,6 +60,8 @@ body.twothirdswidthpage {
     }
 }
 
+// TODO: This entire section is very suspicious
+//
 // To prevent font size larger interfering with the fixed Oxfordshire layout
 .container { width: auto; }
 body:not(.admin) .full-width { width: 464px; }
@@ -223,11 +225,10 @@ body.mappage {
 
 #map_sidebar {
   background-color: $oxfordshire_very_light_green;
+}
 
-  .with-actions & {
-    background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #deead2 29em);
-    background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #deead2 29em);
-  }
+#side-inspect {
+  background-color: #deead2;
 }
 
 .item-list--reports {
@@ -286,11 +287,12 @@ h4.static-with-rule {
 
 #oxford-wrapper #front-main #postcodeForm div {
   border: 1px solid #fff; // because orange "Go" button (see below) abuts this border, looks a tiny bit better if it's not dark green
+  width: 24em; // up from default 20em
 
   #pc {
-    padding: 0 2%;
-    width: 89%;
-    height: 38px;
+    padding: 0 0 0 2%;
+    width: 20em;
+    height: 40px;
   }
 }
 

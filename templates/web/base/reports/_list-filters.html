@@ -1,5 +1,5 @@
 [% select_status = BLOCK %]
-    <select name="status" id="statuses">
+    <select class="form-control" name="status" id="statuses">
         <option value="all"[% ' selected' IF filter_status == 'all' %]>[% loc('all reports') %]</option>
         <option value="open"[% ' selected' IF filter_status == 'open' %]>[% loc('unfixed reports') %]</option>
         <option value="closed"[% ' selected' IF filter_status == 'closed' %]>[% loc('closed reports') %]</option>
@@ -8,7 +8,7 @@
 [% END %]
 
 [% select_category = BLOCK %]
-    <select name="filter_category" id="filter_categories">
+    <select class="form-control" name="filter_category" id="filter_categories">
         <option value="">[% loc('Everything') %]</option>
         [% FOR category IN filter_categories %]
             <option value="[% category | html %]"[% ' selected' IF filter_category == category %]>

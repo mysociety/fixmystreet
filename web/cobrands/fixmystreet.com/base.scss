@@ -152,6 +152,19 @@
     }
 }
 
+.btn-primary {
+    @include button-reset(
+        mix($primary, #fff, 50%),
+        $primary,
+        mix($primary, #ccc, 30%),
+        inherit,
+        darken($primary, 3%),
+        darken(mix($primary, #fff, 50%), 3%),
+        mix($primary, #ccc, 30%),
+        inherit
+    );
+}
+
 .variant1 {
     #site-header {
         border-top-color: #fff;

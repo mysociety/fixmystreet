@@ -3,7 +3,7 @@
         [% IF c.user_exists AND c.cobrand.users_can_hide AND c.user.belongs_to_body( problem.bodies_str ) %]
         <li><form method="post" action="/report/delete/[% problem.id %]" id="remove-from-site-form">
             <input type="hidden" name="token" value="[% csrf_token %]">
-            <input type="submit" id="key-tool-report-abuse" class="abuse" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site" value="[% loc('Remove from site') %]">
+            <input type="submit" id="key-tool-report-abuse" class="abuse btn" data-confirm="[% loc('Are you sure?') %]" name="remove_from_site" value="[% loc('Remove from site') %]">
         </form></li>
         [% ELSIF c.cobrand.moniker != 'zurich' %]
         <li><a rel="nofollow" id="key-tool-report-abuse" class="abuse" href="[% c.uri_for( '/contact', { id => problem.id } ) %]">[% loc('Report abuse' ) %]</a></li>
@@ -44,7 +44,7 @@
         <label class="hidden n" for="alert_rznvy">[% loc('Your email') %]</label>
         <div class="form-txt-submit-box">
           [% IF NOT c.user_exists %]
-            <input type="email" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30" placeholder="[% loc('Your email') %]">
+            <input type="email" class="form-control" name="rznvy" id="alert_rznvy" value="[% email | html %]" size="30" placeholder="[% loc('Your email') %]">
           [% END %]
             <input class="green-btn" type="submit" value="[% loc('Subscribe') %]">
         </div>

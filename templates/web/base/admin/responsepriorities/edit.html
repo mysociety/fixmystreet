@@ -11,7 +11,7 @@
 
     <p>
         <strong>[% loc('Name:') %] </strong>
-        <input type="text" name="name" class="required" size="30" value="[% rp.name | html %]">
+        <input type="text" name="name" class="required form-control" size="30" value="[% rp.name | html %]">
     </p>
     <p>
       <strong>[% loc('Categories:') %]</strong>
@@ -34,7 +34,7 @@
     </p>
     <p>
       <input type="hidden" name="token" value="[% csrf_token %]" >
-      <input type="submit" name="Edit priorities" value="[% rp.id ? loc('Save changes') : loc('Create priority') %]" >
+      <input type="submit" class="btn" name="Edit priorities" value="[% rp.id ? loc('Save changes') : loc('Create priority') %]" >
     </p>
 </form>
 

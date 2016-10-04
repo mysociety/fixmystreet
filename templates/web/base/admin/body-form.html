@@ -22,7 +22,7 @@
     </div>
     <p>
         <label for="name">[% loc('Name') %]</label>
-        <input type="text" name="name" id="name" value="[% body.name | html %]" size="50">
+        <input type="text" class="form-control" name="name" id="name" value="[% body.name | html %]" size="50">
     </p>
 
     <div class="admin-hint">
@@ -35,7 +35,7 @@
     </div>
     <p>
         <label for="parent">[% loc('Parent') %]</label>
-        <select name="parent" id="parent">
+        <select class="form-control" name="parent" id="parent">
             <option value=""> -- [% loc('Select a body') %] -- </option>
             [% FOR b IN bodies %]
             <option value="[% b.id %]"[% ' selected' IF body.parent.id == b.id %]>[% b.name %]</option>
@@ -73,7 +73,7 @@
     </div>
     <p>
         <label for="area_ids">[% loc('Area covered') %]</label>
-        <select name="area_ids" id="area_ids" multiple>
+        <select class="form-control" name="area_ids" id="area_ids" multiple>
             <option value=""> -- [% loc('Select an area') %] -- </option>
             [% SET body_areas = body.areas %]
             [% FOR area IN areas %]
@@ -85,7 +85,7 @@
 
     <p>
         <label for="external_url">[% loc('External URL') %]</label>
-        <input type="text" name="external_url" id="external_url" value="[% body.external_url | html %]" size="50">
+        <input type="text" class="form-control" name="external_url" id="external_url" value="[% body.external_url | html %]" size="50">
     </p>
     <div class="admin-hint">
       <p>[% loc( "You can mark a body as deleted if you do not want it to be active on the site." ) %]</p>
@@ -105,7 +105,7 @@
     </div>
     <p>
         <label for="send_method">Send Method</label>
-        <select name="send_method" id="send_method">
+        <select class="form-control" name="send_method" id="send_method">
             <option value=""> -- Select a method -- </option>
             [% FOR method IN send_methods %]
             <option value="[% method %]"[% ' selected' IF body.send_method == method %]>[% method %]</option>
@@ -118,7 +118,7 @@
         [% loc(
           "These settings are for bodies that use Open311 (or other back-end integration) to receive problem reports.<br>
            <strong>You don't need to set them if the Send Method is email.</strong>.
-           For more information on Open311, see 
+           For more information on Open311, see
            <a href='https://www.mysociety.org/2013/01/17/open311-explained/' class='admin-offsite-link'>this article</a>.
            "
         ) %]
@@ -127,14 +127,14 @@
       <div class="admin-hint">
         <p>
           [% loc(
-            "The <strong>endpoint</strong> is the URL of the service that FixMyStreet will connect to 
+            "The <strong>endpoint</strong> is the URL of the service that FixMyStreet will connect to
             when sending reports to this body."
           ) %]
         </p>
       </div>
     <p>
         <label for="endpoint">[% loc('Endpoint') %]</label>
-        <input type="text" name="endpoint" id="endpoint" value="[% body.endpoint | html %]" size="50">
+        <input type="text" class="form-control" name="endpoint" id="endpoint" value="[% body.endpoint | html %]" size="50">
     </p>
 
     <div class="admin-hint">
@@ -147,7 +147,7 @@
     </div>
     <p>
         <label for="jurisdiction">Open311 Jurisdiction</label>
-        <input type="text" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction | html %]" size="50">
+        <input type="text" class="form-control" name="jurisdiction" id="jurisdiction" value="[% body.jurisdiction | html %]" size="50">
     </p>
 
     <div class="admin-hint">
@@ -160,7 +160,7 @@
     </div>
     <p>
         <label for="api_key">Open311 API Key</label>
-        <input type="text" name="api_key" id="api_key" value="[% body.api_key | html %]" size="25">
+        <input type="text" class="form-control" name="api_key" id="api_key" value="[% body.api_key | html %]" size="25">
     </p>
 
     <div class="admin-hint">
@@ -168,7 +168,7 @@
         [% loc(
           "Enable <strong>Open311 update-sending</strong> if the endpoint will send and receive
           updates to existing reports. If you're not sure, it probably does not, so leave this unchecked.
-          For more information, see 
+          For more information, see
           <a href='https://www.mysociety.org/2013/02/20/open311-extended/' class='admin-offsite-link'>this article</a>."
         ) %]
       </p>
@@ -181,7 +181,7 @@
     <div class="admin-hint">
       <p>
         [% loc(
-          "If you've enabled Open311 update-sending above, you must identify which 
+          "If you've enabled Open311 update-sending above, you must identify which
           FixMyStreet <strong>user</strong> will be attributed as the creator of those updates
           when they are shown on the site. Enter the ID (number) of that user."
         ) %]
@@ -198,7 +198,7 @@
     <div class="admin-hint">
       <p>
         [% loc(
-          "If you've enabled Open311 update-sending above, enable <strong>suppression of alerts</strong> 
+          "If you've enabled Open311 update-sending above, enable <strong>suppression of alerts</strong>
           if you do <strong>not</strong> want that user to be notified whenever these updates are created."
         ) %]
       </p>
@@ -211,7 +211,7 @@
     <div class="admin-hint">
       <p>
         [% loc(
-          "If you've enabled Open311 update-sending above, Open311 usually only accepts OPEN or CLOSED status in 
+          "If you've enabled Open311 update-sending above, Open311 usually only accepts OPEN or CLOSED status in
           its updates. Enable <strong>extended Open311 stauses</strong> if you want to allow extra states to be passed.
           Check that your cobrand supports this feature before switching it on."
         ) %]
@@ -222,11 +222,11 @@
         <label for="send_extended_statuses" class="inline">Send extended Open311 statuses with service request updates</label>
     </p>
     </div>
-    
+
     <div class="admin-hint">
       <p>
         [% loc(
-          "Enable this <strong>can be devolved</strong> setting if one or more contacts have a 
+          "Enable this <strong>can be devolved</strong> setting if one or more contacts have a
           different endpoint (and send method) from the body's. For example, if reports for some categories of
           problem must be emailed, while others can be sent over Open311."
         ) %]
@@ -239,11 +239,11 @@
         <input type="checkbox" id="can_be_devolved" name="can_be_devolved"[% ' checked' IF body.can_be_devolved %]>
         <label for="can_be_devolved" class="inline">Send method or endpoints can be devolved to contacts (i.e, can be different from the body's)</label>
     </p>
-    
+
     <p>
     <input type="hidden" name="posted" value="body">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="submit" value="[% body ? loc('Update body') : loc('Add body') %]">
+    <input type="submit" class="btn" value="[% body ? loc('Update body') : loc('Add body') %]">
     </p>
     </form>
 

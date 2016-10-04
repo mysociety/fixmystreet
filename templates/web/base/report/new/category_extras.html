@@ -15,25 +15,7 @@
         list_of_names.join( '</strong>' _ loc(' or ') _ '<strong>' )
       ); %]
     </p>
-      [%- FOR meta IN category_extras.$category %]
-        [%- meta_name = meta.code -%]
-
-        <label for="form_[% meta_name %]">[% meta.description %]</label>
-        [% IF field_errors.$meta_name %]
-        <p class='form-error'>[% field_errors.$meta_name %]</p>
-        [% END -%]
-        [% IF meta.variable != 'false' %]
-          [% IF meta.exists('values') %]
-            <select class="form-control" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-              [% FOR option IN meta.values %]
-                <option value="[% option.key %]"[% IF option.key == report_meta.$meta_name.value %] selected[% END %]>[% option.name %]</option>
-              [% END %]
-            </select>
-          [% ELSE %]
-            <input class="form-control" type="text" value="[% report_meta.$meta_name.value | html %]" name="[% meta_name %]" id="form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-          [% END %]
-        [% END %]
-      [%- END %]
+    [% INCLUDE 'report/new/category_extras_fields.html' %]
     </div>
   [%- END %]
 </div>

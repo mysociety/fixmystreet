@@ -3,6 +3,10 @@
 $image-sprite: '../fixmystreet/images/sprite.png' !default;
 $layout_front_stats_color: $primary !default;
 $mappage-header-height: 4em !default;
+$mappage-sidebar-width: 29em;
+$mappage-sidebar-padding: 1em;
+$mappage-with-notes-sidebar-width: 44em;
+$mappage-with-actions-sidebar-width: 58em;
 
 .internal-link-fixed-header {
     display: block;
@@ -222,6 +226,10 @@ h1 {
   }
 }
 
+.full-width {
+  margin: 0 ($mappage-sidebar-padding * -1);
+}
+
 // map page - has fixed header and different styling
 body.mappage {
 
@@ -339,17 +347,17 @@ body.mappage.admin {
   top: $mappage-header-height;
   bottom: 0;
   #{$right}: 0;
-  #{$left}: 29em; // width of sidebar
+  #{$left}: $mappage-sidebar-width;
   width: auto; // stretch from right edge of sidebar to left edge of window
   height: auto; // stretch from bottom of header to bottom of window
   margin: 0;
 
   .with-notes & {
-    #{$left}: 44em;
+    #{$left}: $mappage-with-notes-sidebar-width;
   }
 
   .with-actions & {
-    #{$left}: 58em;
+    #{$left}: $mappage-with-actions-sidebar-width;
   }
 }
 
@@ -359,41 +367,92 @@ body.mappage.admin {
   top: $mappage-header-height;
   #{$left}: 0;
   bottom: 0;
-  width: 27em; // width of sidebar, minus padding
-  padding: 1em 1em 0 1em; // Bottom padding taken care of by ::after
+  width: ($mappage-sidebar-width - ($mappage-sidebar-padding * 2));
+  padding: $mappage-sidebar-padding;
   overflow: auto; // vertical scrollbar when list is taller than window
   background-color: #fff; // since no longer in the flow inside .content
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 
   .with-notes & {
-    width: 42em;
+    width: ($mappage-with-notes-sidebar-width - ($mappage-sidebar-padding * 2));
     // TODO: Should have a bitmap image fallback for old browsers!!
     background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
     background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
   }
 
   .with-actions & {
-    width: 58em;
-    background-image: -webkit-linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
-    background-image: linear-gradient(flip(90deg, 270deg), transparent 29em, #E9F2FF 29em);
-  }
-}
+    width: $mappage-with-actions-sidebar-width;
+    max-width: 100%; // Secondary column will squish on screens 768-960px
+    padding: 0; // Padding will be handled by children of .two_column_sidebar
 
-// Firefox/IE and Chrome/Safari (e.g.) differ on where to clip overflowed
-// elements, one group clip outside padding, one clips inside. So using padding
-// in #map_sidebar works in Chrome/Safari but not in Firefox/IE. Instead, we
-// add some extra height using ::after.
-// https://bugzilla.mozilla.org/show_bug.cgi?id=748518
-#map_sidebar::after {
+    &:after {
+      display: none; // 4em bottom spacing will be handled by children of .two_column_sidebar
+    }
+  }
+
+  // Chrome/Safari count padding-bottom as part of the scrollable content in
+  // an overflow:scroll element (technically in contravention of the spec),
+  // whereas Firefox/IE render the padding outside the scrollable area.
+  // We need padding at the bottom of the sidebar, to stop .shadow-wrap from
+  // obscuring content at the bottom of the sidebar. So we use an :after
+  // pseudo-element instead of padding.
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=748518
+  &:after {
     content: "";
     display: block;
     height: 4em;
-    clear: both;
+  }
 }
 
-// IE<=8 does not support ::after
-.iel8 #map_sidebar {
-    padding-bottom: 4em;
+// This goes inside #map_sidebar, and establishes a flex container allowing
+// us to split the sidebar into two side-by-side columns.
+.two_column_sidebar {
+  @include flex-container();
+  @include flex-align(stretch); // children will fill entire height of this element
+  min-height: 100%; // this element will fill entire height of parent (#map_sidebar)
+
+  & > * {
+    // Columns should start at 50% width, and (eg: if scrollbars appear,
+    // reducing the available width), shrink down to less than 50%.
+    @include box-sizing(border-box);
+    @include flex(0 1 auto);
+    width: 50%;
+    padding: $mappage-sidebar-padding;
+
+    // Add extra space at the bottom of the sidebar columns, to stop
+    // .shadow-wrap obscuring text at the bottom of the sidebar.
+    &:after {
+      content: "";
+      display: block;
+      height: 4em;
+    }
+  }
+
+  // Default for children is to share the horizontal space equally amongst
+  // themselves. But to make sure that the edge of #side-report lines up
+  // with the edge of .shadow-wrap, we give #side-report a fixed width,
+  // and leave the other column to shrink to the remaining space.
+  #side-report {
+    width: $mappage-sidebar-width;
+    @include flex(0 0 auto);
+  }
+
+  // No flexbox in IE8, so we settle for floating the columns instead.
+  // They will no longer stretch the full height of the sidebar, and the
+  // width of #side-report will no longer match the width of .shadow-wrap
+  // when a scrollbar is present.
+  .iel8 & {
+    @include clearfix();
+
+    & > * {
+      float: left;
+      width: 50%;
+    }
+
+    #side-report {
+      width: 50%;
+    }
+  }
 }
 
 #skip-this-step {
@@ -693,12 +752,15 @@ body.authpage {
 
 // Wraps around #key-tools box - sticks to the bottom of the screen on desktop
 .shadow-wrap {
-  position:fixed;
-  z-index:10; //this is just to ensure anythign inside .content that has position set goes sites it
+  position: fixed;
+  z-index: 10; //this is just to ensure anythign inside .content that has position set goes sites it
   bottom: 0;
-  width: 29em;
+  #{$left}: 0;
+  margin: 0;
+  width: $mappage-sidebar-width;
   overflow: hidden;
   padding-top: 2em;
+
   ul#key-tools {
     border-top: 0.25em solid $primary;
     margin: 0;
@@ -755,13 +817,6 @@ body.authpage {
     position: static;
     width: auto; // avoid horizontal scrollbar as drawer opens (on devices with permanent scroll bars)
   }
-}
-
-// Old versions of IE don't have box-sixing, so negative margins leave a 2em gap.
-// We can set a fixed width instead, which might result in a horizontal scrollbar
-// while the drawer is opening. Quel dommage.
-.iel8 .shadow-wrap.static {
-    width: 29em;
 }
 
 // If JS is disabled, these are still CSS positioned, so don't want behind shining through.
@@ -879,18 +934,9 @@ textarea.form-error {
   }
 }
 
-// Similar to .with-notes, there's a special version of the
-// report details page, that includes a secondary column.
-body.with-actions {
-  #side-report {
-    width: 27em;
-    float: #{$left};
-  }
-
-  #side-report-secondary {
-    width: 27em;
-    float: #{$right};
-  }
+// The coloured sidebar column on .with-actions pages.
+#side-inspect {
+  background-color: #E9F2FF;
 }
 
 // More general notes

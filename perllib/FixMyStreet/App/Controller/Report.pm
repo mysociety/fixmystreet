@@ -311,8 +311,9 @@ sub inspect : Private {
     my $problem = $c->stash->{problem};
 
     $c->stash->{categories} = $c->forward('/admin/categories_for_point');
+    $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
-    if ( $c->get_param('save') || $c->get_param('save_inspected') ) {
+    if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
 
         my $valid = 1;
@@ -320,7 +321,7 @@ sub inspect : Private {
         my $reputation_change = 0;
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_location detailed_information traffic_information/) {
+            foreach (qw/detailed_information traffic_information/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 
@@ -363,6 +364,14 @@ sub inspect : Private {
 
         if ($permissions->{report_inspect} || $permissions->{report_edit_category}) {
             $c->forward( '/admin/report_edit_category', [ $problem ] );
+
+            # The new category might require extra metadata (e.g. pothole size), so
+            # we need to update the problem with the new values.
+            my $param_prefix = lc $problem->category;
+            $param_prefix =~ s/[^a-z]//g;
+            $param_prefix = "category_" . $param_prefix . "_";
+            my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
+            $c->forward('/report/new/set_report_extras', [ \@contacts, $param_prefix ]);
         }
 
         if ($valid) {

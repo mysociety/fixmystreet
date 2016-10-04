@@ -46,29 +46,21 @@ FixMyStreet::override_config {
     };
 
     subtest "test basic inspect submission" => sub {
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Lots', state => 'Planned' } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Planned' } });
         $report->discard_changes;
         is $report->state, 'planned', 'report state changed';
-        is $report->get_extra_metadata('traffic_information'), 'Lots', 'report data changed';
+        is $report->get_extra_metadata('traffic_information'), 'Yes', 'report data changed';
     };
 
     subtest "test inspect & instruct submission" => sub {
         $report->unset_extra_metadata('inspected');
         $report->update;
+        my $reputation = $report->user->get_extra_metadata("reputation");
         $mech->get_ok("/report/$report_id/inspect");
-        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => "This is a public update." } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", save_inspected => "1" } });
         $report->discard_changes;
         is $report->comments->first->text, "This is a public update.", 'Update was created';
         is $report->get_extra_metadata('inspected'), 1, 'report marked as inspected';
-    };
-
-    subtest "test positive reputation" => sub {
-        $report->unset_extra_metadata('inspected');
-        $report->update;
-        my $reputation = $report->user->get_extra_metadata("reputation");
-        $mech->get_ok("/report/$report_id/inspect");
-        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => "This is a public update." } });
-        $report->discard_changes;
         is $report->user->get_extra_metadata('reputation'), $reputation+1, "User reputation was increased";
     };
 
@@ -77,7 +69,7 @@ FixMyStreet::override_config {
         $report->update;
         $report->comments->delete_all;
         $mech->get_ok("/report/$report_id/inspect");
-        $mech->submit_form_ok({ button => 'save_inspected', with_fields => { public_update => undef } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { public_update => undef, save_inspected => "1" } });
         is_deeply $mech->page_errors, [ "Please provide a public update for this report." ], 'errors match';
         $report->discard_changes;
         is $report->comments->count, 0, "Update wasn't created";
@@ -101,10 +93,10 @@ FixMyStreet::override_config {
             $user->user_body_permissions->delete;
             $user->user_body_permissions->create({ body => $oxon, permission_type => $test->{type} });
             $mech->get_ok("/report/$report_id/inspect");
-            has_or_lacks($test->{priority}, 'Priority');
-            has_or_lacks($test->{priority}, 'High');
-            has_or_lacks($test->{category}, 'Category');
-            has_or_lacks($test->{detailed}, 'Detailed problem information');
+            $mech->contains_or_lacks($test->{priority}, 'Priority');
+            $mech->contains_or_lacks($test->{priority}, 'High');
+            $mech->contains_or_lacks($test->{category}, 'Category');
+            $mech->contains_or_lacks($test->{detailed}, 'Extra details');
             $mech->submit_form_ok({
                 button => 'save',
                 with_fields => {
@@ -137,9 +129,4 @@ END {
     $mech->delete_body($oxon);
     $mech->delete_body($brum);
     done_testing();
-}
-
-sub has_or_lacks {
-    my ($flag, $text) = @_;
-    $flag ? $mech->content_contains($text) : $mech->content_lacks($text);
 }

@@ -19,7 +19,7 @@
 <div class="filters">
     <p>
         <label for="ward">Ward:</label>
-        <select name="ward"><option value=''>All</option>
+        <select class="form-control" name="ward"><option value=''>All</option>
             [% FOR w IN children.values.sort('name') %]
                 <option value="[% w.id %]"[% ' selected' IF w.id == ward %]>[% w.name %]</option>
             [% END %]
@@ -28,7 +28,7 @@
 
     <p>
         <label for="category">Report category:</label>
-        <select name="category"><option value=''>All</option>
+        <select class="form-control" name="category"><option value=''>All</option>
             [% FOR cat_op IN category_options %]
                 <option value='[% cat_op | html %]'[% ' selected' IF category == cat_op %]>[% cat_op | html %]</option>
             [% END %]
@@ -36,7 +36,7 @@
     </p>
 
     <p>
-        <input type="submit" value="Look up">
+        <input type="submit" class="btn" value="Look up">
     </p>
 
     <br clear="all" />
@@ -135,7 +135,7 @@
 <h2>Reports</h2>
 
                 </select>
-<p>Report state: <select name="state">
+<p>Report state: <select class="form-control" name="state">
 <option value=''>All</option>
                 [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
                 loc('Investigating')], ['action scheduled', loc('Planned')], ['in progress',
@@ -143,7 +143,7 @@
                     <option [% 'selected ' IF state.0 == q_state %] value="[% state.0 %]">[% state.1 %]</option>
                 [% END %]
 </select>
-<input type="submit" value="Look up">
+<input type="submit" class="btn" value="Look up">
 <a class="export_as_csv" href="[% c.req.uri_with({ export => 1 }) %]">Export as CSV</a>
 
 <table width="100%" id="reports">
