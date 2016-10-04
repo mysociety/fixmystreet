@@ -10,13 +10,13 @@ shared with the council or displayed publicly.</em>
 [% SET gender = report.get_extra_metadata('gender') %]
 <p class="segmented-control segmented-control--radio" style="font-size: 80%">
     <input type="radio" name="gender" id="gender_female" value="female"[% ' checked' IF gender == 'female' %]>
-    <label for="gender_female">Female</label>
+    <label class="btn" for="gender_female">Female</label>
     <input type="radio" name="gender" id="gender_male" value="male"[% ' checked' IF gender == 'male' %]>
-    <label for="gender_male">Male</label>
+    <label class="btn" for="gender_male">Male</label>
     <input type="radio" name="gender" id="gender_other" value="other"[% ' checked' IF gender == 'other' %]>
-    <label for="gender_other">Other</label>
+    <label class="btn" for="gender_other">Other</label>
     <input type="radio" name="gender" id="gender_unknown" value="unknown"[% ' checked' IF gender == 'unknown' %]>
-    <label for="gender_unknown">Prefer not to say</label>
+    <label class="btn" for="gender_unknown">Prefer not to say</label>
 </p>
 [% END %]
 

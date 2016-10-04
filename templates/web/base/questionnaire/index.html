@@ -50,20 +50,20 @@
 
 <p class="segmented-control segmented-control--radio">
     <input type="radio" name="been_fixed" id="been_fixed_yes" value="Yes"[% ' checked' IF been_fixed == 'Yes' %]>
-    <label for="been_fixed_yes">[% loc('Yes') %]</label>
+    <label class="btn" for="been_fixed_yes">[% loc('Yes') %]</label>
     <input type="radio" name="been_fixed" id="been_fixed_no" value="No"[% ' checked' IF been_fixed == 'No' %]>
-    <label for="been_fixed_no">[% loc('No') %]</label>
+    <label class="btn" for="been_fixed_no">[% loc('No') %]</label>
     <input type="radio" name="been_fixed" id="been_fixed_unknown" value="Unknown"[% ' checked' IF been_fixed == 'Unknown' %]>
-    <label for="been_fixed_unknown">[% loc('Don&rsquo;t know') %]</label>
+    <label class="btn" for="been_fixed_unknown">[% loc('Don&rsquo;t know') %]</label>
 </p>
 
 [% UNLESS answered_ever_reported %]
 <p>[% loc('Have you ever reported a problem to a council before, or is this your first time?') %]</p>
 <p class="segmented-control segmented-control--radio">
     <input type="radio" name="reported" id="reported_yes" value="Yes"[% ' checked' IF reported == 'Yes' %]>
-    <label for="reported_yes">[% loc('Reported before') %]</label>
+    <label class="btn" for="reported_yes">[% loc('Reported before') %]</label>
     <input type="radio" name="reported" id="reported_no" value="No"[% ' checked' IF reported == 'No' %]>
-    <label for="reported_no">[% loc('First time') %]</label>
+    <label class="btn" for="reported_no">[% loc('First time') %]</label>
 </p>
 [% END %]
 
