@@ -189,7 +189,7 @@
     </div>
     <p>
         <label for"comment_user_id">User ID to attribute fetched comments to</label>
-        <input type="text" name="comment_user_id" value="[% body.comment_user_id %]">
+        <input type="text" class="form-control" name="comment_user_id" value="[% body.comment_user_id %]">
         [% IF body.comment_user_id %]
         <a href="[% c.uri_for('user_edit', body.comment_user_id) %]">[% loc('edit user') %]</a>
         [% END %]

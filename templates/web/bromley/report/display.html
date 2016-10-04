@@ -64,7 +64,7 @@
             [% IF field_errors.update %]
                 <div class='form-error'>[% field_errors.update %]</div>
             [% END %]
-            <textarea rows="7" cols="30" name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
+            <textarea class="form-control" rows="7" cols="30" name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
 
             <div class="general-notes">
                 <p>Please note this comments box can only be used for this report.
@@ -114,7 +114,7 @@
             [% IF field_errors.email %]
                 <p class='form-error'>[% field_errors.email %]</p>
             [% END %]
-            <input type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
+            <input class="form-control" type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
 
             <div id="form_sign_in">
                 <p>To submit your update you now need to confirm it either by email or by using a FixMyStreet password.</p>
@@ -131,7 +131,7 @@
                     </div>
 
                     <div class="form-txt-submit-box">
-                        <input type="password" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+                        <input type="password" class="form-control" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
                         <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]">
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                         <p class='form-error'>[% field_errors.password %]</p>
                     [% END %]
                     <div class="form-txt-submit-box">
-                        <input type="password" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
+                        <input type="password" class="form-control" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
                         <input class="green-btn js-submit_sign_in" type="submit" name="submit_sign_in" value="[% loc('Post') %]">
                     </div>
 
@@ -176,13 +176,13 @@
     [% IF field_errors.first_name %]
         <p class='form-error'>[% field_errors.first_name %]</p>
     [% END %]
-    <input class="js-form-name" type="text" value="[% names.first || first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
+    <input class="js-form-name form-control" type="text" value="[% names.first || first_name | html %]" name="first_name" id="form_first_name" placeholder="[% loc('Your first name') %]">
 
     <label for="form_last_name">[% loc('Last Name') %]</label>
     [% IF field_errors.last_name %]
         <p class='form-error'>[% field_errors.last_name %]</p>
     [% END %]
-    <input class="js-form-name" type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
+    <input class="js-form-name form-control" type="text" value="[% names.last || last_name | html %]" name="last_name" id="form_last_name" placeholder="[% loc('Your last name') %]">
 
     <div class="checkbox-group">
         <input type="checkbox" name="may_show_name" id="form_may_show_name" value="1"[% ' checked' IF update AND NOT update.anonymous %]>

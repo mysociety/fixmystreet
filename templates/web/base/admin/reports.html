@@ -2,7 +2,8 @@
 [% PROCESS 'admin/report_blocks.html' %]
 
 <form method="get" action="[% c.uri_for('reports') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search" value="[% searched | html %]">
+    <p><label for="search">[% loc('Search:') %]</label>
+        <input class="form-control" type="text" name="search"  size="30" id="search" value="[% searched | html %]">
 </form>
 
 [% IF problems.size %]

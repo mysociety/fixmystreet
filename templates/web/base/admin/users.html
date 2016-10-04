@@ -5,7 +5,8 @@
     [% loc("User search finds matches in users' names and email addresses.") %]
 </div>
 <form method="get" action="[% c.uri_for('users') %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <p><label for="search">[% loc('Search:') %]</label> <input type="text" name="search"  size="30" id="search" value="[% searched | html %]">
+    <p><label for="search">[% loc('Search:') %]</label>
+        <input class="form-control" type="text" name="search"  size="30" id="search" value="[% searched | html %]">
 </form>
 
 [% IF users.size %]

@@ -51,12 +51,13 @@
       <p [% 'class=hidden' UNLESS contact.get_extra_metadata('inspection_required') %]>
         <label>
           [% loc('Reputation threshold:') %]
-          <input type="text" name="reputation_threshold" id="reputation_threshold" value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30">
+          <input type="text" class="form-control" name="reputation_threshold" id="reputation_threshold"
+            value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30">
         </label>
       </p>
     [% END %]
 
-    <p><strong>[% loc('Note:') %] </strong><textarea name="note" rows="3" cols="40"></textarea>
+    <p><strong>[% loc('Note:') %] </strong><textarea class="form-control" name="note" rows="3" cols="40"></textarea>
 
     [% IF body.can_be_devolved %]
     <h2>[% loc('Configure Endpoint') %]</h2>
