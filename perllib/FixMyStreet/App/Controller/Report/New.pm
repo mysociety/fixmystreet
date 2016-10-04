@@ -86,7 +86,7 @@ sub report_new : Path : Args(0) {
     # work out the location for this report and do some checks
     # Also show map if we're just updating the filters
     return $c->forward('redirect_to_around')
-      if $c->get_param('filter_update') || !$c->forward('determine_location');
+      if !$c->forward('determine_location') || $c->get_param('filter_update');
 
     # create a problem from the submitted details
     $c->stash->{template} = "report/new/fill_in_details.html";
