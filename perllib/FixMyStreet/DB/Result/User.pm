@@ -351,11 +351,18 @@ sub adopt {
 
 # Planned reports / shortlist
 
-# Override the default auto-created function as we only want one live entry per user
+# Override the default auto-created function as we only want one live entry so
+# we need to delete it anywhere else and return an existing one if present.
 around add_to_planned_reports => sub {
     my ( $orig, $self ) = ( shift, shift );
     my ( $report_col ) = @_;
-    my $existing = $self->user_planned_reports->search_rs({ report_id => $report_col->id, removed => undef })->first;
+
+    $self->result_source->schema->resultset("UserPlannedReport")
+        ->active
+        ->for_report($report_col->id)
+        ->search_rs({ user_id => { '!=', $self->id } })
+        ->remove();
+    my $existing = $self->user_planned_reports->active->for_report($report_col->id)->first;
     return $existing if $existing;
     return $self->$orig(@_);
 };
@@ -363,9 +370,7 @@ around add_to_planned_reports => sub {
 # Override the default auto-created function as we don't want to ever delete anything
 around remove_from_planned_reports => sub {
     my ($orig, $self, $report) = @_;
-    $self->user_planned_reports
-        ->search_rs({ report_id => $report->id, removed => undef })
-        ->update({ removed => \'current_timestamp' });
+    $self->user_planned_reports->active->for_report($report->id)->remove();
 };
 
 sub active_planned_reports {
