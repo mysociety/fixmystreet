@@ -19,7 +19,10 @@
                             >[% loc("Report a problem") %]</[% c.req.uri.path == '/' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/my' %]span[% ELSE %]a href="/my"[% END
                             %]>[% c.user_exists ? loc("Your account") : loc("Sign in") %]</[% c.req.uri.path == '/my' ? 'span' : 'a' %]></li>[%
-                        %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
+                        %][% IF c.user_exists AND c.user.has_body_permission_to('planned_reports') %]<li>
+                            <[% IF c.req.uri.path == '/my/planned' %]span[% ELSE %]a href="/my/planned"[% END
+                             %]>[% loc('Shortlist') %]</[% c.req.uri.path == '/my/planned' ? 'span' : 'a' %]></li>[%
+                        %][% END %]<li><[% IF c.req.uri.path == '/reports' %]span[% ELSE %]a href="/reports"[% END
                             %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]></li>[%
                         %]<li><[% IF c.req.uri.path == '/alert' %]span[% ELSE %]a href="/alert[% pc ? '/list?pc=' : '' %][% pc | uri %]"[% END
                             %]>[% loc("Local alerts") %]</[% c.req.uri.path == '/alert' ? 'span' : 'a' %]></li>[%
