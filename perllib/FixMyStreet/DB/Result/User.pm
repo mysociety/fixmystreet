@@ -355,7 +355,7 @@ sub adopt {
 around add_to_planned_reports => sub {
     my ( $orig, $self ) = ( shift, shift );
     my ( $report_col ) = @_;
-    my $existing = $self->user_planned_reports->search_rs({ report_id => $report_col->{id}, removed => undef })->first;
+    my $existing = $self->user_planned_reports->search_rs({ report_id => $report_col->id, removed => undef })->first;
     return $existing if $existing;
     return $self->$orig(@_);
 };

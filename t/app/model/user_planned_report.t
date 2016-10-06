@@ -19,6 +19,10 @@ $user->add_to_planned_reports($problem);
 is $user->active_planned_reports, 1;
 is $user->planned_reports, 1;
 
+$user->add_to_planned_reports($problem);
+is $user->active_planned_reports, 1;
+is $user->planned_reports, 1;
+
 $user->remove_from_planned_reports($problem);
 is $user->active_planned_reports, 0;
 is $user->planned_reports, 1;
