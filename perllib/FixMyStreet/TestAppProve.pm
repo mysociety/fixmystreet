@@ -91,11 +91,11 @@ sub run {
 
     local $ENV{FMS_OVERRIDE_CONFIG} = $config_out;
 
-    if (@ARGV and -e $ARGV[-1]) {
-        unshift @ARGV, '--verbose'
-            if -f $ARGV[-1];
-            # verbose if we have a single file
-    }
+    # If no arguments, test everything
+    unshift @ARGV, 't' unless @ARGV;
+
+    # verbose if we have a single file
+    unshift @ARGV, '--verbose' if @ARGV and -f $ARGV[-1];
 
     unshift @ARGV,
         '--recurse',                             # we always want to recurse
