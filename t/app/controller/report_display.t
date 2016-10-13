@@ -547,14 +547,14 @@ subtest "check user details show when a user has correct permissions" => sub {
     $mech->log_in_ok( $oxfordshireuser->email );
     ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
     is $mech->extract_problem_meta,
-      'Reported in the Roads category by Oxfordshire County Council (Council User) at 15:17, Tue 10 January 2012',
+      'Reported in the Roads category by Oxfordshire County Council (Council User) at 15:17, Tue 10 January 2012 (Hide your name?)',
       'correct problem meta information';
 
     ok $oxfordshireuser->user_body_permissions->delete_all, "Remove view_body_contribute_details permissions";
 
     ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
     is $mech->extract_problem_meta,
-      'Reported in the Roads category by Oxfordshire County Council at 15:17, Tue 10 January 2012',
+      'Reported in the Roads category by Oxfordshire County Council at 15:17, Tue 10 January 2012 (Hide your name?)',
       'correct problem meta information for user without relevant permissions';
 
     $mech->log_out_ok;
@@ -574,7 +574,7 @@ subtest "check brackets don't appear when username and report name are the same"
     $mech->log_in_ok( $oxfordshireuser->email );
     ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
     is $mech->extract_problem_meta,
-      'Reported in the Roads category by Council User at 15:17, Tue 10 January 2012',
+      'Reported in the Roads category by Council User at 15:17, Tue 10 January 2012 (Hide your name?)',
       'correct problem meta information';
 };
 

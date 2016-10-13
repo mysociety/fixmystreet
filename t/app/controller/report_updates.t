@@ -716,11 +716,11 @@ for my $test (
         my $update_meta = $mech->extract_update_metas;
         my $meta_state = $test->{meta} || $test->{fields}->{state};
         if ( $test->{reopened} ) {
-            like $update_meta->[0], qr/reopened$/, 'update meta says reopened';
+            like $update_meta->[0], qr/reopened/, 'update meta says reopened';
         } elsif ( $test->{state} eq 'duplicate' ) {
-            like $update_meta->[0], qr/closed as $meta_state$/, 'update meta includes state change';
+            like $update_meta->[0], qr/closed as $meta_state/, 'update meta includes state change';
         } else {
-            like $update_meta->[0], qr/marked as $meta_state$/, 'update meta includes state change';
+            like $update_meta->[0], qr/marked as $meta_state/, 'update meta includes state change';
         }
 
         if ($test->{view_username}) {
@@ -755,24 +755,24 @@ subtest 'check meta correct for comments marked confirmed but not marked open' =
 
     $mech->get_ok( "/report/" . $report->id );
     my $update_meta = $mech->extract_update_metas;
-    unlike $update_meta->[0], qr/reopened$/,
+    unlike $update_meta->[0], qr/reopened/,
       'update meta does not say reopened';
 
     $comment->update( { mark_open => 1, problem_state => undef } );
     $mech->get_ok( "/report/" . $report->id );
     $update_meta = $mech->extract_update_metas;
 
-    unlike $update_meta->[0], qr/marked as open$/,
+    unlike $update_meta->[0], qr/marked as open/,
       'update meta does not says marked as open';
-    like $update_meta->[0], qr/reopened$/, 'update meta does say reopened';
+    like $update_meta->[0], qr/reopened/, 'update meta does say reopened';
 
     $comment->update( { mark_open => 0, problem_state => undef } );
     $mech->get_ok( "/report/" . $report->id );
     $update_meta = $mech->extract_update_metas;
 
-    unlike $update_meta->[0], qr/marked as open$/,
+    unlike $update_meta->[0], qr/marked as open/,
       'update meta does not says marked as open';
-    unlike $update_meta->[0], qr/reopened$/, 'update meta does not say reopened';
+    unlike $update_meta->[0], qr/reopened/, 'update meta does not say reopened';
 };
 
 subtest "check first comment with no status change has no status in meta" => sub {
@@ -911,7 +911,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
 
     $mech->get_ok( "/report/" . $report->id );
     my $update_meta = $mech->extract_update_metas;
-    like $update_meta->[0], qr/fixed$/, 'update meta says fixed';
+    like $update_meta->[0], qr/fixed/, 'update meta says fixed';
 
     $comment = FixMyStreet::App->model('DB::Comment')->create(
         {
@@ -929,7 +929,7 @@ subtest 'check meta correct for second comment marking as reopened' => sub {
 
     $mech->get_ok( "/report/" . $report->id );
     $update_meta = $mech->extract_update_metas;
-    like $update_meta->[1], qr/reopened$/, 'update meta says reopened';
+    like $update_meta->[1], qr/reopened/, 'update meta says reopened';
 };
 
 $user->from_body(undef);

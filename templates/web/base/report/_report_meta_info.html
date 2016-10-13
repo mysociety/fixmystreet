@@ -1,2 +1,5 @@
 [% problem.meta_line(c) | html %]
+[% IF c.user_exists AND c.user.id == problem.user_id AND !problem.anonymous %]
+    <small>(<a href="/my/anonymize?problem=[% problem.id | uri %]" class="js-hide-name">[% loc('Hide your name?') %]</a>)</small>
+[% END %]
 [%- IF !problem.used_map %]; <strong>([% loc('there is no pin shown as the user did not use the map') %])</strong>[% END %]

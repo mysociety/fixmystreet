@@ -434,6 +434,28 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  hide_name: function() {
+      $('body').on('click', '.js-hide-name', function(e){
+          e.preventDefault();
+
+          var $p = $(this).parents('p');
+          var $form = $p.next('.hide-name-form'); // might not exist yet
+          var url = $(this).attr('href');
+
+          if ($form.length) {
+              $form.slideUp(function(){
+                  $form.remove();
+              });
+          } else {
+              $.get(url).done(function(html){
+                  $(html).find('.hide-name-form').hide().insertAfter($p).slideDown();
+              }).fail(function(){
+                  window.location.href = url;
+              });
+          }
+      });
+  },
+
   on_resize: function() {
     var last_type;
     $(window).on('resize', function() {

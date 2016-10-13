@@ -181,8 +181,10 @@ sub load_updates : Private {
     @combined = map { $_->[1] } sort { $a->[0] <=> $b->[0] } @combined;
     $c->stash->{updates} = \@combined;
 
-    if ($c->sessionid && $c->flash->{alert_to_reporter}) {
-        $c->stash->{alert_to_reporter} = 1;
+    if ($c->sessionid) {
+        foreach (qw(alert_to_reporter anonymized)) {
+            $c->stash->{$_} = $c->flash->{$_} if $c->flash->{$_};
+        }
     }
 
     return 1;

@@ -64,6 +64,10 @@
         [% INCLUDE 'report/_report_meta_info.html' %]
     </p>
 
+    [% IF anonymized ~%]
+        <p class="form-success">[% anonymized %]</p>
+    [% END ~%]
+
     [% INCLUDE 'report/_main_sent_info.html' %]
     [% mlog = problem.latest_moderation_log_entry(); IF mlog %]
         <p>[% tprintf(loc('Moderated by %s at %s'), mlog.admin_user, prettify_dt(mlog.whenedited)) %]</p>

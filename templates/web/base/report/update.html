@@ -24,7 +24,7 @@
             <div class="item-list__update-wrap">
             [% IF update.whenanswered %]
                 <div class="item-list__update-text">
-                    <p class="meta-2"> [% INCLUDE meta_line %] </p>
+                    <p class="meta-2">[% INCLUDE meta_line %]</p>
                 </div>
             [% ELSE %]
                 <a name="update_[% update.id %]" class="internal-link-fixed-header"></a>
@@ -45,6 +45,9 @@
 
                     <p class="meta-2">
                         [% INCLUDE meta_line %]
+                        [% IF c.user_exists AND c.user.id == update.user_id AND !update.anonymous %]
+                            <small>(<a href="/my/anonymize?update=[% update.id | uri %]" class="js-hide-name">[% loc('Hide your name?') %]</a>)</small>
+                        [% END %]
                         [% mlog = update.latest_moderation_log_entry(); IF mlog %]
                             <br />[% tprintf(loc('Moderated by %s at %s'), mlog.admin_user, prettify_dt(mlog.whenedited)) %]
                         [% END %]
