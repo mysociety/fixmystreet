@@ -940,4 +940,16 @@ sub subject_line_for_contact_email {
     return 'FMS message: ' . $subject;
 }
 
+=head2 display_location_extra_params
+
+Return any additional Problem query parameters for use in showing problems on
+the /around page during the
+FixMyStreet::App::Controller::Around::display_location action.
+
+=cut
+sub display_location_extra_params {
+    my ($self, $c) = @_;
+    return 0;
+}
+
 1;

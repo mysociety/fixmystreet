@@ -1,0 +1,18 @@
+[% map_js = BLOCK %]
+<script type="text/javascript" src="[% version('/js/OpenLayers.fixmystreet.js') %]"></script>
+<script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0"></script>
+<script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-toner-lite.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/jquery.ba-hashchange.min.js') %]"></script>
+<!--[if lte IE 6]>
+  <link rel="stylesheet" href="/js/OpenLayers-2.13.1/theme/default/ie6-style.css" type="text/css">
+<![endif]-->
+[% END %]
+
+[% map_html = BLOCK %]
+[% INCLUDE maps/openlayers.html %]
+<script type="text/javascript">
+    var fixmystreet = fixmystreet || {};
+    fixmystreet.show_stats19 = '[% show_stats19 | escape_js | html %]';
+</script>
+[% END %]

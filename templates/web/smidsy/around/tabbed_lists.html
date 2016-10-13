@@ -1,18 +1,14 @@
 <p class="report-list-filters">
-  <input id="show_stats19_checkbox" type="checkbox" [% IF c.req.params.all_pins %]checked[% END %]>
-  <label>Show reports from the Department of Transport</label>
-      <script>
-          $(function () {
-              $('#show_stats19_checkbox').change( function () {
-                  // for now, defer to #all_pins_link functionality
-                  // we will replace this hack when we have proper backend plumbing for it
-                  $('#all_pins_link').click();
-              });
-          });
-      </script>
-  <a href="/faq#stats19" title="What is Stats19?">(?)</a>
+    <a id="stats-19"
+    [% IF c.req.params.show_stats19 %]
+        href="[% c.uri_with( { show_stats19 => 0 } ) %]">Hide reports from the Department of Transport
+    [% ELSE %]
+        href="[% c.uri_with( { show_stats19 => 1 } ) %]">Show reports from the Department of Transport
+    [% END %]
+    </a>
+    <a href="/faq#stats19" title="What is Stats19?">(?)</a>
 </p>
 
-<ul class="incident-list">
-    [% INCLUDE "around/combined_map_list_items.html" %]
+<ul id="current" class="incident-list">
+    [% INCLUDE "around/on_map_list_items.html" %]
 </ul>
