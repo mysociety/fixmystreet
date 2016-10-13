@@ -226,7 +226,7 @@ subtest "test greenwich all reports page" => sub {
         $mech->get_ok('/reports/Royal+Borough+of+Greenwich');
         # There should not be deleted categories in the list
         my $category_select = $mech->forms()->[0]->find_input('filter_category');
-        is $category_select->possible_values, 1, 'deleted categories are not shown';
+        is $category_select, undef, 'deleted categories are not shown';
 
         # Clean up after the test
         $deleted_contact->delete;

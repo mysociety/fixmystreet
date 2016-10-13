@@ -181,7 +181,7 @@ sub display_location : Private {
     my ( $on_map_all, $on_map, $nearby, $distance ) =
       FixMyStreet::Map::map_features( $c,
         latitude => $latitude, longitude => $longitude,
-        interval => $interval, category => $c->stash->{filter_category},
+        interval => $interval, categories => $c->stash->{filter_category},
         states => $c->stash->{filter_problem_states} );
 
     # copy the found reports to the stash
@@ -258,13 +258,11 @@ sub check_and_stash_category : Private {
     )->all;
     my @categories = map { $_->category } @contacts;
     $c->stash->{filter_categories} = \@categories;
-
-
-    my $category = $c->get_param('filter_category');
     my %categories_mapped = map { $_ => 1 } @categories;
-    if ( defined $category && $categories_mapped{$category} ) {
-        $c->stash->{filter_category} = $category;
-    }
+
+    my $categories = [ $c->get_param_list('filter_category', 1) ];
+    my @valid_categories = grep { $_ && $categories_mapped{$_} } @$categories;
+    $c->stash->{filter_category} = \@valid_categories;
 }
 
 =head2 /ajax
@@ -303,7 +301,7 @@ sub ajax : Path('/ajax') {
     my ( $on_map_all, $on_map_list, $nearby, $dist ) =
       FixMyStreet::Map::map_features($c,
           bbox => $bbox, interval => $interval,
-          category => $c->get_param('filter_category'),
+          categories => [ $c->get_param_list('filter_category', 1) ],
           states => $c->stash->{filter_problem_states} );
 
     # create a list of all the pins

@@ -447,11 +447,13 @@ a list, with an empty list if no parameter is present.
 =cut
 
 sub get_param_list {
-    my ($c, $param) = @_;
+    my ($c, $param, $allow_commas) = @_;
+    die unless wantarray;
     my $value = $c->req->params->{$param};
-    return @$value if ref $value;
-    return ($value) if defined $value;
-    return ();
+    return () unless defined $value;
+    my @value = ref $value ? @$value : ($value);
+    return map { split /,/, $_ } @value if $allow_commas;
+    return @value;
 }
 
 =head2 set_param

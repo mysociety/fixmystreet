@@ -289,6 +289,9 @@ select.form-control {
     &[multiple] {
         height: auto;
     }
+    .js &[multiple] {
+        height: 2.2em;
+    }
 }
 
 .form-section-heading {
@@ -1412,6 +1415,7 @@ a:hover.rap-notes-trigger {
     bottom: 0;
     height: auto; // override `.mobile #map_box` height:10em
     margin: 0;
+    z-index: 1; // stack above positioned elements later on the page (eg: .report-list-filters)
   }
 
   #fms_pan_zoom {
@@ -2040,3 +2044,4 @@ table.nicetable {
 @import "_admin";
 @import "_fixedthead";
 @import "_dropzone";
+@import "_multiselect";

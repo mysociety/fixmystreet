@@ -63,10 +63,10 @@ sub get_problems : Private {
         state => [ keys %$states ],
     };
 
-    my $category = $c->get_param('filter_category');
-    if ( $category ) {
-        $params->{category} = $category;
-        $c->stash->{filter_category} = $category;
+    my $categories = [ $c->get_param_list('filter_category', 1) ];
+    if ( @$categories ) {
+        $params->{category} = $categories;
+        $c->stash->{filter_category} = $categories;
     }
 
     my $rs = $c->stash->{problems_rs}->search( $params, {

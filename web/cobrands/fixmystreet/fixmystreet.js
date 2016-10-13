@@ -583,6 +583,18 @@ $.extend(fixmystreet.set_up, {
             $(this).closest("form").submit();
         });
     }
+
+    function make_multi(id) {
+        var $id = $('#' + id),
+            all = $id.data('all');
+        $id.multiSelect({
+            allText: all,
+            noneText: all,
+            positionMenuWithin: $('#side')
+        });
+    }
+    make_multi('statuses');
+    make_multi('filter_categories');
   },
 
   mobile_ui_tweaks: function() {
@@ -1215,11 +1227,19 @@ $(function() {
                     // location.href is something like foo.com/around?pc=abc-123,
                     // which we pass into fixmystreet.display.reports_list() as a fallback
                     // in case the list isn't already in the DOM.
+                    $('#filter_categories').add('#statuses').find('option')
+                        .prop('selected', function() { return this.defaultSelected; })
+                        .trigger('change.multiselect');
                     fixmystreet.display.reports_list(location.href);
                 } else if ('reportId' in e.state) {
                     fixmystreet.display.report(e.state.reportPageUrl, e.state.reportId);
                 } else if ('newReportAtLonlat' in e.state) {
                     fixmystreet.display.begin_report(e.state.newReportAtLonlat, false);
+                } else if ('filter_change' in e.state) {
+                    $('#filter_categories').val(e.state.filter_change.filter_categories);
+                    $('#statuses').val(e.state.filter_change.statuses);
+                    $('#filter_categories').add('#statuses')
+                        .trigger('change.filters').trigger('change.multiselect');
                 } else if ('hashchange' in e.state) {
                     // This popstate was just here because the hash changed.
                     // (eg: mobile nav click.) We want to ignore it.

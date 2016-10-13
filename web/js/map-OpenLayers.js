@@ -270,6 +270,36 @@ var fixmystreet = fixmystreet || {};
         fixmystreet.markers.refresh({force: true});
     }
 
+    function parse_query_string() {
+        var qs = {};
+        location.search.substring(1).split('&').forEach(function(i) {
+            var s = i.split('='),
+                k = s[0],
+                v = s[1] && decodeURIComponent(s[1].replace(/\+/g, ' '));
+            qs[k] = v;
+        });
+        return qs;
+    }
+
+    function replace_query_parameter(qs, id, key) {
+        var value = $('#' + id).val();
+        value ? qs[key] = value.join(',') : delete qs[key];
+        return value;
+    }
+
+    function categories_or_status_changed_history() {
+        if (!('pushState' in history)) {
+            return;
+        }
+        var qs = parse_query_string();
+        var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
+        var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
+        var new_url = location.href.replace(location.search, '?' + $.param(qs));
+        history.pushState({
+            filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses }
+        }, null, new_url);
+    }
+
     function setup_inspector_marker_drag() {
         // On the 'inspect report' page the pin is draggable, so we need to
         // update the easting/northing fields when it's dragged.
@@ -433,15 +463,11 @@ var fixmystreet = fixmystreet || {};
             fixmystreet.select_feature.activate();
             fixmystreet.map.events.register( 'zoomend', null, fixmystreet.maps.markers_resize );
 
-            // If the category filter dropdown exists on the page set up the
-            // event handlers to populate it and react to it changing
-            if ($("select#filter_categories").length) {
-                $("body").on("change", "#filter_categories", categories_or_status_changed);
-            }
-            // Do the same for the status dropdown
-            if ($("select#statuses").length) {
-                $("body").on("change", "#statuses", categories_or_status_changed);
-            }
+            // Set up the event handlers to populate the filters and react to them changing
+            $("#filter_categories").on("change.filters", categories_or_status_changed);
+            $("#statuses").on("change.filters", categories_or_status_changed);
+            $("#filter_categories").on("change.user", categories_or_status_changed_history);
+            $("#statuses").on("change.user", categories_or_status_changed_history);
         } else if (fixmystreet.page == 'new') {
             drag.activate();
         }
