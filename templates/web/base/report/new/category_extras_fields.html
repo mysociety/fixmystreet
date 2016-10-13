@@ -1,19 +1,27 @@
 [%- FOR meta IN category_extras.$category %]
   [%- meta_name = meta.code -%]
 
-  <label for="[% cat_prefix %]form_[% meta_name %]">[% meta.description %]</label>
-  [% IF field_errors.$meta_name %]
-  <p class='form-error'>[% field_errors.$meta_name %]</p>
-  [% END -%]
-  [% IF meta.variable != 'false' %]
-    [% IF meta.exists('values') %]
-      <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
-        [% FOR option IN meta.values %]
-          <option value="[% option.key %]"[% IF option.key == report_meta.$meta_name.value %] selected[% END %]>[% option.name %]</option>
+  [% IF c.cobrand.category_extra_hidden(meta_name) %]
+
+      <input type="hidden" value="" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]">
+
+  [% ELSE %]
+
+      <label for="[% cat_prefix %]form_[% meta_name %]">[% meta.description %]</label>
+      [% IF field_errors.$meta_name %]
+      <p class='form-error'>[% field_errors.$meta_name %]</p>
+      [% END -%]
+      [% IF meta.variable != 'false' %]
+        [% IF meta.exists('values') %]
+          <select class="form-control" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+            [% FOR option IN meta.values %]
+              <option value="[% option.key %]"[% IF option.key == report_meta.$meta_name.value %] selected[% END %]>[% option.name %]</option>
+            [% END %]
+          </select>
+        [% ELSE %]
+          <input class="form-control" type="text" value="[% report_meta.$meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
         [% END %]
-      </select>
-    [% ELSE %]
-      <input class="form-control" type="text" value="[% report_meta.$meta_name.value | html %]" name="[% cat_prefix %][% meta_name %]" id="[% cat_prefix %]form_[% meta_name %]"[% meta.required == 'true' ? ' required' : '' %]>
+      [% END %]
+
     [% END %]
-  [% END %]
 [%- END %]
