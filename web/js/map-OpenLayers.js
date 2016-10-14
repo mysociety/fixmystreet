@@ -431,6 +431,13 @@ var fixmystreet = fixmystreet || {};
                 format: new OpenLayers.Format.FixMyStreet()
             });
         }
+        if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
+            pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetFixed() ];
+            pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
+                url: '?ajax=1',
+                format: new OpenLayers.Format.FixMyStreet()
+            });
+        }
         fixmystreet.markers = new OpenLayers.Layer.Vector("Pins", pin_layer_options);
         fixmystreet.markers.events.register( 'loadend', fixmystreet.markers, function(evt) {
             if (fixmystreet.map.popups.length) {
@@ -724,6 +731,20 @@ OpenLayers.Strategy.FixMyStreet = OpenLayers.Class(OpenLayers.Strategy.BBOX, {
     }
 });
 
+/* Copy of Strategy.Fixed, but with no initial load */
+OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixed, {
+    activate: function() {
+        var activated = OpenLayers.Strategy.prototype.activate.apply(this, arguments);
+        if (activated) {
+            this.layer.events.on({
+                "refresh": this.load,
+                scope: this
+            });
+        }
+        return activated;
+    }
+});
+
 /* Pan data request handler */
 // This class is used to get a JSON object from /ajax that contains
 // pins for the map and HTML for the sidebar. It does a fetch whenever the map
@@ -770,6 +791,10 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         var current;
         if (typeof(obj.current) != 'undefined' && (current = document.getElementById('current'))) {
             current.innerHTML = obj.current;
+        }
+        var reports_list;
+        if (typeof(obj.reports_list) != 'undefined' && (reports_list = document.getElementById('js-reports-list'))) {
+            reports_list.innerHTML = obj.reports_list;
         }
         return fixmystreet.maps.markers_list( obj.pins, false );
     },

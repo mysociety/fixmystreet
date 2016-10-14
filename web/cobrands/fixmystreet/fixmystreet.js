@@ -578,12 +578,6 @@ $.extend(fixmystreet.set_up, {
     // to refresh the map when the filter inputs are changed.
     $(".report-list-filters [type=submit]").hide();
 
-    if (fixmystreet.page == "my" || fixmystreet.page == "reports") {
-        $(".report-list-filters select").change(function() {
-            $(this).closest("form").submit();
-        });
-    }
-
     function make_multi(id) {
         var $id = $('#' + id),
             all = $id.data('all');

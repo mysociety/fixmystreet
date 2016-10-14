@@ -292,9 +292,6 @@ sub ajax : Path('/ajax') {
     my $all_pins = $c->get_param('all_pins') ? 1 : undef;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
-    # Need to be the class that can handle it
-    FixMyStreet::Map::set_map_class( 'OSM' );
-
     $c->forward( '/reports/stash_report_filter_status' );
 
     # extract the data from the map

@@ -63,7 +63,9 @@
 <section class="full-width">
 [% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
 [% INCLUDE 'pagination.html', param = 'p' %]
-[% INCLUDE 'reports/_problem-list.html' %]
+<div id="js-reports-list">
+    [% INCLUDE 'reports/_problem-list.html' %]
+</div>
 [% INCLUDE 'pagination.html', param = 'p' %]
 </section>
 
