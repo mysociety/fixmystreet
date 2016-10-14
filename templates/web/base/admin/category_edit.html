@@ -19,78 +19,7 @@
 [% END %]
 </p>
 
-<form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="category_edit">
-    <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
-    <input type="hidden" name="category" value="[% contact.category | html %]" >
-    <input type="hidden" name="token" value="[% csrf_token %]" >
-
-    <p><strong>[% loc('Email:') %] </strong>
-    <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
-
-    <p>
-      [% IF c.cobrand.moniker != 'zurich' %]
-        <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed %]>
-        <label class="inline" for="confirmed">[% loc('Confirmed' ) %]</label>
-      [% ELSE %]
-        <input type="hidden" name="confirmed" value="1">
-      [% END %]
-        <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
-        <label class="inline" for="deleted">[% loc('Deleted') %]</label>
-      [% IF c.cobrand.moniker != 'zurich' %]
-        <input type="checkbox" name="non_public" value="1" id="non_public"[% ' checked' IF contact.non_public %]>
-        <label class="inline" for="non_public">[% loc('Private') %]</label>
-        <input type="checkbox" name="inspection_required" value="1" id="inspection_required"[% ' checked' IF contact.get_extra_metadata('inspection_required') %]>
-        <label class="inline" for="inspection_required">[% loc('Inspection required') %]</label>
-      [% ELSE %]
-        <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
-        <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
-      [% END %]
-    </p>
-
-    [% IF c.cobrand.moniker != 'zurich' %]
-      <p [% 'class=hidden' UNLESS contact.get_extra_metadata('inspection_required') %]>
-        <label>
-          [% loc('Reputation threshold:') %]
-          <input type="text" class="form-control" name="reputation_threshold" id="reputation_threshold"
-            value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30">
-        </label>
-      </p>
-    [% END %]
-
-    <p><strong>[% loc('Note:') %] </strong><textarea class="form-control" name="note" rows="3" cols="40"></textarea>
-
-    [% IF body.can_be_devolved %]
-    <h2>[% loc('Configure Endpoint') %]</h2>
-    <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-    <p>
-        <label for="endpoint">Endpoint</label>
-        <input type="text" class="form-control" name="endpoint" id="endpoint" value="[% contact.endpoint | html %]" size="50">
-    </p>
-
-    <p>
-        <label for="jurisdiction">Jurisdiction</label>
-        <input type="text" class="form-control" name="jurisdiction" id="jurisdiction" value="[% contact.jurisdiction | html %]" size="50">
-    </p>
-
-    <p>
-        <label for="api_key">Api Key</label>
-        <input type="text" class="form-control" name="api_key" id="api_key" value="[% contact.api_key | html %]" size="25">
-    </p>
-
-    <p>
-        <label for="send_method">Send Method</label>
-        <select class="form-control" name="send_method">
-            <option value=""> -- Select a method -- </option>
-            [% FOR method IN send_methods %]
-            <option value="[% method %]"[% ' selected' IF contact.send_method == method %]>[% method %]</option>
-            [% END %]
-        </select>
-    </p>
-    [% END %]
-
-    <input type="hidden" name="posted" value="new">
-    <p><input type="submit" class="btn" name="Save changes" value="[% loc('Save changes') %]">
-</form>
+[% INCLUDE 'admin/contact-form.html' %]
 
 [% IF contact.extra %]
 <h2>[% loc('Extra data:') %] </h2>

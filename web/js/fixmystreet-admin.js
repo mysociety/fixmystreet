@@ -83,10 +83,17 @@ $(function(){
     // On category edit page, hide the reputation input if inspection isn't required
     $("form#category_edit #inspection_required").change(function() {
         var $p = $("form#category_edit #reputation_threshold").closest("p");
+        var $hint = $p.prevUntil().first();
         if (this.checked) {
             $p.removeClass("hidden");
+            if ($hint.length) {
+                $hint.removeClass("hidden");
+            }
         } else {
             $p.addClass("hidden");
+            if ($hint.length) {
+                $hint.addClass("hidden");
+            }
         }
     });
 });
