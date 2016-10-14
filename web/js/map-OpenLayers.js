@@ -272,6 +272,9 @@ var fixmystreet = fixmystreet || {};
 
     function parse_query_string() {
         var qs = {};
+        if (!location.search) {
+            return qs;
+        }
         location.search.substring(1).split('&').forEach(function(i) {
             var s = i.split('='),
                 k = s[0],
@@ -294,7 +297,14 @@ var fixmystreet = fixmystreet || {};
         var qs = parse_query_string();
         var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
         var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
-        var new_url = location.href.replace(location.search, '?' + $.param(qs));
+        var new_url;
+        if ($.isEmptyObject(qs)) {
+            new_url = location.href.replace(location.search, "");
+        } else if (location.search) {
+            new_url = location.href.replace(location.search, '?' + $.param(qs));
+        } else {
+            new_url = location.href + '?' + $.param(qs);
+        }
         history.pushState({
             filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses }
         }, null, new_url);
