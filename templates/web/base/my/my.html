@@ -1,5 +1,6 @@
 [%
     SET bodyclass = 'mappage';
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html" IF problems.size;
     INCLUDE 'header.html', title = loc('Your Reports')
 %]

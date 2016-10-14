@@ -17,6 +17,7 @@
 [% END %]
 
 [%
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
     SET bodyclass = 'mappage';
     INCLUDE 'header.html',
