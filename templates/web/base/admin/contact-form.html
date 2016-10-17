@@ -84,7 +84,7 @@
     <label for="inspection_required" class="inline">[% loc('Inspection required') %]</label>
   </p>
 
-  <div class="admin-hint">
+  <div class="admin-hint [% 'hidden' UNLESS contact.get_extra_metadata('inspection_required') %]">
     <p>
       [% loc("Reports will automatically be sent without needing to be inspected if the user's <strong>reputation</strong> is at or above this value. Set to <strong>0</strong> if all reports must be inspected regardless.") %]
     </p>
@@ -96,6 +96,28 @@
         value="[% contact.get_extra_metadata('reputation_threshold') | html %]" size="30">
     </label>
   </p>
+
+  [% IF body.can_be_devolved %]
+    <div class="admin-hint">
+      <p>
+        [% loc(
+          "The <strong>send method</strong> determines how problem reports will be sent to the body.
+           If you leave this blank, <strong>send method defaults to email</strong>."
+        ) %]
+      </p>
+    </div>
+    <p>
+        <label for="send_method">Send Method</label>
+        <select class="form-control" name="send_method" id="send_method">
+            <option value=""> -- Select a method -- </option>
+            [% FOR method IN send_methods %]
+            <option value="[% method %]"[% ' selected' IF contact.send_method == method %]>[% method %]</option>
+            [% END %]
+        </select>
+    </p>
+
+    [% INCLUDE 'admin/open311-form-fields.html', object = contact%]
+  [% END %]
 
   <div class="admin-hint">
     <p>

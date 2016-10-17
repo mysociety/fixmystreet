@@ -2,12 +2,13 @@ $(function(){
     // available for admin pages
 
     // hide the open311_only section and reveal it only when send_method is relevant
-    var $open311_only = $('.admin-open311-only');
+    function hide_or_show_open311(e, hide_fast) {
+        var $form = $(this).closest("form");
+        var $open311_only = $form.find('.admin-open311-only');
 
-    function hide_or_show_open311(hide_fast) {
-        var send_method = $('#send_method').val();
+        var send_method = $(this).val();
         var show_open311 = false;
-        if ($('#endpoint').val()) {
+        if ($form.find('[name=endpoint]').val()) {
             show_open311 = true; // always show the form if there is an endpoint value
         } else if (send_method && !send_method.match(/^(email|noop|refused)$/i)) {
             show_open311 = true;
@@ -23,9 +24,11 @@ $(function(){
         }
     }
 
-    if ($open311_only) {
-        $('#send_method').on('change', hide_or_show_open311);
-        hide_or_show_open311(true);
+    if ($('.admin-open311-only').length) {
+        // Add handler to send_method dropdowns and set initial visibility
+        $('[name=send_method]').on('change', hide_or_show_open311).each(function() {
+            hide_or_show_open311.call(this, null, true);
+        });
     }
 
 
