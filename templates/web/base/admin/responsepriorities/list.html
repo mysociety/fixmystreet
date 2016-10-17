@@ -4,13 +4,15 @@
     <thead>
     <tr>
         <th>  [% loc('Name') %] </th>
+        <th>  [% loc('Description') %] </th>
         <th>  &nbsp; </th>
     </tr>
     </thead>
     <tbody>
       [% FOR p IN response_priorities %]
           <tr [% 'class="is-deleted"' IF p.deleted %]>
-              <td>  [% p.name %] </td>
+              <td>  [% p.name | html %] </td>
+              <td>  [% p.description | html %] </td>
               <td> <a href="[% c.uri_for('', body.id, p.id) %]" class="btn">[% loc('Edit') %]</a> </td>
           </tr>
       [% END %]

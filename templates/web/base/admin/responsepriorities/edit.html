@@ -14,6 +14,10 @@
         <input type="text" name="name" class="required form-control" size="30" value="[% rp.name | html %]">
     </p>
     <p>
+        <strong>[% loc('Description:') %] </strong>
+        <input type="text" name="description" class="form-control" size="30" value="[% rp.description | html %]">
+    </p>
+    <p>
       <strong>[% loc('Categories:') %]</strong>
       <ul>
         [% FOR contact IN contacts %]

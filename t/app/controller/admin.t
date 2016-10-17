@@ -1453,6 +1453,7 @@ subtest "response priorities can be added" => sub {
 
     my $fields = {
         name => "Cat 1A",
+        description => "Fixed within 24 hours",
         deleted => undef,
         "contacts[".$oxfordshirecontact->id."]" => 1,
     };
@@ -1466,6 +1467,7 @@ subtest "response priorities can be listed" => sub {
     $mech->get_ok( "/admin/responsepriorities/" . $oxfordshire->id );
 
     $mech->content_contains( $oxfordshire->response_priorities->first->name );
+    $mech->content_contains( $oxfordshire->response_priorities->first->description );
 };
 
 subtest "response priorities are limited by body" => sub {

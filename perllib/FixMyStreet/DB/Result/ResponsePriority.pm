@@ -24,6 +24,8 @@ __PACKAGE__->add_columns(
   { data_type => "text", is_nullable => 0 },
   "deleted",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "description",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("response_priorities_body_id_name_key", ["body_id", "name"]);
@@ -47,8 +49,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-09-07 11:01:40
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:B1swGtQzC3qRa0LUM4IyzA
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-10-17 16:37:28
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:wok3cPA7cPjG4e9lnc1PIg
 
 __PACKAGE__->many_to_many( contacts => 'contact_response_priorities', 'contact' );
 
