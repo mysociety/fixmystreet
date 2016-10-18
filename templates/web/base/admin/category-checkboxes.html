@@ -1,0 +1,18 @@
+  <p>
+    <strong>[% loc('Categories:') %]</strong>
+  </p>
+  <ul>
+    <li>
+      [% loc('Select:') %]
+      <a href="#" data-select-all>[% loc('all') %]</a> /
+      <a href="#" data-select-none>[% loc('none') %]</a>
+    </li>
+    [% FOR contact IN contacts %]
+      <li>
+        <label>
+          <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
+          [% contact.category %]
+        </label>
+      </li>
+    [% END %]
+  </ul>

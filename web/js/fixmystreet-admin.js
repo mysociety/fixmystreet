@@ -31,6 +31,13 @@ $(function(){
         });
     }
 
+    // Some lists of checkboxes have 'select all/none' links at the top
+    $("a[data-select-none], a[data-select-all]").click(function(e) {
+        e.preventDefault();
+        var checked = $(this).filter('[data-select-all]').length > 0;
+        $(this).closest("ul").find('input[type=checkbox]').prop('checked', checked);
+    });
+
 
     // admin hints: maybe better implemented as tooltips?
     $(".admin-hint").on('click', function(){

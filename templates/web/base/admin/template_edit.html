@@ -23,19 +23,14 @@
         <input type="checkbox" name="auto_response" [% 'checked' IF rt.auto_response %] />
       </label>
     </p>
-    <p>
-      <strong>[% loc('Categories:') %]</strong>
-      <ul>
-        [% FOR contact IN contacts %]
-          <li>
-            <label>
-              <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
-              [% contact.category %]
-            </label>
-          </li>
-        [% END %]
-      </ul>
-    </p>
+
+    <div class="admin-hint">
+      <p>
+        [% loc('If you only want this template to be an option for specific categories, pick them here. By default they will show for all categories.') %]
+      </p>
+    </div>
+    [% INCLUDE 'admin/category-checkboxes.html' %]
+
     <p>
       <input type="hidden" name="token" value="[% csrf_token %]" >
       <input type="submit" class="btn" name="Edit templates" value="[% rt.id ? loc('Save changes') : loc('Create template') %]" >
