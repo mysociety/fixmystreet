@@ -49,7 +49,8 @@ sub loop_through {
 
     my %to_send = ();
     while (my $row = $reports->next) {
-        $to_send{$row->bodies_str} .= '* ' . $row->id . ": '" . $row->title . "'\n\n";
+        $to_send{$row->bodies_str} ||= [];
+        push @{$to_send{$row->bodies_str}}, $row;
     }
 
     foreach my $body_id (keys %to_send) {
@@ -66,6 +67,7 @@ sub send_alert {
     my $h = {
         data => $data,
         admin_url => $cobrand->admin_base_url,
+        cobrand => $cobrand,
     };
 
     my $to = [ [ $body_email, $body->name ] ];
