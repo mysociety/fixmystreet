@@ -122,7 +122,7 @@ $(function() {
         // If the user has clicked to rotate a photo and has edited other
         // fields, ask for confirmation before submitting the form
         if (/rotate_photo/.test(clicked) && form_fields_changed) {
-            var message = $(this).parent().data('confirm');
+            var message = $(this).find("input[name="+clicked+"]").parent().data('confirmMsg');
             if (!confirm(message)) {
                 return false;
             }

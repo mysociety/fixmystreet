@@ -107,7 +107,7 @@
     <dd>[% problem.get_time_spent %]</dd>
 
   [% IF problem.photo %]
-    <dd data-confirm="[% loc('Rotating this photo will discard unsaved changes to the report.') | html %]">
+    <dd data-confirm-msg="[% loc('Rotating this photo will discard unsaved changes to the report.') | html %]">
       [% FOR photo IN problem.photos %]
         <div class="update-img">
             <a href="[% c.cobrand.base_url %][% photo.url_temp_full %]" rel="fancy">
