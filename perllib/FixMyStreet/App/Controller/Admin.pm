@@ -8,9 +8,9 @@ use Path::Class;
 use POSIX qw(strftime strcoll);
 use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email);
+use mySociety::ArrayUtils;
 use DateTime::Format::Strptime;
 use List::Util 'first';
-
 
 use FixMyStreet::SendReport;
 
@@ -852,8 +852,12 @@ sub report_edit_category : Private {
     if ((my $category = $c->get_param('category')) ne $problem->category) {
         $problem->category($category);
         my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
-        my $bs = join( ',', map { $_->body_id } @contacts );
-        $problem->bodies_str($bs);
+        my @new_body_ids = map { $_->body_id } @contacts;
+        # If the report has changed bodies we need to resend it
+        if (scalar @{mySociety::ArrayUtils::symmetric_diff($problem->bodies_str_ids, \@new_body_ids)}) {
+            $problem->whensent(undef);
+        }
+        $problem->bodies_str(join( ',', @new_body_ids ));
     }
 }
 

@@ -16,7 +16,11 @@ my $superuser = $mech->create_user_ok('superuser@example.com', name => 'Super Us
 
 my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
 my $oxfordshirecontact = $mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Potholes', email => 'potholes@example.com' );
+$mech->create_contact_ok( body_id => $oxfordshire->id, category => 'Traffic lights', email => 'lights@example.com' );
 my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
+
+my $oxford = $mech->create_body_ok(2421, 'Oxford City Council');
+$mech->create_contact_ok( body_id => $oxford->id, category => 'Graffiti', email => 'graffiti@example.net' );
 
 my $bromley = $mech->create_body_ok(2482, 'Bromley Council', id => 2482);
 
@@ -574,6 +578,34 @@ foreach my $test (
         }
     };
 }
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+    ALLOWED_COBRANDS => 'fixmystreet',
+}, sub {
+
+subtest 'change report category' => sub {
+    my ($ox_report) = $mech->create_problems_for_body(1, $oxfordshire->id, 'Unsure', {
+        category => 'Potholes',
+        areas => ',2237,2421,', # Cached used by categories_for_point...
+        latitude => 51.7549262252,
+        longitude => -1.25617899435,
+        whensent => \'current_timestamp',
+    });
+    $mech->get_ok("/admin/report_edit/" . $ox_report->id);
+
+    $mech->submit_form_ok( { with_fields => { category => 'Traffic lights' } }, 'form_submitted' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Traffic lights';
+    isnt $ox_report->whensent, undef;
+
+    $mech->submit_form_ok( { with_fields => { category => 'Graffiti' } }, 'form_submitted' );
+    $ox_report->discard_changes;
+    is $ox_report->category, 'Graffiti';
+    is $ox_report->whensent, undef;
+};
+
+};
 
 subtest 'change email to new user' => sub {
     $log_entries->delete;
@@ -1512,13 +1544,15 @@ subtest "response priorities can't be viewed across councils" => sub {
     };
 };
 
-
-$mech->delete_user( $user );
-$mech->delete_user( $user2 );
-$mech->delete_user( $user3 );
-$mech->delete_user( $superuser );
-$mech->delete_user( 'test4@example.com' );
-$mech->delete_body( $oxfordshire );
-$mech->delete_body( $bromley );
-
-done_testing();
+END {
+    $mech->delete_user( $user );
+    $mech->delete_user( $user2 );
+    $mech->delete_user( $user3 );
+    $mech->delete_user( $superuser );
+    $mech->delete_user( 'test4@example.com' );
+    $mech->delete_body( $oxfordshire );
+    $mech->delete_body( $oxford );
+    $mech->delete_body( $bromley );
+    $mech->delete_body( $westminster );
+    done_testing();
+}
