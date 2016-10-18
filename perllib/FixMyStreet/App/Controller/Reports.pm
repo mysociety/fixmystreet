@@ -521,7 +521,15 @@ sub ajax : Private {
 
     my $list_html = $c->render_fragment($template);
 
-    my $json = { pins => \@pins };
+    my $pagination = $c->render_fragment('pagination.html', {
+        pager => $c->stash->{problems_pager} || $c->stash->{pager},
+        param => 'p',
+    });
+
+    my $json = {
+        pins => \@pins,
+        pagination => $pagination,
+    };
     $json->{reports_list} = $list_html if $list_html;
     my $body = encode_json($json);
     $c->res->body($body);

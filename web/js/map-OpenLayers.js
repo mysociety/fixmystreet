@@ -297,6 +297,7 @@ var fixmystreet = fixmystreet || {};
         var qs = parse_query_string();
         var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
         var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
+        delete qs['p'];
         var new_url;
         if ($.isEmptyObject(qs)) {
             new_url = location.href.replace(location.search, "");
@@ -795,6 +796,9 @@ OpenLayers.Format.FixMyStreet = OpenLayers.Class(OpenLayers.Format.JSON, {
         var reports_list;
         if (typeof(obj.reports_list) != 'undefined' && (reports_list = document.getElementById('js-reports-list'))) {
             reports_list.innerHTML = obj.reports_list;
+        }
+        if (typeof(obj.pagination) != 'undefined') {
+            $('.js-pagination').html(obj.pagination);
         }
         return fixmystreet.maps.markers_list( obj.pins, false );
     },

@@ -23,7 +23,9 @@
 
 <section class="full-width">
 [% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+<div class="js-pagination">
 [% INCLUDE 'pagination.html', pager = problems_pager, param = 'p' %]
+</div>
 [% INCLUDE 'my/_problem-list.html' %]
 </section>
 
