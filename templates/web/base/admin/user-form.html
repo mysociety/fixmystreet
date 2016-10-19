@@ -142,6 +142,10 @@
             <li>
               [% group.key %]
               <ul class="no-bullets">
+                <li>
+                  (<a href="#" data-select-all>[% loc('all') %]</a> /
+                  <a href="#" data-select-none>[% loc('none') %]</a>)
+                </li>
                 [% FOREACH permission IN group.value %]
                   <li>
                     <label class="inline">
