@@ -61,11 +61,6 @@
         <input type="hidden" name="token" value="[% csrf_token %]" >
         <input type="submit" class="btn" name="Create category" value="[% errors ? loc('Save changes') : loc('Create category') %]">
         </p>
-
-        <div>
-            <input type="hidden" name=".cgifields" value="confirmed" >
-            <input type="hidden" name=".cgifields" value="deleted" >
-        </div>
     </form>
 
 [% END %]

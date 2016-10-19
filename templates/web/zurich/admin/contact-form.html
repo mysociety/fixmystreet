@@ -1,0 +1,21 @@
+<form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8" id="category_edit">
+    <p><strong>[% loc('Category:') %] </strong>[% contact.category | html %]
+    <input type="hidden" name="category" value="[% contact.category | html %]" >
+    <input type="hidden" name="token" value="[% csrf_token %]" >
+
+    <p><strong>[% loc('Email:') %] </strong>
+    <input type="text" class="form-control" name="email" value="[% contact.email | html %]" size="30">
+
+    <p>
+        <input type="hidden" name="confirmed" value="1">
+        <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
+        <label class="inline" for="deleted">[% loc('Deleted') %]</label>
+        <input type="checkbox" name="photo_required" value="1" id="photo_required"[% ' checked' IF contact.get_extra_metadata('photo_required') %]>
+        <label class="inline" for="photo_required">[% loc('Photo required') %]</label>
+    </p>
+
+    <p><strong>[% loc('Note:') %] </strong><textarea class="form-control" name="note" rows="3" cols="40"></textarea>
+
+    <input type="hidden" name="posted" value="new">
+    <p><input type="submit" class="btn" name="Save changes" value="[% loc('Save changes') %]">
+</form>

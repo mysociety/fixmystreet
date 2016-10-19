@@ -120,111 +120,13 @@
     <h2>[% loc('Add new category') %]</h2>
   [% END %]
 
-[% IF errors %]
-<div class="fms-admin-warning">
-  [% errors.values.join('<br>') %]
-</div>
-[% END %]
+  [% IF errors %]
+  <div class="fms-admin-warning">
+    [% errors.values.join('<br>') %]
+  </div>
+  [% END %]
 
-  <form method="post" action="[% c.uri_for('body', body_id ) %]" enctype="application/x-www-form-urlencoded" accept-charset="utf-8">
-
-      <div class="admin-hint">
-        <p>
-          [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
-                  to the body too. These will appear in the drop-down menu on the report-a-problem page.') %]
-          <br>
-          [% loc("If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in
-                  the menu. Make sure you use the same category name in the bodies if you want this to happen.") %]
-        </p>
-      </div>
-      <p>
-        <strong>[% loc('Category:') %] </strong><input type="text" class="form-control" name="category" size="30" value="[% contact.category | html %]">
-      </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent.
-        Other categories for this body may have the same email address.") %]
-      </p>
-      [% IF (body.send_method AND body.send_method != 'Email') OR body.can_be_devolved  %]
-        <p>
-            [% loc("If you're using <strong>a send method that is not email</strong>, enter the service ID (Open311) or equivalent identifier here.") %]
-        </p>
-      [% END %]
-    </div>
-
-    <p>
-      <strong>[% loc('Email address:') %] </strong><input type="text" class="form-control" name="email" size="30" value="[% contact.email | html %]">
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc("Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.
-                If you are not sure of the origin or validity of the contact, leave this unchecked.") %]
-      </p>
-    </div>
-    <p>
-      <input type="checkbox" name="confirmed" value="1" id="confirmed"[% ' checked' IF contact.confirmed OR contact.confirmed == "" %]>
-      <label for="confirmed" class="inline">[% loc('Confirmed') %]</label>
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc("Check <strong>deleted</strong> to remove the category from use.
-        It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
-      </p>
-    </div>
-    <p>
-      <input type="checkbox" name="deleted" value="1" id="deleted"[% ' checked' IF contact.deleted %]>
-      <label for="deleted" class="inline">[% loc('Deleted') %]</label>
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc("Use the <strong>note</strong> to record details that are only displayed in the admin. Notes are not shown publicly, and are not sent to the body.") %]
-      </p>
-    </div>
-    <p>
-      <strong>[% loc('Note:') %] </strong> <textarea class="form-control" name="note" rows="3" cols="40"></textarea>
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc("Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.
-                <br>
-                Normally, categories are not private.
-                <br>
-                This is suitable for issues that you want to allow users to report to the body, but for which there is no public
-                interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin
-                at a specific address.") %]
-      </p>
-    </div>
-    <p>
-      <input type="checkbox" name="non_public" value="1" id="non_public" [% ' checked' IF contact.non_public %]>
-      <label for="non_public" class="inline">[% loc('Private') %]</label>
-    </p>
-
-    <div class="admin-hint">
-      <p>
-        [% loc("Check <strong>inspection required</strong> if reports in this category <strong>must be inspected</strong> before being sent.") %]
-      </p>
-    </div>
-    <p>
-      <input type="checkbox" name="inspection_required" value="1" id="inspection_required" [% 'checked' IF contact.get_extra_metadata('inspection_required') %]>
-      <label for="inspection_required" class="inline">[% loc('Inspection required') %]</label>
-    </p>
-
-    <p>
-      <input type="hidden" name="posted" value="new" >
-      <input type="hidden" name="token" value="[% csrf_token %]" >
-      <input type="submit" class="btn" name="Create category" value="[% errors ? loc('Save changes') : loc('Create category') %]" >
-    </p>
-
-    <div>
-      <input type="hidden" name=".cgifields" value="confirmed" >
-      <input type="hidden" name=".cgifields" value="deleted" >
-    </div>
-  </form>
+  [% INCLUDE 'admin/contact-form.html' %]
 </div>
 
 [% IF NOT errors and c.user.is_superuser %]
