@@ -73,7 +73,7 @@
 
             [% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
                 <label for="form_state">[% loc( 'State' ) %]</label>
-                <select name="state" id="form_state">
+                <select name="state" id="form_state" class="form-control">
                     [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
                     loc('Investigating')], ['action scheduled', loc('Action Scheduled')],
                     ['in progress', loc('In Progress')], ['duplicate', loc('Duplicate')],
