@@ -14,18 +14,17 @@
         <input type="text" name="name" class="required form-control" size="30" value="[% rp.name | html %]">
     </p>
     <p>
-      <strong>[% loc('Categories:') %]</strong>
-      <ul>
-        [% FOR contact IN contacts %]
-          <li>
-            <label>
-              <input type="checkbox" name="contacts[[% contact.id %]]" [% 'checked' IF contact.active %]/>
-              [% contact.category %]
-            </label>
-          </li>
-        [% END %]
-      </ul>
+        <strong>[% loc('Description:') %] </strong>
+        <input type="text" name="description" class="form-control" size="30" value="[% rp.description | html %]">
     </p>
+
+    <div class="admin-hint">
+      <p>
+        [% loc('If you only want this priority to be an option for specific categories, pick them here. By default they will show for all categories.') %]
+      </p>
+    </div>
+    [% INCLUDE 'admin/category-checkboxes.html' %]
+
     <p>
         <label>
           <input type="checkbox" name="deleted" id="deleted" value="1"[% ' checked' IF rp.deleted %]>

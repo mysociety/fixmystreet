@@ -681,7 +681,7 @@ sub response_priorities {
     return $self->result_source->schema->resultset('ResponsePriority')->search(
         {
             'me.body_id' => $self->bodies_str_ids,
-            'contact.category' => $self->category,
+            'contact.category' => [ $self->category, undef ],
         },
         {
             order_by => 'name',

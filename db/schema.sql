@@ -134,6 +134,7 @@ CREATE TABLE response_priorities (
     body_id int references body(id) not null,
     deleted boolean not null default 'f',
     name text not null,
+    description text,
     unique(body_id, name)
 );
 
