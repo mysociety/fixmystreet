@@ -78,6 +78,13 @@ sub _display : Private {
     $c->forward( 'load_problem_or_display_error', [ $id ] );
     $c->forward( 'load_updates' );
     $c->forward( 'format_problem_for_display' );
+
+    my $permissions = $c->stash->{_permissions} = $c->forward( 'check_has_permission_to',
+        [ qw/report_inspect report_edit_category report_edit_priority/ ] );
+    if (any { $_ } values %$permissions) {
+        $c->stash->{template} = 'report/inspect.html';
+        $c->forward('inspect');
+    }
 }
 
 sub support : Path('support') : Args(0) {
@@ -292,23 +299,15 @@ e.g. /report/1/inspect
 sub action_router : Path('') : Args(2) {
     my ( $self, $c, $id, $action ) = @_;
 
-    $c->go( 'inspect', [ $id ] ) if $action eq 'inspect';
     $c->go( 'map', [ $id ] ) if $action eq 'map';
 
     $c->detach( '/page_error_404_not_found', [] );
 }
 
 sub inspect : Private {
-    my ( $self, $c, $id ) = @_;
-
-    $c->forward('/auth/get_csrf_token');
-    $c->forward( 'load_problem_or_display_error', [ $id ] );
-    my $permissions = $c->forward( 'check_has_permission_to',
-        [ qw/report_inspect report_edit_category report_edit_priority/ ] );
-    $c->forward( 'load_updates' );
-    $c->forward( 'format_problem_for_display' );
-
+    my ( $self, $c ) = @_;
     my $problem = $c->stash->{problem};
+    my $permissions = $c->stash->{_permissions};
 
     $c->stash->{categories} = $c->forward('/admin/categories_for_point');
     $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
@@ -347,7 +346,7 @@ sub inspect : Private {
                 $problem->get_photoset->delete_cached;
             }
             if ( $problem->state ne $old_state ) {
-                $c->forward( '/admin/log_edit', [ $id, 'problem', 'state_change' ] );
+                $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
             }
         }
 
@@ -391,7 +390,7 @@ sub inspect : Private {
                     anonymous => 0,
                 } );
             }
-            $c->res->redirect( $c->uri_for( '/report', $problem->id, 'inspect' ) );
+            $c->res->redirect( $c->uri_for( '/report', $problem->id ) );
         }
     }
 };
@@ -416,14 +415,9 @@ to the current Problem in $c->stash->{problem}. Shows the 403 page if not.
 
 sub check_has_permission_to : Private {
     my ( $self, $c, @permissions ) = @_;
-
+    return {} unless $c->user_exists;
     my $bodies = $c->stash->{problem}->bodies_str_ids;
-
-    my %permissions = map { $_ => $c->user->has_permission_to($_, $bodies) } @permissions
-        if $c->user_exists;
-    $c->detach('/page_error_403_access_denied', [ _("Sorry, you don't have permission to do that.") ] )
-        unless $c->user_exists && any { $_ } values %permissions;
-
+    my %permissions = map { $_ => $c->user->has_permission_to($_, $bodies) } @permissions;
     return \%permissions;
 };
 

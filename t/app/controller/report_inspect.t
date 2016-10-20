@@ -31,18 +31,21 @@ FixMyStreet::override_config {
 }, sub {
     subtest "test inspect page" => sub {
         $mech->get_ok("/report/$report_id");
-        $mech->content_lacks('Inspect');
-        $mech->content_lacks('Manage');
+        $mech->content_lacks('Save changes');
+        $mech->content_lacks('Priority');
+        $mech->content_lacks('Traffic management');
 
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_edit_priority' });
         $mech->get_ok("/report/$report_id");
-        $mech->content_contains('Manage');
-        $mech->follow_link_ok({ text => 'Manage' });
+        $mech->content_contains('Save changes');
+        $mech->content_contains('Priority');
+        $mech->content_lacks('Traffic management');
 
         $user->user_body_permissions->create({ body => $oxon, permission_type => 'report_inspect' });
         $mech->get_ok("/report/$report_id");
-        $mech->content_contains('Inspect');
-        $mech->follow_link_ok({ text => 'Inspect' });
+        $mech->content_contains('Save changes');
+        $mech->content_contains('Priority');
+        $mech->content_contains('Traffic management');
     };
 
     subtest "test basic inspect submission" => sub {
@@ -56,7 +59,7 @@ FixMyStreet::override_config {
         $report->unset_extra_metadata('inspected');
         $report->update;
         my $reputation = $report->user->get_extra_metadata("reputation");
-        $mech->get_ok("/report/$report_id/inspect");
+        $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", save_inspected => "1" } });
         $report->discard_changes;
         is $report->comments->first->text, "This is a public update.", 'Update was created';
@@ -68,7 +71,7 @@ FixMyStreet::override_config {
         $report->unset_extra_metadata('inspected');
         $report->update;
         $report->comments->delete_all;
-        $mech->get_ok("/report/$report_id/inspect");
+        $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { public_update => undef, save_inspected => "1" } });
         is_deeply $mech->page_errors, [ "Please provide a public update for this report." ], 'errors match';
         $report->discard_changes;
@@ -77,7 +80,7 @@ FixMyStreet::override_config {
     };
 
     subtest "test location changes" => sub {
-        $mech->get_ok("/report/$report_id/inspect");
+        $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 55, longitude => -2 } });
         $mech->content_contains('Invalid location');
         $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 51.754926, longitude => -1.256179 } });
@@ -92,7 +95,7 @@ FixMyStreet::override_config {
         subtest "test $test->{type} permission" => sub {
             $user->user_body_permissions->delete;
             $user->user_body_permissions->create({ body => $oxon, permission_type => $test->{type} });
-            $mech->get_ok("/report/$report_id/inspect");
+            $mech->get_ok("/report/$report_id");
             $mech->contains_or_lacks($test->{priority}, 'Priority');
             $mech->contains_or_lacks($test->{priority}, 'High');
             $mech->contains_or_lacks($test->{category}, 'Category');

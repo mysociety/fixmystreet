@@ -2,6 +2,5 @@
   SET bodyclass = 'mappage with-actions';
   SET two_column_sidebar = 1;
   PROCESS 'report/_inspect.html';
-  SET shown_form = 1 UNLESS problem.get_extra_metadata('inspected');
-  INCLUDE 'report/display.html', hide_inspect_button = 1;
+  INCLUDE 'report/display.html'
 %]
