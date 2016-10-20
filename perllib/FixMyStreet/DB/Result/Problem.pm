@@ -658,13 +658,15 @@ order of title.
 =cut
 
 sub response_templates {
-    my $problem = shift;
-    return $problem->result_source->schema->resultset('ResponseTemplate')->search(
+    my $self = shift;
+    return $self->result_source->schema->resultset('ResponseTemplate')->search(
         {
-            body_id => $problem->bodies_str_ids
+            'me.body_id' => $self->bodies_str_ids,
+            'contact.category' => [ $self->category, undef ],
         },
         {
-            order_by => 'title'
+            order_by => 'title',
+            join => { 'contact_response_templates' => 'contact' },
         }
     );
 }
