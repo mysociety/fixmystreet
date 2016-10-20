@@ -49,7 +49,7 @@
                         </li>
                         [% END %]
                         <li>
-                            <[% IF c.req.uri.path == '/reports/Oxfordshire' %]span[% ELSE %]a href="/reports/Oxfordshire"[% END
+                            <[% IF c.req.uri.path == '/reports/Oxfordshire' %]span[% ELSE %]a href="/reports/Oxfordshire[% IF c.user_exists AND c.user.categories.size %]?filter_category=[% c.user.categories.join(",") | uri | html %][% END %]"[% END
                                  %]>[% loc("All reports") %]</[% c.req.uri.path == '/reports' ? 'span' : 'a' %]>
                         </li>
                         <li>

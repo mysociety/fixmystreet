@@ -17,6 +17,9 @@
                 <input type="hidden" name="partial" value="[% partial_token.token %]">
             [% END %]
 
+            [% IF c.user_exists AND c.user.categories.size %]
+              <input type="hidden" name="filter_category" value="[% c.user.categories.join(",") | html %]">
+            [% END %]
         </form>
     </div>
 </div>
