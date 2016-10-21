@@ -435,7 +435,7 @@ var fixmystreet = fixmystreet || {};
         if (fixmystreet.page == 'reports' || fixmystreet.page == 'my') {
             pin_layer_options.strategies = [ new OpenLayers.Strategy.FixMyStreetFixed() ];
             pin_layer_options.protocol = new OpenLayers.Protocol.FixMyStreet({
-                url: '?ajax=1',
+                url: fixmystreet.original.href.split('?')[0] + '?ajax=1',
                 format: new OpenLayers.Format.FixMyStreet()
             });
         }
