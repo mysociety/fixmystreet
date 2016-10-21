@@ -33,6 +33,9 @@ sub my : Path : Args(0) {
     $c->stash->{problems_rs} = $c->cobrand->problems->search(
         { user_id => $c->user->id });
     $c->forward('get_problems');
+    if ($c->get_param('ajax')) {
+        $c->detach('/reports/ajax', [ 'my/_problem-list.html' ]);
+    }
     $c->forward('get_updates');
     $c->forward('setup_page_data');
 }
@@ -104,7 +107,9 @@ sub get_updates : Private {
 sub setup_page_data : Private {
     my ($self, $c) = @_;
 
-    my @categories = $c->stash->{problems_rs}->search({}, {
+    my @categories = $c->stash->{problems_rs}->search({
+        state => [ FixMyStreet::DB::Result::Problem->visible_states() ],
+    }, {
         columns => [ 'category' ],
         distinct => 1,
         order_by => [ 'category' ],

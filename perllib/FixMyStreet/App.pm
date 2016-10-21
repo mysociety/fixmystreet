@@ -346,13 +346,21 @@ sub send_email {
 
     $uri = $c->uri_with( ... );
 
-Simply forwards on to $c->req->uri_with - this is a common typo I make!
+Forwards on to $c->req->uri_with, but also deletes keys that have a "" value
+(as undefined is passed as that from a template).
 
 =cut
 
 sub uri_with {
     my $c = shift;
-    return $c->req->uri_with(@_);
+    my $uri = $c->req->uri_with(@_);
+    my $args = $_[0];
+    my %params = %{$uri->query_form_hash};
+    foreach my $key (keys %$args) {
+        delete $params{$key} if $args->{$key} eq "";
+    }
+    $uri->query_form(\%params);
+    return $uri;
 }
 
 =head2 uri_for

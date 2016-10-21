@@ -1,5 +1,6 @@
 [%
     SET bodyclass = 'mappage';
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html" IF problems.size;
     INCLUDE 'header.html', title = loc('Your Reports')
 %]
@@ -37,8 +38,12 @@
 
 <section class="full-width">
 [% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+<div class="js-pagination">
 [% INCLUDE 'pagination.html', pager = problems_pager, param = 'p' %]
-[% INCLUDE 'my/_problem-list.html' %]
+</div>
+<div id="js-reports-list">
+    [% INCLUDE 'my/_problem-list.html' %]
+</div>
 </section>
 
 [% FOREACH u IN updates %]

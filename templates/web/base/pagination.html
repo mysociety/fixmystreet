@@ -1,13 +1,13 @@
 [% IF pager.last_page > 1 %]
     <p class="pagination">
         [% IF pager.previous_page %]
-            <a class="prev" href="[% c.req.uri_with({ $param => pager.previous_page }) %][% '#' _ hash IF hash %]">[% loc('Previous') %]</a>
+            <a class="prev" href="[% c.uri_with({ $param => pager.previous_page, ajax => undefined }) %][% '#' _ hash IF hash %]">[% loc('Previous') %]</a>
         [% END %]
 
         [% tprintf( loc('%d to %d of %d'), pager.first, pager.last, pager.total_entries ) %]
 
         [% IF pager.next_page %]
-            <a class="next" href="[% c.req.uri_with({ $param => pager.next_page }) %][% '#' _ hash IF hash %]">[% loc('Next') %]</a>
+            <a class="next" href="[% c.uri_with({ $param => pager.next_page, ajax => undefined }) %][% '#' _ hash IF hash %]">[% loc('Next') %]</a>
         [% END %]
     </p>
 [% END %]

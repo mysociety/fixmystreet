@@ -17,6 +17,7 @@
 [% END %]
 
 [%
+    PROCESS "report/photo-js.html";
     PROCESS "maps/${map.type}.html";
     SET bodyclass = 'mappage';
     INCLUDE 'header.html',
@@ -61,9 +62,15 @@
 
 <section class="full-width">
 [% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+<div class="js-pagination">
 [% INCLUDE 'pagination.html', param = 'p' %]
-[% INCLUDE 'reports/_problem-list.html' %]
+</div>
+<div id="js-reports-list">
+    [% INCLUDE 'reports/_problem-list.html' %]
+</div>
+<div class="js-pagination">
 [% INCLUDE 'pagination.html', param = 'p' %]
+</div>
 </section>
 
     </div>

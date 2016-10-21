@@ -116,6 +116,10 @@ sub ward : Path : Args(2) {
     $c->forward( 'stash_report_filter_status' );
     $c->forward( 'load_and_group_problems' );
 
+    if ($c->get_param('ajax')) {
+        $c->detach('ajax', [ 'reports/_problem-list.html' ]);
+    }
+
     my $body_short = $c->cobrand->short_name( $c->stash->{body} );
     $c->stash->{rss_url} = '/rss/reports/' . $body_short;
     $c->stash->{rss_url} .= '/' . $c->cobrand->short_name( $c->stash->{ward} )
@@ -364,7 +368,7 @@ sub load_and_group_problems : Private {
     my $page = $c->get_param('p') || 1;
     # NB: If 't' is specified, it will override 'status'.
     my $type = $c->get_param('t') || 'all';
-    my $category = $c->get_param('c') || $c->get_param('filter_category') || '';
+    my $category = [ $c->get_param_list('filter_category', 1) ];
 
     my $states = $c->stash->{filter_problem_states};
     my $where = {
@@ -391,7 +395,7 @@ sub load_and_group_problems : Private {
         $where->{state} = $not_open;
     }
 
-    if ($category) {
+    if (@$category) {
         $where->{category} = $category;
     }
 
@@ -502,6 +506,33 @@ sub add_row {
     my ( $c, $problem, $body, $problems, $pins ) = @_;
     push @{$problems->{$body}}, $problem;
     push @$pins, $problem->pin_data($c, 'reports');
+}
+
+sub ajax : Private {
+    my ($self, $c, $template) = @_;
+
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->header( 'Cache_Control' => 'max-age=0' );
+
+    my @pins = map {
+        my $p = $_;
+        [ $p->{latitude}, $p->{longitude}, $p->{colour}, $p->{id}, $p->{title} ]
+    } @{$c->stash->{pins}};
+
+    my $list_html = $c->render_fragment($template);
+
+    my $pagination = $c->render_fragment('pagination.html', {
+        pager => $c->stash->{problems_pager} || $c->stash->{pager},
+        param => 'p',
+    });
+
+    my $json = {
+        pins => \@pins,
+        pagination => $pagination,
+    };
+    $json->{reports_list} = $list_html if $list_html;
+    my $body = encode_json($json);
+    $c->res->body($body);
 }
 
 =head1 AUTHOR
