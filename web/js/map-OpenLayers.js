@@ -333,8 +333,26 @@ var fixmystreet = fixmystreet || {};
 
     function onload() {
         if ( fixmystreet.area.length ) {
+            var extent = new OpenLayers.Bounds();
+            var lr = new OpenLayers.Geometry.LinearRing([
+                new OpenLayers.Geometry.Point(20E6,20E6),
+                new OpenLayers.Geometry.Point(10E6,20E6),
+                new OpenLayers.Geometry.Point(0,20E6),
+                new OpenLayers.Geometry.Point(-10E6,20E6),
+                new OpenLayers.Geometry.Point(-20E6,20E6),
+                new OpenLayers.Geometry.Point(-20E6,0),
+                new OpenLayers.Geometry.Point(-20E6,-20E6),
+                new OpenLayers.Geometry.Point(-10E6,-20E6),
+                new OpenLayers.Geometry.Point(0,-20E6),
+                new OpenLayers.Geometry.Point(10E6,-20E6),
+                new OpenLayers.Geometry.Point(20E6,-20E6),
+                new OpenLayers.Geometry.Point(20E6,0)
+            ]);
+            var loaded = 0;
+            var new_geometry = new OpenLayers.Geometry.Polygon(lr);
             for (var i=0; i<fixmystreet.area.length; i++) {
                 var area = new OpenLayers.Layer.Vector("KML", {
+                    renderers: ['SVGBig', 'VML', 'Canvas'],
                     strategies: [ new OpenLayers.Strategy.Fixed() ],
                     protocol: new OpenLayers.Protocol.HTTP({
                         url: "/mapit/area/" + fixmystreet.area[i] + ".kml?simplify_tolerance=0.0001",
@@ -342,14 +360,34 @@ var fixmystreet = fixmystreet || {};
                     })
                 });
                 fixmystreet.map.addLayer(area);
-                if ( fixmystreet.area.length == 1 ) {
-                    area.events.register('loadend', null, function(a,b,c) {
-                        if ( fixmystreet.area_format ) {
-                            area.styleMap.styles['default'].defaultStyle = fixmystreet.area_format;
-                        }
-                        zoomToBounds( area.getDataExtent() );
-                    });
-                }
+                area.events.register('loadend', area, function(a,b,c) {
+                    loaded++;
+                    var style = this.styleMap.styles['default'];
+                    if ( fixmystreet.area_format ) {
+                        style.defaultStyle = fixmystreet.area_format;
+                    } else {
+                        $.extend(style.defaultStyle, { fillColor: 'black', strokeColor: 'black' });
+                    }
+                    var geometry = this.features[0].geometry;
+                    if (geometry.CLASS_NAME == 'OpenLayers.Geometry.Collection') {
+                        $.each(geometry.components, function(i, polygon) {
+                            new_geometry.addComponents(polygon.components)
+                            extent.extend(polygon.getBounds());
+                        });
+                    } else if (geometry.CLASS_NAME == 'OpenLayers.Geometry.Polygon') {
+                        new_geometry.addComponents(geometry.components);
+                        extent.extend(this.getDataExtent());
+                    }
+                    if (loaded == fixmystreet.area.length) {
+                        var f = this.features[0].clone();
+                        f.geometry = new_geometry;
+                        this.removeAllFeatures();
+                        this.addFeatures([f]);
+                        zoomToBounds(extent);
+                    } else {
+                        fixmystreet.map.removeLayer(this);
+                    }
+                });
             }
         }
 
@@ -845,3 +883,8 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
     }
 });
 
+OpenLayers.Renderer.SVGBig = OpenLayers.Class(OpenLayers.Renderer.SVG, {
+    MAX_PIXEL: 15E7,
+    CLASS_NAME: "OpenLayers.Renderer.SVGBig"
+
+});
