@@ -292,6 +292,7 @@ $.extend(fixmystreet.set_up, {
                 changeValue = "remove";
                 buttonLabel = $submit.data('label-remove');
                 buttonValue = $submit.data('value-remove');
+                $('.shortlisted-status').remove();
             } else if (data.outcome == 'remove') {
                 changeValue = "add";
                 buttonLabel = $submit.data('label-add');
