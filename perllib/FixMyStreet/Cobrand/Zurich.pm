@@ -83,14 +83,7 @@ sub example_places {
 sub languages { [ 'de-ch,Deutsch,de_CH' ] }
 sub language_override { 'de-ch' }
 
-# If lat/lon are in the URI, we must have zoom as well, otherwise OpenLayers defaults to 0.
-sub uri {
-    my ( $self, $uri ) = @_;
-
-    $uri->query_param( zoom => 6 )
-      if $uri->query_param('lat') && !$uri->query_param('zoom');
-    return $uri;
-}
+sub default_link_zoom { 6 }
 
 sub prettify_dt {
     my $self = shift;

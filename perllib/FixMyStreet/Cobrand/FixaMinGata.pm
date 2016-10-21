@@ -35,17 +35,6 @@ sub area_types {
     [ 'KOM' ];
 }
 
-# If lat/lon are present in the URL, OpenLayers will use that to centre the map.
-# Need to specify a zoom to stop it defaulting to null/0.
-sub uri {
-    my ( $self, $uri ) = @_;
-
-    $uri->query_param( zoom => 3 )
-      if $uri->query_param('lat') && !$uri->query_param('zoom');
-
-    return $uri;
-}
-
 sub geocode_postcode {
     my ( $self, $s ) = @_;
     #    Most people write Swedish postcodes like this:
