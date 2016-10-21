@@ -241,7 +241,7 @@ var fixmystreet = fixmystreet || {};
 
         // All of this, just so that ctrl/cmd-click on a pin works?!
         var event;
-        if (window.MouseEvent) {
+        if (typeof window.MouseEvent === 'function') {
             event = new MouseEvent('click', evt);
             $a[0].dispatchEvent(event);
         } else if (document.createEvent) {
@@ -256,8 +256,8 @@ var fixmystreet = fixmystreet || {};
             event = document.createEventObject();
             event.metaKey = evt.metaKey;
             event.ctrlKey = evt.ctrlKey;
-            if (e.metaKey === undefined) {
-                e.metaKey = e.ctrlKey;
+            if (event.metaKey === undefined) {
+                event.metaKey = event.ctrlKey;
             }
             $a[0].fireEvent("onclick", event);
         } else {
