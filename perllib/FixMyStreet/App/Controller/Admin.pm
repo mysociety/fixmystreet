@@ -482,6 +482,7 @@ sub fetch_contacts : Private {
     my $contacts = $c->stash->{body}->contacts->search(undef, { order_by => [ 'category' ] } );
     $c->stash->{contacts} = $contacts;
     $c->stash->{live_contacts} = $contacts->search({ deleted => 0 });
+    $c->stash->{any_not_confirmed} = $contacts->search({ confirmed => 0 })->count;
 
     if ( $c->get_param('text') && $c->get_param('text') eq '1' ) {
         $c->stash->{template} = 'admin/council_contacts.txt';

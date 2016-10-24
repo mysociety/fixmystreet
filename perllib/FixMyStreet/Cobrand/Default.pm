@@ -647,7 +647,8 @@ sub admin_pages {
     };
     # And some that need special permissions
     if ( $user->is_superuser || $user->has_body_permission_to('category_edit') ) {
-        $pages->{bodies} = [ _('Bodies'), 1 ];
+        my $page_title = $user->is_superuser ? _('Bodies') : _('Categories');
+        $pages->{bodies} = [ $page_title, 1 ];
         $pages->{body} = [ undef, undef ];
     }
     if ( $user->is_superuser || $user->has_body_permission_to('report_edit') ) {
