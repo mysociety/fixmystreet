@@ -2,6 +2,7 @@ package FixMyStreet::App::Controller::FakeMapit;
 use Moose;
 use namespace::autoclean;
 use JSON::MaybeXS;
+use LWP::Simple;
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -20,6 +21,16 @@ world is one area, with ID 161 and name "Everywhere".
 =cut
 
 my $area = { "name" => "Everywhere", "type" => "ZZZ", "id" => 161 };
+
+# The user should have the web server proxying this,
+# but for development we can also do it on the server.
+sub proxy : Path('/mapit') {
+    my ($self, $c) = @_;
+    (my $path = $c->req->uri->path_query) =~ s{^/mapit/}{};
+    my $url = FixMyStreet->config('MAPIT_URL') . $path;
+    my $kml = LWP::Simple::get($url);
+    $c->response->body($kml);
+}
 
 sub output : Private {
     my ( $self, $c, $data ) = @_;
