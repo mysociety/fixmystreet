@@ -58,7 +58,7 @@ FixMyStreet::override_config {
     subtest "test inspect & instruct submission" => sub {
         $report->unset_extra_metadata('inspected');
         $report->update;
-        my $reputation = $report->user->get_extra_metadata("reputation");
+        my $reputation = $report->user->get_extra_metadata("reputation") || 0;
         $mech->get_ok("/report/$report_id");
         $mech->submit_form_ok({ button => 'save', with_fields => { public_update => "This is a public update.", save_inspected => "1" } });
         $report->discard_changes;

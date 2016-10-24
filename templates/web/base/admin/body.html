@@ -73,7 +73,9 @@
       <th colspan=2>[% loc('State') %]</th>
       <th>[% loc('Last editor') %]</th>
       <th>[% loc('Note') %]</th>
+    [% IF any_not_confirmed %]
       <th>[% loc('Confirm') %]</th>
+    [% END %]
     </tr>
     [% WHILE ( cat = contacts.next ) %]
       <tr [% IF cat.deleted %]class="is-deleted"[% END %]>
@@ -94,16 +96,20 @@
         <td>[% cat.editor | html %]
             <br><small>[% PROCESS format_time time=cat.whenedited %]</small></td>
         <td>[% cat.note | html %]</td>
+      [% IF any_not_confirmed %]
         <td><input type="checkbox" name="confirmed" value="[% cat.category | html %]"></td>
+      [% END %]
       </tr>
     [% END %]
   </table>
 
+  [% IF any_not_confirmed %]
   <p>
     <input type="hidden" name="posted" value="update">
     <input type="hidden" name="token" value="[% csrf_token %]">
     <input type="submit" class="btn" name="Update statuses" value="[% loc('Update statuses') %]">
   </p>
+  [% END %]
 </form>
 
 <p class="fms-admin-info">
