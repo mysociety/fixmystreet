@@ -585,7 +585,11 @@ $.extend(fixmystreet.set_up, {
         $id.multiSelect({
             allText: all,
             noneText: all,
-            positionMenuWithin: $('#side')
+            positionMenuWithin: $('#side'),
+            presets: [{
+                name: all,
+                options: []
+            }]
         });
     }
     make_multi('statuses');
