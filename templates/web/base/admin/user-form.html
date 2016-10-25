@@ -21,22 +21,22 @@
         <li><label for="phone">[% loc('Phone:') %]</label>
         <input type='text' class="form-control" id='phone' name='phone' value='[% user.phone | html %]'></li>
 
-        [% IF c.user.is_superuser || c.cobrand.moniker == 'zurich' %]
-          <li>
-            <div class="admin-hint">
-              <p>
-                [% loc(
-                  "Normal (public) users should not be associated with any <strong>body</strong>.<br>
-                  Authorised staff users can be associated with the body they represent.<br>
-                  Depending on the implementation, staff users may have access to the dashboard (summary of
-                  activity across their body), the ability to hide reports or set special report statuses.")
-                %]
-              </p>
-            </div>
-            [% loc('Body:') %] <select class="form-control" id='body' name='body'>
-              <option value=''>[% loc('No body') %]</option>
+      [% IF c.user.is_superuser || c.cobrand.moniker == 'zurich' %]
+        <li>
+          <div class="admin-hint">
+            <p>
+              [% loc(
+                "Normal (public) users should not be associated with any <strong>body</strong>.<br>
+                Authorised staff users can be associated with the body they represent.<br>
+                Depending on the implementation, staff users may have access to the dashboard (summary of
+                activity across their body), the ability to hide reports or set special report statuses.")
+              %]
+            </p>
+          </div>
+          [% loc('Body:') %] <select class="form-control" id='body' name='body'>
+            <option value=''>[% loc('No body') %]</option>
           [% FOR body IN bodies %]
-              <option value="[% body.id %]"[% ' selected data-originally-selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
+            <option value="[% body.id %]"[% ' selected data-originally-selected' IF body.id == user.from_body.id %]>[% body.name %]</option>
           [% END %]
           </select>
         </li>

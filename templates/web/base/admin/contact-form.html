@@ -8,11 +8,11 @@
   [% ELSE %]
     <div class="admin-hint">
       <p>
-        [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
-                to the body too. These will appear in the drop-down menu on the report-a-problem page.') %]
-        <br>
-        [% loc("If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in
-                the menu. Make sure you use the same category name in the bodies if you want this to happen.") %]
+          [% loc('Choose a <strong>category</strong> name that makes sense to the public (e.g., "Pothole", "Street lighting") but is helpful
+                  to the body too. These will appear in the drop-down menu on the report-a-problem page.') %]
+          <br>
+          [% loc("If two or more bodies serve the same location, FixMyStreet combines identical categories into a single entry in
+                  the menu. Make sure you use the same category name in the bodies if you want this to happen.") %]
       </p>
     </div>
     <p>
@@ -22,8 +22,8 @@
 
   <div class="admin-hint">
     <p>
-      [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent.
-      Other categories for this body may have the same email address.") %]
+        [% loc("The <strong>email address</strong> is the destination to which reports about this category will be sent. 
+        Other categories for this body may have the same email address.") %]
     </p>
     [% IF (body.send_method AND body.send_method != 'Email') OR body.can_be_devolved  %]
       <p>
@@ -38,8 +38,8 @@
 
   <div class="admin-hint">
     <p>
-      [% loc("Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.
-              If you are not sure of the origin or validity of the contact, leave this unchecked.") %]
+        [% loc("Check <strong>confirmed</strong> to indicate that this contact has been confirmed as correct.
+                If you are not sure of the origin or validity of the contact, leave this unchecked.") %]
     </p>
   </div>
   <p>
@@ -49,8 +49,8 @@
 
   <div class="admin-hint">
     <p>
-      [% loc("Check <strong>deleted</strong> to remove the category from use.
-      It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
+      [% loc("Check <strong>deleted</strong> to remove the category from use. 
+        It will not appear as an available category in the drop-down menu on the report-a-problem page.") %]
     </p>
   </div>
   <p>
@@ -60,13 +60,13 @@
 
   <div class="admin-hint">
     <p>
-      [% loc("Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.
-              <br>
-              Normally, categories are not private.
-              <br>
-              This is suitable for issues that you want to allow users to report to the body, but for which there is no public
-              interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin
-              at a specific address.") %]
+        [% loc("Check <strong>private</strong> if reports in this category should <strong>never be displayed on the website</strong>.
+                <br>
+                Normally, categories are not private.
+                <br>
+                This is suitable for issues that you want to allow users to report to the body, but for which there is no public
+                interest in displaying the report. In the UK, we've used this for services like requesting an extra rubbish bin
+                at a specific address.") %]
     </p>
   </div>
   <p>
