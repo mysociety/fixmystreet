@@ -11,10 +11,13 @@
       containerHTML: '<div class="multi-select-container">',
       menuHTML: '<div class="multi-select-menu">',
       buttonHTML: '<span class="multi-select-button">',
+      menuItemsHTML: '<div class="multi-select-menuitems">',
       menuItemHTML: '<label class="multi-select-menuitem">',
+      presetsHTML: '<div class="multi-select-presets">',
       activeClass: 'multi-select-container--open',
       noneText: '-- Select --',
       allText: undefined,
+      presets: undefined,
       positionedMenuClass: 'multi-select-container--positioned',
       positionMenuWithin: undefined
     };
@@ -26,6 +29,23 @@
     this._defaults = defaults;
     this._name = pluginName;
     this.init();
+  }
+
+  function arraysAreEqual(array1, array2) {
+    if ( array1.length != array2.length ){
+      return false;
+    }
+
+    array1.sort();
+    array2.sort();
+
+    for ( var i = 0; i < array1.length; i++ ){
+      if ( array1[i] !== array2[i] ){
+        return false;
+      }
+    }
+
+    return true;
   }
 
   $.extend(Plugin.prototype, {
@@ -77,117 +97,14 @@
         }
       }).on('click.multiselect', function(e) {
         _this.menuToggle();
-      });
+      })
+      .appendTo(this.$container);
 
       this.$element.on('change.multiselect', function() {
         _this.updateButtonContents();
       });
 
-      this.$container.append(this.$button);
-
       this.updateButtonContents();
-    },
-
-    constructMenu: function() {
-      var _this = this;
-
-      this.$menu = $(this.settings.menuHTML);
-      this.$menu.attr({
-        'role': 'menu'
-      }).on('keyup.multiselect', function(e){
-        var key = e.which;
-        var escapeKey = 27;
-        if (key === escapeKey) {
-          _this.menuHide();
-        }
-      });
-
-      this.$menu.on('change.multiselect', function() {
-        _this.updateButtonContents();
-      });
-
-      this.$element.on('change.multiselect', function(e, internal) {
-        // Don't need to update the menu contents if this
-        // change event was fired by our tickbox handler.
-        if(internal !== true){
-          _this.updateMenuContents();
-        }
-      });
-
-      this.$container.append(this.$menu);
-
-      this.updateMenuContents();
-    },
-
-    setUpBodyClickListener: function() {
-      var _this = this;
-
-      // Hide the $menu when you click outside of it.
-      $('html').on('click.multiselect', function(){
-        _this.menuHide();
-      });
-
-      // Stop click events from inside the $button or $menu from
-      // bubbling up to the body and closing the menu!
-      this.$container.on('click.multiselect', function(e){
-        e.stopPropagation();
-      });
-    },
-
-    setUpLabelsClickListener: function() {
-      var _this = this;
-      this.$labels.on('click.multiselect', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        _this.menuToggle();
-      });
-    },
-
-    updateMenuContents: function() {
-      var _this = this;
-      this.$menu.empty();
-      this.$element.children('option').each(function(option_index, option) {
-        var $item = _this.constructMenuItem($(option), option_index);
-        _this.$menu.append($item);
-      });
-    },
-
-    constructMenuItem: function($option, option_index) {
-      var unique_id = this.$element.attr('name') + '_' + option_index;
-      var $item = $(this.settings.menuItemHTML)
-        .attr({
-          'for': unique_id,
-          'role': 'menuitem'
-        })
-        .text(' ' + $option.text());
-
-      var $input = $('<input>')
-        .attr({
-          'type': 'checkbox',
-          'id': unique_id,
-          'value': $option.val()
-        });
-      if ( $option.is(':disabled') ) {
-        $input.attr('disabled', 'disabled');
-      }
-      if ( $option.is(':selected') ) {
-        $input.prop('checked', 'checked');
-      }
-
-      $input.on('change.multiselect', function() {
-        if ($(this).prop('checked')) {
-          $option.prop('selected', true);
-        } else {
-          $option.prop('selected', false);
-        }
-
-        // .prop() on its own doesn't generate a change event.
-        // Other plugins might want to do stuff onChange.
-        $option.trigger('change', [true]);
-      });
-
-      $item.prepend($input);
-      return $item;
     },
 
     updateButtonContents: function() {
@@ -212,6 +129,169 @@
       } else {
         this.$button.text( selected.join(', ') );
       }
+    },
+
+    constructMenu: function() {
+      var _this = this;
+
+      this.$menu = $(this.settings.menuHTML);
+      this.$menu.attr({
+        'role': 'menu'
+      }).on('keyup.multiselect', function(e){
+        var key = e.which;
+        var escapeKey = 27;
+        if (key === escapeKey) {
+          _this.menuHide();
+        }
+      })
+      .appendTo(this.$container);
+
+      this.constructMenuItems();
+
+      if ( this.settings.presets ) {
+        this.constructPresets();
+      }
+    },
+
+    constructMenuItems: function() {
+      var _this = this;
+
+      this.$menuItems = $(this.settings.menuItemsHTML);
+      this.$menu.append(this.$menuItems);
+
+      this.$element.on('change.multiselect', function(e, internal) {
+        // Don't need to update the menu items if this
+        // change event was fired by our tickbox handler.
+        if(internal !== true){
+          _this.updateMenuItems();
+        }
+      });
+
+      this.updateMenuItems();
+    },
+
+    updateMenuItems: function() {
+      var _this = this;
+      this.$menuItems.empty();
+
+      this.$element.children('option').each(function(option_index, option) {
+        var $item = _this.constructMenuItem($(option), option_index);
+        _this.$menuItems.append($item);
+      });
+    },
+
+    constructPresets: function() {
+      var _this = this;
+      this.$presets = $(this.settings.presetsHTML);
+      this.$menu.prepend(this.$presets);
+
+      $.each(this.settings.presets, function(i, preset){
+        var unique_id = _this.$element.attr('name') + '_preset_' + i;
+        var $item = $(_this.settings.menuItemHTML)
+          .attr({
+            'for': unique_id,
+            'role': 'menuitem'
+          })
+          .text(' ' + preset.name)
+          .appendTo(_this.$presets);
+
+        var $input = $('<input>')
+          .attr({
+            'type': 'radio',
+            'name': _this.$element.attr('name') + '_presets',
+            'id': unique_id
+          })
+          .prependTo($item);
+
+        $input.on('change.multiselect', function(){
+          _this.$element.val(preset.options);
+          _this.$element.trigger('change');
+        });
+      });
+
+      this.$element.on('change.multiselect', function() {
+        _this.updatePresets();
+      });
+
+      this.updatePresets();
+    },
+
+    updatePresets: function() {
+      var _this = this;
+
+      $.each(this.settings.presets, function(i, preset){
+        var unique_id = _this.$element.attr('name') + '_preset_' + i;
+        var $input = _this.$presets.find('#' + unique_id);
+
+        if ( arraysAreEqual(preset.options || [], _this.$element.val() || []) ){
+          $input.prop('checked', true);
+        } else {
+          $input.prop('checked', false);
+        }
+      });
+    },
+
+    constructMenuItem: function($option, option_index) {
+      var unique_id = this.$element.attr('name') + '_' + option_index;
+      var $item = $(this.settings.menuItemHTML)
+        .attr({
+          'for': unique_id,
+          'role': 'menuitem'
+        })
+        .text(' ' + $option.text());
+
+      var $input = $('<input>')
+        .attr({
+          'type': 'checkbox',
+          'id': unique_id,
+          'value': $option.val()
+        })
+        .prependTo($item);
+
+      if ( $option.is(':disabled') ) {
+        $input.attr('disabled', 'disabled');
+      }
+      if ( $option.is(':selected') ) {
+        $input.prop('checked', 'checked');
+      }
+
+      $input.on('change.multiselect', function() {
+        if ($(this).prop('checked')) {
+          $option.prop('selected', true);
+        } else {
+          $option.prop('selected', false);
+        }
+
+        // .prop() on its own doesn't generate a change event.
+        // Other plugins might want to do stuff onChange.
+        $option.trigger('change', [true]);
+      });
+
+      return $item;
+    },
+
+    setUpBodyClickListener: function() {
+      var _this = this;
+
+      // Hide the $menu when you click outside of it.
+      $('html').on('click.multiselect', function(){
+        _this.menuHide();
+      });
+
+      // Stop click events from inside the $button or $menu from
+      // bubbling up to the body and closing the menu!
+      this.$container.on('click.multiselect', function(e){
+        e.stopPropagation();
+      });
+    },
+
+    setUpLabelsClickListener: function() {
+      var _this = this;
+      this.$labels.on('click.multiselect', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        _this.menuToggle();
+      });
     },
 
     menuShow: function() {
