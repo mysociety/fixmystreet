@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Burmese (Myanmar) (http://www.transifex.com/mysociety/fixmystreet/language/my_MM/)\n"
 "Language: my_MM\n"
@@ -2087,9 +2087,8 @@ msgstr "ျပႆနာေျဖရွင္းျပီးျပီ၊မရွ
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "JPEG ပံုတစ္ပံုသာတင္ရန္"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3890,42 +3889,3 @@ msgstr[0] "%d ရက္မ်ား"
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "ကၽြႏု္ပ္တို႔တြင္ ဒီတည္ေနရာႏွင့္ ပတ္သက္သည့္ အျခားေကာင္အတြက္ အေသးစိတ္မရွိေသးပါ။"
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s သတင္းပို႔သည္မွာ %s"
-
-#~ msgid "About us"
-#~ msgstr "ကၽြႏ္ုပ္တို႔အေၾကာင္း"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "ေဒသအတြင္းျပႆနာအသစ္မ်ားကိုကၽြႏ္ုပ္ထံသို႔အီးေမးလ္ပို႔မည္"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "တိုက္ခန္းအလြတ္သို႔မဟုတ္ maisonette"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "အိမ္အလြတ္သို႔မဟုတ္ဘန္ဂလိုအလြတ္"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "ရံုးအလြတ္သို႔မဟုတ္တျခားစီးပြားေရးအလြတ္"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "အလြတ္အရက္ဆိုင္သို႔မဟုတ္ဘား"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "အမ်ားျပည္သူႏွင့္ဆိုင္ေသာတိုက္အလြတ္-ေက်ာင္း၊ေဆးရံုစသည္ျဖင့္.."
-
-#~ msgid "FixMyStreet"
-#~ msgstr "ကၽြႏု္ပ္လမ္းကိုျပင္ေပးပါ"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "အတည္မျပဳရေသးေသာအစီရင္ခံစာကိုသင္အတည္မျပဳရေသးပါ"
-
-#~ msgid "Problems in this area"
-#~ msgstr "ဒီဧရိယာအတြင္းရွိျပႆနာမ်ား"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "ဒီ %s ရိွ ျပႆနာမ်ား၏ RSS feed"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "တိုက္ခန္းလြတ္မ်ား ရွိရာ ဘေလာက္"

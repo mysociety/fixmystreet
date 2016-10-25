@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Spanish (Spain) (http://www.transifex.com/mysociety/fixmystreet/language/es_ES/)\n"
 "Language: es_ES\n"
@@ -2135,9 +2135,8 @@ msgstr "Por favor, indique si el problema se ha solucionado"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Por favor, suba una imagen JPEG"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3969,48 +3968,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Todavía <strong>no</strong> tenemos detalles para el Ayuntamiento que cubre esta zona."
 msgstr[1] "Todavía <strong>no</strong> tenemos información sobre el ayuntamiento que cubre este área."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, reportado el %s"
-
-#~ msgid "About us"
-#~ msgstr "¿Quiénes somos?"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Reciba por email notificaciones sobre los nuevos problemas"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Piso o duplex vacío"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Casa o bungalow vacío"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Oficina u otros establecimientos comerciales vacíos"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Pub o bar vacío"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Edificio público vacío - escuela, hospital, etc"
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Introduzca un nombre de calle cercana y área, código postal o distrito en Nueva Delhi"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "No puede confirmar alertas no confirmadas."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemas en este área"
-
-#~ msgid "Property type:"
-#~ msgstr "Tipo de propiedad:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "Listado RSS de los problemas en este %s"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Bloque de pisos vacíos"

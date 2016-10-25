@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Czech (Czech Republic) (http://www.transifex.com/mysociety/fixmystreet/language/cs_CZ/)\n"
 "Language: cs_CZ\n"
@@ -2114,9 +2114,8 @@ msgstr "Uveďte, prosím, zda byl či  nebyl problém vyřešen"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Prosím, nahrávejte pouze obrázky ve formátu JPEG"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3955,48 +3954,3 @@ msgid_plural "We do <strong>not</strong> yet have details for the other councils
 msgstr[0] "Doposud <strong>nemáme</strong> podrobnosti  o dalším úřadě, který je za tuto oblast zodpovědný."
 msgstr[1] "Doposud <strong>nemáme</strong> podrobnosti  o dalších úřadech, které jsou za tuto oblast zodpovědné."
 msgstr[2] "Doposud <strong>nemáme</strong> podrobnosti  o dalších úřadech, které jsou za tuto oblast zodpovědné."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, nahlášeno %s"
-
-#~ msgid "About us"
-#~ msgstr "O nás"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Nová lokální hlášení mi pošlete mailem"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Prázdný byt nebo  mesonet"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Prázdný dům nebo bungalow"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Zavřená kancelář nebo komerční prostory"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Zavřená hospoda nebo bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Prázdná veřejná budova - škola, nemocnice a tp."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Zadejte nejbližší název ulice, oblasti, PSČ nebo katastrální části"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Bohužel nemůžete potvrdit nepotvrzená hlášení."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Hlášení v této oblasti"
-
-#~ msgid "Property type:"
-#~ msgstr "Typ nemovitosti:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS kanál hlášení v oblasti %s"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Celý blok prázdných bytů"

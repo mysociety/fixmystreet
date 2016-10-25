@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Italian (http://www.transifex.com/mysociety/fixmystreet/language/it/)\n"
 "Language: it\n"
@@ -2084,9 +2084,8 @@ msgstr "Si prega di indicare se il problema è stato risolto"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Per favore utilizza soltanto il formato JPG"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3891,39 +3890,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "<strong>Non</strong>abbiamo ancora dettagli per un'altro comune che copre questa zona."
 msgstr[1] "<strong>Non</strong>abbiamo ancora dettagli sugli altri comuni che coprono questa zona."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, segnalati al %s"
-
-#~ msgid "About us"
-#~ msgstr "Chi siamo"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Inviami via email i nuovi problemi locali"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Case o bungalow vuoti"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Uffici o altri locali commerciali vuoti"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Pub o bar vuoti"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Edifici pubblici - scuole, ospedali, ecc vuoti"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Mi spiace non puoi confermare le segnalazioni non confermate."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemi in questa area"
-
-#~ msgid "Property type:"
-#~ msgstr "Tipo di proprietà:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS feed per i problemi in questo %s"

@@ -4,14 +4,15 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
+# Altin Ukshini <altin.ukshini@gmail.com>, 2016
 # Egzon Mjeku <emjeku@gmail.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2016-06-21 14:12+0000\n"
+"Last-Translator: Altin Ukshini <altin.ukshini@gmail.com>\n"
 "Language-Team: Albanian (http://www.transifex.com/mysociety/fixmystreet/language/sq/)\n"
 "Language: sq\n"
 "MIME-Version: 1.0\n"
@@ -127,12 +128,12 @@ msgstr "(Email-i në tabelen abuzimi)"
 #: templates/web/zurich/admin/report_edit-sdm.html:60
 #: templates/web/zurich/admin/report_edit.html:88
 msgid "(No name)"
-msgstr ""
+msgstr "(Pa emër)"
 
 #: templates/web/zurich/admin/report_edit-sdm.html:67
 #: templates/web/zurich/admin/report_edit.html:95
 msgid "(No phone number)"
-msgstr ""
+msgstr "(Pa numër të telefonit)"
 
 #: templates/web/base/alert/_list.html:24
 msgid "(a default distance which covers roughly 200,000 people)"
@@ -379,7 +380,7 @@ msgstr "Per momentin funksionon vetem kerkimi dhe  shikimi i raportimeve."
 #: perllib/FixMyStreet/DB/Result/Problem.pm:373
 #: templates/web/zurich/report/_item.html:9
 msgid "Awaiting moderation"
-msgstr ""
+msgstr "Në pritje të vlerësimit"
 
 #: templates/web/base/js/translation_strings.html:32
 msgid "Back"
@@ -2085,9 +2086,8 @@ msgstr ""
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Ju lutem ngarkoni vetem fotografi te formatit JPEG"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3892,27 +3892,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, raportuar në %s"
-
-#~ msgid "About us"
-#~ msgstr "Rreth nesh"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Me dergo email per problemet e reja lokale"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Une kam frike se ju nuk mund te konfirmoni raportet e pakonfirmuara"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemet ne kete zone"
-
-#~ msgid "Property type:"
-#~ msgstr "Lloji i prones:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS feed i problemeve ne kete %s"

@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-05-29 15:42+0000\n"
+"PO-Revision-Date: 2016-09-01 01:38+0000\n"
 "Last-Translator: Jon Kristensen <info@jonkri.com>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/mysociety/fixmystreet/language/sv_SE/)\n"
 "Language: sv_SE\n"
@@ -294,7 +294,8 @@ msgstr "Alla rapporter som CSV"
 
 #: templates/web/base/footer.html:32
 #: templates/web/zurich/admin/index-dm.html:12
-#: templates/web/zurich/admin/stats.html:13 templates/web/zurich/footer.html:20
+#: templates/web/zurich/admin/stats.html:13
+#: templates/web/zurich/footer.html:20
 #: templates/web/zurich/nav_over_content.html:6
 msgid "All reports"
 msgstr "Alla rapporter"
@@ -419,7 +420,8 @@ msgstr "Kan du inte hitta vårt e-brev? Kolla din skräppostmapp &ndash; det är
 msgid "Can't see the map? <em>Skip this step</em>"
 msgstr "Kan du inte se kartan? <em>Hoppa över det här steget</em>"
 
-#: templates/web/base/admin/body.html:68 templates/web/base/admin/index.html:54
+#: templates/web/base/admin/body.html:68
+#: templates/web/base/admin/index.html:54
 #: templates/web/base/report/new/category.html:7
 #: templates/web/base/report/new/category_wrapper.html:3
 #: templates/web/zurich/admin/body.html:14
@@ -587,7 +589,8 @@ msgstr "Bekräfta via epost nedan genom att ange ett nytt lösenord. När du bek
 msgid "Confirmation"
 msgstr "Bekräftelse"
 
-#: templates/web/base/admin/body.html:164 templates/web/base/admin/body.html:79
+#: templates/web/base/admin/body.html:164
+#: templates/web/base/admin/body.html:79
 #: templates/web/base/admin/category_edit.html:37
 #: templates/web/base/admin/category_edit.html:92
 #: templates/web/zurich/admin/stats.html:40
@@ -712,7 +715,8 @@ msgid "Delete template"
 msgstr "Ta bort mall"
 
 #: templates/web/base/admin/bodies.html:27
-#: templates/web/base/admin/body.html:175 templates/web/base/admin/body.html:81
+#: templates/web/base/admin/body.html:175
+#: templates/web/base/admin/body.html:81
 #: templates/web/base/admin/category_edit.html:42
 #: templates/web/base/admin/category_edit.html:93
 msgid "Deleted"
@@ -1383,9 +1387,10 @@ msgid "Loading..."
 msgstr "Laddar..."
 
 #: templates/web/base/alert/choose.html:1
-#: templates/web/base/alert/choose.html:3 templates/web/base/alert/index.html:1
-#: templates/web/base/alert/index.html:3 templates/web/base/alert/list.html:1
-#: templates/web/base/alert/list.html:5 templates/web/base/alert/updates.html:1
+#: templates/web/base/alert/choose.html:3
+#: templates/web/base/alert/index.html:1 templates/web/base/alert/index.html:3
+#: templates/web/base/alert/list.html:1 templates/web/base/alert/list.html:5
+#: templates/web/base/alert/updates.html:1
 #: templates/web/base/tokens/confirm_alert.html:1
 msgid "Local RSS feeds and email alerts"
 msgstr "Lokala RSS-flöden och epostbevakningar"
@@ -2137,7 +2142,8 @@ msgstr "Personlig integritet"
 msgid "Privacy and cookies"
 msgstr "Integritetsskydd och kakor"
 
-#: templates/web/base/admin/body.html:200 templates/web/base/admin/body.html:85
+#: templates/web/base/admin/body.html:200
+#: templates/web/base/admin/body.html:85
 #: templates/web/base/admin/category_edit.html:45
 #: templates/web/base/admin/report_edit.html:77
 msgid "Private"
@@ -2775,7 +2781,8 @@ msgstr "Prenumerera med epost"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1272
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:383
 #: templates/web/base/admin/bodies.html:25
-#: templates/web/base/admin/index.html:1 templates/web/base/status/index.html:1
+#: templates/web/base/admin/index.html:1
+#: templates/web/base/status/index.html:1
 #: templates/web/base/status/index.html:3
 #: templates/web/zurich/admin/index-dm.html:1
 #: templates/web/zurich/admin/index-sdm.html:1
@@ -3323,7 +3330,8 @@ msgstr "Användarsökningen matchar mot användares namn och e-postadresser."
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1277
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:399
-#: templates/web/base/admin/flagged.html:29 templates/web/zurich/header.html:69
+#: templates/web/base/admin/flagged.html:29
+#: templates/web/zurich/header.html:69
 msgid "Users"
 msgstr "Användare"
 

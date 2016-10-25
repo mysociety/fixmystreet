@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Chinese (http://www.transifex.com/mysociety/fixmystreet/language/zh/)\n"
 "Language: zh\n"
@@ -2148,9 +2148,8 @@ msgstr "請敍明該問題是否已解決"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "請上傳JPEG格式照片"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3975,48 +3974,3 @@ msgstr[0] "%d 日期"
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "我們<strong>尚未<strong>有該區域其它單位之細節　"
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s 在 %s 處之申報  "
-
-#~ msgid "About us"
-#~ msgstr "關於我們"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "以電郵通知其它問題"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "閒置的公寓或大樓"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "閒置的房舍"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "閒置的辦公室或其它商業空間"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "閒置的酒館或咖啡廳"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "閒置的公共建築物，如學校,醫院等"
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "輸入最近的街名，地區或郵編號碼"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "您不能確認此尚未確認之申報　"
-
-#~ msgid "Problems in this area"
-#~ msgstr "本區域內的問題"
-
-#~ msgid "Property type:"
-#~ msgstr "公物種類"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "此 %s 問題之RSS 訂閱"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "整區為閒置廢棄空間"

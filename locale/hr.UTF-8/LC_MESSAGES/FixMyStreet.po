@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Croatian (http://www.transifex.com/mysociety/fixmystreet/language/hr/)\n"
 "Language: hr\n"
@@ -2085,9 +2085,8 @@ msgstr "Navedite je li problem rješen  "
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Molimo učitajte samo JPEG slike"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3903,42 +3902,3 @@ msgid_plural "We do <strong>not</strong> yet have details for the other councils
 msgstr[0] "Još <strong>nemamo</strong> podatke za drugo odgovorno tijelo koje je odgovorno za ovu lokaciju."
 msgstr[1] "Još <strong>nemamo</strong> podatke za ostala odgovorna tijela koja su odgovorna za ovu lokaciju."
 msgstr[2] "Još <strong>nemamo</strong> podatke za ostala odgovorna tijela koja su odgovorna za ovu lokaciju."
-
-#~ msgid "About us"
-#~ msgstr "O nama"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Pošalji nam e-mail o novom lokalnom problemu"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Prazan stan ili kućica"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Prazna kuća ili bungalov"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Prazan ured ili poslovni prostor"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Prazan kafić ili bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Prazne javne zgrade - škola, bolnica, itd."
-
-#~ msgid "FixMyStreet"
-#~ msgstr "Popravi.to"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Nažalost, ne možeš potvrditi nepotvrđena izvješća"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemi u ovom području"
-
-#~ msgid "Property type:"
-#~ msgstr "Tip objekta:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS izvor za probleme u ovom %s"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Cijeli blok praznih stanova"

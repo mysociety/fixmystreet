@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Lithuanian (Lithuania) (http://www.transifex.com/mysociety/fixmystreet/language/lt_LT/)\n"
 "Language: lt_LT\n"
@@ -2133,9 +2133,8 @@ msgstr "Prašome nurodyti, ar problema buvo sutvarkyta"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Prašome įkelti tik JPEG formato nuotrauką"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3951,42 +3950,3 @@ msgid_plural "We do <strong>not</strong> yet have details for the other councils
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, pranešta %s"
-
-#~ msgid "About us"
-#~ msgstr "Apie Mus"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Atsiųsti man naujas vietines problemas"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Apleistas butas"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Apleistas namas"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Apleista įtaiga arba kitas komercinės paskirties objektas"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Apleistas baras"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Apleistas viešosios paskirties pastatas - mokyklač ligonine ir t.t"
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Įveskite artimiausia pašto kodą arba gatvės pavadinimą ir rajoną"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Apgailestaujameč bet jūs negalite patvirtinti nepatvirtintų pranešimų."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemos šioje srityje"
-
-#~ msgid "Property type:"
-#~ msgstr "Nuosavybės tipas:"

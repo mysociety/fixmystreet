@@ -4,12 +4,13 @@
 # Matthew Somerville <matthew@mysociety.org>, 2011-06-03.
 #
 # Translators:
+# mySociety <transifex@mysociety.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2015-10-23 16:37+0000\n"
+"PO-Revision-Date: 2016-10-25 15:13+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: German (Switzerland) (http://www.transifex.com/mysociety/fixmystreet/language/de_CH/)\n"
 "Language: de_CH\n"
@@ -51,9 +52,8 @@ msgid "%s admin:"
 msgstr ""
 
 #: templates/web/base/status/stats.html:26
-#, fuzzy
 msgid "%s bodies"
-msgstr "Externe Adressen"
+msgstr ""
 
 #: templates/web/base/status/stats.html:24
 msgid "%s confirmed alerts, %s unconfirmed"
@@ -81,9 +81,8 @@ msgid ""
 msgstr ""
 
 #: templates/web/base/status/stats.html:23
-#, fuzzy
 msgid "%s live updates"
-msgstr "Schicken Sie mir Aktualisierungen"
+msgstr ""
 
 #: templates/web/base/status/stats.html:25
 msgid "%s questionnaires sent &ndash; %s answered (%s%%)"
@@ -1926,9 +1925,8 @@ msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1079
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1134
-#, fuzzy
 msgid "Please enter a name"
-msgstr "Bitte geben Sie Ihren Namen an"
+msgstr ""
 
 #: templates/web/base/auth/change_password.html:12
 #: templates/web/base/auth/change_password.html:15
@@ -2084,9 +2082,8 @@ msgstr ""
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Bitte laden Sie nur JPEG Bilder hoch."
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -2653,9 +2650,8 @@ msgstr "Diese Adresse wurde nicht gefunden."
 #: templates/web/base/auth/general.html:9
 #: templates/web/base/report/display.html:21
 #: templates/web/base/report/new/fill_in_details_form.html:23
-#, fuzzy
 msgid "Sorry, we could not log you in. Please fill in the form below."
-msgstr "Diese Adresse wurde nicht gefunden."
+msgstr ""
 
 #: perllib/FixMyStreet/Geocode/Bing.pm:35
 #: perllib/FixMyStreet/Geocode/Google.pm:45
@@ -3364,9 +3360,8 @@ msgstr "Ihre Anfrage ergab mehr als eine m&ouml;gliche Adresse. Die ersten zehn 
 #: templates/web/base/auth/general.html:6
 #: templates/web/base/report/display.html:27
 #: templates/web/base/report/new/oauth_email_form.html:5
-#, fuzzy
 msgid "We need your email address, please give it below."
-msgstr "Ihre E-Mail Adresse oder Telefonnummer werden nie angezeigt"
+msgstr ""
 
 #: templates/web/base/report/new/form_user_loggedout_email.html:2
 #: templates/web/base/report/update/form_user_loggedout_email.html:2
@@ -3537,9 +3532,8 @@ msgstr "Sie haben dieser Meldung bereits Fotos angehängt. Sie können maximal 3
 
 #: templates/web/base/questionnaire/index.html:83
 #: templates/web/base/report/update/form_update.html:14
-#, fuzzy
 msgid "You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed)."
-msgstr "Sie haben dieser Meldung bereits Fotos angehängt. Sie können maximal 3 Fotos anhängen (wenn Sie mehr anhängen, wird das Älteste entfernt)."
+msgstr ""
 
 #: templates/web/base/auth/sign_out.html:4
 #: templates/web/zurich/auth/sign_out.html:3
@@ -3636,9 +3630,8 @@ msgid "Your phone number"
 msgstr "Ihre Telefonnummer"
 
 #: templates/web/base/questionnaire/index.html:14
-#, fuzzy
 msgid "Your report"
-msgstr "Ihre Meldungen"
+msgstr ""
 
 #: templates/web/base/footer.html:29
 msgid "Your reports"
@@ -3895,64 +3888,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "Gemeldet von %s um %s"
-
-#~ msgid "About us"
-#~ msgstr "&Uuml;ber uns"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Meldungen in dieser Gegend"
-
-#, fuzzy
-#~ msgid "Sorry, you can not log in with Facebook. Please try again later."
-#~ msgstr "Diese Adresse wurde nicht gefunden."
-
-#~ msgid "(we never show your email address or phone number)"
-#~ msgstr "(Ihre E-Mail Adresse und Telefonnummer werden nie angezeigt)"
-
-#~ msgid "(we never show your email)"
-#~ msgstr "(Ihre E-Mail Adresse wird nie angezeigt)"
-
-#~ msgid "I'm afraid we couldn't validate that token. If you've copied the URL from an email, please check that you copied it exactly.\n"
-#~ msgstr "Leider konnte Ihre URL nicht aufgel&ouml;st werden. Falls Sie die URL aus einer Mail kopiert haben, &uuml;berpr&uuml;fen Sie bitte ob Sie die gesamte URL kopiert haben.\n"
-
-#~ msgid "If you use web-based email or have 'junk mail' filters, you may wish to check your bulk/spam mail folders: sometimes, our messages are marked that way."
-#~ msgstr "Falls Sie kein E-Mail erhalten, &uuml;berpr&uuml;fend Sie bitte Ihren Spam-Ordner."
-
-#~ msgid "Message:"
-#~ msgstr "Nachricht:"
-
-#~ msgid "More problems nearby"
-#~ msgstr "Meldungen in der Nähe"
-
-#~ msgid "Nearly Done! Now check your email..."
-#~ msgstr "Fast Fertig! Bitte checken Sie Ihre Mailbox..."
-
-#~ msgid "Photo:"
-#~ msgstr "Foto:"
-
-#~ msgid "Please check your email"
-#~ msgstr "Bitte &uuml;berpr&uuml;fen Sie Ihr E-Mail"
-
-#~ msgid "This problem is in progress"
-#~ msgstr "Dieser Schaden ist in Bearbeitung"
-
-#~ msgid "This problem is old and of unknown status."
-#~ msgstr "Dieses Problem ist alt und hat einen unbekannten Status"
-
-#~ msgid "We have sent you an email containing a link to confirm your account."
-#~ msgstr "Sie werden in K&uuml;rze ein E-Mail erhalten um Ihren Account zu best&auml;tigen."
-
-#~ msgid "You have already attached a photo to this report, attaching another one will replace it."
-#~ msgstr "Sie haben bereits ein Photo angeh&auml;ngt. Laden Sie ein neues hoch um es zu ersetzen."
-
-#~ msgid "Your email:"
-#~ msgstr "Ihre E-Mail"
-
-#~ msgid "Your name:"
-#~ msgstr "Ihr Name"
-
-#~ msgid "Your&nbsp;email:"
-#~ msgstr "Ihre E-Mail Adresse"

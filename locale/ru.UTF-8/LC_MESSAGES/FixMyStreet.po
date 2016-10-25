@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Russian (http://www.transifex.com/mysociety/fixmystreet/language/ru/)\n"
 "Language: ru\n"
@@ -2151,9 +2151,8 @@ msgstr "Сообщите о статусе неполадки: проблема 
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Вы можете загружать только изображения в формате JPEG"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -4010,48 +4009,3 @@ msgstr[0] "У нас пока <strong>нет</strong> подробной инф�
 msgstr[1] "У нас пока <strong>нет</strong> подробной информации об органах самоуправления, в ведении которых находится это место."
 msgstr[2] "У нас пока <strong>нет</strong> подробной информации об органах самоуправления, в ведении которых находится это место."
 msgstr[3] "У нас пока <strong>нет</strong> подробной информации об органах самоуправления, в ведении которых находится это место."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, отправлен в %s"
-
-#~ msgid "About us"
-#~ msgstr "О нас"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Присылайте мне электронные письма с описанием неполадок поблизости"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Пустая квартира или коттедж"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Пустой дом или бунгало"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Пустой офис или коммерческое помещение"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Пустой паб или бар"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Пустое муниципальное здание: школа, больница и др."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Введите название ближайшей улицы и регион, почтовый индекс или район в Дели"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "К сожалению, вы не можете подтверждать неподтвержденные обращения."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Проблемы в этой местности"
-
-#~ msgid "Property type:"
-#~ msgstr "Тип имущества:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS-фид о проблемах здесь: %s"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Целый квартал незаселенных квартир"

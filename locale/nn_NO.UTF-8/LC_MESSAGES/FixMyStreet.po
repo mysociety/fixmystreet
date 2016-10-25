@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Norwegian Nynorsk (Norway) (http://www.transifex.com/mysociety/fixmystreet/language/nn_NO/)\n"
 "Language: nn_NO\n"
@@ -2086,9 +2086,8 @@ msgstr "Ver venleg og oppgje om dette problemet har vorte fiksa eller ikkje"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Ver venleg og berre last opp JPEG-bilete"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3896,39 +3895,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Vi har enno <strong>ikkje</strong> detaljane for den andre administrasjonen som dekkjer denne staden."
 msgstr[1] "Vi har enno <strong>ikkje</strong> detaljane for dei andre administrasjonane som dekkjer denne staden."
-
-#~ msgid "About us"
-#~ msgstr "Om oss"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Send meg e-post om lokale problem"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Tom leilegheit"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Tomt hus eller bungalow"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Tomt kontor eller forretningsbygg"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Tom pub eller bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Tom offentleg bygning – skule, sjukehus, osb."
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Eg er redd du ikkje kan stadfesta ustadfesta rapportar."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problem i dette området"
-
-#~ msgid "Property type:"
-#~ msgstr "Type eigenskap:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS-straum for problem i denne %s-en"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Heil blokk med tomme leilegheiter"

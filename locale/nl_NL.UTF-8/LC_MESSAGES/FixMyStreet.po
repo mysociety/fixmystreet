@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Dutch (Netherlands) (http://www.transifex.com/mysociety/fixmystreet/language/nl_NL/)\n"
 "Language: nl_NL\n"
@@ -2085,9 +2085,8 @@ msgstr "Geef aan of het probleem is verholpen"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Je kan alleen een JPEG foto insturen"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3892,42 +3891,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, gemeld aan %s"
-
-#~ msgid "About us"
-#~ msgstr "Over ons"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Email me nieuwe lokale meldingen"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Lege flat of maisonette"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Leeg huis of bungalow"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Leeg kantoor of ander commercieel"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Lege kroeg of bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Leeg publiek gebouw - school, ziekenhuis etc."
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Ik ben bang dat je geen ongeverifieerde meldingen kunt bevestigen."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemen in dit gebied"
-
-#~ msgid "Property type:"
-#~ msgstr "Pand soort:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS feed van problemen in dit %s"

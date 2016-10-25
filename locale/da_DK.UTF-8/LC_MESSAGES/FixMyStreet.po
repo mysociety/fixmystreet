@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Danish (Denmark) (http://www.transifex.com/mysociety/fixmystreet/language/da_DK/)\n"
 "Language: da_DK\n"
@@ -2123,9 +2123,8 @@ msgstr "Venligs angiv om dette problem er blevet fikset eller ikke"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Venligst læg kun JPEG-bilder op"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3962,48 +3961,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Vi har endnu <strong>ikke</strong> detaljerne for den anden myndighed som dækker dette sted."
 msgstr[1] "Vi har endnu <strong>ikke</strong> detaljerne for de andre myndigheder som dækker dette sted."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, rapporteret %s"
-
-#~ msgid "About us"
-#~ msgstr "Om os"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Send mig e-post om lokale problemer"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Tom lejlighed"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Tomt hus eller bungalow"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Tomt kontor eller forretningsbygning"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Tom pub eller bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Tom offentlig bygning - skole, sygehus, etc."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Vælg et nærliggende gadenavn og område, postnummer eller distrikt i Delhi"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMinVej"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Jeg er bange for at du ikke kan bekræfte ubekræftede rapporter."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemer i dette område"
-
-#~ msgid "Property type:"
-#~ msgstr "Type egenskab:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS-strøm for problemer i denne %s"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Hel blok med tomme lejligheder"

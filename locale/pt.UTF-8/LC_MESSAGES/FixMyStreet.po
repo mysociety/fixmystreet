@@ -7,14 +7,15 @@
 # daey <netrapida@live.com.pt>, 2016
 # francisco oliveira martins <francisco.martins@recortes.cv>, 2013
 # mySociety <transifex@mysociety.org>, 2013
+# daey <netrapida@live.com.pt>, 2016
 # simaor <simaor@hotmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2016-08-11 13:58+0000\n"
+"Last-Translator: daey <netrapida@live.com.pt>\n"
 "Language-Team: Portuguese (http://www.transifex.com/mysociety/fixmystreet/language/pt/)\n"
 "Language: pt\n"
 "MIME-Version: 1.0\n"
@@ -65,7 +66,7 @@ msgstr "%s alertas confirmados,%s não confirmados"
 #: templates/web/base/status/stats.html:27
 #: templates/web/zurich/admin/index.html:6
 msgid "%s council contacts &ndash; %s confirmed, %s unconfirmed"
-msgstr "%s contatos da Zona; %s confirmada,%s não confirmados"
+msgstr "%s contactos da Zona; %s confirmada,%s não confirmados"
 
 #. ("%s is the site name")
 #: templates/web/base/alert/index.html:7
@@ -154,15 +155,15 @@ msgstr "(fechado)"
 #: templates/web/base/report/_item.html:23
 #: templates/web/zurich/report/_item.html:17
 msgid "(fixed)"
-msgstr "(Fixo)"
+msgstr "(Corrigido)"
 
 #: templates/web/base/around/intro.html:2
 msgid "(like graffiti, fly tipping, broken paving slabs, or street lighting)"
-msgstr "(Como ruas e pavimentos  esburacados, grafits, arvores caidas, lajes partidas, entulhos, lixo, pardeiros, vandalismo, postes quebrados, vazamentos de agua e esgotos, ou iluminação pública)"
+msgstr "(Como ruas e pavimentos esburacados, grafitis, árvores caídas, lajes partidas, entulhos, lixo, sinais transito, vandalismo, postes caídos, vazamentos de agua e esgotos, iluminação pública ou qualquer outro problema)"
 
 #: templates/web/base/report/_item.html:19
 msgid "(not sent to council)"
-msgstr "(Não reportar ao conselho)"
+msgstr "(Não reportar ao município)"
 
 #: templates/web/zurich/report/new/fill_in_details_form.html:84
 msgid "(optional)"
@@ -197,7 +198,7 @@ msgstr ""
 #. ("The first %s is a dropdown of all/fixed/etc, the second is a dropdown of categories")
 #: templates/web/base/reports/_list-filters.html:27
 msgid "<label>Show %s</label> <label>about %s</label>"
-msgstr ""
+msgstr "<label>Mostrar %s</label> <label>sobre %s</label>"
 
 #: templates/web/base/status/stats.html:18
 #: templates/web/zurich/admin/index.html:4
@@ -221,7 +222,7 @@ msgstr "<strong> Não </strong>, deixe-me entrar por e-mail"
 #: templates/web/base/report/new/form_user_loggedout_password.html:3
 #: templates/web/base/report/update/form_user_loggedout_password.html:2
 msgid "<strong>Yes</strong> I have a password"
-msgstr "<strong> Sim </strong> Eu tenho password"
+msgstr "<strong> Sim </strong> Eu tenho uma password"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:8
@@ -305,7 +306,7 @@ msgstr "Todos os relatórios entre %s e %s"
 
 #: templates/web/base/report/new/councils_text_some.html:2
 msgid "All the information you provide here will be sent to"
-msgstr "Todas as informações que você fornecer aqui serão enviados para fixmindelo@gmail.com"
+msgstr "Todas as informações que fornecer aqui serão enviados para "
 
 #: templates/web/base/report/new/councils_text_all.html:2
 #: templates/web/base/report/new/councils_text_all.html:4
@@ -412,7 +413,7 @@ msgstr "Por data"
 
 #: templates/web/base/auth/token.html:21 templates/web/base/email_sent.html:18
 msgid "Can&rsquo;t find our email? Check your spam folder&nbsp;&ndash; that&rsquo;s the solution 99% of the time."
-msgstr ""
+msgstr "Não recebeu o email de confirmação? Verifique o SPAM da sua caixa de correio."
 
 #: templates/web/base/around/_report_banner.html:5
 msgid "Can't see the map? <em>Skip this step</em>"
@@ -496,23 +497,23 @@ msgstr ""
 #: templates/web/base/around/_report_banner.html:2
 #: templates/web/base/js/translation_strings.html:55
 msgid "Click map to report a problem"
-msgstr "Click no mapa para reportar um porblema "
+msgstr "Clique no mapa para reportar um problema "
 
 #: templates/web/base/email_sent.html:13
 msgid "Click the link in our confirmation email to activate your alert."
-msgstr ""
+msgstr "Clique no link no email de confirmação para activar o alerta"
 
 #: templates/web/base/email_sent.html:9
 msgid "Click the link in our confirmation email to publish your problem."
-msgstr ""
+msgstr "Clique no link do email de confirmação para publicar o problema"
 
 #: templates/web/base/email_sent.html:11
 msgid "Click the link in our confirmation email to publish your update."
-msgstr ""
+msgstr "Clique no link do email de confirmação para publicar a actualização do problema"
 
 #: templates/web/base/auth/token.html:18
 msgid "Click the link in our confirmation email to sign in."
-msgstr ""
+msgstr "Clique no link do email de confirmação para entrar"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:196
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:969
@@ -531,7 +532,7 @@ msgstr "Fechado"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:781
 msgid "Closed by council"
-msgstr "Fechado pelo Conselho"
+msgstr "Fechado pelo Município"
 
 #: templates/web/base/admin/problem_row.html:38
 msgid "Closed:"
@@ -634,13 +635,13 @@ msgstr "Não olhar para cima da  localização"
 
 #: templates/web/base/admin/list_updates.html:9
 msgid "Council"
-msgstr "Conselho"
+msgstr "Concelho"
 
 #: templates/web/base/admin/body.html:1
 #: templates/web/base/admin/category_edit.html:1
 #: templates/web/zurich/admin/body.html:1
 msgid "Council contacts for %s"
-msgstr "Contatos do Conselho para %s"
+msgstr "Contactos do município para %s"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:683
 msgid "Council ref:&nbsp;%s"
@@ -648,7 +649,7 @@ msgstr ""
 
 #: templates/web/base/admin/stats.html:84
 msgid "Council:"
-msgstr "Conselho:"
+msgstr "Concelho:"
 
 #: templates/web/base/admin/stats.html:12
 #: templates/web/base/admin/stats.html:32
@@ -723,7 +724,7 @@ msgstr "Excluidos"
 #: templates/web/zurich/admin/index-sdm.html:20
 #: templates/web/zurich/admin/reports.html:12
 msgid "Description"
-msgstr "Descripçaoi"
+msgstr "Descrição detalhada do problema"
 
 #: templates/web/base/js/translation_strings.html:34
 #: templates/web/zurich/report/new/fill_in_details_form.html:70
@@ -757,7 +758,7 @@ msgstr "Diligency prêmio tabela classificativa"
 #: templates/web/base/report/update-form.html:29
 #: templates/web/base/report/update/form_user_loggedout.html:27
 msgid "Do you have a %s password?"
-msgstr ""
+msgstr "Já tem uma password?"
 
 #: templates/web/base/questionnaire/index.html:55
 msgid "Don&rsquo;t know"
@@ -900,7 +901,7 @@ msgstr "Inserir um código postal de Mindelo nas proximidades da area, zona, rua
 #: perllib/FixMyStreet/Cobrand/FiksGataMi.pm:20
 #: perllib/FixMyStreet/Cobrand/FixaMinGata.pm:21
 msgid "Enter a nearby postcode, or street name and area"
-msgstr "Inserir um código postal perto, ou nome da rua, zona ou local"
+msgstr "Inserir um código postal válido (xxxx-xxx), ou nome da rua, zona ou localidade"
 
 #: templates/web/base/around/postcode_form.html:5
 #: templates/web/base/around/postcode_form.html:6
@@ -916,7 +917,7 @@ msgstr "Digite uma nova password"
 
 #: templates/web/base/index-steps.html:6
 msgid "Enter details of the problem"
-msgstr "Digite os detalhes do problema"
+msgstr "Escreva de forma detalhada o problema, incluindo uma fotografia"
 
 #: templates/web/base/errors/generic.html:1
 #: templates/web/base/errors/generic.html:4
@@ -929,7 +930,7 @@ msgstr "Erro"
 
 #: templates/web/base/reports/_list-filters.html:12
 msgid "Everything"
-msgstr ""
+msgstr "Todos"
 
 #: templates/web/base/admin/body.html:14
 #: templates/web/base/admin/category_edit.html:18
@@ -987,12 +988,12 @@ msgstr ""
 #: templates/web/base/report/update/form_update.html:36
 #: templates/web/base/report/update/form_update.html:40
 msgid "Fixed"
-msgstr "Corrigido"
+msgstr "FIX"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:11
 msgid "Fixed - Council"
-msgstr "Corrigido - Conselho"
+msgstr "Corrigido - Concelho"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:10
@@ -1045,7 +1046,7 @@ msgstr ""
 #: templates/web/base/report/new/form_user_loggedout_password.html:20
 #: templates/web/base/report/update/form_user_loggedout_password.html:19
 msgid "Forgotten your password?"
-msgstr "Esqueceu sua senha?"
+msgstr "Não se lembra da sua password?"
 
 #: perllib/FixMyStreet/Cobrand/Zurich.pm:752
 msgid "Forwarded to external body"
@@ -1068,7 +1069,7 @@ msgstr "GeoRSS no Google Maps"
 #: templates/web/base/around/_updates.html:3
 #: templates/web/base/report/display_tools.html:11
 msgid "Get updates"
-msgstr "Receba as atualizações"
+msgstr "Atualizações"
 
 #: templates/web/base/reports/_rss.html:3
 #: templates/web/base/reports/_rss.html:9
@@ -1105,7 +1106,7 @@ msgstr "Status da tabela grafica ao longo do tempo"
 
 #: templates/web/base/reports/index.html:12
 msgid "Greyed-out lines are councils that no longer exist."
-msgstr "Cor Cinzenta sao linhas dos conselhos que não existem mais"
+msgstr "Cor Cinzenta sao linhas dos concelhos que já não existem"
 
 #: templates/web/base/questionnaire/index.html:46
 msgid "Has this problem been fixed?"
@@ -1113,7 +1114,7 @@ msgstr "Este problema já foi fixado, relatado?"
 
 #: templates/web/base/questionnaire/index.html:59
 msgid "Have you ever reported a problem to a council before, or is this your first time?"
-msgstr "Alguma vez voce ja relatou algum problema ao Conselho, ou é a sua primeira vez?"
+msgstr "Alguma vez voce ja relatou algum problema ao município, ou é a sua primeira vez?"
 
 #: templates/web/base/footer.html:38
 #: templates/web/zurich/about/faq-de-ch.html:1
@@ -1214,7 +1215,7 @@ msgid "If you submit a problem here the subject and details of the problem will 
 msgstr ""
 "Se você enviar um problema sobre qualquer assunto e detalhes,  será\"\n"
 "\"Público, mas o problema nao <strong> vai </strong> ser comunicados ao\"\n"
-"\"Conselho\"."
+"\"município\"."
 
 #: templates/web/base/questionnaire/index.html:68
 msgid ""
@@ -1355,7 +1356,7 @@ msgstr ""
 #: templates/web/base/report/update/form_user_loggedout_password.html:15
 #: templates/web/zurich/auth/general.html:40
 msgid "Keep me signed in on this computer"
-msgstr "Manter-me logado neste computador"
+msgstr "Manter-me ligado neste computador"
 
 #: templates/web/base/admin/body.html:70
 #: templates/web/zurich/admin/body.html:16
@@ -1402,7 +1403,7 @@ msgstr "Alertas locais"
 
 #: templates/web/base/index-steps.html:5
 msgid "Locate the problem on a map of the area"
-msgstr "Localize o problema em um mapa da área ou zona"
+msgstr "Localize o problema no mapa da área ou localidade"
 
 #: templates/web/base/js/translation_strings.html:43
 msgid "MAP"
@@ -1507,7 +1508,7 @@ msgstr ""
 
 #: templates/web/base/auth/token.html:17 templates/web/base/email_sent.html:5
 msgid "Nearly done! Now check your email&hellip;"
-msgstr ""
+msgstr "Está quase! Agora basta verificar o seu email&hellip;"
 
 #: templates/web/base/reports/index.html:21
 msgid "New <br>problems"
@@ -1536,7 +1537,7 @@ msgstr ""
 
 #: db/alert_types.pl:38
 msgid "New problems for {{COUNCIL}} within {{WARD}} ward on FixMyStreet"
-msgstr "Novos problemas para {{CONSELHO}} {{dentro WARD}} enfermaria em FixMyStreetMindelo"
+msgstr "Novos problemas para {{CONCELHO}} {{dentro WARD}} enfermaria em Fix"
 
 #: db/alert_types.pl:26 db/alert_types.pl:30
 msgid "New problems near {{POSTCODE}} on FixMyStreet"
@@ -1548,7 +1549,7 @@ msgstr "Novos problemas no FixMyStreetMindelo"
 
 #: db/alert_types.pl:34
 msgid "New problems to {{COUNCIL}} on FixMyStreet"
-msgstr "Novos problemas para {{}} CONSELHO em FixMyStreetMindelo"
+msgstr "Novos problemas para {{}} CONCELHO em Fix"
 
 #: db/alert_types.pl:42
 msgid "New problems within {{NAME}}'s boundary on FixMyStreet"
@@ -1593,11 +1594,11 @@ msgstr "Nenhum corpo"
 
 #: templates/web/base/admin/stats.html:85
 msgid "No council"
-msgstr "Sem conselho"
+msgstr "Sem concelho"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:401
 msgid "No council selected"
-msgstr "Nenhum Conselho selecionado"
+msgstr "Nenhum Concelho selecionado"
 
 #: templates/web/base/admin/edit-league.html:17
 msgid "No edits have yet been made."
@@ -1669,7 +1670,7 @@ msgstr "Nao reportado antes"
 
 #: templates/web/base/report/_main.html:62
 msgid "Not reported to council"
-msgstr "Nao reportado ao conselho"
+msgstr "Nao reportado ao município"
 
 #: templates/web/base/admin/body.html:71
 #: templates/web/base/admin/category_edit.html:95
@@ -1699,13 +1700,13 @@ msgstr ""
 #: templates/web/base/report/new/form_user_loggedout.html:24
 #: templates/web/base/report/new/oauth_email_form.html:17
 msgid "Now to submit your report&hellip;"
-msgstr "Agora, para apresentar o seu relatório ..."
+msgstr "Finalmente, para enviar o seu relatório ..."
 
 #: templates/web/base/report/update-form.html:28
 #: templates/web/base/report/update/form_user_loggedout.html:2
 #: templates/web/base/report/update/form_user_loggedout.html:23
 msgid "Now to submit your update&hellip;"
-msgstr "Agora, para apresentar a sua atualização ..."
+msgstr "Finalmente, para enviar a sua actualização ..."
 
 #: templates/web/base/js/translation_strings.html:42
 msgid "OK"
@@ -1771,7 +1772,7 @@ msgstr "Ou os problemas relatados para:"
 
 #: templates/web/base/alert/_list.html:36
 msgid "Or you can subscribe to an alert based upon what ward or council you&rsquo;re in:"
-msgstr "Ou você pode se inscrever em um alerta baseado no que ala, zona ou conselho você está inserido"
+msgstr "Ou você pode se inscrever em um alerta baseado no que ala, zona ou concelho você está inserido"
 
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:1044
 #: perllib/FixMyStreet/App/Controller/Report/New.pm:658
@@ -1890,7 +1891,7 @@ msgstr "Por favor, seja educado, objectivo,  conciso e direto ao ponto."
 #: templates/web/base/auth/change_password.html:12
 #: templates/web/base/auth/change_password.html:17
 msgid "Please check the passwords and try again"
-msgstr "Por favor verifique as senhas e tente novamente"
+msgstr "Por favor verifique as passwords e tente novamente"
 
 #: templates/web/base/auth/general.html:37
 #: templates/web/base/auth/general.html:43
@@ -1980,7 +1981,7 @@ msgstr "Por favor, insira alguns detalhes"
 #: templates/web/zurich/auth/general.html:3
 #: templates/web/zurich/auth/general.html:8
 msgid "Please enter your email"
-msgstr "Digite seu e-mail"
+msgstr "Digite o seu e-mail"
 
 #: templates/web/base/report/new/form_user_loggedout_email.html:7
 #: templates/web/zurich/report/new/fill_in_details_form.html:82
@@ -2041,7 +2042,7 @@ msgstr "Por favor, indique se você gostaria de receber um outro questionário"
 
 #: templates/web/base/report/updates-sidebar-notes.html:2
 msgid "Please note that updates are not sent to the council."
-msgstr "Por favor, note que as atualizações não são enviadas para o conselho."
+msgstr "Por favor, note que as actualizações não são enviadas para as autoridades competentes."
 
 #: templates/web/base/report/new/oauth_email_form.html:4
 msgid "Please note your report has <strong>not yet been sent</strong>."
@@ -2094,9 +2095,8 @@ msgstr "Por favor, indique se o problema foi corrigido"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Faça upload somente de uma imagem em JPEG "
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -2186,7 +2186,7 @@ msgstr "Problemas"
 
 #: templates/web/base/report/display_tools.html:19
 msgid "Problems nearby"
-msgstr "Problemas nas proximidades"
+msgstr "Nas proximidades"
 
 #: templates/web/base/report/display_tools.html:17
 msgid "Problems on the map"
@@ -2235,7 +2235,7 @@ msgstr ""
 #: templates/web/base/report/new/form_user_loggedout_by_email.html:34
 #: templates/web/base/report/update/form_user_loggedout_by_email.html:9
 msgid "Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports."
-msgstr "Fornecer uma senha é opcional, mas isso vai permitir que você mais facilmente relate seus problemas, deixe as atualizações e gerencie  seus relatórios."
+msgstr "Fornecer uma password é opcional, mas isso vai permitir reportar problemas de forma mais fácil, actualizar e gerir os seus relatórios."
 
 #: templates/web/zurich/admin/report_edit.html:245
 #: templates/web/zurich/admin/report_edit.html:272
@@ -2363,11 +2363,11 @@ msgstr ""
 #: templates/web/zurich/footer.html:18
 #: templates/web/zurich/nav_over_content.html:4
 msgid "Report a problem"
-msgstr "Comunicar um problema"
+msgstr "Reportar um problema"
 
 #: templates/web/base/report/display_tools.html:8
 msgid "Report abuse"
-msgstr "Denunciar um abuso"
+msgstr "Abusivo"
 
 #: perllib/FixMyStreet/App/Controller/Rss.pm:297
 msgid "Report on %s"
@@ -2382,7 +2382,7 @@ msgstr ""
 #: templates/web/base/around/intro.html:1
 #: templates/web/zurich/around/intro.html:1
 msgid "Report, view, or discuss local problems"
-msgstr "Relatório, vista, ou discutir os problemas locais"
+msgstr "Reportar, ver ou discutir problemas locais"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:577
 #: templates/web/base/contact/index.html:57
@@ -2613,7 +2613,7 @@ msgstr "Entrar"
 #: templates/web/base/auth/general.html:1
 #: templates/web/zurich/auth/general.html:1
 msgid "Sign in or create an account"
-msgstr "Entar e crear uma conta"
+msgstr "Entrar e criar uma conta"
 
 #: templates/web/base/auth/sign_out.html:1
 #: templates/web/zurich/auth/sign_out.html:1
@@ -2985,7 +2985,7 @@ msgstr ""
 #: templates/web/base/auth/change_password.html:12
 #: templates/web/base/auth/change_password.html:16
 msgid "The passwords do not match"
-msgstr "As senhas não são iguais"
+msgstr "As passwords não são iguais"
 
 #: templates/web/base/errors/page_error_404_not_found.html:9
 msgid "The requested URL '%s' was not found on this server"
@@ -3016,7 +3016,7 @@ msgstr ""
 #: templates/web/base/my/_problem-list.html:8
 #: templates/web/base/reports/_problem-list.html:15
 msgid "There are no reports to show."
-msgstr ""
+msgstr "Não existem relatórios a apresentar"
 
 #: perllib/FixMyStreet/App/Controller/Reports.pm:77
 msgid "There was a problem showing the All Reports page. Please try again later."
@@ -3363,7 +3363,7 @@ msgstr "Visualizando um problema"
 
 #: templates/web/base/reports/body.html:16
 msgid "Wards of this council"
-msgstr "Wards deste conselho"
+msgstr "Wards deste concelho"
 
 #: templates/web/base/alert/choose.html:6
 #: templates/web/base/around/_error_multiple.html:6
@@ -3392,7 +3392,7 @@ msgstr "Percebemos este problema pode ser da responsabilidade do %s, no entanto,
 
 #: templates/web/base/index-steps.html:11
 msgid "We send it to the council on your behalf"
-msgstr "Nós enviá-lo para o conselho em seu nome"
+msgstr "Nós enviá-lo para a autoridade competente em seu nome"
 
 #: templates/web/base/report/new/notes.html:4
 #: templates/web/zurich/report/new/notes.html:4
@@ -3457,7 +3457,7 @@ msgstr "Escrever a mensagem inteiramente em letras maiúsculas torna difícil de
 
 #: templates/web/base/report/new/fill_in_details_form.html:4
 msgid "Wrong location? Just click again on the map."
-msgstr ""
+msgstr "Localização errada? Basta clicar novamente no mapa."
 
 #: templates/web/base/admin/stats.html:10
 msgid "Year"
@@ -3589,7 +3589,7 @@ msgstr "Você realmente deseja reenviar o email?"
 #: templates/web/base/my/my.html:0 templates/web/base/my/my.html:15
 #: templates/web/base/my/my.html:4
 msgid "Your Reports"
-msgstr "Seus relatorios"
+msgstr "Os meus relatórios"
 
 #: templates/web/base/alert/_list.html:89
 #: templates/web/base/alert/updates.html:19
@@ -3602,7 +3602,7 @@ msgstr "Seus relatorios"
 #: templates/web/base/report/update/form_user_loggedout_email.html:1
 #: templates/web/zurich/report/new/fill_in_details_form.html:78
 msgid "Your email"
-msgstr "Seu e-mail"
+msgstr "O seu e-mail"
 
 #: templates/web/base/auth/general.html:55
 #: templates/web/base/report/update/form_user_loggedout_email.html:7
@@ -3648,7 +3648,7 @@ msgstr ""
 
 #: templates/web/base/footer.html:29
 msgid "Your reports"
-msgstr "Seus relatórios"
+msgstr "Os meus relatórios"
 
 #: templates/web/base/my/my.html:39
 msgid "Your updates"
@@ -3656,7 +3656,7 @@ msgstr "Suas atualizações"
 
 #: templates/web/base/reports/_list-filters.html:3
 msgid "all reports"
-msgstr ""
+msgstr "todos os relatórios"
 
 #: templates/web/base/admin/timeline.html:4
 msgid "by %s"
@@ -3664,12 +3664,12 @@ msgstr "por %s"
 
 #: templates/web/base/reports/_list-filters.html:5
 msgid "closed reports"
-msgstr ""
+msgstr "relatórios fechados"
 
 #: templates/web/base/reports/body.html:6
 #: templates/web/base/reports/body.html:7
 msgid "council"
-msgstr "conselho"
+msgstr "concelho"
 
 #: templates/web/base/admin/report_edit.html:32
 msgid "didn't use map"
@@ -3687,7 +3687,7 @@ msgstr ""
 
 #: templates/web/base/reports/_list-filters.html:6
 msgid "fixed reports"
-msgstr ""
+msgstr "relatórios corrigidos"
 
 #: templates/web/base/status/stats.html:20
 #: templates/web/zurich/admin/index.html:5
@@ -3717,7 +3717,7 @@ msgstr ""
 
 #: templates/web/base/report/updates.html:49
 msgid "marked as closed"
-msgstr ""
+msgstr "marcados como fechados"
 
 #: templates/web/base/report/updates.html:28
 #: templates/web/base/report/updates.html:51
@@ -3789,7 +3789,7 @@ msgstr "sair"
 #: templates/web/base/report/new/fill_in_details_form.html:11
 #: templates/web/base/report/new/fill_in_details_form.html:9
 msgid "the local council"
-msgstr "o conselho local"
+msgstr "o município local"
 
 #: templates/web/base/report/_main.html:57
 #: templates/web/zurich/report/_main.html:5
@@ -3802,11 +3802,11 @@ msgstr "este tipo de problema local"
 
 #: perllib/Utils.pm:176
 msgid "today"
-msgstr "hoje"
+msgstr "de hoje"
 
 #: templates/web/base/reports/_list-filters.html:4
 msgid "unfixed reports"
-msgstr ""
+msgstr "por arranjar"
 
 #: templates/web/base/admin/report_edit.html:32
 msgid "used map"
@@ -3814,7 +3814,7 @@ msgstr "mapa usado"
 
 #: templates/web/base/admin/update_edit.html:35
 msgid "user is from same council as problem - %d"
-msgstr "usuário é da mesmo conselho do problema - %d"
+msgstr "usuário é da mesmo concelho do problema - %d"
 
 #: templates/web/base/admin/update_edit.html:38
 msgid "user is problem owner"
@@ -3858,14 +3858,14 @@ msgstr[1] "%d minutos"
 msgid "<big>%s</big> update on reports"
 msgid_plural "<big>%s</big> updates on reports"
 msgstr[0] "<big>%s</big> atualização em relatório"
-msgstr[1] "<big>%s</big> atualização los Relatorios"
+msgstr[1] "<big>%s</big>Atualização dos relatórios"
 
 #: templates/web/base/report/new/councils_text_none.html:3
 #, perl-format
 msgid "We do not yet have details for the council that covers this location."
 msgid_plural "We do not yet have details for the councils that cover this location."
 msgstr[0] "Nós ainda não temos detalhes para o conselho, que abrange este local."
-msgstr[1] "Nós ainda não temos detalhes sobre o concelho, que abrange este local."
+msgstr[1] "Nós ainda não temos detalhes sobre o concelho, abrangido por este local."
 
 #: perllib/Utils.pm:219
 #, perl-format
@@ -3879,14 +3879,14 @@ msgstr[1] "%d semanas"
 msgid "<big>%s</big> report in past week"
 msgid_plural "<big>%s</big> reports in past week"
 msgstr[0] "<big>%s</big> Relatório de semana passada"
-msgstr[1] "<big>%s</big> Relatórios de semana passado"
+msgstr[1] "<big>%s</big> Relatórios da semana passada"
 
 #: templates/web/base/front/stats.html:19
 #, perl-format
 msgid "<big>%s</big> fixed in past month"
 msgid_plural "<big>%s</big> fixed in past month"
 msgstr[0] "<big>%s</big> fixado no mês passado"
-msgstr[1] "<big>%s</big> fixado no mês passado"
+msgstr[1] "<big>%s</big>Arranjado no mês passado"
 
 #: perllib/Utils.pm:221
 #, perl-format
@@ -3901,45 +3901,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Fazemos <strong> não </strong> ainda tem detalhes para os outros conselhos que cobrem este local."
 msgstr[1] "Fazemos <strong> não </strong> ainda tem detalhes para os outros conselhos que cobrem este local."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, reportou em %s"
-
-#~ msgid "About us"
-#~ msgstr "Acerca de nós"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Enviar novos problemas locais"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Apartamento vazio ou duplex"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Casa vazia ou bungalow"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Escritório vazio ou outro comercial"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Pub ou bar vazio"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Edifício público vazio - escola, hospital, etc"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreetMindelo"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Tenho receio de nao puder confirmar os seus relatorios"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemas nesta área"
-
-#~ msgid "Property type:"
-#~ msgstr "Tipo de propriedade:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS feed dos problemas nesta %s"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Bloco inteiro de apartamentos vazios"

@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Malay (http://www.transifex.com/mysociety/fixmystreet/language/ms/)\n"
 "Language: ms\n"
@@ -2087,9 +2087,8 @@ msgstr ""
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Sila memuat naik imej JPEG sahaja"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3886,45 +3885,3 @@ msgstr[0] "%d hari"
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Kita <strong>belum</strong> ada maklumat tentang majlis lain yang menutupi lokasi ini."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, dilaporkan pada %s"
-
-#~ msgid "About us"
-#~ msgstr "Tentang kita"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Emel aku masalah tempatan baru"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Flat atau apartmen lama"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Rumah kosong atau banglo"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Pejabat kosing atau komersial lain"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Pub kosong atau bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Bangunan awam kosong - sekolah, hospital, lain-lain"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Anda tidak boleh mengesahkan laporan yang belum disahkan."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Masalah dalam kawasan ini"
-
-#~ msgid "Property type:"
-#~ msgstr "Jenis bangunan:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "Feed RSS untuk masalah dalam %s ini"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Seluruh blok flat kosong"

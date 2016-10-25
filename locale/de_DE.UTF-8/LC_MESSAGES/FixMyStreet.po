@@ -6,13 +6,14 @@
 # Translators:
 # Ettore Atalan <atalanttore@googlemail.com>, 2015
 # MatHut <mathias.huter@gmail.com>, 2014
+# Thomas Tursics <thomas@tursics.de>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2016-06-30 13:48+0000\n"
+"Last-Translator: Thomas Tursics <thomas@tursics.de>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/mysociety/fixmystreet/language/de_DE/)\n"
 "Language: de_DE\n"
 "MIME-Version: 1.0\n"
@@ -181,7 +182,7 @@ msgstr "-- W&auml;hlen Sie eine Kategorie --"
 
 #: perllib/FixMyStreet/DB/Result/Problem.pm:416
 msgid "-- Pick a property type --"
-msgstr ""
+msgstr "-- Wählen Sie eine Eigentumsart --"
 
 #: templates/web/base/admin/body-form.html:42
 #: templates/web/base/admin/body-form.html:43
@@ -1927,7 +1928,7 @@ msgstr "Bitte geben Sie eine Nachricht ein"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1079
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1134
 msgid "Please enter a name"
-msgstr ""
+msgstr "Bitte geben Sie Ihren Namen ein"
 
 #: templates/web/base/auth/change_password.html:12
 #: templates/web/base/auth/change_password.html:15
@@ -2083,9 +2084,8 @@ msgstr ""
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Bitte nur ein JPEG-BIld hochladen"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3890,21 +3890,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, gemeldet am %s"
-
-#~ msgid "About us"
-#~ msgstr "&Uuml;ber uns"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Leere Kneipe oder Bar"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Meldungen in dieser Gegend"
-
-#~ msgid "Property type:"
-#~ msgstr "Eigentumstyp"

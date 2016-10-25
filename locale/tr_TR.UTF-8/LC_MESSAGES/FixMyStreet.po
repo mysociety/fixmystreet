@@ -5,14 +5,15 @@
 #
 # Translators:
 # Eda Karaman <edakaraman_92@hotmail.de>, 2015
+# Egemen Metin Turan <emturan@gmail.com>, 2016
 # Muradiye <Muradiye.ates@gmail.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2016-07-12 09:19+0000\n"
+"Last-Translator: Egemen Metin Turan <emturan@gmail.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/mysociety/fixmystreet/language/tr_TR/)\n"
 "Language: tr_TR\n"
 "MIME-Version: 1.0\n"
@@ -50,11 +51,11 @@ msgstr "%s - Özet raporlar"
 #. ("%s here is the site name")
 #: templates/web/base/admin/header.html:10
 msgid "%s admin:"
-msgstr "%s Yönetici:"
+msgstr "%s yönetici:"
 
 #: templates/web/base/status/stats.html:26
 msgid "%s bodies"
-msgstr ""
+msgstr "%s bölümler"
 
 #: templates/web/base/status/stats.html:24
 msgid "%s confirmed alerts, %s unconfirmed"
@@ -2106,9 +2107,8 @@ msgstr "Problemin giderilmiş veya giderilmemiş olması durumunu bildiriniz lü
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Sadece JPEG formatı yükleyin"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3904,48 +3904,3 @@ msgstr[0] "%d gün"
 msgid "We do <strong>not</strong> yet have details for the other council that covers this location."
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Bahsettiğiniz alanı kapsayan ilgili diğer kurullar hakkında henüz detaylı  bilgimiz <strong>yok</strong>"
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, rapor edilmiş %s"
-
-#~ msgid "About us"
-#~ msgstr "Hakkımızda"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Yeni yerel problemleri e posta olarak gönder"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Boş daire veye müstakil ev"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Boş ev veya bungalov"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Boş büro veya diğer ticari yerler"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Boş pub veya bar"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Boş kamu binası- okul, hastane, vb."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Yakın çevrede bulunan cadde ismi, bölge ismi, posta kodu veya Delhi de bulunan semti girin"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Maalesef onaylanmamış bildirimleri onaylayamıyorsunuz."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Bu bölgedeki problemler"
-
-#~ msgid "Property type:"
-#~ msgstr "Emlak türü:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "%s ile ilgili problemeleri RSS besleme"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Bütün boş daireler"

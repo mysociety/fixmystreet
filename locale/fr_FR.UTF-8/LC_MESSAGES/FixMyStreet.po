@@ -5,7 +5,7 @@
 #
 # Translators:
 # Christophe Ocivélo Saint-Etienne <ocivelo@gmail.com>, 2014
-# fixmystreetfr <fixmystreet@fixmystreet.fr>, 2015
+# fixmystreetfr <fixmystreet@fixmystreet.fr>, 2015-2016
 # mySociety <transifex@mysociety.org>, 2015
 # Tim Morley <>, 2012
 msgid ""
@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
-"Last-Translator: mySociety <transifex@mysociety.org>\n"
+"PO-Revision-Date: 2016-10-25 12:56+0000\n"
+"Last-Translator: fixmystreetfr <fixmystreet@fixmystreet.fr>\n"
 "Language-Team: French (France) (http://www.transifex.com/mysociety/fixmystreet/language/fr_FR/)\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
@@ -56,7 +56,7 @@ msgstr "%s admin:"
 
 #: templates/web/base/status/stats.html:26
 msgid "%s bodies"
-msgstr ""
+msgstr "%s Administrations"
 
 #: templates/web/base/status/stats.html:24
 msgid "%s confirmed alerts, %s unconfirmed"
@@ -350,7 +350,7 @@ msgstr "Vous êtes un développeur ?"
 
 #: templates/web/base/js/translation_strings.html:52
 msgid "Are you sure you want to cancel this upload?"
-msgstr ""
+msgstr "Êtes-vous sûr de vouloir annuler cet envoi ?"
 
 #: templates/web/base/admin/body-form.html:69
 #: templates/web/base/admin/body.html:16
@@ -605,7 +605,7 @@ msgstr "Confirmer le compte"
 #: templates/web/base/report/new/form_user_loggedout_password.html:21
 #: templates/web/base/report/update/form_user_loggedout_password.html:20
 msgid "Confirm by email instead, providing a new password at that point. When you confirm, your password will be updated."
-msgstr ""
+msgstr "Confirmez par email à la place, Si vous fournissez un nouveau mot de passe à cette étape, lorsque vous confirmez, votre mot de passe sera mis à jour."
 
 #: templates/web/base/questionnaire/creator_fixed.html:1
 #: templates/web/base/tokens/confirm_problem.html:1
@@ -799,7 +799,7 @@ msgstr "Vous n'aimez pas les formulaires ?"
 
 #: templates/web/base/js/translation_strings.html:51
 msgid "Drag and drop photos here or <u>click to upload</u>"
-msgstr ""
+msgstr "Glissez et déposez les photos ici ou <u> cliquer pour les envoyer </ u>"
 
 #: templates/web/base/admin/report_blocks.html:1
 #: templates/web/base/admin/report_blocks.html:14
@@ -1719,7 +1719,7 @@ msgstr "Jamais signalé"
 
 #: templates/web/base/report/_main.html:62
 msgid "Not reported to council"
-msgstr "Pas signalé à l'administration"
+msgstr "Non signalé à l'administration"
 
 #: templates/web/base/admin/body.html:71
 #: templates/web/base/admin/category_edit.html:95
@@ -1755,7 +1755,7 @@ msgstr "Maintenant pour envoyer votre rapport&hellip;"
 #: templates/web/base/report/update/form_user_loggedout.html:2
 #: templates/web/base/report/update/form_user_loggedout.html:23
 msgid "Now to submit your update&hellip;"
-msgstr "Now to submit your mise à jour&hellip;"
+msgstr "Maintenant pour envoyer votre mise à jour&hellip;"
 
 #: templates/web/base/js/translation_strings.html:42
 msgid "OK"
@@ -1988,7 +1988,7 @@ msgstr "Merci d'entrer un message"
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1079
 #: perllib/FixMyStreet/App/Controller/Admin.pm:1134
 msgid "Please enter a name"
-msgstr ""
+msgstr "Merci d'entrer un nom"
 
 #: templates/web/base/auth/change_password.html:12
 #: templates/web/base/auth/change_password.html:15
@@ -2095,7 +2095,7 @@ msgstr "Nous vous informons que les mises à jour ne sont pas envoyées à l'adm
 
 #: templates/web/base/report/new/oauth_email_form.html:4
 msgid "Please note your report has <strong>not yet been sent</strong>."
-msgstr ""
+msgstr "Veuillez noter que votre rapport n'a <strong> pas encore été envoyé </ strong>."
 
 #: templates/web/base/report/new/fill_in_details_form.html:20
 #: templates/web/zurich/report/new/fill_in_details_form.html:11
@@ -2104,7 +2104,7 @@ msgstr "Merci de noter que votre rapport n'a <strong>pas</strong> été envoyé.
 
 #: templates/web/base/report/display.html:26
 msgid "Please note your update has <strong>not yet been posted</strong>."
-msgstr ""
+msgstr "Veuillez noter que votre mise à jour n'a <strong> pas encore été postée </ strong>."
 
 #: templates/web/base/report/new/notes.html:1
 #: templates/web/zurich/report/new/notes.html:1
@@ -2144,9 +2144,8 @@ msgstr "Merci de préciser si le problème a été réglé ou non."
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Merci de charger uniquement des images JPEG"
+msgstr "Veuillez uniquement envoyer une image"
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -2716,7 +2715,7 @@ msgstr "Désolé, nous n'avons pas pu trouver cet emplacement."
 #: templates/web/base/report/display.html:21
 #: templates/web/base/report/new/fill_in_details_form.html:23
 msgid "Sorry, we could not log you in. Please fill in the form below."
-msgstr ""
+msgstr "Désolé, nous ne pouvons pas vous connecter pour le moment. Veuillez compléter le formulaire ci-dessous."
 
 #: perllib/FixMyStreet/Geocode/Bing.pm:35
 #: perllib/FixMyStreet/Geocode/Google.pm:45
@@ -3446,7 +3445,7 @@ msgstr "Nous avons trouvé plus d'une correspondance pour cet endroit. Nous mont
 #: templates/web/base/report/display.html:27
 #: templates/web/base/report/new/oauth_email_form.html:5
 msgid "We need your email address, please give it below."
-msgstr ""
+msgstr "Nous avons besoin de votre adresse e-mail, veuillez l'indiquer ci-dessous."
 
 #: templates/web/base/report/new/form_user_loggedout_email.html:2
 #: templates/web/base/report/update/form_user_loggedout_email.html:2
@@ -3498,7 +3497,7 @@ msgstr "Envoyé le"
 
 #: templates/web/base/js/translation_strings.html:50
 msgid "Whoa there Testino! Three photos are enough."
-msgstr ""
+msgstr "Trois photos suffisent."
 
 #: templates/web/base/tokens/confirm_alert.html:7
 msgid "Why stop there? <a href=\"/alert\">Set up more alerts</a> for free."
@@ -3621,7 +3620,7 @@ msgstr "Vous avez déjà joint les photos de ce rapport. Notez que vous pouvez j
 #: templates/web/base/questionnaire/index.html:83
 #: templates/web/base/report/update/form_update.html:14
 msgid "You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed)."
-msgstr ""
+msgstr "Il y a déjà des photos pour cette mise à jour. veuillez noter que vous pouvez joindre un maximum de 3 photos sur cette mise à jour (si vous en envoyez plus, la plus ancienne sera supprimée)."
 
 #: templates/web/base/auth/sign_out.html:4
 #: templates/web/zurich/auth/sign_out.html:3
@@ -3719,7 +3718,7 @@ msgstr "Votre numéro de téléphone"
 
 #: templates/web/base/questionnaire/index.html:14
 msgid "Your report"
-msgstr ""
+msgstr "Votre rapport"
 
 #: templates/web/base/footer.html:29
 msgid "Your reports"
@@ -3976,48 +3975,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Nous n'avons pas encore de détails pour l'autre administration responsable de ce lieu."
 msgstr[1] "Nous n'avons pas encore de détails pour les autres administrations responsables de ce lieu."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, rapporté %s"
-
-#~ msgid "About us"
-#~ msgstr "À propos"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Envoyez-moi les nouveaux problèmes locaux"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "appartement ou maisonnette vide"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "maison ou bungalow vide"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "bureau ou commerce vide"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "pub ou bar vide"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "bâtiment public - école - hôpital, etc non renseigné."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Saisissez un nom de rue proche et une localité, le code postal et le district de Delhi"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Je suis désolé, vous ne pouvez pas confirmer des rapports non validés"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problèmes dans cette zone"
-
-#~ msgid "Property type:"
-#~ msgstr "Type de propriété:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "Flux RSS des problèmes à l'intérieur de cette %s"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Tout le bloc d'appartements vides"

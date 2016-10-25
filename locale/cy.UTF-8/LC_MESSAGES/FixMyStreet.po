@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:44+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Welsh (http://www.transifex.com/mysociety/fixmystreet/language/cy/)\n"
 "Language: cy\n"
@@ -2082,9 +2082,8 @@ msgstr "Dywedwch a gafodd y broblem ei thrwsio"
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Uwchlwythwch lun JPEG yn unig"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3911,42 +3910,3 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 msgstr[3] ""
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, adroddwyd am %s"
-
-#~ msgid "About us"
-#~ msgstr "Amdanom"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Rhoi gwybod i fi am broblemau lleol newydd drwy e-bost"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Fflat wag"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Tŷ neu fyngalo gwag"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Swyddfa neu adeilad masnachol arall gwag"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Tafarn neu far gwag"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Adeilad cyhoeddus gwag - ysgol, ysbyty, ac ati."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "Rhowch enw stryd ac ardal gerllaw, cod post neu ardal yn Delhi"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Yn anffodus, ni allwch gadarnhau adroddiadau heb eu cadarnhau."
-
-#~ msgid "Problems in this area"
-#~ msgstr "Problemau yn yr ardal hon"
-
-#~ msgid "Property type:"
-#~ msgstr "Math o eiddo:"

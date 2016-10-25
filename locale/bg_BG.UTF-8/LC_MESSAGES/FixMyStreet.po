@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Bulgarian (Bulgaria) (http://www.transifex.com/mysociety/fixmystreet/language/bg_BG/)\n"
 "Language: bg_BG\n"
@@ -2101,9 +2101,8 @@ msgstr "Моля посочете дали проблемът е бил разр
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Моля качвайте само JPEG изображения"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3913,27 +3912,3 @@ msgid "We do <strong>not</strong> yet have details for the other council that co
 msgid_plural "We do <strong>not</strong> yet have details for the other councils that cover this location."
 msgstr[0] "Все още <strong>нямаме</strong> информация за общината, която стопанисва тази територия."
 msgstr[1] "Все още <strong>нямаме</strong> информация за общините, които стопанисват тази територия."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, съобщено на %s"
-
-#~ msgid "About us"
-#~ msgstr "За нас"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Съобщавай ми новите сигнали"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "ПоправиСофия"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Не можете да потвърдите непотвърден през имейла сигнал"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Други сигнали на тази територия"
-
-#~ msgid "Property type:"
-#~ msgstr "Тип на имота:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "RSS абонамент за проблеми в този %s"

@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-03-23 12:43+0000\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
 "Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Ukrainian (Ukraine) (http://www.transifex.com/mysociety/fixmystreet/language/uk_UA/)\n"
 "Language: uk_UA\n"
@@ -2094,9 +2094,8 @@ msgstr "Будь ласка вкажіть чи була вирішена про
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "Будь ласка завантажуйте тільки JPEG зображення"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -3921,42 +3920,3 @@ msgid_plural "We do <strong>not</strong> yet have details for the other councils
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s, сповіщено о %s"
-
-#~ msgid "About us"
-#~ msgstr "Про нас"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "Повідомляйте мене про локальні проблеми листом"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "Порожня квартира або дворівнева"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "Порожній будинок або бунгало"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "Порожній офіс або інше комерційне приміщення"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "Порожній паб або бар"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "Порожня громадська будівля - школа, лікарня та ін."
-
-#~ msgid "FixMyStreet"
-#~ msgstr "FixMyStreet"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "Нажаль ви не можете підтвердити непідтверджені сповіщення"
-
-#~ msgid "Problems in this area"
-#~ msgstr "Проблеми в цьому районі"
-
-#~ msgid "Property type:"
-#~ msgstr "Тип майна:"
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "Whole block of empty flats"

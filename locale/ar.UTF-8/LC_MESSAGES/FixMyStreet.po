@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: fixmystreet\n"
 "Report-Msgid-Bugs-To: matthew@mysociety.org\n"
 "POT-Creation-Date: 2016-05-03 10:41+0100\n"
-"PO-Revision-Date: 2016-04-13 19:08+0000\n"
-"Last-Translator: Khaled Saleem Baleesh <Kbaleesh@gmail.com>\n"
+"PO-Revision-Date: 2016-05-03 09:48+0000\n"
+"Last-Translator: mySociety <transifex@mysociety.org>\n"
 "Language-Team: Arabic (http://www.transifex.com/mysociety/fixmystreet/language/ar/)\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
@@ -2148,9 +2148,8 @@ msgstr "الرجاء تحديد ما إذا كانت المشكلة قد تم ح
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:150
 #: perllib/FixMyStreet/App/Model/PhotoSet.pm:152
 #: templates/web/base/js/translation_strings.html:53
-#, fuzzy
 msgid "Please upload an image only"
-msgstr "الرجاء تحميل صورة JPEG فقط"
+msgstr ""
 
 #: perllib/FixMyStreet/App/Controller/Contact.pm:115
 msgid "Please write a message"
@@ -4029,51 +4028,3 @@ msgstr[2] "<strong>لا</strong> توجد لدينا تفاصيل عن المج�
 msgstr[3] "<strong>لا</strong> توجد لدينا تفاصيل عن المجالس التي تغطي هذا الموقع حتى الآن."
 msgstr[4] "<strong>لا</strong> توجد لدينا تفاصيل عن المجالس التي تغطي هذا الموقع حتى الآن."
 msgstr[5] "<strong>لا</strong> توجد لدينا تفاصيل عن المجالس التي تغطي هذا الموقع حتى الآن."
-
-#~ msgid "%s, reported at %s"
-#~ msgstr "%s، أُبلغ في %s"
-
-#~ msgid "About us"
-#~ msgstr "نبذة عنا"
-
-#~ msgid "Email me new local problems"
-#~ msgstr "راسلني عن المشاكل المحلية الجديدة"
-
-#~ msgid "Empty flat or maisonette"
-#~ msgstr "شقة أو وحدة سكنية فارغة"
-
-#~ msgid "Empty house or bungalow"
-#~ msgstr "منزل أو بنغَل فارغ"
-
-#~ msgid "Empty office or other commercial"
-#~ msgstr "مكتب أو عقار تجاري مهجور"
-
-#~ msgid "Empty pub or bar"
-#~ msgstr "حانة مهجورة"
-
-#~ msgid "Empty public building - school, hospital, etc."
-#~ msgstr "مبنى عام مهجور - مدرسة، مستشفى، إلخ."
-
-#~ msgid "Enter a nearby street name and area, postal code or district in Delhi"
-#~ msgstr "أدخل أقرب اسم شارع وحي أو صندوق بريد أو منطقة في دلهي"
-
-#~ msgid "FixMyStreet"
-#~ msgstr "أصلح شارعي"
-
-#~ msgid "I am afraid you cannot confirm unconfirmed reports."
-#~ msgstr "آسف لايمكنك تأكيد البلاغات الغير مؤكدة."
-
-#~ msgid "Problems in this area"
-#~ msgstr "المشكلات في هذه المنطقة"
-
-#~ msgid "Property type:"
-#~ msgstr "نوع العقار:"
-
-#~ msgid "RSS feed of problems in this %s"
-#~ msgstr "موجز RSS للمشكلات الموجودة ضمن %s"
-
-#~ msgid "Sorry, you can not log in with Facebook. Please try again later."
-#~ msgstr "عذرا، لا يمكنك تسجيل الدخول بالفيسبوك. حاول مرة أخرى لاحقا."
-
-#~ msgid "Whole block of empty flats"
-#~ msgstr "مجموعة كاملة من الشقق الفارغة"
