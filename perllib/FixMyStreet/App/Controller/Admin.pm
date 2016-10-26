@@ -841,6 +841,7 @@ sub report_edit_category : Private {
     my ($self, $c, $problem) = @_;
 
     if ((my $category = $c->get_param('category')) ne $problem->category) {
+        my $category_old = $problem->category;
         $problem->category($category);
         my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
         my @new_body_ids = map { $_->body_id } @contacts;
@@ -849,6 +850,16 @@ sub report_edit_category : Private {
             $problem->whensent(undef);
         }
         $problem->bodies_str(join( ',', @new_body_ids ));
+        $problem->add_to_comments({
+            text => '*' . sprintf(_('Category changed from ‘%s’ to ‘%s’'), $category_old, $category) . '*',
+            created => \'current_timestamp',
+            confirmed => \'current_timestamp',
+            user_id => $c->user->id,
+            name => $c->user->from_body ? $c->user->from_body->name : $c->user->name,
+            state => 'confirmed',
+            mark_fixed => 0,
+            anonymous => 0,
+        });
     }
 }
 
