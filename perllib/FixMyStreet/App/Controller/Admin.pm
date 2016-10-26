@@ -33,8 +33,11 @@ sub begin : Private {
 
     # User must be logged in to see cobrand, and meet whatever checks the
     # cobrand specifies. Default cobrand just requires superuser flag to be set.
-    unless ( $c->user_exists && $c->cobrand->admin_allow_user($c->user) ) {
+    unless ( $c->user_exists ) {
         $c->detach( '/auth/redirect' );
+    }
+    unless ( $c->cobrand->admin_allow_user($c->user) ) {
+        $c->detach('/page_error_403_access_denied', []);
     }
 
     if ( $c->cobrand->moniker eq 'zurich' ) {

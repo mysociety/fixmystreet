@@ -138,8 +138,8 @@ FixMyStreet::override_config {
     my $user = $mech->log_in_ok( 'dm1@example.org') ;
     $user->from_body( undef );
     $user->update;
-    $mech->get_ok( '/admin' );
-    is $mech->uri->path, '/my', "got sent to /my";
+    ok $mech->get( '/admin' );
+    is $mech->res->code, 403, 'Got 403';
     $user->from_body( $division->id );
     $user->update;
 
@@ -361,9 +361,9 @@ subtest 'SDM' => sub {
     FixMyStreet::override_config {
         ALLOWED_COBRANDS => [ 'zurich' ],
     }, sub {
-        $mech->get_ok( '/admin' );
+        ok $mech->get( '/admin' );
     };
-    is $mech->uri->path, '/my', "got sent to /my";
+    is $mech->res->code, 403, 'Got 403';
     $user->from_body( $subdivision->id );
     $user->update;
 

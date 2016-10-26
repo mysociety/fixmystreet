@@ -1396,10 +1396,8 @@ subtest "Users without from_body can't access admin" => sub {
 
     $mech->log_in_ok( $user->email );
 
-    $mech->get_ok('/admin');
-    is $mech->uri->path, '/my', "redirected to correct page";
-    is $mech->res->code, 200, "got 200 for final destination";
-    is $mech->res->previous->code, 302, "got 302 for redirect";
+    ok $mech->get('/admin');
+    is $mech->res->code, 403, "got 403";
 
     $mech->log_out_ok;
 };
@@ -1423,10 +1421,8 @@ subtest "Users with from_body can't access another council's admin" => sub {
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
 
-        $mech->get_ok('/admin');
-        is $mech->uri->path, '/my', "redirected to correct page";
-        is $mech->res->code, 200, "got 200 for final destination";
-        is $mech->res->previous->code, 302, "got 302 for redirect";
+        ok $mech->get('/admin');
+        is $mech->res->code, 403, "got 403";
 
         $mech->log_out_ok;
     };
@@ -1438,10 +1434,8 @@ subtest "Users with from_body can't access fixmystreet.com admin" => sub {
     }, sub {
         $mech->log_in_ok( $oxfordshireuser->email );
 
-        $mech->get_ok('/admin');
-        is $mech->uri->path, '/my', "redirected to correct page";
-        is $mech->res->code, 200, "got 200 for final destination";
-        is $mech->res->previous->code, 302, "got 302 for redirect";
+        ok $mech->get('/admin');
+        is $mech->res->code, 403, "got 403";
 
         $mech->log_out_ok;
     };
