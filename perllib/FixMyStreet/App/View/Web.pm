@@ -22,6 +22,7 @@ __PACKAGE__->config(
     FILTERS => {
         add_links => \&add_links,
         escape_js => \&escape_js,
+        markup => [ \&markup_factory, 1 ],
     },
     COMPILE_EXT => '.ttc',
     STAT_TTL    => FixMyStreet->config('STAGING_SITE') ? 1 : 86400,
@@ -96,6 +97,23 @@ sub _space_slash {
     my $t = shift;
     $t =~ s{/(?!$)}{/ }g;
     return $t;
+}
+
+=head2 markup_factory
+
+This returns a function that will allow updates to have markdown-style italics.
+Pass in the user that wrote the text, so we know whether it can be privileged.
+
+=cut
+
+sub markup_factory {
+    my ($c, $user) = @_;
+    return sub {
+        my $text = shift;
+        return $text unless $user && ($user->from_body || $user->is_superuser);
+        $text =~ s{\*(\S.*?\S)\*}{<i>$1</i>};
+        $text;
+    }
 }
 
 =head2 escape_js

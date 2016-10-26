@@ -31,7 +31,7 @@
                 [% INCLUDE 'report/photo.html' object=update %]
                 <div class="item-list__update-text">
                     <div class="moderate-display">
-                        [% update.text | add_links | html_para %]
+                        [% update.text | add_links | markup(update.user) | html_para %]
                     </div>
                     [% IF moderating %]
                     <div class="moderate-edit">
