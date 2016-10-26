@@ -1182,14 +1182,14 @@ sub user_add : Path('user_edit') : Args(0) {
 
     $c->forward('/auth/check_csrf_token');
 
+    $c->stash->{field_errors} = {};
     unless ($c->get_param('email')) {
         $c->stash->{field_errors}->{email} = _('Please enter a valid email');
-        return;
     }
     unless ($c->get_param('name')) {
         $c->stash->{field_errors}->{name} = _('Please enter a name');
-        return;
     }
+    return if %{$c->stash->{field_errors}};
 
     my $user = $c->model('DB::User')->find_or_create( {
         name => $c->get_param('name'),
@@ -1326,14 +1326,14 @@ sub user_edit : Path('user_edit') : Args(1) {
             }
         }
 
+        $c->stash->{field_errors} = {};
         unless ($user->email) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');
-            return;
         }
         unless ($user->name) {
             $c->stash->{field_errors}->{name} = _('Please enter a name');
-            return;
         }
+        return if %{$c->stash->{field_errors}};
 
         my $existing_user = $c->model('DB::User')->search({ email => $user->email, id => { '!=', $user->id } })->first;
         if ($existing_user) {

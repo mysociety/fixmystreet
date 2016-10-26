@@ -2,9 +2,7 @@
     <input type="hidden" name="token" value="[% csrf_token %]" >
     <input type="hidden" name="submit" value="1" >
 
-    [% IF c.cobrand.moniker == 'zurich' AND field_errors.email %]
-        <p class='error'>[% field_errors.email %]</p>
-    [% END %]
+    [% INCLUDE 'errors.html' errors = field_errors.values %]
     <ul class="no-bullets">
         <li>
           <div class="admin-hint">
