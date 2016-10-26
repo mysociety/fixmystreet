@@ -17,9 +17,15 @@ FixMyStreet::DB->resultset("ContactResponsePriority")->create({
     contact => $contact,
     response_priority => $rp,
 });
+my $wodc = $mech->create_body_ok(2420, 'West Oxfordshire District Council', id => 2420);
+$mech->create_contact_ok( body_id => $wodc->id, category => 'Horses', email => 'horses@example.net' );
+
 
 my ($report) = $mech->create_problems_for_body(1, $oxon->id, 'Test', {
-    category => 'Cows', cobrand => 'fixmystreet', areas => ',2237,' });
+    category => 'Cows', cobrand => 'fixmystreet', areas => ',2237,2420',
+    whensent => \'current_timestamp',
+    latitude => 51.847693, longitude => -1.355908,
+});
 my $report_id = $report->id;
 
 my $user = $mech->log_in_ok('test@example.com');
@@ -124,6 +130,34 @@ FixMyStreet::override_config {
 
         $report->discard_changes;
         is $report->user->get_extra_metadata('reputation'), $reputation-1, "User reputation was decreased";
+    };
+};
+
+FixMyStreet::override_config {
+    MAPIT_URL => 'http://mapit.mysociety.org/',
+    ALLOWED_COBRANDS => [ 'oxfordshire', 'fixmystreet' ],
+    BASE_URL => 'http://fixmystreet.site',
+}, sub {
+    subtest "test category/body changes" => sub {
+        $mech->host('oxfordshire.fixmystreet.site');
+        $report->update({ state => 'confirmed' });
+        $mech->get_ok("/report/$report_id");
+        # Then change the category to the other council in this location,
+        # which should cause it to be resent. We clear the host because
+        # otherwise testing stays on host() above.
+        $mech->clear_host;
+        $mech->submit_form(button => 'save', with_fields => { category => 'Horses' });
+
+        $report->discard_changes;
+        is $report->category, "Horses", "Report in correct category";
+        is $report->whensent, undef, "Report marked as unsent";
+        is $report->bodies_str, $wodc->id, "Reported to WODC";
+
+        is $mech->uri->path, "/report/$report_id", "redirected to correct page";
+        is $mech->res->code, 200, "got 200 for final destination";
+        is $mech->res->previous->code, 302, "got 302 for redirect";
+        # Extra check given host weirdness
+        is $mech->res->previous->header('Location'), "http://fixmystreet.site/report/$report_id";
     };
 };
 

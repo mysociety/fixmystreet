@@ -74,6 +74,7 @@ web-based cross-browser testing tools for this project.
         - Hide confirmed column on body page if all categories confirmed. #1565
         - Show any waiting reports on admin index page. #1382
         - Allow user's phone number to be edited, and a report's category. #400
+        - Resend report if changing category changes body. #1560.
         - New user system:
             - /admin requires a user with the `is_superuser` flag. #1463
             - `createsuperuser` command for creating superusers.

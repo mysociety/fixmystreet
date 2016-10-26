@@ -8,9 +8,9 @@ use Path::Class;
 use POSIX qw(strftime strcoll);
 use Digest::SHA qw(sha1_hex);
 use mySociety::EmailUtil qw(is_valid_email);
+use mySociety::ArrayUtils;
 use DateTime::Format::Strptime;
 use List::Util 'first';
-
 
 use FixMyStreet::SendReport;
 
@@ -837,23 +837,15 @@ Handles changing a problem's category and the complexity that comes with it.
 sub report_edit_category : Private {
     my ($self, $c, $problem) = @_;
 
-    # TODO: It's possible to assign a category belonging to a district
-    # council, meaning a 404 when the page is reloaded because the
-    # problem is no longer included in the current cobrand's
-    # problem_restriction.
-    # See mysociety/fixmystreetforcouncils#44
-    # We could
-    #  a) only allow the current body's categories to be chosen,
-    #  b) show a warning about the impending change of body
-    #  c) bounce the user to the report page on fms.com
-    # Not too worried about this right now, as it forms part of a bigger
-    # concern outlined in the above ticket and
-    # mysociety/fixmystreetforcouncils#17
     if ((my $category = $c->get_param('category')) ne $problem->category) {
         $problem->category($category);
         my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
-        my $bs = join( ',', map { $_->body_id } @contacts );
-        $problem->bodies_str($bs);
+        my @new_body_ids = map { $_->body_id } @contacts;
+        # If the report has changed bodies we need to resend it
+        if (scalar @{mySociety::ArrayUtils::symmetric_diff($problem->bodies_str_ids, \@new_body_ids)}) {
+            $problem->whensent(undef);
+        }
+        $problem->bodies_str(join( ',', @new_body_ids ));
     }
 }
 
