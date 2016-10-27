@@ -267,6 +267,9 @@ fixmystreet.add_assets = function(options) {
         if (fixmystreet.wmts_config) {
             protocol_options.srsName = fixmystreet.wmts_config.map_projection;
         }
+        if (options.propertyNames) {
+            protocol_options.propertyNames = options.propertyNames;
+        }
         var protocol = new OpenLayers.Protocol.WFS(protocol_options);
         var layer_options = {
             fixmystreet: options,
