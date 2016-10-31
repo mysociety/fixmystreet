@@ -84,10 +84,11 @@ $(function(){
       }
     });
 
-    // On user edit page, hide the area select field if body changes
+    // On user edit page, hide the area/categories fields if body changes
     $("form#user_edit select#body").change(function() {
         var show_area = $(this).val() == $(this).find("[data-originally-selected]").val();
         $("form#user_edit select#area_id").closest("li").toggle(show_area);
+        $("form#user_edit .js-user-categories").toggle(show_area);
     });
 
     // On category edit page, hide the reputation input if inspection isn't required

@@ -391,4 +391,19 @@ sub update_reputation {
     $self->update;
 }
 
+has categories => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        return [] unless $self->get_extra_metadata('categories');
+        my @categories = $self->result_source->schema->resultset("Contact")->search({
+            id => $self->get_extra_metadata('categories'),
+        }, {
+            order_by => 'category',
+        })->get_column('category')->all;
+        return \@categories;
+    },
+);
+
 1;

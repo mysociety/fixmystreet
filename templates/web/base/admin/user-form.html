@@ -71,6 +71,19 @@
           </li>
         [% END %]
 
+        [% IF contacts AND c.cobrand.moniker != 'zurich'%]
+          <li class="js-user-categories">
+            <div class="admin-hint">
+              <p>
+                [% loc(
+                  "Authorised staff users can be associated with the categories in which they operate.")
+                %]
+              </p>
+            </div>
+            [% INCLUDE 'admin/category-checkboxes.html' %]
+          </li>
+        [% END %]
+
 
       [% IF c.cobrand.moniker != 'zurich' %]
         <li>
@@ -142,6 +155,10 @@
             <li>
               [% group.key %]
               <ul class="no-bullets">
+                <li>
+                  (<a href="#" data-select-all>[% loc('all') %]</a> /
+                  <a href="#" data-select-none>[% loc('none') %]</a>)
+                </li>
                 [% FOREACH permission IN group.value %]
                   <li>
                     <label class="inline">

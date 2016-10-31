@@ -1330,6 +1330,17 @@ sub user_edit : Path('user_edit') : Args(1) {
         }
 
         $c->stash->{field_errors} = {};
+
+        # Update the categories this user operates in
+        if ( $user->from_body ) {
+            $c->stash->{body} = $user->from_body;
+            $c->forward('fetch_contacts');
+            my @live_contacts = $c->stash->{live_contacts}->all;
+            my @live_contact_ids = map { $_->id } @live_contacts;
+            my @new_contact_ids = grep { $c->get_param("contacts[$_]") } @live_contact_ids;
+            $user->set_extra_metadata('categories', \@new_contact_ids);
+        }
+
         unless ($user->email) {
             $c->stash->{field_errors}->{email} = _('Please enter a valid email');
         }
@@ -1352,6 +1363,22 @@ sub user_edit : Path('user_edit') : Args(1) {
 
         $c->stash->{status_message} =
           '<p><em>' . _('Updated!') . '</em></p>';
+    }
+
+    if ( $user->from_body ) {
+        unless ( $c->stash->{body} && $user->from_body->id eq $c->stash->{body}->id ) {
+            $c->stash->{body} = $user->from_body;
+            $c->forward('fetch_contacts');
+        }
+        my @contacts = @{$user->get_extra_metadata('categories') || []};
+        my %active_contacts = map { $_ => 1 } @contacts;
+        my @live_contacts = $c->stash->{live_contacts}->all;
+        my @all_contacts = map { {
+            id => $_->id,
+            category => $_->category,
+            active => $active_contacts{$_->id},
+        } } @live_contacts;
+        $c->stash->{contacts} = \@all_contacts;
     }
 
     return 1;
