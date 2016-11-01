@@ -365,6 +365,8 @@ sub check_canonical_url : Private {
 sub load_and_group_problems : Private {
     my ( $self, $c ) = @_;
 
+    $c->forward('stash_report_sort', [ $c->cobrand->reports_ordering ]);
+
     my $page = $c->get_param('p') || 1;
     # NB: If 't' is specified, it will override 'status'.
     my $type = $c->get_param('t') || 'all';
@@ -411,10 +413,10 @@ sub load_and_group_problems : Private {
     $problems = $problems->search(
         $where,
         {
-            order_by => $c->cobrand->reports_ordering,
+            order_by => $c->stash->{sort_order},
             rows => $c->cobrand->reports_per_page,
         }
-    )->page( $page );
+    )->include_comment_counts->page( $page );
     $c->stash->{pager} = $problems->pager;
 
     my ( %problems, @pins );
@@ -499,6 +501,27 @@ sub stash_report_filter_status : Private {
 
     $c->stash->{filter_problem_states} = \%filter_problem_states;
     $c->stash->{filter_status} = \%filter_status;
+    return 1;
+}
+
+sub stash_report_sort : Private {
+    my ( $self, $c, $default ) = @_;
+
+    my %types = (
+        updated => 'lastupdate',
+        created => 'confirmed',
+        comments => 'comment_count',
+    );
+
+    my $sort = $c->get_param('sort') || $default;
+    $sort = $default unless $sort =~ /^((updated|created)-(desc|asc)|comments-desc)$/;
+    $sort =~ /^(updated|created|comments)-(desc|asc)$/;
+    my $order_by = $types{$1} || $1;
+    my $dir = $2;
+    $order_by = { -desc => $order_by } if $dir eq 'desc';
+
+    $c->stash->{sort_key} = $sort;
+    $c->stash->{sort_order} = $order_by;
     return 1;
 }
 

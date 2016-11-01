@@ -1231,7 +1231,7 @@ $(function() {
                     // location.href is something like foo.com/around?pc=abc-123,
                     // which we pass into fixmystreet.display.reports_list() as a fallback
                     // in case the list isn't already in the DOM.
-                    $('#filter_categories').add('#statuses').find('option')
+                    $('#filter_categories').add('#statuses').add('#sort').find('option')
                         .prop('selected', function() { return this.defaultSelected; })
                         .trigger('change.multiselect');
                     fixmystreet.display.reports_list(location.href);
@@ -1242,6 +1242,7 @@ $(function() {
                 } else if ('filter_change' in e.state) {
                     $('#filter_categories').val(e.state.filter_change.filter_categories);
                     $('#statuses').val(e.state.filter_change.statuses);
+                    $('#sort').val(e.state.filter_change.sort);
                     $('#filter_categories').add('#statuses')
                         .trigger('change.filters').trigger('change.multiselect');
                 } else if ('hashchange' in e.state) {

@@ -91,10 +91,9 @@ sub map_features {
     # list of problems around map can be limited, but should show all pins
     my $around_limit = $c->cobrand->on_map_list_limit || undef;
 
-    my @around_args = @p{"min_lat", "max_lat", "min_lon", "max_lon", "interval"};
-    my $on_map_all = $c->cobrand->problems_on_map->around_map( @around_args, undef, $p{categories}, $p{states} );
+    my $on_map_all = $c->cobrand->problems_on_map->around_map( undef, %p );
     my $on_map_list = $around_limit
-        ? $c->cobrand->problems_on_map->around_map( @around_args, $around_limit, $p{categories}, $p{states} )
+        ? $c->cobrand->problems_on_map->around_map( $around_limit, %p )
         : $on_map_all;
 
     my $dist = FixMyStreet::Gaze::get_radius_containing_population( $p{latitude}, $p{longitude} );

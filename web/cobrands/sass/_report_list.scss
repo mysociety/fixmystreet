@@ -6,6 +6,10 @@
   font-size: 0.85em;
   line-height: 1.8em;
 
+  & + & {
+    padding-top: 0.25em;
+  }
+
   label {
     // Override default label styling
     font-weight: normal;
@@ -18,23 +22,24 @@
     vertical-align: top;
   }
 
-  select {
-    display: inline-block;
-    width: auto;
-    color: inherit;
-    font-family: inherit;
-    font-size: 1em;
-    border: 1px solid #ced7c4;
-    max-width: 13em;
-    margin: 0 0.2em;
-  }
-
   .form-control {
-    margin-bottom: 0;
+    display: inline-block;
+    margin: 0 0.2em;
+
+    // Visually match the teeny tiny .multi-select-buttons
+    font-size: 0.875em;
+    background-color: #fff;
+    color: #000;
+    max-width: 10em;
+    vertical-align: top;
+    height: 1.8em;
+    line-height: 1.8em;
+    padding: 0;
   }
 
   .multi-select-container {
     margin: 0 0.2em;
+    color: #000;
   }
 
   .multi-select-menu {

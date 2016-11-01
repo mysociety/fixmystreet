@@ -57,6 +57,7 @@ sub get_problems : Private {
     my $p_page = $c->get_param('p') || 1;
 
     $c->forward( '/reports/stash_report_filter_status' );
+    $c->forward('/reports/stash_report_sort', [ 'created-desc' ]);
 
     my $pins = [];
     my $problems = [];
@@ -73,9 +74,9 @@ sub get_problems : Private {
     }
 
     my $rs = $c->stash->{problems_rs}->search( $params, {
-        order_by => { -desc => 'confirmed' },
+        order_by => $c->stash->{sort_order},
         rows => 50
-    } )->page( $p_page );
+    } )->include_comment_counts->page( $p_page );
 
     while ( my $problem = $rs->next ) {
         $c->stash->{has_content}++;

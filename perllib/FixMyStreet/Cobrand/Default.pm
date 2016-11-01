@@ -432,7 +432,7 @@ The order_by clause to use for reports on all reports page
 =cut
 
 sub reports_ordering {
-    return { -desc => 'lastupdate' };
+    return 'updated-desc';
 }
 
 =head2 on_map_list_limit

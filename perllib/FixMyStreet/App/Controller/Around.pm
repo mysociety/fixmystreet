@@ -176,13 +176,16 @@ sub display_location : Private {
 
     # Check the category to filter by, if any, is valid
     $c->forward('check_and_stash_category');
+    $c->forward( '/reports/stash_report_sort', [ 'created-desc' ]);
 
     # get the map features
     my ( $on_map_all, $on_map, $nearby, $distance ) =
       FixMyStreet::Map::map_features( $c,
         latitude => $latitude, longitude => $longitude,
         interval => $interval, categories => $c->stash->{filter_category},
-        states => $c->stash->{filter_problem_states} );
+        states => $c->stash->{filter_problem_states},
+        order => $c->stash->{sort_order},
+      );
 
     # copy the found reports to the stash
     $c->stash->{on_map}     = $on_map;
@@ -293,13 +296,16 @@ sub ajax : Path('/ajax') {
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;
 
     $c->forward( '/reports/stash_report_filter_status' );
+    $c->forward( '/reports/stash_report_sort', [ 'created-desc' ]);
 
     # extract the data from the map
     my ( $on_map_all, $on_map_list, $nearby, $dist ) =
       FixMyStreet::Map::map_features($c,
           bbox => $bbox, interval => $interval,
           categories => [ $c->get_param_list('filter_category', 1) ],
-          states => $c->stash->{filter_problem_states} );
+          states => $c->stash->{filter_problem_states},
+          order => $c->stash->{sort_order},
+      );
 
     # create a list of all the pins
     my @pins = map {
