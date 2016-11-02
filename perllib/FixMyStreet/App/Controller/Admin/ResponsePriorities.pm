@@ -19,7 +19,7 @@ sub index : Path : Args(0) {
     if ($user->is_superuser) {
         $c->forward('/admin/fetch_all_bodies');
     } elsif ( $user->from_body ) {
-        $c->forward('load_user_body', [ $user->from_body->id ]);
+        $c->forward('/admin/load_user_body', [ $user->from_body->id, 'responsepriority_edit' ]);
         $c->res->redirect( $c->uri_for( '', $c->stash->{body}->id ) );
     } else {
         $c->detach( '/page_error_404_not_found' );
@@ -29,7 +29,7 @@ sub index : Path : Args(0) {
 sub list : Path : Args(1) {
     my ($self, $c, $body_id) = @_;
 
-    $c->forward('load_user_body', [ $body_id ]);
+    $c->forward('/admin/load_user_body', [ $body_id, 'responsepriority_edit' ]);
 
     my @priorities = $c->stash->{body}->response_priorities->search(
         undef,
@@ -44,7 +44,7 @@ sub list : Path : Args(1) {
 sub edit : Path : Args(2) {
     my ( $self, $c, $body_id, $priority_id ) = @_;
 
-    $c->forward('load_user_body', [ $body_id ]);
+    $c->forward('/admin/load_user_body', [ $body_id, 'responsepriority_edit' ]);
 
     my $priority;
     if ($priority_id eq 'new') {
@@ -87,20 +87,6 @@ sub edit : Path : Args(2) {
     }
 
     $c->stash->{response_priority} = $priority;
-}
-
-sub load_user_body : Private {
-    my ($self, $c, $body_id) = @_;
-
-    my $has_permission = $c->user->has_body_permission_to('responsepriority_edit') &&
-                         $c->user->from_body->id eq $body_id;
-
-    unless ( $c->user->is_superuser || $has_permission ) {
-        $c->detach( '/page_error_404_not_found' );
-    }
-
-    $c->stash->{body} = $c->model('DB::Body')->find($body_id)
-        or $c->detach( '/page_error_404_not_found' );
 }
 
 __PACKAGE__->meta->make_immutable;

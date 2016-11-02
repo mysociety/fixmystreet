@@ -1021,6 +1021,29 @@ sub load_template_body : Private {
         or $c->detach( '/page_error_404_not_found', [] );
 }
 
+
+=head2 load_user_body
+
+Loads a body by id and saves it on the stash as stash->{body}, but only if the
+logged-in user's from_body matches and the user has the given permission (or is
+a superuser). Shows a 404 error if an error occurs.
+
+=cut
+
+sub load_user_body : Private {
+    my ($self, $c, $body_id, $permission_type) = @_;
+
+    my $has_permission = $c->user->has_body_permission_to($permission_type) &&
+                         $c->user->from_body->id eq $body_id;
+
+    unless ( $c->user->is_superuser || $has_permission ) {
+        $c->detach( '/page_error_404_not_found', [] );
+    }
+
+    $c->stash->{body} = $c->model('DB::Body')->find($body_id)
+        or $c->detach( '/page_error_404_not_found', [] );
+}
+
 sub users: Path('users') : Args(0) {
     my ( $self, $c ) = @_;
 
