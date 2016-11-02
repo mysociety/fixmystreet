@@ -146,4 +146,8 @@ $button_bg_col: #a1a1a1;  // also search bar (tables)
     background-position: $right top;
     background-repeat: no-repeat;
   }
+  .multi-select-container {
+    display: inline-block;
+    vertical-align: top;
+  }
 }

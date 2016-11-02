@@ -642,7 +642,7 @@ sub admin_pages {
 
     # There are some pages that only super users can see
     if ( $user->is_superuser ) {
-        $pages->{flagged} = [ _('Flagged'), 7 ];
+        $pages->{flagged} = [ _('Flagged'), 8 ];
         $pages->{config} = [ _('Configuration'), 9];
     };
     # And some that need special permissions
@@ -669,6 +669,7 @@ sub admin_pages {
     if ( $user->is_superuser || $user->has_body_permission_to('user_edit') ) {
         $pages->{users} = [ _('Users'), 6 ];
         $pages->{user_edit} = [ undef, undef ];
+        $pages->{teams} = [ _('Teams'), 7 ];
     }
 
     return $pages;
