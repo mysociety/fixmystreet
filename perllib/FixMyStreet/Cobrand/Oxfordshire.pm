@@ -100,7 +100,7 @@ sub problem_response_days {
 }
 
 sub reports_ordering {
-    return { -desc => 'confirmed' };
+    return 'created-desc';
 }
 
 sub pin_colour {

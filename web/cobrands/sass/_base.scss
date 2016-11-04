@@ -10,7 +10,7 @@ $itemlist_item_background: #f6f6f6 !default;
 $itemlist_item_background_hover: #e6e6e6 !default;
 $col_big_numbers: #ccc !default;
 
-$form-control-border-color: #aaaaaa;
+$form-control-border-color: #aaaaaa !default;
 
 @import "_mixins";
 @import "_report_list";

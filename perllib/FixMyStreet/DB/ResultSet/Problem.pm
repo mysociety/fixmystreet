@@ -140,27 +140,27 @@ sub _recent {
 # Problems around a location
 
 sub around_map {
-    my ( $rs, $min_lat, $max_lat, $min_lon, $max_lon, $interval, $limit, $categories, $states ) = @_;
+    my ( $rs, $limit, %p) = @_;
     my $attr = {
-        order_by => { -desc => 'created' },
+        order_by => $p{order},
     };
     $attr->{rows} = $limit if $limit;
 
-    unless ( $states ) {
-        $states = FixMyStreet::DB::Result::Problem->visible_states();
+    unless ( $p{states} ) {
+        $p{states} = FixMyStreet::DB::Result::Problem->visible_states();
     }
 
     my $q = {
             non_public => 0,
-            state => [ keys %$states ],
-            latitude => { '>=', $min_lat, '<', $max_lat },
-            longitude => { '>=', $min_lon, '<', $max_lon },
+            state => [ keys %{$p{states}} ],
+            latitude => { '>=', $p{min_lat}, '<', $p{max_lat} },
+            longitude => { '>=', $p{min_lon}, '<', $p{max_lon} },
     };
-    $q->{'current_timestamp - lastupdate'} = { '<', \"'$interval'::interval" }
-        if $interval;
-    $q->{category} = $categories if $categories && @$categories;
+    $q->{'current_timestamp - lastupdate'} = { '<', \"'$p{interval}'::interval" }
+        if $p{interval};
+    $q->{category} = $p{categories} if $p{categories} && @{$p{categories}};
 
-    my @problems = mySociety::Locale::in_gb_locale { $rs->search( $q, $attr )->all };
+    my @problems = mySociety::Locale::in_gb_locale { $rs->search( $q, $attr )->include_comment_counts->all };
     return \@problems;
 }
 
@@ -236,6 +236,18 @@ sub send_reports {
     my ( $rs, $site_override ) = @_;
     require FixMyStreet::Script::Reports;
     return FixMyStreet::Script::Reports::send($site_override);
+}
+
+sub include_comment_counts {
+    my $rs = shift;
+    my $order_by = $rs->{attrs}{order_by};
+    return $rs unless ref $order_by eq 'HASH' && $order_by->{-desc} eq 'comment_count';
+    $rs->search({}, {
+        '+select' => [ {
+            "" => \'(select count(*) from comment where problem_id=me.id and state=\'confirmed\')',
+            -as => 'comment_count'
+        } ]
+    });
 }
 
 1;

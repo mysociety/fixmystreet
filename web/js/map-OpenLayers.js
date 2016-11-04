@@ -286,7 +286,11 @@ var fixmystreet = fixmystreet || {};
 
     function replace_query_parameter(qs, id, key) {
         var value = $('#' + id).val();
-        value ? qs[key] = value.join(',') : delete qs[key];
+        if (value) {
+            qs[key] = (typeof value === 'string') ? value : value.join(',');
+        } else {
+            delete qs[key];
+        }
         return value;
     }
 
@@ -297,6 +301,7 @@ var fixmystreet = fixmystreet || {};
         var qs = parse_query_string();
         var filter_categories = replace_query_parameter(qs, 'filter_categories', 'filter_category');
         var filter_statuses = replace_query_parameter(qs, 'statuses', 'status');
+        var sort_key = replace_query_parameter(qs, 'sort', 'sort');
         delete qs['p'];
         var new_url;
         if ($.isEmptyObject(qs)) {
@@ -307,7 +312,7 @@ var fixmystreet = fixmystreet || {};
             new_url = location.href + '?' + $.param(qs);
         }
         history.pushState({
-            filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses }
+            filter_change: { 'filter_categories': filter_categories, 'statuses': filter_statuses, 'sort': sort_key }
         }, null, new_url);
     }
 
@@ -522,8 +527,10 @@ var fixmystreet = fixmystreet || {};
             // Set up the event handlers to populate the filters and react to them changing
             $("#filter_categories").on("change.filters", categories_or_status_changed);
             $("#statuses").on("change.filters", categories_or_status_changed);
+            $("#sort").on("change.filters", categories_or_status_changed);
             $("#filter_categories").on("change.user", categories_or_status_changed_history);
             $("#statuses").on("change.user", categories_or_status_changed_history);
+            $("#sort").on("change.user", categories_or_status_changed_history);
         } else if (fixmystreet.page == 'new') {
             drag.activate();
         }
@@ -792,17 +799,14 @@ OpenLayers.Strategy.FixMyStreetFixed = OpenLayers.Class(OpenLayers.Strategy.Fixe
 // params to /ajax if the user has filtered the map.
 OpenLayers.Protocol.FixMyStreet = OpenLayers.Class(OpenLayers.Protocol.HTTP, {
     read: function(options) {
-        // Pass the values of the category and status fields as query params
-        var filter_category = $("#filter_categories").val();
-        if (filter_category !== undefined) {
-            options.params = options.params || {};
-            options.params.filter_category = filter_category;
-        }
-        var status = $("#statuses").val();
-        if (status !== undefined) {
-            options.params = options.params || {};
-            options.params.status = status;
-        }
+        // Pass the values of the category, status, and sort fields as query params
+        $.each({ filter_category: 'filter_categories', status: 'statuses', sort: 'sort' }, function(key, id) {
+            var val = $('#' + id).val();
+            if (val !== undefined) {
+                options.params = options.params || {};
+                options.params[key] = val;
+            }
+        });
         return OpenLayers.Protocol.HTTP.prototype.read.apply(this, [options]);
     },
     CLASS_NAME: "OpenLayers.Protocol.FixMyStreet"
