@@ -179,6 +179,40 @@ fixmystreet.resize_to = {
   }
 };
 
+fixmystreet.geolocate = {
+    setup: function(success_callback) {
+        $('#geolocate_link').click(function(e) {
+            var $link = $(this);
+            e.preventDefault();
+            // Spinny thing!
+            if ($('.mobile').length) {
+                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
+            } else {
+                var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color") ? 'white' : 'yellow';
+                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
+            }
+            geo_position_js.getCurrentPosition(function(pos) {
+                $link.find('img').remove();
+                success_callback(pos);
+            }, function(err) {
+                $link.find('img').remove();
+                if (err.code === 1) { // User said no
+                    $link.html(translation_strings.geolocation_declined);
+                } else if (err.code === 2) { // No position
+                    $link.html(translation_strings.geolocation_no_position);
+                } else if (err.code === 3) { // Too long
+                    $link.html(translation_strings.geolocation_no_result);
+                } else { // Unknown
+                    $link.html(translation_strings.geolocation_unknown);
+                }
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000
+            });
+        });
+    }
+};
+
 fixmystreet.set_up = fixmystreet.set_up || {};
 $.extend(fixmystreet.set_up, {
   basics: function() {
@@ -309,37 +343,6 @@ $.extend(fixmystreet.set_up, {
     if (!geo_position_js.init()) {
         return;
     }
-    function add_click_handler(success_callback) {
-        $('#geolocate_link').click(function(e) {
-            var $link = $(this);
-            e.preventDefault();
-            // Spinny thing!
-            if($('.mobile').length){
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-black.gif" alt="" align="bottom">');
-            }else{
-                var spincolor = $('<span>').css("color","white").css("color") === $('#front-main').css("background-color")? 'white' : 'yellow';
-                $link.append(' <img src="/cobrands/fixmystreet/images/spinner-' + spincolor + '.gif" alt="" align="bottom">');
-            }
-            geo_position_js.getCurrentPosition(function(pos) {
-                $link.find('img').remove();
-                success_callback(pos);
-            }, function(err) {
-                $link.find('img').remove();
-                if (err.code == 1) { // User said no
-                    $link.html(translation_strings.geolocation_declined);
-                } else if (err.code == 2) { // No position
-                    $link.html(translation_strings.geolocation_no_position);
-                } else if (err.code == 3) { // Too long
-                    $link.html(translation_strings.geolocation_no_result);
-                } else { // Unknown
-                    $link.html(translation_strings.geolocation_unknown);
-                }
-            }, {
-                enableHighAccuracy: true,
-                timeout: 10000
-            });
-        });
-    }
     if ($('#postcodeForm').length) {
         var link = '<a href="LINK" id="geolocate_link">&hellip; ' + translation_strings.geolocate + '</a>';
         $('form[action="/alert/list"]').append(link.replace('LINK','/alert/list'));
@@ -348,24 +351,11 @@ $.extend(fixmystreet.set_up, {
         } else{
             $('#postcodeForm').append(link.replace('LINK','/around'));
         }
-        add_click_handler(function(pos) {
+        fixmystreet.geolocate.setup(function(pos) {
             var latitude = pos.coords.latitude;
             var longitude = pos.coords.longitude;
             var page = $('#geolocate_link').attr('href');
             location.href = page + '?latitude=' + latitude + ';longitude=' + longitude;
-        });
-    }
-    if ($('form#report_inspect_form').length) {
-        add_click_handler(function(pos) {
-            var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
-            var bng = latlon.clone().transform(
-                new OpenLayers.Projection("EPSG:4326"),
-                new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
-            );
-            $("#problem_northing").text(bng.lat.toFixed(1));
-            $("#problem_easting").text(bng.lon.toFixed(1));
-            $("form#report_inspect_form input[name=latitude]").val(latlon.lat);
-            $("form#report_inspect_form input[name=longitude]").val(latlon.lon);
         });
     }
   },
@@ -398,15 +388,6 @@ $.extend(fixmystreet.set_up, {
             }
         });
     });
-
-    // On the manage/inspect report form, we already have all the extra inputs
-    // in the DOM, we just need to hide/show them as appropriate.
-    $('form#report_inspect_form [name=category]').change(function() {
-        var category = $(this).val();
-        var selector = "[data-category='"+category+"']";
-        $("form#report_inspect_form [data-category]:not("+selector+")").addClass("hidden");
-        $("form#report_inspect_form "+selector).removeClass("hidden");
-    });
   },
 
 
@@ -437,25 +418,6 @@ $.extend(fixmystreet.set_up, {
         }
     });
     $('.js-contribute-as').change();
-  },
-
-  inspect_with_public_update: function() {
-    $('.js-toggle-public-update').each(function() {
-        var $checkbox = $(this);
-        var toggle_public_update = function() {
-            if ($checkbox.prop('checked')) {
-                $('#public_update').parents('p').show();
-            } else {
-                $('#public_update').parents('p').hide();
-            }
-        };
-
-        $checkbox.on('change', function() {
-            toggle_public_update();
-        });
-
-        toggle_public_update();
-    });
   },
 
   on_resize: function() {
@@ -594,6 +556,50 @@ $.extend(fixmystreet.set_up, {
     }
     make_multi('statuses');
     make_multi('filter_categories');
+  },
+
+  report_page_inspect: function() {
+    if (!$('form#report_inspect_form').length) {
+        return;
+    }
+
+    // On the manage/inspect report form, we already have all the extra inputs
+    // in the DOM, we just need to hide/show them as appropriate.
+    $('form#report_inspect_form [name=category]').change(function() {
+        var category = $(this).val(),
+            selector = "[data-category='" + category + "']";
+        $("form#report_inspect_form [data-category]:not(" + selector + ")").addClass("hidden");
+        $("form#report_inspect_form " + selector).removeClass("hidden");
+    });
+
+    $('.js-toggle-public-update').each(function() {
+        var $checkbox = $(this);
+        var toggle_public_update = function() {
+            if ($checkbox.prop('checked')) {
+                $('#public_update').parents('p').show();
+            } else {
+                $('#public_update').parents('p').hide();
+            }
+        };
+        $checkbox.on('change', function() {
+            toggle_public_update();
+        });
+        toggle_public_update();
+    });
+
+    if (geo_position_js.init()) {
+        fixmystreet.geolocate.setup(function(pos) {
+            var latlon = new OpenLayers.LonLat(pos.coords.longitude, pos.coords.latitude);
+            var bng = latlon.clone().transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection("EPSG:27700") // TODO: Handle other projections
+            );
+            $("#problem_northing").text(bng.lat.toFixed(1));
+            $("#problem_easting").text(bng.lon.toFixed(1));
+            $("form#report_inspect_form input[name=latitude]").val(latlon.lat);
+            $("form#report_inspect_form input[name=longitude]").val(latlon.lon);
+        });
+    }
   },
 
   mobile_ui_tweaks: function() {
@@ -1070,13 +1076,23 @@ fixmystreet.display = {
 
   report: function(reportPageUrl, reportId, callback) {
     $.ajax(reportPageUrl).done(function(html, textStatus, jqXHR) {
-        var $reportPage = $(html);
-        var $sideReport = $reportPage.find('#side-report');
+        var $reportPage = $(html),
+            $twoColReport = $reportPage.find('.two_column_sidebar'),
+            $sideReport = $reportPage.find('#side-report');
 
         if ($sideReport.length) {
             $('#side').hide(); // Hide the list of reports
-            $('#side-report').remove(); // Remove any existing report page content from sidebar
-            $sideReport.appendTo('#map_sidebar'); // Insert this report's content
+            // Remove any existing report page content from sidebar
+            $('#side-report').remove();
+            $('.two_column_sidebar').remove();
+            // Insert this report's content
+            if ($twoColReport.length) {
+                $twoColReport.appendTo('#map_sidebar');
+                $('body').addClass('with-actions');
+                fixmystreet.set_up.report_page_inspect();
+            } else {
+                $sideReport.appendTo('#map_sidebar');
+            }
             $('#map_sidebar').scrollTop(0);
 
             var found = html.match(/<title>([\s\S]*?)<\/title>/);
@@ -1151,8 +1167,10 @@ fixmystreet.display = {
     if ($('#side').length) {
         $('#side').show();
         $('#side-form').hide();
+        // Report page may have been one or two columns, remove either
         $('#side-report').remove();
-
+        $('.two_column_sidebar').remove();
+        $('body').removeClass('with-actions');
         $('body').removeClass('with-notes');
 
         fixmystreet.page = fixmystreet.original.page;

@@ -1027,10 +1027,8 @@ has shortlisted_user => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        my $user = $self->result_source->schema->resultset('User')->search(
-            { 'user_planned_reports.report_id' => $self->id },
-            { join => 'user_planned_reports' })->first;
-        return $user;
+        my $user = $self->user_planned_reports->active->first;
+        return $user->user if $user;
     },
 );
 
