@@ -109,19 +109,19 @@ $(function(){
     });
 
     // Wire up the multiselects on the team page
+    function make_multi(id) {
+        var $id = $('#' + id),
+            all = $id.data('all');
+        $id.multiSelect({
+            allText: all,
+            noneText: all,
+            presets: [{
+                name: all,
+                options: []
+            }]
+        });
+    }
     if ($("form#teams").length) {
-        function make_multi(id) {
-            var $id = $('#' + id),
-                all = $id.data('all');
-            $id.multiSelect({
-                allText: all,
-                noneText: all,
-                presets: [{
-                    name: all,
-                    options: []
-                }]
-            });
-        }
         make_multi('areas');
         make_multi('categories');
     }

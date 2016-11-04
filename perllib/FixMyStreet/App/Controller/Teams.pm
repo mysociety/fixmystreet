@@ -1,5 +1,6 @@
 package FixMyStreet::App::Controller::Admin::Teams;
 use Moose;
+use Data::Dumper;
 use namespace::autoclean;
 
 BEGIN { extends 'Catalyst::Controller'; }
@@ -32,6 +33,28 @@ sub search : Path : Args(1) {
     $c->forward('/admin/load_user_body', [ $body_id, 'user_edit' ]);
     $c->forward('/admin/fetch_contacts');
     $c->forward('/admin/fetch_body_areas', [ $c->stash->{body} ]);
+    my %area_ids = map { $_->{id} => $_ } @{ $c->stash->{areas} };
+    $c->log->debug(Dumper(\%area_ids));
+    $c->stash->{areas_by_id} = \%area_ids;
+
+    my $users = $c->cobrand->users->search({ from_body => $body_id });
+
+    my @area_ids = $c->get_param_list("areas", 1);
+    if ( @area_ids ) {
+        $users = $users->search({ area_id => \@area_ids });
+        my %area_ids = map { $_ => 1 } @area_ids;
+        $c->stash->{selected_area_ids} = \%area_ids;
+        $c->log->debug(Dumper([$c->stash->{selected_area_ids}]));
+    }
+
+    my @categories = $c->get_param_list("categories", 1);
+    if ( @categories ) {
+        my %categories = map { $_ => 1 } @categories;
+        $c->stash->{selected_categories} = \%categories;
+    }
+
+    my @users = $users->all;
+    $c->stash->{users} = [ @users ];
 
 }
 

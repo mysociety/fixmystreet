@@ -2,38 +2,45 @@
 
 <div>
   <form method="get" action="" id="teams">
-    <select class="form-control" name="category" id="categories" multiple data-all="[% loc('Everything') %]">
+    Showing users in
+    <select class="form-control" name="categories" id="categories" multiple data-all="[% loc('all categories') %]">
         [% FOR contact IN live_contacts.all %]
-            <option value="[% contact.category | html %]"[% ' selected' IF filter_category.grep(cat).size %]>
+            <option value="[% contact.category | html %]"[% ' selected' IF selected_categories.${contact.category} %]>
                 [% contact.category | html %]
             </option>
         [% END %]
     </select>
 
-    <select class="form-control" id='areas' name='areas' multiple data-all="[% loc("All areas") %]">
+    and
+    <select class="form-control" id='areas' name='areas' multiple data-all="[% loc("all areas") %]">
       [% FOREACH area IN areas %]
-        <option value="[% area.id %]"[% ' selected' IF area.id == user.area_id %]>[% area.name | html %]</option>
+        <option value="[% area.id %]"[% ' selected' IF selected_area_ids.${area.id} %]>[% area.name | html %]</option>
       [% END %]
     </select>
+
+    <input type="submit" value="[% loc('Search') %]">
   </form>
 </div>
 
+[% users.count %]
 <table>
     <thead>
     <tr>
         <th>[% loc('Name') %]</th>
+        <th>[% loc('Email') %]</th>
         <th>[% loc('Area') %]</th>
         <th>[% loc('Categories') %]</th>
         <th>[% loc('Permissions') %]</th>
     </tr>
     </thead>
     <tbody>
-[% FOR user IN users %]
+[% FOREACH user IN users %]
     <tr>
-        <td><a href="[% c.uri_for( 'user_edit', user.id ) %]">[% user.name %]</a></td>
-        <td>[% user.area_id %]</td>
-        <td>[% user.categories %]</td>
-        <td>[% user.permissions %]</td>
+        <td><a href="[% c.uri_for( '/admin/user_edit', user.id ) %]">[% user.name %]</a></td>
+        <td><a href="mailto:[% user.email | html %]">[% user.email | html %]</a></td>
+        <td>[% areas_by_id.${user.area_id}.name %]</td>
+        <td>[% user.categories.join(", ") %]</td>
+        <td>[% user.permissions(c, user.from_body) %]</td>
     </tr>
 [% END %]
     </tbody>
