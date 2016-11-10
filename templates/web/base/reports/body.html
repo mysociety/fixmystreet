@@ -53,13 +53,6 @@
 
 [% INCLUDE 'reports/_ward-list.html' %]
 
-[% IF c.cobrand.moniker == 'fixmystreet' %]
-<p class="promo">
-    FixMyStreet is now available for local council websites.
-    <a href="https://www.fixmystreet.com/council">Find&nbsp;out&nbsp;more</a>.
-</p>
-[% END %]
-
 <section class="full-width">
 [% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
 <div class="js-pagination">
