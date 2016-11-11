@@ -913,7 +913,7 @@ sub set_report_extras : Private {
     foreach my $contact (@$contacts) {
         my $metas = $contact->get_metadata_for_input;
         foreach my $field ( @$metas ) {
-            if ( lc( $field->{required} ) eq 'true' ) {
+            if ( lc( $field->{required} ) eq 'true' && !$c->cobrand->category_extra_hidden($field->{code})) {
                 unless ( $c->get_param($param_prefix . $field->{code}) ) {
                     $c->stash->{field_errors}->{ $field->{code} } = _('This information is required');
                 }

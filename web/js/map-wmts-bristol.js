@@ -4,16 +4,17 @@
 
 // From the 'fullExtent' key from http://maps.bristol.gov.uk/arcgis/rest/services/base/2015_BCC_96dpi/MapServer?f=pjson
 fixmystreet.maps.layer_bounds = new OpenLayers.Bounds(
-    268756.31099999975, // W
-    98527.70309999958, // S
-    385799.51099999994, // E
-    202566.10309999995); // N
+    268756.311, // W
+    98527.7031, // S
+    385799.511, // E
+    202566.1031); // N
 
 fixmystreet.maps.matrix_ids = [
     {
       "identifier": "0",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 181428.9342864172,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 432,
@@ -23,6 +24,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "1",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 90714.4671432086,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 863,
@@ -32,6 +34,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "2",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 45357.2335716043,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 1725,
@@ -41,6 +44,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "3",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 22678.61678580215,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 3449,
@@ -50,6 +54,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "4",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 11339.308392901075,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 6898,
@@ -59,6 +64,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "5",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 5669.654196450538,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 13795,
@@ -68,6 +74,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "6",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 2834.827098225269,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 27590,
@@ -77,6 +84,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "7",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 1181.177957593862,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 66215,
@@ -86,6 +94,7 @@ fixmystreet.maps.matrix_ids = [
       "identifier": "8",
       "supportedCRS": "urn:ogc:def:crs:EPSG::27700",
       "scaleDenominator": 708.7067745563172,
+      "topLeftCorner": { "lat": 4470200, "lon": -5220400 },
       "tileWidth": 256,
       "tileHeight": 256,
       "matrixWidth": 110359,

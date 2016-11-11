@@ -2041,6 +2041,18 @@ table.nicetable {
     }
 }
 
+.asset-spot:before {
+    content: "";
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #000;
+    background-color: #ffff00;
+    margin: 0 0.3em 0 0.2em;
+    border-radius: 100%;
+    vertical-align: -2px;
+}
+
 @import "_admin";
 @import "_fixedthead";
 @import "_dropzone";

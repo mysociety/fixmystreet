@@ -24,6 +24,7 @@ fixmystreet.maps.setup_wmts_base_map = function() {
             url: fixmystreet.wmts_config.tile_urls[i],
             style: fixmystreet.wmts_config.layer_style,
             matrixIds: fixmystreet.maps.matrix_ids,
+            scales: fixmystreet.wmts_config.scales,
             tileOrigin: new OpenLayers.LonLat(fixmystreet.wmts_config.origin_x, fixmystreet.wmts_config.origin_y)
         });
     });

@@ -396,5 +396,10 @@ sub lookup_by_ref_regex {
     return qr/^\s*(\d+)\s*$/;
 }
 
+sub category_extra_hidden {
+    my ($self, $meta) = @_;
+    return 1 if $meta eq 'usrn' || $meta eq 'asset_id';
+    return 0;
+}
 
 1;

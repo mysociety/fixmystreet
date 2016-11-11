@@ -1,8 +1,7 @@
+<div id="form_category_row">
 [% IF js %]
-    <div id="form_category_row">
-        <label for="form_category">[% loc('Category') %]</label>
-        <select class="form-control" name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
-    </div>
+    <label for="form_category">[% loc('Category') %]</label>
+    <select class="form-control" name="category" id="form_category" required><option>[% loc('Loading...') %]</option></select>
 [% ELSE %]
     [% IF category_options.size %]
         [% IF field_errors.category %]
@@ -11,6 +10,7 @@
         [% PROCESS "report/new/category.html" %]
     [% END %]
 [% END %]
+</div>
 
 [%- IF category_extras %]
     [% PROCESS "report/new/category_extras.html" %]

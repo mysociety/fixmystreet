@@ -32,7 +32,7 @@
   [% FOR meta IN contact.get_metadata_for_input %]
     <li>
         [% meta.order %], <code>[% meta.code %]</code>, [% meta.datatype %],
-        [% meta.required ? loc('required') : loc('optional') %]
+        [% meta.required == 'true' ? loc('required') : loc('optional') %]
         <br><small>[% meta.description %]</small>
       [% IF meta.variable != 'false' AND meta.exists('values') %]
         <ul>
