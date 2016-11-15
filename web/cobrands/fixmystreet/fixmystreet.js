@@ -391,6 +391,40 @@ $.extend(fixmystreet.set_up, {
   },
 
 
+  state_change: function() {
+    // Deal with changes to report state by inspector/other staff, specifically
+    // displaying nearby reports if it's changed to 'duplicate'.
+    $("#report_inspect_form").on("change.state", "select#state", function() {
+        var state = $(this).val();
+
+        if (state !== "duplicate") {
+            $("#js-duplicate-reports").addClass("hidden");
+            $("#js-duplicate-reports ul").empty();
+            return;
+        }
+
+        var args = {
+            state: state,
+            filter_category: $("#report_inspect_form select#category").val()
+        };
+        var bounds = fixmystreet.map.getExtent();
+        bounds.transform(bounds.transform(fixmystreet.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")));
+        args.bbox = bounds.toBBOX();
+
+        args.latitude = $('input[name="latitude"]').val();
+        args.longitude = $('input[name="longitude"]').val();
+
+        console.log(args);
+
+        $.getJSON('/ajax', args, function(data) {
+            var $reports = $(data.current);
+            $("#js-duplicate-reports").removeClass("hidden");
+            $reports.slice(0, 5).appendTo($("#js-duplicate-reports ul").empty());
+        });
+    });
+  },
+
+
   contribute_as: function() {
     $('.content').on('change', '.js-contribute-as', function(){
         var opt = this.options[this.selectedIndex],

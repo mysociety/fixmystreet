@@ -76,6 +76,11 @@
             [% END %]
           </select>
         </p>
+        <div id="js-duplicate-reports" class="hidden">
+          <input type="hidden" name="duplicate_of" value="[% problem.get_extra_metadata('duplicate_of') | html %]">
+          Which report is it a duplicate of?
+          <ul></ul>
+        </div>
         [% END %]
 
       </div>
