@@ -45,13 +45,14 @@ web-based cross-browser testing tools for this project.
 
 ## Releases
 
-* In development
+* v2.0 (15th November 2016)
     - Front end improvements:
         - Add HTML emails. #1281 #1103
         - Stop map being underneath content sidebar/header. #1350 #361
         - Use Ajax/HTML5 history to pull in reports and improve map views.
           #1351 #1450 #1457 #1173
         - Allow multiple states and categories to be filtered. #1547
+        - Add sort order options to list pages. #308
         - Invert area highlight on body pages. #1564
         - Allow users to change their own email. #360 #1440
         - Improve change password form/success page. #1503
@@ -82,6 +83,7 @@ web-based cross-browser testing tools for this project.
             - Feature to create report as body/other user. #1473
             - Add user permissions system. #1486
             - Allow user to have an area assigned in admin. #1488
+            - Allow user to have categories assigned in admin. #1563
             - Add inspector report detail view. #1470
             - Add user shortlists. #1482
             - Add response templates and priorities. #1500 #1517

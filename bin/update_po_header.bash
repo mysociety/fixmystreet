@@ -7,7 +7,7 @@
 # Copyright (c) 2011 UK Citizens Online Democracy. All rights reserved.
 # Email: matthew@mysociety.org; WWW: http://www.mysociety.org/
 
-cd "$(dirname $(readlink -f $BASH_SOURCE))/.."
+cd "$(cd "$(dirname "$BASH_SOURCE")" && pwd -P)"/..
 
 # File to write to, clear it to start with
 PO=$1
