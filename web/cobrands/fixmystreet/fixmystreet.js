@@ -414,12 +414,25 @@ $.extend(fixmystreet.set_up, {
         args.latitude = $('input[name="latitude"]').val();
         args.longitude = $('input[name="longitude"]').val();
 
-        console.log(args);
-
         $.getJSON('/ajax', args, function(data) {
-            var $reports = $(data.current);
+            var report_id = $("#report_inspect_form [name=report_id]").val();
+            var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
+            var $reports = $(data.current)
+                            .filter("li")
+                            .not("[data-report-id="+report_id+"]")
+                            .slice(0, 5);
+            $reports.filter("[data-report-id="+duplicate_of+"]").addClass("item-list--reports__item--selected");
+
             $("#js-duplicate-reports").removeClass("hidden");
-            $reports.slice(0, 5).appendTo($("#js-duplicate-reports ul").empty());
+            $("#js-duplicate-reports ul").empty().prepend($reports);
+
+            $reports.find("a").click(function() {
+                var report_id = $(this).closest("li").data('reportId');
+                $("#report_inspect_form [name=duplicate_of]").val(report_id);
+                $("#js-duplicate-reports ul li").removeClass("item-list--reports__item--selected");
+                $(this).closest("li").addClass("item-list--reports__item--selected");
+                return false;
+            });
         });
     });
   },

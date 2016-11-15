@@ -320,7 +320,7 @@ sub inspect : Private {
         my $reputation_change = 0;
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_information traffic_information/) {
+            foreach (qw/detailed_information traffic_information duplicate_of/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 

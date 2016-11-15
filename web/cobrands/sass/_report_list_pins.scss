@@ -50,6 +50,14 @@
     color: #777;
   }
 }
+.item-list--reports__item--selected {
+  background: $base_bg;
+
+  a, a:hover, a:focus {
+    background-color: transparent;
+  }
+}
+
 
 .item-list__item--empty {
   background: none;

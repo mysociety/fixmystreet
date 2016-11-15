@@ -10,6 +10,7 @@
         <p>
           <strong>[% loc('Report ID:') %]</strong>
           [% problem.id %]
+          <input type="hidden" name="report_id" value="[% problem.id | html %]">
         </p>
         <p>
           [% SET local_coords = problem.local_coords; %]
@@ -76,10 +77,14 @@
             [% END %]
           </select>
         </p>
-        <div id="js-duplicate-reports" class="hidden">
-          <input type="hidden" name="duplicate_of" value="[% problem.get_extra_metadata('duplicate_of') | html %]">
+        <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
+          <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
           Which report is it a duplicate of?
-          <ul></ul>
+          <ul>
+            [% IF problem.duplicate_of %]
+              [% INCLUDE 'report/_item.html' no_fixed = 1 item_extra_class = 'item-list__item--with-pin item-list--reports__item--selected' problem = problem.duplicate_of %]
+            [% END %]
+          </ul>
         </div>
         [% END %]
 

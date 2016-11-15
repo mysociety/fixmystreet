@@ -1,4 +1,4 @@
-<li class="item-list__item item-list--reports__item [% item_extra_class %]">
+<li class="item-list__item item-list--reports__item [% item_extra_class %]" data-report-id="[% problem.id | html %]">
 <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">
     [% IF problem.photo %]
         <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
