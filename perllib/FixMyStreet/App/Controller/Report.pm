@@ -300,6 +300,7 @@ sub action_router : Path('') : Args(2) {
     my ( $self, $c, $id, $action ) = @_;
 
     $c->go( 'map', [ $id ] ) if $action eq 'map';
+    $c->go( 'nearby_json', [ $id ] ) if $action eq 'nearby.json';
 
     $c->detach( '/page_error_404_not_found', [] );
 }
@@ -417,6 +418,31 @@ sub map : Private {
     my $image = $c->stash->{problem}->static_map;
     $c->res->content_type($image->{content_type});
     $c->res->body($image->{data});
+}
+
+
+sub nearby_json : Private {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+    my $p = $c->stash->{problem};
+    my $dist = 1000;
+
+    my $nearby = $c->model('DB::Nearby')->nearby(
+        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, undef, [ $p->category ], undef
+    );
+    # my @reports = map { $_->problem : $_; } @$nearby;
+
+    my $on_map_list_html = $c->render_fragment(
+        'around/on_map_list_items.html',
+        { on_map => [], around_map => $nearby }
+    );
+
+    my $json = {};
+    $json->{current} = $on_map_list_html if $on_map_list_html;
+    my $body = encode_json($json);
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
 }
 
 

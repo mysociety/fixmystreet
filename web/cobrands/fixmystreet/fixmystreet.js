@@ -414,8 +414,8 @@ $.extend(fixmystreet.set_up, {
         args.latitude = $('input[name="latitude"]').val();
         args.longitude = $('input[name="longitude"]').val();
 
-        $.getJSON('/ajax', args, function(data) {
-            var report_id = $("#report_inspect_form [name=report_id]").val();
+        var report_id = $("#report_inspect_form [name=report_id]").val();
+        $.getJSON('/report/'+report_id+'/nearby', args, function(data) {
             var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
             var $reports = $(data.current)
                             .filter("li")
