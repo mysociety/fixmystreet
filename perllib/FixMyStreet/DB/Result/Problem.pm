@@ -1037,8 +1037,9 @@ has duplicate_of => (
     lazy => 1,
     default => sub {
         my $self = shift;
-        my $duplicate_of = $self->get_extra_metadata("duplicate_of");
-        return unless defined $duplicate_of;
+        return unless $self->state eq 'duplicate';
+        my $duplicate_of = int($self->get_extra_metadata("duplicate_of") || 0);
+        return unless $duplicate_of;
         return $self->result_source->schema->resultset('Problem')->search({ id => $duplicate_of })->first;
     },
 );

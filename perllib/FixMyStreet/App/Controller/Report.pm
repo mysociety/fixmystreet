@@ -345,6 +345,9 @@ sub inspect : Private {
             if ( $problem->state eq 'hidden' ) {
                 $problem->get_photoset->delete_cached;
             }
+            if ( $problem->state ne 'duplicate' ) {
+                $problem->unset_extra_metadata('duplicate_of');
+            }
             if ( $problem->state ne $old_state ) {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
             }
