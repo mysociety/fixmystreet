@@ -64,28 +64,36 @@
         [% END %]
 
         [% IF permissions.report_inspect %]
-        <p>
-          <label for="state">[% loc('State') %]</label>
-            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-          <select name="state" id="state" class="form-control">
-            [% FOREACH group IN state_groups %]
-              <optgroup label="[% group.0 %]">
-                [% FOREACH state IN group.1 %]
-                  <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
-                [% END %]
-              </optgroup>
-            [% END %]
-          </select>
-        </p>
-        <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
-          <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
-          Which report is it a duplicate of?
-          <ul>
-            [% IF problem.duplicate_of %]
-              [% INCLUDE 'report/_item.html' no_fixed = 1 item_extra_class = 'item-list__item--with-pin item-list--reports__item--selected' problem = problem.duplicate_of %]
-            [% END %]
-          </ul>
-        </div>
+          <p>
+            <label for="state">[% loc('State') %]</label>
+              [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+            <select name="state" id="state" class="form-control">
+              [% FOREACH group IN state_groups %]
+                <optgroup label="[% group.0 %]">
+                  [% FOREACH state IN group.1 %]
+                    <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
+                  [% END %]
+                </optgroup>
+              [% END %]
+            </select>
+          </p>
+          <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
+            <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
+            [% loc('Which report is it a duplicate of?') %]
+            <ul>
+              [% IF problem.duplicate_of %]
+                [% INCLUDE 'report/_item.html' item_extra_class = 'item-list__item--with-pin item-list--reports__item--selected' problem = problem.duplicate_of %]
+              [% END %]
+            </ul>
+          </div>
+          [% IF problem.duplicates.size %]
+            <p><strong>[% loc('Duplicates') %]</strong></p>
+            <ul>
+              [% FOR duplicate IN problem.duplicates %]
+                [% INCLUDE 'report/_item.html' problem = duplicate %]
+              [% END %]
+            </ul>
+          [% END %]
         [% END %]
 
       </div>

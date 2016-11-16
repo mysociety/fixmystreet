@@ -93,7 +93,7 @@ FixMyStreet::override_config {
         $mech->content_lacks('Invalid location');
     };
 
-    subtest "test duplicate report is shown" => sub {
+    subtest "test duplicate reports are shown" => sub {
         my ($report2) = $mech->create_problems_for_body(1, $oxon->id, 'The other report is a duplicate of this one', {
             category => $report->category, cobrand => 'fixmystreet', areas => ',2237,2420',
             whensent => \'current_timestamp',
@@ -106,6 +106,10 @@ FixMyStreet::override_config {
 
         $mech->get_ok("/report/$report_id");
         $mech->content_contains($report2->title);
+
+        my $report2_id = $report2->id;
+        $mech->get_ok("/report/$report2_id");
+        $mech->content_contains($report->title);
 
         $report->unset_extra_metadata('duplicate_of');
         $report->state($old_state);
