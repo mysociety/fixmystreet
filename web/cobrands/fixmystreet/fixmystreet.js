@@ -399,7 +399,6 @@ $.extend(fixmystreet.set_up, {
 
         if (state !== "duplicate") {
             $("#js-duplicate-reports").addClass("hidden");
-            $("#js-duplicate-reports ul").empty();
             return;
         }
 
@@ -414,16 +413,23 @@ $.extend(fixmystreet.set_up, {
         args.latitude = $('input[name="latitude"]').val();
         args.longitude = $('input[name="longitude"]').val();
 
+        $("#js-duplicate-reports").removeClass("hidden");
+
+        var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
+        if (!!duplicate_of) {
+            return;
+        }
+
+        $("#js-duplicate-reports ul").html("<li>Loading...</li>");
+
         var report_id = $("#report_inspect_form [name=report_id]").val();
         $.getJSON('/report/'+report_id+'/nearby', args, function(data) {
-            var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
             var $reports = $(data.current)
                             .filter("li")
                             .not("[data-report-id="+report_id+"]")
                             .slice(0, 5);
             $reports.filter("[data-report-id="+duplicate_of+"]").addClass("item-list--reports__item--selected");
 
-            $("#js-duplicate-reports").removeClass("hidden");
             $("#js-duplicate-reports ul").empty().prepend($reports);
 
             $reports.find("a").click(function() {

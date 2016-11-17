@@ -79,10 +79,12 @@
           </p>
           <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
             <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
-            [% loc('Which report is it a duplicate of?') %]
+            <p class="[% "hidden" UNLESS problem.duplicate_of %]"><strong>[% loc('Duplicate of') %]</strong></p>
+            <p class="[% "hidden" IF problem.duplicate_of %]">[% loc('Which report is it a duplicate of?') %]</p>
             <ul>
               [% IF problem.duplicate_of %]
-                [% INCLUDE 'report/_item.html' item_extra_class = 'item-list__item--with-pin item-list--reports__item--selected' problem = problem.duplicate_of %]
+                [% INCLUDE 'report/_item.html' item_extra_class = 'item-list--reports__item--selected' problem = problem.duplicate_of %]
+                <li class="item-list__item"><a class="btn" href="#" id="js-change-duplicate-report">[% loc('Choose another') %]</a></li>
               [% END %]
             </ul>
           </div>
