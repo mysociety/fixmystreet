@@ -59,9 +59,7 @@ sub tile_parameters {
 }
 
 # This is used to determine which template to render the map with
-sub map_type {
-    return 'fms';
-}
+sub map_template { 'fms' }
 
 # Reproject a WGS84 lat/lon into an x/y coordinate in this map's CRS.
 # Subclasses will want to override this.
@@ -198,7 +196,7 @@ sub get_map_hash {
     my @scales = $self->scales;
     return {
         %params,
-        type => $self->map_type,
+        type => $self->map_template,
         map_type => 'OpenLayers.Layer.WMTS',
         tiles => $self->map_tiles( %params ),
         copyright => $self->copyright(),

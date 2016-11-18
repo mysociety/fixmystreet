@@ -9,9 +9,7 @@ use base 'FixMyStreet::Map::FMS';
 
 use strict;
 
-sub map_type {
-    return '[ [ "", "a-" ], "https://{S}fix.bromley.gov.uk/tilma" ]';
-}
+sub map_template { 'bromley' }
 
 sub map_tile_base {
     '-', "https://%sfix.bromley.gov.uk/tilma/%d/%d/%d.png";

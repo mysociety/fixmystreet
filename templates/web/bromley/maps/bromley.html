@@ -1,0 +1,9 @@
+[% map_js = BLOCK %]
+<script type="text/javascript" src="[% version('/js/OpenLayers/OpenLayers.fixmystreet.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-bing-ol.js') %]"></script>
+<script type="text/javascript" src="[% version('/js/map-fms.js') %]"></script>
+<script type="text/javascript" src="[% version('/cobrands/bromley/map.js') %]"></script>
+[% END %]
+
+[% map_html = INCLUDE maps/openlayers.html include_key = 1 %]

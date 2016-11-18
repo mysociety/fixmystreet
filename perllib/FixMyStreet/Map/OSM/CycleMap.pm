@@ -9,9 +9,7 @@ use base 'FixMyStreet::Map::OSM';
 
 use strict;
 
-sub map_type {
-    return 'OpenLayers.Layer.OSM.CycleMap';
-}
+sub map_type { 'OpenLayers.Layer.OSM.CycleMap' }
 
 sub base_tile_url {
     return 'tile.opencyclemap.org/cycle';

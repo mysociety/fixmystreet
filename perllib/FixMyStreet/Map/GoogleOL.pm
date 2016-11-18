@@ -9,12 +9,8 @@ use parent 'FixMyStreet::Map::OSM';
 
 use strict;
 
-sub map_type {
-    return '""';
-}
+sub map_type { '' }
 
-sub map_template {
-    return 'google-ol';
-}
+sub map_template { 'google-ol' }
 
 1;

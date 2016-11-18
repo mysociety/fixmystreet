@@ -67,9 +67,7 @@ sub copyright {
     return '&copy; Stadt Z&uuml;rich';
 }
 
-sub map_type {
-    return 'zurich';
-}
+sub map_template { 'zurich' }
 
 
 # Reproject a WGS84 lat/lon into Swiss easting/northing

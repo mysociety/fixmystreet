@@ -19,7 +19,7 @@
     data-pin_prefix='[% c.config.ADMIN_BASE_URL IF admin %][% c.cobrand.path_to_pin_icons %]',
     data-numZoomLevels=[% map.numZoomLevels %]
     data-zoomOffset=[% map.zoomOffset %]
-    data-map_type=[% map.map_type %]
+    data-map_type="[% map.map_type %]"
 [% IF include_key -%]
     data-key='[% c.config.BING_MAPS_API_KEY %]'
 [%- END %]

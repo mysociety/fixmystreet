@@ -60,9 +60,7 @@ sub copyright {
     return '&copy; BCC';
 }
 
-sub map_type {
-    return 'bristol';
-}
+sub map_template { 'bristol' }
 
 # Reproject a WGS84 lat/lon into BNG easting/northing
 sub reproject_from_latlon($$$) {

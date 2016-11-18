@@ -2,9 +2,6 @@ fixmystreet.maps.tile_base = [ [ '', 'a-', 'b-', 'c-' ], '//{S}tilma.mysociety.o
 
 fixmystreet.maps.config = (function(original) {
     return function(){
-        if (fixmystreet.map_type) {
-            this.tile_base = fixmystreet.map_type;
-        }
         original();
         fixmystreet.map_type = OpenLayers.Layer.BingUK;
     };

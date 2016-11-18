@@ -6,8 +6,7 @@ use base 'FixMyStreet::Map::OSM';
 
 use strict;
 
-# Is set by the JavaScript
-sub map_type { '""' }
+sub map_type { '' }
 
 sub map_template { 'bing' }
 

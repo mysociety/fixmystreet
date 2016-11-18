@@ -14,13 +14,9 @@ use Utils;
 use constant ZOOM_LEVELS    => 6;
 use constant MIN_ZOOM_LEVEL => 13;
 
-sub map_type {
-    return 'OpenLayers.Layer.OSM.Mapnik';
-}
+sub map_type { 'OpenLayers.Layer.OSM.Mapnik' }
 
-sub map_template {
-    return 'osm';
-}
+sub map_template { 'osm' }
 
 sub map_tiles {
     my ( $self, %params ) = @_;
