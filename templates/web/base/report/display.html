@@ -40,12 +40,19 @@
 
 [% INCLUDE 'report/banner.html' %]
 [% INCLUDE 'report/_main.html' %]
+
+[% IF problem.duplicate_of %]
+    [% INCLUDE 'report/duplicate-no-updates.html' hide_header = 1 %]
+[% END %]
+
 [% TRY %][% INCLUDE 'report/_message_manager.html' %][% CATCH file %][% END %]
 [% INCLUDE 'report/display_tools.html' %]
 [% TRY %][% INCLUDE 'report/sharing.html' %][% CATCH file %][% END %]
 [% INCLUDE 'report/updates.html' %]
 
-[% IF NOT shown_form %]
+[% IF problem.duplicate_of %]
+    [% INCLUDE 'report/duplicate-no-updates.html' %]
+[% ELSIF NOT shown_form %]
     [% INCLUDE 'report/update-form.html' %]
 [% END %]
 
