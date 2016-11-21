@@ -9,8 +9,7 @@
       <div class="inspect-section">
         <p>
           <strong>[% loc('Report ID:') %]</strong>
-          [% problem.id %]
-          <input type="hidden" name="report_id" value="[% problem.id | html %]">
+          <span class="js-report-id">[% problem.id %]</span>
         </p>
         <p>
           [% SET local_coords = problem.local_coords; %]

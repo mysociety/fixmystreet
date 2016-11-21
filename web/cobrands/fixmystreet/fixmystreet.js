@@ -391,56 +391,57 @@ $.extend(fixmystreet.set_up, {
   },
 
 
-  state_change: function() {
-    // Deal with changes to report state by inspector/other staff, specifically
-    // displaying nearby reports if it's changed to 'duplicate'.
-    $("#report_inspect_form").on("change.state", "select#state", function() {
-        var state = $(this).val();
+  manage_duplicates: function() {
+      // Deal with changes to report state by inspector/other staff, specifically
+      // displaying nearby reports if it's changed to 'duplicate'.
+      function refresh_duplicate_list() {
+          var report_id = $("#report_inspect_form .js-report-id").text();
+          var args = {
+              filter_category: $("#report_inspect_form select#category").val(),
+              latitude: $('input[name="latitude"]').val(),
+              longitude: $('input[name="longitude"]').val()
+          };
+          $("#js-duplicate-reports ul").html("<li>Loading...</li>");
+          $.getJSON('/report/'+report_id+'/nearby', args, function(data) {
+              var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
+              var $reports = $(data.current)
+                              .filter("li")
+                              .not("[data-report-id="+report_id+"]")
+                              .slice(0, 5);
+              $reports.filter("[data-report-id="+duplicate_of+"]").addClass("item-list--reports__item--selected");
 
-        if (state !== "duplicate") {
-            $("#js-duplicate-reports").addClass("hidden");
-            return;
-        }
+              $("#js-duplicate-reports ul").empty().prepend($reports);
 
-        var args = {
-            state: state,
-            filter_category: $("#report_inspect_form select#category").val()
-        };
-        var bounds = fixmystreet.map.getExtent();
-        bounds.transform(bounds.transform(fixmystreet.map.getProjectionObject(), new OpenLayers.Projection("EPSG:4326")));
-        args.bbox = bounds.toBBOX();
+              $reports.find("a").click(function() {
+                  var report_id = $(this).closest("li").data('reportId');
+                  $("#report_inspect_form [name=duplicate_of]").val(report_id);
+                  $("#js-duplicate-reports ul li").removeClass("item-list--reports__item--selected");
+                  $(this).closest("li").addClass("item-list--reports__item--selected");
+                  return false;
+              });
+          });
+      }
 
-        args.latitude = $('input[name="latitude"]').val();
-        args.longitude = $('input[name="longitude"]').val();
+      function state_change() {
+          // The duplicate report list only makes sense when state is 'duplicate'
+          if ($(this).val() !== "duplicate") {
+              $("#js-duplicate-reports").addClass("hidden");
+              return;
+          } else {
+              $("#js-duplicate-reports").removeClass("hidden");
+          }
+          // If this report is already marked as a duplicate of another, then
+          // there's no need to refresh the list of duplicate reports
+          var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
+          if (!!duplicate_of) {
+              return;
+          }
 
-        $("#js-duplicate-reports").removeClass("hidden");
+          refresh_duplicate_list();
+      }
 
-        var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
-        if (!!duplicate_of) {
-            return;
-        }
-
-        $("#js-duplicate-reports ul").html("<li>Loading...</li>");
-
-        var report_id = $("#report_inspect_form [name=report_id]").val();
-        $.getJSON('/report/'+report_id+'/nearby', args, function(data) {
-            var $reports = $(data.current)
-                            .filter("li")
-                            .not("[data-report-id="+report_id+"]")
-                            .slice(0, 5);
-            $reports.filter("[data-report-id="+duplicate_of+"]").addClass("item-list--reports__item--selected");
-
-            $("#js-duplicate-reports ul").empty().prepend($reports);
-
-            $reports.find("a").click(function() {
-                var report_id = $(this).closest("li").data('reportId');
-                $("#report_inspect_form [name=duplicate_of]").val(report_id);
-                $("#js-duplicate-reports ul li").removeClass("item-list--reports__item--selected");
-                $(this).closest("li").addClass("item-list--reports__item--selected");
-                return false;
-            });
-        });
-    });
+      $("#report_inspect_form").on("change.state", "select#state", state_change);
+      $("#js-change-duplicate-report").click(refresh_duplicate_list);
   },
 
 
@@ -1146,6 +1147,7 @@ fixmystreet.display = {
                 $twoColReport.appendTo('#map_sidebar');
                 $('body').addClass('with-actions');
                 fixmystreet.set_up.report_page_inspect();
+                fixmystreet.set_up.manage_duplicates();
             } else {
                 $sideReport.appendTo('#map_sidebar');
             }
