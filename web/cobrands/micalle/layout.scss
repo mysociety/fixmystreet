@@ -1,0 +1,31 @@
+@import "_colours";
+@import "../sass/layout";
+
+.big-green-banner {
+  text-transform: none;
+}
+
+body.frontpage {
+  #site-header {
+    height: 5em;
+    background-color: $map_nav_bg;
+  }
+
+  #site-logo {
+    top: 11px;
+  }
+
+  .nav-menu {
+    line-height: 3.25em;
+  }
+}
+
+body.mappage {
+  .nav-menu--main a.report-a-problem-btn {
+    color: white;
+  }
+}
+
+#front-main {
+  background-color: $front_main_background;
+}
