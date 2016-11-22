@@ -4,7 +4,6 @@ $mappage-header-height: 64px;
 
 @import "_colours";
 @import "../sass/layout";
-@import "../sass/report_list_pins";
 
 body, body a {
   font-family:"Trebuchet MS",Arial, Helvetica, sans-serif;
@@ -231,20 +230,14 @@ body.mappage {
   background-color: #deead2;
 }
 
-.item-list--reports {
-    li:after {
-        background-color: $oxfordshire_mid_grey_green;
-    }
-
-    h3 {
-        color: $oxfordshire_link_colour;
-    }
+.item-list--reports h3 {
+  color: $oxfordshire_link_colour;
 }
 
 h4.static-with-rule {
   margin-top: 1em; // down from default 2em, avoid extra space between heading and .council_info_box
   margin-bottom: 0; // no space between this and the .item-list items
-  background: transparent; // rather than light grey
+  // TODO background: transparent; // rather than light grey
   padding: 0.75em 1em * (1/0.875); // compensate for 0.875 font-size
 }
 

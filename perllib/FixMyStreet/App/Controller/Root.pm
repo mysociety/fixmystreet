@@ -58,6 +58,7 @@ sub index : Path : Args(0) {
         return;
     }
 
+    $c->forward('/auth/get_csrf_token');
 }
 
 =head2 default

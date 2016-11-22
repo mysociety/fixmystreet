@@ -1013,6 +1013,152 @@ input.final-submit {
   }
 }
 
+// A version where the normal padding of the list-item is tweaked to
+// make room for an icon or a button next to the report details.
+.item-list__item--indented {
+  position: relative;
+  margin: 0; // reset 0.25em margin-top on default item-list__item
+  padding: 0;
+  border-top: 1px solid #e5e5e5; // can't apply border to `a` because of border-left
+
+  a {
+    display: block;
+    padding: 1em;
+    padding-#{$left}: 2.5em; // make space for background image
+    border-#{$left}: solid 1em transparent; // inset background image 1em from the left
+    background: transparent;
+  }
+
+  // Trigger hover style even when hovering over sibling item-action-button
+  &:hover a {
+    background-color: $itemlist_item_background_hover;
+  }
+
+  h3 {
+    color: inherit; // Some cobrands might want to override with $primary for a more colourful list
+    margin: 0 0 0.2em 0;
+    padding-top: 0; // override .item-list__heading
+    line-height: 1.3em; // override .item-list__heading
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.8em;
+    color: #777;
+  }
+}
+
+// Add this to your .item-list__item--indented element if you
+// need to display both an action button *and* up/down arrows
+.item-list__item--act-and-sort {
+    a {
+        padding-#{$left}: 4.5em; // make space for the extra buttons
+    }
+
+    .item-list__item__shortlist-up,
+    .item-list__item__shortlist-down {
+        width: 36px; // down from 48px
+        left: 3.5em; // up from 1em
+    }
+}
+
+%list-item-action-button {
+  position: absolute;
+  left: 1em; // match the padding on the `a` element
+  top: 50%;
+  margin-top: -24px; // vertically center
+  margin-left: -12px; // horizontally center
+
+  display: block;
+  width: 48px;
+  font-size: 1em;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+
+  overflow: hidden; // hide button text
+  height: 0;
+  padding-top: 48px;
+
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 24px 24px;
+}
+
+.item-list__item__shortlist-add {
+  @extend %list-item-action-button;
+  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive');
+
+  &:hover,
+  &:focus {
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-inactive-hover');
+  }
+}
+
+.item-list__item__shortlist-remove {
+  @extend %list-item-action-button;
+  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-active');
+
+  &:hover,
+  &:focus {
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-active-hover');
+  }
+}
+
+.item-list__item__shortlist-take {
+  @extend %list-item-action-button;
+  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken');
+
+  &:hover,
+  &:focus {
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-taken-hover');
+  }
+}
+
+.item-list__item__shortlist-up {
+  @extend %list-item-action-button;
+
+  padding-top: 24px; // half the normal height, because shorter icon
+  background-size: 24px 14px;
+
+  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
+
+  &:hover,
+  &:focus {
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-up-hover');
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+    cursor: default;
+
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-up');
+  }
+}
+
+.item-list__item__shortlist-down {
+  @extend %list-item-action-button;
+
+  margin-top: 0; // this is the "lower" arrow, so no need to offset vertical position
+  padding-top: 24px; // half the normal height, because shorter icon
+  background-size: 24px 14px;
+
+  @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
+
+  &:hover,
+  &:focus {
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-down-hover');
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+    cursor: default;
+
+    @include high-dpi-background-image('/cobrands/fixmystreet/images/icon-shortlist-down');
+  }
+}
+
 .item-list__heading {
   font-size: 1em;
   font-weight: normal;
@@ -1045,8 +1191,15 @@ input.final-submit {
   margin-right: 0.1em;
 }
 
-.item-list__item--empty p {
-  margin: 0;
+.item-list__item--empty {
+  background: none;
+  color: #777;
+
+  p {
+    margin: 0;
+    padding: 1em;
+    text-align: center;
+  }
 }
 
 .item-list--front-page {

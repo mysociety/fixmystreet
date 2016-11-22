@@ -291,6 +291,8 @@ sub ajax : Path('/ajax') {
     # assume this is not cacheable - may need to be more fine-grained later
     $c->res->header( 'Cache_Control' => 'max-age=0' );
 
+    $c->stash->{page} = 'around'; # Needed by _item.html
+
     # how far back should we go?
     my $all_pins = $c->get_param('all_pins') ? 1 : undef;
     my $interval = $all_pins ? undef : $c->cobrand->on_map_default_max_pin_age;

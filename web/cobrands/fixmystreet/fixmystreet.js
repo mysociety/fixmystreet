@@ -213,6 +213,15 @@ fixmystreet.geolocate = {
     }
 };
 
+fixmystreet.update_list_item_buttons = function($list) {
+    if (!$list) {
+        return;
+    }
+  $list.find('[name="shortlist-up"], [name="shortlist-down"]').prop('disabled', false);
+  $list.children(':first-child').find('[name="shortlist-up"]').prop('disabled', true);
+  $list.children(':last-child').find('[name="shortlist-down"]').prop('disabled', true);
+};
+
 fixmystreet.set_up = fixmystreet.set_up || {};
 $.extend(fixmystreet.set_up, {
   basics: function() {
@@ -227,7 +236,7 @@ $.extend(fixmystreet.set_up, {
     $('#pc').focus();
 
     // In case we've come here by clicking back to a form that disabled a submit button
-    $('input[type=submit]').removeAttr('disabled');
+    $('form.validate input[type=submit]').removeAttr('disabled');
 
     $('[data-confirm]').on('click', function() {
         return confirm(this.getAttribute('data-confirm'));
@@ -313,7 +322,6 @@ $.extend(fixmystreet.set_up, {
         }
         e.preventDefault();
         var $form = $(this),
-            $change = $form.find("input[name='change']" ),
             $submit = $form.find("input[type='submit']" ),
             $labels = $('label[for="' + $submit.attr('id') + '"]'),
             problemId = $form.find("input[name='id']").val(),
@@ -324,18 +332,17 @@ $.extend(fixmystreet.set_up, {
 
         $.post(this.action, data, function(data) {
             if (data.outcome == 'add') {
-                changeValue = "remove";
+                $form.find("input[name='shortlist-add']" ).attr('name', 'shortlist-remove');
                 buttonLabel = $submit.data('label-remove');
                 buttonValue = $submit.data('value-remove');
                 $('.shortlisted-status').remove();
                 $(document).trigger('shortlist-add', problemId);
             } else if (data.outcome == 'remove') {
-                changeValue = "add";
+                $form.find("input[name='shortlist-remove']" ).attr('name', 'shortlist-add');
                 buttonLabel = $submit.data('label-add');
                 buttonValue = $submit.data('value-add');
                 $(document).trigger('shortlist-remove', problemId);
             }
-            $change.val(changeValue);
             $submit.val(buttonValue).attr('aria-label', buttonLabel);
             $labels.text(buttonValue).attr('aria-label', buttonLabel);
         });
@@ -474,6 +481,88 @@ $.extend(fixmystreet.set_up, {
       $("#js-change-duplicate-report").click(refresh_duplicate_list);
   },
 
+  list_item_actions: function() {
+    function toggle_shortlist(btn, sw, id) {
+        btn.attr('class', 'item-list__item__shortlist-' + sw);
+        btn.attr('title', btn.data('label-' + sw));
+        if (id) {
+            sw += '-' + id;
+        }
+        btn.attr('name', 'shortlist-' + sw);
+    }
+
+    $('.item-list').on('click', ':submit', function(e) {
+      e.preventDefault();
+
+      var $submitButton = $(this);
+      var whatUserWants = $submitButton.prop('name');
+      var data;
+      var $item;
+      var $list;
+      var $hiddenInput;
+      var report_id;
+      if (fixmystreet.page === 'around') {
+          // Deal differently because one big form
+          var parts = whatUserWants.split('-');
+          whatUserWants = parts[0] + '-' + parts[1];
+          report_id = parts[2];
+          var token = $('[name=token]').val();
+          data = whatUserWants + '=1&token=' + token + '&id=' + report_id;
+      } else {
+          var $form = $(this).parents('form');
+          $item = $form.parent('.item-list__item');
+          $list = $item.parent('.item-list');
+
+          // The server expects to be told which button/input triggered the form
+          // submission. But $form.serialize() doesn't know that. So we inject a
+          // hidden input into the form, that can pass the name and value of the
+          // submit button to the server, as it expects.
+          $hiddenInput = $('<input>').attr({
+            type: 'hidden',
+            name: whatUserWants,
+            value: $submitButton.prop('value')
+          }).appendTo($form);
+          data = $form.serialize() + '&ajax=1';
+      }
+
+      // Update UI while the ajax request is sent in the background.
+      if ('shortlist-down' === whatUserWants) {
+        $item.insertAfter( $item.next() );
+      } else if ('shortlist-up' === whatUserWants) {
+        $item.insertBefore( $item.prev() );
+      } else if ('shortlist-remove' === whatUserWants) {
+          toggle_shortlist($submitButton, 'add', report_id);
+      } else if ('shortlist-add' === whatUserWants) {
+          toggle_shortlist($submitButton, 'remove', report_id);
+      }
+
+      // Items have moved around. We need to make sure the "up" button on the
+      // first item, and the "down" button on the last item, are disabled.
+      fixmystreet.update_list_item_buttons($list);
+
+      $.ajax({
+        url: '/my/planned/change',
+        type: 'POST',
+        data: data
+      }).fail(function() {
+        // Undo the UI changes we made.
+        if ('shortlist-down' === whatUserWants) {
+          $item.insertBefore( $item.prev() );
+        } else if ('shortlist-up' === whatUserWants) {
+          $item.insertAfter( $item.next() );
+        } else if ('shortlist-remove' === whatUserWants) {
+          toggle_shortlist($submitButton, 'remove', report_id);
+        } else if ('shortlist-add' === whatUserWants) {
+          toggle_shortlist($submitButton, 'add', report_id);
+        }
+        fixmystreet.update_list_item_buttons($list);
+      }).complete(function() {
+        if ($hiddenInput) {
+          $hiddenInput.remove();
+        }
+      });
+    });
+  },
 
   contribute_as: function() {
     $('.content').on('change', '.js-contribute-as', function(){

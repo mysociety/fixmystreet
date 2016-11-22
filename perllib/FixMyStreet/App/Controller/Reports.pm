@@ -108,6 +108,8 @@ Show the summary page for a particular ward.
 sub ward : Path : Args(2) {
     my ( $self, $c, $body, $ward ) = @_;
 
+    $c->forward('/auth/get_csrf_token');
+
     $c->forward( 'body_check', [ $body ] );
     $c->forward( 'ward_check', [ $ward ] )
         if $ward;
@@ -513,13 +515,17 @@ sub stash_report_sort : Private {
     );
 
     my $sort = $c->get_param('sort') || $default;
-    $sort = $default unless $sort =~ /^((updated|created)-(desc|asc)|comments-desc)$/;
+    $sort = $default unless $sort =~ /^((updated|created)-(desc|asc)|comments-desc|shortlist)$/;
+    $c->stash->{sort_key} = $sort;
+
+    # Going to do this sorting code-side
+    $sort = 'created-desc' if $sort eq 'shortlist';
+
     $sort =~ /^(updated|created|comments)-(desc|asc)$/;
     my $order_by = $types{$1} || $1;
     my $dir = $2;
     $order_by = { -desc => $order_by } if $dir eq 'desc';
 
-    $c->stash->{sort_key} = $sort;
     $c->stash->{sort_order} = $order_by;
     return 1;
 }

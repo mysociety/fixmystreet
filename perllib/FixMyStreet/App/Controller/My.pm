@@ -3,6 +3,7 @@ use Moose;
 use namespace::autoclean;
 
 use JSON::MaybeXS;
+use List::MoreUtils qw(first_index);
 
 BEGIN { extends 'Catalyst::Controller'; }
 
@@ -30,8 +31,11 @@ sub begin : Private {
 sub my : Path : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->forward('/auth/get_csrf_token');
+
     $c->stash->{problems_rs} = $c->cobrand->problems->search(
         { user_id => $c->user->id });
+    $c->forward('/reports/stash_report_sort', [ 'created-desc' ]);
     $c->forward('get_problems');
     if ($c->get_param('ajax')) {
         $c->detach('/reports/ajax', [ 'my/_problem-list.html' ]);
@@ -43,12 +47,46 @@ sub my : Path : Args(0) {
 sub planned : Local : Args(0) {
     my ( $self, $c ) = @_;
 
+    $c->forward('/auth/get_csrf_token');
+
     $c->detach('/page_error_403_access_denied', [])
         unless $c->user->has_body_permission_to('planned_reports');
 
     $c->stash->{problems_rs} = $c->user->active_planned_reports;
+    $c->forward('planned_reorder');
+    $c->forward('/reports/stash_report_sort', [ 'shortlist' ]);
     $c->forward('get_problems');
     $c->forward('setup_page_data');
+}
+
+sub planned_reorder : Private {
+    my ($self, $c) = @_;
+
+    my @extra = grep { /^shortlist-(up|down|\d+)$/ } keys %{$c->req->params};
+    return unless @extra;
+    my ($reorder) = $extra[0] =~ /^shortlist-(up|down|\d+)$/;
+
+    my @shortlist = sort by_shortlisted $c->stash->{problems_rs}->all;
+
+    # Find where moving problem ID is
+    my $id = $c->get_param('id') || return;
+    my $curr_index = first_index { $_->id == $id } @shortlist;
+    return unless $curr_index > -1;
+
+    if ($reorder eq 'up' && $curr_index > 0) {
+        @shortlist[$curr_index-1,$curr_index] = @shortlist[$curr_index,$curr_index-1];
+    } elsif ($reorder eq 'down' && $curr_index < @shortlist-1) {
+        @shortlist[$curr_index,$curr_index+1] = @shortlist[$curr_index+1,$curr_index];
+    } elsif ($reorder >= 0 && $reorder <= @shortlist-1) { # Must be an index to move it
+        @shortlist[$curr_index,$reorder] = @shortlist[$reorder,$curr_index];
+    }
+
+    # Store new ordering
+    my $i = 1;
+    foreach (@shortlist) {
+        $_->set_extra_metadata('order', $i++);
+        $_->update;
+    }
 }
 
 sub get_problems : Private {
@@ -57,7 +95,6 @@ sub get_problems : Private {
     my $p_page = $c->get_param('p') || 1;
 
     $c->forward( '/reports/stash_report_filter_status' );
-    $c->forward('/reports/stash_report_sort', [ 'created-desc' ]);
 
     my $pins = [];
     my $problems = [];
@@ -73,9 +110,12 @@ sub get_problems : Private {
         $c->stash->{filter_category} = $categories;
     }
 
+    my $rows = 50;
+    $rows = 5000 if $c->stash->{sort_key} eq 'shortlist'; # Want all reports
+
     my $rs = $c->stash->{problems_rs}->search( $params, {
         order_by => $c->stash->{sort_order},
-        rows => 50
+        rows => $rows,
     } )->include_comment_counts->page( $p_page );
 
     while ( my $problem = $rs->next ) {
@@ -83,6 +123,9 @@ sub get_problems : Private {
         push @$pins, $problem->pin_data($c, 'my', private => 1);
         push @$problems, $problem;
     }
+
+    @$problems = sort by_shortlisted @$problems if $c->stash->{sort_key} eq 'shortlist';
+
     $c->stash->{problems_pager} = $rs->pager;
     $c->stash->{problems} = $problems;
     $c->stash->{pins} = $pins;
@@ -134,24 +177,42 @@ sub planned_change : Path('planned/change') {
     my ($self, $c) = @_;
     $c->forward('/auth/check_csrf_token');
 
+    $c->go('planned') if grep { /^shortlist-(up|down|\d+)$/ } keys %{$c->req->params};
+
     my $id = $c->get_param('id');
     $c->forward( '/report/load_problem_or_display_error', [ $id ] );
 
-    my $change = $c->get_param('change');
+    my $add = $c->get_param('shortlist-add');
+    my $remove = $c->get_param('shortlist-remove');
     $c->detach('/page_error_403_access_denied', [])
-        unless $change && $change =~ /add|remove/;
+        unless $add || $remove;
 
-    if ($change eq 'add') {
+    if ($add) {
         $c->user->add_to_planned_reports($c->stash->{problem});
-    } elsif ($change eq 'remove') {
+    } elsif ($remove) {
         $c->user->remove_from_planned_reports($c->stash->{problem});
     }
 
     if ($c->get_param('ajax')) {
         $c->res->content_type('application/json; charset=utf-8');
-        $c->res->body(encode_json({ outcome => $change }));
+        $c->res->body(encode_json({ outcome => $add ? 'add' : 'remove' }));
     } else {
         $c->res->redirect( $c->uri_for_action('report/display', $id) );
+    }
+}
+
+sub by_shortlisted {
+    my $a_order = $a->get_extra_metadata('order') || 0;
+    my $b_order = $b->get_extra_metadata('order') || 0;
+    if ($a_order && $b_order) {
+        $a_order <=> $b_order;
+    } elsif ($a_order) {
+        -1; # Want non-ordered to come last
+    } elsif ($b_order) {
+        1; # Want non-ordered to come last
+    } else {
+        # Default to order added to planned reports
+        $a->user_planned_reports->first->id <=> $b->user_planned_reports->first->id;
     }
 }
 

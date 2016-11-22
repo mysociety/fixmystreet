@@ -11,7 +11,7 @@
 <form method="post" action="/my/planned/change" id="planned_form" class="hidden-label-target">
     <input type="hidden" name="id" value="[% problem.id %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="hidden" name="change" value="[% IF c.user.is_planned_report(problem) %]remove[% ELSE %]add[% END %]">
+    <input type="hidden" name="[% IF c.user.is_planned_report(problem) %]shortlist-remove[% ELSE %]shortlist-add[% END %]" value="1">
     <p><input
         type="submit"
         id="shortlist-report"

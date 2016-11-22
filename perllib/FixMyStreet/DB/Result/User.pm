@@ -379,6 +379,8 @@ around add_to_planned_reports => sub {
 around remove_from_planned_reports => sub {
     my ($orig, $self, $report) = @_;
     $self->user_planned_reports->active->for_report($report->id)->remove();
+    $report->unset_extra_metadata('order');
+    $report->update;
 };
 
 sub active_planned_reports {

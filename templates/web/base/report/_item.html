@@ -2,6 +2,30 @@
 [% PROCESS 'admin/report_blocks.html' ~%]
 [% END ~%]
 
+[% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) ~%]
+    [% item_extra_class = "item-list__item--indented" ~%]
+    [% item_action = BLOCK ~%]
+      <input type="submit" value="1"
+        data-label-remove="[% loc('Remove from shortlist') %]"
+        data-label-add="[% loc('Add to shortlist') %]"
+      [% IF c.user.is_planned_report(problem) ~%]
+        name="shortlist-remove" title="[% loc('Remove from shortlist') %]" class="item-list__item__shortlist-remove"
+      [%~ ELSE ~%]
+        name="shortlist-add" title="[% loc('Add to shortlist') %]" class="item-list__item__shortlist-[% IF problem.shortlisted_user %]take[% ELSE %]add[% END %]"
+      [%~ END ~%]
+      >
+    [%~ END %]
+[% END %]
+
+[% IF shortlist %]
+    [% item_extra_class = "item-list__item--indented item-list__item--act-and-sort" %]
+    [% item_action = BLOCK %]
+        [% item_action %]
+        <input type="submit" name="shortlist-up" value="[% loc('Up one') %]" title="[% loc('Up one') %]" class="item-list__item__shortlist-up" [% IF loop.first %]disabled[% END %]>
+        <input type="submit" name="shortlist-down" value="[% loc('Down one') %]" title="[% loc('Down one') %]" class="item-list__item__shortlist-down" [% IF loop.last %]disabled[% END %]>
+    [% END %]
+[% END %]
+
 <li class="item-list__item item-list--reports__item [% item_extra_class %]"
     data-report-id="[% problem.id | html %]" data-lastupdate="[% problem.lastupdate %]">
 <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">
@@ -87,4 +111,13 @@
 
 
 </a>
+[% IF item_action AND page != 'around' %]
+    <form method="post" action="/my/planned/change">
+        <input type="hidden" name="id" value="[% problem.id %]">
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        [% item_action %]
+    </form>
+[% ELSIF item_action ~%]
+    [% item_action.replace('("shortlist-[^"]*)', '$1-' _ problem.id) %]
+[% END ~%]
 </li>
