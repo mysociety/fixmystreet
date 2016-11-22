@@ -54,7 +54,7 @@
         [%- ELSIF state == 'not responsible' %]
             [%- update_state = loc( "marked as not the council's responsibility" ) %]
         [%- ELSIF state == 'duplicate' %]
-            [%- update_state = loc( 'marked as a duplicate report' ) %]
+            [%- update_state = loc( 'closed as a duplicate report' ) %]
         [%- ELSIF state == 'internal referral' %]
             [%- update_state = loc( 'marked as an internal referral' ) %]
         [%- END %]

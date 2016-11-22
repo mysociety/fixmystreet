@@ -158,7 +158,7 @@
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]">
           <a class="btn" href="[% c.uri_for( '/report', problem.id ) %]">[% loc('Cancel') %]</a>
-          <input class="btn btn-primary" type="submit" value="[% loc('Save changes') %]" name="save" />
+          <input class="btn btn-primary" type="submit" value="[% loc('Save changes') %]" data-value-original="[% loc('Save changes') %]" data-value-duplicate="[% loc('Save + close as duplicate') %]" name="save" />
         </p>
       </div>
 

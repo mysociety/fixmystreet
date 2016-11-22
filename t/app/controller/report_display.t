@@ -117,7 +117,7 @@ subtest "duplicate reports are signposted correctly" => sub {
 
     my $report2_id = $report2->id;
     ok $mech->get("/report/$report2_id"), "get '/report/$report2_id'";
-    $mech->content_contains('This report is a duplicate.');
+    $mech->content_contains('This report is a duplicate');
     $mech->content_contains($report->title);
     $mech->log_out_ok;
 

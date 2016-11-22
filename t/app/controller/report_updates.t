@@ -685,6 +685,8 @@ for my $test (
         my $meta_state = $test->{meta} || $test->{fields}->{state};
         if ( $test->{reopened} ) {
             like $update_meta->[0], qr/reopened$/, 'update meta says reopened';
+        } elsif ( $test->{state} eq 'duplicate' ) {
+            like $update_meta->[0], qr/closed as $meta_state$/, 'update meta includes state change';
         } else {
             like $update_meta->[0], qr/marked as $meta_state$/, 'update meta includes state change';
         }

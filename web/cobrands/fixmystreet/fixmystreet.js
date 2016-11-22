@@ -390,7 +390,6 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
-
   manage_duplicates: function() {
       // Deal with changes to report state by inspector/other staff, specifically
       // displaying nearby reports if it's changed to 'duplicate'.
@@ -656,6 +655,18 @@ $.extend(fixmystreet.set_up, {
         $("form#report_inspect_form [data-category]:not(" + selector + ")").addClass("hidden");
         $("form#report_inspect_form " + selector).removeClass("hidden");
     });
+
+    // The inspect form submit button can change depending on the selected state
+    $("#report_inspect_form [name=state]").change(function(){
+        var state = $(this).val();
+        var $submit = $("#report_inspect_form input[type=submit]");
+        var value = $submit.attr('data-value-'+state);
+        if (value !== undefined) {
+            $submit.val(value);
+        } else {
+            $submit.val($submit.data('valueOriginal'));
+        }
+    }).change();
 
     $('.js-toggle-public-update').each(function() {
         var $checkbox = $(this);
