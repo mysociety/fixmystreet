@@ -942,6 +942,7 @@ sub pin_data {
         id => $self->id,
         title => $opts{private} ? $self->title : $self->title_safe,
         problem => $self,
+        type => $opts{type},
     }
 };
 

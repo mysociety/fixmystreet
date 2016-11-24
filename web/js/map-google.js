@@ -56,6 +56,9 @@ fixmystreet.maps = {};
         google.maps.event.trigger(fixmystreet.map, 'idle');
     };
 
+    // This is a noop on Google Maps right now.
+    fixmystreet.maps.markers_highlight = function() {};
+
     function PaddingControl(div) {
         div.style.padding = '40px';
     }

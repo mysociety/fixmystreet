@@ -402,13 +402,24 @@ $.extend(fixmystreet.set_up, {
               longitude: $('input[name="longitude"]').val()
           };
           $("#js-duplicate-reports ul").html("<li>Loading...</li>");
-          $.getJSON('/report/'+report_id+'/nearby', args, function(data) {
+          var nearby_url = '/report/'+report_id+'/nearby.json';
+          $.getJSON(nearby_url, args, function(data) {
               var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
               var $reports = $(data.current)
                               .filter("li")
                               .not("[data-report-id="+report_id+"]")
                               .slice(0, 5);
               $reports.filter("[data-report-id="+duplicate_of+"]").addClass("item-list--reports__item--selected");
+
+              (function() {
+                  var timeout;
+                  $reports.on('mouseenter', function(){
+                      clearTimeout(timeout);
+                      fixmystreet.maps.markers_highlight(parseInt($(this).data('reportId'), 10));
+                  }).on('mouseleave', function(){
+                      timeout = setTimeout(fixmystreet.maps.markers_highlight, 50);
+                  });
+              })();
 
               $("#js-duplicate-reports ul").empty().prepend($reports);
 
@@ -419,7 +430,24 @@ $.extend(fixmystreet.set_up, {
                   $(this).closest("li").addClass("item-list--reports__item--selected");
                   return false;
               });
+
+              show_nearby_pins(data, report_id);
           });
+      }
+
+      function show_nearby_pins(data, report_id) {
+          var markers = fixmystreet.maps.markers_list( data.pins, true );
+          // We're replacing all the features in the markers layer with the
+          // possible duplicates, but the list of pins from the server doesn't
+          // include the current report. So we need to extract the feature for
+          // the current report and include it in the list of features we're
+          // showing on the layer.
+          var report_marker = fixmystreet.maps.get_marker_by_id(parseInt(report_id, 10));
+          if (report_marker) {
+              markers.unshift(report_marker);
+          }
+          fixmystreet.markers.removeAllFeatures();
+          fixmystreet.markers.addFeatures( markers );
       }
 
       function state_change() {
