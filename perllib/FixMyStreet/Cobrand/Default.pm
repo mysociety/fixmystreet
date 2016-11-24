@@ -1184,6 +1184,7 @@ Return true if an Open311 service attribute should be a hidden field.
 
 sub category_extra_hidden {
     my ($self, $meta) = @_;
+	return 0;
 }
 
 1;
