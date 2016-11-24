@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::MockModule;
 
 use FixMyStreet::TestMech;
 my $mech = FixMyStreet::TestMech->new;
@@ -33,6 +34,13 @@ for my $test (
   )
 {
     my ( $email, $error_message ) = @$test;
+
+    my $resolver = Test::MockModule->new('Net::DNS::Resolver');
+    $resolver->mock('send', sub {
+        my ($self, $domain, $type) = @_;
+        return Net::DNS::Packet->new;
+    });
+
     pass "--- testing bad email '$email' gives error '$error_message'";
     $mech->get_ok('/auth');
     is_deeply $mech->page_errors, [], 'no errors initially';
