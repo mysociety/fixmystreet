@@ -20,7 +20,7 @@
           <input type="hidden" name="latitude" value="[% problem.latitude %]">
         </p>
         <p>
-          <a href="https://www.google.com/maps/dir/Current+Location/[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
+          <a target="_blank" href="https://www.google.com/maps/dir/Current+Location/[% problem.latitude %],[% problem.longitude %]" class="btn btn--block btn--navigate">[% loc('Navigate to this problem') %]</a>
         </p>
         <p>
           <a href="#" class="btn btn--block btn--geolocate" id="geolocate_link">[% loc('Set to my current location') %]</a>
