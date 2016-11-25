@@ -1,10 +1,12 @@
-[% map_js = BLOCK %]
-<script type="text/javascript" src="[% version('/js/OpenLayers.2.11.zurich.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/OpenLayers.Projection.CH1903Plus.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-wmts-base.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-wmts-zurich.js') %]"></script>
-[% END %]
+[%
+map_js = [
+    version('/js/OpenLayers.2.11.zurich.js'),
+    version('/js/OpenLayers.Projection.CH1903Plus.js'),
+    version('/js/map-OpenLayers.js'),
+    version('/js/map-wmts-base.js'),
+    version('/js/map-wmts-zurich.js'),
+]
+%]
 
 [% map_sub_links = BLOCK %]
     <a class="hidden-nojs" id="map_layer_toggle" href="">Stadtplan</a>

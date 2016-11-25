@@ -1,4 +1,3 @@
-[% map_js = BLOCK %]
 <style>
 #map_box img {
     max-width: none;
@@ -7,9 +6,12 @@
     color: #000;
 }
 </style>
-<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript" src="[% version('/js/map-google.js') %]"></script>
-[% END %]
+[%
+map_js = [
+    "http://maps.googleapis.com/maps/api/js?sensor=false",
+    version('/js/map-google.js'),
+]
+%]
 
 [% map_html = BLOCK %]
 <script nonce="[% csp_nonce %]">

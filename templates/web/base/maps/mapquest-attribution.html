@@ -1,9 +1,8 @@
-[% map_js = BLOCK %]
-<script type="text/javascript" src="[% version('/js/OpenLayers/OpenLayers.fixmystreet.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-OpenStreetMap.js') %]"></script>
-[% END %]
-
-[% map_html = BLOCK %]
-[% INCLUDE maps/openlayers.html %]
-[% END %]
+[%
+map_js = [
+    version('/js/OpenLayers/OpenLayers.fixmystreet.js'),
+    version('/js/map-OpenLayers.js'),
+    version('/js/map-OpenStreetMap.js'),
+];
+map_html = INCLUDE maps/openlayers.html
+%]

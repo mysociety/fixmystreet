@@ -1,28 +1,13 @@
-[% USE date %][% USE Math %]
-
 [% TRY %][% PROCESS 'footer_extra.html' %][% CATCH file %][% END %]
 
-<script type="text/javascript" src="[% start %]/js/translation_strings.[% lang_code %].js?[% Math.int( date.now / 3600 ) %]"></script>
-<script type="text/javascript" src="[% version('/jslib/jquery-1.7.2.min.js') %]"></script>
+[% PROCESS 'common_scripts.html' %]
+
 <!--[if lte IE 9]>
-  <script type="text/javascript" src="[% version('/js/history.polyfill.min.js') %]"></script>
+  <script src="[% version('/js/history.polyfill.min.js') %]"></script>
 <![endif]-->
-<script type="text/javascript" src="[% version('/js/validation_rules.js') %]"></script>
-<script src="[% version('/js/jquery.validate.min.js') %]" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" src="[% version('/js/dropzone.min.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/jquery.multi-select.js') %]"></script>
-
-<script type="text/javascript" src="[% version('/js/geo.min.js') %]"></script>
-<script type="text/javascript" src="[% version('/cobrands/fixmystreet/fixmystreet.js') %]"></script>
-
-[% map_js %]
-<script src="[% version('/cobrands/fixmystreet/map.js') %]"></script>
-
-[% IF admin %]
-  <script src="[% version('/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js') %]"></script>
-  <script type="text/javascript" src="[% version('/js/fixmystreet-admin.js') %]"></script>
+[% FOR script IN scripts ~%]
+    [% script = script.0 ? script : [ script ] ~%]
+    <script src="[% script.0 %]"
+        [%~ FOR attr IN script.1 %] [% attr.key %]="[% attr.value %]"[% END ~%]
+        ></script>
 [% END %]
-
-[% extra_js %]
-
-[% TRY %][% PROCESS 'footer_extra_js.html' %][% CATCH file %][% END %]

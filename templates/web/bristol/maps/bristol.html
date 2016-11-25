@@ -1,9 +1,11 @@
-[% map_js = BLOCK %]
-<script type="text/javascript" src="[% version('/js/OpenLayers/OpenLayers.bristol.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-OpenLayers.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-wmts-base.js') %]"></script>
-<script type="text/javascript" src="[% version('/js/map-wmts-bristol.js') %]"></script>
-[% END %]
+[%
+map_js = [
+    version('/js/OpenLayers/OpenLayers.bristol.js'),
+    version('/js/map-OpenLayers.js'),
+    version('/js/map-wmts-base.js'),
+    version('/js/map-wmts-bristol.js'),
+]
+%]
 
 [% map_html = BLOCK %]
 [% INCLUDE maps/openlayers.html %]
