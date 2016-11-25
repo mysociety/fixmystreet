@@ -475,7 +475,7 @@ sub confirm {
 
 sub bodies_str_ids {
     my $self = shift;
-    return unless $self->bodies_str;
+    return [] unless $self->bodies_str;
     my @bodies = split( /,/, $self->bodies_str );
     return \@bodies;
 }
