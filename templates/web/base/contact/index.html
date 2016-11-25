@@ -45,7 +45,9 @@
             <input type="hidden" name="m" value="[% moderation_complaint %]">
             [% loc('You are complaining that this problem report was unnecessarily moderated:') %]
             [% ELSE %]
-            [% loc('You are reporting the following problem report for being abusive, containing personal information, or similar:') %]
+            [% loc('Does this report break our <a href="/about/house-rules">House Rules</a>? Use this form to let us know.') %]
+            </p> <p>
+            <strong>[% loc('If you are trying to make a new report, please <a href="/">go to the front page</a> and follow the instructions.') %]</strong>
             [% END %]
             </p>
 

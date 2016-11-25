@@ -99,7 +99,7 @@ for my $test (
             $mech->content_contains( $test->{update}->{text} );
         } else {
             $mech->get_ok( '/contact?id=' . $problem->id );
-            $mech->content_contains('reporting the following problem');
+            $mech->content_contains('Does this report break our');
             $mech->content_contains( $test->{title} );
             $mech->content_contains( $test->{meta} );
         }
