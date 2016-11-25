@@ -119,4 +119,6 @@ sub contact_email {
     return join( '@', 'highway.enquiries', 'oxfordshire.gov.uk' );
 }
 
+sub admin_user_domain { 'oxfordshire.gov.uk' }
+
 1;

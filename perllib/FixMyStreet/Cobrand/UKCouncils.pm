@@ -55,8 +55,9 @@ sub updates_restriction {
 sub users_restriction {
     my ($self, $rs) = @_;
 
-    # Council admins can only see users who are members of the same council or
-    # users who have sent a report or update to that council.
+    # Council admins can only see users who are members of the same council,
+    # have an email address in a specified domain, or users who have sent a
+    # report or update to that council.
 
     my $problem_user_ids = $self->problems->search(
         undef,
@@ -73,10 +74,16 @@ sub users_restriction {
         }
     )->as_query;
 
-    return $rs->search([
+    my $or_query = [
         from_body => $self->council_id,
         id => [ { -in => $problem_user_ids }, { -in => $update_user_ids } ],
-    ]);
+    ];
+    if ($self->can('admin_user_domain')) {
+        my $domain = $self->admin_user_domain;
+        push @$or_query, email => { ilike => "%\@$domain" };
+    }
+
+    return $rs->search($or_query);
 }
 
 sub base_url {
