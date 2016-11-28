@@ -563,6 +563,9 @@ $.extend(fixmystreet.set_up, {
         return;
     }
 
+    // Focus on form
+    $('html,body').scrollTop($('#report_inspect_form').offset().top);
+
     // On the manage/inspect report form, we already have all the extra inputs
     // in the DOM, we just need to hide/show them as appropriate.
     $('form#report_inspect_form [name=category]').change(function() {
