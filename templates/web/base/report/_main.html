@@ -5,7 +5,7 @@
 <a href="[% c.uri_for( '/around', { lat => latitude, lon => longitude } ) %]"
     class="problem-back js-back-to-report-list">[% loc('Back to all reports') %]</a>
 
-<div class="problem-header clearfix" problem-id="[% problem.id %]">
+<div class="problem-header clearfix" data-lastupdate="[% problem.lastupdate %]">
 
 [% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) %]
 <form method="post" action="/my/planned/change" id="planned_form" class="hidden-label-target">
