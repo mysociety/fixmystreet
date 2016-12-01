@@ -486,6 +486,7 @@ create table response_templates (
     text text not null,
     created timestamp not null default current_timestamp,
     auto_response boolean NOT NULL DEFAULT 'f',
+    state text,
     unique(body_id, title)
 );
 
