@@ -377,6 +377,7 @@ sub inspect : Private {
             if ( $reputation_change != 0 ) {
                 $problem->user->update_reputation($reputation_change);
             }
+            $problem->lastupdate( \'current_timestamp' );
             $problem->update;
             if ( defined($update_text) ) {
                 $problem->add_to_comments( {
