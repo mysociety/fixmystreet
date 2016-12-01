@@ -112,16 +112,10 @@ class="admin-offsite-link">[% problem.latitude %], [% problem.longitude %]</a>
 <li><label for='detail'>[% loc('Details:') %]</label>
 <textarea class="form-control" name='detail' id='detail' cols=60 rows=10>[% problem.detail | html %]</textarea></li>
 
-<li><label class="inline-text" for="state">[% loc('State:') %]</label>
-<select class="form-control" name="state"  id="state">
-[% FOREACH group IN state_groups %]
-    <optgroup label="[% group.0 %]">
-    [% FOREACH state IN group.1 %]
-        <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
-    [% END %]
-    </optgroup>
-[% END %]
-</select></li>
+<li>
+    <label class="inline-text" for="state">[% loc('State:') %]</label>
+    [% INCLUDE 'admin/state_groups_select.html' %]
+</li>
 <li><label class="inline-text" for="category">[% loc('Category:') %]</label>
 <select class="form-control" name="category" id="category">
   [% IF NOT problem.category OR NOT categories.grep(problem.category).size %]
