@@ -129,7 +129,7 @@ sub index : Path : Args(0) {
 
 sub config_page : Path( 'config' ) : Args(0) {
     my ($self, $c) = @_;
-    my $dir = $c->stash->{additional_template_paths}->[0];
+    my $dir = FixMyStreet->path_to();
     my $git_version = `cd $dir && git describe --tags`;
     chomp $git_version;
     $c->stash(
