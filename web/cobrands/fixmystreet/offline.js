@@ -2,13 +2,80 @@ fixmystreet.offlineBanner = (function() {
     var toCache = 0;
     var cachedSoFar = 0;
 
+    function formText() {
+        var num = fixmystreet.offlineData.getForms().length;
+        return num + ' form' + (num===1 ? '' : 's');
+    }
+
+    function onlineText() {
+        return 'You have <a id="oFN" href=""><span>' + formText() + '</span> saved to submit</a>.';
+    }
+
+    function offlineText() {
+        return 'You are offline \u2013 <span>' + formText() + '</span> saved.';
+    }
+
     return {
         make: function(offline) {
-            var banner = ['<div class="top_banner top_banner--offline"><p><span id="offline_saving">'];
+            var num = fixmystreet.offlineData.getForms().length;
+            var banner = ['<div class="top_banner top_banner--offline"><p><span id="offline_saving"></span> <span id="offline_forms">'];
+            if (offline || num > 0) {
+                banner.push(offline ? offlineText() : onlineText());
+            }
             banner.push('</span></p></div>');
             banner = $(banner.join(''));
             banner.prependTo('.content');
-            banner.hide();
+            if (!offline && num === 0) {
+                banner.hide();
+            }
+
+            window.addEventListener("offline", function(e) {
+                $('.top_banner--offline').slideDown();
+                $('#offline_forms').html(offlineText());
+            });
+
+            window.addEventListener("online", function(e) {
+                $('#offline_forms').html(onlineText());
+            });
+
+            function nextForm(DataOrJqXHR, textStatus, jqXHROrErrorThrown) {
+                fixmystreet.offlineData.shiftForm();
+                $(document).dequeue('postForm');
+            }
+
+            function postForm(url, data) {
+                return $.ajax({ url: url, data: data, type: 'POST' }).done(nextForm);
+            }
+
+            $(document).on('click', '#oFN', function(e) {
+                e.preventDefault();
+                fixmystreet.offlineData.getForms().forEach(function(form) {
+                    $(document).queue('postForm', function() {
+                        postForm(form[0], form[1]).fail(function(jqXHR) {
+                            if (jqXHR.status !== 400) {
+                                return nextForm();
+                            }
+                            // In case the request failed due to out-of-date CSRF token,
+                            // try once more with a new token given in the error response.
+                            var m = jqXHR.responseText.match(/name="token" value="([^"]*)"/);
+                            if (!m) {
+                                return nextForm();
+                            }
+                            var token = m[1];
+                            if (!token) {
+                                return nextForm();
+                            }
+                            var param = form[1].replace(/&token=[^&]*/, '&token=' + token);
+                            return postForm(form[0], param).fail(nextForm);
+                        });
+                    });
+                });
+                $(document).dequeue('postForm');
+            });
+        },
+        update: function() {
+            $('.top_banner--offline').slideDown();
+            $('#offline_forms span').text(formText());
         },
         startProgress: function(l) {
             $('.top_banner--offline').slideDown();
@@ -33,7 +100,7 @@ fixmystreet.offlineData = (function() {
         if (data === undefined) {
             data = JSON.parse(localStorage.getItem('offlineData'));
             if (!data) {
-                data = { cachedReports: {} };
+                data = { cachedReports: {}, forms: [] };
             }
         }
         return data;
@@ -44,6 +111,22 @@ fixmystreet.offlineData = (function() {
     }
 
     return {
+        getForms: function() {
+            return getData().forms;
+        },
+        addForm: function(action, formData) {
+            var forms = getData().forms;
+            if (!forms.length || formData != forms[forms.length - 1][1]) {
+                forms.push([action, formData]);
+                saveData();
+            }
+            fixmystreet.offlineBanner.update();
+        },
+        shiftForm: function(idx) {
+            getData().forms.shift();
+            saveData();
+            fixmystreet.offlineBanner.update();
+        },
         getCachedUrls: function() {
             return Object.keys(getData().cachedReports);
         },
@@ -216,6 +299,29 @@ fixmystreet.offline = (function() {
 
         $('.js-back-to-report-list').attr('href', '/my/planned');
 
+        // Refill form with saved data if there is any
+        var savedForm;
+        fixmystreet.offlineData.getForms().forEach(function(form) {
+            if (form[0].endsWith(url)) {
+                savedForm = form[1];
+            }
+        });
+        if (savedForm) {
+            savedForm.replace(/\+/g, '%20').split('&').forEach(function(kv) {
+                kv = kv.split('=', 2);
+                if (kv[0] != 'save_inspected' && kv[0] != 'public_update' && kv[0] != 'save') {
+                    $('[name=' + kv[0] + ']').val(decodeURIComponent(kv[1]));
+                }
+            });
+        }
+
+        $('#report_inspect_form').submit(function() {
+            var data = $(this).serialize() + '&save=1&saved_at=' + Math.floor(+new Date() / 1000);
+            fixmystreet.offlineData.addForm(this.action, data);
+            location.href = '/my/planned?saved=1';
+            return false;
+        });
+
         return true;
     }
 
@@ -250,7 +356,20 @@ if ($('#offline_list').length) {
         if (html) {
             $('#offline_list').before('<h2>Your offline reports</h2>');
             $('#offline_list').html(html);
+            if (location.search.indexOf('saved=1') > 0) {
+                $('#offline_list').before('<p class="form-success">Your form has been saved offline for submission when back online.</p>');
+            }
             fixmystreet.offline.replaceImages('#offline_list img');
+            var offlineForms = fixmystreet.offlineData.getForms();
+            var savedForms = {};
+            offlineForms.forEach(function(form) {
+                savedForms[form[0]] = 1;
+            });
+            $('#offline_list a').each(function(i, a) {
+                if (savedForms[a.href]) {
+                    $(this).find('h3').prepend('<em>Form data saved</em> ');
+                }
+            });
         }
     }
     fixmystreet.offlineBanner.make(true);

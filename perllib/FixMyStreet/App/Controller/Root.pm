@@ -108,6 +108,7 @@ sub page_error_403_access_denied : Private {
 
 sub page_error_400_bad_request : Private {
     my ( $self, $c, $error_msg ) = @_;
+    $c->forward('/auth/get_csrf_token');
     $c->detach('page_error', [ $error_msg, 400 ]);
 }
 
