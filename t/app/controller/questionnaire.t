@@ -87,16 +87,19 @@ foreach my $test (
         desc => 'User goes to questionnaire URL with a bad token',
         token_extra => 'BAD',
         content => "Sorry, that wasn&rsquo;t a valid link",
+        code => 400,
     },
     {
         desc => 'User goes to questionnaire URL for a now-hidden problem',
         state => 'hidden',
         content => "we couldn't locate your problem",
+        code => 400,
     },
     {
         desc => 'User goes to questionnaire URL for an already answered questionnaire',
         answered => \'current_timestamp',
         content => 'already answered this questionnaire',
+        code => 400,
     },
 ) {
     subtest $test->{desc} => sub {
@@ -106,7 +109,8 @@ foreach my $test (
         $questionnaire->update;
         (my $token = $token->token);
         $token .= $test->{token_extra} if $test->{token_extra};
-        $mech->get_ok("/Q/$token");
+        $mech->get("/Q/$token");
+        is $mech->res->code, $test->{code}, "Right status received";
         $mech->content_contains( $test->{content} );
         # Reset, no matter what test did
         $report->state( 'confirmed' );

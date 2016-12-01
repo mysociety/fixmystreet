@@ -57,9 +57,9 @@ sub example : Local : Args(0) {
         }
     };
     if ($@) {
-        $c->stash->{message} = _("There was a problem showing this page. Please try again later.") . ' ' .
+        my $message = _("There was a problem showing this page. Please try again later.") . ' ' .
             sprintf(_('The error was: %s'), $@);
-        $c->stash->{template} = 'errors/generic.html';
+        $c->detach('/page_error_500_internal_error', [ $message ]);
     }
 }
 

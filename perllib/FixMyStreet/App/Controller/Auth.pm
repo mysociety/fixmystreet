@@ -271,9 +271,8 @@ sub facebook_callback: Path('/auth/Facebook') : Args(0) {
         $access_token = $fb->get_access_token(code => $c->get_param('code'));
     };
     if ($@) {
-        ($c->stash->{message} = $@) =~ s/at [^ ]*Auth.pm.*//;
-        $c->stash->{template} = 'errors/generic.html';
-        $c->detach;
+        (my $message = $@) =~ s/at [^ ]*Auth.pm.*//;
+        $c->detach('/page_error_500_internal_error', [ $message ]);
     }
 
     # save this token in session
@@ -339,9 +338,8 @@ sub twitter_callback: Path('/auth/Twitter') : Args(0) {
         $twitter->request_access_token(verifier => $verifier);
     };
     if ($@) {
-        ($c->stash->{message} = $@) =~ s/at [^ ]*Auth.pm.*//;
-        $c->stash->{template} = 'errors/generic.html';
-        $c->detach;
+        (my $message = $@) =~ s/at [^ ]*Auth.pm.*//;
+        $c->detach('/page_error_500_internal_error', [ $message ]);
     }
 
     my $info = $twitter->verify_credentials();
@@ -527,8 +525,7 @@ sub check_csrf_token : Private {
 
 sub no_csrf_token : Private {
     my ($self, $c) = @_;
-    $c->stash->{message} = _('Unknown error');
-    $c->stash->{template} = 'errors/generic.html';
+    $c->detach('/page_error_400_bad_request', []);
 }
 
 =head2 sign_out

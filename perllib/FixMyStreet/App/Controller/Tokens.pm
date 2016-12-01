@@ -348,6 +348,7 @@ sub token_too_old : Private {
     my ( $self, $c ) = @_;
     $c->stash->{token_not_found} = 1;
     $c->stash->{template} = 'auth/token.html';
+    $c->response->status(400);
 }
 
 __PACKAGE__->meta->make_immutable;

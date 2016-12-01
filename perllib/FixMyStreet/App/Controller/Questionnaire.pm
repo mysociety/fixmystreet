@@ -36,9 +36,8 @@ sub check_questionnaire : Private {
     if ( $questionnaire->whenanswered ) {
         my $problem_url = $c->cobrand->base_url_for_report( $problem ) . $problem->url;
         my $contact_url = $c->uri_for( "/contact" );
-        $c->stash->{message} = sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), $contact_url, $problem_url);
-        $c->stash->{template} = 'errors/generic.html';
-        $c->detach;
+        my $message = sprintf(_("You have already answered this questionnaire. If you have a question, please <a href='%s'>get in touch</a>, or <a href='%s'>view your problem</a>.\n"), $contact_url, $problem_url);
+        $c->detach('/page_error_400_bad_request', [ $message ]);
     }
 
     unless ( $problem->is_visible ) {
@@ -86,8 +85,8 @@ Display couldn't locate problem error message
 sub missing_problem : Private {
     my ( $self, $c ) = @_;
 
-    $c->stash->{message} = _("I'm afraid we couldn't locate your problem in the database.\n");
-    $c->stash->{template} = 'errors/generic.html';
+    my $message = _("I'm afraid we couldn't locate your problem in the database.\n");
+    $c->detach('/page_error_400_bad_request', [ $message ]);
 }
 
 sub submit_creator_fixed : Private {
