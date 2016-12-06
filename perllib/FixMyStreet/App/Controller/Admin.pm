@@ -1377,7 +1377,7 @@ sub user_edit : Path('user_edit') : Args(1) {
     }
 
     if ( $user->from_body ) {
-        unless ( $c->stash->{body} && $user->from_body->id eq $c->stash->{body}->id ) {
+        unless ( $c->stash->{live_contacts} ) {
             $c->stash->{body} = $user->from_body;
             $c->forward('fetch_contacts');
         }

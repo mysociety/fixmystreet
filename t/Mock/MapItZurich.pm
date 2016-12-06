@@ -38,6 +38,12 @@ sub dispatch_request {
         my $json = $self->json->encode({});
         return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
     },
+
+    sub (GET + /area/*/children) {
+        my ($self, $area) = @_;
+        my $json = $self->json->encode({});
+        return [ 200, [ 'Content-Type' => 'application/json' ], [ $json ] ];
+    },
 }
 
 __PACKAGE__->run_if_script;

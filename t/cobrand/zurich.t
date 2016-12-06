@@ -102,8 +102,9 @@ sub get_export_rows_count {
 
 my $EXISTING_REPORT_COUNT = 0;
 
+my $superuser;
 subtest "set up superuser" => sub {
-    my $superuser = $mech->log_in_ok( 'super@example.org' );
+    $superuser = $mech->log_in_ok( 'super@example.org' );
     # a user from body $zurich is a superuser, as $zurich has no parent id!
     $superuser->update({ from_body => $zurich->id }); 
     $EXISTING_REPORT_COUNT = get_export_rows_count($mech);
@@ -967,6 +968,18 @@ subtest 'time_spent' => sub {
 };
 
 $mech->log_out_ok;
+
+FixMyStreet::override_config {
+    ALLOWED_COBRANDS => [ 'zurich' ],
+    MAPIT_URL => 'http://mapit.zurich/',
+    MAPIT_TYPES  => [ 'ZZZ' ],
+}, sub {
+    LWP::Protocol::PSGI->register(t::Mock::MapItZurich->run_if_script, host => 'mapit.zurich');
+    subtest 'users at the top level can be edited' => sub {
+        $mech->log_in_ok( $superuser->email );
+        $mech->get_ok('/admin/user_edit/' . $superuser->id );
+    };
+};
 
 END {
     $mech->delete_body($subdivision);
