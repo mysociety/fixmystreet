@@ -665,7 +665,6 @@ sub admin_pages {
         $pages->{responsepriorities} = [ _('Priorities'), 4 ];
         $pages->{responsepriority_edit} = [ undef, undef ];
     };
-
     if ( $user->has_body_permission_to('user_edit') ) {
         $pages->{users} = [ _('Users'), 6 ];
         $pages->{user_edit} = [ undef, undef ];

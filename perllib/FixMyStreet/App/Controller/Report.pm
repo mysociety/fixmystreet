@@ -339,7 +339,7 @@ sub inspect : Private {
         my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_information traffic_information duplicate_of/) {
+            foreach (qw/detailed_information traffic_information duplicate_of defect_type/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 

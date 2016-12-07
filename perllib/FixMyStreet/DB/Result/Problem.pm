@@ -1100,4 +1100,13 @@ has traffic_management_options => (
     },
 );
 
+has inspection_log_entry => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        return $self->admin_log_entries->search({ action => 'inspected' }, { order_by => { -desc => 'whenedited' } })->first;
+    },
+);
+
 1;

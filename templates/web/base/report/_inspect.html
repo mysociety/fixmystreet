@@ -62,6 +62,18 @@
         [% END %]
 
         [% IF permissions.report_inspect %]
+          [% IF c.cobrand.defect_types %]
+            <p>
+              <label for="defect_type">[% loc('Defect type') %]</label>
+              [% defect_type = problem.get_extra_metadata('defect_type') %]
+              <select id="defect_type" name="defect_type" class="form-control">
+                <option value=""[% ' selected' IF NOT defect_type %]>-</option>
+                [% FOREACH dt IN c.cobrand.defect_types.pairs %]
+                  <option[% ' selected' IF defect_type == dt.key %] value="[% dt.key | html %]">[% dt.value | html %]</option>
+                [% END %]
+              </select>
+            </p>
+          [% END %]
           <p>
             <label for="state">[% loc('State') %]</label>
             [% INCLUDE 'report/inspect/state_groups_select.html' %]
