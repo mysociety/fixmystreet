@@ -946,7 +946,7 @@ fixmystreet.update_pin = function(lonlat, savePushState) {
         // something from it, then pre-fill the category field in the report,
         // if it's a value already present in the drop-down.
         var category = $("#filter_categories").val();
-        if (category !== undefined && $("#form_category option[value="+category+"]").length) {
+        if (category !== undefined && $("#form_category option[value='"+category+"']").length) {
             $("#form_category").val(category);
         }
 
