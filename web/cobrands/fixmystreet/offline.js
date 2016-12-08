@@ -127,6 +127,11 @@ fixmystreet.offlineData = (function() {
             saveData();
             fixmystreet.offlineBanner.update();
         },
+        clearForms: function(idx) {
+            getData().forms = [];
+            saveData();
+            fixmystreet.offlineBanner.update();
+        },
         getCachedUrls: function() {
             return Object.keys(getData().cachedReports);
         },
@@ -369,6 +374,13 @@ if ($('#offline_list').length) {
                 if (savedForms[a.href]) {
                     $(this).find('h3').prepend('<em>Form data saved</em> ');
                 }
+            });
+            $('#offline_clear').html('<button id="js-clear-localStorage">Clear offline data</button>');
+            $('#js-clear-localStorage').click(function() {
+                fixmystreet.offline.removeReports(fixmystreet.offlineData.getCachedUrls());
+                fixmystreet.offlineData.clearForms();
+                localStorage.removeItem('/my/planned');
+                alert('Offline data cleared');
             });
         }
     }
