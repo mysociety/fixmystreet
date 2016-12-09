@@ -606,6 +606,7 @@ var fixmystreet = fixmystreet || {};
         // Create the basics of the map
         fixmystreet.map = new OpenLayers.Map(
             "map", OpenLayers.Util.extend({
+                theme: null,
                 controls: fixmystreet.controls,
                 displayProjection: new OpenLayers.Projection("EPSG:4326")
             }, fixmystreet.map_options)
