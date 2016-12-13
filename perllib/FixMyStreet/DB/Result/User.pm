@@ -268,7 +268,7 @@ sub has_permission_to {
     my ($self, $permission_type, $body_ids) = @_;
 
     return 1 if $self->is_superuser;
-    return 0 unless $body_ids;
+    return 0 if !$body_ids || (ref $body_ids && !@$body_ids);
 
     my $permission = $self->user_body_permissions->find({
             permission_type => $permission_type,
