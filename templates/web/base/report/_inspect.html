@@ -9,7 +9,7 @@
       <div class="inspect-section">
         <p>
           <strong>[% loc('Report ID:') %]</strong>
-          [% problem.id %]
+          <span class="js-report-id">[% problem.id %]</span>
         </p>
         <p>
           [% SET local_coords = problem.local_coords; %]
@@ -63,19 +63,38 @@
         [% END %]
 
         [% IF permissions.report_inspect %]
-        <p>
-          <label for="state">[% loc('State') %]</label>
-            [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-          <select name="state" id="state" class="form-control">
-            [% FOREACH group IN state_groups %]
-              <optgroup label="[% group.0 %]">
-                [% FOREACH state IN group.1 %]
-                  <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
-                [% END %]
-              </optgroup>
-            [% END %]
-          </select>
-        </p>
+          <p>
+            <label for="state">[% loc('State') %]</label>
+              [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
+            <select name="state" id="state" class="form-control">
+              [% FOREACH group IN state_groups %]
+                <optgroup label="[% group.0 %]">
+                  [% FOREACH state IN group.1 %]
+                    <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
+                  [% END %]
+                </optgroup>
+              [% END %]
+            </select>
+          </p>
+          <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
+            <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">
+            <p class="[% "hidden" UNLESS problem.duplicate_of %]"><strong>[% loc('Duplicate of') %]</strong></p>
+            <p class="[% "hidden" IF problem.duplicate_of %]">[% loc('Which report is it a duplicate of?') %]</p>
+            <ul class="item-list">
+              [% IF problem.duplicate_of %]
+                [% INCLUDE 'report/_item.html' item_extra_class = 'item-list--reports__item--selected' problem = problem.duplicate_of %]
+                <li class="item-list__item"><a class="btn" href="#" id="js-change-duplicate-report">[% loc('Choose another') %]</a></li>
+              [% END %]
+            </ul>
+          </div>
+          [% IF problem.duplicates.size %]
+            <p><strong>[% loc('Duplicates') %]</strong></p>
+            <ul class="item-list">
+              [% FOR duplicate IN problem.duplicates %]
+                [% INCLUDE 'report/_item.html' problem = duplicate %]
+              [% END %]
+            </ul>
+          [% END %]
         [% END %]
 
       </div>
@@ -139,7 +158,7 @@
         <p>
           <input type="hidden" name="token" value="[% csrf_token %]">
           <a class="btn" href="[% c.uri_for( '/report', problem.id ) %]">[% loc('Cancel') %]</a>
-          <input class="btn btn-primary" type="submit" value="[% loc('Save changes') %]" name="save" />
+          <input class="btn btn-primary" type="submit" value="[% loc('Save changes') %]" data-value-original="[% loc('Save changes') %]" data-value-duplicate="[% loc('Save + close as duplicate') %]" name="save" />
         </p>
       </div>
 

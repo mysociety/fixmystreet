@@ -231,13 +231,8 @@ sub generate_map_tags : Private {
         latitude  => $problem->latitude,
         longitude => $problem->longitude,
         pins      => $problem->used_map
-        ? [ {
-            latitude  => $problem->latitude,
-            longitude => $problem->longitude,
-            colour    => $c->cobrand->pin_colour($problem, 'report'),
-            type      => 'big',
-          } ]
-        : [],
+            ? [ $problem->pin_data($c, 'report', type => 'big') ]
+            : [],
     );
 
     return 1;
@@ -300,6 +295,7 @@ sub action_router : Path('') : Args(2) {
     my ( $self, $c, $id, $action ) = @_;
 
     $c->go( 'map', [ $id ] ) if $action eq 'map';
+    $c->go( 'nearby_json', [ $id ] ) if $action eq 'nearby.json';
 
     $c->detach( '/page_error_404_not_found', [] );
 }
@@ -318,9 +314,10 @@ sub inspect : Private {
         my $valid = 1;
         my $update_text;
         my $reputation_change = 0;
+        my %update_params = ();
 
         if ($permissions->{report_inspect}) {
-            foreach (qw/detailed_information traffic_information/) {
+            foreach (qw/detailed_information traffic_information duplicate_of/) {
                 $problem->set_extra_metadata( $_ => $c->get_param($_) );
             }
 
@@ -344,6 +341,14 @@ sub inspect : Private {
             }
             if ( $problem->state eq 'hidden' ) {
                 $problem->get_photoset->delete_cached;
+            }
+            if ( $problem->state eq 'duplicate' && $old_state ne 'duplicate' ) {
+                # If the report is being closed as duplicate, make sure the
+                # update records this.
+                $update_params{problem_state} = "duplicate";
+            }
+            if ( $problem->state ne 'duplicate' ) {
+                $problem->unset_extra_metadata('duplicate_of');
             }
             if ( $problem->state ne $old_state ) {
                 $c->forward( '/admin/log_edit', [ $problem->id, 'problem', 'state_change' ] );
@@ -389,6 +394,7 @@ sub inspect : Private {
                     state => 'confirmed',
                     mark_fixed => 0,
                     anonymous => 0,
+                    %update_params,
                 } );
             }
             # This problem might no longer be visible on the current cobrand,
@@ -414,6 +420,38 @@ sub map : Private {
     my $image = $c->stash->{problem}->static_map;
     $c->res->content_type($image->{content_type});
     $c->res->body($image->{data});
+}
+
+
+sub nearby_json : Private {
+    my ( $self, $c, $id ) = @_;
+
+    $c->forward( 'load_problem_or_display_error', [ $id ] );
+    my $p = $c->stash->{problem};
+    my $dist = 1000;
+
+    my $nearby = $c->model('DB::Nearby')->nearby(
+        $c, $dist, [ $p->id ], 5, $p->latitude, $p->longitude, undef, [ $p->category ], undef
+    );
+    my @pins = map {
+        my $p = $_->problem;
+        my $colour = $c->cobrand->pin_colour( $p, 'around' );
+        [ $p->latitude, $p->longitude,
+          $colour,
+          $p->id, $p->title_safe, 'small', JSON->false
+        ]
+    } @$nearby;
+
+    my $on_map_list_html = $c->render_fragment(
+        'around/on_map_list_items.html',
+        { on_map => [], around_map => $nearby }
+    );
+
+    my $json = { pins => \@pins };
+    $json->{current} = $on_map_list_html if $on_map_list_html;
+    my $body = encode_json($json);
+    $c->res->content_type('application/json; charset=utf-8');
+    $c->res->body($body);
 }
 
 

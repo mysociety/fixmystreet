@@ -90,7 +90,8 @@ var fixmystreet = fixmystreet || {};
                 size: pin[5] || marker_size,
                 faded: 0,
                 id: pin[3],
-                title: pin[4] || ''
+                title: pin[4] || '',
+                draggable: pin[6] === false ? false : true
             });
             markers.push( marker );
         }
@@ -144,7 +145,7 @@ var fixmystreet = fixmystreet || {};
       admin_drag: function(pin_moved_callback, confirm_change) {
           confirm_change = confirm_change || false;
           var original_lonlat;
-          var drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+          var drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
               onStart: function(feature, e) {
                   // Keep track of where the feature started, so we can put it
                   // back if the user cancels the operation.
@@ -167,12 +168,41 @@ var fixmystreet = fixmystreet || {};
           } );
           fixmystreet.map.addControl( drag );
           drag.activate();
+      },
+
+      // `markers.redraw()` in markers_highlight will trigger an
+      // `overFeature` event if the mouse cursor is still over the same
+      // marker on the map, which would then run markers_highlight
+      // again, causing an infinite flicker while the cursor remains over
+      // the same marker. We really only want to redraw the markers when
+      // the cursor moves from one marker to another (ie: when there is an
+      // overFeature followed by an outFeature followed by an overFeature).
+      // Therefore, we keep track of the previous event in
+      // fixmystreet.latest_map_hover_event and only call markers_highlight
+      // if we know the previous event was different to the current one.
+      // (See the `overFeature` and `outFeature` callbacks inside of
+      // fixmystreet.select_feature).
+
+      markers_highlight: function(problem_id) {
+          for (var i = 0; i < fixmystreet.markers.features.length; i++) {
+              if (typeof problem_id == 'undefined') {
+                  // There is no highlighted marker, so unfade this marker
+                  fixmystreet.markers.features[i].attributes.faded = 0;
+              } else if (problem_id == fixmystreet.markers.features[i].attributes.id) {
+                  // This is the highlighted marker, unfade it
+                  fixmystreet.markers.features[i].attributes.faded = 0;
+              } else {
+                  // This is not the hightlighted marker, fade it
+                  fixmystreet.markers.features[i].attributes.faded = 1;
+              }
+          }
+          fixmystreet.markers.redraw();
       }
     };
 
     var drag = {
         activate: function() {
-            this._drag = new OpenLayers.Control.DragFeature( fixmystreet.markers, {
+            this._drag = new OpenLayers.Control.DragFeatureFMS( fixmystreet.markers, {
                 onComplete: function(feature, e) {
                     fixmystreet.update_pin( feature.geometry );
                 }
@@ -193,35 +223,6 @@ var fixmystreet = fixmystreet || {};
             z = 13;
         }
         fixmystreet.map.setCenter(center, z);
-    }
-
-    // `markers.redraw()` in markers_highlight will trigger an
-    // `overFeature` event if the mouse cursor is still over the same
-    // marker on the map, which would then run markers_highlight
-    // again, causing an infinite flicker while the cursor remains over
-    // the same marker. We really only want to redraw the markers when
-    // the cursor moves from one marker to another (ie: when there is an
-    // overFeature followed by an outFeature followed by an overFeature).
-    // Therefore, we keep track of the previous event in
-    // fixmystreet.latest_map_hover_event and only call markers_highlight
-    // if we know the previous event was different to the current one.
-    // (See the `overFeature` and `outFeature` callbacks inside of
-    // fixmystreet.select_feature).
-
-    function markers_highlight(problem_id) {
-        for (var i = 0; i < fixmystreet.markers.features.length; i++) {
-            if (typeof problem_id == 'undefined') {
-                // There is no highlighted marker, so unfade this marker
-                fixmystreet.markers.features[i].attributes.faded = 0;
-            } else if (problem_id == fixmystreet.markers.features[i].attributes.id) {
-                // This is the highlighted marker, unfade it
-                fixmystreet.markers.features[i].attributes.faded = 0;
-            } else {
-                // This is not the hightlighted marker, fade it
-                fixmystreet.markers.features[i].attributes.faded = 1;
-            }
-        }
-        fixmystreet.markers.redraw();
     }
 
     function sidebar_highlight(problem_id) {
@@ -505,7 +506,7 @@ var fixmystreet = fixmystreet || {};
                     overFeature: function (feature) {
                         if (fixmystreet.latest_map_hover_event != 'overFeature') {
                             document.getElementById('map').style.cursor = 'pointer';
-                            markers_highlight(feature.attributes.id);
+                            fixmystreet.maps.markers_highlight(feature.attributes.id);
                             sidebar_highlight(feature.attributes.id);
                             fixmystreet.latest_map_hover_event = 'overFeature';
                         }
@@ -513,7 +514,7 @@ var fixmystreet = fixmystreet || {};
                     outFeature: function (feature) {
                         if (fixmystreet.latest_map_hover_event != 'outFeature') {
                             document.getElementById('map').style.cursor = '';
-                            markers_highlight();
+                            fixmystreet.maps.markers_highlight();
                             sidebar_highlight();
                             fixmystreet.latest_map_hover_event = 'outFeature';
                         }
@@ -666,9 +667,9 @@ var fixmystreet = fixmystreet || {};
                 var href = $('a', this).attr('href');
                 var id = parseInt(href.replace(/^.*[/]([0-9]+)$/, '$1'));
                 clearTimeout(timeout);
-                markers_highlight(id);
+                fixmystreet.maps.markers_highlight(id);
             }).on('mouseleave', '.item-list--reports__item', function(){
-                timeout = setTimeout(markers_highlight, 50);
+                timeout = setTimeout(fixmystreet.maps.markers_highlight, 50);
             });
         })();
     });
@@ -887,6 +888,19 @@ OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
         }
     }
 });
+
+/* Drag handler that allows individual features to disable dragging */
+OpenLayers.Control.DragFeatureFMS = OpenLayers.Class(OpenLayers.Control.DragFeature, {
+    CLASS_NAME: "OpenLayers.Control.DragFeatureFMS",
+
+    overFeature: function(feature) {
+        if (feature.attributes.draggable) {
+            return OpenLayers.Control.DragFeature.prototype.overFeature.call(this, feature);
+        } else {
+            return false;
+        }
+    }
+})
 
 OpenLayers.Renderer.SVGBig = OpenLayers.Class(OpenLayers.Renderer.SVG, {
     MAX_PIXEL: 15E7,

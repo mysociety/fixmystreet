@@ -390,6 +390,87 @@ $.extend(fixmystreet.set_up, {
     });
   },
 
+  manage_duplicates: function() {
+      // Deal with changes to report state by inspector/other staff, specifically
+      // displaying nearby reports if it's changed to 'duplicate'.
+      function refresh_duplicate_list() {
+          var report_id = $("#report_inspect_form .js-report-id").text();
+          var args = {
+              filter_category: $("#report_inspect_form select#category").val(),
+              latitude: $('input[name="latitude"]').val(),
+              longitude: $('input[name="longitude"]').val()
+          };
+          $("#js-duplicate-reports ul").html("<li>Loading...</li>");
+          var nearby_url = '/report/'+report_id+'/nearby.json';
+          $.getJSON(nearby_url, args, function(data) {
+              var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
+              var $reports = $(data.current)
+                              .filter("li")
+                              .not("[data-report-id="+report_id+"]")
+                              .slice(0, 5);
+              $reports.filter("[data-report-id="+duplicate_of+"]").addClass("item-list--reports__item--selected");
+
+              (function() {
+                  var timeout;
+                  $reports.on('mouseenter', function(){
+                      clearTimeout(timeout);
+                      fixmystreet.maps.markers_highlight(parseInt($(this).data('reportId'), 10));
+                  }).on('mouseleave', function(){
+                      timeout = setTimeout(fixmystreet.maps.markers_highlight, 50);
+                  });
+              })();
+
+              $("#js-duplicate-reports ul").empty().prepend($reports);
+
+              $reports.find("a").click(function() {
+                  var report_id = $(this).closest("li").data('reportId');
+                  $("#report_inspect_form [name=duplicate_of]").val(report_id);
+                  $("#js-duplicate-reports ul li").removeClass("item-list--reports__item--selected");
+                  $(this).closest("li").addClass("item-list--reports__item--selected");
+                  return false;
+              });
+
+              show_nearby_pins(data, report_id);
+          });
+      }
+
+      function show_nearby_pins(data, report_id) {
+          var markers = fixmystreet.maps.markers_list( data.pins, true );
+          // We're replacing all the features in the markers layer with the
+          // possible duplicates, but the list of pins from the server doesn't
+          // include the current report. So we need to extract the feature for
+          // the current report and include it in the list of features we're
+          // showing on the layer.
+          var report_marker = fixmystreet.maps.get_marker_by_id(parseInt(report_id, 10));
+          if (report_marker) {
+              markers.unshift(report_marker);
+          }
+          fixmystreet.markers.removeAllFeatures();
+          fixmystreet.markers.addFeatures( markers );
+      }
+
+      function state_change() {
+          // The duplicate report list only makes sense when state is 'duplicate'
+          if ($(this).val() !== "duplicate") {
+              $("#js-duplicate-reports").addClass("hidden");
+              return;
+          } else {
+              $("#js-duplicate-reports").removeClass("hidden");
+          }
+          // If this report is already marked as a duplicate of another, then
+          // there's no need to refresh the list of duplicate reports
+          var duplicate_of = $("#report_inspect_form [name=duplicate_of]").val();
+          if (!!duplicate_of) {
+              return;
+          }
+
+          refresh_duplicate_list();
+      }
+
+      $("#report_inspect_form").on("change.state", "select#state", state_change);
+      $("#js-change-duplicate-report").click(refresh_duplicate_list);
+  },
+
 
   contribute_as: function() {
     $('.content').on('change', '.js-contribute-as', function(){
@@ -574,6 +655,18 @@ $.extend(fixmystreet.set_up, {
         $("form#report_inspect_form [data-category]:not(" + selector + ")").addClass("hidden");
         $("form#report_inspect_form " + selector).removeClass("hidden");
     });
+
+    // The inspect form submit button can change depending on the selected state
+    $("#report_inspect_form [name=state]").change(function(){
+        var state = $(this).val();
+        var $submit = $("#report_inspect_form input[type=submit]");
+        var value = $submit.attr('data-value-'+state);
+        if (value !== undefined) {
+            $submit.val(value);
+        } else {
+            $submit.val($submit.data('valueOriginal'));
+        }
+    }).change();
 
     $('.js-toggle-public-update').each(function() {
         var $checkbox = $(this);
@@ -1093,6 +1186,7 @@ fixmystreet.display = {
                 $twoColReport.appendTo('#map_sidebar');
                 $('body').addClass('with-actions');
                 fixmystreet.set_up.report_page_inspect();
+                fixmystreet.set_up.manage_duplicates();
             } else {
                 $sideReport.appendTo('#map_sidebar');
             }

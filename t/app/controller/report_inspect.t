@@ -21,12 +21,14 @@ my $wodc = $mech->create_body_ok(2420, 'West Oxfordshire District Council', id =
 $mech->create_contact_ok( body_id => $wodc->id, category => 'Horses', email => 'horses@example.net' );
 
 
-my ($report) = $mech->create_problems_for_body(1, $oxon->id, 'Test', {
+my ($report, $report2) = $mech->create_problems_for_body(2, $oxon->id, 'Test', {
     category => 'Cows', cobrand => 'fixmystreet', areas => ',2237,2420',
     whensent => \'current_timestamp',
     latitude => 51.847693, longitude => -1.355908,
 });
 my $report_id = $report->id;
+my $report2_id = $report2->id;
+
 
 my $user = $mech->log_in_ok('test@example.com');
 $user->update( { from_body => $oxon } );
@@ -91,6 +93,59 @@ FixMyStreet::override_config {
         $mech->content_contains('Invalid location');
         $mech->submit_form_ok({ button => 'save', with_fields => { latitude => 51.754926, longitude => -1.256179 } });
         $mech->content_lacks('Invalid location');
+    };
+
+    subtest "test duplicate reports are shown" => sub {
+        my $old_state = $report->state;
+        $report->set_extra_metadata('duplicate_of' => $report2->id);
+        $report->state('duplicate');
+        $report->update;
+
+        $mech->get_ok("/report/$report_id");
+        $mech->content_contains($report2->title);
+
+        $mech->get_ok("/report/$report2_id");
+        $mech->content_contains($report->title);
+
+        $report->unset_extra_metadata('duplicate_of');
+        $report->state($old_state);
+        $report->update;
+    };
+
+    subtest "marking a report as a duplicate with update correctly sets update status" => sub {
+        my $old_state = $report->state;
+        $report->comments->delete_all;
+
+        $mech->get_ok("/report/$report_id");
+        $mech->submit_form_ok({ button => 'save', with_fields => { state => 'Duplicate', duplicate_of => $report2->id, public_update => "This is a duplicate.", save_inspected => "1" } });
+        $report->discard_changes;
+
+        is $report->state, 'duplicate', 'report marked as duplicate';
+        is $report->comments->search({ problem_state => 'duplicate' })->count, 1, 'update marking report as duplicate was left';
+
+        $report->update({ state => $old_state });
+    };
+
+    subtest "marking a report as a duplicate doesn't clobber user-provided update" => sub {
+        my $old_state = $report->state;
+        $report->comments->delete_all;
+
+        $mech->get_ok("/report/$report_id");
+        my $update_text = "This text was entered as an update by the user.";
+        $mech->submit_form_ok({ button => 'save', with_fields => {
+            state => 'Duplicate',
+            duplicate_of => $report2->id,
+            public_update => $update_text,
+            save_inspected => "1",
+        }});
+        $report->discard_changes;
+
+        is $report->state, 'duplicate', 'report marked as duplicate';
+        is $report->comments->search({ problem_state => 'duplicate' })->count, 1, 'update marked report as duplicate';
+        $mech->content_contains($update_text);
+        $mech->content_lacks("Thank you for your report. This problem has already been reported.");
+
+        $report->update({ state => $old_state });
     };
 
     foreach my $test (

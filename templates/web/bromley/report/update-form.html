@@ -1,0 +1,137 @@
+<div id="update_form">
+    <h2>[% loc( 'Provide an update') %]</h2>
+
+    [% INCLUDE 'errors.html' %]
+
+    <form method="post" action="[% c.uri_for( '/report/update' ) %]" name="updateForm" class="validate"[% IF c.cobrand.allow_photo_upload %] enctype="multipart/form-data"[% END %]>
+        <input type="hidden" name="token" value="[% csrf_token %]">
+        <fieldset>
+            <input type="hidden" name="submit_update" value="1">
+            <input type="hidden" name="id" value="[% problem.id | html %]">
+
+        [% IF c.cobrand.allow_photo_upload %]
+            <input type="hidden" name="upload_fileid" value="[% upload_fileid %]">
+            <label for="form_photo">
+                <span data-singular="[% loc('Photo') %]" data-plural="[% loc('Photos') %]">[% loc('Photo') %]</span>
+            </label>
+
+              [% IF field_errors.photo %]
+                <p class='form-error'>[% field_errors.photo %]</p>
+              [% END %]
+
+            <div id="form_photos">
+              [% IF upload_fileid %]
+                <p>[% loc('You have already attached photos to this update.  Note that you can attach a maximum of 3 to this update (if you try to upload more, the oldest will be removed).') %]</p>
+                [% FOREACH id IN upload_fileid.split(',') %]
+                <img align="right" src="/photo/temp.[% id %]" alt="">
+                [% END %]
+            [% END %]
+                <input type="file" name="photo1" id="form_photo">
+                <label for="form_photo2">[% loc('Photo') %]</label>
+                <input type="file" name="photo2" id="form_photo2">
+                <label for="form_photo3">[% loc('Photo') %]</label>
+                <input type="file" name="photo3" id="form_photo3">
+            </div>
+        [% END %]
+
+            <label for="form_update">[% loc( 'Update' ) %]</label>
+            [% IF field_errors.update %]
+                <div class='form-error'>[% field_errors.update %]</div>
+            [% END %]
+            <textarea class="form-control" rows="7" cols="30" name="update" id="form_update" placeholder="[% loc('Please write your update here') %]" required>[% update.text | html %]</textarea>
+
+            <div class="general-notes">
+                <p>Please note this comments box can only be used for this report.
+                <br><a href="http://www.bromley.gov.uk/report">Report a different issue</a>
+            </div>
+
+            [% IF c.user && c.user.belongs_to_body( problem.bodies_str ) %]
+                <label for="form_state">[% loc( 'State' ) %]</label>
+                <select name="state" id="form_state" class="form-control">
+                    [% FOREACH state IN [ ['confirmed', loc('Open')], ['investigating',
+                    loc('Investigating')], ['action scheduled', loc('Action Scheduled')],
+                    ['in progress', loc('In Progress')], ['duplicate', loc('Duplicate')],
+                    ['unable to fix', loc('Unable to fix')], ['not responsible', loc('Not Responsible')],
+                    ['fixed', loc('Fixed')] ] %]
+                    <option [% 'selected ' IF state.0 == problem.state_display %] value="[% state.0 %]">[% state.1 %]</option>
+                [% END %]
+                </select>
+            [% ELSE %]
+                [% IF problem.is_fixed AND c.user_exists AND c.user.id == problem.user_id %]
+
+                <input type="checkbox" name="reopen" id="form_reopen" value="1"[% ' checked' IF update.mark_open %]>
+                <label class="inline" for="form_reopen">[% loc('This problem has not been fixed') %]</label>
+
+                [% ELSIF !problem.is_fixed %]
+
+                <div class="checkbox-group">
+                    <input type="checkbox" name="fixed" id="form_fixed" value="1"[% ' checked' IF update.mark_fixed %]>
+                    <label class="inline" for="form_fixed">[% loc('This problem has been fixed') %]</label>
+                </div>
+
+                [% END %]
+            [% END %]
+
+        [% IF c.user_exists %]
+
+            [% INCLUDE name %]
+
+            <input class="final-submit green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]">
+
+
+        [% ELSE %]
+
+            <label for="form_rznvy">[% loc('Email' ) %]
+                <span class="muted">([% loc('We never show your email') %])</span>
+            </label>
+
+            [% IF field_errors.email %]
+                <p class='form-error'>[% field_errors.email %]</p>
+            [% END %]
+            <input class="form-control" type="email" name="rznvy" id="form_rznvy" value="[% update.user.email | html %]" placeholder="[% loc('Your email address' ) %]" required>
+
+            <div id="form_sign_in">
+                <p>To submit your update you now need to confirm it either by email or by using a FixMyStreet password.</p>
+
+                <div id="form_sign_in_no" class="form-box">
+                    <h5>Confirm my report by email</h5>
+
+                    [% INCLUDE name %]
+
+                    <label for="password_register">[% loc('Password (optional)') %]</label>
+
+                    <div class="general-notes">
+                        <p>[% loc('Providing a password is optional, but doing so will allow you to more easily report problems, leave updates and manage your reports.') %]</p>
+                    </div>
+
+                    <div class="form-txt-submit-box">
+                        <input type="password" class="form-control" name="password_register" id="password_register" value="" placeholder="[% loc('Enter a password') %]">
+                        <input class="green-btn js-submit_register" type="submit" name="submit_register" value="[% loc('Post') %]">
+                    </div>
+                </div>
+                <div id="form_sign_in_yes" class="form-box">
+                    <h5>Confirm my report with my FixMyStreet password</h5>
+
+                    <label class="hidden-js n" for="password_sign_in">[% loc('Yes I have a password') %]</label>
+                    [% IF field_errors.password %]
+                        <p class='form-error'>[% field_errors.password %]</p>
+                    [% END %]
+                    <div class="form-txt-submit-box">
+                        <input type="password" class="form-control" name="password_sign_in" id="password_sign_in" value="" placeholder="[% loc('Your password') %]">
+                        <input class="green-btn js-submit_sign_in" type="submit" name="submit_sign_in" value="[% loc('Post') %]">
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="remember_me" name="remember_me" value='1'[% ' checked' IF remember_me %]>
+                        <label class="inline n" for="remember_me">[% loc('Keep me signed in on this computer') %]</label>
+                    </div>
+                </div>
+            </div>
+
+        [% END %]
+
+        <p>Your information will only be used in accordance with our <a href="/faq#privacy">privacy policy</a>.</p>
+
+        </fieldset>
+    </form>
+</div>

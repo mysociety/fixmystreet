@@ -25,31 +25,16 @@ my $dt = DateTime->new(
     second => 23
 );
 
-my $report = FixMyStreet::App->model('DB::Problem')->find_or_create(
-    {
-        postcode           => 'SW1A 1AA',
-        bodies_str         => '2504',
-        areas              => ',105255,11806,11828,2247,2504,',
-        category           => 'Other',
-        title              => 'Test 2',
-        detail             => 'Test 2 Detail',
-        used_map           => 't',
-        name               => 'Test User',
-        anonymous          => 'f',
-        state              => 'confirmed',
-        confirmed          => $dt->ymd . ' ' . $dt->hms,
-        lang               => 'en-gb',
-        service            => '',
-        cobrand            => 'default',
-        cobrand_data       => '',
-        send_questionnaire => 't',
-        latitude           => '51.5016605453401',
-        longitude          => '-0.142497580865087',
-        user_id            => $user->id,
-    }
-);
+my $westminster = $mech->create_body_ok(2504, 'Westminster City Council');
+my ($report, $report2) = $mech->create_problems_for_body(2, $westminster->id, "Example", {
+    user => $user,
+    confirmed => $dt->ymd . ' ' . $dt->hms,
+});
+$report->update({
+    title => 'Test 2',
+    detail => 'Test 2 Detail'
+});
 my $report_id = $report->id;
-ok $report, "created test report - $report_id";
 
 subtest "check that no id redirects to homepage" => sub {
     $mech->get_ok('/report');
@@ -123,6 +108,22 @@ subtest "check owner of report can view non public reports" => sub {
     $mech->content_contains('That report cannot be viewed on FixMyStreet.');
     $mech->log_out_ok;
     ok $report->update( { non_public => 0 } ), 'make report public';
+};
+
+subtest "duplicate reports are signposted correctly" => sub {
+    $report2->set_extra_metadata(duplicate_of => $report->id);
+    $report2->state('duplicate');
+    $report2->update;
+
+    my $report2_id = $report2->id;
+    ok $mech->get("/report/$report2_id"), "get '/report/$report2_id'";
+    $mech->content_contains('This report is a duplicate');
+    $mech->content_contains($report->title);
+    $mech->log_out_ok;
+
+    $report2->unset_extra_metadata('duplicate_of');
+    $report2->state('confirmed');
+    $report2->update;
 };
 
 subtest "test a good report" => sub {
@@ -532,5 +533,6 @@ subtest "Zurich banners are displayed correctly" => sub {
 
 END {
     $mech->delete_user('test@example.com');
+    $mech->delete_body($westminster);
     done_testing();
 }
