@@ -312,6 +312,28 @@ sub inspect : Private {
     $c->stash->{categories} = $c->forward('/admin/categories_for_point');
     $c->stash->{report_meta} = { map { $_->{name} => $_ } @{ $c->stash->{problem}->get_extra_fields() } };
 
+    my %category_body = map { $_->category => $_->body_id } map { $_->contacts->all } values %{$problem->bodies};
+
+    my @priorities = $c->model('DB::ResponsePriority')->for_bodies($problem->bodies_str_ids)->all;
+    my $priorities_by_category = {};
+    foreach my $pri (@priorities) {
+        my $any = 0;
+        foreach ($pri->contacts->all) {
+            $any = 1;
+            push @{$priorities_by_category->{$_->category}}, $pri->id . '=' . URI::Escape::uri_escape_utf8($pri->name);
+        }
+        if (!$any) {
+            foreach (grep { $category_body{$_} == $pri->body_id } @{$c->stash->{categories}}) {
+                push @{$priorities_by_category->{$_}}, $pri->id . '=' . URI::Escape::uri_escape_utf8($pri->name);
+            }
+        }
+    }
+    foreach (keys %{$priorities_by_category}) {
+        $priorities_by_category->{$_} = join('&', @{$priorities_by_category->{$_}});
+    }
+
+    $c->stash->{priorities_by_category} = $priorities_by_category;
+
     if ( $c->get_param('save') ) {
         $c->forward('/auth/check_csrf_token');
 
@@ -350,10 +372,6 @@ sub inspect : Private {
             }
         }
 
-        if ($c->get_param('priority') && ($permissions->{report_inspect} || $permissions->{report_edit_priority})) {
-            $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
-        }
-
         if ( !$c->forward( '/admin/report_edit_location', [ $problem ] ) ) {
             # New lat/lon isn't valid, show an error
             $valid = 0;
@@ -371,6 +389,11 @@ sub inspect : Private {
             $param_prefix = "category_" . $param_prefix . "_";
             my @contacts = grep { $_->category eq $problem->category } @{$c->stash->{contacts}};
             $c->forward('/report/new/set_report_extras', [ \@contacts, $param_prefix ]);
+        }
+
+        # Updating priority must come after category, in case category has changed (and so might have priorities)
+        if ($c->get_param('priority') && ($permissions->{report_inspect} || $permissions->{report_edit_priority})) {
+            $problem->response_priority( $problem->response_priorities->find({ id => $c->get_param('priority') }) );
         }
 
         if ($valid) {

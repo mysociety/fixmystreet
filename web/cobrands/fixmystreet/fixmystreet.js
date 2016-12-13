@@ -573,6 +573,19 @@ $.extend(fixmystreet.set_up, {
             selector = "[data-category='" + category + "']";
         $("form#report_inspect_form [data-category]:not(" + selector + ")").addClass("hidden");
         $("form#report_inspect_form " + selector).removeClass("hidden");
+        // And update the associated priority list
+        var priorities = $("form#report_inspect_form " + selector).data('priorities');
+        var $select = $('#problem_priority'),
+            curr_pri = $select.val();
+        $select.find('option:gt(0)').remove();
+        $.each(priorities.split('&'), function(i, kv) {
+            if (!kv) {
+                return;
+            }
+            kv = kv.split('=', 2);
+            $select.append($('<option>', { value: kv[0], text: decodeURIComponent(kv[1]) }));
+        });
+        $select.val(curr_pri);
     });
 
     $('.js-toggle-public-update').each(function() {

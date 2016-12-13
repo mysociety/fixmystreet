@@ -102,8 +102,8 @@ FixMyStreet::override_config {
             $user->user_body_permissions->delete;
             $user->user_body_permissions->create({ body => $oxon, permission_type => $test->{type} });
             $mech->get_ok("/report/$report_id");
-            $mech->contains_or_lacks($test->{priority}, 'Priority');
-            $mech->contains_or_lacks($test->{priority}, 'High');
+            $mech->contains_or_lacks($test->{priority}, 'Priority</label>');
+            $mech->contains_or_lacks($test->{priority}, '>High');
             $mech->contains_or_lacks($test->{category}, 'Category');
             $mech->contains_or_lacks($test->{detailed}, 'Extra details');
             $mech->submit_form_ok({
