@@ -70,6 +70,7 @@ sub edit : Path : Args(2) {
         $priority->deleted( $c->get_param('deleted') ? 1 : 0 );
         $priority->name( $c->get_param('name') );
         $priority->description( $c->get_param('description') );
+        $priority->external_id( $c->get_param('external_id') );
         $priority->update_or_insert;
 
         my @live_contact_ids = map { $_->id } @live_contacts;
