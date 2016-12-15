@@ -681,16 +681,7 @@ alphabetical order of name.
 
 sub response_priorities {
     my $self = shift;
-    return $self->result_source->schema->resultset('ResponsePriority')->search(
-        {
-            'me.body_id' => $self->bodies_str_ids,
-            'contact.category' => [ $self->category, undef ],
-        },
-        {
-            order_by => 'name',
-            join => { 'contact_response_priorities' => 'contact' },
-        }
-    );
+    return $self->result_source->schema->resultset('ResponsePriority')->for_bodies($self->bodies_str_ids, $self->category);
 }
 
 # returns true if the external id is the council's ref, i.e., useful to publish it

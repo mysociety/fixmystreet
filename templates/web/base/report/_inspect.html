@@ -52,11 +52,11 @@
           [% cat_prefix = category | lower | replace('[^a-z]', '') %]
           [% cat_prefix = "category_" _ cat_prefix _ "_" %]
           [% IF category == problem.category %]
-            <p data-category="[% category | html %]">
+            <p data-category="[% category | html %]" data-priorities="[% priorities_by_category.$category %]">
               [% INCLUDE 'report/new/category_extras_fields.html' %]
             </p>
-          [% ELSIF category_extras.$category.size %]
-            <p data-category="[% category | html %]" class="hidden">
+          [% ELSE %]
+            <p data-category="[% category | html %]" class="hidden" data-priorities="[% priorities_by_category.$category %]">
               [% INCLUDE 'report/new/category_extras_fields.html' report_meta='' %]
             </p>
           [% END %]
@@ -107,7 +107,7 @@
           <select name="priority" id="problem_priority" class="form-control">
             <option value="" [% 'selected' UNLESS problem.response_priority_id %]>-</option>
             [% FOREACH priority IN problem.response_priorities %]
-              <option value="[% priority.id %]" [% 'selected' IF problem.response_priority_id == priority.id %] [% 'disabled' IF priority.deleted %]>[% priority.name %]</option>
+              <option value="[% priority.id %]" [% 'selected' IF problem.response_priority_id == priority.id %] [% 'disabled' IF priority.deleted %]>[% priority.name | html %]</option>
             [% END %]
           </select>
         </p>
