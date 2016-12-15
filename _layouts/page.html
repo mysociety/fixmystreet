@@ -17,23 +17,19 @@ layout: default
 <div class="page-wrapper">
   <div class="page">
 
-      {% capture url_parts %} {{ page.url | remove: "/index.html" | replace:'/'," " }}{% endcapture %}
-      {% capture num_parts %}{{ url_parts | number_of_words | minus: 1 }}{% endcapture %}
-      {% assign previous="" %}
+      {% assign crumbs = page.url | split:"/" %}
       <ul class="breadcrumb">
-      {% if num_parts == "0" or num_parts == "-1" %}
         <li><a href="/">Home</a></li>
         <li><a href="/overview/">Documentation</a></li>
-      {% else %}
-        <li><a href="/">Home</a></li>
-        <li><a href="/overview/">Documentation</a></li>
-        {% for unused in page.content limit:num_parts %}
-          {% capture first_word %}{{ url_parts | truncatewords:1 | remove:"..."}}{% endcapture %}
-          {% capture previous %}{{ previous }}/{{ first_word }}{% endcapture %}
-          <li><a href="{{ previous }}/">{{ first_word | capitalize }}</a></li>
-          {% capture url_parts %}{{ url_parts | remove_first:first_word }}{% endcapture %}
-        {% endfor %}
-      {% endif %}
+        {% if page.layout == 'post' %}
+          <li><a href="/blog/">Blog</a></li>
+        {% else %}
+          {% for crumb in crumbs offset:1 %}
+            {% unless forloop.last %}
+              <li><a href="/{% for c in crumbs offset:1 limit:forloop.index %}{{ c }}/{% endfor %}">{{ crumb | capitalize }}</a></li>
+            {% endunless %}
+          {% endfor %}
+        {% endif %}
       </ul>
 
       <div class="site-search">
