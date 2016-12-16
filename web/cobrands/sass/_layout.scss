@@ -617,6 +617,7 @@ body.authpage {
   display:table;
   width:100%;
   padding: 0 0 1em;
+  table-layout: fixed;
   >div {
     display:table-cell;
     width:50%;
