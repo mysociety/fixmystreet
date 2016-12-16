@@ -328,13 +328,17 @@ $.extend(fixmystreet.set_up, {
             data = $form.serialize() + '&ajax=1',
             changeValue,
             buttonLabel,
-            buttonValue;
+            buttonValue,
+            classToAdd,
+            classToRemove;
 
         $.post(this.action, data, function(data) {
             if (data.outcome == 'add') {
                 $form.find("input[name='shortlist-add']" ).attr('name', 'shortlist-remove');
                 buttonLabel = $submit.data('label-remove');
                 buttonValue = $submit.data('value-remove');
+                classToAdd = $submit.data('class-remove');
+                classToRemove = $submit.data('class-add');
                 $('.shortlisted-status').remove();
                 $(document).trigger('shortlist-add', problemId);
             } else if (data.outcome == 'remove') {
@@ -342,9 +346,11 @@ $.extend(fixmystreet.set_up, {
                 buttonLabel = $submit.data('label-add');
                 buttonValue = $submit.data('value-add');
                 $(document).trigger('shortlist-remove', problemId);
+                classToAdd = $submit.data('class-add');
+                classToRemove = $submit.data('class-remove');
             }
-            $submit.val(buttonValue).attr('aria-label', buttonLabel);
-            $labels.text(buttonValue).attr('aria-label', buttonLabel);
+            $submit.val(buttonValue).attr('aria-label', buttonLabel).removeClass(classToRemove).addClass(classToAdd);
+            $labels.text(buttonValue).attr('aria-label', buttonLabel).removeClass(classToRemove).addClass(classToAdd);
         });
     });
   },

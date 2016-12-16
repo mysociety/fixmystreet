@@ -767,7 +767,9 @@ input.final-submit {
 }
 
 .btn--navigate,
-.btn--geolocate {
+.btn--geolocate,
+.btn--shortlist,
+.btn--shortlisted {
     &:before {
         content: "";
         display: inline-block;
@@ -779,7 +781,7 @@ input.final-submit {
         vertical-align: -0.1em; // vertically centre icon in button
 
         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/navigate@2.png);
+            background-image: url(/cobrands/fixmystreet/images/navigate@2x.png);
         }
 
         @media all {
@@ -793,11 +795,39 @@ input.final-submit {
         background-image: url(/cobrands/fixmystreet/images/crosshairs.png);
 
         @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-            background-image: url(/cobrands/fixmystreet/images/crosshairs@2.png);
+            background-image: url(/cobrands/fixmystreet/images/crosshairs@2x.png);
         }
 
         @media all {
             background-image: url(/cobrands/fixmystreet/images/crosshairs.svg), none;
+        }
+    }
+}
+
+.btn--shortlist {
+    &:before {
+        background-image: url(/cobrands/fixmystreet/images/icon-shortlist-mini.png);
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/icon-shortlist-mini@2x.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/icon-shortlist-mini.svg), none;
+        }
+    }
+}
+
+.btn--shortlisted {
+    &:before {
+        background-image: url(/cobrands/fixmystreet/images/icon-shortlisted-mini.png);
+
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url(/cobrands/fixmystreet/images/icon-shortlisted-mini@2x.png);
+        }
+
+        @media all {
+            background-image: url(/cobrands/fixmystreet/images/icon-shortlisted-mini.svg), none;
         }
     }
 }
