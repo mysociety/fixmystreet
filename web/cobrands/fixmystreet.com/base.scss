@@ -253,6 +253,11 @@ $grid-breakpoint-sm: $mysoc-footer-breakpoint-sm;
 @import "mysoc_footer";
 
 .mysoc-footer {
+
+  @media print {
+    display: none;
+  }
+
   li {
     list-style: none;
   }
