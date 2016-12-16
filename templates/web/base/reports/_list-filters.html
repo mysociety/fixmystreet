@@ -1,5 +1,5 @@
 [% select_status = BLOCK %]
-    <select class="form-control" name="status" id="statuses" multiple data-all="[% loc('All reports') %]">
+    <select class="form-control js-multiple" name="status" id="statuses" multiple data-all="[% loc('All reports') %]">
         <option value="open"[% ' selected' IF filter_status.open %]>[% loc('Unfixed reports') %]</option>
         <option value="closed"[% ' selected' IF filter_status.closed %]>[% loc('Closed reports') %]</option>
         <option value="fixed"[% ' selected' IF filter_status.fixed %]>[% loc('Fixed reports') %]</option>
@@ -8,7 +8,7 @@
 
 [% select_category = BLOCK %]
   [% IF filter_categories.size %]
-    <select class="form-control" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
+    <select class="form-control js-multiple" name="filter_category" id="filter_categories" multiple data-all="[% loc('Everything') %]">
         [% FOR cat IN filter_categories %]
             <option value="[% cat | html %]"[% ' selected' IF filter_category.grep(cat).size %]>
                 [% cat | html %]

@@ -289,7 +289,7 @@ select.form-control {
     &[multiple] {
         height: auto;
     }
-    .js &[multiple] {
+    .js &.js-multiple[multiple] {
         height: 2.2em;
     }
 }
