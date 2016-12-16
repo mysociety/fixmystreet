@@ -45,6 +45,22 @@ web-based cross-browser testing tools for this project.
 
 ## Releases
 
+* v2.0.1 (16th December 2016)
+    - Bugfixes:
+        - Fix issue in dragging map in Chrome 55. openlayers/ol2#1510
+        - Don't double-decode strftime output, to fix date/time display.
+        - Filter category should always carry through to form.
+        - Don't fix height of admin multiple selects. #1589
+    - Admin improvements:
+        - Add duplicate management to inspector view. #1581
+        - Open inspect Navigate link in new tab. #1583
+        - Scroll to report inspect form if present. #1583
+        - Update problem lastupdate column on inspect save. #1584
+        - Update priorities in inspect form on category change. #1590
+    - Development improvements:
+        - Pass test if NXDOMAINs are intercepted.
+        - Better path for showing config git version. #1586
+
 * v2.0 (15th November 2016)
     - Front end improvements:
         - Add HTML emails. #1281 #1103
