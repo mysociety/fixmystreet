@@ -1,6 +1,6 @@
-[% extra_js = BLOCK %]
-    <script src="[% version('/js/jquery.fixedthead.js') %]"></script>
-[% END -%]
+[% extra_js = [
+    version('/js/jquery.fixedthead.js')
+] -%]
 [% INCLUDE 'header.html', title = loc('Summary reports'), bodyclass => 'fullwidthpage' %]
 
 <h1>[% loc('All Reports') %]</h1>

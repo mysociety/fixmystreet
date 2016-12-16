@@ -1829,7 +1829,8 @@ for my $test (
 subtest 'check have to be logged in for creator fixed questionnaire' => sub {
     $mech->log_out_ok();
 
-    $mech->get_ok( "/questionnaire/submit?problem=$report_id&reported=Yes" );
+    $mech->get( "/questionnaire/submit?problem=$report_id&reported=Yes" );
+    is $mech->res->code, 400, "got 400";
 
     $mech->content_contains( "I'm afraid we couldn't locate your problem in the database." )
 };
@@ -1838,7 +1839,8 @@ subtest 'check cannot answer other user\'s creator fixed questionnaire' => sub {
     $mech->log_out_ok();
     $mech->log_in_ok( $user2->email );
 
-    $mech->get_ok( "/questionnaire/submit?problem=$report_id&reported=Yes" );
+    $mech->get( "/questionnaire/submit?problem=$report_id&reported=Yes" );
+    is $mech->res->code, 400, "got 400";
 
     $mech->content_contains( "I'm afraid we couldn't locate your problem in the database." )
 };

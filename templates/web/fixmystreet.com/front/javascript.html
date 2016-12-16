@@ -1,7 +1,12 @@
-<script src="[% version('/js/yepnope.js') %]"></script>
-<script id="script_front" src="[% version('/cobrands/fixmystreet/front.js') %]"
-    data-scripts="
-        [%~ version('/js/OpenLayers/OpenLayers.fixmystreet.js') %],
-        [%~ version('/js/map-OpenLayers.js') %],
-        [%~ version('/js/map-bing-ol.js') %],
-        [%~ version('/js/map-fms.js') %]"></script>
+[%
+map_js = [
+    version('/js/yepnope.js'),
+    [ version('/cobrands/fixmystreet/front.js'), {
+        id = "script_front",
+        'data-scripts' = version('/js/OpenLayers/OpenLayers.fixmystreet.js') _ ',' _ 
+            version('/js/map-OpenLayers.js') _ ',' _
+            version('/js/map-bing-ol.js') _ ',' _
+            version('/js/map-fms.js')
+    } ],
+]
+%]

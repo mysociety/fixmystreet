@@ -316,6 +316,7 @@ $.extend(fixmystreet.set_up, {
             $change = $form.find("input[name='change']" ),
             $submit = $form.find("input[type='submit']" ),
             $labels = $('label[for="' + $submit.attr('id') + '"]'),
+            problemId = $form.find("input[name='id']").val(),
             data = $form.serialize() + '&ajax=1',
             changeValue,
             buttonLabel,
@@ -327,10 +328,12 @@ $.extend(fixmystreet.set_up, {
                 buttonLabel = $submit.data('label-remove');
                 buttonValue = $submit.data('value-remove');
                 $('.shortlisted-status').remove();
+                $(document).trigger('shortlist-add', problemId);
             } else if (data.outcome == 'remove') {
                 changeValue = "add";
                 buttonLabel = $submit.data('label-add');
                 buttonValue = $submit.data('value-add');
+                $(document).trigger('shortlist-remove', problemId);
             }
             $change.val(changeValue);
             $submit.val(buttonValue).attr('aria-label', buttonLabel);

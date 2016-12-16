@@ -38,6 +38,20 @@ sub moniker {
     return $last_part;
 }
 
+=head2 asset_moniker
+
+    $moniker = $cobrand_class->asset_moniker();
+
+Same as moniker, except for the cobrand with the 'fixmystreet' moniker, when it
+returns 'fixmystreet.com', as to avoid confusion that's where its assets are.
+
+=cut
+
+sub asset_moniker {
+    my $self = shift;
+    return $self->moniker eq 'fixmystreet' ? 'fixmystreet.com' : $self->moniker;
+}
+
 =head2 is_default
 
     $bool = $cobrand->is_default();

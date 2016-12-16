@@ -7,7 +7,10 @@
 <!--[if IE 7]>   <html class="no-js ie7 iel8"[% html_att %]><![endif]-->
 <!--[if IE 8]>   <html class="no-js ie8 iel8"[% html_att %]><![endif]-->
 <!--[if IE 9]>   <html class="no-js ie9"[% html_att %]><![endif]-->
-<!--[if gt IE 9]><!--><html class="no-js"[% html_att %]><!--<![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"[% html_att %]
+[% IF appcache ~%]
+ manifest="/offline/appcache.manifest"
+[%~ END %]><!--<![endif]-->
     <head>
         <meta name="viewport" content="initial-scale=1.0">
 
@@ -16,19 +19,11 @@
         <meta name="mobileoptimized" content="0">
 
         [% INCLUDE 'header_opengraph.html' %]
-        [%
-           # For clarity, the 'fixmystreet' moniker (for fixmystreet.com) puts
-           # it stylesheets under fixmystreet.com
-           IF c.cobrand.moniker == 'fixmystreet';
-               SET css_dir = 'fixmystreet.com';
-           ELSE;
-               SET css_dir = c.cobrand.moniker;
-           END %]
-        <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/base.css') %]">
-        <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/layout.css') %]" media="(min-width:48em)">
+        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]" media="(min-width:48em)">
         [% extra_css %]
         <!--[if (lt IE 9) & (!IEMobile)]>
-            <link rel="stylesheet" href="[% version('/cobrands/' _ css_dir _ '/layout.css') %]">
+            <link rel="stylesheet" href="[% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]">
         <![endif]-->
 
         [% INCLUDE 'common_header_tags.html' %]

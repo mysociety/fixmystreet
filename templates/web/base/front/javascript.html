@@ -1,7 +1,12 @@
-[%# Assume using OpenStreetMap maps %]
-<script src="[% version('/js/yepnope.js') %]"></script>
-<script id="script_front" src="[% version('/cobrands/fixmystreet/front.js') %]"
-    data-scripts="
-        [%~ version('/js/OpenLayers/OpenLayers.fixmystreet.js') %],
-        [%~ version('/js/map-OpenLayers.js') %],
-        [%~ version('/js/map-OpenStreetMap.js') %]"></script>
+[%
+# Assume using OpenStreetMap maps
+map_js = [
+    version('/js/yepnope.js'),
+    [ version('/cobrands/fixmystreet/front.js'), {
+        id = 'script_front',
+        'data-scripts' = version('/js/OpenLayers/OpenLayers.fixmystreet.js') _ ',' _
+            version('/js/map-OpenLayers.js') _ ',' _
+            version('/js/map-OpenStreetMap.js')
+    } ],
+]
+%]

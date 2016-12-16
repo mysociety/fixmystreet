@@ -57,7 +57,7 @@ FixMyStreet::override_config {
     };
 
     subtest "test basic inspect submission" => sub {
-        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Planned' } });
+        $mech->submit_form_ok({ button => 'save', with_fields => { traffic_information => 'Yes', state => 'Planned', save_inspected => undef } });
         $report->discard_changes;
         is $report->state, 'planned', 'report state changed';
         is $report->get_extra_metadata('traffic_information'), 'Yes', 'report data changed';
@@ -201,7 +201,7 @@ FixMyStreet::override_config {
         # which should cause it to be resent. We clear the host because
         # otherwise testing stays on host() above.
         $mech->clear_host;
-        $mech->submit_form(button => 'save', with_fields => { category => 'Horses' });
+        $mech->submit_form(button => 'save', with_fields => { category => 'Horses', save_inspected => undef, });
 
         $report->discard_changes;
         is $report->category, "Horses", "Report in correct category";

@@ -408,10 +408,14 @@ sub inspect : Private {
             $problem->lastupdate( \'current_timestamp' );
             $problem->update;
             if ( defined($update_text) ) {
+                my $timestamp = \'current_timestamp';
+                if (my $saved_at = $c->get_param('saved_at')) {
+                    $timestamp = DateTime->from_epoch( epoch => $saved_at );
+                }
                 $problem->add_to_comments( {
                     text => $update_text,
-                    created => \'current_timestamp',
-                    confirmed => \'current_timestamp',
+                    created => $timestamp,
+                    confirmed => $timestamp,
                     user_id => $c->user->id,
                     name => $c->user->from_body->name,
                     state => 'confirmed',

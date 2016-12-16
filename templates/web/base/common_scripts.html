@@ -1,0 +1,44 @@
+[%
+
+USE date;
+USE Math;
+
+scripts = [];
+
+scripts.push(
+    start _ "/js/translation_strings." _ lang_code _ ".js?" _ Math.int( date.now / 3600 ),
+    version('/jslib/jquery-1.7.2.min.js'),
+    version('/js/validation_rules.js'),
+    version('/js/jquery.validate.min.js'),
+    version('/js/dropzone.min.js'),
+    version('/js/jquery.multi-select.js'),
+    version('/js/geo.min.js'),
+    version('/cobrands/fixmystreet/fixmystreet.js'),
+);
+
+FOR script IN map_js;
+    scripts.push(script);
+END;
+
+scripts.push(
+    version('/cobrands/fixmystreet/map.js'),
+    version('/cobrands/fixmystreet/offline.js'),
+);
+
+IF admin;
+    scripts.push(
+        version('/js/jquery-ui/js/jquery-ui-1.10.3.custom.min.js'),
+        version('/js/fixmystreet-admin.js'),
+    );
+END;
+
+FOR script IN extra_js;
+    scripts.push(script);
+END;
+
+TRY;
+    PROCESS 'footer_extra_js.html';
+CATCH file;
+END;
+
+~%]

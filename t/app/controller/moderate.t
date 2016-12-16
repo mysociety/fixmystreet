@@ -67,7 +67,8 @@ subtest 'Auth' => sub {
         $mech->get_ok($REPORT_URL);
         $mech->content_lacks('Moderat');
 
-        $mech->get_ok('/contact?m=1&id=' . $report->id);
+        $mech->get('/contact?m=1&id=' . $report->id);
+        is $mech->res->code, 400;
         $mech->content_lacks('Good bad bad bad');
     };
 

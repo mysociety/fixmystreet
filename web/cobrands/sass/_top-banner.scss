@@ -1,0 +1,49 @@
+.top_banner {
+    color: $primary_text;
+    background: $primary;
+    p {
+        margin: auto;
+        padding: 0.5em 2em;
+        max-width: 50em;
+        text-align: center;
+    }
+    a {
+        color: $primary_text;
+        text-decoration: underline;
+    }
+}
+
+.top_banner--donate {
+    background: #bef;
+}
+
+// The banner interferes with the map moving/placement on mobile, and the top
+// bar navigation on desktop (which both assume that .wrapper is at the top of
+// the page) so hide there for now
+.mappage .top_banner--donate {
+    display: none;
+}
+
+// This banner is only shown via JavaScript AJAX call
+.top_banner--country {
+    display: none;
+}
+
+.top_banner--offline {
+    position: fixed; left: 0; right: 0; top: 0; z-index: 100;
+    opacity: 0.9;
+    background: #c33;
+    color: #fff;
+}
+
+.top_banner--offline a {
+    color: #fff;
+}
+
+.top_banner--offline a:hover {
+    color: #000;
+}
+
+.top_banner__close {
+    float: $right;
+}
