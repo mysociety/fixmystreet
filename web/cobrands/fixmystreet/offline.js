@@ -25,12 +25,11 @@ fixmystreet.offlineBanner = (function() {
             banner.push('</span></p></div>');
             banner = $(banner.join(''));
             banner.prependTo('.content');
-            if (!offline && num === 0) {
+            if (num === 0) {
                 banner.hide();
             }
 
             window.addEventListener("offline", function(e) {
-                $('.top_banner--offline').slideDown();
                 $('#offline_forms').html(offlineText());
             });
 
