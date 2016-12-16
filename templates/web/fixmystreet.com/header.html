@@ -1,0 +1,45 @@
+[% SET html_att = ' lang="' _ lang_code _ '"' -%]
+<!doctype html>
+<!--[if IE 7]>   <html class="no-js ie7 iel8"[% html_att %]><![endif]-->
+<!--[if IE 8]>   <html class="no-js ie8 iel8"[% html_att %]><![endif]-->
+<!--[if IE 9]>   <html class="no-js ie9"[% html_att %]><![endif]-->
+<!--[if gt IE 9]><!--><html class="no-js"[% html_att %]
+[% IF appcache ~%]
+ manifest="/offline/appcache.manifest"
+[%~ END %]><!--<![endif]-->
+    <head>
+        <meta name="viewport" content="initial-scale=1.0">
+
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+        <meta name="HandHeldFriendly" content="true">
+        <meta name="mobileoptimized" content="0">
+
+        [% INCLUDE 'header_opengraph.html' %]
+        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet.com/base.css') %]">
+        <link rel="stylesheet" href="[% version('/cobrands/fixmystreet.com/layout.css') %]" media="(min-width:48em)">
+        [% extra_css %]
+        <!--[if (lt IE 9) & (!IEMobile)]>
+            <link rel="stylesheet" href="[% version('/cobrands/fixmystreet.com/layout.css') %]">
+        <![endif]-->
+
+        [% INCLUDE 'common_header_tags.html' %]
+
+        [% IF c.req.uri.host == 'osm.fixmystreet.com' %]
+            <link rel="canonical" href="https://www.fixmystreet.com[% c.req.uri.path_query %]">
+        [% END %]
+
+        [% TRY %][% PROCESS 'header_extra.html' %][% CATCH file %][% END %]
+
+    </head>
+    [% TRY %][% PROCESS 'set_body_class.html' %][% CATCH file %][% END %]
+    <body class="[% bodyclass | html IF bodyclass %]">
+        <div class="top_banner top_banner--donate"><p>FixMyStreet is run by the charity mySociety. <a href="https://www.mysociety.org/donate/?utm_source=fixmystreet.com&utm_medium=banner&utm_campaign=december_2016&utm_content=banner+donate+now">Can you help support us with a small donation?</a></p></div>
+
+    <div class="wrapper">
+        <div class="table-cell">
+            [% INCLUDE 'header_site.html' %]
+
+            [% pre_container_extra %]
+
+            <div class="container">
+                <div class="content[% " $mainclass" | html IF mainclass %]" role="main">
