@@ -1,5 +1,9 @@
 (function(){
 
+if (!fixmystreet.maps) {
+    return;
+}
+
 var options = {
     wfs_url: "https://maps.bristol.gov.uk/arcgis/services/ext/FixMyStreetSupportData/MapServer/WFSServer",
     wfs_feature: "COD_ASSETS_POINT",
