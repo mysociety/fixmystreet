@@ -1,3 +1,7 @@
+[% IF NOT report_blocks_included ~%]
+[% PROCESS 'admin/report_blocks.html' ~%]
+[% END ~%]
+
 <li class="item-list__item item-list--reports__item [% item_extra_class %]"
     data-report-id="[% problem.id | html %]" data-lastupdate="[% problem.lastupdate %]">
 <a href="[% c.cobrand.base_url_for_report( problem ) %][% problem.url %]">
@@ -5,6 +9,9 @@
         <img class="img" height="60" width="90" src="[% problem.photos.first.url_fp %]" alt="">
     [% END %]
         <h3 class="item-list__heading">[% problem.title | html %]</h3>
+    [% IF c.user.has_permission_to('report_inspect', problem.bodies_str_ids) %]
+        <div class="item-list__description">[% problem.detail | html %]</div>
+    [% END %]
         <small>
             [%- IF c.cobrand.moniker != 'fixamingata' %] [%# Default: %]
                 [%- prettify_dt( problem.confirmed, 1 ) %]
@@ -28,5 +35,54 @@
                 [% loc('(closed)') %]
             [% END %]
         </small>
+
+    [% IF c.user.has_permission_to('report_inspect', problem.bodies_str_ids) %]
+        <div class="item-list__item__metadata">
+            <div>
+                <h4>[% loc('Report ID:') %]</h4>
+                <p>[% problem.id %]</p>
+            </div>
+          [% IF problem.local_coords %]
+            <div>
+                <h4>[% loc('Easting/Northing:') %]</h4>
+                <p>[% problem.local_coords.0 %], [% problem.local_coords.1 %]</p>
+            </div>
+          [% END %]
+            <div>
+                <h4>[% loc('Latitude/Longitude:') %]</h4>
+                <p>[% problem.latitude %], [% problem.longitude %]</p>
+            </div>
+            <div>
+                <h4>[% loc('Category') %]</h4>
+                <p>[% (problem.category OR '-') | html %]</p>
+            </div>
+            <div>
+                <h4>[% loc('State') %]</h4>
+                <p>[% state_pretty.${problem.state} %]</p>
+            </div>
+            <div>
+                <h4>[% loc('Priority') %]</h4>
+                <p>[% problem.response_priority.name OR '-' %]</p>
+            </div>
+            <div>
+                <h4>[% loc('Traffic management required?') %]</h4>
+                <p>[% problem.get_extra_metadata('traffic_information') %]</p>
+            </div>
+            <div>
+                <h4>[% loc('Extra details') %]</h4>
+                <p>[% problem.get_extra_metadata('detailed_information') | html %]</p>
+            </div>
+          [% SET fields = problem.get_extra_fields; IF fields.size %]
+          [% FOR f IN fields %]
+            <div>
+                <h4>[% f.name %]</h4>
+                <p>[% f.value %]</p>
+            </div>
+          [% END %]
+          [% END %]
+        </div>
+    [% END %]
+
+
 </a>
 </li>

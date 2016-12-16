@@ -158,6 +158,13 @@ $right: right;
   flex: $values;
 }
 
+@mixin flex-wrap($wrap) {
+  -webkit-box-wrap: $wrap;
+  -webkit-flex-wrap: $wrap;
+  -ms-flex-wrap: $wrap;
+  flex-wrap: $wrap;
+}
+
 @mixin flex-align($alignment) {
   -webkit-box-align: $alignment;
   -webkit-align-items: $alignment;

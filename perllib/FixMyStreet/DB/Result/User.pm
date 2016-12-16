@@ -248,6 +248,15 @@ sub split_name {
     return { first => $first || '', last => $last || '' };
 }
 
+has body_permissions => (
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        my $self = shift;
+        return [ $self->user_body_permissions->all ];
+    },
+);
+
 sub permissions {
     my ($self, $c, $body_id) = @_;
 
@@ -258,9 +267,7 @@ sub permissions {
 
     return unless $self->belongs_to_body($body_id);
 
-    my @permissions = $self->user_body_permissions->search({
-        body_id => $self->from_body->id,
-    })->all;
+    my @permissions = grep { $_->body_id == $self->from_body->id } @{$self->body_permissions};
     return { map { $_->permission_type => 1 } @permissions };
 }
 
@@ -269,12 +276,13 @@ sub has_permission_to {
 
     return 1 if $self->is_superuser;
     return 0 if !$body_ids || (ref $body_ids && !@$body_ids);
+    $body_ids = [ $body_ids ] unless ref $body_ids;
+    my %body_ids = map { $_ => 1 } @$body_ids;
 
-    my $permission = $self->user_body_permissions->find({
-            permission_type => $permission_type,
-            body_id => $body_ids,
-        });
-    return $permission ? 1 : 0;
+    foreach (@{$self->body_permissions}) {
+        return 1 if $_->permission_type eq $permission_type && $body_ids{$_->body_id};
+    }
+    return 0;
 }
 
 =head2 has_body_permission_to
