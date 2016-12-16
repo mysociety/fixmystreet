@@ -147,7 +147,7 @@ sub version {
         # See if there's an auto.min.js version and use that instead if there is
         (my $file_min = $file) =~ s/\.js$/.auto.min.js/;
         _version_get_mtime($file_min);
-        $file = $file_min if $version_hash{$file_min} >= $version_hash{$file};
+        $url = $file = $file_min if $version_hash{$file_min} >= $version_hash{$file};
     }
     my $admin = $self->template->context->stash->{admin} ? FixMyStreet->config('ADMIN_BASE_URL') : '';
     return "$admin$url?$version_hash{$file}";
