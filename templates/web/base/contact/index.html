@@ -40,16 +40,12 @@
             <input type="hidden" name="id" value="[% update.problem_id %]">
 
         [% ELSIF problem %]
-            <p>
             [% IF moderation_complaint %]
             <input type="hidden" name="m" value="[% moderation_complaint %]">
-            [% loc('You are complaining that this problem report was unnecessarily moderated:') %]
+            <p>[% loc('You are complaining that this problem report was unnecessarily moderated:') %]</p>
             [% ELSE %]
-            [% loc('Does this report break our <a href="/about/house-rules">House Rules</a>? Use this form to let us know.') %]
-            </p> <p>
-            <strong>[% loc('If you are trying to make a new report, please <a href="/">go to the front page</a> and follow the instructions.') %]</strong>
+            [% INCLUDE 'contact/unsuitable-text.html' %]
             [% END %]
-            </p>
 
             <blockquote>
                 <h2>[% problem.title_safe | html %]</h2>
