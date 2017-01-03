@@ -78,7 +78,11 @@ if ($dt->day_of_week == 7) { # Sunday
 }
 is Utils::prettify_dt($dt), $dt->strftime("%H:%M, %A");
 
-$dt = DateTime->now->subtract(days => 100);
+if ($dt->month == 1) { # January
+    $dt = DateTime->now->add(days => 30);
+} else {
+    $dt = DateTime->now->subtract(days => 30);
+}
 is Utils::prettify_dt($dt), $dt->strftime("%H:%M, %A %e %B %Y");
 is Utils::prettify_dt($dt, "date"), $dt->strftime("%A %e %B %Y");
 is Utils::prettify_dt($dt, "zurich"), $dt->strftime("%H:%M, %e. %B %Y");
