@@ -1,0 +1,39 @@
+/* LAYOUT */
+
+// If you are wanting a right-to-left layout, uncomment the following line.
+// $direction: right;
+
+/* COLOURS */
+
+$menu-image: 'menu-black';
+
+$bucks_green: #97c34b;
+$bucks_dark_green: #547f35;
+
+
+$g1: #2e3137;
+$g2: #676973;
+$g6: #eaeaea;
+$g7: #f1f1f1;
+$b3: #0d45a0;
+$b4: #74a9ff;
+
+$primary: $bucks_dark_green;
+$primary_b: $g1;
+$primary_text: $g1;
+
+$base_bg: white;
+$base_fg: $g1;
+
+$map_nav_bg: #fff;
+$nav_fg: #000;
+$nav_fg_hover: #eee;
+
+$col_click_map: $g1;
+$col_click_map_dark: darken($g1, 10%);
+
+$col_fixed_label: #00BD08;
+$col_fixed_label_dark: #4B8304;
+
+$header-top-border-width: 5px;
+$header-top-border: 5px solid $bucks_green;
