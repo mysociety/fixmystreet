@@ -1,0 +1,15 @@
+$bold-font-family:  "Helvetica Neue Bold", "Helvetica Neue", Helvetica, sans-serif;
+$normal-font-family: "Helvetica Neue", Helvetica, sans-serif;
+
+%bold-font {
+  font-family: $bold-font-family;
+  font-weight: bold !important; // !important to ensure it doesn't get overridden, as we can't guarantee placement order in resulting CSS
+}
+%normal-font {
+  font-family: $normal-font-family;
+  font-weight: normal;
+}
+
+$heading-font: $bold-font-family;
+$body-font: $normal-font-family;
+$meta-font: $normal-font-family;
