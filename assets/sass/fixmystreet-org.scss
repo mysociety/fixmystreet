@@ -1,8 +1,7 @@
-@import '../../theme/sass/variables';
-@import '../../theme/sass/mixins';
+@import 'config';
+@import '../../theme/sass/global';
 @import 'owl_carousel';
 @import 'training_slideshow';
-@import 'config';
 
 .site-title {
     height: $logo_height * 0.75;
