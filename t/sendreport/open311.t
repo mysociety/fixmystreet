@@ -26,7 +26,7 @@ subtest 'testing Open311 behaviour', sub {
     $body->update( { send_method => 'Open311', endpoint => 'http://endpoint.example.com', jurisdiction => 'FMS', api_key => 'test' } );
     my $test_data;
     FixMyStreet::override_config {
-        SEND_REPORTS_ON_STAGING => 1,
+        STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => [ 'fixmystreet' ],
     }, sub {
         $test_data = FixMyStreet::DB->resultset('Problem')->send_reports();

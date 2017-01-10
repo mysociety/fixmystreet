@@ -14,9 +14,9 @@
   </p>
 [% ELSE %]
 
-  [% IF c.config.STAGING_SITE and !c.config.SEND_REPORTS_ON_STAGING %]
+  [% IF c.config.STAGING_SITE and !c.config.STAGING_FLAGS.send_reports %]
   <p class="fms-admin-warning">
-    [% tprintf(loc("As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."), "<a class='admin-offsite-link' href='http://fixmystreet.org/customising/config/#send_reports_on_staging'><code>SEND_REPORTS_ON_STAGING</code></a>") %]
+    [% tprintf(loc("As this is a staging site and %s is false, reports made on this site will be sent to the problem reporter, not the contact given for the report’s category."), "<a class='admin-offsite-link' href='http://fixmystreet.org/customising/config/#send_reports_on_staging'><code>STAGING_FLAGS send_reports</code></a>") %]
   </p>
   [% END %]
 

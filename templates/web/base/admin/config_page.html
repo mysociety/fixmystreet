@@ -118,7 +118,11 @@ running version <strong>[% git_version || 'unknown' %]</strong>.
 
 [% INCLUDE subsection heading="Development" %]
 [% INCLUDE just_value value="STAGING_SITE" %]
-[% INCLUDE just_value value="SEND_REPORTS_ON_STAGING" %]
+[% staging_conf = FOR k IN c.config.STAGING_FLAGS %]
+    [% k.key %]:[% k.value %]
+    [%- ',' IF NOT loop.last %]
+[% END %]
+[% INCLUDE just_value value="STAGING_FLAGS" conf = staging_conf %]
 [% INCLUDE just_value value="UPLOAD_DIR" %]
 [% INCLUDE just_value value="GEO_CACHE" %]
 [% INCLUDE just_value value="TESTING_COUNCILS" %]
