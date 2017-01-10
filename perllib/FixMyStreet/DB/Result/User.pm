@@ -287,23 +287,26 @@ sub has_permission_to {
 
 =head2 has_body_permission_to
 
-Checks if the User has a from_body set, and the specified permission on that body.
+Checks if the User has a from_body set, the specified permission on that body,
+and optionally that their from_body is one particular body.
 
 Instead of saying:
 
-    ($user->from_body && $user->has_permission_to('user_edit', $user->from_body->id))
+    ($user->from_body && $user->from_body->id == $body_id && $user->has_permission_to('user_edit', $body_id))
 
 You can just say:
 
-    $user->has_body_permission_to('user_edit')
-
-NB unlike has_permission_to, this doesn't blindly return 1 if the user is a superuser.
+    $user->has_body_permission_to('user_edit', $body_id)
 
 =cut
 
 sub has_body_permission_to {
-    my ($self, $permission_type) = @_;
+    my ($self, $permission_type, $body_id) = @_;
+
+    return 1 if $self->is_superuser;
+
     return unless $self->from_body;
+    return if $body_id && $self->from_body->id != $body_id;
 
     return $self->has_permission_to($permission_type, $self->from_body->id);
 }
