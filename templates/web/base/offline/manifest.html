@@ -5,7 +5,6 @@ CACHE MANIFEST
 CACHE:
 [% version('/cobrands/' _ c.cobrand.asset_moniker _ '/base.css') %]
 [% version('/cobrands/' _ c.cobrand.asset_moniker _ '/layout.css') %]
-
 [% FOR script IN scripts ~%]
     [%- script %]
 [% END %]

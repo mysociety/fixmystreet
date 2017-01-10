@@ -11,6 +11,7 @@ FixMyStreet::App::Controller::Offline - Catalyst Controller
 =head1 DESCRIPTION
 
 Offline pages Catalyst Controller.
+On staging site, appcache only for people who want it.
 
 =head1 METHODS
 
@@ -18,6 +19,10 @@ Offline pages Catalyst Controller.
 
 sub manifest : Path("/offline/appcache.manifest") {
     my ($self, $c) = @_;
+    if (FixMyStreet->staging_flag('enable_appcache', 0)) {
+        $c->response->status(404);
+        $c->response->body('NOT FOUND');
+    }
     $c->res->content_type('text/cache-manifest; charset=utf-8');
     $c->res->header(Cache_Control => 'no-cache, no-store');
 }
@@ -25,6 +30,10 @@ sub manifest : Path("/offline/appcache.manifest") {
 sub appcache : Path("/offline/appcache") {
     my ($self, $c) = @_;
     $c->detach('/page_error_404_not_found', []) if keys %{$c->req->params};
+    if (FixMyStreet->staging_flag('enable_appcache', 0)) {
+        $c->response->status(404);
+        $c->response->body('NOT FOUND');
+    }
 }
 
 __PACKAGE__->meta->make_immutable;
