@@ -92,10 +92,9 @@ sub edit : Path : Args(2) {
 sub load_user_body : Private {
     my ($self, $c, $body_id) = @_;
 
-    my $has_permission = $c->user->has_body_permission_to('responsepriority_edit') &&
-                         $c->user->from_body->id eq $body_id;
+    my $has_permission = $c->user->has_body_permission_to('responsepriority_edit', $body_id);
 
-    unless ( $c->user->is_superuser || $has_permission ) {
+    unless ( $has_permission ) {
         $c->detach( '/page_error_404_not_found' );
     }
 

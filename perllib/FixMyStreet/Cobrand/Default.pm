@@ -646,27 +646,27 @@ sub admin_pages {
         $pages->{config} = [ _('Configuration'), 9];
     };
     # And some that need special permissions
-    if ( $user->is_superuser || $user->has_body_permission_to('category_edit') ) {
+    if ( $user->has_body_permission_to('category_edit') ) {
         my $page_title = $user->is_superuser ? _('Bodies') : _('Categories');
         $pages->{bodies} = [ $page_title, 1 ];
         $pages->{body} = [ undef, undef ];
     }
-    if ( $user->is_superuser || $user->has_body_permission_to('report_edit') ) {
+    if ( $user->has_body_permission_to('report_edit') ) {
         $pages->{reports} = [ _('Reports'), 2 ];
         $pages->{report_edit} = [ undef, undef ];
         $pages->{update_edit} = [ undef, undef ];
         $pages->{abuse_edit} = [ undef, undef ];
     }
-    if ( $user->is_superuser || $user->has_body_permission_to('template_edit') ) {
+    if ( $user->has_body_permission_to('template_edit') ) {
         $pages->{templates} = [ _('Templates'), 3 ];
         $pages->{template_edit} = [ undef, undef ];
     };
-    if ( $user->is_superuser || $user->has_body_permission_to('responsepriority_edit') ) {
+    if ( $user->has_body_permission_to('responsepriority_edit') ) {
         $pages->{responsepriorities} = [ _('Priorities'), 4 ];
         $pages->{responsepriority_edit} = [ undef, undef ];
     };
 
-    if ( $user->is_superuser || $user->has_body_permission_to('user_edit') ) {
+    if ( $user->has_body_permission_to('user_edit') ) {
         $pages->{users} = [ _('Users'), 6 ];
         $pages->{user_edit} = [ undef, undef ];
     }

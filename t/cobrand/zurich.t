@@ -28,12 +28,12 @@ ok $sample_file->exists, "sample file $sample_file exists";
 my $sample_photo = $sample_file->slurp_raw;
 
 # This is a helper method that will send the reports but with the config
-# correctly set - notably SEND_REPORTS_ON_STAGING needs to be true, and
+# correctly set - notably STAGING_FLAGS send_reports needs to be true, and
 # zurich must be allowed cobrand if we want to be able to call cobrand
 # methods on it.
 sub send_reports_for_zurich {
     FixMyStreet::override_config {
-        SEND_REPORTS_ON_STAGING => 1,
+        STAGING_FLAGS => { send_reports => 1 },
         ALLOWED_COBRANDS => ['zurich']
     }, sub {
         # Actually send the report

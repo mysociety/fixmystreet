@@ -41,14 +41,18 @@ DO_NOT_REPLY_EMAIL: 'do-not-reply@example.org'
 # Whether this is a development site or not. It will mean e.g. templates/
 # CSS modified times aren't cached
 STAGING_SITE: 1
-# Normally, a staging site will route all reports to the reporter on a
-# development site (when STAGING_SITE is 1), to guard against sending fake
-# reports to live places. Set this to 1 if you want a dev site to route
-# reports as normal.
-SEND_REPORTS_ON_STAGING: 0
-# Manual testing of multiple cobrands can be made easier by skipping some
-# checks they have in them, if this variable is set
-SKIP_CHECKS_ON_STAGING: 0
+# Developers may want a staging site to act differently from a live site.
+# Possible flags include:
+# - send_reports: Normally, a staging site will route all reports to the
+#   reporter, to guard against sending fake reports to live places. Set
+#   this to 1 if you want a staging site to route reports as normal.
+# - skip_checks: Manual testing of multiple cobrands can be made easier by
+#   skipping some checks they have in them, if this variable is set.
+# - enable_appcache: Whether the appcache should be active.
+STAGING_FLAGS:
+  send_reports: 0
+  skip_checks: 0
+  enable_appcache: 0
 
 # What to use as front page/alert example places placeholder
 # Defaults to High Street, Main Street
