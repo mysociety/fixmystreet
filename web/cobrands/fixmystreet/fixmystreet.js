@@ -492,7 +492,7 @@ $.extend(fixmystreet.set_up, {
         } else if (val === 'another_user') {
             $emailInput.val('').prop('disabled', false);
             $nameInput.val('').prop('disabled', false);
-            $showNameCheckbox.prop('checked', false).prop('disabled', false);
+            $showNameCheckbox.prop('checked', false).prop('disabled', true);
             $addAlertCheckbox.prop('checked', true).prop('disabled', false);
         } else if (val === 'body') {
             $emailInput.val('-').prop('disabled', true);
