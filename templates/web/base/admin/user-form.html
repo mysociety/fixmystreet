@@ -47,7 +47,7 @@
                 [% loc("Staff users have permission to log in to the admin.") %]
               </p>
             </div>
-            [% loc('Staff:') %] <input type="checkbox" id="body" name="body" value="[% c.user.from_body.id %]" [% user.from_body.id == c.user.from_body.id ? ' checked' : '' %] [% 'disabled' UNLESS c.user.is_superuser OR c.user.has_body_permission_to('user_assign_body') %]>
+            [% loc('Staff:') %] <input type="checkbox" id="body" name="body" value="[% c.user.from_body.id %]" [% user.from_body.id == c.user.from_body.id ? ' checked' : '' %] [% 'disabled' UNLESS c.user.has_body_permission_to('user_assign_body') %]>
           </li>
         [% END %]
 
@@ -162,7 +162,7 @@
                 [% FOREACH permission IN group.value %]
                   <li>
                     <label class="inline">
-                      <input type="checkbox" id="perms_[% permission.key %]" name="permissions[[% permission.key %]]" [% "checked" IF user.has_body_permission_to(permission.key) %]>
+                      <input type="checkbox" id="perms_[% permission.key %]" name="permissions[[% permission.key %]]" [% "checked" IF NOT user.is_superuser AND user.has_body_permission_to(permission.key) %]>
                       [% permission.value %]
                     </label>
                   </li>
