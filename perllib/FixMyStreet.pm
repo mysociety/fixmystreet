@@ -212,4 +212,18 @@ sub set_time_zone {
     $dt->set_time_zone($tz_f) if $tz_f;
 }
 
+# Development functions
+
+sub staging_flag {
+    my ($cls, $flag, $value) = @_;
+    $value = 1 unless defined $value;
+    return unless $cls->config('STAGING_SITE');
+    my $flags = $cls->config('STAGING_FLAGS');
+    unless ($flags && ref $flags eq 'HASH') {
+        # Assume all flags 0 if missing
+        return !$value;
+    }
+    return $flags->{$flag} == $value;
+}
+
 1;

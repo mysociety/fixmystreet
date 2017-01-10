@@ -67,7 +67,7 @@ sub send {
     my $recips = $self->build_recipient_list( $row, $h );
 
     # on a staging server send emails to ourselves rather than the bodies
-    if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->config('SEND_REPORTS_ON_STAGING') && !FixMyStreet->test_mode) {
+    if (FixMyStreet->staging_flag('send_reports', 0) && !FixMyStreet->test_mode) {
         $recips = 1;
         @{$self->to} = [ $row->user->email, $self->to->[0][1] || $row->name ];
     }

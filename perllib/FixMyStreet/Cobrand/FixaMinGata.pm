@@ -31,7 +31,7 @@ sub disambiguate_location {
 
 sub area_types {
     my $self = shift;
-    return $self->next::method() if FixMyStreet->config('STAGING_SITE') && FixMyStreet->config('SKIP_CHECKS_ON_STAGING');
+    return $self->next::method() if FixMyStreet->staging_flag('skip_checks');
     [ 'KOM' ];
 }
 

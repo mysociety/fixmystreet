@@ -211,7 +211,7 @@ sub send(;$) {
               . " ]\n\n";
         }
 
-        if (FixMyStreet->config('STAGING_SITE') && !FixMyStreet->config('SEND_REPORTS_ON_STAGING')) {
+        if (FixMyStreet->staging_flag('send_reports', 0)) {
             # on a staging server send emails to ourselves rather than the bodies
             %reporters = map { $_ => $reporters{$_} } grep { /FixMyStreet::SendReport::Email/ } keys %reporters;
             unless (%reporters) {
