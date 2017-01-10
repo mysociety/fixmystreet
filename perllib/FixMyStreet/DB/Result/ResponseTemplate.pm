@@ -33,6 +33,8 @@ __PACKAGE__->add_columns(
   },
   "auto_response",
   { data_type => "boolean", default_value => \"false", is_nullable => 0 },
+  "state",
+  { data_type => "text", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("response_templates_body_id_title_key", ["body_id", "title"]);
@@ -50,8 +52,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-08-24 11:29:04
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KRm0RHbtrzuxzH0S/UAsdw
+# Created by DBIx::Class::Schema::Loader v0.07035 @ 2016-12-01 15:10:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:ySPzQpFwJNki8XBjCNiqZQ
 
 __PACKAGE__->many_to_many( contacts => 'contact_response_templates', 'contact' );
 

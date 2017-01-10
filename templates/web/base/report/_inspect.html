@@ -1,4 +1,3 @@
-[% PROCESS 'admin/report_blocks.html'; # For the report state dropdown %]
 [% permissions = c.user.permissions(c, problem.bodies_str) %]
 [% second_column = BLOCK -%]
   <div id="side-inspect">
@@ -65,16 +64,7 @@
         [% IF permissions.report_inspect %]
           <p>
             <label for="state">[% loc('State') %]</label>
-              [%# XXX this is duplicated from admin/report_edit.html, should be refactored %]
-            <select name="state" id="state" class="form-control">
-              [% FOREACH group IN state_groups %]
-                <optgroup label="[% group.0 %]">
-                  [% FOREACH state IN group.1 %]
-                    <option [% 'selected ' IF state == problem.state %] value="[% state %]">[% state_pretty.$state %]</option>
-                  [% END %]
-                </optgroup>
-              [% END %]
-            </select>
+            [% INCLUDE 'admin/state_groups_select.html' %]
           </p>
           <div id="js-duplicate-reports" class="[% "hidden" UNLESS problem.duplicate_of %]">
             <input type="hidden" name="duplicate_of" value="[% problem.duplicate_of.id %]">

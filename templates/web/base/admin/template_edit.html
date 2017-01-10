@@ -31,6 +31,16 @@
     </div>
     [% INCLUDE 'admin/category-checkboxes.html' %]
 
+    <div class="admin-hint">
+      <p>
+        [% loc('If you want to use this template to prefill the update field when changing a report&rsquo;s state, select the state here.') %]
+      </p>
+    </div>
+    <p>
+      <label for="state">[% loc('State') %]</label>
+      [% INCLUDE 'admin/state_groups_select.html' current_state=rt.state include_empty=1 %]
+    </p>
+
     <p>
       <input type="hidden" name="token" value="[% csrf_token %]" >
       <input type="submit" class="btn" name="Edit templates" value="[% rt.id ? loc('Save changes') : loc('Create template') %]" >
