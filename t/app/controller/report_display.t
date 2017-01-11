@@ -210,13 +210,13 @@ foreach my $meta (
     $report->update;
     subtest "test correct problem meta information" => sub {
         $mech->get_ok("/report/$report_id");
-    
+
     is $mech->extract_problem_meta, $meta->{meta};
 
     };
 }
 
-for my $test ( 
+for my $test (
     {
         description => 'new report',
         date => DateTime->now,
@@ -385,7 +385,7 @@ for my $test (
 my $body_westminster = $mech->create_body_ok(2504, 'Westminster City Council');
 my $body_camden = $mech->create_body_ok(2505, 'Camden Borough Council');
 
-for my $test ( 
+for my $test (
     {
         desc => 'no state dropdown if user not from authority',
         from_body => undef,
@@ -530,6 +530,57 @@ subtest "Zurich banners are displayed correctly" => sub {
   };
 };
 
+my $oxfordshire = $mech->create_body_ok(2237, 'Oxfordshire County Council', id => 2237);
+my $oxfordshireuser = $mech->create_user_ok('counciluser@example.com', name => 'Council User', from_body => $oxfordshire);
+
+subtest "check user details show when a user has correct permissions" => sub {
+    $report->update( {
+      name => 'Oxfordshire County Council',
+      user_id => $oxfordshireuser->id,
+      service => '',
+      anonymous => 'f',
+      bodies_str => $oxfordshire->id,
+      confirmed => '2012-01-10 15:17:00'
+    });
+
+    ok $oxfordshireuser->user_body_permissions->create({
+        body => $oxfordshire,
+        permission_type => 'view_body_contribute_details',
+    });
+
+    $mech->log_in_ok( $oxfordshireuser->email );
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->extract_problem_meta,
+      'Reported in the Roads category by Oxfordshire County Council (Council User) at 15:17, Tue 10 January 2012',
+      'correct problem meta information';
+
+    ok $oxfordshireuser->user_body_permissions->delete_all, "Remove view_body_contribute_details permissions";
+
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->extract_problem_meta,
+      'Reported in the Roads category by Oxfordshire County Council at 15:17, Tue 10 January 2012',
+      'correct problem meta information for user without relevant permissions';
+
+    $mech->log_out_ok;
+
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->extract_problem_meta,
+      'Reported in the Roads category by Oxfordshire County Council at 15:17, Tue 10 January 2012',
+      'correct problem meta information for logged out user';
+
+};
+
+subtest "check brackets don't appear when username and report name are the same" => sub {
+    $report->update( {
+      name => 'Council User'
+    });
+
+    $mech->log_in_ok( $oxfordshireuser->email );
+    ok $mech->get("/report/$report_id"), "get '/report/$report_id'";
+    is $mech->extract_problem_meta,
+      'Reported in the Roads category by Council User at 15:17, Tue 10 January 2012',
+      'correct problem meta information';
+};
 
 END {
     $mech->delete_user('test@example.com');

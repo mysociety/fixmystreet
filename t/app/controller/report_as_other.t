@@ -191,4 +191,3 @@ sub dropdown_shown {
     my ($shown, $name) = @_;
     is grep({ $_ eq 'form_as' } keys %{$mech->visible_form_values($name)}), $shown, "Dropdown shown = $shown";
 }
-

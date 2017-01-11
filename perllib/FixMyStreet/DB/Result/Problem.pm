@@ -606,20 +606,28 @@ sub meta_line {
             $meta = sprintf( _('Reported anonymously at %s'), $date_time );
         }
     } else {
+        my $problem_name = $problem->name;
+
+        if ($c->user_exists and
+            $c->user->has_permission_to('view_body_contribute_details', $problem->bodies_str_ids) and
+            $problem->name ne $problem->user->name) {
+            $problem_name = sprintf( _('%s (%s)'), $problem->name, $problem->user->name );
+        }
+
         if ( $problem->service and $category && $category ne _('Other') ) {
             $meta = sprintf(
                 _('Reported via %s in the %s category by %s at %s'),
                 $problem->service, $category,
-                $problem->name,    $date_time
+                $problem_name,    $date_time
             );
         } elsif ( $problem->service ) {
             $meta = sprintf( _('Reported via %s by %s at %s'),
-                $problem->service, $problem->name, $date_time );
+                $problem->service, $problem_name, $date_time );
         } elsif ( $category and $category ne _('Other') ) {
             $meta = sprintf( _('Reported in the %s category by %s at %s'),
-                $category, $problem->name, $date_time );
+                $category, $problem_name, $date_time );
         } else {
-            $meta = sprintf( _('Reported by %s at %s'), $problem->name, $date_time );
+            $meta = sprintf( _('Reported by %s at %s'), $problem_name, $date_time );
         }
     }
 
