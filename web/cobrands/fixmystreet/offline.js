@@ -15,6 +15,10 @@ fixmystreet.offlineBanner = (function() {
         return 'You are offline \u2013 <span>' + formText() + '</span> saved.';
     }
 
+    function remove() {
+        $('.top_banner--offline').slideUp();
+    }
+
     return {
         make: function(offline) {
             var num = fixmystreet.offlineData.getForms().length;
@@ -75,6 +79,10 @@ fixmystreet.offlineBanner = (function() {
         update: function() {
             $('.top_banner--offline').slideDown();
             $('#offline_forms span').text(formText());
+            var num = fixmystreet.offlineData.getForms().length;
+            if (num === 0) {
+                window.setTimeout(remove, 3000);
+            }
         },
         startProgress: function(l) {
             $('.top_banner--offline').slideDown();
@@ -85,6 +93,7 @@ fixmystreet.offlineBanner = (function() {
             cachedSoFar += 1;
             if (cachedSoFar === toCache) {
                 $('#offline_saving').text('Reports saved offline.');
+                window.setTimeout(remove, 3000);
             } else {
                 $('#offline_saving span').text(cachedSoFar);
             }
