@@ -4,7 +4,7 @@ fixmystreet.offlineBanner = (function() {
 
     function formText() {
         var num = fixmystreet.offlineData.getForms().length;
-        return num + ' form' + (num===1 ? '' : 's');
+        return num + ' update' + (num===1 ? '' : 's');
     }
 
     function onlineText() {
@@ -361,7 +361,7 @@ if ($('#offline_list').length) {
             $('#offline_list').before('<h2>Your offline reports</h2>');
             $('#offline_list').html(html);
             if (location.search.indexOf('saved=1') > 0) {
-                $('#offline_list').before('<p class="form-success">Your form has been saved offline for submission when back online.</p>');
+                $('#offline_list').before('<p class="form-success">Your update has been saved offline for submission when back online.</p>');
             }
             fixmystreet.offline.replaceImages('#offline_list img');
             var offlineForms = fixmystreet.offlineData.getForms();
@@ -371,7 +371,7 @@ if ($('#offline_list').length) {
             });
             $('#offline_list a').each(function(i, a) {
                 if (savedForms[a.href]) {
-                    $(this).find('h3').prepend('<em>Form data saved</em> ');
+                    $(this).find('h3').prepend('<em>Offline update data saved</em> ');
                 }
             });
             $('#offline_clear').html('<button id="js-clear-localStorage">Clear offline data</button>');
