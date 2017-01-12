@@ -383,12 +383,14 @@ if ($('#offline_list').length) {
                     $(this).find('h3').prepend('<em>Offline update data saved</em> ');
                 }
             });
-            $('#offline_clear').html('<button id="js-clear-localStorage">Clear offline data</button>');
+            $('#offline_clear').css('margin-top', '5em').html('<button id="js-clear-localStorage">Clear offline data</button>');
             $('#js-clear-localStorage').click(function() {
-                fixmystreet.offline.removeReports(fixmystreet.offlineData.getCachedUrls());
-                fixmystreet.offlineData.clearForms();
-                localStorage.removeItem('/my/planned');
-                alert('Offline data cleared');
+                if (window.confirm("Are you sure?")) {
+                    fixmystreet.offline.removeReports(fixmystreet.offlineData.getCachedUrls());
+                    fixmystreet.offlineData.clearForms();
+                    localStorage.removeItem('/my/planned');
+                    alert('Offline data cleared');
+                }
             });
         }
     }
