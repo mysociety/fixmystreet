@@ -11,7 +11,7 @@
 <form method="post" action="/my/planned/change" id="planned_form" class="hidden-label-target">
     <input type="hidden" name="id" value="[% problem.id %]">
     <input type="hidden" name="token" value="[% csrf_token %]">
-    <input type="hidden" name="change" value="[% IF c.user.is_planned_report(problem) %]remove[% ELSE %]add[% END %]">
+    <input type="hidden" name="[% IF c.user.is_planned_report(problem) %]shortlist-remove[% ELSE %]shortlist-add[% END %]" value="1">
     <p><input
         type="submit"
         id="shortlist-report"
@@ -19,12 +19,16 @@
         data-label-add="[% loc('Add to shortlist') %]"
         data-value-remove="[% loc('Shortlisted') %]"
         data-value-add="[% loc('Shortlist') %]"
+        data-class-remove="btn--shortlisted"
+        data-class-add="btn--shortlist"
     [%~ IF c.user.is_planned_report(problem) ~%]
         value="[% loc('Shortlisted') %]"
         aria-label="[% loc('Remove from shortlist') %]"
+        class="btn--shortlisted"
     [%~ ELSE ~%]
         value="[% loc('Shortlist') %]"
         aria-label="[% loc('Add to shortlist') %]"
+        class="btn--shortlist"
     [%~ END ~%]
     ></p>
 </form>
@@ -127,9 +131,9 @@
       [% END %]
       [% IF c.user.has_permission_to('planned_reports', problem.bodies_str_ids) %]
           [%~ IF c.user.is_planned_report(problem) ~%]
-            <label class="btn" for="shortlist-report" role="menuitem" aria-label="[% loc('Remove from shortlist') %]">[% loc('Shortlisted') %]</label>
+            <label class="btn btn--shortlisted" for="shortlist-report" role="menuitem" aria-label="[% loc('Remove from shortlist') %]">[% loc('Shortlisted') %]</label>
           [%~ ELSE ~%]
-            <label class="btn" for="shortlist-report" role="menuitem" aria-label="[% loc('Add to shortlist') %]">[% loc('Shortlist') %]</label>
+            <label class="btn btn--shortlist" for="shortlist-report" role="menuitem" aria-label="[% loc('Add to shortlist') %]">[% loc('Shortlist') %]</label>
           [%~ END ~%]
       [% END %]
     </div>

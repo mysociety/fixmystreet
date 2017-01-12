@@ -22,11 +22,11 @@
 [% END %]
 
 <section class="full-width">
-[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 %]
+[% INCLUDE "reports/_list-filters.html", use_form_wrapper = 1 shortlist = 1 %]
 <div class="js-pagination">
 [% INCLUDE 'pagination.html', pager = problems_pager, param = 'p' %]
 </div>
-[% INCLUDE 'my/_problem-list.html' %]
+[% INCLUDE 'my/_problem-list.html' shortlist = 1 %]
 </section>
 
         </div>

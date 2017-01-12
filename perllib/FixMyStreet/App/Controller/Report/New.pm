@@ -83,6 +83,14 @@ sub report_new : Path : Args(0) {
     $c->forward('initialize_report');
     $c->forward('/auth/get_csrf_token');
 
+    my @shortlist = grep { /^shortlist-(add|remove)-(\d+)$/ } keys %{$c->req->params};
+    if (@shortlist) {
+        my ($cmd, $id) = $shortlist[0] =~ /^shortlist-(add|remove)-(\d+)$/;
+        $c->req->params->{id} = $id;
+        $c->req->params->{"shortlist-$cmd"} = 1;
+        $c->detach('/my/planned_change');
+    }
+
     # work out the location for this report and do some checks
     # Also show map if we're just updating the filters
     return $c->forward('redirect_to_around')
