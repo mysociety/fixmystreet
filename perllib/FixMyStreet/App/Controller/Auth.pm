@@ -516,11 +516,12 @@ sub check_csrf_token : Private {
     $token =~ s/ /+/g;
     my ($time) = $token =~ /^(\d+)-[0-9a-zA-Z+\/]+$/;
     $c->stash->{csrf_time} = $time;
+    my $gen_token = $c->forward('get_csrf_token');
+    delete $c->stash->{csrf_time};
     $c->detach('no_csrf_token')
         unless $time
             && $time > time() - 3600
-            && $token eq $c->forward('get_csrf_token');
-    delete $c->stash->{csrf_time};
+            && $token eq $gen_token;
 }
 
 sub no_csrf_token : Private {
