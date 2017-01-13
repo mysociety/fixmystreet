@@ -246,7 +246,11 @@ sub meta_line {
         if ($body eq 'Bromley Council') {
             $body = "$body <img src='/cobrands/bromley/favicon.png' alt=''>";
         }
-        $meta = sprintf( _( 'Posted by %s (<strong>%s</strong>) at %s' ), $user_name, $body, Utils::prettify_dt( $self->confirmed ) );
+        if ($c->user_exists and $c->user->has_permission_to('view_body_contribute_details', $self->problem->bodies_str_ids)) {
+            $meta = sprintf( _( 'Posted by <strong>%s</strong> (%s) at %s' ), $body, $user_name, Utils::prettify_dt( $self->confirmed ) );
+        } else {
+            $meta = sprintf( _( 'Posted by <strong>%s</strong> at %s' ), $body, Utils::prettify_dt( $self->confirmed ) );
+        }
     } else {
         $meta = sprintf( _( 'Posted by %s at %s' ), FixMyStreet::Template::html_filter($self->name), Utils::prettify_dt( $self->confirmed ) )
     }
